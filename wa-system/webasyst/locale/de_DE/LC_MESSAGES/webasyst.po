@@ -1,0 +1,169 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: WebAsyst\n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: 2010-06-08 15:35+0300\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Language: German\n"
+"X-Poedit-Country: Germany\n"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-Basepath: .\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPath-1: .\n"
+
+msgid "0"
+msgstr "null"
+
+msgid "1"
+msgid_plural "1"
+msgstr[0] "ein"
+msgstr[1] "eine"
+
+msgid "2"
+msgstr "zwei"
+
+msgid "3"
+msgstr "drei"
+
+msgid "4"
+msgstr "vier"
+
+msgid "5"
+msgstr "fünf"
+
+msgid "6"
+msgstr "sechs"
+
+msgid "7"
+msgstr "sieben"
+
+msgid "8"
+msgstr "acht"
+
+msgid "9"
+msgstr "neun"
+
+msgid "10"
+msgstr "zehn"
+
+msgid "11"
+msgstr "elf"
+
+msgid "12"
+msgstr "zwölf"
+
+msgid "13"
+msgstr "dreizehn"
+
+msgid "14"
+msgstr "vierzehn"
+
+msgid "15"
+msgstr "fünfzehn"
+
+msgid "16"
+msgstr "sechzehn"
+
+msgid "17"
+msgstr "Seventeen"
+
+msgid "18"
+msgstr "achtzehn"
+
+msgid "19"
+msgstr "neunzehn"
+
+msgid "20"
+msgstr "zwanzig"
+
+msgid "30"
+msgstr "dreißig"
+
+msgid "40"
+msgstr "vierzig"
+
+msgid "50"
+msgstr "fünfzig"
+
+msgid "60"
+msgstr "sechzig"
+
+msgid "70"
+msgstr "siebzig"
+
+msgid "80"
+msgstr "achtzig"
+
+msgid "90"
+msgstr "neunzig"
+
+msgid "100"
+msgstr "einhundert"
+
+msgid "200"
+msgstr "zweihundert"
+
+msgid "300"
+msgstr "dreihundert"
+
+msgid "400"
+msgstr "vierhundert"
+
+msgid "500"
+msgstr "fünfhundert"
+
+msgid "600"
+msgstr "sechshundert"
+
+msgid "700"
+msgstr "siebenhundert"
+
+msgid "800"
+msgstr "achthundert"
+
+msgid "900"
+msgstr "neunhundert"
+
+msgid "1000"
+msgid_plural "1000"
+msgstr [0] "tausend"
+msgstr [1] "tausend"
+
+msgid "1000000"
+msgid_plural "1000000"
+msgstr [0] "Million"
+msgstr [1] "Millionen"
+
+msgid "1000000000"
+msgid_plural "1000000000"
+msgstr [0] "Milliard"
+msgstr [1] "Milliarden"
+
+msgid "1000000000000"
+msgid_plural "1000000000000"
+msgstr [0] "Billion"
+msgstr [1] "Billionen"
+
+msgid "rouble"
+msgid_plural "roubles"
+msgstr[0] "Rubel"
+msgstr[1] "Rubel"
+
+msgid "kopeck"
+msgid_plural "kopeks"
+msgstr[0] "Kopeke"
+msgstr[1] "Kopeken"
+
+msgid "dollar"
+msgid_plural "dollars"
+msgstr[0] "Dollar"
+msgstr[1] "Dollar"
+
+msgid "cent"
+msgid_plural "cents"
+msgstr[0] "Cent"
+msgstr[1] "Cent"

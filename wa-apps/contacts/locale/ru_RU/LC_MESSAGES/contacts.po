@@ -1,0 +1,789 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: WebAsyst\n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: 2011-06-01 18:02+0300\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=((((n%10)==1)&&((n%100)!=11))?(0):(((((n%10)>=2)&&((n%10)<=4))&&(((n%100)<10)||((n%100)>=20)))?(1):2));\n"
+"X-Poedit-Language: Russian\n"
+"X-Poedit-Country: Russian Federation\n"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-Basepath: .\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPath-1: .\n"
+
+msgid "Contacts"
+msgstr "Контакты"
+
+msgid "Users"
+msgstr "Пользователи"
+
+msgid "Reports"
+msgstr "Отчёты"
+
+msgid "View"
+msgstr "Вид"
+
+msgid "Settings"
+msgstr "Настройки"
+
+msgid "Actions"
+msgstr "Действия"
+
+msgid "Add to group"
+msgstr "Добавить в группу"
+
+msgid "No contacts were merged"
+msgstr "Контакты не были объединены"
+
+msgid "All contacts"
+msgstr "Все контакты"
+
+msgid "%s of %s contacts have been merged"
+msgstr "%s из %s контактов были объединены"
+
+msgid " were skipped because they have user accounts"
+msgstr " были пропущены, потому что они являются пользователями"
+
+msgid "contact"
+msgid_plural "contacts"
+msgstr[0] "контакт"
+msgstr[1] "контакта"
+msgstr[2] "контактов"
+
+msgid "Delete selected"
+msgstr "Удалить выбранных"
+
+msgid "Merge selected"
+msgstr "Объединить выбранные"
+
+msgid "Contacts:"
+msgstr "Контактов:"
+
+msgid "Pages:"
+msgstr "Страниц:"
+
+msgid "Import"
+msgstr "Импорт"
+
+msgid "Loading..."
+msgstr "Загрузка..."
+
+msgid "Back"
+msgstr "Назад"
+
+msgid "Save"
+msgstr "Сохранить"
+
+msgid "Cancel"
+msgstr "Отменить"
+
+msgid "cancel"
+msgstr "отменить"
+
+msgid "Online"
+msgstr "Онлайн"
+
+msgid "Offline"
+msgstr "Офлайн"
+
+msgid "Status"
+msgstr "Статус"
+
+msgid "Import results"
+msgstr "Результаты импорта"
+
+msgid "Search results"
+msgstr "Результаты поиска"
+
+msgid "Advanced search"
+msgstr "Расширенный поиск"
+
+msgid "Groups"
+msgstr "Группы"
+
+msgid "search by name or email"
+msgstr "поиск по имени или email"
+
+msgid "no name"
+msgstr "без имени"
+
+msgid "At least one of these fields must be filled"
+msgstr "Хотя бы одно из этих полей должно быть заполнено"
+
+msgid "New person"
+msgstr "Новая персона"
+
+msgid "New company"
+msgstr "Новая компания"
+
+msgid "Forms"
+msgstr "Формы"
+
+msgid "Duplicates"
+msgstr "Дубликаты"
+
+msgid "Plugins"
+msgstr "Плагины"
+
+msgid "Delete contacts"
+msgstr "Удалить контакты"
+
+msgid "Delete anyway"
+msgstr "Удалить всё равно"
+
+msgid "Contact deletion cannot be undone."
+msgstr "Контакты будут удалены без возможности восстановления."
+
+msgid "or"
+msgstr "или"
+
+msgid "OR"
+msgstr "ИЛИ"
+
+msgid "Contact id"
+msgstr "Номер контакта"
+
+msgid "Added"
+msgstr "Добавлен"
+
+msgid "Author"
+msgstr "Автор"
+
+msgid "Method"
+msgstr "Метод"
+
+msgid "Application"
+msgstr "Приложение"
+
+msgid "Select users you want to add to this group:"
+msgstr "Выберите пользователей, которых вы хотите включить в группу:"
+
+msgid "Included"
+msgstr "Включены"
+
+msgid "Not included"
+msgstr "Не включены"
+
+msgid "New user group"
+msgstr "Новая группа пользователей"
+
+msgid "<no name>"
+msgstr "<без названия>"
+
+msgid "All users"
+msgstr "Все пользователи"
+
+msgid "no access"
+msgstr "нет доступа"
+
+msgid "No access"
+msgstr "Нет доступа"
+
+msgid "custom"
+msgstr "настроенный"
+
+msgid "Limited"
+msgstr "Ограниченный"
+
+msgid "Customize"
+msgstr "Настроить"
+
+msgid "full access"
+msgstr "полный доступ"
+
+msgid "Full access"
+msgstr "Полный доступ"
+
+msgid "Selected"
+msgstr "Выбранные"
+
+msgid "Not selected"
+msgstr "Не выбранные"
+
+msgid "Select categories for this contact:"
+msgstr "Выберите категории для данного контакта:"
+
+msgid "none"
+msgstr "нет"
+
+msgid "Delete this contact"
+msgstr "Удалить этот контакт"
+
+msgid "Access rights for group &ldquo;%s&rdquo;"
+msgstr "Права доступа для группы &laquo;%s&raquo;"
+
+msgid "Saved"
+msgstr "Сохранено"
+
+msgid "Yes"
+msgstr "Да"
+
+msgid "No"
+msgstr "Нет"
+
+msgid "Can add contacts"
+msgstr "Может добавлять контакты"
+
+msgid "no categories"
+msgstr "нет категорий"
+
+msgid "Delete user account"
+msgstr "Удалить аккаунт пользователя"
+
+msgid "Select an image file (JPG, GIF or PNG) to change photo:"
+msgstr "Для замены фото выберите другой файл (JPG, GIF или PNG):"
+
+msgid "Upload image (JPG, GIF or PNG):"
+msgstr "Загрузить фотографию (JPG, GIF или PNG):"
+
+msgid "Can not set &ldquo;No access&rdquo; because some access rights are inherited from groups. To revoke access rights, customize group settings or group membership for this user."
+msgstr "Нельзя установить &laquo;Нет доступа&raquo;, потому что некоторые права доступа унаследованы от групп. Для лишения прав доступа, измените настройки групп или вхождение данного пользователя в группы."
+
+msgid "This access level is inherited from groups. To change you must customize these group settings or group membership for this user."
+msgstr "Этот уровень доступа унаследован от групп. Для изменения необходимо изменить настройки этих групп или вхождение данного пользователя в группы."
+
+msgid "Select access level"
+msgstr "Выберите уровень доступа"
+
+msgid "Delete"
+msgstr "Удалить"
+
+msgid "Send"
+msgstr "Отправить"
+
+msgid "Export"
+msgstr "Экспорт"
+
+msgid "Merge"
+msgstr "Объединить"
+
+msgid "Add to list"
+msgstr "Добавить в список"
+
+msgid "Add contacts to categories"
+msgstr "Добавить контакты в категории"
+
+msgid "Actions with selected"
+msgstr "Действия с выбранными"
+
+msgid "prev"
+msgstr "пред"
+
+msgid "next"
+msgstr "след"
+
+msgid "&lt;no name&gt;"
+msgstr "&lt;без названия&gt;"
+
+msgid "&lt;none&gt;"
+msgstr "&lt;нет&gt;"
+
+msgid "Access"
+msgstr "Доступ"
+
+msgid "Administrator"
+msgstr "Администратор"
+
+msgid "All customers"
+msgstr "Все покупатели"
+
+msgid "Are you sure you want to delete this form?"
+msgstr "Вы уверены, что хотите удалить эту форму?"
+
+msgid "Checking links to other applications..."
+msgstr "Поиск связей с другими приложениями..."
+
+msgid "Contacts will not be deleted."
+msgstr "Сами контакты не будут удалены."
+
+msgid "Customize access"
+msgstr "Настроить доступ"
+
+msgid "Delete category"
+msgstr "Удалить категорию"
+
+msgid "Delete group"
+msgstr "Удалить группу"
+
+msgid "Edit"
+msgstr "Редактировать"
+
+msgid "edit search"
+msgstr "изменить параметры поиска"
+
+msgid "Facebook"
+msgstr "Facebook"
+
+msgid "Flickr"
+msgstr "Flickr"
+
+msgid "Internet"
+msgstr "Интернет"
+
+msgid "Limited access"
+msgstr "Ограниченный доступ"
+
+msgid "Must be a number."
+msgstr "Должно быть числом."
+
+msgid "Incorrect Email address format."
+msgstr "Неправильный формат Email адреса."
+
+msgid "Incorrect URL format."
+msgstr "Неправильный формат URL."
+
+# Person name
+msgid "Name"
+msgstr "Имя"
+
+msgid "No contacts will be deleted."
+msgstr "Контакты не будут удалены."
+
+msgid "other"
+msgstr "другой"
+
+msgid "Page not found"
+msgstr "Страница не найдена"
+
+msgid "Pages"
+msgstr "Страницы"
+
+msgid "Photo"
+msgstr "Фото"
+
+msgid "Picasa"
+msgstr "Picasa"
+
+msgid "Remove selected"
+msgstr "Удалить выбранные"
+
+msgid "required"
+msgstr "обязательное"
+
+msgid "Sort by"
+msgstr "Сортировка"
+
+msgid "This field is required."
+msgstr "Это поле обязательное."
+
+msgid "WebAsyst Contacts"
+msgstr "WebAsyst Контакты"
+
+msgid "which?"
+msgstr "какой?"
+
+msgid "contact deleted"
+msgid_plural "contacts deleted"
+msgstr[0] "контакт удалён"
+msgstr[1] "контакта удалено"
+msgstr[2] "контактов удалено"
+
+msgid "Recently added"
+msgstr "Недавно добавлены"
+
+msgid "Recent Searches"
+msgstr "Недавние поиски"
+
+msgid "clear"
+msgstr "очистить"
+
+msgid "logout"
+msgstr "выход"
+
+msgid "Change photo"
+msgstr "Изменить фото"
+
+msgid "not set"
+msgstr "не установлено"
+
+# Contact import
+msgid "Enable validation control (required and unique fields and data format)"
+msgstr "Включить проверку данных (обязательные и уникальные поля, а также формат данных)"
+
+msgid "Error description"
+msgstr "Описание ошибки"
+
+msgid "This line was not imported"
+msgstr "Эта строка не была импортирована"
+
+msgid "Error details shown in columns"
+msgstr "Описание ошибок приведено в колонках"
+
+msgid "Invalid format"
+msgstr "Недопустимый формат"
+
+msgid "This field does not allow duplicates"
+msgstr "Дубликаты недопустимы для этого поля"
+
+msgid "This field is required"
+msgstr "Это поле обязательное"
+
+msgid "One of these fields must have a value"
+msgstr "Одно из этих полей должно иметь значение"
+
+# error message when layout is not found
+msgid "No view selected."
+msgstr "Вид не установлен."
+
+# Sidebar button
+msgid "New contact"
+msgstr "Новый контакт"
+
+# Sidebar header
+msgid "User groups"
+msgstr "Группы пользователей"
+
+# Sidebar stub
+msgid "no groups"
+msgstr "нет групп"
+
+# Alt text for photo on contact page
+msgid "No photo"
+msgstr "Нет фотографии"
+
+# Tab header on a contact page
+msgid "Create user account"
+msgstr "Создать аккаунт пользователя"
+
+# Tab header on a contact page
+msgid "Contact"
+msgstr "Контакт"
+
+# Tab header on a contact page
+msgid "User"
+msgstr "Пользователь"
+
+# Link on a contact page
+msgid "Field constructor"
+msgstr "Конструктор полей"
+
+# Used in access control interfaces on user tab and group rights page
+msgid "NOTE:"
+msgstr "Внимание:"
+
+# Used in a delete confirmation dialog
+msgid "IMPORTANT NOTE:"
+msgstr "ВНИМАНИЕ:"
+
+# Field on user tab on a contact page
+msgid "Login"
+msgstr "Логин"
+
+# Field on user tab on a contact page
+msgid "Password"
+msgstr "Пароль"
+
+# Field on user tab on a contact page
+msgid "Confirm password"
+msgstr "Подтверждение пароля"
+
+# Link on user tab on a contact page
+msgid "change password"
+msgstr "изменить пароль"
+
+# Field on user tab on a contact page
+msgid "New password"
+msgstr "Новый пароль"
+
+# user tab
+msgid "Never logged in"
+msgstr "Никогда не входил в систему"
+
+# user tab
+msgid "Last login"
+msgstr "Последний вход"
+
+# user tab
+msgid "Belongs to groups"
+msgstr "Принадлежит к группам"
+
+# user tab
+msgid "customize groups"
+msgstr "настроить группы"
+
+# Shown instead of select box in access rights control on user tab
+msgid "Full access is inherited from groups."
+msgstr "Полный доступ унаследован от групп."
+
+# Validation error on user tab
+msgid "Login is required."
+msgstr "Логин обязателен."
+
+# Delete user confirmation dialog header
+msgid "Are you sure?"
+msgstr "Вы уверены?"
+
+# Delete user confirmation dialog explanation
+msgid "Contact will not be deleted, but the user won't be able to log in anymore."
+msgstr "Контакт не будет удален, но пользователь больше не сможет входить в систему."
+
+# Validation error on user tab
+msgid "Passwords do not match."
+msgstr "Пароли не совпадают."
+
+# Add selected contacts to category error, when there are no categories
+msgid "No categories available"
+msgstr "Нет ни одной доступной категории"
+
+# Group or category name; colon is included into string to distinguish from person name
+msgid "Name:"
+msgstr "Название:"
+
+# Category editor header (followed by a category name)
+msgid "Edit category &ldquo;%s&rdquo;"
+msgstr "Редактирование категории &laquo;%s&raquo;"
+
+# Category editor header
+msgid "New category"
+msgstr "Новая категория"
+
+# Contact photo dialog button
+msgid "Delete photo"
+msgstr "Удалить фото"
+
+# Group editor header (followed by a group name)
+msgid "Edit group &ldquo;%s&rdquo;"
+msgstr "Редактирование группы &laquo;%s&raquo;"
+
+# User tab validation error
+msgid "This login is already in use."
+msgstr "Такой логин уже используется."
+
+msgid "contact selected"
+msgid_plural "contacts selected"
+msgstr[0] "контакт выбран"
+msgstr[1] "контакта выбрано"
+msgstr[2] "контактов выбрано"
+
+# Delete selected contacts
+msgid "%d contact has been deleted"
+msgid_plural "%d contacts have been deleted"
+msgstr[0] "%d контакт удалён"
+msgstr[1] "%d контакта удалено"
+msgstr[2] "%d контактов удалено"
+
+# Remove selected contacts from a group/category success message
+msgid "%d contact has been removed"
+msgid_plural "%d contacts have been removed"
+msgstr[0] "%d контакт исключён"
+msgstr[1] "%d контакта исключено"
+msgstr[2] "%d контактов исключено"
+
+# Remove selected contacts from a category success message
+msgid "from %d category"
+msgid_plural "from %d categories"
+msgstr[0] "из %d категории"
+msgstr[1] "из %d категорий"
+msgstr[2] "из %d категорий"
+
+# Remove selected contacts from a group/category success message
+msgid "%d contact has been added"
+msgid_plural "%d contacts have been added"
+msgstr[0] "%d контакт добавлен"
+msgstr[1] "%d контакта добавлено"
+msgstr[2] "%d контактов добавлено"
+
+# Add selected contacts to a category success message
+msgid "to %d category"
+msgid_plural "to %d categories"
+msgstr[0] "в %d категорию"
+msgstr[1] "в %d категории"
+msgstr[2] "в %d категорий"
+
+# Group deletion success message
+msgid "Group has been deleted"
+msgstr "Группа удалена"
+
+# Contacts access rights customization dialog
+msgid "Available categories"
+msgstr "Доступные категории"
+
+# Category deletion success message
+msgid "Category has been deleted"
+msgstr "Категория удалена"
+
+msgid "Filters"
+msgstr "Фильтры"
+
+msgid "Lists"
+msgstr "Списки"
+
+msgid "Categories"
+msgstr "Категории"
+
+msgid "select country"
+msgstr "выберите страну"
+
+msgid "Company"
+msgstr "Компания"
+
+msgid "Add"
+msgstr "Добавить"
+
+msgid "Exclude contacts from category &ldquo;%s&rdquo;?"
+msgstr "Исключить контакты из категории &laquo;%s&raquo;?"
+
+msgid "Exclude"
+msgstr "Исключить"
+
+msgid "Exclude from this category"
+msgstr "Исключить из этой категории"
+
+msgid "Exclude from this list"
+msgstr "Исключить из этого списка"
+
+msgid "Exclude contacts from list &ldquo;%s&rdquo;?"
+msgstr "Исключить контакты из списка &laquo;%s&raquo;?"
+
+msgid "Add another"
+msgstr "Добавить ещё"
+
+msgid "Add to category"
+msgstr "Добавить в категорию"
+
+msgid "Delete this category?"
+msgstr "Удалить эту категорию?"
+
+msgid "Delete this group?"
+msgstr "Удалить эту группу?"
+
+# Group access control and user tab. Shows when global access is changed to 'limited'
+msgid "Set up access rights for each application"
+msgstr "Настройте права доступа для каждого приложения"
+
+# Group access control. Comment for admin access level.
+msgid "Full access to all applications and user management."
+msgstr "Полный доступ ко всем приложениям и управлению пользователями."
+
+msgid "Edit contact"
+msgstr "Редактировать контакт"
+
+# Link to edit current category
+msgid "Edit category"
+msgstr "Редактировать категорию"
+
+# Link to edit current group
+msgid "Edit group"
+msgstr "Редактировать группу"
+
+msgid "Close"
+msgstr "Закрыть"
+
+msgid "You can not revoke administrative access level for yourself. Only another Administrator can do this."
+msgstr "Вы не можете аннулировать административный уровень доступа для самого себя. Только другой Администратор может это сделать."
+
+# A note on user access control page
+msgid "Limited and Full access levels in Contacts application DO NOT allow managing user accounts and categories. These access rights are granted to Administrator only."
+msgstr "Уровни доступа &laquo;Ограниченный&raquo; и &laquo;Полный&raquo; в приложении &laquo;Контакты&raquo; НЕ дают прав управления аккаунтами пользователей и категориями. Такие права имеет только Администратор."
+
+msgid "Show %s records on a page"
+msgstr "Показывать %s записей на странице"
+
+# Confirm deletion dialog
+msgid "You can not delete yourself."
+msgstr "Вы не можете удалить себя."
+
+msgid "Please eliminate yourself from deletion list."
+msgstr "Пожалуйста, исключите себя из списка удаляемых."
+
+msgid "%d of %d selected contacts shown below have links to other applications."
+msgstr "%d из %d выбранных контактов, показанные ниже, имеют связи с другими приложениями."
+
+msgid "All selected contacts have links to other applications."
+msgstr "Все выбранные контакты имеют связи с другими приложениями."
+
+msgid "After deletion of these contacts other applications will refer to not existing contacts."
+msgstr "После удаления этих контактов другие приложения будут ссылаться на не существующие контакты."
+
+msgid "Deletion of these contacts is allowed to Administrator only."
+msgstr "Удаление таких контактов разрешено только администратору."
+
+msgid "Delete %d of %d selected"
+msgstr "Удалить %d из %d выбранных"
+
+msgid "%d link"
+msgid_plural "%d links"
+msgstr[0] "%d ссылка"
+msgstr[1] "%d ссылки"
+msgstr[2] "%d ссылок"
+
+msgid "Categories are for classifying contacts, e.g. customers, providers, partners, etc. Webasyst users can be customized to have access to certain contact categories only."
+msgstr "Категории служат для классификации контактов, например: клиенты, поставщики, партнеры и т.д. Пользователям Вебасиста можно настроить доступ только к определенным категориям контактов."
+
+msgid "User groups are for organizing Webasyst users and setting common access rights for groups."
+msgstr "Группы служат для объединения пользователей Вебасиста и предоставления им общих прав доступа."
+
+msgid "This login is already set for user %NAME_LINK%"
+msgstr "Этот логин уже установлен для пользователя %NAME_LINK%"
+
+msgid "Add contacts to lists"
+msgstr "Добавить контакты в списки"
+
+msgid "Select lists:"
+msgstr "Выберите списки:"
+
+msgid "New list:"
+msgstr "Новый список:"
+
+msgid "to %d list"
+msgid_plural "to %d lists"
+msgstr[0] "в %d список"
+msgstr[1] "в %d списка"
+msgstr[2] "в %d списков"
+
+msgid "from %d list"
+msgid_plural "from %d lists"
+msgstr[0] "из %d списка"
+msgstr[1] "из %d списков"
+msgstr[2] "из %d списков"
+
+msgid "from a list"
+msgstr "из списка"
+
+msgid "Save as a filter"
+msgstr "Сохранить как фильтр"
+
+msgid "View has been deleted"
+msgstr "Представление удалено"
+
+msgid "Delete this filter?"
+msgstr "Удалить этот фильтр?"
+
+msgid "Delete filter"
+msgstr "Удалить фильтр"
+
+msgid "Delete this list?"
+msgstr "Удалить этот список?"
+
+msgid "Delete list"
+msgstr "Удалить список"
+
+msgid "Edit list"
+msgstr "Редактировать список"
+
+msgid "Edit filter"
+msgstr "Редактировать фильтр"
+
+msgid "Edit list &ldquo;%s&rdquo;"
+msgstr "Редактирование списка &laquo;%s&raquo;"
+
+msgid "Edit filter &ldquo;%s&rdquo;"
+msgstr "Редактирование фильтра &laquo;%s&raquo;"
+
+msgid "Filter name:"
+msgstr "Название фильтра:"
+
+msgid "Full name"
+msgstr "Полное имя"
+
+msgid "Change photo for contact"
+msgstr "Изменить фото для контакта"
+
+msgid "Are you sure you want to delete this photo?"
+msgstr "Вы действительно хотите удалить фото для этого контакта?"
+
