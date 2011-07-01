@@ -1,0 +1,18 @@
+DirectoryIndex index.php
+
+AddDefaultCharset utf-8
+
+<ifModule mod_rewrite.c>
+    RewriteEngine On
+
+    RewriteCond %{REQUEST_URI} !\.(js|css|jpg|gif|png|ico)$
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^(.*)$ index.php [L,QSA]
+</ifModule>
+
+<ifModule mod_headers.c>
+    <FilesMatch "\.(jpg|jpeg|png|gif|js|css)$">
+	Header set Cache-Control "max-age=3153600, public"
+    </FilesMatch>
+</ifModule>
