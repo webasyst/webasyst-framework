@@ -1,0 +1,4 @@
+RewriteEngine On
+RewriteCond %{REQUEST_URI} \.(js|css|gif|png)$
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^contacts_full(.*)$ contacts$1 [L]

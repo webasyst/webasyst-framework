@@ -1,0 +1,170 @@
+
+<div class="block" id="c-ge-header">
+	{{if $group}}
+		<h1>{{sprintf(_w('Edit group &ldquo;%s&rdquo;'), htmlspecialchars($group.name))}}</h1>
+	{{else}}
+		<h1>[`New user group`]</h1>
+	{{/if}}
+</div>
+
+<div id="tc-ge-members" class="tab-content">
+	<div class="block double-padded">
+		<form action="?module=groups&action=save" id="group-editor-form">
+			<div class="fields" style="width:100%">
+				{{if $group}}
+					<input name="id" type="hidden" value="{{$group.id}}">
+				{{/if}}
+				<input name="user_operation" type="hidden" value="set">
+				<div class="field c-header-edit">
+					<div class="name large">[`Name:`]</div>
+					<div class="value"><span><input name="name" type="text" class="large" value="{{$group.name|escape}}" style="width:55%"></span></div>
+				</div>
+				<div class="field c-sort-block">
+					<p>[`Select users you want to add to this group:`]</p>
+					<ul class="thumbs">
+						<li>
+							<p class="status">[`Included`]</p>
+							<select multiple="multiple" style="width: 250px;" size="8" name="users[]" id="group-members">
+								{{foreach from=$members item=user}}
+									<option value="{{$user.id}}">{{$user.name|escape}}</option>
+								{{/foreach}}
+							</select>
+						</li>
+						<li class="c-sort-btns">
+							<p><input type="button" value="&larr;" id="btn-move-left" /></p>
+							<p><input type="button" value="&rarr;" id="btn-move-right" /></p>
+						</li>
+						<li>
+							<p class="status">[`Not included`]</p>
+							<select multiple="multiple" style="width: 250px;" size="8" id="group-not-members">
+								{{foreach from=$notIncluded item=user}}
+									<option value="{{$user.id}}">{{$user.name|escape}}</option>
+								{{/foreach}}
+							</select>
+						</li>
+					</ul>
+				</div>
+				<div class="field buttons">
+					<div class="value submit">
+						<em class="validation-notice errormsg"></em>
+
+						<input type="submit" value="[`Save`]" class="button green"> [`or`] <a href="#" onclick="$.wa.back(); return false;">[`cancel`]</a>
+						<i class="icon16 loading" style="margin-left: 16px; display: none;"></i>
+					</div>
+				</div>
+			</div>
+		</form>
+		<div class="clear-left"></div>
+	</div>
+</div>
+
+<div class="clear-left"></div>
+
+<script type="text/javascript">
+(function() {
+	// Move <option>s between <select> lists
+	var initListSelect = function(leftList, rightList, moveLeftBtn, moveRightBtn) {
+		var fireChange = function() {
+			rightList.change();
+			leftList.change();
+		};
+		var deselect = function() {
+			leftList.val([]);
+			rightList.val([]);
+		};
+		var moveSelectedLeft = function() {
+			rightList.children('option:selected').appendTo(leftList);
+			fireChange();
+		};
+		var moveSelectedRight = function() {
+			leftList.children('option:selected').appendTo(rightList);
+			fireChange();
+		};
+		var selectAndMove = function() {
+			var o = $(this);
+			deselect();
+			o.attr('selected', true);
+			if ($(o.parent()).attr('id') == leftList.attr('id')) {
+				moveSelectedRight();
+			} else {
+				moveSelectedLeft();
+			}
+		};
+
+		moveLeftBtn.click(moveSelectedLeft);
+		moveRightBtn.click(moveSelectedRight);
+		leftList.dblclick(function() {
+			var self = $(this);
+			// have to do it the hard way because IE8 does not trigger double click events on <option> elements.
+			selectAndMove.call(self.children('[value="'+self.val()+'"]')[0]);
+		});
+		rightList.dblclick(function() {
+			var self = $(this);
+			selectAndMove.call(self.children('[value="'+self.val()+'"]')[0]);
+		});
+	};
+	initListSelect($('#group-members'), $('#group-not-members'), $('#btn-move-left'), $('#btn-move-right'));
+
+	var form = $('#group-editor-form');
+
+	// Button status control
+	var saveButton = form.find('input[type="submit"]');
+	var enableSave = function() {
+		saveButton.attr('disabled', false).addClass('green').removeClass('gray').attr('value', "[`Save`]");
+	};
+	var disableSave = function() {
+		saveButton.attr('disabled', true).addClass('gray').removeClass('green').attr('value', "[`Saved`]");;
+		form.find('select').one('change', enableSave);
+		form.find('input').one('keyup', enableSave);
+	};
+
+	//
+	// form submission
+	//
+
+	// validation stuff
+	var resetErrorMsgs = function() {
+		form.find('.validation-notice').html('');
+		form.find('input').removeClass('error');
+	};
+
+	// validate on submission and send data via ajax
+	form.submit(function() {
+		if (!form[0].name.value) {
+			form[0].name.value = "[`<no name>`]";
+		}
+
+		// ajax request
+		form.find('.loading').show();
+		form.find('#group-members option').attr('selected', true);
+		$.post(form.attr('action'), form.serialize(), function (response) {
+			disableSave();
+			form.find('.loading').hide();
+			if (response.status == 'ok') {
+				$.wa.controller.reloadSidebar();
+				{{if $group}}
+					// Go to group list
+					$.wa.setHash('#/contacts/group/'+response.data.id+'/');
+				{{else}}
+					// Go to access control
+					$.wa.controller.collapseSidebarSection('#c-sb-groups-header', 'uncollapse');
+					$.wa.setHash('#/groups/rights/'+response.data.id+'/');
+				{{/if}}
+			} else if (response.status == 'fail') {
+				form.find('.validation-notice').html(response.errors.join('<br />'));
+			}
+		}, 'json');
+		return false;
+	});
+
+	var input = $('#group-editor-form input[name="name"]')[0];
+	if (input) {
+		// voodoo magic... doesn't work without timeout in some browsers
+		setTimeout(function() {
+			input.focus();
+			input.select();
+		}, 1);
+	}
+	$.wa.controller.setBrowserTitle($('#c-ge-header h1').text());
+}).call({});
+</script>

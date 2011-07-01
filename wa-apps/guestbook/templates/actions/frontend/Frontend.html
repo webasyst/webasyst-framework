@@ -1,0 +1,34 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>[`Guestbook`]</title>
+	<style>
+		.post h3 { margin-bottom: 0; }
+		.post span { color: gray; font-size: 0.9em; }
+		.post p { margin-top: 0; }
+	</style>
+</head>
+
+<body>
+
+	<h1>[`Guestbook`]</h1>
+	
+	<form method="post" action="">
+		[`Name`]:<br />
+		<input name="name" type="text"><br />
+		[`Message`]:<br />
+		<textarea rows="4" cols="70" name="text"></textarea><br />
+		<input type="submit" value="[`Post`]">
+	</form>
+	
+	{foreach from=$records item=r}
+	<div class="post">
+		<h3>{$r.name|escape}</h3>
+		<span>{$r.datetime|wa_datetime}</span>
+		<p>{$r.text|escape|nl2br}</p>
+	</div>	
+	{/foreach}	
+</body>
+
+</html>

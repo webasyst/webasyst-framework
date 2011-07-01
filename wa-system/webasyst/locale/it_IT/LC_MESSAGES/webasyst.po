@@ -1,0 +1,121 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: WebAsyst\n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: 2010-11-13 12:29+0300\n"
+"Last-Translator: Alexander Muzychenko <alex.muzychenko@webasyst.net>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Language: Italian\n"
+"X-Poedit-Country: Italy\n"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-Basepath: .\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPath-1: .\n"
+
+msgid "0"
+msgstr "zero"
+
+msgid "1"
+msgid_plural "1"
+msgstr[0] "uno"
+msgstr[1] "un"
+
+msgid "2"
+msgstr "due"
+
+msgid "3"
+msgstr "tre"
+
+msgid "4"
+msgstr "quattro"
+
+msgid "5"
+msgstr "cinque"
+
+msgid "6"
+msgstr "sei"
+
+msgid "7"
+msgstr "sette"
+
+msgid "8"
+msgstr "otto"
+
+msgid "9"
+msgstr "nove"
+
+msgid "10"
+msgstr "dieci"
+
+msgid "11"
+msgstr "undici"
+
+msgid "12"
+msgstr "dodici"
+
+msgid "13"
+msgstr "tredici"
+
+msgid "14"
+msgstr "quattordici"
+
+msgid "15"
+msgstr "quindici"
+
+msgid "16"
+msgstr "sedici"
+
+msgid "17"
+msgstr "diciassette"
+
+msgid "18"
+msgstr "diciotto"
+
+msgid "19"
+msgstr "diciannove"
+
+msgid "20"
+msgstr "venti"
+
+msgid "30"
+msgstr "trenta"
+
+msgid "40"
+msgstr "trentuno"
+
+msgid "50"
+msgstr "cinquanta"
+
+msgid "60"
+msgstr "sessanta"
+
+msgid "70"
+msgstr "settanta"
+
+msgid "80"
+msgstr "ottanta"
+
+msgid "90"
+msgstr "novanta"
+
+msgid "100"
+msgstr "cento"
+
+msgid "1000"
+msgid_plural "1000"
+msgstr [0] "mille"
+msgstr [1] "mila"
+
+msgid "1000000"
+msgid_plural "1000000"
+msgstr [0] "milione"
+msgstr [1] "milioni"
+
+msgid "1000000000"
+msgid_plural "1000000000"
+msgstr [0] "miliardo"
+msgstr [1] "miliardi"
+

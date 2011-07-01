@@ -1,0 +1,8 @@
+body {
+	background: url("../img/corkboardbackground.jpg");
+}
+
+#wa .ui-page {
+	background: transparent !important;
+	border: none !important
+}

@@ -1,0 +1,13 @@
+<div class="block">
+	<h1 class="wa-page-heading">[`All records`]</h1>
+   	<table class="zebra">
+   		{foreach from=$records item=r}
+    	<tr>
+        	<td>
+        		<b>{$r.title}</b><br />
+        		<i>{$r.content}</i>
+        	</td>
+      	</tr>
+      	{/foreach}
+    </table>
+</div>			
