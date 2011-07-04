@@ -238,7 +238,7 @@ a#wa-my-username { font-weight: bold; text-decoration: none; }
 .clear-left { clear: left; }
 .clear-right { clear: right; }
 .highlighted { background:#ffc; }
-.heading { color: #999; text-transform:uppercase; padding: 0; margin: 0; }
+.heading, .heading a { color: #999; text-transform:uppercase; padding: 0; margin: 0; text-decoration: none; }
 .hint, a.hint, span.hint { color: #aaa; font-size: .8em; }
 .hint a { color: #888; }
 .hint a, a.hint { text-decoration: underline !important; }
@@ -264,7 +264,6 @@ position:relative; top:0.05em; margin:0 0 -0.5em; }
 .block.not-padded { padding: 0px; }
 .block.double-padded { padding: 20px; }
 .block.triple-padded { padding: 30px; }
-.block.shadowed { border: 1px solid #ccc; -moz-box-shadow: 0px 5px 13px #bbb; -webkit-box-shadow: 0px 1px 15px #aaa; box-shadow: 0px 1px 15px #aaa; }
 .collapsible { padding-left: 12px; }
 .hierarchical { margin-left: 14px; }
 .tags a { color: green; text-decoration: underline; }
