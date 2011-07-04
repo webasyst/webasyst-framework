@@ -24,7 +24,8 @@ class waContactUrlField extends waContactStringField
         }
     }
     
-    protected function setValue($value) {
+    protected function setValue($value) 
+    {
         if (is_array($value) && isset($value['value'])) {
             $value = $value['value'];
         }
@@ -35,5 +36,3 @@ class waContactUrlField extends waContactStringField
         return $value;
     }
 }
-
-// EOF

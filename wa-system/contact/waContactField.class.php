@@ -160,6 +160,9 @@ abstract class waContactField
             return array();
         }
         if ($this->isMulti()) {
+        	if (!is_array($data)) {
+        		$data = array($data);
+        	}
             foreach ($data as &$row) {
                 $row = $this->format($row, $format);
             }
@@ -193,7 +196,8 @@ abstract class waContactField
      *
      * @return array|string|null Validation errors (array for multi fields, string for simple fields) or null if everything is ok.
      */
-    public function validateUnique($data, $contactId=null) {
+    public function validateUnique($data, $contactId=null) 
+    {
         if (!$this->getParameter('unique')) {
             return null;
         }
@@ -389,7 +393,8 @@ abstract class waContactField
         return $data;
     }
 
-    protected function setValue($value) {
+    protected function setValue($value) 
+    {
         return $value;
     }
 
@@ -414,13 +419,16 @@ abstract class waContactField
         return str_replace(array('waContact', 'Field'), array('', ''), get_class($this));
     }
 
-    /** Get the current value of option $p.
-      * Used by a Field Constructor editor to access field parameters.
-      *
-      * waContactField has one parameter: localized_names = array(locale => name)
-      *
-      * @param $p string parameter to read */
-    public function getParameter($p) {
+    /** 
+     * Get the current value of option $p.
+     * Used by a Field Constructor editor to access field parameters.
+     *
+     * waContactField has one parameter: localized_names = array(locale => name)
+     *
+     * @param $p string parameter to read 
+     */
+    public function getParameter($p) 
+    {
         if ($p == 'localized_names') {
             return $this->name;
         }
@@ -431,16 +439,19 @@ abstract class waContactField
         return $this->options[$p];
     }
 
-    /** Set the value of option $p.
-      * Used by a Field Constructor editor to change field parameters.
-      *
-      * localized_names = array(locale => name)
-      * required = boolean
-      * unique = boolean
-      *
-      * @param $p string parameter to set
-      * @param $value mixed value to set */
-    public function setParameter($p, $value) {
+    /** 
+     * Set the value of option $p.
+     * Used by a Field Constructor editor to change field parameters.
+     *
+     * localized_names = array(locale => name)
+     * required = boolean
+     * unique = boolean
+     *
+     * @param $p string parameter to set
+     * @param $value mixed value to set 
+     */
+    public function setParameter($p, $value) 
+    {
         if ($p == 'localized_names') {
             if (is_array($value)) {
                 if (!$value) {
@@ -456,9 +467,12 @@ abstract class waContactField
         $this->options[$p] = $value;
     }
 
-    /** Set array of parameters
-      * @param array $param parameter => value */
-    public function setParameters($param) {
+    /** 
+     * Set array of parameters
+     * @param array $param parameter => value 
+     */
+    public function setParameters($param) 
+    {
         if (!is_array($param)) {
             throw new waException('$param must be an array: '.print_r($param, TRUE));
         }
@@ -467,7 +481,8 @@ abstract class waContactField
         }
     }
 
-    public static function __set_state($state) {
+    public static function __set_state($state) 
+    {
          return new $state['_type']($state['id'], $state['name'], $state['options']);
     }
 }
