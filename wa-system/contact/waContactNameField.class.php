@@ -33,15 +33,47 @@ class waContactNameField extends waContactStringField
         } else {
             $name = array();
             foreach(array('firstname', 'middlename', 'lastname') as $part) {
-                if ( ( $part = trim($contact[$part])) || $part === '0') {
+                if ( ($part = trim($contact[$part])) || $part === '0') {
                     $name[] = $part;
                 }
             }
 
-            $name = implode(' ', $name);
+            $name = trim(implode(' ', $name));
         }
-        $contact[$this->getId()] = $name;
+        if (!$name) {
+        	$email = $contact->get('email', 'value');
+        	if (is_array($email)) {
+        		$email = array_shift($email);
+        	}      	
+        	$name = strtok($email, '@');
+        	$this->set($contact, $name);
+        }
+        //$contact[$this->getId()] = $name;
         return $name;
+    }
+    
+    public function set(waContact $contact, $value)
+    {
+    	$value = trim($value);
+    	if ($contact['is_company']) {
+    		return $value;
+    	}
+    	$value_parts = explode(' ', trim($value), 3);
+    	switch (count($value_parts)) {
+    		case 1: 
+    			$contact['firstname'] = $value;
+    			break;
+    		case 2:
+    			$contact['firstname'] = $value_parts[0];
+    			$contact['lastname'] = $value_parts[1];
+    			break;
+    		case 3:
+    			$contact['firstname'] = $value_parts[0];
+    			$contact['middlename'] = $value_parts[1];
+    			$contact['lastname'] = $value_parts[2];
+    			break;    			
+    	}
+    	return $value;
     }
 
     public static function formatName(&$info)

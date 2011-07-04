@@ -282,7 +282,11 @@ class waContact implements ArrayAccess
     public function save($data = array(), $validate = false)
     {
         foreach ($data as $key => $value) {
-            $this->data[$key] = $value;
+        	if ($key == 'name') {
+        		$this->data[$key] = waContactFields::get($key)->set($this, $value);	
+        	} else {
+            	$this->data[$key] = $value;
+        	}
         }
         $this->data['name'] = $this->get('name');
         $save = array();
@@ -293,7 +297,6 @@ class waContact implements ArrayAccess
                 if ($f->isMulti() && !is_array($value)) {
                     $value = array($value);
                 }
-
                 if ($validate && ( $e = $f->validate($value, $this->id))) {
                         $errors[$f->getId()] = $e;
                 } else {
@@ -691,7 +694,11 @@ class waContact implements ArrayAccess
                     $this->data[$field_id][] = $value;
                 }
             } else {
-                $this->data[$field_id] = $value;
+            	if (method_exists($f, 'set')) {
+            		$this->data[$field_id] = $f->set($this, $value);
+            	} else {
+                	$this->data[$field_id] = $value;
+            	}
             }
         }
     }

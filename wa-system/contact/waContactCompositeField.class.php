@@ -14,7 +14,8 @@
  */
 class waContactCompositeField extends waContactField
 {
-    protected function init() {
+    protected function init() 
+    {
         if (!isset($this->options['required'])) {
             $this->options['required'] = array();
         }
