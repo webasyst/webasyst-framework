@@ -1,4 +1,4 @@
-# Webasyst Framework #
+# Webasyst PHP Framework #
 
 http://www.webasyst.com/
 
