@@ -2,7 +2,6 @@
 
 Webasyst is an open source PHP Framework for developing web apps with backend and frontend.
 Distributed under the terms of LGPL license.
-
 http://www.webasyst.com/
 
 ## System Requirements ##
@@ -32,7 +31,7 @@ http://www.webasyst.com/
 	via SVN:
 	
 		cd %PATH%
-		svn checkout git://svn.github.com/webasyst/webasyst-framework.git
+		svn checkout http://svn.github.com/webasyst/webasyst-framework.git
 
 2. Set up Webasyst config files (located within %PATH%/wa-config folder).
 
