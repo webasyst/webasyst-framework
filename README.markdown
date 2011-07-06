@@ -8,10 +8,10 @@ http://www.webasyst.com/
 ## --- System Requirements --- ##
 
 	* Web Server
-		* Apache or IIS
+		* e.g. Apache or IIS
 		
 	* PHP 5.2+
-	    * spl extension
+		* spl extension
 		* mbstring
 		* iconv
 		* json
@@ -27,7 +27,7 @@ http://www.webasyst.com/
 	via GIT:
 
 		cd %PATH%
-		git clone git://github.com/webasyst/webasyst-framework.git ./
+		git clone git://github.com/webasyst/webasyst-framework.git
 
 	via SVN:
 	
