@@ -55,3 +55,7 @@ http://www.webasyst.com/
 	Open wa-config/db.php in a text editor and enter database connection credentials.
 
 4. Run Webasyst Framework in a web browser (e.g. http://localhost/webasyst/).
+
+## Updating Webasyst Framework ##
+
+Staying with the latest version of Webasyst Framework is easy: simply update your files from the repository and login into Webasyst, and all required meta updates will be applied to Webasyst and its apps automatically.
