@@ -1,11 +1,11 @@
-## --- Webasyst --- ##
+# Webasyst #
 
 Webasyst is an open source PHP Framework for developing web apps with backend and frontend.
-Distributed under the terms of LGPL license (http://www.gnu.org/licenses/lgpl.html).
+Distributed under the terms of LGPL license.
 
 http://www.webasyst.com/
 
-## --- System Requirements --- ##
+## System Requirements ##
 
 	* Web Server
 		* e.g. Apache or IIS
@@ -20,7 +20,7 @@ http://www.webasyst.com/
 	* MySQL 4.1+
 
 
-## --- Installing Webasyst Framework --- ##
+## Installing Webasyst Framework ##
 
 1. Get the code into your web server's folder %PATH% (e.g. public_html/webasyst):
 
@@ -56,8 +56,3 @@ http://www.webasyst.com/
 	Open wa-config/db.php in a text editor and enter database connection credentials.
 
 4. Run Webasyst Framework in a web browser (e.g. http://localhost/webasyst/).
-
-
-## --- Committing your changes into Webasyst repository --- ##
-
-Commit is available via GIT only. SVN is only for read and getting updates.
