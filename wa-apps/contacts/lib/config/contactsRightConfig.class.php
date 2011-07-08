@@ -2,9 +2,10 @@
 
 class contactsRightConfig extends waRightConfig
 {
-    /** @var contactsRightsModel */
+    /** 
+     * @var contactsRightsModel 
+     */
     protected static $model = null;
-    protected $plugins_added = FALSE;
 
     public function init()
     {
@@ -12,28 +13,14 @@ class contactsRightConfig extends waRightConfig
         $items = $model->getNames();
         $this->addItem('create', _w('Can add contacts'), 'checkbox');
         $this->addItem('category', _w('Available categories'), 'list', array('items' => $items, 'hint1' => 'all_checkbox'));
+        
+        wa()->event('rights.config', $this);
+        
         if (!self::$model) {
             self::$model = new contactsRightsModel();
         }
     }
-
-    public function getHTML($rights = array(), $inherited=null)
-    {
-        if (!$this->plugins_added) {
-            // allow plugins to insert their own items
-            // we do it here rather than in constructor because HTML is not always needed
-            foreach(wa()->event('rights.config', $this) as $items) {
-                foreach ($items as $item) {
-                    if (isset($item['id'], $item['name'], $item['type'], $item['options'])) {
-                        $this->addItem($item['id'], $item['name'], $item['type'], $item['options']);
-                    }
-                }
-            }
-            $this->plugins_added = TRUE;
-        }
-        return parent::getHTML($rights, $inherited);
-    }
-
+    
     public function setDefaultRights($contact_id)
     {
         // Default access rights for contacts: creation of new contacts and all categories are allowed

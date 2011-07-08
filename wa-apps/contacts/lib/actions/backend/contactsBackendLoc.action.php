@@ -96,6 +96,8 @@ class contactsBackendLocAction extends waViewAction
         }
 
         $this->view->assign('strings', $strings ? $strings : new stdClass()); // stdClass is used to show {} instead of [] when there's no strings
+        
+        $this->getResponse()->addHeader('Content-Type', 'text/javascript; charset=utf-8');
     }
 }
 

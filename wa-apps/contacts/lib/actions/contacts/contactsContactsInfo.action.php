@@ -37,7 +37,7 @@ class contactsContactsInfoAction extends waViewAction
 
         // collect data from other applications to show in tabs (for premium app only)
         if (waRequest::param('full')) {
-            $links = wa()->event('info', $this->id);
+            $links = wa()->event('profile.tab', $this->id);
             $this->view->assign('links', $links);
         }
 

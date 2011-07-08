@@ -28,7 +28,7 @@ class contactsDefaultLayout extends waLayout
 
         // Plugin assets
         if (waRequest::param('full')) {
-            $this->view->assign('assets', wa()->event('assets', null));
+            wa()->event('assets');
         }
 
         $this->view->assign('admin', wa()->getUser()->getRights('contacts', 'backend') > 1);

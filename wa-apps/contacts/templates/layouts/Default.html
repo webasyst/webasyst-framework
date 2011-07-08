@@ -64,14 +64,7 @@
 	{{$wa_app_static_url}}js/fieldTypes.js
 {{/wa_js}}
 
-{{*
-  * Plugin assets
-  *}}
-{{if !empty($assets)}}
-	{{foreach $assets as $html}}
-		{{$html}}
-	{{/foreach}}
-{{/if}}
+{{$wa->js(false)}}
 </head>
 <body id="{{$wa_app}}"><div id="wa">
 	{{wa_header}}
