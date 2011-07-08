@@ -213,14 +213,20 @@ class waContactRightsModel extends waModel {
         return $this->query($sql)->fetchAll('group_id', true);
     }
 
-    /** @return array basic info from wa_contact for users who have access to given application. */
+    /** 
+     * Return array ids of users who have access right to given application
+     * 
+     * @param string $app_id
+     * @param string $name
+     * @return array 
+     */
     public function getUsers($app_id, $name = 'backend', $value = null)
     {
     	$sql = "SELECT DISTINCT IF(r.group_id < 0, -r.group_id, g.contact_id) 
     			FROM  wa_contact_rights r 
     			LEFT JOIN wa_user_groups g ON r.group_id = g.group_id 
-    			WHERE r.app_id = s:app_id AND r.name = s:name AND r.value ".
-    			($value === null ? " > 0" : " = ".(int)$value);
+    			WHERE (r.app_id = s:app_id AND r.name = s:name AND r.value > 0) OR
+    				  (r.app_id = 'webasyst' AND r.name = 'backend' AND r.value > 0)";
         return $this->query($sql, array('app_id' => $app_id, 'name' => $name))->fetchAll(null, true);
     }
 

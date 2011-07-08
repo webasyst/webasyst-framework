@@ -147,6 +147,7 @@ class waAutoload
         'wadbresult' => 'database/waDbResult.class.php',
         'wadbresultiterator' => 'database/waDbResultIterator.class.php',
         'wadbstatement' => 'database/waDbStatement.class.php',
+    	'wanestedsetmodel' => 'database/waNestedSetModel.class.php',
         'warequest' => 'request/waRequest.class.php',
         'waresponse' => 'response/waResponse.class.php',
         'wastorage' => 'storage/waStorage.class.php',

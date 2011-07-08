@@ -54,32 +54,35 @@ class waAuth implements waiAuth
 		if ($params && isset($params['login']) && isset($params['password'])) {
 			$login = $params['login'];
 			$password = $params['password'];
-		}
-		if (waRequest::getMethod() == 'post' && !waRequest::isXMLHttpRequest()) {
-			if (strlen(waRequest::post('login', '')) > 0) {
-				$user_info = $model->getByField('login', waRequest::post('login'));
-				if ($user_info && $user_info['is_user'] &&
-					waSystem::getInstance()->getUser()->getPasswordHash(waRequest::post('password')) === 
-					$user_info['password']) {
-					$response = waSystem::getInstance()->getResponse();
-					// if remember
-					if (waRequest::post('remember')) {
-	                    $response->setCookie('auth_token', $this->getToken($user_info), time() + 2592000);
-	                    $response->setCookie('remember', 1);
-					} else {
-						$response->setCookie('remember', null, -1);
-					}	
-					
-					// return array with compact user info 
-					return array(
-						'id' => $user_info['id'], 
-						'login' => $user_info['login']
-					);
-				} else {
-					throw new waException(_ws('Invalid login or password'));	
-				}
-			} else {
+		} elseif (waRequest::getMethod() == 'post' && waRequest::post('wa_auth_login')) {
+			$login = waRequest::post('login');
+			$password = waRequest::post('password');
+			if (!strlen($login)) {
 				throw new waException(_ws('Login is required'));
+			}
+		} else {
+			$login = null;
+		}
+		if ($login && strlen($login)) {
+			$user_info = $model->getByField('login', $login);
+			if ($user_info && $user_info['is_user'] &&
+				waSystem::getInstance()->getUser()->getPasswordHash($password) ===	$user_info['password']) {
+				$response = waSystem::getInstance()->getResponse();
+				// if remember
+				if (waRequest::post('remember')) {
+                    $response->setCookie('auth_token', $this->getToken($user_info), time() + 2592000);
+                    $response->setCookie('remember', 1);
+				} else {
+					$response->setCookie('remember', null, -1);
+				}	
+				
+				// return array with compact user info 
+				return array(
+					'id' => $user_info['id'], 
+					'login' => $user_info['login']
+				);
+			} else {
+				throw new waException(_ws('Invalid login or password'));	
 			}
 		} elseif (waSystem::getSetting('rememberme', 1, 'webasyst') && $token = waRequest::cookie('auth_token')) {
 			$response = waSystem::getInstance()->getResponse();

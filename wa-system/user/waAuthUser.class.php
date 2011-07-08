@@ -42,7 +42,11 @@ class waAuthUser extends waUser
 	            ini_set('session.gc_maxlifetime', self::$options['session_timeout']);
 	        }        
 	            
-	        $info = waSystem::getInstance()->getAuth()->isAuth();
+	        $auth = waSystem::getInstance()->getAuth();
+	        $info = $auth->isAuth();
+	        if (!$info && !waRequest::post('wa_auth_login')) {
+	        	$info = $auth->auth();
+	        }
 	        if ($info && isset($info['id'])) {
 	            $this->auth = true;
 	            $this->id = $info['id'];

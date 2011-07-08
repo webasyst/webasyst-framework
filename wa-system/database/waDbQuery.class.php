@@ -75,6 +75,12 @@ class waDbQuery
 		return $this->model->query($sql)->fetch();	
 	}
 	
+	public function fetchField($field = false, $seek = false)
+	{
+		$sql = $this->getSQL();
+		return $this->model->query($sql)->fetchField($field, $seek);	
+	}
+	
 	protected function getSQL()
 	{
 		$sql = "SELECT ".$this->select." FROM ".$this->model->getTableName();

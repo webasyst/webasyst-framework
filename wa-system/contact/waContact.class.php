@@ -192,9 +192,17 @@ class waContact implements ArrayAccess
             $result = waContactFields::getStorage()->get($this, $field_id);
             if (!$result && isset(self::$options['default'][$field_id])) {
                 return self::$options['default'][$field_id];
-            } else {
-                return $result;
-            }
+            } elseif ($result === null) {
+            	// get data from data storage
+            	$result = waContactFields::getStorage('data')->get($this, $field_id);
+            	if ($result && is_array($result)) {
+            		$result = current($result);
+            		if (is_array($result) && isset($result['value'])) {
+            			return $result['value'];
+            		}
+            	}	
+            } 
+            return $result;
         }
 
     }

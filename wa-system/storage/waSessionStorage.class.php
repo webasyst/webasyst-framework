@@ -57,9 +57,14 @@ class waSessionStorage extends waStorage
 		}
 
 		if ($this->options['auto_start'] && !self::$started) {
-			@session_start();
-			self::$started = true;
+			$this->open();
 		}
+	}
+	
+	public function open()
+	{
+		@session_start();
+		self::$started = true;
 	}
 
 	public function read($key)
@@ -72,6 +77,9 @@ class waSessionStorage extends waStorage
 
 	public function remove($key)
 	{
+		if (!self::$started) {
+			$this->open();
+		}		
 		$data = null;
 		if (isset($_SESSION[$key]))	{
 			$data = $_SESSION[$key];
@@ -82,6 +90,9 @@ class waSessionStorage extends waStorage
 
 	public function write($key, $data)
 	{
+		if (!self::$started) {
+			$this->open();
+		}		
 		$_SESSION[$key] = $data;
 	}
 
@@ -90,13 +101,22 @@ class waSessionStorage extends waStorage
 		session_regenerate_id($destroy);
 	}
 
+	/**
+	 * Return true if before session was started and false otherwise
+	 * 
+	 * @return bool
+	 */
 	public function close()
 	{
+		$return = self::$started;
+		self::$started = false;
 		session_write_close();
+		return $return;
 	}
 	
 	public function destroy()
 	{
+		self::$started = false;
         session_unset();      
         session_destroy();		
 	}

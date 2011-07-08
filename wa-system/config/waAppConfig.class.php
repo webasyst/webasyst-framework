@@ -109,6 +109,13 @@ class waAppConfig extends SystemConfig
 		} else {
 			$ignore_all = false;
 		}
+		
+		if (!self::isDebug()) {
+			$cache = new waVarExportCache('updates', 0, $this->application);
+			if ($cache->isCached() && $cache->get() <= $time) {
+				return;
+			}
+		}
 		$path = $this->getAppPath().'/lib/updates';
 		$cache_database_dir = $this->getPath('cache').'/db';
 		if (file_exists($path)) {
@@ -123,6 +130,15 @@ class waAppConfig extends SystemConfig
 				}
 			}
 			ksort($files);
+			if (!self::isDebug()) {
+				// get last time
+				if ($files) {
+					$keys = array_keys($files);
+					$cache->set(end($keys));
+				} else {
+					$cache->set($time ? $time : 1);
+				}
+			}
 			foreach ($files as $t => $file) {
   				try {
   					if (!$ignore_all) {
@@ -159,27 +175,41 @@ class waAppConfig extends SystemConfig
 		// check app.sql
 		$file_sql = $this->getAppPath('lib/config/app.sql');
 		if (file_exists($file_sql)) {
-			// execute sql
-			$sqls = file_get_contents($file_sql);
-			while(strpos($sqls,($separator = uniqid(':SQL:')))!== false) {
-			}
-			$sqls = preg_replace("/;\r?\n/", $separator, $sqls);
-			$sqls = explode($separator, $sqls);
-			$sqls = array_map('trim', $sqls);
-			$sqls = array_filter($sqls, 'strlen');
-			$model = new waModel();
-			foreach ($sqls as $sql) {
-				// ignore drop table
-				if (preg_match('/drop[\s\t\r\n]+table/is', $sql)) {
-					continue;
-				}
-				$model->exec($sql);
-			}
+			self::executeSQL($file_sql, 1);
 		}
 		$file = $this->getAppConfigPath('install');
 		if (file_exists($file)) {
 			$app_id = $this->application;
 			include($file);
+		}
+	}
+	
+	/**
+	 * Execute sql from file
+	 * 
+	 * @param string $file_sql - full path to sql file
+	 * @param int $type
+	 * 	   0 - execute all queries
+	 * 	   1 - ignore drop table
+	 * 	   2 - execute only drop table 
+	 */
+	public static function executeSQL($file_sql, $type = 0)
+	{
+		$sqls = file_get_contents($file_sql);
+		$sqls = preg_split("/;\r?\n/", $sqls);
+		$model = new waModel();
+		foreach ($sqls as $sql) {
+		    if (trim($sql)) {
+    			// ignore drop table
+    			if ($type == 1 && preg_match('/drop[\s\t\r\n]+table/is', $sql)) {
+    				continue;
+    			}
+    			// execute only drop table 
+    			elseif ($type == 2 && !preg_match('/drop[\s\t\r\n]+table/is', $sql)) {
+    				continue;
+    			}
+    			$model->exec($sql);
+		    }
 		}
 	}
 	
@@ -193,21 +223,7 @@ class waAppConfig extends SystemConfig
 		// check app.sql
 		$file_sql = $this->getAppPath('lib/config/app.sql');
 		if (file_exists($file_sql)) {
-			// execute sql
-			$sqls = file_get_contents($file_sql);
-			while(strpos($sqls,($separator = uniqid(':SQL:')))!== false) {
-			}
-			$sqls = preg_replace("/;\r?\n/", $separator, $sqls);
-			$sqls = explode($separator, $sqls);
-			$sqls = array_map('trim', $sqls);
-			$sqls = array_filter($sqls, 'strlen');
-			$model = new waModel();
-			foreach ($sqls as $sql) {
-				// execute only drop table
-				if (preg_match('/drop[\s\t\r\n]+table/is', $sql)) {
-					$model->exec($sql);
-				}
-			}
+			self::executeSQL($file_sql, 2);
 		}
 		// Remove all app settings
 		$app_settings_model = new waAppSettingsModel();
@@ -336,7 +352,7 @@ class waAppConfig extends SystemConfig
 		}
 	}
 	
-	protected function getPluginPath($plugin_id)
+	public function getPluginPath($plugin_id)
 	{
 		return $this->getAppPath()."/plugins/".$plugin_id;
 	}
@@ -347,19 +363,30 @@ class waAppConfig extends SystemConfig
 			$file = waConfig::get('wa_path_cache')."/apps/".$this->application.'/config/plugins.php';
 			if (!file_exists($file) || SystemConfig::isDebug()) {
 				waFiles::create(waConfig::get('wa_path_cache')."/apps/".$this->application.'/config');
+				if (!file_exists($this->getAppConfigPath('plugins'))) {
+					$this->plugins = array();
+					return $this->plugins;
+				}
 				$all_plugins = include($this->getAppConfigPath('plugins'));
 				$this->plugins = array();
 				foreach ($all_plugins as $plugin_id => $enabled) {
 					if ($enabled) {
-						$plugin_config = $this->getPluginPath($plugin_id)."/lib/plugin.php";
+						$plugin_config = $this->getPluginPath($plugin_id)."/lib/config/plugin.php";
 						if (!file_exists($plugin_config)) {
 							continue;
 						}
 						$plugin_info = include($plugin_config);
 						//$plugin_info['name'] = _wd($plugin_id, $plugin_info['name']);
+						$plugin_info['id'] = $plugin_id;
 						if (isset($plugin_info['img'])) {
 							$plugin_info['img'] = 'wa-apps/'.$this->application.'/plugins/'.$plugin_id.'/'.$plugin_info['img'];
 						}
+						if (isset($plugin_info['rights'])) {
+							if ($plugin_info['rights']) {
+								$plugin_info['handlers']['rights.config'] = 'rightsConfig';
+							}
+						}
+						
 						$this->plugins[$plugin_id] = $plugin_info;
 					}
 				}

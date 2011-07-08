@@ -24,6 +24,7 @@
 				<div class="dialog-content">
 					<div class="dialog-content-indent">
 					<form method="post" action="">
+						<input type="hidden" name="wa_auth_login" value="1" />
 						<h1>{$name}</h1>						
 						{if !empty($error)}
 						<div id="wa-login-error" class="error">{$error|escape}</div>

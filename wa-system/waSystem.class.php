@@ -270,12 +270,12 @@ class waSystem
                     $app = 'webasyst';
                 }
 
-                $aInstance = waSystem::getInstance($app, null, true);
-                if ($app != 'webasyst' && $this->getEnv() == 'backend' && !$this->getUser()->getRights($aInstance->getConfig()->getApplication(), 'backend')) {
+                $app_system = waSystem::getInstance($app, null, true);
+                if ($app != 'webasyst' && $this->getEnv() == 'backend' && !$this->getUser()->getRights($app_system->getConfig()->getApplication(), 'backend')) {
                     header("Location: ".$this->getConfig()->getBackendUrl(true));
                     exit;
                 }
-                $aInstance->getFrontController()->dispatch($route);
+                $app_system->getFrontController()->dispatch($route);
             }
         } catch(waApiException $e) {
             print $e;
@@ -518,9 +518,9 @@ class waSystem
         return isset(self::$apps[$app_id]);
     }
 
-    public function getUrl($rel = false)
+    public function getUrl($absolute = false)
     {
-        $url = $rel ? '' : $this->config->getRootUrl();
+        $url = $this->config->getRootUrl($absolute);
         if ($this->config->getEnviroment() == 'backend' && ($app = $this->getApp())) {
             $url .= $this->config->getBackendUrl().'/';
             if ($app !== 'webasyst') {
@@ -571,7 +571,9 @@ class waSystem
 
     /** Active plugin for _wp(). Updated by wa()->event(). */
     protected static $activePlugin = array();
-    public static function getActiveLocaleDomain() {
+    
+    public static function getActiveLocaleDomain() 
+    {
         if (self::$activePlugin) {
             return implode('_', end(self::$activePlugin));
         } else {
@@ -579,14 +581,16 @@ class waSystem
         }
     }
 
-    public static function pushActivePlugin($plugin, $app = null) {
+    public static function pushActivePlugin($plugin, $app = null) 
+    {
         if (!$app) {
             $app = wa()->getConfig()->getPrefix();
         }
         return array_push(self::$activePlugin, array($app, $plugin));
     }
 
-    public static function popActivePlugin() {
+    public static function popActivePlugin() 
+    {
         return array_pop(self::$activePlugin);
     }
 
@@ -595,93 +599,38 @@ class waSystem
       * @param string $app application id that generated event
       * @param string $event event name
       * @return array list of arrays ['className', 'method', 'pluginId', 'appId'] */
-    protected function getPluginHandlers($app, $event) {
-        $handlers = $this->loadPluginHandlers($app);
-        $prefix = wa($app)->getConfig()->getPrefix();
-        if(!isset($handlers[$prefix][$event]) || !is_array($handlers[$prefix][$event])) {
-            return array();
-        }
-        return $handlers[$prefix][$event];
-    }
-
-    /** Get all handlers registered by $app's plugins.
-      * @param $app application id
-      * @return array $result[app][event][] = array('className', 'method', 'pluginId', 'appId') */
-    protected function loadPluginHandlers($app) {
-        // !!! TODO: cache it
-
-		$result = array();
-        $path = $this->getConfig()->getPath('apps')."/$app/plugins";
-        $prefix = wa($app)->getConfig()->getPrefix();
-        
-        $config_path = wa()->getAppPath('lib/config/plugins.php', $app);
-        if (file_exists($config_path)) {
-        	$plugins = array_keys(include($config_path));
-        }
-        else {
-        	$plugins = waFiles::listdir($path);
-        }
-
-        foreach($plugins as $plugin) {
-            if ($plugin{0} == '.') {
-                continue;
-            }
-
-            $pluginPath = $path.'/'.$plugin;
-
-            $config = $pluginPath.'/lib/plugin.php';
-            if (!file_exists($config)) {
-                waLog::log('Error: Plugin config not found: '.$config);
-                continue;
-            }
-
-            if (! ( $config = include($config)) || !is_array($config)) {
-                waLog::log('Error: Bad config for plugin '.$app.' - '.$plugin);
-                continue;
-            }
-
-            if (!isset($config['handlers']) || !is_array($config['handlers'])) {
-                continue;
-            }
-
-            foreach($config['handlers'] as $a => $handlers) {
-                if (!isset($result[$a])) {
-                    $result[$a] = array();
-                }
-
-                foreach($handlers as $event => $handler) {
-                    if (!isset($result[$a][$event])) {
-                        $result[$a][$event] = array();
-                    }
-                    if (!is_array($handler)) {
-                        $handler = array($prefix.$plugin.'Plugin', $handler);
-                    } else if (count($handler) != 2) {
-                        waLog::log("Error: bad handler definition in plugin $app.$plugin for $a $event.");
-                        continue;
-                    }
-                    $handler[] = $plugin;
-                    $handler[] = $app;
-                    $result[$a][$event][] = $handler;
-                }
-            }
-        }
-
-        return $result;
+    protected function getPlugins($app, $event) 
+    {
+    	//$system = self::getInstance($app);
+    	$plugins = $this->getConfig()->getPlugins();
+    	$result = array();
+    	foreach ($plugins as $plugin_id => $plugin) {
+    		foreach ($plugin['handlers'] as $handler_event => $handler_method) {
+    			if ($event == $handler_event) {
+	    			$class = $app.ucfirst($plugin_id).'Plugin';
+    				$result[] = array($class, $handler_method, $plugin_id, $app);
+    			}
+    		}
+    	}
+    	return $result;
     }
 
     /** Trigger event with given $name from current active application.
       * @param string $name
       * @param $params passed to event handlers
       * @return array app_id or plugin_id => data returned from handler (unless null is returned) */
-    public function event($name, $params)
+    public function event($name, $params = null)
     {
         $result = array();
         if (is_array($name)) {
             $event_app_id = $name[0];
+            $system = self::getInstance($event_app_id);
             $name = $name[1];
         } else {
-            $event_app_id = $this->getApp();
+            $event_app_id = $this->getConfig()->getApplication();
+            $system = $this;
         }
+        
 
         $prefix = wa($event_app_id)->getConfig()->getPrefix();
 
@@ -693,10 +642,14 @@ class waSystem
         foreach ($apps as $app_id => $info) {
             $file_path = $path."/".$app_id."/lib/handlers/".$prefix.".".$name.".handler.php";
             if (file_exists($file_path)) {
-                $config = SystemConfig::getAppConfig($app_id, $this->config->getEnviroment(), $this->config->getRootPath());
-                waSystem::getInstance($app_id, $config);
+//                $config = SystemConfig::getAppConfig($app_id, $this->config->getEnviroment(), $this->config->getRootPath());
+                waSystem::getInstance($app_id);
                 include_once($file_path);
-                $class_name = $prefix.ucfirst($name)."Handler";
+                $class_name = $name;
+                if (strpos($name, '.') !== false) {
+                    $class_name = strtok($class_name, '.').ucfirst(strtok(''));
+                }
+                $class_name = $prefix.ucfirst($class_name)."Handler";
                 $handler = new $class_name();
                 try {
                     $r = $handler->execute($params);
@@ -708,72 +661,36 @@ class waSystem
                 }
             }
         }
-        self::setActive($event_app_id);
+        //self::setActive($event_app_id);
 
         //
         // Call handlers defined by current application's plugins
         //
-        foreach($this->getPluginHandlers($event_app_id, $name) as $handler) {
-            list($class, $method, $plugin, $app) = $handler;
-            if (!class_exists($class)) {
-                waLog::log("Error: class $class not found to handle $event_app_id ($prefix) $name event.");
-                continue;
-            }
-            try {
-                // Remember active plugin locale name for _wp() to work
-                self::pushActivePlugin($plugin, wa($app)->getConfig()->getPrefix());
-
-                // Load plugin locale if it exists
-                $localePath = wa()->getAppPath('plugins/'.$plugin.'/locale', $app);
-                if (is_dir($localePath)) {
-                    waLocale::load(wa()->getLocale(), $localePath, self::getActiveLocaleDomain(), false);
-                }
-
-                // Call event handler
-                $class = new $class();
-                if (null !== ( $r = $class->$method($params))) {
-                    $result[$plugin.'Plugin'] = $r;
-                }
-            } catch (Exception $e) {
-                waLog::log('Error: '.$e->getMessage());
-            }
-            self::popActivePlugin();
-        }
-        return $result;
-    }
-    
-    /** 
-     * Return list plugins by $app.
-     */
-    public function getPlugins($app = null)
-    {
-    	$result = array();
-    	if (!$app) {
-    		$app = wa()->getApp();
+    	$plugins = $system->getConfig()->getPlugins();
+    	foreach ($plugins as $plugin_id => $plugin) {
+    		foreach ($plugin['handlers'] as $handler_event => $handler_method) {
+    			if ($name == $handler_event) {
+  				    // Remember active plugin locale name for _wp() to work
+	                self::pushActivePlugin($plugin_id, wa($event_app_id)->getConfig()->getPrefix());    				
+    				try {
+	    				$class_name = $event_app_id.ucfirst($plugin_id).'Plugin';
+	    				$class = new $class_name($plugin);
+		                // Load plugin locale if it exists
+		                $locale_path = $this->getAppPath('plugins/'.$plugin_id.'/locale', $event_app_id);
+		                if (is_dir($locale_path)) {
+		                    waLocale::load($this->getLocale(), $locale_path, self::getActiveLocaleDomain(), false);
+		                }	    				
+		                if (null !== ( $r = $class->$handler_method($params))) {
+		                    $result[$plugin_id.'-plugin'] = $r;
+		                }
+	    				
+    				} catch (Exception $e) {
+    					waLog::log('Error: '.$e->getMessage());
+    				}
+    				self::popActivePlugin();
+    			}
+    		}
     	}
-    	$path = wa()->getAppPath('plugins', $app);
-     	$config_path = wa()->getAppPath('lib/config/plugins.php', $app);
-        if (file_exists($config_path)) {
-        	$plugins = array_keys(include($config_path));
-        }
-        else {
-        	$plugins = waFiles::listdir($path);
-        }
-    	
-        foreach ($plugins as $plugin) {
-        	$plugin_path = $path.'/'.$plugin;
-        	$config = $plugin_path.'/lib/plugin.php';
-            if (!file_exists($config)) {
-                waLog::log('Error: Plugin config not found: '.$config);
-                continue;
-            }
-            if (! ( $config = include($config)) || !is_array($config)) {
-                waLog::log('Error: Bad config for plugin '.$app.' - '.$plugin);
-                continue;
-            }
-        	
-        	$result[$plugin] = $config;
-        }
         return $result;
     }
 }

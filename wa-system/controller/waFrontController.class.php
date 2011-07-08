@@ -76,11 +76,22 @@ class waFrontController
 
         // Load plugin locale and set plugin as active
         if ($plugin) {
-            waSystem::pushActivePlugin($plugin, $prefix);
-            $localePath = wa()->getAppPath('plugins/'.$plugin.'/locale', wa()->getApp());
-            if (is_dir($localePath)) {
-                waLocale::load(wa()->getLocale(), $localePath, waSystem::getActiveLocaleDomain(), false);
-            }
+        	$plugin_path = $this->system->getAppPath('plugins/'.$plugin, $this->system->getApp());
+        	if (!file_exists($plugin_path.'/lib/config/plugin.php')) {
+        		$plugin = null;
+        	} else {
+        		$plugin_info = include($plugin_path.'/lib/config/plugin.php');
+        		// check rights
+        		if ($plugin_info['rights']) {
+        			if (!$this->system->getUser()->getRights($this->system->getConfig()->getApplication(), 'plugin.'.$plugin)) {
+        				throw new waRightsException("Access denied", 403);
+        			}
+        		}
+	            waSystem::pushActivePlugin($plugin, $prefix);
+	            if (is_dir($plugin_path.'/locale')) {
+	                waLocale::load($this->system->getLocale(), $plugin_path.'/locale', waSystem::getActiveLocaleDomain(), false);
+	            }
+        	}
         }
 
         //
