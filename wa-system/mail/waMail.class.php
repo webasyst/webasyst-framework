@@ -40,6 +40,6 @@ class waMail
 		} else {
 			$message = $this->compose($to, $subject, $body, $from);
 		}		
-		return mail($message->getTo(true), $message->getSubject(true), $message->getBody(true), $message->getHeaders(true));
+		return @mail($message->getTo(true), $message->getSubject(true), $message->getBody(true), $message->getHeaders(true));
 	}	
 }

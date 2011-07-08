@@ -375,6 +375,8 @@ class waMailDecode
 					if (($i = strrpos($this->part['params']['name'], '.')) !== false) {
 						$path .= substr($this->part['params']['name'], $i);
 					}
+				} elseif ($this->part['type'] == 'image' && in_array($this->part['subtype'], array('gif', 'jpg', 'png'))) {
+					$path .= '.'.$this->part['subtype'];
 				}
 				$attach = array(
 					'file' => basename($path)
@@ -405,12 +407,12 @@ class waMailDecode
 						stream_filter_append($fp, "convert.quoted-printable-decode", STREAM_FILTER_WRITE);
 					}
 				}
-				do {
+				while (($i = strpos($this->buffer, $boundary, $this->buffer_offset)) === false && !$this->is_last) {
 					fwrite($fp, $this->buffer_offset ? substr($this->buffer, $this->buffer_offset) : $this->buffer);
 					$this->buffer = '';
 					$this->buffer_offset = 0;
 					$this->read();
-				} while (($i = strpos($this->buffer, $boundary, $this->buffer_offset)) === false && !$this->is_last);
+				}
 				fwrite($fp, substr($this->buffer, $this->buffer_offset, $i - $this->buffer_offset));
 				fclose($fp);
 				$this->buffer_offset = $i;
@@ -502,7 +504,7 @@ class waMailDecode
 		if (is_array($str)) {
 			$str = implode("", $str);
 		}
-		$result = array('value' => trim(strtok($str, ';')));
+		$result = array('value' => trim(strtok($str, ';')), 'params' => array());
 		while (($param = strtok('=')) !== false) {
 			$result['params'][strtolower(trim($param))] = trim(strtok(';'), ' "');
 		}
