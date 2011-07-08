@@ -354,6 +354,6 @@ $_ = function(p1, p2) {
 
 	if (console) console.log('Localization failed: '+p1); // !!!
 	return p1;
-}
+};
 
 // EOF
