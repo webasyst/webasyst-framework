@@ -42,10 +42,10 @@ abstract class waView
 	
 	protected function prepare() 
 	{
-   	   $this->assign('wa_url', waSystem::getInstance()->getRootUrl());
-   	   $this->assign('wa_app', waSystem::getInstance()->getApp());
-   	   $this->assign('wa_app_url', waSystem::getInstance()->getAppUrl());
-   	   $this->assign('wa_app_static_url', waSystem::getInstance()->getAppStaticUrl());
+   	   $this->assign('wa_url', $this->system->getRootUrl());
+   	   $this->assign('wa_app', $this->system->getApp());
+   	   $this->assign('wa_app_url', $this->system->getAppUrl());
+   	   $this->assign('wa_app_static_url', $this->system->getAppStaticUrl());
    	   $this->assign('wa', new waViewHelper());
 	}
 	

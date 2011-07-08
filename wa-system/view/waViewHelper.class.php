@@ -67,12 +67,15 @@ class waViewHelper
 	{
 		return '<link href="'.$this->wa->getRootUrl().'wa-content/css/wa/wa-1.0.css" rel="stylesheet" type="text/css" >
 <!--[if IE 8]><link type="text/css" href="'.$this->wa->getRootUrl().'wa-content/css/wa/wa-1.0.ie8.css" rel="stylesheet"><![endif]-->
-<!--[if IE 7]><link type="text/css" href="'.$this->wa->getRootUrl().'wa-content/css/wa/wa-1.0.ie7.css" rel="stylesheet"><![endif]-->';
+<!--[if IE 7]><link type="text/css" href="'.$this->wa->getRootUrl().'wa-content/css/wa/wa-1.0.ie7.css" rel="stylesheet"><![endif]-->'.
+		$this->wa->getResponse()->getCss(true);
 	}
 	
-	public function js()
+	public function js($include_jquery = true)
 	{
-		return '<script src="'.$this->wa->getRootUrl().'wa-content/js/jquery/jquery-1.4.2.min.js" type="text/javascript"></script>';
+		return ($include_jquery ? 
+			'<script src="'.$this->wa->getRootUrl().'wa-content/js/jquery/jquery-1.5.2.min.js" type="text/javascript"></script>' :
+			'').$this->wa->getResponse()->getJs(true);
 	}
 	
 	public function version($system = false)

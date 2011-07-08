@@ -17,6 +17,8 @@ class waResponse {
 	protected $cookies = array();
 	protected $headers = array();
 	protected $metas = array();
+	protected $js = array();
+	protected $css = array();
 	
 	protected $status;
 	
@@ -156,4 +158,41 @@ class waResponse {
   			return $this->metas;
   		}
   	}  	
+  	
+  	public function addJs($url)
+  	{
+  		$this->js[] = $url;
+  	}
+  	
+  	public function getJs($html = true)
+  	{
+  		if (!$html) {
+  			return $this->js;
+  		} else {
+  			$result = '';
+  			foreach ($this->js as $url) {
+  				$result .= '<script type="text/javascript" src="'.$url.'"></script>'."\n";
+  			}
+  			return $result;
+  		}
+  	}
+  	
+  	public function addCss($url)
+  	{
+  		$this->css[] = $url;
+  	}
+  	
+  	public function getCss($html = true)
+  	{
+  		if (!$html) {
+  			return $this->css;
+  		} else {
+  			$result = '';
+  			foreach ($this->css as $url) {
+  				$result .= '<link href="'.$url.'" rel="stylesheet" type="text/css" >'."\n";
+  			}
+  			return $result;
+  		}
+  	}
+  	
 }

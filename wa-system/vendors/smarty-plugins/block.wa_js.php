@@ -66,7 +66,7 @@
 	        if ($r && !$mtime) {
 		        $data = "";    	
 		        foreach ($files_combine as $file) {
-		        	$data .= file_get_contents($root_path.'/'.$file)."\n";
+		        	$data .= file_get_contents($root_path.'/'.$file).";\n";
 		        }
 		        waFiles::create($app_path.'/'.$params['file']);
 		        $r = @file_put_contents($app_path.'/'.$params['file'], $data);
