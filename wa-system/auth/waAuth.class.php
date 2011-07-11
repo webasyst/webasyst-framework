@@ -49,8 +49,7 @@ class waAuth implements waiAuth
 	}
 	
 	protected function _auth($params)
-	{
-		$model = new waContactModel();
+	{	
 		if ($params && isset($params['login']) && isset($params['password'])) {
 			$login = $params['login'];
 			$password = $params['password'];
@@ -64,6 +63,7 @@ class waAuth implements waiAuth
 			$login = null;
 		}
 		if ($login && strlen($login)) {
+		    $model = new waContactModel();
 			$user_info = $model->getByField('login', $login);
 			if ($user_info && $user_info['is_user'] &&
 				waSystem::getInstance()->getUser()->getPasswordHash($password) ===	$user_info['password']) {
@@ -85,6 +85,7 @@ class waAuth implements waiAuth
 				throw new waException(_ws('Invalid login or password'));	
 			}
 		} elseif (waSystem::getSetting('rememberme', 1, 'webasyst') && $token = waRequest::cookie('auth_token')) {
+		    $model = new waContactModel();
 			$response = waSystem::getInstance()->getResponse();
 			$id = substr($token, 15, -15);
 			$user_info = $model->getById($id);
