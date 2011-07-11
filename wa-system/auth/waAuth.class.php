@@ -84,7 +84,7 @@ class waAuth implements waiAuth
 			} else {
 				throw new waException(_ws('Invalid login or password'));	
 			}
-		} elseif (waSystem::getSetting('rememberme', 1, 'webasyst') && $token = waRequest::cookie('auth_token')) {
+		} elseif (($token = waRequest::cookie('auth_token')) && waSystem::getSetting('rememberme', 1, 'webasyst')) {
 		    $model = new waContactModel();
 			$response = waSystem::getInstance()->getResponse();
 			$id = substr($token, 15, -15);
