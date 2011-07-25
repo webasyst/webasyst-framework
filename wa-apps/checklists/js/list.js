@@ -17,10 +17,9 @@
 		//
 
 		where = where || 'top';
-		var disabled = $('#c-checklist').is('.c-edit-mode') ? ' disabled="true"' : '';
 		var li =	'<li rel="'+item.sort+'" class="item'+(item.done ? ' c-done' : '')+'">'+
 						'<label>'+
-							'<input type="checkbox" name="'+item.id+'" class="c-item-checkbox"'+(item.done ? ' checked="true"' : '')+disabled+'> '+
+							'<input type="checkbox" name="'+item.id+'" class="c-item-checkbox"'+(item.done ? ' checked="true"' : '')+'> '+
 							'<span class="c-item-name">'+item.name+'</span>'+
 						'</label>'+
 						(item.when ? '<span class="hint c-completed-when">'+item.when+'</span>' : '')+
@@ -47,6 +46,7 @@
 		} else {
 			$('#c-checklist').append(li);
 		}
+		$('#c-checklist').sortable('refresh');
 	};
 
 	// List items
@@ -92,37 +92,26 @@
 	});
 
 	// turns edit mode on and off
+	// edit mode = form to add items
 	var toggleEditMode = function(action) {
+		if (!$.cl.can_edit) {
+			return false;
+		}
 		action = action || 'toggle';
 		var form = $('#c-add-form');
 		var clist = $('#c-checklist');
 		if (action === 'off' || (action === 'toggle' && form.is(':visible'))) {
 			$('#c-add-form').hide();
-			clist.sortable().sortable('disable');
-			clist.find(':checkbox').attr('disabled', false);
 			clist.removeClass('c-edit-mode');
-			$('#add').next().addClass('hidden');
 		} else {
-			clist.sortable().sortable('enable');
-			clist.find(':checkbox').attr('disabled', true);
 			clist.addClass('c-edit-mode');
 			$('#c-add-form').show().find(':text').focus();
-			$('#add').next().removeClass('hidden');
 		}
 	};
 	$('#add').click(function() {
 		toggleEditMode();
 		return false;
 	});
-	$('#edit-mode-off').click(function() {
-		toggleEditMode('off');
-		return false;
-	});
-
-	// if there are no items then show form right away
-	if (!items.length) {
-		toggleEditMode('on');
-	}
 
 	// Warn user when there's more than 255 symbols are in name or icon field
 	var warn = function(input) {
@@ -136,6 +125,9 @@
 
 	// add list item when user clicks button or presses enter in input
 	var addItem = function() {
+		if (!$.cl.can_edit) {
+			return false;
+		}
 		var btn = $('#c-add-form :submit');
 		if (btn.attr('disabled')) {
 			return false;
@@ -211,10 +203,13 @@
 
 	// edit items
 	$('.c-edit-item', $('#c-checklist')[0]).die('click').live('click', function() {
+		if (!$.cl.can_edit) {
+			return false;
+		}
 		var li = $(this).parents('#c-checklist li');
 		var newValue = prompt($.cl.loc.prompt, li.find('.c-item-name').text());
 		if (!newValue) {
-			return;
+			return false;
 		}
 
 		li.find('.c-item-name').text(newValue);
@@ -232,6 +227,9 @@
 
 	// delete items
 	$('.c-delete-item', $('#c-checklist')[0]).die('click').live('click', function() {
+		if (!$.cl.can_edit) {
+			return false;
+		}
 		var li = $(this).parents('#c-checklist li');
 		$.post('?module=json&action=deleteitem', {
 			id: li.find(':checkbox').attr('name')
@@ -246,33 +244,44 @@
 	$('#cnt'+$.cl.list_id).parent().addClass('selected').siblings('.selected').removeClass('selected');
 
 	// make list sortable
-	$('#c-checklist').sortable({
-		opacity: 0.75,
-		handle: 'span.c-item-name',
-		disabled: true,
-		stop: function(e, ui) {
-			var li = ui.item;
-			var data = {
-				id: li.find(':checkbox').attr('name'),
-			};
-			if (li.next().length) {
-				data.sort = li.next().attr('rel');
-			} else if (li.prev().length) {
-				data.sort = 1 + li.prev().attr('rel');
-			} else {
-				return; // no reason to sort list if there's only one item
-			}
+	if ($.cl.can_edit) {
+		$('#c-checklist').sortable({
+			opacity: 0.75,
+			handle: 'span.c-item-name',
+			distance: 5,
+			stop: function(e, ui) {
+				var li = ui.item;
+				var data = {
+					id: li.find(':checkbox').attr('name'),
+				};
+				if (li.next().length) {
+					data.sort = li.next().attr('rel');
+				} else if (li.prev().length) {
+					data.sort = 1 + li.prev().attr('rel');
+				} else {
+					return; // no reason to sort list if there's only one item
+				}
 
-			$.post('?module=json&action=itemsave', data, function(item) {
-				item = item.data;
-				li.remove();
-				insertItem(item);
-			}, 'json');
+				$.post('?module=json&action=itemsave', data, function(item) {
+					item = item.data;
+					li.remove();
+					insertItem(item);
+				}, 'json');
+			}
+		});
+
+		// if there are no items then show form right away
+		if (!items.length) {
+			toggleEditMode('on');
 		}
-	});
+	}
 
 	// delete list button
 	$('#deletelist').click(function() {
+		if (!$.cl.can_edit) {
+			return false;
+		}
+
 		if (!confirm($.cl.loc.delconfirm.replace('%s', $.trim($('#name span').text())))) {
 			return false;
 		}
@@ -314,7 +323,7 @@
 					current = $('#c-checklist :checkbox').last().focus();
 				}
 				return false;
-			// 	Alt + A focuses input to add new items
+			// Alt + A focuses input to add new items
 			case 65: // A
 				if (e.altKey) {
 					toggleEditMode('on');

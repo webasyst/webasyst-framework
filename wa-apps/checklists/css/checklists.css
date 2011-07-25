@@ -6,7 +6,6 @@
 
 .c-list { background: #fff; border: 1px solid #fff;}
 .c-list h1 i.icon16 { margin-top: 6px; margin-left: 0.3em; }
-.c-list h1 a#edit-mode-off { font-weight: normal; font-size: 0.5em; color: #aaa; position: relative; top: -0.3em; left: -0.6em; }
 .c-list ul.menu-v { margin: 15px 0 0; }
 .c-list ul.menu-v li { padding-left: 28px; margin: 0 0 8px -10px; font-size: 1.05em; }
 .c-list ul.menu-v li input { margin: 0 2px 0 -18px; }
@@ -21,10 +20,12 @@
 .c-list ul.menu-v li.c-add-form input { margin: 0; }
 .c-list ul.menu-v li a.c-edit-item { display: none; }
 .c-list ul.menu-v li a.c-delete-item { display: none; }
-.c-list ul.menu-v.c-edit-mode li input[type="checkbox"] { opacity: 0.4; }
-.c-list ul.menu-v.c-edit-mode li span.c-item-name { cursor: move; }
-.c-list ul.menu-v.c-edit-mode li a.c-edit-item { display: inline; }
-.c-list ul.menu-v.c-edit-mode li a.c-delete-item { display: inline; }
+.c-list ul.menu-v li a.c-edit-item { display: none; }
+.c-list ul.menu-v li a.c-delete-item { display: none; }
+.c-list.cl-editable ul.menu-v li:hover a.c-edit-item { display: inline; opacity: 0.5; }
+.c-list.cl-editable ul.menu-v li:hover a.c-delete-item { display: inline; opacity: 0.5; }
+.c-list.cl-editable ul.menu-v li:hover a.c-edit-item:hover { opacity: 1.0; }
+.c-list.cl-editable ul.menu-v li:hover a.c-delete-item:hover { opacity: 1.0; }
 
 .c-settings ul.menu-h li a { padding: 8px 10px; }
 .c-list-icons { max-width: 350px; }
@@ -34,7 +35,7 @@
 .c-list-icons ul.menu-h li a i.icon16 { margin: 0; }
 .c-list-icons ul.menu-h li.selected a { border: 3px solid #FDDA3B; background: #ffd; }
 
-.c-white { background: #fff; border: 1px solid #ddd; } 
+.c-white { background: #fff; border: 1px solid #ddd; }
 .c-gray { background: #eee; border: 1px solid #ccc; }
 .c-yellow { background: #ffc; border: 1px solid #dda; }
 .c-green { background: #dfc; border: 1px solid #ad9; }

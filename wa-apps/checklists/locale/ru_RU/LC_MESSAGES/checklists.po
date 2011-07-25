@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WebAsyst Checklists\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2011-07-25 14:05+0300\n"
+"PO-Revision-Date: 2011-07-25 17:31+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -45,9 +45,6 @@ msgstr "или"
 
 msgid "go back to list"
 msgstr "вернуться к списку"
-
-msgid "Edit list"
-msgstr "Редактировать список"
 
 msgid "List settings"
 msgstr "Настройки списка"
