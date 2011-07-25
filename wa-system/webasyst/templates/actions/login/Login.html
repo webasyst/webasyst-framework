@@ -4,6 +4,17 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<title>{$wa->accountName()}</title>
 	{$wa->css()}
+	{if $type=='password'}
+	<style type="text/css">
+		.dialog.newpassword .dialog-window {
+			width: 615px;
+			min-width: 615px;
+		}
+		#wa-login .newpassword h1 { margin-top: 10px}
+		#wa-login .newpassword .field .name { width: auto}
+		#wa-login .newpassword .field .value { margin-left: 250px; margin-bottom: 5px}
+	</style>
+	{/if}	
 	<script src="{$wa_url}wa-content/js/jquery/jquery-1.4.2.min.js" type="text/javascript"></script>
 	<script src="{$wa_url}wa-content/js/jquery-wa/wa.dialog.js" type="text/javascript"></script>
 	<script type="text/javascript">
@@ -18,14 +29,15 @@
 		{if $background && $stretch}
 		<img id="wa-login-stretched-background" src="{$wa_url}{$background}" />
 		{/if}
-		<div class="dialog width500px height300px{if !empty($error)} error{/if}" id="wa-login-dialog">
+		<div class="dialog {if $type=='password'}newpassword {/if}width500px height300px{if !empty($error)} error{/if}" id="wa-login-dialog">
 			<div class="dialog-background"></div>
-			<div class="dialog-window">
+			<div class="dialog-window"{if $type=='forgot'} style="min-height: 130px; height: 160px"{/if}>
 				<div class="dialog-content">
 					<div class="dialog-content-indent">
 					<form method="post" action="">
+						{if !$type}
 						<input type="hidden" name="wa_auth_login" value="1" />
-						<h1>{$name}</h1>						
+						<h1>{$title}</h1>						
 						{if !empty($error)}
 						<div id="wa-login-error" class="error">{$error|escape}</div>
 						{elseif !empty($options.description)}
@@ -36,7 +48,11 @@
 						<div class="fields form">
 							<div class="field">
 								<div class="name">
+									{if $options.login == 'email'}
+									[`Email`]:
+									{else}
 									[`Login`]:
+									{/if}
 								</div>
 								<div class="value">
 									<input type="text" class="wa-login-text-input" id="wa-login-input" value="{$wa->post('login')|escape}" name="login" />
@@ -58,11 +74,71 @@
 							<div class="field">
 								<div class="value submit">
 									<input type="submit" value="[`Sign In`]" class="button" id="wa-login-submit">
-									<a href="{$wa_app_url}?action=forgot" class="wa-forgotpassword">[`Forgot password?`]</a>
+									<a href="?forgot=1" class="wa-forgotpassword">[`Forgot password?`]</a>
 								</div>
 							</div>
 						</div>
-									
+						{elseif $type=='password'}
+						<h1>{$wa->accountName()}</h1>
+						<div class="fields form">
+							<div class="field">
+								<div class="name">
+									{if $options.login == 'email'}
+									[`Email`]:
+									{else}
+									[`Login`]:
+									{/if}
+								</div>
+								<div class="value">
+									<input disabled="disabled" type="text" class="wa-login-text-input" value="{$login}" id="wa-login-input" name="login" autocomplete="off" />
+								</div>
+							</div>
+							<div class="field">
+								<div class="name">
+									[`Create a new password`]:
+								</div>
+								<div class="value">
+									<input type="password" class="wa-login-text-input{if !empty($error)} error{/if}" name="password" />
+								</div>
+							</div>
+							<div class="field">
+								<div class="name">
+									[`Confirm new password`]:
+								</div>
+								<div class="value">
+									<input type="password" class="wa-login-text-input{if !empty($error)} error{/if}" name="password_confirm" />
+									{if !empty($error)}<em class="errormsg">{$error|escape}</em>{/if}
+								</div>
+							</div>
+							<div class="field">
+								<div class="value submit">
+									<input type="submit" value="[`Save and login`]" class="button" id="wa-login-submit">
+								</div>
+							</div>
+						</div>						
+						{elseif $type=='forgot'}
+							<h1 style="font-weight:bold;text-align:left;font-size:1.8em;margin-top:0">[`Password recovery`]</h1>
+							{if !empty($success)}
+							<p>[`Password recovery instructions have been sent to your email address.`]</p>
+							<br /><br />
+							<a href="?">[`Back to login page`]</a>
+							{else}
+							[`Please enter your login name or email:`]
+							<div class="field">
+								<input style="width: 50%" id="wa-login-input" type="text" class="large{if !empty($errors.login)} error{/if}" name="login" value="{$wa->post('login')}" autocomplete="off" />
+							</div>
+							{if !empty($error)}
+							<p class="i-error">{$error}</p>
+							{/if}		
+							{/if}	
+							{if empty($success)}
+							<div style="margin-top:20px">		
+									<input type="submit" value="[`Send`]" class="button green" />
+									[`or`]
+									<a href="?">[`cancel`]</a>
+							</div>				
+							{/if}												
+						{/if}							
 					</form>
 					</div>
 				</div>

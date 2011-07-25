@@ -36,7 +36,7 @@ class waRouting
         foreach ($this->routes as $domain => $routes) {
             if (isset($routes[$route])) {
                 $exists = true;
-                if ($domain !== 'default') {
+                if ($domain !== 'default' || isset($params['domain']) && ($domain = $params['domain'])) {
                     $root_url = 'http://'.$domain.'/';
                 }
                 break;
@@ -47,10 +47,23 @@ class waRouting
         }
 
         $url = $routes[$route]['url'];
+        $offset = 0;
+        if (preg_match_all('/\[([i|s]?:[a-z_]+)\]/ui', $url, $match, PREG_OFFSET_CAPTURE|PREG_SET_ORDER)) {
+            foreach ($match as $m) {
+                $var = explode(':', $m[1][0]);
+                if (isset($params[$var[1]])) {
+                    $v = $params[$var[1]];
+                } else {
+                    $v = '';
+                }
+                $url = substr($url, 0, $m[0][1] + $offset).$v.substr($url, $m[0][1] + $offset + strlen($m[0][0]));
+                $offset = strlen($v) - strlen($m[0][0]);
+            }
+        } 
         foreach ($params as $k => $v) {
-            $url = preg_replace("!\[[(i|s)]?:[a-z]+\]!ui", $v, $url);
+            //$url = preg_replace("!\[[(i|s)]?:[a-z]+\]!ui", $v, $url);
         }
-        $url = preg_replace('!/?\*$!i', '/', $url);
+        $url = preg_replace('!(/{2,}|/?\*)$!i', '/', $url);
         if ($url == '/') {
             $url = '';
         }
@@ -66,6 +79,10 @@ class waRouting
     {
         if ($domain === null) {
             $domain = waRequest::server('HTTP_HOST');
+            $u = trim($this->system->getRootUrl(false, true), '/');
+            if ($u) {
+                $domain .= '/'.$u;
+            }
         }
         if (isset($this->routes[$domain])) {
             return $this->routes[$domain];

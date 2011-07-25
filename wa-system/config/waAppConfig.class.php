@@ -76,10 +76,7 @@ class waAppConfig extends SystemConfig
 		if (file_exists($this->getAppPath().'/lib/config/factories.php')) {
 			$this->factories = include($this->getAppPath().'/lib/config/factories.php'); 
 		}
-		if (waSystem::isLoaded()) {
-			$this->setLocale(waSystem::getInstance()->getLocale());
-		}		
-		
+	
 		$this->checkUpdates();
 	}
 	
@@ -227,7 +224,7 @@ class waAppConfig extends SystemConfig
 		}
 		// Remove all app settings
 		$app_settings_model = new waAppSettingsModel();
-		$app_settings_model->deleteByField('app_id', $this->application);
+		$app_settings_model->del($this->application);
 		
 		$contact_settings_model = new waContactSettingsModel();
 		$contact_settings_model->deleteByField('app_id', $this->application);
@@ -241,16 +238,11 @@ class waAppConfig extends SystemConfig
 		waFiles::delete($this->getPath('cache').'/apps/'.$this->application);
 	}
 	
-	public function setLocale($locale)
+	public function setLocale($locale, $bind = true)
 	{
-		waLocale::load($locale, $this->getAppPath('locale'), $this->application, true);
+		waLocale::load($locale, $this->getAppPath('locale'), $this->application, $bind);
 	}
-	
-	public function setActive()
-	{
-		$this->setLocale(waSystem::getInstance()->getLocale());
-	}
-	
+		
 	public function getClasses()
 	{
 		$cache_file = waConfig::get('wa_path_cache').'/apps/'.$this->application.'/config/autoload.php';
@@ -363,11 +355,13 @@ class waAppConfig extends SystemConfig
 			$file = waConfig::get('wa_path_cache')."/apps/".$this->application.'/config/plugins.php';
 			if (!file_exists($file) || SystemConfig::isDebug()) {
 				waFiles::create(waConfig::get('wa_path_cache')."/apps/".$this->application.'/config');
-				if (!file_exists($this->getAppConfigPath('plugins'))) {
+				// read plugins from file wa-config/[APP_ID]/plugins.php
+				$path = $this->getConfigPath('plugins.php', true);
+				if (!file_exists($path)) {
 					$this->plugins = array();
 					return $this->plugins;
 				}
-				$all_plugins = include($this->getAppConfigPath('plugins'));
+				$all_plugins = include($path);
 				$this->plugins = array();
 				foreach ($all_plugins as $plugin_id => $enabled) {
 					if ($enabled) {
@@ -399,7 +393,7 @@ class waAppConfig extends SystemConfig
 	}
 	
 	
-	public function count()
+	public function onCount()
 	{
 		return null;
 	}

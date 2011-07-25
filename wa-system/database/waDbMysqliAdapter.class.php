@@ -92,7 +92,12 @@ class waDbMysqliAdapter extends waDbAdapter
 	public function escape($string, $handler)
 	{
 		return $handler->real_escape_string($string);
-	}	
+	}
+
+	public function ping($handler)
+	{
+	    return $handler->ping();
+	}
 	
 	public function error($handler)
 	{

@@ -130,6 +130,14 @@ class waSystemConfig
 			self::$root_url = preg_replace('!/[^/]*$!', '/', self::$root_url);
 		}
 		if ($absolute) {
+            $url = $this->getHostUrl();
+    		return $url.self::$root_url.($script && !$this->getSystemOption('mod_rewrite') ? 'index.php/' : '');
+    	}
+		return self::$root_url.($script && !$this->getSystemOption('mod_rewrite') ? 'index.php/' : ''); 
+	}	
+	
+	public function getHostUrl()
+	{
 			$https = isset($_SERVER['HTTPS']) ? $_SERVER['HTTPS'] : '';
 			if (strtolower($https) == 'on') {
     			$url = 'https://'; 
@@ -137,10 +145,8 @@ class waSystemConfig
     			$url = 'http://';
     		}
     		$url .= $_SERVER['HTTP_HOST'];
-    		return $url.self::$root_url.($script && !$this->getSystemOption('mod_rewrite') ? 'index.php/' : '');
-    	}
-		return self::$root_url.($script && !$this->getSystemOption('mod_rewrite') ? 'index.php/' : ''); 
-	}	
+	        return $url;
+	}
 	
 	protected function configure()
 	{

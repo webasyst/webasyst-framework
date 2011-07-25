@@ -29,8 +29,8 @@ $.wa = $.extend(true, $.wa, {
 		hash = hash.replace(/\/\//g, "/");
 		hash = hash.replace(/^.*#/, '');
 		if (location.hash.length < 2){
-			location = location.protocol +'//'+ location.host + location.pathname +'#'+ hash;
-			return false;
+			//location = location.protocol +'//'+ location.host + location.pathname +'#'+ hash;
+			//return false;
 		}
 		if (parent && !$.browser.msie) {
 			parent.window.location.hash = hash;

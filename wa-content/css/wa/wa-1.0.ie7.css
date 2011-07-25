@@ -36,6 +36,12 @@ ul.menu-v li a { display: block; }
 ul.menu-v.compact li a { display: block; }
 ul.menu-h .inline-link * i.icon10 { display: block; }
 ul.menu-h li { display: block; float: left; }
+
+ul.menu-h.float-right { display: inline; zoom:1; }
+ul.menu-h.float-right li { position: relative; height: 20px; display: inline;}
+ul.menu-h.float-right li a { zoom:1; height: 20px;}
+ul.menu-h.float-right li a i.icon16 { display: block; float: left;}
+
 ul.thumbs li { display: inline; zoom:1; overflow: hidden; }
 ul.thumbs li div { float: left; clear: left; width: 100%; }
 ul.thumbs li.highlighted img { border: solid 2px #FFEE22; }
@@ -49,3 +55,6 @@ ul.thumbs.li100px li { width: 104px; }
 .heading { overflow: hidden;}
 .heading i.icon16 { display:block;float: left; margin-left: 0; }
 .heading b { float: left; display: block;}
+.content { zoom:1;}
+a.inline-link b { display: block; float: left; top:0;}
+a.inline-link b i { top:0; cursor: pointer;}

@@ -48,12 +48,12 @@ abstract class waViewActions extends waController
 
     }
 
-    public function execute($action)
+    public function execute($action, $params = null)
     {
         $method = $action.'Action';
         if (method_exists($this, $method)) {
             $this->action = $action;
-            $this->$method();
+            $this->$method($params);
         } else {
             throw new waException('Action '.$method.' not found', 404);
         }
@@ -78,9 +78,9 @@ abstract class waViewActions extends waController
         $this->execute($action);
         $this->postExecute();
 
-        if ($this->action == $action) {
+        //if ($this->action == $action) {
             $this->display();
-        }
+        //}
 
     }
 

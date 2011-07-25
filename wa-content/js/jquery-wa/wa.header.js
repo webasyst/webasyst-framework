@@ -14,7 +14,7 @@ $(function () {
 			}
 			$('#wa-moreapps').hide();
 		}
-		
+
 		/*
 		if ($("#wa-applist ul>li").length * 75 > $('#wa-applist').width()) {
 			$('#wa-moreapps').show();
@@ -23,14 +23,14 @@ $(function () {
 		}
 		*/
 	}).resize();
-	
+
 	var sortableApps = function () {
 		$("#wa-applist ul").sortable({
 			distance: 5,
 			helper: 'clone',
 			items: 'li[id!=""]',
 			opacity: 0.75,
-			tolerance: 'pointer', 
+			tolerance: 'pointer',
 			stop: function () {
 			var data = $(this).sortable("toArray");
 			var apps = [];
@@ -41,10 +41,10 @@ $(function () {
 				}
 			}
 			var url = backend_url + "?module=settings&action=save";
-			$.post(url, {name: 'apps', value: apps}); 
+			$.post(url, {name: 'apps', value: apps});
 		}});
 	}
-	
+
 	if ($("#wa-applist ul").sortable) {
 		sortableApps();
 	} else {
@@ -64,7 +64,7 @@ $(function () {
 		$.getScript(path + 'jquery.ui.sortable.min.js', function () {
 			sortableApps();
 		});
-		
+
 	}
 
 	$('#wa-moreapps').click(function() {
@@ -72,7 +72,7 @@ $(function () {
 		if (i.hasClass('darr')) {
 			if ($('#wa-applist li:last').attr('id')) {
 				$('#wa-moreapps').parent().insertAfter($('#wa-applist li:last'));
-			}			
+			}
 			$('#wa-header').css('height', 'auto');
 			i.removeClass('darr').addClass('uarr');
 		} else {
@@ -81,20 +81,20 @@ $(function () {
 			$(window).resize();
 		}
 	});
-	
+
 	$("a.wa-announcement-close").click(function () {
 		var app_id = $(this).attr('rel');
 		$(this).next('p').remove();
 		$(this).remove();
 		var url = backend_url + "?module=settings&action=save";
-		$.post(url, {app_id: app_id, name: 'announcement_close', value: 'now()'}); 
-		
+		$.post(url, {app_id: app_id, name: 'announcement_close', value: 'now()'});
+
 	});
-	
+
 	var updateCount = function () {
 		$.ajax({
-			url: backend_url + "?action=count", 
-			data: {'background_process': 1}, 
+			url: backend_url + "?action=count",
+			data: {'background_process': 1},
 			success: function (response) {
 				if (response.status == 'ok') {
 					for (var app_id in response.data) {
@@ -119,5 +119,11 @@ $(function () {
 			dataType: "json"
 		});
 	}
-	updateCount();
+
+	// update counts immidiately if there are no cached counts; otherwise, update later
+	if (!$('#wa-applist').is('.counts-cached')) {
+		updateCount();
+	} else {
+		setTimeout(updateCount, 60000);
+	}
 });

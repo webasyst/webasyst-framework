@@ -26,6 +26,7 @@ abstract class waViewAction extends waController
     protected $params = null;
     
     protected $controller = null;
+    protected $layout = null;
 
     public function __construct($params = null)
     {
@@ -43,6 +44,18 @@ abstract class waViewAction extends waController
     	$this->controller = $controller;
     }
     
+    protected function setThemeTemplate($template, $theme = null)
+    {
+        if ($theme === null) {
+            $theme = waRequest::param('theme', 'default');
+        }
+        $theme_path = wa()->getDataPath('themes', true).'/'.$theme;
+        if (!file_exists($theme_path) || !file_exists($theme_path.'/theme.php')) {
+            $theme_path = 'themes/'.$theme;
+        }
+        $this->template = $theme_path.'/'.$template;
+    }
+    
     /**
      * 
      * @return waController
@@ -57,6 +70,7 @@ abstract class waViewAction extends waController
     	if ($this->controller !== null && $this->controller instanceof waViewController) {
     		$this->controller->setLayout($layout);
     	}
+    	$this->layout = $layout;
     }
 
     public function execute()

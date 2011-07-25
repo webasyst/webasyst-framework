@@ -306,23 +306,24 @@ class waModel
                     throw new waException(sprintf('Unknown field %s', $f));
                 }
                 if (is_array($v)) {
-                    $where[] = $f . " IN (".implode("','", $this->escape($v))."')";
+                    $where[] = $this->escapeField($f)." IN (".implode("','", $this->escape($v))."')";
                 } else {
-                    $where[] = $f . " = ".$this->getFieldValue($f, $v);
+                    $where[] = $this->escapeField($f)." = ".$this->getFieldValue($f, $v);
                 }
             }
         } elseif (is_array($value)) {
-            $where[] = $field . " IN ('".implode("','", $this->escape($value))."')";
+            $where[] = $this->escapeField($field)." IN ('".implode("','", $this->escape($value))."')";
         } else {
-            $where[] = $field . " = ".$this->getFieldValue($field, $value);
+            $where[] = $this->escapeField($field)." = ".$this->getFieldValue($field, $value);
         }
 
         $values = array();
         foreach ($data as $field => $value) {
             if (isset($this->fields[$field])) {
-              $values[] = "`".$field."` = ".$this->getFieldValue($field, $value);
+              $values[] = $this->escapeField($field)." = ".$this->getFieldValue($field, $value);
             }
         }
+
         if ($values && $where) {
            $sql = "UPDATE ".($options ? $options." " : "").$this->table. "
                    SET ".implode(", ", $values)."
@@ -342,7 +343,7 @@ class waModel
         $values = array();
         foreach ($data as $field => $value) {
             if (isset($this->fields[$field])) {
-              $values[] = "`".$field."` = ".$this->getFieldValue($field, $value);
+              $values[] = $this->escapeField($field)." = ".$this->getFieldValue($field, $value);
             }
         }
         if ($values) {
@@ -385,21 +386,21 @@ class waModel
             case 'float':
                 return str_replace(',', '.', (double)$value);
             case 'date':
-            	if (!$value) {
-            		if ($is_null) {
-            			return 'NULL';
-            		} else {
-            			return "'0000-00-00'";
-            		}
-            	}
+                if (!$value) {
+                    if ($is_null) {
+                        return 'NULL';
+                    } else {
+                        return "'0000-00-00'";
+                    }
+                }
             case 'datetime':
                 if (!$value) {
-            		if ($is_null) {
-            			return 'NULL';
-            		} else {
-            			return "'0000-00-00 00:00:00'";
-            		}
-            	}            	
+                    if ($is_null) {
+                        return 'NULL';
+                    } else {
+                        return "'0000-00-00 00:00:00'";
+                    }
+                }
             case 'varchar':
             case 'text':
             default:
@@ -418,7 +419,7 @@ class waModel
         $values = array();
         foreach ($data as $field => $value) {
             if (isset($this->fields[$field])) {
-              $values["`".$field."`"] = $this->getFieldValue($field, $value);
+              $values[$this->escapeField($field)] = $this->getFieldValue($field, $value);
             }
         }
         if ($values) {
@@ -484,6 +485,11 @@ class waModel
             return $data;
         }
         return $this->adapter->escape($data, $this->handler);
+    }
+    
+    protected function escapeField($field)
+    {
+        return $this->adapter->escapeField($field);
     }
 
     /**
@@ -658,6 +664,11 @@ class waModel
     {
         $query = new waDbQuery($this);
         return $query->order($order);
+    }
+    
+    public function ping()
+    {
+        return $this->adapter->ping($this->handler);
     }
 }
 

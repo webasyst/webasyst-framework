@@ -243,7 +243,7 @@ class waImageGd extends waImage
 				$quality = NULL;
 			break;
 			default:
-				throw new waException(sprintf(_ws('GD not support %s images'), $extension));
+				throw new waException(sprintf(_ws('GD does not support %s images'), $extension));
 			break;
 		}
 

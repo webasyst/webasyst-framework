@@ -98,6 +98,11 @@ class waDbMySQLAdapter extends waDbAdapter
 		return mysql_error($handler);
 	}
 	
+	public function ping($handler)
+	{
+	    return mysql_ping($handler);
+	}
+	
 	public function errorCode($handler)
 	{
 		return mysql_errno($handler);

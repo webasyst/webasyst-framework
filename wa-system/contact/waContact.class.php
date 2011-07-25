@@ -88,15 +88,15 @@ class waContact implements ArrayAccess
         $ts = $this->get('photo');
 
         if ($ts) {
-        	if (waSystemConfig::systemOption('mod_rewrite')) {
-            	return wa()->getDataUrl('photo/'.$this->id.'/'.$ts.'.'.$size.'.jpg', true, 'contacts');
-        	} else {
-        		if (file_exists(wa()->getDataPath('photo/'.$this->id.'/'.$ts.'.'.$size.'.jpg', true, 'contacts'))) {
-        			return wa()->getDataUrl('photo/'.$this->id.'/'.$ts.'.'.$size.'.jpg', true, 'contacts');
-        		} else {
-        			return wa()->getDataUrl('photo/thumb.php/'.$this->id.'/'.$ts.'.'.$size.'.jpg', true, 'contacts');
-        		}
-        	}
+            if (waSystemConfig::systemOption('mod_rewrite')) {
+                return wa()->getDataUrl('photo/'.$this->id.'/'.$ts.'.'.$size.'.jpg', true, 'contacts');
+            } else {
+                if (file_exists(wa()->getDataPath('photo/'.$this->id.'/'.$ts.'.'.$size.'.jpg', true, 'contacts'))) {
+                    return wa()->getDataUrl('photo/'.$this->id.'/'.$ts.'.'.$size.'.jpg', true, 'contacts');
+                } else {
+                    return wa()->getDataUrl('photo/thumb.php/'.$this->id.'/'.$ts.'.'.$size.'.jpg', true, 'contacts');
+                }
+            }
         } else {
             $size = (int)$width;
             if (!in_array($size, array(20, 32, 50, 96))) {
@@ -120,6 +120,15 @@ class waContact implements ArrayAccess
         return $contact_model->delete($this->id);
     }
 
+    /**
+      * Get field value.
+      *
+      * @param string $field_id field to retrieve; either col from wa_contact table, or 'email', or custom
+                                field from wa_contact_data. 'field_id:subfield_id' for composite fields is allowed.
+                                'field_id.ext' for fields with extension is allowed.
+      * @param string $format   data format to use. Default is the same as $this[$field_id].
+                                'value' for simple
+      */
     public function get($field_id, $format = null)
     {
         if (strpos($field_id, '.') !== false) {
@@ -142,10 +151,12 @@ class waContact implements ArrayAccess
         }
 
 
-        // Get field object
+        // Try to use field object
         $field = waContactFields::get($field_id, 'enabled');
         if ($field) {
             $result = $field->get($this, $format);
+
+            // Composite field
             // @todo: make simple method for check composite fields
             if ($subfield && $field instanceof waContactCompositeField) {
                 if (!$field->isMulti()) {
@@ -158,6 +169,8 @@ class waContact implements ArrayAccess
                     }
                 }
             }
+
+            // Multi field access by extension
             if ($field->isMulti() && $ext) {
                 foreach ($result as $sort => $row) {
                     if ($row['ext'] !== $ext) {
@@ -166,7 +179,10 @@ class waContact implements ArrayAccess
                 }
                 $result = array_values($result);
             }
+
+            // 'default' format: a simple string
             if ($format === 'default' || (is_array($format) && in_array('default', $format))) {
+                // for multi fields return value of the first copy
                 if ($field->isMulti()) {
                     if (!$result) {
                         return '';
@@ -175,36 +191,44 @@ class waContact implements ArrayAccess
                     } else {
                         return $result[0];
                     }
-                } else {
+                }
+                // for non-multi fields return field value
+                else {
                     return is_array($result) ? $result['value'] : $result;
                 }
-            } elseif ($format == 'html') {
+            }
+            // 'html' format: ???
+            else if ($format == 'html') {
                 if ($field->isMulti()) {
                     return implode(', ', $result);
                 } else {
                     $result;
                 }
-            } else {
+            }
+            // no special formatting
+            else {
                 return $result;
             }
-        } else {
+        }
+        // no field with $field_id exists
+        else {
             // try get data from default storage
             $result = waContactFields::getStorage()->get($this, $field_id);
             if (!$result && isset(self::$options['default'][$field_id])) {
                 return self::$options['default'][$field_id];
-            } elseif ($result === null) {
-            	// get data from data storage
-            	$result = waContactFields::getStorage('data')->get($this, $field_id);
-            	if ($result && is_array($result)) {
-            		$result = current($result);
-            		if (is_array($result) && isset($result['value'])) {
-            			return $result['value'];
-            		}
-            	}	
-            } 
+            }
+            // try get data from data storage
+            else if ($result === null) {
+                $result = waContactFields::getStorage('data')->get($this, $field_id);
+                if ($result && is_array($result)) {
+                    $result = current($result);
+                    if (is_array($result) && isset($result['value'])) {
+                        return $result['value'];
+                    }
+                }
+            }
             return $result;
         }
-
     }
 
     /**
@@ -290,11 +314,11 @@ class waContact implements ArrayAccess
     public function save($data = array(), $validate = false)
     {
         foreach ($data as $key => $value) {
-        	if ($key == 'name') {
-        		$this->data[$key] = waContactFields::get($key)->set($this, $value);	
-        	} else {
-            	$this->data[$key] = $value;
-        	}
+            if ($key == 'name') {
+                $this->data[$key] = waContactFields::get($key)->set($this, $value);
+            } else {
+                $this->data[$key] = $value;
+            }
         }
         $this->data['name'] = $this->get('name');
         $save = array();
@@ -432,20 +456,20 @@ class waContact implements ArrayAccess
 
     public function removeCache($keys = null)
     {
-    	if ($keys === null) {
-    		if (isset(self::$cache[$this->getId()])) {
-    			unset(self::$cache[$this->getId()]);
-    		}
-    	} else {
-	        if (!is_array($keys)) {
-	            $keys = array($keys);
-	        }
-	        foreach ($keys as $key) {
-	            if (isset(self::$cache[$this->getId()][$key])) {
-	                unset(self::$cache[$this->getId()][$key]);
-	            }
-	        }
-    	}
+        if ($keys === null) {
+            if (isset(self::$cache[$this->getId()])) {
+                unset(self::$cache[$this->getId()]);
+            }
+        } else {
+            if (!is_array($keys)) {
+                $keys = array($keys);
+            }
+            foreach ($keys as $key) {
+                if (isset(self::$cache[$this->getId()][$key])) {
+                    unset(self::$cache[$this->getId()][$key]);
+                }
+            }
+        }
     }
 
     public function getSettings($app_id, $name = null)
@@ -670,16 +694,16 @@ class waContact implements ArrayAccess
             if ($f->isMulti()) {
                 if ($f->isExt()) {
                     if (is_array($value)) {
-                    	if (isset($value['value'])) {
-                        	$value['ext'] = $ext;
-                    	} else {
-                    		foreach ($value as &$v) {
-                    			$v = array(
-                    				'value' => $v,
-                    				'ext' => $ext
-                    			);
-                    		}
-                    	}
+                        if (isset($value['value'])) {
+                            $value['ext'] = $ext;
+                        } else {
+                            foreach ($value as &$v) {
+                                $v = array(
+                                    'value' => $v,
+                                    'ext' => $ext
+                                );
+                            }
+                        }
                     } else {
                         $value = array(
                             'value' => $value,
@@ -693,27 +717,27 @@ class waContact implements ArrayAccess
                     $this->data[$field_id] = $this->get($field_id);
                 }
                 if (is_array($value) && !isset($value['value'])) {
-                	if (!$add) {
-                    	$this->data[$field_id] = $value;
-                	} else {
-                		$this->data[$field_id] = array_merge($this->data[$field_id], $value);
-                	}
+                    if (!$add) {
+                        $this->data[$field_id] = $value;
+                    } else {
+                        $this->data[$field_id] = array_merge($this->data[$field_id], $value);
+                    }
                 } else {
                     $this->data[$field_id][] = $value;
                 }
             } else {
-            	if (method_exists($f, 'set')) {
-            		$this->data[$field_id] = $f->set($this, $value);
-            	} else {
-                	$this->data[$field_id] = $value;
-            	}
+                if (method_exists($f, 'set')) {
+                    $this->data[$field_id] = $f->set($this, $value);
+                } else {
+                    $this->data[$field_id] = $value;
+                }
             }
         }
     }
 
     public function offsetSet($offset, $value)
     {
-    	$this->set($offset, $value);
+        $this->set($offset, $value);
     }
 
     public function offsetUnset($offset)

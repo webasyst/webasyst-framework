@@ -14,8 +14,6 @@ class webasystBackendActions extends waViewActions
     public function defaultAction()
     {
         $widgets = array();
-//		$widgets = array_merge($widgets, waWidgets::load('contacts', array('graph', 'list')));
-//		$widgets = array_merge($widgets, waWidgets::load('orders', array('graph', 'orders')));
         $this->view->assign("widgets", $widgets);
         $this->view->assign("username", wa()->getUser()->getName());
     }

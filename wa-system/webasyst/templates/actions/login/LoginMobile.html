@@ -16,6 +16,7 @@
 	</div>	
 	<div data-role="content" {if !empty($error)}data-theme="r"{/if}>
 	<form action="" method="post">
+		<input type="hidden" name="wa_auth_login" value="1" />
 		{if !empty($error)}<div class="wa-mobile-error">{$error|escape}</div>{/if}
 		<div data-role="fieldcontain">
     		<label for="name">[`Login`]:</label>

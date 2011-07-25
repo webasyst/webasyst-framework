@@ -38,12 +38,20 @@ class waAppSettingsModel extends waModel
 		return $r;
 	}
 	
-	public function del($app_id, $name)
+	public function del($app_id, $name = null)
 	{
-		if (isset(self::$cache[$app_id][$name])) {
-			unset(self::$cache[$app_id][$name]);
-		}
-		$this->addCacheCleaner($this->getCache($app_id));
-		return $this->deleteByField(array('app_id' => $app_id, 'name' => $name));
+	    $this->addCacheCleaner($this->getCache($app_id));
+	    $params = array('app_id' => $app_id);
+	    if ($name === null) {
+	        if (isset(self::$cache[$app_id])) {
+    			unset(self::$cache[$app_id]);
+    		}	        
+	    } else {
+    		if (isset(self::$cache[$app_id][$name])) {
+    			unset(self::$cache[$app_id][$name]);
+    		}
+    		$params['name'] = $name;
+	    }
+		return $this->deleteByField($params);
 	}
 }

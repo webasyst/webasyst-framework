@@ -38,6 +38,7 @@ class waLayout extends waController
 
     public function executeAction($name, $action, waDecorator $decorator = null)
     {
+        $action->setLayout($this);
         $content = $decorator ? $decorator->display($action) : $action->display();
         $this->setBlock($name, $content);
     }

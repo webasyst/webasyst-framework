@@ -1,0 +1,44 @@
+#wa { background: #fff url(../img/clothes.jpg); }
+
+.c-sidebar { padding-top: 34px; }
+.c-sidebar ul.menu-v li.selected a { background: #ccc;}
+.c-sidebar ul.menu-v li i.c-new-list { margin-top: 0; }
+
+.c-list { background: #fff; border: 1px solid #fff;}
+.c-list h1 i.icon16 { margin-top: 6px; margin-left: 0.3em; }
+.c-list h1 a#edit-mode-off { font-weight: normal; font-size: 0.5em; color: #aaa; position: relative; top: -0.3em; left: -0.6em; }
+.c-list ul.menu-v { margin: 15px 0 0; }
+.c-list ul.menu-v li { padding-left: 28px; margin: 0 0 8px -10px; font-size: 1.05em; }
+.c-list ul.menu-v li input { margin: 0 2px 0 -18px; }
+.c-list ul.menu-v li span { margin: 0 0.3em 0 0;}
+.c-list ul.menu-v span.c-completed-when { display: none; }
+.c-list ul.menu-v span.c-completed-by { display: none; font-weight: bold; }
+.c-list ul.menu-v li.c-done { margin-bottom: 3px; }
+.c-list ul.menu-v li.c-done span.c-item-name  { color: #aaa; text-decoration: line-through; font-size: 0.8em; }
+.c-list ul.menu-v li.c-done span.c-completed-when  { display: inline; }
+.c-list ul.menu-v li.c-done span.c-completed-by  { display: inline; }
+.c-list ul.menu-v li.c-add-form { padding-left:13px; padding-bottom: 10px; display: none; }
+.c-list ul.menu-v li.c-add-form input { margin: 0; }
+.c-list ul.menu-v li a.c-edit-item { display: none; }
+.c-list ul.menu-v li a.c-delete-item { display: none; }
+.c-list ul.menu-v.c-edit-mode li input[type="checkbox"] { opacity: 0.4; }
+.c-list ul.menu-v.c-edit-mode li span.c-item-name { cursor: move; }
+.c-list ul.menu-v.c-edit-mode li a.c-edit-item { display: inline; }
+.c-list ul.menu-v.c-edit-mode li a.c-delete-item { display: inline; }
+
+.c-settings ul.menu-h li a { padding: 8px 10px; }
+.c-list-icons { max-width: 350px; }
+.c-list-icons ul.menu-h { padding-bottom: 10px; }
+.c-list-icons ul.menu-h li { margin: 0; }
+.c-list-icons ul.menu-h li a { border: 3px solid transparent; }
+.c-list-icons ul.menu-h li a i.icon16 { margin: 0; }
+.c-list-icons ul.menu-h li.selected a { border: 3px solid #FDDA3B; background: #ffd; }
+
+.c-white { background: #fff; border: 1px solid #ddd; } 
+.c-gray { background: #eee; border: 1px solid #ccc; }
+.c-yellow { background: #ffc; border: 1px solid #dda; }
+.c-green { background: #dfc; border: 1px solid #ad9; }
+.c-blue { background: #cef; border: 1px solid #acd; }
+.c-red { background: #fcc; border: 1px solid #daa; }
+.c-purple { background: #edf; border: 1px solid #cbd; }
+

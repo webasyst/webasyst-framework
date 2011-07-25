@@ -40,6 +40,12 @@ class waFrontController
             $module = waRequest::param('module', $module);
             $action = waRequest::param('action', waRequest::get($this->options['action']));
             $plugin = waRequest::param('plugin', waRequest::get('plugin', ''));
+            // event init
+            if (!waRequest::request('background_process')) {
+                if (method_exists($this->system->getConfig(), 'onInit')) {
+                    $this->system->getConfig()->onInit();
+                }
+            }
             if ($widget = waRequest::param('widget')) {
                 $this->executeWidget($widget, $action);
             } elseif ($this->system->getEnv() == 'backend') {

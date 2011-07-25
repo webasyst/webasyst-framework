@@ -73,17 +73,18 @@ class waSystem
                 $config = SystemConfig::getAppConfig($name, $system->getEnv(), $system->config->getRootPath());
             }
             if ($config) {
-                if (!self::$current || self::$current == 'wa-system' || $set_current) {
-                    self::$current = $name;
-                }
-                $class = __CLASS__;
-                self::$instances[$name] = new $class($config);
+                self::$instances[$name] = new self($config);
                 if (!self::$instances[$name] instanceof waSystem) {
                     throw new waFactoryException(sprintf('Class "%s" is not of the type waSystem.', $class));
                 }
             } else {
                 throw new waException(sprintf('The "%s" system does not exist.', $name));
             }
+        }
+        if ($set_current) {
+            self::setActive($name);
+        } elseif (!self::$current || self::$current == 'wa-system') {
+            self::$current = $name;
         }
         return self::$instances[$name];
     }
@@ -613,6 +614,19 @@ class waSystem
     		}
     	}
     	return $result;
+    }
+    
+    /**
+     * Return waPlugin object
+     * 
+     * @param string $plugin_id
+     * @return waPlugin
+     */
+    public function getPlugin($plugin_id)
+    {
+        $app = $this->getApp();
+        $class = $app.ucfirst($plugin_id).'Plugin';
+        return new $class();
     }
 
     /** Trigger event with given $name from current active application.

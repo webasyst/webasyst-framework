@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WebAsyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2011-06-16 10:17+0300\n"
+"PO-Revision-Date: 2011-07-21 13:53+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -1489,59 +1489,64 @@ msgstr "Все контакты"
 msgid "All users"
 msgstr "Все пользователи"
 
-
 #: /wa-system/config/waRightConfig.class.php:143
 msgid "Group"
-msgstr ""
+msgstr "Группа"
 
 #: /wa-system/contact/waContactCompositeField.class.php:71
 msgid "%s subfield is required."
-msgstr ""
+msgstr "Подполе %s обязательное."
 
 #: /wa-system/contact/waContactField.class.php:308
 msgid "This field is required"
-msgstr ""
+msgstr "Это поле обязательное."
 
 #: /wa-system/image/waImage.class.php:51
 msgid "Not an image or invalid image: "
-msgstr ""
+msgstr "Неправильный формат изображения: "
 
 #: /wa-system/image/waImage.class.php:97
 msgid "Not %s image adapter"
-msgstr ""
+msgstr "Not %s image adapter"
 
 #: /wa-system/image/waImage.class.php:276
 msgid "File must be writable: "
-msgstr ""
+msgstr "Нужны права на запись в файл: "
 
 #: /wa-system/image/waImageGd.class.php:44
 msgid "GD does not support %s images"
-msgstr ""
+msgstr "GD не поддерживает работу с изображениями в формате %s"
 
 #: /wa-system/image/waImageGd.class.php:56
 msgid "GD is not installed"
-msgstr ""
+msgstr "GD не установлен"
 
 #: /wa-system/image/waImageGd.class.php:63
 msgid "Need GD version of the above 2.0.1"
-msgstr ""
-
-#: /wa-system/image/waImageGd.class.php:246
-msgid "GD not support %s images"
-msgstr ""
+msgstr "Необходима версия GD не ниже 2.0.1"
 
 #: /wa-system/image/waImageImagick.class.php:29
 msgid "ImageMagick is not installed."
-msgstr ""
+msgstr "ImageMagick не установлен."
 
 #: /wa-system/validator/waRegexValidator.class.php:25
 msgid "Not match."
-msgstr ""
+msgstr "Не удовлетворяет условиям."
 
 #: /wa-system/validator/waValidator.class.php:36
 msgid "Required"
-msgstr ""
+msgstr "Обязательное"
 
 #: /wa-system/validator/waValidator.class.php:97
 msgid "Invalid"
-msgstr ""
+msgstr "Неверно"
+
+msgid "Today"
+msgstr "Сегодня"
+
+msgid "Yesterday"
+msgstr "Вчера"
+
+msgid "Tomorrow"
+msgstr "Завтра"
+

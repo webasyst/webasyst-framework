@@ -7,7 +7,7 @@ return array(
 	'english_name' => 'English',
 	'english_region' => 'USA',
 	'date_formats' => array(
-		'monthdate' => 'Fj, Y',
+		'monthdate' => 'F j, Y',
 		'date' => 'm/d/Y',
 		'dtime' => 'd/m H:i',
 		'datetime' => 'm/d/Y H:i',

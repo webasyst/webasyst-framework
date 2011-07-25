@@ -147,6 +147,7 @@ class waAutoload
         'wadbresult' => 'database/waDbResult.class.php',
         'wadbresultiterator' => 'database/waDbResultIterator.class.php',
         'wadbstatement' => 'database/waDbStatement.class.php',
+        'wadbrecordbuilder' => 'database/waDbRecordBuilder.class.php',
     	'wanestedsetmodel' => 'database/waNestedSetModel.class.php',
         'warequest' => 'request/waRequest.class.php',
         'waresponse' => 'response/waResponse.class.php',
@@ -177,6 +178,7 @@ class waAutoload
         'warequestfileiterator' => 'request/waRequestFileIterator.class.php',
         'walongactioncontroller' => 'controller/waLongActionController.class.php',
         'waaction' => 'controller/waAction.class.php',
+    	'waloginaction' => 'controller/waLoginAction.class.php',
         'wahtmlcontrol' => 'util/waHtmlControl.class.php',
         'walocalizedcollection' => 'util/waLocalizedCollection.php',
 

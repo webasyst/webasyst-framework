@@ -150,7 +150,7 @@ class waRightConfig
                 $addScriptForCB = TRUE;
             }
 
-            if ($inherited !== null && $item['type'] == 'select') {
+            if ($inherited !== null && ($item['type'] == 'select' || $item['type'] == 'selectlist')) {
                 $addScriptForSelect = TRUE;
             }
         }
@@ -294,6 +294,20 @@ class waRightConfig
                         $inherited[$name.'.'.$id] = 1;
                     }
                     $html .= $this->getItemHtml($name.'.'.$id, htmlspecialchars($item_name), 'checkbox', array('cssclass' => 'c-access-subcontrol-item'), $rights, $inherited);
+                }
+                return $html;
+            case 'selectlist':
+                if (!isset($params['options']) || !$params['options']) {
+                    return '';
+                }
+                $html = '<tr class="c-access-subcontrol-header'.($params['cssclass'] ? ' '.$params['cssclass'] : '').'">'.
+                                '<td><div>'.$label.'</div></td>'.
+                                ($inherited !== null ? '<td></td>' : '').
+                                '<td><div class="hint">'.(isset($params['hint1']) ? $params['hint1'] : '').'</td>'.
+                                ($inherited !== null ? '<td><div class="hint">'.(isset($params['hint2']) ? $params['hint2'] : '').'</td>' : '').
+                        '</tr>';
+                foreach ($params['items'] as $id => $item_name) {
+                    $html .= $this->getItemHtml($name.'.'.$id, htmlspecialchars($item_name), 'select', array('cssclass' => 'c-access-subcontrol-item', 'options' => $params['options']), $rights, $inherited);
                 }
                 return $html;
             default:

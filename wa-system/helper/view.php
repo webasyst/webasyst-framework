@@ -15,13 +15,23 @@ function wa_header()
     $app_settings_model = new waAppSettingsModel();
 
     $apps_html = '';
+    $applist_class = '';
+    $counts = wa()->getStorage()->read('apps-count');
+    if (is_array($counts)) {
+        $applist_class .= ' counts-cached';
+    }
     foreach ($apps as $app_id => $app) {
         if (isset($app['img'])) {
             $img = '<img src="'.$root_url.$app['img'].'" alt="">';
         } else {
             $img = '';
         }
-        $apps_html .= '<li id="wa-app-'.$app_id.'"'.($app_id == $current_app ? ' class="selected"':'').'><a href="'.$backend_url.$app_id.'/">'.$img.' '.$app['name'].'</a></li>';
+
+        $count = '';
+        if ($counts && isset($counts[$app_id])) {
+            $count = '<span class="indicator">'.$counts[$app_id].'</span>';
+        }
+        $apps_html .= '<li id="wa-app-'.$app_id.'"'.($app_id == $current_app ? ' class="selected"':'').'><a href="'.$backend_url.$app_id.'/">'.$img.' '.$app['name'].$count.'</a></li>';
     }
 
     if ($system->getRequest()->isMobile(false)) {
@@ -81,12 +91,15 @@ function wa_header()
         $userpic = '<a href="'.$backend_url.'contacts/#/contact/'.$user['id'].'">'.$userpic.'</a>';
         $username = '<a href="'.$backend_url.'contacts/#/contact/'.$user['id'].'" id="wa-my-username">'.$username.'</a>';
     }
-    
+
     $more = _ws('more');
+
+    if ($applist_class) {
+        $applist_class = ' class="'.trim($applist_class).'"';
+    }
 
     $html = <<<HTML
 <script type="text/javascript">var backend_url = "{$backend_url}";</script>
-<script id="wa-header-js" type="text/javascript" src="{$root_url}wa-content/js/jquery-wa/wa.header.js"></script>
 {$announcements_html}
 <div id="wa-header" class="minimize1d">
     <div id="wa-account">
@@ -105,15 +118,16 @@ function wa_header()
             </div>
         </div>
     </div>
-    <div id="wa-applist">
+    <div id="wa-applist" {$applist_class}>
         <ul>
             {$apps_html}
-			<li>
-				<a href="#" class="inline-link" id="wa-moreapps"><i class="icon10 darr" id="wa-moreapps-arrow"></i><b><i>{$more}</i></b></a>
-			</li>            
+            <li>
+                <a href="#" class="inline-link" id="wa-moreapps"><i class="icon10 darr" id="wa-moreapps-arrow"></i><b><i>{$more}</i></b></a>
+            </li>
         </ul>
     </div>
 </div>
+<script id="wa-header-js" type="text/javascript" src="{$root_url}wa-content/js/jquery-wa/wa.header.js"></script>
 HTML;
     return $html;
 }
@@ -149,4 +163,3 @@ function wa_lambda($args, $body) {
     return $fn[$hash];
 }
 
-// EOF

@@ -15,7 +15,9 @@
 class waAuth implements waiAuth
 {	
 	protected $options = array(
-		'cookie_expire' => 2592000
+		'cookie_expire' => 2592000,
+	    'is_user' => true, // only contacts with is_user = 1 can auth
+	    'login' => 'login'
 	);
 	
 	public function __construct($options = array())
@@ -48,6 +50,22 @@ class waAuth implements waiAuth
 		return waSystem::getInstance()->getStorage()->read('auth_user');
 	}
 	
+	
+	protected function getByLogin($login)
+	{
+	    if ($this->options['login'] == 'login') { 
+    	    $model = new waContactModel();
+	    	return $model->getByField('login', $login);
+	    } elseif ($this->options['login'] == 'email') {
+	        $email_model = new waContactEmailsModel();
+	        $row = $email_model->getByField(array('email' => $login, 'sort' => 0));
+	        if ($row) {
+	            $model = new waContactModel();
+	            return $model->getById($row['contact_id']);
+	        }
+	    }
+	}
+	
 	protected function _auth($params)
 	{	
 		if ($params && isset($params['login']) && isset($params['password'])) {
@@ -63,9 +81,8 @@ class waAuth implements waiAuth
 			$login = null;
 		}
 		if ($login && strlen($login)) {
-		    $model = new waContactModel();
-			$user_info = $model->getByField('login', $login);
-			if ($user_info && $user_info['is_user'] &&
+            $user_info = $this->getByLogin($login);
+			if ($user_info && ($user_info['is_user'] || !$this->options['is_user']) &&
 				waSystem::getInstance()->getUser()->getPasswordHash($password) ===	$user_info['password']) {
 				$response = waSystem::getInstance()->getResponse();
 				// if remember
@@ -79,7 +96,8 @@ class waAuth implements waiAuth
 				// return array with compact user info 
 				return array(
 					'id' => $user_info['id'], 
-					'login' => $user_info['login']
+					'login' => $user_info['login'],
+					'is_user' => $user_info['is_user']
 				);
 			} else {
 				throw new waException(_ws('Invalid login or password'));	
@@ -89,12 +107,13 @@ class waAuth implements waiAuth
 			$response = waSystem::getInstance()->getResponse();
 			$id = substr($token, 15, -15);
 			$user_info = $model->getById($id);
-			if ($user_info && $user_info['is_user'] && 
+			if ($user_info && ($user_info['is_user'] || !$this->options['is_user']) && 
 				$token === $this->getToken($user_info)) {
 				$response->setCookie('auth_token', $token, time() + 2592000);
 				return array(
 					'id' => $user_info['id'], 
-					'login' => $user_info['login']
+					'login' => $user_info['login'],
+				    'is_user' => $user_info['is_user']
 				);
 			} else {
 				$response->setCookie('auth_token', null, -1);
@@ -125,5 +144,10 @@ class waAuth implements waiAuth
 	public function getOptions()
 	{
 		return $this->options;	
+	}
+	
+	public function getOption($name)
+	{
+	    return $this->options[$name];
 	}
 }

@@ -44,10 +44,10 @@ class waAuthUser extends waUser
 	            
 	        $auth = waSystem::getInstance()->getAuth();
 	        $info = $auth->isAuth();
-	        if (!$info && !waRequest::post('wa_auth_login')) {
+	        if (!$info && !waRequest::post('wa_auth_login') && (wa()->getEnv() == 'backend')) {
 	        	$info = $auth->auth();
 	        }
-	        if ($info && isset($info['id'])) {
+	        if ($info && isset($info['id']) && (waSystem::getInstance()->getEnv() == 'frontend' || !empty($info['is_user']))) {
 	            $this->auth = true;
 	            $this->id = $info['id'];
 	            if (!waRequest::request('background_process')) {
@@ -57,7 +57,8 @@ class waAuthUser extends waUser
         }
     }
     
-    public function updateLastPage() {
+    public function updateLastPage() 
+    {
         if (waRequest::isXMLHttpRequest() || !$this->id || wa()->getEnv() !== 'backend') {
             return;
         }
@@ -69,7 +70,8 @@ class waAuthUser extends waUser
         wa()->getResponse()->setCookie('last_page', $this->getId().'^^^'.$page);
     }
     
-    public function getLastPage() {
+    public function getLastPage() 
+    {
         if (! ( $page = wa()->getRequest()->cookie('last_page'))) {
             return '';
         }
@@ -100,7 +102,7 @@ class waAuthUser extends waUser
         	}
         	$contact_model = new waContactModel();
         	$contact_info = $contact_model->getById($this->id);
-        	if (!$contact_info || !$contact_info['is_user']) {
+        	if (!$contact_info || (waSystem::getInstance()->getEnv() == 'backend' && !$contact_info['is_user'])) {
         		waSystem::getInstance()->getAuth()->clearAuth();
         		header("Location: ".wa()->getConfig()->getBackendUrl(true));
         		exit;

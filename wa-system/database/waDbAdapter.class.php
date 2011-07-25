@@ -56,6 +56,11 @@ abstract class waDbAdapter
 		return "`".$string."`";
 	}	
 	
+	public function ping($handler)
+	{
+	    return true;
+	}
+	
 	abstract public function error($handler);
 	
 	abstract public function errorCode($handler);	

@@ -49,7 +49,6 @@ class webasystLoginFirstAction extends waViewAction
 				$user['email'] = $email;
 				$user['create_method'] = 'install';
 				if ($errors = $user->save()) {
-					print_r($errors); exit;
 					// log errors
 					waLog::log(implode("\r\n", $errors));
 					// display errors
@@ -57,11 +56,10 @@ class webasystLoginFirstAction extends waViewAction
 					$this->view->assign('errors', $errors);
 				} else {
 					$user->setRight('webasyst', 'backend', 1);
-					// @todo: use waAuth
-					waSystem::getInstance()->getStorage()->write('auth_user', array(
-						'id' => $user->getId(),
-						'login' => $login
-					));
+					waSystem::getInstance()->getAuth()->auth(array(
+					    'login' => $login,
+					    'password' => $password   
+				    ));
 					$this->redirect($this->getConfig()->getBackendUrl(true));
 				}
 			}	

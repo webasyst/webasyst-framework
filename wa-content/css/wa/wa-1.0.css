@@ -325,6 +325,7 @@ ul.menu-v { list-style-type:none; margin:5px 0 0; padding: 0; }
 ul.menu-v li { text-align:left; display:block; margin:0 -2px 3px 0; padding: 4px 0; line-height:1em; position: relative /* for overhanging icons */; min-width: 60px; }
 ul.menu-v a { outline:none; -moz-outline:none; font-style:normal; text-decoration: none; color: #03c; display: block /* for proper hierarchical menus display */; padding: 5px; margin: -5px; }
 ul.menu-v a:hover { color: red; }
+ul.menu-v a strong.small.highlighted { color: #000; }
 ul.menu-v li.selected a { background:#eee; color: #000; }
 ul.menu-v li.selected ul.menu-v li a { background: inherit; color: #03c; }
 ul.menu-v li ul.menu-v li { /* font-size: 95%; decrease font size on every level in hierarchical menus if you want */ }
@@ -566,8 +567,9 @@ table.bottom-bordered { border-bottom: 1px solid #aaa; }
 i.icon16 { background-repeat:no-repeat; background-image: url(../../../wa-content/img/icon16.png); height:16px; width:16px; display:inline-block; text-indent:-9999px; text-decoration:none!important; }
 * i.icon16 { text-decoration:none!important; vertical-align:top; margin: -0.1em 0.25em 0 0; }
 .heading i.icon16 { vertical-align:top; margin:-0.1em 0.1em 0 -0.5em; }
-.hint i.icon10 { vertical-align:top; margin:-0.05em 0.15em 0 0; }
+.hint i.icon10 { vertical-align:top; margin:0.15em 0.15em 0 0; }
 .count i.icon10, .count i.icon16 { margin-right: 0; }
+.button i.icon10, .button i.icon16 { vertical-align: middle; margin: 0; }
 h1 i.icon16, h2 i.icon16 { margin-top: 0.1em; }
 ul.tabs .icon10 { margin-top: 12px; }
 ul.tabs .icon16 { margin-top: 8px; }
@@ -596,7 +598,7 @@ ul.tabs .icon16 { margin-top: 8px; }
 .icon16.user { background-position:-304px 0; }
 .icon16.contact { background-position:-320px 0; }
 .icon16.picture { background-position:-352px -16px; }
-.icon16.pictures-stack { background-position:-336px -16px; }
+.icon16.pictures { background-position:-336px -16px; }
 .icon16.add { background-position:-64px -16px; }
 .icon16.add-bw { background-position:-80px -16px; }
 .icon16.delete { background-position:-96px -16px; }
@@ -668,6 +670,29 @@ ul.tabs .icon16 { margin-top: 8px; }
 .icon16.move { background-position:-176px 0; }
 .icon16.info {  background-position: -48px -112px;}
 .icon16.rss {  background-position: -160px -112px;}
+.icon16.medal {  background-position: -336px -48px;}
+.icon16.clock {  background-position: -352px -48px;}
+.icon16.alarm-clock { background-position: -368px -48px;}
+.icon16.anchor {  background-position: -384px -48px;}
+.icon16.home {  background-position: -400px -48px;}
+.icon16.cup {  background-position: -416px -48px;}
+.icon16.bug {  background-position: -432px -48px;}
+.icon16.disk {  background-position: -448px -48px;}
+.icon16.burn {  background-position: -464px -48px;}
+.icon16.animal-monkey { background-position: -336px 0;}
+.icon16.smiley { background-position: -352px 0;}
+.icon16.fruit { background-position: -368px 0;}
+.icon16.car { background-position: -384px 0;}
+.icon16.guitar {  background-position: -400px 0;}
+.icon16.store {  background-position: -416px 0;}
+.icon16.target {  background-position: -432px 0;}
+.icon16.luggage {  background-position: -448px 0;}
+.icon16.cookie {  background-position: -464px 0;}
+.icon16.bean {  background-position: -480px 0;}
+.icon16.sport-soccer {  background-position: -496px 0;}
+.icon16.clapperboard {  background-position: -352px -16px;}
+
+
 .icon16.userpic20 { background-position: -2px -2px; /* use this for 20x20 userpics as 16x16 icons; cuts 2px from each side of 20x20 userpic, but gives clean alignment */ }
 .icon16.loading { background-image: url("../../../wa-content/img/loading16.gif"); }
 
@@ -697,10 +722,10 @@ h5 i.icon10 { vertical-align:top; margin: 0.1em 0 0 0; }
 .icon10.darr { background-position:-10px 0; }
 .icon10.larr { background-position:-30px 0; }
 .icon10.rarr { background-position:-40px 0; }
-.icon10.star-small { background-position:-60px -40px; }
-.icon10.star-small-empty { background-position:-80px -40px; }
-.icon10.star-small-half { background-position:-70px -40px; }
-.icon10.delete-small { background-position:-80px -20px; }
+.icon10.star { background-position:-60px -40px; }
+.icon10.star-empty { background-position:-80px -40px; }
+.icon10.star-half { background-position:-70px -40px; }
+.icon10.delete { background-position:-80px -20px; }
 
 /*
  * Custom 16x16 or 10x10 images can be added like this (PNG images are recommended):

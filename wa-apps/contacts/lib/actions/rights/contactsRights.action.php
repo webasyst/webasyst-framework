@@ -33,7 +33,7 @@ class contactsRightsAction extends waViewAction
         $file_path = $app_config->getAppPath('lib/config/'.$class_name.".class.php");
         if (file_exists($file_path)) {
             // Init app
-            waSystem::getInstance($app_id, $app_config);
+            waSystem::getInstance($app_id, $app_config, true);
             include($file_path);
             $right_config = new $class_name();
             $rights += $right_config->getRights($contact_id);
@@ -43,7 +43,7 @@ class contactsRightsAction extends waViewAction
             }
 
             $this->view->assign('html', $right_config->getHTML($rights, $group_rights));
-            //waSystem::setActive('contacts');
+            waSystem::setActive('contacts');
         }
 
         if ($contact_id > 0) {
