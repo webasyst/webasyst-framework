@@ -165,7 +165,7 @@ class waRequest
 
     protected static function getData($data, $name = false, $default = false, $type = false)
     {
-        if (!$name) {
+        if ($name === null) {
             return $data;
         }
         if (isset($data[$name])) {
@@ -192,5 +192,15 @@ class waRequest
         } else {
             self::$params[$key] = $value;
         }
+    }
+    
+    public static function getIp()
+    {
+   		if (getenv('HTTP_X_FORWARDED_FOR')) {
+			$ip = getenv('HTTP_X_FORWARDED_FOR');
+		} else {
+			$ip = getenv('REMOTE_ADDR');
+		}
+		return $ip;
     }
 }

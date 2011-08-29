@@ -13,8 +13,6 @@ class webasystBackendActions extends waViewActions
 
     public function defaultAction()
     {
-        $widgets = array();
-        $this->view->assign("widgets", $widgets);
         $this->view->assign("username", wa()->getUser()->getName());
     }
 

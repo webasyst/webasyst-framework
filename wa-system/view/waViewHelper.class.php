@@ -19,6 +19,7 @@ class waViewHelper
 	 */
 	protected $wa;
 	protected $version;
+	protected static $helpers = array();
 	
 	public function __construct()
 	{
@@ -148,4 +149,23 @@ class waViewHelper
 			return $this->wa->getResponse()->setTitle($title);
 		}
 	}	
+	
+	public function isMobile()
+	{
+	    return waRequest::isMobile();
+	}
+	
+	
+	public function __get($app)
+	{
+	    if (!isset(self::$helpers[$app])) {
+	        $class = $app.'ViewHelper';
+	        if (class_exists($class)) {
+	            self::$helpers[$app] = new $class($this->wa);
+	        } else {
+	            self::$helpers[$app] = null;
+	        }
+	    }
+	    return self::$helpers[$app];
+	}
 }

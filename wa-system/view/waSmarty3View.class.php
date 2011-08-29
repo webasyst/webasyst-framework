@@ -133,4 +133,9 @@ class waSmarty3View extends waView
     		$this->smarty->caching = false;
     	}
     }
+    
+    public function setTemplateDir($path)
+    {
+    	$this->smarty->template_dir = $path;
+    }
 }

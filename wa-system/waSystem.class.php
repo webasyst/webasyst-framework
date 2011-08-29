@@ -189,9 +189,41 @@ class waSystem
     /**
      * @return waAuth
      */
-    public function getAuth()
+    public function getAuth($provider = null, $params = array())
     {
-        return $this->getCommonFactory('auth', 'waAuth', array(), null);
+        if ($provider) {
+            $file = $this->config->getPath('system').'/auth/'.$provider.'/'.$provider.'Auth.class.php';
+            if (!file_exists($file)) {
+                $file = $this->config->getPath('plugins').'/auth/'.$provider.'/'.$provider.'Auth.class.php';    
+            }
+            if (file_exists($file)) {
+                require_once($file);
+                $class = $provider.'Auth';
+                return new $class($params);
+            } else {
+                throw new waException("Auth provider not found.");
+            }
+        } else {
+            return $this->getCommonFactory('auth', 'waAuth', array(), null); 
+        }
+    }
+    
+    public function getAuthAdapters($domain = null)
+    {
+        if (!$domain) {
+            $domain = $this->config->getDomain();
+        }
+        $config = $this->getConfig()->getConfigFile('config', 'auth');
+        if (!isset($config[$domain])) {
+            return array();
+        }
+        $result = array();
+        foreach ($config[$domain] as $provider => $params) {
+            if ($params) {
+                $result[$provider] = $this->getAuth($provider, $params);
+            }
+        }
+        return $result;
     }
 
     /**
@@ -235,7 +267,21 @@ class waSystem
     public function dispatch()
     {
         try {
-            if ($this->getEnv() == 'backend' && !$this->getUser()->isAuth()) {
+            if (preg_match('/^sitemap-?([a-z0-9_]+)?.xml$/i', $this->config->getRequestUrl(true), $m)) {
+		        $app_id = isset($m[1]) ? $m[1] : 'webasyst';
+		        if ($this->appExists($app_id)) {
+		            $system = waSystem::getInstance($app_id);
+		            $class = $app_id.'SitemapConfig';
+		            if (class_exists($class)) {
+    		            $sitemap = new $class();
+    		            $sitemap->execute();
+		            }
+		        }
+		        throw new waException("Page not found", 404);
+		    } elseif (!strncmp($this->config->getRequestUrl(true), 'oauth.php', 9)) {
+                $webasyst_system = waSystem::getInstance('webasyst');
+                $webasyst_system->getFrontController()->execute(null, 'login', 'OAuth', true);    
+            } elseif ($this->getEnv() == 'backend' && !$this->getUser()->isAuth()) {
                 $webasyst_system = waSystem::getInstance('webasyst');
                 $webasyst_system->getFrontController()->execute(null, 'login', waRequest::get('action'), true);
             } elseif ($this->config instanceof waAppConfig) {
@@ -314,12 +360,12 @@ class waSystem
         waSystem::getInstance('webasyst');
         // Load app
         waSystem::getInstance($app, null, true);
-        try {
+        if (class_exists($class)) {
             $cli = new $class();
             $cli->run();
-        } catch (Exception $e) {
-            echo $e;
-        }
+        } else {
+            throw new waException("Class ".$class." not found", 404);
+        } 
     }
 
     public function getLocale()
@@ -468,7 +514,7 @@ class waSystem
                 foreach ($all_apps as $app => $enabled) {
                     if ($enabled) {
                         waLocale::loadByDomain($app);
-                        $app_config = $this->config->getPath('apps', $app.'/lib/config/app');
+                        $app_config = $this->getAppPath('lib/config/app.php', $app);
                         if (!file_exists($app_config)) {
                             if (false && SystemConfig::isDebug()) {
                                 throw new waException("Config not found. Create config by path ".$app_config);
@@ -476,7 +522,7 @@ class waSystem
                             continue;
                         }
                         $app_info = include($app_config);
-                        $build_file = $app_config = $this->config->getPath('apps', $app.'/lib/config/build');
+                        $build_file = $app_config = $this->getAppPath('lib/config/build.php', $app);
                         if (file_exists($build_file)) {
                             $app_info['build'] = include($build_file);
                         } else {
@@ -501,6 +547,7 @@ class waSystem
                 }
             } else {
                 self::$apps = include($file);
+                waLocale::loadByDomain('webasyst');
             }
         }
         if ($system) {
@@ -516,7 +563,7 @@ class waSystem
     public function appExists($app_id)
     {
         $this->getApps();
-        return isset(self::$apps[$app_id]);
+        return $app_id === 'webasyst' || isset(self::$apps[$app_id]);
     }
 
     public function getUrl($absolute = false)
@@ -572,8 +619,8 @@ class waSystem
 
     /** Active plugin for _wp(). Updated by wa()->event(). */
     protected static $activePlugin = array();
-    
-    public static function getActiveLocaleDomain() 
+
+    public static function getActiveLocaleDomain()
     {
         if (self::$activePlugin) {
             return implode('_', end(self::$activePlugin));
@@ -582,15 +629,15 @@ class waSystem
         }
     }
 
-    public static function pushActivePlugin($plugin, $app = null) 
+    public static function pushActivePlugin($plugin, $app = null)
     {
         if (!$app) {
             $app = wa()->getConfig()->getPrefix();
         }
-        return array_push(self::$activePlugin, array($app, $plugin));
+        return array_push(self::$activePlugin, $plugin ? array($app, $plugin) : array($app));
     }
 
-    public static function popActivePlugin() 
+    public static function popActivePlugin()
     {
         return array_pop(self::$activePlugin);
     }
@@ -600,31 +647,31 @@ class waSystem
       * @param string $app application id that generated event
       * @param string $event event name
       * @return array list of arrays ['className', 'method', 'pluginId', 'appId'] */
-    protected function getPlugins($app, $event) 
+    protected function getPlugins($app, $event)
     {
-    	//$system = self::getInstance($app);
-    	$plugins = $this->getConfig()->getPlugins();
-    	$result = array();
-    	foreach ($plugins as $plugin_id => $plugin) {
-    		foreach ($plugin['handlers'] as $handler_event => $handler_method) {
-    			if ($event == $handler_event) {
-	    			$class = $app.ucfirst($plugin_id).'Plugin';
-    				$result[] = array($class, $handler_method, $plugin_id, $app);
-    			}
-    		}
-    	}
-    	return $result;
+        //$system = self::getInstance($app);
+        $plugins = $this->getConfig()->getPlugins();
+        $result = array();
+        foreach ($plugins as $plugin_id => $plugin) {
+            foreach ($plugin['handlers'] as $handler_event => $handler_method) {
+                if ($event == $handler_event) {
+                    $class = $app.ucfirst($plugin_id).'Plugin';
+                    $result[] = array($class, $handler_method, $plugin_id, $app);
+                }
+            }
+        }
+        return $result;
     }
-    
+
     /**
      * Return waPlugin object
-     * 
+     *
      * @param string $plugin_id
      * @return waPlugin
      */
     public function getPlugin($plugin_id)
     {
-        $app = $this->getApp();
+        $app = $this->getConfig()->getApplication();
         $class = $app.ucfirst($plugin_id).'Plugin';
         return new $class();
     }
@@ -633,7 +680,7 @@ class waSystem
       * @param string $name
       * @param $params passed to event handlers
       * @return array app_id or plugin_id => data returned from handler (unless null is returned) */
-    public function event($name, $params = null)
+    public function event($name, &$params = null)
     {
         $result = array();
         if (is_array($name)) {
@@ -644,7 +691,7 @@ class waSystem
             $event_app_id = $this->getConfig()->getApplication();
             $system = $this;
         }
-        
+
 
         $prefix = wa($event_app_id)->getConfig()->getPrefix();
 
@@ -680,31 +727,31 @@ class waSystem
         //
         // Call handlers defined by current application's plugins
         //
-    	$plugins = $system->getConfig()->getPlugins();
-    	foreach ($plugins as $plugin_id => $plugin) {
-    		foreach ($plugin['handlers'] as $handler_event => $handler_method) {
-    			if ($name == $handler_event) {
-  				    // Remember active plugin locale name for _wp() to work
-	                self::pushActivePlugin($plugin_id, wa($event_app_id)->getConfig()->getPrefix());    				
-    				try {
-	    				$class_name = $event_app_id.ucfirst($plugin_id).'Plugin';
-	    				$class = new $class_name($plugin);
-		                // Load plugin locale if it exists
-		                $locale_path = $this->getAppPath('plugins/'.$plugin_id.'/locale', $event_app_id);
-		                if (is_dir($locale_path)) {
-		                    waLocale::load($this->getLocale(), $locale_path, self::getActiveLocaleDomain(), false);
-		                }	    				
-		                if (null !== ( $r = $class->$handler_method($params))) {
-		                    $result[$plugin_id.'-plugin'] = $r;
-		                }
-	    				
-    				} catch (Exception $e) {
-    					waLog::log('Error: '.$e->getMessage());
-    				}
-    				self::popActivePlugin();
-    			}
-    		}
-    	}
+        $plugins = $system->getConfig()->getPlugins();
+        foreach ($plugins as $plugin_id => $plugin) {
+            foreach ($plugin['handlers'] as $handler_event => $handler_method) {
+                if ($name == $handler_event) {
+                    // Remember active plugin locale name for _wp() to work
+                    self::pushActivePlugin($plugin_id, wa($event_app_id)->getConfig()->getPrefix());
+                    try {
+                        $class_name = $event_app_id.ucfirst($plugin_id).'Plugin';
+                        $class = new $class_name($plugin);
+                        // Load plugin locale if it exists
+                        $locale_path = $this->getAppPath('plugins/'.$plugin_id.'/locale', $event_app_id);
+                        if (is_dir($locale_path)) {
+                            waLocale::load($this->getLocale(), $locale_path, self::getActiveLocaleDomain(), false);
+                        }
+                        if (null !== ( $r = $class->$handler_method($params))) {
+                            $result[$plugin_id.'-plugin'] = $r;
+                        }
+
+                    } catch (Exception $e) {
+                        waLog::log('Error: '.$e->getMessage());
+                    }
+                    self::popActivePlugin();
+                }
+            }
+        }
         return $result;
     }
 }

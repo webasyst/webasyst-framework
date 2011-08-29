@@ -53,16 +53,13 @@ class waException extends Exception
             exit;
         }
 
+        if (waSystem::getInstance()->getEnv() == 'cli') {
+            return date("Y-m-d H:i:s")." php ".implode(" ", waRequest::server('argv'))."\n".
+            "Error with code {$this->getCode()} in '{$this->getFile()}' around line {$this->getLine()}:{$this->getFileContext()}\n".
+            $this->getTraceAsString()."\n";
+        }
 
         $result = <<<HTML
-<style>
-    body { background-color: #fff; color: #333; }
-    body, p, ol, ul, td { font-family: verdana, arial, helvetica, sans-serif; font-size: 13px; line-height: 25px; }
-    pre { background-color: #eee; padding: 10px; font-size: 11px; line-height: 18px; }
-    a { color: #000; }
-    a:visited { color: #666; }
-    a:hover { color: #fff; background-color:#000; }
-</style>
 <div style="width:99%; position:relative">
 <h2 id='Title'>{$message}</h2>
 <div id="Context" style="display: block;"><h3>Error with code {$this->getCode()} in '{$this->getFile()}' around line {$this->getLine()}:</h3><pre>{$this->getFileContext()}</pre></div>

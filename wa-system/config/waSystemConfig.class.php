@@ -65,6 +65,28 @@ class waSystemConfig
 			$this->enviroment = $enviroment;
 		}
 		
+		$url = $this->getRequestUrl();
+		if ($url === 'robots.txt' || $url === 'favicon.ico') {
+		    $this->responseStatic($url);
+		}
+	}
+		
+	protected function responseStatic($file)
+	{
+        $domain = waRequest::server('HTTP_HOST');
+        $u = trim($this->getRootUrl(false, true), '/');
+        if ($u) {
+            $domain .= '/'.$u;
+        }
+        $file = waConfig::get('wa_path_data').'/public/site/'.$domain.'/'.$file;
+        if (file_exists($file)) {
+            $file_type = waFiles::getMimeType($file);
+            header("Content-type: {$file_type}");
+            @readfile($file);
+        } else {
+            header("HTTP/1.0 404 Not Found");
+        }
+        exit;
 	}
 	
 	public static function getTime($diff = true)
@@ -102,7 +124,7 @@ class waSystemConfig
 		return isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '/';
 	}
 	
-	public function getRequestUrl($without_root = true)
+	public function getRequestUrl($without_root = true, $without_params = false)
 	{
 		$url = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '/';
 		if ($without_root) {
@@ -112,6 +134,11 @@ class waSystemConfig
 			if (substr($url, 0, 9) == 'index.php') {
 				$url = substr($url, 10);
 			}
+		}
+		if ($without_params) {
+		    if (($i = strpos($url, '?')) !== false) {
+		        return substr($url, 0, $i);
+		    }
 		}
 		return $url;
 	}
@@ -147,6 +174,16 @@ class waSystemConfig
     		$url .= $_SERVER['HTTP_HOST'];
 	        return $url;
 	}
+	
+	public function getDomain()
+	{
+        $domain = waRequest::server('HTTP_HOST');
+        $u = trim(waSystem::getInstance()->getRootUrl(false, true), '/');
+        if ($u) {
+            $domain .= '/'.$u;
+        }
+        return $domain;
+	}	
 	
 	protected function configure()
 	{
@@ -214,7 +251,6 @@ class waSystemConfig
 			'wa_path_root'		=> $root_path,
 			'wa_path_apps'		=> $root_path.DIRECTORY_SEPARATOR.'wa-apps',
 			'wa_path_system'	=> $root_path.DIRECTORY_SEPARATOR.'wa-system',
-			'wa_path_lib'		=> $root_path.DIRECTORY_SEPARATOR.'wa-system/lib',
 			'wa_path_log'		=> $root_path.DIRECTORY_SEPARATOR.'wa-log',
 			'wa_path_data'		=> $root_path.DIRECTORY_SEPARATOR.'wa-data',
 			'wa_path_config'	=> $root_path.DIRECTORY_SEPARATOR.'wa-config',

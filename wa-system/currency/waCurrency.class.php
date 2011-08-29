@@ -94,6 +94,9 @@ class waCurrency
 	
 	public static function format($format, $n, $currency, $locale = null)
 	{
+	    if ($locale == null) {
+	        $locale = waSystem::getInstance()->getLocale();
+	    }
 		$currency = waCurrency::getInfo($currency);
 		waLocale::loadByDomain('webasyst', $locale);
 		$locale = waLocale::getInfo($locale);

@@ -36,7 +36,9 @@ class waFiles
             @mkdir($path, 0775, true);
             if (!file_exists($path)) {
                 //@todo: Recursive create dirictory
-                throw new waException('!!! TODO');
+                if (waSystemConfig::isDebug()) {
+                    throw new waException('!!! TODO');
+                }
             }
         }
         return $return_path;
@@ -50,7 +52,9 @@ class waFiles
     public static function copy($source_path, $dest_path)
     {
         if (is_dir($source_path)) {
-            throw new waException('!!! TODO');
+            if (waSystemConfig::isDebug()) {
+                throw new waException('!!! TODO');
+            }
         } else {
             self::create($dest_path);
             copy($source_path, $dest_path);
@@ -65,7 +69,9 @@ class waFiles
     public static function move($source_path, $dest_path)
     {
         if (is_dir($source_path)) {
-            throw new waException('!!! TODO');
+            if (waSystemConfig::isDebug()) {
+                throw new waException('!!! TODO');
+            }
         } else {
             self::create($dest_path);
             return rename($source_path, $dest_path);
@@ -160,7 +166,7 @@ class waFiles
         switch ($type) {
             case 'jpg': case 'jpeg': case 'jpe': return 'image/jpeg';
             case 'png': case 'gif': case 'bmp': case 'tiff' : return 'image/'.strtolower($match[1]);
-
+            case 'ico': return 'image/x-icon';
             case 'doc': case 'docx': return 'application/msword';
             case 'xls': case 'xlt': case 'xlm': case 'xld': case 'xla': case 'xlc': case 'xlw': case 'xll': return 'application/vnd.ms-excel';
             case 'ppt': case 'pps': return 'application/vnd.ms-powerpoint';
@@ -201,7 +207,7 @@ class waFiles
     {
         if (file_exists($file)) {
             $file_type = self::getMimeType($attach ? $attach : $file);
-            if($md5) {
+            if ($md5) {
                 $md5 = base64_encode(md5_file($file));
             }
             @ini_set( 'async_send', 1 );

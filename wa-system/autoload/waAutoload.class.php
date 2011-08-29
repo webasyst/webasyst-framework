@@ -108,6 +108,19 @@ class waAutoload
         }
     }
 
+    /**
+     * Get all classes that are available for autoloading.
+     * @return array classname => file path relative to wa-root, no leading slash
+     */
+    public function getClasses()
+    {
+        $result = $this->classes;
+        foreach ($this->system_classes as $class => $path) {
+            $result[$class] = 'wa-system/'.$path;
+        }
+        return $result;
+    }
+
     protected $system_classes = array(
         'waapicontroller' => 'api/waApiController.class.php',
         'waapimethod' => 'api/waApiMethod.class.php',
@@ -147,8 +160,8 @@ class waAutoload
         'wadbresult' => 'database/waDbResult.class.php',
         'wadbresultiterator' => 'database/waDbResultIterator.class.php',
         'wadbstatement' => 'database/waDbStatement.class.php',
-        'wadbrecordbuilder' => 'database/waDbRecordBuilder.class.php',
-    	'wanestedsetmodel' => 'database/waNestedSetModel.class.php',
+        'wadbrecord' => 'database/waDbRecord.class.php',
+        'wanestedsetmodel' => 'database/waNestedSetModel.class.php',
         'warequest' => 'request/waRequest.class.php',
         'waresponse' => 'response/waResponse.class.php',
         'wastorage' => 'storage/waStorage.class.php',
@@ -163,6 +176,8 @@ class waAutoload
         'wagettext' => 'locale/waGettext.class.php',
         'walayout' => 'layout/waLayout.class.php',
         'wautils' => 'util/waUtils.class.php',
+        'waarrayobject' => 'util/waArrayObject.class.php',
+        'waarrayobjectdiff' => 'util/waArrayObjectDiff.class.php',
         'wacsv' => 'util/waCSV.class.php',
         'waworkflow' => 'workflow/waWorkflow.class.php',
         'waworkflowaction' => 'workflow/waWorkflowAction.class.php',
@@ -178,18 +193,18 @@ class waAutoload
         'warequestfileiterator' => 'request/waRequestFileIterator.class.php',
         'walongactioncontroller' => 'controller/waLongActionController.class.php',
         'waaction' => 'controller/waAction.class.php',
-    	'waloginaction' => 'controller/waLoginAction.class.php',
+        'waloginaction' => 'controller/waLoginAction.class.php',
         'wahtmlcontrol' => 'util/waHtmlControl.class.php',
         'walocalizedcollection' => 'util/waLocalizedCollection.php',
 
         'smarty' => 'vendors/smarty3/Smarty.class.php',
-    	'waidna' => 'vendors/idna/waIdna.class.php',
+        'waidna' => 'vendors/idna/waIdna.class.php',
 
         'wacontactmodel' => 'webasyst/lib/models/waContact.model.php',
         'wacontactdatamodel' => 'webasyst/lib/models/waContactData.model.php',
-        'wacontactdatatextmodel' => 'webasyst/lib/models/waContactDataText.model.php',    
-    	'wacontactemailsmodel' => 'webasyst/lib/models/waContactEmails.model.php',
-    	'wacontactrightsmodel' => 'webasyst/lib/models/waContactRights.model.php',
+        'wacontactdatatextmodel' => 'webasyst/lib/models/waContactDataText.model.php',
+        'wacontactemailsmodel' => 'webasyst/lib/models/waContactEmails.model.php',
+        'wacontactrightsmodel' => 'webasyst/lib/models/waContactRights.model.php',
 
         'waloginlogmodel' => 'webasyst/lib/models/waLoginLog.model.php',
         'waappsettingsmodel' => 'webasyst/lib/models/waAppSettings.model.php'

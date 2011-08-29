@@ -70,11 +70,15 @@ function wa_header()
     $data = $announcement_model->getByApps($user->getId(), array_keys($apps), $user['create_datetime']);
     $announcements = array();
     foreach ($data as $row) {
-        $announcements[$row['app_id']][] = $row['text'];
+        // show no more than 1 message per application
+        if (isset($announcements[$row['app_id']]) && count($announcements[$row['app_id']]) >= 1) {
+            continue;
+        }
+        $announcements[$row['app_id']][] = waDateTime::format('datetime', $row['datetime']).': '.$row['text'];
     }
     $announcements_html = '';
     foreach ($announcements as $app_id => $texts) {
-        $announcements_html .= '<a href="#" rel="'.$app_id.'" class="wa-announcement-close" title="close">x</a><p>';
+        $announcements_html .= '<a href="#" rel="'.$app_id.'" class="wa-announcement-close" title="close">'._ws('[close]').'</a><p>';
         $announcements_html .= implode('<br />', $texts);
         $announcements_html .= '</p>';
     }
@@ -141,25 +145,3 @@ function wa_backend_url()
 {
     return waSystem::getInstance()->getConfig()->getBackendUrl(true);
 }
-
-/** print_r() all arguments inside <pre> and die(). */
-function wa_print_r() {
-    echo '<pre rel="waException">';
-    foreach(func_get_args() as $v) {
-        echo "\n".print_r($v, TRUE);
-    }
-    echo "</pre>\n";
-    exit;
-}
-
-// !!! should probably move it to other file?
-/** Wrapper around create_function() that caches functions it creates to avoid memory leaks */
-function wa_lambda($args, $body) {
-    static $fn = array();
-    $hash = $args.md5($args.$body).md5($body);
-    if(!isset($fn[$hash])) {
-        $fn[$hash] = create_function($args, $body);
-    }
-    return $fn[$hash];
-}
-

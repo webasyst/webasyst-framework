@@ -496,7 +496,7 @@ class waMailDecode
 				$value = $temp;
 			}
 		}
-		return trim($value);		
+		return $value;		
 	}	
 	
 	protected function parseHeader($str) 

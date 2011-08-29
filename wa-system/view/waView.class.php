@@ -43,6 +43,7 @@ abstract class waView
 	protected function prepare() 
 	{
    	   $this->assign('wa_url', $this->system->getRootUrl());
+   	   $this->assign('wa_backend_url', waSystem::getInstance()->getConfig()->getBackendUrl(true));
    	   $this->assign('wa_app', $this->system->getApp());
    	   $this->assign('wa_app_url', $this->system->getAppUrl());
    	   $this->assign('wa_app_static_url', $this->system->getAppStaticUrl());

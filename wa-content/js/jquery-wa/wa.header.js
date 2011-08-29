@@ -82,13 +82,13 @@ $(function () {
 		}
 	});
 
-	$("a.wa-announcement-close").click(function () {
+	$("a.wa-announcement-close", $('#wa')[0]).live('click', function () {
 		var app_id = $(this).attr('rel');
 		$(this).next('p').remove();
 		$(this).remove();
 		var url = backend_url + "?module=settings&action=save";
 		$.post(url, {app_id: app_id, name: 'announcement_close', value: 'now()'});
-
+		return false;
 	});
 
 	var updateCount = function () {
@@ -97,9 +97,17 @@ $(function () {
 			data: {'background_process': 1},
 			success: function (response) {
 				if (response.status == 'ok') {
+					// announcements
+					if (response.data.__announce) {
+						$('#wa-announcement').remove();
+						$('#wa-header').before(response.data.__announce);
+						delete response.data.__announce;
+					}
+
+					// applications
 					for (var app_id in response.data) {
 						var n = response.data[app_id];
-						if (n > 0) {
+						if (n) {
 							var a = $("#wa-app-" + app_id + " a");
 							if (a.find('span.indicator').length) {
 								a.find('span.indicator').html(n);
@@ -111,6 +119,8 @@ $(function () {
 						}
 					}
 				}
+
+				$(document).trigger('wa.appcount', response.data);
 				setTimeout(updateCount, 60000);
 			},
 			error: function () {

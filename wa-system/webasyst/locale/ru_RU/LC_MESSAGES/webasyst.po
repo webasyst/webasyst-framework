@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WebAsyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2011-07-21 13:53+0300\n"
+"PO-Revision-Date: 2011-08-04 14:00+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -1549,4 +1549,8 @@ msgstr "Вчера"
 
 msgid "Tomorrow"
 msgstr "Завтра"
+
+# Link to hide announcements above apps list
+msgid "[close]"
+msgstr "[закрыть]"
 

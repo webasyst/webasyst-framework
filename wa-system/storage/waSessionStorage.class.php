@@ -67,6 +67,11 @@ class waSessionStorage extends waStorage
 		self::$started = true;
 	}
 
+	public function get($key)
+	{
+	    return $this->read($key);
+	}
+	
 	public function read($key)
 	{
 		if (isset($_SESSION[$key])) {
@@ -86,6 +91,11 @@ class waSessionStorage extends waStorage
 			unset($_SESSION[$key]);
 		}
 		return $data;
+	}
+	
+	public function set($key, $data)
+	{
+	    $this->write($key, $data);
 	}
 
 	public function write($key, $data)

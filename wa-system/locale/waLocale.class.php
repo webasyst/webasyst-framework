@@ -195,7 +195,7 @@ function _w($msgid1, $msgid2 = null, $n = null, $sprintf = true)
         return waLocale::getAdapter()->ngettext($msgid1, $msgid2, $n === 'm' ? 1 : 2);
     } else {
         $str = waLocale::getAdapter()->ngettext($msgid1, $msgid2, $n);
-        if ($sprintf && strpos($str, '%d') !== false) {
+        if ($sprintf && ($i = strpos($str, '%')) !== false) {
             return sprintf($str, $n);
         }
         return $str;

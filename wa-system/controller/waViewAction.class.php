@@ -47,18 +47,37 @@ abstract class waViewAction extends waController
     protected function setThemeTemplate($template, $theme = null)
     {
         if ($theme === null) {
-            $theme = waRequest::param('theme', 'default');
+            $theme = $this->getTheme();
         }
         $theme_path = wa()->getDataPath('themes', true).'/'.$theme;
         if (!file_exists($theme_path) || !file_exists($theme_path.'/theme.php')) {
-            $theme_path = 'themes/'.$theme;
+            $theme_path = wa()->getAppPath().'/'.'themes/'.$theme;
         }
-        $this->template = $theme_path.'/'.$template;
+        $this->view->setTemplateDir($theme_path);
+        $this->template = 'file:'.$template;
+    }
+    
+    protected function getTheme()
+    {
+        if (waRequest::isMobile()) {
+            return waRequest::param('theme_mobile', 'default');
+        } 
+        return waRequest::param('theme', 'default');
+    }
+    
+    protected function getThemeUrl()
+    {
+        $theme = $this->getTheme();
+        $theme_path = wa()->getDataPath('themes', true).'/'.$theme;
+        if (!file_exists($theme_path) || !file_exists($theme_path.'/theme.php')) {
+            return wa()->getAppStaticUrl().'/themes/'.$theme.'/'; 
+        }
+        return wa()->getDataUrl('themes/'.$theme.'/', true);
     }
     
     /**
      * 
-     * @return waController
+     * @return waViewController
      */
     public function getController()
     {

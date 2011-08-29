@@ -411,8 +411,8 @@ class waModel
     /**
      * Вставляет новую запись в таблицу
      *
-     * @param $data
-     * @param $type
+     * @param array $data field => value
+     * @param int $type pass 1 (or true) for `ON DUPLICATE KEY UPDATE`; pass 2 for `INSERT IGNORE`.
      */
     public function insert($data, $type = 0)
     {
@@ -486,7 +486,7 @@ class waModel
         }
         return $this->adapter->escape($data, $this->handler);
     }
-    
+
     protected function escapeField($field)
     {
         return $this->adapter->escapeField($field);
@@ -665,7 +665,7 @@ class waModel
         $query = new waDbQuery($this);
         return $query->order($order);
     }
-    
+
     public function ping()
     {
         return $this->adapter->ping($this->handler);

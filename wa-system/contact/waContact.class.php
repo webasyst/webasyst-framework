@@ -391,17 +391,27 @@ class waContact implements ArrayAccess
     }
 
     /**
-     * Returns data from cache (used by contactStorage)
+     * Returns data for this contact from cache without any database queries
+     * Used by contactStorage.
      *
-     * @param string $field_id
-     * @param mixed
+     * @param string $field_id field to retrieve data for; omit to get all data from cache
+     * @param mixed $old_value true to consider only values from DB; false (default) to add values set to this contact but not saved yet
      */
-    public function getCache($field_id, $old_value = false)
+    public function getCache($field_id = null, $old_value = false)
     {
+        if (!$field_id) {
+            $result = $old_value ? array() : $this->data;
+            if ($this->id && isset(self::$cache[$this->id])) {
+                $result += self::$cache[$this->id];
+            }
+            return $result;
+        }
+
         if (strpos($field_id, ':') !== false) {
             $field_parts = explode(':', $field_id);
             $field_id = $field_parts[0];
         }
+
         if (!$old_value && isset($this->data[$field_id])) {
             return $this->data[$field_id];
         } elseif ($this->id) {

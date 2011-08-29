@@ -35,11 +35,18 @@ class waRouting
         $root_url = $this->system->getRootUrl($absolute, true);
         foreach ($this->routes as $domain => $routes) {
             if (isset($routes[$route])) {
-                $exists = true;
-                if ($domain !== 'default' || isset($params['domain']) && ($domain = $params['domain'])) {
+                if (isset($params['domain'])) {
+                    if ($params['domain'] == $domain) {
+                        $exists = true;
+                        $root_url = 'http://'.$domain.'/';
+                        break;    
+                    }
+                } elseif ($domain !== 'default') {
+                    $exists = true;
                     $root_url = 'http://'.$domain.'/';
+                    break;
                 }
-                break;
+                
             }
         }
         if (!$exists) {
@@ -78,10 +85,12 @@ class waRouting
     public function getRoutes($domain = null)
     {
         if ($domain === null) {
-            $domain = waRequest::server('HTTP_HOST');
-            $u = trim($this->system->getRootUrl(false, true), '/');
-            if ($u) {
-                $domain .= '/'.$u;
+            $domain = $this->getDomain();
+        }
+        $u = $domain.'/'.$this->system->getConfig()->getRequestUrl(true);
+        foreach ($this->routes as $d => $a) {
+            if (strpos($u, $d) === 0) {
+                return $this->routes[$d];
             }
         }
         if (isset($this->routes[$domain])) {
@@ -91,24 +100,43 @@ class waRouting
         }
         return array();
     }
-
-    public function dispatch($route = array())
+    
+    public function getDomain()
     {
+        $domain = waRequest::server('HTTP_HOST');
+        $u = trim($this->system->getRootUrl(false, true), '/');
+        if ($u) {
+            $domain .= '/'.$u;
+        }
+        return $domain;        
+    }
+
+    public function dispatch($route = array(), $add_slash = false)
+    {
+        $routes = $this->getRoutes();
+        if ($route && !$routes) {
+            return array();
+        }
         $url = $this->system->getConfig()->getRequestUrl();
         $url = preg_replace("!\?.*$!", '', $url);
         if ($route) {
-            $this->root_url = preg_replace("/^([^?*\[]+).*$/is", "$1", $route['url']);
+            $this->root_url = preg_replace("/^([^?*\[]*).*$/is", "$1", $route['url']);
             $url = substr($url, strlen($this->root_url));
         }
+        if ($add_slash && (substr($url, -1) !== '/')) {
+            $url .= '/';
+        }
         $found = false;
-        $routes = $this->getRoutes();
-        foreach ($routes as $route) {
+        foreach ($routes as $r) {
             $vars = array();
-            $pattern = str_replace(array(' ', '.', '*'), array('\s', '\.', '.*?'), $route['url']);
-            if (preg_match_all('/\[([i|s]?):([a-z_]+)\]/ui', $route['url'], $match, PREG_OFFSET_CAPTURE|PREG_SET_ORDER)) {
+            $pattern = str_replace(array(' ', '.', '*'), array('\s', '\.', '.*?'), $r['url']);
+            if (preg_match_all('/\[([i|s]?):([a-z_]+)\]/ui', $r['url'], $match, PREG_OFFSET_CAPTURE|PREG_SET_ORDER)) {
                 $offset = 0;
                 foreach ($match as $m) {
                     $vars[] = $m[2][0];
+                    if ($route && (waRequest::param($m[2][0]) !== null)) {
+                        return false;
+                    }
                     switch ($m[1][0]) {
                         case 'i':
                             $p = '[0-9]+';
@@ -117,9 +145,9 @@ class waRouting
                             $p = '.*?';
                             break;
                         default:
-                            if (isset($route[':'.$m[2][0]])) {
-                                $p = $route[':'.$m[2][0]];
-                                unset($route[':'.$m[2][0]]);
+                            if (isset($r[':'.$m[2][0]])) {
+                                $p = $r[':'.$m[2][0]];
+                                unset($r[':'.$m[2][0]]);
                             } else {
                                 $p = '.*?';
                             }
@@ -129,8 +157,8 @@ class waRouting
                 }
             }
             if (preg_match('!^'.$pattern.'$!ui', $url, $match)) {
-                if (isset($route['redirect'])) {
-                    header("Location: ".$route['redirect']);
+                if (isset($r['redirect'])) {
+                    header("Location: ".$r['redirect']);
                     exit;
                 }
                 if ($vars) {
@@ -141,7 +169,7 @@ class waRouting
                         }
                     }
                 }
-                foreach ($route as $k => $v) {
+                foreach ($r as $k => $v) {
                     if ($k !== 'url') {
                         waRequest::setParam($k, $v);
                     }
@@ -152,8 +180,15 @@ class waRouting
             }
 
         }
+        if (!$found && !$add_slash && (substr($url, -1) !== '/')) {
+            return $this->dispatch($route, true);
+        }
+        
+        if ($found && $add_slash) {
+            $this->system->getResponse()->redirect($this->system->getRootUrl().$url);
+        }
 
-        $route = $found ? $route: array();
+        $r = $found ? $r: array();
 
         // Default routing via GET parameters
         if (waRequest::param('module') === null) {
@@ -173,6 +208,6 @@ class waRouting
                 waRequest::setParam('plugin', $plugin);
             }
         }
-        return $route;
+        return $r;
     }
 }

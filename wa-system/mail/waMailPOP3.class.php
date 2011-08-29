@@ -39,6 +39,8 @@ class waMailPOP3
 		// try open socket
 		$this->handler = @fsockopen($this->server, $this->port, $errno, $errstr, $this->getOption('timeout', 10));
 		if ($this->handler) {
+		    // read welcome
+		    $this->read();
 			// auth
 			$this->auth();
 		} else {
