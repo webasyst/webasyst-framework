@@ -18,7 +18,9 @@ class checklistsItem
         $item['who'] = '';
         if ($item['contact_id'] && wa()->getUser()->getId() != $item['contact_id']) {
             $c = new waContact($item['contact_id']);
-            $item['who'] = htmlspecialchars($c->getName());
+            try {
+                $item['who'] = htmlspecialchars($c->getName());
+            } catch (Exception $e) {}
         }
         return $item;
     }

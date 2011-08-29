@@ -48,6 +48,18 @@ class checklistsJsonActions extends waJsonActions
 
             $lim->moveApart($i['list_id'], isset($item['sort']) ? $item['sort'] : $i['sort']);
             $lim->updateById($id, $item);
+
+            // update log
+            if (isset($item['name'])) {
+                $this->log('item_edit', 1);
+            }
+            if (array_key_exists('done', $item)) {
+                if ($item['done']) {
+                    $this->log('item_check', 1);
+                } else {
+                    $this->log('item_uncheck', 1);
+                }
+            }
         } else {
             if(!isset($item['name']) || strlen($item['name']) <= 0 || empty($item['list_id'])) {
                 throw new waException('Not enough parameters.');
@@ -61,6 +73,7 @@ class checklistsJsonActions extends waJsonActions
 
             $lim->moveApart($item['list_id'], isset($item['sort']) ? $item['sort'] : 0);
             $id = $lim->insert($item);
+            $this->log('item_create', 1);
         }
 
         $this->response = checklistsItem::prepareItem($lim->getById($id));
@@ -69,7 +82,7 @@ class checklistsJsonActions extends waJsonActions
         $lm->updateCount($this->response['list_id']);
     }
 
-    /** Save list using POST data from list settings form */
+    /** Move list in sidebar */
     public function ListmoveAction()
     {
         if (! ( $id = waRequest::post('id', 0, 'int'))) {
@@ -120,6 +133,7 @@ class checklistsJsonActions extends waJsonActions
             if (!$admin) {
                 $rm->save(wa()->getUser()->getId(), 'checklists', 'list.'.$id, 2);
             }
+            $this->log('list_create', 1);
         }
         $this->response = $id;
     }
@@ -145,6 +159,7 @@ class checklistsJsonActions extends waJsonActions
         $lm = new checklistsListModel();
         $lm->updateCount($item['list_id']);
         $this->response = 'done';
+        $this->log('item_delete', 1);
     }
 
     /** Start over by unchecking all list items */
@@ -164,6 +179,7 @@ class checklistsJsonActions extends waJsonActions
         $lm->updateCount($id);
 
         $this->response = checklistsItem::prepareItems(array_values($lim->getByList($id)));
+        $this->log('list_startover', 1);
     }
 
     /** Delete list */
@@ -184,6 +200,7 @@ class checklistsJsonActions extends waJsonActions
         $lim = new checklistsListItemsModel();
         $lim->deleteByField('list_id', $id);
 
+        $this->log('list_delete', 1);
         $this->response = 'done';
     }
 }
