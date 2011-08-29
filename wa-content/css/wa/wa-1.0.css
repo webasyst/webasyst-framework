@@ -225,6 +225,8 @@ a#wa-my-username { font-weight: bold; text-decoration: none; }
 .visible { display: block !important; }
 .bold { font-weight: bold !important; }
 .no-bold { font-weight: normal !important; }
+.italic { font-style: italic !important; }
+.no-italic { font-style: normal !important; }
 .underline { text-decoration:underline !important; }
 .no-underline { text-decoration:none !important; }
 .strike, .strike * { text-decoration: line-through !important; }
@@ -238,7 +240,7 @@ a#wa-my-username { font-weight: bold; text-decoration: none; }
 .clear-left { clear: left; }
 .clear-right { clear: right; }
 .highlighted { background:#ffc; }
-.heading, .heading a { color: #999; text-transform:uppercase; padding: 0; margin: 0; text-decoration: none; }
+.heading, .heading a { color: #999; text-transform:uppercase; padding: 0; margin: 0; text-decoration: none; cursor: pointer; }
 .hint, a.hint, span.hint { color: #aaa; font-size: .8em; }
 .hint a { color: #888; }
 .hint a, a.hint { text-decoration: underline !important; }
@@ -262,6 +264,7 @@ position:relative; top:0.05em; margin:0 0 -0.5em; }
 -------------------------------------------- */
 .block, .block.padded { padding: 10px; }
 .block.not-padded { padding: 0px; }
+.block.half-padded { padding: 5px; }
 .block.double-padded { padding: 20px; }
 .block.triple-padded { padding: 30px; }
 .collapsible { padding-left: 12px; }
@@ -639,7 +642,7 @@ ul.tabs .icon16 { margin-top: 8px; }
 .icon16.view-thumb-list { background-position:-320px -96px; }
 .icon16.view-timeline { background-position:-16px -48px; }
 .icon16.hierarchical { background-position:-32px -48px; }
-.icon16.book { background-position:-16px -80px; }
+.icon16.book-open { background-position:-16px -80px; }
 .icon16.lens { background-position:-320px -16px; }
 .icon16.desktop { background-position:-208px -64px; }
 .icon16.apps { background-position:-192px -48px; }

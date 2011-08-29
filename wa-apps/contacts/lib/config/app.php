@@ -5,8 +5,8 @@ return array(
 	'img' => 'img/contacts.png',
 	'rights' => true,
 	'analytics' => true,
-	'version'=>'1.0.0',
-    'critical'=>'1.0.0',
+	'version'=>'1.0.1',
+	'critical'=>'1.0.0',
 	'vendor' => 'webasyst',
 	'system' => true,
 );

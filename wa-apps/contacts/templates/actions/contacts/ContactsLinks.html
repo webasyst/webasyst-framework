@@ -80,8 +80,9 @@
 					} else {
 						$.wa.setHash('#/');
 					}
-				} else { // otherwise we should be on a list page, refresh it
-					$.wa.controller.dispatch();
+				} else {
+					// otherwise we should be on a list page, refresh it
+					$.wa.controller.redispatch();
 				}
 			}, "json");
 			return false;

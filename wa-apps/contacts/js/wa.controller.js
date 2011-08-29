@@ -32,6 +32,14 @@
 				});
 			}
 
+			$.wa.errorHandler = function (xhr) {
+				if (xhr.status == 404) {
+					$.wa.setHash('/contacts/all/');
+					return false;
+				}
+				return true;
+			}
+
 			// .selected class for selected items in list
 			$("#contacts-container .contacts-data input.selector").live('click', function () {
 				if ($(this).is(":checked")) {
@@ -134,13 +142,22 @@
 			this.stopDispatchIndex = n;
 		},
 
+
+		// last hash processed by this.dispatch()
+		previousHash: null,
+
+		/** Force reload current hash-based 'page'. */
+		redispatch: function() {
+			this.previousHash = null;
+			this.dispatch();
+		},
+
 		/**
 		  * Called automatically when window.location.hash changes.
 		  * Call a corresponding handler by concatenating leading non-int parts of hash,
 		  * e.g. for #/aaa/bbb/ccc/111/dd/12/ee/ff
 		  * a method $.wa.controller.AaaBbbCccAction(['111', 'dd', '12', 'ee', 'ff']) will be called.
 		  */
-		previousHash: null,
 		dispatch: function (hash) {
 			if (this.stopDispatchIndex > 0) {
 				this.stopDispatchIndex--;
@@ -555,7 +572,7 @@
 				return;
 			}
 			$('<div id="confirm-remove-from-category-dialog" class="small"></div>').waDialog({
-				content: $('<h2>'+$_('Exclude contacts from category &ldquo;%s&rdquo;?').replace('%s', $('h1.wa-page-heading').text())+'</h2>'),
+				content: $('<h2></h2>').text($_('Exclude contacts from category &ldquo;%s&rdquo;?').replace('%s', $('h1.wa-page-heading').text())),
 				buttons: $('<div></div>')
 				.append(
 					$('<input type="submit" class="button red" value="'+$_('Exclude')+'">').click(function() {
@@ -565,7 +582,7 @@
 							$.wa.controller.afterInitHTML = function () {
 								$.wa.controller.showMessage(response.data.message);
 							};
-							$.wa.controller.dispatch();
+							$.wa.controller.redispatch();
 						}, 'json');
 					})
 				)
@@ -585,7 +602,7 @@
 					$.wa.controller.afterInitHTML = function () {
 						$.wa.controller.showMessage(response.data.message);
 					};
-					$.wa.controller.dispatch();
+					$.wa.controller.redispatch();
 				}
 			}, "json");
 		},

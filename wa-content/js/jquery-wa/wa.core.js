@@ -275,21 +275,23 @@ $.wa = $.extend(true, $.wa, {
 $(document).ajaxError(function(e, xhr, settings, exception) {
 	// Generic error page
 	if (xhr.status !== 200) {
-		document.open("text/html");
-		document.write(xhr.responseText);
-		document.close();
-		$(window).one('hashchange', function() {
-			window.location.reload();
-		});
-	} else
+		if (!$.wa.errorHandler || $.wa.errorHandler(xhr)) {
+			document.open("text/html");
+			document.write(xhr.responseText);
+			document.close();
+			$(window).one('hashchange', function() {
+				window.location.reload();
+			});
+		}
+	}
 	// Session timeout, show login page
-	if (xhr.responseText.indexOf('wa-login') != -1) {
+	else if (xhr.responseText.indexOf('wa-login') != -1) {
 		document.open("text/html");
 		document.write(xhr.responseText);
 		document.close();
-	} else
+	}
 	// Show an exception in development mode
-	if (xhr.responseText.indexOf('waException') != -1) {
+	else if (xhr.responseText.indexOf('waException') != -1) {
 		$.wa.dialogCreate('ajax-error', {'content': "<div>" + xhr.responseText + '</div>'});
 	}
 });

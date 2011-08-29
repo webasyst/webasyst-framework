@@ -35,22 +35,26 @@ class contactsRightsSaveController extends waJsonController
         // then need to notify all applications to remove their custom access records.
         if (!$is_admin && $app_id == 'webasyst' && $name == 'backend') {
             foreach(wa()->getApps() as $aid => $app) {
-                if (isset($app['rights']) && $app['rights']) {
-                    $app_config = SystemConfig::getAppConfig($aid);
-                    $class_name = $app_config->getPrefix()."RightConfig";
-                    $file_path = $app_config->getAppPath('lib/config/'.$class_name.".class.php");
-                    $right_config = null;
-                    if (!file_exists($file_path)) {
-                        continue;
+                try {
+                    if (isset($app['rights']) && $app['rights']) {
+                        $app_config = SystemConfig::getAppConfig($aid);
+                        $class_name = $app_config->getPrefix()."RightConfig";
+                        $file_path = $app_config->getAppPath('lib/config/'.$class_name.".class.php");
+                        $right_config = null;
+                        if (!file_exists($file_path)) {
+                            continue;
+                        }
+                        waSystem::getInstance($aid, $app_config);
+                        include_once($file_path);
+                        $right_config = new $class_name();
+                        $right_config->clearRights($contact_id);
                     }
-                    waSystem::getInstance($aid, $app_config);
-                    include_once($file_path);
-                    $right_config = new $class_name();
-                    $right_config->clearRights($contact_id);
+                } catch (Exception $e) {
+                    // silently ignore other applications errors
                 }
             }
         }
-        
+
         // Update $app_id access records
         $app_config = SystemConfig::getAppConfig($app_id);
         $class_name = $app_config->getPrefix()."RightConfig";
@@ -68,8 +72,8 @@ class contactsRightsSaveController extends waJsonController
                 // If we've got response from custom rights config, then no need to update main rights table
                 continue;
             }
-            
-            // Set default limited rights 
+
+            // Set default limited rights
             if ($right_config && $name == 'backend' && $value == 1) {
                 foreach($right_config->setDefaultRights($contact_id) as $n => $v) {
                     $right_model->save($contact_id, $app_id, $n, $v);
@@ -77,7 +81,7 @@ class contactsRightsSaveController extends waJsonController
             }
             $right_model->save($contact_id, $app_id, $name, $value);
         }
-        
+
         waSystem::setActive('contacts');
         $this->response = true;
     }
