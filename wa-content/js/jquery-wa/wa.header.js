@@ -105,12 +105,13 @@ $(function () {
 					}
 
 					// applications
+					$('#wa-header a span.indicator').hide();
 					for (var app_id in response.data) {
 						var n = response.data[app_id];
 						if (n) {
 							var a = $("#wa-app-" + app_id + " a");
 							if (a.find('span.indicator').length) {
-								a.find('span.indicator').html(n);
+								a.find('span.indicator').html(n).show();
 							} else {
 								a.append('<span class="indicator">' + n + '</span>')
 							}

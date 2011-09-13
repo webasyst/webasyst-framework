@@ -40,7 +40,7 @@ class waDbQueryAnalyzer
     function __construct($query)
     {
         $this->query_string = trim($query);
-        $type = substr($this->query_string, 0, strpos($this->query_string, ' '));
+        $type = strtok($this->query_string, " \n\t");
         $this->type = trim(strtolower($type));
     }
 

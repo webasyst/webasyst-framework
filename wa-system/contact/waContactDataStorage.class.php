@@ -46,6 +46,7 @@ class waContactDataStorage extends waContactStorage
     
     public function save(waContact $contact, $fields)
     {
+        
         $contact_id = $contact->getId();
         $data = array(); 
         foreach ($fields as $field => $value) {
@@ -53,6 +54,9 @@ class waContactDataStorage extends waContactStorage
             if (!$f || !$f->isMulti()) {
                 if ($f instanceof waContactCompositeField) {
                     $delete = array();
+                    if (isset($value['data'])) {
+                        $value = $value['data'];
+                    }
                     foreach ($f->getField(false) as $subfield) {
                         if (isset($value[$subfield]) && $value[$subfield]) {
                             $data[] = (int)$contact_id.", 

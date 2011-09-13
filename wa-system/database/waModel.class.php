@@ -103,15 +103,21 @@ class waModel
      */
     public function getMetadata()
     {
-        if (!$this->fields) {
+        if ($this->table && !$this->fields) {
+            $runtime_cache = new waRuntimeCache('db/'.$this->table);
+            if ($this->fields = $runtime_cache->get()) {
+                return $this->fields;
+            }
             if (SystemConfig::isDebug()) {
-                return $this->fields = $this->describe(true);
-            }
-            $cache = new waSystemCache('db/'.$this->table);
-            if (!($this->fields = $cache->get())) {
                 $this->fields = $this->describe(true);
-                $cache->set($this->fields);
+            } else {
+                $cache = new waSystemCache('db/'.$this->table);
+                if (!($this->fields = $cache->get())) {
+                    $this->fields = $this->describe(true);
+                    $cache->set($this->fields);
+                }
             }
+            $runtime_cache->set($this->fields);
         }
         return $this->fields;
     }
@@ -284,8 +290,8 @@ class waModel
      * @example
      * 1) Update by one field and one value
      * $this->updateByField('field', $value, $data, $options);
-     * 	   $data - updated data
-     * 	   field = $value - condition for update
+     *    $data - updated data
+     *    field = $value - condition for update
      * 2) Update by one field and a few values
      * $this->updateByField('field', array($value1, $value2), $data, $options);
      * 3) Update by a few fields and values
@@ -650,8 +656,10 @@ class waModel
      */
     public function where($where)
     {
+        $params = func_get_args();
+        $where = array_shift($params);
         $query = new waDbQuery($this);
-        return $query->where($where);
+        return $query->where($where, $params);
     }
 
     /**
@@ -666,6 +674,12 @@ class waModel
         return $query->order($order);
     }
 
+    /**
+     * Checks whether or not the connection to the server is working. 
+     * If it has gone down, an automatic reconnection is attempted.
+     * 
+     * @return bool
+     */
     public function ping()
     {
         return $this->adapter->ping($this->handler);

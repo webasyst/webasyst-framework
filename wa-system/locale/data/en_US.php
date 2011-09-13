@@ -16,6 +16,7 @@ return array(
 	'decimal_point' => '.',
 	'frac_digits' => '2',
 	'thousands_sep' => ',',
+	'first_day' => 7,
 	'amount_in_words' => array(
 		'delim' => array(
 			10 => '-', 

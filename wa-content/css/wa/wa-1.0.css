@@ -694,7 +694,13 @@ ul.tabs .icon16 { margin-top: 8px; }
 .icon16.bean {  background-position: -480px 0;}
 .icon16.sport-soccer {  background-position: -496px 0;}
 .icon16.clapperboard {  background-position: -352px -16px;}
-
+.icon16.upload { background-position: -288px 0px;}
+.icon16.zip { background-position: -128px -64px; }
+.icon16.image { background-position: -288px -16px; }
+.icon16.download { background-position: -272px 0px; }
+.icon16.script-css { background-position: -112px -64px; }
+.icon16.script-js { background-position: -96px -64px; }
+.icon16.script-php {background-position: -80px -64px; }
 
 .icon16.userpic20 { background-position: -2px -2px; /* use this for 20x20 userpics as 16x16 icons; cuts 2px from each side of 20x20 userpic, but gives clean alignment */ }
 .icon16.loading { background-image: url("../../../wa-content/img/loading16.gif"); }

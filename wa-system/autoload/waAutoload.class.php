@@ -205,6 +205,11 @@ class waAutoload
         'wacontactdatatextmodel' => 'webasyst/lib/models/waContactDataText.model.php',
         'wacontactemailsmodel' => 'webasyst/lib/models/waContactEmails.model.php',
         'wacontactrightsmodel' => 'webasyst/lib/models/waContactRights.model.php',
+    	'wacontactsettingsmodel' => 'webasyst/lib/models/waContactSettings.model.php',
+        'wacontactcategorymodel' => 'webasyst/lib/models/waContactCategory.model.php',
+    	'wacontactcategoriesmodel' => 'webasyst/lib/models/waContactCategories.model.php',
+        'wausergroupsmodel' => 'webasyst/lib/models/waUserGroups.model.php',
+    	'wagroupmodel' => 'webasyst/lib/models/waGroup.model.php',
 
         'waloginlogmodel' => 'webasyst/lib/models/waLoginLog.model.php',
         'waappsettingsmodel' => 'webasyst/lib/models/waAppSettings.model.php'

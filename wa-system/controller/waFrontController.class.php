@@ -35,6 +35,9 @@ class waFrontController
     {
             if ($this->system->getEnv() == 'frontend') {
                 $this->system->getRouting(true)->dispatch($route);
+                if (waRequest::param('secure') && !$this->system->getUser()->isAuth()) {
+                    return $this->system->login();
+                }
             }
             $module = waRequest::get($this->options['module'], $this->system->getConfig()->getEnviroment());
             $module = waRequest::param('module', $module);
@@ -78,7 +81,7 @@ class waFrontController
     public function execute($plugin = null, $module = null, $action = null, $default = false)
     {
         // current app prefix
-        $prefix = $this->system->getConfig()->getPrefix('prefix');
+        $prefix = $this->system->getConfig()->getPrefix();
 
         // Load plugin locale and set plugin as active
         if ($plugin) {

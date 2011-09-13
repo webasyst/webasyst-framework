@@ -4,7 +4,7 @@
 function wa_print_r() {
     echo '<pre rel="waException">';
     foreach(func_get_args() as $v) {
-        echo "\n".print_r($v, TRUE);
+        echo "\n".wa_print_r_helper($v, TRUE);
     }
     echo "</pre>\n";
     exit;
@@ -33,3 +33,48 @@ function int_ok($val)
     // typecast trick works fine for anything else except boolean true
     return ($val !== true) && ((string)(int) $val) === ((string) $val);
 }
+
+/** Helper function. More human-readable print_r(). */
+function wa_print_r_helper($value, $level = 0)
+{
+    if ($level > 9) {
+        // Being paranoid
+        return 'Too big level of nesting';
+    }
+
+    if (!is_array($value) && !is_object($value)) {
+        if ($value === true) {
+            return 'TRUE';
+        } else if ($value === false) {
+            return 'FALSE';
+        } else if ($value === null) {
+            return 'NULL';
+        }
+        return $value;
+    }
+
+    $br = "\n"; // line break with tabs
+    for($i = 0; $i < $level; $i++) {
+        $br .= "\t";
+    }
+
+    if (is_object($value)) {
+        // Skip huge core objects
+        /*$class = get_class($value);
+        do {
+            if(in_array($class, array('CmsObject', 'Smarty', 'CMSModule'))) {
+                return get_class($value)." Object (skipped as a descendant of $class)";
+            }
+        } while ( ( $class = get_parent_class($class))); */
+        $str = get_class($value).' Object'.$br.'{';
+    } else {
+        $str = 'Array'.$br.'(';
+    }
+
+    foreach($value as $key => $val) {
+        $str .= $br."\t".$key.' => '.wa_print_r_helper($val, $level + 1);
+    }
+    $str .= is_array($value) ? $br.')' : $br.'}';
+    return $str;
+}
+

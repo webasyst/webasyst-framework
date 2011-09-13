@@ -72,8 +72,18 @@ class waLocale
         if ($locale === null) {
             $locale = self::$locale;
         }
-        $locale_path = waSystem::getInstance()->getAppPath('locale', $domain);
-        self::load($locale, $locale_path, $domain, false);
+        if (is_array($domain)) {
+            $locale_path = waSystem::getInstance()->getAppPath('plugins/'.$domain[1].'/locale', $domain[0]);
+            $domain = $domain[0].'_'.$domain[1];
+        } else {
+            $locale_path = waSystem::getInstance()->getAppPath('locale', $domain);
+        }
+        if (isset(self::$loaded[$locale][$domain])) {
+            return;
+        }
+        if (file_exists($locale_path)) {
+            self::load($locale, $locale_path, $domain, false);
+        }
     }
 
     /**
@@ -93,6 +103,15 @@ class waLocale
             self::$loaded[$locale][$domain] = true;
             self::getAdapter()->load($locale, $locale_path, $domain, $textdomain);
         //}
+    }
+    
+    public static function getFirstDay($locale = null)
+    {
+        if (!$locale) {
+            $locale = self::$locale;
+        }
+        $locale = self::getInfo($locale);
+        return isset($locale['first_day']) ? $locale['first_day'] : 1; 
     }
 
     public static function getInfo($locale)

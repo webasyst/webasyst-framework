@@ -167,6 +167,7 @@ class waContact implements ArrayAccess
                         $row['value'] = isset($row['data'][$subfield]) ? $row['data'][$subfield] : null;
                         unset($row['data']);
                     }
+                    unset($row);
                 }
             }
 
@@ -177,6 +178,7 @@ class waContact implements ArrayAccess
                         unset($result[$sort]);
                     }
                 }
+
                 $result = array_values($result);
             }
 
@@ -387,7 +389,11 @@ class waContact implements ArrayAccess
 
     public function getTimezone()
     {
-        return $this->get('timezone');
+        $timezone = $this->get('timezone');
+        if (!$timezone) {
+            $timezone = self::$options['default']['timezone'];
+        }
+        return $timezone;
     }
 
     /**
@@ -699,7 +705,15 @@ class waContact implements ArrayAccess
                         return;
                     }
                 }
-                $value = $f->set($value);
+                if ($subfield) {
+                    if (!isset($this->data[$field_id])) {
+                        $this->data[$field_id] = $this->get($field_id);
+                    }
+                    $this->data[$field_id]['data'][$subfield] = $value;
+                    return;
+                } else {
+                    $value = $f->set($value);
+                }
             }
             if ($f->isMulti()) {
                 if ($f->isExt()) {

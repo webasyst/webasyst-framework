@@ -16,6 +16,7 @@
         'decimal_point' => ',',
         'frac_digits' => '2',
         'thousands_sep' => ' ',
+        'first_day' => 1,
         'amount_in_words' => array(
             'plural' => array(
                 1000 => 2

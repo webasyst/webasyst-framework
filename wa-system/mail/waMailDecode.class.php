@@ -146,8 +146,10 @@ class waMailDecode
 	
 	protected function cleanHTML($html)
 	{
+	    // body only
+	    $html = preg_replace("!^.*?<body[^>]*>(.*?)</body>.*?$!isu", "$1", $html);
 		// remove tags
-		$html = trim(strip_tags($html, "<a><p><div><br><b><strong><i><em><s><u><span><img><sup><font><sub><ul><ol><li><h1><h2><h3><h4><h5><h6><table><tr><td><th><hr><center>"));
+		$html = trim(strip_tags($html, "<a><p><div><br><b><blockquote><strong><i><em><s><u><span><img><sup><font><sub><ul><ol><li><h1><h2><h3><h4><h5><h6><table><tr><td><th><hr><center>"));
     	// realign javascript href to onclick 
 	    $html = preg_replace("/href=(['\"]).*?javascript:(.*)?\\1/i", "onclick=' $2 '", $html);
 	    return $html; 

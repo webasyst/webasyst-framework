@@ -50,7 +50,11 @@ class waRouting
             }
         }
         if (!$exists) {
-            throw new waException('Route not found');
+            if (isset($this->routes['default'][$route])) {
+                $root_url = 'http://'.waRequest::server('HTTP_HOST').'/';
+            } else {
+                throw new waException('Route not found');
+            }
         }
 
         $url = $routes[$route]['url'];
@@ -74,7 +78,7 @@ class waRouting
         if ($url == '/') {
             $url = '';
         }
-        return $root_url.$url;
+        return ($absolute ? $root_url : '/').$url;
     }
 
     public function getRootUrl()
@@ -89,7 +93,7 @@ class waRouting
         }
         $u = $domain.'/'.$this->system->getConfig()->getRequestUrl(true);
         foreach ($this->routes as $d => $a) {
-            if (strpos($u, $d) === 0) {
+            if ($d && strpos($u, $d) === 0) {
                 return $this->routes[$d];
             }
         }
@@ -104,7 +108,7 @@ class waRouting
     public function getDomain()
     {
         $domain = waRequest::server('HTTP_HOST');
-        $u = trim($this->system->getRootUrl(false, true), '/');
+        $u = trim($this->system->getRootUrl(), '/');
         if ($u) {
             $domain .= '/'.$u;
         }

@@ -204,7 +204,19 @@ class waSystem
                 throw new waException("Auth provider not found.");
             }
         } else {
-            return $this->getCommonFactory('auth', 'waAuth', array(), null); 
+            $options = array();
+            if (isset(self::$factories_config['auth'])) {
+                $config = self::$factories_config['auth'];
+                if (is_array($config) && isset($config[0])) {
+                    $class = $config[0];
+                    $options = isset($config[1]) ? $config[1] : $options;
+                } else {
+                    $class = $config;
+                }
+            } else {
+                $class = 'waAuth';
+            }
+            return $this->getFactory('auth', $class, $options);
         }
     }
     
@@ -263,22 +275,37 @@ class waSystem
     {
         return $this->config->getEnviroment();
     }
+    
+    public function login()
+    {
+        $class_name = $this->getConfig()->getPrefix().'LoginAction';
+        if (class_exists($class_name)) {
+            $controller = $this->getFactory('default_controller', 'waDefaultViewController');
+            $controller->setAction($class_name);
+        } else {
+            $controller = new waDefaultViewController();
+            // load webasyst
+            self::getInstance('webasyst');
+            $controller->setAction('webasystLoginAction');
+        }
+        $controller->run();
+    }
 
     public function dispatch()
     {
         try {
             if (preg_match('/^sitemap-?([a-z0-9_]+)?.xml$/i', $this->config->getRequestUrl(true), $m)) {
-		        $app_id = isset($m[1]) ? $m[1] : 'webasyst';
-		        if ($this->appExists($app_id)) {
-		            $system = waSystem::getInstance($app_id);
-		            $class = $app_id.'SitemapConfig';
-		            if (class_exists($class)) {
-    		            $sitemap = new $class();
-    		            $sitemap->execute();
-		            }
-		        }
-		        throw new waException("Page not found", 404);
-		    } elseif (!strncmp($this->config->getRequestUrl(true), 'oauth.php', 9)) {
+                $app_id = isset($m[1]) ? $m[1] : 'webasyst';
+                if ($this->appExists($app_id)) {
+                    $system = waSystem::getInstance($app_id);
+                    $class = $app_id.'SitemapConfig';
+                    if (class_exists($class)) {
+                        $sitemap = new $class();
+                        $sitemap->execute();
+                    }
+                }
+                throw new waException("Page not found", 404);
+            } elseif (!strncmp($this->config->getRequestUrl(true), 'oauth.php', 9)) {
                 $webasyst_system = waSystem::getInstance('webasyst');
                 $webasyst_system->getFrontController()->execute(null, 'login', 'OAuth', true);    
             } elseif ($this->getEnv() == 'backend' && !$this->getUser()->isAuth()) {
@@ -299,9 +326,9 @@ class waSystem
                         $this->getResponse()->redirect($this->getConfig()->getBackendUrl(true), 302);
                     }
                     $app = waRequest::param('app');
-                    $webasyst_system = waSystem::getInstance('webasyst');
-                    if (waRequest::param('secure') && !$this->getUser()->isAuth()) {
-                        $webasyst_system->getFrontController()->execute(null, 'login');
+                    $app_system = waSystem::getInstance($app);
+                    if (waRequest::param('secure') && !$app_system->getUser()->isAuth()) {
+                        $app_system->login();
                         return;
                     }
                 } else {
@@ -671,9 +698,19 @@ class waSystem
      */
     public function getPlugin($plugin_id)
     {
-        $app = $this->getConfig()->getApplication();
-        $class = $app.ucfirst($plugin_id).'Plugin';
-        return new $class();
+        $app_id = $this->getConfig()->getApplication();
+        $path = $this->getConfig()->getPluginPath($plugin_id).'/lib/config/plugin.php';
+        if (file_exists($path)) {
+            $class = $app_id.ucfirst($plugin_id).'Plugin';
+            $plugin_info = include($path);
+            $plugin_info['id'] = $plugin_id;
+            if (isset($plugin_info['img'])) {
+                $plugin_info['img'] = 'wa-apps/'.$app_id.'/plugins/'.$plugin_id.'/'.$plugin_info['img'];
+            }
+            return new $class($plugin_info);
+        } else {
+            throw new waException('Plugin '.$plugin_id.' not found');
+        }
     }
 
     /** Trigger event with given $name from current active application.
@@ -710,7 +747,7 @@ class waSystem
                 if (strpos($name, '.') !== false) {
                     $class_name = strtok($class_name, '.').ucfirst(strtok(''));
                 }
-                $class_name = $prefix.ucfirst($class_name)."Handler";
+                $class_name = $app_id.ucfirst($prefix).ucfirst($class_name)."Handler";
                 $handler = new $class_name();
                 try {
                     $r = $handler->execute($params);

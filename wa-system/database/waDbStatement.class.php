@@ -36,15 +36,15 @@ final class waDbStatement
 
     /**
      * Placeholders
-     * @param array $placesMap
+     * @param array $places_map
      */
-    private $placesMap    = array();
+    private $places_map    = array();
 
     /**
      * Values to replace placeholders
-     * @param array $bindedParams
+     * @param array $binded_params
      */
-    private $bindedParams = array();
+    private $binded_params = array();
 
     /**
      * Model
@@ -74,104 +74,98 @@ final class waDbStatement
      */
     private function prepareQuery()
     {
-        if($this->query == '')
-        {
-            throw new MySQLException('Empty query');
+        if ($this->query == '') {
+            throw new waDbException('Empty query');
         }
 
         $matches = array();
 
-        if(preg_match_all('/([sibf]?)(\?|:[A-z0-9_]+)/', $this->query, $matches, PREG_OFFSET_CAPTURE))
-        {
-            $unnamedCount = 0;
-            foreach ($matches[0] as $id=>$match)
-            {
+        if (preg_match_all('/([sibf]?)(\?|:[A-z0-9_]+)/', $this->query, $matches, PREG_OFFSET_CAPTURE)) {
+            $unnamed_count = 0;
+            foreach ($matches[0] as $id => $match) {
                 $match[2] = $matches[1][$id][0];
                 $match[3] = $matches[2][$id][0];
-                $pName = ($match[3][0] === ':') ? ltrim($match[3], ':') : $unnamedCount++;
-                $this->placesMap[$pName]['placeholder'] = $match[0];
-                $this->placesMap[$pName]['offset'][]    = $match[1];
-                $this->placesMap[$pName]['type']        = $match[2];
+                $p_name = ($match[3][0] === ':') ? ltrim($match[3], ':') : $unnamed_count++;
+                $this->places_map[$p_name]['placeholder'] = $match[0];
+                $this->places_map[$p_name]['offset'][] = $match[1];
+                $this->places_map[$p_name]['type'] = $match[2];
             }
         }
     }
-
 
     /**
      * Assembly
      * @return string $query
      */
-    private function assemblyQuery()
+    public function getQuery()
     {
         /* No placeholders */
-        if(empty($this->placesMap)){
+        if (empty($this->places_map)) {
             return $this->query;
         }
+        
+        $this->checkParams();
+        
         /* With placeholders */
         $query = $this->query;
         $placeholders = array();
-        foreach($this->placesMap as $placeName=>$place)
-        {
-            switch($place['type']) {
+        foreach ($this->places_map as $place_name=>$place) {
+            switch ($place['type']) {
                 case 'i':
-                    if (is_array($this->bindedParams[$placeName])) {
-                        $replacedValue = array();
-                        foreach ($this->bindedParams[$placeName] as $v) {
-                            $replacedValue[] = (int)$v;
+                    if (is_array($this->binded_params[$place_name])) {
+                        $replaced_value = array();
+                        foreach ($this->binded_params[$place_name] as $v) {
+                            $replaced_value[] = (int)$v;
                         }
-                        $replacedValue = implode(",", $replacedValue);
+                        $replaced_value = implode(",", $replaced_value);
                     } else {
-                        $replacedValue = (int)$this->bindedParams[$placeName];
+                        $replaced_value = (int)$this->binded_params[$place_name];
                     }
                     break;
                 case 'b':
-                    $replacedValue = ((bool)$this->bindedParams[$placeName]) ? 1 : 0;
+                    $replaced_value = ((bool)$this->binded_params[$place_name]) ? 1 : 0;
                     break;
                 case 'f':
-                    $replacedValue = str_replace(',', '.', (float)$this->bindedParams[$placeName]);
+                    $replaced_value = str_replace(',', '.', (float)$this->binded_params[$place_name]);
                     break;
                 case 's':
                 default:
-                    if (is_array($this->bindedParams[$placeName])) {
-                        $replacedValue = array();
-                        foreach ($this->bindedParams[$placeName] as $v) {
-                            $replacedValue[] = "'".$this->escape($v)."'";
+                    if (is_array($this->binded_params[$place_name])) {
+                        $replaced_value = array();
+                        foreach ($this->binded_params[$place_name] as $v) {
+                            $replaced_value[] = "'".$this->escape($v)."'";
                         }
-                        $replacedValue = implode(",", $replacedValue);
+                        $replaced_value = implode(",", $replaced_value);
                     } else {
-                        $replacedValue = $this->bindedParams[$placeName] === null ? 'NULL' : "'". $this->escape($this->bindedParams[$placeName]) ."'";
+                        $replaced_value = $this->binded_params[$place_name] === null ? 'NULL' : "'". $this->escape($this->binded_params[$place_name]) ."'";
                     }
             }
 
-            foreach($place['offset'] as $offset)
-            {
-                $placeholders[$offset] = array('placeholder' => $place['placeholder'], 'value' => $replacedValue);
+            foreach($place['offset'] as $offset) {
+                $placeholders[$offset] = array('placeholder' => $place['placeholder'], 'value' => $replaced_value);
             }
         }
 
         ksort($placeholders);
 
-        $offsetIncrement = 0;
-        foreach($placeholders as $current_offset => $placeholder)
-        {
-            $offset = $current_offset + $offsetIncrement;
+        $offset_increment = 0;
+        foreach ($placeholders as $current_offset => $placeholder) {
+            $offset = $current_offset + $offset_increment;
             $placeLength = mb_strlen($placeholder['placeholder']);
             $query = mb_substr($query, 0, $offset) . $placeholder['value'] . mb_substr($query, $offset+$placeLength);
-            $offsetIncrement = (($offsetIncrement - $placeLength) + mb_strlen($placeholder['value']));
+            $offset_increment = (($offset_increment - $placeLength) + mb_strlen($placeholder['value']));
         }
         return $query;
     }
 
-    private function checkParamsFilling()
+    private function checkParams()
     {
-        if(count($this->placesMap) > count($this->bindedParams))
-        {
+        if(count($this->places_map) > count($this->binded_params)) {
             $error = "Bad params: \n" .
                      "Placeholder's params: \n" .
-                     var_export($this->placesMap) . "\n" .
+                     var_export($this->places_map) . "\n" .
                      "Bind params: \n" .
-                     var_export($this->bindedParams) . "\n";
-
+                     var_export($this->binded_params) . "\n";
             throw new Exception($error);
         }
         return true;
@@ -182,17 +176,17 @@ final class waDbStatement
      * @param mixed $value
      * @return bool
      */
-    function bindParam($param, &$value)
+    public function bindParam($param, &$value)
     {
         if(!is_string($param) && !is_integer($param)) {
             throw new Exception('Illegal name/place of the placeholder.');
         }
-        if(is_object($value) || is_array($value)) {
+        if (is_object($value) || is_array($value)) {
             throw new Exception('Illegal value of the placeholder.');
         }
 
-        if(isset($this->placesMap[$param])) {
-            $this->bindedParams[$param] = &$value;
+        if(isset($this->places_map[$param])) {
+            $this->binded_params[$param] = &$value;
             return true;
         }
 
@@ -203,15 +197,15 @@ final class waDbStatement
      * @param array $paramsArray
      * @return bool
      */
-    function bindArray($paramsArray)
+    public function bindArray($params_array)
     {
-        if (!is_array($paramsArray)) {
-            throw new Exception('В качестве параметра функции необходим массив.');
+        if (!is_array($params_array)) {
+            throw new Exception('Invalid arguments passed');
         }
 
-        foreach($paramsArray as $param => $value){
-            if(isset($this->placesMap[$param])) {
-                $this->bindedParams[$param] = $value;
+        foreach ($params_array as $param => $value){
+            if (isset($this->places_map[$param])) {
+                $this->binded_params[$param] = $value;
             }
         }
 
@@ -222,28 +216,26 @@ final class waDbStatement
      * Execute query and returns object of the result
      * @return DbResultSelect|DbResultInsert|DbResultDelete $dbresult
      */
-    function query(array $params = array())
+    public function query(array $params = array())
     {
         $this->bindArray($params);
-        $this->checkParamsFilling();
-        return $this->model->query($this->assemblyQuery());
+        return $this->model->query($this->getQuery());
     }
 
     /**
      * Execute query without creating of the result object
      * @return boolean
      */
-    function exec(array $params = array())
+    public function exec(array $params = array())
     {
         $this->bindArray($params);
-        $this->checkParamsFilling();
-        return $this->model->exec($this->assemblyQuery());
+        return $this->model->exec($this->getQuery());
     }
 
     /**
      * Escape string
      */
-    function escape($value)
+    public function escape($value)
     {
         return $this->model->escape($value);
     }

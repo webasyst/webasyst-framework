@@ -84,7 +84,7 @@ class waPlugin
 		}	
 
 		// Remove cache of the appliaction
-		waFiles::delete($this->getPath('cache').'/apps/'.$this->app_id);
+		waFiles::delete(wa()->getAppCachePath('', $this->app_id));
 	}    
     
 

@@ -135,7 +135,7 @@ class waViewHelper
 				$c = current($result);
 				return new waContact($c['id']);
 			} else {
-				throw new waException('contact not found', 404);
+				return new waContact();
 			}
 		}
 		return new waContact($id);

@@ -78,6 +78,11 @@ class waGettext
             } else {
             	$msgstr = $this->prepare($msgstr);
             }
+            
+            // ignore strings without translation
+            if ($msgstr === "") {
+                continue;
+            }
 
             $this->messages[$this->prepare($msgid)] = $msgstr;
         }		
