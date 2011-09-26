@@ -159,6 +159,9 @@ class waDateTime
         waLocale::loadByDomain("webasyst", $locale);
 
         if ($format === 'humandatetime') {
+            if (preg_match("/^[0-9]+$/", $time)) {
+                $time = date("Y-m-d H:i:s", $time);
+            }
             $date_time = new DateTime($time);
             if ($timezone) {
                 $date_time->setTimezone(new DateTimeZone($timezone));

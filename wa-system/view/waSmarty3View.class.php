@@ -61,10 +61,18 @@ class waSmarty3View extends waView
 		$this->smarty->loadFilter('pre', 'translate');
     } 
     
-    public function getPostfix()
-    {
-    	return $this->postfix;
-    }
+	public function setOptions($options)
+	{
+	    foreach ($options as $k => $v) {
+	        $this->options[$k] = $v;
+	        switch ($k) {
+	            case "left_delimiter":
+	            case "right_delimiter":
+	                $this->smarty->$k = $v;
+	                break;
+	        }
+	    }
+	}    
         
     public function assign($name, $value = null)
     {

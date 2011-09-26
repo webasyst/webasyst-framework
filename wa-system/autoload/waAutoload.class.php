@@ -200,6 +200,7 @@ class waAutoload
         'smarty' => 'vendors/smarty3/Smarty.class.php',
         'waidna' => 'vendors/idna/waIdna.class.php',
 
+        'wacountrymodel' => 'webasyst/lib/models/waCountry.model.php',
         'wacontactmodel' => 'webasyst/lib/models/waContact.model.php',
         'wacontactdatamodel' => 'webasyst/lib/models/waContactData.model.php',
         'wacontactdatatextmodel' => 'webasyst/lib/models/waContactDataText.model.php',

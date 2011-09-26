@@ -22,9 +22,18 @@ abstract class waView
      */
     protected $system;
     
+    protected $options = array();
+    
 	public function __construct(waSystem $system, $options = array())
 	{
 		$this->system = $system;	
+	}
+	
+	public function setOptions($options)
+	{
+	    foreach ($options as $k => $v) {
+	        $this->options[$k] = $v;
+	    }
 	}
 	
     public function getPostfix()

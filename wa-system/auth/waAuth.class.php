@@ -68,7 +68,19 @@ class waAuth implements waiAuth
 	
 	protected function _auth($params)
 	{	
-		if ($params && isset($params['login']) && isset($params['password'])) {
+	    if ($params && isset($params['id'])) {
+	        $contact_model = new waContactModel();
+	        $user_info = $contact_model->getById($params['id']);
+	        if ($user_info && ($user_info['is_user'] || !$this->options['is_user'])) {
+	            waSystem::getInstance()->getResponse()->setCookie('auth_token', null, -1);
+				return array(
+					'id' => $user_info['id'], 
+					'login' => $user_info['login'],
+					'is_user' => $user_info['is_user']
+				);
+	        }
+	        return false;
+	    } elseif ($params && isset($params['login']) && isset($params['password'])) {
 			$login = $params['login'];
 			$password = $params['password'];
 		} elseif (waRequest::getMethod() == 'post' && waRequest::post('wa_auth_login')) {
@@ -135,6 +147,9 @@ class waAuth implements waiAuth
 	 */
 	public function clearAuth()
 	{
+        // Update last datetime of the current user
+        waSystem::getInstance()->getUser()->updateLastTime(true);
+	    
 		waSystem::getInstance()->getStorage()->destroy();
 		if (waRequest::cookie('auth_token')) {
 			waSystem::getInstance()->getResponse()->setCookie('auth_token', null, -1);

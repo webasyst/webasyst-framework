@@ -32,13 +32,10 @@ class waFiles
         if (substr($path, -1) !== '/' && strpos(basename($path), ".") !== false) {
             $path = dirname($path);
         }
-        if (!file_exists($path)) {
+        if ($path && !file_exists($path)) {
             @mkdir($path, 0775, true);
-            if (!file_exists($path)) {
-                //@todo: Recursive create dirictory
-                if (waSystemConfig::isDebug()) {
-                    throw new waException('!!! TODO');
-                }
+            if(!file_exists($path) && file_exists(self::create(dirname($path)))){
+            	 @mkdir($path, 0775, true);
             }
         }
         return $return_path;

@@ -78,7 +78,7 @@ class waContactDataStorage extends waContactStorage
                 }
             } elseif ($f->isMulti()) {
                 $sort = 0;
-                if (!is_array($value)) {
+                if (!is_array($value) || isset($value['value'])) {
                     $value = array($value);
                 }
                 $delete_flag = false;

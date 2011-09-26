@@ -386,6 +386,7 @@ class waModel
     protected function castValue($type, $value, $is_null = false)
     {
         switch ($type) {
+            case 'bigint':
             case 'int':
                 return (int)$value;
             case 'double':
@@ -425,7 +426,7 @@ class waModel
         $values = array();
         foreach ($data as $field => $value) {
             if (isset($this->fields[$field])) {
-              $values[$this->escapeField($field)] = $this->getFieldValue($field, $value);
+                $values[$this->escapeField($field)] = $this->getFieldValue($field, $value);
             }
         }
         if ($values) {
@@ -482,15 +483,24 @@ class waModel
     {
         if (is_array($data)){
             foreach($data as $key => $value){
-                if ($type == 'int') {
+                if ($type === 'int') {
                     $data[$key] = (int)$value;
+                } elseif ($type === 'like') {
+                    $data[$key] = str_replace(array('%', '_'), array('\%', '\_'), $this->adapter->escape($value, $this->handler));
                 } else {
                     $data[$key] = $this->adapter->escape($value, $this->handler);
                 }
             }
             return $data;
         }
-        return $this->adapter->escape($data, $this->handler);
+        switch ($type) {
+            case 'int':
+                return (int)$data;
+            case 'like':
+                return str_replace(array('%', '_'), array('\%', '\_'), $this->adapter->escape($data, $this->handler));
+            default:
+                return $this->adapter->escape($data, $this->handler);
+        }
     }
 
     protected function escapeField($field)

@@ -17,8 +17,8 @@
 			});
 
 			this.lastView = {
-				title: $.storage.get('lastview.title'),
-				hash: $.storage.get('lastview.hash')
+				title: $.storage.get('contacts/lastview/title'),
+				hash: $.storage.get('contacts/lastview/hash')
 			};
 			this.options = options;
 			this.random = null;
@@ -125,7 +125,7 @@
 
 			// Do not save 404 pages as last hashes
 			$(document).ajaxError(function() {
-				$.storage.del('last-hash');
+				$.storage.del('contacts/last-hash');
 			});
 
 			if (this.initFull) {
@@ -178,6 +178,7 @@
 			hash = hash.replace(/^[^#]*#\/*/, '');
 
 			if (hash) {
+				var save_hash = true;
 				hash = hash.split('/');
 				if (hash[0]) {
 					var actionName = "";
@@ -205,6 +206,7 @@
 						this.currentActionAttr = attr;
 						this[actionName + 'Action'](attr);
 					} else {
+						save_hash = false;
 						if (console) {
 							console.log('Invalid action name:', actionName+'Action');
 						}
@@ -219,10 +221,13 @@
 				}
 
 				// save last page to return to by default later
-				$.storage.set('last-hash', hash);
+				if(save_hash) {
+					$.storage.set('contacts/last-hash', hash);
+				}
 			} else {
 				//if (console) console.log('DefaultAction');
 				this.defaultAction();
+				$.storage.del('contacts/last-hash');
 			}
 
 			// Highlight current item in history, if exists
@@ -233,7 +238,7 @@
 
 		/** Load last page  */
 		lastPage: function() {
-			var hash = $.storage.get('last-hash');
+			var hash = $.storage.get('contacts/last-hash');
 			if (hash) {
 				$.wa.setHash('#/'+hash);
 			} else {
@@ -430,6 +435,7 @@
 				if (!this.contactsSearchForm) {
 					if (console) {
 						console.log('No advanced search in free contacts.');
+						setTimeout(function() { $.wa.setHash('#/'); }, 1);
 					}
 					return;
 				}
@@ -909,19 +915,19 @@
 			if (params && params[3]) {
 				p.view = params[3];
 				if (hashkey) {
-					$.storage.set('view.'+hashkey, p.view);
+					$.storage.set('contacts/view/'+hashkey, p.view);
 				}
 			} else {
 				// If view is not explicitly set then use the last opened view, if present
-				p.view = $.storage.get('view.'+hashkey) || 'table';
+				p.view = $.storage.get('contacts/view/'+hashkey) || 'table';
 			}
 			if (params && params[4]) {
 				p.limit = params[4];
 				if (hashkey) {
-					$.storage.set('limit.'+hashkey, p.limit);
+					$.storage.set('contacts/limit/'+hashkey, p.limit);
 				}
 			} else {
-				p.limit = $.storage.get('limit.'+hashkey);
+				p.limit = $.storage.get('contacts/limit/'+hashkey);
 			}
 			return p;
 		},
@@ -939,8 +945,8 @@
 					title: title,
 					hash: window.location.hash.toString()
 				};
-				$.storage.set('lastview.title', this.lastView.title);
-				$.storage.set('lastview.hash', this.lastView.hash);
+				$.storage.set('contacts/lastview/title', this.lastView.title);
+				$.storage.set('contacts/lastview/hash', this.lastView.hash);
 
 				el.text(title);
 				this.setBrowserTitle(title);
@@ -1142,7 +1148,7 @@
 					break;
 				case 'restore':
 					if (id) {
-						var status = $.storage.get('collapsible.'+id);
+						var status = $.storage.get('contacts/collapsible/'+id);
 						if (status == 'hidden') {
 							hide();
 						} else {
@@ -1161,7 +1167,7 @@
 
 			// save status in persistent storage
 			if (id && newStatus) {
-				$.storage.set('collapsible.'+id, newStatus);
+				$.storage.set('contacts/collapsible/'+id, newStatus);
 			}
 		},
 

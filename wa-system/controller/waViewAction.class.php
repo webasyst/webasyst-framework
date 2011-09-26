@@ -59,6 +59,9 @@ abstract class waViewAction extends waController
     
     protected function getTheme()
     {
+        if (waRequest::get('set_force_theme')) {
+            return waRequest::get('set_force_theme');
+        }
         if (waRequest::isMobile()) {
             return waRequest::param('theme_mobile', 'default');
         } 
@@ -151,6 +154,11 @@ abstract class waViewAction extends waController
             $this->view->clearAllAssign();
             return $result;
         }
+    }
+
+    public function getLayout()
+    {
+        return $this->layout;
     }
 }
 

@@ -261,7 +261,7 @@ class waRightConfig
                             '<td><input type="hidden" name="app['.$name.']" value="0">'.
                                 '<select name="app['.$name.']">'.$oHTML.'</select>'.
                             '</td>'.
-                            ($inherited !== null ? '<td>'.$o[$group].'<input type="hidden" class="g-value" value="'.$group.'"></td>' : '').
+                            ($inherited !== null ? '<td>'.($inherited && isset($inherited['backend']) ? $o[$group] : '').'<input type="hidden" class="g-value" value="'.$group.'"></td>' : '').
                         '</tr>';
             case 'checkbox':
                 return '<tr'.($params['cssclass'] ? ' class="'.$params['cssclass'].'"' : '').'>'.

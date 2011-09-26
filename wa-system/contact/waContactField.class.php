@@ -177,6 +177,66 @@ abstract class waContactField
             return $this->format($data, $format);
         }
     }
+    
+    
+    public function set(waContact $contact, $value, $params, $add = false)
+    {
+        if ($this->isMulti()) {
+            $is_ext = $this->isExt();
+            $ext = isset($params['ext']) ? $params['ext'] : '';
+            if (!is_array($value)) {
+                $value = array('value' => $value);
+                if ($is_ext) {
+                    $value['ext'] = $ext;
+                }
+                $value = array($value);
+            } elseif (isset($value['value'])) {
+                if ($is_ext) {
+                    $value['ext'] = $ext;
+                }
+                if (!$is_ext && isset($value['ext'])) {
+                    unset($value['ext']);
+                } 
+                $value = array($value);                
+            } else {
+                foreach ($value as &$v) {
+                    if (!is_array($v)) {
+                        $v = array('value' => $v);
+                        if ($is_ext) {
+                            $v['ext'] = $ext;
+                        }
+                    } elseif (!$is_ext && isset($v['ext'])) {
+                        unset($v['ext']);
+                    }
+                }
+                unset($v);
+            }
+            if ($add) {
+                $data = $contact->get($this->id);
+                foreach ($value as $v) {
+                    $data[] = $v;
+                }
+                return $data;
+            } else {
+                if ($is_ext && $ext) {
+                    $data = $contact->get($this->id);
+                    foreach ($data as $sort => $row) {
+                        if ($row['ext'] == $ext) {
+                            unset($data[$sort]);
+                        }
+                    }    
+                    foreach ($value as $v) {
+                        $data[] = $v;
+                    }
+                    return $data;
+                } else {
+                    return $value;
+                }
+            }
+        } else {
+            return $this->setValue($value);
+        }
+    }
 
     /**
      * Returns validator of the field

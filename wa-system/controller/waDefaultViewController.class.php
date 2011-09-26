@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 /*
  * This file is part of Webasyst framework.
@@ -14,21 +14,27 @@
  */
 class waDefaultViewController extends waViewController
 {
-	protected $action;
-	
-	public function setAction($action)
-	{
-		if ($action instanceof waViewAction) {
-			$action->setController($this);
-		}
-		$this->action = $action;
-	}
-	
-	public function execute()
-	{
-		if ($this->action) {
-			$class_name = $this->action;
-			$this->executeAction(new $class_name());
-		}
-	}
+    protected $action;
+
+    public function setAction($action)
+    {
+        if ($action instanceof waViewAction) {
+            $action->setController($this);
+        }
+        $this->action = $action;
+    }
+
+    public function execute()
+    {
+        if (!$this->action instanceof waViewAction) {
+            $class_name = $this->action;
+            $this->action = new $class_name();
+        }
+
+        if (!$this->layout && $this->action && $this->action->getLayout()) {
+            $this->setLayout($this->action->getLayout());
+        }
+
+        $this->executeAction($this->action);
+    }
 }

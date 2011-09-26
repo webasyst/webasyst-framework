@@ -320,7 +320,12 @@ class waSystem
             } else {
                 $app = null;
                 $route = null;
-                if ($this->config->getEnviroment() == 'frontend') {
+                if ($this->getEnv() == 'frontend') {
+                    // logout
+                    if (waRequest::get('logout') !== null) {
+                        waSystem::getInstance()->getAuth()->clearAuth();
+                        $this->getResponse()->redirect($this->config->getRequestUrl(false, true));
+                    }
                     $route = $this->getRouting()->dispatch();
                     if (!$route) {
                         $this->getResponse()->redirect($this->getConfig()->getBackendUrl(true), 302);

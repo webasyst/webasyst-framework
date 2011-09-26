@@ -31,33 +31,51 @@ class waRouting
 
     public function getUrl($route, $params = array(), $absolute = false)
     {
-        $exists = false;
+        if (is_array($route)) {
+            $absolute = $params ? true : false;
+            $params = $route;
+            $route = null;
+        }
+        
+        $r = null;
+        
         $root_url = $this->system->getRootUrl($absolute, true);
         foreach ($this->routes as $domain => $routes) {
-            if (isset($routes[$route])) {
+            if (!$route) {
+                if ($params['domain'] != $domain) {
+                    continue;
+                }
+                foreach ($routes as $row) {
+                    if ($row['app'] == $params['app']) {
+                        $r = $row;
+                        $root_url = 'http://'.$domain.'/';
+                        break;
+                    }
+                }
+            } elseif (isset($routes[$route])) {
                 if (isset($params['domain'])) {
                     if ($params['domain'] == $domain) {
-                        $exists = true;
+                        $r = $routes[$route];
                         $root_url = 'http://'.$domain.'/';
                         break;    
                     }
                 } elseif ($domain !== 'default') {
-                    $exists = true;
+                    $r = $routes[$route];
                     $root_url = 'http://'.$domain.'/';
                     break;
-                }
-                
+                }   
             }
         }
-        if (!$exists) {
+        if (!$r) {
             if (isset($this->routes['default'][$route])) {
+                $r = $this->routes['default'][$route];
                 $root_url = 'http://'.waRequest::server('HTTP_HOST').'/';
             } else {
-                throw new waException('Route not found');
+                return null;
             }
         }
 
-        $url = $routes[$route]['url'];
+        $url = $r['url'];
         $offset = 0;
         if (preg_match_all('/\[([i|s]?:[a-z_]+)\]/ui', $url, $match, PREG_OFFSET_CAPTURE|PREG_SET_ORDER)) {
             foreach ($match as $m) {
@@ -71,9 +89,6 @@ class waRouting
                 $offset = strlen($v) - strlen($m[0][0]);
             }
         } 
-        foreach ($params as $k => $v) {
-            //$url = preg_replace("!\[[(i|s)]?:[a-z]+\]!ui", $v, $url);
-        }
         $url = preg_replace('!(/{2,}|/?\*)$!i', '/', $url);
         if ($url == '/') {
             $url = '';
@@ -184,7 +199,7 @@ class waRouting
             }
 
         }
-        if (!$found && !$add_slash && (substr($url, -1) !== '/')) {
+        if (!$found && !$add_slash && $url && (substr($url, -1) !== '/')) {
             return $this->dispatch($route, true);
         }
         

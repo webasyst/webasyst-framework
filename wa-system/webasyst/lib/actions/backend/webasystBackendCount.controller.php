@@ -23,6 +23,7 @@ class webasystBackendCountController extends waJsonController
         // cache counts in session
         wa()->getStorage()->write('apps-count', array_filter($this->response));
 
+        /*
         // announcements
         $user = wa()->getUser();
         $am = new waAnnouncementModel();
@@ -48,5 +49,6 @@ class webasystBackendCountController extends waJsonController
             }
             $this->response['__announce'] = $announcements_html;
         }
+        */
     }
 }

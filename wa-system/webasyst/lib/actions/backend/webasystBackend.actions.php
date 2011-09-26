@@ -18,9 +18,6 @@ class webasystBackendActions extends waViewActions
 
     public function logoutAction()
     {
-        // Update last datetime of the current user
-        waSystem::getInstance()->getUser()->updateLastTime(true);
-
         // Clear auth data
         waSystem::getInstance()->getAuth()->clearAuth();
 

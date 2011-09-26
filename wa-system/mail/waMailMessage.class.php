@@ -126,6 +126,12 @@ class waMailMessage
 	{
 		$this->addHeader('To', $to);
 	}
+	
+	
+	public function setTo($to)
+	{
+	    $this->setHeader('To', is_array($to) ? $to : array($to));
+	}
 
 	/** 
 	 * @param string|array $cc

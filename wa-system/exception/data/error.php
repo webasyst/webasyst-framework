@@ -27,8 +27,10 @@
 						<h1><?php echo _ws('Error');?> #<?php echo $code;?></h1>
 						<p>
 						<?php if ($app) {?>
+							<a href="<?php echo $backend_url.$app['id']."/";?>">
 							<img src="<?php echo wa_url().$app['img'];?>" /><br />
 							<span class="small"><?php echo $app['name'];?></span>
+							</a>
 						<?php }?>
 						</p>
 						<h2><?php echo $message;?></h2>

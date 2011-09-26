@@ -80,7 +80,7 @@ final class waDbStatement
 
         $matches = array();
 
-        if (preg_match_all('/([sibf]?)(\?|:[A-z0-9_]+)/', $this->query, $matches, PREG_OFFSET_CAPTURE)) {
+        if (preg_match_all('/([sibfl]?)(\?|:[A-z0-9_]+)/', $this->query, $matches, PREG_OFFSET_CAPTURE)) {
             $unnamed_count = 0;
             foreach ($matches[0] as $id => $match) {
                 $match[2] = $matches[1][$id][0];
@@ -124,6 +124,9 @@ final class waDbStatement
                     break;
                 case 'b':
                     $replaced_value = ((bool)$this->binded_params[$place_name]) ? 1 : 0;
+                    break;
+                case 'l':
+                    $replaced_value = str_replace(array('%', '_'), array('\%', '\_'), $this->escape($this->binded_params[$place_name]));
                     break;
                 case 'f':
                     $replaced_value = str_replace(',', '.', (float)$this->binded_params[$place_name]);

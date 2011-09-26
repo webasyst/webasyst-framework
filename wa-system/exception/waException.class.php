@@ -41,6 +41,7 @@ class waException extends Exception
         $message = nl2br($this->getMessage());
         if (wa()->getApp()) {
             $app = wa()->getAppInfo();
+            $backend_url = waSystem::getInstance()->getConfig()->getBackendUrl(true);
         } else {
             $app = array();
         }

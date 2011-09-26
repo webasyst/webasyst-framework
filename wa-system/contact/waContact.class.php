@@ -105,6 +105,31 @@ class waContact implements ArrayAccess
             return wa()->getRootUrl().'wa-content/img/userpic'.$size.'.jpg';
         }
     }
+    
+    public function setPhoto($file) 
+    {
+        if (!file_exists($file)) {
+            throw new waException('file not exists');
+        }
+        if (!$this->getId()) {
+            throw new waException('Contact not saved!');
+        }
+        
+        $rand = mt_rand();
+        $path = wa()->getDataPath("photo", true, 'contacts')."/".$this->getId();
+        // delete old image
+        if (file_exists($path)) {
+            waFiles::delete($path);
+        }
+        waFiles::create($path);
+        $filename = $path."/".$rand.".original.jpg";
+        waImage::factory($file)->save($filename, 90);
+        waFiles::copy($filename, $path."/".$rand.".jpg");
+        
+        waContactFields::getStorage('waContactInfoStorage')->set($this, array('photo' => $rand));
+        
+        return $this->getPhoto();
+    }
 
     /**
      * Delete contact
@@ -670,92 +695,7 @@ class waContact implements ArrayAccess
         if (!$f) {
             $this->data[$field_id] = $value;
         } else {
-            if ($f instanceof waContactCompositeField) {
-                if ($f->isMulti()) {
-                    if ($subfield) {
-                        if ($add) {
-                            if (!isset($this->data[$field_id])) {
-                                $this->data[$field_id] = $this->get($field_id);
-                            }
-                            if (($n = count($this->data[$field_id])) > 0) {
-                                $data = $this->data[$field_id][$n - 1];
-                                $data_ext = isset($data['ext']) ? $data['ext'] : null;
-                                if (isset($data['fill']) && !isset($data['data'][$subfield]) && $ext == $data_ext) {
-                                    $this->data[$field_id][$n - 1]['data'][$subfield] = $value;
-                                    return;
-                                }
-                            }
-                            $this->data[$field_id][] = array(
-                                        'data' => array(
-                                            $subfield => $value
-                                        ),
-                                        'fill' => true,
-                                        'ext' => $ext
-                            );
-                        } else {
-                            $this->data[$field_id] = array(
-                                array(
-                                    'data' => array(
-                                        $subfield => $value
-                                    ),
-                                    'ext' => $ext
-                                )
-                            );
-                        }
-                        return;
-                    }
-                }
-                if ($subfield) {
-                    if (!isset($this->data[$field_id])) {
-                        $this->data[$field_id] = $this->get($field_id);
-                    }
-                    $this->data[$field_id]['data'][$subfield] = $value;
-                    return;
-                } else {
-                    $value = $f->set($value);
-                }
-            }
-            if ($f->isMulti()) {
-                if ($f->isExt()) {
-                    if (is_array($value)) {
-                        if (isset($value['value'])) {
-                            $value['ext'] = $ext;
-                        } else {
-                            foreach ($value as &$v) {
-                                $v = array(
-                                    'value' => $v,
-                                    'ext' => $ext
-                                );
-                            }
-                        }
-                    } else {
-                        $value = array(
-                            'value' => $value,
-                            'ext' => $ext
-                        );
-                    }
-                }
-                if (!$add) {
-                    $this->data[$field_id] = array();
-                } elseif (!isset($this->data[$field_id])) {
-                    $this->data[$field_id] = $this->get($field_id);
-                }
-                if (is_array($value) && !isset($value['value'])) {
-                    if (!$add) {
-                        $this->data[$field_id] = $value;
-                    } else {
-                        $this->data[$field_id] = array_merge($this->data[$field_id], $value);
-                    }
-                } else {
-                    $this->data[$field_id][] = $value;
-                }
-            } else {
-                if (method_exists($f, 'set')) {
-                    $this->data[$field_id] = $f->set($this, $value);
-                } else {
-                    $this->data[$field_id] = $value;
-                }
-            }
+            $this->data[$field_id] = $f->set($this, $value, array('ext' => $ext, 'subfield' => $subfield), $add);
         }
     }
 

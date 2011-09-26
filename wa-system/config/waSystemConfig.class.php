@@ -78,7 +78,7 @@ class waSystemConfig
         if ($u) {
             $domain .= '/'.$u;
         }
-        $file = waConfig::get('wa_path_data').'/public/site/'.$domain.'/'.$file;
+        $file = waConfig::get('wa_path_data').'/public/site/data/'.$domain.'/'.$file;
         if (file_exists($file)) {
             $file_type = waFiles::getMimeType($file);
             header("Content-type: {$file_type}");

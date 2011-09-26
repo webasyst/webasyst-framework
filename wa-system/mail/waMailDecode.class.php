@@ -110,7 +110,7 @@ class waMailDecode
 		
 		$result['from'] = array(
 			'name' => trim(substr($result['from'], 0, $i), ' "'),
-			'email' => trim(substr($result['from'], $i + 1), ' <>')
+			'email' => trim(substr($result['from'], $i), ' <>')
 		);
 		
 		if (strpos($result['subject'], ' ') === false) {

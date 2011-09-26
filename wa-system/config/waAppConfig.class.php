@@ -253,15 +253,13 @@ class waAppConfig extends SystemConfig
                 $paths[] = $this->getAppPath().'/plugins/';
             }
             $result = array();
+            $length = strlen($this->getRootPath());
             foreach ($paths as $path) {
-                $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($path), RecursiveIteratorIterator::SELF_FIRST);
-                $length = strlen($this->getRootPath());
-                foreach ($iterator as $file) {
-                    if ($file->isFile() && substr($file, -4) == '.php') {
-                        $class = $this->getClassByFilename($file->getFilename());
-                        if ($class) {
-                                $result[strtolower($class)] = substr($file, $length + 1);
-                        }
+                $files = $this->getPHPFiles($path);
+                foreach ($files as $file) {
+                    $class = $this->getClassByFilename(basename($file));
+                    if ($class) {
+                        $result[strtolower($class)] = substr($file, $length + 1);
                     }
                 }
             }
@@ -269,6 +267,23 @@ class waAppConfig extends SystemConfig
             return $result;
         }
         return include($cache_file);
+    }
+    
+    protected function getPHPFiles($path)
+    {
+        $dh = opendir($path);
+        $result = array();
+        while (($f = readdir($dh)) !== false) {
+            if ($f === '.' || $f === '..' || $f === '.svn') {
+                continue;
+            } elseif (is_dir($path.$f)) {
+                $result = array_merge($result, $this->getPHPFiles($path.$f.'/'));
+            } elseif (substr($f, -4) == '.php') {
+                $result[] = $path.$f;
+            }
+        }
+        closedir($dh);
+        return $result;
     }
     
     protected function getClassByFilename($filename) 
@@ -398,4 +413,17 @@ class waAppConfig extends SystemConfig
         return null;
     }
     
+    
+    public function setCount($n = null)
+    {
+        $count = wa()->getStorage()->read('apps-count');
+        if ($count && isset($count[$this->application])) {
+            if ($n) {
+                $count[$this->application] = $n;
+            } else {
+                unset($count[$this->application]);
+            }
+            wa()->getStorage()->write('apps-count', $count);
+        }
+    }
 }

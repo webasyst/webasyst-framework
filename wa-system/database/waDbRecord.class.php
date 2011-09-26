@@ -229,7 +229,7 @@ class waDbRecord extends waArrayObjectDiff
         // load from model
         $row = $this->m->getById($this->id);
         if (!$row) {
-            throw new waException('No record found in database for id='.$this->id);
+            throw new waException('No record found in database for id='.$this->id, 404);
         }
         $this->persistent->setAll($row);
     }

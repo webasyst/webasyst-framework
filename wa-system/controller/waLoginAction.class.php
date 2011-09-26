@@ -13,6 +13,8 @@ abstract class waLoginAction extends waViewAction
     {
         $title = $this->getTitle();
         
+        $this->view->setOptions(array('left_delimiter' => '{', 'right_delimiter' => '}'));
+        
         if (waRequest::get('forgot')) {
             $title .= ' - '._ws('Password recovery');
             if (waRequest::method() == 'post') {
@@ -42,13 +44,15 @@ abstract class waLoginAction extends waViewAction
         $auth = $this->getAuth();
         try {
         	if ($auth->auth()) {
+        	    $this->getStorage()->remove('auth_login');
         	    $this->afterAuth();
         	}
         } catch (waException $e) {
         	$this->view->assign('error', $e->getMessage());
         }
         
-       	$this->view->assign('options', $auth->getOptions());        
+       	$this->view->assign('options', $auth->getOptions());
+       	$this->view->assign('login', waRequest::post('login', $this->getStorage()->read('auth_login')));        
         
         if ($this->template === null) {
             if (waRequest::isMobile()) {

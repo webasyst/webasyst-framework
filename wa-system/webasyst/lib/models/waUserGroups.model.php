@@ -67,10 +67,17 @@ class waUserGroupsModel extends waModel
             return $this->exec($sql);
         }
     }
-    
+
+    /** @return boolean true if user belongs to group, false otherwise */
+    public function isMember($contact_id, $group_id)
+    {
+        $sql = "SELECT 1 FROM {$this->table} WHERE contact_id=i:cid AND group_id=i:gid LIMIT 1";
+        return (bool) $this->query($sql, array('cid' => $contact_id, 'gid' => $group_id))->fetchField();
+    }
+
     /**
       * @param array $contacts list of user ids
-      * @return array user_id => array(group_id, group_id, ...) 
+      * @return array user_id => array(group_id, group_id, ...)
       */
     public function getGroupIdsForUsers($contacts) {
         $sql = "SELECT contact_id, group_id

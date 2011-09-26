@@ -102,20 +102,87 @@ class waContactCompositeField extends waContactField
         return $result;
     }
     
-    public function set($value)
+    public function set(waContact $contact, $value, $params, $add = false)
     {
 		if ($this->isMulti()) {
+            $is_ext = $this->isExt();
+            $ext = isset($params['ext']) ? $params['ext'] : '';
+            $subfield = isset($params['subfield']) ? $params['subfield'] : '';
+		    
+            if ($subfield) {
+                if ($add) {
+                    $values = $contact->get($field_id);
+                    if (($n = count($values)) > 0) {
+                        $data = $values[$n - 1];
+                        $data_ext = isset($data['ext']) ? $data['ext'] : null;
+                        if (isset($data['fill']) && !isset($data['data'][$subfield]) && $ext == $data_ext) {
+                            $values[$n - 1]['data'][$subfield] = $value;
+                            return $values;
+                        }
+                    }
+                    $values[] = array(
+                        'data' => array(
+                            $subfield => $value
+                        ),
+                        'fill' => true,
+                        'ext' => $ext
+                    );
+                    return $values;
+                } else {
+                    return array(
+                        array(
+                            'data' => array(
+                                $subfield => $value
+                            ),
+                            'ext' => $ext
+                        )
+                    );
+                }             
+            }     
+                   
 			if (isset($value[0])) {
 				foreach ($value as &$v) {
 					$v = $this->setValue($v);
+					if ($is_ext && $ext) {
+					    $v['ext'] = $ext;
+					}
 				}
-				return $value;
+				unset($v);
 			} else {
-				return array(
-					$this->setValue($value)
-				);
+			    $value = $this->setValue($value);
+				if ($is_ext && $ext) {
+				    $value['ext'] = $ext;
+				}
+			    $value = array($value);
 			}
+		    if ($add) {
+                $data = $contact->get($this->id);
+                foreach ($value as $v) {
+                    $data[] = $v;
+                }
+                return $data;
+            } else {
+                if ($is_ext && $ext) {
+                    $data = $contact->get($this->id);
+                    foreach ($data as $sort => $row) {
+                        if ($row['ext'] == $ext) {
+                            unset($data[$sort]);
+                        }
+                    }    
+                    foreach ($value as $v) {
+                        $data[] = $v;
+                    }
+                    return $data;
+                } else {
+                    return $value;
+                }
+            }
 		} else {
+		    if ($subfield) {
+		        $data = $contact->get($this->id);
+		        $data['data'][$subfield] = $value;
+		        return $data;
+		    }
 			return $this->setValue($value);
 		}
     }
