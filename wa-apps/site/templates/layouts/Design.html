@@ -1,0 +1,98 @@
+<div class="sidebar left200px s-internal-sidebar" style="min-height:300px">
+	<div class="s-core-app-name">
+		<h2 class="s-short-header">
+			<img src="{$wa_url}{$app.icon.24}">
+			{if !empty($route._name)}{$route._name}{else}{$app.name}{/if}
+			<span class="hint">{$domain_root_url}/{$route.url|escape}</span>
+		</h2>
+	
+		<a href="#/routing/route={$route_id}" class="s-settings-link"><i class="icon10 settings"></i><u>[`Settlement settings`]</u></a>
+	</div>
+		{foreach from=$themes key=t_id item=t}
+		<div class="s-theme-block">
+			<span class="count"><a href="{$preview_url|escape}{$t_id}" target="_blank" class="s-theme-preview{if $t_id==$theme} current{/if}" title="[`Preview`]"><i class="icon16 new-window"></i></a></span>
+			<h4 class="heading" data-hash="{$t_id}"><i class="icon16 {if $t_id==$route.theme || $t_id==$route.theme_mobile}d{else}r{/if}arr"></i>{$t.name}</h4>
+			<ul class="menu-v with-icons s-theme" {if $t_id!=$route.theme && $t_id!=$route.theme_mobile}style="display:none"{/if} id="theme-{$t_id}">
+				{foreach from=$t.files key=f item=f_info}
+				<li data-file="{$f|escape}">
+					<a href="#/design/route={$route_id|escape}&theme={$t_id}&file={$f|escape}">
+						<i class="icon16 script{if substr($f, -4)=='.css'}-css{elseif substr($f, -3)=='.js'}-js{/if}"></i>{$f|escape}
+					</a>
+				</li>
+				{/foreach}
+				<li class="top-padded add-file"><a href="#/design/add/route={$route_id|escape}&theme={$t_id}" class="small"><i class="icon10 add"></i>[`New file`] </a> </li>
+			</ul>
+		</div>
+		{/foreach}
+</div>
+
+<div class="content left200px">
+	{$content}
+	<div class="dialog" id="s-design-preview">
+			<div class="dialog-background"> </div>
+			<div class="dialog-window" style="height: 140px; min-height: 140px; width: 350px; min-width: 350px">
+				<form>
+				<input type="hidden" id="s-preview-key" value="" />
+				<div class="dialog-content">
+						<div class="dialog-content-indent">
+							<h1>[`Theme preview`]</h1>
+							<p>[`Design theme “<strong id="s-current-theme"></strong>” is enabled for your current session. For all other users theme “{$themes[$theme].name}” still remains as default.`]</p>
+						</div>
+				</div>
+				<div class="dialog-buttons">
+						<div class="dialog-buttons-gradient">
+								<input type="submit" class="button" value="[`Finish preview session`]">
+						</div>
+				</div>
+				</form>
+			</div>
+	</div>	
+</div>
+
+{if $themes}
+<script type="text/javascript">
+var w = null;
+$(".s-theme-preview").click(function () {
+	var url = $(this).attr('href');
+	if (!$(this).hasClass('current')) {
+		$("#s-current-theme").html($(this).parents('div:first').find('h4').text());
+		$("#s-design-preview").waDialog({
+			esc: false,
+			onSubmit: function () {
+				$("#s-design-preview").hide();
+				$("body").append($('<iframe style="display:none" src="' + url.replace(/(set_force_theme=).*$/, '$1') + '" />').load(function () {
+					$(this).remove();
+				}));
+				return false;
+			}
+		});
+	}
+});
+
+$("div.s-internal-sidebar h4.heading").click(function (e, not_save) {
+	var h = $(this);
+	var k = 'site/' + $.wa.site.domain + '/{$route_id}/theme-' + h.attr('data-hash');
+	var is_save = !(not_save || false)
+	if (is_save) {
+		if (!$.storage.get(k)) {
+		    $.storage.set(k, 1);
+		} else {
+			$.storage.del(k);
+		}
+	}
+	if (h.find('i').hasClass('darr')) {
+		h.find('i').removeClass('darr').addClass('rarr');
+		h.next('ul').hide();
+	} else {
+		h.find('i').removeClass('rarr').addClass('darr');
+		h.next('ul').show();
+	}
+});
+
+$("div.s-internal-sidebar h4.heading").each(function () {
+	if ($.storage.get('site/' + $.wa.site.domain + '/{$route_id}/theme-' + $(this).attr('data-hash'))) {
+		$(this).trigger('click', true);
+	}
+});
+</script>
+{/if}

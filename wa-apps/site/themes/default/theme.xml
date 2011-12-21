@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE theme PUBLIC "wa-app-theme" "http://www.webasyst.com/wa-content/xml/wa-app-theme.dtd" >
+<theme id="default" system="1" vendor="webasyst" app="site" version="1.0.0">
+	<name locale="en_US">Default theme</name>
+	<name locale="ru_RU">Основная тема</name>
+	<files>
+		<file path="index.html">
+			<description locale="en_US">Common layout</description>
+			<description locale="ru_RU">Основной макет</description>
+		</file>
+		<file path="page.html">
+			<description locale="en_US">Page content</description>
+			<description locale="ru_RU">Содержимое страницы</description>
+		</file>
+		<file path="sidebar.html">
+			<description locale="en_US">Page navigation</description>
+			<description locale="ru_RU">Колонка со списком страниц слева</description>
+		</file>
+		<file path="error.html">
+			<description locale="en_US">404 and other errors</description>
+			<description locale="ru_RU">404 и другие ошибки</description>
+		</file>
+		<file path="default.css">
+			<description locale="en_US">CSS for common desktop and laptop computers</description>
+			<description locale="ru_RU">Основной набор стилей CSS</description>
+		</file>
+		<file path="mobile.css">
+			<description locale="en_US">CSS for multi-touch mobile devices</description>
+			<description locale="ru_RU">Дополнительный CSS для мобильных устройств</description>
+		</file>
+	</files>
+</theme>

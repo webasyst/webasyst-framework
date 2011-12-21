@@ -1,0 +1,84 @@
+<script type="text/javascript">
+    document.title = {json_encode($app.name)} + ' [`settings`] — ' + {json_encode($domain)};
+</script>
+<div class="s-editor s-white s-app-settings">
+	<form id="s-settings-form" method="post" action="?module=routing&action=params&domain_id={$domain_id}&route={$route_id}">
+	<div class="float-left">
+		<div class="block s-grey-toolbar">
+			<h4>[`{$app.name|escape} app settled at`] /{$route.url|escape}</h4>
+		</div>
+		<div class="block double-padded">
+			<div class="fields form">
+				{$themes=siteHelper::getThemes($app_id, true)}
+				{if $themes}
+				<div class="field-group">
+				<div class="field">
+					<div class="name">[`Settlement name`]</div>
+					<div class="value">
+						<input type="text" name="params[_name]" value="{$route._name|escape}" class="bold" /><br />
+						<span class="hint">[`Name is used in the <em>$wa->apps</em> navigation menu of this website`]</span>
+					</div>
+				</div>
+				<div class="field">
+					<div class="name">[`Design theme`]</div>
+					<div class="value">
+						{html_options name="params[theme]" options=$themes selected=$route.theme}
+					</div>
+				</div>
+				<div class="field">
+					<div class="name">[`Mobile design theme`]</div>
+					<div class="value">
+						{html_options name="params[theme_mobile]" options=$themes selected=$route.theme_mobile}
+						<br />
+						<span class="hint">[`Design theme for mobile multi-touch devices such as iPhone and Android`]</span>
+					</div>
+				</div>
+                <div class="field">
+                    <div class="name">[`Locale`]</div>
+                    <div class="value">
+                        {html_options name="params[locale]" options=$locales selected=$route.locale}
+                    </div>
+                </div>              				
+				</div>
+				{/if}
+				{if !empty($params)}
+					{foreach $params item=p}
+					<div class="field">
+						<div class="name">{$p.name|escape}</div>
+						<div class="value">{$p.value}</div>
+					</div>
+					{/foreach}
+				{/if}				
+				<div class="field">
+					<div class="name">[`Custom parameters`]</div>
+					<div class="value">
+						<textarea name="other_params">{foreach from=$route key=key item=value}{if !in_array($key, array('app', 'url', 'theme', 'theme_mobile', '_name', '_pages', 'locale')) && !isset($params[$key])}{$key|escape}={if $value===false}0{else}{$value|escape}{/if}
+
+{/if}{/foreach}</textarea>
+						<br />
+						<span class="hint">[`Optional set of custom <em>key=value</em> parameters which can be used within design templates and pages of this settlement as <em>&#123;$wa->globals("key")&#125;</em>. Each key=value pair should be on a separate line.`] <a href="[`http://www.webasyst.com/framework/docs/site/design/`]" target="_blank">[`Help`]</a> <i class="icon10 new-window"></i></span>
+					</div>
+				</div>
+				<div class="field">
+					<div class="value">
+						<input type="submit" name="save" class="button green" value="[`Save`]" />
+						<span id="s-settings-form-status"></span>
+					</div>
+				</div>					
+			</div>
+		</div>
+	</div>
+	</form>
+<div class="clear"></div>
+</div>
+
+<script type="text/javascript">
+	$("#s-settings-form").submit(function () {
+		var f = $(this);
+		$("#s-settings-form-status").html('<i style="vertical-align:middle" class="icon16 loading"></i> [`Saving...`]').fadeIn("slow");
+		$.post(f.attr('action'), f.serialize(), function () {
+			$("#s-settings-form-status").html('<i style="vertical-align:middle" class="icon16 yes"></i>[`Saved`]').fadeOut('slow');
+		});
+		return false;
+	});
+</script>

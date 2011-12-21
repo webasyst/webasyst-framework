@@ -1,0 +1,109 @@
+<div class="content">
+	<div class="s-themes">
+		<table id="s-themes-list">
+			<tbody>
+<!-- {if $themes}{foreach from=$themes item=theme key=theme_id}{$theme_id}{assign var=theme_slug value=$theme_id} -->
+				{include file="templates/actions/themes/ThemesRow.html" inline}
+<!-- {foreachelse} -->
+				<tr>
+					<td>[`There are no design themes installed for this app`]</td>
+				</tr>
+<!-- {/foreach}{else}here no themes{/if} -->
+			</tbody>
+		</table>
+		<div class="block double-padded align-center">
+			<a id="s-upload-link" href="#/themes/" class="bold no-underline">
+				<i class="icon16 upload"><!-- icon --></i><u>[`Upload theme`]</u>
+			</a>
+			<span class="s-dialog-error hint" style="color: red;font-weight: bold;"></span>
+			<span class="hint">
+			[`or`] <a href="{$wa_backend_url}installer/?module=themes">[`browse for themes`]</a><br />
+			[`in the “Installer” app`]
+			</span>
+		</div>
+		<div class="clear"></div>
+	</div>
+</div>
+
+<div class="dialog" id="s-name-dialog">
+	<div class="dialog-background"> </div>
+	<div class="dialog-window" style="height: 150px;">
+		<form>
+		<div class="dialog-content">
+			<div class="dialog-content-indent">
+				<h1 id="s-name-dialog-title">[`Rename`]</h1>
+				<span class="s-dialog-error" style="color: red;font-weight: bold;"></span>
+				<div class="fields form">
+					<div class="field">
+						<div class="name">
+							[`Theme name`]
+						</div>
+						<div class="value">
+							<input type="text" id="s-name" name="name" class="bold large" value="" >
+						</div>
+					</div>
+					<div class="field">
+						<div class="name">
+							[`Theme ID`]
+						</div>
+						<div class="value">
+							<input type="text" id="s-id" name="id" value="" ><br />
+							<span class="small">[`IMPORTANT: Change Theme ID only if you are sure what you are doing. If this theme is in use by any of your websites, you will have to manually update these websites’ app settings to use this or another theme after altering the Theme ID parameter. Otherwise websites may stop working with the “Unable to load template file” error.`]</span>
+						</div>
+					</div>
+				</div>
+							
+			</div>
+		</div>
+		<div class="dialog-buttons">
+			<div class="dialog-buttons-gradient">
+				<input type="submit" class="button green" value="[`Save`]">
+				[`or`] <a href="#/themes/" class="inline-link cancel"><b><i>[`cancel`]</i></b></a>
+			</div>
+		</div>
+		</form>
+	</div>
+</div>
+
+<div class="dialog" id="s-upload-dialog">
+		<div class="dialog-background"> </div>
+		<div class="dialog-window" style="height: 200px; min-height: 200px; width: 400px; min-width: 350px">
+			<form target="s-upload-iframe" id="s-upload-form" method="post" action="?module=themes&amp;action=upload" enctype="multipart/form-data">
+			<div class="dialog-content">
+					<div class="dialog-content-indent">
+						<h1>[`Upload theme`]</h1>
+						<span class="s-dialog-error bold" style="color: red;"></span>
+						<p>[`Theme must be uploaded as a valid Webasyst design theme archive (.tar.gz archive with theme files and theme.xml manifest file).`]</p>
+						<input id="s-input-file" type="file" name="theme_files[]" >
+						{if !is_array($domain)}
+						<input type="hidden" name="domain" value="{$domain}">
+						{/if}
+						<div class="loading" style="display:none; margin-top: 10px">
+							<i class="icon16 loading"></i> [`Uploading...`]
+						</div>							
+					</div>
+			</div>
+			<div class="dialog-buttons">
+					<div class="dialog-buttons-gradient">
+							<input type="submit" class="button green" value="[`Upload`]">
+							[`or`] <a href="#/themes/" class="inline-link cancel"><b><i>[`cancel`]</i></b></a> </div>
+			</div>
+			</form>
+			<iframe style="display:none" name="s-upload-iframe" id="s-upload-iframe"></iframe>
+		</div>
+</div>
+<script type="text/javascript" src="{$wa_app_static_url}js/site.themes.js?v{$wa->version()}"></script>
+<script type="text/javascript">
+$.wa.locale = $.extend($.wa.locale, {
+	'rename_title':{json_encode('[`Rename`]')},
+});
+{literal}
+$.wa.site.themes.init( {
+{/literal}
+'domain':{json_encode($domain)},
+'title':'[`Themes`]'
+{literal}
+});
+{/literal}
+{*  + {if (isset($domain) && $domain)}{json_encode($domain)}{else}''{/if} *}
+</script>
