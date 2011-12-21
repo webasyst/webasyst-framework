@@ -600,6 +600,7 @@ $.wa.site = {
 			$("#s-save-panel .s-bottom-fixed-bar-content-offset").removeClass('s-page-editor');
 			$("#wa div.s-scrollable-part").removeClass('s-no-editor');
 			$('#s-editor-save-button').removeClass('yellow').addClass('green');
+			$("#process-message").empty();
 		} else {
 			$("#s-save-panel").hide();
 			$("#wa div.s-scrollable-part").addClass('s-no-editor');
