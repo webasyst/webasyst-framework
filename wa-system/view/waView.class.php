@@ -23,10 +23,20 @@ abstract class waView
     protected $system;
     
     protected $options = array();
+    protected $helper;
     
 	public function __construct(waSystem $system, $options = array())
 	{
-		$this->system = $system;	
+		$this->system = $system;
+		$this->helper = new waViewHelper($this);
+	}
+	
+	/**
+	 * @return waViewHelper
+	 */
+	public function getHelper()
+	{
+	    return $this->helper;
 	}
 	
 	public function setOptions($options)
@@ -41,7 +51,7 @@ abstract class waView
     	return $this->postfix;
     }	
 	
-	abstract public function assign($name, $value = null);
+	abstract public function assign($name, $value = null, $escape = false);
 	
 	abstract public function clearAssign($name);
 	
@@ -54,9 +64,12 @@ abstract class waView
    	   $this->assign('wa_url', $this->system->getRootUrl());
    	   $this->assign('wa_backend_url', waSystem::getInstance()->getConfig()->getBackendUrl(true));
    	   $this->assign('wa_app', $this->system->getApp());
-   	   $this->assign('wa_app_url', $this->system->getAppUrl());
+   	   $this->assign('wa_app_url', $this->system->getAppUrl(null, true));
    	   $this->assign('wa_app_static_url', $this->system->getAppStaticUrl());
-   	   $this->assign('wa', new waViewHelper());
+   	   if (!$this->helper) {
+   	       $this->helper = new waViewHelper($this);
+   	   }
+   	   $this->assign('wa', $this->helper);
 	}
 	
 	abstract public function fetch($template, $cache_id = null);
@@ -83,5 +96,15 @@ abstract class waView
 	public function cache($lifetime) 
 	{
 		
+	}
+	
+	public function getCacheId()
+	{
+        return null;			
+	}
+	
+	public function autoescape($value = null)
+	{
+	    
 	}
 }

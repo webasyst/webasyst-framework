@@ -35,9 +35,10 @@ class waSmarty3View extends waView
      */
     public function __construct(waSystem $system, $options = array()) 
     {
-    	$this->system = $system;
+    	parent::__construct($system, $options);
     	
         $this->smarty = new Smarty();
+        $this->setOptions($options);
         if (isset($options['auto_literal'])) {
         	$this->smarty->auto_literal =  $options['auto_literal'];
         }
@@ -49,13 +50,14 @@ class waSmarty3View extends waView
 		}
 		$this->smarty->template_dir = isset($options['template_dir']) ? $options['template_dir'] : $this->system->getAppPath();
 		$this->smarty->compile_dir = isset($options['compile_dir']) ? $options['compile_dir'] : $this->system->getAppCachePath('templates/compiled/');
-		$this->smarty->compile_id = isset($options['compile_id']) ? $this->system->getApp()."_".$options['compile_id'] : $this->system->getApp()."_".$this->system->getUser()->getLocale();
 		$this->smarty->cache_dir = $this->system->getAppCachePath('templates/cache/');
 		if (ini_get('safe_mode')) {
 		    $this->smarty->use_sub_dirs = false;
 		} else {
 		    $this->smarty->use_sub_dirs = true;
 		}
+		// not use
+		//$this->smarty->setCompileCheck(wa()->getConfig()->isDebug()?true:false);
 			
 		$this->smarty->addPluginsDir($this->system->getConfig()->getPath('system').'/vendors/smarty-plugins');
 		$this->smarty->loadFilter('pre', 'translate');
@@ -73,9 +75,24 @@ class waSmarty3View extends waView
 	        }
 	    }
 	}    
+	
+	protected function prepare()
+	{
+   		$this->smarty->compile_id = isset($this->options['compile_id']) ? 
+   		    $this->system->getApp()."_".$this->options['compile_id'] : 
+   		    $this->system->getApp()."_".$this->system->getLocale();
+   		parent::prepare();
+	}
         
-    public function assign($name, $value = null)
+    public function assign($name, $value = null, $escape = false)
     {
+        if ($escape) {
+            if (is_array($value)) {
+                $value = array_map('htmlspecialchars', $value);
+            } else {
+                $value = htmlspecialchars($value);
+            }
+        }
         $this->smarty->assign($name, $value);
     }
     
@@ -142,8 +159,26 @@ class waSmarty3View extends waView
     	}
     }
     
+    public function getCacheId()
+    {
+		$cache_id = isset($this->smarty->getParent()->tpl_vars['cache_id']) ? $this->smarty->getParent()->tpl_vars['cache_id'] : null;
+		if ($cache_id && isset($cache_id->value)) {
+			$cache_id = $cache_id->value;
+		}
+		return $cache_id;        
+    }
+    
     public function setTemplateDir($path)
     {
     	$this->smarty->template_dir = $path;
+    }
+    
+    public function autoescape($value = null)
+    {
+        if ($value === null) {
+            return $this->smarty->escape_html;   
+        } else {
+            $this->smarty->escape_html = $value;
+        }	 
     }
 }

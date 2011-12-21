@@ -102,6 +102,9 @@ class waDateTime
 
     public static function date($format, $time = null, $timezone = null, $locale = null)
     {
+        if (is_numeric($time) && strlen($time)!= 8) {
+            $time = date('Y-m-d H:i:s', $time);
+        }
         $date_time = new DateTime($time);
         if ($timezone) {
             $date_time->setTimezone(new DateTimeZone($timezone));
@@ -177,7 +180,7 @@ class waDateTime
             } elseif (date('Y-m-d', strtotime("+ 1 day")) == $date) {
                 $result = _ws('Tomorrow');
             } else {
-                $result = self::date(self::getFormat('monthdate', $locale), $time, $timezone, $locale);
+                $result = self::date(self::getFormat('humandate', $locale), $time, $timezone, $locale);
             }
             return  $result.' '.self::date(self::getFormat('time', $locale), $time, $timezone, $locale);
         }
@@ -194,19 +197,25 @@ class waDateTime
         $date_formats = $locale['date_formats'];
 
         $default = array(
-            'monthdate' => 'd f Y',
+            'humandate' => 'd f Y',
             'date' => 'Y-m-d',
             'time' => 'H:i',
             'fulltime' => 'H:i:s',
             'datetime' => 'Y-m-d H:i',
-            'fulldatetime' => 'Y-m-d H:i:s'
+            'fulldatetime' => 'Y-m-d H:i:s',
+            'timestamp' => 'U',
         );
+        
+        
+       
 
         if (isset($date_formats[$format])) {
             return $date_formats[$format];
         } elseif (isset($default[$format])) {
             return $default[$format];
-        } elseif (stripos("ymdhisfjn", $format) !== false) {
+        } elseif ( defined($format) && (strpos($format, 'DATE_') === 0) ) {
+            return constant($format);
+        } elseif (stripos("ymdhisfjnucrzt", $format) !== false) {
             return $format;
         } else {
             return "Y-m-d H:i:s";
@@ -288,7 +297,7 @@ class waDateTime
             }
         }
 
-        if ($format == 'date' || $format == 'monthdate') {
+        if ($format == 'date' || $format == 'humandate') {
             return $info['Y']."-".$info['m']."-".$info['d'];
         } elseif ($format == 'time' || $format == 'fulltime') {
             return $info['H'].":".$info['i'].":".$info['s'];

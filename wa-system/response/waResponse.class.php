@@ -145,9 +145,13 @@ class waResponse {
   		$this->setMeta('title', $title);
   	}
   	
-  	public function setMeta($name, $value) 
+  	public function setMeta($name, $value = null) 
   	{
-  		$this->metas[$name] = $value;
+  	    if (is_array($name)) {
+  	        $this->metas += $name;
+  	    } else {
+  		    $this->metas[$name] = $value;
+  	    }
   	}
   	
   	public function getMeta($name = null)
@@ -159,9 +163,15 @@ class waResponse {
   		}
   	}  	
   	
-  	public function addJs($url)
+  	public function addJs($url, $app_id = false)
   	{
+  	    if ($app_id) {
+  	        $url = wa()->getAppStaticUrl($app_id).$url;
+  	    } else {
+  	        $url = wa()->getRootUrl().$url;
+  	    } 
   		$this->js[] = $url;
+  		return $this;
   	}
   	
   	public function getJs($html = true)
@@ -177,9 +187,15 @@ class waResponse {
   		}
   	}
   	
-  	public function addCss($url)
+  	public function addCss($url, $app_id = false)
   	{
+  	    if ($app_id) {
+  	        $url = wa()->getAppStaticUrl($app_id).$url;
+  	    } else {
+  	        $url = wa()->getRootUrl().$url;
+  	    }  	    
   		$this->css[] = $url;
+  		return $this;
   	}
   	
   	public function getCss($html = true)

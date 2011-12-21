@@ -16,16 +16,11 @@ abstract class waDbResult
 {
 
     /**
-     * @var mysql
-     */
-    protected $handler;
-
-    /**
-     *
-     * Enter description here ...
+     * Database adapter
      * @var waDbAdapter
      */
     protected $adapter;
+    
     /**
      * @var mixed
      */
@@ -37,12 +32,17 @@ abstract class waDbResult
      * @param mysql $mysql
      * @param mixed $result
      */
-    final function __construct($handler, $result, $adapter)
+    final function __construct($result, $adapter)
     {
         $this->result = $result;
-        $this->handler = $handler;
         $this->adapter = $adapter;
         $this->onConstruct();
+    }
+    
+    
+    public function getResult()
+    {
+        return $this->result;
     }
 
 

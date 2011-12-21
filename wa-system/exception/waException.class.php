@@ -36,6 +36,15 @@ class waException extends Exception
         return "\n". implode("", $context);
     }
 
+    public static function print_r()
+    {
+        $message = '';
+        foreach(func_get_args() as $v) {
+            $message .= ($message ? "\n" : '').print_r($v, TRUE);
+        }
+        throw new self($message, 500);
+    }
+
     public function __toString()
     {
         $message = nl2br($this->getMessage());
@@ -46,6 +55,7 @@ class waException extends Exception
             $app = array();
         }
         if (!waSystem::getInstance()->getConfig()->isDebug()) {
+            $env = wa()->getEnv();
             $file = $code = $this->getCode();
             if (!$code || !file_exists(dirname(__FILE__).'/data/'.$code.'.php')) {
                 $file = 'error';
@@ -56,8 +66,12 @@ class waException extends Exception
 
         if (waSystem::getInstance()->getEnv() == 'cli') {
             return date("Y-m-d H:i:s")." php ".implode(" ", waRequest::server('argv'))."\n".
-            "Error with code {$this->getCode()} in '{$this->getFile()}' around line {$this->getLine()}:{$this->getFileContext()}\n".
+            "Error: {$this->getMessage()}\nwith code {$this->getCode()} in '{$this->getFile()}' around line {$this->getLine()}:{$this->getFileContext()}\n".
             $this->getTraceAsString()."\n";
+        } elseif ($this->code == 404) {
+            $response = new waResponse();
+            $response->setStatus(404);
+            $response->sendHeaders();
         }
 
         $result = <<<HTML

@@ -8,13 +8,14 @@ class contactsPhotoCropController extends waJsonController
         $this->response = array();
 
         // Initialize all needed post vars as $vars in current namespace
-        foreach(array('id', 'x1', 'y1', 'x2', 'y2', 'w', 'h', 'ww', 'orig') as $var) {
+        foreach(array('x1', 'y1', 'x2', 'y2', 'w', 'h', 'ww', 'orig') as $var) {
             if (null === ( $$var = (int)waRequest::post($var))) { // $$ black magic...
                 $this->response['error'] = 'wrong parameters';
                 return;
             }
         }
 
+        $id = $this->getId();
         $contact = new waContact($id);
 
         // Path to file we need to crop
@@ -96,12 +97,18 @@ class contactsPhotoCropController extends waJsonController
             $this->log('photo_add', 1);
         }
 
-        // Update recent history to reload thumbnail correctly
-        $history = new contactsHistoryModel();
-        $history->save('/contact/'.$id, null, null, '--');
+        // Update recent history to reload thumbnail correctly (if not called from personal account)
+        if (wa()->getUser()->get('is_user')) {
+            $history = new contactsHistoryModel();
+            $history->save('/contact/'.$id, null, null, '--');
+        }
 
         $this->response = array('url' => $contact->getPhoto());
     }
+
+    protected function getId()
+    {
+        return (int) waRequest::post('id');
+    }
 }
 
-// EOF

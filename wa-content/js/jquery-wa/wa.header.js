@@ -80,6 +80,7 @@ $(function () {
 			i.removeClass('uarr').addClass('darr');
 			$(window).resize();
 		}
+		return false;
 	});
 
 	$("a.wa-announcement-close", $('#wa')[0]).live('click', function () {
@@ -96,7 +97,7 @@ $(function () {
 			url: backend_url + "?action=count",
 			data: {'background_process': 1},
 			success: function (response) {
-				if (response.status == 'ok') {
+				if (response && response.status == 'ok') {
 					// announcements
 					if (response.data.__announce) {
 						$('#wa-announcement').remove();

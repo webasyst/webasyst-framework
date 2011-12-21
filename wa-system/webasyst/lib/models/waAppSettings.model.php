@@ -7,7 +7,7 @@ class waAppSettingsModel extends waModel
 	protected static $cache = array();
 	protected $table = 'wa_app_settings';
 	
-	public function get($app_id, $name, $default = '')
+	public function get($app_id, $name = null, $default = '')
 	{
 		if (!isset(self::$cache[$app_id])) {
 			$sql = "SELECT name, value 
@@ -16,7 +16,13 @@ class waAppSettingsModel extends waModel
 			$this->setCache($this->getCache($app_id));
 			self::$cache[$app_id] = $this->query($sql, array($app_id))->fetchAll('name', true);			 
 		}
-		return  isset(self::$cache[$app_id][$name]) ? self::$cache[$app_id][$name] : $default;
+		
+		if (is_null($name)) {
+			return  isset(self::$cache[$app_id]) ? self::$cache[$app_id] : array();
+		}
+		else {
+			return  isset(self::$cache[$app_id][$name]) ? self::$cache[$app_id][$name] : $default;	
+		}
 	}
 	
 	protected function getCache($app_id)

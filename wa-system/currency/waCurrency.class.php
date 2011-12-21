@@ -94,11 +94,13 @@ class waCurrency
 	
 	public static function format($format, $n, $currency, $locale = null)
 	{
-	    if ($locale == null) {
+	    if ($locale === null) {
 	        $locale = waSystem::getInstance()->getLocale();
 	    }
 		$currency = waCurrency::getInfo($currency);
-		waLocale::loadByDomain('webasyst', $locale);
+		if ($format == 'w' || $format == 'W') {
+		    waLocale::loadByDomain('webasyst', $locale);
+		}
 		$locale = waLocale::getInfo($locale);
 		return preg_replace('/%(\.?[0-9]?)([w]?)({[n|f|c|s][0-9]?})?/ie', 'self::extract($n, $currency, $locale, "$1", "$2", "$3")', $format);
 	}

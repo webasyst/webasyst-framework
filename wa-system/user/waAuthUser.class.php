@@ -88,7 +88,7 @@ class waAuthUser extends waUser
     {
         $time = $this->storage->read('user_last_datetime'); 
         if (!$time || $force || $time == '0000-00-00 00:00:00' || 
-             (time() - strtotime($time) > 120)
+             (time() - strtotime($time) > 12000)
         ) {
         	try {
             	$login_log_model = new waLoginLogModel();
@@ -133,7 +133,7 @@ class waAuthUser extends waUser
     
     public function setLocale($locale)
     {
-        $this->info['locale'] = $locale;
+        
     }
     
     public function save($data = array(), $validate = false)
@@ -190,6 +190,16 @@ class waAuthUser extends waUser
             }
         }
         return false;
+    }
+    
+    public function logout()
+    {
+        // Update last datetime of the current user
+        $this->updateLastTime(true);
+        // clear auth        
+        waSystem::getInstance()->getAuth()->clearAuth();
+        $this->id = $this->data = null;
+        $this->auth = false;
     }
 }
 

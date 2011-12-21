@@ -99,6 +99,13 @@ abstract class waViewActions extends waController
         $template = $pluginRoot.$this->template_folder.strtolower($match[0])."/".$match[0].$template.$this->view->getPostfix();
         return $template;
     }
+    
+
+    public function setTemplate($template)
+    {
+        $this->template = $template;
+    }    
+    
 
     public function display()
     {

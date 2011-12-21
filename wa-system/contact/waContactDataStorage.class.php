@@ -56,6 +56,8 @@ class waContactDataStorage extends waContactStorage
                     $delete = array();
                     if (isset($value['data'])) {
                         $value = $value['data'];
+                    } elseif (isset($value['value']) && is_array($value['value'])) {
+                        $value = $value['value'];
                     }
                     foreach ($f->getField(false) as $subfield) {
                         if (isset($value[$subfield]) && $value[$subfield]) {

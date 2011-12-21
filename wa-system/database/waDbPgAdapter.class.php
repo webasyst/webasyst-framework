@@ -23,12 +23,12 @@ class waDbPgAdapter extends waDbAdapter
 		return pg_connect($connection);
 	}
 	
-	public function query($query, $handler)
+	public function query($query)
 	{
-		return pg_query($handler, $query);
+		return pg_query($this->handler, $query);
 	}
 	
-	public function close($handler)
+	public function close()
 	{
 		
 	}
@@ -48,17 +48,17 @@ class waDbPgAdapter extends waDbAdapter
 		return pg_fetch_assoc($result);
 	}	
 	
-	public function escape($string, $handler)
+	public function escape($string)
 	{
-		return pg_escape_string($handler, $string);
+		return pg_escape_string($this->handler, $string);
 	}
 	
-	public function error($handler)
+	public function error()
 	{
-		return pg_errormessage($handler);
+		return pg_errormessage($this->handler);
 	}
 	
-	public function errorCode($handler)
+	public function errorCode()
 	{
 		
 	}
@@ -68,10 +68,10 @@ class waDbPgAdapter extends waDbAdapter
 		return $string;
 	}
 	
-	public function schema($table, $handler)
+	public function schema($table)
 	{
 		$sql = "select * from INFORMATION_SCHEMA.COLUMNS WHERE table_name = '".$table."'";
-		$res = pg_query($sql);
+		$res = pg_query($this->handler, $sql);
 		$result = array();
 		while ($row = pg_fetch_assoc($res)) {
 			$type = $row['data_type'];

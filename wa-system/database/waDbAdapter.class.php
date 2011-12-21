@@ -17,12 +17,29 @@ abstract class waDbAdapter
     const RESULT_ASSOC = 1;
     const RESULT_NUM = 2;
     const RESULT_BOTH = 3;
+    
+    protected $handler;
+    protected $settings;
+    
+    public function __construct($settings)
+    {
+    	$this->settings = $settings;
+    	$this->handler = $this->connect($settings);
+    }
+    
+    public function reconnect() 
+    {
+    	if ($this->handler) {
+    		$this->close();
+    	}
+    	$this->handler = $this->connect($this->settings);
+    }
 
     abstract public function connect($settings);
 
-    abstract public function close($handler);
+    abstract public function close();
 
-    abstract public function query($query, $handler);
+    abstract public function query($query);
 
     abstract public function free($result);
 
@@ -45,7 +62,7 @@ abstract class waDbAdapter
         return $this->fetch_array($result, $mode = self::RESULT_ASSOC);
     }
 
-    public function escape($string, $handler)
+    public function escape($string)
     {
         return addslashes($string);
     }
@@ -55,18 +72,23 @@ abstract class waDbAdapter
         return "`".$string."`";
     }
 
-    public function ping($handler)
+    public function ping()
     {
         return true;
     }
 
-    abstract public function error($handler);
+    abstract public function error();
 
-    abstract public function errorCode($handler);    
+    abstract public function errorCode();    
 
-    abstract public function insert_id($handler);
+    abstract public function insert_id();
 
-    abstract public function affected_rows($handler);
+    abstract public function affected_rows();
 
-    abstract public function schema($table, $handler);
+    abstract public function schema($table);
+    
+    public function getIterator($result)
+    {
+        return new waDbResultIterator($result, $this);
+    }
 }

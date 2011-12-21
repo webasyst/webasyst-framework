@@ -17,7 +17,7 @@
 /** 
  * Главный конфигурационный файл приложения
  * Подробнее о конфигах приложения:
- * http://www.webasyst.com/ru/framework/docs/application-guide/config/#app.php
+ * http://www.webasyst.com/ru/framework/docs/dev/config/#app.php
  */
 return array(
 	// название приложения

@@ -15,7 +15,7 @@
 class waLocale
 {
     protected static $locale;
-    protected static $adapter;
+    public static $adapter;
 
     protected static $loaded = array();
 
@@ -39,6 +39,11 @@ class waLocale
         } else {
             self::$adapter = new waLocaleAdapter();
         }
+    }
+
+    public static function getLocale()
+    {
+        return self::$locale;
     }
 
     /**
@@ -98,20 +103,20 @@ class waLocale
 
     public static function load($locale, $locale_path, $domain, $textdomain = true)
     {
-        //if ($locale != self::$locale || !isset(self::$loaded[$locale][$domain])) {
+        if (!self::$locale || $textdomain) {
             self::$locale = $locale;
-            self::$loaded[$locale][$domain] = true;
-            self::getAdapter()->load($locale, $locale_path, $domain, $textdomain);
-        //}
+        }
+        self::$loaded[$locale][$domain] = true;
+        self::getAdapter()->load($locale, $locale_path, $domain, $textdomain);
     }
-    
+
     public static function getFirstDay($locale = null)
     {
         if (!$locale) {
             $locale = self::$locale;
         }
         $locale = self::getInfo($locale);
-        return isset($locale['first_day']) ? $locale['first_day'] : 1; 
+        return isset($locale['first_day']) ? $locale['first_day'] : 1;
     }
 
     public static function getInfo($locale)
@@ -185,14 +190,96 @@ class waLocale
                 }
                 asort($data);
                 break;
+            case false:
+                return array_keys($data);
             default:
                 return $data;
         }
 
         return $data;
     }
-}
 
+    public static function getByISO3($iso3)
+    {
+        switch ($iso3) {
+            case 'rus':
+                $l = 'ru_RU'; break;
+            default:
+                $l = 'en_US'; break;
+        }
+
+        if (self::getInfo($l)) {
+            return $l;
+        }
+
+        return null;
+    }
+
+    /**
+     * Return string from an array depending on locale.
+     *
+     * When $arr is not an array, return it.
+     * Otherwise return one of (in order of priority):
+     * - $arr[$locale]
+     * - $arr['en_US']
+     * - first element in $arr
+     * - ''
+     *
+     * @param array|string $arr strings in different locales, locale => string
+     * @param string $locale defaults to current active locale
+     * @return string
+     */
+    public static function fromArray($arr, $locale=null)
+    {
+        if (!is_array($arr)) {
+            return $arr;
+        } else if (!$arr) {
+            return '';
+        }
+
+        if (!$locale) {
+            $locale = wa()->getLocale();
+        }
+
+        if(isset($arr[$locale])) {
+            return $arr[$locale];
+        }
+        if(isset($arr['en_US'])) {
+            return $arr['en_US'];
+        }
+        return reset($arr);
+    }
+
+    /**
+     * Transliterate value using transliteration table from locale settings (if exists).
+     * Recursively applies self to arrays.
+     *
+     * @param string|array $value
+     * @param string $locale defaults to current system locale
+     * @return string|array transliterated $value
+     */
+    public function transliterate($value, $locale=null)
+    {
+        if (!$locale) {
+            $locale = self::getLocale();
+        }
+
+        $t = self::getInfo($locale);
+        if (!isset($t['translit_table'])) {
+            return $value;
+        }
+        $t = $t['translit_table'];
+
+        if (is_array($value)) {
+            foreach($value as $k => &$v) {
+                $v = self::transliterate($v, $locale);
+            }
+            return $value;
+        }
+
+        return str_replace(array_keys($t), array_values($t), $value);
+    }
+}
 
 /**
  * Translate string
@@ -209,16 +296,24 @@ function _w($msgid1, $msgid2 = null, $n = null, $sprintf = true)
         return $msgid1;
     }
     if ($msgid2 === null) {
-        return waLocale::getAdapter()->gettext($msgid1);
+        return waLocale::$adapter->gettext($msgid1);
     } elseif ($n === 'm' || $n === 'f') {
-        return waLocale::getAdapter()->ngettext($msgid1, $msgid2, $n === 'm' ? 1 : 2);
+        return waLocale::$adapter->ngettext($msgid1, $msgid2, $n === 'm' ? 1 : 2);
     } else {
-        $str = waLocale::getAdapter()->ngettext($msgid1, $msgid2, $n);
+        $str = waLocale::$adapter->ngettext($msgid1, $msgid2, $n);
         if ($sprintf && ($i = strpos($str, '%')) !== false) {
             return sprintf($str, $n);
         }
         return $str;
     }
+}
+
+/** Copy of sprintf() with the first (string) argument passed to _wp() beforehand. */
+function sprintf_wp()
+{
+    $args = func_get_args();
+    array_unshift($args, _w(array_shift($args)));
+    return call_user_func_array('sprintf', $args);
 }
 
 /**
@@ -250,9 +345,9 @@ function _wd($domain, $msgid1, $msgid2 = null, $n = null, $sprintf = true)
         return $msgid1;
     }
     if ($msgid2 === null) {
-        return waLocale::getAdapter()->dgettext($domain, $msgid1);
+        return waLocale::$adapter->dgettext($domain, $msgid1);
     } else {
-        $str = waLocale::getAdapter()->dngettext($domain, $msgid1, $msgid2, $n);
+        $str = waLocale::$adapter->dngettext($domain, $msgid1, $msgid2, $n);
         if ($sprintf && strpos($str, '%d') !== false) {
             return sprintf($str, $n);
         }
@@ -272,7 +367,7 @@ function _wd($domain, $msgid1, $msgid2 = null, $n = null, $sprintf = true)
  */
 function _wp($msgid1, $msgid2 = null, $n = null, $sprintf = true)
 {
-    if( ( $domain = wa()->getActiveLocaleDomain())) {
+    if ($domain = wa()->getActiveLocaleDomain()) {
         return _wd($domain, $msgid1, $msgid2, $n, $sprintf);
     } else {
         return _w($msgid1, $msgid2, $n, $sprintf);

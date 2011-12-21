@@ -15,7 +15,7 @@ class guestbookBackendActions extends waViewActions
 		// Передаем записи в шаблон
 		$this->view->assign('records', $records);	
 		// Передаём в шаблон УРЛ фронтенда
-		$this->view->assign('url', wa()->getRouting()->getUrl('guestbook'));
+		$this->view->assign('url', wa()->getRouting()->getUrl('guestbook', true));
 		/*
 		 * Передаём в шаблон права пользователя на удаление записей из гостевой книги
 		 * Права описаны в конфиге lib/config/guestbookRightConfig.class.php

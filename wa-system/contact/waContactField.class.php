@@ -117,15 +117,15 @@ abstract class waContactField
         if (!$locale) {
             $locale = waSystem::getInstance()->getLocale();
         }
-        
+
         if (isset($this->name[$locale])) {
             return $this->name[$locale];
         } else if (isset($this->name['en_US'])) {
-        	if ($locale = waSystem::getInstance()->getLocale()) {
-        		return _ws($this->name['en_US']);	
-        	} else {
-            	return waLocale::translate('webasyst', $locale, $this->name['en_US']);
-        	}
+            if ($locale = waSystem::getInstance()->getLocale()) {
+                return _ws($this->name['en_US']);
+            } else {
+                return waLocale::translate('webasyst', $locale, $this->name['en_US']);
+            }
         } else {
             return reset($this->name); // reset() returns the first value
         }
@@ -136,9 +136,14 @@ abstract class waContactField
         return isset($this->options['multi']) && $this->options['multi'];
     }
     
+    public function isUnique()
+    {
+    	return isset($this->options['unique']) && $this->options['unique'];
+    }        
+
     public function isExt()
     {
-    	return $this->isMulti() && isset($this->options['ext']);
+        return $this->isMulti() && isset($this->options['ext']);
     }
 
     /**
@@ -160,9 +165,9 @@ abstract class waContactField
             return array();
         }
         if ($this->isMulti()) {
-        	if (!is_array($data)) {
-        		$data = array($data);
-        	}
+            if (!is_array($data)) {
+                $data = array($data);
+            }
             foreach ($data as &$row) {
                 $row = $this->format($row, $format);
             }
@@ -177,9 +182,9 @@ abstract class waContactField
             return $this->format($data, $format);
         }
     }
-    
-    
-    public function set(waContact $contact, $value, $params, $add = false)
+
+
+    public function set(waContact $contact, $value, $params = array(), $add = false)
     {
         if ($this->isMulti()) {
             $is_ext = $this->isExt();
@@ -196,8 +201,8 @@ abstract class waContactField
                 }
                 if (!$is_ext && isset($value['ext'])) {
                     unset($value['ext']);
-                } 
-                $value = array($value);                
+                }
+                $value = array($value);
             } else {
                 foreach ($value as &$v) {
                     if (!is_array($v)) {
@@ -224,7 +229,7 @@ abstract class waContactField
                         if ($row['ext'] == $ext) {
                             unset($data[$sort]);
                         }
-                    }    
+                    }
                     foreach ($value as $v) {
                         $data[] = $v;
                     }
@@ -256,7 +261,7 @@ abstract class waContactField
      *
      * @return array|string|null Validation errors (array for multi fields, string for simple fields) or null if everything is ok.
      */
-    public function validateUnique($data, $contactId=null) 
+    public function validateUnique($data, $contactId=null)
     {
         if (!$this->getParameter('unique')) {
             return null;
@@ -425,8 +430,15 @@ abstract class waContactField
             }
 
             if ($f == 'value') {
-                if (is_array($data)) {
+                if (is_array($data) && isset($data['value'])) {
+                    $k = array_keys($data);
                     $data = $data['value'];
+                    sort($k);
+                    if ($k == array('ext', 'value')) {
+                        $data = htmlspecialchars($data);
+                    }
+                } else if (!is_array($data)) {
+                    $data = htmlspecialchars($data);
                 }
                 continue;
             }
@@ -453,7 +465,7 @@ abstract class waContactField
         return $data;
     }
 
-    protected function setValue($value) 
+    protected function setValue($value)
     {
         return $value;
     }
@@ -479,15 +491,15 @@ abstract class waContactField
         return str_replace(array('waContact', 'Field'), array('', ''), get_class($this));
     }
 
-    /** 
+    /**
      * Get the current value of option $p.
      * Used by a Field Constructor editor to access field parameters.
      *
      * waContactField has one parameter: localized_names = array(locale => name)
      *
-     * @param $p string parameter to read 
+     * @param $p string parameter to read
      */
-    public function getParameter($p) 
+    public function getParameter($p)
     {
         if ($p == 'localized_names') {
             return $this->name;
@@ -499,7 +511,7 @@ abstract class waContactField
         return $this->options[$p];
     }
 
-    /** 
+    /**
      * Set the value of option $p.
      * Used by a Field Constructor editor to change field parameters.
      *
@@ -508,9 +520,9 @@ abstract class waContactField
      * unique = boolean
      *
      * @param $p string parameter to set
-     * @param $value mixed value to set 
+     * @param $value mixed value to set
      */
-    public function setParameter($p, $value) 
+    public function setParameter($p, $value)
     {
         if ($p == 'localized_names') {
             if (is_array($value)) {
@@ -527,11 +539,11 @@ abstract class waContactField
         $this->options[$p] = $value;
     }
 
-    /** 
+    /**
      * Set array of parameters
-     * @param array $param parameter => value 
+     * @param array $param parameter => value
      */
-    public function setParameters($param) 
+    public function setParameters($param)
     {
         if (!is_array($param)) {
             throw new waException('$param must be an array: '.print_r($param, TRUE));
@@ -541,10 +553,8 @@ abstract class waContactField
         }
     }
 
-    public static function __set_state($state) 
+    public static function __set_state($state)
     {
          return new $state['_type']($state['id'], $state['name'], $state['options']);
     }
 }
-
-// EOF

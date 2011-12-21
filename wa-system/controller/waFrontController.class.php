@@ -31,36 +31,34 @@ class waFrontController
         }
     }
 
-    public function dispatch($route = null)
+    public function dispatch()
     {
-            if ($this->system->getEnv() == 'frontend') {
-                $this->system->getRouting(true)->dispatch($route);
-                if (waRequest::param('secure') && !$this->system->getUser()->isAuth()) {
-                    return $this->system->login();
-                }
+        if ($this->system->getEnv() == 'frontend') {
+            $module = 'frontend';
+        } else {
+            $module = waRequest::get($this->options['module'], $this->system->getEnv());
+        }
+        $module = waRequest::param('module', $module);
+        $action = waRequest::param('action', waRequest::get($this->options['action']));
+        $plugin = waRequest::param('plugin', waRequest::get('plugin', ''));
+        // event init
+        if (!waRequest::request('background_process')) {
+            if (method_exists($this->system->getConfig(), 'onInit')) {
+                $this->system->getConfig()->onInit();
             }
-            $module = waRequest::get($this->options['module'], $this->system->getConfig()->getEnviroment());
-            $module = waRequest::param('module', $module);
-            $action = waRequest::param('action', waRequest::get($this->options['action']));
-            $plugin = waRequest::param('plugin', waRequest::get('plugin', ''));
-            // event init
-            if (!waRequest::request('background_process')) {
-                if (method_exists($this->system->getConfig(), 'onInit')) {
-                    $this->system->getConfig()->onInit();
-                }
-            }
-            if ($widget = waRequest::param('widget')) {
-                $this->executeWidget($widget, $action);
-            } elseif ($this->system->getEnv() == 'backend') {
-                $url = explode("/", $this->system->getConfig()->getRequestUrl(true));
-                if (isset($url[2]) && isset($url[3]) && $url[2] == 'widgets') {
-                    $this->executeWidget($url[3], $action);
-                } else {
-                    $this->execute($plugin, $module, $action);
-                }
+        }
+        if ($widget = waRequest::param('widget')) {
+            $this->executeWidget($widget, $action);
+        } elseif ($this->system->getEnv() == 'backend') {
+            $url = explode("/", $this->system->getConfig()->getRequestUrl(true));
+            if (isset($url[2]) && isset($url[3]) && $url[2] == 'widgets') {
+                $this->executeWidget($url[3], $action);
             } else {
                 $this->execute($plugin, $module, $action);
             }
+        } else {
+            $this->execute($plugin, $module, $action);
+        }
     }
 
     public function executeWidget($widget, $action = null)
@@ -80,6 +78,9 @@ class waFrontController
       * Throw 404 exception if no controller found. */
     public function execute($plugin = null, $module = null, $action = null, $default = false)
     {
+        if (!$this->system->getConfig()->checkRights($module, $action)) {
+            throw new waRightsException(_ws("Access denied."));
+        }
         // current app prefix
         $prefix = $this->system->getConfig()->getPrefix();
 

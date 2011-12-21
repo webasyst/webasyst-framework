@@ -337,8 +337,8 @@ $.store.serializers = {
 			encoders.push( "json" );
 			decoders.push( "json" );
 		},
-		encode: JSON.stringify,
-		decode: JSON.parse
+		encode: ((typeof(JSON) == 'object')?JSON.stringify:$.JSON.stringify),
+		decode: ((typeof(JSON) == 'object')?JSON.parse:$.JSON.parse)
 	},
 	
 	// TODO: html serializer

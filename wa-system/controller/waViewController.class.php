@@ -28,17 +28,17 @@ abstract class waViewController extends waController
 
     /**
      * Set layout
-     * 
+     *
      * @param waLayout $layout
      */
-    public function setLayout(waLayout $layout)
+    public function setLayout(waLayout $layout=null)
     {
         $this->layout = $layout;
     }
 
     /**
      * Execute controller and display result
-     * 
+     *
      * @see waController::run()
      */
     public function run($params = null)
@@ -47,7 +47,7 @@ abstract class waViewController extends waController
         $this->display();
     }
 
-    protected function preExecute() 
+    protected function preExecute()
     {
         wa()->getUser()->updateLastPage();
     }
@@ -59,14 +59,14 @@ abstract class waViewController extends waController
 
     /**
      * Return layout or null
-     *  
+     *
      * @return waLayout|null
      */
     public function getLayout()
     {
         if ($this->layout instanceof waLayout) {
             return $this->layout;
-        } 
+        }
         return null;
     }
 
@@ -79,7 +79,7 @@ abstract class waViewController extends waController
      */
     public function executeAction(waViewAction $action, $name = 'content', waDecorator $decorator = null)
     {
-    	$action->setController($this);
+        $action->setController($this);
         $content = $decorator ? $decorator->display($action) : $action->display();
         if (isset($this->blocks[$name])) {
             $this->blocks[$name] .= $content;
@@ -93,16 +93,16 @@ abstract class waViewController extends waController
      * Display result
      */
     public function display()
-    {	
+    {
         if ($this->layout instanceof waLayout) {
             foreach ($this->blocks as $name => $content) {
                 $this->layout->setBlock($name, $content);
             }
             $this->layout->display();
         } else {
-        	// Send headers
-        	waSystem::getInstance()->getResponse()->sendHeaders();
-        	// Print all blocks
+            // Send headers
+            waSystem::getInstance()->getResponse()->sendHeaders();
+            // Print all blocks
             foreach ($this->blocks as $name => $content) {
                 echo $content;
             }

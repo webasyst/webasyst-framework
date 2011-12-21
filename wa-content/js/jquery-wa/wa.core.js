@@ -224,7 +224,7 @@ $.wa = $.extend(true, $.wa, {
 		dd.addClass('disabled');
 		setTimeout(function() {
 			dd.removeClass('disabled');
-		}, 1);
+		}, 100);
 	},
 
 	/** Enable automatic close of .dropdowns when user clicks on item inside one. */
@@ -243,7 +243,7 @@ $.wa = $.extend(true, $.wa, {
 		self.addClass('disabled');
 		setTimeout(function() {
 			self.removeClass('disabled');
-		}, 1);
+		}, 100);
 	},
 
 	 /** Set default value for an input field. If field becomes empty, it receives specified css class
@@ -285,13 +285,11 @@ $(document).ajaxError(function(e, xhr, settings, exception) {
 		}
 	}
 	// Session timeout, show login page
-	else if (xhr.responseText.indexOf('wa-login') != -1) {
-		document.open("text/html");
-		document.write(xhr.responseText);
-		document.close();
+	else if (xhr.getResponseHeader('wa-session-expired')) {
+		window.location.reload();
 	}
 	// Show an exception in development mode
-	else if (xhr.responseText.indexOf('waException') != -1) {
+	else if (xhr.responseText.indexOf('Exception') != -1) {
 		$.wa.dialogCreate('ajax-error', {'content': "<div>" + xhr.responseText + '</div>'});
 	}
 });

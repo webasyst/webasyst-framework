@@ -27,13 +27,11 @@ class waRequest
     {
         $type = trim(strtolower($type));
         switch ($type) {
-            case self::TYPE_INT: {
+            case self::TYPE_INT:
                 return (int)$val;
-            }
-            case self::TYPE_STRING_TRIM: {
+            case self::TYPE_STRING_TRIM:
                 return trim($val);
-            }
-            case self::TYPE_ARRAY_INT: {
+            case self::TYPE_ARRAY_INT:
                 if (!is_array($val)) {
                     $val = explode(",", $val);
                 }
@@ -41,11 +39,9 @@ class waRequest
                     $v = self::cast($v, self::TYPE_INT);
                 }
                 return $val;
-            }
             case self::TYPE_STRING:
-            default: {
+            default:
                 return $val;
-            }
         }
     }
 
@@ -66,6 +62,9 @@ class waRequest
 
     public static function request($name = null, $default = null, $type = null)
     {
+        if ($name === null) {
+            return $_POST + $_GET;
+        }
         $r = self::post($name, $default, $type);
         if ($r !== $default) {
             return $r;
@@ -142,6 +141,9 @@ class waRequest
 
     public static function server($name = null, $default = null, $type = null)
     {
+        if ($name && !isset($_SERVER[$name])) {
+            $name = strtoupper($name);
+        }
         return self::getData($_SERVER, $name, $default, $type);
     }
 
@@ -187,7 +189,7 @@ class waRequest
 
     public static function setParam($key, $value = null)
     {
-        if ($value === null) {
+        if ($value === null && is_array($key)) {
             self::$params = $key;
         } else {
             self::$params[$key] = $value;
@@ -202,5 +204,48 @@ class waRequest
 			$ip = getenv('REMOTE_ADDR');
 		}
 		return $ip;
+    }
+    
+    /**
+     * Returns locale by header Accept-Language
+     */
+    public static function getLocale()
+    {
+        $locales = waLocale::getAll(false);
+        if (($l = self::param('locale')) && in_array($l, $locales)) {
+            return $l;
+        }
+        if (!self::server('HTTP_ACCEPT_LANGUAGE')) {
+        	return $locales[0];
+        }        
+        preg_match_all("/([a-z]{1,8})(?:-([a-z]{1,8}))?(?:\s*;\s*q\s*=\s*(1|1\.0{0,3}|0|0\.[0-9]{0,3}))?\s*(?:,|$)/i",
+            self::server('HTTP_ACCEPT_LANGUAGE'), $matches);
+        $result = $locales[0];
+        $max_q = 0;       
+        for ($i = 0; $i < count($matches); $i++) {
+        	$lang = $matches[1][$i];
+        	if (!empty($matches[2][$i])) {
+        		$lang .= '_'.$matches[2][$i];
+        	}
+        	if (!empty($matches[3][$i])) {
+        		$q = (float)$matches[3][$i];
+        	} else {
+        		$q = 1.0;
+        	}
+        	if (in_array($lang, $locales) && ($q > $max_q)) {
+        		$result = $lang;
+        		$max_q = $q;
+        	} elseif (empty($matches[2][$i]) && ($q * 0.8 > $max_q)) {
+        		$n = strlen($lang);
+        		foreach ($locales as $l) {
+        			if (!strncmp($l, $lang, $n)) {
+        				$result = $l;
+        				$max_q = $q * 0.8;
+        				break;
+        			}
+        		}
+        	}
+        }
+        return $result;                 
     }
 }

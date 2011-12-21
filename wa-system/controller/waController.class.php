@@ -68,14 +68,14 @@ abstract class waController
             $actions = $config->getLogActions();
             // Check action
             if (!isset($actions[$action])) {
-            	if (waSystemConfig::isDebug()) {
-                	throw new waException('Unknown action for log '.$action);
-            	} else {
-            		return false;
-            	}
+                if (waSystemConfig::isDebug()) {
+                    throw new waException('Unknown action for log '.$action);
+                } else {
+                    return false;
+                }
             }
             if ($actions[$action] === false) {
-            	return false;
+                return false;
             }
             $app_id = $system->getApp();
         } else {
@@ -90,6 +90,10 @@ abstract class waController
         );
         if ($count !== null) {
             $data['count'] = $count;
+        }
+
+        if (!class_exists('waLogModel')) {
+            wa('webasyst');
         }
         $log_model = new waLogModel();
         return $log_model->insert($data);
@@ -117,6 +121,22 @@ abstract class waController
     public function getStorage()
     {
         return waSystem::getInstance()->getStorage();
+    }
+
+    public function storage()
+    {
+        $n = func_num_args();
+        $args = func_get_args();
+        if ($n == 1) {
+            return $this->getStorage()->get($this->getApp().'/'.$args[0]);
+        } elseif ($n == 2) {
+            if ($args[1] === null) {
+                return $this->getStorage()->del($this->getApp().'/'.$args[0]);
+            } else {
+                return $this->getStorage()->set($this->getApp().'/'.$args[0], $args[1]);
+            }
+        }
+        return null;
     }
 
     /**

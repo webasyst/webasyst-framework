@@ -2,7 +2,7 @@
 
 /**
  * Класс для описания настроек прав доступа для приложения
- * http://www.webasyst.com/ru/framework/docs/application-guide/access-rights/
+ * http://www.webasyst.com/ru/framework/docs/dev/access-rights/
  */
 class dummyRightConfig extends waRightConfig
 {

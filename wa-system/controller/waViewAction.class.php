@@ -24,7 +24,7 @@ abstract class waViewAction extends waController
     protected $title = "";
     protected $template = null;
     protected $params = null;
-    
+
     protected $controller = null;
     protected $layout = null;
 
@@ -38,61 +38,93 @@ abstract class waViewAction extends waController
     {
         return $this->title;
     }
-    
+
     public function setController(waController $controller)
     {
-    	$this->controller = $controller;
+        $this->controller = $controller;
     }
-    
+
     protected function setThemeTemplate($template, $theme = null)
     {
         if ($theme === null) {
             $theme = $this->getTheme();
         }
-        $theme_path = wa()->getDataPath('themes', true).'/'.$theme;
-        if (!file_exists($theme_path) || !file_exists($theme_path.'/theme.php')) {
-            $theme_path = wa()->getAppPath().'/'.'themes/'.$theme;
+        if (strpos($theme, ':') !== false) {
+            list($app_id, $theme) = explode(':', $theme, 2);
+        } else {
+            $app_id = null;
+        }
+        $theme_path = wa()->getDataPath('themes', true, $app_id).'/'.$theme;
+        if (!file_exists($theme_path) || !file_exists($theme_path.'/theme.xml')) {
+            $theme_path = wa()->getAppPath().'/themes/'.$theme;
+            $this->view->assign('wa_theme_url', wa()->getAppStaticUrl($app_id).'themes/'.$theme.'/');
+        } else {
+            $this->view->assign('wa_theme_url', wa()->getDataUrl('themes', true, $app_id).'/'.$theme.'/');
         }
         $this->view->setTemplateDir($theme_path);
         $this->template = 'file:'.$template;
+        return file_exists($theme_path.'/'.$template);
     }
     
+    private function themeExists($theme)
+    {
+        $theme_path = wa()->getDataPath('themes', true).'/'.$theme;
+        if (file_exists($theme_path) && file_exists($theme_path.'/theme.xml')) {
+            return true;
+        }
+        return file_exists(wa()->getAppPath().'/themes/'.$theme);
+    }
+ 
+
     protected function getTheme()
     {
-        if (waRequest::get('set_force_theme')) {
-            return waRequest::get('set_force_theme');
+        $key = $this->getConfig()->getApplication();
+        $key .= '/'.wa()->getRouting()->getDomain().'/theme';
+        if (($theme_hash = waRequest::get('theme_hash')) && ($theme = waRequest::get('set_force_theme')) !== null) {
+            $app_settings_model = new waAppSettingsModel();
+            $hash = $app_settings_model->get('site', 'theme_hash');
+            if ($theme_hash == md5($hash)) {
+                if ($theme && $this->themeExists($theme)) {
+                    wa()->getStorage()->set($key, $theme);
+                    return $theme;
+                } else {
+                    wa()->getStorage()->del($key);
+                }
+            }
+        } elseif (($theme = wa()->getStorage()->get($key)) && $this->themeExists($theme)) {
+            return $theme;
         }
         if (waRequest::isMobile()) {
             return waRequest::param('theme_mobile', 'default');
-        } 
+        }
         return waRequest::param('theme', 'default');
     }
-    
+
     protected function getThemeUrl()
     {
         $theme = $this->getTheme();
         $theme_path = wa()->getDataPath('themes', true).'/'.$theme;
-        if (!file_exists($theme_path) || !file_exists($theme_path.'/theme.php')) {
-            return wa()->getAppStaticUrl().'/themes/'.$theme.'/'; 
+        if (!file_exists($theme_path) || !file_exists($theme_path.'/theme.xml')) {
+            return wa()->getAppStaticUrl().'/themes/'.$theme.'/';
         }
         return wa()->getDataUrl('themes/'.$theme.'/', true);
     }
-    
+
     /**
-     * 
+     *
      * @return waViewController
      */
     public function getController()
     {
-    	return $this->controller;
+        return $this->controller;
     }
-    
-    public function setLayout(waLayout $layout)
+
+    public function setLayout(waLayout $layout=null)
     {
-    	if ($this->controller !== null && $this->controller instanceof waViewController) {
-    		$this->controller->setLayout($layout);
-    	}
-    	$this->layout = $layout;
+        if ($this->controller !== null && $this->controller instanceof waViewController) {
+            $this->controller->setLayout($layout);
+        }
+        $this->layout = $layout;
     }
 
     public function execute()
@@ -107,15 +139,15 @@ abstract class waViewAction extends waController
 
     protected function getTemplate()
     {
-    	$plugin_root = $this->getPluginRoot();
-    	
+        $plugin_root = $this->getPluginRoot();
+
         // Use template set up by a subclass, if any
         if ($this->template === null) {
             // figure it out by a class name by default
             $prefix = waSystem::getInstance()->getConfig()->getPrefix();
             $template = substr(get_class($this), strlen($prefix), -6);
             if ($plugin_root) {
-            	$template = preg_replace("~^.*Plugin~", '', $template);
+                $template = preg_replace("~^.*Plugin~", '', $template);
             }
         } else {
             // If path contains / or : then it's a full path to template
@@ -140,7 +172,7 @@ abstract class waViewAction extends waController
         return $this->view->isCached($this->getTemplate(), $this->cache_id);
     }
 
-    public function display()
+    public function display($clear_assign = true)
     {
         $this->view->cache($this->cache_time);
         if ($this->cache_time && $this->isCached())  {
@@ -151,7 +183,9 @@ abstract class waViewAction extends waController
             }
             $this->execute();
             $result = $this->view->fetch($this->getTemplate(), $this->cache_id);
-            $this->view->clearAllAssign();
+            if ($clear_assign) {
+                $this->view->clearAllAssign();
+            }
             return $result;
         }
     }

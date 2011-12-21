@@ -267,7 +267,7 @@ class waRightConfig
                 return '<tr'.($params['cssclass'] ? ' class="'.$params['cssclass'].'"' : '').'>'.
                             '<td><div>'.$label.'</div></td>'.
                             ($inherited !== null ? '<td><i class="icon10 '.($own || $group ? 'yes' : 'no').'"></i></td>' : '').
-                            '<td><input type="hidden" name="app['.$name.']" value="0"><input type="checkbox" name="app['.$name.']" value="1"'.($own ? ' checked="checked"' : '').'></td>'.
+                            '<td><input type="hidden" name="app['.$name.']" value="0"><input type="checkbox" name="app['.$name.']" value="'.(isset($params['value']) ? $params['value'] : 1).'"'.($own ? ' checked="checked"' : '').'></td>'.
                             ($inherited !== null ? '<td><input type="checkbox"'.($group ? ' checked="checked"' : '').' disabled="disabled"></td>' : '').
                         '</tr>';
             case 'list':
@@ -289,11 +289,15 @@ class waRightConfig
                                 '<td><div class="hint">'.(isset($params['hint1']) ? $params['hint1'] : '').'</td>'.
                                 ($inherited !== null ? '<td><div class="hint">'.(isset($params['hint2']) ? $params['hint2'] : '').'</td>' : '').
                         '</tr>';
+                $item_params = array('cssclass' => 'c-access-subcontrol-item');
+                if (isset($params['value'])) {
+                    $item_params['value'] = $params['value'];
+                }
                 foreach ($params['items'] as $id => $item_name) {
                     if ($group) {
                         $inherited[$name.'.'.$id] = 1;
                     }
-                    $html .= $this->getItemHtml($name.'.'.$id, htmlspecialchars($item_name), 'checkbox', array('cssclass' => 'c-access-subcontrol-item'), $rights, $inherited);
+                    $html .= $this->getItemHtml($name.'.'.$id, htmlspecialchars($item_name), 'checkbox', $item_params, $rights, $inherited);
                 }
                 return $html;
             case 'selectlist':
@@ -310,6 +314,13 @@ class waRightConfig
                     $html .= $this->getItemHtml($name.'.'.$id, htmlspecialchars($item_name), 'select', array('cssclass' => 'c-access-subcontrol-item', 'options' => $params['options']), $rights, $inherited);
                 }
                 return $html;
+            case 'header':
+                if(!isset($params['tag'])) {
+                    $params['tag'] = 'h2';
+                }
+                return '<tr'.($params['cssclass'] ? ' class="'.$params['cssclass'].'"' : '').'>'.
+                            '<td colspan="'.($inherited !== null ? '4' : '2').'"><div><'.$params['tag'].'>'.$label.'</'.$params['tag'].'></div></td>'.
+                        '</tr>';
             default:
                 throw new waException('Unknown control: '.$type);
         }

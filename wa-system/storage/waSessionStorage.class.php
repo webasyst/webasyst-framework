@@ -80,6 +80,11 @@ class waSessionStorage extends waStorage
 		return null;
 	}
 
+	public function del($key)
+	{
+	    $this->remove($key);
+	}	
+	
 	public function remove($key)
 	{
 		if (!self::$started) {

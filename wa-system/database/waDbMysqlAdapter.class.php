@@ -43,9 +43,14 @@ class waDbMySQLAdapter extends waDbAdapter
 		return $handler;
 	}
 	
-	public function query($query, $handler)
+	public function query($query)
 	{
-		return mysql_query($query, $handler);
+		$r = mysql_query($query, $this->handler);
+		// check error MySQL server has gone away
+		if (!$r && mysql_errno($this->handler) == 2006 && mysql_ping($this->handler)) {
+		    return mysql_query($query, $this->handler);
+		}
+		return $r;
 	}
 	
 	public function free($result)
@@ -58,9 +63,9 @@ class waDbMySQLAdapter extends waDbAdapter
 		return mysql_data_seek($result, $offset);
 	}		
 	
-	public function close($handler)
+	public function close()
 	{
-		return mysql_close($handler);
+		return mysql_close($this->handler);
 	}
 	
 	public function num_rows($result)
@@ -78,41 +83,41 @@ class waDbMySQLAdapter extends waDbAdapter
 		return mysql_fetch_assoc($result);
 	}	
 	
-	public function insert_id($handler)
+	public function insert_id()
 	{
-		return mysql_insert_id($handler);
+		return mysql_insert_id($this->handler);
 	}
 	
-	public function affected_rows($handler)
+	public function affected_rows()
 	{
-		return mysql_affected_rows($handler);
+		return mysql_affected_rows($this->handler);
 	}		
 	
-	public function escape($string, $handler)
+	public function escape($string)
 	{
-		return mysql_real_escape_string($string, $handler);
+		return mysql_real_escape_string($string, $this->handler);
 	}	
 	
-	public function error($handler)
+	public function error()
 	{
-		return mysql_error($handler);
+		return mysql_error($this->handler);
 	}
 	
-	public function ping($handler)
+	public function ping()
 	{
-	    return mysql_ping($handler);
+	    return mysql_ping($this->handler);
 	}
 	
-	public function errorCode($handler)
+	public function errorCode()
 	{
-		return mysql_errno($handler);
+		return mysql_errno($this->handler);
 	}
 	
-	public function schema($table, $handler)
+	public function schema($table)
 	{
-    	$res = mysql_query("DESCRIBE ".$table, $handler);
+    	$res = $this->query("DESCRIBE ".$table);
     	if (!$res) {
-    		$this->exception($handler);
+    		$this->exception();
     	} 
    		$result = array();
    		while ($row = mysql_fetch_assoc($res)) {
@@ -133,9 +138,9 @@ class waDbMySQLAdapter extends waDbAdapter
    		return $result;		
 	}
 	
-	protected function exception($handler)
+	protected function exception()
 	{
-		throw new waDbException(mysql_error($handler), mysql_errno($handler));
+		throw new waDbException(mysql_error($this->handler), mysql_errno($this->handler));
 	}
 	
 }

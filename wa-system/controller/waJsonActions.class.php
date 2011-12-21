@@ -52,6 +52,7 @@ abstract class waJsonActions extends waController
 		$this->postExecute();
 		
 		if ($this->action == $action) {
+		    $this->getResponse()->sendHeaders();
 	    	if (!$this->errors) {
 	    	    $data = array('status' => 'ok', 'data' => $this->response);
 	    		echo json_encode($data);

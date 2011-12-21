@@ -46,11 +46,12 @@ class waGettext
         
         // match all msgid/msgstr entries
         $matched = preg_match_all(
-            '/(msgid\s+(?:"(?:[^"]|\\\\")*?"\s*)+)\s+' .
+            '/(msgid\s+(?:"(?:\\\\"|[^"])*?"\s*)+)\s+' .
         	'(msgid_plural\s+(?:"(?:[^"]|\\\\")*?"\s*)+)?\s*'.
-            '((?:msgstr(?:\[\d\])?\s+(?:"(?:[^"]|\\\\")*?"\s*)+\s+)+)/u',
+            '((?:msgstr(?:\[\d\])?\s+(?:"(?:\\\\"|[^"])*"\s*)+\s+)+)/u',
             $contents, $matches
         );
+        
         
         unset($contents);
         
@@ -67,7 +68,7 @@ class waGettext
             $msgstr= preg_replace('/\s*msgstr\s*"(.*)"\s*/s', '\\1', $matches[3][$i]);
                         
             if ($msgid_plural) {
-            	$msgstr = preg_replace('/\s*msgstr\[\d\]\s*"((?:[^"]|\\\\")*)"\s*/si', "\\1\n\n", $matches[3][$i]);
+            	$msgstr = preg_replace('/\s*msgstr\[\d\]\s*"((?:\\\\"|[^"])*)"\s*/si', "\\1\n\n", $matches[3][$i]);
             	$msgstr = explode("\n\n", rtrim($msgstr, "\n"));
             }
             

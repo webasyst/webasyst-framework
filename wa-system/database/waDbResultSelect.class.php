@@ -28,7 +28,7 @@ class waDbResultSelect extends waDbResult implements IteratorAggregate
      */
     protected function onConstruct()
     {
-        $this->iterator = new waDbResultIterator($this->result, $this->handler, $this->adapter);
+        $this->iterator = $this->adapter->getIterator($this->result);
     }
     
     /**
@@ -133,11 +133,9 @@ class waDbResultSelect extends waDbResult implements IteratorAggregate
      */
     public function free()
     {
-        if($this->iterator instanceof waDbResultIterator)
-        {
+        if ($this->iterator instanceof waDbResultIterator) {
             return $this->iterator->free();
         }
-        
         return true;
     }
     

@@ -152,21 +152,24 @@ class waMailDecode
 		$html = trim(strip_tags($html, "<a><p><div><br><b><blockquote><strong><i><em><s><u><span><img><sup><font><sub><ul><ol><li><h1><h2><h3><h4><h5><h6><table><tr><td><th><hr><center>"));
     	// realign javascript href to onclick 
 	    $html = preg_replace("/href=(['\"]).*?javascript:(.*)?\\1/i", "onclick=' $2 '", $html);
-	    return $html; 
-	    //remove javascript from tags 
-	    while (preg_match("/<(.*)?javascript.*?\(.*?((?>[^()]+)|(?R)).*?\)?\)(.*)?>/i", $html)) {
-	        $html = preg_replace("/<(.*)?javascript.*?\(.*?((?>[^()]+)|(?R)).*?\)?\)(.*)?>/i", "<$1$3$4$5>", $html); 
+ 
+	    //remove javascript from tags
+	    $pattern = "/<(.*)?javascript.*?\(.*?((?>[^()]+)|(?R)).*?\)?\)(.*)?>/i"; 
+	    while (preg_match($pattern, $html)) {
+	        $html = preg_replace($pattern, "<$1$3$4$5>", $html); 
 	    }
 	    
 	    // dump expressions from contibuted content 
 	    $html = preg_replace("/:expression\(.*?((?>[^(.*?)]+)|(?R)).*?\)\)/i", "", $html); 
 		
-	    while (preg_match("/<(.*)?:expr.*?\(.*?((?>[^()]+)|(?R)).*?\)?\)(.*)?>/i", $html)) { 
-	        $html = preg_replace("/<(.*)?:expr.*?\(.*?((?>[^()]+)|(?R)).*?\)?\)(.*)?>/i", "<$1$3$4$5>", $html);
+	    $pattern = "/<(.*)?:expr.*?\(.*?((?>[^()]+)|(?R)).*?\)?\)(.*)?>/i";
+	    while (preg_match($pattern, $html)) { 
+	        $html = preg_replace($pattern, "<$1$3$4$5>", $html);
 	    } 
-	    // remove all on* events    
-	    while (preg_match("/<(.*)?[\s\r\n\t]on.+?=?\s?.+?(['\"]).*?\\2\s?(.*)?>/i", $html)) { 
-	       $html = preg_replace("/<(.*)?[\s\r\n\t]on.+?=?\s?.+?(['\"]).*?\\2\s?(.*)?>/i", "<$1$3>", $html); 
+	    // remove all on* events
+	    $pattern = "/<(.*)?[\s\r\n\t]on.+?=?\s?.+?(['\"]).*?\\2\s?(.*)?>/i";    
+	    while (preg_match($pattern, $html)) { 
+	       $html = preg_replace($pattern, "<$1$3>", $html); 
 	    }
 	    return $html;		
 	}

@@ -24,14 +24,14 @@ class waDbSQLite3Adapter extends waDbAdapter
 		return new SQLite3($settings['database']);
 	}
 	
-	public function query($query, $handler)
+	public function query($query)
 	{
-		return $handler->query($query);
+		return $this->handler->query($query);
 	}
 	
-	public function close($handler)
+	public function close()
 	{
-		return $handler->close();
+		return $this->handler->close();
 	}
 	
 	public function free($result)
@@ -63,34 +63,34 @@ class waDbSQLite3Adapter extends waDbAdapter
 		return $result->fetchArray($mode);
 	}
 		
-	public function insert_id($handler)
+	public function insert_id()
 	{
-		return $handler->lastInsertRowID();		
+		return $this->handler->lastInsertRowID();		
 	}
 	
-	public function affected_rows($handler)
+	public function affected_rows()
 	{
-		return $handler->changes();
+		return $this->handler->changes();
 	}
 	
-	public function escape($string, $handler)
+	public function escape($string)
 	{
-		return $handler->escapeString($string);
+		return $this->handler->escapeString($string);
 	}	
 	
-	public function error($handler)
+	public function error()
 	{
-		return $handler->lastErrorMsg();	
+		return $this->handler->lastErrorMsg();	
 	}
 	
-	public function errorCode($handler)
+	public function errorCode()
 	{
-		return $handler->lastErrorCode();
+		return $this->handler->lastErrorCode();
 	}	
 	
-	public function schema($table, $handler)
+	public function schema($table)
 	{
-		$res = $handler->query("SELECT * FROM sqlite_master WHERE name = '".$table."'");
+		$res = $this->handler->query("SELECT * FROM sqlite_master WHERE name = '".$table."'");
 		$row = $res->fetchArray();
 		if (!$row) {
 			return array();
@@ -121,5 +121,4 @@ class waDbSQLite3Adapter extends waDbAdapter
 		}
 		return $result;
 	}
-	
 }

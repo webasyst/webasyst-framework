@@ -6,7 +6,7 @@ class contactsPhotoTmpimageController extends waController
 {
     public function execute()
     {
-        $id = (int)waRequest::post('id');
+        $id = $this->getId();
         $file = waRequest::file('photo');
 
         if (!$file->uploaded()) {
@@ -46,7 +46,7 @@ class contactsPhotoTmpimageController extends waController
         $this->getStorage()->write('photoEditors', $photoEditors);
 
         // Return temporary file url to browser
-        $temp_file_url = $this->getConfig()->getBackendUrl(true).'?app=contacts&action=data&temp=1&path=photo/'.$fname;
+        $temp_file_url = $this->getPreviewUrl($fname);
         $this->sendResponse($temp_file_url);
     }
 
@@ -54,6 +54,16 @@ class contactsPhotoTmpimageController extends waController
         echo '<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"><html><head></head><body>'.
             $string
         .'</body></html>';
+    }
+
+    protected function getId()
+    {
+        return (int)waRequest::request('id');
+    }
+
+    protected function getPreviewUrl($file)
+    {
+        return $this->getConfig()->getBackendUrl(true).'?app=contacts&action=data&temp=1&path=photo/'.$file;
     }
 }
 

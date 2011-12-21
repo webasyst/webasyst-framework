@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WebAsyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2011-08-04 14:00+0300\n"
+"PO-Revision-Date: 2011-12-13 15:22+0400\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -1371,9 +1371,11 @@ msgstr "Выйти"
 msgid "Send"
 msgstr "Отправить"
 
-#: /wa-system/webasyst/templates/actions/login/LoginForgot.html:37
 msgid "Please enter your login name or email:"
 msgstr "Пожалуйста, введите ваш логин или email:"
+
+msgid "Please enter your email:"
+msgstr "Пожалуйста, введите ваш email:"
 
 #: /wa-system/webasyst/templates/actions/login/LoginForgot.html:51
 msgid "or"
@@ -1461,6 +1463,9 @@ msgstr "Инструкции по восстановлению пароля бы
 
 msgid "No user with this login name or email has been found."
 msgstr "Пользователь с таким логином или email адресом не найден."
+
+msgid "No user with this email has been found."
+msgstr "Пользователь с таким email адресом не найден."
 
 msgid "Effective<br/>rights"
 msgstr "Результирующие<br/>права"
@@ -1553,4 +1558,16 @@ msgstr "Завтра"
 # Link to hide announcements above apps list
 msgid "[close]"
 msgstr "[закрыть]"
+
+msgid "Recover password for"
+msgstr "Восстановление пароля для"
+
+msgid "Session has expired. Please reload current page and log in again."
+msgstr "Сессия истекла. Обновите пожалуйста страницу и войдите снова."
+
+msgid "Theme %s already exists"
+msgstr ""
+
+msgid "Invalid theme id %s"
+msgstr ""
 

@@ -30,7 +30,7 @@ class waPlugin
 				$this->install();
 				$app_settings_model->set($this->app_id, 'plugin.'.$this->id.'.update_time', 1);
 			} catch (Exception $e) {
-				waLog::log($e->__toString());
+				waLog::log($e->getMessage());
 				return;
 			}
 		}

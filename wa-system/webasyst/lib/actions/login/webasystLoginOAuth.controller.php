@@ -10,7 +10,7 @@ class webasystLoginOAuthController extends waController
         
         $domain = $this->getConfig()->getDomain();
         
-        $config = $this->getConfig()->getConfigFile('config', 'auth');
+        $config = $this->getConfig()->getConfigFile('auth');
         if (isset($config[$domain][$provider])) {
             $params = $config[$domain][$provider];
             $url = $system->getConfig()->getRequestUrl();

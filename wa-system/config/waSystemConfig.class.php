@@ -15,7 +15,7 @@
 class waSystemConfig
 {
 	protected $root_path = null;
-	protected $enviroment = null;
+	protected $environment = null;
 	protected static $root_url = null;
 	
 	protected static $active = null;
@@ -33,7 +33,7 @@ class waSystemConfig
 	protected static $helpers = false;
 	
 	
-	public function __construct($enviroment = null, $root_path = null)
+	public function __construct($environment = null, $root_path = null)
 	{
 		self::$time = microtime(true);
 		if (self::$active == null || $this instanceof waAppConfig) {
@@ -56,13 +56,13 @@ class waSystemConfig
 		$this->configure();
 		$this->init();
 		
-		if ($enviroment === null) {
+		if ($environment === null) {
 			$url = explode("/", $this->getRequestUrl(true));
 			$url = $url[0];
 			
-			$this->enviroment = $url === $this->getSystemOption('backend_url') ? 'backend' : 'frontend';
+			$this->environment = $url === $this->getSystemOption('backend_url') ? 'backend' : 'frontend';
 		} else {
-			$this->enviroment = $enviroment;
+			$this->environment = $environment;
 		}
 		
 		$url = $this->getRequestUrl();
@@ -121,12 +121,12 @@ class waSystemConfig
 	
 	public function getCurrentUrl()
 	{
-		return isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '/';
+		return waRequest::server('REQUEST_URI', '/');
 	}
 	
 	public function getRequestUrl($without_root = true, $without_params = false)
 	{
-		$url = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '/';
+		$url = waRequest::server('REQUEST_URI', '/');
 		if ($without_root) {
 			$url = substr($url, strlen($this->getRootUrl()));
 		}
@@ -277,9 +277,9 @@ class waSystemConfig
 	}
 	
 	
-	public function getConfigFile($name, $file, $default = array())
+	public function getConfigFile($file, $default = array())
 	{
-		$path = $this->getPath($name, $file);
+		$path = $this->getPath('config', $file);
 		if (file_exists($path)) {
 			return include($path);
 		} else {
@@ -302,7 +302,7 @@ class waSystemConfig
 	
 	public function getRouting()
 	{
-		return $this->getConfigFile('config', 'routing'); 
+		return $this->getConfigFile('routing'); 
 	}
 
 	public function getRootPath()
@@ -329,40 +329,40 @@ class waSystemConfig
 	 * Returns instance of AppConfig
 	 * 
 	 * @param $application
-	 * @param $enviroment
+	 * @param $environment
 	 * @param $root_path
 	 * 
 	 * @return waAppConfig
 	 */
-	public static function getAppConfig($application, $enviroment = null, $root_path = null)
+	public static function getAppConfig($application, $environment = null, $root_path = null, $locale = null)
 	{
 		$class_name = $application.'Config';
 		if ($root_path === null) {
 			$root_path = realpath(dirname(__FILE__).'/../..');
 		}
 		
-		if ($enviroment === null) {
-			$enviroment = waSystem::getInstance()->getEnv();
+		if ($environment === null) {
+			$environment = waSystem::getInstance()->getEnv();
 		}
 
 		if ($application === 'webasyst') {
 			require_once($root_path.'/wa-system/webasyst/lib/config/webasystConfig.class.php');
-			return new webasystConfig($enviroment, $root_path);
+			return new webasystConfig($environment, $root_path);
 		}
 		
 		if (file_exists($file = $root_path.'/wa-apps/'.$application.'/lib/config/'.$class_name.'.class.php')) {
 			require_once($file);
-			return new $class_name($enviroment, $root_path);
+			return new $class_name($environment, $root_path, $application, $locale);
 		} elseif (file_exists($file = $root_path.'/wa-apps/'.$application.'/lib/config/app.php')) {
-			return new waAppConfig($enviroment, $root_path, $application);
+			return new waAppConfig($environment, $root_path, $application, $locale);
 		} else {
 			throw new waException(sprintf('Application "%s" does not exist.', $application));
 		}
 	}
 	
-	public function getEnviroment()
+	public function getEnvironment()
 	{
-    	return $this->enviroment;
+    	return $this->environment;
 	}	
 	
 	public function getDatabase()
@@ -386,7 +386,7 @@ class waSystemConfig
 		
 	public function getMessage($type = 'email')
 	{
-		$settings = $this->getConfigFile('config', 'message');
+		$settings = $this->getConfigFile('message');
 		return isset($settings[$type]) ? $settings[$type] : array();
 	}
 	

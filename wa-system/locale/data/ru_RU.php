@@ -6,7 +6,7 @@
         'english_name' => 'Russian',
         'english_region' => 'Russian Federation',
         'date_formats' => array(
-            'monthdate' => 'j f Y',
+            'humandate' => 'j f Y',
             'date' => 'd.m.Y',
             'dtime' => 'd.m H:i',
             'datetime' => 'd.m.Y H:i',

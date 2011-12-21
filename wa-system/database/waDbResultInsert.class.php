@@ -23,7 +23,7 @@ class waDbResultInsert extends waDbResultDelete
     protected function onConstruct()
     {
         parent::onConstruct();
-        $this->insert_id = $this->adapter->insert_id($this->handler);
+        $this->insert_id = $this->adapter->insert_id();
     }
 
     /**

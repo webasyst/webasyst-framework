@@ -14,7 +14,7 @@
  */
 class waContactCompositeField extends waContactField
 {
-    protected function init() 
+    protected function init()
     {
         if (!isset($this->options['required'])) {
             $this->options['required'] = array();
@@ -39,7 +39,7 @@ class waContactCompositeField extends waContactField
                     $row = $this->format($row, $format);
                 }
                 return $data;
-            } else {            	
+            } else {
                 return $this->format(current($data), $format);
             }
         } else {
@@ -85,7 +85,7 @@ class waContactCompositeField extends waContactField
             $value = array();
             foreach ($this->options['fields'] as $field) {
                 if (isset($data['data'][$field->getId()])) {
-                    $value[] = htmlspecialchars($field->getName().": ".$field->format($data['data'][$field->getId()], 'value'));
+                    $value[] = htmlspecialchars($field->getName()).": ".$field->format($data['data'][$field->getId()], 'value');
                 }
             }
             $data['value'] = implode("<br>\n", $value);
@@ -101,14 +101,14 @@ class waContactCompositeField extends waContactField
         }
         return $result;
     }
-    
-    public function set(waContact $contact, $value, $params, $add = false)
+
+    public function set(waContact $contact, $value, $params = array(), $add = false)
     {
-		if ($this->isMulti()) {
+        if ($this->isMulti()) {
             $is_ext = $this->isExt();
             $ext = isset($params['ext']) ? $params['ext'] : '';
             $subfield = isset($params['subfield']) ? $params['subfield'] : '';
-		    
+
             if ($subfield) {
                 if ($add) {
                     $values = $contact->get($field_id);
@@ -137,25 +137,25 @@ class waContactCompositeField extends waContactField
                             'ext' => $ext
                         )
                     );
-                }             
-            }     
-                   
-			if (isset($value[0])) {
-				foreach ($value as &$v) {
-					$v = $this->setValue($v);
-					if ($is_ext && $ext) {
-					    $v['ext'] = $ext;
-					}
-				}
-				unset($v);
-			} else {
-			    $value = $this->setValue($value);
-				if ($is_ext && $ext) {
-				    $value['ext'] = $ext;
-				}
-			    $value = array($value);
-			}
-		    if ($add) {
+                }
+            }
+
+            if (isset($value[0])) {
+                foreach ($value as &$v) {
+                    $v = $this->setValue($v);
+                    if ($is_ext && $ext) {
+                        $v['ext'] = $ext;
+                    }
+                }
+                unset($v);
+            } else {
+                $value = $this->setValue($value);
+                if ($is_ext && $ext) {
+                    $value['ext'] = $ext;
+                }
+                $value = array($value);
+            }
+            if ($add) {
                 $data = $contact->get($this->id);
                 foreach ($value as $v) {
                     $data[] = $v;
@@ -168,7 +168,7 @@ class waContactCompositeField extends waContactField
                         if ($row['ext'] == $ext) {
                             unset($data[$sort]);
                         }
-                    }    
+                    }
                     foreach ($value as $v) {
                         $data[] = $v;
                     }
@@ -177,31 +177,31 @@ class waContactCompositeField extends waContactField
                     return $value;
                 }
             }
-		} else {
-		    if ($subfield) {
-		        $data = $contact->get($this->id);
-		        $data['data'][$subfield] = $value;
-		        return $data;
-		    }
-			return $this->setValue($value);
-		}
+        } else {
+            if ($subfield) {
+                $data = $contact->get($this->id);
+                $data['data'][$subfield] = $value;
+                return $data;
+            }
+            return $this->setValue($value);
+        }
     }
-    
+
     protected function setValue($value)
     {
-    	if (!isset($value['value']) && !isset($value['data'])) {
-        	foreach ($this->getFields() as $sf) {
-        		$sf_id = $sf->getId();
-        		if (isset($value[$sf_id])) {
-        			$value['data'][$sf_id] = $value[$sf_id];
-        			unset($value[$sf_id]); 
-        		} 
-        	}
+        if (!isset($value['value']) && !isset($value['data'])) {
+            foreach ($this->getFields() as $sf) {
+                $sf_id = $sf->getId();
+                if (isset($value[$sf_id])) {
+                    $value['data'][$sf_id] = $value[$sf_id];
+                    unset($value[$sf_id]);
+                }
+            }
         } elseif (isset($value['value']) && !isset($value['data'])) {
-        	$value['data'] = $value['value'];
-        	unset($value['value']);
+            $value['data'] = $value['value'];
+            unset($value['value']);
         }
-        return $value;    	
+        return $value;
     }
 
     public function getFields()

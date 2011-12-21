@@ -19,14 +19,14 @@ class waDbResultIterator implements Iterator
      *
      * @var mixid
      */
-    protected $current    = null;
+    protected $current = null;
 
     /**
      * Current key
      *
      * @var int
      */
-    protected $key        = 0;
+    protected $key = 0;
 
     /**
      * Resource
@@ -35,7 +35,6 @@ class waDbResultIterator implements Iterator
      */
     private $result;
     private $count = null;
-    private $handler;
     /**
      *
      * Enter description here ...
@@ -47,11 +46,15 @@ class waDbResultIterator implements Iterator
      *
      * @param mysql_result $result
      */
-    public function __construct($result, $handler, waDbAdapter $adapter)
+    public function __construct($result, waDbAdapter $adapter)
     {
         $this->result = $result;
-        $this->handler = $handler;
         $this->adapter = $adapter;
+    }
+    
+    public function __destruct()
+    {
+        $this->free();
     }
 
     /**
@@ -210,7 +213,10 @@ class waDbResultIterator implements Iterator
      */
     public function free()
     {
-        $this->adapter->free($this->result);
+        if ($this->result) {
+            $this->adapter->free($this->result);
+            $this->result = null;
+        }
     }
 }
 

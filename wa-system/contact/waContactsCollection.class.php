@@ -14,7 +14,7 @@ class waContactsCollection
     protected $count;
 
     protected $options = array(
-        'check_rights' => true
+        'check_rights' => false
     );
 
     protected $update_count;
@@ -56,6 +56,9 @@ class waContactsCollection
 
     protected function setHash($hash)
     {
+        if (is_array($hash)) {
+            $hash = '/id/'.implode(',', $hash);
+        }
         if (substr($hash, 0, 1) == '#') {
             $hash = substr($hash, 1);
         }
@@ -121,11 +124,14 @@ class waContactsCollection
             if (!$contact_model->fieldExists($f)) {
                 if ($f == 'email') {
                     $this->post_fields['email'][] = $f;
-                } else if ($f == '_online_status') {
+                } elseif ($f == '_online_status') {
                     $required_fields['last_datetime'] = 'c';
                     $required_fields['login'] = 'c';
                     $this->post_fields['_internal'][] = $f;
-                } else if ($f == '_access') {
+                } elseif ($f == '_access') {
+                    $this->post_fields['_internal'][] = $f;
+                } elseif ($f == 'photo_url' || substr($f, 0, 10) == 'photo_url_') {
+                    $required_fields['photo'] = 'c';
                     $this->post_fields['_internal'][] = $f;
                 } else {
                     $this->post_fields['data'][] = $f;
@@ -177,28 +183,40 @@ class waContactsCollection
             foreach ($this->post_fields as $table => $fields) {
                 if ($table == '_internal') {
                     foreach ($fields as $f) {
-                        switch($f) {
-                            case '_online_status':
-                                $t = time() - waUser::getOption('online_timeout', 300);
-                                foreach($data as &$v) {
-                                    $v['_online_status'] = waUser::getStatusByInfo($v);
-                                }
-                                unset($v);
-                                break;
-                            case '_access':
-                                $rm = new waContactRightsModel();
-                                $accessStatus = $rm->getAccessStatus($ids);
-                                foreach($data as $id => &$v) {
-                                    if (!isset($accessStatus[$id])) {
-                                        $v['_access'] = '';
-                                        continue;
+                        if ($f == 'photo_url' || substr($f, 0, 10) == 'photo_url_') {
+                            if ($f == 'photo_url') {
+                                $size = null;    
+                            } else {
+                                $size = substr($f, 10);
+                            }
+                            foreach ($data as $id => &$v) {
+                                $v[$f] = waContact::getPhotoUrl($id, $v['photo'], $size);
+                            }
+                            unset($v);
+                        } else {
+                            switch($f) {
+                                case '_online_status':
+                                    $t = time() - waUser::getOption('online_timeout', 300);
+                                    foreach($data as &$v) {
+                                        $v['_online_status'] = waUser::getStatusByInfo($v);
                                     }
-                                    $v['_access'] = $accessStatus[$id];
-                                }
-                                unset($v);
-                                break;
-                            default:
-                                throw new waException('Unknown internal field: '.$f);
+                                    unset($v);
+                                    break;
+                                case '_access':
+                                    $rm = new waContactRightsModel();
+                                    $accessStatus = $rm->getAccessStatus($ids);
+                                    foreach($data as $id => &$v) {
+                                        if (!isset($accessStatus[$id])) {
+                                            $v['_access'] = '';
+                                            continue;
+                                        }
+                                        $v['_access'] = $accessStatus[$id];
+                                    }
+                                    unset($v);
+                                    break;
+                                default:
+                                    throw new waException('Unknown internal field: '.$f);
+                            }
                         }
                     }
                     continue;
@@ -209,11 +227,11 @@ class waContactsCollection
 
                 foreach ($post_data as $contact_id => $contact_data) {
                     foreach ($contact_data as $field_id => $value) {
-                        if (! ( $f = waContactFields::get($field_id))) {
+                        if (!($f = waContactFields::get($field_id))) {
                             continue;
                         }
                         if (!$f->isMulti()) {
-                            $post_data[$contact_id][$field_id] = $value[0]['value'];
+                            $post_data[$contact_id][$field_id] = isset($value[0]['data']) ? $value[0]['data'] : $value[0]['value'];
                         }
                     }
                 }
@@ -336,7 +354,9 @@ class waContactsCollection
                     $alias = "d".($this->alias_index['data']++);
                     $field_parts = explode('.', $parts[0]);
                     $f = $field_parts[0];
-                    $title[] = waContactFields::get($f)->getName().$parts[1].$parts[2];
+                    if ($fo = waContactFields::get($f)) {
+                        $title[] = $fo->getName().$parts[1].$parts[2];
+                    }
                     $ext = isset($field_parts[1]) ? $field_parts[1] : null;
                     $on = $alias.'.contact_id = c.id AND '.$alias.".field = '".$model->escape($f)."'";
                     $on .= ' AND '.$alias.".value ".$this->getExpression($parts[1], $parts[2]);

@@ -567,7 +567,7 @@
 			}
 			var self = this;
 			$('<div id="add-to-category-dialog"></div>').waDialog({
-				url: '?module=categories&action=addselected'+(self.current_category_id ? '&disabled='+self.current_category_id : '')
+				url: '?module=categories&action=addSelected'+(self.current_category_id ? '&disabled='+self.current_category_id : '')
 			});
 		},
 

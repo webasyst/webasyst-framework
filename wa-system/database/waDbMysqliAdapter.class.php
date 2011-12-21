@@ -41,17 +41,21 @@ class waDbMysqliAdapter extends waDbAdapter
      * Performs a query on the database and return a result object or false
      * 
      * @param string $query - SQL-query
-     * @param mysqli $handler - mysqli connection
      * @return mysqli_result
      */
-    public function query($query, $handler)
+    public function query($query)
     {
-        return $handler->query($query);
+        $r =  $this->handler->query($query);
+		// check error MySQL server has gone away
+		if (!$r && $this->handler->errno == 2006 && $this->handler->ping()) {
+		    return $this->handler->query($query);
+		}
+		return $r;        
     }
     
-    public function close($handler)
+    public function close()
     {
-        return $handler->close($handler);
+        return $this->handler->close();
     }
     
     public function num_rows($result)
@@ -79,41 +83,41 @@ class waDbMysqliAdapter extends waDbAdapter
         return $result->fetch_assoc();
     }    
     
-    public function insert_id($handler)
+    public function insert_id()
     {
-        return $handler->insert_id;
+        return $this->handler->insert_id;
     }
     
-    public function affected_rows($handler)
+    public function affected_rows()
     {
-        return $handler->affected_rows;
+        return $this->handler->affected_rows;
     }    
     
-    public function escape($string, $handler)
+    public function escape($string)
     {
-        return $handler->real_escape_string($string);
+        return $this->handler->real_escape_string($string);
     }
 
-    public function ping($handler)
+    public function ping()
     {
-        return $handler->ping();
+        return @$this->handler->ping();
     }
     
-    public function error($handler)
+    public function error()
     {
-        return $handler->error;
+        return $this->handler->error;
     }
     
-    public function errorCode($handler)
+    public function errorCode()
     {
-        return $handler->errno;
+        return $this->handler->errno;
     }
     
-    public function schema($table, $handler)
+    public function schema($table)
     {
-        $res = $this->query("DESCRIBE ".$table, $handler);
+        $res = $this->query("DESCRIBE ".$table);
         if (!$res) {
-            $this->exception($handler);
+            $this->exception();
         } 
            $result = array();
            while ($row = $this->fetch_assoc($res)) {
@@ -134,9 +138,9 @@ class waDbMysqliAdapter extends waDbAdapter
            return $result;        
     }
     
-    protected function exception($handler)
+    protected function exception()
     {
-        throw new waDbException($this->error($handler), $this->errorCode($handler));
+        throw new waDbException($this->error(), $this->errorCode());
     }
     
 }

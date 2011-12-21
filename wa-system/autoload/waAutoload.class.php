@@ -63,29 +63,28 @@ class waAutoload
     public function autoload($class)
     {
         if ($path = $this->get($class)) {
-            require $path;
-            return true;
+            	require $path;
+            	return true;
         }
         return false;
     }
 
     public function get($class)
     {
-        $original_class = $class;
-        $class = strtolower($class);
         if (isset($this->system_classes[$class])) {
             return $this->base_path.'/wa-system/'.$this->system_classes[$class];
-        } elseif (substr($class, 0, 2) === 'wa') {
-            $dir = preg_replace("/^wai?([A-Z][a-z]+).*?$/", "$1", $original_class);
-            if ($dir == 'Db') {
-                $dir = 'database';
-            }
-            $path = $this->base_path.'/wa-system/'.strtolower($dir).'/'.$original_class.'.'.(substr($original_class, 0, 3) === 'wai' ? 'interface' : 'class').'.php';
+        } elseif (substr($class, 0, 9) === 'waContact') {
+            return $this->base_path.'/wa-system/contact/'.$class.'.class.php';
+        } elseif (substr($class, 0, 4) === 'waDb') {
+            return $this->base_path.'/wa-system/database/'.$class.'.class.php';    
+        } elseif (substr($class, 0, 2) == 'wa') {
+            $dir = preg_replace("/^wai?([A-Z][a-z]+).*?$/", "$1", $class);
+            $path = $this->base_path.'/wa-system/'.strtolower($dir).'/'.$class.'.'.(substr($class, 0, 3) === 'wai' ? 'interface' : 'class').'.php';
             if (file_exists($path)) {
                 return $path;
             } else {
-                $dir = preg_replace("/^wa.*?([A-Z][a-z]+)$/", "$1", $original_class);
-                $path = $this->base_path.'/wa-system/'.strtolower($dir).'/'.$original_class.'.class.php';
+                $dir = preg_replace("/^wa.*?([A-Z][a-z]+)$/", "$1", $class);
+                $path = $this->base_path.'/wa-system/'.strtolower($dir).'/'.$class.'.class.php';
                 if (file_exists($path)) {
                     return $path;
                 }
@@ -101,10 +100,10 @@ class waAutoload
     {
         if (is_array($class)) {
             foreach ($class as $class_name => $path) {
-                $this->classes[strtolower($class_name)] = $path;
+                $this->classes[$class_name] = $path;
             }
         } else {
-            $this->classes[strtolower($class)] = $path;
+            $this->classes[$class] = $path;
         }
     }
 
@@ -122,97 +121,147 @@ class waAutoload
     }
 
     protected $system_classes = array(
-        'waapicontroller' => 'api/waApiController.class.php',
-        'waapimethod' => 'api/waApiMethod.class.php',
-        'waapidecorator' => 'api/waApiDecorator.class.php',
-        'waapidecoratorjson' => 'api/waApiDecoratorJSON.class.php',
-        'waapidecoratorxml' => 'api/waApiDecoratorXML.class.php',
-        'waapiexception' => 'api/waApiException.class.php',
-        'waautoload' => 'autoload/waAutoload.class.php',
-        'wacontactscollection' => 'contact/waContactsCollection.class.php',
-        'waconfig' => 'config/waConfig.class.php',
-        'waappconfig' => 'config/waAppConfig.class.php',
-        'warightconfig' => 'config/waRightConfig.class.php',
-        'waanalyticsconfig' => 'config/waAnalyticsConfig.class.php',
-        'wasystemconfig' => 'config/waSystemConfig.class.php',
-        'wasystem' => 'waSystem.class.php',
-        'waexception' => 'exception/waException.class.php',
-        'warightsexception' => 'exception/waRightsException.class.php',
-        'wacontroller' => 'controller/waController.class.php',
-        'wafrontcontroller' => 'controller/waFrontController.class.php',
-        'wadefaultcontroller' => 'controller/waDefaultController.class.php',
-        'waviewactions' => 'controller/waViewActions.class.php',
-        'wajsonactions' => 'controller/waJsonActions.class.php',
-        'waviewcontroller' => 'controller/waViewController.class.php',
-        'wajsoncontroller' => 'controller/waJsonController.class.php',
-        'waicontroller' => 'controller/waiController.interface.php',
-        'waviewaction' => 'controller/waViewAction.class.php',
-        'wawidget' => 'controller/waWidget.class.php',
-        'wafiles' => 'file/waFiles.class.php',
-        'wamodel' => 'database/waModel.class.php',
-        'wadbexception' => 'exception/waDbException.class.php',
-        'wadbconnector' => 'database/waDbConnector.class.php',
-        'wadbqueryanalyzer' => 'database/waDbQueryAnalyzer.class.php',
-        'wadbresultselect' => 'database/waDbResultSelect.class.php',
-        'wadbresultinsert' => 'database/waDbResultInsert.class.php',
-        'wadbresultupdate' => 'database/waDbResultUpdate.class.php',
-        'wadbresultdelete' => 'database/waDbResultDelete.class.php',
-        'wadbresult' => 'database/waDbResult.class.php',
-        'wadbresultiterator' => 'database/waDbResultIterator.class.php',
-        'wadbstatement' => 'database/waDbStatement.class.php',
-        'wadbrecord' => 'database/waDbRecord.class.php',
-        'wanestedsetmodel' => 'database/waNestedSetModel.class.php',
-        'warequest' => 'request/waRequest.class.php',
-        'waresponse' => 'response/waResponse.class.php',
-        'wastorage' => 'storage/waStorage.class.php',
-        'wasessionstorage' => 'storage/waSessionStorage.class.php',
-        'wauser' => 'user/waUser.class.php',
-        'waauthuser' => 'user/waAuthUser.class.php',
-        'waauth' => 'auth/waAuth.class.php',
-        'waauthadapter' => 'auth/waAuthAdapter.class.php',
-        'wacookieauthadapter' => 'auth/waCookieAuthAdapter.class.php',
-        'waiauthadapter' => 'auth/waiAuthAdapter.interface.php',
-        'walocale' => 'locale/waLocale.class.php',
-        'wagettext' => 'locale/waGettext.class.php',
-        'walayout' => 'layout/waLayout.class.php',
-        'wautils' => 'util/waUtils.class.php',
-        'waarrayobject' => 'util/waArrayObject.class.php',
-        'waarrayobjectdiff' => 'util/waArrayObjectDiff.class.php',
-        'wacsv' => 'util/waCSV.class.php',
-        'waworkflow' => 'workflow/waWorkflow.class.php',
-        'waworkflowaction' => 'workflow/waWorkflowAction.class.php',
-        'waworkflowstate' => 'workflow/waWorkflowState.class.php',
-        'wadatetime' => 'datetime/waDateTime.class.php',
-        'waemailmessage' => 'message/waEmailMessage.class.php',
-        'waeventhandler' => 'event/waEventHandler.class.php',
-        'wacurrency' => 'currency/waCurrency.class.php',
-        'wawidgets' => 'widget/waWidgets.class.php',
-        'wapayment' => 'payment/waPayment.class.php',
-        'waapppayment' => 'payment/waAppPayment.class.php',
-        'warequestfile' => 'request/waRequestFile.class.php',
-        'warequestfileiterator' => 'request/waRequestFileIterator.class.php',
-        'walongactioncontroller' => 'controller/waLongActionController.class.php',
-        'waaction' => 'controller/waAction.class.php',
-        'waloginaction' => 'controller/waLoginAction.class.php',
-        'wahtmlcontrol' => 'util/waHtmlControl.class.php',
-        'walocalizedcollection' => 'util/waLocalizedCollection.php',
+      'waAPIController' => 'api/waAPIController.class.php',
+      'waAPIDecorator' => 'api/waAPIDecorator.class.php',
+      'waAPIDecoratorJSON' => 'api/waAPIDecoratorJSON.class.php',
+      'waAPIDecoratorXML' => 'api/waAPIDecoratorXML.class.php',
+      'waAPIException' => 'api/waAPIException.class.php',
+      'waAPIMethod' => 'api/waAPIMethod.class.php',
 
-        'smarty' => 'vendors/smarty3/Smarty.class.php',
-        'waidna' => 'vendors/idna/waIdna.class.php',
+      'waAuth' => 'auth/waAuth.class.php',
+      'waAuthAdapter' => 'auth/waAuthAdapter.class.php',
+      'waCookieAuthAdapter' => 'auth/waCookieAuthAdapter.class.php',
+      'waiAuth' => 'auth/waiAuth.interface.php',
+      'waiAuthAdapter' => 'auth/waiAuthAdapter.interface.php',
 
-        'wacountrymodel' => 'webasyst/lib/models/waCountry.model.php',
-        'wacontactmodel' => 'webasyst/lib/models/waContact.model.php',
-        'wacontactdatamodel' => 'webasyst/lib/models/waContactData.model.php',
-        'wacontactdatatextmodel' => 'webasyst/lib/models/waContactDataText.model.php',
-        'wacontactemailsmodel' => 'webasyst/lib/models/waContactEmails.model.php',
-        'wacontactrightsmodel' => 'webasyst/lib/models/waContactRights.model.php',
-    	'wacontactsettingsmodel' => 'webasyst/lib/models/waContactSettings.model.php',
-        'wacontactcategorymodel' => 'webasyst/lib/models/waContactCategory.model.php',
-    	'wacontactcategoriesmodel' => 'webasyst/lib/models/waContactCategories.model.php',
-        'wausergroupsmodel' => 'webasyst/lib/models/waUserGroups.model.php',
-    	'wagroupmodel' => 'webasyst/lib/models/waGroup.model.php',
+      'waAutoload' => 'autoload/waAutoload.class.php',
 
-        'waloginlogmodel' => 'webasyst/lib/models/waLoginLog.model.php',
-        'waappsettingsmodel' => 'webasyst/lib/models/waAppSettings.model.php'
+      'waFileCache' => 'cache/waFileCache.class.php',
+      'waMemcachedCache' => 'cache/waMemcachedCache.class.php',
+      'waRuntimeCache' => 'cache/waRuntimeCache.class.php',
+      'waSerializeCache' => 'cache/waSerializeCache.class.php',
+      'waSystemCache' => 'cache/waSystemCache.class.php',
+      'waVarExportCache' => 'cache/waVarExportCache.class.php',
+      'waiCache' => 'cache/waiCache.interface.php',
+    
+      'waAnalyticsConfig' => 'config/waAnalyticsConfig.class.php',
+      'waAppConfig' => 'config/waAppConfig.class.php',
+      'waConfig' => 'config/waConfig.class.php',
+      'waRightConfig' => 'config/waRightConfig.class.php',
+      'waSystemConfig' => 'config/waSystemConfig.class.php',
+    
+      'waContactsCollection' => 'contact/waContactsCollection.class.php',
+    
+      'waAction' => 'controller/waAction.class.php',
+      'waController' => 'controller/waController.class.php',
+      'waDefaultViewController' => 'controller/waDefaultViewController.class.php',
+      'waFrontController' => 'controller/waFrontController.class.php',
+      'waJsonActions' => 'controller/waJsonActions.class.php',
+      'waJsonController' => 'controller/waJsonController.class.php',
+      'waLoginAction' => 'controller/waLoginAction.class.php',
+      'waLongActionController' => 'controller/waLongActionController.class.php',
+      'waViewAction' => 'controller/waViewAction.class.php',
+      'waViewActions' => 'controller/waViewActions.class.php',
+      'waViewController' => 'controller/waViewController.class.php',
+      'waWidget' => 'controller/waWidget.class.php',
+    
+      'waCurrency' => 'currency/waCurrency.class.php',
+    
+      'waDbAdapter' => 'database/waDbAdapter.class.php',
+      'waDbCacheIterator' => 'database/waDbCacheIterator.class.php',
+      'waDbConnector' => 'database/waDbConnector.class.php',
+      'waDbMysqlAdapter' => 'database/waDbMysqlAdapter.class.php',
+      'waDbMysqliAdapter' => 'database/waDbMysqliAdapter.class.php',
+      'waDbQuery' => 'database/waDbQuery.class.php',
+      'waDbQueryAnalyzer' => 'database/waDbQueryAnalyzer.class.php',
+      'waDbRecord' => 'database/waDbRecord.class.php',
+      'waDbResult' => 'database/waDbResult.class.php',
+      'waDbResultDelete' => 'database/waDbResultDelete.class.php',
+      'waDbResultInsert' => 'database/waDbResultInsert.class.php',
+      'waDbResultIterator' => 'database/waDbResultIterator.class.php',
+      'waDbResultSelect' => 'database/waDbResultSelect.class.php',
+      'waDbResultUpdate' => 'database/waDbResultUpdate.class.php',
+      'waDbStatement' => 'database/waDbStatement.class.php',
+      'waModel' => 'database/waModel.class.php',
+      'waNestedSetModel' => 'database/waNestedSetModel.class.php',
+    
+      'waDateTime' => 'datetime/waDateTime.class.php',
+    
+      'waEventHandler' => 'event/waEventHandler.class.php',
+    
+      'waDbException' => 'exception/waDbException.class.php',
+      'waException' => 'exception/waException.class.php',
+      'waRightsException' => 'exception/waRightsException.class.php',
+    
+      'waFiles' => 'file/waFiles.class.php',
+      'waTheme' => 'file/waTheme.class.php',
+    
+      'waLayout' => 'layout/waLayout.class.php',
+    
+      'waGettext' => 'locale/waGettext.class.php',
+      'waLocale' => 'locale/waLocale.class.php',
+      'waLocaleAdapter' => 'locale/waLocaleAdapter.class.php',
+    
+      'waEmailMessage' => 'message/waEmailMessage.class.php',
+    
+      'waAppPayment' => 'payment/waAppPayment.class.php',
+      'waPayment' => 'payment/waPayment.class.php',
+    
+      'waRequest' => 'request/waRequest.class.php',
+      'waRequestFile' => 'request/waRequestFile.class.php',
+      'waRequestFileIterator' => 'request/waRequestFileIterator.class.php',
+    
+      'waResponse' => 'response/waResponse.class.php',
+    
+      'waSessionStorage' => 'storage/waSessionStorage.class.php',
+      'waStorage' => 'storage/waStorage.class.php',
+    
+      'waAuthUser' => 'user/waAuthUser.class.php',
+      'waUser' => 'user/waUser.class.php',
+    
+      'waArrayObject' => 'util/waArrayObject.class.php',
+      'waArrayObjectDiff' => 'util/waArrayObjectDiff.class.php',
+      'waCSV' => 'util/waCSV.class.php',
+      'waHtmlControl' => 'util/waHtmlControl.class.php',
+      'waLocalizedCollection' => 'util/waLocalizedCollection.php',
+      'waUtils' => 'util/waUtils.class.php',
+    
+      'waEmailValidator' => 'validator/waEmailValidator.class.php',
+      'waRegexValidator' => 'validator/waRegexValidator.class.php',
+      'waStringValidator' => 'validator/waStringValidator.class.php',
+      'waUrlValidator' => 'validator/waUrlValidator.class.php',
+      'waValidator' => 'validator/waValidator.class.php',
+    
+      'waIdna' => 'vendors/idna/waIdna.class.php',
+      'Smarty' => 'vendors/smarty3/Smarty.class.php',
+    
+      'waSmarty3View' => 'view/waSmarty3View.class.php',
+      'waView' => 'view/waView.class.php',
+      'waViewHelper' => 'view/waViewHelper.class.php',
+    
+      'waWidgets' => 'widget/waWidgets.class.php',
+    
+      'waWorkflow' => 'workflow/waWorkflow.class.php',
+      'waWorkflowAction' => 'workflow/waWorkflowAction.class.php',
+      'waWorkflowEntity' => 'workflow/waWorkflowEntity.class.php',
+      'waWorkflowState' => 'workflow/waWorkflowState.class.php',
+    
+      'waSystem' => 'waSystem.class.php',
+    
+      'waAppSettingsModel' => 'webasyst/lib/models/waAppSettings.model.php',
+      'waAnnouncementModel' => 'webasyst/lib/models/waAnnouncement.model.php',
+      'waContactModel' => 'webasyst/lib/models/waContact.model.php',
+      'waContactCategoriesModel' => 'webasyst/lib/models/waContactCategories.model.php',
+      'waContactCategoryModel' => 'webasyst/lib/models/waContactCategory.model.php',
+      'waContactDataModel' => 'webasyst/lib/models/waContactData.model.php',
+      'waContactDataTextModel' => 'webasyst/lib/models/waContactDataText.model.php',
+      'waContactEmailsModel' => 'webasyst/lib/models/waContactEmails.model.php',
+      'waContactRightsModel' => 'webasyst/lib/models/waContactRights.model.php',
+      'waContactSettingsModel' => 'webasyst/lib/models/waContactSettings.model.php',
+      'waContactTokensModel' => 'webasyst/lib/models/waContactTokens.model.php',
+      'waCountryModel' => 'webasyst/lib/models/waCountry.model.php',
+      'waGroupModel' => 'webasyst/lib/models/waGroup.model.php',
+      'waLoginLogModel' => 'webasyst/lib/models/waLoginLog.model.php',
+      'waUserGroupsModel' => 'webasyst/lib/models/waUserGroups.model.php',
     );
 }

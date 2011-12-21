@@ -7,7 +7,7 @@ return array(
 	'english_name' => 'German',
 	'english_region' => 'Germany',
 	'date_formats' => array(
-		'monthdate' => 'j. F, Y',
+		'humandate' => 'j. F, Y',
 		'date' => 'd.m.Y',
 		'datetime' => 'd.m.Y H:i',
 		'fulldatetime' => 'd.m.Y H:i:s'

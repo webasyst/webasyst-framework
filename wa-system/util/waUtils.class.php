@@ -5,12 +5,14 @@ class waUtils
 	public static function varExportToFile($var, $file)
 	{
 	    if (!file_exists($file) || is_writable($file)) {
-    		$h = fopen($file, 'w+');
-    		if ($h) {
-    			fwrite($h, "<?php\nreturn ".var_export($var, true).";");
+    		if ($h = @fopen($file, 'w+')) {
+    			flock($h, LOCK_EX);
+    			$result = fwrite($h, "<?php\nreturn ".var_export($var, true).";");
+    			flock($h, LOCK_UN);
     			fclose($h);
+    			return $result;
     		}
-    		return $var;
 	    }
+	    return false;
 	}
 }

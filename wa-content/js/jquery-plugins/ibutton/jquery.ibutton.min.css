@@ -1,0 +1,79 @@
+.ibutton-container{position:relative;height:27px;cursor:pointer;overflow:hidden;max-width:400px;-khtml-user-select:none;-o-user-select:none;-moz-user-select:none;-moz-user-focus:ignore;-moz-user-input:disabled;width:89px;}
+.ibutton-container.mini{height:16px;width:55px;}
+.ibutton-container input{position:absolute;top:0;left:0;filter:alpha(opacity=0);-moz-opacity:.0;opacity:.0;-moz-user-input:enabled!important;}
+.ibutton-handle{display:block;height:27px;cursor:inherit;position:absolute;top:0;left:0;width:0;background:transparent url(images/ibutton-slider-default.png) no-repeat scroll 0 -54px;z-index:3;padding-left:3px;width:33px;}
+.ibutton-container.mini .ibutton-handle {background:transparent url(images/ibutton-slider-mini.png) no-repeat scroll 0 -16px; height:16px; width: 20px;}
+
+.ibutton-handle-right{height:100%;width:100%;padding-right:3px;background:transparent url(images/ibutton-slider-default.png) no-repeat scroll 100% -54px;z-index:3;}
+.ibutton-container.mini .ibutton-handle-right { background:transparent url(images/ibutton-slider-mini.png) no-repeat scroll 100% -16px;}
+
+.ibutton-handle-middle{height:100%;width:100%;background:transparent url(images/ibutton-slider-default.png) no-repeat scroll 50% -54px;z-index:3;}
+.ibutton-container.mini .ibutton-handle-middle {background:transparent url(images/ibutton-slider-mini.png) no-repeat scroll 50% -16px;}
+
+div.ibutton-label-on,div.ibutton-label-off{white-space:nowrap;font-size:17px;line-height:17px;font-weight:bold;font-family:Helvetica Neue,Arial,Helvetica,sans-serif;text-transform:uppercase;cursor:inherit;display:block;height:22px;position:absolute;width:auto;top:0;padding-top:5px;overflow:hidden;background:transparent url(images/ibutton-slider-default.png) no-repeat scroll 0 0;}
+.ibutton-container.mini div.ibutton-label-on,.ibutton-container.mini div.ibutton-label-off {background:transparent url(images/ibutton-slider-mini.png) no-repeat scroll 0 0; height: 14px; font-size: 11px; line-height: 11px; padding-top:2px;}
+
+div.ibutton-label-on{color:#fff;text-shadow:0 -1px 2px rgba(0,0,0,0.4);left:0;padding-top:5px;z-index:1;}
+div.ibutton-label-on span{padding-left:5px;}
+div.ibutton-label-off{color:#7c7c7c;background-position:100% 0;text-shadow:0 -1px 2px rgba(153,153,153,0.4);text-align:right;right:0;width:95%;}
+.ibutton-container.mini div.ibutton-label-off{background-position:100% 0;}
+
+div.ibutton-label-off span{padding-right:5px;}
+.ibutton-container label{cursor:inherit;padding:1px 3px;font-size:1em!important;}
+.ibutton-focus label{border:1px dotted #666!important;padding:0 2px;}
+.ibutton-focus div.ibutton-label-on span label{border-color:#fff!important;}
+
+.ibutton-padding-left,.ibutton-padding-right{position:absolute;top:4px;z-index:2;background:transparent url(images/ibutton-slider-default.png) no-repeat scroll 0 -4px;width:3px;height:20px;}
+.ibutton-container.mini .ibutton-padding-left,.ibutton-container.mini .ibutton-padding-right {top:4px;z-index:2;background:transparent url(images/ibutton-slider-mini.png) no-repeat scroll 0 -4px;  width:3px;  height:8px;}
+
+.ibutton-padding-left{left:0;}
+.ibutton-padding-right{right:0;background-position:100% -4px;}
+
+.ibutton-container.mini .ibutton-padding-right {right:0; background-position:100% -4px;}
+
+.ibutton-active-handle .ibutton-handle{background-position:0 -108px;}
+.ibutton-container.mini .ibutton-active-handle .ibutton-handle {background-position:0 -80px;}
+.ibutton-active-handle .ibutton-handle-right{background-position:100% -108px;}
+.ibutton-container.mini .ibutton-active-handle .ibutton-handle-right {background-position:100% -80px;}
+
+.ibutton-active-handle .ibutton-handle-middle{background-position:50% -108px;}
+.ibutton-disabled{cursor:not-allowed!important;}
+.ibutton-disabled .ibutton-handle{background-position:0 -81px;}
+.ibutton-disabled .ibutton-handle-right{background-position:100% -81px;}
+.ibutton-disabled .ibutton-handle-middle{background-position:50% -81px;}
+.ibutton-disabled div.ibutton-label-on{background-position:0 -27px;}
+.ibutton-disabled div.ibutton-label-off{background-position:100% -27px;}
+.ibutton-disabled .ibutton-padding-left{background-position:0 -27px;}
+.ibutton-disabled .ibutton-padding-right{background-position:100% -27px;}
+.ibutton-disabled div.ibutton-label-on{color:#fff;}
+.ibutton-disabled div.ibutton-label-off{color:#cbcbcb;}
+
+.ibutton-container.mini .ibutton-active-handle .ibutton-handle-middle {
+    background-position:50% -80px;
+}
+.ibutton-container.mini .ibutton-disabled {
+    cursor:not-allowed!important;
+}
+.ibutton-container.mini .ibutton-disabled .ibutton-handle {
+    background-position:0 -48px;
+}
+.ibutton-container.mini .ibutton-disabled .ibutton-handle-right {
+    background-position:100% -48px;
+}
+.ibutton-container.mini .ibutton-disabled .ibutton-handle-middle {
+    background-position:50% -48px;
+}
+.ibutton-container.mini .ibutton-disabled div.ibutton-label-on {
+    background-position:0 -32px;
+}
+.ibutton-container.mini .ibutton-disabled div.ibutton-label-off {
+    background-position:100% -32px;
+}
+.ibutton-container.mini .ibutton-disabled .ibutton-padding-left {
+    background-position:0 -32px;
+}
+.ibutton-container.mini .ibutton-disabled .ibutton-padding-right {
+    background-position:100% -32px;
+}
+.ibutton-container.mini div.ibutton-label-on span {     padding-left:0;} 
+.ibutton-container.mini div.ibutton-label-off span {    padding-right:0;}

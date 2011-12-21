@@ -26,9 +26,9 @@ class waDbCacheIterator implements Iterator
      *
      * @var array
      */
-    private $array          = array();
+    private $array = array();
     
-    private $iteration      = 0;
+    private $iteration = 0;
 
     /**
      * Конструктор итератора. Получает в качестве параметра
@@ -38,7 +38,7 @@ class waDbCacheIterator implements Iterator
      */
     public function __construct($array)
     {
-        $this->array    = (array) $array;
+        $this->array = (array)$array;
     }
     
     /**

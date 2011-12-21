@@ -3,11 +3,11 @@
 /**
  * Экшен бекенда по умолчанию
  * Подробнее о экшенах и контроллерах:
- * http://www.webasyst.com/ru/framework/docs/application-guide/controllers/
+ * http://www.webasyst.com/ru/framework/docs/dev/controllers/
  * 
  * Доступен в бэкенде по урлу dummy/
  * Подробнее о маршрутизации в бэкенде:
- * http://www.webasyst.com/ru/framework/docs/application-guide/backend-routing/
+ * http://www.webasyst.com/ru/framework/docs/dev/backend-routing/
  */
 class dummyBackendAction extends waViewAction
 {

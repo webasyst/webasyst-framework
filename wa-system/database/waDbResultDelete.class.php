@@ -23,7 +23,7 @@ class waDbResultDelete extends waDbResult
 
     protected function onConstruct()
     {
-        $this->affected_rows = $this->adapter->affected_rows($this->handler);
+        $this->affected_rows = $this->adapter->affected_rows();
     }
 
     /**

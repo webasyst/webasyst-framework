@@ -59,7 +59,7 @@ class contactsContactsInfoAction extends waViewAction
         // Update history in user's browser
         $historyModel = new contactsHistoryModel();
         $this->view->assign('history', $historyModel->get());
-        
+
         $this->view->assign('wa_view', $this->view);
     }
 
@@ -83,9 +83,13 @@ class contactsContactsInfoAction extends waViewAction
         // who created this contact and when
         $this->view->assign('contact_create_time', waDateTime::format('datetime', $this->contact['create_datetime'], $system->getUser()->getTimezone()));
         if ($this->contact['create_contact_id']) {
-            $author = new waContact($this->contact['create_contact_id']);
-            if ($author['name']) {
-                $this->view->assign('author', $author);
+            try {
+                $author = new waContact($this->contact['create_contact_id']);
+                if ($author['name']) {
+                    $this->view->assign('author', $author);
+                }
+            } catch (Exception $e) {
+                // Contact not found. Ignore silently.
             }
         }
 

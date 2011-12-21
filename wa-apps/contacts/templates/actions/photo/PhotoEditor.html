@@ -1,5 +1,9 @@
 <div class="block" id="c-ge-header">
-	<h1>[`Change photo for contact`] {{$contact['name']|escape}}</h1>
+	{{if $env == 'backend'}}
+		<h1>[`Change photo for contact`] {{$contact['name']|escape}}</h1>
+	{{else}}
+		<h1>[`Change photo`]</h1>
+	{{/if}}
 </div>
 <div class="tab-content">
 	<div class="block double-padded">
@@ -8,7 +12,7 @@
 		</div>
 		<div id="new-photo-wrapper" style="margin:0 140px 0 0">
 		</div>
-		<form id="save-selection-form" action="?module=photo&action=crop" method="post">
+		<form id="save-selection-form" action="{{$crop_url}}" method="post">
 			<div style="text-align: center;">
 				<input type="hidden" name="id" value="{{$contactId}}" />
 				<input id="x1" type="hidden" name="x1" value="" />
@@ -26,7 +30,7 @@
 
 		<p id="c-pe-hint-photo" style="margin:1.5em 0 0.75em 0{{if !empty($oldPreview)}};display:none{{/if}}">[`Select an image file (JPG, GIF or PNG) to change photo:`]</p>
 		<p id="c-pe-hint-no-photo" style="margin:1.2em 0 0.4em 0{{if empty($oldPreview)}};display:none{{/if}}">[`Upload image (JPG, GIF or PNG):`]</p>
-		<form id="imageform" target="sendfile" action="?module=photo&action=tmpimage" method="post" enctype="multipart/form-data">
+		<form id="imageform" target="sendfile" action="{{$tmpimage_url}}" method="post" enctype="multipart/form-data">
 			<div class="c-photo-loading-image"><input id="fileselect" type="file" name="photo" /><i id="photo-loading-image" class="icon16 loading" style="margin-left:16px;display:none"></i><input id="photo-id-input" type="hidden" name="id" value=""></div>
 		</form>
 
@@ -54,13 +58,13 @@
 								if (!confirm('[`Are you sure you want to delete this photo?`]')) {
 									return false;
 								}
-								$.get("?module=photo&action=delete&id="+$.wa.contactEditor.contact_id,
+								$.get("{{$delete_url}}",
 									function(data) {
 										{{if $logged_user_id == $contact['id']}}
 											// If user removed their own photo, then update it in top right corner too
 											$('#wa-usercorner .profile.image32px img').attr('src', '{{$wa_url}}wa-content/img/userpic32.jpg');
 										{{/if}}
-										$.wa.setHash('#/contact/{{$contactId}}/');
+										window.location = "{{$back_url}}";
 									}
 								);
 								return false;
@@ -103,7 +107,7 @@
 											$('#wa-usercorner .profile.image32px img').attr('src', data.data.url.replace('96x96', '32x32'));
 										{{/if}}
 									}
-									$.wa.setHash('#/contact/{{$contactId}}/');
+									window.location = "{{$back_url}}";
 								},
 								error: function(jqXHR, textStatus, errorThrown) {
 									if (console) {
@@ -116,12 +120,12 @@
 						})
 				)
 				.append(" [`or`] ")
-				.append($('<a href="#/contact/{{$contactId}}/">'+"[`cancel`]"+'</a>'))
+				.append($('<a href="{{$back_url}}">'+"[`cancel`]"+'</a>'))
 		)
 		.append(
 			$('<input id="cancel-button" class="button gray" type="submit" value="'+"[`Close`]"+'" />')
 				.click(function() {
-					$.wa.setHash('#/contact/{{$contactId}}/');
+					window.location = "{{$back_url}}";
 				})
 		);
 

@@ -385,6 +385,14 @@ ul.menu-h.dropdown ul li.disabled a { color: #888!important; background: #fff!im
 ul.menu-h.dropdown ul li.disabled .icon16 {
 filter:progid:DXImageTransform.Microsoft.Alpha(opacity=50); -moz-opacity: 0.5; -khtml-opacity: 0.5; opacity:.5; }
 
+/* dropdown.clickable */
+ul.menu-h.dropdown.clickable ul { display: none;}
+ul.menu-h.dropdown.clickable li:hover ul { display: none; }
+ul.menu-h.dropdown.clickable li:hover ul li:hover ul { display:none; }
+ul.menu-h.dropdown.clickable li:hover ul li:hover ul ul { display: none; }
+ul.menu-h.dropdown.clickable li:hover ul li:hover ul li:hover ul { display: none; }
+
+
 /* TABs
 -------------------------------------------- */
 ul.tabs { list-style: none; margin: 0 0 0 10px; padding: 0; white-space: nowrap; height: 32px; }
@@ -509,7 +517,7 @@ table.bottom-bordered { border-bottom: 1px solid #aaa; }
 .tooltip.width400px { width: 400px; }
 
 /*shadow for content */
-.shadowed {  background: none repeat scroll 0 0 #F7F7F7; border: 1px solid #CCCCCC; -moz-box-shadow: 0 1px 15px #BBBBBB; -webkit-box-shadow: 0 1px 15px #BBBBBB; box-shadow: 0 1px 15px #BBBBBB; margin: 15px;}
+.shadowed {  background: none repeat scroll 0 0 #F7F7F7; border: 1px solid #CCCCCC; -moz-box-shadow: 0 3px 13px #BBBBBB; -webkit-box-shadow: 0 3px 13px #BBBBBB; box-shadow: 0 3px 13px #BBBBBB; margin: 15px;}
 
 
 /*
@@ -701,9 +709,13 @@ ul.tabs .icon16 { margin-top: 8px; }
 .icon16.script-css { background-position: -112px -64px; }
 .icon16.script-js { background-position: -96px -64px; }
 .icon16.script-php {background-position: -80px -64px; }
+.icon16.sort {background-position: -368px -96px; }
+.icon16.cheatsheet {background-position: -144px -64px; }
+.icon16.palette { background-position: -272px -16px; }
 
 .icon16.userpic20 { background-position: -2px -2px; /* use this for 20x20 userpics as 16x16 icons; cuts 2px from each side of 20x20 userpic, but gives clean alignment */ }
 .icon16.loading { background-image: url("../../../wa-content/img/loading16.gif"); }
+
 
 /* 10x10
 -------------------------------------------- */
@@ -735,6 +747,7 @@ h5 i.icon10 { vertical-align:top; margin: 0.1em 0 0 0; }
 .icon10.star-empty { background-position:-80px -40px; }
 .icon10.star-half { background-position:-70px -40px; }
 .icon10.delete { background-position:-80px -20px; }
+.icon10.info { background-position:-20px -40px; }
 
 /*
  * Custom 16x16 or 10x10 images can be added like this (PNG images are recommended):
@@ -770,5 +783,7 @@ h5 i.icon10 { vertical-align:top; margin: 0.1em 0 0 0; }
 .ui-datepicker .ui-datepicker-next-hover { background: #eee; border:none!important; right:2px; }
 .ui-datepicker .ui-datepicker-prev-hover { background: #eee; border:none!important; left: 2px; }
 .ui-datepicker .ui-datepicker-title select{ font-size:0.68em;}
+
+ 
 
 

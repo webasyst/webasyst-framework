@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WebAsyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2011-06-01 18:02+0300\n"
+"PO-Revision-Date: 2011-11-25 14:19+0400\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -486,6 +486,10 @@ msgstr "Подтверждение пароля"
 msgid "change password"
 msgstr "изменить пароль"
 
+# Personal profile menu item
+msgid "Change password"
+msgstr "Изменить пароль"
+
 # Field on user tab on a contact page
 msgid "New password"
 msgstr "Новый пароль"
@@ -785,5 +789,5 @@ msgid "Change photo for contact"
 msgstr "Изменить фото для контакта"
 
 msgid "Are you sure you want to delete this photo?"
-msgstr "Вы действительно хотите удалить фото для этого контакта?"
+msgstr "Вы действительно хотите удалить фото?"
 

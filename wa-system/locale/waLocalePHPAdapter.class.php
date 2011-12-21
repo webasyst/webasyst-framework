@@ -47,9 +47,12 @@ class waLocalePHPAdapter
 		
 		if ($textdomain) {
 			self::$domain = $domain;
+			self::$locale = $locale;
 		}
 		
-		self::$locale = $locale;
+		if (!self::$locale) {
+		    self::$locale = $locale;
+		}
 	}
 	
 	public function gettext($msgid)

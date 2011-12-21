@@ -13,23 +13,19 @@
  * @subpackage request
  */
 
-/** Wrapper class for uploaded files.
- * $this->... fields are read only. Correct fields are:
- * name, type, size, tmp_name, error - same as in $_FILES global var.
+/** 
+ * Wrapper class for uploaded files.
+ * 
+ * $this->... fields are read only. 
+ * Correct fields are:
+ * name, type, size, tmp_name, error, error_code - same as in $_FILES global var.
  * extension - file extension (not including the dot)
  */
 class waRequestFile
 {
-
-	const OK	= 0;
-	const INI_SIZE	= 1;
-	const FORM_SIZE	= 2;
-	const PARTIAL	= 3;
-	const NO_FILE	= 4;
-	const NO_TMP_DIR	= 6;
-	const CANT_WRITE	= 7;
-	const EXTENSION	= 8;
-	/** $this->data === null represents a case when no file is uploaded. */
+	/** 
+	 * $this->data === null represents a case when no file is uploaded. 
+	 */
 	protected $data = array(
         'name' => '',
         'type' => '',
@@ -38,12 +34,12 @@ class waRequestFile
         'error' => 'no file uploaded',
 	);
 
-	public function __construct($data) {
+	public function __construct($data) 
+	{
 		if ($data === null) {
 			$this->data = null;
 			return;
 		}
-
 		foreach($this->data as $k => $v) {
 			if (!isset($data[$k])) {
 				throw new waException("Key {$k} must be set.");
@@ -52,8 +48,9 @@ class waRequestFile
 		$this->setData($data['name'], $data['type'], $data['size'], $data['tmp_name'], $data['error']);
 	}
 
-	public function uploaded() {
-		return ($this->data !== null)&&(!$this->data['error']);
+	public function uploaded() 
+	{
+		return ($this->data !== null) && !$this->data['error'];
 	}
 
 	/**
@@ -61,7 +58,8 @@ class waRequestFile
 	 *
 	 * @return waImage
 	 */
-	public function waImage() {
+	public function waImage() 
+	{
 		if ($this->data === null) {
 			throw new waException('No file uploaded.');
 		}
@@ -69,16 +67,19 @@ class waRequestFile
 	}
 
 	/** When 2-nd parameter is omitted, first one is considered to be full path */
-	public function moveTo($dir, $name=null) {
-		return move_uploaded_file($this->data['tmp_name'], $this->concatFullPath($dir, $name));
+	public function moveTo($dir, $name = null) 
+	{
+		return @move_uploaded_file($this->data['tmp_name'], $this->concatFullPath($dir, $name));
 	}
 
 	/** When 2-nd parameter is omitted, first one is considered to be full path */
-	public function copyTo($dir, $name=null) {
-		return copy($this->data['tmp_name'], $this->concatFullPath($dir, $name));
+	public function copyTo($dir, $name=null) 
+	{
+		return @copy($this->data['tmp_name'], $this->concatFullPath($dir, $name));
 	}
 
-	public function __get($name) {
+	public function __get($name) 
+	{
 		switch($name) {
 			case 'extension':
 				$path_info = pathinfo($this->data['name']);
@@ -87,19 +88,26 @@ class waRequestFile
 				if ($this->data === null) {
 					throw new waException('No file uploaded.');
 				}
-
+				if ($name == 'error_code') {
+				    return $this->data['error'];
+				}
 				if (!isset($this->data[$name])) {
 					throw new waException('Unable to read '.$name);
+				}
+				if ($name == 'error') {
+				    return self::getError($this->data['error']);
 				}
 				return $this->data[$name];
 		}
 	}
 
-	public function __set($name, $value) {
+	public function __set($name, $value) 
+	{
 		throw new waException('waRequestFile fields are read-only.');
 	}
 
-	public function __isset($name) {
+	public function __isset($name) 
+	{
 		if ($this->data === null) {
 			throw new waException('No file uploaded.');
 		}
@@ -107,7 +115,8 @@ class waRequestFile
 		return isset($this->data[$name]);
 	}
 
-	public function __toString() {
+	public function __toString() 
+	{
 		if ($this->data === null) {
 			return '';
 		}
@@ -119,23 +128,12 @@ class waRequestFile
 	//
 	// non-public methods
 	//
-	protected function setData($name, $type, $size, $tmp_name, $error) {
+	protected function setData($name, $type, $size, $tmp_name, $error) 
+	{
 		if (!is_int($error)) {
 			throw new waException('File error code must be integer.');
 		}
-		if($error!=self::OK){
-			switch ($error){
-				case self::INI_SIZE:$error='Target file exceeds maximum allowed size. (upload_max_filesize)';break;
-				case self::FORM_SIZE:$error='Target file exceeds the MAX_FILE_SIZE value specified on the upload form.';break;
-				case self::PARTIAL:$error='Target file was not uploaded completely.';break;
-				case self::NO_FILE:$error='No target file was uploaded.';break;
-				case self::NO_TMP_DIR:$error='Missing a temporary folder.';break;
-				case self::CANT_WRITE:$error='Failed to write target file to disk.';break;
-				case self::EXTENSION:$error='File upload stopped by extension.';break;
-				default:$error='Unknown upload error';break;
-			}
-		}else{
-
+		if ($error == UPLOAD_ERR_OK) {
 			if (!is_string($name)) {
 				throw new waException('File input name must be string.');
 			}
@@ -148,15 +146,13 @@ class waRequestFile
 			if (!is_string($tmp_name)) {
 				throw new waException('File tmp_name must be string.');
 			}
-			if(!is_uploaded_file($tmp_name)){
+			if (!is_uploaded_file($tmp_name)){
 				throw new waException('Possible file upload attack: '.$tmp_name);
 			}
 			if (!file_exists($tmp_name)) {
 				throw new waException('No such file ($tmp_name): '.$tmp_name);
 			}
 		}
-
-
 		$this->data = array(
             'name' => $name,
             'type' => $type,
@@ -165,9 +161,41 @@ class waRequestFile
             'error' => $error,
 		);
 	}
+	
+	protected static function getError($error)
+	{
+		switch ($error) {
+		    case UPLOAD_ERR_OK:
+		        return '';
+			case UPLOAD_ERR_INI_SIZE:
+			    return 'The uploaded file exceeds the upload_max_filesize directive in php.ini.'; 
+			case UPLOAD_ERR_FORM_SIZE:
+			    return 'The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the HTML form.'; 
+			case UPLOAD_ERR_PARTIAL:
+			    return 'The uploaded file was only partially uploaded.';
+			case UPLOAD_ERR_NO_FILE:
+			    return 'No file was uploaded.';
+			case UPLOAD_ERR_NO_TMP_DIR:
+			    return 'Missing a temporary folder.';
+			case UPLOAD_ERR_CANT_WRITE:
+			    return 'Failed to write file to disk.';
+			case UPLOAD_ERR_EXTENSION:
+			    return 'A PHP extension stopped the file upload.';
+			default:
+			    return 'Unknown upload error';
+		}	    
+	}
 
-	/** used by moveTo() and copyTo() */
-	protected function concatFullPath($dir, $name) {
+	/**
+	 * Returns full path to the file 
+	 * Used by methods moveTo() and copyTo()
+	 * 
+	 * @param string $dir - directory
+	 * @param string $name - name of the file
+	 * @return string - full path 
+	 */
+	protected function concatFullPath($dir, $name) 
+	{
 		if ($this->data === null) {
 			throw new waException('No file uploaded.');
 		}
@@ -187,5 +215,3 @@ class waRequestFile
 		}
 	}
 }
-
-// EOF

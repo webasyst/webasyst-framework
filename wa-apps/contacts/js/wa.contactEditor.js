@@ -3,6 +3,7 @@ $.wa.contactEditor = {
 	contact_id: null,
 	contactType: 'person', // person|company
 	baseFieldType: null, // defined in fieldTypes.js
+	saveUrl: '?module=contacts&action=save', // URL to send data when saving contact
 
 	/** Editor factory templates, filled below */
 	factoryTypes: {
@@ -189,7 +190,7 @@ $.wa.contactEditor = {
 		}
 
 		var that = this;
-		$.post('?module=contacts&action=save', {
+		$.post(this.saveUrl, {
 			'data': $.JSON.encode(data),
 			'type': this.contactType,
 			'id': this.contact_id != null ? this.contact_id : 0

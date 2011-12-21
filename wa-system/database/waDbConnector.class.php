@@ -14,59 +14,42 @@
  */
 class waDbConnector
 {
-    private static $handlers = array();
+    private static $connections = array();
     private static $config;
     
     protected function __construct() {}
     
     /**
      * Returns connection to database
-     *
      * @param int $code
-     * @return res
+     * @return resource
      */
-    public static function getConnection($name = 'default')
+    public static function getConnection($name = 'default', $writable = true)
     {
-        if (isset(self::$handlers[$name])) {
-            return self::$handlers[$name];
-        }
-        else {
-        	$config = self::getConfig(); 
-        	if (!isset($config[$name])) {
-        		throw new waDbException("Unknown name of the DataBase Connection");
+        if (isset(self::$connections[$name])) {
+            return self::$connections[$name];
+        } else {
+        	$settings = self::getConfig($name); 
+        	$class = "waDb".ucfirst(strtolower($settings['type']))."Adapter";
+        	if (!class_exists($class)) {
+        		throw new waDbException(sprintf("Database adapter %s not found", $class));
         	}
-        	$type = isset($config[$name]['type']) ? $config[$name]['type'] : 'mysql';
-        	$adapter = self::getAdapter($type); 
-            $handler = $adapter->connect($config[$name]);
-            if ($handler) {
-                return self::$handlers[$name] = array(
-            		'handler' => $handler,
-            		'adapter' => $adapter
-            	);
-            } else {
-            	throw new waDbException("Couldn't connect to the server");
-            }
+        	return self::$connections[$name] = new $class($settings);
         }
     }
-    
-    /**
-     * Returns adaptor of database by type
-     * 
-     * @param string $type
-     * @return waDbAdapter
-     */
-    protected static function getAdapter($type)
+            
+    protected static function getConfig($name)
     {
-    	$adaptor = "waDb".ucfirst(strtolower($type))."Adapter";
-    	return new $adaptor();
-    }
-        
-    protected static function getConfig()
-    {
-    	if (!self::$config) {
+    	if (self::$config === null) {
     		self::$config = waSystem::getInstance()->getConfig()->getDatabase(); 
     	}
-    	return self::$config;
+      	if (!isset(self::$config[$name])) {
+       		throw new waDbException(sprintf("Unknown Database Connection %s", $name));
+       	}
+       	if (!isset(self::$config[$name]['type'])) {
+       		self::$config[$name]['type'] = function_exists('mysqli_connect') ? 'mysqli' : 'mysql'; 
+       	}
+    	return self::$config[$name];
     }
 
 }

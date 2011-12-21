@@ -15,28 +15,19 @@
 class waModel
 {
     /**
-     * Connection handler
-     */
-    protected $handler;
-
-    /**
-     *
-     * Adapter of the database
-     *
+     * Database Adapter
      * @var waDbAdapter
      */
     protected $adapter;
 
     /**
      * Writable or not
-     *
      * @var boolean
      */
     protected $writable   = true;
 
     /**
      * Name of the table
-     *
      * @var string
      */
     protected $table    = false;
@@ -45,24 +36,21 @@ class waModel
 
     /**
      * Primary key of the table
-     *
      * @var string
      */
     protected $id = 'id';
 
     /**
      * Cache
-     *
      * @var waiCache
      */
     private $cache   = null;
 
     /**
-     * Список клюей для очистки кеша после выполнения запроса на изменения
-     *
+     * Array of caches to clean after execution of query INSERT, UPDATE or DELETE
      * @var array
      */
-    private $cacheCleaners    = array();
+    private $cache_cleaners = array();
 
     /**
      * Database id in config (db.php), by default "default"
@@ -85,21 +73,15 @@ class waModel
     {
         $this->writable = $writable;
         $this->type     = $type ? $type : 'default';
-        $connect  = waDbConnector::getConnection($this->type, $this->writable);
-        $this->handler = $connect['handler'];
-        if (!$this->handler) {
-            throw new waDbException("Empty handler");
-        }
-        $this->adapter = $connect['adapter'];
+        $this->adapter = waDbConnector::getConnection($this->type, $this->writable);
         if ($this->table && !$this->fields) {
-            $this->getMetadata();
+        	$this->getMetadata();
         }
     }
-
+    
     /**
-     * Получает описание таблицы и формирует описание полей таблицы
-     *
-     * @return array метаописание таблицы
+     * Get meta description of the table and generate fields array
+     * @return array
      */
     public function getMetadata()
     {
@@ -130,27 +112,26 @@ class waModel
      */
     public function describe($normalize = true)
     {
-        return $this->adapter->schema($this->table, $this->handler);
+        return $this->adapter->schema($this->table);
     }
 
     public function autocommit($flag)
     {
-        $this->handler->autocommit($flag);
+        $this->adapter->autocommit($flag);
     }
 
     public function commit()
     {
-        $this->handler->commit();
+        $this->adapter->commit();
     }
 
     public function rollback()
     {
-        $this->handler->rollback();
+        $this->adapter->rollback();
     }
 
     /**
-     * Устанавливает текущий кешер
-     *
+     * Set cache
      * @param waDbCacher $cacher
      */
     public function setCache(waiCache $cache = null)
@@ -159,61 +140,58 @@ class waModel
     }
 
     /**
-     * Добавляет кешер для сброса
-     *
-     * @param $cacher
+     * Add cache to remove
+     * @param $cache
      */
     public function addCacheCleaner(waiCache $cache)
     {
-        $this->cacheCleaners[] = $cache;
+        $this->cache_cleaners[] = $cache;
     }
 
     /**
-     * Удаляет все установленные кеши
-     *
+     * Clean all cachers
      */
     private function cleanCache()
     {
-        foreach ($this->cacheCleaners as $cache) {
+        foreach ($this->cache_cleaners as $cache) {
             $cache->delete();
         }
-
-        $this->cacheCleaners = array();
+        $this->cache_cleaners = array();
     }
 
     protected $sql;
 
     /**
-     * Выполняет запрос
-     *
+     * Execute query
      * @param string $sql -
      * @return resource|boolean
      */
     private function run($sql, $unbuffer = false)
     {
         $sql = trim($sql);
-        $result = $this->adapter->query($sql, $this->handler);
+        $result = $this->adapter->query($sql);
 
         if (!$result) {
             $error = "Query Error\nQuery: ".$sql.
-                     "\nError: ".$this->adapter->errorCode($this->handler) .
-                     "\nMessage: ".$this->adapter->error($this->handler);
-            throw new waDbException($error, $this->adapter->errorCode($this->handler));
+                     "\nError: ".$this->adapter->errorCode() .
+                     "\nMessage: ".$this->adapter->error();
+            throw new waDbException($error, $this->adapter->errorCode());
         }
 
         return $result;
     }
 
     /**
-     * Выполняет запрос
-     *
+     * Execute query
      * @param string $sql
      * @return resource|boolean
      */
     public function exec($sql, $params = null)
     {
+        if (!$sql) {
+            return true;
+        }
         $waDbQueryAnalyzer = new waDbQueryAnalyzer($sql);
-
         switch($waDbQueryAnalyzer->getQueryType()) {
             case 'update': case 'replace': case 'delete': case 'insert': $this->cleanCache();
         }
@@ -242,7 +220,7 @@ class waModel
         if ($this->cache && $this->cache instanceof waiCache && $waDbQueryAnalyzer->getQueryType() == 'select') {
             // if not cached
             if(!$this->cache->isCached()) {
-                $result = $waDbQueryAnalyzer->invokeResult($this->run($sql), $this->handler, $this->adapter);
+                $result = $waDbQueryAnalyzer->invokeResult($this->run($sql), $this->adapter);
                 // set cache
                 $this->cache->set($result);
                 $this->cache = null;
@@ -259,7 +237,7 @@ class waModel
             }
         }
 
-        return $waDbQueryAnalyzer->invokeResult($this->run($sql), $this->handler, $this->adapter);
+        return $waDbQueryAnalyzer->invokeResult($this->run($sql), $this->adapter);
     }
 
     /**
@@ -387,8 +365,10 @@ class waModel
     {
         switch ($type) {
             case 'bigint':
+            case 'tinyint':
             case 'int':
                 return (int)$value;
+            case 'decimal':
             case 'double':
             case 'float':
                 return str_replace(',', '.', (double)$value);
@@ -486,9 +466,9 @@ class waModel
                 if ($type === 'int') {
                     $data[$key] = (int)$value;
                 } elseif ($type === 'like') {
-                    $data[$key] = str_replace(array('%', '_'), array('\%', '\_'), $this->adapter->escape($value, $this->handler));
+                    $data[$key] = str_replace(array('%', '_'), array('\%', '\_'), $this->adapter->escape($value));
                 } else {
-                    $data[$key] = $this->adapter->escape($value, $this->handler);
+                    $data[$key] = $this->adapter->escape($value);
                 }
             }
             return $data;
@@ -497,9 +477,9 @@ class waModel
             case 'int':
                 return (int)$data;
             case 'like':
-                return str_replace(array('%', '_'), array('\%', '\_'), $this->adapter->escape($data, $this->handler));
+                return str_replace(array('%', '_'), array('\%', '\_'), $this->adapter->escape($data));
             default:
-                return $this->adapter->escape($data, $this->handler);
+                return $this->adapter->escape($data);
         }
     }
 
@@ -692,7 +672,11 @@ class waModel
      */
     public function ping()
     {
-        return $this->adapter->ping($this->handler);
+        if (!$this->adapter->ping()) {
+            // reconnect to the server
+            $this->adapter->reconnect();
+        }
+        return true;
     }
 }
 

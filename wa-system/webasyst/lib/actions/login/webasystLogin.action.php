@@ -9,7 +9,7 @@ class webasystLoginAction extends waLoginAction
         if (!$redirect || $redirect === $this->getConfig()->getBackendUrl(true)) {
         	$redirect = $this->getUser()->getLastPage();
         }
-        if (!$redirect) {
+        if (!$redirect || $redirect == $this->getConfig()->getBackendUrl(true).'?module=login') {
         	$redirect = $this->getConfig()->getBackendUrl(true);
         }
         $this->redirect(array('url' => $redirect));        		

@@ -4,11 +4,11 @@
  * Json-контролллер для получения данных о конкретной записи
  * Класс унаследован от waJsonController
  * Подробнее про экшены и контроллеры:
- * http://www.webasyst.com/ru/framework/docs/application-guide/controllers/
+ * http://www.webasyst.com/ru/framework/docs/dev/controllers/
  * 
  * Доступен в бэкенде по урлу dummy/?action=record&id=[ID]
  * Подробнее о маршрутизации в бэкенде:
- * http://www.webasyst.com/ru/framework/docs/application-guide/backend-routing/
+ * http://www.webasyst.com/ru/framework/docs/dev/backend-routing/
  */
 class dummyBackendRecordController extends waJsonController
 {

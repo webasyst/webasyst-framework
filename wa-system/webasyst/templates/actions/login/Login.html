@@ -4,17 +4,19 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<title>{$wa->accountName()}</title>
 	{$wa->css()}
-	{if $type=='password'}
 	<style type="text/css">
-		.dialog.newpassword .dialog-window {
-			width: 615px;
-			min-width: 615px;
-		}
-		#wa-login .newpassword h1 { margin-top: 10px}
-		#wa-login .newpassword .field .name { width: auto}
-		#wa-login .newpassword .field .value { margin-left: 250px; margin-bottom: 5px}
+		{if $type=='password'}
+			.dialog.newpassword .dialog-window {
+				width: 615px;
+				min-width: 615px;
+			}
+			#wa-login .newpassword h1 { margin-top: 10px}
+			#wa-login .newpassword .field .name { width: auto}
+			#wa-login .newpassword .field .value { margin-left: 250px; margin-bottom: 5px}
+		{else}
+			#wa-login p.i-error { margin: 6px 0 10px; color: red }
+		{/if}
 	</style>
-	{/if}	
 	<script src="{$wa_url}wa-content/js/jquery/jquery-1.4.2.min.js" type="text/javascript"></script>
 	<script src="{$wa_url}wa-content/js/jquery-wa/wa.dialog.js" type="text/javascript"></script>
 	<script type="text/javascript">
@@ -37,7 +39,7 @@
 					<form method="post" action="">
 						{if !$type}
 						<input type="hidden" name="wa_auth_login" value="1" />
-						<h1>{$title}</h1>						
+						<h1>{$title}</h1>
 						{if !empty($error)}
 						<div id="wa-login-error" class="error">{$error|escape}</div>
 						{elseif !empty($options.description)}
@@ -74,25 +76,17 @@
 							<div class="field">
 								<div class="value submit">
 									<input type="submit" value="[`Sign In`]" class="button" id="wa-login-submit">
+									{if (!empty($back_on_cancel))}
+										[`or`]
+										<a class="wa-logincancel" href="{$back_on_cancel}">[`cancel`]</a>
+									{/if}
 									<a href="?forgot=1" class="wa-forgotpassword">[`Forgot password?`]</a>
 								</div>
 							</div>
 						</div>
 						{elseif $type=='password'}
-						<h1>{$wa->accountName()}</h1>
+						<h1 style="font-size:1.8em">[`Recover password for`] {$login}</h1>
 						<div class="fields form">
-							<div class="field">
-								<div class="name">
-									{if $options.login == 'email'}
-									[`Email`]:
-									{else}
-									[`Login`]:
-									{/if}
-								</div>
-								<div class="value">
-									<input disabled="disabled" type="text" class="wa-login-text-input" value="{$login}" id="wa-login-input" name="login" autocomplete="off" />
-								</div>
-							</div>
 							<div class="field">
 								<div class="name">
 									[`Create a new password`]:
@@ -115,55 +109,62 @@
 									<input type="submit" value="[`Save and login`]" class="button" id="wa-login-submit">
 								</div>
 							</div>
-						</div>						
+						</div>
 						{elseif $type=='forgot'}
 							<h1 style="font-weight:bold;text-align:left;font-size:1.8em;margin-top:0">[`Password recovery`]</h1>
 							{if !empty($success)}
-							<p>[`Password recovery instructions have been sent to your email address.`]</p>
-							<br /><br />
-							<a href="?">[`Back to login page`]</a>
+								<p>[`Password recovery instructions have been sent to your email address.`]</p>
+								<br /><br />
+								<a href="?">[`Back to login page`]</a>
 							{else}
-							[`Please enter your login name or email:`]
-							<div class="field">
-								<input style="width: 50%" id="wa-login-input" type="text" class="large{if !empty($errors.login)} error{/if}" name="login" value="{$wa->post('login')}" autocomplete="off" />
-							</div>
-							{if !empty($error)}
-							<p class="i-error">{$error}</p>
-							{/if}		
-							{/if}	
-							{if empty($success)}
-							<div style="margin-top:20px">		
-									<input type="submit" value="[`Send`]" class="button green" />
-									[`or`]
-									<a href="?">[`cancel`]</a>
-							</div>				
-							{/if}												
-						{/if}							
+								{if $options.login == 'email'}
+									[`Please enter your email:`]
+								{else}
+									[`Please enter your login name or email:`]
+								{/if}
+								<div class="field">
+									<input style="width: 50%" id="wa-login-input" type="text" class="large{if !empty($errors.login)} error{/if}" name="login" value="{$wa->post('login')}" autocomplete="off" />
+								</div>
+								{if !empty($error)}
+									<p class="i-error">{$error}</p>
+								{/if}
+								<div{if empty($error)} style="margin-top:20px"{/if}>
+										<input type="submit" value="[`Send`]" class="button green" />
+										[`or`]
+										<a href="?">[`cancel`]</a>
+								</div>
+							{/if}
+						{/if}
 					</form>
 					</div>
 				</div>
-				
-				<div class="dialog-buttons">
 
-						<div class="wa-poweredby">
-							<a href="http://www.webasyst.com">
-								Webasyst
-								<span class="wa-dots">
-								<span class="wa-dot-red"></span>
-								<span class="wa-dot-blue"></span>
-								<span class="wa-dot-yellow"></span>
-								<span class="wa-dot-pink"></span>
-								<span class="wa-dot-green"></span>
-								<span class="wa-dot-cyan"></span></span>
-							</a>
-						</div>
-	
+				<div class="dialog-buttons">
+					<div class="wa-poweredby">
+						<a href="http://www.webasyst.{if $wa->locale()=='ru_RU'}ru{else}net{/if}">
+							WebAsyst
+							<span class="wa-dots">
+							<span class="wa-dot-red"></span>
+							<span class="wa-dot-blue"></span>
+							<span class="wa-dot-yellow"></span>
+							<span class="wa-dot-pink"></span>
+							<span class="wa-dot-green"></span>
+							<span class="wa-dot-cyan"></span></span>
+						</a>
+					</div>
 				</div>
-				
 			</div>
 		</div>
-	
 	</div>
+<script type="text/javascript">
+$(function() {
+	window.setTimeout(function() { // voodoo magic... does not work without setTimeout() in IE8.
+		var input = $('input:text')[0] || $('input:password')[0];
+		if (input) {
+			input.focus();
+		}
+	}, 1);
+});
+</script>
 </body>
-
 </html>

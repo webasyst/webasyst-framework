@@ -52,7 +52,7 @@ class waContact implements ArrayAccess
             } catch (waDbException $e) {}
             if (!isset(self::$options['default']['locale']) || !self::$options['default']['locale']) {
                 self::$options['default']['locale'] = 'ru_RU';
-            }
+            }            
         }
         if (!isset(self::$options['default']['timezone'])) {
             self::$options['default']['timezone'] = @date_default_timezone_get();
@@ -74,36 +74,39 @@ class waContact implements ArrayAccess
 
     public function getPhoto($width = null, $height = null)
     {
+        return self::getPhotoUrl($this->id, $this->get('photo'), $width, $height);
+    }
+    
+    public static function getPhotoUrl($id, $ts, $width = null, $height = null)
+    {
         if ($width === 'original') {
-            $size = 'original';
+        	$size = 'original';
         } else if ($width && !$height) {
-            $size = $width.'x'.$width;
+        	$size = $width.'x'.$width;
         } else if (!$width) {
-            $width = 96;
-            $size = '96x96';
+        	$width = 96;
+        	$size = '96x96';
         } else {
-            $size = $width.'x'.$height;
-        }
-
-        $ts = $this->get('photo');
-
+        	$size = $width.'x'.$height;
+        }        
+        
         if ($ts) {
-            if (waSystemConfig::systemOption('mod_rewrite')) {
-                return wa()->getDataUrl('photo/'.$this->id.'/'.$ts.'.'.$size.'.jpg', true, 'contacts');
-            } else {
-                if (file_exists(wa()->getDataPath('photo/'.$this->id.'/'.$ts.'.'.$size.'.jpg', true, 'contacts'))) {
-                    return wa()->getDataUrl('photo/'.$this->id.'/'.$ts.'.'.$size.'.jpg', true, 'contacts');
-                } else {
-                    return wa()->getDataUrl('photo/thumb.php/'.$this->id.'/'.$ts.'.'.$size.'.jpg', true, 'contacts');
-                }
-            }
+        	if (waSystemConfig::systemOption('mod_rewrite')) {
+        		return wa()->getDataUrl('photo/'.$id.'/'.$ts.'.'.$size.'.jpg', true, 'contacts');
+        	} else {
+        		if (file_exists(wa()->getDataPath('photo/'.$id.'/'.$ts.'.'.$size.'.jpg', true, 'contacts'))) {
+        			return wa()->getDataUrl('photo/'.$id.'/'.$ts.'.'.$size.'.jpg', true, 'contacts');
+        		} else {
+        			return wa()->getDataUrl('photo/thumb.php/'.$id.'/'.$ts.'.'.$size.'.jpg', true, 'contacts');
+        		}
+        	}
         } else {
-            $size = (int)$width;
-            if (!in_array($size, array(20, 32, 50, 96))) {
-                $size = 96;
-            }
-            return wa()->getRootUrl().'wa-content/img/userpic'.$size.'.jpg';
-        }
+        	$size = (int)$width;
+        	if (!in_array($size, array(20, 32, 50, 96))) {
+        		$size = 96;
+        	}
+        	return wa()->getRootUrl().'wa-content/img/userpic'.$size.'.jpg';
+        }        
     }
     
     public function setPhoto($file) 
@@ -239,20 +242,25 @@ class waContact implements ArrayAccess
         }
         // no field with $field_id exists
         else {
-            // try get data from default storage
-            $result = waContactFields::getStorage()->get($this, $field_id);
-            if (!$result && isset(self::$options['default'][$field_id])) {
-                return self::$options['default'][$field_id];
-            }
-            // try get data from data storage
-            else if ($result === null) {
-                $result = waContactFields::getStorage('data')->get($this, $field_id);
-                if ($result && is_array($result)) {
-                    $result = current($result);
-                    if (is_array($result) && isset($result['value'])) {
-                        return $result['value'];
-                    }
+            if ($this->issetCache($field_id)) {
+                $result = $this->getCache($field_id);
+            } else {
+            
+                // try get data from default storage
+                $result = waContactFields::getStorage()->get($this, $field_id);
+                if (!$result && isset(self::$options['default'][$field_id])) {
+                    return self::$options['default'][$field_id];
                 }
+                // try get data from data storage
+                elseif ($result === null) {
+                    $result = waContactFields::getStorage('data')->get($this, $field_id);
+                }
+            }
+            if ($result && is_array($result)) {
+            	$result = current($result);
+            	if (is_array($result) && isset($result['value'])) {
+            		return $result['value'];
+            	}
             }
             return $result;
         }
@@ -296,6 +304,13 @@ class waContact implements ArrayAccess
                 $result = self::$cache[$this->id];
                 foreach ($fields as $field) {
                     $result[$field->getId()] = $field->get($this);
+                }
+                foreach ($result as $field_id => $value) {
+                    if (!isset($fields[$field_id]) && is_array($value)) {
+                        if (isset($value[0]['value'])) {
+                            $result[$field_id] = $value[0]['value'];
+                        }
+                    }
                 }
                 // remove some fields
                 unset($result['password']);
@@ -356,9 +371,16 @@ class waContact implements ArrayAccess
                 if ($f->isMulti() && !is_array($value)) {
                     $value = array($value);
                 }
-                if ($validate && ( $e = $f->validate($value, $this->id))) {
+                if ($validate) {
+                    if ($e = $f->validate($value, $this->id)) {
                         $errors[$f->getId()] = $e;
-                } else {
+                    }
+                } elseif ($f->isUnique()) { // validate unique  
+                    if ($e = $f->validateUnique($value, $this->id)) {
+                        $errors[$f->getId()] = $e;
+                    }
+                }
+                if (!$errors) {
                     $save[$f->getStorage()->getType()][$field] = $value;
                 }
             } elseif ($contact_model->fieldExists($field)) {
@@ -368,13 +390,15 @@ class waContact implements ArrayAccess
             }
         }
         // Returns errors
-        if ($validate && $errors) {
+        if ($errors) {
             return $errors;
         }
 
         // Saving to all storages
         try {
+            $is_add = false;
             if (!$this->id) {
+                $is_add = true;
                 $storage = 'waContactInfoStorage';
                 $this->id = waContactFields::getStorage($storage)->set($this, $save[$storage]);
                 unset($save[$storage]);
@@ -384,6 +408,11 @@ class waContact implements ArrayAccess
             }
             $this->data = array();
         } catch (Exception $e) {
+            // remove created contact
+            if ($is_add && $this->id) {
+                $this->delete();
+                $this->id = null;
+            }
             $errors['name'][] = $e->getMessage();
         }
         return $errors ? $errors : 0;
@@ -405,6 +434,10 @@ class waContact implements ArrayAccess
                 $this->setCache($contact_info);
                 $locale = isset($contact_info['locale']) ? $contact_info['locale'] : '';
             }
+        }
+        // try get locale by header Accept-Language (only for current user)
+        if (!$locale && $this instanceof waAuthUser) {
+        	$locale = waRequest::getLocale();
         }
         if (!$locale) {
             $locale = self::$options['default']['locale'];
@@ -582,8 +615,11 @@ class waContact implements ArrayAccess
      */
     public function getRights($app_id, $name = null, $assoc = true)
     {
-        $right_model = new waContactRightsModel();
         if ($name !== null && substr($name, -1) === '%') {
+            if (!$this->id) {
+            	return array();
+            }            
+            $right_model = new waContactRightsModel();
             $data = $right_model->get($this->id, $app_id);
             $result = array();
             $prefix = substr($name, 0, -1);
@@ -599,6 +635,10 @@ class waContact implements ArrayAccess
             }
             return $result;
         } else {
+            if (!$this->id) {
+                return false;
+            }
+            $right_model = new waContactRightsModel();
             return $right_model->get($this->id, $app_id, $name);
         }
     }

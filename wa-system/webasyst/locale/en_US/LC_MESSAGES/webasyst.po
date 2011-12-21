@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WebAsyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2010-06-08 15:35+0300\n"
+"PO-Revision-Date: 2011-12-13 15:22+0400\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -402,3 +402,10 @@ msgstr ""
 #: /wa-system/webasyst/templates/mail/RecoveringPassword.html:4
 msgid "IMPORTANT NOTE: If you did not request your password recovery, it means that someone else was trying to login using your login name or email. For security purposes we recommend you to login your account now and change password."
 msgstr ""
+
+msgid "Theme %s already exists"
+msgstr ""
+
+msgid "Invalid theme id %s"
+msgstr ""
+

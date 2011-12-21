@@ -18,7 +18,7 @@ class waContactInfoStorage extends waContactStorage
      * @var waContactModel
      */
     protected $model;
-    
+
     public function load(waContact $contact, $fields = null)
     {
         if (!$this->model) {
@@ -26,11 +26,11 @@ class waContactInfoStorage extends waContactStorage
         }
         $data = $this->model->getById($contact->getId());
         if (!$data) {
-        	throw new waException('Contact does not exists', 404);
+            throw new waException('Contact does not exist: '.$contact->getId(), 404);
         }
         return $data;
     }
-    
+
     public function save(waContact $contact, $fields)
     {
         if (!$this->model) {
@@ -50,7 +50,7 @@ class waContactInfoStorage extends waContactStorage
         if (!$fields) {
             return;
         }
-        
+
         switch($type) {
             case 'person':
                 $cwhere = " WHERE c.is_company=0 ";
@@ -77,7 +77,7 @@ class waContactInfoStorage extends waContactStorage
             }
             $set[] = "`$id`=$value";
         }
-        
+
         $set = implode(',', $set);
         $this->model->exec("UPDATE wa_contact AS c SET ".$set.$cwhere);
     }
@@ -94,19 +94,19 @@ class waContactInfoStorage extends waContactStorage
             return 0;
         }
         $field = $field->getId();
-        
+
         $sql = "SELECT SUM(t.num) AS dupl
                 FROM (
                     SELECT `$field` AS f, COUNT(*) AS num
                     FROM wa_contact
                     WHERE LENGTH(`$field`) > 0
                     GROUP BY f
-                    HAVING num > 1 
+                    HAVING num > 1
                 ) AS t";
         $r = $this->model->query($sql)->fetchField();
         return $r ? $r : 0;
     }
-    
+
     public function findDuplicatesFor($field, $values, $excludeIds=array()) {
         if (!$values) {
             return array();
@@ -122,7 +122,7 @@ class waContactInfoStorage extends waContactStorage
             return 0;
         }
         $field = $field->getId();
-        
+
         $sql = "SELECT `$field` AS f, id
                 FROM wa_contact
                 WHERE `$field` IN (:values)".
@@ -132,5 +132,3 @@ class waContactInfoStorage extends waContactStorage
         return $r->fetchAll('f', true);
     }
 }
-
-// EOF

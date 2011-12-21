@@ -13,13 +13,22 @@ class webasystBackendActions extends waViewActions
 
     public function defaultAction()
     {
-        $this->view->assign("username", wa()->getUser()->getName());
+        try {
+            $this->view->assign("username", wa()->getUser()->getName());
+        } catch (waException $e) { 
+            // user not exists
+            if ($e->getCode() == 404) {
+                wa()->getUser()->logout();
+                wa()->dispatch();
+                exit;
+            }
+        }
     }
 
     public function logoutAction()
     {
         // Clear auth data
-        waSystem::getInstance()->getAuth()->clearAuth();
+        $this->getUser()->logout();
 
         // Redirect to the main page
         $this->redirect($this->getConfig()->getBackendUrl(true));

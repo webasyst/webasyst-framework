@@ -136,9 +136,9 @@ HTML;
     return $html;
 }
 
-function wa_url()
+function wa_url($absolute = false)
 {
-    return waSystem::getInstance()->getRootUrl();
+    return waSystem::getInstance()->getRootUrl($absolute);
 }
 
 function wa_backend_url()

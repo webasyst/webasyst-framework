@@ -23,3 +23,46 @@ class waContactEmailField extends waContactStringField
         }
     }
 }
+
+class waContactEmailListFormatter extends waContactFieldFormatter
+{
+	public function format($data)
+	{
+		if (is_array($data)) {
+			$data['data'] = $data['value'];
+		} else {
+			$data = array(
+				'data' => $data,
+				'value' => $data
+			);
+		}
+		if (!$data['data']) {
+			$data['value'] = '';
+			return $data;
+		}
+		$href = 'mailto:'.$data['data'];
+		$data['value'] = '<a href="'.addslashes($href).'">'.htmlspecialchars($data['value']).'</a>';
+		return $data;
+	}
+}
+
+class waContactEmailTopFormatter extends waContactFieldFormatter
+{
+	public function format($data) {
+	    if (is_array($data)) {
+            $result = htmlspecialchars($data['value']);
+            $result = '<a class="inline" href="mailto:'.$result.'">'.$result.'</a>';
+            if (isset($data['ext']) && $data['ext']) {
+                $ext = $data['ext'];
+                $f = waContactFields::get('email');
+                $exts = $f->getParameter('ext');
+                if (isset($exts[$ext])) {
+                    $ext = _ws($exts[$ext]);
+                } 
+                $result .= ' <em class="hint">'.htmlspecialchars($ext).'</em>';
+            }
+            return $result;
+	    }
+        return htmlspecialchars($data);
+	}
+}

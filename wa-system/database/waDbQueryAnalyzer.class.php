@@ -30,26 +30,19 @@ class waDbQueryAnalyzer
      */
     //protected $DbQueryBenchmark;
 
-    /**
-     * mysql
-     *
-     * @var resource
-     */
-    protected $handler;
-
-    function __construct($query)
+    public function __construct($query)
     {
         $this->query_string = trim($query);
         $type = strtok($this->query_string, " \n\t");
         $this->type = trim(strtolower($type));
     }
 
-    function getQueryType()
+    public function getQueryType()
     {
         return $this->type;
     }
 
-    function isSelectCount()
+    public function isSelectCount()
     {
         if(preg_match("/^\s*SELECT\s+COUNT\(/ius", $this->query_string))
         {
@@ -59,27 +52,27 @@ class waDbQueryAnalyzer
         return false;
     }
 
-    function invokeResult($query_result, $handler, waDbAdapter $adapter)
+    public function invokeResult($query_result, waDbAdapter $adapter)
     {
         switch($this->type){
             case 'select':
             case 'show':
             case 'desc':
             case 'describe':
-                $result = new waDbResultSelect($handler, $query_result, $adapter);
+                $result = new waDbResultSelect($query_result, $adapter);
                 break;
             case 'insert':
             case 'replace':
-                $result = new waDbResultInsert($handler, $query_result, $adapter);
+                $result = new waDbResultInsert($query_result, $adapter);
                 break;
             case 'update':
-                $result = new waDbResultUpdate($handler, $query_result, $adapter);
+                $result = new waDbResultUpdate($query_result, $adapter);
                 break;
             case 'delete':
-                $result = new waDbResultDelete($handler, $query_result, $adapter);
+                $result = new waDbResultDelete($query_result, $adapter);
                 break;
             case 'replace':
-                $result = new waDbResultReplace($handler, $query_result, $adapter);
+                $result = new waDbResultReplace($query_result, $adapter);
                 break;
             default:
                 return $query_result;

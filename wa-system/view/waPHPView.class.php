@@ -11,7 +11,7 @@ class waPHPView extends waView
 	
 	public function __construct(waSystem $system, $options = array())
 	{
-		$this->system = $system;
+		parent::__construct($system, $options);
 		$this->template_dir = isset($options['template_dir']) ? $options['template_dir'] : $this->system->getAppPath();
 	}
 	

@@ -14,7 +14,7 @@
 		{{/if}}
 		<div class="details {{if empty($user)}}c-header-thumb-no{{/if}}">
 			{{if !empty($user)}}
-				<h3>{{$user.name}}</h3>
+				<h3>{{$user.name|escape}}</h3>
 			{{else}}
 				<h3 class="c-group-name">{{if $group.name}}{{$group.name|escape}}{{else}}[`&lt;no name&gt;`]{{/if}}</h3>
 			{{/if}}

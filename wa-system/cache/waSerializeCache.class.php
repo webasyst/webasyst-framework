@@ -26,11 +26,13 @@ class waSerializeCache extends waFileCache
 		}
 	}
 
-	protected function readFromFile($file)
+	protected function readFromFile($file, $t = null)
 	{
 		if (file_exists($file)) {
 			$info = unserialize(file_get_contents($file));
-	        if (!empty($info['ttl']) && time() - $info['time'] >= $info['ttl']) {
+			if ($t && $info['time'] < $t) {
+			    return null;
+			} elseif (!empty($info['ttl']) && time() - $info['time'] >= $info['ttl']) {
 	        	return null;
 	        } else {
 	        	return $info['value'];

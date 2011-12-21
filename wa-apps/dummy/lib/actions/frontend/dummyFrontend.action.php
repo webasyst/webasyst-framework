@@ -3,10 +3,10 @@
 /**
  * Экшен фронтенда по умолчанию
  * Подробнее о экшенах и контроллерах:
- * http://www.webasyst.com/ru/framework/docs/application-guide/controllers/
+ * http://www.webasyst.com/ru/framework/docs/dev/controllers/
  * 
  * Подробнее о маршрутизации во фронтенде:
- * http://www.webasyst.com/ru/framework/docs/application-guide/routing/
+ * http://www.webasyst.com/ru/framework/docs/dev/routing/
  */
 class dummyFrontendAction extends waViewAction
 {

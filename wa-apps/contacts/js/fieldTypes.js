@@ -108,10 +108,13 @@ $.wa.contactEditor.baseFieldType = {
 	  * Default implementation uses this.newInlineFieldElement(), wraps it and initializes in-place editor.
 	  */
 	newFieldElement: function(mode) {
+		if(this.fieldData.read_only) {
+			mode = 'view';
+		}
 		var inlineElement = this.newInlineFieldElement(mode);
 
 		// Do not show anything if there's no inline element
-		if(inlineElement === null) {
+		if(inlineElement === null && (!this.fieldData.show_empty || mode == 'edit')) {
 			return $('<div style="display: none"></div>');
 		}
 
@@ -155,14 +158,13 @@ $.wa.contactEditor.baseFieldType = {
 		if(mode == 'view' && !this.fieldValue) {
 			return null;
 		}
-
 		var result = null;
-		var value = this.fieldValue;
 		if (mode == 'edit') {
 			result = $('<span><input class="val" type="text"></span>');
-			result.find('input.val').val(value);
+			result.find('input.val').val(this.fieldValue);
 		} else {
-			result = $('<span class="val"></span>').text(value);
+			result = $('<span class="val"></span>');
+			result.text(this.fieldValue);
 		}
 		return result;
 	},
@@ -434,7 +436,6 @@ $.wa.contactEditor.factoryTypes.Name = $.extend({}, $.wa.contactEditor.baseField
 		if ($.wa.contactEditor.fieldEditors.title) {
 			title = $.wa.contactEditor.fieldEditors.title.getValue()+' ';
 		}
-
 		// Update page header
 		$('#contact-fullname').text(''+title+(this.fieldValue ? this.fieldValue : '<'+$_('no name')+'>'));
 
@@ -501,24 +502,7 @@ $.wa.contactEditor.factoryTypes.Name = $.extend({}, $.wa.contactEditor.baseField
 	}
 });
 
-$.wa.contactEditor.factoryTypes.NameSubfield = $.extend({}, $.wa.contactEditor.baseFieldType, {
-	// Name subfields no longer need to be hidden in view mode
-	/*newInlineFieldElement: null,
-
-	newFieldElement: function(mode) {
-		if (mode != 'edit') {
-			return $('<div style="display: none"></div>');
-		}
-
-		var nameAddition = '';
-		if (mode == 'edit') {
-			nameAddition = ':';
-		}
-		result = $.wa.contactEditor.wrapper('<span><input class="val" type="text"></span>', this.fieldData.name+nameAddition);
-		result.find('input.val').val(this.fieldValue);
-		return result;
-	}*/
-});
+$.wa.contactEditor.factoryTypes.NameSubfield = $.extend({}, $.wa.contactEditor.baseFieldType, {});
 
 $.wa.contactEditor.factoryTypes.Multifield = $.extend({}, $.wa.contactEditor.baseFieldType, {
 	subfieldEditors: null,
@@ -638,8 +622,9 @@ $.wa.contactEditor.factoryTypes.Multifield = $.extend({}, $.wa.contactEditor.bas
 			// load ext
 			if (typeof this.fieldData.ext != 'undefined') {
 				var ext = this.fieldValue[i].ext;
-				if (sf.currentMode == 'edit') {
-					ext = sf.parentEditorData.domElement.find('input.ext')[0].getExtValue();
+				var el = sf.parentEditorData.domElement.find('input.ext')[0];
+				if (sf.currentMode == 'edit' && el) {
+					ext = el.getExtValue();
 				}
 				val[i].ext = ext;
 			}
@@ -852,6 +837,10 @@ $.wa.contactEditor.factoryTypes.Multifield = $.extend({}, $.wa.contactEditor.bas
 	newInlineFieldElement: null,
 
 	newFieldElement: function(mode) {
+		if(this.fieldData.read_only) {
+			mode = 'view';
+		}
+
 		var childWrapper = $('<div class="multifield-subfields"></div>');
 		var inlineMode = typeof this.subfieldFactory.newInlineFieldElement == 'function';
 
@@ -863,8 +852,8 @@ $.wa.contactEditor.factoryTypes.Multifield = $.extend({}, $.wa.contactEditor.bas
 		}
 
 		// do not show anything if there are no values
-		if (allEmpty) {
-			return $('<div></div>');
+		if (allEmpty && !this.fieldData.show_empty) {
+			return $('<div style="display: none"></div>');
 		}
 
 		// Wrap over for all subfields to be in separate div
@@ -1000,7 +989,7 @@ $.wa.contactEditor.factoryTypes.Composite = $.extend({}, $.wa.contactEditor.base
 	},
 
 	setValue: function(data) {
-		if (!data || typeof data.data == 'undefined') {
+		if (!data) {
 			return;
 		}
 
@@ -1009,7 +998,10 @@ $.wa.contactEditor.factoryTypes.Composite = $.extend({}, $.wa.contactEditor.base
 		// Save subfields
 		for(var sfid in this.subfieldEditors) {
 			var sf = this.subfieldEditors[sfid];
-			if (typeof data.data[sfid] != 'undefined') {
+			if (typeof data.data == 'undefined') {
+				sf.initialize();
+				sf.setValue(sf.getValue());
+			} else if (typeof data.data[sfid] != 'undefined') {
 				sf.setValue(data.data[sfid]);
 			} else {
 				sf.setValue(sf.getValue());
@@ -1080,9 +1072,12 @@ $.wa.contactEditor.factoryTypes.Composite = $.extend({}, $.wa.contactEditor.base
 	newInlineFieldElement: null,
 
 	newFieldElement: function(mode) {
+		if(this.fieldData.read_only) {
+			mode = 'view';
+		}
 		if (mode == 'view') {
 			// Do not show anything in view mode if field is empty
-			if(!this.fieldValue.value) {
+			if(!this.fieldValue.value && !this.fieldData.show_empty) {
 				return $('<div style="display: none"></div>');
 			}
 		}
@@ -1184,7 +1179,6 @@ $.wa.contactEditor.factoryTypes.Address = $.extend({}, $.wa.contactEditor.factor
 		//
 		// edit mode
 		//
-
 		var wrapper = $('<div class="address-field"></div>');
 		wrapper.append('<span style="display:none" class="replace-with-ext"></span>');
 

@@ -114,7 +114,14 @@ class waAuth implements waiAuth
 			} else {
 				throw new waException(_ws('Invalid login or password'));	
 			}
-		} elseif (($token = waRequest::cookie('auth_token')) && waSystem::getSetting('rememberme', 1, 'webasyst')) {
+		} elseif ($token = waRequest::cookie('auth_token')) {
+		    try {
+		        $r = waSystem::getSetting('rememberme', 1, 'webasyst');
+		    } catch (waDbException $e) {
+		        if ($e->getCode() == 1146) {
+		            return false;
+		        }
+		    }
 		    $model = new waContactModel();
 			$response = waSystem::getInstance()->getResponse();
 			$id = substr($token, 15, -15);
@@ -146,10 +153,7 @@ class waAuth implements waiAuth
 	 * @return void
 	 */
 	public function clearAuth()
-	{
-        // Update last datetime of the current user
-        waSystem::getInstance()->getUser()->updateLastTime(true);
-	    
+	{   
 		waSystem::getInstance()->getStorage()->destroy();
 		if (waRequest::cookie('auth_token')) {
 			waSystem::getInstance()->getResponse()->setCookie('auth_token', null, -1);

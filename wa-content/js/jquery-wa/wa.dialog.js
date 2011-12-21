@@ -2,26 +2,47 @@ jQuery.fn.waDialog = function (options) {
 	options = options || {}
 	options = jQuery.extend({
 		esc: true,
-		content: '<h1>Loading... <i class="icon16 loading"></i></h1>',
 		buttons: null,
 		url: null,
-		
+		disableButtonsOnSubmit: false,
 		onLoad: null,
 		onCancel: null,
-		onSubmit: null
+		onSubmit: null		
 	}, options);
 	
-	var d = jQuery(this);
+	var d = $(this);
+
+	var id = d.attr('id');
+	if (id && !d.hasClass('dialog')) {
+		d.removeAttr('id');
+		$("#" + id).remove();
+	}	
 	
-	if (d.attr('id') && !d.parent().length) {
-		$("#" + d.attr('id')).remove();
-	}
-		
+	var cl = (options['class'] || options['className']) ? (options['class'] || options['className']) : d.attr('class');
+	
 	if (!d.hasClass('dialog')) {
-		d = jQuery(
-				'<div ' + (d.attr('id') ? 'id = "' + d.attr('id') + '"' : '') + ' class="dialog ' + d.attr('class') + '" style="display: none">'+
-				'<div class="dialog-background"></div>'+
-				'<div class="dialog-window">'+
+		var content = $(this);
+		var d = $('<div ' + (id ? 'id = "' + id + '"' : '') + ' class="dialog ' + cl + '" style="display: none">'+
+					'<div class="dialog-background"></div>'+
+					'<div class="dialog-window"></div>'+
+			  '</div>').appendTo('body');
+		if (content.find('.dialog-content').length || content.find('.dialog-buttons').length) {
+			$('.dialog-window', d).append(content.show());
+			var dc = content.find('.dialog-content');
+			if (dc.length) {
+				var tmp = $('<div class="dialog-content-indent"></div>');
+				dc.contents().appendTo(tmp);
+				dc.append(tmp);
+			}
+			dc = content.find('.dialog-buttons');
+			if (dc.length) {
+				var tmp = $('<div class="dialog-buttons-gradient"></div>');
+				dc.contents().appendTo(tmp);
+				dc.append(tmp);
+			}			
+		} else {
+			$('.dialog-window', d).append(
+					(options.onSubmit ? '<form method="post" action="">' : '') + 
 					'<div class="dialog-content">'+
 						'<div class="dialog-content-indent">'+
 							// content goes here
@@ -32,22 +53,61 @@ jQuery.fn.waDialog = function (options) {
 							// buttons go here
 						'</div>'+
 					'</div>'+
-				'</div>'+
-			'</div>'
-		).appendTo('body');
-		d.find('.dialog-buttons-gradient').empty().append(options.buttons);
-		d.find('.dialog-content-indent').empty().append(options.content);		
+					(options.onSubmit ? '</form>' : '')
+			);
+			d.find('.dialog-content-indent').append(content.show());
+		}
+		d.find('.dialog-buttons-gradient').append(options.buttons);
+		if (options.url) {
+			d.find('.dialog-content-indent').append('<h1>Loading... <i class="icon16 loading"></i></h1>');
+		} else if (options.content) {
+			d.find('.dialog-content-indent').append(options.content);
+		} 		
+		if (options.title) {
+			d.find('.dialog-content-indent').prepend('<h1>' + options.title + '</h1>');
+		} 
+	} else if (options.content) {
+		d.find('.dialog-content-indent').html(options.content);
+	} else if (options.buttons) {
+		d.find('.dialog-buttons-gradient').html(options.buttons);
+	}
+	
+	if (d.find('.dialog-background').length) {
+		d.prepend('<div class="dialog-background"> </div>');
+	}
+	
+	d.bind('close', function () {
+		if (options.onClose) {
+			options.onClose.call($(this));
+		}
+		$(this).hide();
+	});
+	
+	var css = ['width', 'height', 'min-width', 'min-height'];
+	for (var k = 0; k < css.length; k++) {
+		if (options[css[k]]) {
+			if ((css[k] == 'height' && options[css[k]] < '300px') || (css[k] == 'width' && options[css[k]] < '400px')) {
+				d.find('div.dialog-window').css('min-' + css[k], options[css[k]]);
+			} 
+			d.find('div.dialog-window').css(css[k], options[css[k]]);
+		}
+	}
+	
+	if (options.disableButtonsOnSubmit) {
+		d.find("input[type=submit]").removeAttr('disabled');
 	}
 	
 	if (!d.parent().length) {
 		d.appendTo('body');
 	}
 	
-	d.find('.dialog-buttons .cancel').unbind('click').click(function () {
+	d.find('.dialog-buttons .cancel').unbind('click').click(function (e) {
+		e.stopPropagation(); 
+		e.preventDefault();
 		if (options.onCancel) {
 			options.onCancel.call(d.get(0));
 		}
-		d.hide();
+		d.trigger('close');
 		return false;
 	});
 	
@@ -55,18 +115,37 @@ jQuery.fn.waDialog = function (options) {
 	
 	if (options.url) {
 		jQuery.get(options.url, function (response) {
-			d.find('.dialog-content-indent').html(response);
+			var el = $(response);
+			if (el.find('.dialog-content').length || el.find('.dialog-buttons').length) {
+				if (el.find('.dialog-content').length) {
+					d.find('.dialog-content-indent').empty().append(el.find('.dialog-content'));
+				}
+				if (el.find('.dialog-buttons').length) {
+					d.find('.dialog-buttons-gradient').empty().append(el.find('.dialog-buttons'));
+				}
+			} else {
+				d.find('.dialog-content-indent').empty().append(el);
+			}
 			d.trigger('resize');
 			if (options.onLoad) {
 				options.onLoad.call(d.get(0));
 			}
 		});
+	} else {
+		if (options.onLoad) {
+			options.onLoad.call(d.get(0));
+		}		
 	}	
 
 	if (options.onSubmit) {
-		d.find('form').unbind('submit').submit(options.onSubmit);
+		d.find('form').unbind('submit').submit(function () {
+			if (options.disableButtonsOnSubmit) {
+				d.find("input[type=submit]").attr('disabled', 'disabled');
+			}
+			return options.onSubmit.apply(this, [d]);
+		});
 	}
-	
+		
 	d.bind('resize', function () {
 		var el = jQuery(this).find('.dialog-window');
 		var dw = el.width();
@@ -91,9 +170,10 @@ jQuery.fn.waDialog = function (options) {
 	
 	if (options.esc) {
 		d.bind('esc', function () {
-			jQuery(this).hide();
+			d.trigger('close');
 		});
 	}
+	return d;
 }
 
 jQuery(window).resize(function () {
