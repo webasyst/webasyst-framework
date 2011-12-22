@@ -16,7 +16,7 @@ class siteViewHelper
     {
         try {
             $domain_model = new siteDomainModel();
-            $domain = $domain_model->getByName(waSystem::getInstance()->getRouting()->getDomain());
+            $domain = $domain_model->getByName(waSystem::getInstance()->getRouting()->getDomain(null, true));
 
             $ids = waRequest::param('_pages');
             if ($ids) {

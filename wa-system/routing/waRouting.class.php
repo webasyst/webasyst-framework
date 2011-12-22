@@ -67,26 +67,17 @@ class waRouting
     
     public function getRoutes($domain = null)
     {
-        $domain = $this->getDomain($domain);
+        $domain = $this->getDomain($domain, true);
         if (isset($this->routes[$domain])) {
         	return $this->routes[$domain];
-        } else {
-            if (substr($domain, 0, 4) == 'www.') {
-                $domain = substr($domain, 4);
-            } else {
-                $domain = 'www.'.$domain;
-            }
-            if (isset($this->routes[$domain])) {
-            	return $this->routes[$domain];
-            }            
-        } 
+        }
         if (isset($this->routes['default']) && $this->routes['default']) {
         	return $this->routes['default'];
         }
         return array();
     }
     
-    public function getDomain($domain = null)
+    public function getDomain($domain = null, $check = false)
     {
         if ($domain) {
             return $domain;
@@ -99,6 +90,16 @@ class waRouting
             $u = trim($this->system->getRootUrl(), '/');
             if ($u) {
             	$this->domain .= '/'.$u;
+            }
+        }
+        if ($check) {
+            if (!isset($this->routes[$this->domain])) {
+                if (substr($this->domain, 0, 4) == 'www.') {
+                	$domain = substr($this->domain, 4);
+                } else {
+                	$domain = 'www.'.$this->domain;
+                }
+                return $domain;
             }
         }
         return $this->domain;

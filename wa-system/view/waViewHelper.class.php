@@ -42,7 +42,7 @@ class waViewHelper
     public function apps()
     {
         if ($this->wa->getEnv() == 'frontend') {
-            $domain = $this->wa->getRouting()->getDomain();
+            $domain = $this->wa->getRouting()->getDomain(null, true);
             $domain_config_path = $this->wa->getConfig()->getConfigPath('domains/'.$domain.'.php', true, 'site');
             if (file_exists($domain_config_path)) {
                 $domain_config = include($domain_config_path);
