@@ -70,7 +70,17 @@ class waRouting
         $domain = $this->getDomain($domain);
         if (isset($this->routes[$domain])) {
         	return $this->routes[$domain];
-        } elseif (isset($this->routes['default']) && $this->routes['default']) {
+        } else {
+            if (substr($domain, 0, 4) == 'www.') {
+                $domain = substr($domain, 4);
+            } else {
+                $domain = 'www.'.$domain;
+            }
+            if (isset($this->routes[$domain])) {
+            	return $this->routes[$domain];
+            }            
+        } 
+        if (isset($this->routes['default']) && $this->routes['default']) {
         	return $this->routes['default'];
         }
         return array();
@@ -181,6 +191,13 @@ class waRouting
     		}
     		if (preg_match('!^'.$pattern.'$!ui', $url, $match)) {
     			if (isset($r['redirect'])) {
+    			    $p = str_replace('.*?', '(.*?)', $pattern);
+    			    if ($p != $pattern) {
+    			        preg_match('!^'.$p.'$!ui', $url, $m);
+    			        if (isset($m[1])) {
+    			            $r['redirect'] = str_replace('*', $m[1], $r['redirect']);
+    			        }
+    			    }
     				header("Location: ".$r['redirect']);
     				exit;
     			}

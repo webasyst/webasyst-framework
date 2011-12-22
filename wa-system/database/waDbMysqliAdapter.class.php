@@ -100,7 +100,10 @@ class waDbMysqliAdapter extends waDbAdapter
 
     public function ping()
     {
-        return @$this->handler->ping();
+        if (!@$this->handler->ping()) {
+            return $this->reconnect();
+        }
+        return true;
     }
     
     public function error()

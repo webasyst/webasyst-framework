@@ -249,6 +249,9 @@ class waAppConfig extends SystemConfig
 	        $this->loaded_locale = $locale;
 		    waLocale::load($locale, $this->getAppPath('locale'), $this->application, $bind);
 	    }
+	    if ($bind && waLocale::getDomain() != $this->application) { 
+	        waLocale::load($locale, $this->getAppPath('locale'), $this->application, $bind);
+	    }
 	}
 
 	public function getClasses()

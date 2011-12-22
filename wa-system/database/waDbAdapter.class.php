@@ -32,7 +32,7 @@ abstract class waDbAdapter
     	if ($this->handler) {
     		$this->close();
     	}
-    	$this->handler = $this->connect($this->settings);
+    	return $this->handler = $this->connect($this->settings);
     }
 
     abstract public function connect($settings);

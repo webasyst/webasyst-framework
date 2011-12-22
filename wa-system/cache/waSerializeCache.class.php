@@ -20,7 +20,7 @@ class waSerializeCache extends waFileCache
 	{
 		$data = serialize(array('time' => time(), 'ttl' => $this->ttl, 'value' => $v));
 		if (!file_exists($file) || is_writable($file)) {
-			return file_put_contents($file, $data);
+			return @file_put_contents($file, $data);
 		} elseif (waSystemConfig::isDebug()) {
 			throw new waException("Cannot write to cache file ".$file, 601);
 		}

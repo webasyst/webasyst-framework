@@ -15,6 +15,7 @@
 class waLocale
 {
     protected static $locale;
+    protected static $domain;
     public static $adapter;
 
     protected static $loaded = array();
@@ -108,6 +109,14 @@ class waLocale
         }
         self::$loaded[$locale][$domain] = true;
         self::getAdapter()->load($locale, $locale_path, $domain, $textdomain);
+        if ($textdomain) {
+            self::$domain = $domain;
+        }
+    }
+    
+    public static function getDomain()
+    {
+        return self::$domain;
     }
 
     public static function getFirstDay($locale = null)

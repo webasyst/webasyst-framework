@@ -583,6 +583,9 @@ $.wa.site = {
 	    			$('#s-editor-save-button').click();
 	    			e.preventDefault();
 		    	}
+		    	if (e.metaKey) {
+		    		return;
+		    	}
 		    	if ((e.which < 33 || e.which > 40) && 
 		    		(e.which > 27 || e.which == 8 || e.which == 13) && 
 		    		(e.which < 112 || e.which > 124) && 
