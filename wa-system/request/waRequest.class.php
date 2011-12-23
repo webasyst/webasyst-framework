@@ -222,7 +222,7 @@ class waRequest
             self::server('HTTP_ACCEPT_LANGUAGE'), $matches);
         $result = $locales[0];
         $max_q = 0;       
-        for ($i = 0; $i < count($matches); $i++) {
+        for ($i = 0; $i < count($matches[0]); $i++) {
         	$lang = $matches[1][$i];
         	if (!empty($matches[2][$i])) {
         		$lang .= '_'.$matches[2][$i];

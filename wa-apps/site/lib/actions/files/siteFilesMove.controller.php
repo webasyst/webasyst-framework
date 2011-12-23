@@ -7,7 +7,7 @@ class siteFilesMoveController extends waJsonController
         $path = rtrim(waRequest::post('path'), ' /');
         $path = wa()->getDataPath($path, true, null, false);
         $hash = $new_path = waRequest::post('new_path');
-        $new_path = wa()->getDataPath($new_path, true, null, false);
+        $new_path = wa()->getDataPath($new_path, true, null, false).($new_path ? '' : '/');
 
         if (!is_writable($new_path)) {
             $this->errors = sprintf(_w("Files could not bet moved due to the insufficient file write permissions for the %s folder."), rtrim($hash, '/'));

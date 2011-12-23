@@ -356,13 +356,17 @@ $.wa.site = {
 	getFileMenu: function (file) {
 		var url = $("#s-domain").attr('href') + 'wa-data/public/site/' + $.wa.site.filesPath() + file;
 		var menu = $('<ul class="menu-v width-icons" style="display:block"></ul>');
-		if (file.substr(-4) != '.php') {
+		if (file.substr(-4) != '.php' && file.substr(-6) != '.phtml' && file.substr(0,1) != '.') {
 			menu.append('<li>' +
 							'<i class="icon16 globe"></i>' + $_('File URL') + ': ' +
 							'<a href="' + url + '" target="_blank" class="bold">' + url + '<i class="icon10 new-window"></i></a>' +
-						'</li>' +
-						'<li><a href="?module=files&action=download&path=' + $.wa.site.filesPath() + '&file=' + file + '"><i class="icon16 download"></i>' + $_('Download') + '</a></li>'
-			);
+						'</li>');
+		}
+		if (file.substr(-4) != '.php' && file.substr(-6) != '.phtml') {
+			menu.append('<li>' + 
+					'<a href="?module=files&action=download&path=' + 
+						$.wa.site.filesPath() + '&file=' + file + '"><i class="icon16 download"></i>' + $_('Download') + 
+					'</a></li>');
 		}
 		menu.append($('<li></li>').append('<a href="#"><i class="icon16 edit"></i>' + $_('Rename') + '</a>').click(function () {
 			$("#s-rename-dialog").waDialog({ 

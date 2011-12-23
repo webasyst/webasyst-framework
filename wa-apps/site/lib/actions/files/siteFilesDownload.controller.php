@@ -9,7 +9,7 @@ class siteFilesDownloadController extends waController
         $file = waRequest::get('file');
         $path .= '/'.$file;
         
-        if (file_exists($path) && is_file($path) && substr($path, -4) !== '.php') {
+        if (file_exists($path) && is_file($path) && !in_array(waFiles::extension($path, array('php', 'phtml')))) {
             waFiles::readFile($path, $file);
         } else {
             throw new waException("File not found", 404);

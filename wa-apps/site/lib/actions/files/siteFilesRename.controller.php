@@ -13,8 +13,15 @@ class siteFilesRenameController extends waJsonController
         $name = preg_replace('!\.\.[/\\\]!','', $name);
         if ($file) {
             $name_ext = waFiles::extension($name);
-            if ($name_ext != waFiles::extension($file) && in_array($name_ext, siteFilesUploadController::$disabled)) {
-                $this->errors = sprintf(_w("Files with extension .%s are not allowed to security considerations."), $name_ext);
+            if ($name_ext != waFiles::extension($file)) {
+                if (strpos(strtolower($name), '.php') !== false) {
+                    if ($name_ext != 'php') {
+                        $name_ext = 'php';
+                    }
+                }
+                if (in_array($name_ext, array('php', 'phtml'))) {
+                    $this->errors = sprintf(_w("Files with extension .%s are not allowed to security considerations."), $name_ext);
+                }
             }
         }
         if (file_exists($path) && $name) {

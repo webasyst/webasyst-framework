@@ -34,8 +34,14 @@ class siteFilesUploadController extends waJsonController
     
     protected function isValid($f)
     {
-        if ($f->extension == 'php') {
-        	$this->errors[] = sprintf(_w("Files with extension .%s are not allowed for upload due to the security considerations."), $f->extension);
+        $ext = $f->extension;
+        if (strpos(strtolower($f->name), '.php') !== false) {
+            if (strtolower($ext) != 'php') {
+                $ext = 'php';
+            }
+        }
+        if (in_array(strtolower($ext), array('php', 'phtml'))) {
+        	$this->errors[] = sprintf(_w("Files with extension .%s are not allowed for upload due to the security considerations."), $ext);
             return false;
         }
         return true;
