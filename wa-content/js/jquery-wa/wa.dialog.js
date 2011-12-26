@@ -1,25 +1,25 @@
 jQuery.fn.waDialog = function (options) {
-	options = options || {}
 	options = jQuery.extend({
+		loading_header: '',
 		esc: true,
 		buttons: null,
 		url: null,
 		disableButtonsOnSubmit: false,
 		onLoad: null,
 		onCancel: null,
-		onSubmit: null		
-	}, options);
-	
+		onSubmit: null
+	}, options || {});
+
 	var d = $(this);
 
 	var id = d.attr('id');
 	if (id && !d.hasClass('dialog')) {
 		d.removeAttr('id');
 		$("#" + id).remove();
-	}	
-	
+	}
+
 	var cl = (options['class'] || options['className']) ? (options['class'] || options['className']) : d.attr('class');
-	
+
 	if (!d.hasClass('dialog')) {
 		var content = $(this);
 		var d = $('<div ' + (id ? 'id = "' + id + '"' : '') + ' class="dialog ' + cl + '" style="display: none">'+
@@ -39,10 +39,10 @@ jQuery.fn.waDialog = function (options) {
 				var tmp = $('<div class="dialog-buttons-gradient"></div>');
 				dc.contents().appendTo(tmp);
 				dc.append(tmp);
-			}			
+			}
 		} else {
 			$('.dialog-window', d).append(
-					(options.onSubmit ? '<form method="post" action="">' : '') + 
+					(options.onSubmit ? '<form method="post" action="">' : '') +
 					'<div class="dialog-content">'+
 						'<div class="dialog-content-indent">'+
 							// content goes here
@@ -59,50 +59,50 @@ jQuery.fn.waDialog = function (options) {
 		}
 		d.find('.dialog-buttons-gradient').append(options.buttons);
 		if (options.url) {
-			d.find('.dialog-content-indent').append('<h1>Loading... <i class="icon16 loading"></i></h1>');
+			d.find('.dialog-content-indent').append('<h1>'+(options.loading_header || '')+'<i class="icon16 loading"></i></h1>');
 		} else if (options.content) {
 			d.find('.dialog-content-indent').append(options.content);
-		} 		
+		}
 		if (options.title) {
 			d.find('.dialog-content-indent').prepend('<h1>' + options.title + '</h1>');
-		} 
+		}
 	} else if (options.content) {
 		d.find('.dialog-content-indent').html(options.content);
 	} else if (options.buttons) {
 		d.find('.dialog-buttons-gradient').html(options.buttons);
 	}
-	
+
 	if (d.find('.dialog-background').length) {
 		d.prepend('<div class="dialog-background"> </div>');
 	}
-	
+
 	d.bind('close', function () {
 		if (options.onClose) {
 			options.onClose.call($(this));
 		}
 		$(this).hide();
 	});
-	
+
 	var css = ['width', 'height', 'min-width', 'min-height'];
 	for (var k = 0; k < css.length; k++) {
 		if (options[css[k]]) {
 			if ((css[k] == 'height' && options[css[k]] < '300px') || (css[k] == 'width' && options[css[k]] < '400px')) {
 				d.find('div.dialog-window').css('min-' + css[k], options[css[k]]);
-			} 
+			}
 			d.find('div.dialog-window').css(css[k], options[css[k]]);
 		}
 	}
-	
+
 	if (options.disableButtonsOnSubmit) {
 		d.find("input[type=submit]").removeAttr('disabled');
 	}
-	
+
 	if (!d.parent().length) {
 		d.appendTo('body');
 	}
-	
+
 	d.find('.dialog-buttons .cancel').unbind('click').click(function (e) {
-		e.stopPropagation(); 
+		e.stopPropagation();
 		e.preventDefault();
 		if (options.onCancel) {
 			options.onCancel.call(d.get(0));
@@ -110,9 +110,9 @@ jQuery.fn.waDialog = function (options) {
 		d.trigger('close');
 		return false;
 	});
-	
+
 	d.show();
-	
+
 	if (options.url) {
 		jQuery.get(options.url, function (response) {
 			var el = $(response);
@@ -134,8 +134,8 @@ jQuery.fn.waDialog = function (options) {
 	} else {
 		if (options.onLoad) {
 			options.onLoad.call(d.get(0));
-		}		
-	}	
+		}
+	}
 
 	if (options.onSubmit) {
 		d.find('form').unbind('submit').submit(function () {
@@ -145,29 +145,29 @@ jQuery.fn.waDialog = function (options) {
 			return options.onSubmit.apply(this, [d]);
 		});
 	}
-		
+
 	d.bind('resize', function () {
 		var el = jQuery(this).find('.dialog-window');
 		var dw = el.width();
 		var dh = el.height();
-		
+
 		jQuery("body").css('min-height', dh+'px');
-		
+
 		var ww = jQuery(window).width();
 		var wh = jQuery(window).height()-60;
-	
+
 		//centralize dialog
 		var w = (ww-dw)/2 / ww;
 		var h = (wh-dh-60)/2 / wh; //60px is the height of .dialog-buttons div
 		if (h < 0) h = 0;
 		if (w < 0) w = 0;
-		
+
 		el.css({
 			'left': Math.round(w*100)+'%',
 			'top': Math.round(h*100)+'%'
 		});
 	}).trigger('resize');
-	
+
 	if (options.esc) {
 		d.bind('esc', function () {
 			d.trigger('close');
@@ -184,5 +184,5 @@ jQuery(document).keyup(function(e) {
 	//all dialogs should be closed when Escape is pressed
 	if (e.keyCode == 27) {
 		jQuery(".dialog:visible").trigger('esc');
-	} 
+	}
 });

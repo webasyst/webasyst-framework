@@ -294,8 +294,8 @@ class waViewHelper
     public function __get($app)
     {
         if (!isset(self::$helpers[$app])) {
-            if ($app == 'site' && $this->app() !== 'site') {
-                wa('site');
+            if ($this->app() !== $app) {
+                wa($app);
             }
             $class = $app.'ViewHelper';
             if (class_exists($class)) {

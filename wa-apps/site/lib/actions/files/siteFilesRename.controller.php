@@ -21,6 +21,7 @@ class siteFilesRenameController extends waJsonController
                 }
                 if (in_array($name_ext, array('php', 'phtml'))) {
                     $this->errors = sprintf(_w("Files with extension .%s are not allowed to security considerations."), $name_ext);
+                    return;
                 }
             }
         }
