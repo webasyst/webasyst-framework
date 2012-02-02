@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WebAsyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2011-11-25 14:19+0400\n"
+"PO-Revision-Date: 2012-01-31 13:48+0400\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -790,4 +790,25 @@ msgstr "Изменить фото для контакта"
 
 msgid "Are you sure you want to delete this photo?"
 msgstr "Вы действительно хотите удалить фото?"
+
+msgid "This email address is in use."
+msgstr "Этот электронный адрес занят."
+
+msgid "(unconfirmed)"
+msgstr "(не подтверждён)"
+
+msgid "Maximum allowed number of emails is %s"
+msgstr "Максимально допустимое количество адресов - %s"
+
+msgid "Unable to change list of emails: no main email exists."
+msgstr "Невозможно изменить список адресов, если нет главного адреса."
+
+msgid "Main email %s cannot be removed"
+msgstr "Нельзя удалить главный адрес %s"
+
+msgid "Error sending confirmation email."
+msgstr "Ошибка при отправке письма с подтверждением."
+
+msgid "A message with confirmation link has been sent to this address."
+msgstr "На данный адрес было отправлено сообщение, которое содержит ссылку для подтверждения."
 

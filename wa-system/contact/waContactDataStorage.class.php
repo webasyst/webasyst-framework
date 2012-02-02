@@ -76,7 +76,13 @@ class waContactDataStorage extends waContactStorage
                         $this->getModel()->exec($sql);
                     }
                 } else {
-                    $data[] = (int)$contact_id.", '".$this->getModel()->escape($field)."', '', '".$this->getModel()->escape($value)."', 0";
+                    if ($value === null) {
+                        $sql = "DELETE FROM ".$this->getModel()->getTableName()."
+                                WHERE contact_id = ".(int)$contact_id." AND field = '".$this->getModel()->escape($field)."'";
+                        $this->getModel()->exec($sql);
+                    } else {
+                        $data[] = (int)$contact_id.", '".$this->getModel()->escape($field)."', '', '".$this->getModel()->escape($value)."', 0";
+                    }
                 }
             } elseif ($f->isMulti()) {
                 $sort = 0;

@@ -113,7 +113,7 @@ class waLocale
             self::$domain = $domain;
         }
     }
-    
+
     public static function getDomain()
     {
         return self::$domain;
@@ -267,7 +267,7 @@ class waLocale
      * @param string $locale defaults to current system locale
      * @return string|array transliterated $value
      */
-    public function transliterate($value, $locale=null)
+    public static function transliterate($value, $locale=null)
     {
         if (!$locale) {
             $locale = self::getLocale();

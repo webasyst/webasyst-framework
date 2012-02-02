@@ -51,9 +51,9 @@
 							<div class="field">
 								<div class="name">
 									{if $options.login == 'email'}
-									[`Email`]:
+									[s`Email`]:
 									{else}
-									[`Login`]:
+									[s`Login`]:
 									{/if}
 								</div>
 								<div class="value">
@@ -62,34 +62,34 @@
 							</div>
 							<div class="field">
 								<div class="name">
-									[`Password`]:
+									[s`Password`]:
 								</div>
 								<div class="value">
 									<input type="password" class="wa-login-text-input" name="password" value="" />
 									{if $remember_enabled}
 									<div class="wa-remember-me">
-										<input id="remember-me" name="remember" type="checkbox" {if !empty($remember) || $wa->post('remember')}checked="checked" {/if} value="1" /> <label for="remember-me">[`Remember me`]</label>
+										<input id="remember-me" name="remember" type="checkbox" {if !empty($remember) || $wa->post('remember')}checked="checked" {/if} value="1" /> <label for="remember-me">[s`Remember me`]</label>
 									</div>
 									{/if}
 								</div>
 							</div>
 							<div class="field">
 								<div class="value submit">
-									<input type="submit" value="[`Sign In`]" class="button" id="wa-login-submit">
+									<input type="submit" value="[s`Sign In`]" class="button" id="wa-login-submit">
 									{if (!empty($back_on_cancel))}
-										[`or`]
-										<a class="wa-logincancel" href="{$back_on_cancel}">[`cancel`]</a>
+										[s`or`]
+										<a class="wa-logincancel" href="{$back_on_cancel}">[s`cancel`]</a>
 									{/if}
-									<a href="?forgot=1" class="wa-forgotpassword">[`Forgot password?`]</a>
+									<a href="?forgot=1" class="wa-forgotpassword">[s`Forgot password?`]</a>
 								</div>
 							</div>
 						</div>
 						{elseif $type=='password'}
-						<h1 style="font-size:1.8em">[`Recover password for`] {$login}</h1>
+						<h1 style="font-size:1.8em">[s`Recover password for`] {$login}</h1>
 						<div class="fields form">
 							<div class="field">
 								<div class="name">
-									[`Create a new password`]:
+									[s`Create a new password`]:
 								</div>
 								<div class="value">
 									<input type="password" class="wa-login-text-input{if !empty($error)} error{/if}" name="password" />
@@ -97,7 +97,7 @@
 							</div>
 							<div class="field">
 								<div class="name">
-									[`Confirm new password`]:
+									[s`Confirm new password`]:
 								</div>
 								<div class="value">
 									<input type="password" class="wa-login-text-input{if !empty($error)} error{/if}" name="password_confirm" />
@@ -106,32 +106,32 @@
 							</div>
 							<div class="field">
 								<div class="value submit">
-									<input type="submit" value="[`Save and login`]" class="button" id="wa-login-submit">
+									<input type="submit" value="[s`Save and login`]" class="button" id="wa-login-submit">
 								</div>
 							</div>
 						</div>
 						{elseif $type=='forgot'}
-							<h1 style="font-weight:bold;text-align:left;font-size:1.8em;margin-top:0">[`Password recovery`]</h1>
+							<h1 style="font-weight:bold;text-align:left;font-size:1.8em;margin-top:0">[s`Password recovery`]</h1>
 							{if !empty($success)}
-								<p>[`Password recovery instructions have been sent to your email address.`]</p>
+								<p>[s`Password recovery instructions have been sent to your email address.`]</p>
 								<br /><br />
-								<a href="?">[`Back to login page`]</a>
+								<a href="?">[s`Back to login page`]</a>
 							{else}
 								{if $options.login == 'email'}
-									[`Please enter your email:`]
+									[s`Please enter your email:`]
 								{else}
-									[`Please enter your login name or email:`]
+									[s`Please enter your login name or email:`]
 								{/if}
 								<div class="field">
-									<input style="width: 50%" id="wa-login-input" type="text" class="large{if !empty($errors.login)} error{/if}" name="login" value="{$wa->post('login')}" autocomplete="off" />
+									<input style="width: 50%" id="wa-login-input" type="text" class="large{if !empty($errors.login)} error{/if}" name="login" value="{$wa->request('login')|escape}" autocomplete="off" />
 								</div>
 								{if !empty($error)}
 									<p class="i-error">{$error}</p>
 								{/if}
 								<div{if empty($error)} style="margin-top:20px"{/if}>
-										<input type="submit" value="[`Send`]" class="button green" />
-										[`or`]
-										<a href="?">[`cancel`]</a>
+										<input type="submit" value="[s`Send`]" class="button green" />
+										[s`or`]
+										<a href="?">[s`cancel`]</a>
 								</div>
 							{/if}
 						{/if}
@@ -164,6 +164,24 @@ $(function() {
 			input.focus();
 		}
 	}, 1);
+	{if !$type}
+		// When user clicks "forgot password" link, send email (if already typed in)
+		// to show on the next form by default.
+		$('.wa-forgotpassword').click(function() {
+			var val = $('#wa-login-input').val();
+			if (!val) {
+				return true;
+			}
+			var form = $('<form action="'+$(this).attr('href')+'" method="POST">'+
+							'<input type="hidden" name="ignore" value="1">'+
+							'<input type="hidden" name="login" value="">'+
+						 '</form>');
+			form.find('[name="login"]').val(val);
+			form.appendTo('body');
+			form.submit();
+			return false;
+		});
+	{/if}
 });
 </script>
 </body>

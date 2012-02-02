@@ -675,7 +675,7 @@ elRTE.prototype.ui.prototype.buttons.wa_image = function(rte, name) {
 				$("<label></label>")
 					.append('<input type="radio" name="source" value="file" /> ' + this.rte.i18n('Upload') + ' ')
 					.append(this.src.file)
-					.append('<br /><span class="hint">' + ($_ ? $_('Image will be uploaded into') : this.rte.i18n('Image will be uploaded into')) + ' /wa-data/public/site/img/</span>')]
+					.append('<br /><span class="hint">' + ($_ ? $_('Image will be uploaded into') : this.rte.i18n('Image will be uploaded into')) + ' '+(rte.options.wa_image_upload_path?rte.options.wa_image_upload_path:'/wa-data/public/site/img/')+'</span>')]
 				))
 		.append(dialog_row(this.rte.i18n('Title'), this.src.title))
 		.append(dialog_row(this.rte.i18n('Alt text'), this.src.alt))

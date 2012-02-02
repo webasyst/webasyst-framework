@@ -12,14 +12,16 @@ abstract class waLoginAction extends waViewAction
 
     public function execute()
     {
+        waLocale::loadByDomain('webasyst', wa()->getLocale());
+
         $title = $this->getTitle();
 
         $this->view->setOptions(array('left_delimiter' => '{', 'right_delimiter' => '}'));
 
         // Password recovery form to enter login/email
-        if (waRequest::get('forgot')) {
+        if (waRequest::request('forgot')) {
             $title .= ' - '._ws('Password recovery');
-            if (waRequest::method() == 'post') {
+            if (waRequest::method() == 'post' && !waRequest::post('ignore')) {
                 $this->forgot();
             }
             $this->view->assign('type', 'forgot');
@@ -129,6 +131,12 @@ abstract class waLoginAction extends waViewAction
             $contact->setCache($contact_info);
             // get defaul email to send mail
             if ($to = $contact->get('email', 'default')) {
+                // Send message in user's language
+                if ($contact['locale']) {
+                    wa()->setLocale($contact['locale']);
+                    waLocale::loadByDomain('webasyst', wa()->getLocale());
+                }
+
                 // generate unique key and save in contact settings
                 $hash = md5(uniqid(null, true));
                 $contact_settings_model = new waContactSettingsModel();
@@ -180,7 +188,14 @@ abstract class waLoginAction extends waViewAction
             $contact_hash = substr($contact_hash, 0, 16).$contact_id.substr($contact_hash, -16);
             $contact_model = new waContactModel();
             $contact_info = $contact = $contact_model->getById($contact_id);
-            if ($contact_info && $hash === $contact_hash) {
+            if ($contact_info && $hash === $contact_hash)
+            {
+                // Show the form in user's language
+                if ($contact_info['locale']) {
+                    wa()->setLocale($contact_info['locale']);
+                    waLocale::loadByDomain('webasyst', wa()->getLocale());
+                }
+
                 $auth = $this->getAuth();
                 if ($auth->getOption('login') == 'login') {
                     $login = $contact_info['login'];

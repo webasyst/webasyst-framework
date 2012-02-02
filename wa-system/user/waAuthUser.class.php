@@ -135,17 +135,7 @@ class waAuthUser extends waUser
     {
         
     }
-    
-    public function save($data = array(), $validate = false)
-    {
-        if ($result = parent::save()) {
-        	if ($this->storage) {
-            	$this->storage->write('user_info', $this->info);
-        	}
-        }
-        return $result;
-    }
-                    
+                       
     public function isAuth()
     {
         return (bool)$this->auth;

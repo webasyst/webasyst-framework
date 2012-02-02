@@ -224,7 +224,7 @@ $.wa = $.extend(true, $.wa, {
 		dd.addClass('disabled');
 		setTimeout(function() {
 			dd.removeClass('disabled');
-		}, 100);
+		}, 600);
 	},
 
 	/** Enable automatic close of .dropdowns when user clicks on item inside one. */
@@ -243,7 +243,7 @@ $.wa = $.extend(true, $.wa, {
 		self.addClass('disabled');
 		setTimeout(function() {
 			self.removeClass('disabled');
-		}, 100);
+		}, 600);
 	},
 
 	 /** Set default value for an input field. If field becomes empty, it receives specified css class

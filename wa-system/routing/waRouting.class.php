@@ -298,6 +298,9 @@ class waRouting
                 $app_routes = $this->getAppRoutes($r['app'], $r);
                 foreach ($app_routes as $app_r) {
                     $j = $i + $this->countParams($app_r, $params);
+                    if (!isset($params['action']) && !isset($app_r['action'])) {
+                        $j++;
+                    }
                     $u = $app_r['url'];
                     if (preg_match_all('/<([a-z_]+):?([^>]*)?>/ui', $u, $match, PREG_OFFSET_CAPTURE|PREG_SET_ORDER)) {
                     	$offset = 0;

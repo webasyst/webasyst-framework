@@ -79,6 +79,9 @@ class waContactInfoStorage extends waContactStorage
         }
 
         $set = implode(',', $set);
+        if (!$this->model) {
+            $this->model = new waContactModel();
+        }
         $this->model->exec("UPDATE wa_contact AS c SET ".$set.$cwhere);
     }
 

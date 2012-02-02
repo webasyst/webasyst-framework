@@ -287,7 +287,7 @@ class waAppConfig extends SystemConfig
 		$dh = opendir($path);
 		$result = array();
 		while (($f = readdir($dh)) !== false) {
-			if ($f === '.' || $f === '..' || $f === '.svn') {
+			if ($this->isIgnoreFile($f)) {
 				continue;
 			} elseif (is_dir($path.$f)) {
 				$result = array_merge($result, $this->getPHPFiles($path.$f.'/'));
@@ -297,6 +297,12 @@ class waAppConfig extends SystemConfig
 		}
 		closedir($dh);
 		return $result;
+	}
+	
+	
+	protected function isIgnoreFile($f)
+	{
+	    return $f === '.' || $f === '..' || $f === '.svn';
 	}
 
 	protected function getClassByFilename($filename)

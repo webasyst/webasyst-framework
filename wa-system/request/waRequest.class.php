@@ -248,4 +248,28 @@ class waRequest
         }
         return $result;                 
     }
+    
+    public static function getTheme()
+    {
+    	$key = wa()->getConfig()->getApplication();
+    	$key .= '/'.wa()->getRouting()->getDomain().'/theme';
+    	if (($theme_hash = self::get('theme_hash')) && ($theme = self::get('set_force_theme')) !== null) {
+    		$app_settings_model = new waAppSettingsModel();
+    		$hash = $app_settings_model->get('site', 'theme_hash');
+    		if ($theme_hash == md5($hash)) {
+    			if ($theme && waTheme::exists($theme)) {
+    				wa()->getStorage()->set($key, $theme);
+    				return $theme;
+    			} else {
+    				wa()->getStorage()->del($key);
+    			}
+    		}
+    	} elseif (($theme = wa()->getStorage()->get($key)) && waTheme::exists($theme)) {
+    		return $theme;
+    	}
+    	if (self::isMobile()) {
+    		return self::param('theme_mobile', 'default');
+    	}
+    	return self::param('theme', 'default');
+    }    
 }

@@ -356,6 +356,7 @@ ul.menu-v.dropdown li { position: relative; }
 ul.menu-v.dropdown li:hover { background: #eee; }
 ul.menu-v.dropdown li ul { display: none; position: absolute; left: 100%; width: 100%; top: -12px; background: #fff; border: 2px solid #aaa; padding: 5px; z-index: 50; margin-left: 2px; -moz-box-shadow: 0px 0px 5px #aaa; -webkit-box-shadow: 0px 0px 5px #aaa; box-shadow: 0px 0px 5px #aaa; }
 ul.menu-v.dropdown li:hover ul { display: block; }
+ul.menu-v.dropdown.disabled li:hover ul { display: none !important; }
 ul.menu-v.dropdown li:hover ul ul { display: none; } /* level 2*/
 ul.menu-v.dropdown li:hover ul li:hover ul { display: block; }
 ul.menu-v.dropdown li:hover ul li:hover ul ul { display: none; } /* level 3; add more levels in a similar way if you want */
@@ -376,6 +377,7 @@ ul.menu-h.dropdown ul li { display: block; padding: 6px 8px 6px 24px; margin: 0;
 ul.menu-h.dropdown ul li i.icon16 { margin-left:-20px; margin-right:4px; }
 ul.menu-h.dropdown ul li ul { top: -7px; left: 100%; margin-left: 0; }
 ul.menu-h.dropdown li:hover ul { display: block; }
+ul.menu-h.dropdown.disabled li:hover ul { display: none !important; }
 ul.menu-h.dropdown li:hover ul ul { display: none; }  /* level 2*/
 ul.menu-h.dropdown li:hover ul li:hover ul { display: block; }
 ul.menu-h.dropdown li:hover ul li:hover ul ul { display: none; } /* level 3; add more levels in a similar way if needed */
@@ -712,6 +714,11 @@ ul.tabs .icon16 { margin-top: 8px; }
 .icon16.sort {background-position: -368px -96px; }
 .icon16.cheatsheet {background-position: -144px -64px; }
 .icon16.palette { background-position: -272px -16px; }
+.icon16.blogs { background-position: -112px -80px; }
+.icon16.blog { background-position: -96px -80px; }
+.icon16.notebooks  { background-position: -80px -80px; }
+.icon16.calendar  { background-position: -48px -48px; }
+.icon16.exclamation  { background-position: -64px -48px; }
 
 .icon16.userpic20 { background-position: -2px -2px; /* use this for 20x20 userpics as 16x16 icons; cuts 2px from each side of 20x20 userpic, but gives clean alignment */ }
 .icon16.loading { background-image: url("../../../wa-content/img/loading16.gif"); }
@@ -748,7 +755,8 @@ h5 i.icon10 { vertical-align:top; margin: 0.1em 0 0 0; }
 .icon10.star-half { background-position:-70px -40px; }
 .icon10.delete { background-position:-80px -20px; }
 .icon10.info { background-position:-20px -40px; }
-
+.icon10.exclamation { background-position:-90px -20px; }
+.icon10.clock { background-position:-10px -30px; }
 /*
  * Custom 16x16 or 10x10 images can be added like this (PNG images are recommended):
  * .icon16.iconname { background-image: url("../path/to/your/image/file.png"); background-position:0 0; }

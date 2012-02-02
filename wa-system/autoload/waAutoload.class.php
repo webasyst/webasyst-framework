@@ -202,8 +202,6 @@ class waAutoload
       'waLocale' => 'locale/waLocale.class.php',
       'waLocaleAdapter' => 'locale/waLocaleAdapter.class.php',
     
-      'waEmailMessage' => 'message/waEmailMessage.class.php',
-    
       'waAppPayment' => 'payment/waAppPayment.class.php',
       'waPayment' => 'payment/waPayment.class.php',
     
@@ -263,5 +261,6 @@ class waAutoload
       'waGroupModel' => 'webasyst/lib/models/waGroup.model.php',
       'waLoginLogModel' => 'webasyst/lib/models/waLoginLog.model.php',
       'waUserGroupsModel' => 'webasyst/lib/models/waUserGroups.model.php',
+      'waTransactionModel' => 'webasyst/lib/models/waTransaction.model.php',
     );
 }

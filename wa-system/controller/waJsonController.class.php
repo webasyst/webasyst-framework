@@ -25,14 +25,19 @@ abstract class waJsonController extends waController
     
 	public function run($params = null)  
 	{	
-		$this->execute();
-		$this->getResponse()->sendHeaders();
-    	if (!$this->errors) {
-    	    $data = array('status' => 'ok', 'data' => $this->response);
-    		echo json_encode($data);
-    	} else {
-    		echo json_encode(array('status' => 'fail', 'errors' => $this->errors));	
-    	}        
+		$this->execute(); 
+		$this->display();       
+	}
+	
+	public function display()
+	{
+	    $this->getResponse()->sendHeaders();
+	    if (!$this->errors) {
+	    	$data = array('status' => 'ok', 'data' => $this->response);
+	    	echo json_encode($data);
+	    } else {
+	    	echo json_encode(array('status' => 'fail', 'errors' => $this->errors));
+	    }	    
 	}
 	
 	public function getError()

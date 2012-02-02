@@ -507,12 +507,12 @@ class waSystem
         return $create ? waFiles::create($file) : $file;
     }
 
-    public function getDataUrl($path = null, $public = false, $app_id = null)
+    public function getDataUrl($path = null, $public = false, $app_id = null, $absolute = false)
     {
         if ($app_id === null) {
             $app_id = $this->getConfig()->getApplication();
         }
-        return $this->getRootUrl().'wa-data/'.($public ? 'public' : 'protected').'/'.$app_id.($path ? '/'.$path : '');
+        return $this->getRootUrl($absolute).'wa-data/'.($public ? 'public' : 'protected').'/'.$app_id.($path ? '/'.$path : '');
     }
 
 

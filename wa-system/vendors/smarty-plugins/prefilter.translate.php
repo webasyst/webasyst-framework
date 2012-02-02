@@ -5,7 +5,13 @@ function smarty_gettext_translate($matches)
     return _wp(str_replace('\"', '"', $matches[1]));
 }
 
+function smarty_gettext_s_translate($matches)
+{
+	return _ws(str_replace('\"', '"', $matches[1]));
+}
+
 function smarty_prefilter_translate($source, &$smarty)
 {
-    return preg_replace_callback("/\[\`([^\`]+)\`\]/usi", "smarty_gettext_translate", $source);
+    $source = preg_replace_callback("/\[\`([^\`]+)\`\]/usi", "smarty_gettext_translate", $source);
+    return preg_replace_callback("/\[s\`([^\`]+)\`\]/usi", "smarty_gettext_s_translate", $source);
 }

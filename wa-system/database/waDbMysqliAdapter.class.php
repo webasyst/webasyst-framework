@@ -15,9 +15,9 @@
 class waDbMysqliAdapter extends waDbAdapter
 {
     
-    const RESULT_ASSOC = MYSQLI_ASSOC;
-    const RESULT_NUM = MYSQLI_NUM;
-    const RESULT_BOTH = MYSQLI_BOTH;
+    const RESULT_ASSOC = 1;
+    const RESULT_NUM = 2;
+    const RESULT_BOTH = 3;
         
     public function connect($settings)
     {

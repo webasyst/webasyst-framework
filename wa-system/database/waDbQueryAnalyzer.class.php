@@ -33,7 +33,7 @@ class waDbQueryAnalyzer
     public function __construct($query)
     {
         $this->query_string = trim($query);
-        $type = strtok($this->query_string, " \n\t");
+        $type = strtok($this->query_string, " \n\t("); // `(` added as whitespace for `(SELECT ...) UNION (SELECT ...) ORDER BY ...` queries
         $this->type = trim(strtolower($type));
     }
 

@@ -36,6 +36,11 @@ class waTransactionDataModel extends waModel
         return $this->query($sql)->fetchAll();
     }
 
-
+    public function getRawData($transaction_id)
+    {
+        $sql = "SELECT * FROM ".$this->table." WHERE transaction_id=s:transaction_id";
+        return $this->query($sql, array('transaction_id'=>$transaction_id))->fetchAll('field_id');
+    }
+    
 }
 

@@ -29,7 +29,8 @@ $.wa.contactEditor.baseFieldType = {
 	//
 
 	/** Last value set by setValue() (or constructor).
-	  * Default implementation expects fieldValue to be string. */
+	  * Default implementation expects fieldValue to be string.
+	  * Subclasses may store anything here. */
 	fieldValue: '',
 
 	//
@@ -41,13 +42,12 @@ $.wa.contactEditor.baseFieldType = {
 		this.fieldData = fieldData;
 	},
 
-	/** Editor constructor. Should set all apropriate fields as if
+	/** Editor constructor. Should set all appropriate fields as if
 	  * this.setValue() got called with an empty data (with no record in db).
 	  * this.fieldData is available for standalone fields,
 	  * or empty {} for subfields of a multifield. */
 	initialize: function() {
-		var val = '';
-		this.setValue(val);
+		this.setValue('');
 	},
 
 	reinit: function() {
@@ -75,10 +75,12 @@ $.wa.contactEditor.baseFieldType = {
 		var result = this.fieldValue;
 		if (this.currentMode == 'edit' && this.domElement !== null) {
 			var input = this.domElement.find('input.val');
-			result = '';
-			if (!input.hasClass('empty')) { // default values use css class .empty to grey out value
-				if (input.attr('type') != 'checkbox' || input.attr('checked')) {
-					result = input.val();
+			if (input.length > 0) {
+				result = '';
+				if (!input.hasClass('empty')) { // default values use css class .empty to grey out value
+					if (input.attr('type') != 'checkbox' || input.attr('checked')) {
+						result = input.val();
+					}
 				}
 			}
 		}
@@ -151,7 +153,6 @@ $.wa.contactEditor.baseFieldType = {
 	/** When used as a part of multi or composite field, corresponding wrapper
 	  * uses this function (if defined and not null) instead of newFieldElement().
 	  * Unwrapped value (but still $(...) wrapped) is expected. If null returned, field is not shown.
-	  * Do not initialize in-place editors here.
 	  */
 	newInlineFieldElement: function(mode) {
 		// Do not show anything in view mode if field is empty
@@ -605,6 +606,8 @@ $.wa.contactEditor.factoryTypes.Multifield = $.extend({}, $.wa.contactEditor.bas
 			var a = data.length > 0 ? data.length : 1; // Never remove the first
 			this.subfieldEditors.splice(a, this.subfieldEditors.length - a);
 		}
+
+		this.origFieldValue = null;
 	},
 
 	getValue: function() {
@@ -804,8 +807,8 @@ $.wa.contactEditor.factoryTypes.Multifield = $.extend({}, $.wa.contactEditor.bas
 		var result = $('<div class="value"></div>').append(value);
 		var rwe = result.find('.replace-with-ext');
 		if (rwe.size() <= 0) {
-			result.append('<span class="replace-with-ext"></span>');
-			rwe = result.children('.replace-with-ext');
+			result.append('<span><span class="replace-with-ext"></span></span>');
+			rwe = result.find('.replace-with-ext');
 		}
 
 		// Extension
@@ -914,15 +917,13 @@ $.wa.contactEditor.factoryTypes.Multifield = $.extend({}, $.wa.contactEditor.bas
 		if (this.currentMode != mode) {
 			// When user switches from edit to view, we need to restore
 			// deleted editors, if any. So we set initial value here to ensure that.
-			if (mode == 'view' && this.currentMode == 'edit') {
-				for(var i = 0; i < this.fieldValue.length;) {
-					if (this.fieldValue[i].temp) {
-						this.fieldValue.splice(i, 1);
-					} else {
-						i++;
-					}
+			if (mode == 'view' && this.currentMode == 'edit' && this.origFieldValue) {
+				this.setValue(this.origFieldValue);
+			} else if (this.currentMode == 'view' && !this.origFieldValue) {
+				this.origFieldValue = [];
+				for (var i = 0; i < this.fieldValue.length; i++) {
+					this.origFieldValue.push($.extend({}, this.fieldValue[i]));
 				}
-				this.setValue(this.fieldValue);
 			}
 
 			this.currentMode = mode;
@@ -1346,7 +1347,7 @@ $.wa.contactEditor.factoryTypes.Email = $.extend({}, $.wa.contactEditor.factoryT
 $.wa.contactEditor.factoryTypes.Checkbox = $.extend({}, $.wa.contactEditor.baseFieldType, {
 	/** Load field contents from given data and update DOM. */
 	setValue: function(data) {
-		this.fieldValue = data;
+		this.fieldValue = parseInt(data);
 		if (this.currentMode == 'null' || !this.domElement) {
 			return;
 		}

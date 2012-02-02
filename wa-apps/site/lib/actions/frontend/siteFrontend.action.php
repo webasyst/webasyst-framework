@@ -14,6 +14,7 @@ class siteFrontendAction extends waViewAction
 			}			
 			$this->view->getHelper()->globals($params);
 			$this->view->assign('page', $page);
+			$this->view->assign('wa_theme_url', $this->getThemeUrl());
 			$page['content'] = $this->view->fetch('string:'.$page['content']);
 			$this->view->assign('page', $page);
 			// set response

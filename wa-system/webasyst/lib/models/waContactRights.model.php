@@ -218,20 +218,21 @@ class waContactRightsModel extends waModel {
      *
      * @param string $app_id
      * @param string $name
+     * @param int $value minimal user rights
      * @return array
      */
-    public function getUsers($app_id, $name = 'backend', $value = null)
+    public function getUsers($app_id, $name = 'backend', $value = 1)
     {
         $sql = "SELECT DISTINCT IF(r.group_id < 0, -r.group_id, g.contact_id)
                 FROM  wa_contact_rights r
                 LEFT JOIN wa_user_groups g ON r.group_id = g.group_id
-                WHERE (r.app_id = s:app_id AND r.name = s:name AND r.value > 0) OR
+                WHERE (r.app_id = s:app_id AND r.name = s:name AND r.value >= i:value) OR
                       (r.app_id = 'webasyst' AND r.name = 'backend' AND r.value > 0)";
         if ($name != 'backend') {
             // app admin
             $sql .= " OR (r.app_id = s:app_id AND r.name = 'backend' AND r.value > 1)";
         }
-        return $this->query($sql, array('app_id' => $app_id, 'name' => $name))->fetchAll(null, true);
+        return $this->query($sql, array('app_id' => $app_id, 'name' => $name, 'value' => $value))->fetchAll(null, true);
     }
 
     /** Get access rights by group and key

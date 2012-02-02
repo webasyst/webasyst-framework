@@ -1,6 +1,6 @@
 <?php 
 
-abstract class waAuthAdapter
+abstract class waAuthAdapter implements waiAuth
 {
     
     protected $options = array();

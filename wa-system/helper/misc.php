@@ -21,6 +21,32 @@ function wa_lambda($args, $body) {
 }
 
 /**
+ * Return value of $var or $def when $var is unset.
+ * Use of this function does not produce a notice for undefined vars and array indexes,
+ * but has a side-effect of creating var or index with NULL value.
+ */
+function ifset(&$var, $def=null)
+{
+	if (isset($var)) {
+		return $var;
+	}
+	return $def;
+}
+
+/**
+ * Return value of $var or $def when $var is empty.
+ * Use of this function does not produce a notice for undefined vars and array indexes,
+ * but has a side-effect of creating var or index with NULL value.
+ */
+function ifempty(&$var, $def=null)
+{
+	if (empty($var)) {
+		return $def;
+	}
+	return $var;
+}
+
+/**
  * Check if the given value represents integer.
  * @return boolean true if $val contains integer or a string that represents integer.
  */

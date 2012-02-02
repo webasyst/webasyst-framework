@@ -50,14 +50,14 @@ class waViewHelper
                     return $domain_config['apps'];
                 }
             }
-            return $this->wa->getFrontendApps($domain, 
-                isset($domain_config) && isset($domain_config['name']) ? 
+            return $this->wa->getFrontendApps($domain,
+                isset($domain_config) && isset($domain_config['name']) ?
                 $domain_config['name'] : null, true);
         } else {
             return $this->wa->getUser()->getApps();
         }
     }
-    
+
     public function isAuthEnabled()
     {
         $domain = $this->wa->getRouting()->getDomain();
@@ -65,7 +65,7 @@ class waViewHelper
         if (file_exists($domain_config_path)) {
             $domain_config = include($domain_config_path);
             if (isset($domain_config['auth_enabled']) && $domain_config['auth_enabled']) {
-            	return $domain_config['auth_enabled'];
+                return $domain_config['auth_enabled'];
             }
         }
         return false;
@@ -86,7 +86,7 @@ class waViewHelper
     {
         return $this->wa->getLocale();
     }
-    
+
     public function userLocale()
     {
         return $this->locale();
@@ -162,16 +162,21 @@ class waViewHelper
         return waRequest::post($name);
     }
 
+    public function request($name)
+    {
+        return waRequest::request($name);
+    }
+
     public function url($absolute = false)
     {
         return $this->wa->getRootUrl($absolute);
     }
-    
+
     public function domainUrl()
     {
         return $this->wa->getConfig()->getHostUrl();
     }
-    
+
     public function currentUrl($absolute = false)
     {
         $url = $this->wa->getConfig()->getCurrentUrl();
@@ -221,37 +226,37 @@ class waViewHelper
     {
         return waRequest::isMobile();
     }
-    
-    
+
+
     public function userAgent($type = null)
     {
         $user_agent = waRequest::server('HTTP_USER_AGENT');
-        
+
         if (!$type) {
             return $user_agent;
         } elseif ($type == 'isMobile') {
             return waRequest::isMobile(false);
         } elseif ($type == 'platform' || $type == 'os') {
             $patterns = array(
-            	'android' => 'android',
-            	'blackberry' => 'blackberry',            	
-            	'linux' => 'Linux',            	
-            	'ios' => '(ipad|iphone|ipod)',
+                'android' => 'android',
+                'blackberry' => 'blackberry',
+                'linux' => 'Linux',
+                'ios' => '(ipad|iphone|ipod)',
                 'mac' => '(Macintosh|Mac\sOS)',
-            	'windows' => 'Windows',
+                'windows' => 'Windows',
             );
         } elseif ($type == 'device') {
             $patterns = array(
-            	'ipad' => 'ipad',                
+                'ipad' => 'ipad',
                 'ipod' => 'ipod',
-            	'iphone' => 'iphone',
-            	'android' => 'android'
-            );            
+                'iphone' => 'iphone',
+                'android' => 'android'
+            );
         }
         foreach ($patterns as $id => $pattern) {
-        	if (preg_match('/'.$pattern.'/i', $user_agent)) {
-        		return $id;
-        	}
+            if (preg_match('/'.$pattern.'/i', $user_agent)) {
+                return $id;
+            }
         }
         return '';
     }
@@ -270,7 +275,7 @@ class waViewHelper
             self::$params[$key] = $value;
         }
     }
-    
+
     public function getEnv()
     {
         return $this->wa->getEnv();

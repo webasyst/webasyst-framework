@@ -425,7 +425,7 @@ class waModel
                    $sql .= $field." = VALUES(".$field.")";
                }
            }
-           if ($type || !$this->isAutoIncrement()) {
+           if (!$this->isAutoIncrement()) {
                return $this->exec($sql);
            } else {
                return $this->query($sql)->lastInsertId();
@@ -518,14 +518,18 @@ class waModel
         return $this->getByField($this->id, $value);
     }
 
-    public function getByField($field, $value = null, $all = false)
+    public function getByField($field, $value = null, $all = false, $limit = false)
     {
         if (is_array($field)) {
+            $limit = $all;
             $all = $value;
         }
         $sql = "SELECT * FROM ".$this->table;
         if ($where = $this->getWhereByField($field, $value)) {
             $sql .= " WHERE ".$where;
+        }
+        if ($limit) {
+            $sql .= " LIMIT ".(int)$limit; 
         }
 
         $result = $this->query($sql);
@@ -537,30 +541,41 @@ class waModel
         }
     }
 
-    protected function getWhereByField($field, $value = null)
+    /**
+     * 
+     * Returns WHERE condition for the SQL query
+     * 
+     * @param string $field
+     * @param string|array $value
+     * @param bool $add_table_name - add or not table's name in the query
+     * @throws waException
+     * @return string
+     */
+    protected function getWhereByField($field, $value = null, $add_table_name = false)
     {
         $where = array();
         if (is_array($field)) {
+            $add_table_name = $value;
             foreach ($field as $f => $v) {
                 if (!isset($this->fields[$f])) {
-                    throw new waException(sprintf('Unknown field %s', $f));
+                    throw new waException(sprintf(_ws('Unknown field %s'), $f));
                 }
                 if (is_array($v)) {
-                    $where[] = $f . " IN ('".implode("','", $this->escape($v))."')";
+                    $where[] = ($add_table_name ? $this->table."." : "") . $f . " IN ('".implode("','", $this->escape($v))."')";
                 } else {
-                    $where[] = $f . " = ".$this->getFieldValue($f, $v);
+                    $where[] = ($add_table_name ? $this->table."." : "") . $f . " = ".$this->getFieldValue($f, $v);
                 }
             }
         } elseif (is_array($value)) {
-            $where[] = $field . " IN ('".implode("','", $this->escape($value))."')";
+            $where[] = ($add_table_name ? $this->table."." : "") . $field . " IN ('".implode("','", $this->escape($value))."')";
         } else {
-            $where[] = $field . " = ".$this->getFieldValue($field, $value);
+            $where[] = ($add_table_name ? $this->table."." : "") . $field . " = ".$this->getFieldValue($field, $value);
         }
         return implode(" AND ", $where);
     }
 
     /**
-     * Возвращает количество строк в таблице с указанным значением поля
+     * Returns the number of rows in the table with the specified field 
      *
      * @param string $field
      * @param string $value

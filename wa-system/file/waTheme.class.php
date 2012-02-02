@@ -68,8 +68,19 @@ class waTheme implements ArrayAccess
 	{
 		//TODO validate theme id
 		$this->id = $id;
-		$this->app = ($app === true) ? wa()->getApp() : $app;
+		$this->app = ($app === true || !$app) ? wa()->getApp() : $app;
 		$this->initPath($force);
+	}
+	
+	public static function exists($id, $app_id = true)
+	{
+	    $app_id = ($app_id === true || !$app_id) ? wa()->getApp() : $app_id;
+	    
+	    $theme_path = wa()->getDataPath('themes', true, $app_id).'/'.$id;
+	    if (file_exists($theme_path) && file_exists($theme_path.'/theme.xml')) {
+	    	return true;
+	    }
+	    return file_exists(wa()->getAppPath(null, $app_id).'/themes/'.$id);	    
 	}
 
 	private function initPath($force = false)

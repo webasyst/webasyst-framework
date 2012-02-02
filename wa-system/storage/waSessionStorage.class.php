@@ -72,6 +72,11 @@ class waSessionStorage extends waStorage
 	    return $this->read($key);
 	}
 	
+	public function getAll()
+	{
+	    return $_SESSION;
+	}
+	
 	public function read($key)
 	{
 		if (isset($_SESSION[$key])) {

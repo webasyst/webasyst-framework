@@ -63,12 +63,17 @@ abstract class waContactStorage
         $this->get($contact, array_keys($fields), true);
         
         foreach ($fields as $field_id => $value) {
-            if (($old_value = $contact->getCache($field_id, true)) === $value) {
+            if (($old_value = $contact->getCache($field_id, true)) === $value ||
+                ($old_value === null && $value === "")) {
                 unset($fields[$field_id]);
             } 
-            if (is_array($old_value) && is_array($value) && count($old_value) > count($value)) {
-                $fields[$field_id][] = null;
-            }    
+            if (is_array($old_value) && is_array($value)) {
+                if (count($old_value) > count($value)) {
+                    $fields[$field_id][] = null;
+                }
+            } elseif ($old_value && $value === "") {
+                $fields[$field_id] = null;
+            }
         }
         if ($result = $this->save($contact, $fields)) {
             $contact->removeCache(array_keys($fields));

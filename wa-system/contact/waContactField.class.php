@@ -19,9 +19,13 @@ abstract class waContactField
      * Available options
      *
      * array(
-     *     'export' => bool,
-     *     'sort' => bool,
-     *     'search' => bool,
+     *     'export' => bool,      // !!! never used?..
+     *     'sort' => bool,        // ?..
+     *     'pa_hidden' => bool,   // do not show in personal account
+     *     'pa_readonly' => bool, // show as read-only in personal acccount
+     *     'unique' => bool,      // only allows unique values
+     *     'required' => bool,    // is required in visual contact editor
+     *     'search' => bool,      // ?..
      *     'validator' => waValidator,
      *     'storage' => waContactStorage,
      *     'multi' => bool,
@@ -135,11 +139,11 @@ abstract class waContactField
     {
         return isset($this->options['multi']) && $this->options['multi'];
     }
-    
+
     public function isUnique()
     {
-    	return isset($this->options['unique']) && $this->options['unique'];
-    }        
+        return isset($this->options['unique']) && $this->options['unique'];
+    }
 
     public function isExt()
     {
@@ -318,11 +322,11 @@ abstract class waContactField
             }
 
             // Check if current user can view $cid profile.
-            if (!$rights_model) {
+            if (!$rights_model && class_exists('ContactsRightsModel')) {
                 $rights_model = new ContactsRightsModel();
                 $userId = waSystem::getInstance()->getUser()->getId();
             }
-            if ($rights_model->getRight($userId, $cid)) {
+            if ($rights_model && $rights_model->getRight($userId, $cid)) {
                 // at least read access
                 $contact = new waContact($cid);
                 $nameLink = '<a href="'.wa_url().'webasyst/contacts/#/contact/'.$cid.'">'.$contact->get('name').'</a>';
@@ -558,3 +562,4 @@ abstract class waContactField
          return new $state['_type']($state['id'], $state['name'], $state['options']);
     }
 }
+
