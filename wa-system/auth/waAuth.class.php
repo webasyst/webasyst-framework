@@ -32,7 +32,7 @@ class waAuth implements waiAuth
 	/**
 	 * Auth user returns result of auth
 	 * 
-	 * @param waiAuthAdapter $auth_adapter
+	 * @param waAuthAdapter $auth_adapter
 	 * @return mixed
 	 */
 	public function auth($params = array())
@@ -53,18 +53,37 @@ class waAuth implements waiAuth
 	
 	protected function getByLogin($login)
 	{
+        $result = array();
 	    if ($this->options['login'] == 'login') { 
     	    $model = new waContactModel();
-	    	return $model->getByField('login', $login);
+	    	$result = $model->getByField('login', $login);
 	    } elseif ($this->options['login'] == 'email') {
 	        $email_model = new waContactEmailsModel();
 	        $row = $email_model->getByField(array('email' => $login, 'sort' => 0));
 	        if ($row) {
 	            $model = new waContactModel();
-	            return $model->getById($row['contact_id']);
+	            $result = $model->getById($row['contact_id']);
 	        }
 	    }
+        if ($result) {
+            $this->checkBan($result);
+        }
+        return $result;
 	}
+
+    protected function checkBan($data)
+    {
+        $contact_data_model = new waContactDataModel();
+        $rows = $contact_data_model->getByField(array('contact_id' => $data['id'],
+            'field' => array('banned_datetime', 'banned_reason', 'sort' => 0)), true);
+        $result = array();
+        foreach ($rows as $row) {
+            $result[$row['field']] = $row['value'];
+        }
+        if (isset($result['banned_datetime']) && $result['banned_datetime']) {
+            throw new waException(isset($result['banned_reason']) ? $result['banned_reason'] : 'You are banned!');
+        }
+    }
 	
 	protected function _auth($params)
 	{	
@@ -126,6 +145,7 @@ class waAuth implements waiAuth
 			$response = waSystem::getInstance()->getResponse();
 			$id = substr($token, 15, -15);
 			$user_info = $model->getById($id);
+            $this->checkBan($user_info);
 			if ($user_info && ($user_info['is_user'] || !$this->options['is_user']) && 
 				$token === $this->getToken($user_info)) {
 				$response->setCookie('auth_token', $token, time() + 2592000);

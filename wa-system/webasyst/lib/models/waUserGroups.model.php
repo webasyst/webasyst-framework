@@ -38,6 +38,7 @@ class waUserGroupsModel extends waModel
             $sql .= implode(",", $data);
             return $this->exec($sql);
         }
+        return true;
     }
 
     public function emptyGroup($group_id) {
@@ -66,9 +67,14 @@ class waUserGroupsModel extends waModel
             $sql = "DELETE FROM ".$this->table." WHERE ".implode(" AND ", $where);
             return $this->exec($sql);
         }
+        return true;
     }
 
-    /** @return boolean true if user belongs to group, false otherwise */
+    /**
+     * @param $contact_id
+     * @param $group_id
+     * @return boolean true if user belongs to group, false otherwise
+     */
     public function isMember($contact_id, $group_id)
     {
         $sql = "SELECT 1 FROM {$this->table} WHERE contact_id=i:cid AND group_id=i:gid LIMIT 1";

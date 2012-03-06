@@ -19,7 +19,7 @@ class waDbResultSelect extends waDbResult implements IteratorAggregate
     /**
      * Iterator
      *
-     * @var DbResultIterator
+     * @var waDbResultIterator
      */
     protected $iterator;
     
@@ -34,7 +34,7 @@ class waDbResultSelect extends waDbResult implements IteratorAggregate
     /**
      * Get Itterator
      *
-     * @return DbResultIterator
+     * @return waDbResultIterator
      */
     public function getIterator()
     {
@@ -55,7 +55,6 @@ class waDbResultSelect extends waDbResult implements IteratorAggregate
     /**
      * Returns array with types of keys
      *
-     * @param int $type
      * @return array
      */
     public function fetchArray()
@@ -82,13 +81,12 @@ class waDbResultSelect extends waDbResult implements IteratorAggregate
     {
         return $this->iterator->fetchArray();
     }
-    
+
     /**
      * Returns value of the column (field)
-     *
-     * @param string $field     имя колонки
-     * @param int $seek         номер строки
-     * @return array
+     * @param bool|string $field
+     * @param bool|int $seek
+     * @return bool|mixed
      */
     public function fetchField($field = false, $seek = false)
     {
@@ -109,6 +107,7 @@ class waDbResultSelect extends waDbResult implements IteratorAggregate
      * Returns all values
      *
      * @param string $key - use one of the values as array index
+     * @param int|bool $normalize
      * @return array
      */
     public function fetchAll($key = null, $normalize = false)
@@ -142,7 +141,7 @@ class waDbResultSelect extends waDbResult implements IteratorAggregate
     /**
      * Rewind itterator
      *
-     * @return DbResultSelect
+     * @return waDbResultSelect
      */
     public function rewind()
     {
@@ -151,7 +150,7 @@ class waDbResultSelect extends waDbResult implements IteratorAggregate
     }
     
     /**
-     * Выполняем сохранение данных при сериализации.
+     * Saving data for serialization
      *
      * @return array
      */

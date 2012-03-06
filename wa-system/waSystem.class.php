@@ -69,6 +69,9 @@ class waSystem
 
         if (!isset(self::$instances[$name])) {
             if ($config === null && self::$current) {
+                /**
+                 * @var $system waSystem
+                 */
                 $system = self::$instances[self::$current];
                 $locale = $set_current ? $system->getLocale() : null;
                 $config = SystemConfig::getAppConfig($name, $system->getEnv(), $system->config->getRootPath(), $locale);
@@ -76,7 +79,7 @@ class waSystem
             if ($config) {
                 self::$instances[$name] = new self($config);
                 if (!self::$instances[$name] instanceof waSystem) {
-                    throw new waFactoryException(sprintf('Class "%s" is not of the type waSystem.', $class));
+                    throw new waException(sprintf('Class "%s" is not of the type waSystem.', $config));
                 }
             } else {
                 throw new waException(sprintf('The "%s" system does not exist.', $name));
@@ -94,6 +97,9 @@ class waSystem
     {
         if (isset(self::$instances[$name])) {
             self::$current = $name;
+            /**
+             * @var $s waSystem
+             */
             $s = self::$instances[$name];
             $s->getConfig()->setLocale($s->getLocale());
         }
@@ -119,6 +125,7 @@ class waSystem
     }
 
     /**
+     * @param array $options
      * @return waSmarty3View
      */
     public function getView($options = array())
@@ -134,6 +141,13 @@ class waSystem
         return $this->getCommonFactory('routing', 'waRouting', array(), self::getInstance('wa-system'));
     }
 
+    /**
+     * @param string $name
+     * @param string $class
+     * @param array $options
+     * @param mixed $first_param
+     * @return mixed
+     */
     public function getFactory($name, $class, $options = array(), $first_param = false)
     {
         if ($config = $this->getConfig()->getFactory($name)) {
@@ -154,6 +168,13 @@ class waSystem
         return $this->factories[$name];
     }
 
+    /**
+     * @param string $name
+     * @param string $class
+     * @param array $options
+     * @param mixed $first_param
+     * @return mixed
+     */
     public function getCommonFactory($name, $class, $options = array(), $first_param = false)
     {
         if (!isset(self::$factories_common[$name])) {
@@ -297,6 +318,9 @@ class waSystem
                     $system = self::getInstance($app_id);
                     $class = $app_id.'SitemapConfig';
                     if (class_exists($class)) {
+                        /**
+                         * @var $sitemap waSitemapConfig
+                         */
                         $sitemap = new $class();
                         $sitemap->display();
                     }
@@ -355,9 +379,10 @@ class waSystem
                     throw new waRightsException('Access to this app denied');
                 }
                 if (waRequest::param('secure') && !$this->getUser()->isAuth()) {
-                    return $app_system->login();
+                    $app_system->login();
+                } else {
+                    $app_system->getFrontController()->dispatch();
                 }
-                $app_system->getFrontController()->dispatch();
             }
         } catch(waApiException $e) {
             print $e;
@@ -396,6 +421,9 @@ class waSystem
         // Load app
         waSystem::getInstance($app, null, true);
         if (class_exists($class)) {
+            /**
+             * @var $cli waCliController
+             */
             $cli = new $class();
             $cli->run();
         } else {
@@ -705,12 +733,12 @@ class waSystem
         }
     }
 
-    public function getAppStaticUrl($app = null)
+    public function getAppStaticUrl($app = null, $absolute = false)
     {
         if (!$app || $app === true) {
             $app = $this->getApp();
         }
-        $url = $this->config->getRootUrl();
+        $url = $this->config->getRootUrl($absolute);
         return $url.'wa-apps/'.$app.'/';
     }
 
@@ -804,7 +832,7 @@ class waSystem
 
     /** Trigger event with given $name from current active application.
       * @param string $name
-      * @param $params passed to event handlers
+      * @param mixed $params passed to event handlers
       * @return array app_id or plugin_id => data returned from handler (unless null is returned) */
     public function event($name, &$params = null)
     {
@@ -836,6 +864,9 @@ class waSystem
                     $class_name = strtok($class_name, '.').ucfirst(strtok(''));
                 }
                 $class_name = $app_id.ucfirst($prefix).ucfirst($class_name)."Handler";
+                /**
+                 * @var $handler waEventHandler
+                 */
                 $handler = new $class_name();
                 try {
                     $r = $handler->execute($params);

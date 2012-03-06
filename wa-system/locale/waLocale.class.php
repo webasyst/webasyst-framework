@@ -16,6 +16,9 @@ class waLocale
 {
     protected static $locale;
     protected static $domain;
+    /**
+     * @var waLocaleAdapter
+     */
     public static $adapter;
 
     protected static $loaded = array();
@@ -29,16 +32,15 @@ class waLocale
 
     public static function init()
     {
-        if (self::$init) {
-            return false;
-        }
-        self::$init = true;
-        // Alias to gettext
+        if (!self::$init) {
+            self::$init = true;
+            // Alias to gettext
 
-        if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN' || !function_exists('gettext')) {
-            self::$adapter = new waLocalePHPAdapter();
-        } else {
-            self::$adapter = new waLocaleAdapter();
+            if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN' || !function_exists('gettext')) {
+                self::$adapter = new waLocalePHPAdapter();
+            } else {
+                self::$adapter = new waLocaleAdapter();
+            }
         }
     }
 
@@ -277,6 +279,9 @@ class waLocale
         if (!isset($t['translit_table'])) {
             return $value;
         }
+        /**
+         * @var $t array
+         */
         $t = $t['translit_table'];
 
         if (is_array($value)) {

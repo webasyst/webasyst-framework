@@ -53,14 +53,22 @@ class waContactEmailStorage extends waContactStorage
                 continue;
             } 
             
+            $status = false;
             if (is_array($field)) {
                 $value = $field['value'];
+                if (isset($field['status'])) {
+                    $status = $field['status'];
+                }
             } else {
                 $value = $field;
             }
+            if (!$status) {
+                $status = wa()->getEnv() == 'frontend' ? 'unconfirmed' : 'unknown';
+            }
             $ext = (is_array($field) && isset($field['ext'])) ? $field['ext'] : '';
             if ($value) {
-                $data[] = $contact->getId().", '".$this->getModel()->escape($value)."', '".$this->getModel()->escape($ext)."' , ".(int)$sort;
+                $data[] = $contact->getId().", '".$this->getModel()->escape($value)."', 
+                '".$this->getModel()->escape($ext)."' , ".(int)$sort.", '".$this->getModel()->escape($status)."'";
             } else {
                 $sql = "DELETE FROM ".$this->getModel()->getTableName()." 
                         WHERE contact_id = i:id AND sort = i:sort";
@@ -75,8 +83,9 @@ class waContactEmailStorage extends waContactStorage
                 $this->getModel()->exec($sql, array('id' => $contact->getId(), 'sort' => $sort));            
         } 
         if ($data) {
-            $sql = "INSERT INTO ".$this->getModel()->getTableName()." (contact_id, email, ext, sort) 
-                    VALUES (".implode("), (", $data).") ON DUPLICATE KEY UPDATE email = VALUES(email), ext = VALUES(ext), sort = VALUES(sort)";
+            $sql = "INSERT INTO ".$this->getModel()->getTableName()." (contact_id, email, ext, sort, status) 
+                    VALUES (".implode("), (", $data).") 
+            		ON DUPLICATE KEY UPDATE email = VALUES(email), ext = VALUES(ext), sort = VALUES(sort), status = VALUES(status)";
             return $this->getModel()->exec($sql);
         }
         return true;

@@ -12,7 +12,10 @@ class waCountryModel extends waModel implements waLocalizedCollection
     protected static $cacheLocale = null;
     protected static $cache = null;
     
-    public function all($start=0, $limit=FALSE, $locale=null) {
+    protected static $instance;
+    
+    public function all($start=0, $limit=FALSE, $locale=null)
+    {
         if (!$locale) {
             $locale = waSystem::getInstance()->getLocale();
             if (!$locale) {
@@ -38,7 +41,8 @@ class waCountryModel extends waModel implements waLocalizedCollection
         return $this->query($sql, array('locale' => $locale))->fetchAll('iso3letter');
     }
     
-    public function filter($parameters, $start=0, $limit=0, $locale=null) {
+    public function filter($parameters, $start=0, $limit=0, $locale=null)
+    {
         if (!$locale) {
             $locale = waSystem::getInstance()->getLocale();
             if (!$locale) {
@@ -53,12 +57,14 @@ class waCountryModel extends waModel implements waLocalizedCollection
         // !!!
     }
     
-    public function name($id, $locale=null) {
+    public function name($id, $locale=null)
+    {
         $a = $this->get($id, $locale);
         return $a['name'];
     }
     
-    public function get($id, $locale=null) {
+    public function get($id, $locale=null)
+    {
         if (!$locale) {
             $locale = waSystem::getInstance()->getLocale();
             if (!$locale) {
@@ -79,7 +85,8 @@ class waCountryModel extends waModel implements waLocalizedCollection
         return $this->query($sql, array('locale' => $locale, 'id' => $id))->fetchAssoc();
     }
     
-    public function count($parameters = null) {
+    public function count($parameters = null)
+    {
         if ($parameters === null) {
             if (self::$cacheLocale) {
                 return count(self::$cache);
@@ -92,7 +99,8 @@ class waCountryModel extends waModel implements waLocalizedCollection
         return $this->query($sql)->fetchField();
     }
     
-    public function preload($locale=null) {
+    public function preload($locale=null)
+    {
         if (!$locale) {
             $locale = waSystem::getInstance()->getLocale();
             if (!$locale) {
@@ -104,9 +112,16 @@ class waCountryModel extends waModel implements waLocalizedCollection
         self::$cacheLocale = $locale;
     }
     
-    /** If $locale exists, make sure DB is up to date and return TRUE.
-      * If no files found for $locale, return FALSE. */
-    protected function updateLocaleDb($locale) {
+
+    /**
+     * If $locale exists, make sure DB is up to date and return true.
+     * If no files found for $locale, return FALSE.
+     *
+     * @param string $locale
+     * @return bool
+     */
+    protected function updateLocaleDb($locale)
+    {
         if ($locale == 'en_US') {
             return TRUE;
         }
@@ -179,6 +194,15 @@ class waCountryModel extends waModel implements waLocalizedCollection
         self::$localeDbUpdated[$locale] = TRUE;
         return self::$localeDbUpdated[$locale];
     }
+    
+    /** 
+     * @return waCountryModel
+     */
+    public static function getInstance()
+    {
+        if (!self::$instance) {
+            self::$instance = new self();
+        }
+        return self::$instance;
+    }
 }
-
-// EOF

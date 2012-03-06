@@ -29,8 +29,8 @@ abstract class waDbResult
     /**
      *
      * @final
-     * @param mysql $mysql
      * @param mixed $result
+     * @param waDbAdapter $adapter
      */
     final function __construct($result, $adapter)
     {
@@ -51,12 +51,12 @@ abstract class waDbResult
     /**
      * Overload calling of the methods for debug
      *
-     * @throws DbResultException
+     * @throws waDbException
      * @param string $method
      * @param array $args
      */
     final public function __call($method, $args)
     {
-        throw new Exception('Undefined method: '.$method);
+        throw new waException('Undefined method: '.$method);
     }
 }

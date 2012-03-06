@@ -7,6 +7,7 @@ class contactsContactsInfoAction extends waViewAction
      * @var waContact|waUser
      */
     protected $contact;
+    protected $id;
 
     public function execute()
     {

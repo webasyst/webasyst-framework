@@ -12,6 +12,6 @@
  * @package wa-system
  * @subpackage database
  */
-class DbResultReplace extends DbResultDelete 
+class waDbResultReplace extends waDbResultDelete
 {
 }

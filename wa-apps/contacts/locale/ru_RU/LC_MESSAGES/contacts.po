@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WebAsyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2012-01-31 13:48+0400\n"
+"PO-Revision-Date: 2012-02-03 17:57+0400\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -811,4 +811,10 @@ msgstr "Ошибка при отправке письма с подтвержд�
 
 msgid "A message with confirmation link has been sent to this address."
 msgstr "На данный адрес было отправлено сообщение, которое содержит ссылку для подтверждения."
+
+msgid "Password updated successfully."
+msgstr "Пароль успешно изменён."
+
+msgid "Password can not be empty."
+msgstr "Пароль не может быть пустым."
 

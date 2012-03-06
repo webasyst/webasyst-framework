@@ -29,6 +29,9 @@ abstract class waViewAction extends waController
     protected $template = null;
     protected $params = null;
 
+    /**
+     * @var waViewController
+     */
     protected $controller = null;
     protected $layout = null;
 

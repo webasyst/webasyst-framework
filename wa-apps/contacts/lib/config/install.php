@@ -15,4 +15,10 @@ DATA;
 
 file_put_contents($path.'/.htaccess', $data);
 
-copy($this->getAppPath('lib/config/data/thumb.php'), $path.'/thumb.php');
+if (!copy($this->getAppPath('lib/config/data/thumb.php'), $path.'/thumb.php')) {
+    $error = sprintf('Installation could not be completed due to the insufficient file write permissions for the %s folder.', $path);
+    if(class_exists('waLog')) {
+        waLog::log(basename(__FILE__).': '.$error,'contacts-install.log');
+    }
+    throw new waException($error);
+}

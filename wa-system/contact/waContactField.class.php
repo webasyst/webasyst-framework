@@ -151,10 +151,10 @@ abstract class waContactField
     }
 
     /**
-     *
-     * @return waContactStorage
+     * @param string $name
+     * @return waContactStorage|waContactDataStorage
      */
-    public function getStorage($name = false)
+    public function getStorage($name = null)
     {
         if ($name) {
             return $this->options['storage'];

@@ -48,7 +48,7 @@ final class waDbStatement
 
     /**
      * Model
-     * @var DbModel $model
+     * @var waModel $model
      */
     protected $model = null;
 
@@ -59,7 +59,7 @@ final class waDbStatement
     protected $query = '';
 
     /**
-     * @param DbModel $model
+     * @param waModel $model
      * @param string $query
      */
     function __construct(waModel $model, $query)
@@ -217,7 +217,7 @@ final class waDbStatement
 
     /**
      * Execute query and returns object of the result
-     * @return DbResultSelect|DbResultInsert|DbResultDelete $dbresult
+     * @return waDbResultSelect|waDbResultInsert|waDbResultDelete $dbresult
      */
     public function query(array $params = array())
     {
@@ -227,6 +227,7 @@ final class waDbStatement
 
     /**
      * Execute query without creating of the result object
+     * @param array $params
      * @return boolean
      */
     public function exec(array $params = array())
@@ -236,10 +237,16 @@ final class waDbStatement
     }
 
     /**
-     * Escape string
+     * Escapes special characters in a string for use in an SQL statement
+     *
+     * @param string
+     * @return string
      */
     public function escape($value)
     {
+        if (is_float($value)) {
+            return str_replace(',', '.', (float)$value);
+        }
         return $this->model->escape($value);
     }
 }

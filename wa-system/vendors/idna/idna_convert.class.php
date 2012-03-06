@@ -118,11 +118,11 @@ class idna_convert
      *           on failures; false: loose mode, ideal for "wildlife" applications
      *           by silently ignoring errors and returning the original input instead
      *
-     * @param    mixed     Parameter to set (string: single parameter; array of Parameter => Value pairs)
-     * @param    string    Value to use (if parameter 1 is a string)
-     * @return   boolean   true on success, false otherwise
+     * @param mixed $option   Parameter to set (string: single parameter; array of Parameter => Value pairs)
+     * @param string $value   Value to use (if parameter 1 is a string)
+     * @return boolean true on success, false otherwise
      */
-    public function set_parameter($option, $value = false)
+    public function set_parameter($option, $value = null)
     {
         if (!is_array($option)) {
             $option = array($option => $value);
@@ -454,7 +454,7 @@ class idna_convert
 
     /**
      * The actual encoding algorithm
-     * @param  string
+     * @param  string $decoded
      * @return mixed
      */
     protected function _encode($decoded)

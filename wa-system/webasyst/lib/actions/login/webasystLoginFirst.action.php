@@ -29,7 +29,7 @@ class webasystLoginFirstAction extends waViewAction
 			$password_confirm = waRequest::post('password_confirm');
 			
 			if ($password !== $password_confirm) {
-				$errors['password'] = 'Passwords do not match';
+				$errors['password'] = _w('Passwords do not match');
 			}
 			
 			$email = waRequest::post('email');
@@ -41,6 +41,13 @@ class webasystLoginFirstAction extends waViewAction
 			if ($errors) {
 				$this->view->assign('errors', $errors);
 			} else {
+			    // save account name
+			    $app_settings_model = new waAppSettingsModel();
+			    $app_settings_model->set('webasyst', 'name', waRequest::post('account_name'));
+                if ($email) {
+                    $app_settings_model->set('webasyst', 'email', $email);
+                }
+			    // create user
 				$user = new waUser();
 				$user['firstname'] = $login;
 				$user['is_user'] = 1;
@@ -62,6 +69,7 @@ class webasystLoginFirstAction extends waViewAction
 				    ));
 					$this->redirect($this->getConfig()->getBackendUrl(true));
 				}
+				
 			}	
 		}
 		

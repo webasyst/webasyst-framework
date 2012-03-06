@@ -84,56 +84,51 @@ class waMailDecode
 		}
 		fclose($this->source);
 		
-		$result = array();
-		
-		$headers = array('subject','from', 'to', 'cc', 'bcc', 'reply-to');
-		foreach ($headers as $h) {
-			if (isset($this->parts[0]['headers'][$h])) {
-				$result[$h] = $this->decodeHeader($this->parts[0]['headers'][$h]);
-				if (is_array($result[$h])) { 
-					$result[$h] = implode("", $result[$h]);	
-				}
-				if ($h != 'subject' && $h != 'from') {
-					$result[$h] = $this->explodeEmails($result[$h]);
-				}
-			} else {
-				$result[$h] = '';
-			}
-		}
-		
-		$i = (int)strrpos($result['from'], ' ');
-		if (($j = strrpos($result['from'], '<')) !== false) {
-			if ($j > $i) {
-				$i = $j;
-			}
-		}
-		
-		$result['from'] = array(
-			'name' => trim(substr($result['from'], 0, $i), ' "'),
-			'email' => trim(substr($result['from'], $i), ' <>')
-		);
-		
-		if (strpos($result['subject'], ' ') === false) {
-			$result['subject'] = str_replace('_', ' ', $result['subject']);
-		}
-		if (isset($this->parts[0]['headers']['date'])) {
-			$d = preg_replace("/[^a-z0-9:,\.\s\t\+]/i", '', $this->parts[0]['headers']['date']);
-			$result['date'] = date("Y-m-d H:i:s", strtotime($d));
-		} else {
-			$result['date'] = '';
-		}
+        $headers = $this->parts[0]['headers'];
+        foreach ($headers as $h => &$v) {
+            $v = $this->decodeHeader($v);
+            if (is_array($v)) {
+                $v = implode("", $v);
+            }
+            if ($h == 'subject') {
+                if (strpos($v, ' ') === false) {
+                	$v = str_replace('_', ' ', $v);
+                }
+            } elseif ($h == 'date') {
+                $v = preg_replace("/[^a-z0-9:,\.\s\t\+]/i", '', $v);
+                $v = date("Y-m-d H:i:s", strtotime($v));
+            } elseif ($h == 'to' || $h == 'cc') {
+                $parser = new waMailAddressParser($v);
+                $v = $parser->parse();
+            } elseif ($h == 'from') {
+                if ($v) {
+                    $parser = new waMailAddressParser($v);
+                    $v = $parser->parse();
+                    if (!isset($v[0])) {
+                        $v = $v[0];
+                    }
+                }
+            }
+        }
+        unset($v);
+        foreach (array('subject','from', 'to', 'cc', 'reply-to', 'date') as $h) {
+            if (!isset($headers[$h])) {
+                $headers[$h] = '';
+            }
+        }		
+        $result = array_merge(array('headers' => $headers), $this->body);
+				
 		// return body		
-		$result['html'] = $result['plain'] = '';
-		if (isset($this->body['html'])) {
-			$result['html']	= $this->cleanHTML($this->body['html']);
-			if (!isset($this->body['plain']) || ($this->body['html'] && !trim($this->body['plain']))) {
-				$result['plain'] = trim(strip_tags($result['html']));	
+		if (isset($result['text/html'])) {
+			$result['text/html'] = $this->cleanHTML($result['text/html']);
+			if (!isset($this->body['text/plain']) || ($this->body['text/html'] && !trim($this->body['text/plain']))) {
+				$result['text/plain'] = trim(strip_tags($result['text/html']));	
 			}
 		}
-		if (isset($this->body['plain']) && !$result['plain']) {
-			$result['plain'] = trim($this->body['plain']);
-			if (!isset($this->body['html'])) {
-				$result['html'] = nl2br($result['plain']);	
+		if (isset($this->body['text/plain'])) {
+			$result['text/plain'] = trim($this->body['text/plain']);
+			if (!isset($this->body['text/html'])) {
+				$result['text/html'] = nl2br($result['text/plain']);	
 			}			
 		}
 		// return attachments
@@ -259,6 +254,7 @@ class waMailDecode
 				}				
 				if (!isset($this->part['type'])) {
 					$this->part['type'] = 'text';
+					$this->part['subtype'] = 'plain';
 					$this->part['headers']['content-transfer-encoding'] = 'quoted-printable';
 				}
 				if ($this->part['type'] == 'multipart') {
@@ -294,7 +290,7 @@ class waMailDecode
 				return true;
 			case self::STATE_PART_DATA:
 				if (isset($this->part['parent'])) {
-					// save applications 
+					// save applications   
 					if ($this->attachments || $this->part['type'] != 'text' || isset($this->part['headers']['content-disposition'])) {
 						return array(
 							'type' => self::TYPE_ATTACH,
@@ -326,6 +322,7 @@ class waMailDecode
 					);
 				}
 		}
+        return false;
 	}
 	
 	protected function skipLineBreak()
@@ -420,6 +417,9 @@ class waMailDecode
 				}
 				fwrite($fp, substr($this->buffer, $this->buffer_offset, $i - $this->buffer_offset));
 				fclose($fp);
+				if (!isset($this->part['headers']['content-disposition'])) {
+				    $this->body[$this->part['type']."/".$this->part['subtype']] = file_get_contents($path);
+				}
 				$this->buffer_offset = $i;
 				$this->state = self::STATE_PART;
 				if (isset($this->part['parent'])) {
@@ -446,7 +446,7 @@ class waMailDecode
 						}
 						
 						if (isset($this->part['params']['charset']) && strtolower($this->part['params']['charset']) != 'utf-8') {
-							$this->part['data'] = iconv($this->part['params']['charset'], "utf-8", $this->part['data']);
+							$this->part['data'] = @iconv($this->part['params']['charset'], "utf-8", $this->part['data']);
 						} else {
 							$charset = mb_detect_encoding($this->part['data']);
 							if ($charset && strtolower($charset) != "UTF-8" && $temp = iconv($charset, 'UTF-8', $this->part['data'])) {
@@ -460,7 +460,7 @@ class waMailDecode
 								unset($temp);
 							}
 						}
-						$this->body[$this->part['subtype']] = $this->part['data'];
+						$this->body[$this->part['type'].'/'.$this->part['subtype']] = $this->part['data'];
 				}
 				if (isset($this->part['parent'])) {
 					$this->part_index = $this->part['parent'];
@@ -475,7 +475,11 @@ class waMailDecode
 		$this->buffer = substr($this->buffer, $this->buffer_offset);
 		$this->buffer_offset = 0;
 	}
-	
+
+    /**
+     * @param string|array $value
+     * @return string
+     */
 	protected function decodeHeader($value)
 	{
 		if (is_array($value)) {
@@ -493,7 +497,7 @@ class waMailDecode
 				$value = $temp;
 			}
 		} elseif (isset($this->part['params']['charset'])) {
-			$value = iconv($this->part['params']['charset'], 'UTF-8', $value);
+			$value = @iconv($this->part['params']['charset'], 'UTF-8', $value);
 		}
 		if (!preg_match('//u', $value)) {
 			$charset = mb_detect_encoding($value);

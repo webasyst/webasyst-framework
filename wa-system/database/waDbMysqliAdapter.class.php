@@ -18,6 +18,11 @@ class waDbMysqliAdapter extends waDbAdapter
     const RESULT_ASSOC = 1;
     const RESULT_NUM = 2;
     const RESULT_BOTH = 3;
+
+    /**
+     * @var mysqli
+     */
+    protected $handler;
         
     public function connect($settings)
     {
@@ -62,22 +67,40 @@ class waDbMysqliAdapter extends waDbAdapter
     {
         return $result->num_rows;
     }
-    
+
+    /**
+     * @param mysqli_result $result
+     * @return mixed
+     */
     public function free($result)
     {
         return $result->free_result();
     }
-    
+
+    /**
+     * @param mysqli_result $result
+     * @param int $offset
+     * @return mixed
+     */
     public function data_seek($result, $offset)
     {
         return $result->data_seek($offset);
     }    
-    
+
+    /**
+     * @param mysqli_result $result
+     * @param int $mode
+     * @return mixed
+     */
     public function fetch_array($result, $mode = self::RESULT_NUM)
     {
         return $result->fetch_array($mode);
     }
-    
+
+    /**
+     * @param mysqli_result $result
+     * @return mixed
+     */
     public function fetch_assoc($result)
     {
         return $result->fetch_assoc();
@@ -134,7 +157,7 @@ class waDbMysqliAdapter extends waDbAdapter
                    $field['length'] = substr($row['Type'], $i + 1, -1);
                }
                $field['null'] = $row['Null'] == 'YES' ? 1 : 0;
-               $field['default'] = $row['Default'] === 'NULL' ? ($field['null'] ? null : $this->castValue($field['type'], '')) : $row['Default'];
+               $field['default'] = $row['Default'] === 'NULL' ? ($field['null'] ? null : '') : $row['Default'];
                $field['extra'] = $row['Extra']; 
                $result[$row['Field']] = $field;
            }

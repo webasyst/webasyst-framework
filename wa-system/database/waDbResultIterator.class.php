@@ -16,35 +16,30 @@ class waDbResultIterator implements Iterator
 {
     /**
      * Current element
-     *
-     * @var mixid
+     * @var mixed
      */
     protected $current = null;
 
     /**
      * Current key
-     *
      * @var int
      */
     protected $key = 0;
 
     /**
-     * Resource
-     *
-     * @var mysql_result
+     * @var resource
      */
     private $result;
     private $count = null;
+
     /**
-     *
-     * Enter description here ...
      * @var waDbAdapter
      */
     private $adapter;
 
     /**
-     *
-     * @param mysql_result $result
+     * @param resource $result
+     * @param waDbAdapter $adapter
      */
     public function __construct($result, waDbAdapter $adapter)
     {
@@ -95,7 +90,7 @@ class waDbResultIterator implements Iterator
 
     /**
      * Reset key
-     *
+     * @return mixed|null
      */
     public function rewind()
     {
@@ -103,7 +98,6 @@ class waDbResultIterator implements Iterator
         $this->key     = 0;
         if ($this->count()) {
             $this->seek(0);
-            $this->current  = $this->adapter->fetch_assoc($this->result);
         }
         return $this->current;
     }
@@ -131,12 +125,16 @@ class waDbResultIterator implements Iterator
     /**
      * Seek on result
      *
-     * @return bool
+     * @param int $offset
+     * @return bool|void
      */
     public function seek($offset = 0)
     {
         if ($offset < $this->count()) {
-            return $this->adapter->data_seek($this->result, $offset);
+            if ($r = $this->adapter->data_seek($this->result, $offset)) {
+                $this->current = $this->adapter->fetch_assoc($this->result);
+                return $r;
+            }
         }
 
         return false;
@@ -155,6 +153,9 @@ class waDbResultIterator implements Iterator
         return $this->count;
     }
 
+    /**
+     * @param int $mode
+     */
     public function fetch($mode = null)
     {
         return $this->adapter->fetch($this->result, $mode);
@@ -172,7 +173,8 @@ class waDbResultIterator implements Iterator
 
     /**
      * Export data
-     *
+     * @param string|null $key
+     * @param bool|int $normalize
      * @return array
      */
     public function export($key = null, $normalize = false)

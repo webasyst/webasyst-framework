@@ -115,7 +115,7 @@ a#wa-my-username { font-weight: bold; text-decoration: none; }
 #wa-applist ul li { display:inline-block; width: 75px; text-align: center; vertical-align: top; position:relative; }
 #wa-applist ul li a { display: block; font-size: 11px; line-height: 1.05em; text-align: center; text-decoration: none; color: #555; padding-bottom: 13px; }
 #wa-applist ul li a:hover { color: #ee2200; }
-#wa-applist ul li a .indicator { position: absolute; top: 0px; right: 3px; background: #f00; }
+#wa-applist ul li a .indicator { position: absolute; top: 0px; right: 3px; background: #f00; color: #fff; }
 #wa-applist ul li a img { border: 0; display: block; margin: 0 auto 5px; width: 48px; height: 48px; }
 #wa-applist ul li.selected a { font-weight: bold; color: #000; font-size: 11px; }
 #wa-applist a#wa-moreapps { padding: 20px 0; color: #777; text-decoration: none; }
@@ -251,11 +251,11 @@ a.inline-link b { border-bottom: 1px dotted; font-weight:normal; position:relati
 a.inline-link b i { font-style:normal; position:relative; top:0.13em; }
 .count { float:right; color:#999; font-size:0.82em; display:inline-block; //display:block;
 position:relative; top:0.05em; margin:0 0 -0.5em; }
-.count.indicator { top: 0; background: red; color: #fff !important; padding-top: 1px; }
 .selected .count { color: #777; }
 .highlighted.count { color: #777; }
-.indicator { -moz-border-radius: 9px; -webkit-border-radius: 20px; border-radius: 20px; background:#aaa; color:#fff; font-size:10px; line-height:1em; padding:2px 4px; display:inline-block; position:relative; top: -0.65em; }
-.indicator.red { background: red; }
+.indicator { -moz-border-radius: 9px; -webkit-border-radius: 20px; border-radius: 20px; background:#ffb; color:#000; font-size: 10px; line-height:1em; padding:2px 4px; display:inline-block; position:relative; top: -0.65em; }
+.indicator.red { background: red; color:#fff !important; }
+.count.indicator { top: 0; font-size: 11px; }
 .username { font-weight: bold; }
 .status { margin: 2px 0 5px; padding: 0; color:#666666; font-style:normal; font-weight: normal; }
 .editable:hover { background: #eed; cursor:text; }
@@ -269,7 +269,7 @@ position:relative; top:0.05em; margin:0 0 -0.5em; }
 .block.triple-padded { padding: 30px; }
 .collapsible { padding-left: 12px; }
 .hierarchical { margin-left: 14px; }
-.tags a { color: green; text-decoration: underline; }
+.tags a { color: green; text-decoration: underline !important; }
 .tags a:hover { color: red; }
 .rating i.icon16 { margin-right: 2px; }
 .rating-small i.icon16 { margin-right: -8px; }
@@ -313,15 +313,36 @@ input.large { font-size: 1.2em; font-weight: bold; }
 input.small { font-size: 0.8em; width: 100px !important; min-width: 100px !important; }
 input.empty { color: #aaa; }
 input.error { border: 2px solid red; color: red; }
-.button { -moz-border-radius: 24px; -webkit-border-radius: 24px; border-radius: 24px; color:#111; text-shadow:0 1px 1px #fff; font-weight:bold; background: #eee url(../../wa-content/img/button-bg.png) repeat-x; background: -webkit-gradient(linear, left top, left bottom, color-stop(0, #fff), color-stop(1, #ddd)); background: -moz-linear-gradient(top center, #fff 0%, #ddd 100%); background-image: -o-linear-gradient(rgb(255,255,255),rgb(238,238,238)); *filters:  progid:DXImageTransform.Microsoft.gradient(GradientType=0, startColorstr='#ffffff', endColorstr='#dddddd'); /* IE6 & IE7 */
--ms-filters: "progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#ffffff', endColorstr='#dddddd')"; /* IE8 */ border: 4px solid #ccc; -moz-box-shadow: -1px -1px 0 #444444 inset; white-space:nowrap; font-size:13px!important; line-height:20px; height:34px; padding:0 15px 3px; }
+.button { -moz-border-radius: 24px; -webkit-border-radius: 24px; border-radius: 24px; color:#111; text-shadow:0 1px 1px #fff; font-weight:bold; 
+border: 4px solid #ccc; -moz-box-shadow: -1px -1px 0 #444444 inset; -webkit-box-shadow: -1px -1px 0 #444444 inset;box-shadow: -1px -1px 0 #444444 inset; white-space:nowrap; font-size:13px!important; line-height:20px; height:34px; padding:0 15px 3px; 
+background: rgb(255,255,255);
+background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIwJSIgeTI9IjEwMCUiPgogICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iI2ZmZmZmZiIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiNkZGRkZGQiIHN0b3Atb3BhY2l0eT0iMSIvPgogIDwvbGluZWFyR3JhZGllbnQ+CiAgPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEiIGhlaWdodD0iMSIgZmlsbD0idXJsKCNncmFkLXVjZ2ctZ2VuZXJhdGVkKSIgLz4KPC9zdmc+);
+background: -moz-linear-gradient(top,  rgba(255,255,255,1) 0%, rgba(221,221,221,1) 100%);
+background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(255,255,255,1)), color-stop(100%,rgba(221,221,221,1)));
+background: -webkit-linear-gradient(top,  rgba(255,255,255,1) 0%,rgba(221,221,221,1) 100%);
+background: -o-linear-gradient(top,  rgba(255,255,255,1) 0%,rgba(221,221,221,1) 100%);
+background: -ms-linear-gradient(top,  rgba(255,255,255,1) 0%,rgba(221,221,221,1) 100%);
+background: linear-gradient(top,  rgba(255,255,255,1) 0%,rgba(221,221,221,1) 100%);
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#dddddd',GradientType=0 );
+}
 a.button { color: #000; text-decoration: none; padding: 4px 18px 6px; }
 .button.red { border-color:#F60; }
 .button.green { border-color:#6C3; }
 .button.blue { border-color:#09F; }
 .button.yellow { border-color:#FDDA3B; }
 .button:disabled { color:#999; }
-
+.button:active, .button.active {color:#444;
+-moz-box-shadow: -1px -1px 0 #444444 inset, 1px 1px 0 rgba(255,255,255, .6) inset; -webkit-box-shadow: -1px -1px 0 #444444 inset, 1px 1px 0 rgba(255,255,255, .6) inset; box-shadow:  -1px -1px 0 #444444 inset, 1px 1px 0 rgba(255,255,255, .6) inset;;
+background: rgb(221,221,221);
+background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIwJSIgeTI9IjEwMCUiPgogICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iI2RkZGRkZCIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiNmY2ZjZmMiIHN0b3Atb3BhY2l0eT0iMSIvPgogIDwvbGluZWFyR3JhZGllbnQ+CiAgPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEiIGhlaWdodD0iMSIgZmlsbD0idXJsKCNncmFkLXVjZ2ctZ2VuZXJhdGVkKSIgLz4KPC9zdmc+);
+background: -moz-linear-gradient(top,  rgba(221,221,221,1) 0%, rgba(252,252,252,1) 100%);
+background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(221,221,221,1)), color-stop(100%,rgba(252,252,252,1)));
+background: -webkit-linear-gradient(top,  rgba(221,221,221,1) 0%,rgba(252,252,252,1) 100%);
+background: -o-linear-gradient(top,  rgba(221,221,221,1) 0%,rgba(252,252,252,1) 100%);
+background: -ms-linear-gradient(top,  rgba(221,221,221,1) 0%,rgba(252,252,252,1) 100%);
+background: linear-gradient(top,  rgba(221,221,221,1) 0%,rgba(252,252,252,1) 100%);
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#dddddd', endColorstr='#fcfcfc',GradientType=0 );
+}
 /* MENUs
 -------------------------------------------- */
 ul.menu-v { list-style-type:none; margin:5px 0 0; padding: 0; }
@@ -432,7 +453,6 @@ ul.thumbs.li200px li { width: 200px; }
 ul.thumbs.li250px li { width: 250px; }
 ul.thumbs.li300px li { width: 300px; }
 ul.thumbs.li350px li { width: 350px; }
-ul.thumbs li .corner-exclamation { position:absolute; z-index:10; left:3px; top:3px; font-size: 0.8em; color: #fff; font-weight: bold; }
 ul.thumbs a { text-decoration: none; }
 ul.thumbs li.selected { /* nothing! */ }
 ul.thumbs li.selected img { border: 4px solid #FDDA3B; margin: -4px -2px -2px -4px; -moz-border-radius: 4px; -webkit-border-radius: 4px; border-radius: 4px; }
@@ -650,7 +670,7 @@ ul.tabs .icon16 { margin-top: 8px; }
 .icon16.view-table { background-position:-304px -96px; }
 .icon16.view-splitview { background-position:-336px -96px; }
 .icon16.view-thumb-list { background-position:-320px -96px; }
-.icon16.view-timeline { background-position:-16px -48px; }
+.icon16.view-timeline { background-position:-288px -96px; }
 .icon16.hierarchical { background-position:-32px -48px; }
 .icon16.book-open { background-position:-16px -80px; }
 .icon16.lens { background-position:-320px -16px; }
@@ -711,7 +731,7 @@ ul.tabs .icon16 { margin-top: 8px; }
 .icon16.script-css { background-position: -112px -64px; }
 .icon16.script-js { background-position: -96px -64px; }
 .icon16.script-php {background-position: -80px -64px; }
-.icon16.sort {background-position: -368px -96px; }
+.icon16.sort { background-position: -368px -96px; }
 .icon16.cheatsheet {background-position: -144px -64px; }
 .icon16.palette { background-position: -272px -16px; }
 .icon16.blogs { background-position: -112px -80px; }
@@ -719,7 +739,9 @@ ul.tabs .icon16 { margin-top: 8px; }
 .icon16.notebooks  { background-position: -80px -80px; }
 .icon16.calendar  { background-position: -48px -48px; }
 .icon16.exclamation  { background-position: -64px -48px; }
-
+.icon16.tags { background-position: -480px -48px; }
+.icon16.stack { background-position: -128px -80px; }
+.icon16.checkboxes { background-position: -144px -80px; }
 .icon16.userpic20 { background-position: -2px -2px; /* use this for 20x20 userpics as 16x16 icons; cuts 2px from each side of 20x20 userpic, but gives clean alignment */ }
 .icon16.loading { background-image: url("../../../wa-content/img/loading16.gif"); }
 
@@ -754,9 +776,14 @@ h5 i.icon10 { vertical-align:top; margin: 0.1em 0 0 0; }
 .icon10.star-empty { background-position:-80px -40px; }
 .icon10.star-half { background-position:-70px -40px; }
 .icon10.delete { background-position:-80px -20px; }
-.icon10.info { background-position:-20px -40px; }
+.icon10.info { background-position:-20px -30px; }
 .icon10.exclamation { background-position:-90px -20px; }
 .icon10.clock { background-position:-10px -30px; }
+.icon10.view-thumbs { background-position:-110px -10px; }
+.icon10.view-table { background-position:-80px -10px; }
+.icon10.view-splitview { background-position:-100px -10px; }
+.icon10.view-thumb-list { background-position:-90px -10px; }
+.icon10.view-timeline { background-position:-110px -20px; }
 /*
  * Custom 16x16 or 10x10 images can be added like this (PNG images are recommended):
  * .icon16.iconname { background-image: url("../path/to/your/image/file.png"); background-position:0 0; }
@@ -776,14 +803,14 @@ h5 i.icon10 { vertical-align:top; margin: 0.1em 0 0 0; }
 .ui-state-default { background-color: #dd8; border-color: #855; }
 .ui-datepicker { font-family:'Lucida Grande', Helvetica, Arial, sans-serif; }
 .ui-datepicker.ui-widget-content { -moz-border-radius: 10px 10px 10px 10px; -webkit-border-radius: 10px 10px 10px 10px; border-radius: 10px 10px 10px 10px; -moz-box-shadow: 0 0 20px #BBBBBB; background: none repeat scroll 0 0 #FFFFFF; border: 7px solid #F3F3F3; }
-.ui-datepicker .ui-datepicker-header { background:none; border:none; }
-.ui-datepicker .ui-datepicker-title { font-weight:bold; font-size:1.35em; color:#555; }
+.ui-datepicker .ui-datepicker-header { background:none; border:none; height: 20px; }
+.ui-datepicker .ui-datepicker-title { font-weight:bold; font-size:1.15em; color:#555; line-height: 20px; }
 .ui-datepicker .ui-state-default { background:none; border:none; font-size: 0.94em; padding: 0 0.2em 1.4em; }
 .ui-datepicker .ui-state-default.ui-state-hover { background:#eee; border:none; }
 .ui-datepicker .ui-state-active { background:#ddd; border:none; font-weight: bold; }
 .ui-datepicker table { border:none; }
 .ui-datepicker th { background:none; font-size:0.88em; font-weight:normal; padding:0.3em; color:#888; }
-.ui-datepicker td { border:solid 1px #ccc; border-width: 1px 0 1px 1px; padding:0; }
+.ui-datepicker td { border:solid 1px #ccc; border-width: 1px 0 1px 1px; padding:0; height: 25px;}
 .ui-datepicker tbody { border:solid 1px #ccc; border-width: 0 1px 1px 0; }
 .ui-datepicker .ui-datepicker-prev span { background-image: url(../../../wa-content/img/icon16.png); background-position:-160px 0; }
 .ui-datepicker .ui-datepicker-next span { background-image: url(../../../wa-content/img/icon16.png); background-position:-144px 0; }

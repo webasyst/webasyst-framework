@@ -5,14 +5,11 @@ class contactsRightsModel extends waModel
     protected $table = 'contacts_rights';
 
     /**
-     * Retuns rights of user (user_id) to the contacts from contact_id
+     * Returns rights of user (user_id) to the contacts from contact_id
      *
-     * @param int $user_id
+     * @param int|null $user_id
      * @param int|array $contact_id
-     * @return rights
-     *         read
-     *         write
-     *         false
+     * @return string|boolean rights ('read', 'write' or false)
      */
     public function getRight($user_id, $contact_id)
     {

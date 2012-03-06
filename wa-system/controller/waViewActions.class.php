@@ -70,7 +70,9 @@ abstract class waViewActions extends waController
         if (!$action) {
             $action = 'default';
         }
-        wa()->getUser()->updateLastPage();
+        if ($action != 'logout') {
+            wa()->getUser()->updateLastPage();
+        }
         $this->preExecute();
         if ($this->getRequest()->isMobile() && method_exists($this, $action."MobileAction")) {
             $action = $action."Mobile";

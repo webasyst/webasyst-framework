@@ -66,6 +66,9 @@ class waFrontController
         $prefix = $this->system->getConfig()->getPrefix('prefix');
         $class_name = $prefix.ucfirst($widget)."Widget";
         if (class_exists($class_name, true)) {
+            /**
+             * @var $controller waWidget
+             */
             $controller = new $class_name();
             return $controller->run($action);
         } else {
@@ -92,7 +95,7 @@ class waFrontController
         	} else {
         		$plugin_info = include($plugin_path.'/lib/config/plugin.php');
         		// check rights
-        		if ($plugin_info['rights']) {
+        		if (isset($plugin_info['rights']) && $plugin_info['rights']) {
         			if (!$this->system->getUser()->getRights($this->system->getConfig()->getApplication(), 'plugin.'.$plugin)) {
         				throw new waRightsException("Access denied", 403);
         			}
@@ -112,8 +115,11 @@ class waFrontController
         $class_names = array();
 
         // Single Controller (recomended)
-        $class_name = $prefix.($plugin ? ucfirst($plugin).'plugin' : '').ucfirst($module).($action ? ucfirst($action) : '').'Controller';
+        $class_name = $prefix.($plugin ? ucfirst($plugin).'Plugin' : '').ucfirst($module).($action ? ucfirst($action) : '').'Controller';
         if (class_exists($class_name, true)) {
+            /**
+             * @var $controller waController
+             */
             $controller = new $class_name();
             $r = $controller->run();
             if ($plugin) {
@@ -124,7 +130,7 @@ class waFrontController
         $class_names[] = $class_name;
 
         // Controller Multi Actions, Zend/Symfony style
-        $class_name = $prefix.($plugin ? ucfirst($plugin).'plugin' : '').ucfirst($module).'Actions';
+        $class_name = $prefix.($plugin ? ucfirst($plugin).'Plugin' : '').ucfirst($module).'Actions';
         if (class_exists($class_name, true)) {
             $controller = new $class_name();
             $r = $controller->run($action);
@@ -139,6 +145,9 @@ class waFrontController
         $class_name = $prefix.($plugin ? ucfirst($plugin).'Plugin' : '').ucfirst($module).($action ? ucfirst($action) : '').'Action';
         if (class_exists($class_name)) {
         	// get default view controller
+            /**
+             * @var $controller waDefaultViewController
+             */
             $controller = $this->system->getFactory('default_controller', 'waDefaultViewController');
             $controller->setAction($class_name);
             $r = $controller->run();

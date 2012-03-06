@@ -53,7 +53,7 @@ abstract class waController
      * @param int $count
      * @return bool|int
      */
-    public function log($action, $count = null, $contact_id = null)
+    public function log($action, $count = null, $contact_id = null, $params = null)
     {
         /**
          * @var waSystem
@@ -90,6 +90,10 @@ abstract class waController
         );
         if ($count !== null) {
             $data['count'] = $count;
+        }
+        
+        if ($params !== null) {
+            $data['params'] = $params;
         }
 
         if (!class_exists('waLogModel')) {

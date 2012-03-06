@@ -50,7 +50,11 @@ class waGroupModel extends waModel
         return $result;
     }
 
-    /** @return array id => array(id=>..,name=>..,cnt=>..) */
+    /**
+     * @param null $key
+     * @param bool $normalize
+     * @return array (id => array(id=>..,name=>..,cnt=>..))
+     */
     public function getAll($key = null, $normalize = false)
     {
         $sql = "SELECT * FROM `{$this->table}` ORDER BY name";
@@ -61,6 +65,7 @@ class waGroupModel extends waModel
      * Delete group
      *
      * @param int $id
+     * @return bool
      */
     public function delete($id)
     {
@@ -71,8 +76,13 @@ class waGroupModel extends waModel
         return $this->deleteById($id);
     }
 
-    /** Update members count */
-    public function updateCount($id, $count) {
+    /**
+     * Update members count
+     * @param $id
+     * @param $count
+     */
+    public function updateCount($id, $count)
+    {
         $this->updateById($id, array('cnt' => $count));
     }
 }

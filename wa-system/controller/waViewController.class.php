@@ -15,7 +15,7 @@
 abstract class waViewController extends waController
 {
     /**
-     * @var Layout
+     * @var waLayout
      */
     protected $layout = null;
 

@@ -13,8 +13,8 @@
 interface waLocalizedCollection {
     /**
      * @param $id
-     * @param $locale string (defaults to current system locale) - locale to return item in
-     * @return one item with given id in given locale */
+     * @param string $locale (defaults to current system locale) - locale to return item in
+     * @return mixed one item with given id in given locale */
 	public function get($id, $locale=null);
 	
 	/**

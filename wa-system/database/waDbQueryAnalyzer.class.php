@@ -23,13 +23,6 @@ class waDbQueryAnalyzer
     const QUERY_DELETE  = 'delete';
     const QUERY_UPDATE  = 'update';
 
-    /**
-     * Query benchmarking
-     *
-     * @var DbQueryBenchmark
-     */
-    //protected $DbQueryBenchmark;
-
     public function __construct($query)
     {
         $this->query_string = trim($query);

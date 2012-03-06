@@ -8,6 +8,9 @@ class contactsAnalyticsConfig extends waAnalyticsConfig
 		$fields = array();
 		$app_fields = waContactFields::getAll('enabled');
 		foreach ($app_fields as $id => $f) {
+            /**
+             * @var $f waContactField
+             */
 			if ($f->getStorage(true) == 'info') {
 				$fields[$id] = array(
 					'name' => $f->getName(),
@@ -25,12 +28,19 @@ class contactsAnalyticsConfig extends waAnalyticsConfig
 				);				
 			} else {
 				if ($f instanceof waContactCompositeField) {
-					foreach ($f->getFields() as $sf)
-					$fields[$f->getId().":".$sf->getId()] = array(
-						'name' => $sf->getName(),
-						'table' => 'wa_contact_data',
-						'field' => 'value' 
-					);
+                    /**
+                     * @var $f waContactCompositeField
+                     */
+					foreach ($f->getFields() as $sf) {
+                        /**
+                         * @var $sf waContactField
+                         */
+                        $fields[$f->getId().":".$sf->getId()] = array(
+                            'name' => $sf->getName(),
+                            'table' => 'wa_contact_data',
+                            'field' => 'value'
+                        );
+                    }
 				} else {
 					$fields[$id] = array(
 						'name' => $f->getName(),

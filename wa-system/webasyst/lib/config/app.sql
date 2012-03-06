@@ -69,6 +69,7 @@ CREATE TABLE IF NOT EXISTS `wa_contact_emails` (
   `email` varchar(255) NOT NULL,
   `ext` varchar(32) NOT NULL DEFAULT '',
   `sort` int(11) NOT NULL DEFAULT '0',
+  `status` ENUM(  'unknown',  'confirmed',  'unconfirmed',  'unavailable' ) NOT NULL DEFAULT  'unknown',
   PRIMARY KEY (`id`),
   UNIQUE KEY `contact_sort` (`contact_id`,`sort`),
   KEY `email` (`email`)
@@ -364,6 +365,7 @@ CREATE TABLE IF NOT EXISTS `wa_log` (
   `datetime` datetime NOT NULL,
   `action` varchar(255) NOT NULL,
   `count` int(11) DEFAULT NULL,
+  `params` TEXT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
 

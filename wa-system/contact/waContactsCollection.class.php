@@ -31,8 +31,9 @@ class waContactsCollection
      * Constructor for collection of contacts
      *
      * @param string $hash - search hash
+     * @param array $options
      * @example
-     *        All contacts where name contains John
+     *     All contacts where name contains John
      *     $collection = new contactsCollection('/search/name*=John/');
      *
      *     All contacts in the list with id 100500
@@ -155,8 +156,11 @@ class waContactsCollection
 
     /**
      * Get data for contacts in this collection.
-     *
+     * @param string|array $fields
+     * @param int $offset
+     * @param int $limit
      * @return array [contact_id][field] = field value in appropriate field format
+     * @throws waException
      */
     public function getContacts($fields = "id", $offset = 0, $limit = 50)
     {
@@ -183,6 +187,9 @@ class waContactsCollection
             foreach ($this->post_fields as $table => $fields) {
                 if ($table == '_internal') {
                     foreach ($fields as $f) {
+                        /**
+                         * @var $f string
+                         */
                         if ($f == 'photo_url' || substr($f, 0, 10) == 'photo_url_') {
                             if ($f == 'photo_url') {
                                 $size = null;    
@@ -221,9 +228,18 @@ class waContactsCollection
                     }
                     continue;
                 }
-
+                
+                $data_fields = $fields;
+                foreach ($data_fields as $k => $field_id) {
+                    $f = waContactFields::get($field_id);
+                    if ($f && $f instanceof waContactCompositeField) {
+                    	unset($data_fields[$k]);
+                    	$data_fields = array_merge($data_fields, $f->getField());
+                    }                    
+                }
+                
                 $model = $this->getModel($table);
-                $post_data = $model->getData($ids, $fields);
+                $post_data = $model->getData($ids, $data_fields);
 
                 foreach ($post_data as $contact_id => $contact_data) {
                     foreach ($contact_data as $field_id => $value) {
@@ -432,6 +448,10 @@ class waContactsCollection
         }
     }
 
+    /**
+     * Add joins and conditions for hash /group/$group_id
+     * @param int $id
+     */
     protected function groupPrepare($id)
     {
         $group_model = new waGroupModel();
@@ -454,7 +474,10 @@ class waContactsCollection
     }
 
 
-
+    /**
+     * Returns ORDER BY clause
+     * @return string
+     */
     protected function getOrderBy()
     {
         if ($this->order_by) {
@@ -464,6 +487,10 @@ class waContactsCollection
         }
     }
 
+    /**
+     * Returns GROUP BY clause
+     * @return string
+     */
     protected function getGroupBy()
     {
         if ($this->group_by) {
@@ -476,6 +503,7 @@ class waContactsCollection
     /**
      * Returns contacts model
      *
+     * @param string $type
      * @return waContactModel|waContactDataModel|waContactEmailsModel
      */
     protected function getModel($type = null)
@@ -500,6 +528,13 @@ class waContactsCollection
         }
     }
 
+    /**
+     * Returns expression for SQL
+     *
+     * @param string $op - operand ==, >=, etc
+     * @param string $value - value
+     * @return string
+     */
     protected function getExpression($op, $value)
     {
         $model = $this->getModel();
@@ -524,7 +559,7 @@ class waContactsCollection
     }
 
 
-    public function getSQL()
+    public function getSQL($with_primary_email = false)
     {
         $this->prepare();
         $sql = "FROM wa_contact c";
@@ -540,9 +575,17 @@ class waContactsCollection
                 $sql .= (isset($join['type']) ? " ".$join['type'] : '')." JOIN ".$join['table']." ".$alias." ON ".$on;
             }
         }
+        
+        if ($with_primary_email) {
+            $sql .= " JOIN wa_contact_emails _e ON c.id = _e.contact_id";
+        }
 
         if ($this->where) {
-            $sql .= " WHERE ".implode(" AND ", $this->where);
+            $where = $this->where;
+            if ($with_primary_email) {
+                $where[] = "_e.sort = 0";
+            }
+            $sql .= " WHERE ".implode(" AND ", $where);
         }
 
         return $sql;
@@ -553,20 +596,39 @@ class waContactsCollection
      *
      * @param string $table - name of the temporary table
      * @param string $fields - fields for select
+     * @param bool $ignore
      * @return bool - result
      */
-    public function toTempTable($table, $fields = 'id')
+    public function saveToTable($table, $fields = 'id', $ignore = false)
     {
-        /*
-         $sql = "CREATE TEMPORARY TABLE IF NOT EXISTS ".$table." (
-                    id INT UNSIGNED NOT NULL PRIMARY KEY
-         )";
-         $this->getModel()->exec($sql);
-         */
-
-         $sql = "INSERT INTO ".$table." (".(is_array($fields) ? implode(",", array_keys($fields)) : $fields).")
-                  SELECT DISTINCT ".(is_array($fields) ? 'c.'.implode(",c.", $fields) : 'c.'.$fields)." ".$this->getSQL().$this->getOrderBy();
-         $this->getModel()->exec($sql);
+        if (!is_array($fields)) {
+            $fields = implode(",", $fields);
+            $fields = array_map("trim", $fields);
+        }   
+        $primary_email = false;
+        $insert_fields = $select_fields = array();
+        foreach ($fields as $k => $v) {
+            if (is_numeric($k)) {
+                $insert_fields[] = $v;
+                $select_fields[] = "c.".$v;
+            } else {
+                $insert_fields[] = $k;
+                if (strpos($v, '.') !== false || is_numeric($v)) {
+                    $select_fields[] = $v;
+                } else {
+                    if ($v == '_email') {
+                        $select_fields[] = "_e.email";
+                        $primary_email = true;
+                    } else {
+                        $select_fields[] = "c.".$v;
+                    }
+                }
+            }
+            
+        }
+        $sql = "INSERT ".($ignore ? "IGNORE " : "")."INTO ".$table." (".implode(",", $insert_fields).")
+                SELECT DISTINCT ".implode(",", $select_fields)." ".$this->getSQL($primary_email).$this->getOrderBy();
+        return $this->getModel()->exec($sql);
     }
 
     /**
@@ -574,6 +636,7 @@ class waContactsCollection
      *
      * @param string $field
      * @param string $order
+     * @return string
      */
     public function orderBy($field, $order = 'ASC')
     {

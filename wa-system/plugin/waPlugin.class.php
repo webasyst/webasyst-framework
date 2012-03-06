@@ -110,7 +110,7 @@ class waPlugin
     protected function getUrl($url, $is_plugin)
     {
     	if ($is_plugin) {
-    		return $this->getPluginStaticUrl().$url;
+    	    return 'plugins/'.$this->id.'/'.$url;
     	} else {
     		return $url;
     	}
@@ -118,12 +118,12 @@ class waPlugin
     
     protected function addJs($url, $is_plugin = true)
     {
-		waSystem::getInstance()->getResponse()->addJs($this->getUrl($url, $is_plugin));
+		waSystem::getInstance()->getResponse()->addJs($this->getUrl($url, $is_plugin),$this->app_id);
     }
     
     protected function addCss($url, $is_plugin = true)
     {
-    	waSystem::getInstance()->getResponse()->addCss($this->getUrl($url, $is_plugin));
+    	waSystem::getInstance()->getResponse()->addCss($this->getUrl($url, $is_plugin),$this->app_id);
     }
 }
 

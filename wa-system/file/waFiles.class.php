@@ -22,7 +22,7 @@ class waFiles
 	 * Create parent directories for given file path, unless already exist.
 	 *
 	 * Notice: if folder name contains dot it must terminate /
-	 * @param $path full path
+	 * @param string $path  full path
 	 * @return string copy of $path
 	 */
 	public static function create($path)
@@ -225,6 +225,7 @@ class waFiles
 			case 'zip': return 'application/zip';
 			case 'tar': return 'application/x-tar';
 			case 'swf': return 'application/x-shockwave-flash';
+			case 'eml': return 'message/rfc822';
 
 			default: return 'application/octet-stream';
 		}
@@ -267,26 +268,15 @@ class waFiles
 						foreach($ranges as $range){
 							$range = trim($range);
 							if (preg_match('/^(\d+)-(\d+)$/',$range,$matches)) {
-								$intervals[] = array(
-                                'from'	=>intval($matches[1]),
-                                'to'	=>intval($matches[2])
-								);
-							}elseif(preg_match('/^(\d+)-$/',$range,$matches)) {
-								$intervals[] = array(
-                                'from'	=>intval($matches[1]),
-                                'to'	=>$file_size-1
-								);
-
-							} elseif(preg_match('/^-(\d+)$/',$range,$matches)) {
-								$intervals[] = array(
-                                'from'	=>$file_size-intval($matches[1]),
-                                'to'	=>$file_size-1
-								);
+								$intervals[] = array('from'	=> intval($matches[1]), 'to' => intval($matches[2]));
+							} elseif (preg_match('/^(\d+)-$/',$range,$matches)) {
+								$intervals[] = array('from'	=> intval($matches[1]), 'to' => $file_size - 1);
+							} elseif (preg_match('/^-(\d+)$/',$range,$matches)) {
+								$intervals[] = array('from'	=> $file_size-intval($matches[1]), 'to'	=> $file_size - 1);
 							} else {
-								throw new waException('Requested range not satisfiable',416);
+								throw new waException('Requested range not satisfiable', 416);
 							}
 						}
-
 						foreach ($intervals as $interval) {
 							if ($from === false) {
 								$from = $interval['from'];
@@ -303,7 +293,7 @@ class waFiles
 							}
 						}
 
-						if ($from<0 || ($to+1)>$file_size) {
+						if ($from < 0 || ($to + 1) > $file_size) {
 							throw new waException('Requested range not satisfiable',416);
 						}
 
@@ -379,9 +369,9 @@ class waFiles
 	}
 
 	/**
-	 * 
 	 * Protect folder by creating htaccess if it not exists
-	 * @param unknown_type $path
+     *
+	 * @param string $path
 	 */
 	public static function protect($path)
 	{

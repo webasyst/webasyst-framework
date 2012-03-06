@@ -59,7 +59,7 @@ class waAuthUser extends waUser
     
     public function updateLastPage() 
     {
-        if (waRequest::isXMLHttpRequest() || !$this->id || wa()->getEnv() !== 'backend') {
+        if (waRequest::isXMLHttpRequest() || !$this->id || wa()->getEnv() !== 'backend' || waRequest::method() == 'post') {
             return;
         }
         $page = wa()->getRequest()->server('REQUEST_URI');
@@ -153,6 +153,9 @@ class waAuthUser extends waUser
             $a = explode('|', $change_password);
             $change_password = array();
             foreach ($a as $part) {
+                /**
+                 * @var $part string
+                 */
                 if (strpos($part, ':') === false) {
                     $change_password[$part] = true;
                 } else {

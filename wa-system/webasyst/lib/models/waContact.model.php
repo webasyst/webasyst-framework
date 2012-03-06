@@ -62,7 +62,7 @@ class waContactModel extends waModel
     public function delete($id)
     {
         // Fire @event contacts.delete to delete links to other applications
-        $result = wa()->event(array('contacts', 'delete'), $id);
+        wa()->event(array('contacts', 'delete'), $id);
 
 
         if (is_array($id)) {
@@ -92,6 +92,7 @@ class waContactModel extends waModel
 
         // Delete from contact lists
         if (class_exists('contactsContactListsModel')) {
+            // @todo: Use plugin for contacts
             $contact_lists_model = new contactsContactListsModel();
             $contact_lists_model->deleteByField('contact_id', $id);
         }

@@ -14,6 +14,9 @@
  */
 class waDefaultViewController extends waViewController
 {
+    /**
+     * @var waViewAction
+     */
     protected $action;
 
     public function setAction($action)

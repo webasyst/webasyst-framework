@@ -4,6 +4,8 @@ jQuery.fn.waDialog = function (options) {
 		esc: true,
 		buttons: null,
 		url: null,
+		'class': null, // className is a synonym
+		content: null,
 		disableButtonsOnSubmit: false,
 		onLoad: null,
 		onCancel: null,
@@ -57,7 +59,9 @@ jQuery.fn.waDialog = function (options) {
 			);
 			d.find('.dialog-content-indent').append(content.show());
 		}
-		d.find('.dialog-buttons-gradient').append(options.buttons);
+        if (options.buttons) {
+		    d.find('.dialog-buttons-gradient').empty().append(options.buttons);
+        }
 		if (options.url) {
 			d.find('.dialog-content-indent').append('<h1>'+(options.loading_header || '')+'<i class="icon16 loading"></i></h1>');
 		} else if (options.content) {
@@ -66,13 +70,19 @@ jQuery.fn.waDialog = function (options) {
 		if (options.title) {
 			d.find('.dialog-content-indent').prepend('<h1>' + options.title + '</h1>');
 		}
-	} else if (options.content) {
-		d.find('.dialog-content-indent').html(options.content);
-	} else if (options.buttons) {
-		d.find('.dialog-buttons-gradient').html(options.buttons);
+	} else {
+		if (options.content) {
+			d.find('.dialog-content-indent').html(options.content);
+			if (options.title) {
+				d.find('.dialog-content-indent').prepend('<h1>' + options.title + '</h1>');
+			}
+		}
+		if (options.buttons) {
+			d.find('.dialog-buttons-gradient').empty().append(options.buttons);
+		}
 	}
 
-	if (d.find('.dialog-background').length) {
+	if (!d.find('.dialog-background').length) {
 		d.prepend('<div class="dialog-background"> </div>');
 	}
 
@@ -101,15 +111,6 @@ jQuery.fn.waDialog = function (options) {
 		d.appendTo('body');
 	}
 
-	d.find('.dialog-buttons .cancel').unbind('click').click(function (e) {
-		e.stopPropagation();
-		e.preventDefault();
-		if (options.onCancel) {
-			options.onCancel.call(d.get(0));
-		}
-		d.trigger('close');
-		return false;
-	});
 
 	d.show();
 
@@ -118,10 +119,10 @@ jQuery.fn.waDialog = function (options) {
 			var el = $(response);
 			if (el.find('.dialog-content').length || el.find('.dialog-buttons').length) {
 				if (el.find('.dialog-content').length) {
-					d.find('.dialog-content-indent').empty().append(el.find('.dialog-content'));
+					d.find('.dialog-content-indent').empty().append(el.find('.dialog-content').contents());
 				}
 				if (el.find('.dialog-buttons').length) {
-					d.find('.dialog-buttons-gradient').empty().append(el.find('.dialog-buttons'));
+					d.find('.dialog-buttons-gradient').empty().append(el.find('.dialog-buttons').contents());
 				}
 			} else {
 				d.find('.dialog-content-indent').empty().append(el);
@@ -137,7 +138,18 @@ jQuery.fn.waDialog = function (options) {
 		}
 	}
 
-	if (options.onSubmit) {
+    d.find('.dialog-buttons').delegate('.cancel', 'click', function (e) {
+        e.stopPropagation();
+        e.preventDefault();
+        if (options.onCancel) {
+            options.onCancel.call(d.get(0));
+        }
+        d.trigger('close');
+        return false;
+    });
+
+
+    if (options.onSubmit) {
 		d.find('form').unbind('submit').submit(function () {
 			if (options.disableButtonsOnSubmit) {
 				d.find("input[type=submit]").attr('disabled', 'disabled');
@@ -146,7 +158,7 @@ jQuery.fn.waDialog = function (options) {
 		});
 	}
 
-	d.bind('resize', function () {
+	d.bind('wa-resize', function () {
 		var el = jQuery(this).find('.dialog-window');
 		var dw = el.width();
 		var dh = el.height();
@@ -166,7 +178,7 @@ jQuery.fn.waDialog = function (options) {
 			'left': Math.round(w*100)+'%',
 			'top': Math.round(h*100)+'%'
 		});
-	}).trigger('resize');
+	}).trigger('wa-resize');
 
 	if (options.esc) {
 		d.bind('esc', function () {
@@ -177,7 +189,7 @@ jQuery.fn.waDialog = function (options) {
 }
 
 jQuery(window).resize(function () {
-	jQuery(".dialog:visible").trigger('resize');
+	jQuery(".dialog:visible").trigger('wa-resize');
 });
 
 jQuery(document).keyup(function(e) {

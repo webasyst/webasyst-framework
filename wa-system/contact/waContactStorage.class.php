@@ -19,7 +19,13 @@ abstract class waContactStorage
     {
         return get_class($this);
     }
-    
+
+    /**
+     * @param waContact $contact
+     * @param array|string $fields
+     * @param bool $old_value
+     * @return array|void
+     */
     public function get(waContact $contact, $fields = array(), $old_value = false)
     {    	
         if (!is_array($fields)) {

@@ -46,6 +46,9 @@ class contactsRightsSaveController extends waJsonController
                         }
                         waSystem::getInstance($aid, $app_config);
                         include_once($file_path);
+                        /**
+                         * @var waRightConfig
+                         */
                         $right_config = new $class_name();
                         $right_config->clearRights($contact_id);
                     }
@@ -64,6 +67,9 @@ class contactsRightsSaveController extends waJsonController
             // Init app
             waSystem::getInstance($app_id, $app_config);
             include_once($file_path);
+            /**
+             * @var waRightConfig
+             */
             $right_config = new $class_name();
         }
 
@@ -75,6 +81,9 @@ class contactsRightsSaveController extends waJsonController
 
             // Set default limited rights
             if ($right_config && $name == 'backend' && $value == 1) {
+                /**
+                 * @var $right_config waRightConfig
+                 */
                 foreach($right_config->setDefaultRights($contact_id) as $n => $v) {
                     $right_model->save($contact_id, $app_id, $n, $v);
                 }

@@ -17,7 +17,7 @@ class waLayout extends waController
     protected $blocks = array();
     protected $template = null;
     /**
-     * @var waSmartyView
+     * @var waSmarty3View
      */
     protected $view;
     /**

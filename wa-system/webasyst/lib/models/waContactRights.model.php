@@ -12,8 +12,14 @@ class waContactRightsModel extends waModel {
     protected static $cache = array();
     protected $table = "wa_contact_rights";
 
-    /** Check key for current auth user and application */
-    public function check($name) {
+    /**
+     * Check key for current auth user and application
+     *
+     * @param string $name
+     * @return array|int
+     */
+    public function check($name)
+    {
         return $this->get(null, null, $name);
     }
 
@@ -23,7 +29,7 @@ class waContactRightsModel extends waModel {
       *
       * @param int|array $id (defaults to current auth user) user id if positive; group id if negative (0 is group id for guests); can be a list of such integers.
       * @param string $app_id application id; defaults to current application.
-      * @param $name key to fetch value for; if not specified, then an array name => value is returned.
+      * @param string|null $name key to fetch value for; if not specified, then an array name => value is returned.
       * @param boolean $check_groups (default is true) if set to false then only own access rights are considered, as if contact has no groups assigned
       * @return int|array depends on $name */
     public function get($id=null, $app_id=null, $name=null, $check_groups = TRUE)
@@ -143,11 +149,14 @@ class waContactRightsModel extends waModel {
         return $result;
     }
 
-    /** Save access preference for user or group.
-      * @param int $id treated as user id if positive; group id otherwise; 0 is group id for guests.
-      * @param string $app_id application id
-      * @param $name key to save value for
-      * @param $value int value to save; negative saved as 0. */
+    /**
+     * Save access preference for user or group.
+     * @param int $id treated as user id if positive; group id otherwise; 0 is group id for guests.
+     * @param string $app_id application id
+     * @param string $name key to save value for
+     * @param int $value int value to save; negative saved as 0.
+     * @return bool
+     */
     public function save($id, $app_id, $name, $value)
     {
         $id = -$id;
@@ -177,7 +186,11 @@ class waContactRightsModel extends waModel {
         ));
     }
 
-    /** @return array (contact_id => value) of users allowed for given app and access key */
+    /**
+     * @param $app_id
+     * @param $name
+     * @return array (contact_id => value) of users allowed for given app and access key
+     */
     public function getAllowedUsers($app_id, $name)
     {
         $sql = "SELECT -group_id contact_id, value
@@ -189,7 +202,11 @@ class waContactRightsModel extends waModel {
         return $this->query($sql, array('app_id' => $app_id, 'name' => $name))->fetchAll('contact_id', true);
     }
 
-    /** @return array (group_id => value) of groups allowed for given app and access key */
+    /**
+     * @param $app_id
+     * @param $name
+     * @return array (group_id => value) of groups allowed for given app and access key
+     */
     public function getAllowedGroups($app_id, $name) {
         $sql = "SELECT group_id, value
                 FROM ".$this->table."
@@ -235,11 +252,14 @@ class waContactRightsModel extends waModel {
         return $this->query($sql, array('app_id' => $app_id, 'name' => $name, 'value' => $value))->fetchAll(null, true);
     }
 
-    /** Get access rights by group and key
-      * @param int|array $id group ids (if positive) or contact ids (negative)
-      * @param string $name key to check value for; default is 'backend'
-      * @param boolean $check_groups (default is true) if set to false then only own access rights are considered, as if contact has no groups assigned
-      * @return array (app_id => value) */
+    /**
+     * Get access rights by group and key
+     * @param int|array $id group ids (if positive) or contact ids (negative)
+     * @param string $name key to check value for; default is 'backend'
+     * @param boolean $check_groups (default is true) if set to false then only own access rights are considered, as if contact has no groups assigned
+     * @param boolean $noWA
+     * @return array (app_id => value)
+     */
     public function getApps($id, $name='backend', $check_groups=true, $noWA=true)
     {
         $cache = false;
@@ -274,6 +294,11 @@ class waContactRightsModel extends waModel {
 
     /**
      * Get rights for all contacts/groups from $ids.
+     * @param array $ids
+     * @param null|string $app_id
+     * @param string $name
+     * @param boolean $check_groups
+     * @return array
      */
     public function getByIds($ids, $app_id=null, $name='backend', $check_groups=true)
     {

@@ -23,7 +23,7 @@ class waRequest
 
     public function __construct () {}
 
-    protected static function cast($val, $type = false)
+    protected static function cast($val, $type = null)
     {
         $type = trim(strtolower($type));
         switch ($type) {
@@ -165,7 +165,7 @@ class waRequest
         return strtolower(self::server('REQUEST_METHOD'));
     }
 
-    protected static function getData($data, $name = false, $default = false, $type = false)
+    protected static function getData($data, $name = null, $default = null, $type = null)
     {
         if ($name === null) {
             return $data;

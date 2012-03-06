@@ -53,8 +53,6 @@
 									<em class="errormsg">{if !empty($errors.password)}{$errors.password}{/if}</em>
 								</div>
 							</div>
-						  </div>
-						  <div class="field-group">
 							<div class="field">
 								<div class="name">
 									[`Email`]:
@@ -64,6 +62,16 @@
 									<em class="errormsg">{if !empty($errors.email)}{$errors.email}{/if}</em>
 								</div>
 							</div>
+						  </div>
+						  <div class="field-group">							
+                            <div class="field">
+                                <div class="name">
+                                    [`Company name`]:
+                                </div>
+                                <div class="value">
+                                    <input type="text" name="account_name" value="{$wa->post('account_name', _ws('Webasyst'))}" />
+                                </div>
+                            </div>							
 						  </div>
 
 						</div>

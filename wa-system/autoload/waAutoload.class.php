@@ -158,6 +158,7 @@ class waAutoload
       'waFrontController' => 'controller/waFrontController.class.php',
       'waJsonActions' => 'controller/waJsonActions.class.php',
       'waJsonController' => 'controller/waJsonController.class.php',
+      'waUploadJsonController' => 'controller/waUploadJsonController.class.php',
       'waLoginAction' => 'controller/waLoginAction.class.php',
       'waLongActionController' => 'controller/waLongActionController.class.php',
       'waViewAction' => 'controller/waViewAction.class.php',
@@ -262,5 +263,6 @@ class waAutoload
       'waLoginLogModel' => 'webasyst/lib/models/waLoginLog.model.php',
       'waUserGroupsModel' => 'webasyst/lib/models/waUserGroups.model.php',
       'waTransactionModel' => 'webasyst/lib/models/waTransaction.model.php',
+	  'waTransactionDataModel' => 'webasyst/lib/models/waTransactionData.model.php',
     );
 }

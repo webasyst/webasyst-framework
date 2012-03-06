@@ -15,14 +15,14 @@
 class waContactCategoryStorage extends waContactStorage
 {
     /**
-     * @var waContactModel
+     * @var waContactCategoriesModel
      */
     protected $model = null;
 
     /**
      * Returns model
      *
-     * @return waContactDataModel
+     * @return waContactCategoriesModel
      */
     protected function getModel()
     {
@@ -32,6 +32,11 @@ class waContactCategoryStorage extends waContactStorage
         return $this->model;
     }
 
+    /**
+     * @param waContact $contact
+     * @param string|array $fields
+     * @return array
+     */
     public function load(waContact $contact, $fields=null)
     {
         if ($fields && $fields != 'categories' && (!is_array($fields) || !in_array('categories', $fields))) {

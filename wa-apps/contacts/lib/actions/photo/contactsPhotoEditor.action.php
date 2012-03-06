@@ -3,6 +3,10 @@
 /** Contact photo upload and crop dialog. */
 class contactsPhotoEditorAction extends waViewAction
 {
+    /**
+     * @var waContact
+     */
+    protected $contact;
     public function execute()
     {
         $id = $this->getId();

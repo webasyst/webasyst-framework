@@ -14,6 +14,9 @@ class contactsDefaultLayout extends waLayout
         // normally this is done with waContactFields::getInfo() but we don't need most of the info
         // so we loop through fields manually.
         foreach (waContactFields::getAll('enabled') as $field_id => $f) {
+            /**
+             * @var $f waContactField
+             */
             $fields[$field_id] = array();
             $fields[$field_id]['id'] = $field_id;
             $fields[$field_id]['name'] = $f->getName();

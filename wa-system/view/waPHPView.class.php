@@ -15,7 +15,7 @@ class waPHPView extends waView
 		$this->template_dir = isset($options['template_dir']) ? $options['template_dir'] : $this->system->getAppPath();
 	}
 	
-	public function assign($name, $value = null)
+	public function assign($name, $value = null, $escape = false)
 	{
 		if (is_array($name)) {
 			$this->vars += $name;

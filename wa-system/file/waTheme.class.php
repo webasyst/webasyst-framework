@@ -77,7 +77,7 @@ class waTheme implements ArrayAccess
 	    $app_id = ($app_id === true || !$app_id) ? wa()->getApp() : $app_id;
 	    
 	    $theme_path = wa()->getDataPath('themes', true, $app_id).'/'.$id;
-	    if (file_exists($theme_path) && file_exists($theme_path.'/theme.xml')) {
+	    if (file_exists($theme_path) && file_exists($theme_path.'/'.self::PATH)) {
 	    	return true;
 	    }
 	    return file_exists(wa()->getAppPath(null, $app_id).'/themes/'.$id);	    
@@ -395,7 +395,7 @@ XML;
 			$id = $this->id;
 		}
 		$target = wa()->getDataPath("themes/{$id}",true,$this->app,false);
-		if (file_exists($target)) {
+		if (file_exists($target.'/'.self::PATH)) {
 			throw new waException(sprintf(_ws("Theme %s already exists"),$id));
 		}
 		self::protect($this->app);
@@ -404,6 +404,9 @@ XML;
 		if ($this->id != $id) {
 			//hack for extended classes
 			$class = get_class($this);
+            /**
+             * @var $instance waTheme
+             */
 			$instance =  new $class($id,$this->app);
 			$instance->init();
 			$instance->info['id'] = $id;

@@ -45,10 +45,16 @@ class waViewHelper
             $domain = $this->wa->getRouting()->getDomain(null, true);
             $domain_config_path = $this->wa->getConfig()->getConfigPath('domains/'.$domain.'.php', true, 'site');
             if (file_exists($domain_config_path)) {
+                /**
+                 * @var $domain_config array
+                 */
                 $domain_config = include($domain_config_path);
                 if (isset($domain_config['apps']) && $domain_config['apps']) {
                     return $domain_config['apps'];
                 }
+                return $this->wa->getFrontendApps($domain, isset($domain_config['name']) ? $domain_config['name'] : null, true);
+            } else {
+                return $this->wa->getFrontendApps($domain, null, true);
             }
             return $this->wa->getFrontendApps($domain,
                 isset($domain_config) && isset($domain_config['name']) ?
@@ -157,9 +163,9 @@ class waViewHelper
         return waRequest::server($name);
     }
 
-    public function post($name)
+    public function post($name, $default = null)
     {
-        return waRequest::post($name);
+        return waRequest::post($name, $default);
     }
 
     public function request($name)
@@ -261,6 +267,11 @@ class waViewHelper
         return '';
     }
 
+    /**
+     * @param string|array $key
+     * @param string|null $value
+     * @return string|void
+     */
     public function globals($key, $value = null)
     {
         if (func_num_args() == 1) {
@@ -268,9 +279,9 @@ class waViewHelper
                 foreach ($key as $k => $v) {
                     self::$params[$k] = $v;
                 }
-                return;
+            } else {
+                return isset(self::$params[$key]) ? self::$params[$key] : null;
             }
-            return isset(self::$params[$key]) ? self::$params[$key] : null;
         } elseif (func_num_args() == 2) {
             self::$params[$key] = $value;
         }

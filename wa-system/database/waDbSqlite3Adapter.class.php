@@ -17,13 +17,18 @@ class waDbSQLite3Adapter extends waDbAdapter
 	
 	const RESULT_ASSOC = SQLITE3_ASSOC;
 	const RESULT_NUM = SQLITE3_NUM;
-	const RESULT_BOTH = SQLITE3_BOTH;	
+	const RESULT_BOTH = SQLITE3_BOTH;
+
+    /**
+     * @var SQLite3
+     */
+    protected $handler;
 	
 	public function connect($settings)
 	{
 		return new SQLite3($settings['database']);
 	}
-	
+
 	public function query($query)
 	{
 		return $this->handler->query($query);

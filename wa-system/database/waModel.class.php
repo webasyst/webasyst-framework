@@ -132,7 +132,7 @@ class waModel
 
     /**
      * Set cache
-     * @param waDbCacher $cacher
+     * @param waiCache $cache
      */
     public function setCache(waiCache $cache = null)
     {
@@ -154,6 +154,9 @@ class waModel
     private function cleanCache()
     {
         foreach ($this->cache_cleaners as $cache) {
+            /**
+             * @var $cache waiCache
+             */
             $cache->delete();
         }
         $this->cache_cleaners = array();
@@ -184,6 +187,7 @@ class waModel
     /**
      * Execute query
      * @param string $sql
+     * @param array $params
      * @return resource|boolean
      */
     public function exec($sql, $params = null)
@@ -204,10 +208,11 @@ class waModel
     }
 
     /**
-     * Выполняет запрос и возвращает иттератор результата
+     * Executes query and returns iterator of the result
      *
      * @param string $sql
-     * @return waDbResult|waDbResultSelect
+     * @param array $params
+     * @return waDbResult|waDbResultSelect|waDbResultInsert
      */
     public function query($sql, $params = null)
     {
@@ -259,7 +264,7 @@ class waModel
     /**
      * Update table by field/fields
      *
-     * @param string $field
+     * @param string|array $field
      * @param string $value
      * @param array $data
      * @param string $options
@@ -433,6 +438,54 @@ class waModel
         }
         return true;
     }
+    
+    public function multiInsert($data)
+    {
+        $values = array();
+        $fields = array();
+        if (isset($data[0])) {
+            foreach ($data as $row) {
+                $row_values = array();
+                foreach ($row as $field => $value) {
+                    if (isset($this->fields[$field])) {
+                    	$row_values[$this->escapeField($field)] = $this->getFieldValue($field, $value);
+                    }
+                }
+                if (!$fields) {
+                    $fields = array_keys($row_values);
+                }
+                $values[] = '('.implode(',', $row_values).")";
+            }
+        } else {
+            $multi_field = false;
+            $row_values = array();
+            foreach ($data as $field => $value) {
+                if (isset($this->fields[$field])) {
+                    if (is_array($value) && !$multi_field) {
+                        $multi_field = $field;
+                        $row_values[$this->escapeField($field)] = '';
+                    } else {
+                        $row_values[$this->escapeField($field)] = $this->getFieldValue($field, $value);
+                    }
+                } 
+            }
+            $fields = array_keys($row_values);
+            if ($multi_field) {
+                foreach ($data[$multi_field] as $v) {
+                    $row_values[$this->escapeField($multi_field)] = $this->getFieldValue($multi_field, $v);
+                    $values[] = '('.implode(',', $row_values).")";
+                }
+            } else {
+                $values[] = '('.implode(',', $row_values).")";
+            }
+        }
+        if ($values) {
+            $sql = "INSERT INTO ".$this->table." (".implode(',', $fields).") VALUES ".implode(',', $values);
+            return $this->exec($sql);
+        }
+        return true;
+    }
+
 
     public function isAutoIncrement()
     {
@@ -457,6 +510,7 @@ class waModel
      * Escape data
      *
      * @param mixed $data
+     * @param string $type - int|like
      * @return string
      */
     public function escape($data, $type = null)
@@ -489,13 +543,13 @@ class waModel
     }
 
     /**
-     * Возвращает конструктор запроса
+     * Returns Query Constructor
      *
-     * @return waDbQueryConstructor
+     * @return waDbQuery
      */
     public function getQueryConstructor()
     {
-        return new waDbQueryConstructor($this);
+        return new waDbQuery($this);
     }
 
     /**
@@ -545,7 +599,7 @@ class waModel
      * 
      * Returns WHERE condition for the SQL query
      * 
-     * @param string $field
+     * @param string|array $field
      * @param string|array $value
      * @param bool $add_table_name - add or not table's name in the query
      * @throws waException
@@ -602,7 +656,7 @@ class waModel
     }
 
     /**
-     * Удаляет записи из таблицы по полю
+     * Delete records from table by field
      *
      * @param string|array $field
      * @param int|float|string|array $value
@@ -619,7 +673,7 @@ class waModel
 
 
     /**
-     * Подготавливает запрос и возвращает объект waDbStatement
+     * Prepare query and returns object of waDbStatement
      *
      * @param string $sql - запрос
      * @return waDbStatement
@@ -631,7 +685,7 @@ class waModel
 
 
     /**
-     * Проверяет существует ли поле в таблице
+     * Checks exists or not field in the table
      *
      * @param string $field
      * @return bool

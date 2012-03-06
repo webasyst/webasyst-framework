@@ -32,6 +32,23 @@ class waContactAddressField extends waContactCompositeField
             $this->options['formats']['js'] = new waContactAddressOneLineFormatter();
         }
     }
+    
+    public function format($data, $format = null)
+    {
+    	if (!isset($data['value'])) {
+    		$value = array();
+    		foreach ($this->options['fields'] as $field) {
+                /**
+                 * @var $field waContactField
+                 */
+    			if (isset($data['data'][$field->getId()])) {
+    				$value[] = $field->format($data['data'][$field->getId()], 'value');
+    			}
+    		}
+    		$data['value'] = implode(", ", $value);
+    	}
+    	return parent::format($data, $format);
+    }    
 }
 
 /** Format address on one line. */

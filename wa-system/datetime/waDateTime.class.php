@@ -267,7 +267,9 @@ class waDateTime
         $pattern = str_replace(array('F'), "([^\s0-9.,]+)", $pattern);
         $pattern = str_replace(array(' ', '.'), array("\s", '\.'), $pattern);
 
-        preg_match_all("!".$pattern."!uis", $string, $match, PREG_SET_ORDER);
+        if (!preg_match_all("!".$pattern."!uis", $string, $match, PREG_SET_ORDER)) {
+            return false;
+        }
 
         $values = $match[0];
         array_shift($values);
@@ -296,14 +298,25 @@ class waDateTime
                 $info['d'] = str_pad($info['j'], 2, "0", STR_PAD_LEFT);
             }
         }
-
         if ($format == 'date' || $format == 'humandate') {
-            return $info['Y']."-".$info['m']."-".$info['d'];
+            $result = $info['Y']."-".$info['m']."-".$info['d'];
+            $result_format = "Y-m-d";
         } elseif ($format == 'time' || $format == 'fulltime') {
-            return $info['H'].":".$info['i'].":".$info['s'];
-        } elseif ($format == 'datetime' || $format == 'fulldatetime') {
-            return $info['Y']."-".$info['m']."-".$info['d']." ".$info['H'].":".$info['i'].":".$info['s'];
+            $result = $info['H'].":".$info['i'].":".$info['s'];
+            $result_format = "H-i-s";
+        } else {
+            $result = $info['Y']."-".$info['m']."-".$info['d']." ".$info['H'].":".$info['i'].":".$info['s'];
+            $result_format = "Y-m-d H:i:s";
         }
-        return $info['Y']."-".$info['m']."-".$info['d']." ".$info['H'].":".$info['i'].":".$info['s'];
+        
+        if ($timezone === null) {
+            $timezone = wa()->getUser()->getTimezone();
+        }
+        if ($timezone && $timezone != self::getDefaultTimeZone() && $format != 'date') {
+            $date_time = new DateTime($result, new DateTimeZone($timezone));
+            $date_time->setTimezone(new DateTimeZone(self::getDefaultTimeZone()));
+            $result = $date_time->format($result_format);
+        }
+        return $result;
     }
 }

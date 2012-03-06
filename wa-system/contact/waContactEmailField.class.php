@@ -22,6 +22,24 @@ class waContactEmailField extends waContactStringField
             $this->options['formats']['top'] = new waContactEmailTopFormatter();
         }
     }
+    
+    public function set(waContact $contact, $value, $params = array(), $add = false)
+    {
+        $value = parent::set($contact, $value, $params, $add);
+        $status = wa()->getEnv() == 'frontend' ? 'unconfirmed' : 'unknown';
+        if ($this->isMulti()) {
+            foreach ($value as $k => $v) {
+                if (!isset($v['status'])) {
+                    $value[$k]['status'] = $status;
+                }
+            }
+        } else {
+            if (!isset($v['status'])) {
+            	$value[$k]['status'] = $status;
+            }            
+        }
+        return $value;
+    }
 }
 
 class waContactEmailListFormatter extends waContactFieldFormatter

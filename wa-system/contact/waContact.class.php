@@ -232,7 +232,7 @@ class waContact implements ArrayAccess
                 if ($field->isMulti()) {
                     return implode(', ', $result);
                 } else {
-                    $result;
+                    return $result;
                 }
             }
             // no special formatting
@@ -284,6 +284,9 @@ class waContact implements ArrayAccess
             // Get field to load from Storages
             $load = array();
             foreach ($fields as $field) {
+                /**
+                 * @var $field waContactField
+                 */
                 if (!isset($cache[$field->getId()])) {
                     $load[$field->getStorage()->getType()] = true;
                 }

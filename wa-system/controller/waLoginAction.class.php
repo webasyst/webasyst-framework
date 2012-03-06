@@ -12,11 +12,18 @@ abstract class waLoginAction extends waViewAction
 
     public function execute()
     {
-        waLocale::loadByDomain('webasyst', wa()->getLocale());
+        $this->view->setOptions(array('left_delimiter' => '{', 'right_delimiter' => '}'));
+
+        // Set locale if specified
+        if ( ( $locale = waRequest::get('locale')) || ( $locale = wa()->getStorage()->read('locale'))) {
+            wa()->setLocale($locale);
+            wa()->getStorage()->write('locale', $locale);
+        }
+
+        // load webasyst locale and make it default for [``] in templates
+        wa('webasyst')->getConfig()->setLocale(wa()->getLocale(), true);
 
         $title = $this->getTitle();
-
-        $this->view->setOptions(array('left_delimiter' => '{', 'right_delimiter' => '}'));
 
         // Password recovery form to enter login/email
         if (waRequest::request('forgot')) {
@@ -45,7 +52,6 @@ abstract class waLoginAction extends waViewAction
             // (This is also the reason to use 200 HTTP response code here: no error handler required at all.)
             //
             header('wa-session-expired: 1');
-            wa('webasyst')->getConfig()->setLocale(wa()->getLocale(), true); // load system locale
             echo _ws('Session has expired. Please reload current page and log in again.').'<script>window.location.reload();</script>';
             exit;
         }

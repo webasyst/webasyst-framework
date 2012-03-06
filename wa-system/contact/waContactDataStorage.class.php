@@ -53,6 +53,9 @@ class waContactDataStorage extends waContactStorage
             $f = waContactFields::get($field);
             if (!$f || !$f->isMulti()) {
                 if ($f instanceof waContactCompositeField) {
+                    /**
+                     * @var $f waContactCompositeField
+                     */
                     $delete = array();
                     if (isset($value['data'])) {
                         $value = $value['data'];
@@ -198,7 +201,12 @@ class waContactDataStorage extends waContactStorage
         $this->getModel()->exec($sql);
     }
 
-    public function duplNum($field) {
+    /**
+     * @param waContactField|string $field
+     * @return bool|int|mixed
+     */
+    public function duplNum($field)
+    {
         if ($field instanceof waContactField) {
             $field = $field->getId();
         }
@@ -213,8 +221,15 @@ class waContactDataStorage extends waContactStorage
         $r = $this->getModel()->query($sql, array('field' => $field))->fetchField();
         return $r ? $r : 0;
     }
-    
-    public function findDuplicatesFor($field, $values, $excludeIds=array()) {
+
+    /**
+     * @param waContactField|string $field
+     * @param $values
+     * @param array $excludeIds
+     * @return array
+     */
+    public function findDuplicatesFor($field, $values, $excludeIds=array())
+    {
         if ($field instanceof waContactField) {
             $field = $field->getId();
         }

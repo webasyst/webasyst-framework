@@ -30,11 +30,24 @@ class waTransactionModel extends waModel
         return $result;
     }
     
+    public function getPrimary($order_id)
+    {
+        $sql = "SELECT * FROM ".$this->table." WHERE order_id=i:order_id AND parent_id IS NULL";
+        return $this->query($sql, array('order_id'=>$order_id))->fetchAll('id');
+    }
+    
     public function getRefundable($order_id, $paymentsystem_id)
     {
         $sql = "SELECT * FROM ".$this->table." WHERE order_id=i:order_id AND paymentsystem_id=s:paymentsystem_id
-        	AND (type='AUTH+CAPTURE' OR type='AUTH_ONLY') ORDER BY create_datetime DESC";
+        	AND state='CAPTURED' ORDER BY create_datetime DESC";
         $result = $this->query($sql, array('order_id'=>$order_id, 'paymentsystem_id'=>$paymentsystem_id))->fetchAll();
+        return $result;
+    }
+    
+    public function getCancelable($order_id)
+    {
+        $sql = "SELECT * FROM ".$this->table." WHERE order_id=i:order_id AND state='AUTH' ORDER BY create_datetime DESC";
+        $result = $this->query($sql, array('order_id'=>$order_id))->fetchAll();
         return $result;
     }
     

@@ -56,10 +56,13 @@ class waMailPOP3
 	}
 	
 	
-	public function exec($command)
+	public function exec($command, $read = true)
 	{
 		if (false === fwrite($this->handler, $command."\r\n")) {
 			throw new waException("Cannot write to ".$this->server);
+		}
+		if (!$read) {
+		    return "";
 		}
 		$data = $this->read();
 		if (stripos($data, '+OK') === 0) {
@@ -67,7 +70,7 @@ class waMailPOP3
 		} elseif (stripos($data, '-ERR') === 0){
 			throw new waException('Error from '.$this->server.': ' . trim(substr($data, 4)));
 		} else {
-			throw new waException('Unknown response from '.$this->server.': '.$data);
+			throw new waException('Unknown response from '.$this->server.' ('.$command.'): '.$data);
 		}
 	}	
 	
@@ -147,6 +150,7 @@ class waMailPOP3
 	 */
 	public function close()
 	{
-		$this->exec("QUIT");
+		$this->exec("QUIT", false);
+		fclose($this->handler);
 	}	
 }

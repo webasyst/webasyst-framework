@@ -75,6 +75,7 @@ class waImage
                 break;
             }
         }
+        return null;
     }
 
     /**
@@ -100,13 +101,12 @@ class waImage
     }
 
     /**
-     *
      * @param int $width
      * @param int $height
-     * @param const $master
+     * @param string $master
      * @return waImage
      */
-    public function resize($width = false, $height = false, $master = false)
+    public function resize($width = null, $height = null, $master = null)
     {
         if (!$master)
         {
@@ -199,8 +199,8 @@ class waImage
      *
      * @param int $width
      * @param int $height
-     * @param mix $offset_x		int|CENTER|BOTTOM
-     * @param mix $offset_y 	int|CENTER|BOTTOM
+     * @param string $offset_x		int|CENTER|BOTTOM
+     * @param string $offset_y 	int|CENTER|BOTTOM
      * @return waImage
      */
     public function crop($width, $height, $offset_x = self::CENTER, $offset_y = self::CENTER)

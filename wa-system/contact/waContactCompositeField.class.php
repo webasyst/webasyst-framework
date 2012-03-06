@@ -25,6 +25,9 @@ class waContactCompositeField extends waContactField
     {
         $info = parent::getInfo();
         foreach ($this->options['fields'] as $field) {
+            /**
+             * @var $field waContactField
+             */
             $info['fields'][$field->getId()] = $field->getInfo();
         }
         return $info;
@@ -93,6 +96,10 @@ class waContactCompositeField extends waContactField
         return parent::format($data, $format);
     }
 
+    /**
+     * @param bool $with_parent_id
+     * @return array
+     */
     public function getField($with_parent_id = true)
     {
         $result = array();

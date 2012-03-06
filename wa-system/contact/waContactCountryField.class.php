@@ -16,7 +16,15 @@ class waContactCountryField extends waContactSelectField
 {
     protected $model = null;
     
-    function getOptions($id = null) {
+    public function init()
+    {
+        if (!isset($this->options['formats']['value'])) {
+        	$this->options['formats']['value'] = new waContactCountryFormatter();
+        }
+    }
+    
+    public function getOptions($id = null) 
+    {
         if (!$this->model) {
             $this->model = new waCountryModel();
         }
@@ -36,6 +44,14 @@ class waContactCountryField extends waContactSelectField
     
     public function getType() {
         return 'Country';
+    }
+}
+
+class waContactCountryFormatter extends waContactFieldFormatter
+{
+    public function format($data)
+    {
+        return waCountryModel::getInstance()->name($data);
     }
 }
 

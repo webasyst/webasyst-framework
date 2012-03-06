@@ -67,14 +67,19 @@ class waAppConfig extends SystemConfig
 
 	public function init()
 	{
-		$file_path = $this->getPath('config').'/apps/'.$this->application.'/config.php';
-		if (file_exists($file_path)) {
-			$config = include($file_path);
-			if ($config && is_array($config)) {
-				foreach ($config as $name => $value) {
-					$this->options[$name] = $value;
-				}
-			}
+		$files = array(
+		    $this->getAppPath().'/lib/config/config.php', // defaults 
+		    $this->getPath('config').'/apps/'.$this->application.'/config.php' // custom
+		);
+		foreach ($files as $file_path) {
+    		if (file_exists($file_path)) {
+    			$config = include($file_path);
+    			if ($config && is_array($config)) {
+    				foreach ($config as $name => $value) {
+    					$this->options[$name] = $value;
+    				}
+    			}
+    		}
 		}
 
 		$this->info = include($this->getAppPath().'/lib/config/app.php');
@@ -161,7 +166,7 @@ class waAppConfig extends SystemConfig
 			$t = 1;
 		}
 		if ($ignore_all) {
-			if (!$t) {
+			if (!isset($t) || !$t) {
 				$t = 1;
 			}
 			if (!isset($app_settings_model)) {

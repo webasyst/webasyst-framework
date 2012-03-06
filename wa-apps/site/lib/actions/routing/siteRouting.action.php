@@ -80,20 +80,20 @@ class siteRoutingAction extends waViewAction
             case 'select':
                 $html = '<select name="params['.$info['id'].']">';
                 foreach ($info['items'] as $k => $v) {
-                    $html .= '<option '.($k == $value ? 'selected="selected" ' : '').'value="'.$k.'">'.$v.'</option>';
+                    $html .= '<option '.($k == $value ? 'selected="selected" ' : '').'value="'.$k.'">'.htmlspecialchars($v).'</option>';
                 } 
                 $html .= '</select>';
                 return $html;
             case 'radio':
                 foreach ($info['items'] as $k => $v) {
                     $html .= '<label class="s-label-with-check">'.
-                             	'<input type="radio" name="params['.$info['id'].']" value="'.$k.'" />'.$v.'</label>';
+                             	'<input type="radio" name="params['.$info['id'].']" value="'.$k.'" />'.htmlspecialchars($v).'</label>';
                 }
                 return $html;
             case 'checkbox':
                 foreach ($info['items'] as $k => $v) {
                     $html .= '<label class="s-label-with-check">'.
-                                '<input type="checkbox" name="params['.$info['id'].'][]" value="'.$k.'" />'.$v.'</label>';
+                                '<input type="checkbox" name="params['.$info['id'].'][]" value="'.$k.'" />'.htmlspecialchars($v).'</label>';
                 }
                 return $html;
             case 'radio_select':
@@ -103,12 +103,12 @@ class siteRoutingAction extends waViewAction
                              	'<input type="radio" '.
                                     ($value == $k || isset($v['items'][$value]) ? 'checked="checked"' : '').
                                     ' name="params['.$info['id'].']" value="'.$k.'" />'.
-                                $v['name'].' <span class="hint">'.$v['description'].'</span>'.
+                                htmlspecialchars($v['name']).' <span class="hint">'.$v['description'].'</span>'.
                              '</label>';
                     if (isset($v['items'])) {
                         $html .= '<select '.($value == $k || isset($v['items'][$value]) ? '' : 'disabled="disabled"').' name="params['.$info['id'].']">';
                         foreach ($v['items'] as $k => $v) {
-                            $html .= '<option '.($k == $value ? 'selected="selected" ' : '').'value="'.$k.'">'.$v.'</option>';
+                            $html .= '<option '.($k == $value ? 'selected="selected" ' : '').'value="'.$k.'">'.htmlspecialchars($v).'</option>';
                         } 
                         $html .= '</select>';
                     }

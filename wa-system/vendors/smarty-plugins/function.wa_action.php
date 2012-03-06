@@ -1,5 +1,10 @@
 <?php 
 
+/**
+ * @param $params
+ * @param $smarty
+ * @return string|void
+ */
 function smarty_function_wa_action($params, &$smarty)
 {
 	$current_app = waSystem::getInstance()->getApp();

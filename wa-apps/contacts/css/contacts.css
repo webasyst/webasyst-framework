@@ -340,3 +340,15 @@ ul.menu-v li.drag-newposition { height: 0px; }
 ul.menu-v li.drag-newposition.dragging { height: 10px; }
 ul.menu-v li.drag-active a { background:#eec !important; }
 ul.menu-v li.drag-active ul.menu-v li a { background: inherit !important; }
+
+.view-mode .address-field .ext {
+	position: absolute;
+	left: -60px;
+	width: 38px;
+	overflow: hidden;
+}
+.view-mode .address-field .ext {
+	font-weight: normal;
+	color: #AAA;
+	font-size: .8em;
+}

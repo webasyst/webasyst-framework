@@ -98,7 +98,12 @@ class waGettext
         	'messages' => $this->messages,
         	'f' => $this->f
         );
-	} 
+	}
+
+    protected function readMo()
+    {
+
+    }
 	
     protected function prepare($string, $reverse = false)
     {

@@ -276,8 +276,13 @@ $(document).ajaxError(function(e, xhr, settings, exception) {
 	// Generic error page
 	if (xhr.status !== 200) {
 		if (!$.wa.errorHandler || $.wa.errorHandler(xhr)) {
+			if (xhr.responseText.indexOf('Exception') != -1) {
+				$.wa.dialogCreate('ajax-error', {'content': "<div>" + xhr.responseText + '</div>'});
+				return;
+			}
+
 			document.open("text/html");
-			document.write(xhr.responseText);
+			document.write(xhr.responseText); // !!! throws an "Access denied" exception in IE9
 			document.close();
 			$(window).one('hashchange', function() {
 				window.location.reload();

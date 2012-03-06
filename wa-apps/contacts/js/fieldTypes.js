@@ -1173,8 +1173,9 @@ $.wa.contactEditor.factoryTypes.Address = $.extend({}, $.wa.contactEditor.factor
 				return null;
 			}
 			return $('<div class="address-field"></div>')
-				.append('<div class="ext"><strong><span style="display:none" class="replace-with-ext"></span></strong></div>')
-				.append(this.fieldValue.value);
+				//.append('<div class="ext"><strong><span style="display:none" class="replace-with-ext"></span></strong></div>')
+				.append(this.fieldValue.value)
+				.append('<span style="display:none" class="replace-with-ext"></span>');
 		}
 
 		//

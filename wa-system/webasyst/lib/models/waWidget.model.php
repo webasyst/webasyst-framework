@@ -48,8 +48,9 @@ class waWidgetModel extends waModel
 			$sql = "REPLACE INTO wa_widget_params 
 					(widget_id, name, value) VALUES ";
 			$sql .= implode(", ", $values);
+            return $this->exec($sql);
 		}	
-		return $this->exec($sql);	
+		return true;
 	}
 	
 	public function delete($id)

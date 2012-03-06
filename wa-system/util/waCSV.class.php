@@ -18,6 +18,9 @@ class waCSV
     protected $extensions = array('txt', 'csv');
 
     protected $delimiter;
+    /**
+     * @var array
+     */
     protected $fields;
     protected $first_line = false;
     protected $format_id = false;
@@ -27,7 +30,7 @@ class waCSV
     {
         $result = array();
         foreach (self::$delimiters as $k => $d) {
-            $result[$k] = array($d[0], _s($d[1]));
+            $result[$k] = array($d[0], _ws($d[1]));
         }
         return $result;
     }
@@ -37,7 +40,7 @@ class waCSV
      *
      * @param $file - path to the source file
      */
-    public function __construct($first_line = false, $delimiter = ",", $fields = false, $file = false)
+    public function __construct($first_line = false, $delimiter = ",", $fields = array(), $file = false)
     {
         $this->first_line = $first_line;
         $this->delimiter = $delimiter;
@@ -179,7 +182,7 @@ class waCSV
         }
 
         if ($fields_count > self::MAX_FIELDS_COUNT) {
-            throw new UserException(sprintf(_("Number of columns can not exceed %s"), self::MAX_FIELDS_COUNT));
+            throw new waException(sprintf(_("Number of columns can not exceed %s"), self::MAX_FIELDS_COUNT));
         }
 
         if ($k = $fields_count - count($fields)) {

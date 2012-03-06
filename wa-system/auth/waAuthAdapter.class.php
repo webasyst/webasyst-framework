@@ -14,11 +14,14 @@ abstract class waAuthAdapter implements waiAuth
 		}
 	}
 	
-	abstract public function auth();
+	public function auth()
+    {
+
+    }
     
     public function isAuth()
     {
-        return waSystem::getInstance()->getStorage()->set('auth_user_data');
+        return waSystem::getInstance()->getStorage()->get('auth_user_data');
     }
     
 	public function clearAuth()

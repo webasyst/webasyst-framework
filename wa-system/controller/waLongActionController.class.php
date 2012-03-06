@@ -134,7 +134,10 @@ abstract class waLongActionController extends waController
         'ready' => FALSE,
     );
 
-    // actual source for $this->fd for __get()
+    /**
+     * actual source for $this->fd for __get()
+     * @var resource
+     */
     private $_fd = null;
 
     // Whether we're currently inside a transaction

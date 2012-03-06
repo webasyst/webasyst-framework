@@ -94,6 +94,7 @@ class waContactDataModel extends waModel
      *
      * @param int $id
      * @param int $contact_id
+     * @return boolean
      */
     public function deleteField($id, $contact_id)
     {
@@ -116,7 +117,7 @@ class waContactDataModel extends waModel
 
     public function addField($contact_id, $field, $value, $ext = null)
     {
-        $sort = $this->getSort();
+        $sort = $this->getSort($contact_id, $field);
         $data = array(
             'contact_id' => $contact_id,
             'field' => $field,

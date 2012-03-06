@@ -3,6 +3,16 @@
 /** save contact data that came from contact add or contact edit form. */
 class contactsContactsSaveController extends waJsonController
 {
+    /**
+     * @var int
+     */
+    protected $id;
+    protected $type;
+    /**
+     * @var waContact
+     */
+    protected $contact;
+
     public function execute()
     {
 

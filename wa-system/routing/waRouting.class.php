@@ -27,6 +27,15 @@ class waRouting
         }
     }
     
+    
+    public function setRoute($route, $domain = null)
+    {
+        $this->route = $route;
+        if ($domain !== null) {
+            $this->domain = $domain;
+        }
+    }
+    
     protected function formatRoutes($routes, $is_app = false)
     {
     	$result = array();
@@ -63,7 +72,20 @@ class waRouting
     		}
     	}
     	return $result;
-    }    
+    }
+
+    public function getByApp($app_id)
+    {
+        $result = array();
+        foreach ($this->routes as $d => $routes) {
+            foreach ($routes as $r_id => $r) {
+                if (isset($r['app']) && $r['app'] == $app_id) {
+                    $result[$d][$r_id] = $r;
+                }
+            }
+        }
+        return $result;
+    }
     
     public function getRoutes($domain = null)
     {
@@ -116,7 +138,7 @@ class waRouting
         $url = preg_replace("!\?.*$!", '', $url);
         $url = urldecode($url);
         $r = $this->dispatchRoutes($this->getRoutes(), $url);
-        if (!$r && substr($url, -1) !== '/') {
+        if (!$r  || ($r['url'] == '*' && $url && strpos(substr($url, -5), '.') === false) && substr($url, -1) !== '/') {
             $url .= '/';
             if ($r = $this->dispatchRoutes($this->getRoutes(), $url)) {
                 $this->system->getResponse()->redirect($this->system->getRootUrl().$url);
@@ -124,7 +146,7 @@ class waRouting
         }
         // if route found and app exists
         if ($r && isset($r['app']) && $r['app'] && $this->system->appExists($r['app'])) {
-            $this->route = $r;
+            $this->setRoute($r);
             // dispatch app routes
             $params = waRequest::param();
             $u = $r['url'];

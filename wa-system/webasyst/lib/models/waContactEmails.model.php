@@ -35,7 +35,7 @@ class waContactEmailsModel extends waModel
 
     public function getEmails($contact_id)
     {
-        $sql = "SELECT email value, ext FROM ".$this->table." WHERE contact_id = i:id ORDER BY sort";
+        $sql = "SELECT email value, ext, status FROM ".$this->table." WHERE contact_id = i:id ORDER BY sort";
         return $this->query($sql, array('id' => $contact_id))->fetchAll();
     }
 
@@ -54,6 +54,14 @@ class waContactEmailsModel extends waModel
     {
     	$sql = "SELECT contact_id FROM ".$this->table." WHERE email = s:email ORDER BY sort LIMIT 1";
     	return $this->query($sql, array('email' => $email))->fetchField();
+    }
+
+    public function getContactIdByNameEmail($name, $email)
+    {
+        $sql = "SELECT c.id FROM ".$this->table." e
+                JOIN wa_contact c ON e.contact_id = c.id
+                WHERE e.email = s:email AND e.sort = 0 AND c.name = s:name";
+        return  $this->query($sql, array('email' => $email, 'name' => $name))->fetchField();
     }
 }
 

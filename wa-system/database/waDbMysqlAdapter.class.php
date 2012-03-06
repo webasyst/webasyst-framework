@@ -131,7 +131,7 @@ class waDbMySQLAdapter extends waDbAdapter
    				$field['length'] = substr($row['Type'], $i + 1, -1);
    			}
    			$field['null'] = $row['Null'] == 'YES' ? 1 : 0;
-   			$field['default'] = $row['Default'] === 'NULL' ? ($field['null'] ? null : $this->castValue($field['type'], '')) : $row['Default'];
+   			$field['default'] = $row['Default'] === 'NULL' ? ($field['null'] ? null : '') : $row['Default'];
    			$field['extra'] = $row['Extra']; 
    			$result[$row['Field']] = $field;
    		}

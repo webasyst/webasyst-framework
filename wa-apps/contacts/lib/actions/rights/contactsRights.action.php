@@ -44,6 +44,8 @@ class contactsRightsAction extends waViewAction
 
             $this->view->assign('html', $right_config->getHTML($rights, $group_rights));
             waSystem::setActive('contacts');
+        } else {
+            $this->view->assign('html', '');
         }
 
         if ($contact_id > 0) {

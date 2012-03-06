@@ -48,9 +48,9 @@ class waSmarty3View extends waView
 		if (isset($options['right_delimiter'])) {
 			$this->smarty->right_delimiter = $options['right_delimiter'];
 		}
-		$this->smarty->template_dir = isset($options['template_dir']) ? $options['template_dir'] : $this->system->getAppPath();
-		$this->smarty->compile_dir = isset($options['compile_dir']) ? $options['compile_dir'] : $this->system->getAppCachePath('templates/compiled/');
-		$this->smarty->cache_dir = $this->system->getAppCachePath('templates/cache/');
+		$this->smarty->setTemplateDir(isset($options['template_dir']) ? $options['template_dir'] : $this->system->getAppPath());
+		$this->smarty->setCompileDir(isset($options['compile_dir']) ? $options['compile_dir'] : $this->system->getAppCachePath('templates/compiled/'));
+		$this->smarty->setCacheDir($this->system->getAppCachePath('templates/cache/'));
 		if (ini_get('safe_mode')) {
 		    $this->smarty->use_sub_dirs = false;
 		} else {
@@ -170,7 +170,7 @@ class waSmarty3View extends waView
     
     public function setTemplateDir($path)
     {
-    	$this->smarty->template_dir = $path;
+        $this->smarty->setTemplateDir($path);
     }
     
     public function autoescape($value = null)
@@ -178,7 +178,7 @@ class waSmarty3View extends waView
         if ($value === null) {
             return $this->smarty->escape_html;   
         } else {
-            $this->smarty->escape_html = $value;
+            return $this->smarty->escape_html = $value;
         }	 
     }
 }

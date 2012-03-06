@@ -42,7 +42,7 @@ class waArrayObject implements ArrayAccess, IteratorAggregate
 
     /**
      * Append all key => value pairs from given Traversabel to $this
-     * @param Traversable $data
+     * @param array $data
      */
     public function setAll($data)
     {

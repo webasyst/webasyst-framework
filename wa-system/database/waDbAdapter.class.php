@@ -17,7 +17,10 @@ abstract class waDbAdapter
     const RESULT_ASSOC = 1;
     const RESULT_NUM = 2;
     const RESULT_BOTH = 3;
-    
+
+    /**
+     * @var resource
+     */
     protected $handler;
     protected $settings;
     

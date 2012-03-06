@@ -18,7 +18,9 @@ class siteFrontendAction extends waViewAction
 			$page['content'] = $this->view->fetch('string:'.$page['content']);
 			$this->view->assign('page', $page);
 			// set response
-			$this->getResponse()->setTitle($page['title']);
+            if (!$this->getResponse()->getTitle()) {
+			    $this->getResponse()->setTitle($page['title']);
+            }
 			$this->getResponse()->setMeta(array(
 				'keywords' => isset($page['keywords']) ? $page['keywords'] : '',
 				'description' => isset($page['description']) ? $page['description'] : ''

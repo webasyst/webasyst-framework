@@ -349,7 +349,7 @@ class waHtmlControl
 	 * @todo hide real value for password
 	 * @param $name
 	 * @param $params
-	 * @return unknown_type
+	 * @return string
 	 */
 	private function getPasswordControl($name,$params = array())
 	{
@@ -503,6 +503,9 @@ class waHtmlControl
 	 */
 	private function getCustomControl($name,$params = array())
 	{
+        /**
+         * @var $callback callback|string
+         */
 		$callback = isset($params['callback'])?$params['callback']:null;
 		if($callback){
 			unset($params['callback']);
@@ -518,6 +521,7 @@ class waHtmlControl
 			}
 			return  call_user_func_array($callback,array($name,$params));
 		}
+        return null;
 	}
 
 	/**

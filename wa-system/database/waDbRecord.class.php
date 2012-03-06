@@ -29,7 +29,7 @@ class waDbRecord extends waArrayObjectDiff
       * @var waModel */
     protected $m;
 
-    /** @var mixed id as accepted by model */
+    /** @var string|int id as accepted by model */
     protected $id = null;
 
     //
@@ -52,7 +52,9 @@ class waDbRecord extends waArrayObjectDiff
         }
     }
 
-    /** @return id of this record */
+    /**
+     * @return string|int id of the record
+     */
     public function getId()
     {
         return $this->id;
