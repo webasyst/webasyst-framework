@@ -1,0 +1,216 @@
+<?php
+
+class blogFrontendCommentController extends waJsonController
+{
+    /**
+     *
+     * Blog ID
+     * @var int
+     */
+    private $blog_id;
+
+    /**
+     *
+     * Post ID
+     * @var int
+     */
+    private $post_id;
+    private $post;
+
+    /**
+     *
+     * Post comment parent ID
+     * @var int
+     */
+    private $parent_id;
+    private $comment_id;
+    /**
+     *
+     * @var blogCommentModel
+     */
+    private $comment_model;
+
+    public function preExecute()
+    {
+
+    }
+
+    public function execute()
+    {
+
+        if (!$this->appSettings('show_comments',true)) {
+            throw new waException(_ws("Page not found"),404);
+        }
+        $this->comment_model = new blogCommentModel();
+
+        $this->blog_id = waRequest::param('blog_id', false, waRequest::TYPE_ARRAY_INT);
+
+        $this->verify();
+        if ($this->getRequest()->method() == 'post') {
+            $res = $this->addComment();
+        } else {
+            $this->comment_id = waRequest::param('blog_id', false, waRequest::TYPE_ARRAY_INT);
+            $res = true;
+        }
+
+        if (waRequest::get('json')) {
+            if($this->comment_id) {
+                $this->displayComment();
+            }
+        } else {
+            if (!$res) {
+                var_export($this->errors);exit;
+                //handle error on non ajax
+            }
+            $url = blogPost::getUrl($this->post).'#comment-'.intval($this->parent_id?$this->parent_id:$this->comment_id);
+            $this->redirect($url);
+        }
+    }
+
+    private function verify()
+    {
+        $post_slug = waRequest::param('post_url', false, waRequest::TYPE_STRING);
+
+        $post_model = new blogPostModel();
+        $this->post = $post_model->getBySlug($post_slug);
+
+        if (!$this->post ||
+        $this->post['status'] != blogPostModel::STATUS_PUBLISHED ||
+        !$this->post['comments_allowed']) {
+            throw new waException(_w('Post not found'), 404);
+        }
+
+        if ($this->blog_id && !in_array($this->post['blog_id'], (array)$this->blog_id)) {
+            throw new waException(_w('Post not found'), 404);
+        }
+
+    }
+
+    private function addComment()
+    {
+
+        $comment = array(
+			'blog_id'		 => $this->post['blog_id'],
+			'post_id'		 => $this->post['id'],
+			'contact_id'	 => $this->getUser()->getId(),
+			'text'			 => waRequest::post('text'),
+        );
+
+        if ($this->getUser()->getId()) {
+            $comment['auth_provider'] = 'user';
+        } else {
+            $comment['auth_provider'] = waRequest::post('auth_provider', 'guest', 'string_trim');
+            if ($comment['auth_provider'] == 'user') {
+                $comment['auth_provider'] = 'guest';
+            } elseif (!$comment['auth_provider']) {
+                $comment['auth_provider'] = 'guest';
+            }
+
+        }
+
+        switch($adapter = $comment['auth_provider']) {
+            case 'user': {
+                break;
+            }
+            case 'guest': {
+                $comment['name']		 = waRequest::post('name', '', 'string_trim');
+                $comment['email']		 = waRequest::post('email', '', 'string_trim');
+                $comment['site']		 = waRequest::post('site', '', 'string_trim');
+                break;
+            }
+            default: {
+                $auth_adapters = wa()->getAuthAdapters();
+                if (!isset($auth_adapters[$adapter])) {
+                    $this->errors[] = _w('Invalid auth provider');
+                } elseif ($user_data = $this->getStorage()->get('auth_user_data')) {
+                    $comment['name'] = $user_data['name'];
+                    $comment['email'] = '';
+                    $comment['site'] = $user_data['source_link'];
+                } else {
+                    $this->errors[] = _w('Invalid auth provider data');
+                }
+                break;
+            }
+        }
+
+
+        if (count($this->errors) > 0) {
+            if (waRequest::get('json')) {
+                $this->getResponse()->addHeader('Content-type', 'application/json');
+            }
+            return false;
+        }
+
+        $captcha = waRequest::post('captcha', '', 'string_trim');
+        if (!empty($captcha)) {
+            $this->redirect(blogPost::getUrl($this->post));
+        }
+
+        $this->errors = array_merge($this->errors,blogCommentModel::validate($comment,$comment['auth_provider']));
+
+        if (count($this->errors) > 0) {
+            if (waRequest::get('json')) {
+                $this->getResponse()->addHeader('Content-type', 'application/json');
+            }
+            return false;
+        }
+
+        $this->parent_id = (int)waRequest::post('parent', 0);
+        try {
+            $comment['post_data'] = $this->post;
+            $res = $this->comment_model->add($comment, $this->parent_id);
+            if(is_array($res)) {
+                foreach ($res as $plugin) {
+                    if ($plugin !== true) {
+                        if($plugin) {
+                            $this->errors[] = $plugin;
+                        } else {
+                            $this->errors[]['text'] = _w('Invalid data');
+                        }
+                    }
+                }
+
+            } else {
+                $this->comment_id =$res;
+            }
+
+            if (count($this->errors) > 0) {
+                if (waRequest::get('json')) {
+                    $this->getResponse()->addHeader('Content-type', 'application/json');
+                }
+                return false;
+            }
+            return true;
+        }
+        catch (Exception $e) {
+            throw new waException(_w('Database error'));
+        }
+
+    }
+
+    private function displayComment()
+    {
+        $this->getResponse()->addHeader('Content-type', 'application/json');
+        if ($this->comment_id && ($comment = $this->comment_model->getById($this->comment_id) )) {
+            $count = $this->comment_model->countByStatus($this->post['id']);
+
+            $this->post['comments'] = $this->comment_model->prepareView(array($comment), array('photo_url_20'),array('user'=>true));
+
+            $theme = waRequest::param('theme', 'default');
+            $theme_path = wa()->getDataPath('themes', true).'/'.$theme;
+            if (!file_exists($theme_path) || !file_exists($theme_path.'/theme.xml')) {
+                $theme_path = wa()->getAppPath().'/themes/'.$theme;
+            }
+
+            $template = 'file:comments.html';
+            $view = wa()->getView(array('template_dir' => $theme_path));
+            $view->assign('post', $this->post);
+
+            $this->response['template']	 = $view->fetch($template);
+            $this->response['count_str'] = $count." "._w('comment', 'comments', $count);
+            $this->response['parent']	 = $this->parent_id;
+        } else {
+            throw new waException(_w('Comment not found'), 404);
+        }
+    }
+}

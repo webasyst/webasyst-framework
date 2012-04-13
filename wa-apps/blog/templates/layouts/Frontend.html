@@ -1,0 +1,17 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd"><html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+{if isset($title)}
+<title>{$title|escape} &mdash; {$wa->accountName()|escape}</title>
+{else}
+<title>{$wa->appName()|escape} &mdash; {$wa->accountName()|escape}</title>
+{/if}
+<script type="text/javascript" src="{$wa_url}wa-content/js/jquery/jquery-1.4.2.min.js"></script>
+<link href="{$wa_url}wa-content/css/wa/wa.frame.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<div style="padding: 10px">
+{$content}
+</div>
+</body>
+</html>

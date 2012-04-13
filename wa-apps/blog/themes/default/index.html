@@ -1,0 +1,144 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>{$wa->title()|escape}</title>
+    {if isset($links)}{foreach from=$links item=link key=role}
+    <link rel="{$role}" href="{$link}">
+    {/foreach}{/if}
+
+    {assign var=rss value=$wa->blog->rss()}
+    {if $rss}<link rel="alternate" type="application/rss+xml" title="[`RSS`] &mdash; {$wa->accountName()|escape}" href="{$rss}">{/if}
+
+    <link href="{$wa_theme_url}default.css" rel="stylesheet" type="text/css">
+    {if $wa->isMobile()}
+        <link href="{$wa_theme_url}mobile.css" rel="stylesheet" type="text/css">
+        <meta name="viewport" content="width=device-width; initial-scale=1; maximum-scale=1; user-scalable=0;">
+    {/if}
+
+    {$wa->js()}
+    <script type="text/javascript" src="{$wa_theme_url}blog.js?v{$wa->version()}"></script>
+    <script type="text/javascript" src="{$wa_url}wa-content/js/jquery-wa/wa.core.js"></script>
+
+	{*
+		@event frontend_action_default.%plugin_id%.head
+		@event frontend_action_post.%plugin_id%.head
+		@event frontend_action_page.%plugin_id%.head
+		@event frontend_action_error.%plugin_id%.head
+	*}
+    <!-- plugin hook: "frontend_action_{$action}.head" -->
+    {foreach from=$frontend_action item=output key=plugin}
+        {if is_array($output) && isset($output.head)}
+
+            <!-- begin {$plugin} -->{$output.head}<!-- end {$plugin} -->
+        {/if}
+    {/foreach}
+
+</head>
+<body>
+    <div id="header" role="navigation sitemap">
+        <div class="container">
+            <ul id="wa-apps">
+                {foreach from=$wa->apps() item=a}
+                    <li{if $a.url==$wa_app_url} class="selected"{/if}><a href="{$a.url}">{$a.name}</a></li>
+                {/foreach}
+                {if $wa->isAuthEnabled()}
+                    <li class="float-right small"><a href="?signup">[`Sign up`]</a></li>
+                    <li class="float-right small"><a href="?auth">[`Login`]</a></li>
+                {/if}
+            </ul>
+            <div class="clear-both"></div>
+        </div>
+    </div>
+    <div id="main">
+        <div class="container app-header" role="navigation">
+
+			{*
+				@event frontend_action_default.%plugin_id%.nav_before
+				@event frontend_action_post.%plugin_id%.nav_before
+				@event frontend_action_page.%plugin_id%.nav_before
+				@event frontend_action_error.%plugin_id%.nav_before
+			*}
+            <!-- plugin hook: "frontend_action_{$action}.nav_before" -->
+            {foreach from=$frontend_action item=output key=plugin}
+                {if is_array($output) && isset($output.nav_before)}
+
+                    <!-- begin {$plugin} -->{$output.nav_before}<!-- end {$plugin} -->
+                {/if}
+            {/foreach}
+            <div class="sidebar right">
+                <div id="subscribe">
+                    {if $rss}
+                        <a href="{$rss}" title="[`Subscribe`]"><i class="icon16 rss"></i><strong>RSS</strong></a>
+                    {/if}
+                </div>
+            </div>
+            <ul class="menu-h" id="blog-list">
+            	{if !$settlement_one_blog || $action == 'post'}
+                    {if $settlement_one_blog}
+                        <li><a href="{$wa->blog->url()}">[`All posts`]</a></li>
+                    {else}
+                        {$published_blogs = $wa->blog->blogs()}
+                        {if count($published_blogs)>1}
+                            <li class="{if is_array($wa->globals('blog_id'))}selected{/if}"><a href="{$wa->blog->url()}">[`All posts`]</a></li>
+                            {foreach from=$published_blogs item=blog}
+                                <li class="{if $wa->globals('blog_id') eq $blog.id}selected{/if}">
+                                    <a href="{$blog.link|escape}">{$blog.name|escape}</a>
+                                </li>
+                            {/foreach}
+                        {else}
+                            {assign var=blog value=current($published_blogs)}
+                            <li class="selected">
+                                <a href="{$wa->blog->url()}">{$blog.name|escape}</a>
+                            </li>
+                        {/if}
+                    {/if}
+            	{/if}
+            </ul>
+            <div class="clear-both"></div>
+        </div>
+        <div class="container">
+            <div class="sidebar right">
+                {include file='sidebar.html' inline}
+            </div>
+            <div class="content right">
+                {$content}
+            </div>
+            <div class="clear-both"></div>
+        </div>
+    </div>
+    <div id="footer">
+        <div class="container">
+            <div id="poweredby">
+                <a title="[`Powered by Webasyst`]" href="http://www.webasyst.com/" class="dots"></a>
+            </div>
+            <div id="copyright">
+                &copy; {time()|wa_datetime:"Y"}
+                <a href="{$wa_url}">{$wa->accountName()|escape}</a>
+            </div>
+        	{*
+        		@event frontend_action_default.%plugin_id%.footer
+        		@event frontend_action_post.%plugin_id%.footer
+        		@event frontend_action_page.%plugin_id%.footer
+        		@event frontend_action_error.%plugin_id%.footer
+        	*}
+            <!-- plugin hook: "frontend_action_{$action}.footer" -->
+            {foreach from=$frontend_action item=output key=plugin}
+                {if is_array($output) && isset($output.footer)}
+
+                    <!-- begin {$plugin} -->{$output.footer}<!-- end {$plugin} -->
+                {/if}
+            {/foreach}
+
+            <!-- <div id="sub-links">
+                 suggested place for your footer links
+                <ul>
+                    <li><a href="#">About</a></li>
+                    <li><a href="#">Terms Of Service</a></li>
+                </ul>
+            </div>
+            -->
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,821 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: blog\n"
+"POT-Creation-Date: 2011-11-11 13:30+0300\n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: blog\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+"X-Poedit-Language: en_US\n"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-Basepath: .\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPath-1: .\n"
+
+#: /wa-apps/blog/templates/actions/backend/BackendComments.html:68
+msgid "Loading"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/post/Post.html:16
+msgid "Settings"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/backend/Backend.html:49
+msgid "Delete"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/post/Post.html:53
+msgid "(empty title)"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/post/Post.html:60
+msgid "Public post"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/post/Post.html:70
+msgid "Private post"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/post/Post.html:99
+msgid "No comments"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/backend/BackendArchive.html:84
+msgid "Archive"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/backend/BackendCalendar.html:58
+msgid "Click to create a post scheduled to be published on this day"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/backend/BackendSidebar.html:29
+msgid "Comments"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/post/comments.html:43
+msgid "delete"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/post/comments.html:44
+msgid "restore"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/post/comments.html:47
+msgid "reply"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/backend/BackendComments.html:65
+msgid "no comments"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/post/Post.html:121
+msgid "Done"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/post/PostEdit.html:34
+msgid "Blog"
+msgstr ""
+
+#: /wa-apps/blog/lib/actions/backend/blogBackendSettings.action.php:18
+msgid "New blog"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/backend/BackendSettings.html:15
+msgid "Blog name"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/backend/BackendSettings.html:28
+msgid "Private"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/backend/BackendSettings.html:30
+msgid "Public"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/backend/BackendSettings.html:33
+msgid "Blog posts are published and available in the frontend and RSS feed"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/backend/BackendSettings.html:34
+msgid "Blog posts are published and available only within Webasyst backend for users who have rights to access this blog"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/backend/BackendSettings.html:42
+msgid "Color"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/backend/BackendSettings.html:50
+msgid "Color coding is used only within Webasyst backend"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/backend/BackendSettings.html:57
+msgid "Icon"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/backend/BackendSettings.html:67
+msgid "Or enter icon URL (should be a 16x16 px image)"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/plugins/Plugins.html:58
+msgid "Save"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/backend/BackendSidebar.html:16
+msgid "New post"
+msgstr ""
+
+#: /wa-apps/blog/lib/actions/backend/blogBackend.action.php:78
+msgid "All posts"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/backend/BackendSidebar.html:36
+msgid "Calendar"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/backend/BackendSidebar.html:78
+msgid "Drafts"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/backend/BackendSidebar.html:105
+msgid "Plugins"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/plugins/Plugins.html:35
+msgid "No plugins installed"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/plugins/Plugins.html:39
+msgid "Plugin order defines the order they are executed. Sort plugin list to change the order."
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/plugins/Plugins.html:62
+msgid "Plugin does not offer configuration settings."
+msgstr ""
+
+msgid "To add posts, you must first <a href=\"%s\"> create a new blog</a>."
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/post/Post.html:32
+msgid "Edit post"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/post/Post.html:35
+msgid "Post %s will be deleted permanently. Delete?"
+msgstr "Post “%s” will be deleted permanently. Delete?"
+
+#: /wa-apps/blog/templates/actions/post/PostEdit.html:20
+msgid "Delete post"
+msgstr ""
+
+msgid "Delete blog"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/post/Post.html:111
+msgid "Add comment"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/post/PostEdit.html:7
+msgid "Author"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/post/PostEdit.html:18
+msgid "Preview"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/post/PostEdit.html:63
+msgid "Published"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/post/PostEdit.html:98
+msgid "WYSIWYG"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/post/PostEdit.html:147
+msgid "Publication deadline"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/post/PostEdit.html:123
+msgid "Not set"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/post/PostEdit.html:133
+msgid "Publish"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/post/PostEdit.html:134
+msgid "Save draft"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/post/PostEdit.html:227
+msgid "or"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/post/PostEdit.html:227
+msgid "cancel"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/post/PostEdit.html:167
+msgid "Schedule publication"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/post/PostEdit.html:177
+msgid "Schedule"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/post/PostEdit.html:193
+msgid "edit"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/post/PostEdit.html:201
+msgid "Autopublication is scheduled for"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/post/PostEdit.html:226
+msgid "Unpublish"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/post/PostEdit.html:253
+msgid "Max %d characters"
+msgstr ""
+
+#: /wa-apps/blog/lib/actions/backend/blogBackend.action.php:51
+msgid "Access denied"
+msgstr ""
+
+#: /wa-apps/blog/lib/actions/frontend/blogFrontendPost.action.php:73
+msgid "Post not found"
+msgstr ""
+
+#: /wa-apps/blog/lib/actions/frontend/blogFrontendAddComment.controller.php:48
+msgid "Name can not be left blank"
+msgstr ""
+
+#: /wa-apps/blog/lib/actions/frontend/blogFrontendAddComment.controller.php:54
+msgid "Email can not be left blank"
+msgstr ""
+
+#: /wa-apps/blog/lib/actions/frontend/blogFrontendAddComment.controller.php:58
+msgid "Email is not valid"
+msgstr ""
+
+#: /wa-apps/blog/lib/actions/frontend/blogFrontendAddComment.controller.php:62
+msgid "Site URL is not valid"
+msgstr ""
+
+#: /wa-apps/blog/lib/actions/post/blogPostAddComment.controller.php:20
+msgid "Comment text can not be left blank"
+msgstr ""
+
+#: /wa-apps/blog/lib/actions/frontend/blogFrontendAddComment.controller.php:70
+msgid "Comment length should not exceed 4096 symbols"
+msgstr ""
+
+#: /wa-apps/blog/lib/actions/frontend/blogFrontendAddComment.controller.php:100
+msgid "Database error"
+msgstr ""
+
+#: /wa-apps/blog/lib/models/blogPost.model.php:173
+msgid "URL must not contain /"
+msgstr ""
+
+#: /wa-apps/blog/lib/models/blogPost.model.php:176
+msgid "This address is already in use"
+msgstr ""
+
+#: wa-apps/blog/lib/classes/blogPost.class.php:235
+msgid "comment"
+msgid_plural "comments"
+msgstr[0] "comment"
+msgstr[1] "comments"
+
+#: /wa-apps/blog/templates/actions/post/Post.html:30
+msgid "Private blog"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/backend/BackendSidebar.html:54
+msgid "Blogs"
+msgstr ""
+
+#: /wa-apps/blog/lib/actions/frontend/blogFrontendAddComment.controller.php:51
+msgid "Name length should not exceed 255 symbols"
+msgstr ""
+
+#: wa-apps/blog/lib/classes/blogPost.class.php:235
+msgid "%d post"
+msgid_plural "%d posts"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "%d post of %d"
+msgid_plural "%d posts of %d"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "%d comment of %d"
+msgid_plural "%d comments of %d"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "%d comment"
+msgid_plural "%d comments"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "Editing post %s"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/backend/Backend.html:29
+msgid "Blog settings"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/backend/Backend.html:36
+msgid "Manage posts"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/backend/Backend.html:44
+msgid "Move to blog"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/post/Post.html:11
+msgid "Open on website"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/post/PostEdit.html:355
+msgid "Continue reading →"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/backend/Backend.html:213
+msgid "Show older posts"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/backend/BackendCalendar.html:27
+msgid "Overdue posts"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/backend/BackendCalendar.html:62
+msgid "Overdue"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/backend/BackendCalendar.html:64
+msgid "Draft"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/backend/BackendCalendar.html:66
+msgid "Scheduled for publication"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/backend/BackendSidebar.html:103
+msgid "Belong to private blog"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/blog/BlogSettings.html:39
+msgid "Blog type"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/blog/BlogSettings.html:55
+msgid "Public URL"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/comments/Comments.html:31
+msgid "Show older comments"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/comments/include.comment.html:20
+msgid "on"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/comments/include.comment.html:24
+msgid "unpublished post"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/comments/include.comment.html:47
+msgid "Comment deleted"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/comments/include.comment.html:43
+msgid "Comment for unpublished post"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/comments/include.comment.html:47
+msgid "in reply to"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/post/PostEdit.html:8
+msgid "Allow comments"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/settings/Settings.html:125
+msgid "Off"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/settings/Settings.html:127
+msgid "On"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/post/PostEdit.html:57
+msgid "Deadline is for plan purposes only. It will not automatically published the post, but will highlight the post if publication date is overdue."
+msgstr ""
+
+#: /wa-apps/blog/templates/dialogs/postSchedule.html:18
+msgid "format"
+msgstr ""
+
+#: /wa-apps/blog/templates/dialogs/postSchedule.html:18
+msgid "current time is"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/post/PostEdit.html:93
+msgid "Custom parameters"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/post/PostEdit.html:96
+msgid "Optional set of custom <em>key=value</em> parameters which can be used within a frontend's theme template as <em>&#123;$post.key&#125;</em>. Each key=value pair should be on a separate line."
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/post/PostEdit.html:245
+msgid "HTML"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/post/PostEdit.html:300
+msgid "Saved"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/post/PostEdit.html:294
+msgid "Unpublish this blog post?"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/post/PostEdit.html:360
+msgid "Split vertical"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/settings/Settings.html:7
+msgid "Settings updated"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/settings/Settings.html:18
+msgid "Personal settings"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/settings/Settings.html:22
+msgid "App icon counter"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/settings/Settings.html:58
+msgid "Frontend settings"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/settings/Settings.html:63
+msgid "Homepage title"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/settings/Settings.html:72
+msgid "Title format"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/settings/Settings.html:78
+msgid "Post title only"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/settings/Settings.html:160
+msgid "E.g."
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/settings/Settings.html:88
+msgid "Blog » Post title"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/settings/Settings.html:103
+msgid "URLs & Titles"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/settings/Settings.html:141
+msgid "RSS"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/settings/Settings.html:145
+msgid "Number of posts in RSS file"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/settings/Settings.html:148
+msgid "&lt;author&gt; tag"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/settings/Settings.html:153
+msgid "Use blog post author's real name"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/settings/Settings.html:158
+msgid "Use blog name"
+msgstr ""
+
+#: /wa-apps/blog/templates/dialogs/blogDelete.html:9
+msgid "The blog %s contains <strong>%d posts</strong>. What should be done with these posts?"
+msgstr "The blog “%s” contains <strong>%d posts</strong>. What should be done with these posts?"
+
+#: /wa-apps/blog/templates/dialogs/blogDelete.html:12
+msgid "Move posts to another blog"
+msgstr ""
+
+#: /wa-apps/blog/templates/dialogs/blogDelete.html:22
+msgid "Delete permanently"
+msgstr ""
+
+#: /wa-apps/blog/templates/dialogs/blogDelete.html:25
+msgid "This blog does no contain posts, and thus can be safely deleted."
+msgstr ""
+
+#: /wa-apps/blog/templates/dialogs/postDeadline.html:13
+msgid "Deadline is for planning purposes only. It will not publish the post automatically, but will highlight the post in the calendar if it is not published in time."
+msgstr ""
+
+#: /wa-apps/blog/templates/dialogs/postDelete.html:8
+msgid "The post <b>%s</b> will be permanently deleted without the ability to recover. Delete?"
+msgstr "The post “<b>%s</b>” will be permanently deleted without the ability to recover. Delete?"
+
+#: /wa-apps/blog/templates/dialogs/postDelete.html:10
+msgid "Delete posts"
+msgstr ""
+
+#: /wa-apps/blog/templates/dialogs/postDelete.html:11
+msgid "Selected posts will be permanently deleted without the ability to recover. Delete?"
+msgstr ""
+
+#: /wa-apps/blog/templates/dialogs/postMove.html:17
+msgid "Move posts"
+msgstr ""
+
+#: /wa-apps/blog/templates/dialogs/postSchedule.html:26
+msgid "Cron is working properly. Latest execution time: %s"
+msgstr ""
+
+#: /wa-apps/blog/templates/dialogs/postSchedule.html:30
+msgid "Scheduled publication requires CRON to be properly setup for Webasyst Blog app, which is not the case for this installation. Setup cron for the Blog app with the following command (<a href=\"http://www.webasyst.com/ru/framework/docs/server/cron/\" target=\"_blank\">cron setup instructions</a>):<br /><br /> <strong>%s</strong>"
+msgstr ""
+
+#: /wa-apps/blog/lib/classes/blogFrontController.class.php:54
+msgid "Blog not found"
+msgstr ""
+
+#: /wa-apps/blog/lib/actions/blog/blogBlogSettings.action.php:110
+msgid "%s settings"
+msgstr ""
+
+#: /wa-apps/blog/lib/actions/blog/blogBlogSettings.action.php:149
+msgid "Blog name must not be empty"
+msgstr ""
+
+#: /wa-apps/blog/lib/actions/comments/blogCommentsAdd.controller.php:51
+msgid "Isn't allowed comment to this post"
+msgstr ""
+
+#: /wa-apps/blog/lib/actions/frontend/blogFrontendComment.controller.php:193
+msgid "Comment not found"
+msgstr ""
+
+#: /wa-apps/blog/lib/actions/frontend/blogFrontend.action.php:100
+msgid "Posts by %s"
+msgstr ""
+
+#: /wa-apps/blog/lib/actions/plugins/blogPlugins.action.php:60
+msgid "Plugin settings page"
+msgstr ""
+
+#: /wa-apps/blog/lib/actions/post/blogPostEdit.action.php:70
+msgid "Adding new post"
+msgstr ""
+
+#: /wa-apps/blog/lib/actions/post/blogPostEdit.action.php:200
+msgid "%s ago"
+msgstr ""
+
+#: /wa-apps/blog/lib/actions/post/blogPostEdit.action.php:200
+msgid "in %s"
+msgstr ""
+
+#: /wa-apps/blog/lib/actions/post/blogPostGetPostUrl.controller.php:20
+msgid "Can't find corresponding blog"
+msgstr ""
+
+#: /wa-apps/blog/lib/actions/post/blogPostGetPostUrl.controller.php:33
+msgid "Can't find corresponding post"
+msgstr ""
+
+#: /wa-apps/blog/lib/actions/post/blogPostImage.controller.php:25
+msgid "Files with extensions %s are allowed only."
+msgstr ""
+
+#: /wa-apps/blog/lib/actions/post/blogPostImage.controller.php:55
+msgid "File could not bet saved due to the insufficient file write permissions for the %s folder."
+msgstr ""
+
+#: /wa-apps/blog/lib/actions/post/blogPostImage.controller.php:77
+msgid "Failed to upload file %s."
+msgstr ""
+
+#: /wa-apps/blog/lib/actions/settings/blogSettings.action.php:63
+msgid "Blog settings page"
+msgstr ""
+
+#: /wa-apps/blog/lib/classes/blogSlugValidator.class.php:31
+msgid "%subject% URL must not be empty"
+msgstr ""
+
+#: /wa-apps/blog/lib/classes/blogSlugValidator.class.php:32
+msgid "%subject% URL is in use. Please enter another URL"
+msgstr ""
+
+#: /wa-apps/blog/lib/classes/blogSlugValidator.class.php:33
+msgid "%subject% URL is invalid"
+msgstr ""
+
+#: /wa-apps/blog/lib/config/blogRightConfig.class.php:14
+msgid "Can create new blogs"
+msgstr ""
+
+#: /wa-apps/blog/lib/config/blogRightConfig.class.php:24
+msgid "No access"
+msgstr ""
+
+#: /wa-apps/blog/lib/config/blogRightConfig.class.php:25
+msgid "Read only"
+msgstr ""
+
+#: /wa-apps/blog/lib/config/blogRightConfig.class.php:26
+msgid "Read and publish new posts"
+msgstr ""
+
+#: /wa-apps/blog/lib/config/blogRightConfig.class.php:27
+msgid "Full access"
+msgstr ""
+
+#: /wa-apps/blog/lib/config/site.php:19
+msgid "Published blogs & URLs"
+msgstr ""
+
+#: /wa-apps/blog/lib/config/site.php:23
+msgid "All blogs. Plain URLs (%s)"
+msgstr ""
+
+#: /wa-apps/blog/lib/config/site.php:24
+msgid "<br />Post URLs: <strong>%s</strong>, e.g. %s<br />Blog post list URLs: <strong>%s</strong>, e.g. %s"
+msgstr ""
+
+#: /wa-apps/blog/lib/config/site.php:27
+msgid "All blogs. Hierarchical URLs (%s)"
+msgstr ""
+
+#: /wa-apps/blog/lib/config/site.php:31
+msgid "One blog"
+msgstr ""
+
+#: /wa-apps/blog/lib/config/site.php:32
+msgid "Post URL format <u>%s</u> and <u>%s</u> for blog URL"
+msgstr ""
+
+#: /wa-apps/blog/lib/config/site.php:63
+msgid "Returns blog info by <em>blog_id</em> as an array with the following structure: (<em>\"id\"</em>, <em>\"url\"</em>, <em>\"name\"</em>, <em>\"status\"</em>, <em>\"icon\"</em>, <em>\"qty\"</em>, <em>\"color\"</em>, <em>\"sort\"</em>, <em>\"icon_url\"</em>, <em>\"icon_html\"</em>, <em>\"link\"</em>)"
+msgstr ""
+
+#: /wa-apps/blog/lib/config/site.php:65
+msgid "Returns the array of all public blogs. Each blog is an array presenting the blog data"
+msgstr ""
+
+#: /wa-apps/blog/lib/config/site.php:66
+msgid "Returns the array of all posts by <em>blog_id</em>. If <em>blog_id</em> is <em>null</em>, the array of all public posts is returned. Optional parameter <em>number_of_posts</em> limits the number of elements returned"
+msgstr ""
+
+#: /wa-apps/blog/lib/handlers/contacts.links.handler.php:16
+msgid "Posts"
+msgstr ""
+
+#: /wa-apps/blog/lib/models/blogBlog.model.php:125
+msgid "Blog URL is in use. Please enter another URL"
+msgstr ""
+
+#: /wa-apps/blog/lib/models/blogPost.model.php:784
+msgid "Incorrect format"
+msgstr ""
+
+#: /wa-apps/blog/lib/config/site.php:61
+msgid "Returns post info by <em>post_id</em> as an array with the following structure: (<em>\"id\"</em>, <em>\"contact_id\"</em>, <em>\"contact_name\"</em>, <em>\"datetime\"</em>, <em>\"title\"</em>, <em>\"text\"</em>, <em>\"status\"</em>, <em>\"url\"</em>, <em>\"blog_id\"</em>, <em>\"comments_allowed\"</em>, <em>\"user\"</em>, <em>\"comment_datetime\"</em>, <em>\"comment_count\"</em>, <em>\"comment_str_translate\"</em>, <em>\"comment_new_count\"</em>, <em>\"plugins\"</em>, <em>\"icon\"</em>, <em>\"color\"</em>, <em>\"blog_status\"</em>, <em>\"blog_url\"</em>, <em>\"blog_name\"</em>, <em>\"link\"</em>)"
+msgstr ""
+
+#: /wa-apps/blog/themes/default/error.html:2
+msgid "Error"
+msgstr ""
+
+#: /wa-apps/blog/themes/default/error.html:3
+msgid "The requested resource is not available."
+msgstr ""
+
+#: /wa-apps/blog/themes/default/index.html:32
+msgid "Sign up"
+msgstr ""
+
+#: /wa-apps/blog/themes/default/index.html:33
+msgid "Login"
+msgstr ""
+
+#: /wa-apps/blog/themes/default/index.html:44
+msgid "Subscribe"
+msgstr ""
+
+#: /wa-apps/blog/themes/default/index.html:79
+msgid "Powered by Webasyst"
+msgstr ""
+
+#: /wa-apps/blog/themes/default/post.html:106
+msgid "Guest"
+msgstr ""
+
+#: /wa-apps/blog/themes/default/post.html:140
+msgid "Your name"
+msgstr ""
+
+#: /wa-apps/blog/themes/default/post.html:119
+msgid "Email"
+msgstr ""
+
+#: /wa-apps/blog/themes/default/post.html:123
+msgid "Website"
+msgstr ""
+
+#: /wa-apps/blog/themes/default/post.html:141
+msgid "log out"
+msgstr ""
+
+#: /wa-apps/blog/themes/default/post.html:146
+msgid "Comment"
+msgstr ""
+
+#: /wa-apps/blog/themes/default/post.html:158
+msgid "Comments for non published posts are disabled"
+msgstr ""
+
+#: /wa-apps/blog/themes/default/sidebar.html:51
+msgid "Edit blog layout in your <a href=\"%s\">Webasyst backend</a> using “Site” app."
+msgstr "Use “Site” app to customize blog design, this string, and to add static pages to this sidebar."
+
+#: /wa-apps/blog/themes/default/stream.html:124
+msgid "Loading..."
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/post/PostEdit.html:335
+msgid "Image will be uploaded into"
+msgstr ""
+
+#: /wa-apps/blog/lib/config/site.php:39
+msgid "Post sub-URL format (%s)"
+msgstr ""
+
+#: /wa-apps/blog/lib/config/site.php:43
+msgid "Post URL only"
+msgstr ""
+
+#: /wa-apps/blog/lib/config/site.php:56
+msgid "e.g."
+msgstr ""
+
+#: /wa-apps/blog/lib/config/site.php:47
+msgid "Year/post URL"
+msgstr ""
+
+#: /wa-apps/blog/lib/config/site.php:51
+msgid "Year/month/post URL"
+msgstr ""
+
+#: /wa-apps/blog/lib/config/site.php:55
+msgid "Year/month/date/post URL"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/settings/Settings.html:28
+msgid "My overdue post drafts"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/settings/Settings.html:29
+msgid "posts with overdue publication deadline"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/settings/Settings.html:35
+msgid "New posts published by other users"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/settings/Settings.html:46
+msgid "Count new comments on my posts only"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/settings/Settings.html:65
+msgid "Setup in the <a href=\"%s\">Blog app settlement settings</a> within the Site app"
+msgstr ""
+
+#: /wa-apps/blog/lib/actions/frontend/blogFrontendComment.controller.php:145
+msgid "Invalid data"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/settings/Settings.html:41
+msgid "New comments"
+msgstr ""
+

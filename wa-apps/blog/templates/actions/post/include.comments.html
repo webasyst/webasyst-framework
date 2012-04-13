@@ -1,0 +1,36 @@
+
+<!-- comments begin -->
+{assign var="depth" value=-1}
+{foreach from=$post.comments item=comment}
+	{if $comment.depth < $depth}
+		{assign var="loop" value=$depth-$comment.depth}
+		{section name="end-comment" loop=$loop}
+
+				</li>
+			</ul>
+		{/section}
+		{assign var="depth" value=$comment.depth}
+	{/if}
+	{if $comment.depth == $depth}
+
+		</li>
+		<li>
+	{/if}
+	{if $comment.depth > $depth}
+
+	<ul class="menu-v with-icons">
+		<li>
+		{assign var="depth" value=$comment.depth}
+	{/if}
+		{include file="../comments/include.comment.html" allow_reply=$post.comments_allowed inline single_view=true}
+		<!-- sub comment placeholder -->
+{/foreach}
+
+{section name="end-comment" loop=$depth }
+
+			</li>
+		</ul>
+{/section}
+	</li>
+</ul>
+<!-- comments end -->

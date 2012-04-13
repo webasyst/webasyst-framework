@@ -1,0 +1,73 @@
+
+{if !isset($page) || ($page < 2)}
+{wa_js file="js/compiled/blog-comments_stream.js"}
+{$wa_app_static_url}js/jquery.form.js
+{$wa_app_static_url}js/jquery.pageless2.js
+{$wa_app_static_url}js/blogComments.js
+{/wa_js}
+	<script type="text/javascript">
+    	$.wa_blog.comments = $.extend(true,$.wa_blog.comments,{
+    		'options':{
+    			pageless:{
+    				url: '?module=comments',
+    				target: '.b-comments ul.menu-v:first',
+    				count: {$pages|string_format:'%d'},
+    			}
+    		}
+    	});
+	</script>
+	<div class="block">
+		<h1>[`Comments`]</h1>
+		{* @event backend_comments.%plugin_id%.toolbar *}
+		<!-- plugin hook: "backend_comments.toolbar" -->
+		{foreach from=$backend_comments item=output key=plugin}
+			{if is_array($output) && isset($output.toolbar)}
+
+				<!-- begin {$plugin} -->{$output.section}<!-- end {$plugin} -->
+			{/if}
+		{/foreach}
+
+		<!-- end plugin hook: "backend_comments.section" -->
+		<div class="b-comments">
+			<ul class="menu-v with-icons ">
+{/if}
+				{foreach from=$comments item=comment}
+					<li>
+						{include file="../comments/include.comment.html" allow_reply=$comment.post.comments_allowed inline}
+					</li>
+				{foreachelse}
+					<li>[`no comments`]</li>
+				{/foreach}
+					<li class="pageless-wrapper">
+						{sprintf(_w("%d comment of %d", "%d comments of %d", $comments_count,false),$comments_count,$comments_total_count)|escape}
+						{if $comments_count < $comments_total_count}
+							<br>
+							<a href="#next" class="pageless-link">[`Show older comments`]</a>
+							<span class="pageless-progress" style="display:none"><img src="{$wa_url}wa-content/img/loading16.gif" alt="">[`Loading`]&nbsp;{_w("%d comment", "%d comments", min($comments_total_count-$comments_count,$comments_per_page))|escape}...</span>
+						{/if}
+					</li>
+
+{if !isset($page) || ($page < 2)}
+			</ul>
+
+			<ul id="b-comment-add" class="menu-v with-icons" style="display: none;">
+				<li>
+					<!-- plugin hook: "comment-list-entry" -->
+					<i class="icon16 userpic20" style="background-image: url('{$current_contact.photo20}');"><!-- icon --></i>{$current_contact.name|escape}
+					<form id="b-comment-add-form" action="?module=comments&amp;action=add" method="post">
+					<p>
+						<textarea name="text" cols="60" rows ="30"></textarea>
+					</p>
+					<p>
+						<input type="hidden" name="parent" value="0">
+						<input type="button" id="send" value="[`Done`]">
+						<span class="b-comment-add-form-status b-ajax-status" style="display: none;">
+							<i class="b-ajax-status-loading icon16 loading"><!--icon --></i>
+						</span>
+					</p>
+					</form>
+				</li>
+			</ul>
+		</div>
+	</div>
+{/if}

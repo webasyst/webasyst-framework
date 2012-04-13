@@ -1,0 +1,166 @@
+<div id="post-stream" role="main" class="lazyloading" {if $is_concrete_blog}itemscope itemtype="http://schema.org/Blog"{/if}>
+
+	{assign var=can_use_smarty value=$wa->blog->option('can_use_smarty')}
+	{if $page eq 1 && $stream_title}<h1>{$stream_title|escape}</h1>{/if}
+	<a name="page_{$page}"></a>
+	{foreach from=$posts item=post} <!-- post item #{$post.id}  -->
+		{if isset($annotation_only) && $annotation_only}
+		<div class="post search-match" id="post-{$post.id}" {if $is_concrete_blog}itemprop="blogPosts"{/if} itemscope itemtype="http://schema.org/BlogPosting">
+			<h3><a href="{$post.link}" itemprop="url">{$post.title|default:'[`(empty title)`]'|escape}</a></h3>
+			<span class="hint">
+				{if $post.user.posts_link}
+					<a href="{$post.user.posts_link}" class="username" rel="author">{$post.user.name|escape}</a>
+				{else}
+					<span class="username" rel="author">{$post.user.name|escape}</span>
+				{/if}
+				{$post.datetime|wa_datetime:"humandate"}
+			</span>
+			<p>
+				{if $can_use_smarty}
+					{include file="string:`$post.text`" assign=text}
+					{$text|strip_tags|truncate:400}
+				{else}
+					{$post.text|strip_tags|truncate:400}
+				{/if}
+			</p>
+		</div>
+		{else}
+		<div class="post" id="post-{$post.id}" {if $is_concrete_blog}itemprop="blogPosts"{/if} itemscope itemtype="http://schema.org/BlogPosting">
+			<h3>
+				<a href="{$post.link}" itemprop="url">{$post.title|default:'[`(empty title)`]'|escape}</a>
+				{if isset($post.plugins) && isset($post.plugins.post_title) && $post.plugins.post_title}
+
+					{* @event prepare_posts_frontend.%plugin_id%.post_title *}
+					<!-- plugin hook: "prepare_posts_frontend.*.post_title" -->
+					{foreach from=$post.plugins.post_title item=output key=plugin}
+
+						<!-- begin "prepare_posts_frontend.{$plugin}.post_title" -->
+						{$output}
+						<!-- end "prepare_posts_frontend.{$plugin}.post_title" -->
+					{/foreach}
+					<!-- end plugin hook: "prepare_posts_frontend.*.post_title" -->
+				{/if}
+			</h3>
+			<div class="credentials">
+
+				{if isset($post.user.photo_url_20)}
+					{if $post.user.posts_link}
+						<a href="{$post.user.posts_link}">
+							<img src="{$post.user.photo_url_20}" class="userpic" alt="">
+						</a>
+					{else if isset($post.user.photo_url_20)}
+						<img src="{$post.user.photo_url_20}" class="userpic" alt="">
+					{/if}
+				{/if}
+
+				{if $post.user.posts_link}
+					<a href="{$post.user.posts_link}" class="username" rel="author">{$post.user.name|escape}</a>
+				{else }
+					<span class="username" rel="author">{$post.user.name|escape}</span>
+				{/if}
+				<span class="hint date">{$post.datetime|wa_datetime:"humandate"}</span>
+				{if $show_comments && $post.comments_allowed}
+					<a href="{$post.link}#comments" class="small">
+						{if isset($post.comment_count) && $post.comment_count}{$post.comment_count} {$post.comment_str_translate}{else}[`no comments`]{/if}
+					</a>
+				{/if}
+
+			</div>
+
+			{if isset($post.plugins) && isset($post.plugins.before) && $post.plugins.before}
+				<div class="text_before">
+
+					{* @event prepare_posts_frontend.%plugin_id%.before *}
+					<!-- plugin hook: "prepare_posts_frontend.*.before" -->
+					{foreach from=$post.plugins.before item=output key=plugin}
+
+						<!-- begin "prepare_posts_frontend.{$plugin}.before" -->
+						{$output}
+						<!-- end "prepare_posts_frontend.{$plugin}.before" -->
+					{/foreach}
+					<!-- end plugin hook: "prepare_posts_frontend.*.before" -->
+				</div>
+			{/if}
+			<div class="text">
+				{if $can_use_smarty}
+					{include file="string:`$post.text`"}
+				{else}
+					{$post.text}
+				{/if}
+				{if $post.cutted}
+					<a href="{$post.link}">{$post.cut_link_label|default:'[`Continue reading →`]'}</a>
+				{/if}
+			</div>
+
+			{if isset($post.plugins) && isset($post.plugins.after) && $post.plugins.after}
+				<div class="text_after">
+
+					{* @event prepare_posts_frontend.%plugin_id%.after *}
+					<!-- plugin hook: "prepare_posts_frontend.*.after" -->
+					{foreach from=$post.plugins.after item=output key=plugin}
+
+						<!-- begin "prepare_posts_frontend.{$plugin}.after" -->
+						{$output}
+						<!-- end "prepare_posts_frontend.{$plugin}.after" -->
+					{/foreach}
+					<!-- end plugin hook: "prepare_posts_frontend.*.after" -->
+				</div>
+			{/if}
+		</div>
+		{/if}
+
+	{foreachelse} <!-- there no posts  -->
+
+		{if !isset($page) || $page lt 2}
+			{_w('%d post','%d posts',0,true)|escape}
+		{/if}
+
+	{/foreach}
+
+	{if $layout_type neq 'page'}
+		<div class="pageless-wrapper">
+
+		{if isset($page) && $page lt $pages}
+			{_w('%d post','%d posts',count($posts)+($page-1)*$posts_per_page,true)|escape}&nbsp;{_w('of %d post','of %d posts',$post_count,true)|escape}
+			<br>
+			<a href="?page={$page+1}" class="pageless-link">[`Show older posts`]</a>
+			<div class="pageless-progress" style="display:none;"><i class="icon16 loading"><!-- icon --></i>[`Loading...`]</div>
+		{elseif isset($page) && $pages}
+			{_w('%d post','%s posts',$post_count,true)|escape}
+		{/if}
+
+		</div>
+	{/if}
+</div>
+
+{capture name=paging}
+{* used while JavaScript disabled or per page view *}
+
+	<ul class="menu-h">
+		{for $p=1 to $pages}
+			<li{if $p eq $page} class="selected"{/if}><a href="{if $p eq $page}#page_{$page}{else}?page={$p}{/if}">{$p}</a></li>
+		{/for}
+	</ul>
+{/capture}
+
+{if !isset($page) or ($page le 1)}
+	<script type="text/javascript">
+	$.pageless({
+		url: '?layout=lazyloading',
+		target: '.lazyloading:first',
+		scroll: function(response){
+			var progress = '';
+			if (response) {
+				progress = '  <i class="icon16 loading"><'+'/i> <em>[`Loading`]...<'+'/em>';
+			}
+		},
+		count: {$pages}
+	});
+	</script>
+
+	<noscript>
+		{$smarty.capture.paging}
+	</noscript>
+{elseif $layout_type neq 'lazyloading'}
+	{$smarty.capture.paging}
+{/if}

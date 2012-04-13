@@ -1,0 +1,57 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+"http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+{assign var=title value=$wa->title()}
+<title>{$title|default:$wa->appName()|escape} &mdash; {$wa->accountName()|escape}</title>
+{$wa->css()}
+
+<link type="text/css" rel="stylesheet" href="{$wa_app_static_url}css/blog.css?v={$wa->version()}">
+<!--[if lte IE 9]>
+  <link type="text/css" href="{$wa_app_static_url}css/blog.ie7.css" rel="stylesheet">
+<![endif]-->
+
+<link type="text/css" rel="stylesheet" href="{$wa_url}wa-content/js/jquery-plugins/ibutton/jquery.ibutton.min.css?v={$wa->version()}">
+
+
+{wa_js file="js/compiled/blog-jquery.js"}
+{$wa_url}wa-content/js/jquery/jquery-1.7.1.min.js
+
+{$wa_url}wa-content/js/jquery-plugins/jquery.json.js
+{$wa_url}wa-content/js/jquery-plugins/jquery.store.js
+{$wa_url}wa-content/js/jquery-plugins/jquery.tmpl.min.js
+{$wa_url}wa-content/js/jquery-plugins/ibutton/jquery.ibutton.min.js
+
+{$wa_url}wa-content/js/jquery-wa/wa.core.js
+{$wa_url}wa-content/js/jquery-wa/wa.dialog.js
+
+{$wa_app_static_url}js/blog.js
+{/wa_js}
+{$wa->js(false)}
+<script type="text/javascript">
+$.wa_blog = $.extend(true,$.wa_blog,{
+	'rights':{json_encode($rights)}
+});
+</script>
+
+</head>
+
+<body>
+	<div id="wa">
+		{wa_header}
+
+		<div id="wa-app">
+
+			{$sidebar}
+			<div class="content left200px">
+			{$content}
+			</div>
+
+		</div><!-- #wa-app -->
+
+	</div><!-- #wa -->
+
+</body>
+
+</html>

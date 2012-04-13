@@ -1,0 +1,100 @@
+{* @var $action string default|error|page|post *}
+<!-- Current action [{$action}] -->
+
+{*
+	<div id="search" role="search">
+		<form>
+			<input type="search" value="search" />
+			<input type="submit" value="Find" />
+		</form>
+	</div>
+*}
+
+{if ( (($action eq 'default')  && (!isset($action_info) || !isset($action_info.search)))|| ($action eq 'error') || ($action eq 'page')) && is_object($wa->site)}
+	{* static pages from the "Site" app *}
+	<div id="site-pages">
+		{$blog_pages=$wa->blog->pages()}
+		{if $blog_pages}
+			<ul class="menu-v" id="page-list">
+				{foreach from=$blog_pages item=p}
+					<li{if isset($page_id) and $page_id eq $p.id} class="selected"{/if}><a href="{$p.url}" title="{$p.title|escape}">{$p.name|escape}</a></li>
+				{/foreach}
+			</ul>
+		{/if}
+	</div>
+{/if}
+
+<p class="small" role="contentinfo">
+    {assign var="info_mes" value=sprintf('[`Edit blog layout in your <a href="%s">Webasyst backend</a> using “Site” app.`]',$wa_backend_url) }
+	{if $action eq 'default'}
+		{if isset($action_info) && isset($action_info.search) && isset($action_info.search.contact_id)}
+			{$c= $wa->contact($action_info.search.contact_id)}
+
+			<img width="96" src="{$c->getPhoto(96)}" title="{$c.name|escape}"  alt=""><br>
+			<strong>{$c.name}</strong>
+
+			{$ca = $c->get('about')|escape}
+			{if $ca}
+				<br><br>
+				{$ca}
+			{/if}
+
+			<br>
+			{$cs = $c->get('url')}
+			{foreach from=$cs item=s}
+			<br>
+			<a href="{$s.value|escape}" title="{$s.ext}">{$s.value|escape}</a>
+			{/foreach}
+		{else}
+			{$info_mes}
+		{/if}
+	{elseif ($action eq 'error') || ($action eq 'page')}
+		{$info_mes}
+	{/if}
+</p>
+
+{if ($action eq 'default') && (!isset($action_info) || !isset($action_info.search))}
+	{* timeline navigation *}
+	<div id="timeline">
+	{if isset($sidebar_timeline) && $sidebar_timeline}
+		<ul>
+			{assign var=year value=null}
+			{foreach from=$sidebar_timeline key=year_month item=item}
+				{if $year neq $item.year}
+					{if !$item@first}
+							</ul>
+						</li>
+					{/if}
+					<li {if isset($post_params.year) && !isset($post_params.month) && ($post_params.year eq $item.year)}class="selected"{/if}>
+					{assign var=year value=$item.year}
+					<a href="{$item.year_link}">{$item.year|default:'NULL'}</a>
+					<ul>
+				{/if}
+
+				<li {if isset($post_params.year) && isset($post_params.month) && ($post_params.year eq $item.year) && ($post_params.month eq $item.month) }class="selected"{/if}>
+					<a href="{$item.link}" title="{_w("%d post","%s posts",$item.count)|escape}">{_ws(date("F",gmmktime(0,0,0,$item.month)))}</a>
+				</li>
+	{if $item@last}
+			</ul>
+		</li>
+			{/if}
+			{/foreach}
+		</ul>
+	{/if}
+	</div>
+	<!-- end timeline -->
+
+{/if}
+
+	<!-- plugin hook: "frontend_action_{$action}.sidebar" -->
+	{foreach from=$frontend_action item=output key=plugin}
+		{if is_array($output) && isset($output.sidebar)}
+
+			<!-- begin {$plugin} -->{$output.sidebar}<!-- end {$plugin} -->
+		{/if}
+	{/foreach}
+
+
+{if $action eq post}
+	<!-- plugin hook: frontend_sidebar.post -->
+{/if}

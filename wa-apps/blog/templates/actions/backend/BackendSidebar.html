@@ -1,0 +1,156 @@
+{wa_js file="js/compiled/blog-sidebar.js"}
+{$wa_url}wa-content/js/jquery-ui/jquery.ui.core.min.js
+{$wa_url}wa-content/js/jquery-ui/jquery.ui.widget.min.js
+{$wa_url}wa-content/js/jquery-ui/jquery.ui.mouse.min.js
+{$wa_url}wa-content/js/jquery-ui/jquery.ui.sortable.min.js
+{/wa_js}
+
+	<div class="sidebar left200px">
+
+		<div class="b-sidebar menu-collapsible">
+
+			<!-- core navigation -->
+
+			<div class="block">
+				<ul class="menu-v with-icons category-menu">
+					{if $writable_blogs}
+					<li class="bottom-padded {if isset($new_post)&&$new_post==true}selected{/if}">
+						<a href="?module=post&amp;action=edit&amp;id="><i class="icon16 add"><!-- icon --></i><strong>[`New post`]</strong>
+						</a>
+					</li>
+					{/if}
+					<li {if isset($view_all_posts) && $view_all_posts == true}class="selected"{/if}>
+						<a href="{$wa_app_url}">
+							<span class="count ">{$post_count}</span>
+							<i class="icon16 blogs"><!-- icon --></i>[`All posts`]
+							{if isset($new_post_count) && $new_post_count > 0}
+								<strong class="small highlighted">+{$new_post_count}</strong>
+							{/if}
+						</a>
+					</li>
+					<li {if $module == 'comments'}class="selected"{/if}>
+						<a href="?module=comments">
+							<span class="count comment-count">{$comment_count}</span>
+							<i class="icon16 comments"><!-- icon --></i>[`Comments`]
+							{if $comment_new_count > 0}<strong class="small highlighted">+{$comment_new_count}</strong>{/if}
+						</a>
+					</li>
+					<li {if $action == 'calendar'}class="selected"{/if}>
+						<a href="?action=calendar">
+							{if $count_draft_overdue > 0}<strong class="count indicator red">{$count_draft_overdue}</strong>{/if}
+							<i class="icon16 calendar"><!-- icon --></i>[`Calendar`]
+						</a>
+					</li>
+					{* @event backend_sidebar.%plugin_id%.menu *}
+					<!-- plugin hook: "backend_sidebar.menu" -->
+					{foreach from=$backend_sidebar item=output key=plugin}
+						{if is_array($output) && isset($output.menu)}
+
+							<!-- begin {$plugin} -->{$output.menu}<!-- end {$plugin} -->
+						{/if}
+					{/foreach}
+
+					<!-- end plugin hook: "backend_sidebar.menu" -->
+				</ul>
+			</div>
+
+			<!-- blog list -->
+			<div class="block">
+			{if $wa->blog->rights(true)}
+				<span class="count">
+					<a href="?module=blog&amp;blog=&amp;action=settings"><i class="icon16 add"><!-- icon --></i></a>
+				</span>
+			{/if}
+				<h5 class="heading collapse-handler">
+					<i class="icon16 darr"><!-- icon --></i>[`Blogs`]
+				</h5>
+				<ul class="menu-v with-icons collapsible category-menu" id="blogs">
+					{foreach from=$blogs item=blog key=id} <!-- blog list item {$id}  -->
+					<li {if isset($blog_id) && $blog_id==$id}class="selected"{/if} id="blog_li_item_{$id}">
+						<a href="?blog={$id}">
+							<span class="count">{$blog.qty}</span>
+							{$blog.icon_html}{$blog.name|escape} {if $blog.status == blogBLogModel::STATUS_PRIVATE}<i class="icon10 lock-bw no-overhanging" title="[`Private blog`]"><!-- icon --></i>{/if}
+							{if isset($blog.new_post)}<strong class="small highlighted">+{$blog.new_post}</strong>{/if}
+						</a>
+					</li>
+					{/foreach}
+				</ul>
+			</div>
+
+			{* @event backend_sidebar.%plugin_id%.section *}
+			<!-- plugin hook: "backend_sidebar.section" -->
+			{foreach from=$backend_sidebar item=output key=plugin}
+				{if is_array($output) && isset($output.section)}
+
+					<!-- begin {$plugin} -->{$output.section}<!-- end {$plugin} -->
+				{/if}
+			{/foreach}
+
+			<!-- end plugin hook: "backend_sidebar.section" -->
+
+			{if $writable_blogs}
+			<!-- drafts -->
+			<div class="block">
+
+				<h5 class="heading collapse-handler">
+					<i class="icon16 darr"><!-- icon --></i>[`Drafts`]
+				</h5>
+
+				<ul id="blog-drafts" class="menu-v with-icons b-drafts collapsible">
+
+				{foreach from=$drafts item=post}
+					<li {if $post.id == $post_id}class="selected"{/if}>
+
+						<a class="{if $post.status eq blogPostModel::STATUS_SCHEDULED}italic{/if}" href="?module=post&amp;action=edit&amp;id={$post.id}">
+							{if $post.status == blogPostModel::STATUS_SCHEDULED}
+								<span class="count"><i class="icon16 clock"><!-- icon --></i></span>
+							{elseif $post.status == blogPostModel::STATUS_DEADLINE}
+								<span class="count"><i class="icon16 exclamation"><!-- icon --></i></span>
+							{/if}
+							<i class="icon16 userpic20" style="background-image: url('{$post.user.photo_url_20}')"><!-- icon --></i><span{if isset($post.overdue)} class="bold b-draft-overdue"{/if}>{$post.title|escape|truncate:80|default:'[`(empty title)`]'}</span>
+							{if $post.blog_status == blogBlogModel::STATUS_PRIVATE}
+								<i class="icon10 lock-bw no-overhanging" title="[`Belong to private blog`]"><!-- icon --></i>
+							{/if}
+							{if $post.datetime}
+								<br>
+								<span class="hint{if isset($post.overdue)} b-draft-overdue{/if}">{$post.datetime|wa_datetime:'humandate'}</span>
+							{/if}
+						</a>
+
+					</li>
+
+				{/foreach}
+				</ul>
+
+			</div>
+			{/if}
+
+			<div class="hr"></div>
+
+			<!-- not-that-frequently-accessed app sections -->
+			<div class="block">
+				<ul class="menu-v with-icons">
+                    {if $wa->user()->getRights($wa->app(), 'pages')}
+                    <li {if $module == 'pages'}class="selected"{/if}><a href="?module=pages"><i class="icon16 notebook"><!-- icon --></i>[s`Pages`]</a></li>
+                    {/if}
+				    {if $wa->user()->isAdmin($wa->app())}
+					<li {if $action == 'plugins'}class="selected"{/if}><a href="?module=plugins"><i class="icon16 plugins"><!-- icon --></i>[`Plugins`]</a></li>
+				    {/if}
+					<li {if $module == 'settings'}class="selected"{/if}><a href="?module=settings"><i class="icon16 settings"><!-- icon --></i>[`Settings`]</a></li>
+
+					{* @event backend_sidebar.%plugin_id%.system *}
+					<!-- plugin hook: "backend_sidebar.system" -->
+					{foreach from=$backend_sidebar item=output key=plugin}
+						{if is_array($output) && isset($output.system)}
+
+							<!-- begin {$plugin} -->{$output.system}<!-- end {$plugin} -->
+						{/if}
+					{/foreach}
+
+					<!-- end plugin hook: "backend_sidebar.system" -->
+
+				</ul>
+			</div>
+
+		</div>
+	</div>
