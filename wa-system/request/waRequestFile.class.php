@@ -218,9 +218,9 @@ class waRequestFile
             throw new waException('No file uploaded.');
         }
 
-        if (!$this->skip_uploaded_check && !is_uploaded_file($tmp_name)) {
+        if (!$this->skip_uploaded_check && !is_uploaded_file($this->data['tmp_name'])) {
             throw new waException('Temporary file does not exist anymore.');
-        } else if ($this->skip_uploaded_check && !file_exists($tmp_name)) {
+        } else if ($this->skip_uploaded_check && !file_exists($this->data['tmp_name'])) {
             throw new waException('Temporary file does not exist anymore.');
         }
 

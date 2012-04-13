@@ -274,5 +274,6 @@ class waAutoload
       'waPageSaveController' => 'page/actions/waPageSave.controller.php',
       'waPageSortController' => 'page/actions/waPageSort.controller.php',
       'waPageDeleteController' => 'page/actions/waPageDelete.controller.php',
+      'waPageUploadimageController' => 'page/actions/waPageUploadimage.controller.php'
     );
 }

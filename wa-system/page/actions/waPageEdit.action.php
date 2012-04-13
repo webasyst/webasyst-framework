@@ -59,6 +59,7 @@ class waPageEditAction extends waViewAction
         }
 
         $this->view->assign('routes', $routes);
+        $this->view->assign('upload_url', wa()->getDataUrl('img', true));
 
         $this->template = $this->getConfig()->getRootPath().'/wa-system/page/templates/PageEdit.html';
     }
