@@ -59,9 +59,9 @@ jQuery.fn.waDialog = function (options) {
 			);
 			d.find('.dialog-content-indent').append(content.show());
 		}
-        if (options.buttons) {
-		    d.find('.dialog-buttons-gradient').empty().append(options.buttons);
-        }
+		if (options.buttons) {
+			d.find('.dialog-buttons-gradient').empty().append(options.buttons);
+		}
 		if (options.url) {
 			d.find('.dialog-content-indent').append('<h1>'+(options.loading_header || '')+'<i class="icon16 loading"></i></h1>');
 		} else if (options.content) {
@@ -125,9 +125,9 @@ jQuery.fn.waDialog = function (options) {
 					d.find('.dialog-buttons-gradient').empty().append(el.find('.dialog-buttons').contents());
 				}
 			} else {
-				d.find('.dialog-content-indent').empty().append(el);
+				d.find('.dialog-content-indent').html(response);
 			}
-			d.trigger('resize');
+			d.trigger('wa-resize');
 			if (options.onLoad) {
 				options.onLoad.call(d.get(0));
 			}
@@ -138,18 +138,18 @@ jQuery.fn.waDialog = function (options) {
 		}
 	}
 
-    d.find('.dialog-buttons').delegate('.cancel', 'click', function (e) {
-        e.stopPropagation();
-        e.preventDefault();
-        if (options.onCancel) {
-            options.onCancel.call(d.get(0));
-        }
-        d.trigger('close');
-        return false;
-    });
+	d.find('.dialog-buttons').delegate('.cancel', 'click', function (e) {
+		e.stopPropagation();
+		e.preventDefault();
+		if (options.onCancel) {
+			options.onCancel.call(d.get(0));
+		}
+		d.trigger('close');
+		return false;
+	});
 
 
-    if (options.onSubmit) {
+	if (options.onSubmit) {
 		d.find('form').unbind('submit').submit(function () {
 			if (options.disableButtonsOnSubmit) {
 				d.find("input[type=submit]").attr('disabled', 'disabled');

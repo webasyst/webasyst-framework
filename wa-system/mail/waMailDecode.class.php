@@ -104,7 +104,7 @@ class waMailDecode
                 if ($v) {
                     $parser = new waMailAddressParser($v);
                     $v = $parser->parse();
-                    if (!isset($v[0])) {
+                    if (isset($v[0])) {
                         $v = $v[0];
                     }
                 }

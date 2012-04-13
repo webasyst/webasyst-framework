@@ -152,7 +152,7 @@ abstract class waContactField
 
     /**
      * @param string $name
-     * @return waContactStorage|waContactDataStorage
+     * @return waContactStorage
      */
     public function getStorage($name = null)
     {
@@ -187,7 +187,12 @@ abstract class waContactField
         }
     }
 
-
+    /**
+     * Prepare value to be stored in DB.
+     * For multi fields return list of arrays(value=>..., ext=>...); ext is optional, see $this->isExt()
+     *
+     * $value can be a string, an array(value=>..., ext=>...) or list of these.
+     */
     public function set(waContact $contact, $value, $params = array(), $add = false)
     {
         if ($this->isMulti()) {
@@ -200,7 +205,7 @@ abstract class waContactField
                 }
                 $value = array($value);
             } elseif (isset($value['value'])) {
-                if ($is_ext) {
+                if ($is_ext && !isset($value['ext'])) {
                     $value['ext'] = $ext;
                 }
                 if (!$is_ext && isset($value['ext'])) {
@@ -214,8 +219,13 @@ abstract class waContactField
                         if ($is_ext) {
                             $v['ext'] = $ext;
                         }
-                    } elseif (!$is_ext && isset($v['ext'])) {
-                        unset($v['ext']);
+                    } else {
+                        if (!$is_ext && isset($v['ext'])) {
+                            unset($v['ext']);
+                        }
+                        if ($is_ext && !isset($v['ext'])) {
+                            $v['ext'] = $ext;
+                        }
                     }
                 }
                 unset($v);
@@ -364,6 +374,9 @@ abstract class waContactField
         $errors = null;
         if ($this->options['validators']) {
             foreach ($validators as $validator) {
+                /**
+                 * @var waValidator $validator
+                 */
                 if ($validator instanceof waValidator) {
                     if ($this->isMulti()) {
                         $allEmpty = true;
@@ -474,6 +487,10 @@ abstract class waContactField
         return $value;
     }
 
+    /**
+     * @param string $format
+     * @return waContactFieldFormatter
+     */
     protected function getFormatter($format)
     {
         if (isset($this->options['formats'][$format])) {

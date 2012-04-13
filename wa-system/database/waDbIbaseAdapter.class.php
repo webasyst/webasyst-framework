@@ -76,7 +76,7 @@ class waDbIbaseAdapter extends waDbAdapter
 	{ 
 	}
 	
-	public function getIterator($result, $handler)
+	public function getIterator($result)
 	{
 		return new waDbResultIbaseIterator($result, $this);
 	}

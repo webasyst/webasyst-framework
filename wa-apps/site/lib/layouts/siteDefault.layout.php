@@ -25,24 +25,35 @@ class siteDefaultLayout extends waLayout
 	    $domain = siteHelper::getDomain();
 	    $routing = wa()->getRouting();
 	    $routes = $routing->getRoutes($domain);
-	    $route_pages = array();
+
+        $page_model = new sitePageModel();
+        $pages = $page_model->select('id,name,url,status')->where('domain_id = '.$this->domain_id)->order('sort')->fetchAll('id');
+
+        $pages_urls = array();
+        foreach ($pages as $page_id => $p) {
+            $pages_urls[$page_id] = $p['url'];
+            $pages[$page_id]['url'] = null;
+        }
+
 	    foreach ($routes as $r_id => $r) {
-	        if (isset($r['_pages'])) {
-	            $u = $routing->getUrlByRoute($r);
-	            foreach ($r['_pages'] as $page_id) {
-	                $route_pages[$page_id] = $u;
-	            }
+	        if (isset($r['app']) && $r['app'] == 'site' && (strpos($r['url'], '<url') === false)) {
+                $u = $routing->getUrlByRoute($r);
+                if (!isset($r['_exclude']) || !$r['_exclude']) {
+                    foreach ($pages_urls as $p_id => $p_url) {
+                        $pages[$p_id]['url'] = $u.$p_url;
+                        unset($pages_urls[$p_id]);
+                    }
+                } else {
+                    foreach ($pages_urls as $p_id => $p_url) {
+                        if (!in_array($p_id, $r['_exclude'])) {
+                            $pages[$p_id]['url'] = $u.$p_url;
+                            unset($pages_urls[$p_id]);
+                        }
+                    }
+                }
 	        }
 	    }
-	    
-	    $page_model = new sitePageModel();
-	    $pages = $page_model->select('id,name,url,status')->where('domain_id = '.$this->domain_id)->order('sort')->fetchAll('id');
-	    
-	    foreach ($pages as &$p) {
-	        if (isset($route_pages[$p['id']])) {
-	            $p['url'] = $route_pages[$p['id']].$p['url'];
-	        }
-	    }
-	    return $pages;	    
+
+	    return $pages;
 	}
 }

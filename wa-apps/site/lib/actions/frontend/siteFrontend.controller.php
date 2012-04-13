@@ -13,7 +13,11 @@ class siteFrontendController extends waViewController
 			$page = $cache->get();
 		} else {
 		    $site = new siteFrontend();
-		    $page = $site->getPage(waRequest::param('url', ''));
+            if (waRequest::param('error')) {
+                $page = array();
+            } else {
+		        $page = $site->getPage(waRequest::param('url', ''));
+            }
 			if ($page && $cache) {
 				$cache->set($page);
 			}

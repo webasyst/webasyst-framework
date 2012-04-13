@@ -35,6 +35,9 @@ class contactsRightsAction extends waViewAction
             // Init app
             waSystem::getInstance($app_id, $app_config, true);
             include($file_path);
+            /**
+             * @var waRightConfig $right_config
+             */
             $right_config = new $class_name();
             $rights += $right_config->getRights($contact_id);
 

@@ -94,4 +94,11 @@ abstract class waDbAdapter
     {
         return new waDbResultIterator($result, $this);
     }
+
+    public function autocommit($flag) {}
+
+    public function commit() {}
+
+    public function rollback() {}
+
 }

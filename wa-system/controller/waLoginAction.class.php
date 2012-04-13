@@ -2,14 +2,6 @@
 
 abstract class waLoginAction extends waViewAction
 {
-    public function getTitle()
-    {
-        if ( ( $title = $this->getConfig()->getOption('login_form_title'))) {
-            return waLocale::fromArray($title);
-        }
-        return wa()->getSetting('name', 'Webasyst', 'webasyst');
-    }
-
     public function execute()
     {
         $this->view->setOptions(array('left_delimiter' => '{', 'right_delimiter' => '}'));
@@ -24,6 +16,7 @@ abstract class waLoginAction extends waViewAction
         wa('webasyst')->getConfig()->setLocale(wa()->getLocale(), true);
 
         $title = $this->getTitle();
+        $title_style = $this->getTitleStyle();
 
         // Password recovery form to enter login/email
         if (waRequest::request('forgot')) {
@@ -70,6 +63,7 @@ abstract class waLoginAction extends waViewAction
         }
 
         $this->view->assign('title', $title);
+        $this->view->assign('title_style', $title_style);
 
         $app_settings_model = new waAppSettingsModel();
         $background = $app_settings_model->get('webasyst', 'auth_form_background');
@@ -83,15 +77,30 @@ abstract class waLoginAction extends waViewAction
         $this->view->assign('remember_enabled', $app_settings_model->get('webasyst', 'rememberme', 1));
 
         $auth = $this->getAuth();
+        $authorized = false;
         try {
+            // Already authorized from session?
             if ($this->getUser()->isAuth()) {
                 if (!$auth->getOption('is_user') || $this->getUser()->get('is_user')) {
-                    $this->afterAuth();
+                    $authorized = true;
                 }
             }
-            if ($auth->auth()) {
+            // Try to authorize from POST or cookies
+            if (!$authorized && $auth->auth()) {
+                $authorized = true;
+            }
+
+            if ($authorized) {
+                // Final check: is user banned?
+                if (wa()->getUser()->get('is_banned')) {
+                    wa()->getAuth()->clearAuth();
+                    throw new waException(_w('Access denied'));
+                }
+
+                // Proceed with successfull authorization
                 $this->getStorage()->remove('auth_login');
                 $this->afterAuth();
+                exit;
             }
         } catch (waException $e) {
             $this->view->assign('error', $e->getMessage());
@@ -109,6 +118,19 @@ abstract class waLoginAction extends waViewAction
         }
     }
 
+    public function getTitle()
+    {
+        if ( ( $title = $this->getConfig()->getOption('login_form_title'))) {
+            return waLocale::fromArray($title);
+        }
+        return wa()->getSetting('name', 'Webasyst', 'webasyst');
+    }
+
+    public function getTitleStyle()
+    {
+        return $this->getConfig()->getOption('login_form_title_style');
+    }
+
     /**
      * @return waAuth
      */
@@ -124,8 +146,10 @@ abstract class waLoginAction extends waViewAction
         $auth = $this->getAuth();
         $is_user = $auth->getOption('is_user');
         if (strpos($login, '@')) {
-            $sql = "SELECT c.* FROM wa_contact c JOIN wa_contact_emails e ON c.id = e.contact_id
-            WHERE ".($is_user ? "c.is_user = 1 AND " : "")."e.email LIKE s:email ORDER BY c.last_datetime DESC LIMIT 1";
+            $sql = "SELECT c.* FROM wa_contact c
+            JOIN wa_contact_emails e ON c.id = e.contact_id
+            WHERE ".($is_user ? "c.is_user = 1 AND " : "")."e.email LIKE s:email AND e.sort = 0
+            ORDER BY c.id LIMIT 1";
             $contact_info = $contact_model->query($sql, array('email' => $login))->fetch();
             $this->view->assign('email', true);
         } else {
@@ -135,6 +159,11 @@ abstract class waLoginAction extends waViewAction
         if ($contact_info && (!$is_user || $contact_info['is_user'])) {
             $contact = new waContact($contact_info['id']);
             $contact->setCache($contact_info);
+
+            // Is user banned?
+            if ($contact->get('is_banned')) {
+                $this->view->assign('error', _w('Password recovery for this email has been banned.'));
+            } else
             // get defaul email to send mail
             if ($to = $contact->get('email', 'default')) {
                 // Send message in user's language
@@ -158,9 +187,10 @@ abstract class waLoginAction extends waViewAction
                 }
                 $this->view->assign('url', $this->getConfig()->getHostUrl().$url);
                 // send email
-                $subject = _w("Recovering password");
-                if (file_exists(wa()->getAppPath('templates/mail/RecoveringPassword.html'))) {
-                    $body = $this->view->fetch('templates/mail/RecoveringPassword.html');
+                $subject = _ws("Recovering password");
+                $template_file = $this->getConfig()->getConfigPath('mail/RecoveringPassword.html', true, 'webasyst');
+                if (file_exists($template_file)) {
+                    $body = $this->view->fetch($template_file);
                 } else {
                     $body = $this->view->fetch(wa()->getAppPath('templates/mail/RecoveringPassword.html', 'webasyst'));
                 }
@@ -169,7 +199,7 @@ abstract class waLoginAction extends waViewAction
                 if ($mailer->send($to, $subject, $body)) {
                     $this->view->assign('success', true);
                 } else {
-                    $this->view->assign('error', _w('Sorry, we can not recover password for this login name or email. Please refer to your system administrator.'));
+                    $this->view->assign('error', _ws('Sorry, we can not recover password for this login name or email. Please refer to your system administrator.'));
                 }
             } else {
                 $this->view->assign('error', _w('Sorry, we can not recover password for this login name or email. Please refer to your system administrator.'));

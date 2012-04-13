@@ -1,11 +1,11 @@
 <div class="sidebar left200px s-internal-sidebar" style="min-height:300px">
 	<div class="s-core-app-name">
 		<h2 class="s-short-header">
-			<img src="{$wa_url}{$app.icon.24}">
+			<img src="{$wa_url}{$app.icon.24}" alt="">
 			{if !empty($route._name)}{$route._name}{else}{$app.name}{/if}
 			<span class="hint">{$domain_root_url}/{$route.url|escape}</span>
 		</h2>
-	
+
 		<a href="#/routing/route={$route_id}" class="s-settings-link"><i class="icon10 settings"></i><u>[`Settlement settings`]</u></a>
 	</div>
 		{foreach from=$themes key=t_id item=t}
@@ -46,7 +46,7 @@
 				</div>
 				</form>
 			</div>
-	</div>	
+	</div>
 </div>
 
 {if $themes}

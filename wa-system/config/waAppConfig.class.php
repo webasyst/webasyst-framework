@@ -68,7 +68,7 @@ class waAppConfig extends SystemConfig
 	public function init()
 	{
 		$files = array(
-		    $this->getAppPath().'/lib/config/config.php', // defaults 
+		    $this->getAppPath().'/lib/config/config.php', // defaults
 		    $this->getPath('config').'/apps/'.$this->application.'/config.php' // custom
 		);
 		foreach ($files as $file_path) {
@@ -108,9 +108,9 @@ class waAppConfig extends SystemConfig
 		if (!$time) {
 			try {
 				$this->install();
-			} catch (Exception $e) {
+			} catch (waException $e) {
 				waLog::log($e->__toString());
-				return;
+                throw $e;
 			}
 			$ignore_all = true;
 		} else {
@@ -129,6 +129,9 @@ class waAppConfig extends SystemConfig
 			$iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($path), RecursiveIteratorIterator::SELF_FIRST);
 			$files = array();
 			foreach ($iterator as $file) {
+                /**
+                 * @var SplFileInfo $file
+                 */
 				if ($file->isFile() && preg_match('/^[0-9]+\.php$/', $file->getFilename())) {
 					$t = substr($file->getFilename(), 0, -4);
 					if ($t > $time) {
@@ -175,6 +178,19 @@ class waAppConfig extends SystemConfig
 			$app_settings_model->set($this->application, 'update_time', $t);
 		}
 
+        if (isset($this->info['edition']) && $this->info['edition']) {
+            if (!isset($app_settings_model)) {
+                $app_settings_model = new waAppSettingsModel();
+            }
+            if (!$app_settings_model->get($this->application, 'edition')) {
+                $file_sql = $this->getAppPath('lib/config/app.'.$this->info['edition'].'.sql');
+                if (file_exists($file_sql)) {
+                    self::executeSQL($file_sql, 1);
+                }
+                $app_settings_model->set($this->application, 'edition', $this->info['edition']);
+            }
+        }
+
 	}
 
 	public function install()
@@ -191,15 +207,17 @@ class waAppConfig extends SystemConfig
 		}
 	}
 
-	/**
-	 * Execute sql from file
-	 *
-	 * @param string $file_sql - full path to sql file
-	 * @param int $type
-	 *        0 - execute all queries
-	 *        1 - ignore drop table
-	 *        2 - execute only drop table
-	 */
+    /**
+     * Execute sql from file
+     *
+     * @static
+     * @param string $file_sql
+     * @param int $type
+     *          0 - execute all queries,
+     *          1 - ignore drop table,
+     *          2 - execute only drop table
+     * @return void
+     */
 	public static function executeSQL($file_sql, $type = 0)
 	{
 		$sqls = file_get_contents($file_sql);
@@ -254,7 +272,7 @@ class waAppConfig extends SystemConfig
 	        $this->loaded_locale = $locale;
 		    waLocale::load($locale, $this->getAppPath('locale'), $this->application, $bind);
 	    }
-	    if ($bind && waLocale::getDomain() != $this->application) { 
+	    if ($bind && waLocale::getDomain() != $this->application) {
 	        waLocale::load($locale, $this->getAppPath('locale'), $this->application, $bind);
 	    }
 	}
@@ -303,8 +321,8 @@ class waAppConfig extends SystemConfig
 		closedir($dh);
 		return $result;
 	}
-	
-	
+
+
 	protected function isIgnoreFile($f)
 	{
 	    return $f === '.' || $f === '..' || $f === '.svn';
@@ -396,44 +414,44 @@ class waAppConfig extends SystemConfig
 		if ($this->plugins === null) {
 			$file = waConfig::get('wa_path_cache')."/apps/".$this->application.'/config/plugins.php';
 			if (!file_exists($file) || SystemConfig::isDebug()) {
-				waFiles::create(waConfig::get('wa_path_cache')."/apps/".$this->application.'/config');
-				// read plugins from file wa-config/[APP_ID]/plugins.php
-				$path = $this->getConfigPath('plugins.php', true);
-				if (!file_exists($path)) {
-					$this->plugins = array();
-					return $this->plugins;
-				}
-				$all_plugins = include($path);
-				$this->plugins = array();
-				foreach ($all_plugins as $plugin_id => $enabled) {
-					if ($enabled) {
-						$plugin_config = $this->getPluginPath($plugin_id)."/lib/config/plugin.php";
-						if (!file_exists($plugin_config)) {
-							continue;
-						}
-						$plugin_info = include($plugin_config);
-						//$plugin_info['name'] = _wd($plugin_id, $plugin_info['name']);
-						$plugin_info['id'] = $plugin_id;
-						if (isset($plugin_info['img'])) {
-							$plugin_info['img'] = 'wa-apps/'.$this->application.'/plugins/'.$plugin_id.'/'.$plugin_info['img'];
-						}
-						if (isset($plugin_info['rights'])) {
-							if ($plugin_info['rights']) {
-								$plugin_info['handlers']['rights.config'] = 'rightsConfig';
-							}
-						}
-
-						$this->plugins[$plugin_id] = $plugin_info;
-					}
-				}
-				waUtils::varExportToFile($this->plugins, $file);
+                waFiles::create(waConfig::get('wa_path_cache')."/apps/".$this->application.'/config');
+                // read plugins from file wa-config/[APP_ID]/plugins.php
+                $path = $this->getConfigPath('plugins.php', true);
+                if (!file_exists($path)) {
+                    $this->plugins = array();
+                    return $this->plugins;
+                }
+                $all_plugins = include($path);
+                $this->plugins = array();
+                foreach ($all_plugins as $plugin_id => $enabled) {
+                    if ($enabled) {
+                        $plugin_config = $this->getPluginPath($plugin_id)."/lib/config/plugin.php";
+                        if (!file_exists($plugin_config)) {
+                            continue;
+                        }
+                        $plugin_info = include($plugin_config);
+                        //$plugin_info['name'] = _wd($plugin_id, $plugin_info['name']);
+                        $plugin_info['id'] = $plugin_id;
+                        if (isset($plugin_info['img'])) {
+                            $plugin_info['img'] = 'wa-apps/'.$this->application.'/plugins/'.$plugin_id.'/'.$plugin_info['img'];
+                        }
+                        if (isset($plugin_info['rights']) && $plugin_info['rights']) {
+                            $plugin_info['handlers']['rights.config'] = 'rightsConfig';
+                        }
+                        if (isset($plugin_info['frontend']) && $plugin_info['frontend']) {
+                            $plugin_info['handlers']['routing'] = 'routing';
+                        }
+                        $this->plugins[$plugin_id] = $plugin_info;
+                    }
+                }
+                waUtils::varExportToFile($this->plugins, $file);
 			} else {
 				$this->plugins = include($file);
 			}
 		}
 		return $this->plugins;
 	}
-	
+
 	public function checkRights($module, $action)
 	{
 	    return true;

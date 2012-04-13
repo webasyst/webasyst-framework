@@ -1039,7 +1039,7 @@
 		},
 
 		/** Helper to switch to particular tab in a tab set. */
-		switchToTab: function(tab, onto, onfrom) {
+		switchToTab: function(tab, onto, onfrom, tabContent) {
 			if (typeof(tab) == 'string') {
 				if (tab.substr(0, 2) == 't-') {
 					tab = '#'+tab;
@@ -1054,9 +1054,12 @@
 				return;
 			}
 
-			var id = tab.attr('id');
-			if (!id || id.substr(0, 2) != 't-') {
-				return;
+			if (!tabContent) {
+				var id = tab.attr('id');
+				if (!id || id.substr(0, 2) != 't-') {
+					return;
+				}
+				tabContent = $('#tc-'+id.substr(2));
 			}
 
 			if (onfrom) {
@@ -1068,11 +1071,10 @@
 				}
 			}
 
-			var tabContent = $('#tc-'+id.substr(2));
 			var doSwitch = function() {
-				$('ul.tabs li.selected').removeClass('selected');
+				tab.parent().find('li.selected').removeClass('selected');
 				tab.removeClass('hidden').css('display', '').addClass('selected');
-				$('.tab-content').addClass('hidden');
+				tabContent.siblings('.tab-content').addClass('hidden');
 				tabContent.removeClass('hidden');
 				if (onto) {
 					onto.call(tab[0]);

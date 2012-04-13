@@ -205,7 +205,12 @@ class waSystem
     }
 
     /**
+     * Returns auth adapter
+     *
+     * @param string $provider
+     * @param array $params
      * @return waAuth
+     * @throws waException
      */
     public function getAuth($provider = null, $params = array())
     {
@@ -357,7 +362,22 @@ class waSystem
                         $this->getResponse()->redirect($logout_url);
                     }
                     if (!$this->getRouting()->dispatch()) {
-                        $this->getResponse()->redirect($this->getConfig()->getBackendUrl(true), 302);
+                        $routes = $this->getRouting()->getRoutes();
+                        $redirect = true;
+                        $route = end($routes);
+                        if (isset($route['app'])) {
+                                $redirect = false;
+                                // set routing
+                                foreach ($route as $k => $v) {
+                                    if ($k !== 'url') {
+                                        waRequest::setParam($k, $v);
+                                    }
+                                }
+                                waRequest::setParam('error', 404);
+                        }
+                        if ($redirect) {
+                            $this->getResponse()->redirect($this->getConfig()->getBackendUrl(true), 302);
+                        }
                     }
                     $app = waRequest::param('app');
                 } else {
@@ -802,10 +822,11 @@ class waSystem
     }
 
     /**
-     * Return waPlugin object
+     * Returns waPlugin object by plugin id
      *
      * @param string $plugin_id
      * @return waPlugin
+     * @throws waException
      */
     public function getPlugin($plugin_id)
     {
@@ -897,10 +918,9 @@ class waSystem
                         if (is_dir($locale_path)) {
                             waLocale::load($this->getLocale(), $locale_path, self::getActiveLocaleDomain(), false);
                         }
-                        if (null !== ( $r = $class->$handler_method($params))) {
+                        if (method_exists($class, $handler_method) && null !== ( $r = $class->$handler_method($params))) {
                             $result[$plugin_id.'-plugin'] = $r;
                         }
-
                     } catch (Exception $e) {
                         waLog::log('Error: '.$e->getMessage());
                     }

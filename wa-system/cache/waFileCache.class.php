@@ -65,7 +65,7 @@ abstract class waFileCache implements waiCache
     	$this->value = null;
         $file = $this->getFilePath();
         if (file_exists($file)) {
-            return unlink($file);
+            return @unlink($file);
         }
         return true;
     }   

@@ -58,6 +58,7 @@ class waUser extends waContact
      * Returns hash of the password
      *
      * @param string $password
+     * @return string
      */
     public function getPasswordHash($password)
     {
@@ -92,12 +93,16 @@ class waUser extends waContact
 
     public function offsetSet($offset, $value)
     {
-        switch ($offset) {
-            case 'password':
+        if ($offset == 'password') {
                 $value = $this->getPasswordHash($value);
-                break;
+                parent::offsetSet($offset, $value);
+                // set new auth token for current user
+                if ($this->id == wa()->getUser()->getId()) {
+                    wa()->getAuth()->updateAuth($this);
+                }
+        } else {
+            parent::offsetSet($offset, $value);
         }
-        parent::offsetSet($offset, $value);
     }
 
     /**
@@ -106,7 +111,7 @@ class waUser extends waContact
      * @param string $app_id - if specified returns only users whish has access to the application
      * @return array
      */
-    public static function getUsers($app_id = false)
+    public static function getUsers($app_id = null)
     {
         $contact_model = new waContactModel();
         if ($app_id) {

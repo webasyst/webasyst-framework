@@ -30,14 +30,14 @@ class contactsDefaultLayout extends waLayout
         }
 
         // Plugin assets
-        if (waRequest::param('full')) {
+        if ($this->getConfig()->getInfo('edition') === 'full') {
             wa()->event('assets');
         }
 
         $this->view->assign('admin', wa()->getUser()->getRights('contacts', 'backend') > 1);
         $this->view->assign('global_admin', wa()->getUser()->getRights('webasyst', 'backend') > 0);
         $this->view->assign('fields', $fields);
-        $this->view->assign('versionFull', waRequest::param('full'));
+        $this->view->assign('versionFull', $this->getConfig()->getInfo('edition') === 'full');
     }
 }
 

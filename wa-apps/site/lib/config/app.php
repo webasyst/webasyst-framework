@@ -8,9 +8,8 @@ return array(
 		16 => 'img/site16.png'
     ),
 	'frontend' => true,
-	'pages' => true,
-	'version'=>'1.0.0',
-    'critical'=>'1.0.0',
+	'version'=>'1.1.1',
+    'critical'=>'1.1.0',
 	'vendor' => 'webasyst',
 	'system' => true,
 	'rights' => true,

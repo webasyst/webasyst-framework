@@ -19,6 +19,7 @@
 
 #header { margin-bottom: 20px; }
 #header ul#wa-apps li.selected { background: none; }
+#footer { padding-bottom: 30px; }
 #footer .container { margin: 0 15px; }
 #footer #copyright { padding-left: 0; }
 #footer #sub-links { margin-left: 0; margin-top: 30px; }

@@ -11,6 +11,8 @@ class siteHelperAction extends waViewAction
                     '$wa_backend_url' => _w('URL to access Webasyst backend (relative)'),                    
                     '$wa_theme_url' => _w('URL of the current app design theme folder (relative)'),                    
 
+                    '$wa->title()' => _w('Title'),
+                    '$wa->title("<em>title</em>")' => _w('Assigns a new title'),
         			'$wa->accountName()' => _w('Returns name of this Webasyst installation (name is specified in “Installer” app settings)'),
                     '$wa->apps()' => _w('Returns this site’s core navigation menu which is either set automatically or manually in the “Site settings” screen'),
                     '$wa->currentUrl(bool <em>$absolute</em>)' => _w('Returns current page URL (either absolute or relative)'),

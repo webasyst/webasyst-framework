@@ -24,14 +24,14 @@ class waContactRightsModel extends waModel {
     }
 
     /** Get access value for user or group.
-      * Value for a group is determined from group acces preferences.
-      * Eventual value for a user is MAX(preference for this user, preferences for groups user is member of).
-      *
-      * @param int|array $id (defaults to current auth user) user id if positive; group id if negative (0 is group id for guests); can be a list of such integers.
-      * @param string $app_id application id; defaults to current application.
-      * @param string|null $name key to fetch value for; if not specified, then an array name => value is returned.
-      * @param boolean $check_groups (default is true) if set to false then only own access rights are considered, as if contact has no groups assigned
-      * @return int|array depends on $name */
+     * Value for a group is determined from group acces preferences.
+     * Eventual value for a user is MAX(preference for this user, preferences for groups user is member of).
+     *
+     * @param int|array $id (defaults to current auth user) user id if positive; group id if negative (0 is group id for guests); can be a list of such integers.
+     * @param string $app_id application id; defaults to current application.
+     * @param string|null $name key to fetch value for; if not specified, then an array name => value is returned.
+     * @param boolean $check_groups (default is true) if set to false then only own access rights are considered, as if contact has no groups assigned
+     * @return int|array depends on $name */
     public function get($id=null, $app_id=null, $name=null, $check_groups = TRUE)
     {
         if ($app_id !== null && $app_id !== 'webasyst' && !waSystem::getInstance()->appExists($app_id)) {
@@ -49,7 +49,12 @@ class waContactRightsModel extends waModel {
             return $name ? PHP_INT_MAX : array('backend' => PHP_INT_MAX);
         }
 
-        if (is_array($id) || !isset(self::$cache[$id][$app_id])) {
+        if (!is_array($id)) {
+            $cached = isset(self::$cache[$id]) && isset(self::$cache[$id][$app_id]) && ((!$name && (count(self::$cache[$id][$app_id]) > 1)) || ($name && isset(self::$cache[$id][$app_id][$name])));
+        } else {
+            $cached = false;
+        }
+        if (is_array($id) || !$cached) {
             $group_ids = is_array($id) ? array_map(wa_lambda('$a', 'return -$a;'), $id) : array(-$id);
             if ($check_groups) {
                 $group_ids[] = 0; // guests
@@ -69,6 +74,9 @@ class waContactRightsModel extends waModel {
                 'group_id' => $group_ids,
                 'app_id' => $app_id
             ))->fetchAll('name', true);
+            if (!isset($rights['backend'])) {
+                $rights['backend'] = 0;
+            }
 
             if (!is_array($id)) {
                 self::$cache[$id][$app_id] = $rights;
@@ -111,9 +119,9 @@ class waContactRightsModel extends waModel {
                 WHERE -group_id IN (i:ids)
                 GROUP BY group_id";
         $result = $this->query($sql, array(
-                // everything from $ids and all groups found for users in $ids; can contain duplicates, but it's ok
+        // everything from $ids and all groups found for users in $ids; can contain duplicates, but it's ok
                 'ids' => array_merge($ids, $group_ids)
-            )
+        )
         )->fetchAll('id', true);
 
         // update result considering group rights for users
@@ -276,20 +284,20 @@ class waContactRightsModel extends waModel {
         $sql = "SELECT app_id, MAX(value) v
                 FROM ".$this->table."
                 WHERE group_id IN (i:group_id)"
-                    .($noWA ? " AND app_id != 'webasyst' " : '').
+                .($noWA ? " AND app_id != 'webasyst' " : '').
                     "AND name = s:name
                     AND value > 0
                 GROUP BY app_id";
 
-        $data = $this->query($sql, array('group_id' => $id, 'name' => $name));
-        $result = array();
-        foreach ($data as $row) {
-            $result[$row['app_id']] = $row['v'];
-            if ($cache) {
-                self::$cache[$cache][$row['app_id']] = $row['v'];
-            }
-        }
-        return $result;
+                $data = $this->query($sql, array('group_id' => $id, 'name' => $name));
+                $result = array();
+                foreach ($data as $row) {
+                    $result[$row['app_id']] = $row['v'];
+                    if ($cache) {
+                        self::$cache[$cache][$row['app_id']][$name] = $row['v'];
+                    }
+                }
+                return $result;
     }
 
     /**
@@ -318,7 +326,7 @@ class waContactRightsModel extends waModel {
 
         // filter superadmins
         if ($app_id != 'webasyst') {
-            foreach($this->getAll(array_keys($no_access), 'webasyst', 'backend', $check_groups) as $id => $v) {
+            foreach($this->getByIds(array_keys($no_access), 'webasyst', 'backend', $check_groups) as $id => $v) {
                 $access[$id] = PHP_INT_MAX;
                 unset($no_access[$id]);
             }
@@ -329,7 +337,7 @@ class waContactRightsModel extends waModel {
 
         // filter app admins
         if ($name != 'backend') {
-            foreach($this->getAll(array_keys($no_access), $app_id, 'backend', $check_groups) as $id => $v) {
+            foreach($this->getByIds(array_keys($no_access), $app_id, 'backend', $check_groups) as $id => $v) {
                 $access[$id] = PHP_INT_MAX;
                 unset($no_access[$id]);
             }

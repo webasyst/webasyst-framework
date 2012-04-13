@@ -15,7 +15,6 @@ return array(
 			'$wa->site->page(<em>id</em>)' => _w('Returns page info (array) by <em>id</em> (int)'),
         ),
         'index.html' => array(
-            '$title' => _w('Title'),
             '$content' => _w('Content'),
             '$meta_keywords' => _w('META Keywords'),
 			'$meta_description' => _w('META Description'),

@@ -40,6 +40,11 @@ abstract class waController
         return $this->getConfig()->getApplication();
     }
 
+    public function getAppId()
+    {
+        return $this->getConfig()->getApplication();
+    }
+
 
     public function getRights($name = null, $assoc = true)
     {

@@ -14,7 +14,10 @@
  */
 abstract class waContactStorage 
 {
-    
+
+    /**
+     * @return string
+     */
     public function getType()
     {
         return get_class($this);
@@ -89,21 +92,29 @@ abstract class waContactStorage
     
     abstract protected function save(waContact $contact, $fields);
     
-    /** Delete all data for specified fields.
-      * @param array $fields list of fields to remove
-      * @param string $type company|person|both (defaults to both) */
+    /**
+     * Delete all data for specified fields.
+     * @param array $fields list of fields to remove
+     * @param string $type company|person|both (defaults to both)
+     */
     abstract public function deleteAll($fields, $type=null);
 
-    /** Number of duplicates in db for given field.
-      * @param waContactField|string $field
-      * @return int */
+    /**
+     * Number of duplicates in db for given field.
+     * @param waContactField|string $field
+     * @return int
+     */
     abstract public function duplNum($field);
     
-    /** For each [key => value] pair in $values search db for value in $field
-      * among all contacts except $excludeIds. (Note that $values could contain dublicates
-      * itself, and they won't be reported.)
-      * @param waContactField|string $field 
-      * @return array key => contact_id for each key from $values for which a record in db found */
+    /**
+     * For each [key => value] pair in $values search db for value in $field
+     * among all contacts except $excludeIds. (Note that $values could contain dublicates
+     * itself, and they won't be reported.)
+     * @param waContactField|string $field
+     * @param array $values
+     * @param array $excludeIds
+     * @return array key => contact_id for each key from $values for which a record in db found
+     */
     abstract public function findDuplicatesFor($field, $values, $excludeIds=array());
 }
 

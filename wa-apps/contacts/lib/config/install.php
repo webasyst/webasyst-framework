@@ -6,6 +6,7 @@ waFiles::create($path);
 $data = <<<DATA
 <ifModule mod_rewrite.c>
     RewriteEngine On
+    #RewriteBase /wa-data/public/contacts/photo/
 
     RewriteCond %{REQUEST_URI} \.jpg$
     RewriteCond %{REQUEST_FILENAME} !-f

@@ -12,7 +12,7 @@ class siteFrontend
         }
 		$page_model = new sitePageModel();
 		if (substr($url, -1) !== '/' && strpos(substr($url, -5), '.') === false) {
-			if ($page = $page_model->getByUrl($this->getDomainId(), waRequest::param('_pages'), $url.'/')) {
+			if ($page = $page_model->getByUrl($this->getDomainId(), $url.'/')) {
 				$url = waSystem::getInstance()->getConfig()->getRequestUrl(false);
 				if (($i = strpos($url, '?')) === false) {
 					wa()->getResponse()->redirect($url.'/');
@@ -21,7 +21,7 @@ class siteFrontend
 				}
 			}
 		}
-		$page = $page_model->getByUrl($this->getDomainId(), waRequest::param('_pages'), $url);
+		$page = $page_model->getByUrl($this->getDomainId(), $url, waRequest::param('_exclude', array()));
         if (!$page) {
             return array();
         }		
@@ -39,7 +39,7 @@ class siteFrontend
         if (!$page['title']) {
         	$page['title'] = $page['name'];
         }
-        $page['url'] = wa()->getAppUrl().$page['url'];
+        //$page['url'] = wa()->getAppUrl().$page['url'];
         foreach ($page as $k => $v) {
             if ($k != 'content') {
                 $page[$k] = htmlspecialchars($v); 

@@ -14,7 +14,7 @@
 
 <ul id="s-settings-tabs" class="tabs s-grey-toolbar s-grey-toolbar">
 	<li class="selected"><a href="#routing">[`Routing`]</a></li>
-	<li><a href="#settings">[`Settings`]</a></li> 
+	<li><a href="#settings">[`Settings`]</a></li>
 </ul>
 </div>
 <div class="tab-content" id="tab-routing">
@@ -25,13 +25,13 @@
 			{foreach from=$routes key=route_id item=route}
 			<tr id="route-{$route_id}">
 				<td class="s-url">
-					<span><a style="display:inline" href="#"><i class="icon16 sort"></i></a></span> <span>{$url}/</span><span class="s-editable-url" style="color:#000">{$route.url|escape}</span>									
+					<span><a style="display:inline" href="#"><i class="icon16 sort"></i></a></span> <span>{$url}/</span><span class="s-editable-url" style="color:#000">{$route.url|escape}</span>
 				</td>
 				<td class="s-app">
 					{if isset($route.app)}
-					<img src="{$wa_url}{$route.app.icon.24}" class="s-app24x24icon-menu-v">{$route.app.name}
+					<img src="{$wa_url}{$route.app.icon.24}" class="s-app24x24icon-menu-v" alt="">{$route.app.name}
 					{else}
-					<img src="{$wa_app_static_url}img/arrow.png" class="s-app24x24icon-menu-v">
+					<img src="{$wa_app_static_url}img/arrow.png" class="s-app24x24icon-menu-v" alt="">
 					<span class="redirect">{$route.redirect|escape}</span>
 					{/if}
 				</td>
@@ -58,7 +58,7 @@
 <div class="tab-content" style="display:none" id="tab-settings">
 	<div class="block double-padded fields form">
 		<form target="s-settings-iframe" id="s-settings-form" method="post" action="?module=settings&action=save&domain_id={$domain_id}" enctype="multipart/form-data">
-		
+
 		<div class="field-group">
 		<div class="field">
 			<div class="name bold">[`Site URL`]</div>
@@ -77,8 +77,8 @@
 				</div>
 			</div>
 		</div>
-		</div>	
-			
+		</div>
+
 		<div class="field-group">
 		<div class="field">
 			<div class="name">
@@ -95,32 +95,32 @@
                     <table id="s-wa-apps" class="zebra s-settings-apps">
 						{foreach from=$domain_apps item=row}
 						<tr>
-	   					   <td class="s-app"><a style="display:inline" href="#" onclick="return false"><i class="icon16 sort"></i></a> 
-						      <span>{$row.name|escape}</span> 
+	   					   <td class="s-app"><a style="display:inline" href="#" onclick="return false"><i class="icon16 sort"></i></a>
+						      <span>{$row.name|escape}</span>
 						      <input style="display:none" type="text" name="apps[name][]" value="{$row.name|escape}" />
 						   </td>
 						   <td>
-						      <span>{$row.url|escape}</span> 
+						      <span>{$row.url|escape}</span>
 						      <input style="display:none" type="text" name="apps[url][]" value="{$row.url|escape}" />
 						   </td>
     		               <td class="s-actions">
 			                    <a href="#" class="s-apps-edit" title="[`Edit`]"><i class="icon16 edit"></i></a>
-			                    <a href="#" class="s-apps-delete" title="[`Delete`]"><i class="icon16 delete"></i></a> 			                    
+			                    <a href="#" class="s-apps-delete" title="[`Delete`]"><i class="icon16 delete"></i></a>
 			               </td>
-						</tr>			
+						</tr>
 						{/foreach}
 					</table>
 					<div style="display:none; float: right;"><em class="hint">[`When done editing, click “Save” to apply changes.`]</em></div>
-					<a href="#" class="inline-link" id="s-apps-add"><i class="icon16 add"></i> 
+					<a href="#" class="inline-link" id="s-apps-add"><i class="icon16 add"></i>
 					   <b><i>[`Add link`]</i></b>
 					</a>
-					
+
 				</div>
 			</div>
 		</div>
-		</div>	
+		</div>
 
-		<div class="field-group">		
+		<div class="field-group">
 		<div class="field">
 			<div class="name">[`Favicon`]</div>
 			<div class="value">
@@ -138,8 +138,8 @@
 				{if isset($robots_message)}<span class="small" style="color: #f00;">{$robots_message}</span>{else}<span class="hint">[`Contents of this site's robots.txt file.`]</span>{/if}
 			</div>
 		</div>
-		</div>	
-			
+		</div>
+
 		<div class="field">
 				<div class="value">
 					<input type="submit" name="save" class="button green" value="[`Save`]">
@@ -148,7 +148,7 @@
 		</div>
 		</form>
 		<iframe style="display:none" name="s-settings-iframe" id="s-settings-iframe"></iframe>
-	</div>	
+	</div>
 
 </div>
 <div class="clear"></div>
@@ -163,17 +163,17 @@ var site_select_apps = '<select class="s-select-app">' +
 '</select>';
 
     $("a#s-apps-add").click(function () {
-    	$('#s-wa-apps').append('<tr><td><a style="display:inline" href="#" onclick="return false"><i class="icon16 sort"></i></a>' +  
-                              '<span></span><input type="text" name="apps[name][]" value="" /></td>' + 
-                              '<td><span></span><input type="text" name="apps[url][]" value="" /></td>' + 
-                              '<td class="s-actions">' + 
-                                '<a href="#" class="s-apps-edit" title="[`Edit`]"><i class="icon16 edit"></i></a>' + 
+    	$('#s-wa-apps').append('<tr><td><a style="display:inline" href="#" onclick="return false"><i class="icon16 sort"></i></a>' +
+                              '<span></span><input type="text" name="apps[name][]" value="" /></td>' +
+                              '<td><span></span><input type="text" name="apps[url][]" value="" /></td>' +
+                              '<td class="s-actions">' +
+                                '<a href="#" class="s-apps-edit" title="[`Edit`]"><i class="icon16 edit"></i></a>' +
                                 '<a href="#" class="s-apps-delete" title="[`Delete`]"><i class="icon16 delete"></i></a>' +
                               '</td></tr>');
     	$('#s-wa-apps').next('div').show();
     	return false;
     });
-    
+
     $("#s-wa-apps a.s-apps-edit").live('click', function () {
     	var tr = $(this).parents('tr');
     	tr.find('span').hide();
@@ -181,44 +181,44 @@ var site_select_apps = '<select class="s-select-app">' +
     	$('#s-wa-apps').next('div').show();
     	return false;
     });
-    
+
     $("#s-wa-apps a.s-apps-delete").live('click', function () {
         if (confirm('[`This will delete the link from the menu. Are you sure?`]')) {
         	$(this).parents('tr').remove();
         }
         $('#s-wa-apps').next('div').show();
         return false;
-    });  
-    
+    });
+
     $("#s-wa-apps").sortable({
         distance: 5,
-        helper: 'clone',    
+        helper: 'clone',
         items: 'tr',
         opacity: 0.75,
         tolerance: 'pointer',
         stop: function (event, ui) {
             $("#s-wa-apps").next('div').show();
         }
-    });    
-    
+    });
+
     $("input[name=wa_apps_type]").change(function () {
         if ($("#waapps-select").is(":checked")) {
             $("#waapps-select").parent().children('div').show();
         } else {
             $("#waapps-select").parent().children('div').hide();
         }
-    });    
+    });
 
 	$("a#s-routing-addrule").click(function () {
 		var tr = $('<tr>' +
-				   '<td class="s-url"><span><a style="display:inline" href="#"><i class="icon16 sort"></i></a></span> <span>{$url|escape}/</span><input class="s-url" type="text" value=""></td>' + 
-				   '<td class="s-app"><img src="{$wa_url}{$apps.site.icon.24}" />' + site_select_apps + '</td>' + 
+				   '<td class="s-url"><span><a style="display:inline" href="#"><i class="icon16 sort"></i></a></span> <span>{$url|escape}/</span><input class="s-url" type="text" value=""></td>' +
+				   '<td class="s-app"><img src="{$wa_url}{$apps.site.icon.24}" alt=""/>' + site_select_apps + '</td>' +
 				   '<td class="s-actions"><input class="s-route-save" type="button" value="[`Save`]"></td>' +
 				   '</tr>');
 		$("#s-rules").prepend(tr);
 		return false;
 	});
-	
+
 	$("#s-domain-title").click(function () {
 		if ($(this).is(":checked")) {
 			$(this).parent().children('div').hide().children('input').attr('disabled', 'disabled');
@@ -239,7 +239,7 @@ var site_select_apps = '<select class="s-select-app">' +
 		return false;
 	});
 
-	
+
 	$("#s-settings-tabs a").click(function () {
 		var id = $(this).attr('href').replace(/^.*#/, '');
 		$("#s-settings-tabs li.selected").removeClass('selected');
@@ -253,7 +253,7 @@ var site_select_apps = '<select class="s-select-app">' +
 		}
 		return false;
 	});
-	
+
 	$("#s-settings-form").submit(function () {
 		$("#s-settings-iframe").one('load', function () {
 			var response = $.parseJSON($(this).contents().find('body').html());
@@ -268,8 +268,8 @@ var site_select_apps = '<select class="s-select-app">' +
 				$("#s-settings-form-status").fadeIn("slow");
 			}
 		});
-	});	
-	
+	});
+
 	$("#s-delete").click(function () {
 		if (!confirm('[`This will delete entire website including all its pages without the ability to recover. Are you sure?`]')) {
 			return false;
@@ -296,7 +296,7 @@ var site_select_apps = '<select class="s-select-app">' +
 	$("#s-rules").delegate("input.s-route-save", 'click', function () {
 		var t = $(this).parents('tr');
 		var params = {
-			url: t.find('input.s-url').val() 
+			url: t.find('input.s-url').val()
 		};
 		if (t.attr('id')) {
 			params['route'] = t.attr('id').replace(/^route-/, '');
@@ -312,10 +312,10 @@ var site_select_apps = '<select class="s-select-app">' +
 		$.post("?module=routing&action=save&domain_id={$domain_id}", params, function (response) {
 			if (response.status == 'ok') {
 				t.find('input.s-url').replaceWith('<span class="s-editable-url" style="color:#000">' + response.data.url + '</span>');
-				
+
 				if (t.find('select.s-select-app').length) {
 					if (response.data.redirect) {
-						t.find('select.s-select-app').remove();	
+						t.find('select.s-select-app').remove();
 					} else {
 						t.find('select.s-select-app').replaceWith(t.find('select.s-select-app option:selected').html());
 					}
@@ -323,15 +323,15 @@ var site_select_apps = '<select class="s-select-app">' +
 				t.find('td.s-actions input').hide();
 				if (!t.attr('id')) {
 	                t.find('td.s-actions').append(
-	                (response.data.app ? '<a href="#/routing/route=' + response.data.route + '" class="s-route-settings" title="[`App settings`]"><i class="icon16 settings"></i></a> ' : '') + 
-	                '<a href="#" class="s-route-edit" title="[`Edit URL`]"><i class="icon16 edit"></i></a> ' + 
+	                (response.data.app ? '<a href="#/routing/route=' + response.data.route + '" class="s-route-settings" title="[`App settings`]"><i class="icon16 settings"></i></a> ' : '') +
+	                '<a href="#" class="s-route-edit" title="[`Edit URL`]"><i class="icon16 edit"></i></a> ' +
                     '<a href="#" class="s-route-delete" title="[`Delete rule`]"><i class="icon16 delete"></i></a>');
-					
+
 					t.attr('id', 'route-' + response.data.route);
 					if (response.data.app) {
 						var html = '<li id="design-' + response.data.route + '" class="app-'+ response.data.app.id +'">' +
 						'<a href="#/design/route=' + response.data.route + '" class="bold">' +
-						'<img class="s-app16x16icon-menu-v" src="{$wa_url}' + response.data.app.icon['16'] + '">' + response.data.app.name +
+						'<img class="s-app16x16icon-menu-v" src="{$wa_url}' + response.data.app.icon['16'] + '" alt="">' + response.data.app.name +
 						' <span class="hint">' + $.wa.site.options.root_url + '/' + response.data.url + '</span></a></li>';
 						if ($("#s-design li.app-" + response.data.app.id).length) {
 							$(html).insertAfter($("#s-design li.app-" + response.data.app.id + ':last'));
@@ -351,7 +351,7 @@ var site_select_apps = '<select class="s-select-app">' +
 			}
 		}, "json");
 	});
-	
+
 	$("select.s-select-app").live('change', function () {
 		if ($(this).val()) {
 			if ($(this).next('.redirect').length) {
@@ -382,10 +382,10 @@ var site_select_apps = '<select class="s-select-app">' +
 		t.find('td.s-actions input').show();
 		return false;
 	});
-	
+
 	$("#s-rules").sortable({
 		distance: 5,
-		helper: 'clone',	
+		helper: 'clone',
 		items: 'tr',
 		opacity: 0.75,
 		tolerance: 'pointer',
@@ -396,8 +396,8 @@ var site_select_apps = '<select class="s-select-app">' +
 			$.post("?module=routing&action=sort&domain_id={$domain_id}" , { route: id, pos: pos}, function () {
 			}, "json");
 		}
-	});		
-	
+	});
+
 	$("#s-rules").delegate("td.s-url input", 'keydown', function (e) {
 		if (e.which == 13) {
 			$(this).parents('tr').find('input.s-route-save').click();

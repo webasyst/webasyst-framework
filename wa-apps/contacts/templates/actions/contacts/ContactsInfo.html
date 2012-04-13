@@ -128,23 +128,30 @@
 <script type="text/javascript">
 	// 'Back to' link
 	if($.wa.controller.lastView && $.wa.controller.lastView.title) {
-		$('#c-e-last-view')
-			.text($.wa.controller.lastView.title)
-			.prepend('<i class="icon10 larr"></i>')
-			.attr('href', $.wa.controller.lastView.hash || '#/')
-			.parent().show();
+		if (window.location.hash.indexOf('/no-bc') < 0) {
+			$('#c-e-last-view')
+				.text($.wa.controller.lastView.title)
+				.prepend('<i class="icon10 larr"></i>')
+				.attr('href', $.wa.controller.lastView.hash || '#/')
+				.parent()
+				.show();
+		} else {
+			$('#c-e-last-view').parent().show().hide(); // chromium bug workaround O_o
+		}
 	}
 
 	// attach tab controls to tabs
-	$('ul.tabs li').each(function(k, tab) {
+	$('#c-info-tabs li').each(function(k, tab) {
 		tab = $(tab);
 		tab.click(function() {
 			$.wa.controller.switchToTab(tab, function() {
 				var id = tab.attr('id').substr(2);
 				var hash = $.wa.controller.cleanHash('#/contact/' + $.wa.contactEditor.contact_id + '/' + (id == 'contact' ? '' : id+'/'));
-				if ($.wa.controller.cleanHash() != hash) {
-					$.wa.controller.stopDispatch(1);
-					$.wa.setHash(hash);
+				if (id == 'contact' || $.wa.controller.cleanHash().indexOf(hash) != 0) {
+					if (hash != $.wa.controller.cleanHash()) {
+						$.wa.controller.stopDispatch(1);
+						$.wa.setHash(hash);
+					}
 				}
 				var input = $('#tc-'+id+' input:visible')[0];
 				if (input) {

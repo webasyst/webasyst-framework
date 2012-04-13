@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WebAsyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2012-02-28 11:10+0300\n"
-"Last-Translator: Vladimir V. Tuporshin <vofka@webasyst.net>\n"
+"PO-Revision-Date: 2012-04-11 17:06+0400\n"
+"Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
@@ -328,6 +328,36 @@ msgstr "Суббота"
 
 msgid "Sunday"
 msgstr "Воскресенье"
+
+msgid "year"
+msgid_plural "years"
+msgstr[0] "год"
+msgstr[1] "года"
+msgstr[2] "лет"
+
+msgid "month"
+msgid_plural "months"
+msgstr[0] "месяц"
+msgstr[1] "месяца"
+msgstr[2] "месяцев"
+
+msgid "day"
+msgid_plural "days"
+msgstr[0] "день"
+msgstr[1] "дня"
+msgstr[2] "дней"
+
+msgid "hour"
+msgid_plural "hours"
+msgstr[0] "час"
+msgstr[1] "часа"
+msgstr[2] "часов"
+
+msgid "minute"
+msgid_plural "minutes"
+msgstr[0] "минута"
+msgstr[1] "минуты"
+msgstr[2] "минут"
 
 # webasyst-templates
 msgid "Login name"
@@ -1331,6 +1361,9 @@ msgstr "Мгновенные сообщения"
 msgid "Invalid login or password"
 msgstr "Неправильный логин или пароль"
 
+msgid "Invalid email or password"
+msgstr "Неправильный email или пароль"
+
 msgid "Login is required"
 msgstr "Логин обязателен"
 
@@ -1577,3 +1610,86 @@ msgstr "Название компании"
 msgid "Webasyst"
 msgstr "Вебасист"
 
+msgid "Access denied"
+msgstr "Доступ запрещен"
+
+msgid "Password recovery for this email has been banned."
+msgstr "Восстановление пароля для данного адреса невозможно."
+
+msgid "Pages"
+msgstr "Страницы"
+
+msgid "When done editing, click “Save” to apply changes."
+msgstr "После завершения редактирования не забудьте нажать на кнопку «Сохранить»"
+
+msgid "Enable this URL"
+msgstr "Включить показ страницы по этому адресу"
+
+msgid "Disable this URL"
+msgstr "Отключить показ страницы по этому адресу"
+
+msgid "Page settings"
+msgstr "Настройки страницы"
+
+msgid "This will delete entire page. Are you sure?"
+msgstr "Будет удалена вся страница. Продолжить?"
+
+msgid "Draft"
+msgstr "Черновик"
+
+msgid "draft"
+msgstr "черновик"
+
+msgid "Published"
+msgstr "Опубликовано"
+
+msgid "Page URL"
+msgstr "URL страницы"
+
+msgid "Page name"
+msgstr "Название страницы"
+
+msgid "Optional set of custom <em>key=value</em> parameters which can be used within page.html template or this page content as <em>&#123;$page.key&#125;</em>. Each key=value pair should be on a separate line."
+msgstr "Необязательный набор параметров вида <em>key=value</em>, к значениям которых можно обращаться в шаблоне page.html или в содержимом текущей страницы как <em>&#123;$page.key&#125;</em>. Каждая пара key=value должна быть указана на отдельной строке."
+
+msgid "http://www.webasyst.com/framework/docs/site/pages/"
+msgstr "http://www.webasyst.com/ru/framework/docs/site/pages/"
+
+msgid "WYSIWYG"
+msgstr "Визуальный редактор"
+
+msgid "The page is not available on the website because “%s” app is not connected in the website structure."
+msgstr "Страница недоступна, потому что приложение «%s» не подключено в структуре веб-сайта"
+
+msgid "New page"
+msgstr "Новая страница"
+
+msgid "Save"
+msgstr "Сохранить"
+
+msgid "enable"
+msgstr "включить"
+
+msgid "disable"
+msgstr "выключить"
+
+msgid "<strong class=\"title\">Title</strong>"
+msgstr "<strong class=\"title\">Заголовок</strong>"
+
+msgid "Page custom parameters"
+msgstr "Дополнительные параметры страницы"
+
+msgid "META Keywords"
+msgstr "META Keywords"
+
+msgid "META Description"
+msgstr "META Description"
+
+msgid "Help"
+msgstr "Помощь"
+
+msgid "Saving..."
+msgstr "Сохранение..."
+
+msgid "Saved"
+msgstr "Сохранено"

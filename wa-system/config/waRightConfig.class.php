@@ -229,7 +229,10 @@ class waRightConfig
      * @param string $label human readable name for a field
      * @param string $type control type; currently checkbox|list
      * @param array $params parameters
+     * @param array $rights
+     * @param array $inherited
      * @return string HTML
+     * @throws waException
      */
     protected function getItemHTML($name, $label, $type, $params, $rights, $inherited=null) {
         $own = isset($rights[$name]) ? $rights[$name] : '';

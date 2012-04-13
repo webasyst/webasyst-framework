@@ -237,6 +237,7 @@ class waAutoload
       'waSmarty3View' => 'view/waSmarty3View.class.php',
       'waView' => 'view/waView.class.php',
       'waViewHelper' => 'view/waViewHelper.class.php',
+      'waAppViewHelper' => 'view/waAppViewHelper.class.php',
     
       'waWidgets' => 'widget/waWidgets.class.php',
     
@@ -264,5 +265,14 @@ class waAutoload
       'waUserGroupsModel' => 'webasyst/lib/models/waUserGroups.model.php',
       'waTransactionModel' => 'webasyst/lib/models/waTransaction.model.php',
 	  'waTransactionDataModel' => 'webasyst/lib/models/waTransactionData.model.php',
+
+      'waPageModel' => 'page/models/waPage.model.php',
+      'waPageParamsModel' => 'page/models/waPageParams.model.php',
+      'waPageAction' => 'page/actions/waPage.action.php',
+      'waPageEditAction' => 'page/actions/waPageEdit.action.php',
+      'waPageJsonController' => 'page/actions/waPageJson.controller.php',
+      'waPageSaveController' => 'page/actions/waPageSave.controller.php',
+      'waPageSortController' => 'page/actions/waPageSort.controller.php',
+      'waPageDeleteController' => 'page/actions/waPageDelete.controller.php',
     );
 }

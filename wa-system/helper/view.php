@@ -88,7 +88,7 @@ function wa_header()
 
     $logout = _ws('logout');
     $userpic = '<img width="32" height="32" src="'.$user->getPhoto(32).'" alt="">';
-    $username = htmlspecialchars($user['name']);
+    $username = htmlspecialchars($user['name'], ENT_QUOTES, 'utf-8');
 
     // If the user has access to contacts app then show a link to his profile
     if (wa()->getUser()->getRights('contacts', 'backend')) {
@@ -102,12 +102,14 @@ function wa_header()
         $applist_class = ' class="'.trim($applist_class).'"';
     }
 
+    $company_name = htmlspecialchars($app_settings_model->get('webasyst', 'name', 'Webasyst'), ENT_QUOTES, 'utf-8');
+
     $html = <<<HTML
 <script type="text/javascript">var backend_url = "{$backend_url}";</script>
 {$announcements_html}
 <div id="wa-header" class="minimize1d">
     <div id="wa-account">
-        <h3>{$app_settings_model->get('webasyst', 'name', 'Webasyst')}</h3>
+        <h3>{$company_name}</h3>
         {$top_url}
     </div>
     <div id="wa-usercorner">

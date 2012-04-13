@@ -187,6 +187,10 @@ class waLocale
                 'ru_RU' => self::getInfo('ru_RU'),
             );
         }
+        
+        if ($type === true) {
+            $type = 'all';
+        }
 
         switch ($type) {
             case 'name_region':

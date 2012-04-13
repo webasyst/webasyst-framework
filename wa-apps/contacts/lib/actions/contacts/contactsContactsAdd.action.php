@@ -12,7 +12,7 @@ class contactsContactsAddAction extends waViewAction
         $fields = waContactFields::getInfo($type, TRUE);
         $this->view->assign('contactFields', $fields);
         $this->view->assign('contactType', $type);
-        $this->view->assign('header', _w('New '.(waRequest::param('full') ? $type : 'contact')));
+        $this->view->assign('header', _w('New '.($this->getConfig()->getInfo('edition') === 'full' ? $type : 'contact')));
         $this->view->assign('limitedCategories', $this->getRights('category.all') ? 0 : 1);
     }
 }

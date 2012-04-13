@@ -686,6 +686,9 @@ msgstr "Возвращает значение глобальной переме�
 msgid "Assigns global var a new value"
 msgstr "Присваивает новое значение глобальной пемеренной"
 
+msgid "Assigns a new title"
+msgstr "Устанавливает новый заголовок"
+
 #: /wa-apps/site/lib/actions/helper/siteHelper.action.php:20
 msgid "Returns GET parameter value (same as PHP $_GET[\"<em>key</em>\"])"
 msgstr "Возаращает значение GET-параметра (аналогично $_GET[\"<em>key</em>\"] в PHP)"

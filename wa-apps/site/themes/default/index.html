@@ -3,7 +3,7 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <title>{$title}</title>
+    <title>{$wa->title()}</title>
     <meta name="Keywords" content="{$meta_keywords}" />
     <meta name="Description" content="{$meta_description}" />    
     <link href="{$wa_theme_url}default.css" rel="stylesheet" type="text/css"/>
@@ -46,7 +46,7 @@
             </div>
             <div id="copyright">
                 &copy; {time()|wa_datetime:"Y"}
-                <a href="{$wa_url}">{$wa->accountName()}</a>
+                <a href="{$wa_url}">{$wa->accountName()|escape}</a>
             </div>
             <!-- <div id="sub-links">
 	             suggested place for your footer links 

@@ -2,10 +2,10 @@
 "http://www.w3.org/TR/html4/strict.dtd"><html>
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	<title>{$wa->accountName()}</title>
+	<title>{$wa->accountName()|escape}</title>
 	{$wa->css()}
 	<style type="text/css">
-		{if $type=='password'}
+		{if $type == 'password'}
 			.dialog.newpassword .dialog-window {
 				width: 615px;
 				min-width: 615px;
@@ -39,7 +39,7 @@
 					<form method="post" action="">
 						{if !$type}
 						<input type="hidden" name="wa_auth_login" value="1" />
-						<h1>{$title}</h1>
+						<h1{if !empty($title_style)} style="{$title_style}"{/if}>{$title|escape}</h1>
 						{if !empty($error)}
 						<div id="wa-login-error" class="error">{$error|escape}</div>
 						{elseif !empty($options.description)}

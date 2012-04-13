@@ -1,22 +1,3 @@
 #!/usr/bin/php
 <?php
-
-if (!isset($argc)) {
-	die("Run from CLI only!");
-}
-
-require_once(dirname(__FILE__).'/wa-config/SystemConfig.class.php');
-
-if (count($argv) < 3) {
-	die("Use\r\n ".__FILE__." APP CLASS PARAMS\r\n");
-}
-
-try {
-    $config = new SystemConfig('cli');
-    waSystem::getInstance(null, $config)->dispatchCli($argv);
-} catch (Exception $e) {
-    waLog::log($e, "cli.log");
-    if (waSystemConfig::isDebug()) {
-        echo $e;
-    }
-}
+require_once(dirname(__FILE__).'/wa-system/cli.php');

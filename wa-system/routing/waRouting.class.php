@@ -139,9 +139,9 @@ class waRouting
         $url = urldecode($url);
         $r = $this->dispatchRoutes($this->getRoutes(), $url);
         if (!$r  || ($r['url'] == '*' && $url && strpos(substr($url, -5), '.') === false) && substr($url, -1) !== '/') {
-            $url .= '/';
-            if ($r = $this->dispatchRoutes($this->getRoutes(), $url)) {
-                $this->system->getResponse()->redirect($this->system->getRootUrl().$url);
+            $r2 = $this->dispatchRoutes($this->getRoutes(), $url.'/');
+            if ($r2 && (!$r || $r2['url'] != '*')) {
+                $this->system->getResponse()->redirect($this->system->getRootUrl().$url.'/');
             }
         }
         // if route found and app exists
@@ -181,11 +181,57 @@ class waRouting
     	$url = urldecode($url);
     	return substr($url, strlen($this->root_url));
     }
+
+
+    /**
+     * Returns routes for pages
+     * @TODO: add file cache
+     * @param string $app APP_ID
+     * @return array
+     */
+    protected function getPageRoutes($app)
+    {
+        $class = $app.'PageModel';
+        /**
+         * @var waPageModel $model
+         */
+        $model = new $class();
+        $query = $model->select('id, url');
+        $where = array();
+        if (waRequest::param('_exclude')) {
+            $where[] = "id NOT IN ('".implode("','", $model->escape(waRequest::param('_exclude')))."')";
+        }
+        if (!waRequest::get('preview')) {
+            $where[] = "status = 1";
+        }
+        if ($where) {
+            $query = $query->where(implode(" AND ", $where));
+        }
+        $rows = $query->fetchAll();
+        $page_routes = array();
+        foreach ($rows as $row) {
+            $page_routes[] = array(
+                'url' => $row['url'],
+                'module' => 'frontend',
+                'action' => 'page',
+                'page_id' => $row['id']
+            );
+        }
+        return $page_routes;
+    }
+
     
     protected function getAppRoutes($app, $route = array())
     {
         $routes = wa($app)->getConfig()->getRouting($route);
-        return $this->formatRoutes($routes, true);
+        $routes = $this->formatRoutes($routes, true);
+        if (wa($app)->getConfig()->getInfo('pages')) {
+            $page_routes = $this->getPageRoutes($app);
+            if ($page_routes) {
+                $routes = array_merge($page_routes, $routes);
+            }
+        }
+        return $routes;
     }
         
     protected function dispatchRoutes($routes, $url)
@@ -276,6 +322,7 @@ class waRouting
         }
         $routes = array();
         if (!$this->route || $this->route['app'] != $app ||
+               (!isset($this->route['module']) && isset($params['module']) && $params['module'] != 'frontend') ||
                (isset($this->route['module']) && isset($params['module']) && $this->route['module'] != $params['module'])
            ){
             // find base route
@@ -308,6 +355,9 @@ class waRouting
         foreach ($routes as $domain => $domain_routes) {
             foreach ($domain_routes as $r) {
                 $i = $this->countParams($r, $params);
+                if (isset($params['module']) && isset($r['module'])) {
+                    $i++;
+                }
                 if ($absolute || $this->getDomain() != $domain) {
                 	$root_url = self::getUrlByRoute($r, $domain);
                 } else {

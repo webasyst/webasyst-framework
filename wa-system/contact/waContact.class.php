@@ -149,14 +149,15 @@ class waContact implements ArrayAccess
     }
 
     /**
-      * Get field value.
-      *
-      * @param string $field_id field to retrieve; either col from wa_contact table, or 'email', or custom
-                                field from wa_contact_data. 'field_id:subfield_id' for composite fields is allowed.
-                                'field_id.ext' for fields with extension is allowed.
-      * @param string $format   data format to use. Default is the same as $this[$field_id].
-                                'value' for simple
-      */
+     * Get field value of the contact
+     *
+     * @param string $field_id field to retrieve; either col from wa_contact table, or 'email', or custom
+     *                          field from wa_contact_data. 'field_id:subfield_id' for composite fields is allowed.
+     *                          'field_id.ext' for fields with extension is allowed.
+     * @param string $format   data format to use. Default is the same as $this[$field_id].
+     *                          'value' for simple
+     * @return mixed
+     */
     public function get($field_id, $format = null)
     {
         if (strpos($field_id, '.') !== false) {
@@ -268,6 +269,7 @@ class waContact implements ArrayAccess
 
     /**
      * Returns code for the user
+     * @return string
      */
     public function getCode()
     {
@@ -354,13 +356,15 @@ class waContact implements ArrayAccess
      * If saving was succesfully returns 0 and array of errors themselves
      *
      * @param array $data
+     * @param bool $validate
      * @return int|array
      */
     public function save($data = array(), $validate = false)
     {
         foreach ($data as $key => $value) {
-            if ($key == 'name') {
-                $this->data[$key] = waContactFields::get($key)->set($this, $value);
+            $f = waContactFields::get($key);
+            if ($f) {
+                $this->data[$key] = $f->set($this, $value);
             } else {
                 $this->data[$key] = $value;
             }
@@ -509,9 +513,15 @@ class waContact implements ArrayAccess
         }
     }
 
-    /** Static variant of setCache()
-      * Accepts one parameter: array(contact_id => array(field => data))
-      * or two parameters: contact_id and array(field => data) */
+    /**
+     * Static variant of setCache()
+     * Accepts one parameter: array(contact_id => array(field => data))
+     * or two parameters: contact_id and array(field => data)
+     *
+     * @static
+     * @param int $id
+     * @param array $data
+     */
     public static function setCacheFor($id, $data=null) {
         if (!$data && is_array($id)) {
             $data = $id;
@@ -523,7 +533,11 @@ class waContact implements ArrayAccess
         }
     }
 
-    public function setCache($data) {
+    /**
+     * @param array $data
+     */
+    public function setCache($data)
+    {
         if (isset(self::$cache[$this->getId()])) {
             self::$cache[$this->getId()] = array_merge(self::$cache[$this->getId()], $data);
         } else {
@@ -615,6 +629,7 @@ class waContact implements ArrayAccess
      * @param string $app_id - application id (contacs, orders, ...)
      * @param string $name - key of the right, if it is null method return all rights of the contact for application
      * @param bool $assoc - only if $name is null when true returns associative array of the rights
+     * @return int|bool
      */
     public function getRights($app_id, $name = null, $assoc = true)
     {
@@ -650,7 +665,6 @@ class waContact implements ArrayAccess
      * Check the user is admin of the application
      *
      * @param string $app_id
-     *
      * @return bool - true if contact is admin
      */
     public function isAdmin($app_id = 'webasyst')
@@ -703,7 +717,12 @@ class waContact implements ArrayAccess
 
     public function offsetExists($offset)
     {
-        //@todo:
+        //@TODO
+        if (!$this->id) {
+            return isset($this->data[$offset]);
+        } else {
+            return true;
+        }
     }
 
     public function offsetGet($offset)

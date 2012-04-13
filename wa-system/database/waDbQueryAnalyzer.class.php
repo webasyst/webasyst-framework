@@ -45,6 +45,11 @@ class waDbQueryAnalyzer
         return false;
     }
 
+    /**
+     * @param $query_result
+     * @param waDbAdapter $adapter
+     * @return waDbResultDelete|waDbResultInsert|waDbResultReplace|waDbResultSelect|waDbResultUpdate
+     */
     public function invokeResult($query_result, waDbAdapter $adapter)
     {
         switch($this->type){

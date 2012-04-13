@@ -28,7 +28,7 @@ class waAppSettingsModel extends waModel
 	protected function getCache($app_id)
 	{
 		// cache one day
-		return new waSerializeCache('app_settings/'.$app_id, 86400, 'webasyst');
+		return new waSerializeCache('app_settings/'.$app_id, SystemConfig::isDebug() ? 600 : 86400, 'webasyst');
 	}
 	
 	public function set($app_id, $name, $value)

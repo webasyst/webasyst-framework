@@ -1,5 +1,5 @@
 <ul class="tabs">
-	{if $app}<li class="no-tab"><img src="{$wa_url}{$app.icon.24}"><p class="bold">{$file|escape}</p><p><span class="hint">{$app.name|escape}</span></p></li>{/if}
+	{if $app}<li class="no-tab"><img src="{$wa_url}{$app.icon.24}" alt=""><p class="bold">{$file|escape}</p><p><span class="hint">{$app.name|escape}</span></p></li>{/if}
 	{if $vars}<li id="s-helper-vars" class="selected"><a href="#">{$app.name|escape}</a></li>{/if}
 	<li id="s-helper-wa"{if !$vars} class="selected"{/if}><a href="#">$wa</a></li>
 	<li id="s-helper-smarty"><a href="#">Smarty</a></li>
@@ -18,7 +18,7 @@
 				<div class="name"><a href="#" class="inline-link"><b><i>&#123;{$sub_v}&#125;</i></b></a></div>
 				<div class="value"><span class="hint">{$sub_desc}</span></div>
 			</div>
-			{/foreach}	
+			{/foreach}
 		{/if}
 		{/foreach}
 	</div>
@@ -39,7 +39,7 @@
         {foreach from=$smarty_vars item=desc key=v}
 	   <div class="field">
             <div class="name"><a href="#" class="inline-link"><b><i>{$v|escape}</i></b></a></div>
-            <div class="value"><span class="hint">{$desc}</span></div>	   
+            <div class="value"><span class="hint">{$desc}</span></div>
 	   </div>
 	   {/foreach}
 	</div>

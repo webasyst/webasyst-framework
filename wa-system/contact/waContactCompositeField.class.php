@@ -111,14 +111,14 @@ class waContactCompositeField extends waContactField
 
     public function set(waContact $contact, $value, $params = array(), $add = false)
     {
+        $subfield = isset($params['subfield']) ? $params['subfield'] : '';
         if ($this->isMulti()) {
             $is_ext = $this->isExt();
             $ext = isset($params['ext']) ? $params['ext'] : '';
-            $subfield = isset($params['subfield']) ? $params['subfield'] : '';
 
             if ($subfield) {
                 if ($add) {
-                    $values = $contact->get($field_id);
+                    $values = $contact->get($this->getId());
                     if (($n = count($values)) > 0) {
                         $data = $values[$n - 1];
                         $data_ext = isset($data['ext']) ? $data['ext'] : null;
@@ -186,7 +186,7 @@ class waContactCompositeField extends waContactField
             }
         } else {
             if ($subfield) {
-                $data = $contact->get($this->id);
+                $data = $contact->get($this->getId());
                 $data['data'][$subfield] = $value;
                 return $data;
             }

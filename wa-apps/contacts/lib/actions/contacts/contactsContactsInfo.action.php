@@ -34,11 +34,25 @@ class contactsContactsInfoAction extends waViewAction
         $this->getUserInfo();
 
         // free or premium app?
-        $this->view->assign('versionFull', waRequest::param('full'));
+        $this->view->assign('versionFull', $this->getConfig()->getInfo('edition') === 'full');
+
 
         // collect data from other applications to show in tabs (for premium app only)
-        if (waRequest::param('full')) {
-            $links = wa()->event('profile.tab', $this->id);
+        if ($this->getConfig()->getInfo('edition') === 'full') {
+            $links = array();
+            foreach(wa()->event('profile.tab', $this->id) as $app_id => $one_or_more_links) {
+                if (!isset($one_or_more_links['html'])) {
+                    $i = '';
+                    foreach($one_or_more_links as $link) {
+                        $key = isset($link['id']) ? $link['id'] : $app_id.$i;
+                        $links[$key] = $link;
+                        $i++;
+                    }
+                } else {
+                    $key = isset($one_or_more_links['id']) ? $one_or_more_links['id'] : $app_id;
+                    $links[$key] = $one_or_more_links;
+                }
+            }
             $this->view->assign('links', $links);
         }
 

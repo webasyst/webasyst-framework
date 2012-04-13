@@ -34,4 +34,14 @@ abstract class waAuthAdapter implements waiAuth
 	    $class = substr(get_class($this), 0, -4);
 	    return ucfirst($class);
 	}
+
+    public function checkAuth($data = null)
+    {
+
+    }
+
+    public function updateAuth($data)
+    {
+
+    }
 }

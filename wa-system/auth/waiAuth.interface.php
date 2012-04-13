@@ -17,4 +17,6 @@ interface waiAuth
 	public function auth();
 	public function isAuth();
 	public function clearAuth();
+    public function checkAuth($data = null);
+    public function updateAuth($data);
 }

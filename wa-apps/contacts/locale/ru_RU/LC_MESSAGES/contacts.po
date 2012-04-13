@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WebAsyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2012-02-03 17:57+0400\n"
+"PO-Revision-Date: 2012-04-05 14:39+0400\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -252,6 +252,9 @@ msgstr "Выберите уровень доступа"
 
 msgid "Delete"
 msgstr "Удалить"
+
+msgid "delete"
+msgstr "удалить"
 
 msgid "Send"
 msgstr "Отправить"
@@ -817,4 +820,10 @@ msgstr "Пароль успешно изменён."
 
 msgid "Password can not be empty."
 msgstr "Пароль не может быть пустым."
+
+msgid "Current password"
+msgstr "Действующий пароль"
+
+msgid "Incorrect current password"
+msgstr "Неправильный действующий пароль"
 

@@ -20,6 +20,12 @@
  * Correct fields are:
  * name, type, size, tmp_name, error, error_code - same as in $_FILES global var.
  * extension - file extension (not including the dot)
+ *
+ * @property string $name
+ * @property string $type
+ * @property int $size
+ * @property string $tmp_name
+ * @property string $error
  */
 class waRequestFile
 {
@@ -59,6 +65,7 @@ class waRequestFile
     /**
      * Return waImage class for this image ot null if image is broken
      *
+     * @throws waException
      * @return waImage
      */
     public function waImage()
@@ -69,7 +76,12 @@ class waRequestFile
         return waImage::factory($this->data['tmp_name']);
     }
 
-    /** When 2-nd parameter is omitted, first one is considered to be full path */
+    /**
+     * When 2-nd parameter is omitted, first one is considered to be full path
+     * @param $dir
+     * @param string $name
+     * @return bool
+     */
     public function moveTo($dir, $name = null)
     {
         if (@is_uploaded_file($this->data['tmp_name'])) {

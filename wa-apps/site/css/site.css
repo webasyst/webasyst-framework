@@ -57,7 +57,8 @@ a.s-settings-link.selected { background: #eee; }
 .s-content .s-app-settings .hr { margin: 0; }
 .s-content .s-app-settings .heading { margin-bottom: 20px; }
 .s-content .s-page-urls { margin-bottom: 2px; }
-.s-content .s-page-app-url { color: #000; }
+.s-content .s-page-app-url { }
+.s-content .s-page-app-url.gray { color: #AAA; }
 .s-content .s-page-app-url.s-disabled, .s-content .s-page-app-url.s-disabled input { color: #aaa; }
 .s-content .s-page-app-url img { position: relative; top: 2px; margin-left: 2px; }
 .s-content .s-wysiwyg-html-toggle { margin-right: 17px; margin-top: -20px; float: right; margin-bottom:0 }

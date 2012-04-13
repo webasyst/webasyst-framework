@@ -32,9 +32,11 @@ class siteRoutingParamsController extends waJsonController
             'url' => $routes[$domain][$route_id]['url'],
             'app' => $routes[$domain][$route_id]['app'],
         );
-        
-        if (isset($routes[$domain][$route_id]['_pages'])) {
-            $t['_pages'] = $routes[$domain][$route_id]['_pages'];
+
+        foreach ($routes[$domain][$route_id] as $k => $v) {
+            if (substr($k, 0, 1) == '_') {
+                $t[$k] = $routes[$domain][$route_id][$k];
+            }
         }
         
         $routes[$domain][$route_id] = $t;

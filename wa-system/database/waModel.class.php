@@ -60,7 +60,7 @@ class waModel
     protected $type;
 
 
-    private $readonly   = false;
+    //private $readonly   = false;
 
     /**
      * Конструктор
@@ -212,7 +212,7 @@ class waModel
      *
      * @param string $sql
      * @param array $params
-     * @return waDbResult|waDbResultSelect|waDbResultInsert
+     * @return waDbResultDelete|waDbResultInsert|waDbResultReplace|waDbResultSelect|waDbResultUpdate
      */
     public function query($sql, $params = null)
     {
@@ -284,39 +284,25 @@ class waModel
      */
     public function updateByField($field, $value, $data = null, $options = null, $return_object = false)
     {
-        $where = array();
         if (is_array($field)) {
-            $w = $field;
             $return_object = $options;
             $options = $data;
             $data = $value;
-            foreach ($w as $f => $v) {
-                if (!isset($this->fields[$f])) {
-                    throw new waException(sprintf('Unknown field %s', $f));
-                }
-                if (is_array($v)) {
-                    $where[] = $this->escapeField($f)." IN (".implode("','", $this->escape($v))."')";
-                } else {
-                    $where[] = $this->escapeField($f)." = ".$this->getFieldValue($f, $v);
-                }
-            }
-        } elseif (is_array($value)) {
-            $where[] = $this->escapeField($field)." IN ('".implode("','", $this->escape($value))."')";
-        } else {
-            $where[] = $this->escapeField($field)." = ".$this->getFieldValue($field, $value);
+            $value = false;
         }
+        $where = $this->getWhereByField($field, $value);
 
         $values = array();
-        foreach ($data as $field => $value) {
-            if (isset($this->fields[$field])) {
-              $values[] = $this->escapeField($field)." = ".$this->getFieldValue($field, $value);
+        foreach ($data as $f => $value) {
+            if (isset($this->fields[$f])) {
+              $values[] = $this->escapeField($f)." = ".$this->getFieldValue($f, $value);
             }
         }
 
         if ($values && $where) {
-           $sql = "UPDATE ".($options ? $options." " : "").$this->table. "
+            $sql = "UPDATE ".($options ? $options." " : "").$this->table. "
                    SET ".implode(", ", $values)."
-                   WHERE ".implode(" AND ", $where);
+                   WHERE ".$where;
             if ($return_object) {
                 return $this->query($sql);
             } else {
@@ -385,6 +371,7 @@ class waModel
                         return "'0000-00-00'";
                     }
                 }
+                return "'".$this->escape($value)."'";
             case 'datetime':
                 if (!$value) {
                     if ($is_null) {
@@ -393,6 +380,7 @@ class waModel
                         return "'0000-00-00 00:00:00'";
                     }
                 }
+                return "'".$this->escape($value)."'";
             case 'varchar':
             case 'text':
             default:
@@ -401,10 +389,11 @@ class waModel
     }
 
     /**
-     * Вставляет новую запись в таблицу
+     * Inserts a new record to the table
      *
      * @param array $data field => value
      * @param int $type pass 1 (or true) for `ON DUPLICATE KEY UPDATE`; pass 2 for `INSERT IGNORE`.
+     * @return bool|int|resource
      */
     public function insert($data, $type = 0)
     {
@@ -577,6 +566,7 @@ class waModel
         if (is_array($field)) {
             $limit = $all;
             $all = $value;
+            $value = false;
         }
         $sql = "SELECT * FROM ".$this->table;
         if ($where = $this->getWhereByField($field, $value)) {
@@ -615,15 +605,17 @@ class waModel
                     throw new waException(sprintf(_ws('Unknown field %s'), $f));
                 }
                 if (is_array($v)) {
-                    $where[] = ($add_table_name ? $this->table."." : "") . $f . " IN ('".implode("','", $this->escape($v))."')";
+                    $where[] = ($add_table_name ? $this->table."." : "") . $this->escapeField($f) . " IN ('".implode("','", $this->escape($v))."')";
                 } else {
-                    $where[] = ($add_table_name ? $this->table."." : "") . $f . " = ".$this->getFieldValue($f, $v);
+                    $where[] = ($add_table_name ? $this->table."." : "") . $this->escapeField($f) .
+                               ($v === null ? " IS NULL" : " = ".$this->getFieldValue($f, $v));
                 }
             }
         } elseif (is_array($value)) {
-            $where[] = ($add_table_name ? $this->table."." : "") . $field . " IN ('".implode("','", $this->escape($value))."')";
+            $where[] = ($add_table_name ? $this->table."." : "") . $this->escapeField($field) . " IN ('".implode("','", $this->escape($value))."')";
         } else {
-            $where[] = ($add_table_name ? $this->table."." : "") . $field . " = ".$this->getFieldValue($field, $value);
+            $where[] = ($add_table_name ? $this->table."." : "") . $this->escapeField($field) .
+                       ($value === null ? " IS NULL" : " = ".$this->getFieldValue($field, $value));
         }
         return implode(" AND ", $where);
     }

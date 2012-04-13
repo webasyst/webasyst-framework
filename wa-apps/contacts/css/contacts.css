@@ -50,6 +50,7 @@ a.c-user-group-setup { margin-left: 10px; }
 table#c-access-rights-by-app { border: 0; clear: left; display: none; margin-left: -10px; }
 table#c-access-rights-by-app td { vertical-align: top; padding-top: 22px; border: 0; }
 table#c-access-rights-by-app td.c-app-icon { vertical-align: top; padding-top: 5px; width: 1%; }
+table#c-access-rights-by-app td.c-app-icon img { max-width: 48px; }
 table#c-access-rights-by-app td.c-app-name { width: 150px; padding-top: 24px;  }
 table#c-access-rights-by-app td.c-app-name span { padding: 1px 3px; }
 table#c-access-rights-by-app td.c-app-name span.c-access-color-full { background: #bcffa5; }

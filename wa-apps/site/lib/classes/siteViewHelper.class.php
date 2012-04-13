@@ -1,34 +1,21 @@
 <?php 
 
-class siteViewHelper
+class siteViewHelper extends waAppViewHelper
 {
-    /**
-     * @var waSystem
-     */
-    protected $wa;
-    
-    public function __construct($system)
-    {
-        $this->wa = $system;
-    }
-    
     public function pages($with_params = true)
     {
         try {
             $domain_model = new siteDomainModel();
             $domain = $domain_model->getByName(waSystem::getInstance()->getRouting()->getDomain(null, true));
 
-            $ids = waRequest::param('_pages');
-            if ($ids) {
-                $page_model = new sitePageModel();
-                $sql = "SELECT id, name, title, url, create_datetime, update_datetime FROM ".$page_model->getTableName().' 
-                		WHERE domain_id = i:domain_id AND status = 1 AND id IN (i:ids)
-                		ORDER BY sort';
-                $pages = $page_model->query($sql, array('domain_id' => $domain['id'], 'ids' => $ids))->fetchAll('id');
-            } else {
-                $pages = array();
-            }
-            
+            $page_model = new sitePageModel();
+            $exclude_ids = waRequest::param('_exclude');
+            $sql = "SELECT id, name, title, url, create_datetime, update_datetime FROM ".$page_model->getTableName().'
+                    WHERE domain_id = i:domain_id AND status = 1'.
+                    ($exclude_ids ? " AND id NOT IN (:ids)" : '').
+                    ' ORDER BY sort';
+            $pages = $page_model->query($sql, array('domain_id' => $domain['id'], 'ids' => $exclude_ids))->fetchAll('id');
+
             if ($with_params) {
                 $page_params_model = new sitePageParamsModel();
                 $data = $page_params_model->getByField('page_id', array_keys($pages), true);

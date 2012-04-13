@@ -33,6 +33,9 @@ abstract class waViewAction extends waController
      * @var waViewController
      */
     protected $controller = null;
+    /**
+     * @var waLayout
+     */
     protected $layout = null;
 
     public function __construct($params = null)
@@ -64,10 +67,10 @@ abstract class waViewAction extends waController
     {
         return $this->getTheme()->getUrl();
     }
-    
+
     /**
-     * Return current theme 
-     * 
+     * Return current theme
+     *
      * @return waTheme
      */
     public function getTheme()
@@ -120,6 +123,7 @@ abstract class waViewAction extends waController
             // figure it out by a class name by default
             $prefix = waSystem::getInstance()->getConfig()->getPrefix();
             $template = substr(get_class($this), strlen($prefix), -6);
+
             if ($plugin_root) {
                 $template = preg_replace("~^.*Plugin~", '', $template);
             }
@@ -135,9 +139,8 @@ abstract class waViewAction extends waController
 
         // Path inside /templates dir is determined by template name prefix
         $match = array();
-        preg_match("/^[A-Z]?[^A-Z]+/", $template, $match);
+        preg_match("/^[A-Z]?[^A-Z]*/", $template, $match);
         $template = 'actions/'.strtolower($match[0])."/".$template.$this->view->getPostfix();
-
         return $plugin_root.'templates/'.$template;
     }
 

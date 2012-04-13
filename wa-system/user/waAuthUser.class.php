@@ -88,7 +88,7 @@ class waAuthUser extends waUser
     {
         $time = $this->storage->read('user_last_datetime'); 
         if (!$time || $force || $time == '0000-00-00 00:00:00' || 
-             (time() - strtotime($time) > 12000)
+             (time() - strtotime($time) > 120)
         ) {
         	try {
             	$login_log_model = new waLoginLogModel();
@@ -100,8 +100,14 @@ class waAuthUser extends waUser
         			exit;
         		}
         	}
+
         	$contact_model = new waContactModel();
         	$contact_info = $contact_model->getById($this->id);
+            $auth = waSystem::getInstance()->getAuth();
+            if (!$auth->checkAuth($contact_info)) {
+                header("Location: ".wa()->getConfig()->getRequestUrl(false));
+                exit;
+            }
         	if (!$contact_info || (waSystem::getInstance()->getEnv() == 'backend' && !$contact_info['is_user'])) {
         		waSystem::getInstance()->getAuth()->clearAuth();
         		header("Location: ".wa()->getConfig()->getBackendUrl(true));

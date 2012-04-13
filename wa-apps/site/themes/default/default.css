@@ -20,7 +20,7 @@ html, body { height: 100%; width: 100%; font-family: 'Georgia', Times, serif; fo
 a { color: #03c; outline:0 none; }
 a:focus { outline:none; outline-offset:-4px; }
 a:visited { color: #63c; }
-a:hover { color: red; }
+a:hover { color: red !important; }
 input[type="button"]::-moz-focus-inner { border: 0; }
 input[type="submit"]::-moz-focus-inner { border: 0; }
 a img { border: 0; }
@@ -57,15 +57,16 @@ hr { background-color: #ccc; height: 1px; border: 0; }
 .inline-link { text-decoration: none !important; }
 .inline-link b { border-bottom: 1px dotted; font-weight: normal; position: relative; top: -0.13em;}
 .inline-link b i { font-style: normal; position: relative; top: 0.13em;}
-.small { font-size: 0.8em; }
+.small { font-size: 0.9em; }
 .large { font-size: 1.2em; }
 .highlighted { background:  #FFFFCC; }
 .hint { color: #aaa; font-size: .9em;}
 .hint a { color: #aaa; }
 .float-left { float: left !important; }
 .float-right { float: right !important; }
+.align-center { text-align: center; }
 .clear-both { clear: both; }
-.shadowed { -moz-box-shadow: 0 5px 15px #888; -webkit-box-shadow: 0 5px 15px #888; box-shadow: 0 5px 15px #888; }
+.shadowed { -moz-box-shadow: 0 5px 15px #aaa; -webkit-box-shadow: 0 5px 15px #aaa; box-shadow: 0 5px 15px #aaa; }
 
 /* 16x16 Icons
 -------------- */
@@ -105,12 +106,12 @@ ul.menu-h li.selected ul * { background: #fff !important; }
 #header { font-family: Helvetica, Arial, sans-serif; background: #000; color: #ccc; }
 #header a { text-decoration: none; }
 #header ul#wa-apps { margin: 0 -10px; padding: 0;}
-#header ul#wa-apps li { float: left; list-style: none; margin: 0; padding: 5px 0; }
+#header ul#wa-apps li { float: left; list-style: none; margin: 0; padding: 6px 0; }
 #header ul#wa-apps li.selected { background: url("img/app-selected.png") bottom center no-repeat; }
 #header ul#wa-apps li a,
 #header ul#wa-apps li strong { display: block; padding: 5px 10px; margin-right: 10px; color: #ccc; }
 #header ul#wa-apps li a:visited { color: #ccc; }
-#header ul#wa-apps li a:hover { color: #fff; }
+#header ul#wa-apps li a:hover { color: #fff !important; }
 #header ul#wa-apps li.selected a,
 #header ul#wa-apps li.selected strong { font-weight: bold; color: #fff; }
 #header ul#wa-apps li.float-right a,
@@ -119,7 +120,7 @@ ul.menu-h li.selected ul * { background: #fff !important; }
 
 #main { clear: both; line-height: 1.5em; margin: 0; }
 
-#footer { clear: both; margin-top: 10px; font-size: 0.9em; color: #aaa; }
+#footer { clear: both; margin-top: 10px; font-size: 0.9em; color: #aaa; padding-bottom: 30px; }
 #footer .container { border-top: 1px solid #ddd; padding-left: 0; padding-right: 0; margin: 0 30px; padding-top: 13px; }
 #footer #sub-links { margin-left: 200px; }
 #footer #sub-links ul { list-style: none; padding: 0; margin: 0; }

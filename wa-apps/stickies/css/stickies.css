@@ -1,6 +1,6 @@
 body{
-	 overflow: hidden;
-	 background: url("../img/corkboardbackground.jpg") repeat scroll 0 0 transparent;
+	overflow: hidden;
+	background: url("../img/corkboardbackground.jpg") repeat scroll 0 0 transparent;
 }
 
 #wa-account {
@@ -51,7 +51,6 @@ body{
 	cursor: move;
 }
 
-#wa { background: url('img/corkboardbackground.jpg'); }
 
 /* override standard header colors because of custom background */
 
@@ -118,24 +117,6 @@ div.sticky-content { padding: 3px; width:153px; height:153px; }
 .sticky-header a { float: right; margin: 0 0 0 0.25em; }
 .sticky-header a.sticky-setting { float: left; }
 
-.sticky-pink .sticky-inner { background-color:#ffc7c7; border-color: #e27575; }
-.sticky-pink .sticky-header { background-color:#ffb2b2; border-color: #e27575; }
-.sticky-blue .sticky-inner { background-color:#adf4ff; border-color: #02bcd7; }
-.sticky-blue .sticky-header { background-color:#89f0ff;	border-color: #02bcd7; }
-.sticky-purple .sticky-inner { background-color:#b6caff; border-color: #7591dc; }
-.sticky-purple .sticky-header { background-color:#9bb6fe; border-color: #7591dc; }
-.sticky-grey .sticky-inner { background-color:#ddd;	border-color: #999; }
-.sticky-grey .sticky-header { background-color:#ccc; border-color: #999; }
-.sticky-green .sticky-inner { background-color:#bfa; border-color: #76b865; }
-.sticky-green .sticky-header { background-color:#9bf884; border-color: #76b865; }
-
-.bg-cork { background:url(img/corkboardbackground.jpg) }
-.bg-sky { background:url(img/sky.jpg) }
-.bg-wood { background:url(img/wood.jpg) }
-.bg-paper { background:url(img/paper.jpg) }
-.bg-chrome { background:url(img/chrome.jpg); }
-.bg-metal { background:url(img/metal.jpg); }
-
 .background-vars li a { border:solid 1px #666; margin:2px; text-indent:-9999px; display:block!important; }
 .background-vars li a:hover { border:solid 1px #333; }
 .background-vars li.selected a { border: 2px solid #666; margin: 1px; }
@@ -149,17 +130,12 @@ div.sticky-content { padding: 3px; width:153px; height:153px; }
 .size-vars li.selected a { border:solid 1px #fff; }
 
 i.sticky { background:#FEF49C }
-i.sticky-pink { background:#FFC7C7 }
-i.sticky-blue { background:#ADF4FF }
-i.sticky-purple { background:#B6CAFF }
-i.sticky-grey { background:#DDDDDD }
-i.sticky-green { background:#bfa; }
 
 /* sidebar's custom scroll in WebKit browsers */
 
 #wa ::-webkit-scrollbar { width:10px; height:10px; }
 #wa ::-webkit-scrollbar-button:start:decrement, #doc ::-webkit-scrollbar-button:end:increment { display:block; height:0; background-color:transparent; }
-#wa ::-webkit-scrollbar-track-piece { background-color:rgba(255, 240, 220, 0.95) background-image:url(img/scroll.png); background-position: center center; -webkit-border-radius:0; -webkit-border-bottom-right-radius:10px; -webkit-border-bottom-left-radius:10px; }
+#wa ::-webkit-scrollbar-track-piece { background-color:rgba(255, 240, 220, 0.95) background-image:url(../img/scroll.png); background-position: center center; -webkit-border-radius:0; -webkit-border-bottom-right-radius:10px; -webkit-border-bottom-left-radius:10px; }
 #wa ::-webkit-scrollbar-thumb:vertical { height:50px; background-color:rgba(255, 240, 220, 0.75); -webkit-border-radius:10px; }
 #wa ::-webkit-scrollbar-thumb:horizontal { width:50px; background-color:rgba(255, 240, 220, 0.75); -webkit-border-radius:10px; }
 

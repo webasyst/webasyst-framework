@@ -62,8 +62,9 @@ class siteDesignSaveController extends waJsonController
 			$content = waRequest::post('content');
 			$file_path = $theme->getPath().'/'.$file;
 			if (!file_exists($file_path) || is_writable($file_path)) {
-			    if ($content) {
-				    $r = @file_put_contents($file_path, $content);
+			    if (file_exists($file_path)) {
+				    @file_put_contents($file_path, $content ? $content : '');
+                    $r = true;
 			    } else {
 			        $r = @touch($file_path);
 			    }

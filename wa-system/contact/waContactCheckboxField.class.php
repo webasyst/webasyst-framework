@@ -12,9 +12,20 @@
  * @package wa-system
  * @subpackage contact
  */
-class waContactCheckboxField extends waContactField 
+class waContactCheckboxField extends waContactField
 {
+    public function set(waContact $contact, $value, $params = array(), $add = false)
+    {
+        if ($this->isMulti()) {
+            throw new waException('Multi-checkboxes are not implemented.');
+        }
 
+        if (!$value) {
+            return '';
+        }
+
+        // Only update timestamp if checkbox was not set before the save
+        $old = $contact->get($this->id);
+        return $old ? $old : time();
+    }
 }
-
-// EOF

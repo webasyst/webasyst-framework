@@ -1,5 +1,5 @@
-<div class="block double-padded s-site-selector">	
-		
+<div class="block double-padded s-site-selector">
+
 		<ul id="s-domains-menu" class="menu-h dropdown clickable">
 			<li>
 				<h1>
@@ -8,7 +8,7 @@
 						<i class="icon10 darr no-overhanging"></i>
 					</a>
 				</h1>
-				<ul class="menu-v with-icons">				
+				<ul class="menu-v with-icons">
 					{foreach from=$domains item=d key=d_id}
 					<li>
 						<a href="?domain_id={$d_id}">
@@ -20,7 +20,7 @@
 					<li class="s-add-new-site"><a href="#" class="small"><i class="icon10 add"></i>[`New site`]</a> </li>
 					{/if}
 				</ul>
-						
+
 			</li>
 		</ul>
 		<a href="{if $domain_id}http://{$domains[$domain_id].name|escape}/{else}{$wa_url}{/if}" target="_blank" class="s-settings-link"><i class="icon10 new-window"></i><u>[`Open website`]</u></a>
@@ -28,14 +28,14 @@
 </div>
 
 <div style="display:none" id="addsite-dialog">
-	<form method="post" action="?module=domains&action=save">
+	<form method="post" action="?module=domains&amp;action=save">
 		<div class="dialog-content">
 			<h1>[`New site`]</h1>
 			<p>
 				<strong class="large">http://</strong><input type="text" id="domain-name" name="name" class="bold large" value="" />
 				<br /><span class="hint">[`E.g. mydomain.com, www.mydomain.com, subdomain.mydomain.com`]</span>
 			</p>
-			
+
 			[`Enter the URL of your new website. You should own the domain and map it into your Webasyst installation (the URL should be the effective URL to access this Webasyst installation). Contact your hosting provider on how to map your domain name.`] <a href="[`http://www.webasyst.com/framework/docs/site/structure/`]" target="_blank">[`Help`]</a> <i class="icon10 new-window"></i>
 		</div>
 		<div class="dialog-buttons">
@@ -54,10 +54,10 @@
 		{foreach from=$app.routes key=r_id item=route}
 		<li id="design-{$r_id}" class="app-{$app.id}">
 			<a href="#/design/route={$r_id}" class="bold">
-				<img class="s-app16x16icon-menu-v" src="{$wa_url}{$app.icon.16}">{$app.name}
+				<img class="s-app16x16icon-menu-v" src="{$wa_url}{$app.icon.16}" alt="">{$app.name}
 				<span class="hint">{$domain_root_url}/{$route.url|escape}</span>
 			</a>
-		</li>		
+		</li>
 		{/foreach}
 		{/foreach}
 	</ul>
@@ -71,9 +71,9 @@
 		<li id="page-{$p.id}">
 			<a href="#/pages/id={$p.id}">
 				<i class="icon16 notebook"></i>{$p.name|escape}
-				<span class="hint">{$domain_root_url}/{$p.url|escape}</span>
+				<span class="hint">{if $p.url !== null}{$domain_root_url}/{$p.url|escape}{/if}</span>
 				{if !$p.status} <span class="s-draft">[`draft`]</span>{/if}
-			</a>			
+			</a>
 		</li>
 		{/foreach}
 	</ul>
@@ -86,5 +86,5 @@
 		{if $rights.snippets}<li id="s-link-snippets"><a href="#/snippets/"><i class="icon16 zone"></i>[`Snippets`]</a></li>{/if}
 		{if $rights.files}<li id="s-link-files"><a href="#/files/"><i class="icon16 upload"></i>[`Files`]</a></li>{/if}
 		{if $rights.themes}<li id="s-link-themes"><a href="#/themes/"><i class="icon16 palette"></i>[`Themes`]</a></li>{/if}
-	</ul>	
+	</ul>
 </div>

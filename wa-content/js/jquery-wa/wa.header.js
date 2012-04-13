@@ -120,9 +120,8 @@ $(function () {
 							$("#wa-app-" + app_id + " a span.indicator").remove();
 						}
 					}
+                    $(document).trigger('wa.appcount', response.data);
 				}
-
-				$(document).trigger('wa.appcount', response.data);
 				setTimeout(updateCount, 60000);
 			},
 			error: function () {

@@ -198,17 +198,33 @@ $.wa.site = {
 			} else {
 				$(".el-rte").hide();
 			}			
-			
-			// other
-		   $("div.s-page-app-url input[type=radio]").click(function () {
-			   $("div.s-page-app-url.bold").removeClass('bold');
-			   $("div.s-page-app-url input[type=text]").attr('disabled', 'disabled');
-			   $(this).parents('div.s-page-app-url').addClass('bold').find('input[type=text]').removeAttr('disabled').focus();
-		   });
-		
+
 		    $("div.s-page-app-url input[type=text]").keyup(function () {
-		    	$("div.s-page-app-url input[type=text]").not(this).val($(this).val());	
+		    	$("div.s-page-app-url span.s-page-url-part").html($(this).val());
 		    });
+
+
+            $("a.wa-page-exclude").click(function () {
+                var d = $(this).parent();
+                if (d.hasClass('gray')) {
+                    d.removeClass('gray');
+                    d.children('span').removeClass('strike');
+                    d.find('input').remove();
+                    $(this).children('i').hide();
+                    $(this).attr('title', $_('Disable this URL'));
+                    $(this).find('b i').html($_('disable'));
+                } else {
+                    d.addClass('gray');
+                    d.children('span').addClass('strike');
+                    d.append('<input type="hidden" name="exclude[]" value="' + $(this).attr('data-route') + '" />');
+                    $(this).children('i').show();
+                    $(this).attr('title', $_('Enable this URL'));
+                    $(this).find('b i').html($_('enable'));
+                }
+                $(".wa-page-url div.value.hint").show();
+                $('#s-editor-save-button').removeClass('green').addClass('yellow');
+                return false;
+            });
 		    
 		    var iButtonInit = function () {
                 $("#s-page-v").iButton({
