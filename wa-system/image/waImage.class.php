@@ -23,6 +23,8 @@ class waImage
     const CENTER = 'CENTER';
     const BOTTOM = 'BOTTOM';
 
+    const FILTER_GRAYSCALE = 'grayscale';
+
     const Gd = 'Gd';
     const Imagick = 'Imagick';
 
@@ -289,6 +291,30 @@ class waImage
     {
         $amount = min(max($amount, 1), 100);
         $this->_sharpen($amount);
+        return $this;
+    }
+
+    /**
+     *
+     * @param const $type
+     * @return waImage
+     */
+    public function filter($type)
+    {
+        $this->_filter($type);
+        return $this;
+    }
+
+    /**
+     *
+     * @param waImage|string $watermark. String means text-watermark
+     * @param int $opacity 0..100. Fully opaque is 100
+     * @param null|string path to ttf-font file. Use when text-watermark. If null use default font (in different adapters different default font)
+     * @return waImage
+     */
+    public function watermark($watermark, $opacity = 30, $font_file = null)
+    {
+        $this->_watermark($watermark, $opacity, $font_file);
         return $this;
     }
 }

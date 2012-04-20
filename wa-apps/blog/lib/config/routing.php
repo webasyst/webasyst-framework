@@ -17,7 +17,6 @@ return array(
 
 	    	'<blog_url>/<post_url>/comment/' => 'frontend/comment',
 	        '<post_url>/comment/' => 'frontend/comment',
-	    	'oauth/<provider>/' => 'frontend/oauth',
 	    	'logout/' => 'frontend/logout',
 
 	    	'rss/' => 'frontend/rss',
@@ -37,7 +36,6 @@ return array(
 1 => array(
 
 	        '<post_url>/comment/' => 'frontend/comment',
-	    	'oauth/<provider>/' => 'frontend/oauth',
 	    	'logout/' => 'frontend/logout',
 
 	    	'rss/' => 'frontend/rss',
@@ -56,7 +54,6 @@ return array(
 ),
 2 => array(
 	        '<post_url>/comment/' => 'frontend/comment',
-	    	'oauth/<provider>/' => 'frontend/oauth',
 	    	'logout/' => 'frontend/logout',
 
 	    	"{$blog_prefix}/rss/" => 'frontend/rss',
@@ -74,10 +71,6 @@ return array(
 	    	"{$blog_prefix}/<year:{$year}>/<month:{$month}>/<day:{$day}>/"=>'frontend',
 	    	"{$blog_prefix}/<year:{$year}>/<month:{$month}>/"=>'frontend',
 	    	"{$blog_prefix}/<year:{$year}>/"=>'frontend',
-
-//plugins
-//	'tags/<tag>/'=>'frontend/plugins',
-
 
 	    	"{$blog_prefix}/<blog_url>/" => 'frontend',
 			'<post_url>/' => 'frontend/post',

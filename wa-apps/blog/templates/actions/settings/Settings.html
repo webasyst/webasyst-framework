@@ -11,6 +11,8 @@
 
 		<form action="?blog=&amp;module=settings" method="post">
 
+			{$wa->csrf()}
+
 
 			<div class="fields form">
 
@@ -84,6 +86,15 @@
 								<li><input type="checkbox" name="show_comments" id="settings-comments-switcher" {if $backend_settings['show_comments'] == '1'}checked="checked"{/if} value="1"></li>
 								<li><span id="settings-comments-switcher-on-label">[`On`]</span></li>
 							</ul>
+						</div>
+
+					</div>
+
+					<div class="field"{if !$backend_settings['show_comments']} style="display:none;"{/if} id="settings-captcha-field">
+
+						<div class="value b-ibutton-checkbox">
+							<input type="checkbox" name="request_captcha" id="settings-captcha-switcher" {if $backend_settings['request_captcha'] == '1'}checked="checked"{/if} value="1"></li>
+							<label for="settings-captcha-switcher">[`Protect comment submit form with CAPTCHA`]</label>
 						</div>
 
 					</div>
@@ -176,9 +187,11 @@
 				if (!this.checked) {
 					$(onLabelSelector).addClass('b-unselected');
 					$(offLabelSelector).removeClass('b-unselected');
+					$('#settings-captcha-field').hide(200);
 				} else {
 					$(onLabelSelector).removeClass('b-unselected');
 					$(offLabelSelector).addClass('b-unselected');
+					$('#settings-captcha-field').show(200);
 				}
 			}
 		};
@@ -191,6 +204,11 @@
 					$(this).attr('disabled',disabled);
 				}
 			});
+			if (disabled) {
+				$('#settings-captcha-field').hide(200);
+			} else {
+				$('#settings-captcha-field').show(200);
+			}
 		});
 
 		$('.js-primary-checkbox').change();

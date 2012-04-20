@@ -61,12 +61,6 @@ class facebookAuth extends waAuthAdapter
                     $storage->set('auth_user_data', $user_data);
                 }
             }
-
-            $redirect = waRequest::get('redirect');
-            if (!$redirect) {
-                $redirect = waSystem::getInstance()->getRootUrl();
-            }
-            waSystem::getInstance()->getResponse()->redirect($redirect);
         } else {
             throw new waException("The state does not match. You may be a victim of CSRF.");
         }

@@ -126,7 +126,7 @@ class blogPostEditAction extends waViewAction
         $this->view->assign('backend_post_edit', wa()->event('backend_post_edit', $post));
 
         $app_settings = new waAppSettingsModel();
-        $show_comments = $app_settings->get($this->getApp(), 'show_comments');
+        $show_comments = $app_settings->get($this->getApp(), 'show_comments',true);
 
         $this->view->assign('show_comments', $show_comments);
         $this->view->assign('post', $post);

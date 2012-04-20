@@ -12,7 +12,7 @@
  * @package wa-system
  * @subpackage image
  */
-class waImageImagick extends waImage 
+class waImageImagick extends waImage
 {
 	/**
 	 * @var  Imagick
@@ -20,35 +20,35 @@ class waImageImagick extends waImage
 	protected $im;
 
 	/**
-	 * Checks if ImageMagick is enabled.	
+	 * Checks if ImageMagick is enabled.
 	 */
 	public static function check()
 	{
-		if (!extension_loaded('imagick')) 
+		if (!extension_loaded('imagick'))
 		{
 			throw new waException(_ws('ImageMagick is not installed.'));
 		}
 
 		return self::$checked = true;
 	}
-	
+
 	public function __construct($file)
 	{
 		if (!self::$checked) {
 			self::check();
 		}
 		parent::__construct($file);
-		
+
 		$this->im = new Imagick;
 		$this->im->readImage($file);
 	}
-	
+
 	public function __destruct()
 	{
 		$this->im->clear();
 		$this->im->destroy();
 	}
-	
+
 
 	protected function _resize($width, $height)
 	{
@@ -58,9 +58,9 @@ class waImageImagick extends waImage
 //				$animation->setImagePage( $animation->getImageWidth(), $animation->getImageHeight(), 0, 0 );
 				$animation->resizeImage($width, $height, Imagick::FILTER_CUBIC, 0.5);
 			}
-		} 
+		}
 		else {
-			if ($this->im->resizeImage($width, $height, Imagick::FILTER_CUBIC, 0.5)) 
+			if ($this->im->resizeImage($width, $height, Imagick::FILTER_CUBIC, 0.5))
 			{
 				$this->width = $this->im->getImageWidth();
 				$this->height = $this->im->getImageHeight();
@@ -81,7 +81,7 @@ class waImageImagick extends waImage
 		return false;
 	}
 
-	protected function _rotate($degrees) 
+	protected function _rotate($degrees)
 	{
 		if ($this->im->rotateImage(new ImagickPixel, $degrees))
 		{
@@ -93,8 +93,8 @@ class waImageImagick extends waImage
 
 		return false;
 	}
-	
-	protected function _sharpen($amount) 
+
+	protected function _sharpen($amount)
 	{
 		//IM not support $amount under 5 (0.15)
 		$amount = ($amount < 5) ? 5 : $amount;
@@ -112,7 +112,7 @@ class waImageImagick extends waImage
 
 		return false;
 	}
-	
+
 	protected function _save($file, $quality)
 	{
 		$extension = pathinfo($file, PATHINFO_EXTENSION);
@@ -132,7 +132,7 @@ class waImageImagick extends waImage
 		}
 		return false;
 	}
-	
+
 	protected function _render($type, $quality)
 	{
 		$type = $this->_save_function($type, $quality);
@@ -141,11 +141,11 @@ class waImageImagick extends waImage
 		$this->mime = image_type_to_mime_type($type);
 
 		if ($this->im->getNumberImages() > 1 && $type == "gif") {
-			return $this->im->getImagesBlob();			
+			return $this->im->getImagesBlob();
 		}
 		return $this->im->getImageBlob();
 	}
-	
+
 	protected function _save_function($extension, & $quality)
 	{
 		switch (strtolower($extension))
@@ -175,4 +175,61 @@ class waImageImagick extends waImage
 
 		return $type;
 	}
+
+	protected function _filter($type)
+	{
+	    switch ($type) {
+	        case self::FILTER_GRAYSCALE:
+	            $this->im->setImageColorSpace(Imagick::COLORSPACE_GRAY);
+	            break;
+	        default:
+	            $this->im->setImageColorSpace(Imagick::COLORSPACE_GRAY);
+	            break;
+	    }
+	}
+
+	protected function _watermark($watermark, $opacity, $font_file = null)
+	{
+	    $opacity = min(max($opacity, 0), 100);
+	    if ($watermark instanceof waImage) {
+
+	        $offset = $this->calcWatermarkOffset($watermark->width, $watermark->height);
+	        $watermark = new Imagick($watermark->file);
+	        $watermark->setImageOpacity($opacity / 100);
+	        $this->im->compositeImage(
+	                $watermark,
+	                Imagick::COMPOSITE_OVER,
+	                $offset[0],
+	                $offset[1]);
+	    } else {
+	        $text = (string) $watermark;
+	        if (!$text) {
+	            return;
+	        }
+	        $font_size = 24;    // 24px = 18pt
+	        $font_color = new ImagickPixel('#000000');
+
+	        $watermark = new ImagickDraw();
+	        $watermark->setFillColor($font_color);
+	        $watermark->setFillOpacity($opacity / 100);
+	        if ($font_file && file_exists($font_file)) {
+	            $watermark->setFont($font_file);
+	        }
+	        $watermark->setFontSize($font_size);
+
+	        $metrics = $this->im->queryFontMetrics($watermark, $text);
+	        $width = $metrics['textWidth'];
+	        $height = $metrics['textHeight'];
+	        $offset = $this->calcWatermarkOffset($width, $height);
+	        $offset[1] = $offset[1] + $height;    // correcting cause is annotateImage's calc relatively bottom of text
+
+	        $this->im->annotateImage($watermark, $offset[0], $offset[1], 0, $text);
+	    }
+	}
+
+	private function calcWatermarkOffset($width, $height)
+	{
+	    return array(($this->width - $width) / 2, $height / 2);
+	}
+
 }

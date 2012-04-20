@@ -98,6 +98,11 @@ $(function(){
 
 		$('div.tab[data-provider=\''+provider+'\']').show();
 		$('input[name=auth_provider]').val(provider);
+		if (provider == 'guest') {
+			$('.wa-captcha').show();
+		} else {
+			$('.wa-captcha').hide();
+		}
 	}
 
 	$('ul#user-auth-provider li.selected a, ul#user-auth-provider li:eq(0) a').click(function(){
@@ -110,6 +115,11 @@ $(function(){
 
 		$('.tab').hide();
 		$('div.tab[data-provider=\''+provider+'\']').show();
+		if (provider == 'guest') {
+			$('.wa-captcha').show();
+		} else {
+			$('.wa-captcha').hide();
+		}
 
 		$('input[name=auth_provider]').val(provider);
 

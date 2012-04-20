@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: blog\n"
 "POT-Creation-Date: 2011-11-11 13:35+0300\n"
 "PO-Revision-Date: \n"
-"Last-Translator: Vladimir V. Tuporshin <vofka@webasyst.net>\n"
+"Last-Translator: \n"
 "Language-Team: blog\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
@@ -827,3 +827,27 @@ msgstr "Новые комментарии"
 
 msgid "Can edit pages"
 msgstr "Может редактировать страницы"
+
+#: /wa-apps/blog/templates/actions/settings/Settings.html:101
+msgid "Protect comment submit form with CAPTCHA"
+msgstr "Защита формы добавления комментария <em>капчей</em> (CAPTCHA)"
+
+msgid "Refresh"
+msgstr "Обновить"
+
+#: /wa-apps/blog/lib/actions/frontend/blogFrontendComment.controller.php:122
+msgid "Invalid captcha code"
+msgstr "Неверный код CAPTCHA"
+
+#: /wa-apps/blog/lib/actions/frontend/blogFrontendComment.controller.php:130
+msgid "Invalid auth provider"
+msgstr "Неверный провайдер авторизации"
+
+#: /wa-apps/blog/lib/actions/frontend/blogFrontendComment.controller.php:136
+msgid "Invalid auth provider data"
+msgstr "Неверные данные провайдера авторизации"
+
+#: /wa-apps/blog/themes/default/post.html:178
+msgid "Refresh CAPTCHA"
+msgstr "Обновить CAPTCHA"
+

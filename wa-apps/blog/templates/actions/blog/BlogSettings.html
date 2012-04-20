@@ -19,6 +19,7 @@
 
 	<div class="block triple-padded b-post {$blog.color}">
 		<form action="?module=blog&amp;action=settings&amp;blog={$blog_id}" method="post" id="blog-form">
+		{$wa->csrf()}
 		<div class="fields form">
 			<div class="field-group">
 				<div class="field">
@@ -140,6 +141,7 @@
 		</form>
 		{if $blog_id}
 		<form action="?module=blog&amp;action=delete" method="post">
+			{$wa->csrf()}
 			<p><input type="hidden" name="id" id="blog-id" value="{$blog_id}"></p>
 			{include file='./../../dialogs/blogDelete.html' inline}
 

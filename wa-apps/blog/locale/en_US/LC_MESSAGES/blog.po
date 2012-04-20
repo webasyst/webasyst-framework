@@ -819,3 +819,31 @@ msgstr ""
 msgid "New comments"
 msgstr ""
 
+#: /wa-apps/blog/templates/actions/settings/Settings.html:101
+msgid "Protect comment submit form with CAPTCHA"
+msgstr ""
+
+#: /wa-apps/blog/lib/actions/frontend/blogFrontendComment.controller.php:122
+msgid "Invalid captcha code"
+msgstr "Invalid CAPTCHA code"
+
+#: /wa-apps/blog/lib/actions/frontend/blogFrontendComment.controller.php:130
+msgid "Invalid auth provider"
+msgstr ""
+
+#: /wa-apps/blog/lib/actions/frontend/blogFrontendComment.controller.php:136
+msgid "Invalid auth provider data"
+msgstr ""
+
+#: /wa-apps/blog/lib/config/blogRightConfig.class.php:17
+msgid "Can edit pages"
+msgstr ""
+
+#: /wa-apps/blog/lib/config/site.php:33
+msgid "Post URLs: <strong>%s</strong>"
+msgstr ""
+
+#: /wa-apps/blog/themes/default/post.html:178
+msgid "Refresh CAPTCHA"
+msgstr ""
+

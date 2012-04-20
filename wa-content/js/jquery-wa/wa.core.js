@@ -299,6 +299,22 @@ $(document).ajaxError(function(e, xhr, settings, exception) {
 	}
 });
 
+$(document).ajaxSend(function (event, xhr, settings) {
+    if (settings.type == 'POST') {
+        var matches = document.cookie.match(new RegExp("(?:^|; )_csrf=([^;]*)"));
+        var csrf = matches ? decodeURIComponent(matches[1]) : '';
+        if (settings.data === null ) {
+            settings.data = {};
+        }
+        if (typeof(settings.data) == 'string') {
+            if (settings.data.indexOf('_csrf=') == -1) {
+                settings.data += (settings.data.length > 0 ? '&' : '') + '_csrf=' + csrf;
+            }
+        } else {
+            settings.data['_csrf'] = csrf;
+        }
+    }
+});
 
 if (!Array.prototype.indexOf)
 {

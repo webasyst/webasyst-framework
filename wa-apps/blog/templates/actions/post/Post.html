@@ -183,6 +183,7 @@
 							<i class="icon16 userpic20" style="background-image: url('{$current_contact.photo20}');"><!-- icon --></i>{$current_contact.name|escape}
 							<form id="b-comment-add-form" action="?module=comments&amp;action=add&amp;id={$post.id}" method="post">
 							<p>
+								{$wa->csrf()}
 								<textarea name="text" cols="60" rows="20"></textarea>
 								<input type="hidden" name="parent" value="0">
 								<br>
@@ -206,6 +207,7 @@
 
 {if isset($dialogs)}
 	<form id="post-form" action="?module=post&amp;action=save" method="post">
+		{$wa->csrf()}
 		<input type="hidden" value="{$post.id}" name="id" id="post-id">
 		<input type="hidden" value="{$post.blog_id}" name="blog_id" id="blog-id">
 		<!-- dialog begin -->

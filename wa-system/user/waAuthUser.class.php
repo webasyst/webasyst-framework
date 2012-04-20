@@ -53,7 +53,11 @@ class waAuthUser extends waUser
 	            if (!waRequest::request('background_process')) {
 	            	$this->updateLastTime();
 	            }
-	        }
+                // check CSRF cookie
+                if (!waRequest::cookie('_csrf')) {
+                    waSystem::getInstance()->getResponse()->setCookie('_csrf', uniqid('', true));
+                }
+            }
         }
     }
     

@@ -35,5 +35,11 @@ class blogRightConfig extends waRightConfig
 			'options'	 => $options,
 		);
 		$this->addItem('blog', _w('Blog'), 'selectlist',$control);
+		/**
+		 * @event rights.config
+		 * @param waRightConfig $this Rights setup object
+		 * @return void
+		 */
+		wa()->event('rights.config', $this);
 	}
 }

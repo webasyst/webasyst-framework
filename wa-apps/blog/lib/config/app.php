@@ -14,5 +14,6 @@ return array(
 	'version'=>'1.0.0',
 	'critical'=>'0.0.2',
 	'vendor' => 'webasyst',
+    'csrf' => true
 );
 //EOF

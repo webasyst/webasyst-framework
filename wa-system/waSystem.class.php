@@ -134,6 +134,14 @@ class waSystem
     }
 
     /**
+     * @return waCaptcha
+     */
+    public function getCaptcha()
+    {
+        return $this->getFactory('captcha', 'waCaptcha', array());
+    }
+
+    /**
      * @return waRouting
      */
     public function getRouting()
@@ -329,6 +337,14 @@ class waSystem
                         $sitemap = new $class();
                         $sitemap->display();
                     }
+                } else {
+                    throw new waException("Page not found", 404);
+                }
+            } elseif (preg_match('/^([a-z0-9_]+)?\/?captcha\.php$/i', $this->config->getRequestUrl(true, true), $m)) {
+                $app_id = isset($m[1]) ? $m[1] : 'webasyst';
+                if ($this->appExists($app_id)) {
+                    $captcha = new waCaptcha(array('app_id' => $app_id));
+                    $captcha->display();
                 } else {
                     throw new waException("Page not found", 404);
                 }

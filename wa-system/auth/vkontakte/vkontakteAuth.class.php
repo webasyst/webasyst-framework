@@ -46,12 +46,6 @@ class vkontakteAuth extends waAuthAdapter
                 }
                 // save user data
                 $storage->set('auth_user_data', $user_data);
-
-                $redirect = waRequest::get('redirect');
-                if (!$redirect) {
-                    $redirect = waSystem::getInstance()->getRootUrl();
-                }
-                waSystem::getInstance()->getResponse()->redirect($redirect);
             }
         }
 

@@ -116,6 +116,12 @@ class blogFrontendCommentController extends waJsonController
                 $comment['name']		 = waRequest::post('name', '', 'string_trim');
                 $comment['email']		 = waRequest::post('email', '', 'string_trim');
                 $comment['site']		 = waRequest::post('site', '', 'string_trim');
+                if ($this->appSettings('request_captcha',true)) {
+                    $captcha = new waCaptcha();
+                    if(!wa()->getCaptcha()->isValid()) {
+                        $this->errors[] = array('captcha' => _w('Invalid captcha code'));
+                    }
+                }
                 break;
             }
             default: {
@@ -139,11 +145,6 @@ class blogFrontendCommentController extends waJsonController
                 $this->getResponse()->addHeader('Content-type', 'application/json');
             }
             return false;
-        }
-
-        $captcha = waRequest::post('captcha', '', 'string_trim');
-        if (!empty($captcha)) {
-            $this->redirect(blogPost::getUrl($this->post));
         }
 
         $this->errors = array_merge($this->errors,blogCommentModel::validate($comment,$comment['auth_provider']));

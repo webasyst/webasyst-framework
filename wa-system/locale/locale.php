@@ -52,7 +52,13 @@ class waGettextParser
                 $this->cache(array($match[0], $file.":".$this->getLine($text, $match[1])));
             }
         }
-        $function_pattern = ($this->config['project'] == 'webasyst')?'_ws?':'_w';
+        if ($this->config['project'] == 'webasyst') {
+            $function_pattern = '_ws';
+        } elseif (strpos($this->config['project'],'plugins')) {
+            $function_pattern = '_wp';
+        } else {
+            $function_pattern = '_w';
+        }
         if (preg_match_all("/(?:{$function_pattern}|\$_)\(\"((\\\\\"|[^\"])+)\"\)/usi", $text, $matches, PREG_OFFSET_CAPTURE)) {
             foreach ($matches[1] as $match) {
                 $this->cache(array($match[0], $file.":".$this->getLine($text, $match[1])));
@@ -63,6 +69,8 @@ class waGettextParser
                 $this->cache(array($match[0], $file.":".$this->getLine($text, $match[1])));
             }
         }
+
+        #plural forms support
     }
 
     protected function getLine($text, $pos)
@@ -209,6 +217,7 @@ if (count($argv) < 2) {
 }
 
 $app_id = $argv[1];
+$locale_id = $app_id;
 if ($app_id == 'webasyst') {
     $path = realpath(dirname(__FILE__)."/../../")."/wa-system/";
     $include = array(
@@ -217,18 +226,21 @@ if ($app_id == 'webasyst') {
 } elseif (strpos($app_id, '/themes/')) {
 
     $path = realpath(dirname(__FILE__)."/../../")."/wa-apps/";
+    $locale_id = str_replace('/themes/', '_', $locale_id);
     $include = array(
         $path.$app_id,
     );
 } elseif (strpos($app_id, '/plugins/')) {
 
     $path = realpath(dirname(__FILE__)."/../../")."/wa-apps/";
+    $locale_id = str_replace('/plugins/', '_', $locale_id);
     $include = array(
         $path.$app_id."/templates",
         $path.$app_id."/lib",
     );
 } else {
     $path = realpath(dirname(__FILE__)."/../../")."/wa-apps/";
+    $locale_id = basename($locale_id);
     $include = array(
         $path.$app_id."/templates",
         $path.$app_id."/lib",
@@ -250,7 +262,7 @@ $config = array(
 
 $locales = include(realpath(dirname(__FILE__)."/../../")."/wa-config/locale.php");
 foreach ($locales as $l) {
-    $config['locales'][$l] = basename($app_id);
+    $config['locales'][$l] = $locale_id;
 }
 
 if (isset($argv[2]) && $argv[2] == 'verify') {

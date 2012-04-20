@@ -1,10 +1,10 @@
 <?php
 
-class blogFrontendOauthAction extends waViewAction
+class webasystLoginOAuthAction extends waViewAction
 {
     public function execute()
     {
-        $provider = waRequest::param('provider');
+        $provider = waRequest::get('provider');
         $this->view->assign('provider', $provider);
 
         $refresh = 0;
@@ -15,7 +15,5 @@ class blogFrontendOauthAction extends waViewAction
             wa()->getStorage()->del('auth_user_data');
         }
         $this->view->assign('refresh', $refresh);
-        $this->setLayout(new blogFrontendLayout());
-        $this->setThemeTemplate('oauth.html', waRequest::param('theme', 'default'));
     }
 }

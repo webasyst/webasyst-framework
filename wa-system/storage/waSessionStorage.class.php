@@ -112,8 +112,12 @@ class waSessionStorage extends waStorage
 	{
 		if (!self::$started) {
 			$this->open();
-		}		
-		$_SESSION[$key] = $data;
+		}
+        if (is_array($key) && count($key) == 2) {
+            $_SESSION[$key[0]][$key[1]] = $data;
+        } else {
+		    $_SESSION[$key] = $data;
+        }
 	}
 
 	public function regenerate($destroy = false)

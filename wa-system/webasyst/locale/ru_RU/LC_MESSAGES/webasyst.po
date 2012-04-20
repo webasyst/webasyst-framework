@@ -1693,3 +1693,6 @@ msgstr "Сохранение..."
 
 msgid "Saved"
 msgstr "Сохранено"
+
+msgid "Refresh CAPTCHA"
+msgstr "Обновить капчу (CAPTCHA)"

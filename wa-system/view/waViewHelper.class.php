@@ -307,6 +307,21 @@ class waViewHelper
         return '';
     }
 
+    public function csrf()
+    {
+        return '<input type="hidden" name="_csrf" value="'.waRequest::cookie('_csrf', '').'" />';
+    }
+
+    public function captcha()
+    {
+        return $this->wa->getCaptcha()->getHtml();
+    }
+
+    public function captchaUrl($add_random = true)
+    {
+        return $this->url().$this->app().'/captcha.php'.($add_random ? '?v='.uniqid(time()) : '');
+    }
+
     public function __get($app)
     {
         if (!isset(self::$helpers[$app])) {

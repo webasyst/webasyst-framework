@@ -166,6 +166,9 @@ $.blog.oauth = function (provider) {
 				</p>
 			</div>
 			<div class="comment-submit">
+				{if $request_captcha && !$wa->user()->getId()}
+					{$wa->captcha()}
+				{/if}
 				<input type="hidden" name="auth_provider" value="{$current_auth_source|default:'guest'}">
 				<input type="hidden" name="parent" value="0">
 				<input type="submit" value="[`Add comment`]">

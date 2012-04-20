@@ -53,11 +53,6 @@ class twitterAuth extends waAuthAdapter
             );
 
             $storage->set('auth_user_data', $user_data);
-            $redirect = waRequest::get('redirect');
-            if (!$redirect) {
-                $redirect = waSystem::getInstance()->getRootUrl();
-            }
-            waSystem::getInstance()->getResponse()->redirect($redirect);
         }
     }
 
@@ -83,18 +78,17 @@ class twitterAuth extends waAuthAdapter
         $param_pairs = array();
         foreach($params as $k => $v){$param_pairs[] = "{$k}={$v}";}
 
-        $param_string = "GET&".$this->urlencode_rfc3986($url)."&".$this->urlencode_rfc3986(implode('&', $param_pairs));
+        $param_string = "POST&".$this->urlencode_rfc3986($url)."&".$this->urlencode_rfc3986(implode('&', $param_pairs));
         $app_secret = $this->urlencode_rfc3986($app_secret)."&";
 
         $params['oauth_signature'] = base64_encode(hash_hmac('sha1', $param_string, $app_secret, true));
 
         $url_pairs = array();
         foreach($params as $k => $v){$url_pairs[] = "{$k}={$v}";}
-        $url .= "?".implode('&', $url_pairs);
 
         $retry = 0;
         do {
-            $response = file_get_contents($url);
+            $response = $this->post($url, implode('&', $url_pairs));
         } while (!$response && (++$retry <5));
 
 
@@ -108,5 +102,19 @@ class twitterAuth extends waAuthAdapter
     protected function urlencode_rfc3986($input)
     {
         return str_replace('+',' ',str_replace('%7E', '~', rawurlencode($input)));
+    }
+
+    protected function post($url, $params)
+    {
+        $ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_HEADER, 0);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $params);
+
+        $content = curl_exec( $ch );
+        curl_close( $ch );
+
+        return $content;
     }
 }

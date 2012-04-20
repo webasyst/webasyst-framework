@@ -25,9 +25,6 @@
 		<file path="stream.html" custom="0">
 			<description locale="en_US">Post stream</description>
 		</file>
-		<file path="oauth.html" custom="0">
-			<description locale="en_US">OAuth athorization page</description>
-		</file>
 		<file path="default.css" custom="0">
 			<description locale="en_US">CSS for common desktop and laptop computers</description>
 		</file>

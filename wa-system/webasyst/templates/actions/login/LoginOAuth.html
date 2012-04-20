@@ -1,0 +1,12 @@
+<script type="text/javascript">
+    //document.domain = document.domain;
+    var refresh = {$refresh};
+    if (window.opener) {
+        if (refresh) {
+            window.opener.location.reload();
+            self.close();
+        } else {
+            window.location.href = '{$wa_url}oauth.php?provider={$provider}';
+        };
+    };
+</script>

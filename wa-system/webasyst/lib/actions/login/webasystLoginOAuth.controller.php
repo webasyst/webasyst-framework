@@ -1,6 +1,6 @@
 <?php 
 
-class webasystLoginOAuthController extends waController
+class webasystLoginOAuthController extends waViewController
 {
     public function execute()
     {
@@ -14,14 +14,31 @@ class webasystLoginOAuthController extends waController
         if (isset($config[$domain][$provider])) {
             $params = $config[$domain][$provider];
             $url = $system->getConfig()->getRequestUrl();
-            $params['url'] = $system->getRootUrl(true).preg_replace("/\\?.*$/", '', $url).
+            if (isset($params['redirect_uri'])) {
+                $params['url'] = $params['redirect_uri'];
+            } else {
+                $params['url'] = $system->getRootUrl(true).preg_replace("/\\?.*$/", '', $url).
             				 '?provider='.$provider.'&redirect='.urlencode(waRequest::server('HTTP_REFERER'));
+            }
             
             $auth = waSystem::getInstance()->getAuth($provider, $params);
             $auth->auth();
         }
-        
-        // redirect to main page
-        $this->getResponse()->redirect(waSystem::getInstance()->getRootUrl());
+
+
+        $get = waRequest::get();
+        if (isset($get['provider'])) {
+            unset($get['provider']);
+        }
+
+        if ($get) {
+            $this->executeAction(new webasystLoginOAuthAction());
+        } else {
+            $redirect = waRequest::get('redirect');
+            if (!$redirect) {
+                $redirect = waSystem::getInstance()->getRootUrl();
+            }
+            $this->getResponse()->redirect($redirect);
+        }
     }
 }

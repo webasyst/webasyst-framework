@@ -72,7 +72,7 @@ class blogFrontendAction extends blogViewAction
 
         $post_model = new blogPostModel();
         $options = array();
-        if (!$this->appSettings('show_comments')) {
+        if (!$this->appSettings('show_comments', true)) {
             $options['comments'] = false;
         }
         $options['params'] = true;

@@ -33,6 +33,7 @@ class blogFrontendPostAction extends blogViewAction
         $storage = wa()->getStorage();
         $post_model = new blogPostModel();
         $show_comments = $this->appSettings('show_comments', true);
+        $request_captcha = $show_comments && $this->appSettings('request_captcha', true);
         $available =  blogHelper::getAvailable();
 
         // it's preview
@@ -160,6 +161,7 @@ class blogFrontendPostAction extends blogViewAction
         $this->view->assign('form', $form);
         $this->view->assign('post', $post);
         $this->view->assign('show_comments',$show_comments);
+        $this->view->assign('request_captcha',$request_captcha);
 
         $current_user['photo20'] = $this->getUser()->getPhoto(20);
         $this->view->assign('current_user', $current_user);
@@ -167,6 +169,7 @@ class blogFrontendPostAction extends blogViewAction
         $this->view->assign('theme', waRequest::param('theme', 'default'));
 
         $app_url = wa()->getAppStaticUrl();
+        $root_url = wa()->getRootUrl();
 
         $current_auth = false;
         $current_auth_source = false;
@@ -185,7 +188,7 @@ class blogFrontendPostAction extends blogViewAction
             $adapters[$name] = array (
 				'name' => $adapter->getName(),
 				'photo_url_20' => "{$app_url}img/{$name}.png",
-				'url'=>wa()->getRouteUrl('blog/frontend/oauth', array('provider'=>$name), true),
+				'url' => $root_url.'oauth.php?provider='.$name,
             );
         }
         $this->view->assign('auth_adapters', $adapters);

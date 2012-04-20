@@ -12,10 +12,10 @@
  * @package wa-system
  * @subpackage image
  */
-class waImageGd extends waImage 
+class waImageGd extends waImage
 {
 	protected $image;
-	
+
 	public function __construct($file)
 	{
 		if (!self::$checked) {
@@ -23,33 +23,63 @@ class waImageGd extends waImage
 		}
 		parent::__construct($file);
 
-		switch ($this->type)
-		{
-			case IMAGETYPE_JPEG: {
-				$create_function = 'imagecreatefromjpeg';
-				break;
-			}
-			case IMAGETYPE_GIF: {
-				$create_function = 'imagecreatefromgif';
-				break;
-			}
-			case IMAGETYPE_PNG: {
-				$create_function = 'imagecreatefrompng';
-				break;
-			}
-		}
+// 		switch ($this->type)
+// 		{
+// 			case IMAGETYPE_JPEG: {
+// 				$create_function = 'imagecreatefromjpeg';
+// 				break;
+// 			}
+// 			case IMAGETYPE_GIF: {
+// 				$create_function = 'imagecreatefromgif';
+// 				break;
+// 			}
+// 			case IMAGETYPE_PNG: {
+// 				$create_function = 'imagecreatefrompng';
+// 				break;
+// 			}
+// 		}
 
-		if ( !isset($create_function) || !function_exists($create_function))
-		{
-			throw new waException(sprintf(_ws('GD does not support %s images'), $this->type));
-		}
-		
+// 		if ( !isset($create_function) || !function_exists($create_function))
+// 		{
+// 			throw new waException(sprintf(_ws('GD does not support %s images'), $this->type));
+// 		}
+
 		if (!is_resource($this->image)) {
-			$this->image = $create_function($this->file);
-			imagesavealpha($this->image, true);
+		    $this->image = $this->createGDImageResourse($this->file, $this->type);
+// 			$this->image = $create_function($this->file);
+// 			imagesavealpha($this->image, true);
 		}
 	}
-	
+
+	private function createGDImageResourse($file, $type)
+	{
+	    switch ($type)
+	    {
+	        case IMAGETYPE_JPEG: {
+	            $create_function = 'imagecreatefromjpeg';
+	            break;
+	        }
+	        case IMAGETYPE_GIF: {
+	            $create_function = 'imagecreatefromgif';
+	            break;
+	        }
+	        case IMAGETYPE_PNG: {
+	            $create_function = 'imagecreatefrompng';
+	            break;
+	        }
+	    }
+
+	    if ( !isset($create_function) || !function_exists($create_function))
+	    {
+	        throw new waException(sprintf(_ws('GD does not support %s images'), $type));
+	    }
+
+        $image = $create_function($file);
+        imagesavealpha($image, true);
+
+        return $image;
+	}
+
 	public static function check()
 	{
 		if (!function_exists('gd_info')) {
@@ -96,7 +126,7 @@ class waImageGd extends waImage
 			}
 		}
 	}
-	
+
 	protected function _rotate($degrees)
 	{
 		$transparent = imagecolorallocatealpha($this->image, 0, 0, 0, 127);
@@ -104,7 +134,7 @@ class waImageGd extends waImage
 			$image = imagerotate($this->image, 360 - $degrees, $transparent, 1);
 		}
 		else {
-			
+
 		}
 		imagesavealpha($image, true);
 		$this->updateInfo($image);
@@ -114,11 +144,11 @@ class waImageGd extends waImage
 	{
 		imagedestroy($this->image);
 		$this->image = $image;
-		
+
 		$this->width  = imagesx($image);
 		$this->height = imagesy($image);
 	}
-	
+
 	protected function _crop($width, $height, $offset_x, $offset_y)
 	{
 		$image = $this->_create($width, $height);
@@ -159,38 +189,38 @@ class waImageGd extends waImage
 		}
 		else {
 			$img = $this->image;
-			
+
 			$radius = 1;
 			$threshold = 1;
-			
-			if ($amount > 500)    $amount = 500; 
-                $amount = $amount * 0.016; 
-                if ($radius > 50)    $radius = 50; 
-                $radius = $radius * 2; 
-                if ($threshold > 255)    $threshold = 255; 
-                 
-                $radius = abs(round($radius));     // Only integers make sense. 
-			
-			
-			$w = imagesx($img); 
-			$h = imagesy($img); 
-			$imgCanvas = imagecreatetruecolor($w, $h); 
-			$imgBlur = imagecreatetruecolor($w, $h); 
-			// Move copies of the image around one pixel at the time and merge them with weight 
-            // according to the matrix. The same matrix is simply repeated for higher radii. 
-			for ($i = 0; $i < $radius; $i++)    { 
-				imagecopy ($imgBlur, $img, 0, 0, 1, 0, $w - 1, $h); // left 
-				imagecopymerge ($imgBlur, $img, 1, 0, 0, 0, $w, $h, 50); // right 
-				imagecopymerge ($imgBlur, $img, 0, 0, 0, 0, $w, $h, 50); // center 
-				imagecopy ($imgCanvas, $imgBlur, 0, 0, 0, 0, $w, $h); 
 
-				imagecopymerge ($imgBlur, $imgCanvas, 0, 0, 0, 1, $w, $h - 1, 33.33333 ); // up 
-				imagecopymerge ($imgBlur, $imgCanvas, 0, 1, 0, 0, $w, $h, 25); // down 
-			} 
-			
-			imagedestroy($imgCanvas); 
-			imagedestroy($imgBlur); 
-                 
+			if ($amount > 500)    $amount = 500;
+                $amount = $amount * 0.016;
+                if ($radius > 50)    $radius = 50;
+                $radius = $radius * 2;
+                if ($threshold > 255)    $threshold = 255;
+
+                $radius = abs(round($radius));     // Only integers make sense.
+
+
+			$w = imagesx($img);
+			$h = imagesy($img);
+			$imgCanvas = imagecreatetruecolor($w, $h);
+			$imgBlur = imagecreatetruecolor($w, $h);
+			// Move copies of the image around one pixel at the time and merge them with weight
+            // according to the matrix. The same matrix is simply repeated for higher radii.
+			for ($i = 0; $i < $radius; $i++)    {
+				imagecopy ($imgBlur, $img, 0, 0, 1, 0, $w - 1, $h); // left
+				imagecopymerge ($imgBlur, $img, 1, 0, 0, 0, $w, $h, 50); // right
+				imagecopymerge ($imgBlur, $img, 0, 0, 0, 0, $w, $h, 50); // center
+				imagecopy ($imgCanvas, $imgBlur, 0, 0, 0, 0, $w, $h);
+
+				imagecopymerge ($imgBlur, $imgCanvas, 0, 0, 0, 1, $w, $h - 1, 33.33333 ); // up
+				imagecopymerge ($imgBlur, $imgCanvas, 0, 1, 0, 0, $w, $h, 25); // down
+			}
+
+			imagedestroy($imgCanvas);
+			imagedestroy($imgBlur);
+
 			$this->image = $img;
 		}
 	}
@@ -202,7 +232,7 @@ class waImageGd extends waImage
 		list($save, $type) = $this->_save_function($extension, $quality);
 
 		// Check if this image is PNG or GIF, then set if Transparent
-		if ($extension == "jpg" && ($this->type == IMAGETYPE_PNG || $this->type == IMAGETYPE_GIF)) 
+		if ($extension == "jpg" && ($this->type == IMAGETYPE_PNG || $this->type == IMAGETYPE_GIF))
 		{
 			$output = imagecreatetruecolor($this->width, $this->height);
 			$white = imagecolorallocate($output,  255, 255, 255);
@@ -210,7 +240,7 @@ class waImageGd extends waImage
 			imagecopy($output, $this->image, 0, 0, 0, 0, $this->width, $this->height);
 			$this->image = $output;
 		}
-    	    
+
 		$status = isset($quality) ? $save($this->image, $file, $quality) : $save($this->image, $file);
 
 		if ($status === true && $type !== $this->type)
@@ -249,7 +279,65 @@ class waImageGd extends waImage
 
 		return array($save, $type);
 	}
-	
+
+	protected function _filter($type)
+	{
+	    switch ($type) {
+	        case self::FILTER_GRAYSCALE:
+	            imagefilter($this->image, IMG_FILTER_GRAYSCALE);
+	            break;
+	        default:
+	            imagefilter($this->image, IMG_FILTER_GRAYSCALE);
+	            break;
+	    }
+	}
+
+	protected function _watermark($watermark, $opacity, $font_file = null)
+	{
+	    $opacity = min(max($opacity, 0), 100);
+	    imagealphablending($this->image, true);
+
+	    if ($watermark instanceof waImage) {
+	        $width = $watermark->width;
+	        $height = $watermark->height;
+	        $offset = $this->calcWatermarkOffset($width, $height);
+	        $watermark = $this->createGDImageResourse($watermark->file, $watermark->type);
+	        imagecopymerge($this->image, $watermark, $offset[0], $offset[1], 0, 0, $width, $height, $opacity);
+	        imagedestroy($watermark);
+
+	    } else {
+	        $text = (string) $watermark;
+	        if (!$text) {
+	            return;
+	        }
+	        $font_size = 18; // 18pt = 24px
+	        $font_color = imagecolorallocatealpha($this->image, 0, 0, 0, ((100 - $opacity) / 100) * 127);
+	        if ($font_file && file_exists($font_file)) {
+	            $metrics = imagettfbbox($font_size, 0, $font_file, $text);
+	            if ($metrics) {
+	                $width = $metrics[2] - $metrics[0];
+	                $height = $metrics[1] - $metrics[7];
+	                $offset = $this->calcWatermarkOffset($width, $height);
+	                $offset[1] = $offset[1] + $height;    // correcting cause is imagettftext's calc relatively bottom of text
+	                imagettftext($this->image, $font_size, 0, $offset[0], $offset[1], $font_color, $font_file, $text);
+	            }  else {
+	                throw new waException(_ws("Can't read font file $font_file"));
+	            }
+	        } else {
+	            $font = 5;
+	            $width = imagefontwidth($font) * strlen($text);
+    	        $height = imagefontheight($font);
+    	        $offset = $this->calcWatermarkOffset($width, $height);
+    	        imagestring($this->image, $font, $offset[0], $offset[1], $text, $font_color);
+	        }
+	    }
+	}
+
+	private function calcWatermarkOffset($width, $height)
+	{
+	    return array(($this->width - $width) / 2, $height / 2);
+	}
+
 	public function __destruct()
 	{
 		if (is_resource($this->image))	{
