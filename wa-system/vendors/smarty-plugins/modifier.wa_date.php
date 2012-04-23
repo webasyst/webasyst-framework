@@ -9,7 +9,7 @@ function smarty_modifier_wa_date($string, $format = 'date', $timezone = null, $l
 {
     if ($locale === null) {
         /**
-         * @var waSmartyView
+         * @var waSmarty3View
          */
         $smarty = waConfig::get('current_smarty');
         $locale = $smarty->getVars('locale');

@@ -27,23 +27,23 @@ class waMemcachedCache implements waiCache
     
     public function __construct($key, $ttl = 0, $app_id = null)
     {
-    	$this->key = trim($key, '/');
-    	$this->ttl = $ttl;
-    	$this->app_id = $app_id;
-    	if (!self::$memcached) {
-    	    self::$memcached = new Memcached('wa');
-    	    $config = waSystem::getInstance()->getConfig()->getConfigFile('memcached');
-    	    if (!$config) {
-    	        throw new waException('Memcache config not found');
-    	    }
-    	    self::$memcached->addServer($config['host'], $config['port']);
-    	}
+        $this->key = trim($key, '/');
+        $this->ttl = $ttl;
+        $this->app_id = $app_id;
+        if (!self::$memcached) {
+            self::$memcached = new Memcached('wa');
+            $config = waSystem::getInstance()->getConfig()->getConfigFile('memcached');
+            if (!$config) {
+                throw new waException('Memcache config not found');
+            }
+            self::$memcached->addServer($config['host'], $config['port']);
+        }
     }
     
     public function get()
     {
         if ($this->value !== null) {
-        	return $this->value;
+            return $this->value;
         }
         $this->value = self::$memcached->get($this->key);
         return $this->value;

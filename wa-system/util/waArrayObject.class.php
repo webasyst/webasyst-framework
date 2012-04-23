@@ -171,7 +171,7 @@ class waArrayObject implements ArrayAccess, IteratorAggregate
 
     public function offsetUnset($offset)
     {
-        return $this->__unset($offset);
+        $this->__unset($offset);
     }
 
     //

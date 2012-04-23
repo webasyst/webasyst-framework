@@ -115,10 +115,11 @@ class waRightConfig
     }
 
     /**
-      * Set default access for given contact and return access rights to set up in system access storage.
-      *
-      * @return array access key => value
-      */
+     * Set default access for given contact and return access rights to set up in system access storage.
+     *
+     * @param int $contact_id
+     * @return array access key => value
+     */
     public function setDefaultRights($contact_id)
     {
         return array();

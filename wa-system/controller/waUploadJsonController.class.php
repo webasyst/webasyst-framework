@@ -9,8 +9,8 @@ class waUploadJsonController extends waJsonController
         $this->path = $this->getPath();
         
         if (!is_writable($this->path)) {
-        	$p = substr($this->path, strlen(wa()->getDataPath('', true)));
-        	$this->errors = sprintf(_w("File could not bet saved due to the insufficient file write permissions for the %s folder."), $p);
+            $p = substr($this->path, strlen(wa()->getDataPath('', true)));
+            $this->errors = sprintf(_w("File could not bet saved due to the insufficient file write permissions for the %s folder."), $p);
         } else {
             $this->errors = array();
             $this->process();
@@ -21,7 +21,7 @@ class waUploadJsonController extends waJsonController
     protected function process()
     {
         foreach (waRequest::file('files') as $f) {
-        	$this->processFile($f);
+            $this->processFile($f);
         }        
     }
     
@@ -39,7 +39,7 @@ class waUploadJsonController extends waJsonController
             }
         }
         if (in_array(strtolower($ext), array('php', 'phtml'))) {
-        	$this->errors[] = sprintf(_w("Files with extension .%s are not allowed for upload due to the security considerations."), $ext);
+            $this->errors[] = sprintf(_w("Files with extension .%s are not allowed for upload due to the security considerations."), $ext);
             return false;
         }
         return true;
@@ -52,17 +52,17 @@ class waUploadJsonController extends waJsonController
     protected function processFile(waRequestFile $f)
     {
         if ($f->uploaded()) {
-        	if (!$this->isValid($f)) {
-        		return false;
-        	}
-        	if (!$this->save($f)) {
-        		$this->errors[] = sprintf(_w('Failed to upload file %s.'), $f->name);
-        		return false;
-        	}
-        	return true;
+            if (!$this->isValid($f)) {
+                return false;
+            }
+            if (!$this->save($f)) {
+                $this->errors[] = sprintf(_w('Failed to upload file %s.'), $f->name);
+                return false;
+            }
+            return true;
         } else {
-        	$this->errors[] = sprintf(_w('Failed to upload file %s.'), $f->name).' ('.$f->error.')';
-        	return false;
+            $this->errors[] = sprintf(_w('Failed to upload file %s.'), $f->name).' ('.$f->error.')';
+            return false;
         }
     }
     

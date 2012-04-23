@@ -15,14 +15,14 @@
 class waDbCacheIterator implements Iterator
 {
     /**
-     * Текущий индекс выборки.
+     * Current key
      * 
      * @var int
      */
-    protected $key          = '';
+    protected $key = '';
     
     /**
-     * Массив данных.
+     * Array of the data
      *
      * @var array
      */
@@ -31,9 +31,6 @@ class waDbCacheIterator implements Iterator
     private $iteration = 0;
 
     /**
-     * Конструктор итератора. Получает в качестве параметра
-     * массив данных.
-     *
      * @param array $array
      */
     public function __construct($array)
@@ -42,7 +39,7 @@ class waDbCacheIterator implements Iterator
     }
     
     /**
-     * Текущий элемент массива.
+     * Return the current element
      * 
      * @return mixed
      */
@@ -52,7 +49,7 @@ class waDbCacheIterator implements Iterator
     }
     
     /**
-     * Текущий ключ массива.
+     *  Return the key of the current element
      * 
      * @return int
      */
@@ -62,9 +59,7 @@ class waDbCacheIterator implements Iterator
     }
     
     /**
-     * Сдвигает и возвращает элемент массива.
-     * 
-     * @return mixed
+     * Move forward to next element
      */
     public function next()
     {
@@ -74,8 +69,9 @@ class waDbCacheIterator implements Iterator
     }
     
     /**
-     * Сброс указателя результата к начальным значениям.
-     * 
+     * Rewind the Iterator to the first element
+     *
+     * @return mixed
      */
     public function rewind()
     {
@@ -85,8 +81,7 @@ class waDbCacheIterator implements Iterator
     }
     
     /**
-     * Проверка текущей позиции итератора 
-     * и количества записей в массиве данных.
+     * Checks if current position is valid
      * 
      * @return bool
      */
@@ -98,10 +93,11 @@ class waDbCacheIterator implements Iterator
         
         return $this->iteration < $this->count();
     }
-    
+
     /**
-     * Перемещение указателя к указанной позиции.
-     * 
+     * Move internal pointer
+     *
+     * @param int $offset
      * @return bool
      */
     public function seek($offset = 0)
@@ -110,12 +106,11 @@ class waDbCacheIterator implements Iterator
         {
             next($this->array);
         }
-        
         return true;
     }
     
     /**
-     * Возвращает количество записей.
+     * Return number of the elements
      *
      * @return int
      */
@@ -141,11 +136,13 @@ class waDbCacheIterator implements Iterator
         }
         return $object;
     }
-    
-    
+
+
     /**
-     * Возвращает данные записанные в итераторе.
+     * Export data
      *
+     * @param string|bool $key
+     * @param bool $normalize
      * @return array
      */
     public function export($key = null, $normalize = false)
@@ -153,13 +150,13 @@ class waDbCacheIterator implements Iterator
         if (isset($key)) {
             $rows   = array();
             foreach ($this->array as $row) {
-            	$index = $row[$key];
-            	if ($normalize) {
-            		unset($row[$key]);
-            		if (count($row) == 1) {
-            			$row = array_shift($row);
-            		}
-            	}
+                $index = $row[$key];
+                if ($normalize) {
+                    unset($row[$key]);
+                    if (count($row) == 1) {
+                        $row = array_shift($row);
+                    }
+                }
                 $rows[$index] = $row;
             }
             return (array) $rows;

@@ -14,8 +14,7 @@
  */
 class waEventHandler
 {
-	public function execute($params)
-	{
-		
-	}
+    public function execute($params)
+    {
+    }
 }

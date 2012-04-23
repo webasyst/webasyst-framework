@@ -14,53 +14,53 @@
  */
 abstract class waJsonActions extends waController
 {
-	protected $action;
+    protected $action;
     protected $response = array();
-    protected $errors = array();	
-	
-	
+    protected $errors = array();
+
+
     protected function preExecute()
     {
-    	
-    }
-	
-	protected function execute($action)
-	{
-		$method = $action.'Action';
-		if (method_exists($this, $method)) {
-			$this->action = $action;
-			$this->$method();
-		}else{
-			throw new waException(sprintf("Invalid action or missed method at %s for action %s",get_class($this),$action));
-		}
-	}
-	
-	protected function postExecute()
-	{
-		
-	}
-	
-	
-	public function run($params = null) 
-	{
-		$action = $params;
-		if (!$action) {
-			$action = 'default';
-		}		
-		$this->preExecute();
-		$this->execute($action);
-		$this->postExecute();
-		
-		if ($this->action == $action) {
-		    $this->getResponse()->sendHeaders();
-	    	if (!$this->errors) {
-	    	    $data = array('status' => 'ok', 'data' => $this->response);
-	    		echo json_encode($data);
-	    	} else {
-	    		echo json_encode(array('status' => 'fail', 'errors' => $this->errors));	
-	    	}     
-		}
 
-	}
-	
+    }
+
+    protected function execute($action)
+    {
+        $method = $action.'Action';
+        if (method_exists($this, $method)) {
+            $this->action = $action;
+            $this->$method();
+        }else{
+            throw new waException(sprintf("Invalid action or missed method at %s for action %s",get_class($this),$action));
+        }
+    }
+
+    protected function postExecute()
+    {
+
+    }
+
+
+    public function run($params = null)
+    {
+        $action = $params;
+        if (!$action) {
+            $action = 'default';
+        }
+        $this->preExecute();
+        $this->execute($action);
+        $this->postExecute();
+
+        if ($this->action == $action) {
+            $this->getResponse()->sendHeaders();
+            if (!$this->errors) {
+                $data = array('status' => 'ok', 'data' => $this->response);
+                echo json_encode($data);
+            } else {
+                echo json_encode(array('status' => 'fail', 'errors' => $this->errors));
+            }
+        }
+
+    }
+
 }

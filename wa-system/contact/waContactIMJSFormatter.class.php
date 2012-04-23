@@ -31,7 +31,6 @@ class waContactIMJSFormatter extends waContactFieldFormatter
         }
         
         $icon = '';
-        $ext = '';        
         if (isset($data['ext']) && $data['ext'] && ( $f = waContactFields::get('im'))) {
             $exts = $f->getParameter('ext');
             if (isset($exts[$data['ext']])) {

@@ -34,5 +34,5 @@ CHANGE `sort` `sort` int(11) NOT NULL DEFAULT '0'";
 
 $model = new waModel();
 foreach ($sql as $q) {
-	$model->exec($q);
+    $model->exec($q);
 }

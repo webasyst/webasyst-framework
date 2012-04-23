@@ -1,5 +1,16 @@
 <?php
-
+/*
+ * This file is part of Webasyst framework.
+ *
+ * Licensed under the terms of the GNU Lesser General Public License (LGPL).
+ * http://www.webasyst.com/framework/license/
+ *
+ * @link http://www.webasyst.com/
+ * @author Webasyst LLC
+ * @copyright 2011 Webasyst LLC
+ * @package wa-system
+ * @subpackage mail
+ */
 class waMailAddressParser
 {
     protected $offset;
@@ -77,11 +88,11 @@ class waMailAddressParser
                         $this->skip();
                     }
                     if ($this->string[$this->offset] == '<') {
-                    	$this->offset++;
-                    	$this->expected = '>';
+                        $this->offset++;
+                        $this->expected = '>';
                         $this->buffer_name = str_replace(array("\r\n", "\n", "\t", "  "), " ", trim($this->buffer));
-                    	$this->buffer = "";
-                    	$this->state = self::STATE_EMAIL;
+                        $this->buffer = "";
+                        $this->state = self::STATE_EMAIL;
                     } else {
                         throw new waException("Email not found");
                     }
@@ -104,7 +115,7 @@ class waMailAddressParser
                 if ($this->expected) {
                     $i = strpos($this->string, $this->expected, $this->offset);
                     if ($i === false) {
-                    	throw new waException("Bracket '<' not closed");
+                        throw new waException("Bracket '<' not closed");
                     }
                     $this->buffer = trim(substr($this->string, $this->offset, $i - $this->offset));
                     $this->offset = $i + 1;

@@ -9,7 +9,7 @@ function smarty_modifier_wa_format_country($code, $locale=null)
 {
     if ($locale === null ) {
         /**
-         * @var waSmartyView
+         * @var waSmarty3View
          */
         $smarty = waConfig::get('current_smarty');
     }
@@ -24,9 +24,9 @@ function smarty_modifier_wa_format_country($code, $locale=null)
     if ($locale === null) {
         $locale = waSystem::getInstance()->getUser()->getLocale();
     }
-	$country_model = new waCountryModel();
-	$country = $country_model->get($code, $locale);
-	
+    $country_model = new waCountryModel();
+    $country = $country_model->get($code, $locale);
+
     return isset($country['name']) ? $country['name'] : $code;
 }
 

@@ -10,7 +10,7 @@ function smarty_modifier_wa_format_number($n, $decimals=0, $locale=null)
 {
     if ($locale === null ) {
         /**
-         * @var waSmartyView
+         * @var waSmarty3View
          */
         $smarty = waConfig::get('current_smarty');
     }

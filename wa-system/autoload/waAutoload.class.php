@@ -63,8 +63,8 @@ class waAutoload
     public function autoload($class)
     {
         if ($path = $this->get($class)) {
-            	require $path;
-            	return true;
+                require $path;
+                return true;
         }
         return false;
     }
@@ -264,7 +264,7 @@ class waAutoload
       'waLoginLogModel' => 'webasyst/lib/models/waLoginLog.model.php',
       'waUserGroupsModel' => 'webasyst/lib/models/waUserGroups.model.php',
       'waTransactionModel' => 'webasyst/lib/models/waTransaction.model.php',
-	  'waTransactionDataModel' => 'webasyst/lib/models/waTransactionData.model.php',
+      'waTransactionDataModel' => 'webasyst/lib/models/waTransactionData.model.php',
 
       'waPageModel' => 'page/models/waPage.model.php',
       'waPageParamsModel' => 'page/models/waPageParams.model.php',

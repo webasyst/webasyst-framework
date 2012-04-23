@@ -25,11 +25,13 @@ class waValidator
 
         protected $_type;
 
-        /**
-         * Because of a specific way this class is saved and loaded via var_dump,
-         * constructor parameters order and number cannot be changed in subclasses.
-         * Subclasses also must always provide a call to parent's constructor.
-         */
+    /**
+     * Because of a specific way this class is saved and loaded via var_dump,
+     * constructor parameters order and number cannot be changed in subclasses.
+     * Subclasses also must always provide a call to parent's constructor.
+     * @param array $options
+     * @param array $messages
+     */
     public function __construct($options = array(), $messages = array())
     {
         $this->messages = array(

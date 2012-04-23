@@ -51,11 +51,11 @@ class waDbMysqliAdapter extends waDbAdapter
     public function query($query)
     {
         $r =  $this->handler->query($query);
-		// check error MySQL server has gone away
-		if (!$r && $this->handler->errno == 2006 && $this->handler->ping()) {
-		    return $this->handler->query($query);
-		}
-		return $r;        
+        // check error MySQL server has gone away
+        if (!$r && $this->handler->errno == 2006 && $this->handler->ping()) {
+            return $this->handler->query($query);
+        }
+        return $r;
     }
     
     public function close()

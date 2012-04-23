@@ -14,13 +14,13 @@
  */
 class waNumberValidator extends waRegexValidator
 {
-	const REGEX_NUMBER = '~^-?[0-9]+([\.,][0-9]+)?$~';
-	
-	protected function init()
-	{
-		$this->setMessage('not_match', 'Invalid Number');
-		$this->setPattern(self::REGEX_NUMBER);
-	}
+    const REGEX_NUMBER = '~^-?[0-9]+([\.,][0-9]+)?$~';
+
+    protected function init()
+    {
+        $this->setMessage('not_match', 'Invalid Number');
+        $this->setPattern(self::REGEX_NUMBER);
+    }
 }
 
 // EOF

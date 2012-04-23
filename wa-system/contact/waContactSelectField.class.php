@@ -45,8 +45,12 @@ class waContactSelectField extends waContactField
         return $data;
     }
 
-    /** Return 'Select' type, unless redefined in subclasses */
-    public function getType() {
+    /**
+     * Return 'Select' type, unless redefined in subclasses
+     * @return string
+     */
+    public function getType()
+    {
         return 'Select';
     }
 }

@@ -25,7 +25,7 @@ class waContactDateLocalFormatter extends waContactFieldFormatter
             $value = waDateTime::format('date', $value);
         }
         unset($value); // being paranoid
-	    
+
         return $data;
     }
 }

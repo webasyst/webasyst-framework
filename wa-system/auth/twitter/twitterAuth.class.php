@@ -30,8 +30,8 @@ class twitterAuth extends waAuthAdapter
             $oauth_token = waRequest::get('oauth_token');
 
             $response = $this->request("oauth/access_token", array(
-        		'oauth_verifier' => $oauth_verifier,
-        		'oauth_token' => $oauth_token
+                'oauth_verifier' => $oauth_verifier,
+                'oauth_token' => $oauth_token
             ));
 
             // access token
@@ -65,11 +65,11 @@ class twitterAuth extends waAuthAdapter
 
         $defaults = array(
             "oauth_version" => "1.0",
-			"oauth_nonce" => md5(microtime() . mt_rand()),
-			"oauth_timestamp" => time(),
-			"oauth_consumer_key" => $app_id,
-			"oauth_callback" => urlencode($url_callback),
-			"oauth_signature_method" => "HMAC-SHA1",
+            "oauth_nonce" => md5(microtime() . mt_rand()),
+            "oauth_timestamp" => time(),
+            "oauth_consumer_key" => $app_id,
+            "oauth_callback" => urlencode($url_callback),
+            "oauth_signature_method" => "HMAC-SHA1",
         );
 
         $params = array_merge($defaults, $params);

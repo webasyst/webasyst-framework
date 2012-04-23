@@ -15,7 +15,7 @@
 class waContactDataStorage extends waContactStorage
 {
     /**
-     * @var waContactModel
+     * @var waContactDataModel
      */
     protected $model;
     
@@ -34,13 +34,13 @@ class waContactDataStorage extends waContactStorage
     
     public function load(waContact $contact, $fields = null)
     {
-    	foreach ($fields as $k => $field_id) {
-    		$f = waContactFields::get($field_id);
-    		if ($f && $f instanceof waContactCompositeField) {
-    			unset($fields[$k]);
-    			$fields = array_merge($fields, $f->getField());
-    		}
-    	}
+        foreach ($fields as $k => $field_id) {
+            $f = waContactFields::get($field_id);
+            if ($f && $f instanceof waContactCompositeField) {
+                unset($fields[$k]);
+                $fields = array_merge($fields, $f->getField());
+            }
+        }
         return $this->getModel()->getData($contact->getId(), $fields);
     }    
     

@@ -109,7 +109,7 @@ class waAuth implements waiAuth
         if ($login && strlen($login)) {
             $user_info = $this->getByLogin($login);
             if ($user_info && ($user_info['is_user'] || !$this->options['is_user']) &&
-                waSystem::getInstance()->getUser()->getPasswordHash($password) ===	$user_info['password']) {
+                waSystem::getInstance()->getUser()->getPasswordHash($password) ===    $user_info['password']) {
                 $response = waSystem::getInstance()->getResponse();
                 // if remember
                 if (waRequest::post('remember')) {

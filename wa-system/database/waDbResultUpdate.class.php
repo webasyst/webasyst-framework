@@ -14,5 +14,5 @@
  */
 class waDbResultUpdate extends waDbResultInsert 
 {
-	
+
 }

@@ -26,16 +26,16 @@ abstract class waDbAdapter
     
     public function __construct($settings)
     {
-    	$this->settings = $settings;
-    	$this->handler = $this->connect($settings);
+        $this->settings = $settings;
+        $this->handler = $this->connect($settings);
     }
     
     public function reconnect() 
     {
-    	if ($this->handler) {
-    		$this->close();
-    	}
-    	return $this->handler = $this->connect($this->settings);
+        if ($this->handler) {
+            $this->close();
+        }
+        return $this->handler = $this->connect($this->settings);
     }
 
     abstract public function connect($settings);

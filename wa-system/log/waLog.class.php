@@ -4,14 +4,14 @@
 class waLog
 {
     public static function log($message, $file = 'error.log') {
-    	$path = waSystem::getInstance()->getConfig()->getPath('log').'/'.$file;
-    	if (!file_exists($path)) {
-    	    touch($path);
-    	    chmod($path, 0666);
-    	} elseif (!is_writable($path)) {
-    	    return false;
-    	}
-    	
+        $path = waSystem::getInstance()->getConfig()->getPath('log').'/'.$file;
+        if (!file_exists($path)) {
+            touch($path);
+            chmod($path, 0666);
+        } elseif (!is_writable($path)) {
+            return false;
+        }
+
         $fd = fopen($path, 'a');
         if (!flock($fd, LOCK_EX)) {
             throw new waException('Unable to lock '.$path);

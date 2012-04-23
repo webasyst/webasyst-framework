@@ -16,71 +16,71 @@
  
 class waDbIbaseAdapter extends waDbAdapter
 {
-	public function connect($settings)
-	{
-		return  ibase_connect($settings['host'].":".$settings['database'], $settings['user'], $settings['password'], $settings['charset']);
-	}
-	
-	public function query($query)
-	{
-		return ibase_query($this->handler, $query);
-	}
-	
-	public function free($result)
-	{
-		return ibase_free_result($result);
-	}
-		
-	public function fetch_assoc($result)
-	{
-		return ibase_fetch_assoc($result);
-	}
-	
-	public function fetch_array($result, $mode = self::RESULT_NUM)
-	{
-		return ibase_fetch_row($result, $mode);
-	}
-	
-	public function close()
-	{
-		return ibase_close($this->handler);
-	}
-	
-	public function data_seek($result, $offset) { 
-	}
+    public function connect($settings)
+    {
+        return  ibase_connect($settings['host'].":".$settings['database'], $settings['user'], $settings['password'], $settings['charset']);
+    }
 
-	public function num_rows($result) 
-	{
-	}
-	
-	public function error() 
-	{
-		return ibase_errmsg($this->handler);
-	}
-	
-	public function errorCode() 
-	{ 
-		return ibase_errcode($this->handler);
-	}
-	
-	public function insert_id()
-	{
-	}
-	
-	public function affected_rows() 
-	{
-	    	return ibase_affected_rows($this->handler);
-	}
+    public function query($query)
+    {
+        return ibase_query($this->handler, $query);
+    }
 
-	public function schema($table) 
-	{ 
-	}
-	
-	public function getIterator($result)
-	{
-		return new waDbResultIbaseIterator($result, $this);
-	}
-	
+    public function free($result)
+    {
+        return ibase_free_result($result);
+    }
+
+    public function fetch_assoc($result)
+    {
+        return ibase_fetch_assoc($result);
+    }
+
+    public function fetch_array($result, $mode = self::RESULT_NUM)
+    {
+        return ibase_fetch_row($result, $mode);
+    }
+
+    public function close()
+    {
+        return ibase_close($this->handler);
+    }
+
+    public function data_seek($result, $offset) {
+    }
+
+    public function num_rows($result)
+    {
+    }
+
+    public function error()
+    {
+        return ibase_errmsg($this->handler);
+    }
+
+    public function errorCode()
+    {
+        return ibase_errcode($this->handler);
+    }
+
+    public function insert_id()
+    {
+    }
+
+    public function affected_rows()
+    {
+            return ibase_affected_rows($this->handler);
+    }
+
+    public function schema($table)
+    {
+    }
+
+    public function getIterator($result)
+    {
+        return new waDbResultIbaseIterator($result, $this);
+    }
+
 }
 
 class waDbResultIbaseIterator extends waDbResultIterator
@@ -92,7 +92,7 @@ class waDbResultIbaseIterator extends waDbResultIterator
          
     public function __construct($result, waDbAdapter $adapter)
     {
-	parent::__construct($result, $adapter);
+    parent::__construct($result, $adapter);
         $this->result = $result;
         $this->key = -1;
     }
@@ -100,7 +100,7 @@ class waDbResultIbaseIterator extends waDbResultIterator
     public function current() // override
     {
         if ($this->key == -1) {
-    	    $this->next();
+            $this->next();
         }
         return $this->records[$this->key];
     }
@@ -118,7 +118,7 @@ class waDbResultIbaseIterator extends waDbResultIterator
                 
     public function key() // override
     {
-	return $this->key;
+    return $this->key;
     }
                                                                                                     
     public function next() // override
@@ -143,7 +143,7 @@ class waDbResultIbaseIterator extends waDbResultIterator
     public function count()  // override
     {
         while (!$this->eof) {
-    	    $this->next();
+            $this->next();
         }
         return count($this->records);
     }
@@ -152,7 +152,7 @@ class waDbResultIbaseIterator extends waDbResultIterator
     {
         $row = $this->fetchAssoc();
         if ($row) {
-	    $this->records[] = $row;
+        $this->records[] = $row;
             $this->key = count($this->records)-1;
         }
         return $row;
@@ -160,7 +160,7 @@ class waDbResultIbaseIterator extends waDbResultIterator
                                                                     
     private function next_record()
     {
-	$this->key++;
+    $this->key++;
         return $this->records[$this->key];
     }
                                 

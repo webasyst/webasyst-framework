@@ -98,7 +98,7 @@ class waDbResultSelect extends waDbResult implements IteratorAggregate
         $data   = $this->iterator->fetch();
         // if field not specified then return first element
         if (!$field && is_array($data)) {
-        	return array_shift($data);
+            return array_shift($data);
         }
         return (isset($data[$field])) ? $data[$field] : false;
     }
@@ -148,22 +148,22 @@ class waDbResultSelect extends waDbResult implements IteratorAggregate
         $this->getIterator()->rewind();
         return $this;
     }
-    
+
     /**
      * Saving data for serialization
      *
-     * @return array
+     * @return array|void
      */
     public function __sleep()
     {
         $this->iterator  = new waDbCacheIterator($this->iterator->export());
         return array('iterator');
     }
-    
+
     /**
-     * Просыпаемся после восстановления объекта из кеша.
+     * Wakeup
      *
-     * @return boolean
+     * @return bool|void
      */
     public function __wakeup()
     {

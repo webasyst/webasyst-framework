@@ -80,32 +80,32 @@ class waContact implements ArrayAccess
     public static function getPhotoUrl($id, $ts, $width = null, $height = null)
     {
         if ($width === 'original') {
-        	$size = 'original';
+            $size = 'original';
         } else if ($width && !$height) {
-        	$size = $width.'x'.$width;
+            $size = $width.'x'.$width;
         } else if (!$width) {
-        	$width = 96;
-        	$size = '96x96';
+            $width = 96;
+            $size = '96x96';
         } else {
-        	$size = $width.'x'.$height;
+            $size = $width.'x'.$height;
         }        
         
         if ($ts) {
-        	if (waSystemConfig::systemOption('mod_rewrite')) {
-        		return wa()->getDataUrl('photo/'.$id.'/'.$ts.'.'.$size.'.jpg', true, 'contacts');
-        	} else {
-        		if (file_exists(wa()->getDataPath('photo/'.$id.'/'.$ts.'.'.$size.'.jpg', true, 'contacts'))) {
-        			return wa()->getDataUrl('photo/'.$id.'/'.$ts.'.'.$size.'.jpg', true, 'contacts');
-        		} else {
-        			return wa()->getDataUrl('photo/thumb.php/'.$id.'/'.$ts.'.'.$size.'.jpg', true, 'contacts');
-        		}
-        	}
+            if (waSystemConfig::systemOption('mod_rewrite')) {
+                return wa()->getDataUrl('photo/'.$id.'/'.$ts.'.'.$size.'.jpg', true, 'contacts');
+            } else {
+                if (file_exists(wa()->getDataPath('photo/'.$id.'/'.$ts.'.'.$size.'.jpg', true, 'contacts'))) {
+                    return wa()->getDataUrl('photo/'.$id.'/'.$ts.'.'.$size.'.jpg', true, 'contacts');
+                } else {
+                    return wa()->getDataUrl('photo/thumb.php/'.$id.'/'.$ts.'.'.$size.'.jpg', true, 'contacts');
+                }
+            }
         } else {
-        	$size = (int)$width;
-        	if (!in_array($size, array(20, 32, 50, 96))) {
-        		$size = 96;
-        	}
-        	return wa()->getRootUrl().'wa-content/img/userpic'.$size.'.jpg';
+            $size = (int)$width;
+            if (!in_array($size, array(20, 32, 50, 96))) {
+                $size = 96;
+            }
+            return wa()->getRootUrl().'wa-content/img/userpic'.$size.'.jpg';
         }        
     }
     
@@ -258,10 +258,10 @@ class waContact implements ArrayAccess
                 }
             }
             if ($result && is_array($result)) {
-            	$result = current($result);
-            	if (is_array($result) && isset($result['value'])) {
-            		return $result['value'];
-            	}
+                $result = current($result);
+                if (is_array($result) && isset($result['value'])) {
+                    return $result['value'];
+                }
             }
             return $result;
         }
@@ -444,7 +444,7 @@ class waContact implements ArrayAccess
         }
         // try get locale by header Accept-Language (only for current user)
         if (!$locale && $this instanceof waAuthUser) {
-        	$locale = waRequest::getLocale();
+            $locale = waRequest::getLocale();
         }
         if (!$locale) {
             $locale = self::$options['default']['locale'];
@@ -467,6 +467,7 @@ class waContact implements ArrayAccess
      *
      * @param string $field_id field to retrieve data for; omit to get all data from cache
      * @param mixed $old_value true to consider only values from DB; false (default) to add values set to this contact but not saved yet
+     * @return array|null
      */
     public function getCache($field_id = null, $old_value = false)
     {
@@ -494,9 +495,8 @@ class waContact implements ArrayAccess
     }
 
     /**
-     *
-     *
      * @param string $field_id
+     * @param bool $old_value
      * @return bool
      */
     public function issetCache($field_id, $old_value = false)
@@ -635,7 +635,7 @@ class waContact implements ArrayAccess
     {
         if ($name !== null && substr($name, -1) === '%') {
             if (!$this->id) {
-            	return array();
+                return array();
             }            
             $right_model = new waContactRightsModel();
             $data = $right_model->get($this->id, $app_id);

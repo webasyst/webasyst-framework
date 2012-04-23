@@ -14,38 +14,38 @@
  */
 class waRegexValidator extends waStringValidator
 {
-	protected $options = array(
-		'required' => false,
-		'pattern' => '//'
-	);
-	
-	protected function init()
-	{
-		parent::init();
-		$this->setMessage('not_match', _ws('Not match.'));
-	}
-	
-	public function setPattern($pattern)
-	{
-		$this->setOption('pattern', $pattern);			
-	}
-	
-	public function getPattern()
-	{
-		return $this->getOption('pattern');
-	}
-	
-	public function isValid($value)
-	{
-		parent::isValid($value);
-		
-		if (!$this->isEmpty($value)) {
-			$pattern = $this->getPattern();
-			if (!preg_match($pattern, $value)) {
-				$this->setError($this->getMessage('not_match', array('value' => $value)));
-			}
-		}
+    protected $options = array(
+        'required' => false,
+        'pattern' => '//'
+    );
 
-		return $this->getErrors() ? false : true;				
-	}
+    protected function init()
+    {
+        parent::init();
+        $this->setMessage('not_match', _ws('Not match.'));
+    }
+
+    public function setPattern($pattern)
+    {
+        $this->setOption('pattern', $pattern);
+    }
+
+    public function getPattern()
+    {
+        return $this->getOption('pattern');
+    }
+
+    public function isValid($value)
+    {
+        parent::isValid($value);
+
+        if (!$this->isEmpty($value)) {
+            $pattern = $this->getPattern();
+            if (!preg_match($pattern, $value)) {
+                $this->setError($this->getMessage('not_match', array('value' => $value)));
+            }
+        }
+
+        return $this->getErrors() ? false : true;
+    }
 }

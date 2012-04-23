@@ -33,10 +33,10 @@ class waEmailValidator extends waRegexValidator
     
     public function isValid($value)
     {
-    	if (!preg_match("/^[a-z0-9~@+:\[\]\.-]+$/i", $value)) {
-    		$idna = new waIdna();
-    		$value = $idna->encode($value);
-    	}
-    	return parent::isValid($value);
+        if (!preg_match("/^[a-z0-9~@+:\[\]\.-]+$/i", $value)) {
+            $idna = new waIdna();
+            $value = $idna->encode($value);
+        }
+        return parent::isValid($value);
     }
 }

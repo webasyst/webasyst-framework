@@ -41,7 +41,7 @@ class waImage
 
     public function __construct($file)
     {
-        try	{
+        try    {
             $file = realpath($file);
             $image_info = @getimagesize($file);
         }
@@ -83,7 +83,8 @@ class waImage
     /**
      *
      * @param string $file
-     * @param string $adapter  Gd|Imagick
+     * @param bool|string $adapter Gd|Imagick
+     * @throws waException
      * @return waImage
      */
     public static function factory($file, $adapter = false)
@@ -93,8 +94,6 @@ class waImage
         }
 
         $class = 'waImage'.$adapter;
-
-
 
         if (!class_exists($class, true)) {
             throw new waException(sprintf(_ws('Not %s image adapter'), $adapter));
@@ -201,8 +200,8 @@ class waImage
      *
      * @param int $width
      * @param int $height
-     * @param string $offset_x		int|CENTER|BOTTOM
-     * @param string $offset_y 	int|CENTER|BOTTOM
+     * @param string $offset_x        int|CENTER|BOTTOM
+     * @param string $offset_y     int|CENTER|BOTTOM
      * @return waImage
      */
     public function crop($width, $height, $offset_x = self::CENTER, $offset_y = self::CENTER)
@@ -260,17 +259,17 @@ class waImage
 
     /**
      *
-     * @param $file
-     * @param $quality
+     * @param string $file
+     * @param int $quality
+     * @throws waException
      * @return boolean
      */
-    public function save($file = false, $quality = 100)
+    public function save($file = null, $quality = 100)
     {
-        if (!$file)	{
+        if (!$file)    {
             $file = $this->file;
         }
-
-        if (is_file($file))	{
+        if (is_file($file))    {
             if (!is_writable($file)) {
                 if(!preg_match('//u', $file)) {
                     $file = iconv('windows-1251','utf-8',$file);
@@ -308,11 +307,11 @@ class waImage
     /**
      *
      * @param waImage|string $watermark. String means text-watermark
-     * @param int $opacity 0..100. Fully opaque is 100
+     * @param float|int $opacity 0..1. Fully opaque is 1
      * @param null|string path to ttf-font file. Use when text-watermark. If null use default font (in different adapters different default font)
      * @return waImage
      */
-    public function watermark($watermark, $opacity = 30, $font_file = null)
+    public function watermark($watermark, $opacity = 0.3, $font_file = null)
     {
         $this->_watermark($watermark, $opacity, $font_file);
         return $this;

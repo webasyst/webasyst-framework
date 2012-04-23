@@ -15,31 +15,31 @@ interface waLocalizedCollection {
      * @param $id
      * @param string $locale (defaults to current system locale) - locale to return item in
      * @return mixed one item with given id in given locale */
-	public function get($id, $locale=null);
-	
-	/**
-	 * Get the whole colelction (in stable order defined by concrete implementation).
-	 * @param $start int (optional, default 0) how namy items to skip at the begining of the list
-	 * @param $limit int (optional, default no limit) maximum number of items to return
-	 * @param $locale string (defaults to current system locale) - locale to return items in
-	 * @return array an associative array id => item 
-	 */
-	public function all($start=0, $limit=0, $locale=null);
-	
-	/**
-	 * Return a part of the collection (in stable order defined by concrete implementation)
-	 * @param $parameters mixed parameters to base filtering on; format is implementation-dependant
-	 * @param $start int (optional, default 0) how namy items to skip at the begining of the list
-	 * @param $limit int (optional, default no limit) maximum number of items to return
-	 * @param $locale string (defaults to current system locale) - locale to return items in
-	 * @return array an associative array id => item 
-	 */
-	public function filter($parameters, $start=0, $limit=0, $locale=null);
-	
-	/**
-	 * @param $parameters (optional, default null) same parameters $this->filter() would accept
-	 * @return int how many items would $this->filter() (or $this->all(), of $parameters omitted) return. */
-	public function count($parameters=null);
+    public function get($id, $locale=null);
+
+    /**
+     * Get the whole colelction (in stable order defined by concrete implementation).
+     * @param $start int (optional, default 0) how namy items to skip at the begining of the list
+     * @param $limit int (optional, default no limit) maximum number of items to return
+     * @param $locale string (defaults to current system locale) - locale to return items in
+     * @return array an associative array id => item
+     */
+    public function all($start=0, $limit=0, $locale=null);
+
+    /**
+     * Return a part of the collection (in stable order defined by concrete implementation)
+     * @param $parameters mixed parameters to base filtering on; format is implementation-dependant
+     * @param $start int (optional, default 0) how namy items to skip at the begining of the list
+     * @param $limit int (optional, default no limit) maximum number of items to return
+     * @param $locale string (defaults to current system locale) - locale to return items in
+     * @return array an associative array id => item
+     */
+    public function filter($parameters, $start=0, $limit=0, $locale=null);
+
+    /**
+     * @param $parameters (optional, default null) same parameters $this->filter() would accept
+     * @return int how many items would $this->filter() (or $this->all(), of $parameters omitted) return. */
+    public function count($parameters=null);
 }
 
 // EOF

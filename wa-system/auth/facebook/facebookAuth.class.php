@@ -24,7 +24,7 @@ class facebookAuth extends waAuthAdapter
         if (waRequest::get('state') == $storage->get('auth_facebook_state')) {
             // token url
             $url = "https://graph.facebook.com/oauth/access_token?"."client_id=".$app_id.
-            	   "&redirect_uri=".urlencode($url)."&client_secret=".$app_secret."&code=".$code;
+                   "&redirect_uri=".urlencode($url)."&client_secret=".$app_secret."&code=".$code;
             // get oauth token
             $retry = 0;
             do {

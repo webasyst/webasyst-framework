@@ -14,9 +14,9 @@
  */
 abstract class waView
 {
-	
-	protected $postfix = '.html';
-		
+
+    protected $postfix = '.html';
+
     /**
      * @var waSystem
      */
@@ -25,86 +25,86 @@ abstract class waView
     protected $options = array();
     protected $helper;
     
-	public function __construct(waSystem $system, $options = array())
-	{
-		$this->system = $system;
-		$this->helper = new waViewHelper($this);
-	}
-	
-	/**
-	 * @return waViewHelper
-	 */
-	public function getHelper()
-	{
-	    return $this->helper;
-	}
-	
-	public function setOptions($options)
-	{
-	    foreach ($options as $k => $v) {
-	        $this->options[$k] = $v;
-	    }
-	}
-	
+    public function __construct(waSystem $system, $options = array())
+    {
+        $this->system = $system;
+        $this->helper = new waViewHelper($this);
+    }
+
+    /**
+     * @return waViewHelper
+     */
+    public function getHelper()
+    {
+        return $this->helper;
+    }
+
+    public function setOptions($options)
+    {
+        foreach ($options as $k => $v) {
+            $this->options[$k] = $v;
+        }
+    }
+
     public function getPostfix()
     {
-    	return $this->postfix;
-    }	
-	
-	abstract public function assign($name, $value = null, $escape = false);
-	
-	abstract public function clearAssign($name);
-	
-	abstract public function clearAllAssign();
-	
-	abstract public function getVars($name = null);
-	
-	protected function prepare() 
-	{
-   	   $this->assign('wa_url', $this->system->getRootUrl());
-   	   $this->assign('wa_backend_url', waSystem::getInstance()->getConfig()->getBackendUrl(true));
-   	   $this->assign('wa_app', $this->system->getApp());
-   	   $this->assign('wa_app_url', $this->system->getAppUrl(null, true));
-   	   $this->assign('wa_app_static_url', $this->system->getAppStaticUrl());
-   	   if (!$this->helper) {
-   	       $this->helper = new waViewHelper($this);
-   	   }
-   	   $this->assign('wa', $this->helper);
-	}
-	
-	abstract public function fetch($template, $cache_id = null);
-	
-	abstract public function display($template, $cache_id = null);
-	
-	abstract public function templateExists($template);
-	
-	public function isCached($template, $cache_id = null)
-	{
-		return false;
-	}
-	
-	public function clearCache($template, $cache_id = null)
-	{
-		
-	}
-	
-	public function clearAllCache($exp_time = null, $type = null)
-	{
-		
-	}
-	
-	public function cache($lifetime) 
-	{
-		
-	}
-	
-	public function getCacheId()
-	{
-        return null;			
-	}
-	
-	public function autoescape($value = null)
-	{
-	    
-	}
+        return $this->postfix;
+    }
+
+    abstract public function assign($name, $value = null, $escape = false);
+
+    abstract public function clearAssign($name);
+
+    abstract public function clearAllAssign();
+
+    abstract public function getVars($name = null);
+
+    protected function prepare()
+    {
+          $this->assign('wa_url', $this->system->getRootUrl());
+          $this->assign('wa_backend_url', waSystem::getInstance()->getConfig()->getBackendUrl(true));
+          $this->assign('wa_app', $this->system->getApp());
+          $this->assign('wa_app_url', $this->system->getAppUrl(null, true));
+          $this->assign('wa_app_static_url', $this->system->getAppStaticUrl());
+          if (!$this->helper) {
+              $this->helper = new waViewHelper($this);
+          }
+          $this->assign('wa', $this->helper);
+    }
+
+    abstract public function fetch($template, $cache_id = null);
+
+    abstract public function display($template, $cache_id = null);
+
+    abstract public function templateExists($template);
+
+    public function isCached($template, $cache_id = null)
+    {
+        return false;
+    }
+
+    public function clearCache($template, $cache_id = null)
+    {
+
+    }
+
+    public function clearAllCache($exp_time = null, $type = null)
+    {
+
+    }
+
+    public function cache($lifetime)
+    {
+
+    }
+
+    public function getCacheId()
+    {
+        return null;
+    }
+
+    public function autoescape($value = null)
+    {
+
+    }
 }

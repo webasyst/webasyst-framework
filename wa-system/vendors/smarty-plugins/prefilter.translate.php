@@ -7,7 +7,7 @@ function smarty_gettext_translate($matches)
 
 function smarty_gettext_s_translate($matches)
 {
-	return _ws(str_replace('\"', '"', $matches[1]));
+    return _ws(str_replace('\"', '"', $matches[1]));
 }
 
 function smarty_prefilter_translate($source, &$smarty)

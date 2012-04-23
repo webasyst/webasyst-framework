@@ -47,7 +47,14 @@ class waRequest
 
     public static function post($name = null, $default = null, $type = null)
     {
-        return self::getData($_POST, $name, $default, $type);
+        if ($name) {
+            return self::getData($_POST, $name, $default, $type);
+        }
+
+        // Remove CSRF hidden field from post data
+        $data = $_POST;
+        unset($data['_csrf']);
+        return self::getData($data, $name, $default, $type);
     }
 
     public static function issetPost($name)
@@ -195,17 +202,17 @@ class waRequest
             self::$params[$key] = $value;
         }
     }
-    
+
     public static function getIp()
     {
-   		if (getenv('HTTP_X_FORWARDED_FOR')) {
-			$ip = getenv('HTTP_X_FORWARDED_FOR');
-		} else {
-			$ip = getenv('REMOTE_ADDR');
-		}
-		return $ip;
+        if (getenv('HTTP_X_FORWARDED_FOR')) {
+            $ip = getenv('HTTP_X_FORWARDED_FOR');
+        } else {
+            $ip = getenv('REMOTE_ADDR');
+        }
+        return $ip;
     }
-    
+
     /**
      * Returns locale by header Accept-Language
      */
@@ -216,60 +223,60 @@ class waRequest
             return $l;
         }
         if (!self::server('HTTP_ACCEPT_LANGUAGE')) {
-        	return $locales[0];
-        }        
+            return $locales[0];
+        }
         preg_match_all("/([a-z]{1,8})(?:-([a-z]{1,8}))?(?:\s*;\s*q\s*=\s*(1|1\.0{0,3}|0|0\.[0-9]{0,3}))?\s*(?:,|$)/i",
             self::server('HTTP_ACCEPT_LANGUAGE'), $matches);
         $result = $locales[0];
-        $max_q = 0;       
+        $max_q = 0;
         for ($i = 0; $i < count($matches[0]); $i++) {
-        	$lang = $matches[1][$i];
-        	if (!empty($matches[2][$i])) {
-        		$lang .= '_'.$matches[2][$i];
-        	}
-        	if (!empty($matches[3][$i])) {
-        		$q = (float)$matches[3][$i];
-        	} else {
-        		$q = 1.0;
-        	}
-        	if (in_array($lang, $locales) && ($q > $max_q)) {
-        		$result = $lang;
-        		$max_q = $q;
-        	} elseif (empty($matches[2][$i]) && ($q * 0.8 > $max_q)) {
-        		$n = strlen($lang);
-        		foreach ($locales as $l) {
-        			if (!strncmp($l, $lang, $n)) {
-        				$result = $l;
-        				$max_q = $q * 0.8;
-        				break;
-        			}
-        		}
-        	}
+            $lang = $matches[1][$i];
+            if (!empty($matches[2][$i])) {
+                $lang .= '_'.$matches[2][$i];
+            }
+            if (!empty($matches[3][$i])) {
+                $q = (float)$matches[3][$i];
+            } else {
+                $q = 1.0;
+            }
+            if (in_array($lang, $locales) && ($q > $max_q)) {
+                $result = $lang;
+                $max_q = $q;
+            } elseif (empty($matches[2][$i]) && ($q * 0.8 > $max_q)) {
+                $n = strlen($lang);
+                foreach ($locales as $l) {
+                    if (!strncmp($l, $lang, $n)) {
+                        $result = $l;
+                        $max_q = $q * 0.8;
+                        break;
+                    }
+                }
+            }
         }
-        return $result;                 
+        return $result;
     }
-    
+
     public static function getTheme()
     {
-    	$key = wa()->getConfig()->getApplication();
-    	$key .= '/'.wa()->getRouting()->getDomain().'/theme';
-    	if (($theme_hash = self::get('theme_hash')) && ($theme = self::get('set_force_theme')) !== null) {
-    		$app_settings_model = new waAppSettingsModel();
-    		$hash = $app_settings_model->get('site', 'theme_hash');
-    		if ($theme_hash == md5($hash)) {
-    			if ($theme && waTheme::exists($theme)) {
-    				wa()->getStorage()->set($key, $theme);
-    				return $theme;
-    			} else {
-    				wa()->getStorage()->del($key);
-    			}
-    		}
-    	} elseif (($theme = wa()->getStorage()->get($key)) && waTheme::exists($theme)) {
-    		return $theme;
-    	}
-    	if (self::isMobile()) {
-    		return self::param('theme_mobile', 'default');
-    	}
-    	return self::param('theme', 'default');
-    }    
+        $key = wa()->getConfig()->getApplication();
+        $key .= '/'.wa()->getRouting()->getDomain().'/theme';
+        if (($theme_hash = self::get('theme_hash')) && ($theme = self::get('set_force_theme')) !== null) {
+            $app_settings_model = new waAppSettingsModel();
+            $hash = $app_settings_model->get('site', 'theme_hash');
+            if ($theme_hash == md5($hash)) {
+                if ($theme && waTheme::exists($theme)) {
+                    wa()->getStorage()->set($key, $theme);
+                    return $theme;
+                } else {
+                    wa()->getStorage()->del($key);
+                }
+            }
+        } elseif (($theme = wa()->getStorage()->get($key)) && waTheme::exists($theme)) {
+            return $theme;
+        }
+        if (self::isMobile()) {
+            return self::param('theme_mobile', 'default');
+        }
+        return self::param('theme', 'default');
+    }
 }

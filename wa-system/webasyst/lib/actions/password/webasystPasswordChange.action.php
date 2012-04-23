@@ -2,8 +2,8 @@
 
 class webasystPasswordChangeAction extends waViewAction
 {
-	public function execute()
-	{
-		
-	}
+    public function execute()
+    {
+
+    }
 }  

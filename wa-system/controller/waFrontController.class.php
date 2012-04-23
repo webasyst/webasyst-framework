@@ -19,15 +19,15 @@ class waFrontController
      */
     protected $system;
     protected $options = array(
-    	'module' => 'module',
-    	'action' => 'action'
+        'module' => 'module',
+        'action' => 'action'
     );
 
     public function __construct($options = array())
     {
         $this->system = waSystem::getInstance();
         foreach ($options as $k => $v) {
-        	$this->options[$k] = $v;
+            $this->options[$k] = $v;
         }
     }
 
@@ -89,22 +89,22 @@ class waFrontController
 
         // Load plugin locale and set plugin as active
         if ($plugin) {
-        	$plugin_path = $this->system->getAppPath('plugins/'.$plugin, $this->system->getApp());
-        	if (!file_exists($plugin_path.'/lib/config/plugin.php')) {
-        		$plugin = null;
-        	} else {
-        		$plugin_info = include($plugin_path.'/lib/config/plugin.php');
-        		// check rights
-        		if (isset($plugin_info['rights']) && $plugin_info['rights']) {
-        			if (!$this->system->getUser()->getRights($this->system->getConfig()->getApplication(), 'plugin.'.$plugin)) {
-        				throw new waRightsException("Access denied", 403);
-        			}
-        		}
-	            waSystem::pushActivePlugin($plugin, $prefix);
-	            if (is_dir($plugin_path.'/locale')) {
-	                waLocale::load($this->system->getLocale(), $plugin_path.'/locale', waSystem::getActiveLocaleDomain(), false);
-	            }
-        	}
+            $plugin_path = $this->system->getAppPath('plugins/'.$plugin, $this->system->getApp());
+            if (!file_exists($plugin_path.'/lib/config/plugin.php')) {
+                $plugin = null;
+            } else {
+                $plugin_info = include($plugin_path.'/lib/config/plugin.php');
+                // check rights
+                if (isset($plugin_info['rights']) && $plugin_info['rights']) {
+                    if (!$this->system->getUser()->getRights($this->system->getConfig()->getApplication(), 'plugin.'.$plugin)) {
+                        throw new waRightsException("Access denied", 403);
+                    }
+                }
+                waSystem::pushActivePlugin($plugin, $prefix);
+                if (is_dir($plugin_path.'/locale')) {
+                    waLocale::load($this->system->getLocale(), $plugin_path.'/locale', waSystem::getActiveLocaleDomain(), false);
+                }
+            }
         }
 
         //
@@ -144,7 +144,7 @@ class waFrontController
         // Single Action
         $class_name = $prefix.($plugin ? ucfirst($plugin).'Plugin' : '').ucfirst($module).($action ? ucfirst($action) : '').'Action';
         if (class_exists($class_name)) {
-        	// get default view controller
+            // get default view controller
             /**
              * @var $controller waDefaultViewController
              */

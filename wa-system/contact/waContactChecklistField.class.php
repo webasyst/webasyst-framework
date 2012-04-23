@@ -14,8 +14,12 @@
  */
 class waContactChecklistField extends waContactSelectField
 {
-    /** Return 'Checklist' type, unless redefined in subclasses */
-    public function getType() {
+    /**
+     * Return 'Checklist' type, unless redefined in subclasses
+     * @return string
+     */
+    public function getType()
+    {
         return 'Checklist';
     }
 

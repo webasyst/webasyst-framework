@@ -1,13 +1,13 @@
 <?php
 
 if (!isset($argc)) {
-	die("Run from CLI only!");
+    die("Run from CLI only!");
 }
 
 require_once(dirname(__FILE__).'/../wa-config/SystemConfig.class.php');
 
 if (count($argv) < 3) {
-	die("Use\r\n".realpath(dirname(__FILE__).'/../')."/cli.php  APP CLASS PARAMS\r\n");
+    die("Use\r\n".realpath(dirname(__FILE__).'/../')."/cli.php  APP CLASS PARAMS\r\n");
 }
 
 try {

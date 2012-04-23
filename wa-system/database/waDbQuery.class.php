@@ -28,6 +28,7 @@ class waDbQuery
     }
     
     /**
+     * @param string|array $select
      * @return waDbQuery 
      */
     public function select($select)
@@ -37,6 +38,7 @@ class waDbQuery
     }
     
     /**
+     * @param mixed $where
      * @return waDbQuery 
      */
     public function where($where)
@@ -58,6 +60,7 @@ class waDbQuery
     }
     
     /**
+     * @param string $limit
      * @return waDbQuery 
      */
     public function limit($limit)
@@ -67,6 +70,7 @@ class waDbQuery
     }    
     
     /**
+     * @param string $order
      * @return waDbQuery 
      */
     public function order($order)

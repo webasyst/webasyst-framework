@@ -35,19 +35,19 @@ class waContactAddressField extends waContactCompositeField
     
     public function format($data, $format = null)
     {
-    	if (!isset($data['value'])) {
-    		$value = array();
-    		foreach ($this->options['fields'] as $field) {
+        if (!isset($data['value'])) {
+            $value = array();
+            foreach ($this->options['fields'] as $field) {
                 /**
                  * @var $field waContactField
                  */
-    			if (isset($data['data'][$field->getId()])) {
-    				$value[] = $field->format($data['data'][$field->getId()], 'value');
-    			}
-    		}
-    		$data['value'] = implode(", ", $value);
-    	}
-    	return parent::format($data, $format);
+                if (isset($data['data'][$field->getId()])) {
+                    $value[] = $field->format($data['data'][$field->getId()], 'value');
+                }
+            }
+            $data['value'] = implode(", ", $value);
+        }
+        return parent::format($data, $format);
     }    
 }
 
@@ -66,7 +66,8 @@ class waContactAddressOneLineFormatter extends waContactFieldFormatter
         return $data;
     }
 
-    protected function getParts($data) {
+    protected function getParts($data)
+    {
         $result = array(
             // country flag image
             'pic' => '',
@@ -80,8 +81,8 @@ class waContactAddressOneLineFormatter extends waContactFieldFormatter
         );
 
         $countryName = '';
-        $countryPic = '';
-        $searchLink = '';
+//        $countryPic = '';
+//        $searchLink = '';
 
         if (isset($data['data']['country']) && $data['data']['country']) {
             $model = new waCountryModel();

@@ -33,26 +33,26 @@ class waAuthUser extends waUser
     {
         parent::init();
         if (waSystem::getInstance()->getEnv() != 'frontend' || waRequest::param('session', true)) {
-	        $this->storage = waSystem::getInstance()->getStorage();
-	        if (!isset(self::$options['session_timeout'])) {
-	            self::$options['session_timeout'] = 1800;
-	        }
-	        
-	        if (ini_get('session.gc_maxlifetime') < self::$options['session_timeout']) {
-	            ini_set('session.gc_maxlifetime', self::$options['session_timeout']);
-	        }        
-	            
-	        $auth = waSystem::getInstance()->getAuth();
-	        $info = $auth->isAuth();
-	        if (!$info && !waRequest::post('wa_auth_login') && (wa()->getEnv() == 'backend')) {
-	        	$info = $auth->auth();
-	        }
-	        if ($info && isset($info['id']) && (waSystem::getInstance()->getEnv() == 'frontend' || !empty($info['is_user']))) {
-	            $this->auth = true;
-	            $this->id = $info['id'];
-	            if (!waRequest::request('background_process')) {
-	            	$this->updateLastTime();
-	            }
+            $this->storage = waSystem::getInstance()->getStorage();
+            if (!isset(self::$options['session_timeout'])) {
+                self::$options['session_timeout'] = 1800;
+            }
+
+            if (ini_get('session.gc_maxlifetime') < self::$options['session_timeout']) {
+                ini_set('session.gc_maxlifetime', self::$options['session_timeout']);
+            }
+
+            $auth = waSystem::getInstance()->getAuth();
+            $info = $auth->isAuth();
+            if (!$info && !waRequest::post('wa_auth_login') && (wa()->getEnv() == 'backend')) {
+                $info = $auth->auth();
+            }
+            if ($info && isset($info['id']) && (waSystem::getInstance()->getEnv() == 'frontend' || !empty($info['is_user']))) {
+                $this->auth = true;
+                $this->id = $info['id'];
+                if (!waRequest::request('background_process')) {
+                    $this->updateLastTime();
+                }
                 // check CSRF cookie
                 if (!waRequest::cookie('_csrf')) {
                     waSystem::getInstance()->getResponse()->setCookie('_csrf', uniqid('', true));
@@ -94,31 +94,31 @@ class waAuthUser extends waUser
         if (!$time || $force || $time == '0000-00-00 00:00:00' || 
              (time() - strtotime($time) > 120)
         ) {
-        	try {
-            	$login_log_model = new waLoginLogModel();
-            	$last_activity = $login_log_model->getCurrent($this->id);
-        	} catch (waDbException $e) {
-        		if ($e->getCode() == 1146) {
-        			waSystem::getInstance()->getAuth()->clearAuth();
-        			header("Location: ".wa()->getConfig()->getBackendUrl(true));
-        			exit;
-        		}
-        	}
+            try {
+                $login_log_model = new waLoginLogModel();
+                $last_activity = $login_log_model->getCurrent($this->id);
+            } catch (waDbException $e) {
+                if ($e->getCode() == 1146) {
+                    waSystem::getInstance()->getAuth()->clearAuth();
+                    header("Location: ".wa()->getConfig()->getBackendUrl(true));
+                    exit;
+                }
+            }
 
-        	$contact_model = new waContactModel();
-        	$contact_info = $contact_model->getById($this->id);
+            $contact_model = new waContactModel();
+            $contact_info = $contact_model->getById($this->id);
             $auth = waSystem::getInstance()->getAuth();
             if (!$auth->checkAuth($contact_info)) {
                 header("Location: ".wa()->getConfig()->getRequestUrl(false));
                 exit;
             }
-        	if (!$contact_info || (waSystem::getInstance()->getEnv() == 'backend' && !$contact_info['is_user'])) {
-        		waSystem::getInstance()->getAuth()->clearAuth();
-        		header("Location: ".wa()->getConfig()->getBackendUrl(true));
-        		exit;
-        	} else {
-        		$this->setCache($contact_info);
-        	}
+            if (!$contact_info || (waSystem::getInstance()->getEnv() == 'backend' && !$contact_info['is_user'])) {
+                waSystem::getInstance()->getAuth()->clearAuth();
+                header("Location: ".wa()->getConfig()->getBackendUrl(true));
+                exit;
+            } else {
+                $this->setCache($contact_info);
+            }
             if (!$last_activity) {
                 $login_log_model->insert(array(
                     'contact_id' => $this->id,

@@ -203,7 +203,6 @@ class waContactsCollection
                         } else {
                             switch($f) {
                                 case '_online_status':
-                                    $t = time() - waUser::getOption('online_timeout', 300);
                                     foreach($data as &$v) {
                                         $v['_online_status'] = waUser::getStatusByInfo($v);
                                     }
@@ -233,8 +232,8 @@ class waContactsCollection
                 foreach ($data_fields as $k => $field_id) {
                     $f = waContactFields::get($field_id);
                     if ($f && $f instanceof waContactCompositeField) {
-                    	unset($data_fields[$k]);
-                    	$data_fields = array_merge($data_fields, $f->getField());
+                        unset($data_fields[$k]);
+                        $data_fields = array_merge($data_fields, $f->getField());
                     }                    
                 }
                 

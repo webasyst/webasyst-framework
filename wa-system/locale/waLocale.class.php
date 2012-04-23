@@ -351,6 +351,7 @@ function _ws($msgid1, $msgid2 = null, $n = null, $sprintf = true)
 /**
  * Translate string using locale of domain
  *
+ * @param string $domain
  * @param string $msgid1
  * @param string $msgid2
  * @param int $n

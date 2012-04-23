@@ -13,5 +13,4 @@
  */
 class waDbException extends waException
 {
-	
 }

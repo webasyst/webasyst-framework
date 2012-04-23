@@ -228,20 +228,20 @@ class waDateTime
         $pattern = array(
 
             //day
-            'd',		//day of the month
-            'j',		//3 letter name of the day
-            'l',		//full name of the day
-            'z',		//day of the year
+            'd',        //day of the month
+            'j',        //3 letter name of the day
+            'l',        //full name of the day
+            'z',        //day of the year
 
             //month
-            'F',		//Month name full
-            'M',		//Month name short
-            'n',		//numeric month no leading zeros
-            'm',		//numeric month leading zeros
+            'F',        //Month name full
+            'M',        //Month name short
+            'n',        //numeric month no leading zeros
+            'm',        //numeric month leading zeros
 
             //year
-            'Y', 		//full numeric year
-            'y'		//numeric year: 2 digit
+            'Y',         //full numeric year
+            'y'        //numeric year: 2 digit
         );
         $replace = array(
             'dd','d','DD','o',

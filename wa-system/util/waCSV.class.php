@@ -125,11 +125,11 @@ class waCSV
 
     /**
      * Returns stat info about csv-file
-     * 	array(
-     * 		'DELIMITER' => ...,
-     * 		'FIELDS' => array(...), // fields in the first row
-     * 		'NUM_ROWS' => ... // Count of the rows in the file
-     * 	)
+     *     array(
+     *         'DELIMITER' => ...,
+     *         'FIELDS' => array(...), // fields in the first row
+     *         'NUM_ROWS' => ... // Count of the rows in the file
+     *     )
      *
      * @return array
      */
@@ -170,7 +170,7 @@ class waCSV
             $n = 1;
         }
 
-        while ($n <= 10 && $string = $this->encodeArray(fgetcsv($h, $this->length, $this->delimiter)))	{
+        while ($n <= 10 && $string = $this->encodeArray(fgetcsv($h, $this->length, $this->delimiter)))    {
             if ($this->notEmptyArray($string)) {
                 $records[] = $string;
                 $count = count($string);

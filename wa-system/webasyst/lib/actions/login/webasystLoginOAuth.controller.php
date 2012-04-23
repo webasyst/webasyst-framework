@@ -18,7 +18,7 @@ class webasystLoginOAuthController extends waViewController
                 $params['url'] = $params['redirect_uri'];
             } else {
                 $params['url'] = $system->getRootUrl(true).preg_replace("/\\?.*$/", '', $url).
-            				 '?provider='.$provider.'&redirect='.urlencode(waRequest::server('HTTP_REFERER'));
+                             '?provider='.$provider.'&redirect='.urlencode(waRequest::server('HTTP_REFERER'));
             }
             
             $auth = waSystem::getInstance()->getAuth($provider, $params);

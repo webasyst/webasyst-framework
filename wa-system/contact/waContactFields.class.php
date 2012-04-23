@@ -105,10 +105,16 @@ class waContactFields
         return null;
     }
 
-    /** Merge two arrays (possibly containing same keys) so that the resulting array
-      * contains key => value from each of them in order of appearance in original array.
-      * If it is not possible, then no guarantee about resulting key order is made. */
-    protected static function merge_maintaining_order($a, $b) {
+    /**
+     * Merge two arrays (possibly containing same keys) so that the resulting array
+     * contains key => value from each of them in order of appearance in original array.
+     * If it is not possible, then no guarantee about resulting key order is made.
+     * @param $a
+     * @param $b
+     * @return array
+     */
+    protected static function merge_maintaining_order($a, $b)
+    {
         $result = array();
         reset($a);
         reset($b);
@@ -161,18 +167,21 @@ class waContactFields
     }
 
     /**
-      * Return array of field objects by type:
-      * person: all person fields (default);
-      * contact: all company fields;
-      * person_disabled: existing custom and system fields disabled for person contacts;
-      * company_disabled: existing custom and system fields disabled for company contacts.
-      * enabled: all fields currently active either for company or for person; if a field is active for both then only a person instance returned
-      * all: all fields; first enabled for person, then enabled for company, then rest.
-      * @param string $contactType person|contact|person_disabled|company_disabled|enabled
-      * @param boolean $all (defaults to false) whether to include hidden fields in the list
-      * @return array fieldId => waContactField
-      */
-    public static function getAll($contactType='person', $all=false) {
+     * Return array of field objects by type:
+     * person: all person fields (default);
+     * contact: all company fields;
+     * person_disabled: existing custom and system fields disabled for person contacts;
+     * company_disabled: existing custom and system fields disabled for company contacts.
+     * enabled: all fields currently active either for company or for person; if a field is active for both then only a person instance returned
+     * all: all fields; first enabled for person, then enabled for company, then rest.
+     *
+     * @param string $contactType person|contact|person_disabled|company_disabled|enabled
+     * @param boolean $all (defaults to false) whether to include hidden fields in the list
+     * @throws waException
+     * @return array fieldId => waContactField
+     */
+    public static function getAll($contactType='person', $all=false)
+    {
         self::ensureStaticVars();
         switch ($contactType) {
             case 'person':
@@ -207,7 +216,11 @@ class waContactFields
         return $result;
     }
 
-    /** @param string $contactType defaults to person; see ::getAll() parameters for details */
+    /**
+     * @param string $contactType defaults to person; see ::getAll() parameters for details
+     * @param bool $all
+     * @return array
+     */
     public static function getInfo($contactType='person', $all = false)
     {
         self::ensureStaticVars();
@@ -224,7 +237,8 @@ class waContactFields
      * @throws waException
      * @param waContactField $field
      */
-    public static function createField($field) {
+    public static function createField($field)
+    {
         if (!($field instanceof waContactField)) {
             throw new waException('Invalid contact field '.print_r($field, TRUE));
         }
@@ -259,7 +273,8 @@ class waContactFields
      * @param $id waContactField|int field ID or field instance.
      * @throws waException
      */
-    public function deleteField($id) {
+    public function deleteField($id)
+    {
         self::ensureStaticVars();
         if (is_object($id) && $id instanceof waContactField) {
             $id = $id->getId();
@@ -286,6 +301,9 @@ class waContactFields
             return;
         }
         $fields = include($file);
+        if (!$fields) {
+            return;
+        }
         foreach ($fields as $k => $f) {
             if (!($f instanceof waContactField)) {
                 throw new waException("Invalid contact field ".print_r($f, TRUE));
@@ -307,7 +325,8 @@ class waContactFields
      * @throws waException
      * @param waContactField $field
      */
-    public function updateField($field) {
+    public function updateField($field)
+    {
         if (! ( $field instanceof waContactField)) {
             throw new waException('Invalid contact field '.print_r($field, TRUE));
         }
@@ -329,8 +348,7 @@ class waContactFields
         } else {
             $fields = array();
         }
-        $fields = include($file);
-        foreach($fields as $k => $v) {
+        foreach ($fields as $k => $v) {
             if ($v->getId() == $id) {
                 $fields[$k] = $field;
                 break;
@@ -364,7 +382,8 @@ class waContactFields
      * @param $type string person|company
      * @param $position int how many items to skip at the begining of list before inserting $field (default: new field is inserted at the end of the list, existing field position does not change);
      */
-    public static function enableField($field, $type, $position=null) {
+    public static function enableField($field, $type, $position=null)
+    {
         if (!($field instanceof waContactField)) {
             $field = self::get($field, 'all');
         }
@@ -486,8 +505,12 @@ class waContactFields
         file_put_contents($file, "<?php\nreturn ".var_export($contactOrder, TRUE).";\n// EOF");
     }
 
-    /** @return mixed null, if field does not exist; false if it is custom; true if it is system. */
-    public static function isSystemField($id) {
+    /**
+     * @param string $id
+     * @return mixed null, if field does not exist; false if it is custom; true if it is system.
+     */
+    public static function isSystemField($id)
+    {
         self::ensureStaticVars();
         if (!isset(self::$fieldStatus[$id])) {
             return null;
@@ -495,10 +518,13 @@ class waContactFields
         return self::$fieldStatus[$id];
     }
 
-    /** Get field parameters to be saved in *_fields_order.php
-      * @param waContactField $field
-      * @return array parameter => value */
-    protected static function getCustomParameters($field) {
+    /**
+     * Get field parameters to be saved in *_fields_order.php
+     * @param waContactField $field
+     * @return array parameter => value
+     */
+    protected static function getCustomParameters($field)
+    {
         $result = array();
         foreach(self::$customParameters as $p => $def) {
             $result[$p] = $field->getParameter($p);
@@ -506,17 +532,25 @@ class waContactFields
         return $result;
     }
 
-    /** Reset field parameters that are normally saved in *_fields_order.php
-      * to prepare $field object to be saved in *fields.php
-      * @param waContactField $field */
-    protected static function resetCustomParameters($field) {
+    /**
+     * Reset field parameters that are normally saved in *_fields_order.php
+     * to prepare $field object to be saved in *fields.php
+     * @param waContactField $field
+     */
+    protected static function resetCustomParameters($field)
+    {
         foreach(self::$customParameters as $p => $def) {
             $field->setParameter($p, $def);
         }
     }
 
-    /** Load self::$personFields, self::$companyFields, self::$fieldStatus if not loaded yet */
-    protected static function ensureStaticVars() {
+    /**
+     * Load self::$personFields, self::$companyFields, self::$fieldStatus if not loaded yet
+     * @throws waException
+     * @return
+     */
+    protected static function ensureStaticVars()
+    {
         if (self::$personFields !== null) {
             return;
         }

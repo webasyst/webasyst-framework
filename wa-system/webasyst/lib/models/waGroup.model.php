@@ -53,7 +53,7 @@ class waGroupModel extends waModel
     /**
      * @param null $key
      * @param bool $normalize
-     * @return array (id => array(id=>..,name=>..,cnt=>..))
+     * @return array array(id => array(id=>..,name=>..,cnt=>..) )
      */
     public function getAll($key = null, $normalize = false)
     {

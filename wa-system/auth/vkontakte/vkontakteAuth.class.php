@@ -32,14 +32,14 @@ class vkontakteAuth extends waAuthAdapter
             if (isset($data['response']) && isset($data['response'][0])) {
                 $data = $data['response'][0];
                 $user_data = array(
-	                'source' => 'vkontakte',
-	                'source_id' => $data['uid'],
-	                'source_link' => "http://vkontakte.ru/id".$data['uid'],
-	                'name' => $data['first_name']." ".$data['last_name'],
-	                'firstname' => $data['first_name'],
-	                'lastname' => $data['last_name'],
-	                'login' => $data['first_name'],
-                //	                'locale' => $data['locale']
+                    'source' => 'vkontakte',
+                    'source_id' => $data['uid'],
+                    'source_link' => "http://vkontakte.ru/id".$data['uid'],
+                    'name' => $data['first_name']." ".$data['last_name'],
+                    'firstname' => $data['first_name'],
+                    'lastname' => $data['last_name'],
+                    'login' => $data['first_name'],
+                //                    'locale' => $data['locale']
                 );
                 if (isset($data['email'])) {
                     $user_data['email'] = $data['email'];

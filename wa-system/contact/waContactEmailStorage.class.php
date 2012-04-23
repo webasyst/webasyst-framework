@@ -40,11 +40,12 @@ class waContactEmailStorage extends waContactStorage
     public function save(waContact $contact, $fields)
     {
         if (!isset($fields['email'])) {
-        	return true;	
+            return true;
         }
-    	
+
         $data = array();
         $delete_flag = false;
+        $sort = 0;
         foreach ($fields['email'] as $sort => $field) {
             if ($field === null) {
                 $sql = "DELETE FROM ".$this->getModel()->getTableName()." 
@@ -85,7 +86,7 @@ class waContactEmailStorage extends waContactStorage
         if ($data) {
             $sql = "INSERT INTO ".$this->getModel()->getTableName()." (contact_id, email, ext, sort, status) 
                     VALUES (".implode("), (", $data).") 
-            		ON DUPLICATE KEY UPDATE email = VALUES(email), ext = VALUES(ext), sort = VALUES(sort), status = VALUES(status)";
+                    ON DUPLICATE KEY UPDATE email = VALUES(email), ext = VALUES(ext), sort = VALUES(sort), status = VALUES(status)";
             return $this->getModel()->exec($sql);
         }
         return true;

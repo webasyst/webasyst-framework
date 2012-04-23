@@ -13,12 +13,12 @@ class webasystBackendCountController extends waJsonController
         foreach ($apps as $app_id => $app) {
             $class_name = $app_id.'Config';
             if (file_exists($root_path.'/wa-apps/'.$app_id.'/lib/config/'.$class_name.'.class.php')) {
-            	try {
+                try {
                     $n = wa($app_id)->getConfig()->onCount();
                     if ($n !== null) {
                         $this->response[$app_id] = $n;
                     }
-            	} catch(Exception $ex) {
+                } catch(Exception $ex) {
                     waLog::log($ex->__toString());
                 }
             }

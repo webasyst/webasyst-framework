@@ -14,7 +14,7 @@
  */
 class waRightsException extends waException
 {
-	function __construct($message, $code=403) {
+    function __construct($message, $code=403) {
         parent::__construct($message, $code);
-	}
+    }
 }

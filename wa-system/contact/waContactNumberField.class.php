@@ -14,12 +14,12 @@
  */
 class waContactNumberField extends waContactStringField
 {
-	public function init()
-	{
-		if (!isset($this->options['validators'])) {
-			$this->options['validators'] = new waNumberValidator($this->options);
-		}
-	}
+    public function init()
+    {
+        if (!isset($this->options['validators'])) {
+            $this->options['validators'] = new waNumberValidator($this->options);
+        }
+    }
 }
 
 // EOF

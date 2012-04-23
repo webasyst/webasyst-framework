@@ -3,11 +3,11 @@
 class waGettextParser
 {
     protected $config = array(
-		'include' => '.*',
-		'project' => 'WebAsyst',
-		'path' => '/',
-		'locales' => array(),
-		'debug' => false,
+        'include' => '.*',
+        'project' => 'WebAsyst',
+        'path' => '/',
+        'locales' => array(),
+        'debug' => false,
         'verify'=>false,
     );
 
@@ -254,10 +254,10 @@ if (!file_exists($path)) {
 
 
 $config = array(
-	'project' => $app_id,
-	'include' => ".+\.(html|js|php)",
-	'path' => $path.$app_id."/locale",
-	'locales' => array()
+    'project' => $app_id,
+    'include' => ".+\.(html|js|php)",
+    'path' => $path.$app_id."/locale",
+    'locales' => array()
 );
 
 $locales = include(realpath(dirname(__FILE__)."/../../")."/wa-config/locale.php");

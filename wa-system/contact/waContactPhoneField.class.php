@@ -14,5 +14,5 @@
  */
 class waContactPhoneField extends waContactStringField
 {
-	
+
 }

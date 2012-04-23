@@ -71,6 +71,7 @@ final class waDbStatement
 
     /**
      * Preparing query to the next operations
+     * @throws waDbException
      */
     private function prepareQuery()
     {
@@ -177,6 +178,7 @@ final class waDbStatement
     /**
      * @param mixed $param
      * @param mixed $value
+     * @throws Exception
      * @return bool
      */
     public function bindParam($param, &$value)
@@ -197,7 +199,8 @@ final class waDbStatement
     }
 
     /**
-     * @param array $paramsArray
+     * @param $params_array
+     * @throws Exception
      * @return bool
      */
     public function bindArray($params_array)
@@ -217,6 +220,7 @@ final class waDbStatement
 
     /**
      * Execute query and returns object of the result
+     * @param array $params
      * @return waDbResultSelect|waDbResultInsert|waDbResultDelete $dbresult
      */
     public function query(array $params = array())

@@ -63,19 +63,16 @@ class waModel
     //private $readonly   = false;
 
     /**
-     * Конструктор
-     *
      * @param string $type
-     * @param string $bind
-     * @param boolean $writeable
+     * @param bool $writable
      */
-    public function __construct($type = false, $writable = false)
+    public function __construct($type = null, $writable = false)
     {
         $this->writable = $writable;
         $this->type     = $type ? $type : 'default';
         $this->adapter = waDbConnector::getConnection($this->type, $this->writable);
         if ($this->table && !$this->fields) {
-        	$this->getMetadata();
+            $this->getMetadata();
         }
     }
     
@@ -165,9 +162,12 @@ class waModel
     protected $sql;
 
     /**
-     * Execute query
-     * @param string $sql -
-     * @return resource|boolean
+     * Execute SQL query
+     *
+     * @param string $sql
+     * @param bool $unbuffer
+     * @throws waDbException
+     * @return resource
      */
     private function run($sql, $unbuffer = false)
     {
@@ -346,11 +346,10 @@ class waModel
     }
 
     /**
-     * Приводит значение к нужному типу
-     *
      * @param string $type
      * @param string $value
-     * @return
+     * @param bool $is_null
+     * @return int|mixed|string
      */
     protected function castValue($type, $value, $is_null = false)
     {
@@ -437,7 +436,7 @@ class waModel
                 $row_values = array();
                 foreach ($row as $field => $value) {
                     if (isset($this->fields[$field])) {
-                    	$row_values[$this->escapeField($field)] = $this->getFieldValue($field, $value);
+                        $row_values[$this->escapeField($field)] = $this->getFieldValue($field, $value);
                     }
                 }
                 if (!$fields) {

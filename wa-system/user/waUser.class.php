@@ -15,8 +15,8 @@
 class waUser extends waContact
 {
 
-	protected $apps;
-	
+    protected $apps;
+
     public function init()
     {
         parent::init();
@@ -139,9 +139,9 @@ class waUser extends waContact
      * Returns list of all user groups
      *
      * @example returns array(
-     * 	1 => 'Group 1',
-     * 	2 => 'Group 2',
-     * 	...
+     *     1 => 'Group 1',
+     *     2 => 'Group 2',
+     *     ...
      * )
      *
      * @return array - associative array with key group id and value group name
@@ -173,16 +173,16 @@ class waUser extends waContact
 
         $sorted_apps = array();
         if ($sorted) {
-	        $sort = explode(',', $this->getSettings('', 'apps'));
-	        foreach ($sort as $app_id) {
-	            if (!$is_admin && (!isset($rights[$app_id]) || !$rights[$app_id])) {
-	                continue;
-	            }
-	            if (isset($apps[$app_id])) {
-	                $sorted_apps[$app_id] = $apps[$app_id];
-	                unset($apps[$app_id]);
-	            }
-	        }
+            $sort = explode(',', $this->getSettings('', 'apps'));
+            foreach ($sort as $app_id) {
+                if (!$is_admin && (!isset($rights[$app_id]) || !$rights[$app_id])) {
+                    continue;
+                }
+                if (isset($apps[$app_id])) {
+                    $sorted_apps[$app_id] = $apps[$app_id];
+                    unset($apps[$app_id]);
+                }
+            }
         }
         foreach ($apps as $app_id => $app) {
             if (!$is_admin && (!isset($rights[$app_id]) || !$rights[$app_id])) {

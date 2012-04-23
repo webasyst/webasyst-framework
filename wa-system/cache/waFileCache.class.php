@@ -40,7 +40,7 @@ abstract class waFileCache implements waiCache
 
     protected function getFilePath()
     {
-    	return waSystem::getInstance()->getCachePath('cache/'.$this->key.'.php', $this->app_id);
+        return waSystem::getInstance()->getCachePath('cache/'.$this->key.'.php', $this->app_id);
     }
     
     public function get()
@@ -56,13 +56,13 @@ abstract class waFileCache implements waiCache
     
     public function set($value)
     {        
-    	$this->value = null;
+        $this->value = null;
         return $this->writeToFile($this->getFilePath(), $value);
     }    
     
     public function delete()
     {
-    	$this->value = null;
+        $this->value = null;
         $file = $this->getFilePath();
         if (file_exists($file)) {
             return @unlink($file);

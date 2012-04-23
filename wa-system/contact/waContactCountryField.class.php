@@ -19,7 +19,7 @@ class waContactCountryField extends waContactSelectField
     public function init()
     {
         if (!isset($this->options['formats']['value'])) {
-        	$this->options['formats']['value'] = new waContactCountryFormatter();
+            $this->options['formats']['value'] = new waContactCountryFormatter();
         }
     }
     

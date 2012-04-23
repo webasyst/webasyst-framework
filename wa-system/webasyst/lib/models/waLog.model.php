@@ -2,6 +2,6 @@
 
 class waLogModel extends waModel
 {
-	protected $table = "wa_log";
-	
+    protected $table = "wa_log";
+
 }

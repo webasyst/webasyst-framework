@@ -60,8 +60,6 @@ class waContactCategoryStorage extends waContactStorage
                 'value' => array_keys($categories)
             )
         );
-        
-        return array();
     }
 
     public function save(waContact $contact, $fields)

@@ -14,8 +14,8 @@
  */
 abstract class waAction extends waController
 {
-	public function display()
-	{
-		
-	}
+    public function display()
+    {
+
+    }
 }

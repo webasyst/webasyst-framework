@@ -30,7 +30,7 @@ abstract class waContactStorage
      * @return array|void
      */
     public function get(waContact $contact, $fields = array(), $old_value = false)
-    {    	
+    {
         if (!is_array($fields)) {
             $all_fields = array($fields);
         } else {
@@ -39,7 +39,7 @@ abstract class waContactStorage
         
         $result = array();
         $load_fields = array();
-        foreach ($all_fields as $i => $field_id) {
+        foreach ($all_fields as $field_id) {
             if ($contact->issetCache($field_id, $old_value)) {
                 $result[$field_id] = $contact->getCache($field_id, $old_value);
             } else {

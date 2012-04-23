@@ -1,9 +1,9 @@
 <?php
-	$response = new waResponse();
-	if (!$response->setStatus($code)) {
-		$response->setStatus(500);
-	} 
-	$response->sendHeaders();
+    $response = new waResponse();
+    if (!$response->setStatus($code)) {
+        $response->setStatus(500);
+    }
+    $response->sendHeaders();
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
 "http://www.w3.org/TR/html4/strict.dtd"><html>

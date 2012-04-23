@@ -2,10 +2,10 @@
 
 class waAnalyticsConfig 
 {
-	public function getEntities()
-	{
-		return array();
-	}
-	
-	
+    public function getEntities()
+    {
+        return array();
+    }
+
+
 }

@@ -14,5 +14,5 @@
  */
 class waWidget extends waViewActions
 {
-	protected $template_folder = 'templates/widgets/';
+    protected $template_folder = 'templates/widgets/';
 }

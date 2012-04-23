@@ -14,30 +14,30 @@
  */
 abstract class waStorage
 {
-	protected $options = array();
+    protected $options = array();
 
-	public function __construct($options = array())
-	{
-		$this->init($options);
-	}
+    public function __construct($options = array())
+    {
+        $this->init($options);
+    }
 
-	public function init($options = array())
-	{
-		foreach ($options as $name => $value) {
-			$this->options[$name] = $value;
-		}
-	}
+    public function init($options = array())
+    {
+        foreach ($options as $name => $value) {
+            $this->options[$name] = $value;
+        }
+    }
 
-	public function getOptions()
-	{
-		return $this->options;
-	}
+    public function getOptions()
+    {
+        return $this->options;
+    }
 
-	abstract public function read($key);
+    abstract public function read($key);
 
-	abstract public function regenerate($destroy = false);
+    abstract public function regenerate($destroy = false);
 
-	abstract public function remove($key);
+    abstract public function remove($key);
 
-	abstract public function write($key, $data);
+    abstract public function write($key, $data);
 }

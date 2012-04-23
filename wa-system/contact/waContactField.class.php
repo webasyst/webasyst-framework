@@ -192,6 +192,12 @@ abstract class waContactField
      * For multi fields return list of arrays(value=>..., ext=>...); ext is optional, see $this->isExt()
      *
      * $value can be a string, an array(value=>..., ext=>...) or list of these.
+     *
+     * @param waContact $contact
+     * @param $value
+     * @param array $params
+     * @param bool $add
+     * @return array
      */
     public function set(waContact $contact, $value, $params = array(), $add = false)
     {
@@ -273,6 +279,8 @@ abstract class waContactField
     /**
      * Check field value to be unique, if field is set up as unique.
      *
+     * @param $data
+     * @param int $contactId
      * @return array|string|null Validation errors (array for multi fields, string for simple fields) or null if everything is ok.
      */
     public function validateUnique($data, $contactId=null)
@@ -352,7 +360,7 @@ abstract class waContactField
     /**
      * Validate field value and returns errors or null if value is valud
      * @param mixed $data
-     * @param int|null $contactId
+     * @param int $contact_id
      * @return array|string|null
      */
     public function validate($data, $contact_id=null)
@@ -504,6 +512,9 @@ abstract class waContactField
         return $this->getId();
     }
 
+    /**
+     * @return string
+     */
     public function getType()
     {
         if (isset($this->options['type'])) {
@@ -519,6 +530,7 @@ abstract class waContactField
      * waContactField has one parameter: localized_names = array(locale => name)
      *
      * @param $p string parameter to read
+     * @return array|null
      */
     public function getParameter($p)
     {
@@ -563,6 +575,7 @@ abstract class waContactField
     /**
      * Set array of parameters
      * @param array $param parameter => value
+     * @throws waException
      */
     public function setParameters($param)
     {

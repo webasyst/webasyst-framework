@@ -14,20 +14,20 @@
  */
 class waLoginValidator extends waRegexValidator
 {
-	const REGEX_LOGIN = '/^[a-z0-9\.@_-]+$/i';
-	
-	protected function init()
-	{
-		$this->setOption(array(
-			'required' => true,
-			'min_length' => 4,
-			'max_length' => 32
-		));
-		
-		parent::init();
-				
-		$this->setPattern(self::REGEX_LOGIN);
-				
-		$this->setMessage('not_match', 'Invalid login');
-	}	
+    const REGEX_LOGIN = '/^[a-z0-9\.@_-]+$/i';
+
+    protected function init()
+    {
+        $this->setOption(array(
+            'required' => true,
+            'min_length' => 4,
+            'max_length' => 32
+        ));
+
+        parent::init();
+
+        $this->setPattern(self::REGEX_LOGIN);
+
+        $this->setMessage('not_match', 'Invalid login');
+    }
 }

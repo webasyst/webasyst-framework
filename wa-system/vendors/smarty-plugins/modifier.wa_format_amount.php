@@ -10,7 +10,7 @@ function smarty_modifier_wa_format_amount($string, $currency_id=null, $locale=nu
 {
     if ($locale === null || $currency_id === null) {
         /**
-         * @var waSmartyView
+         * @var waSmarty3View
          */
         $smarty = waConfig::get('current_smarty');
     }

@@ -14,8 +14,8 @@
  */
 class waCliController extends waController
 {
-	public function execute()
-	{
-		
-	}
+    public function execute()
+    {
+
+    }
 }

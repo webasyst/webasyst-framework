@@ -37,9 +37,9 @@ class waDbRecord extends waArrayObjectDiff
     //
 
     /**
-      * @param waModel $m model to use for saving
-      * @param mixed $id id of existing record, as accepted by model; omit to create new record.
-      */
+     * @param array|\Traversable|\waModel $m model to use for saving
+     * @param mixed $id id of existing record, as accepted by model; omit to create new record.
+     */
     public function __construct(waModel $m, $id = null)
     {
         parent::__construct();

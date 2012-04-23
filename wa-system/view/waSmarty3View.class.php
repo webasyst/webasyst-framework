@@ -28,61 +28,62 @@ class waSmarty3View extends waView
      * @var waSystem
      */
     protected $system;
-     
+
     /**
-     * 
-     * @return Smarty
+     * @param waSystem $system
+     * @param array $options
+     * @return waSmarty3View
      */
     public function __construct(waSystem $system, $options = array()) 
     {
-    	parent::__construct($system, $options);
-    	
+        parent::__construct($system, $options);
+
         $this->smarty = new Smarty();
         $this->setOptions($options);
         if (isset($options['auto_literal'])) {
-        	$this->smarty->auto_literal =  $options['auto_literal'];
+            $this->smarty->auto_literal =  $options['auto_literal'];
         }
         if (isset($options['left_delimiter'])) {
-			$this->smarty->left_delimiter =  $options['left_delimiter'];
+            $this->smarty->left_delimiter =  $options['left_delimiter'];
         }
-		if (isset($options['right_delimiter'])) {
-			$this->smarty->right_delimiter = $options['right_delimiter'];
-		}
-		$this->smarty->setTemplateDir(isset($options['template_dir']) ? $options['template_dir'] : $this->system->getAppPath());
-		$this->smarty->setCompileDir(isset($options['compile_dir']) ? $options['compile_dir'] : $this->system->getAppCachePath('templates/compiled/'));
-		$this->smarty->setCacheDir($this->system->getAppCachePath('templates/cache/'));
-		if (ini_get('safe_mode')) {
-		    $this->smarty->use_sub_dirs = false;
-		} else {
-		    $this->smarty->use_sub_dirs = true;
-		}
-		// not use
-		//$this->smarty->setCompileCheck(wa()->getConfig()->isDebug()?true:false);
-			
-		$this->smarty->addPluginsDir($this->system->getConfig()->getPath('system').'/vendors/smarty-plugins');
-		$this->smarty->loadFilter('pre', 'translate');
+        if (isset($options['right_delimiter'])) {
+            $this->smarty->right_delimiter = $options['right_delimiter'];
+        }
+        $this->smarty->setTemplateDir(isset($options['template_dir']) ? $options['template_dir'] : $this->system->getAppPath());
+        $this->smarty->setCompileDir(isset($options['compile_dir']) ? $options['compile_dir'] : $this->system->getAppCachePath('templates/compiled/'));
+        $this->smarty->setCacheDir($this->system->getAppCachePath('templates/cache/'));
+        if (ini_get('safe_mode')) {
+            $this->smarty->use_sub_dirs = false;
+        } else {
+            $this->smarty->use_sub_dirs = true;
+        }
+        // not use
+        //$this->smarty->setCompileCheck(wa()->getConfig()->isDebug()?true:false);
+
+        $this->smarty->addPluginsDir($this->system->getConfig()->getPath('system').'/vendors/smarty-plugins');
+        $this->smarty->loadFilter('pre', 'translate');
     } 
     
-	public function setOptions($options)
-	{
-	    foreach ($options as $k => $v) {
-	        $this->options[$k] = $v;
-	        switch ($k) {
-	            case "left_delimiter":
-	            case "right_delimiter":
-	                $this->smarty->$k = $v;
-	                break;
-	        }
-	    }
-	}    
-	
-	protected function prepare()
-	{
-   		$this->smarty->compile_id = isset($this->options['compile_id']) ? 
-   		    $this->system->getApp()."_".$this->options['compile_id'] : 
-   		    $this->system->getApp()."_".$this->system->getLocale();
-   		parent::prepare();
-	}
+    public function setOptions($options)
+    {
+        foreach ($options as $k => $v) {
+            $this->options[$k] = $v;
+            switch ($k) {
+                case "left_delimiter":
+                case "right_delimiter":
+                    $this->smarty->$k = $v;
+                    break;
+            }
+        }
+    }
+
+    protected function prepare()
+    {
+           $this->smarty->compile_id = isset($this->options['compile_id']) ?
+               $this->system->getApp()."_".$this->options['compile_id'] :
+               $this->system->getApp()."_".$this->system->getLocale();
+           parent::prepare();
+    }
         
     public function assign($name, $value = null, $escape = false)
     {
@@ -108,64 +109,60 @@ class waSmarty3View extends waView
 
     public function getVars($name = null) 
     {
-    	if (!$name) {
-        	return $this->smarty->tpl_vars;
-    	} else {
-    		return isset($this->smarty->tpl_vars[$name]) ? $this->smarty->tpl_vars[$name] : null;
-    	}
+        return $this->smarty->getTemplateVars($name);
     }
        
     public function fetch($template, $cache_id = null) 
     {
-    	waConfig::set('current_smarty', $this);
-    	$this->prepare();
-    	return $this->smarty->fetch($template, $cache_id);        
+        waConfig::set('current_smarty', $this);
+        $this->prepare();
+        return $this->smarty->fetch($template, $cache_id);
     }
 
     public function display($template, $cache_id = null) 
     {
-    	waConfig::set('current_smarty', $this);
-    	$this->prepare();    	
-   		return $this->smarty->display($template, $cache_id);        
+        waConfig::set('current_smarty', $this);
+        $this->prepare();
+           return $this->smarty->display($template, $cache_id);
     }    
     
     public function templateExists($template)
     {
-    	return $this->smarty->templateExists($template);
+        return $this->smarty->templateExists($template);
     }
     
     public function isCached($template, $cache_id = null)
     {
-    	return $this->smarty->isCached($template, $cache_id);
+        return $this->smarty->isCached($template, $cache_id);
     }
     
     public function clearAllCache($exp_time = null, $type = null)
     {
-    	return $this->smarty->clearAllCache($exp_time, $type);
+        return $this->smarty->clearAllCache($exp_time, $type);
     }
     
     public function clearCache($template, $cache_id = null)
     {
-		return $this->smarty->clearCache($template, $cache_id);    	
+        return $this->smarty->clearCache($template, $cache_id);
     }
     
     public function cache($lifetime)
     {
-    	if ($lifetime) {
-	    	$this->smarty->caching = Smarty::CACHING_LIFETIME_SAVED;
-	    	$this->smarty->cache_lifetime = $lifetime;
-    	} else {
-    		$this->smarty->caching = false;
-    	}
+        if ($lifetime) {
+            $this->smarty->caching = Smarty::CACHING_LIFETIME_SAVED;
+            $this->smarty->cache_lifetime = $lifetime;
+        } else {
+            $this->smarty->caching = false;
+        }
     }
     
     public function getCacheId()
     {
-		$cache_id = isset($this->smarty->getParent()->tpl_vars['cache_id']) ? $this->smarty->getParent()->tpl_vars['cache_id'] : null;
-		if ($cache_id && isset($cache_id->value)) {
-			$cache_id = $cache_id->value;
-		}
-		return $cache_id;        
+        $cache_id = isset($this->smarty->getParent()->tpl_vars['cache_id']) ? $this->smarty->getParent()->tpl_vars['cache_id'] : null;
+        if ($cache_id && isset($cache_id->value)) {
+            $cache_id = $cache_id->value;
+        }
+        return $cache_id;
     }
     
     public function setTemplateDir($path)
@@ -179,6 +176,6 @@ class waSmarty3View extends waView
             return $this->smarty->escape_html;   
         } else {
             return $this->smarty->escape_html = $value;
-        }	 
+        }
     }
 }

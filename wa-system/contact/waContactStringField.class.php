@@ -28,13 +28,17 @@ class waContactStringField extends waContactField
         return $info;
     }
     
-    /** Get the current value of parameter $p.
-      * Used by a field constructor to access field parameters.
-      *
-      * waContactStringField has one parameter: input_height, integer from 1 to 5.
-      * 
-      * @param $p string parameter to read */
-    public function getParameter($p) {
+    /**
+     * Get the current value of parameter $p.
+     * Used by a field constructor to access field parameters.
+     *
+     * waContactStringField has one parameter: input_height, integer from 1 to 5.
+     *
+     * @param string $p parameter to read
+     * @return array|null
+     */
+    public function getParameter($p)
+    {
         if ($p == 'input_height') {
             if (!isset($this->options['input_height'])) {
                 $this->options['input_height'] = 1;
@@ -44,14 +48,18 @@ class waContactStringField extends waContactField
         return parent::getParameter($p);
     }
 
-    /** Set the value of parameter $p.
-      * Used by a field constructor to change field parameters.
-      *
-      * waContactStringField has one parameter: input_height, integer from 1 to 5.
-      * 
-      * @param $p string parameter to set
-      * @param $value mixed value to set */
-    public function setParameter($p, $value) {
+    /**
+     * Set the value of parameter $p.
+     * Used by a field constructor to change field parameters.
+     *
+     * waContactStringField has one parameter: input_height, integer from 1 to 5.
+     *
+     * @param string $p parameter to set
+     * @param mixed $value value to set
+     * @return void
+     */
+    public function setParameter($p, $value)
+    {
         if ($p == 'input_height') {
             $value = (int) $value;
             if ($value < 1) {
@@ -60,10 +68,9 @@ class waContactStringField extends waContactField
                 $value = 5;
             }
             $this->options['input_height'] = $value;
-            return;
+        } else {
+            parent::setParameter($p, $value);
         }
-        
-        parent::setParameter($p, $value);
     }
 }
 

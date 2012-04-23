@@ -23,12 +23,15 @@ abstract class waContactFieldFormatter
      * Because of a specific way this class is saved and loaded via var_dump,
      * constructor parameters order and number cannot be changed in subclasses.
      * Subclasses also must always provide a call to parent's constructor.
+     * @param array $options
      */
-    public function __construct($options = null) {
+    public function __construct($options = null)
+    {
         $this->_type = get_class($this);
     }
 
-    public static function __set_state($state) {
+    public static function __set_state($state)
+    {
          return new $state['_type']($state['options']);
     }
 } 

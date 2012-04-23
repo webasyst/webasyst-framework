@@ -39,7 +39,7 @@ class waTransactionModel extends waModel
     public function getRefundable($order_id, $paymentsystem_id)
     {
         $sql = "SELECT * FROM ".$this->table." WHERE order_id=i:order_id AND paymentsystem_id=s:paymentsystem_id
-        	AND state='CAPTURED' ORDER BY create_datetime DESC";
+            AND state='CAPTURED' ORDER BY create_datetime DESC";
         $result = $this->query($sql, array('order_id'=>$order_id, 'paymentsystem_id'=>$paymentsystem_id))->fetchAll();
         return $result;
     }
@@ -53,9 +53,9 @@ class waTransactionModel extends waModel
     
     public function updateStateByOrder($order_id, $state)
     {
-		$sql = "UPDATE ".$this->table." SET state=s:state WHERE order_id=s:order_id";
-		$result = $this->exec($sql, array('order_id'=>$order_id, 'state'=>$state));
-		return $result;
+        $sql = "UPDATE ".$this->table." SET state=s:state WHERE order_id=s:order_id";
+        $result = $this->exec($sql, array('order_id'=>$order_id, 'state'=>$state));
+        return $result;
     }
     
 }

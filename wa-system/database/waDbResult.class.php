@@ -51,9 +51,9 @@ abstract class waDbResult
     /**
      * Overload calling of the methods for debug
      *
-     * @throws waDbException
      * @param string $method
      * @param array $args
+     * @throws waException
      */
     final public function __call($method, $args)
     {

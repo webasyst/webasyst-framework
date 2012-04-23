@@ -15,14 +15,14 @@
 class waContactDataTextStorage extends waContactDataStorage
 {
     /**
-     * @var waContactModel
+     * @var waContactDataTextModel
      */
     protected $model;
-    
+
     /**
-     * Returns model 
-     * 
-     * @return waContactDataTextModel
+     * Returns model
+     *
+     * @return waContactDataModel|waContactDataTextModel
      */
     protected function getModel()
     {

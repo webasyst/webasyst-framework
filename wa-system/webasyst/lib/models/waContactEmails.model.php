@@ -52,8 +52,8 @@ class waContactEmailsModel extends waModel
     
     public function getContactIdByEmail($email)
     {
-    	$sql = "SELECT contact_id FROM ".$this->table." WHERE email = s:email ORDER BY sort LIMIT 1";
-    	return $this->query($sql, array('email' => $email))->fetchField();
+        $sql = "SELECT contact_id FROM ".$this->table." WHERE email = s:email ORDER BY sort LIMIT 1";
+        return $this->query($sql, array('email' => $email))->fetchField();
     }
 
     public function getContactIdByNameEmail($name, $email)

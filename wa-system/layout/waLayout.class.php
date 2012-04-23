@@ -97,7 +97,7 @@ class waLayout extends waController
         
     public function assign($name, $value)
     {
-    	$this->blocks[$name] = $value;
+        $this->blocks[$name] = $value;
     }
 
     public function execute()

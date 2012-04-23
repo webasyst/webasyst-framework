@@ -81,10 +81,10 @@ class waPageModel extends waModel
         if ($page) {
             if ($page['sort'] < $sort) {
                 $sql = "UPDATE ".$this->table." SET sort = sort - 1
-	            		WHERE sort > ".$page['sort']." AND sort <= ".$sort;
+                        WHERE sort > ".$page['sort']." AND sort <= ".$sort;
             } elseif ($page['sort'] > $sort) {
                 $sql = "UPDATE ".$this->table." SET sort = sort + 1
-	            		WHERE sort >= ".$sort." AND sort < ".$page['sort'];
+                        WHERE sort >= ".$sort." AND sort < ".$page['sort'];
             }
             $this->exec($sql);
             $this->updateById($id, array('sort' => $sort));
