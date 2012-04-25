@@ -57,6 +57,8 @@
  *
  * Besides $this->fd and $this->data, $this->max_exec_time is also available for reading.
  * It contains max execution time for this script (false if unknown).
+ *
+ * @property $processId
  */
 abstract class waLongActionController extends waController
 {
@@ -148,6 +150,8 @@ abstract class waLongActionController extends waController
 
     // true if this Runner generated process id himself (didn't get it from request)
     private $_newProcess = false;
+
+    private $_max_exec_time;
 
     // Files used by this class.
     // Actual filenames are filled in by $this->_initDataStructures() and $this->_obtainLock()

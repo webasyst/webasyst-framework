@@ -6,6 +6,9 @@ class waPHPView extends waView
 
     protected $vars = array();
     protected $template_dir = array();
+    /**
+     * @var waSystem
+     */
     protected $system;
     protected $current_template;
 

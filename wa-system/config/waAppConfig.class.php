@@ -83,7 +83,7 @@ class waAppConfig extends SystemConfig
         }
 
         $this->info = include($this->getAppPath().'/lib/config/app.php');
-        if ($this->getEnvironment() == 'backend' &&  isset($this->info['csrf']) && $this->info['csrf'] && waRequest::method() == 'post') {
+        if (wa()->getEnv() == 'backend' &&  isset($this->info['csrf']) && $this->info['csrf'] && waRequest::method() == 'post') {
             if (waRequest::post('_csrf') != waRequest::cookie('_csrf')) {
                 throw new waException('CSRF Protection', 403);
             }

@@ -410,11 +410,21 @@ class waRouting
         }
         return $n;
     }
-        
-    public static function getUrlByRoute($route, $domain = false)
+
+    /**
+     * @static
+     * @param array $route
+     * @param string $domain
+     * @return string
+     */
+    public static function getUrlByRoute($route, $domain = null)
     {
-        $url = $route['url'];
-        return ($domain ? 'http://'.self::getDomainUrl($domain).'/' : '') .self::clearUrl($route['url']);
+        $url = self::clearUrl($route['url']);
+        if ($domain) {
+            $https = isset($_SERVER['HTTPS']) ? $_SERVER['HTTPS'] : '';
+            return 'http'.(strtolower($https) == 'on' ? 's' : '').'://'.self::getDomainUrl($domain).'/'.$url;
+        }
+        return $url;
     }
 
     public static function clearUrl($url)

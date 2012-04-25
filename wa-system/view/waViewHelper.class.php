@@ -56,9 +56,6 @@ class waViewHelper
             } else {
                 return $this->wa->getFrontendApps($domain, null, true);
             }
-            return $this->wa->getFrontendApps($domain,
-                isset($domain_config) && isset($domain_config['name']) ?
-                $domain_config['name'] : null, true);
         } else {
             return $this->wa->getUser()->getApps();
         }
@@ -326,7 +323,11 @@ class waViewHelper
     {
         if (!isset(self::$helpers[$app])) {
             if ($this->app() !== $app) {
-                wa($app);
+                if (wa()->appExists($app)) {
+                    wa($app);
+                } else {
+                    return null;
+                }
             }
             $class = $app.'ViewHelper';
             if (class_exists($class)) {

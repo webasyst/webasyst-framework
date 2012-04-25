@@ -181,6 +181,9 @@ class waContactsCollection
             // in case when we're asked to load all fields from that table
             $fill = array_fill_keys(array_keys($this->post_fields), array());
             foreach (waContactFields::getAll('enabled') as $fid => $field) {
+                /**
+                 * @var waContactField $field
+                 */
                 $fill[$field->getStorage(true)][$fid] = false;
             }
 

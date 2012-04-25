@@ -42,4 +42,31 @@ class waMail
         }
         return @mail($message->getTo(true), $message->getSubject(true), $message->getBody(true), $message->getHeaders(true));
     }
+
+    /**
+     * Default "Name <email>" to use as a From address.
+     * Optionally replaces parts of a string if specified in parameters.
+     */
+    public static function getDefaultSender($email=null, $name=null)
+    {
+        static $app_settings_model = null;
+        if (!$app_settings_model) {
+            $app_settings_model = new waAppSettingsModel();
+        }
+
+        if ($name === null) {
+            $name = $app_settings_model->get('webasyst', 'name');
+        }
+
+        if ($email === null) {
+            $email = $app_settings_model->get('webasyst', 'email');
+        }
+
+        if ($name) {
+            $email = $name.' <'.$email.'>';
+        }
+
+        return $email;
+    }
 }
+

@@ -221,6 +221,9 @@ class waUser extends waContact
                 }
                 waSystem::getInstance($aid, $app_config);
                 include_once($file_path);
+                /**
+                 * @var waRightConfig $right_config
+                 */
                 $right_config = new $class_name();
                 $right_config->clearRights($id);
             }

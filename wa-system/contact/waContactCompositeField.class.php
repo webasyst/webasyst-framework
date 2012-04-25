@@ -65,6 +65,9 @@ class waContactCompositeField extends waContactField
                 $v = &$value;
             }
             foreach ($this->options['fields'] as $field) {
+                /**
+                 * @var waContactField $field
+                 */
                 $subId = $field->getId();
                 $str = isset($v[$subId]) ? trim($v[$subId]) : '';
                 if ($str) {
@@ -104,6 +107,9 @@ class waContactCompositeField extends waContactField
     {
         $result = array();
         foreach ($this->options['fields'] as $field) {
+            /**
+             * @var waContactField $field
+             */
             $result[] = ($with_parent_id ? $this->getId().":" : "").$field->getId();
         }
         return $result;

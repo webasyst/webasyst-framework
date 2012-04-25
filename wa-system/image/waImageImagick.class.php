@@ -190,6 +190,12 @@ class waImageImagick extends waImage
         }
     }
 
+    /**
+     * @param waImage|string $watermark
+     * @param $opacity
+     * @param null $font_file
+     * @return mixed
+     */
     protected function _watermark($watermark, $opacity, $font_file = null)
     {
         $opacity = min(max($opacity, 0), 1);

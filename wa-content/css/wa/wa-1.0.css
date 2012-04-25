@@ -701,10 +701,11 @@ ul.tabs .icon16 { margin-top: 8px; }
 .icon16.email { background-position:-16px -112px; }
 .icon16.facebook { background-position:-224px -112px; }
 .icon16.twitter { background-position:-208px -112px; }
-.icon16.picasa { background-position:-272px -112px; }
-.icon16.flickr { background-position:-192px -112px; }
+.icon16.google { background-position:-288px -112px; }
 .icon16.vkontakte { background-position:-240px -112px; }
 .icon16.livejournal { background-position:-256px -112px; }
+.icon16.picasa { background-position:-272px -112px; }
+.icon16.flickr { background-position:-192px -112px; }
 .icon16.access { background-position:-208px -80px; }
 .icon16.yes { background-position:0 -16px; }
 .icon16.yes-bw { background-position:-16px -16px; }

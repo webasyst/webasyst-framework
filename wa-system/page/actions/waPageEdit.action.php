@@ -2,6 +2,7 @@
 
 class waPageEditAction extends waViewAction
 {
+    protected $id;
     protected $model;
     protected $sidebar = true;
     protected $ibutton = true;

@@ -68,7 +68,6 @@ class waNestedSetModel extends waModel
             ));
            return $this->insert($data);
         }
-        return false;
     }
     
     /**

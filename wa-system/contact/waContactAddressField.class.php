@@ -110,6 +110,9 @@ class waContactAddressOneLineFormatter extends waContactFieldFormatter
         }
 
         foreach (waContactFields::get('address')->getFields() as $field) {
+            /**
+             * @var waContactField $field
+             */
             $id = $field->getId();
             if (isset($data['data'][$id]) && trim($data['data'][$id])) {
                 $result['parts'][$id] = htmlspecialchars($id == 'country' ? $countryName : trim($data['data'][$id]));

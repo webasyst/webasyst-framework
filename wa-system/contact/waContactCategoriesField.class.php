@@ -14,7 +14,10 @@
  */
 class waContactCategoriesField extends waContactChecklistField
 {
-    var $model;
+    /**
+     * @var waContactCategoryModel
+     */
+    protected  $model;
     protected function init() {
         $this->options['storage'] = 'waContactCategoryStorage';
         $this->options['required'] = !wa()->getUser()->getRights('contacts', 'category.all');

@@ -14,6 +14,9 @@
  */
 class waContactCountryField extends waContactSelectField
 {
+    /**
+     * @var waCountryModel
+     */
     protected $model = null;
     
     public function init()

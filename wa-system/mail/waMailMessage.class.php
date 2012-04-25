@@ -15,7 +15,7 @@
 class waMailMessage
 {
     protected $headers = array(
-        'Content-Transfer-Encoding' => 'base64',
+        //'Content-Transfer-Encoding' => 'base64',
         'MIME-Version' => '1.0'
     );
 
@@ -33,12 +33,7 @@ class waMailMessage
         $this->setSubject($subject);
         $this->setBody($body);
         if ($from === null) {
-            $app_settings_model = new waAppSettingsModel();
-            $name = $app_settings_model->get('webasyst', 'name');
-            $from = $app_settings_model->get('webasyst', 'email');
-            if ($name) {
-                $from = $name.' <'.$from.'>';
-            }
+            $from = waMail::getDefaultSender();
         }
         if ($from) {
             $this->setFrom($from);
@@ -175,7 +170,7 @@ class waMailMessage
         if ($this->attachments) {
             $this->setHeader('Content-Type', 'multipart/mixed; charset=UTF-8; boundary='.$this->boundary);
         } else {
-            $this->setHeader('Content-Type', $this->content_type.'; charset=UTF-8');
+            $this->setHeader('Content-Type', 'multipart/alternative; charset=UTF-8; boundary='.$this->boundary);
         }
         if (!$encode) {
             return $this->headers;
@@ -218,11 +213,9 @@ class waMailMessage
     public function getBody($encode = false)
     {
         if ($encode) {
+            $this->boundary = md5(uniqid(time()));
+            $result = $this->encodeBody();
             if ($this->attachments) {
-                $result  = "--".$this->boundary."\r\n";
-                $result .= "Content-Type: ".$this->content_type."; charset=UTF-8\r\n";
-                $result .= "Content-Transfer-Encoding: base64\r\n\r\n";
-                $result .= rtrim(chunk_split(base64_encode($this->body)));
                 foreach ($this->attachments as $attach) {
                     $filename = mb_encode_mimeheader($attach[1], 'UTF-8', 'B');
                     $result .= "\r\n--".$this->boundary."\r\n";
@@ -234,14 +227,47 @@ class waMailMessage
                     $result .= "Content-Transfer-Encoding: base64\r\n\r\n";
                     $result .= $this->encodeFile($attach[0])."\r\n";
                 }
-                $result .= "\r\n--".$this->boundary."--\r\n";
-                return $result;
-            } else {
-                return rtrim(chunk_split(base64_encode($this->body)));
             }
+            $result .= "\r\n--".$this->boundary."--\r\n";
+            return $result;
         } else {
             return $this->body;
         }
+    }
+
+
+    protected function encodeBody()
+    {
+        $result  = "--".$this->boundary."\r\n";
+        if ($this->attachments) {
+            $boundary = md5(uniqid(time()));
+            $result .= 'Content-Type: multipart/alternative; charset=UTF-8; boundary='.$boundary."\r\n";
+            $result .= "\r\n--".$boundary."\r\n";
+            $result .= $this->getBodyPart('text/plain');
+            $result .= "\r\n--".$boundary."\r\n";
+            $result .= $this->getBodyPart('text/html');
+            $result .= "\r\n--".$boundary."--\r\n";
+        } else {
+            $result .= "Content-Type: ".$this->content_type."; charset=UTF-8\r\n";
+            $result .= "Content-Transfer-Encoding: base64\r\n\r\n";
+            $result .= rtrim(chunk_split(base64_encode($this->body)));
+        }
+        return $result;
+    }
+
+    protected function getBodyPart($type = 'text/html')
+    {
+        if ($this->content_type == $type) {
+            $body = $this->body;
+        } elseif ($type == 'text/plain') {
+            $body = strip_tags($this->body);
+        } elseif ($type == 'text/html') {
+            $body = nl2br($this->body);
+        }
+        $result = "Content-Type: ".$type."; charset=UTF-8\r\n";
+        $result .= "Content-Transfer-Encoding: base64\r\n\r\n";
+        $result .= rtrim(chunk_split(base64_encode($body)));
+        return $result;
     }
 
     public function addAttachment($file, $name = null, $inline = false)
@@ -254,7 +280,6 @@ class waMailMessage
             $attach[] = md5($file.uniqid());
         }
         $this->attachments[] = $attach;
-        $this->boundary = md5(uniqid(time()));
         if ($inline) {
             return 'cid:'.end($attach);
         }
@@ -280,7 +305,7 @@ class waMailMessage
                     $name = mb_encode_mimeheader($name, 'UTF-8', 'B');
                 } else if ((substr($name, 0, 1) != '"' || substr($name, -1) != '"') && preg_match('/[\(\)\<\>\\\.\[\]@,;:"]/', $name)) {
                     $name = '"'.addcslashes($name, '\\"').'"';
-                }                
+                }
                 $address = preg_replace('/^<*(\S+@\S+?)>*$/', '<$1>', $address);
                 return $name.' '.$address;
             }

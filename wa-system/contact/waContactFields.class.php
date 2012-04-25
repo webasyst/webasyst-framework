@@ -81,7 +81,7 @@ class waContactFields
      *
      * @param string $field_id
      * @param string $type (defaults to enabled) see ::getAll() parameters for details
-     * @return waContactField
+     * @return waContactField|waContactCompositeField
      */
     public static function get($field_id, $type='enabled')
     {
@@ -208,6 +208,9 @@ class waContactFields
 
         if (!$all) {
             foreach($result as $id => $f) {
+                /**
+                 * @var waContactField $f
+                 */
                 if ($f->getParameter('hidden')) {
                     unset($result[$id]);
                 }
@@ -227,6 +230,9 @@ class waContactFields
         $result = array();
         $fields = self::getAll($contactType, $all);
         foreach ($fields as $field_id => $field) {
+            /**
+             * @var waContactField $field
+             */
             $result[$field_id] = $field->getInfo();
         }
         return $result;
@@ -305,6 +311,9 @@ class waContactFields
             return;
         }
         foreach ($fields as $k => $f) {
+            /**
+             * @var waContactField $f
+             */
             if (!($f instanceof waContactField)) {
                 throw new waException("Invalid contact field ".print_r($f, TRUE));
             }
@@ -349,6 +358,9 @@ class waContactFields
             $fields = array();
         }
         foreach ($fields as $k => $v) {
+            /**
+             * @var waContactField $v
+             */
             if ($v->getId() == $id) {
                 $fields[$k] = $field;
                 break;
@@ -493,6 +505,10 @@ class waContactFields
                 throw new waException('Unknown contact type: '.$type);
         }
 
+        /**
+         * @var waContactField $f
+         */
+
         // Remove data from DB
         $f->getStorage()->deleteAll($id, $type);
 
@@ -561,6 +577,9 @@ class waContactFields
         // Load system fields
         self::$fieldStatus = array();
         foreach(include(wa()->getConfig()->getPath('system', 'contact/data/fields')) as $f) {
+            /**
+             * @var waContactField $f
+             */
             if (!($f instanceof waContactField)) {
                 throw new waException("Invalid contact field ".print_r($f, TRUE));
             }
@@ -573,6 +592,9 @@ class waContactFields
         $file = wa()->getConfig()->getConfigPath('custom_fields.php', true, 'contacts');
         if (is_readable($file)) {
             foreach(include($file) as $f) {
+                /**
+                 * @var waContactField $f
+                 */
                 if (!($f instanceof waContactField)) {
                     throw new waException("Invalid contact field ".print_r($f, TRUE));
                 }

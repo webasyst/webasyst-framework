@@ -24,4 +24,3 @@ function smarty_function_wa_tpl_vars($params, &$smarty)
     return $str;
 }
 
-?>

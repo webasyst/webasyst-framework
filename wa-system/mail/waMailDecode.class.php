@@ -151,6 +151,27 @@ class waMailDecode
         return $result;
     }
 
+    /**
+     * Returns formatted Message-ID
+     * @param array $headers
+     * @return string
+     */
+    public function getMessageId($headers)
+    {
+        $message_id = isset($headers['message-id']) ? $headers['message-id'] : null;
+        if ($message_id) {
+            $message_id = trim($message_id, ' <>');
+            // add @servername
+            if (strpos($message_id, '@') === false) {
+                $from = explode('@', $headers['from']['email']);
+                if (isset($from[1])) {
+                    $message_id .= '@'.$from[1];
+                }
+            }
+        }
+        return $message_id ? $message_id : null;
+    }
+
     protected function cleanHTML($html)
     {
         // body only
@@ -304,11 +325,16 @@ class waMailDecode
                 if (isset($this->part['parent'])) {
                     // save applications
                     if ($this->attachments || $this->part['type'] != 'text' || isset($this->part['headers']['content-disposition'])) {
-                        return array(
-                            'type' => self::TYPE_ATTACH,
-                            'value' => $this->buffer_offset,
-                            'boundary' => $this->parts[$this->part['parent']]['params']['boundary']
-                        );
+                        if (!$this->attachments && isset($this->part['headers']['content-disposition']) &&
+                            $this->part['headers']['content-disposition'] == 'inline' && $this->part['type'] == 'text') {
+                            // nothing
+                        } else {
+                            return array(
+                                'type' => self::TYPE_ATTACH,
+                                'value' => $this->buffer_offset,
+                                'boundary' => $this->parts[$this->part['parent']]['params']['boundary']
+                            );
+                        }
                     }
                     // other parts
                     $boundary = "\n--".$this->parts[$this->part['parent']]['params']['boundary'];

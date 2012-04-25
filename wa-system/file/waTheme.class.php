@@ -447,6 +447,9 @@ XML;
             self::protect($this->app);
             waFiles::move($this->path, $target);
             $class = get_class($this);
+            /**
+             * @var waTheme $instance
+             */
             $instance =  new $class($id,$this->app);
             $instance->init();
             $instance->info['id'] = $id;

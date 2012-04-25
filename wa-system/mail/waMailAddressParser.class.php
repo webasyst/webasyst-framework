@@ -20,6 +20,7 @@ class waMailAddressParser
     protected $data;
     protected $buffer_name = "";
     protected $buffer = "";
+    protected $group;
     
     protected $expected;
     
@@ -27,6 +28,7 @@ class waMailAddressParser
     const STATE_ADDRESS = 1;
     const STATE_NAME = 2;    
     const STATE_EMAIL = 3;
+    const STATE_GROUP_NAME = 4;
     
     public function __construct($string)
     {
@@ -68,11 +70,29 @@ class waMailAddressParser
                     $this->state = self::STATE_ADDRESS;
                 }
                 break;
+            case self::STATE_GROUP_NAME:
+                $i = strpos($this->string, ':', $this->offset);
+                if ($i === false) {
+                    throw new waException(sprintf("Expected :"));
+                }
+                $this->buffer.= substr($this->string, $this->offset, $i - $this->offset);
+                $this->group = $this->buffer;
+                $this->buffer = "";
+                $this->offset = $i + 1;
+                $this->skip();
+                $this->state = self::STATE_ADDRESS;
+                break;
             case self::STATE_NAME:
                 // find close quote
                 $i = strpos($this->string, $this->expected, $this->offset);
                 if ($i === false) {
-                    throw new waException(sprintf("Expected %s", $this->expected));
+                    $i = strpos($this->string, ':', $this->offset);
+                    if ($i === false) {
+                        throw new waException(sprintf("Expected %s", $this->expected));
+                    } else {
+                        $this->state = self::STATE_GROUP_NAME;
+                        break;
+                    }
                 }
                 // quote escaped
                 if ($this->expected != '<' && $this->string[$i - 1] == "\\") {

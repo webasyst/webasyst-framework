@@ -287,7 +287,7 @@ class waContact implements ArrayAccess
             $load = array();
             foreach ($fields as $field) {
                 /**
-                 * @var $field waContactField
+                 * @var waContactField $field
                  */
                 if (!isset($cache[$field->getId()])) {
                     $load[$field->getStorage()->getType()] = true;

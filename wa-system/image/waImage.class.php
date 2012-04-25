@@ -295,7 +295,7 @@ class waImage
 
     /**
      *
-     * @param const $type
+     * @param string $type
      * @return waImage
      */
     public function filter($type)
