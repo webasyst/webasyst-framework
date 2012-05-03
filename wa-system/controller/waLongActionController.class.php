@@ -224,9 +224,12 @@ abstract class waLongActionController extends waController
             }
         }
 
+        // For new processes do not call step() in the first iteration
+        // to be able to return processId to browser instantly.
+        $continue = !$this->_newProcess;
+
         $this->_lastSaveTime = explode(' ', microtime());
         $this->_transaction = true;
-        $continue = true;
         while($continue && !$this->isDone()) {
             $continue = $this->step();
             $this->_save();

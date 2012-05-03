@@ -107,14 +107,14 @@ class blogBlogSettingsAction extends waViewAction
         $posts_total_count = 0;
         if ($blog_id) {
             $post_model = new blogPostModel();
-            $posts_total_count = $post_model->countByField('blog_id',$blog_id);
+            $posts_total_count = $post_model->countByField('blog_id', $blog_id);
             if ($posts_total_count) {
                 $blog_model = new blogBlogModel();
                 $blogs = $blog_model->getAvailable($this->getUser());
                 $this->view->assign('blogs', $blogs);
             }
         }
-        $this->view->assign('posts_total_count',$posts_total_count);
+        $this->view->assign('posts_total_count', $posts_total_count);
 
         $this->view->assign('blog_id', $blog_id);
         $this->view->assign('blog', $blog);

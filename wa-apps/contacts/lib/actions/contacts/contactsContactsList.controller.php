@@ -1,6 +1,6 @@
 <?php
 
-/** Everything that shows lists of contacts use this controller. */
+/** Everything that shows lists of contacts uses this controller. */
 class contactsContactsListController extends waJsonController
 {
     protected $offset, $limit;
@@ -10,9 +10,6 @@ class contactsContactsListController extends waJsonController
 
     protected function prepare()
     {
-
-        $contact_model = new waContactModel();
-
         $this->offset = waRequest::post('offset', 0, 'int');
         $this->limit = waRequest::post('limit', 20, 'int');
         if (!$this->limit) {

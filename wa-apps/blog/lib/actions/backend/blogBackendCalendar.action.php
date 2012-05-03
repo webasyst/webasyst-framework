@@ -57,7 +57,7 @@ class blogBackendCalendarAction extends waViewAction
             	'user'=>false,
                 'rights'=>true,
         );
-        $posts = $post_model->search($search_options,$extend_options,array('blog'=>$blogs))->fetchSearchAll(false);
+        $posts = $post_model->search($search_options, $extend_options, array('blog'=>$blogs))->fetchSearchAll(false);
 
         $current_date_start = $date_start;
         $days = array();
@@ -113,10 +113,10 @@ class blogBackendCalendarAction extends waViewAction
             }
             $contact_where = array();
             if ($full) {
-                $contact_where[] = "blog_id IN (".implode(', ',$full).")";
+                $contact_where[] = "blog_id IN (".implode(', ', $full).")";
             }
             if ($writeable) {
-                $contact_where[] .= "contact_id = {$this->getUser()->getId()} AND blog_id IN (".implode(', ',$writeable).")";
+                $contact_where[] .= "contact_id = {$this->getUser()->getId()} AND blog_id IN (".implode(', ', $writeable).")";
             }
             if ($contact_where) {
                 $search = true;

@@ -166,9 +166,11 @@
 
 				elem = $(elem);
 				elem.html(self.view(self.settings.view, response.data, active_fields));
-				var pre = self.topLineHtml(self.settings.view);
-				if (pre) {
-					elem.before($(pre));
+				if (!options.hide_head) {
+					var pre = self.topLineHtml(self.settings.view);
+					if (pre) {
+						elem.before($(pre));
+					}
 				}
 				if (self.options && self.options.afterLoad) {
 					self.options.afterLoad(response.data);
@@ -345,7 +347,7 @@
 				}
 				var url = '#/contact/' + contact.id;
 				html += '<li class="contact-row"><div class="profile image96px">' + photo +
-				'<div class="details"><input class="selector" value="' + contact.id + '" type="checkbox">' +
+				'<div class="details"><input class="selector" name="c_list_selector" value="' + contact.id + '" type="'+(this.options.selector == 'radio' ? 'radio' : 'checkbox')+'">' +
 				'<p class="contact-name"><a href="'+url+'">' + name + '</a></p>';
 				var skip = {
 					title: true,
@@ -401,7 +403,10 @@
 
 			}
 			html += '</ul>';
-			html += this.getPaging(data.count);
+
+			if (!this.options.hide_foot) {
+				html += this.getPaging(data.count);
+			}
 			return html;
 		},
 

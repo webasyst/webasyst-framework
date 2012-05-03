@@ -78,6 +78,8 @@ class blogFrontendAction extends blogViewAction
         $options['params'] = true;
         $options['text'] = 'cut';
 
+        $annotation_only = false;
+
         if (isset($this->search_params["search"])) {
             $plugin = $this->search_params["search"];
             if (!isset($this->search_params["plugin"])) {
@@ -85,6 +87,7 @@ class blogFrontendAction extends blogViewAction
             }
             if( isset($this->search_params[$plugin])) {
                 $this->search_params["plugin"][$plugin] = $this->search_params[$plugin];
+                $annotation_only = true;
             }
         }
         $blogs = blogHelper::getAvailable();
@@ -100,9 +103,11 @@ class blogFrontendAction extends blogViewAction
                 reset($posts);
                 $post = current($posts);
                 $name = $post['user']['name'];
+                $annotation_only = true;
             } else {
                 if ($contact = blogHelper::getContactInfo($this->search_params['contact_id'])) {
                     $name = $contact['name'];
+                    $annotation_only = true;
                 } else {
                     throw new waException(_w('Blog not found'), 404);
                 }
@@ -139,13 +144,11 @@ class blogFrontendAction extends blogViewAction
         }
 
         //handle search result
-        if (isset($this->search_params['contact_id'])) {
-            $this->view->assign('annotation_only',true);
-            if ($layout = $this->getLayout()) {
-                $layout->assign('action_info', array('search'=>array('contact_id'=>$this->search_params['contact_id'])));
-            }
+        if (isset($this->search_params['contact_id']) && ($layout = $this->getLayout())) {
+            $layout->assign('action_info', array('search'=>array('contact_id'=>$this->search_params['contact_id'])));
         }
 
+        $this->view->assign('annotation_only',$annotation_only);
         $this->view->assign('posts', $posts);
         $this->view->assign('page',$this->page);
         $this->view->assign('layout_type',$this->layout_type);

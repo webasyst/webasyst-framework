@@ -10,7 +10,7 @@
 	</div>
 *}
 
-{if ( (($action eq 'default')  && (!isset($action_info) || !isset($action_info.search)))|| ($action eq 'error') || ($action eq 'page')) && is_object($wa->site)}
+{if ( (($action eq 'default')  && (!isset($action_info) || !isset($action_info.search)))|| ($action eq 'error') || ($action eq 'page'))}
 	{* static pages from the "Site" app *}
 	<div id="site-pages">
 		{$blog_pages=$wa->blog->pages()}

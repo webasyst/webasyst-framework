@@ -31,9 +31,7 @@ class blogCronScheduleCli extends waCliController
                 }
             }
         }
-        if ($log = ob_get_clean()) {
-            waLog::log($log,$log_file);
-        }
+
         $action = __FUNCTION__;
         /**
          * @event cron_action
@@ -41,6 +39,9 @@ class blogCronScheduleCli extends waCliController
          * @return void
          */
         wa()->event('cron_action',$action);
+        if ($log = ob_get_clean()) {
+            waLog::log($log,$log_file);
+        }
     }
 }
 //EOF

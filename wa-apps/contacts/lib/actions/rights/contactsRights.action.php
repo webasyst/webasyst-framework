@@ -42,7 +42,7 @@ class contactsRightsAction extends waViewAction
             $rights += $right_config->getRights($contact_id);
 
             if ($group_ids) {
-                $group_rights += $right_config->getRights($group_ids);
+                $group_rights += $right_config->getRights(array_map(wa_lambda('$a', 'return -$a;'), $group_ids));
             }
 
             $this->view->assign('html', $right_config->getHTML($rights, $group_rights));

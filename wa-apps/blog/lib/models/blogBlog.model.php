@@ -226,11 +226,24 @@ SQL;
     public function deleteByField($field, $value = null)
     {
         $items = $this->getByField($field,$value,$this->id);
-        $keys = array_keys($items);
+        $blog_ids = array_keys($items);
+        /**
+         * @event blog_predelete
+         * @param array[]int $blog_ids array of blog's ID
+         * @return void
+         */
+        wa()->event('blog_predelete', $blog_ids);
         $res = parent::deleteByField($field, $value);
         if ($res) {
             $post_model = new blogPostModel();
-            $post_model->deleteByField('blog_id', $keys);
+            $post_model->deleteByField('blog_id', $blog_ids);
+
+            /**
+             * @event blog_delete
+             * @param array[]int $blog_ids array of blog's ID
+             * @return void
+             */
+            wa()->event('blog_delete', $blog_ids);
         }
         return $res;
     }

@@ -13,7 +13,7 @@ class blogBackendAction extends waViewAction
         $stream = array();
         $search_options = array();
 
-        if ($blog_id = max(0,waRequest::get('blog', null, waRequest::TYPE_INT))) {
+        if ($blog_id = max(0, waRequest::get('blog', null, waRequest::TYPE_INT))) {
 
             if (!isset($blogs[$blog_id])) {
                 throw new waException(_w('Blog not found'), 404);
@@ -38,15 +38,15 @@ class blogBackendAction extends waViewAction
 
         $search = false;
 
-        if ($plugin = waRequest::get('search',false)) {
+        if ($plugin = waRequest::get('search', false)) {
             if (!isset($search_options["plugin"])) {
                 $search_options["plugin"] = array();
             }
-            $search_options["plugin"][$plugin] = waRequest::get($plugin,true);
+            $search_options["plugin"][$plugin] = waRequest::get($plugin, true);
         }
 
-        $page = max(1,waRequest::get('page', 1, waRequest::TYPE_INT));
-        $posts_per_page = max(1,intval($this->getConfig()->getOption('posts_per_page')));
+        $page = max(1, waRequest::get('page', 1, waRequest::TYPE_INT));
+        $posts_per_page = max(1, intval($this->getConfig()->getOption('posts_per_page')));
 
         $extend_options = array();
         $extend_options['status'] = true;
@@ -62,7 +62,7 @@ class blogBackendAction extends waViewAction
         if ($page == 1) {
             $stream['title'] = $this->getResponse()->getTitle();
             $this->setLayout(new blogDefaultLayout());
-            $this->view->assign('plugin',$plugin);
+            $this->view->assign('plugin', $plugin);
         }
 
 
@@ -78,14 +78,14 @@ class blogBackendAction extends waViewAction
         $this->view->assign('posts_total_count', $post_model->searchCount());
         $this->view->assign('posts_count', ($page - 1) * $posts_per_page + count($posts));
         $this->view->assign('posts_per_page', $posts_per_page);
-        $this->view->assign('contact_rights',$this->getUser()->getRights('contacts','backend'));
+        $this->view->assign('contact_rights', $this->getUser()->getRights('contacts', 'backend'));
     }
 
     private function getUrl($blog = null)
     {
     	$url = false;
     	if (!$blog) {
-    		$urls = blogBlog::getUrl(false,true);
+    		$urls = blogBlog::getUrl(false, true);
     	} else if (isset($blog['status']) && $blog['status'] == blogBlogModel::STATUS_PUBLIC) {
     		$urls = blogBlog::getUrl($blog, true);
     	}

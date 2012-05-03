@@ -7,8 +7,8 @@ class blogCommentsAddController extends waJsonController
 
     public function execute()
     {
-        $this->post_id = max(0,$this->getRequest()->get('id',0,waRequest::TYPE_INT));
-        $this->parent_id = max(0,$this->getRequest()->post('parent',0,waRequest::TYPE_INT));
+        $this->post_id = max(0, $this->getRequest()->get('id', 0, waRequest::TYPE_INT));
+        $this->parent_id = max(0, $this->getRequest()->post('parent', 0, waRequest::TYPE_INT));
 
         $comment_model = new blogCommentModel();
         $post_model = new blogPostModel();
@@ -22,7 +22,7 @@ class blogCommentsAddController extends waJsonController
 
         $stream = false;
 
-        #find comment parent
+        //find comment parent
         if ($this->parent_id && ($parent = $comment_model->getById($this->parent_id))) {
             if ($this->post_id && ($this->post_id != $parent['post_id'])) {
                 throw new waRightsException(_w('Access denied'));
@@ -35,7 +35,7 @@ class blogCommentsAddController extends waJsonController
             $this->parent_id = 0;
         }
 
-        #find post
+        //find post
         if (!$this->post_id || !($post = $post_model->getBlogPost($this->post_id))) {
             throw new waException(_w('Post not found'), 404);
         };
@@ -43,10 +43,10 @@ class blogCommentsAddController extends waJsonController
         $contact_id = $this->getUser()->getId();
 
         #check rights
-        $rights = blogHelper::checkRights($post['blog_id'],$contact_id,blogRightConfig::RIGHT_READ);
+        $rights = blogHelper::checkRights($post['blog_id'], $contact_id, blogRightConfig::RIGHT_READ);
 
 
-        #check comment mode
+        //check comment mode
         if (!$post['comments_allowed']) {
             throw new waException(_w("Isn't allowed comment to this post"));
         }
@@ -58,7 +58,7 @@ class blogCommentsAddController extends waJsonController
 			'text'			 => $this->getRequest()->post('text'),
         );
 
-        $this->errors += blogCommentModel::validate($comment,'backend');
+        $this->errors += blogCommentModel::validate($comment, 'backend');
         if (count($this->errors) > 0) {
             return ;
         }
@@ -81,15 +81,15 @@ class blogCommentsAddController extends waJsonController
 
         $comment['post'] = &$post;
 
-        $post['comments'] = $comment_model->prepareView(array($comment),array('photo_url_20'));
-        blogHelper::extendRights($post['comments'],array(),$contact_id);
+        $post['comments'] = $comment_model->prepareView(array($comment), array('photo_url_20'));
+        blogHelper::extendRights($post['comments'], array(), $contact_id);
         if ($stream) {
             $posts = array($this->post_id=>&$post);
             $blog_model = new blogBlogModel();
             $extend_data = array(
             	'blog'=>$blog_model->search(array('id'=>$this->post_id))->fetchSearchAll(),
             );
-            $post_model->prepareView($posts,array('link'=>true),$extend_data);
+            $post_model->prepareView($posts, array('link'=>true), $extend_data);
         } else {
             unset($comment['post']);
         }
@@ -97,7 +97,7 @@ class blogCommentsAddController extends waJsonController
 
         $view = wa()->getView();
         $view->assign('post', $post);
-        $view->assign('contact_rights',$this->getUser()->getRights('contacts','backend'));
+        $view->assign('contact_rights', $this->getUser()->getRights('contacts', 'backend'));
         $template = $view->fetch('templates/actions/post/include.comments.html');
 
         $this->getResponse()->addHeader('Content-type', 'application/json');

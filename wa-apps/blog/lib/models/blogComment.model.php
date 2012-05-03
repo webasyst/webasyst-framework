@@ -238,21 +238,21 @@ SQL;
             $items = $this->getByField($field,$value,$this->id);
         }
         $res = false;
-        if ($keys = array_keys($items)) {
+        if ($comment_ids = array_keys($items)) {
             /**
              * @event comment_predelete
-             * @param array $keys array of comment's ID
+             * @param array $comment_ids array of comment's ID
              * @return void
              */
-            wa()->event('comment_predelete', $keys);
-            $res = parent::deleteByField('id', $keys);
+            wa()->event('comment_predelete', $comment_ids);
+            $res = parent::deleteByField('id', $comment_ids);
             if ($res) {
                 /**
                  * @event comment_delete
-                 * @param array $keys array of comment's ID
+                 * @param array $comment_ids array of comment's ID
                  * @return void
                  */
-                wa()->event('comment_delete', $keys);
+                wa()->event('comment_delete', $comment_ids);
             }
         }
         return $res;

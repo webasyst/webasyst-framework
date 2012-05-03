@@ -260,6 +260,11 @@ SQL;
                     $this->sql_params['order'] = "{$this->table}.{$this->id} DESC";
                     break;
                 }
+                case 'overdue': {
+                    $time = time();
+                    $this->sql_params['order'] = "IF({$this->table}.status = '".self::STATUS_DEADLINE."', ({$time} - UNIX_TIMESTAMP({$this->table}.datetime)), ({$this->table}.{$this->id} - {$time})) DESC";
+                    break;
+                }
                 default: {
                     if (in_array($options['sort'], $this->fields)) {
                         $this->sql_params['order'] = "{$this->table}.{$options['sort']} DESC";
@@ -275,6 +280,22 @@ SQL;
              * Build post search query
              * @event search_posts_backend
              * @event search_posts_frontend
+             * @example public function postSearch($options)
+             * {
+             *     $result = null;
+             *     //check se
+             *     if (is_array($options) && isset($options['plugin'])) {
+             *         if (isset($options['plugin'][$this->id])) {
+             *             $result = array();
+             *             $result['where'][] = 'contact_id = '.wa()->getUser()->getId();
+             *             $response = wa()->getResponse();
+             *             $title = $response->getTitle();
+             *             $title = _wp('My posts');
+             *             $response->setTitle($title);
+             *         }
+             *     }
+             *     return $result;
+             * }
              * @param array[string]mixed $options
              * @return array[string][string]mixed $return['%plugin_id%']
              * @return array[string][string][]string $return['%plugin_id%']['join'] Join conditions
@@ -427,13 +448,19 @@ SQL;
              * Extend each post item via plugins data
              * @event prepare_posts_frontend
              * @event prepare_posts_backend
+             * @example public function preparePost(&$items)
+             * {
+             *     foreach ($items as &$item) {
+             *         $item['post_title'][$this->id] = 'Extra post title html code here';
+             *     }
+             * }
              * @param array[int][string]mixed $items Post items
              * @param array[int][string]mixed $items[id] Post item
              * @param array[int][string]int $items[id]['id'] Post item ID
              * @param array[int][string][string]string $items[id]['before'][%plugin_id%] Placeholder for plugin %plugin_id% output
              * @param array[int][string][string]string $items[id]['after'][%plugin_id%] Placeholder for plugin %plugin_id% output
              * @param array[int][string][string]string $items[id]['post_title'][%plugin_id%] Placeholder for plugin %plugin_id% output
-             * @param array[int][string][string]string $items[id]['post_title_righ'][%plugin_id%] Placeholder for plugin %plugin_id% output
+             * @param array[int][string][string]string $items[id]['post_title_right'][%plugin_id%] Placeholder for plugin %plugin_id% output
              * @return void
              */
             wa()->event('prepare_posts_'.wa()->getEnv(), $items);
@@ -595,7 +622,7 @@ SQL;
                 throw new waException(_w('URL must not contain /'));
             }
             if ( $this->checkUrl($data['url'], $id) ) {
-                throw new  waException(_w('This address is already in use'));
+                throw new  waException(_w('This address is already in use'). ' '.$data['url']);
             }
         } else {
             //$data['url'] = blogHelper::transliterate($data['url']);
@@ -726,20 +753,20 @@ SQL;
             $items = $this->getByField($field,$value,$this->id);
         }
         $res = false;
-        if ($keys = array_keys($items)) {
+        if ($post_ids = array_keys($items)) {
             /**
              * @event post_predelete
-             * @param array[]int $keys array of post's ID
+             * @param array[]int $post_ids array of post's ID
              * @return void
              */
-            wa()->event('post_predelete', $keys);
-            $res = parent::deleteByField('id', $keys);
+            wa()->event('post_predelete', $post_ids);
+            $res = parent::deleteByField('id', $post_ids);
             if ($res) {
                 $comment_model = new blogCommentModel();
-                $comment_model->deleteByField('post_id', $keys);
+                $comment_model->deleteByField('post_id', $post_ids);
 
                 $params_model = new blogPostParamsModel();
-                $params_model->deleteByField('post_id', $keys);
+                $params_model->deleteByField('post_id', $post_ids);
 
                 $blog_model = new blogBlogModel();
                 $blogs = array();
@@ -750,10 +777,10 @@ SQL;
                 $blog_model->recalculate($blogs);
                 /**
                  * @event post_delete
-                 * @param array[]int $keys array of post's ID
+                 * @param array[]int $post_ids array of post's ID
                  * @return void
                  */
-                wa()->event('post_delete', $keys);
+                wa()->event('post_delete', $post_ids);
             }
         }
         return $res;

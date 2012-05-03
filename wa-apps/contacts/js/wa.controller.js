@@ -42,11 +42,16 @@
 
 			// .selected class for selected items in list
 			$("#contacts-container .contacts-data input.selector").live('click', function () {
+				if ($(this).is(':radio')) {
+					$(this).parents('.contact-row').siblings().removeClass('selected');
+				}
+
 				if ($(this).is(":checked")) {
 					$(this).parents('.contact-row').addClass('selected');
 				} else {
 					$(this).parents('.contact-row').removeClass('selected');
 				}
+
 				$.wa.controller.updateSelectedCount();
 			});
 

@@ -187,7 +187,7 @@ abstract class waLoginAction extends waViewAction
                 }
                 $this->view->assign('url', $this->getConfig()->getHostUrl().$url);
                 // send email
-                $subject = _ws("Recovering password");
+                $subject = _ws("Password recovery");
                 $template_file = $this->getConfig()->getConfigPath('mail/RecoveringPassword.html', true, 'webasyst');
                 if (file_exists($template_file)) {
                     $body = $this->view->fetch($template_file);
@@ -195,10 +195,19 @@ abstract class waLoginAction extends waViewAction
                     $body = $this->view->fetch(wa()->getAppPath('templates/mail/RecoveringPassword.html', 'webasyst'));
                 }
                 $this->view->clearAllAssign();
-                $mailer = new waMail();
-                if ($mailer->send($to, $subject, $body)) {
-                    $this->view->assign('success', true);
-                } else {
+                $mail_error = false;
+                try {
+                    $m = new waMailMessage($subject, $body);
+                    $m->setTo($to);
+                    if ($m->send()) {
+                        $this->view->assign('success', true);
+                    } else {
+                        $mail_error = true;
+                    }
+                } catch (Exception $e) {
+                    $mail_error = true;
+                }
+                if ($mail_error) {
                     $this->view->assign('error', _ws('Sorry, we can not recover password for this login name or email. Please refer to your system administrator.'));
                 }
             } else {

@@ -401,7 +401,7 @@ class waMailDecode
                 } else {
                     $this->part['headers'][$this->current_header] = array(trim(strtok($part['value'], "\n")));
                     while (($value = strtok("\n")) !== false) {
-                        $this->part['headers'][$this->current_header][] = trim($value);
+                        $this->part['headers'][$this->current_header][] = rtrim($value);
                     }
                 }
                 break;

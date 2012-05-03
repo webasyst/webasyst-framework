@@ -29,7 +29,7 @@ class blogBackendSidebarAction extends waViewAction
         $blog_model = new blogBlogModel();
         $blogs = $blog_model->getAvailable($this->user);
 
-        $blogs = $blog_model->prepareView($blogs,array('new'=>true));
+        $blogs = $blog_model->prepareView($blogs, array('new'=>true));
         $comment_model = new blogCommentModel();
         $comment_count = $comment_model->countByParam(array_keys($blogs), null, blogCommentModel::STATUS_PUBLISHED);
         $activity_datetime = blogHelper::getLastActivity();
@@ -54,11 +54,11 @@ class blogBackendSidebarAction extends waViewAction
 
         if ($writable_blogs) {
             $post_model = new blogPostModel();
-            $search_options = array('status' =>array(blogPostModel::STATUS_DRAFT,blogPostModel::STATUS_DEADLINE,blogPostModel::STATUS_SCHEDULED));
+            $search_options = array('status' =>array(blogPostModel::STATUS_DRAFT, blogPostModel::STATUS_DEADLINE, blogPostModel::STATUS_SCHEDULED));
             if (!$this->user->isAdmin($this->getApp()) ) {
                 $search_options['contact_id'] = $this->user->getId();
             }
-            $search_options['sort'] = 'create';
+            $search_options['sort'] = 'overdue';
             $drafts = $post_model->search($search_options, array(
                 	'status' => true,
                 	'link'=>false,
@@ -66,10 +66,10 @@ class blogBackendSidebarAction extends waViewAction
                     'comments'=>false,
             ), array('blog' => $blogs))->fetchSearchAll(false);
 
-            $where = "status = '".blogPostModel::STATUS_DEADLINE."' AND datetime < '".waDateTime::date("Y-m-d")."'";
+            $where = "status = '".blogPostModel::STATUS_DEADLINE."' AND datetime <= '".waDateTime::date("Y-m-d")."'";
             if (!$this->getUser()->isAdmin($this->getApp())) {
                 $where .= " AND contact_id = {$this->getUser()->getId()}";
-                $where .= " AND blog_id IN (".implode(', ',array_keys($blogs)).")";
+                $where .= " AND blog_id IN (".implode(', ', array_keys($blogs)).")";
             }
             $count_overdue = $post_model->select("count(id)")->where($where)->fetchField();
             $count_overdue = ($count_overdue) ? $count_overdue : 0;
@@ -82,9 +82,29 @@ class blogBackendSidebarAction extends waViewAction
          * Extend backend sidebar
          * Add extra sidebar items (menu items, additional sections, system output)
          * @event backend_sidebar
+         * @example #event handler example
+         * public function sidebarAction()
+         * {
+         *     $output = array();
+         *
+         *     #add external link into sidebar menu
+         *     $output['menu']='<li>
+         *         <a href="http://www.webasyst.com">
+         *             http://www.webasyst.com
+         *         </a>
+         *     </li>';
+         *
+         *     #add section into sidebar menu
+         *     $output['section']='';
+         *
+         *     #add system link into sidebar menu
+         *     $output['system']='';
+         *
+         *     return $output;
+         * }
          * @return array[string][string]string $return[%plugin_id%]['menu'] Single menu items
          * @return array[string][string]string $return[%plugin_id%]['section'] Sections menu items
-         * @return array[string][string]string $return[%plugin_id%]['system'] Extra menu output
+         * @return array[string][string]string $return[%plugin_id%]['system'] Extra menu items
          */
         $this->view->assign('backend_sidebar', wa()->event('backend_sidebar'));
 

@@ -143,6 +143,7 @@
 			</div>
 
 			<div class="b-post-footer-backend">
+			{* @event backend_post.%plugin_id%.footer *}
 			<!-- plugin hook: "backend_post.*.footer" -->
 				{if isset($backend_post)}
 					{foreach from=$backend_post item=output key=plugin}

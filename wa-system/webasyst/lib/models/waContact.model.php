@@ -59,11 +59,12 @@ class waContactModel extends waModel
      * @param int|array $id - contact id or array of contact ids
      * @return bool
      */
-    public function delete($id)
+    public function delete($id, $send_event=true)
     {
-        // Fire @event contacts.delete to delete links to other applications
-        wa()->event(array('contacts', 'delete'), $id);
-
+        if ($send_event) {
+            // Fire @event contacts.delete allowing other applications to clean up their data
+            wa()->event(array('contacts', 'delete'), $id);
+        }
 
         if (is_array($id)) {
             $nid = array();
@@ -104,10 +105,10 @@ class waContactModel extends waModel
         // Delete data
         $contact_data_model = new waContactDataModel();
         $contact_data_model->deleteByField('contact_id', $id);
-        
+
         $contact_data_text_model = new waContactDataTextModel();
         $contact_data_text_model->deleteByField('contact_id', $id);
-        
+
 
         // Delete contact from logs
         $login_log_model = new waLoginLogModel();

@@ -32,9 +32,17 @@ class contactsGroupsEditorAction extends waViewAction
             }
         }
 
+        usort($members, array($this, '_cmp'));
+        usort($users, array($this, '_cmp'));
+
         $this->view->assign('group', $group);
         $this->view->assign('notIncluded', $users);
         $this->view->assign('members', $members);
+    }
+
+    function _cmp($a, $b)
+    {
+        return strcmp($a['name'], $b['name']);
     }
 }
 

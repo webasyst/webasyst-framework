@@ -6,33 +6,33 @@
 
 	<meta name="apple-mobile-web-app-capable" content="yes">
 	<meta name="viewport" content="width=device-width; initial-scale=1; maximum-scale=1; user-scalable=0;">
-	
+
 	<link rel="apple-touch-icon" href="apps/mobile/img/iphone_icon.png">
 
 	<link	type="text/css"	rel="stylesheet" href="{{$wa_url}}wa-content/css/wa/wa-mobile-1.0.css" />
 	<link	type="text/css"	rel="stylesheet" href="{{$wa_app_static_url}}css/mobile.css">
-	
+
 	<script type="text/javascript"	src="{{$wa_url}}wa-content/js/jquery/jquery-1.5.2.min.js"></script>
 	<script type="text/javascript"	src="{{$wa_url}}wa-content/js/jquery-wa/wa.core.js"></script>
 	<script type="text/javascript"	src="{{$wa_url}}wa-content/js/jquery-plugins/jquery.tmpl.js"></script>
 	<script type="text/javascript"	src="{{$wa_url}}wa-content/js/jquery-plugins/jquery.cookie.js"></script>
-	
+
 	<script type="text/javascript"	src="{{$wa_app_static_url}}js/wa.stickiesmobilecontroller.js"></script>
 
 	<script type="text/javascript"	src="{{$wa_app_static_url}}js/generic.js"></script>
-	
-	
-	<script type="text/javascript"	src="{{$wa_url}}wa-content/js/jquery-mobile/jquery.mobile-1.0a4.js"></script>
-	
 
-	
+
+	<script type="text/javascript"	src="{{$wa_url}}wa-content/js/jquery-mobile/jquery.mobile-1.0a4.js"></script>
+
+
+
 	<style type="text/css">
 {{foreach from=$stick_colors_css item=color key=color_key}}
 /*{{$color_key}} sticky*/
 		div.sticky-{{$color_key}} {
 			background-color:{{$color.body}};
-			background-image: -moz-linear-gradient(top, 
-								{{$color.border}}, 
+			background-image: -moz-linear-gradient(top,
+								{{$color.border}},
 								{{$color.body}});
 			background-image: -webkit-gradient(linear,left top,left bottom,
 									color-stop(0, 		{{$color.border}}),
@@ -57,7 +57,7 @@
 <div data-role="page" id="loading">
 
 	<div data-role="header" data-position="inline" data-backbtn="false">
-		<a href="{{$wa->url(true)}}" rel="external"  data-role="button" data-iconpos="notext" data-icon="mobile-apps">
+		<a href="{{$wa_backend_url}}" rel="external"  data-role="button" data-iconpos="notext" data-icon="mobile-apps">
 			<!-- [`Apps`] -->
 		</a>
 		{{*
@@ -74,7 +74,7 @@
 
 	<div data-role="content">
 	</div>
-{{*	
+{{*
 	<div data-role="footer">
 		(c)WebAsyst
 	</div>
@@ -84,7 +84,7 @@
 <!-- {{capture name="sheet-list"}} Sheets subpage template -->
 <div data-role="page" id="sheets">
 	<div data-role="header" data-position="inline" data-backbtn="false" >
-		<a href="{{$wa->url(true)}}" rel="external"  data-role="button" data-iconpos="notext" data-icon="mobile-apps">
+		<a href="{{$wa_backend_url}}" rel="external"  data-role="button" data-iconpos="notext" data-icon="mobile-apps">
 			[`Apps`]
 		</a>
 {{*
@@ -103,7 +103,7 @@
 		<ul data-role="listview" data-inset="true"{{* data-filter="true"*}} data-theme="e">
 <!--		{{literal}}{{each sheets}}{{/literal}} -->
 			<li>
-				<a href="#sheet/${$value.id}" data-ajax="json">					
+				<a href="#sheet/${$value.id}" data-ajax="json">
 					{{literal}}{{if $value.name}}${$value.name}{{else}}&lt;[`no name`]&gt;{{/if}} {{/literal}}
 				</a>
 				<span class="ui-li-count">
@@ -138,10 +138,10 @@
 		>
 			[`Add`]
 		</a>
-*}}		
+*}}
 		<h1 id="sheet-title">{{literal}}{{if current_sheet.name}}${current_sheet.name}{{else}}&lt;[`no name`]&gt;{{/if}} {{/literal}}</h1>
 	</div>
-	
+
 	<div data-role="content" class="stickies">
 		<ul	data-role="listview"
 			data-inset="true"
@@ -161,7 +161,7 @@
 <!--		{{literal}}{{/each}}{{/literal}} -->
 		</ul>
 	</div>
-	
+
 </div>
 <!-- {{/capture}} -->
 
@@ -189,7 +189,7 @@
 			>
 				${sticky.content}
 			</p>
-{{*			
+{{*
 			<a	href="#settings"
 				data-role="button"
 				data-icon="gear"
@@ -211,7 +211,7 @@
 
 {{foreach from=$smarty.capture item=template key=name}}
 <script type="text/x-jquery-tmpl" id="{{$name}}-template-js">
-<!-- begin {{$name}} {{$template}} end {{$name}} -->
+<!-- begin {{$name}} {{$template|replace:'</':'<\/'}} end {{$name}} -->
 </script>
 
 {{/foreach}}

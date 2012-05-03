@@ -3,12 +3,12 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>[`Welcome`] &mdash; {$wa->accountName()}</title>
 {$wa->css()}
-<script type="text/javascript" src="{{$wa_url}}wa-content/js/jquery/jquery-1.4.2.min.js"></script>
+<script type="text/javascript" src="{$wa_url}wa-content/js/jquery/jquery-1.4.2.min.js"></script>
 </head>
 <body>
 {$wa->header()}
 <div id="wa-app" class="block double-padded">
-	<h1>{{$username|escape|string_format:"[`Hi, %s!`]"}}</h1>
+	<h1>{$username|escape|string_format:"[`Hi, %s!`]"}</h1>
 	<div style="border:1px solid #EAEAEA;padding:10px; margin:10px 0">
 		<p>[`This is your Dashboard.`]</p>
 

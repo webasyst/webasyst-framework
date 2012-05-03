@@ -24,6 +24,11 @@ abstract class waViewActions extends waController
     protected $layout;
 
     /**
+     * @var waSmarty3View
+     */
+    protected $view;
+
+    /**
      * @var waSystem
      */
     protected $system;

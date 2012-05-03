@@ -14,11 +14,6 @@ function smarty_modifier_wa_date_add($string, $format, $timezone = null, $locale
          */
         $smarty = waConfig::get('current_smarty');
         $locale = $smarty->getVars('locale');
-        if (isset($locale->value)) {
-            $locale = $locale->value;
-        } else {
-            $locale = null;
-        }
     }
     if ($locale === null) {
         $locale = waSystem::getInstance()->getUser()->getLocale();

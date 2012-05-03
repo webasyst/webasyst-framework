@@ -162,6 +162,7 @@ class waHtmlControl
             'title_wrapper'=>'%s&nbsp;:',
             'description_wrapper'=>'<br>%s',
             'control_wrapper'=>"%s\n%s\n%s\n",
+            'control_separator'=>"<br>",
 
         );
         $params = array_merge($wrappers,$params);
@@ -381,10 +382,15 @@ class waHtmlControl
             $control .= "<input type=\"radio\" name=\"{$name}\" value=\"{$option_value}\"";
             $control .= self::addCustomParams(array('class','style','id','checked'),$params);
             $option_title = htmlentities((string)$option['title'],ENT_QUOTES,self::$default_charset);
-            $control .= "><label";
+            $control .= ">&nbsp;<label";
             $control .= self::addCustomParams(array('id'=>'for',),$params);
-            $control .= self::addCustomParams(array('description'=>'title',),$option);
+            $control .= self::addCustomParams(array('description'=>'title','class','style',),$option);
             $control .= ">{$option_title}</label><br>\n";
+
+            $control .= self::getControlDescription(array_merge($params,$option));
+            if ($id < count($options)) {
+                $control .= $params['control_separator'];
+            }
         }
         return $control;
     }
@@ -489,9 +495,18 @@ class waHtmlControl
         if(!isset($params['value'])){
             $params['value'] = 1;
         }
+        if (isset($params['label']) && $params['label']) {
+            $control .= "<label";
+            $control .= self::addCustomParams(array('for'=>'id'),$params);
+            $control .= ">";
+        }
         $control .= "<input type=\"checkbox\" name=\"{$name}\"";
-        $control .= self::addCustomParams(array('value','class','style','checked','id'),$params);
+        $control .= self::addCustomParams(array('value','class','style','checked','id', 'title'),$params);
         $control .= ">";
+        if (isset($params['label']) && $params['label']) {
+            $control .= '&nbsp;'.htmlentities(_wp((string)$params['label']),ENT_QUOTES,self::$default_charset)."</label>";
+        }
+
         return $control;
     }
 

@@ -1,11 +1,12 @@
 (function($) {
-	
+
 	$.ui.ddmanager['drop'] = function(draggable, event) {
 		var dropped = false;
 		$.each($.ui.ddmanager.droppables[draggable.options.scope] || [], function() {
-			if(!this.options) return;
-			if (!this.options.disabled && this.visible && $.ui.intersect(draggable, this, this.options.tolerance))
-				dropped = this._drop.call(this, event);
+			if(!this.options) {
+				return;
+			}
+			if (!this.options.disabled && this.visible && $.ui.intersect(draggable, this, this.options.tolerance)){dropped = this._drop.call(this, event);}
 
 			if (!this.options.disabled && this.visible && this.accept.call(this.element[0],(draggable.currentItem || draggable.element))) {
 				this.isout = 1; this.isover = 0;
@@ -18,7 +19,7 @@
 	$.wa.stickiescontroller = {
 			debug: true,
 			currentLayout: null,
-			
+
 			stickResizeTimer: {},
 			stickResizeSign: {},
 			stickFontSize: {},
@@ -43,14 +44,14 @@
 				'max_width':400,
 				'max_height':400
 			},
-			
+
 			init: function (options) {
 				var self = this;
 				if (typeof($.History) != "undefined"){
-					
+
 					$.History.bind(function (hash) {
 						self.dispatch(hash);
-				    });
+					});
 					var h = parent ? parent.window.location.hash : location.hash;
 					var sheet_id = Math.max(0,parseInt($.cookie('stickies.current_sheet')));
 					if (h.length < 2) {
@@ -63,19 +64,19 @@
 						$.wa.setHash(h);
 					}
 				}
-				
+
 				$("textarea.sticky-content").live('keyup change focus', function(event) {
 					var id = parseInt($(this).attr('id').match(/\d+$/));
 					if(id){
 						self.updateZIndex(id);
 						if(event.type!= 'focus'){
-							
+
 							var timestamp = $(this).attr('timestamp');
 							if(!timestamp) {
 								$(this).attr('timestamp',event.timeStamp);
 								timestamp = event.timeStamp;
 							}
-							
+
 							if ((event.type == 'change')||(event.timeStamp-timestamp)>10000) {//60 000 ms TODO make it option
 								self.updateFontSize(id, true);
 								self.stickyModifyAction({'content':$(this).val(),'id':id,'timestamp':event.timeStamp});
@@ -89,7 +90,7 @@
 						self.log('Invalid sticky id:',$(this).attr('id'));
 					}
 				});
-				
+
 				$('.js-form-submit').live('submit', function() {
 					var hash = $(this).attr('action').replace(/^.*#\/?/, '');
 					self.dispatch(hash);
@@ -100,7 +101,7 @@
 					self.dispatch(hash);
 					return false;
 				});
-				
+
 				$(".sticky").live('click', function(event) {
 					var id = parseInt($(this).attr('id').match(/\d+$/));
 					if(id){
@@ -109,7 +110,7 @@
 						self.log('Invalid sticky id:',$(this).attr('id'));
 					}
 				});
-				
+
 				$(".js-menu-item").live('click', function() {
 					var hash = $(this).attr('href').replace(/^.*#\/?/, '');
 					if($(this).hasClass('js-menu-no-proceed')){
@@ -119,7 +120,7 @@
 					}
 					return false;
 				});
-				
+
 				$(".js-sheet-item").live('mouseover', function() {
 					if ($('.stickies-settings-form:visible').size() == 0
 						&& $('#wa-app-stickies-sheets').sortable('option', 'disabled') ) {
@@ -127,12 +128,12 @@
 					}
 					return true;
 				});
-				
+
 				$('div#stickies-sheets').droppable({
 					accept:'.sticky',
 					tolerance: 'pointer',
 					scope: 'sheet',
-					over: function(event, ui) {		
+					over: function(event, ui) {
 						var dragg = $(ui.draggable);
 						dragg.resizable( "destroy" ).find('div.sticky-inner').hide();
 						if (dragg.find('.clone-head').size() == 0) {
@@ -141,7 +142,7 @@
 						else {
 							dragg.find('.clone-head').show();
 						}
-						
+
 						if (!dragg.data('isOut')) {
 							var drag = dragg.data("draggable");
 							drag.helperProportions = {
@@ -149,16 +150,16 @@
 								height: dragg.find('.clone-head').height()
 							};
 							drag._setContainment();
-							
+
 							dragg.data('isOver', true);
 						}
-						
+
 					},
 					out: function(event, ui) {
 						var dragg = $(ui.draggable);
 						if (dragg.find('.clone-head').size() != 0) {
 							dragg.find('.clone-head').hide();
-							
+
 							if (dragg.data('isOut')) {
 								var drag = dragg.data("draggable");
 								drag.helperProportions = {
@@ -169,7 +170,7 @@
 								dragg.data('isOver', null);
 							}
 						}
-							
+
 						dragg.find('div.sticky-inner').show();
 						self.makeStickResizable(ui.draggable);
 					},
@@ -178,59 +179,60 @@
 						return true;
 					}
 				});
-				
+
 				$('body').click(function(e){
 					if ( $('.sticky').find(e.target).size() == 0 ) {
 						self.updateZIndexAllBlur();
 					}
 				});
-				
-				$(window).unload( function () { self.checkChanges(); } );
-				
-//				$(window).resize(function(){
-//					var handler = setInterval(function(){
-//						self.onWindowResizeHandler(handler);
-//					}, 500);
-//				});
-				
-				//prepare templates
-				var pattern = /<\\\/(\w+)/g;
-				var replace_pattern = '<\/$1';
-				$.template('sheet',$('#sheet-template-js').html().replace(pattern,replace_pattern));
 
-				$.template('sticky',$('#sticky-template-js').html().replace(pattern,replace_pattern));
-				$.template('sticky-settings',$('#sticky-settings-template-js').html().replace(pattern,replace_pattern));
-				$.template('add-sticky',$('#add-sticky-template-js').html().replace(pattern,replace_pattern));
-				$.template('sheet-add',$('#sheet-add-template-js').html().replace(pattern,replace_pattern));
+				$(window).unload( function () { self.checkChanges(); } );
+
+				//prepare templates
+
+				var pattern = /<\\\/(\w+)/g;
+				var replace = '</$1';
+
+				$("script[type$='x-jquery-tmpl']").each(function() {
+					var id = $(this).attr('id').replace(/-template-js$/, '');
+					try {
+						var template = $(this).html().replace(pattern, replace);
+						$.template(id, template);
+					} catch (e) {
+						if (typeof(console) == 'object') {
+							console.log(e);
+						}
+					}
+				});
 
 			},
-			
+
 			dispatch: function (hash) {
 				if (hash) {
 					hash = hash.replace(/^.*#/, '');
 					hash = hash.split('/');
 					if (hash[0]) {
-			        	var actionName = "";
-			        	var attrMarker = hash.length;
-			        	for (var i in hash) {
-			        		var h = hash[i];
-			        		if (i < 2) {
-			        			if (i == 0){
-			        				actionName = h;
-			        			} else if(h.match(/[a-z]+/i)) {
-			        				actionName += h.substr(0,1).toUpperCase() + h.substr(1);
-			        			} else {
-			        				attrMarker = i;
-				        			break;
-			        			}
-			        		} else {
-			        			attrMarker = i;
-			        			break;
-			        		}
-			        	}	
-				        var attr = hash.slice(attrMarker);
-			        	this.execute(actionName, attr);
-			        	
+						var actionName = "";
+						var attrMarker = hash.length;
+						for (var i in hash) {
+							var h = hash[i];
+							if (i < 2) {
+								if (i == 0){
+									actionName = h;
+								} else if(h.match(/[a-z]+/i)) {
+									actionName += h.substr(0,1).toUpperCase() + h.substr(1);
+								} else {
+									attrMarker = i;
+									break;
+								}
+							} else {
+								attrMarker = i;
+								break;
+							}
+						}
+						var attr = hash.slice(attrMarker);
+						this.execute(actionName, attr);
+
 					} else {
 						this.defaultAction();
 					}
@@ -238,20 +240,20 @@
 					this.defaultAction();
 				}
 			},
-			
+
 			execute: function (actionName, attr) {
 				this.trace('execute', [actionName,attr]);
 				if (this[actionName + 'Action']) {
-	    			this.currentAction = actionName;
-	    			this.currentActionAttr = attr;
-	        		this[actionName + 'Action'](attr);
-	        	} else {
-	        		this.log('Invalid action name:', actionName+'Action')
-	        		$.wa.setHash('#');
-	        		this.dispatch('#');
-	        	}
+					this.currentAction = actionName;
+					this.currentActionAttr = attr;
+					this[actionName + 'Action'](attr);
+				} else {
+					this.log('Invalid action name:', actionName+'Action');
+					$.wa.setHash('#');
+					this.dispatch('#');
+				}
 			},
-			
+
 			checkChanges: function() {
 				var self = this;
 				$('.sticky-status.nosaved').each( function (i) {
@@ -260,11 +262,11 @@
 					$('#sticky_content_'+id).change();
 				});
 			},
-			
+
 			defaultAction: function () {
 				this.sheetAction(-1);
 			},
-			
+
 			sheetAddAction: function(params) {
 				var self = this;
 				this.sendRequest(
@@ -278,26 +280,20 @@
 					}
 				);
 			},
-			
+
 			sheetAction: function(params) {
 				var url = '?module=sheet';
 				var sheet_id = parseInt(params);
 				var self = this;
-//				var loading_item = $('#sheet_item_'+sheet_id+' .loading');
-//				if(!loading_item.length){
-//					loading_item = $('.loading-big');
-//				}
-				//$('#sheet_item_'+sheet_id+' .count').hide();
-//				loading_item.show();
+
 				this.checkChanges();
-				
+
 				return this.sendRequest(
 					url,
 					{'sheet_id':sheet_id},
 					function (data) {
 						self.drawSheet(data);
-//						loading_item.hide();
-						
+
 						var date = new Date();
 						date.setDate(date.getDate()+30);//30 days
 						if(!data.current_sheet_id&&data.default_sheet_id){
@@ -306,26 +302,20 @@
 						}else	if(data.current_sheet_id){
 							$.cookie('stickies.current_sheet',data.current_sheet_id,{'expires':date});
 						}
-						if (data.current_sheet)
-							$( 'title' ).html ( (data.current_sheet.name.split("<").join("&lt;").split(">").join("&gt;").split('"').join("&#34;").split("'").join("&#39;") || "&lt;"+'no name'.translate()+"&gt;") + " &mdash; " + accountName );
-						
+						if (data.current_sheet){$( 'title' ).html ( (data.current_sheet.name.split("<").join("&lt;").split(">").join("&gt;").split('"').join("&#34;").split("'").join("&#39;") || "&lt;"+'no name'.translate()+"&gt;") + " &mdash; " + accountName );}
+
 						if (data.current_sheet_add) {
 							self.sheetEditAction(data.current_sheet_id);
 							$('.stickies-sidebar-scrolable').scrollTop(10000);
 						}
-					},
-					function() {
-//						loading_item.hide();
 					}
-					
 				);
 			},
 			sheetEditAction: function(params) {
 				this.checkChanges();
 				this.log('sheetEditAction', params);
-				//$('#sheet_item_' + parseInt(params)).toggleClass('wa-ui-expanded');
 				$('#sheet_item_' + parseInt(params)+' .stickies-settings-form').toggle(0);
-				
+
 				if ($('#sheet_item_' + parseInt(params)+' .stickies-settings-form').is(':visible')) {
 					$('#sheet_item_' + parseInt(params)).parent().sortable( "disable" );
 				}
@@ -342,7 +332,7 @@
 				$('#stickies').attr('class',sheet_class);
 				$('#background-vars-'+id+' li.selected').removeClass('selected');
 				$('#background-vars-'+id+'-'+sheet_class).addClass('selected');
-				
+
 			},
 			sheetSaveAction: function(params) {
 				var id = parseInt(params);
@@ -352,7 +342,6 @@
 					'?module=sheet&action=save',
 					request_data,
 					function (data) {
-						//$('#sheet_item_' + id).toggleClass('wa-ui-expanded');
 						$('#sheet_item_' + parseInt(params)+' .stickies-settings-form').toggle(0);
 						if (data.name == '') {
 							data.name = '&lt;'+'no name'.translate()+'&gt;';
@@ -361,7 +350,7 @@
 						$('title').html( data.name.split("<").join("&lt;").split(">").join("&gt;").split('"').join("&#34;").split("'").join("&#39;") + " &mdash; " + accountName );
 					}
 				);
-				
+
 			},
 			sheetSortAction: function(id, after_id ,sheet) {
 				var self = this;
@@ -398,21 +387,20 @@
 								self.sheetAction(-1);
 							}
 						}
-						
+
 					);
 				}
 			},
-			
+
 			stickyModifyAction: function (param,callback) {
-				var self = this;
 				var state_item = $('#sticky_'+param.id+' .sticky-status');
 				state_item.removeClass('saved nosaved').addClass('process');
 				if(param.content == undefined){
 					param.content = $('#sticky_'+param.id+' :input[name=content]').val();//.stick_content
 				}
 				if(param.font_size == undefined){
-					if ($('#sticky_'+param.id+' :input[name=content]').size() )
-						param.font_size = $('#sticky_'+param.id+' :input[name=content]').css('font-size').replace(/px/i, '');//.stick_content
+					if ($('#sticky_'+param.id+' :input[name=content]').size() ){param.font_size = $('#sticky_'+param.id+' :input[name=content]').css('font-size').replace(/px/i, '');//.stick_content
+}
 				}
 				this.sendRequest(
 						'?module=sticky&action=modify',
@@ -423,13 +411,11 @@
 							if(param.timestamp){
 								$('#sticky_'+param.id+' .stick_content').attr('timestamp',param.timestamp);
 							}
-							if(!param.font_size){
-								var container = $('#sticky_'+param.id);
-							}
+
 							if(typeof(callback) == 'function'){
 								callback();
 							}
-							
+
 						},
 						function () {
 							state_item.removeClass('process nosaved').addClass('nosaved');
@@ -438,7 +424,7 @@
 						}
 				);
 			},
-		
+
 			stickyAddAction: function (param) {
 				var self = this;
 				this.sendRequest(
@@ -451,7 +437,7 @@
 					}
 				);
 			},
-			
+
 			stickySettingsAction: function (param) {
 				var id = parseInt(param);
 				if($('#sticky-settings-'+id).length) {
@@ -460,10 +446,10 @@
 					this.drawStickSettings(id);
 				}
 			},
-			
+
 			stickySizeAction: function (params) {
 			},
-			
+
 			stickyColorAction: function (params) {
 				var id = parseInt(params[0]);
 				var color = params[1];
@@ -474,11 +460,11 @@
 				$('#color-vars-'+id+' li.selected').removeClass('selected');
 				$('#color-vars-'+id+'-'+color).addClass('selected');
 				$('#sticky_'+id).attr('class',sticky_class);
-				
+
 				this.hideStickSettings(id);
 				this.stickyModifyAction({'id':id,'color':color});
 			},
-			
+
 			stickyDeleteAction: function (param) {
 				var self = this;
 				var id = parseInt(param);
@@ -490,15 +476,15 @@
 					'?module=sticky&action=delete',
 					request_data,
 					 function (data) {
-						var id = parseInt(param[0])
+						var id = parseInt(param[0]);
 						var sticky = $('.stick-position-'+id);
 						sticky.remove();
 						self.stick[id] = null;
 					}
-					
+
 				);
 			},
-			
+
 			updateFontSize: function (id, allow_save, is_resize) {
 				var mimics = [
 				'paddingTop',
@@ -508,12 +494,13 @@
 				'fontSize',
 				'fontFamily',
 				'fontWeight'];
-				
-				var self = this;
+
 				var $textarea = $('#sticky_'+id+' .sticky-content:input[name=content]');
 				var textareaContent = $textarea.val().replace(/&/g,'&amp;').replace(/  /g, '&nbsp;').replace(/<|>/g, '&gt;').replace(/\n/g, '<br />');
-				if (textareaContent.length == 0) return;
-				
+				if (textareaContent.length == 0) {
+					return;
+				}
+
 				$twin = $textarea.parent().find('div.twin');
 				if ($twin.length == 0) {
 					$twin =	$('<div class="twin"/>').css({'position': 'absolute','word-wrap':'break-word', 'display': 'none', 'border': '1px solid #ccc'});
@@ -524,21 +511,22 @@
 					$twin.appendTo($textarea.parent());
 				}
 				$twin.css('width', $textarea.width());
-				
-				
+
+
 				var twinContent = $twin.html().replace(/<br>/ig,'<br />');
 
 				$twin.html(textareaContent+'&nbsp;');
-				
+
 				var h = $textarea.height(),
 					textarea_font = $textarea.css('font-size').replace(/px/i, '');
-				
+
 				if ( (!is_resize && (textareaContent+'&nbsp;' == twinContent))
 					|| ($twin.height() < h && textarea_font >= 16)
-					|| ($twin.height() > h && textarea_font <= 4) 
-					)
+					|| ($twin.height() > h && textarea_font <= 4)
+					) {
 					return;
-				
+				}
+
 				for (var font = 4; font < 16; font += 1 ) {
 					$twin.css('font-size',  font);
 					if ($twin.height() > h) {
@@ -551,10 +539,10 @@
 				$textarea.css('font-size', font);
 				this.log('updateFontSize', font);
 				$textarea.css('lineHeight', $twin.css('lineHeight'));
-				
+
 				return;
 			},
-			
+
 			updateZIndex: function(id){
 				var container = $('#sticky_'+id);
 				var z_index = this.stickZIndex[id]||Math.max(1,parseInt(container.css('z-index')));
@@ -564,19 +552,19 @@
 					$('div.sticky-inner.active').removeClass('active');
 					$('#sticky_'+id+' div.sticky-inner').addClass('active');
 				}
-				
+
 			},
 			updateZIndexAllBlur: function(){
 				$('div.sticky-inner.active').removeClass('active');
 				this.maxZIndex++;
 			},
-			
+
 			drawSheet: function (data) {
-				
+
 				$('#wa-app-stickies-sheets').empty();
 				$('#wa-app-stickies-stickies').empty();
 				$('#wa-app-stickies-add').empty();
-				
+
 				if(data.current_sheet){
 					$('#stickies').attr('class',data.current_sheet.background_id||'cork');//TODO setup default backgound id
 					$.tmpl('add-sticky',{'sheet_id':data.current_sheet_id}).appendTo('#wa-app-stickies-add');
@@ -594,21 +582,16 @@
 					}
 				}
 				$.tmpl('sheet-add',{}).appendTo('#wa-app-stickies-sheets');
-				var position = {
-						'window_width':$(window).width(),
-						'window_height':$(window).height(),
-						'container_x1':20,
-						'container_y1':20
-				};
-				
+
+
 				var stickies_cache = {};
 				for(id in data.stickies){
 					this.drawStick(data.stickies[id]);
 					stickies_cache[data.stickies[id].id] = data.stickies[id];
 				}
-				
+
 				this.makeSheetsSortable("#wa-app-stickies-sheets");
-				
+
 				this.makeSticksTransferable($("#wa-app-stickies-sheets .js-sheet-item").not('.selected'));
 
 				//make stick draggable
@@ -617,24 +600,19 @@
 					var id = parseInt($(this).attr('id').match(/\d+$/));
 					self.makeStickDraggable("#sticky_"+id,{'width':$(this).width(),'height':$(this).height()});
 					if (!stickies_cache[id] || stickies_cache[id].font_size == 0) {
-						if (stickies_cache[id].content.length != 0)
-							self.updateFontSize(id,true);
+						if (stickies_cache[id].content.length != 0){self.updateFontSize(id,true);}
 					}
 				});
 			},
-			
+
 			drawStick: function(data) {
-				if (typeof data.id == 'undefined') return;
-				
-				var position = {
-						'window_width':$(window).width(),
-						'window_height':$(window).height(),
-						'container_x1':20,
-						'container_y1':20
-				};
+				if (typeof data.id == 'undefined') {
+					return;
+				}
+
 				var stick_id = data.id;
 				this.stickZIndex[stick_id] = this.maxZIndex;
-				
+
 				if (!$('.stick-containment').length) {
 					$contener1 = $('<div />').addClass('stick-containment').css({
 						'position' : 'absolute',
@@ -644,12 +622,12 @@
 						'right' : '20px',
 						'bottom' : '20px'
 //						'border' : '1px solid #ccc'
-					}).appendTo('#wa-app-stickies-stickies');					
+					}).appendTo('#wa-app-stickies-stickies');
 				}
 				else {
 					$contener1 = $('.stick-containment');
 				}
-				
+
 				$contener2 = $('<div />').addClass('stick-position-' + data['id']).css({
 					'position' : 'absolute',
 					'display' : 'block',
@@ -659,14 +637,14 @@
 					'bottom' : data['size_height'] + 'px'
 //					'border' : '1px solid #ccc'
 				}).appendTo($contener1);
-				
+
 				data.position_left = data.position_left / 100;
 				data.position_top = data.position_top / 100;
 				$.tmpl('sticky',{'sticky':data,'zindex':++this.maxZIndex}).appendTo($contener2);
-				
+
 				return;
 			},
-			
+
 			drawStickSettings: function(id) {
 				var color = $('#sticky_'+id).attr('class').match(/sticky-(\w+)/);
 				if(color) {
@@ -674,7 +652,7 @@
 				} else {
 					color = '';
 				}
-				var sticky =$('#sticky_'+id+' .sticky-content'); 
+				var sticky =$('#sticky_'+id+' .sticky-content');
 				var height =sticky.height();
 				var width = sticky.width();
 				var size = Math.max(height,width);
@@ -684,7 +662,7 @@
 					$('#sticky-settings-'+id).show().height(height).width(width);
 				});
 			},
-			
+
 			hideStickSettings: function(id)
 			{
 				var self = this;
@@ -695,7 +673,7 @@
 					self.updateFontSize(id,false);
 				});
 			},
-			
+
 			makeSheetsSortable: function (selector) {
 				var self = this;
 				$(selector).sortable({
@@ -721,19 +699,18 @@
 					}
 				});
 			},
-			
+
 			makeStickDraggable: function (selector,size) {
 				var self = this;
 				size = size||{'height':0,'width':0};
 				$(selector).each(function(){
-					var id = parseInt($(this).attr('id').match(/\d+$/));
 					$(this).draggable( {
 						'start' : function(event,ui) {
 							var id = parseInt($(this).attr('id').match(/\d+$/));
 							$('#sticky_status_'+ id).removeClass('saved process').addClass('nosaved');
 							self.updateZIndex(id);
-							
-							
+
+
 						},
 						'stop' : function (event,ui){
 							//is exits draggable
@@ -747,12 +724,12 @@
 						'zindex': 10001,
 						'cusrsor':'move',
 						'handle':'div.sticky-header'
-					});					
+					});
 				});
 				//and resizable
 				self.makeStickResizable(selector);
 			},
-			
+
 			makeStickResizable: function(selector){
 				var self = this;
 				$(selector).resizable({
@@ -767,7 +744,7 @@
 					}
 				});
 			},
-			
+
 			makeSticksTransferable: function (selector) {
 				var self = this;
 				$(selector).droppable({
@@ -783,7 +760,7 @@
 					}
 				});
 			},
-			
+
 			onStickDrop: function(id, sheet_id) {
 				$('#sticky_'+id).draggable({ revert: true });
 				this.stickyModifyAction(
@@ -799,21 +776,21 @@
 					}
 				);
 			},
-			
+
 			onResizeHandler: function(id, width,height) {
-				
+
 				$('.stick-position-'+id).css({
 					'right' : width + 'px',
 					'bottom' : height + 'px'
 				});
-				
+
 				var size	 = width;
 				$('#size-vars-'+id+' li.selected').removeClass('selected');
 				$('#size-vars-'+id+'-'+size).addClass('selected');
 				$('#sticky_'+id).height(height).width(width);
 				$('#sticky_'+id+' .sticky-content').height(height-this._border.height).width(width-this._border.width);
 				$('#sticky-settings-'+id).height(height).width(width);
-				
+
 				var offset = this.stickCalculatePosition($('#sticky_'+id));
 				var params = {
 						'drag':true,
@@ -823,20 +800,20 @@
 						'position_left' : offset.left_procent * 100,
 						'position_top' : offset.top_procent * 100
 				};
-				
+
 				this.trace('resize',params);
 				this.updateFontSize(id, false, true);
-				
+
 				this.updateZIndex(id);
 				this.stickyModifyAction(params);
 			},
-			
+
 			stickCalculatePosition: function(stick) {
 				this.log('stickCalculatePosition');
 				var container = stick.parent(),
 					left_procent = 100 * parseInt(stick.css('left')) / parseInt(container.width()),
 					top_procent = 100 * parseInt(stick.css('top')) / parseInt(container.height());
-					
+
 				stick.css('left', left_procent+"%");
 				stick.css('top', top_procent+"%");
 				return {
@@ -844,14 +821,14 @@
 					top_procent: top_procent
 				};
 			},
-			
+
 			onStickDragableStop: function(event, ui, item) {
 				var id = parseInt(item.attr('id').match(/\d+$/));
 				if (id){
-					
+
 					var stick = $(item);
 					var offset = this.stickCalculatePosition(stick);
-					
+
 					var params = {
 						'drag':true,
 						'id':id,
@@ -865,12 +842,12 @@
 					this.log('Invalid sticky id:',item.attr('id'));
 				}
 			},
-			
+
 			sendRequest: function(url,request_data,success_handler,error_handler) {
 				var self = this;
 				return $.ajax({
 					'url':url,
-					'data':request_data,
+					'data':request_data||{},
 					'type':'POST',
 					'success': function (data, textStatus, XMLHttpRequest) {
 						try{
@@ -912,7 +889,7 @@
 							}
 							self.error('Empty server responce'.translate(), 'warning');
 						}
-						
+
 					},
 					'error': function (XMLHttpRequest, textStatus, errorThrown) {
 						self.log('AJAX request error', textStatus);
@@ -923,7 +900,7 @@
 					}
 				});
 			},
-			
+
 			error: function (message,type) {
 				var container = $('#wa-system-notice');
 				if(container){
@@ -937,13 +914,13 @@
 					}
 					container.html(message);
 					container.slideDown().delay(delay).slideUp();
-					
+
 				}else{
 					alert(message);
 				}
-				
+
 			},
-			
+
 			log: function (message, params) {
 				if(console){
 					console.log(message,params);

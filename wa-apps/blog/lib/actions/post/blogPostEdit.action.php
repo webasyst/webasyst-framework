@@ -115,13 +115,15 @@ class blogPostEditAction extends waViewAction
         $this->view->assign('datetime_timezone', waDateTime::date("T", null, wa()->getUser()->getTimezone()));
 
         /**
+         * Backend post edit page
+         * UI hook allow extends post edit page
          * @event backend_post_edit
          * @param array[string]mixed $post
          * @param array[string]int $post['id']
          * @param  array[string]int $post['blog_id']
-         * @return array[string][string]string $return[%plugin_id%]
-         * @return array[string][string]string $return[%plugin_id%]['sidebar']
-         * @return array[string][string]string $return[%plugin_id%]['toolbar']
+         * @return array[string][string]string $return[%plugin_id%] Array plugin's html output
+         * @return array[string][string]string $return[%plugin_id%]['sidebar'] Plugin sidebar html output
+         * @return array[string][string]string $return[%plugin_id%]['toolbar'] Plugin toolbar html output
          */
         $this->view->assign('backend_post_edit', wa()->event('backend_post_edit', $post));
 

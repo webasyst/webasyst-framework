@@ -8,5 +8,5 @@ return array(
 	'group_add' => array(),
 	'create_user_account' => array(),
 	'search' => array(),
+	'contact_merge' => array(),
 );
-

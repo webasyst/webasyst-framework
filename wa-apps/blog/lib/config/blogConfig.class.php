@@ -125,7 +125,7 @@ class blogConfig extends waAppConfig
                 $post_model = new blogPostModel();
             }
 
-            $where = "status = '".blogPostModel::STATUS_DEADLINE."' AND datetime < '".waDateTime::date("Y-m-d")."'";
+            $where = "status = '".blogPostModel::STATUS_DEADLINE."' AND datetime <= '".waDateTime::date("Y-m-d")."'";
             if (!$user->isAdmin($app)) {
                 $where .= " AND contact_id = {$user_id}";
                 $where .= " AND blog_id IN (".implode(', ',$blogs).")";

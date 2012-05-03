@@ -52,7 +52,7 @@ class waContact implements ArrayAccess
             } catch (waDbException $e) {}
             if (!isset(self::$options['default']['locale']) || !self::$options['default']['locale']) {
                 self::$options['default']['locale'] = 'ru_RU';
-            }            
+            }
         }
         if (!isset(self::$options['default']['timezone'])) {
             self::$options['default']['timezone'] = @date_default_timezone_get();
@@ -76,7 +76,7 @@ class waContact implements ArrayAccess
     {
         return self::getPhotoUrl($this->id, $this->get('photo'), $width, $height);
     }
-    
+
     public static function getPhotoUrl($id, $ts, $width = null, $height = null)
     {
         if ($width === 'original') {
@@ -88,8 +88,8 @@ class waContact implements ArrayAccess
             $size = '96x96';
         } else {
             $size = $width.'x'.$height;
-        }        
-        
+        }
+
         if ($ts) {
             if (waSystemConfig::systemOption('mod_rewrite')) {
                 return wa()->getDataUrl('photo/'.$id.'/'.$ts.'.'.$size.'.jpg', true, 'contacts');
@@ -106,10 +106,10 @@ class waContact implements ArrayAccess
                 $size = 96;
             }
             return wa()->getRootUrl().'wa-content/img/userpic'.$size.'.jpg';
-        }        
+        }
     }
-    
-    public function setPhoto($file) 
+
+    public function setPhoto($file)
     {
         if (!file_exists($file)) {
             throw new waException('file not exists');
@@ -117,7 +117,7 @@ class waContact implements ArrayAccess
         if (!$this->getId()) {
             throw new waException('Contact not saved!');
         }
-        
+
         $rand = mt_rand();
         $path = wa()->getDataPath("photo", true, 'contacts')."/".$this->getId();
         // delete old image
@@ -128,9 +128,9 @@ class waContact implements ArrayAccess
         $filename = $path."/".$rand.".original.jpg";
         waImage::factory($file)->save($filename, 90);
         waFiles::copy($filename, $path."/".$rand.".jpg");
-        
+
         waContactFields::getStorage('waContactInfoStorage')->set($this, array('photo' => $rand));
-        
+
         return $this->getPhoto();
     }
 
@@ -246,7 +246,7 @@ class waContact implements ArrayAccess
             if ($this->issetCache($field_id)) {
                 $result = $this->getCache($field_id);
             } else {
-            
+
                 // try get data from default storage
                 $result = waContactFields::getStorage()->get($this, $field_id);
                 if (!$result && isset(self::$options['default'][$field_id])) {
@@ -378,13 +378,15 @@ class waContact implements ArrayAccess
                 if ($f->isMulti() && !is_array($value)) {
                     $value = array($value);
                 }
-                if ($validate) {
-                    if ($e = $f->validate($value, $this->id)) {
-                        $errors[$f->getId()] = $e;
-                    }
-                } elseif ($f->isUnique()) { // validate unique  
-                    if ($e = $f->validateUnique($value, $this->id)) {
-                        $errors[$f->getId()] = $e;
+                if ($validate !== 42) { // this deep dark magic is used when merging contacts
+                    if ($validate) {
+                        if ($e = $f->validate($value, $this->id)) {
+                            $errors[$f->getId()] = $e;
+                        }
+                    } elseif ($f->isUnique()) { // validate unique
+                        if ($e = $f->validateUnique($value, $this->id)) {
+                            $errors[$f->getId()] = $e;
+                        }
                     }
                 }
                 if (!$errors) {
@@ -636,7 +638,7 @@ class waContact implements ArrayAccess
         if ($name !== null && substr($name, -1) === '%') {
             if (!$this->id) {
                 return array();
-            }            
+            }
             $right_model = new waContactRightsModel();
             $data = $right_model->get($this->id, $app_id);
             $result = array();

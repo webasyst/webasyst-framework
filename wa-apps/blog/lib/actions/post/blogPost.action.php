@@ -41,13 +41,13 @@ class blogPostAction extends waViewAction
 
         /**
          * Backend post view page
-         * Allow extend via additional JS and CSS files and extra template output
+         * UI hook allow extends post view page
          * @event backend_post
          * @param array[string]mixed $post Current page post item data
          * @param array[string]int $post['id'] Post ID
          * @param array[string]int $post['blog_id'] Post blog ID
          * @return array[string][string]string $backend_post['%plugin_id%'] Plugin %plugin_id% extra output
-         * @return array[string][string]string $backend_post['%plugin_id%']['footer'] Plugin %plugin_id% extra footer output
+         * @return array[string][string]string $backend_post['%plugin_id%']['footer'] Plugin %plugin_id% footer html
          */
         $this->view->assign('backend_post', wa()->event('backend_post', $post));
 

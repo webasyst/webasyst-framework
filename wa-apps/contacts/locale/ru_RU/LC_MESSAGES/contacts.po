@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WebAsyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2012-04-05 14:39+0400\n"
+"PO-Revision-Date: 2012-05-02 19:40+0400\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -818,7 +818,7 @@ msgstr "На данный адрес было отправлено сообще�
 msgid "Password updated successfully."
 msgstr "Пароль успешно изменён."
 
-msgid "Password can not be empty."
+msgid "Password cannot be empty."
 msgstr "Пароль не может быть пустым."
 
 msgid "Current password"
@@ -826,4 +826,7 @@ msgstr "Действующий пароль"
 
 msgid "Incorrect current password"
 msgstr "Неправильный действующий пароль"
+
+msgid "Select a master contact to which all other contacts will be merged"
+msgstr "Выберите главный контакт, в который объединить все остальные"
 

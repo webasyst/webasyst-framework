@@ -1,72 +1,99 @@
 <?php
 
-/*
- * This file is part of Webasyst framework.
- *
- * Licensed under the terms of the GNU Lesser General Public License (LGPL).
- * http://www.webasyst.com/framework/license/
- *
- * @link http://www.webasyst.com/
- * @author Webasyst LLC
- * @copyright 2011 Webasyst LLC
- * @package wa-system
- * @subpackage mail
- */
-class waMail
+require_once dirname(__FILE__).'/../vendors/swift/swift_required.php';
+
+class waMail extends Swift_Mailer
 {
-    public function __construct()
-    {
 
+    protected static $wa_config = array();
+    private $wa_set_transport = false;
+
+    public function __construct(Swift_Transport $transport = null)
+    {
+        if (!$transport) {
+            $transport = Swift_MailTransport::newInstance();
+            // set transport from config (see method send)
+            $this->wa_set_transport = true;
+        }
+        parent::__construct($transport);
+    }
+
+    public function send(Swift_Mime_Message $message, &$failedRecipients = null)
+    {
+        if (!$message->getFrom()) {
+            if ($from = self::getDefaultFrom()) {
+                $message->setFrom($from);
+            }
+        }
+        if ($this->wa_set_transport) {
+            $this->_transport = self::getTransportByEmail(key($message->getFrom()));
+        }
+        return parent::send($message, $failedRecipients);
     }
 
     /**
-     * Compose new message and returns objects of waMailMessage class
-     *
-     * @param string $to
-     * @param string $subject
-     * @param string $body
-     * @param string $from
-     * @return waMailMessage
+     * @static
+     * @param string $email
+     * @return Swift_Transport
      */
-    public function compose($to, $subject, $body, $from = null)
+    public static function getTransportByEmail($email)
     {
-        return new waMailMessage($to, $subject, $body, $from);
-    }
+        $email = mb_strtolower($email);
+        if (!isset(self::$wa_config['transport'])) {
+            self::$wa_config['transport'] = wa()->getConfig()->getConfigFile('mail');
+        }
 
-    public function send($to, $subject = null, $body = null, $from = null)
-    {
-        if ($to instanceof waMailMessage) {
-            $message = $to;
+        $config = array();
+        if (isset(self::$wa_config['transport'][$email])) {
+            $config = self::$wa_config['transport'][$email];
         } else {
-            $message = $this->compose($to, $subject, $body, $from);
+            $email_parts = explode('@', $email);
+            if (isset($email_parts[1]) && isset(self::$wa_config['transport'][$email_parts[1]])) {
+                $config = self::$wa_config['transport'][$email_parts[1]];
+            } elseif (isset(self::$wa_config['transport']['default'])) {
+                $config = self::$wa_config['transport']['default'];
+            }
         }
-        return @mail($message->getTo(true), $message->getSubject(true), $message->getBody(true), $message->getHeaders(true));
+        if (!$config || !isset($config['type'])) {
+            return Swift_MailTransport::newInstance();
+        }
+        if ($config['type'] == 'smtp') {
+            $transport = Swift_SmtpTransport::newInstance($config['host'], $config['port']);
+            if (isset($config['login'])) {
+                $transport->setUsername($config['login']);
+                $transport->setPassword($config['password']);
+            }
+            if (isset($config['encryption'])) {
+                $transport->setEncryption($config['encryption']);
+            }
+            return $transport;
+        } else {
+            $class_name = "Swift_".ucfirst($config['type'])."Transport";
+            if (class_exists($class_name)) {
+                if (isset($config['options'])) {
+                    return new $class_name($config['options']);
+                } else {
+                    return new $class_name();
+                }
+            } else {
+                return Swift_MailTransport::newInstance();
+            }
+        }
     }
 
-    /**
-     * Default "Name <email>" to use as a From address.
-     * Optionally replaces parts of a string if specified in parameters.
-     */
-    public static function getDefaultSender($email=null, $name=null)
+    public static function getDefaultFrom()
     {
-        static $app_settings_model = null;
-        if (!$app_settings_model) {
+        if (!isset(self::$wa_config['from'])) {
             $app_settings_model = new waAppSettingsModel();
-        }
-
-        if ($name === null) {
-            $name = $app_settings_model->get('webasyst', 'name');
-        }
-
-        if ($email === null) {
             $email = $app_settings_model->get('webasyst', 'email');
+            if ($email) {
+                self::$wa_config['from'] = array(
+                    $email => $app_settings_model->get('webasyst', 'name')
+                );
+            } else {
+                self::$wa_config['from'] = array();
+            }
         }
-
-        if ($name) {
-            $email = $name.' <'.$email.'>';
-        }
-
-        return $email;
+        return self::$wa_config['from'];
     }
 }
-

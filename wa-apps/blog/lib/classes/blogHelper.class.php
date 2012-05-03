@@ -294,10 +294,7 @@ class blogHelper
                 if (in_array($post['status'],array(blogPostModel::STATUS_DEADLINE /*,blogPostModel::STATUS_SCHEDULED*/))) {
                     $datetime = waDateTime::date("Y-m-d", $post['datetime'], $timezone);
                     if ($datetime  <= $current_datetime) {
-                        //$post['alert'] = true;
-                        if ($datetime < $current_datetime) {
-                            $post['overdue'] = true;
-                        }
+                        $post['overdue'] = true;
                     }
 
                 } elseif (in_array($post['status'],array(blogPostModel::STATUS_PUBLISHED))) {

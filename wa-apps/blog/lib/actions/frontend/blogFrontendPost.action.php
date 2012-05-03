@@ -148,6 +148,8 @@ class blogFrontendPostAction extends blogViewAction
 
 
         /**
+         * Frontend post view page
+         * UI hook allow extends frontend post view page
          * @event frontend_post
          * @param array[string]mixed $post
          * @param array[string]int $post['id']

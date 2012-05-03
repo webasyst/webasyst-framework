@@ -16,22 +16,12 @@ function smarty_modifier_wa_format_amount_currency_words($string, $currency_id=n
     }
     if ($locale === null) {
         $locale = $smarty->getVars('locale');
-        if (isset($locale->value)) {
-            $locale = $locale->value;
-        } else {
-            $locale = null;
-        }
     }
     if ($locale === null) {
         $locale = waSystem::getInstance()->getUser()->getLocale();
     }
     if ($currency_id === null) {
         $currency_id = $smarty->getVars('currency_id');
-        if (isset($currency_id->value)) {
-            $currency_id = $currency_id->value;
-        } else {
-            $currency_id = null;
-        }
     }
 
     if ($currency_id && $locale) {

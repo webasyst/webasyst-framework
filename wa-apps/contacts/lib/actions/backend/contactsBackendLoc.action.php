@@ -84,6 +84,7 @@ class contactsBackendLocAction extends waViewAction
             'Exclude contacts from category &ldquo;%s&rdquo;?',
             'Exclude contacts from list &ldquo;%s&rdquo;?',
             'Exclude',
+            'Select a master contact to which all other contacts will be merged',
         ) as $s) {
             $strings[$s] = _w($s);
         }

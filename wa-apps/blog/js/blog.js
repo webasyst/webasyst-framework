@@ -161,7 +161,7 @@ $.wa_blog = {
 		},
 		compileTemplates : function() {
 			var pattern = /<\\\/(\w+)/g;
-			var replace = '<\/$1';
+			var replace = '</$1';
 
 			$("script[type$='x-jquery-tmpl']").each(function() {
 				var id = $(this).attr('id').replace(/-template-js$/, '');

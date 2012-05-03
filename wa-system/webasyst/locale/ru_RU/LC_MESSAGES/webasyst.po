@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WebAsyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2012-04-11 17:06+0400\n"
+"PO-Revision-Date: 2012-04-26 18:22+0400\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -381,7 +381,7 @@ msgstr "Логин"
 msgid "Sign In"
 msgstr "Войти"
 
-msgid "Save and login"
+msgid "Save and log in"
 msgstr "Сохранить и войти"
 
 # countries
@@ -1426,10 +1426,6 @@ msgstr "показать на карте"
 msgid "logout"
 msgstr "выйти"
 
-#: /wa-system/webasyst/lib/actions/login/webasystLoginForgot.action.php:33
-msgid "Recovering password"
-msgstr "Восстановление пароля"
-
 #: /wa-system/webasyst/lib/actions/login/webasystLoginForgot.action.php:43
 msgid "Sorry, we can not recover password for this login name or email. Please refer to your system administrator."
 msgstr "Извините, мы не можем восстановить пароль для указанного логина или email адреса. Пожалуйста, обращайтесь к вашему системному администратору."
@@ -1439,15 +1435,15 @@ msgid "To recover your password please follow this link:"
 msgstr "Для восстановления пароля перейдите по ссылке:"
 
 #: /wa-system/webasyst/templates/mail/RecoveringPassword.html:4
-msgid "IMPORTANT NOTE: If you did not request your password recovery, it means that someone else was trying to login using your login name or email. For security purposes we recommend you to login your account now and change password."
+msgid "IMPORTANT NOTE: If you did not request your password recovery, someone else might be trying to log in using your email address. For security purposes we recommend you to log in to your account and to change your password."
 msgstr "ВАЖНО: Если вы не просили восстановить пароль, то значит кто-то другой пытался подключиться используя ваш логин или email. В целях безопасности мы рекомендуем вам зайти сейчас в ваш аккаунт и изменить пароль."
 
 #: /wa-system/webasyst/templates/actions/login/LoginPassword.html:57
-msgid "Create a new password"
+msgid "Enter a new password"
 msgstr "Новый пароль"
 
 #: /wa-system/webasyst/templates/actions/login/LoginPassword.html:65
-msgid "Confirm new password"
+msgid "Re-enter password"
 msgstr "Подтвердите пароль"
 
 #: /wa-system/webasyst/templates/actions/login/LoginFirst.html:49
@@ -1696,3 +1692,11 @@ msgstr "Сохранено"
 
 msgid "Refresh CAPTCHA"
 msgstr "Обновить капчу (CAPTCHA)"
+
+msgid "You have no permission to access this page."
+msgstr "У вас нет разрешения на доступ к данной странице."
+
+msgid "Please refer to your system administrator."
+msgstr "Пожалуйста, обратитесь к вашему системному администратору."
+
+
