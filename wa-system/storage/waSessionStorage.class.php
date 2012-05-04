@@ -30,7 +30,7 @@ class waSessionStorage extends waStorage
             'session_cookie_path'     => $cookie_defaults['path'],
             'session_cookie_domain'   => $cookie_defaults['domain'],
             'session_cookie_secure'   => $cookie_defaults['secure'],
-            'session_cookie_httponly' => isset($cookie_defaults['httponly']) ? $cookie_defaults['httponly'] : false,
+            'session_cookie_httponly' => true,
             'session_cache_limiter'   => 'none',
         ), $options);
 

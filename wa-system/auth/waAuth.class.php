@@ -113,7 +113,7 @@ class waAuth implements waiAuth
                 $response = waSystem::getInstance()->getResponse();
                 // if remember
                 if (waRequest::post('remember')) {
-                    $response->setCookie('auth_token', $this->getToken($user_info), time() + 2592000);
+                    $response->setCookie('auth_token', $this->getToken($user_info), time() + 2592000, null, '', false, true);
                     $response->setCookie('remember', 1);
                 } else {
                     $response->setCookie('remember', null, -1);
@@ -143,7 +143,7 @@ class waAuth implements waiAuth
             $this->checkBan($user_info);
             if ($user_info && ($user_info['is_user'] || !$this->options['is_user']) &&
                 $token === $this->getToken($user_info)) {
-                $response->setCookie('auth_token', $token, time() + 2592000);
+                $response->setCookie('auth_token', $token, time() + 2592000, null, '', false, true);
                 return $this->getAuthData($user_info);
             } else {
                 $response->setCookie('auth_token', null, -1);
@@ -196,7 +196,7 @@ class waAuth implements waiAuth
     {
         wa()->getStorage()->set('auth_user', $this->getAuthData($data));
         if (waRequest::cookie('auth_token')) {
-            wa()->getResponse()->setCookie('auth_token', $this->getToken($data), time() + 2592000);
+            wa()->getResponse()->setCookie('auth_token', $this->getToken($data), time() + 2592000, null, '', false, true);
         }
     }
 

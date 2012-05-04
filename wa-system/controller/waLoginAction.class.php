@@ -75,6 +75,9 @@ abstract class waLoginAction extends waViewAction
         $this->view->assign('background', $background);
 
         $this->view->assign('remember_enabled', $app_settings_model->get('webasyst', 'rememberme', 1));
+        if (waRequest::method() == 'get') {
+            $this->view->assign('remember', waRequest::cookie('remember'));
+        }
 
         $auth = $this->getAuth();
         $authorized = false;

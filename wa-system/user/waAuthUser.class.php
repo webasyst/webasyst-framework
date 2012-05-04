@@ -71,7 +71,7 @@ class waAuthUser extends waUser
         if ($page === $backend || substr($page, 0, strlen($backend)+1) === $backend.'?') {
             return;
         }
-        wa()->getResponse()->setCookie('last_page', $this->getId().'^^^'.$page);
+        wa()->getResponse()->setCookie('last_page', $this->getId().'^^^'.$page, null, null, '', false, true);
     }
     
     public function getLastPage() 
