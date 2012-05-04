@@ -1,0 +1,36 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: blog/plugins/troll\n"
+"POT-Creation-Date: 2012-05-04 15:32+0400\n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: blog/plugins/troll\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Language: en_US\n"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-Basepath: .\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPath-1: .\n"
+
+#: /wa-apps/blog/plugins/troll/lib/config/plugin.php:4
+msgid "Troll"
+msgstr ""
+
+#: /wa-apps/blog/plugins/troll/lib/blogTroll.plugin.php:15
+msgid "Troll!"
+msgstr ""
+
+#: /wa-apps/blog/plugins/troll/lib/config/plugin.php:5
+msgid "Mark selected users with a troll face"
+msgstr ""
+
+#: /wa-apps/blog/plugins/troll/lib/config/plugin.php:12
+msgid "A list defining troll search criteria (each line of the textarea defines a criteria). If any of the criteria match commentator's email, name or site URL, a troll face is shown.<br /><br />Example:<br /><em>koe9s@gmail.com<br />unwanteddomain.com<br />Alxs29<br />@troll.com</em>"
+msgstr ""
+
+#: /wa-apps/blog/plugins/troll/lib/config/plugin.php:11
+msgid "Troll list"
+msgstr ""
+

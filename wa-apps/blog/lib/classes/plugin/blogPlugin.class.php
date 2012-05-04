@@ -37,7 +37,8 @@ class blogPlugin extends waPlugin
         }
         foreach ($this->settings as $param=>$setting) {
             if (!isset($setting['name'])) {
-                $this->settings[$param]['name'] = $param;
+                //TODO check it
+                //$this->settings[$param]['name'] = $param;
             }
         }
         return $this->settings;
@@ -115,7 +116,7 @@ class blogPlugin extends waPlugin
             $params['id'] = $this->app_id.'_'.$this->id;
             return $this->settings->getControl($this->settings_fields[$field]['settings_html_function'],$field,$params);
         } else {
-            throw new InvalidArgumentException(sprintf('The settings of "%s" has no "%s" setting.', get_class($this), $field));
+            waLog::log(sprintf('The settings of "%s" has no "%s" setting.', get_class($this), $field));
         }
 
     }

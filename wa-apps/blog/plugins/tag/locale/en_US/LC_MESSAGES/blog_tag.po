@@ -1,0 +1,44 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: blog/plugins/tag\n"
+"POT-Creation-Date: 2012-04-17 16:55+0400\n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: blog/plugins/tag\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Language: en_US\n"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-Basepath: .\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPath-1: .\n"
+
+#: /wa-apps/blog/plugins/tag/lib/config/plugin.php:5
+msgid "Tags"
+msgstr ""
+
+#: /wa-apps/blog/plugins/tag/templates/actions/backend/BackendEdit.html:11
+msgid "Assign tags"
+msgstr ""
+
+#: /wa-apps/blog/plugins/tag/templates/actions/backend/BackendEdit.html:13
+msgid "Separate tags with a comma (,)."
+msgstr ""
+
+#: /wa-apps/blog/plugins/tag/lib/blogTag.plugin.php:40
+msgid "Tag"
+msgstr ""
+
+#: /wa-apps/blog/plugins/tag/lib/config/plugin.php:6
+msgid "Assign tags to posts"
+msgstr ""
+
+#: /wa-apps/blog/plugins/tag/templates/actions/backend/BackendEdit.html:7
+msgid "Add a tag"
+msgstr ""
+
+#: /wa-apps/blog/plugins/tag/lib/blogTag.plugin.php:39
+msgid "Tagged %s"
+msgstr "Tagged “%s”"
+

@@ -17,18 +17,18 @@ $.blog.oauth = function (provider) {
 <div class="post" role="main" id="post-{$post.id}">
 	<h1 itemprop="name">
 		{$post.title|default:'[`(empty title)`]'|escape}
+		
+		{* @event prepare_posts_frontend.%plugin_id%.post_title *}
 		{if isset($post.plugins) && isset($post.plugins.post_title) && $post.plugins.post_title}
-
-			{* @event prepare_posts_frontend.%plugin_id%.post_title *}
 			<!-- plugin hook: "prepare_posts_frontend.*.post_title" -->
 			{foreach from=$post.plugins.post_title item=output key=plugin}
-
 				<!-- begin "prepare_posts_frontend.{$plugin}.post_title" -->
 				{$output}
 				<!-- end "prepare_posts_frontend.{$plugin}.post_title" -->
 			{/foreach}
 			<!-- end plugin hook: "prepare_posts_frontend.*.post_title" -->
 		{/if}
+		
 	</h1>
 	<div class="credentials">
 		{if $post.contact_id}
@@ -45,13 +45,11 @@ $.blog.oauth = function (provider) {
 		<span class="hint date" title="{$post.datetime|wa_datetime}" itemprop="datePublished" datetime="{$post.datetime|date_format:'Y-m-d\TH:m'}">{$post.datetime|wa_datetime:"humandate"}</span>
 	</div>
 
+	{* @event prepare_posts_frontend.%plugin_id%.before *}
 	{if isset($post.plugins) && isset($post.plugins.before) && $post.plugins.before}
 		<div class="text_before">
-
-			{* @event prepare_posts_frontend.%plugin_id%.before *}
 			<!-- plugin hook: "prepare_posts_frontend.*.before" -->
 			{foreach from=$post.plugins.before item=output key=plugin}
-
 				<!-- begin "prepare_posts_frontend.{$plugin}.before" -->
 				{$output}
 				<!-- end "prepare_posts_frontend.{$plugin}.before" -->
@@ -68,13 +66,11 @@ $.blog.oauth = function (provider) {
 		{/if}
 	</div>
 
+	{* @event prepare_posts_frontend.%plugin_id%.after *}
 	{if isset($post.plugins) && isset($post.plugins.after) && $post.plugins.after}
-		<div class="text_after">
-
-			{* @event prepare_posts_frontend.%plugin_id%.after *}
+		<div class="text_after">			
 			<!-- plugin hook: "prepare_posts_frontend.*.after" -->
 			{foreach from=$post.plugins.after item=output key=plugin}
-
 				<!-- begin "prepare_posts_frontend.{$plugin}.after" -->
 				{$output}
 				<!-- end "prepare_posts_frontend.{$plugin}.after" -->
@@ -82,6 +78,7 @@ $.blog.oauth = function (provider) {
 			<!-- end plugin hook: "prepare_posts_frontend.*.after" -->
 		</div>
 	{/if}
+	
 </div>
 
 {* @event frontend_post.%plugin_id%.footer *}

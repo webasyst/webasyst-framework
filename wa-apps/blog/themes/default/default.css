@@ -216,12 +216,6 @@ div.wa-captcha .errormsg { display: inline; margin-left: 10px; }
 
 /* Plugins
 ---------- */
-/*
 
-#tags { text-align: center; }
-
-.icon16.facebook { background-image: url("img/facebook.png");  }
-.icon16.twitter { background-image: url("img/twitter.png");  }
-.icon16.livejournal { background-image: url("img/livejournal.png");  }
-.icon16.loading { background-image: url("../../../../wa-content/img/loading16.gif"); }
-*/
+.tags a { color: green; }
+.tags.cloud { text-align: center; font-size: 0.9em; padding-top: 20px; margin-top: 30px; border-top: 1px solid #ccc; }

@@ -50,8 +50,6 @@ class blogFrontendAction extends blogViewAction
             }
         }
 
-        $this->setThemeTemplate('stream.html');
-
         switch ($this->layout_type) {
             case 'lazyloading': {
                 break;
@@ -61,6 +59,8 @@ class blogFrontendAction extends blogViewAction
                 break;
             }
         }
+
+        $this->setThemeTemplate('stream.html');
 
         return $this;
     }
@@ -114,6 +114,8 @@ class blogFrontendAction extends blogViewAction
             }
             $this->getResponse()->setTitle($name);
             $stream_title =sprintf(_w('Posts by %s'),$name);
+        } elseif ($annotation_only) {
+            $stream_title = $this->getResponse()->getTitle();
         }
         $this->view->assign('stream_title', $stream_title);
 

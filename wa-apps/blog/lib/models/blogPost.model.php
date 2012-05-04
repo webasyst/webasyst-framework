@@ -867,7 +867,7 @@ SQL;
 					'id' => $data['id']
                 ));
             } else {
-                if (isset($options['transliterate']) && $options['transliterate']) {
+                if (isset($options['transliterate']) && $options['transliterate'] && !$data['url'] && $data['title']) {
                     $data['url'] = blogHelper::transliterate($data['title']);
                 }
                 $url_validator = new blogSlugValidator();

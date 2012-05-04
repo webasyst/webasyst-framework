@@ -86,14 +86,27 @@
 
 {/if}
 
-	<!-- plugin hook: "frontend_action_{$action}.sidebar" -->
+	{*
+		@event frontend_action_default.%plugin_id%.sidebar
+		@event frontend_action_post.%plugin_id%.sidebar
+		@event frontend_action_page.%plugin_id%.sidebar
+		@event frontend_action_error.%plugin_id%.sidebar
+	*}
+	<!-- begin plugin hook: "{$action}.sidebar" -->
 	{foreach from=$frontend_action item=output key=plugin}
 		{if is_array($output) && isset($output.sidebar)}
 
-			<!-- begin {$plugin} -->{$output.sidebar}<!-- end {$plugin} -->
+		<!-- begin {$plugin} -->
+		{if is_array($output.sidebar)}
+			{include file="string:`$output.sidebar.template`" var=$output.sidebar}
+		{else}
+			{$output.sidebar}
+		{/if}
+
+		<!-- end {$plugin} -->
 		{/if}
 	{/foreach}
-
+	<!-- end plugin hook: "{$action}.sidebar" -->
 
 {if $action eq post}
 	<!-- plugin hook: frontend_sidebar.post -->

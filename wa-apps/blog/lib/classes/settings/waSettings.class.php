@@ -118,7 +118,7 @@ abstract class waSettings implements Countable, ArrayAccess, Iterator, Serializa
                             if (class_exists($class)&&in_array('waSettingWrapper',class_parents($class))) {
                                 $value = $value->store();
                             } else {
-                                throw new waException(sprintf('Invalid setting class %s for setting %s at %s',get_class($value),$name,$this->name));
+                                waLog::log(sprintf('Invalid setting class %s for setting %s at %s',get_class($value),$name,$this->name));
                             }
                         }
                         if (is_array($value)) {
@@ -309,7 +309,9 @@ abstract class waSettings implements Countable, ArrayAccess, Iterator, Serializa
             } elseif (isset($this->settingsParams[$name])&&isset($this->settingsParams[$name]['settings_value'])) {
                 $this->settings[$name] = $this->settingsParams[$name]['settings_value'];
             } else {
-                throw new InvalidArgumentException(sprintf('The settings of "%s" has no "%s" setting.', $this->name, $name));
+                //XXX check it
+                // delete settings from storage
+                $this->offsetUnset($name);
             }
 
             if (isset($this->settingsParams[$name]['settings_object'])) {

@@ -843,7 +843,15 @@ msgstr ""
 msgid "Post URLs: <strong>%s</strong>"
 msgstr ""
 
-#: /wa-apps/blog/themes/default/post.html:178
-msgid "Refresh CAPTCHA"
+#: /wa-apps/blog/templates/actions/plugins/Plugins.html:89
+msgid "Plugin %s is installed and working."
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/plugins/Plugins.html:92
+msgid "No configuration options are available for this plugin."
+msgstr ""
+
+#: /wa-apps/blog/lib/actions/plugins/blogPlugins.action.php:61
+msgid "Plugin %s settings"
 msgstr ""
 

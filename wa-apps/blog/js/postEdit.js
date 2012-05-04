@@ -680,6 +680,9 @@
 
 							inline = false;
 							updateStatusIcon('');
+						},
+						error: function(jqXHR, textStatus, errorThrown) {
+							//TODO
 						}
 					});
 				}
@@ -969,6 +972,21 @@
 			}
 		},
 		onSubmit: function() {
+
+			var blog = $.wa_blog;
+			for (var i in blog) {
+				if (i != 'editor') {
+					if (blog[i].onSubmit && (typeof(blog[i].onSubmit) == 'function')) {
+						try {
+							blog[i].onSubmit();
+						} catch (e) {
+							if (typeof(console) == 'object') {
+								console.log(e);
+							}
+						}
+					}
+				}
+			}
 
 			var textarea = $("#" + this.options['content_id']);
 

@@ -1,35 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE theme PUBLIC "wa-app-theme" "http://www.webasyst.com/wa-content/xml/wa-app-theme.dtd">
 <theme id="default" system="1" vendor="webasyst" app="blog">
-	<name locale="en_US">Default</name>
-	<name locale="ru_RU">Основная тема</name>
-	<files>
-		<file path="index.html" custom="0">
-			<description locale="en_US">Common blog layout</description>
-		</file>
-		<file path="sidebar.html" custom="0">
-			<description locale="en_US">Common blog sidebar</description>
-		</file>
-		<file path="stream.html" custom="0">
-			<description locale="en_US">Post stream</description>
-		</file>
-		<file path="post.html" custom="0">
-			<description locale="en_US">Post page</description>
-		</file>
-		<file path="comments.html" custom="0">
-			<description locale="en_US">Post comment list</description>
-		</file>
-		<file path="error.html" custom="0">
-			<description locale="en_US">404 and other errors</description>
-		</file>
-		<file path="stream.html" custom="0">
-			<description locale="en_US">Post stream</description>
-		</file>
-		<file path="default.css" custom="0">
-			<description locale="en_US">CSS for common desktop and laptop computers</description>
-		</file>
-		<file path="mobile.css" custom="0">
-			<description locale="en_US">CSS for multi-touch mobile devices</description>
-		</file>
-	</files>
+    <name locale="en_US">Default</name>
+    <name locale="ru_RU">Основная тема</name>
+    <files>
+        <file path="index.html" custom="0">
+            <description locale="en_US">Common blog layout</description>
+        </file>
+        <file path="sidebar.html" custom="0">
+            <description locale="en_US">Common blog sidebar</description>
+        </file>
+        <file path="stream.html" custom="0">
+            <description locale="en_US">Post stream</description>
+        </file>
+        <file path="post.html" custom="0">
+            <description locale="en_US">Post page</description>
+        </file>
+        <file path="page.html" custom="0">
+            <description locale="en_US">Single page</description>
+        </file>
+        <file path="comments.html" custom="0">
+            <description locale="en_US">Post comment list</description>
+        </file>
+        <file path="error.html" custom="0">
+            <description locale="en_US">404 and other errors</description>
+        </file>
+        <file path="stream.html" custom="0">
+            <description locale="en_US">Post stream</description>
+        </file>
+        <file path="default.css" custom="0">
+            <description locale="en_US">CSS for common desktop and laptop computers</description>
+        </file>
+        <file path="mobile.css" custom="0">
+            <description locale="en_US">CSS for multi-touch mobile devices</description>
+        </file>
+    </files>
 </theme>

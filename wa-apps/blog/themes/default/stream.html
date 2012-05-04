@@ -28,9 +28,9 @@
 		<div class="post" id="post-{$post.id}" {if $is_concrete_blog}itemprop="blogPosts"{/if} itemscope itemtype="http://schema.org/BlogPosting">
 			<h3>
 				<a href="{$post.link}" itemprop="url">{$post.title|default:'[`(empty title)`]'|escape}</a>
-				{if isset($post.plugins) && isset($post.plugins.post_title) && $post.plugins.post_title}
 
-					{* @event prepare_posts_frontend.%plugin_id%.post_title *}
+				{* @event prepare_posts_frontend.%plugin_id%.post_title *}
+				{if isset($post.plugins) && isset($post.plugins.post_title) && $post.plugins.post_title}
 					<!-- plugin hook: "prepare_posts_frontend.*.post_title" -->
 					{foreach from=$post.plugins.post_title item=output key=plugin}
 
@@ -40,6 +40,7 @@
 					{/foreach}
 					<!-- end plugin hook: "prepare_posts_frontend.*.post_title" -->
 				{/if}
+
 			</h3>
 			<div class="credentials">
 
@@ -67,13 +68,11 @@
 
 			</div>
 
+			{* @event prepare_posts_frontend.%plugin_id%.before *}
 			{if isset($post.plugins) && isset($post.plugins.before) && $post.plugins.before}
 				<div class="text_before">
-
-					{* @event prepare_posts_frontend.%plugin_id%.before *}
 					<!-- plugin hook: "prepare_posts_frontend.*.before" -->
 					{foreach from=$post.plugins.before item=output key=plugin}
-
 						<!-- begin "prepare_posts_frontend.{$plugin}.before" -->
 						{$output}
 						<!-- end "prepare_posts_frontend.{$plugin}.before" -->
@@ -81,6 +80,7 @@
 					<!-- end plugin hook: "prepare_posts_frontend.*.before" -->
 				</div>
 			{/if}
+
 			<div class="text">
 				{if $can_use_smarty}
 					{include file="string:`$post.text`"}
@@ -92,13 +92,11 @@
 				{/if}
 			</div>
 
+			{* @event prepare_posts_frontend.%plugin_id%.after *}
 			{if isset($post.plugins) && isset($post.plugins.after) && $post.plugins.after}
 				<div class="text_after">
-
-					{* @event prepare_posts_frontend.%plugin_id%.after *}
 					<!-- plugin hook: "prepare_posts_frontend.*.after" -->
 					{foreach from=$post.plugins.after item=output key=plugin}
-
 						<!-- begin "prepare_posts_frontend.{$plugin}.after" -->
 						{$output}
 						<!-- end "prepare_posts_frontend.{$plugin}.after" -->
@@ -106,6 +104,7 @@
 					<!-- end plugin hook: "prepare_posts_frontend.*.after" -->
 				</div>
 			{/if}
+
 		</div>
 		{/if}
 

@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: blog\n"
 "POT-Creation-Date: 2011-11-11 13:35+0300\n"
 "PO-Revision-Date: \n"
-"Last-Translator: \n"
+"Last-Translator: Vladimir V. Tuporshin <vofka@webasyst.net>\n"
 "Language-Team: blog\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
@@ -391,7 +391,7 @@ msgstr "Показать предыдущие комментарии"
 
 #: /wa-apps/blog/templates/actions/comments/include.comment.html:20
 msgid "on"
-msgstr "вкл"
+msgstr "к записи"
 
 #: /wa-apps/blog/templates/actions/comments/include.comment.html:24
 msgid "unpublished post"
@@ -832,9 +832,6 @@ msgstr "Может редактировать страницы"
 msgid "Protect comment submit form with CAPTCHA"
 msgstr "Защита формы добавления комментария <em>капчей</em> (CAPTCHA)"
 
-msgid "Refresh"
-msgstr "Обновить"
-
 #: /wa-apps/blog/lib/actions/frontend/blogFrontendComment.controller.php:122
 msgid "Invalid captcha code"
 msgstr "Неверный код CAPTCHA"
@@ -847,7 +844,15 @@ msgstr "Неверный провайдер авторизации"
 msgid "Invalid auth provider data"
 msgstr "Неверные данные провайдера авторизации"
 
-#: /wa-apps/blog/themes/default/post.html:178
-msgid "Refresh CAPTCHA"
-msgstr "Обновить CAPTCHA"
+#: /wa-apps/blog/templates/actions/plugins/Plugins.html:89
+msgid "Plugin %s is installed and working."
+msgstr "Плагин «%s» установлен и работает."
+
+#: /wa-apps/blog/templates/actions/plugins/Plugins.html:92
+msgid "No configuration options are available for this plugin."
+msgstr "Этот плагин не предоставляет возможность изменения настроек."
+
+#: /wa-apps/blog/lib/actions/plugins/blogPlugins.action.php:61
+msgid "Plugin %s settings"
+msgstr "Настройки плагина «%s»"
 

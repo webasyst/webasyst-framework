@@ -15,6 +15,9 @@
 		{else}
 			{$smarty.capture.commentor_name}
 		{/if}
+		{if !$comment.contact_id && $comment.email}
+			<span class="hint">{$comment.email|escape}</span>
+		{/if}
 
 		{if isset($comment.plugins) && isset($comment.plugins.authorname_suffix) && $comment.plugins.authorname_suffix}
 

@@ -1,0 +1,48 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: blog/plugins/akismet\n"
+"POT-Creation-Date: 2012-04-28 16:12+0400\n"
+"PO-Revision-Date: \n"
+"Last-Translator: Vladimir V. Tuporshin <vofka@webasyst.net>\n"
+"Language-Team: blog/plugins/akismet\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Language: en_US\n"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-Basepath: .\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPath-1: .\n"
+
+#: /wa-apps/blog/plugins/akismet/lib/blogAkismet.plugin.php:42
+msgid "mark as spam"
+msgstr ""
+
+#: /wa-apps/blog/plugins/akismet/lib/blogAkismet.plugin.php:31
+msgid "According to Akismet.com, your comment very much looks like spam, thus will not be published. Please rewrite your comment. Sorry for the inconvenience."
+msgstr ""
+
+#: /wa-apps/blog/plugins/akismet/lib/config/plugin.php:5
+msgid "Akismet"
+msgstr ""
+
+#: /wa-apps/blog/plugins/akismet/lib/config/plugin.php:6
+msgid "Anti-spam comment fitering powered by Akismet.com"
+msgstr ""
+
+#: /wa-apps/blog/plugins/akismet/lib/config/plugin.php:12
+msgid "Akismet API Key"
+msgstr ""
+
+#: /wa-apps/blog/plugins/akismet/lib/config/plugin.php:13
+msgid "Get an API key for your domain at <a target=\"_blank\" href=\"%s\">Akismet website</a>"
+msgstr ""
+
+#: /wa-apps/blog/plugins/akismet/lib/config/plugin.php:18
+msgid "Report spam"
+msgstr ""
+
+#: /wa-apps/blog/plugins/akismet/lib/config/plugin.php:19
+msgid "Send comments marked as spam to Akismet server"
+msgstr ""
+
