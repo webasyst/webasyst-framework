@@ -814,7 +814,7 @@
 								'<li>' +
 									'<a href="#" onclick="$.wa.controller.addToListDialog(); return false"><i class="icon16 add-to-list"></i>'+$_('Add to list')+'</a>' +
 								'</li>' : '') +
-							($.wa.controller.contactsMerge ?
+							(($.wa.controller.contactsMerge && $.wa.controller.admin) ?
 								'<li>' +
 									'<a href="#" onClick="$.wa.controller.contactsMerge(); return false"><i class="icon16 merge"></i>'+$_('Merge')+'</a>' +
 								'</li>' : '') +

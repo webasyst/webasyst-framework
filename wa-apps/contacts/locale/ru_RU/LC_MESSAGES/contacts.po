@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WebAsyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2012-05-02 19:40+0400\n"
+"PO-Revision-Date: 2012-05-21 17:59+0400\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -829,4 +829,10 @@ msgstr "Неправильный действующий пароль"
 
 msgid "Select a master contact to which all other contacts will be merged"
 msgstr "Выберите главный контакт, в который объединить все остальные"
+
+msgid "Users can not be merged into other contacts."
+msgstr "Пользователи не могут быть объединены в другой контакт."
+
+msgid "Email %s is successfully confirmed."
+msgstr "Адрес %s успешно подтверждён."
 
