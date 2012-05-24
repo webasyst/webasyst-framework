@@ -90,12 +90,15 @@ class waDbResultSelect extends waDbResult implements IteratorAggregate
      */
     public function fetchField($field = false, $seek = false)
     {
-        /* Seek to the need position */
+        // Seek to the need position
         if ($seek !== false) {
             $this->iterator->seek($seek);
         }
         
         $data   = $this->iterator->fetch();
+        if (!$data) {
+            return false;
+        }
         // if field not specified then return first element
         if (!$field && is_array($data)) {
             return array_shift($data);

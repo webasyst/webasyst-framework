@@ -12,7 +12,7 @@
  * @package wa-system
  * @subpackage currency
  */
-class waCurrency 
+class waCurrency
 {
 
     public static function getInfo($currency)
@@ -92,51 +92,68 @@ class waCurrency
         return $result;
     }
 
+    /**
+     * Format amount according to currency settings and current locale settings.
+     *
+     * TODO: document format string specifications. For now, see unit tests for some usage clues.
+     *
+     * @param string $format
+     * @param float $n amount to format
+     * @param string $currency 3-letter iso code
+     * @param string $locale
+     */
     public static function format($format, $n, $currency, $locale = null)
     {
+        $old_locale = waSystem::getInstance()->getLocale();
         if ($locale === null) {
-            $locale = waSystem::getInstance()->getLocale();
+            $locale = $old_locale;
         }
         $currency = waCurrency::getInfo($currency);
-        if ($format == 'w' || $format == 'W') {
+        if ($format == '%w' || $format == '%W') {
+            if ($locale !== $old_locale) {
+                wa()->setLocale($locale);
+            }
             waLocale::loadByDomain('webasyst', $locale);
         }
         $locale = waLocale::getInfo($locale);
-        return preg_replace('/%(\.?[0-9]?)([w]?)({[n|f|c|s][0-9]?})?/ie', 'self::extract($n, $currency, $locale, "$1", "$2", "$3")', $format);
+        $result = preg_replace('/%(\.?[0-9]?)([w]?)({[n|f|c|s][0-9]?})?/ie', 'self::extract($n, $currency, $locale, "$1", "$2", "$3")', $format);
+        if ($locale !== $old_locale) {
+            wa()->setLocale($old_locale);
+        }
+        return $result;
     }
 
     protected static function extract($n, $currency, $locale, $precision, $format, $desc)
     {
         $result = '';
 
-        $precision = explode('.', $precision);
-        if (!isset($precision[1])) {
-
-        } elseif ($precision[0] === '' && $precision[1] === '') {
-            $n = (int)$n;
-        } elseif ($precision[0] === '') {
-            $n = round($n, $precision[1]);
-            $n = str_replace(',', '.', $n);
-            if (($i = strpos($n, '.')) !== false) {
-                $n = substr($n, $i + 1, $precision[1]);
+        // Number of fractional digits to show
+        $precision_arr = explode('.', $precision);
+        if ($precision_arr[0] !== '' || !isset($precision_arr[1])) {
+            // Bad syntax. Fall back to locale defaults.
+            $precision = $locale['frac_digits'];
+        } else {
+            if ($precision_arr[1] === '') {
+                // Special syntax to show integer value formatted as a float
+                $n = round($n);
+                $precision = $locale['frac_digits'];
             } else {
-                $n = 0;
-            }
-            while (strlen($n) < 2) {
-                $n .= '0';
+                // Use specified precision, overriding the default locale settings
+                $precision = (int) $precision_arr[1];
             }
         }
 
         if ($format == 'w' || $format == 'W') {
+            // Amount in words.
+            // TODO: currently only works for integers.
+            $n = round($n);
             $params = isset($locale['amount_in_words']) ? $locale['amount_in_words'] : array();
             $result = self::getIntInWords($n, $params);
             if ($format == 'W') {
                 $result = mb_strtoupper(mb_substr($result, 0, 1)).mb_substr($result, 1);
             }
-        } elseif ($precision[0] === '' && !isset($precision[1])) {
-            $result = number_format($n, $locale['frac_digits'], $locale['decimal_point'], $locale['thousands_sep']);
         } else {
-            $result = $n;
+            $result = number_format($n, $precision, $locale['decimal_point'], $locale['thousands_sep']);
         }
 
         if (!isset($currency['position'])) {

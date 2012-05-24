@@ -203,12 +203,18 @@ class waRequest
         }
     }
 
-    public static function getIp()
+    public static function getIp($get_as_int = false)
     {
         if (getenv('HTTP_X_FORWARDED_FOR')) {
             $ip = getenv('HTTP_X_FORWARDED_FOR');
         } else {
             $ip = getenv('REMOTE_ADDR');
+        }
+        if ($get_as_int) {
+            $ip = ip2long($ip);
+            if ($ip > 2147483647) {
+              $ip -= 4294967296;
+            }
         }
         return $ip;
     }

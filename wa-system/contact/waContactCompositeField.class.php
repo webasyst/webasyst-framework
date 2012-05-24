@@ -96,7 +96,21 @@ class waContactCompositeField extends waContactField
             }
             $data['value'] = implode("<br>\n", $value);
         }
-        return parent::format($data, $format);
+
+        if ($format == 'html') {
+            // Override logic for this format to avoid double htmlspecialchars()
+            $result = $data['value'];
+            if ($this->isMulti() && !empty($data['ext'])) {
+                $ext = $data['ext'];
+                if (isset($this->options['ext'][$ext])) {
+                    $ext = _ws($this->options['ext'][$ext]);
+                }
+                $result .= ' <em class="hint">'.htmlspecialchars($ext).'</em>';
+            }
+            return $result;
+        } else {
+            return parent::format($data, $format);
+        }
     }
 
     /**

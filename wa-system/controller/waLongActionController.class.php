@@ -44,7 +44,7 @@
  * for this class to be able to keep it's guarantees.
  * Reasonably small = no more than 10% of max execution time for each transaction.
  *
- * Controller's entry point for this class expects a 'processid' get or post parameter.
+ * Controller's entry point for this class expects a 'processId' get or post parameter.
  * It then becomes available as $this->processId. If id is not given in request,
  * a new process is started and $this->info() is responsible for returning id to user
  * for subsequent operations. $this->newProcess indicates whether this
@@ -182,9 +182,11 @@ abstract class waLongActionController extends waController
         // It doesn't always work, but it doesn't hurt either.
         @set_time_limit(0);
 
-        $this->_processId = waRequest::get('processid');
-        if (!$this->_processId) {
-            $this->_processId = waRequest::post('processid');
+        // Get processId from GET/POST parameters
+        foreach(array('processId', 'processid') as $field) {
+            if ( ( $this->_processId = waRequest::request($field))) {
+                break;
+            }
         }
 
         if (!$this->processId) {
@@ -229,6 +231,9 @@ abstract class waLongActionController extends waController
         $continue = !$this->_newProcess;
 
         $this->_lastSaveTime = explode(' ', microtime());
+        if (!$continue) {
+            $this->_save();
+        }
         $this->_transaction = true;
         while($continue && !$this->isDone()) {
             $continue = $this->step();

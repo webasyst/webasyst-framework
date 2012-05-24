@@ -75,7 +75,7 @@ class waViewHelper
     }
 
 
-    public function user($field=null, $format=null)
+    public function user($field=null, $format='html')
     {
         $user = $this->wa->getUser();
         if ($field !== null) {
@@ -95,16 +95,18 @@ class waViewHelper
         return $this->locale();
     }
 
-    public function appName()
+    public function appName($escape = true)
     {
         $app_info = $this->wa->getAppInfo();
-        return $app_info['name'];
+        $name = $app_info['name'];
+        return $escape ? htmlspecialchars($name) : $name;
     }
 
-    public function accountName()
+    public function accountName($escape = true)
     {
         $app_settings_model = new waAppSettingsModel();
-        return $app_settings_model->get('webasyst', 'name', 'Webasyst');
+        $name = $app_settings_model->get('webasyst', 'name', 'Webasyst');
+        return $escape ? htmlspecialchars($name) : $name;
     }
 
     public function module($default = null)

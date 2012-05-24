@@ -55,7 +55,7 @@ class waGettextParser
         if ($this->config['project'] == 'webasyst') {
             $function_pattern = '_ws';
         } elseif (strpos($this->config['project'],'plugins')) {
-            $function_pattern = '_wp';
+            $function_pattern = '_wp\*?\/?';
         } else {
             $function_pattern = '_w';
         }

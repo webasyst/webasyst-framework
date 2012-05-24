@@ -20,6 +20,11 @@ class waPlugin
 
         $this->checkUpdates();
     }
+
+    public function getName()
+    {
+        return $this->info['name'];
+    }
     
     protected function checkUpdates()
     {

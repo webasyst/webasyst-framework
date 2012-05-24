@@ -169,7 +169,8 @@ abstract class waController
     {
         if ($custom) {
             $path = $this->getConfig()->getPath('config').'/apps/'.$this->getApp().'/'.$name;
-            return waFiles::create($path);
+            waFiles::create($path);
+            return $path;
         } else {
             $path = $this->getConfig()->getAppPath('lib/config/'.$name);
         }

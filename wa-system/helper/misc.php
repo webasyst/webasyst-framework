@@ -104,9 +104,9 @@ function wa_print_r_helper($value, $level = 0)
     return $str;
 }
 
-function wa_make_pattern($string, $separator = '\\')
+function wa_make_pattern($string, $separator = '/')
 {
-    $metacharacters = array('?','+','*','.','(',')','[',']','{','}','<','>','^','$','@');
+    $metacharacters = array('?','+','*','.','(',')','[',']','{','}','<','>','^','$');
     $metacharacters[] = $separator;
     foreach($metacharacters as &$char){
         $char = "\\{$char}";

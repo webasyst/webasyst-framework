@@ -157,13 +157,18 @@ $.wa = $.extend(true, $.wa, {
 		}
 
 		if (p.url) {
-			$.post(p.url, p.post, function (response) {
-				dialog.find('.dialog-content-indent').html(response);
-				$.wa.waCenterDialog(dialog);
-				if (p.onload) {
-					p.onload.call(dialog[0]);
-				}
-			});
+            var f_callback = function (response) {
+                dialog.find('.dialog-content-indent').html(response);
+                $.wa.waCenterDialog(dialog);
+                if (p.onload) {
+                    p.onload.call(dialog[0]);
+                }
+            };
+            if (p.post) {
+			    $.post(p.url, p.post, f_callback);
+            } else {
+                $.get(p.url, f_callback);
+            }
 		}
 
 		this.waCenterDialog(dialog);
@@ -307,13 +312,13 @@ $(document).ajaxSend(function (event, xhr, settings) {
 		var matches = document.cookie.match(new RegExp("(?:^|; )_csrf=([^;]*)"));
 		var csrf = matches ? decodeURIComponent(matches[1]) : '';
 		if (settings.data === null ) {
-			settings.data = {};
+			settings.data = '';
 		}
 		if (typeof(settings.data) == 'string') {
 			if (settings.data.indexOf('_csrf=') == -1) {
 				settings.data += (settings.data.length > 0 ? '&' : '') + '_csrf=' + csrf;
 			}
-		} else {
+        } else if (typeof(settings.data) == 'object') {
 			settings.data['_csrf'] = csrf;
 		}
 	}

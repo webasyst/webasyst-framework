@@ -294,7 +294,8 @@ class waSystemConfig
         }
         if ($user_config) {
             $path = $this->getPath('config').'/apps/'.$app.'/'.$name;
-            return waFiles::create($path);
+            waFiles::create($path);
+            return $path;
         } else {
             return $this->getPath('apps').'/'.$app.'/lib/config/'.$name;
         }

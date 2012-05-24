@@ -107,7 +107,7 @@ class waMailDecode
                     $v = str_replace('_', ' ', $v);
                 }
             } elseif ($h == 'date') {
-                $v = preg_replace("/[^a-z0-9:,\.\s\t\+]/i", '', $v);
+                $v = preg_replace("/[^a-z0-9:,\.\s\t\+-]/i", '', $v);
                 $v = date("Y-m-d H:i:s", strtotime($v));
             } elseif ($h == 'to' || $h == 'cc') {
                 $parser = new waMailAddressParser($v);
@@ -176,6 +176,7 @@ class waMailDecode
     {
         // body only
         $html = preg_replace("!^.*?<body[^>]*>(.*?)</body>.*?$!isu", "$1", $html);
+
         // remove tags
         $html = trim(strip_tags($html, "<a><p><div><br><b><blockquote><strong><i><em><s><u><span><img><sup><font><sub><ul><ol><li><h1><h2><h3><h4><h5><h6><table><tr><td><th><hr><center>"));
         // realign javascript href to onclick
@@ -195,7 +196,7 @@ class waMailDecode
             $html = preg_replace($pattern, "<$1$3$4$5>", $html);
         }
         // remove all on* events
-        $pattern = "/<(.*)?[\s\r\n\t]on.+?=?\s?.+?(['\"]).*?\\2\s?(.*)?>/i";
+        $pattern = "/<([^>]*)?[\s\r\n\t]on.+?=?\s?.+?(['\"]).*?\\2\s?(.*)?>/i";
         while (preg_match($pattern, $html)) {
            $html = preg_replace($pattern, "<$1$3>", $html);
         }
@@ -339,6 +340,9 @@ class waMailDecode
                     // other parts
                     $boundary = "\n--".$this->parts[$this->part['parent']]['params']['boundary'];
                     if (($i = strpos($this->buffer, $boundary, $this->buffer_offset)) === false) {
+                        if ($this->is_last) {
+                            $this->state = self::STATE_END;
+                        }
                         // need more data
                         return false;
                     }
@@ -396,12 +400,15 @@ class waMailDecode
                     $this->part['headers']['date'] = strtok('');
                 } elseif (strpos($part['value'], "\n") === false) {
                     if ($part['value'] || !isset($this->part['headers'][$this->current_header])) {
+                        if ($this->current_header == 'content-transfer-encoding') {
+                            $part['value'] = strtolower($part['value']);
+                        }
                         $this->part['headers'][$this->current_header] = $part['value'];
                     }
                 } else {
                     $this->part['headers'][$this->current_header] = array(trim(strtok($part['value'], "\n")));
                     while (($value = strtok("\n")) !== false) {
-                        $this->part['headers'][$this->current_header][] = rtrim($value);
+                        $this->part['headers'][$this->current_header][] = ltrim(rtrim($value), "\t");
                     }
                 }
                 break;
@@ -484,16 +491,22 @@ class waMailDecode
                         }
 
                         if (isset($this->part['params']['charset']) && strtolower($this->part['params']['charset']) != 'utf-8') {
-                            $this->part['data'] = @iconv($this->part['params']['charset'], "utf-8", $this->part['data']);
+                            $this->part['data'] = @iconv($this->part['params']['charset'], "utf-8//IGNORE", $this->part['data']);
                         } else {
                             $charset = mb_detect_encoding($this->part['data']);
-                            if ($charset && strtolower($charset) != "UTF-8" && $temp = iconv($charset, 'UTF-8', $this->part['data'])) {
+                            if ($charset && strtolower($charset) != "utf-8" && $temp = iconv($charset, 'UTF-8', $this->part['data'])) {
                                 $this->part['data'] = $temp;
                                 unset($temp);
-                            } elseif (!$charset && !preg_match("//u", $this->part['data'])) {
-                                $temp = iconv("windows-1251", "utf-8", $this->part['data']);
-                                if (preg_match("/[а-я]/ui", $temp)) {
-                                    $this->part['data'] = $temp;
+                            } elseif (!preg_match("//u", $this->part['data'])) {
+                                if (!$charset) {
+                                    $temp = iconv("windows-1251", "utf-8", $this->part['data']);
+                                    if (preg_match("/[а-я]/ui", $temp)) {
+                                        $this->part['data'] = $temp;
+                                    }
+                                } else {
+                                    if ($temp = @iconv('utf-8', 'utf-8//IGNORE', $this->part['data'])) {
+                                        $this->part['data'] = $temp;
+                                    }
                                 }
                                 unset($temp);
                             }
@@ -527,12 +540,17 @@ class waMailDecode
             unset($v);
             return $value;
         }
-        if (preg_match("/=\?(.+)\?(B|Q)\?(.+)\?=?(.*)/i", $value)) {
-            $temp = mb_decode_mimeheader($value);
-            if ($temp === $value) {
+        if (preg_match("/=\?(.+)\?(B|Q)\?(.*)\?=?(.*)/i", $value, $m)) {
+            $value = ltrim($value);
+            if (isset($m[3]) && strpos($m[3], '_') !== false && strpos($m[3], ' ') === false) {
                 $value = iconv_mime_decode($value, 0, 'UTF-8');
             } else {
-                $value = $temp;
+                $temp = mb_decode_mimeheader($value);
+                if ($temp === $value) {
+                    $value = iconv_mime_decode($value, 0, 'UTF-8');
+                } else {
+                    $value = $temp;
+                }
             }
         } elseif (isset($this->part['params']['charset'])) {
             $value = @iconv($this->part['params']['charset'], 'UTF-8', $value);
@@ -555,15 +573,29 @@ class waMailDecode
         while (($param = strtok('=')) !== false) {
             $result['params'][strtolower(trim($param))] = trim(strtok(';'), ' "');
         }
+
         if (isset($result['params']['name'])) {
             $result['params']['name'] = $this->decodeHeader($result['params']['name']);
         }
-        if (isset($result['params']['name*']) && !isset($result['params']['name'])) {
-            $temp = explode("''", $result['params']['name*']);
-            if (count($temp) == 2) {
-                $result['params']['name'] = iconv($temp[0], 'UTF-8', urldecode($temp[1]));
-                unset($result['params']['name*']);
+        $temp = array();
+        foreach ($result['params'] as $key => $value) {
+            if (preg_match("/^([a-z]+)\*([0-9]*)\*?$/", $key, $match)) {
+                if (!isset($match[2])) {
+                    $match[2] = 0;
+                }
+                if (strpos($value, "''") !== false) {
+                    $temp_v = explode("''", $value);
+                    $value = urldecode($temp_v[1]);
+                    if (strtolower($temp_v[0]) != 'utf-8') {
+                        $value = iconv($temp_v[0], 'UTF-8', $value);
+                    }
+                }
+                $temp[$match[1]][$match[2]] = $value;
+                unset($result['params'][$key]);
             }
+        }
+        foreach ($temp as $key => $values) {
+            $result['params'][$key] = implode("", $values);
         }
         return $result;
     }

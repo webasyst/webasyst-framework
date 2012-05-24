@@ -359,7 +359,7 @@ class waSystem
                 $url = substr($this->config->getRequestUrl(true), 13);
                 waRequest::setParam('module_id', strtok($url, '/?'));
                 $webasyst_system = self::getInstance('webasyst');
-                $webasyst_system->getFrontController()->execute(null, 'payments', null, true);                
+                $webasyst_system->getFrontController()->execute(null, 'payments', null, true);
             } elseif ($this->getEnv() == 'backend' && !$this->getUser()->isAuth()) {
                 $webasyst_system = self::getInstance('webasyst');
                 $webasyst_system->getFrontController()->execute(null, 'login', waRequest::get('action'), true);
@@ -536,7 +536,8 @@ class waSystem
             $path = preg_replace('!\.\.[/\\\]!','', $path);
         }
         $file = waConfig::get('wa_path_cache').'/apps/'.$app_id.($path ? '/'.$path : '');
-        return waFiles::create($file);
+        waFiles::create($file);
+        return $file;
     }
 
     public function getCachePath($path = null, $app_id = null)
@@ -573,7 +574,10 @@ class waSystem
             $path = preg_replace('!\.\.[/\\\]!','', $path);
         }
         $file = waConfig::get('wa_path_data').'/'.($public ? 'public' : 'protected').'/'.$app_id.($path ? '/'.$path : '');
-        return $create ? waFiles::create($file) : $file;
+        if ($create) {
+            waFiles::create($file);
+        }
+        return $file;
     }
 
     public function getDataUrl($path = null, $public = false, $app_id = null, $absolute = false)
@@ -694,7 +698,7 @@ class waSystem
     {
         $routes = $this->getRouting()->getRoutes($domain);
         $path = waRouting::getDomainUrl($domain, false);
-        
+
         $apps = array();
         $all_apps = $this->getApps();
         foreach ($routes as $r) {
@@ -712,7 +716,7 @@ class waSystem
                     } else {
                         if (!isset(self::$instances['site'])) {
                             self::getInstance('site');
-                        }                        
+                        }
                         $domain_model = new siteDomainModel();
                         $domain_info = $domain_model->getByName($domain);
                         $name = ($domain_info && $domain_info['title']) ? $domain_info['title'] : $this->accountName();
@@ -728,13 +732,13 @@ class waSystem
         }
         return array_reverse($apps);
     }
-    
+
     public function accountName()
     {
         $app_settings_model = new waAppSettingsModel();
-        return $app_settings_model->get('webasyst', 'name', 'Webasyst');        
+        return $app_settings_model->get('webasyst', 'name', 'Webasyst');
     }
-    
+
     public function appExists($app_id)
     {
         $this->getApps();
@@ -755,7 +759,7 @@ class waSystem
 
     public function getRouteUrl($path, $params = array(), $absolute = false)
     {
-        return $this->getRouting()->getUrl($path, $params, $absolute); 
+        return $this->getRouting()->getUrl($path, $params, $absolute);
     }
 
     public function getAppUrl($app = null, $script = false)
@@ -922,7 +926,7 @@ class waSystem
                         $result[$app_id] = $r;
                     }
                 } catch (Exception $e) {
-                    waLog::log('Error: '.$e->getMessage());
+                    waLog::log('Event handling error in '.$file_path.': '.$e->getMessage());
                 }
             }
         }
@@ -949,7 +953,7 @@ class waSystem
                             $result[$plugin_id.'-plugin'] = $r;
                         }
                     } catch (Exception $e) {
-                        waLog::log('Error: '.$e->getMessage());
+                        waLog::log('Event handling error in '.$class_name.'->'.$handler_method.'(): '.$e->getMessage());
                     }
                     self::popActivePlugin();
                 }
@@ -968,7 +972,7 @@ class waSystem
         if ($app_id === null) {
             $app_id = $this->getConfig()->getApplication();
         }
-        
+
         $theme_paths = array(
             'original'    => $this->getAppPath('themes',$app_id),
             'custom'    => $this->getDataPath('themes',true,$app_id,false),
@@ -985,7 +989,7 @@ class waSystem
                 closedir($dir);
             }
         }
-        
+
         $themes = array();
         array_unique($theme_ids);
         foreach($theme_ids as $id) {

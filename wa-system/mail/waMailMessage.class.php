@@ -4,6 +4,11 @@ require_once dirname(__FILE__).'/../vendors/swift/swift_required.php';
 
 class waMailMessage extends Swift_Message
 {
+    /**
+     * @var waIdna
+     */
+    protected static $_idna;
+
     public function addAttachment($path, $name = null, $inline = false)
     {
         $attach = Swift_Attachment::fromPath($path);
@@ -24,7 +29,34 @@ class waMailMessage extends Swift_Message
     public function setTo($addresses, $name = null)
     {
         $this->_formatAddresses($addresses, $name);
-        return parent::setTo($addresses, $name);
+        if (!is_array($addresses) && isset($name)) {
+            $addresses = array($addresses => $name);
+        }
+        $result = array();
+        foreach ((array)$addresses as $email => $name) {
+            if (!is_string($email)) {
+                $email = $name;
+                $name = null;
+            }
+            if (!preg_match("/^[a-z0-9~@+:\[\]\.-]+$/ui", $email)) {
+                $email = $this->encodeEmail($email);
+            }
+            if ($name === null) {
+                $result[] = $email;
+            } else {
+                $result[$email] = $name;
+            }
+        }
+        return parent::setTo($result);
+    }
+
+
+    public function encodeEmail($email)
+    {
+        if (!self::$_idna) {
+            self::$_idna = new waIdna();
+        }
+        return self::$_idna->encode($email);
     }
 
     /**

@@ -21,26 +21,28 @@ class waFiles
     /**
      * Create parent directories for given file path, unless already exist.
      *
-     * Notice: if folder name contains dot it must terminate /
      * @param string $path  full path
-     * @return string copy of $path
+     * @return string|bool copy of $path if success or false otherwise
      */
     public static function create($path)
     {
         if (file_exists($path)) {
             return $path;
         }
-        $return_path = $path;
+        $result = $path;
         if (substr($path, -1) !== '/' && strpos(basename($path), ".") !== false) {
             $path = dirname($path);
         }
         if ($path && !file_exists($path)) {
-            @mkdir($path, 0775, true);
+            $status = @mkdir($path, 0775, true);
             if (!file_exists($path) && file_exists(self::create(dirname($path)))){
-                @mkdir($path, 0775, true);
+                $status = @mkdir($path, 0775, true);
+            }
+            if (!$status) {
+                $result = false;
             }
         }
-        return $return_path;
+        return $result;
     }
 
     /**

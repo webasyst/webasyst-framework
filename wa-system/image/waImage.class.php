@@ -24,6 +24,7 @@ class waImage
     const BOTTOM = 'BOTTOM';
 
     const FILTER_GRAYSCALE = 'grayscale';
+    const FILTER_SEPIA = 'sepia';
 
     const Gd = 'Gd';
     const Imagick = 'Imagick';
@@ -305,15 +306,24 @@ class waImage
     }
 
     /**
-     *
-     * @param waImage|string $watermark. String means text-watermark
-     * @param float|int $opacity 0..1. Fully opaque is 1
-     * @param null|string path to ttf-font file. Use when text-watermark. If null use default font (in different adapters different default font)
+     * @param array $options
+     *     'watermark' => waImage|string. String means text-watermark
+     *     'opacity' => float|int 0..1. Fully opaque is 1
+     *     'font_file' => null|string path to ttf-font file. Use when text-watermark. If null use default font (in different adapters different default font),
+     *     'font_size' => float Size of font
      * @return waImage
      */
-    public function watermark($watermark, $opacity = 0.3, $font_file = null)
+    public function watermark($options)
     {
-        $this->_watermark($watermark, $opacity, $font_file);
+        if (!isset($options['watermark'])) {
+            throw new waException("'watermark' is Obligatory option");
+        }
+        $options['opacity'] = isset($options['opacity']) ? $options['opacity'] : 0.3;
+        if (!($options['watermark'] instanceof waImage)) {
+            $options['font_file'] = isset($options['font_file']) ? $options['font_file'] : null;
+            $options['font_size'] = isset($options['font_size']) ? $options['font_size'] : 14;
+        }
+        $this->_watermark($options);
         return $this;
     }
 }

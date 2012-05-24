@@ -291,7 +291,7 @@ class waHtmlControl
     {
         $title = '';
         if(isset($params['title']) && $params['title_wrapper']){
-            $option_title = htmlentities(_wp((string)$params['title']),ENT_QUOTES,self::$default_charset);
+            $option_title = htmlentities(self::_wp($params['title']),ENT_QUOTES,self::$default_charset);
             $title = sprintf($params['title_wrapper'],"<label for=\"{$params['id']}\">{$option_title}</label>\n");
         }
         return $title;
@@ -300,8 +300,8 @@ class waHtmlControl
     private static function getControlDescription($params)
     {
         $description = '';
-        if(isset($params['description']) && $params['description_wrapper']){
-            $description = sprintf($params['description_wrapper'],_wp((string)$params['description']));
+        if(!empty($params['description_wrapper']) && !empty($params['description'])){
+            $description = sprintf($params['description_wrapper'],self::_wp($params['description']));
         }
         return $description;
     }
@@ -381,7 +381,7 @@ class waHtmlControl
             $option_value = htmlentities((string)$option_value,ENT_QUOTES,self::$default_charset);
             $control .= "<input type=\"radio\" name=\"{$name}\" value=\"{$option_value}\"";
             $control .= self::addCustomParams(array('class','style','id','checked'),$params);
-            $option_title = htmlentities((string)$option['title'],ENT_QUOTES,self::$default_charset);
+            $option_title = htmlentities(self::_wp($option['title']),ENT_QUOTES,self::$default_charset);
             $control .= ">&nbsp;<label";
             $control .= self::addCustomParams(array('id'=>'for',),$params);
             $control .= self::addCustomParams(array('description'=>'title','class','style',),$option);
@@ -418,7 +418,7 @@ class waHtmlControl
             $control .= "<option value=\"{$option_value}\"";
             $control .= self::addCustomParams(array('selected'),$params);
             $control .= self::addCustomParams(array('class','style','description'=>'title',),$option);
-            $option_title = htmlentities(_wp((string)$option['title']),ENT_QUOTES,self::$default_charset);
+            $option_title = htmlentities(self::_wp($option['title']),ENT_QUOTES,self::$default_charset);
             $control .= ">{$option_title}</option>\n";
         }
         $control .= "</select>";
@@ -504,7 +504,7 @@ class waHtmlControl
         $control .= self::addCustomParams(array('value','class','style','checked','id', 'title'),$params);
         $control .= ">";
         if (isset($params['label']) && $params['label']) {
-            $control .= '&nbsp;'.htmlentities(_wp((string)$params['label']),ENT_QUOTES,self::$default_charset)."</label>";
+            $control .= '&nbsp;'.htmlentities(self::_wp($params['label']),ENT_QUOTES,self::$default_charset)."</label>";
         }
 
         return $control;
@@ -557,12 +557,26 @@ class waHtmlControl
                     $param_value = implode(' ',$param_value);
                 }
                 if($param_value !== false){
+                    if(in_array($param, array('title','description'))) {
+                        $param_value = self::_wp($param_value);
+                    }
                     $param_value = htmlentities((string)$param_value,ENT_QUOTES,self::$default_charset);
                     $params_string .= " {$target}=\"{$param_value}\"";
                 }
             }
         }
         return $params_string;
+    }
+
+    private static function _wp($param)
+    {
+        if (is_array($param)) {
+            $param[key($param)] = _wp(current($param));
+            $string = call_user_func_array('sprintf', $param);
+        } else {
+            $string = _wp($param);
+        }
+        return $string;
     }
 
 }

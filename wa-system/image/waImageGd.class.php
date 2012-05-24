@@ -23,31 +23,8 @@ class waImageGd extends waImage
         }
         parent::__construct($file);
 
-//         switch ($this->type)
-//         {
-//             case IMAGETYPE_JPEG: {
-//                 $create_function = 'imagecreatefromjpeg';
-//                 break;
-//             }
-//             case IMAGETYPE_GIF: {
-//                 $create_function = 'imagecreatefromgif';
-//                 break;
-//             }
-//             case IMAGETYPE_PNG: {
-//                 $create_function = 'imagecreatefrompng';
-//                 break;
-//             }
-//         }
-
-//         if ( !isset($create_function) || !function_exists($create_function))
-//         {
-//             throw new waException(sprintf(_ws('GD does not support %s images'), $this->type));
-//         }
-
         if (!is_resource($this->image)) {
             $this->image = $this->createGDImageResourse($this->file, $this->type);
-//             $this->image = $create_function($this->file);
-//             imagesavealpha($this->image, true);
         }
     }
 
@@ -286,14 +263,31 @@ class waImageGd extends waImage
             case self::FILTER_GRAYSCALE:
                 imagefilter($this->image, IMG_FILTER_GRAYSCALE);
                 break;
+            case self::FILTER_SEPIA:
+                imagefilter($this->image, IMG_FILTER_GRAYSCALE);
+                imagefilter($this->image, IMG_FILTER_COLORIZE, 0x70, 0x42, 0x14, 0x25);
+                break;
             default:
                 imagefilter($this->image, IMG_FILTER_GRAYSCALE);
                 break;
         }
     }
 
-    protected function _watermark($watermark, $opacity, $font_file = null)
+    /**
+     * @param array $options
+     *     'watermark' => waImage|string $watermark
+     *     'opacity' => float|int 0..1
+     *     'font_file' => null $font_file
+     *     'font_size' => float Size of font
+     * @return mixed
+     */
+    protected function _watermark($options)
     {
+        // export options to php-vars
+        foreach ($options as $name => $value) {
+            $$name = $value;
+        }
+
         $opacity = min(max($opacity, 0), 1);
         imagealphablending($this->image, true);
 
@@ -310,7 +304,6 @@ class waImageGd extends waImage
             if (!$text) {
                 return;
             }
-            $font_size = 18; // 18pt = 24px
 
             $font_color = imagecolorallocatealpha($this->image, 0, 0, 0, floor((1 - $opacity) * 127));
             if ($font_file && file_exists($font_file)) {

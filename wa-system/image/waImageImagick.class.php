@@ -184,6 +184,9 @@ class waImageImagick extends waImage
             case self::FILTER_GRAYSCALE:
                 $this->im->setImageColorSpace(Imagick::COLORSPACE_GRAY);
                 break;
+            case self::FILTER_SEPIA:
+                $this->im->sepiaToneImage(80);
+                break;
             default:
                 $this->im->setImageColorSpace(Imagick::COLORSPACE_GRAY);
                 break;
@@ -191,13 +194,20 @@ class waImageImagick extends waImage
     }
 
     /**
-     * @param waImage|string $watermark
-     * @param $opacity
-     * @param null $font_file
+     * @param array $options
+     *     'watermark' => waImage|string $watermark
+     *     'opacity' => float|int 0..1
+     *     'font_file' => null $font_file
+     *     'font_size' => float Size of font
      * @return mixed
      */
-    protected function _watermark($watermark, $opacity, $font_file = null)
+    protected function _watermark($options)
     {
+        // export options to php-vars
+        foreach ($options as $name => $value) {
+            $$name = $value;
+        }
+
         $opacity = min(max($opacity, 0), 1);
         if ($watermark instanceof waImage) {
 
@@ -214,7 +224,7 @@ class waImageImagick extends waImage
             if (!$text) {
                 return;
             }
-            $font_size = 24;    // 24px = 18pt
+            $font_size = 24*$font_size/18;    // 24px = 18pt
             $font_color = new ImagickPixel('#000000');
 
             $watermark = new ImagickDraw();

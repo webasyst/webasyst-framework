@@ -29,10 +29,19 @@ class waDbConnector
      */
     public static function getConnection($name = 'default', $writable = true)
     {
+        if (is_array($name)) {
+            $settings = $name;
+            $name = md5(var_export($name, true));
+            if (!isset($settings['type'])) {
+                $settings['type'] = function_exists('mysqli_connect') ? 'mysqli' : 'mysql';
+            }
+        }
         if (isset(self::$connections[$name])) {
             return self::$connections[$name];
         } else {
-            $settings = self::getConfig($name);
+            if (empty($settings)) {
+                $settings = self::getConfig($name);
+            }
             $class = "waDb".ucfirst(strtolower($settings['type']))."Adapter";
             if (!class_exists($class)) {
                 throw new waDbException(sprintf("Database adapter %s not found", $class));
