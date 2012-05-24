@@ -1,5 +1,5 @@
 <?php
 
 return array(
-	'<url>' => 'frontend'
+    '<url>' => 'frontend'
 );

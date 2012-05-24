@@ -10,43 +10,43 @@ class siteHelper
     public static function getDomains($full = false)
     {
         if (!self::$domains) {
-		    $domain_model = new siteDomainModel();
-		    $q = $domain_model->select('*');
-		    if (!wa()->getUser()->isAdmin('site')) {
-		        $domain_ids = wa()->getUser()->getRights('site', 'domain.%', false);
-		        if ($domain_ids) {
-		            $q->where("id IN ('".implode("','", $domain_ids)."')");
-		        } else {
-		            $q->where('0');
-		        }
-		    } 
-		    self::$domains = $q->fetchAll('id');
-		    if (wa()->getUser()->isAdmin('site')) {
-    		    $routes = wa('wa-system')->getConfig()->getRouting();
-    		    // hide default routing (for all domains)
-    		    if (isset($routes['default'])) {
-    		        unset($routes['default']);   
-    		    }
-    		    $ds = array();
-    		    foreach (self::$domains as $d) {
-    		        $ds[] = $d['name'];
-    		    }
-    		    $new_domains = array_diff(array_keys($routes), $ds);
-    		    if ($new_domains) {
-        		    foreach ($new_domains as $d) {
-        		        $domain_model->insert(array('name' => $d), 2);
-        		    }
-        		    self::$domains = $domain_model->select('*')->fetchAll('id');
-    		    }
-            	if (!self::$domains) {
-    		    	$domain_model->insert(array('name' => wa()->getConfig()->getDomain(), 2));
-        			self::$domains = $domain_model->select('*')->fetchAll('id');
-    	    	}
-		    }
-		    // hide default routing (for all domains)	    			                
-		    if (isset(self::$domains['default'])) {
-		        unset(self::$domains['default']);   
-		    }
+            $domain_model = new siteDomainModel();
+            $q = $domain_model->select('*');
+            if (!wa()->getUser()->isAdmin('site')) {
+                $domain_ids = wa()->getUser()->getRights('site', 'domain.%', false);
+                if ($domain_ids) {
+                    $q->where("id IN ('".implode("','", $domain_ids)."')");
+                } else {
+                    $q->where('0');
+                }
+            }
+            self::$domains = $q->fetchAll('id');
+            if (wa()->getUser()->isAdmin('site')) {
+                $routes = wa('wa-system')->getConfig()->getRouting();
+                // hide default routing (for all domains)
+                if (isset($routes['default'])) {
+                    unset($routes['default']);
+                }
+                $ds = array();
+                foreach (self::$domains as $d) {
+                    $ds[] = $d['name'];
+                }
+                $new_domains = array_diff(array_keys($routes), $ds);
+                if ($new_domains) {
+                    foreach ($new_domains as $d) {
+                        $domain_model->insert(array('name' => $d), 2);
+                    }
+                    self::$domains = $domain_model->select('*')->fetchAll('id');
+                }
+                if (!self::$domains) {
+                    $domain_model->insert(array('name' => wa()->getConfig()->getDomain(), 2));
+                    self::$domains = $domain_model->select('*')->fetchAll('id');
+                }
+            }
+            // hide default routing (for all domains)
+            if (isset(self::$domains['default'])) {
+                unset(self::$domains['default']);
+            }
         }    
         $result = array();
         foreach (self::$domains as $id => $d) {
@@ -76,20 +76,20 @@ class siteHelper
                     }
                 }    
             }
-        	
-        	if (!self::$domain_id) {
-        	    self::$domain_id = wa()->getUser()->getSettings('site', 'last_domain_id');
-        	    if (!isset($domains[self::$domain_id])) {
-        	        self::$domain_id = null;
-        	    }
-        	}
-    		if (!self::$domain_id) {
-    			self::$domain_id = current(array_keys($domains));
-    		}
-    		
-    		if (self::$domain_id && !isset($domains[self::$domain_id])) {
-    		    throw new waException('Domain not found', 404);
-    		}
+
+            if (!self::$domain_id) {
+                self::$domain_id = wa()->getUser()->getSettings('site', 'last_domain_id');
+                if (!isset($domains[self::$domain_id])) {
+                    self::$domain_id = null;
+                }
+            }
+            if (!self::$domain_id) {
+                self::$domain_id = current(array_keys($domains));
+            }
+
+            if (self::$domain_id && !isset($domains[self::$domain_id])) {
+                throw new waException('Domain not found', 404);
+            }
         }    
         return self::$domain_id;   
     }
@@ -102,14 +102,14 @@ class siteHelper
     
     public static function getApp($info = true)
     {
-    	$app_id = waRequest::get('app');
-		if (!$app_id) {
-			$app_id = wa()->getConfig()->getApplication();
-		}
-		if ($info) {
-		    return wa()->getAppInfo($app_id);
-		}
-		return $app_id;        
+        $app_id = waRequest::get('app');
+        if (!$app_id) {
+            $app_id = wa()->getConfig()->getApplication();
+        }
+        if ($info) {
+            return wa()->getAppInfo($app_id);
+        }
+        return $app_id;
     }
     
     public static function getApps($app_key = false)
@@ -120,23 +120,23 @@ class siteHelper
         
         $apps = array();
         foreach ($routes as $route_id => $route) {
-        	if (isset($route['app'])) {
-        		$app_id = $route['app'];
-        		if (!isset($all_apps[$app_id])) {
-        			continue;
-        		}
-        		if (isset($route['parent']) && isset($route['page_id'])) {
-        		    continue;
-        		}
-        		if (!isset($apps[$app_id])) {
-        		    if ($app_key && (!isset($all_apps[$app_id][$app_key]) || !$all_apps[$app_id][$app_key])) {
-        		        continue;
-        		    }
-        			$apps[$app_id] = $all_apps[$app_id];
-        			$apps[$app_id]['routes'] = array();
-        		}
-        		$apps[$app_id]['routes'][$route_id] = $route;
-        	}
+            if (isset($route['app'])) {
+                $app_id = $route['app'];
+                if (!isset($all_apps[$app_id])) {
+                    continue;
+                }
+                if (isset($route['parent']) && isset($route['page_id'])) {
+                    continue;
+                }
+                if (!isset($apps[$app_id])) {
+                    if ($app_key && (!isset($all_apps[$app_id][$app_key]) || !$all_apps[$app_id][$app_key])) {
+                        continue;
+                    }
+                    $apps[$app_id] = $all_apps[$app_id];
+                    $apps[$app_id]['routes'] = array();
+                }
+                $apps[$app_id]['routes'][$route_id] = $route;
+            }
         }
         return $apps;
         
@@ -145,7 +145,7 @@ class siteHelper
     public static function getThemes($app_id, $name_only = true)
     {
         if (!isset(self::$themes[$app_id])) {
-        	self::$themes[$app_id] = wa()->getThemes($app_id);
+            self::$themes[$app_id] = wa()->getThemes($app_id);
         }
         if ($name_only) {
             $themes = self::$themes[$app_id];
@@ -165,51 +165,51 @@ class siteHelper
         if (!file_exists($dest)) {
             waFiles::create($dest);
         }
-		$iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($source), RecursiveIteratorIterator::SELF_FIRST);
-		$n = strlen($source);
-		foreach ($iterator as $file) {
-			$rel_path = str_replace('\\', '/', substr($file, $n));
-			if (strpos($rel_path, '/.svn') !== false) {
-				continue;
-			}
-			if ($file->isDir() && $file->getFileName() !== '.' && $file->getFileName() !== '..') {
-				mkdir($dest.'/'.$rel_path);
-			} elseif ($file->isFile()) {
-				copy($file->getPathName(), $dest.'/'.$rel_path);
-				if(basename($file->getPathName()) == 'theme.xml') {
-					@touch($dest.'/'.$rel_path);
-				}
-			}
-		}
+        $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($source), RecursiveIteratorIterator::SELF_FIRST);
+        $n = strlen($source);
+        foreach ($iterator as $file) {
+            $rel_path = str_replace('\\', '/', substr($file, $n));
+            if (strpos($rel_path, '/.svn') !== false) {
+                continue;
+            }
+            if ($file->isDir() && $file->getFileName() !== '.' && $file->getFileName() !== '..') {
+                mkdir($dest.'/'.$rel_path);
+            } elseif ($file->isFile()) {
+                copy($file->getPathName(), $dest.'/'.$rel_path);
+                if(basename($file->getPathName()) == 'theme.xml') {
+                    @touch($dest.'/'.$rel_path);
+                }
+            }
+        }
     }
     
     public static function getDomainUrl()
     {
-    	$u1 = rtrim(wa()->getRootUrl(false, false), '/');
-    	$u2 = rtrim(wa()->getRootUrl(false, true), '/');
-    	if ($u1 != $u2) {
-    		return substr($u2, strlen($u1));
-    	} else {
-    	    return '';
-    	}
+        $u1 = rtrim(wa()->getRootUrl(false, false), '/');
+        $u2 = rtrim(wa()->getRootUrl(false, true), '/');
+        if ($u1 != $u2) {
+            return substr($u2, strlen($u1));
+        } else {
+            return '';
+        }
     }    
     
     public static function sortThemes($themes, $route)
     {
-    	$result = array();
-    	$t = isset($route['theme']) ? $route['theme'] : 'default';
-    	if (isset($themes[$t])) {
-    		$result[$t] = $themes[$t];
-    		unset($themes[$t]);
-    	}
-    	$t = isset($route['theme_mobile']) ? $route['theme_mobile'] : '';
-    	if ($t && $t != $route['theme'] && isset($themes[$t])) {
-    		$result[$t] = $themes[$t];
-    		unset($themes[$t]);
-    	}
-    	foreach ($themes as $t => $theme) {
-    		$result[$t] = $theme;
-    	}
-    	return $result;
+        $result = array();
+        $t = isset($route['theme']) ? $route['theme'] : 'default';
+        if (isset($themes[$t])) {
+            $result[$t] = $themes[$t];
+            unset($themes[$t]);
+        }
+        $t = isset($route['theme_mobile']) ? $route['theme_mobile'] : '';
+        if ($t && $t != $route['theme'] && isset($themes[$t])) {
+            $result[$t] = $themes[$t];
+            unset($themes[$t]);
+        }
+        foreach ($themes as $t => $theme) {
+            $result[$t] = $theme;
+        }
+        return $result;
     }    
 }

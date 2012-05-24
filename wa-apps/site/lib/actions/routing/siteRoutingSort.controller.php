@@ -26,7 +26,7 @@ class siteRoutingSortController extends waJsonController
             }
         }
         if ($pos == $i) {
-        	$result[$route] = $routes[$route];
+            $result[$route] = $routes[$route];
         }        
         $all_routes[$domain] = $result;
         waUtils::varExportToFile($all_routes, $path);

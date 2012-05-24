@@ -2,21 +2,21 @@
 
 class sitePagesAction extends waPageEditAction
 {
-	public function execute()
-	{	
-		$domain_id = siteHelper::getDomainId();
-		$domain = siteHelper::getDomain();
-		
-		$this->id = waRequest::get('id');		
-		$page_model = new sitePageModel();
-		if (!$this->id || !($page = $page_model->getById($this->id))) {
-		    $this->id = null;
-			$page = array();
-		}
-		
-		$this->getPageParams();
+    public function execute()
+    {
+        $domain_id = siteHelper::getDomainId();
+        $domain = siteHelper::getDomain();
 
-		$routes = wa()->getRouting()->getRoutes($domain);
+        $this->id = waRequest::get('id');
+        $page_model = new sitePageModel();
+        if (!$this->id || !($page = $page_model->getById($this->id))) {
+            $this->id = null;
+            $page = array();
+        }
+
+        $this->getPageParams();
+
+        $routes = wa()->getRouting()->getRoutes($domain);
         $site_route = false;
 
         foreach ($routes as $r_id => $r) {
@@ -33,15 +33,15 @@ class sitePagesAction extends waPageEditAction
                 $this->view->assign('url', waRouting::getUrlByRoute($r, $domain));
             }
         }
-		
-		$this->view->assign('page', $page);
-		$this->view->assign('preview_hash', $this->getPreviewHash());		
-		
-		$this->view->assign('routes', $routes);
-		
-		$this->view->assign('domain_id', $domain_id);
-		$this->view->assign('domain', $domain);
-		
-		$this->view->assign('lang', substr(wa()->getLocale(), 0, 2));
-	}
+
+        $this->view->assign('page', $page);
+        $this->view->assign('preview_hash', $this->getPreviewHash());
+
+        $this->view->assign('routes', $routes);
+
+        $this->view->assign('domain_id', $domain_id);
+        $this->view->assign('domain', $domain);
+
+        $this->view->assign('lang', substr(wa()->getLocale(), 0, 2));
+    }
 }

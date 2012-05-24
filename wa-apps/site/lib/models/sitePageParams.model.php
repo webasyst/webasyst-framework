@@ -2,5 +2,5 @@
 
 class sitePageParamsModel extends waPageParamsModel
 {
-	protected $table = 'site_page_params';
+    protected $table = 'site_page_params';
 }

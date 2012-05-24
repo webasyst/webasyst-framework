@@ -23,9 +23,9 @@ class siteSettingsSaveController extends waJsonController
         // save wa_apps
         $domain_config_path = $this->getConfig()->getConfigPath('domains/'.$domain.'.php');
         if (file_exists($domain_config_path)) {
-        	$domain_config = include($domain_config_path);
+            $domain_config = include($domain_config_path);
         } else {
-        	$domain_config = array();
+            $domain_config = array();
         }        
         
         $title = waRequest::post('title');
@@ -68,7 +68,7 @@ class siteSettingsSaveController extends waJsonController
         }
         
         if ($save_config && !waUtils::varExportToFile($domain_config, $domain_config_path)) {
-        	$this->errors = sprintf(_w('Navigation menu could not be saved due to the insufficient file write permissions for the "%s" folder.'), 'wa-config/apps/site/domains');
+            $this->errors = sprintf(_w('Navigation menu could not be saved due to the insufficient file write permissions for the "%s" folder.'), 'wa-config/apps/site/domains');
         }
         
         

@@ -71,9 +71,9 @@ class siteRoutingSaveController extends waJsonController
     {
         $route = 0;
         foreach ($routes as $r_id => $r) {
-        	if (is_numeric($r_id) && $r_id > $route) {
-        		$route = $r_id;
-        	}
+            if (is_numeric($r_id) && $r_id > $route) {
+                $route = $r_id;
+            }
         }
         $route++;
         return $route;

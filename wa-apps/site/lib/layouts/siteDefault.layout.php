@@ -3,28 +3,28 @@
 class siteDefaultLayout extends waLayout
 {
     protected $domain_id;
-	public function execute()
-	{	
-	    $this->domain_id = siteHelper::getDomainId();	
-						
-		$this->view->assign('apps', siteHelper::getApps());	
-		$this->view->assign('domain_id', $this->domain_id);
-		$this->view->assign('domains', siteHelper::getDomains(true));
-		$this->view->assign('pages', $this->getPages());
-		$this->view->assign('domain_root_url', siteHelper::getDomainUrl());
-		$this->view->assign('rights', array(
-		    'admin' => $this->getUser()->isAdmin('site'),
-		    'files' => $this->getRights('files'),
-			'themes' => $this->getRights('themes'),
-			'snippets' => $this->getRights('snippets'),
-		));
-	}	
-	
-	protected function getPages()
-	{
-	    $domain = siteHelper::getDomain();
-	    $routing = wa()->getRouting();
-	    $routes = $routing->getRoutes($domain);
+    public function execute()
+    {
+        $this->domain_id = siteHelper::getDomainId();
+
+        $this->view->assign('apps', siteHelper::getApps());
+        $this->view->assign('domain_id', $this->domain_id);
+        $this->view->assign('domains', siteHelper::getDomains(true));
+        $this->view->assign('pages', $this->getPages());
+        $this->view->assign('domain_root_url', siteHelper::getDomainUrl());
+        $this->view->assign('rights', array(
+            'admin' => $this->getUser()->isAdmin('site'),
+            'files' => $this->getRights('files'),
+            'themes' => $this->getRights('themes'),
+            'snippets' => $this->getRights('snippets'),
+        ));
+    }
+
+    protected function getPages()
+    {
+        $domain = siteHelper::getDomain();
+        $routing = wa()->getRouting();
+        $routes = $routing->getRoutes($domain);
 
         $page_model = new sitePageModel();
         $pages = $page_model->select('id,name,url,status')->where('domain_id = '.$this->domain_id)->order('sort')->fetchAll('id');
@@ -35,8 +35,8 @@ class siteDefaultLayout extends waLayout
             $pages[$page_id]['url'] = null;
         }
 
-	    foreach ($routes as $r_id => $r) {
-	        if (isset($r['app']) && $r['app'] == 'site' && (strpos($r['url'], '<url') === false)) {
+        foreach ($routes as $r_id => $r) {
+            if (isset($r['app']) && $r['app'] == 'site' && (strpos($r['url'], '<url') === false)) {
                 $u = $routing->getUrlByRoute($r);
                 if (!isset($r['_exclude']) || !$r['_exclude']) {
                     foreach ($pages_urls as $p_id => $p_url) {
@@ -51,9 +51,9 @@ class siteDefaultLayout extends waLayout
                         }
                     }
                 }
-	        }
-	    }
+            }
+        }
 
-	    return $pages;
-	}
+        return $pages;
+    }
 }

@@ -10,34 +10,34 @@ class siteFrontend
         if ($url === null) {
             $url = wa()->getRouting()->getCurrentUrl();
         }
-		$page_model = new sitePageModel();
-		if (substr($url, -1) !== '/' && strpos(substr($url, -5), '.') === false) {
-			if ($page = $page_model->getByUrl($this->getDomainId(), $url.'/')) {
-				$url = waSystem::getInstance()->getConfig()->getRequestUrl(false);
-				if (($i = strpos($url, '?')) === false) {
-					wa()->getResponse()->redirect($url.'/');
-				} else {
-					wa()->getResponse()->redirect(substr($url, 0, $i).'/'.substr($url, $i));
-				}
-			}
-		}
-		$page = $page_model->getByUrl($this->getDomainId(), $url, waRequest::param('_exclude', array()));
+        $page_model = new sitePageModel();
+        if (substr($url, -1) !== '/' && strpos(substr($url, -5), '.') === false) {
+            if ($page = $page_model->getByUrl($this->getDomainId(), $url.'/')) {
+                $url = waSystem::getInstance()->getConfig()->getRequestUrl(false);
+                if (($i = strpos($url, '?')) === false) {
+                    wa()->getResponse()->redirect($url.'/');
+                } else {
+                    wa()->getResponse()->redirect(substr($url, 0, $i).'/'.substr($url, $i));
+                }
+            }
+        }
+        $page = $page_model->getByUrl($this->getDomainId(), $url, waRequest::param('_exclude', array()));
         if (!$page) {
             return array();
-        }		
+        }
         if (!$page['status']) {
-        	$app_settings_model = new waAppSettingsModel();
-        	$hash = $app_settings_model->get('site', 'preview_hash');
-        	if (!$hash || md5($hash) != waRequest::get('preview')) {
-        		return array();
-        	}
+            $app_settings_model = new waAppSettingsModel();
+            $hash = $app_settings_model->get('site', 'preview_hash');
+            if (!$hash || md5($hash) != waRequest::get('preview')) {
+                return array();
+            }
         }
         $params_model = new sitePageParamsModel();
         if ($params = $params_model->getById($page['id'])) {
-        	$page += $params;
+            $page += $params;
         }
         if (!$page['title']) {
-        	$page['title'] = $page['name'];
+            $page['title'] = $page['name'];
         }
         //$page['url'] = wa()->getAppUrl().$page['url'];
         foreach ($page as $k => $v) {
@@ -57,9 +57,9 @@ class siteFrontend
                 $this->domain_id = $d['id'];
             } else {
                 if (substr($domain, 0, 4) == 'www.') {
-                	$domain = substr($domain, 4);
+                    $domain = substr($domain, 4);
                 } else {
-                	$domain = 'www.'.$domain;
+                    $domain = 'www.'.$domain;
                 }
                 if ($d = $domain_model->getByName($domain)) {
                     $this->domain_id = $d['id'];

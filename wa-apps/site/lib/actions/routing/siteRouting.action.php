@@ -107,7 +107,7 @@ class siteRoutingAction extends waViewAction
                         $v = array('name'=>$v);
                     }
                     $html .= '<label class="s-label-with-check">'.
-                             	'<input type="radio" name="params['.$info['id'].']" value="'.$k.'" />'.htmlspecialchars($v['name']).
+                                 '<input type="radio" name="params['.$info['id'].']" value="'.$k.'" />'.htmlspecialchars($v['name']).
                     (isset($v['description'])?(' <span class="hint">'.$v['description'].'</span>'):'').
                              '</label>';
                 }
@@ -130,7 +130,7 @@ class siteRoutingAction extends waViewAction
                         $v = array('name'=>$v);
                     }
                     $html .= '<label class="s-label-with-check">'.
-                             	'<input type="radio" '.
+                                 '<input type="radio" '.
                     ($value == $k || isset($v['items'][$value]) ? 'checked="checked"' : '').
                                     ' name="params['.$info['id'].']" value="'.$k.'" />'.
                     htmlspecialchars($v['name']).(isset($v['description'])?(' <span class="hint">'.$v['description'].'</span>'):'').
@@ -146,10 +146,10 @@ class siteRoutingAction extends waViewAction
                 $html .= '</div>';
                 $html .= '<script type="text/javascript">
                 $("#s-radio-select-'.$route_id.'-'.$id.' input[type=radio]").change(function () {
-                	if ($(this).is(":checked")) {
-                		$("#s-radio-select-'.$route_id.'-'.$id.' select").attr("disabled", "disabled");
-                		$(this).parent().next("select").removeAttr("disabled");
-                	}
+                    if ($(this).is(":checked")) {
+                        $("#s-radio-select-'.$route_id.'-'.$id.' select").attr("disabled", "disabled");
+                        $(this).parent().next("select").removeAttr("disabled");
+                    }
                 });
                 </script>';
                 return $html;
@@ -169,7 +169,7 @@ class siteRoutingAction extends waViewAction
                         $selected = true;
                     }
                     $html .= '<label class="s-label-with-check">'.
-                             	'<input type="radio" '.
+                                 '<input type="radio" '.
                     ($checked? 'checked="checked"' : '').
                                     ' name="params['.$info['id'].']" value="'.$k.'" />'.
                     htmlspecialchars($v['name']).(isset($v['description'])?(' <span class="hint">'.$v['description'].'</span>'):'').
@@ -181,10 +181,10 @@ class siteRoutingAction extends waViewAction
                 $html .= '</div>';
                 $html .= '<script type="text/javascript">
                 $("#s-radio-select-'.$route_id.'-'.$id.' input[type=radio]").change(function () {
-                	if ($(this).is(":checked")) {
-                		$("#s-radio-select-'.$route_id.'-'.$id.' select").attr("disabled", "disabled");
-                		$(this).parent().next("input").removeAttr("disabled").focus();
-                	}
+                    if ($(this).is(":checked")) {
+                        $("#s-radio-select-'.$route_id.'-'.$id.' select").attr("disabled", "disabled");
+                        $(this).parent().next("input").removeAttr("disabled").focus();
+                    }
                 });
                 </script>';
                 return $html;

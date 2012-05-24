@@ -1,9 +1,9 @@
 <div class="sidebar left top-padded" role="navigation">
-    <ul class="menu-v" id="page-list">
-        {foreach from=$wa->site->pages() item=p}
-        <li{if $page && $p.id==$page.id} class="selected"{/if}><a href="{$p.url}">{$p.name}</a></li>
-        {/foreach}
-    </ul>
-    <hr>
-    <p class="hint">[`Edit this layout in your <a href="{$wa_backend_url}">Webasyst backend</a> using “Site” app.`]</p>
+  <ul class="menu-v" id="page-list">
+    {foreach $wa->site->pages() as $p}
+    <li{if $page && $p.id==$page.id} class="selected"{/if}><a href="{$p.url}">{$p.name}</a></li>
+    {/foreach}
+  </ul>
+  <hr>
+  <p class="hint">[`Edit this layout in your <a href="{$wa_backend_url}">Webasyst backend</a> using “Site” app.`]</p>
 </div>

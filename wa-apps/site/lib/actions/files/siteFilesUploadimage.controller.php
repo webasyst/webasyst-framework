@@ -8,24 +8,24 @@ class siteFilesUploadimageController extends siteFilesUploadController
     {
         $f = waRequest::file('file');
         $this->name = $f->name;
-    	if ($this->processFile($f)) {
-    	    $this->response = wa()->getDataUrl('img/'.$this->name, true);    
-    	}
+        if ($this->processFile($f)) {
+            $this->response = wa()->getDataUrl('img/'.$this->name, true);
+        }
     }    
     
     protected function getPath()
     {
-    	return wa()->getDataPath('img', true);
+        return wa()->getDataPath('img', true);
     }
     
     protected function isValid($f)
     {
         $allowed = array('jpg', 'jpeg', 'png', 'gif');
-    	if (!in_array(strtolower($f->extension), $allowed)) {
-    		$this->errors[] = sprintf(_w("Files with extensions %s are allowed only."), '*.'.implode(', *.', $allowed));
-    		return false;
-    	}
-    	return true;
+        if (!in_array(strtolower($f->extension), $allowed)) {
+            $this->errors[] = sprintf(_w("Files with extensions %s are allowed only."), '*.'.implode(', *.', $allowed));
+            return false;
+        }
+        return true;
     }
 
     protected function save(waRequestFile $f)

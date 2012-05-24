@@ -18,14 +18,14 @@ class siteRoutingParamsController extends waJsonController
         $app_id = $routes[$domain][$route_id]['app'];
         if ($app_id == 'site') {
             if ($title = siteHelper::getDomain('title')) {
-            	$name = $title;
+                $name = $title;
             } else {
-            	$app_settings_model = new waAppSettingsModel();
-            	$name = $app_settings_model->get('webasyst', 'name', 'Webasyst');
+                $app_settings_model = new waAppSettingsModel();
+                $name = $app_settings_model->get('webasyst', 'name', 'Webasyst');
             }            
         } else {
             $app = wa()->getAppInfo($app_id);
-        	$name = $app['name'];
+            $name = $app['name'];
         }
         
         $t = array(
