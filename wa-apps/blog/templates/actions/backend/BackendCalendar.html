@@ -1,102 +1,105 @@
 {if $allow_add}
 <script type="text/javascript">
-	$(function(){
-		$(".b-calendar td").click(function(event){
-			if (event.target.tagName == $(this).get(0).tagName ) {
-				window.location.href = "?module=post&action=edit&date="+$(this).attr("id").replace(/^date-/,'');
-			}
-		});
-		$('.b-calendar td').each(function(){
-			$(this).attr('title','[`Click to create a post scheduled to be published on this day`]');
-		});
-	});
+  $(function(){
+    $(".b-calendar td").click(function(event){
+      if (event.target.tagName == $(this).get(0).tagName ) {
+        window.location.href = "?module=post&action=edit&date="+$(this).attr("id").replace(/^date-/,'');
+      }
+    });
+    $('.b-calendar td').each(function(){
+      $(this).attr('title','[`Click to create a post scheduled to be published on this day`]');
+    });
+  });
 </script>
 {/if}
 <div class="b-stream">
-	<div class="block triple-padded b-stream-title">
-		<div class="block half-padded float-left">
-			{if $prev_overdue}
-				<i class="icon16 exclamation" title="[`Overdue posts`]"><!-- icon --></i>
-			{/if}
-			<a href="?action=calendar&amp;month={$prev_month}"><i class="icon16 larr"><!-- icon --></i></a>
-		</div>
-		<div class="block half-padded float-right">
-			<a href="?action=calendar&amp;month={$next_month}"><i class="icon16 rarr"><!-- icon --></i></a>
-			{if $next_overdue}
-				<i class="icon16 exclamation" title="[`Overdue posts`]"><!-- icon --></i>
-			{/if}
-		</div>
-		<h1 class="align-center">
-			{$current_month_local}
-		</h1>
-	</div>
+  <div class="block triple-padded b-stream-title">
+    <div class="block half-padded float-left">
+      {if $prev_overdue}
+        <i class="icon16 exclamation" title="[`Overdue posts`]"><!-- icon --></i>
+      {/if}
+      <a href="?action=calendar&amp;month={$prev_month}"><i class="icon16 larr"><!-- icon --></i></a>
+    </div>
+    <div class="block half-padded float-right">
+      <a href="?action=calendar&amp;month={$next_month}"><i class="icon16 rarr"><!-- icon --></i></a>
+      {if $next_overdue}
+        <i class="icon16 exclamation" title="[`Overdue posts`]"><!-- icon --></i>
+      {/if}
+    </div>
+    <h1 class="align-center">
+      {$current_month_local}
+    </h1>
+  </div>
 
-	<div class="block double-padded b-post b-white">
-		<table class="b-calendar">
-			<thead>
-			<tr>
-				{if $week_first_sunday}<th>{_ws('Sun')}</th>{/if}
-				<th>{_ws('Mon')}</th>
-				<th>{_ws('Tue')}</th>
-				<th>{_ws('Wed')}</th>
-				<th>{_ws('Thu')}</th>
-				<th>{_ws('Fri')}</th>
-				<th>{_ws('Sat')}</th>
-				{if !$week_first_sunday}<th>{_ws('Sun')}</th>{/if}
-			</tr>
-			</thead>
-			<tbody>
+  <div class="block double-padded b-post b-white">
+    <table class="b-calendar">
+      <thead>
+      <tr>
+        {if $week_first_sunday}<th>{_ws('Sun')}</th>{/if}
+        <th>{_ws('Mon')}</th>
+        <th>{_ws('Tue')}</th>
+        <th>{_ws('Wed')}</th>
+        <th>{_ws('Thu')}</th>
+        <th>{_ws('Fri')}</th>
+        <th>{_ws('Sat')}</th>
+        {if !$week_first_sunday}<th>{_ws('Sun')}</th>{/if}
+      </tr>
+      </thead>
+      <tbody>
 
-			{foreach from=$days item=week}
-				<tr>
-				{foreach from=$week item=day}
-					<td id="date-{$day.date.date}"{if $day.date.month != $current_month} class="b-not-this-month"{elseif $day.date.month == $today_month && $day.date.day == $today} class="b-today"{/if}>
-						<span class="b-date">{$day.date.day}</span>
-						{foreach from=$day.posts item=post}
-							<span title="{$post.blog_name|escape}">
-							{strip}
-								{if isset($post.alert)}
-									<i class="icon10 exclamation" title="[`Overdue`]"><!-- icon --></i>
-								{elseif $post.status == blogPostModel::STATUS_DEADLINE}
-									<i class="icon10 exclamation" title="[`Overdue`]"><!-- icon --></i>
-								{elseif $post.status == blogPostModel::STATUS_DRAFT}
-									<i class="icon10 edit-bw" title="[`Draft`]"><!-- icon --></i>
-								{elseif $post.status eq blogPostModel::STATUS_SCHEDULED}
-									<i class="icon10 clock" title="[`Scheduled for publication`]"><!-- icon --></i><strong class="small italic">{$post.datetime|wa_datetime:'time'}</strong>&nbsp;
-								{elseif $post.blog_status == blogBlogModel::STATUS_PUBLIC}
-									<i class="icon10 yes" title="[`Published`]"><!-- icon --></i>
-								{elseif $post.blog_status == blogBlogModel::STATUS_PRIVATE}
-									<i class="icon10 lock-bw" title="[`Private post`]"><!-- icon --></i>
-								{/if}
-							{/strip}
-							{if $post.editable}
-								{if $post.status neq blogPostModel::STATUS_PUBLISHED || $post.blog_status eq blogBlogModel::STATUS_PUBLIC}
-									{assign var=post_link value="?module=post&amp;id=`$post.id`&amp;action=edit"}
-								{elseif $post.link && $post.status eq blogPostModel::STATUS_PUBLISHED}
-									{assign var=post_link value="{current($post.link)}"}
-								{else}
-									{assign var=post_link value="?module=post&amp;id=`$post.id`"}
-								{/if}
-							{elseif $post.link && $post.status eq blogPostModel::STATUS_PUBLISHED}
-								{assign var=post_link value="{current($post.link)}"}
-							{else}
-								{assign var=post_link value="?module=post&amp;id=`$post.id`"}
-							{/if}
+      {foreach $days as $week}
+        <tr>
+        {foreach $week as $day}
+          <td id="date-{$day.date.date}"{if $day.date.month != $current_month} class="b-not-this-month"{elseif $day.date.month == $today_month && $day.date.day == $today} class="b-today"{/if}>
+            <span class="b-date">{$day.date.day}</span>
+            {foreach $day.posts as $post}
+              <span title="{$post.blog_name|escape}">
+              {strip}
+                {if isset($post.alert)}
+                  <i class="icon10 exclamation" title="[`Overdue`]"><!-- icon --></i>
+                {elseif $post.status == blogPostModel::STATUS_DEADLINE}
+                  <i class="icon10 exclamation" title="[`Overdue`]"><!-- icon --></i>
+                {elseif $post.status == blogPostModel::STATUS_DRAFT}
+                  <i class="icon10 edit-bw" title="[`Draft`]"><!-- icon --></i>
+                {elseif $post.status eq blogPostModel::STATUS_SCHEDULED}
+                  <i class="icon10 clock" title="[`Scheduled for publication`]"><!-- icon --></i><strong class="small italic">{$post.datetime|wa_datetime:'time'}</strong>&nbsp;
+                {elseif $post.blog_status == blogBlogModel::STATUS_PUBLIC}
+                  <i class="icon10 yes" title="[`Published`]"><!-- icon --></i>
+                {elseif $post.blog_status == blogBlogModel::STATUS_PRIVATE}
+                  <i class="icon10 lock-bw" title="[`Private post`]"><!-- icon --></i>
+                {/if}
+              {/strip}
+              {$target=''}
+              {if $post.editable}
+                {if $post.status neq blogPostModel::STATUS_PUBLISHED || $post.blog_status eq blogBlogModel::STATUS_PUBLIC}
+                  {$post_link="?module=post&amp;id=`$post.id`&amp;action=edit"}
+                {elseif $post.link && $post.status eq blogPostModel::STATUS_PUBLISHED}
+                  {$target='target="_blank"'}
+                  {$post_link=current($post.link)}
+                {else}
+                  {$post_link="?module=post&amp;id=`$post.id`"}
+                {/if}
+              {elseif $post.link && $post.status eq blogPostModel::STATUS_PUBLISHED}
+                {$target='target="_blank"'}
+                {$post_link="{current($post.link)}"}
+              {else}
+                {$post_link="?module=post&amp;id=`$post.id`"}
+              {/if}
 
-							<a href="{$post_link}"
-								class="small {if isset($post.overdue) && $post.overdue}b-draft-overdue{else if $post.status eq blogPostModel::STATUS_DEADLINE || $post.status eq blogPostModel::STATUS_DRAFT}b-draft{else}{$post.color}{/if} {if $post.status eq blogPostModel::STATUS_SCHEDULED}italic{/if}"
-							>{$post.title|escape}</a>
-							{if $post.status == blogPostModel::STATUS_PUBLISHED}
-								<span class="hint">{$post.datetime|wa_datetime:"time"}</span>
-							{/if}
-							</span>
-							<br><br>
-						{/foreach}
-					</td>
-				{/foreach}
-				</tr>
-			{/foreach}
-			</tbody>
-		</table>
-	</div>
+              <a href="{$post_link}"{$target}
+                class="small {if isset($post.overdue) && $post.overdue}b-draft-overdue{else if $post.status eq blogPostModel::STATUS_DEADLINE || $post.status eq blogPostModel::STATUS_DRAFT}b-draft{else}{$post.color}{/if} {if $post.status eq blogPostModel::STATUS_SCHEDULED}italic{/if}"
+              >{$post.title|escape}</a>
+              {if $post.status == blogPostModel::STATUS_PUBLISHED}
+                <span class="hint">{$post.datetime|wa_datetime:"time"}</span>
+              {/if}
+              </span>
+              <br><br>
+            {/foreach}
+          </td>
+        {/foreach}
+        </tr>
+      {/foreach}
+      </tbody>
+    </table>
+  </div>
 </div>

@@ -2,7 +2,7 @@
 
 class blogAkismetPlugin extends blogPlugin
 {
-    public function commentPresaveFrontend($comment)
+    public function commentValidate($comment)
     {
         $result = null;
 
@@ -40,11 +40,15 @@ class blogAkismetPlugin extends blogPlugin
         $this->addJs('js/akismet.js', true);
         $output = array();
         $string = _wp("mark as spam");
-        $output['footer'] = <<<HTML
+        $output['toolbar'] = <<<HTML
 <script type="text/javascript">
-    $.wa.locale["mark as spam"] = "{$string}";
+  $.wa.locale = $.extend($.wa.locale, {
+    'mark as spam':'{$string}'
+  });
 </script>
 HTML;
+        $output['footer'] = $output['toolbar'];
         return $output;
+
     }
 }

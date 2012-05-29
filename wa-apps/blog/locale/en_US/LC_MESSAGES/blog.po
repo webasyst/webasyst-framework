@@ -314,8 +314,8 @@ msgid_plural "%d posts of %d"
 msgstr[0] ""
 msgstr[1] ""
 
-msgid "%d comment of %d"
-msgid_plural "%d comments of %d"
+msgid "%d comment of %d (including deleted)"
+msgid_plural "%d comments of %d (including deleted)"
 msgstr[0] ""
 msgstr[1] ""
 
@@ -853,5 +853,13 @@ msgstr ""
 
 #: /wa-apps/blog/lib/actions/plugins/blogPlugins.action.php:61
 msgid "Plugin %s settings"
+msgstr ""
+
+#: /wa-apps/blog/lib/classes/blogPost.class.php:115
+msgid "Syntax error at post template"
+msgstr ""
+
+#: /wa-apps/blog/templates/dialogs/postPublish.html:6
+msgid "Confirm the blog for publishing this post"
 msgstr ""
 

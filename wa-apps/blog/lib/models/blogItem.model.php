@@ -22,6 +22,55 @@ abstract class blogItemModel extends waModel
         return $this->select('id')->where(implode(' AND ',$where))->fetch();
     }
 
+    private static function shortUuid()
+    {
+        static $time = 0;
+        static $counter = 0;
+        if(!$time) {
+            $time = time();
+        }
+        return ($time << 24) + $counter++;
+    }
+
+
+    public function genUniqueUrl($from)
+    {
+        static $time = 0;
+        static $counter = 0;
+        $from = preg_replace('/\s+/', '-', $from);
+        $url = blogHelper::transliterate($from);
+
+        if (strlen($url) == 0) {
+            $url = self::shortUuid();
+        } else {
+            $url = mb_substr($url, 0, $this->fields['url']['length']);
+        }
+        $url = mb_strtolower($url);
+
+        $pattern = mb_substr($this->escape($url, 'like'),0, $this->fields['url']['length']-3). '%';
+        $sql = "SELECT url FROM {$this->table} WHERE url LIKE '{$pattern}' ORDER BY LENGTH(url)";
+
+        $alike = $this->query($sql)->fetchAll('url');
+
+        if (is_array($alike) && isset($alike[$url])) {
+            $last = array_shift($alike);
+            $counter = 1;
+            do {
+                $modifier = "-{$counter}";
+                $length  = mb_strlen($modifier);
+                $url = mb_substr($last['url'], 0, $this->fields['url']['length'] - $length).$modifier;
+            } while ( ($counter++ < 99) && isset($alike[$url]));
+            if (isset($alike[$url])) {
+                $short_uuid = self::shortUuid();
+                $length  = mb_strlen($short_uuid);
+
+                $url = mb_substr($last['url'], 0, $this->fields['url']['length'] - $length).$short_uuid;
+            }
+        }
+
+        return mb_strtolower($url);
+    }
+
     public function search($options = array(),$extend_options = array(),$extend_data = array())
     {
         $this->sql_params = array();

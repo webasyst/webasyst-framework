@@ -3,11 +3,11 @@
 <script type="text/javascript">
 $.blog = {};
 $.blog.oauth = function (provider) {
-	var providers = {json_encode($auth_adapters)};
-	var leftvar = (screen.width-600)/2;
-	var topvar = (screen.height-400)/2;
-	window.open(providers[provider].url,'oauth', "width=600,height=400,left="+leftvar+",top="+topvar+",status=no,toolbar=no,menubar=no");
-	return false;
+  var providers = {json_encode($auth_adapters)};
+  var leftvar = (screen.width-600)/2;
+  var topvar = (screen.height-400)/2;
+  window.open(providers[provider].url,'oauth', "width=600,height=400,left="+leftvar+",top="+topvar+",status=no,toolbar=no,menubar=no");
+  return false;
 }
 </script>
 {/if}
@@ -15,167 +15,163 @@ $.blog.oauth = function (provider) {
 <div itemscope itemtype="http://schema.org/BlogPosting">
 
 <div class="post" role="main" id="post-{$post.id}">
-	<h1 itemprop="name">
-		{$post.title|default:'[`(empty title)`]'|escape}
-		
-		{* @event prepare_posts_frontend.%plugin_id%.post_title *}
-		{if isset($post.plugins) && isset($post.plugins.post_title) && $post.plugins.post_title}
-			<!-- plugin hook: "prepare_posts_frontend.*.post_title" -->
-			{foreach from=$post.plugins.post_title item=output key=plugin}
-				<!-- begin "prepare_posts_frontend.{$plugin}.post_title" -->
-				{$output}
-				<!-- end "prepare_posts_frontend.{$plugin}.post_title" -->
-			{/foreach}
-			<!-- end plugin hook: "prepare_posts_frontend.*.post_title" -->
-		{/if}
-		
-	</h1>
-	<div class="credentials">
-		{if $post.contact_id}
-			<a href="{$post.user.posts_link}">
-				<img src="{$post.user.photo_url_20}" class="userpic" alt="">
-			</a>
-			<a href="{$post.user.posts_link}" class="username" rel="author" itemprop="author">
-				{$post.user.name|escape}
-			</a>
-		{else}
-			<img src="{$post.user.photo_url_20}" class="userpic" alt="">
-			<span class="username" rel="author" itemprop="author">{$post.user.name|escape}</span>
-		{/if}
-		<span class="hint date" title="{$post.datetime|wa_datetime}" itemprop="datePublished" datetime="{$post.datetime|date_format:'Y-m-d\TH:m'}">{$post.datetime|wa_datetime:"humandate"}</span>
-	</div>
+  <h1 itemprop="name">
+    {$post.title|default:'[`(empty title)`]'|escape}
 
-	{* @event prepare_posts_frontend.%plugin_id%.before *}
-	{if isset($post.plugins) && isset($post.plugins.before) && $post.plugins.before}
-		<div class="text_before">
-			<!-- plugin hook: "prepare_posts_frontend.*.before" -->
-			{foreach from=$post.plugins.before item=output key=plugin}
-				<!-- begin "prepare_posts_frontend.{$plugin}.before" -->
-				{$output}
-				<!-- end "prepare_posts_frontend.{$plugin}.before" -->
-			{/foreach}
-			<!-- end plugin hook: "prepare_posts_frontend.*.before" -->
-		</div>
-	{/if}
+    {* @event prepare_posts_frontend.%plugin_id%.post_title *}
+    {if !empty($post.plugins.post_title)}
+      <!-- plugin hook: "prepare_posts_frontend.*.post_title" -->
+      {foreach $post.plugins.post_title as $plugin => $output}
+        <!-- begin "prepare_posts_frontend.{$plugin}.post_title" -->
+        {$output}
+        <!-- end "prepare_posts_frontend.{$plugin}.post_title" -->
+      {/foreach}
+      <!-- end plugin hook: "prepare_posts_frontend.*.post_title" -->
+    {/if}
 
-	<div class="text" itemprop="articleBody">
-		{if $wa->blog->option('can_use_smarty')}
-			{include file="string:`$post.text`"}
-		{else}
-			{$post.text}
-		{/if}
-	</div>
+  </h1>
+  <div class="credentials">
+    {if $post.contact_id}
+      <a href="{$post.user.posts_link}">
+        <img src="{$post.user.photo_url_20}" class="userpic" alt="">
+      </a>
+      <a href="{$post.user.posts_link}" class="username" rel="author" itemprop="author">
+        {$post.user.name|escape}
+      </a>
+    {else}
+      <img src="{$post.user.photo_url_20}" class="userpic" alt="">
+      <span class="username" rel="author" itemprop="author">{$post.user.name|escape}</span>
+    {/if}
+    <span class="hint date" title="{$post.datetime|wa_datetime}" itemprop="datePublished" datetime="{$post.datetime|date_format:'Y-m-d\TH:i'}">{$post.datetime|wa_datetime:"humandate"}</span>
+  </div>
 
-	{* @event prepare_posts_frontend.%plugin_id%.after *}
-	{if isset($post.plugins) && isset($post.plugins.after) && $post.plugins.after}
-		<div class="text_after">			
-			<!-- plugin hook: "prepare_posts_frontend.*.after" -->
-			{foreach from=$post.plugins.after item=output key=plugin}
-				<!-- begin "prepare_posts_frontend.{$plugin}.after" -->
-				{$output}
-				<!-- end "prepare_posts_frontend.{$plugin}.after" -->
-			{/foreach}
-			<!-- end plugin hook: "prepare_posts_frontend.*.after" -->
-		</div>
-	{/if}
-	
+  {* @event prepare_posts_frontend.%plugin_id%.before *}
+  {if !empty($post.plugins.before)}
+    <div class="text_before">
+      <!-- plugin hook: "prepare_posts_frontend.*.before" -->
+      {foreach $post.plugins.before as $plugin => $output}
+        <!-- begin "prepare_posts_frontend.{$plugin}.before" -->
+        {$output}
+        <!-- end "prepare_posts_frontend.{$plugin}.before" -->
+      {/foreach}
+      <!-- end plugin hook: "prepare_posts_frontend.*.before" -->
+    </div>
+  {/if}
+
+  <div class="text" itemprop="articleBody">
+    {$post.text}
+  </div>
+
+  {* @event prepare_posts_frontend.%plugin_id%.after *}
+  {if !empty($post.plugins.after)}
+    <div class="text_after">
+      <!-- plugin hook: "prepare_posts_frontend.*.after" -->
+      {foreach $post.plugins.after as $plugin => $output}
+        <!-- begin "prepare_posts_frontend.{$plugin}.after" -->
+        {$output}
+        <!-- end "prepare_posts_frontend.{$plugin}.after" -->
+      {/foreach}
+      <!-- end plugin hook: "prepare_posts_frontend.*.after" -->
+    </div>
+  {/if}
+
 </div>
 
 {* @event frontend_post.%plugin_id%.footer *}
 <!-- plugin hook: "frontend_post.*.footer" -->
-	{if isset($frontend_post)}
-		{foreach from=$frontend_post item=output key=plugin}
-			{if isset($output.footer)}
+  {if !empty($frontend_post)}
+    {foreach $frontend_post as $plugin => $output}
+      {if !empty($output.footer)}
 
-			<!-- begin frontend_post.{$plugin}.footer -->
-				{$output.footer}
-			<!-- end frontend_post.{$plugin}.footer -->
-			{/if}
-		{/foreach}
-	{/if}
+      <!-- begin frontend_post.{$plugin}.footer -->
+        {$output.footer}
+      <!-- end frontend_post.{$plugin}.footer -->
+      {/if}
+    {/foreach}
+  {/if}
 <!-- end plugin hook: "frontend_post.*.footer" -->
 
 {if $show_comments && $post.comments_allowed}
-	<div class="comments">
-		<a name="comments"></a>
-		{if $post.status eq blogPostModel::STATUS_PUBLISHED}
-			<h3 class="comment-count" {if $post.comment_count == 0}style="display: none;"{/if}>{$post.comment_count} {$post.comment_str_translate}</h3>
-			{if $post.comment_count == 0}
-				<ul class="menu-v with-icons">
-					<!-- placeholder for new comments -->
-				</ul>
-			{/if}
+  <div class="comments">
+    <a name="comments"></a>
+    {if $post.status eq blogPostModel::STATUS_PUBLISHED}
+      <h3 class="comment-count" {if $post.comment_count == 0}style="display: none;"{/if}>{$post.comment_count} {$post.comment_str_translate}</h3>
+      {if $post.comment_count == 0}
+        <ul class="menu-v with-icons">
+          <!-- placeholder for new comments -->
+        </ul>
+      {/if}
 
-			{include 'comments.html' inline}
-	</div>
+      {include 'comments.html' inline}
+  </div>
 
-	<div class="comment-form">
-		<form action="{$post.comment_link}" method="post">
-			<a name="comment-0"></a>
-			<h4>[`Add comment`]</h4>
+  <div class="comment-form">
+    <form action="{$post.comment_link}" method="post">
+      <a name="comment-0"></a>
+      <h4>[`Add comment`]</h4>
 
-			<div class="comment-form-fields">
-				{if !$wa->user()->getId()}
-					{if $auth_adapters}
-						<ul class="menu-h auth-type" id="user-auth-provider">
-							<li data-provider="guest" {if !$current_auth_source}class="selected"{/if}><a href="#">[`Guest`]</a></li>
-							{foreach from=$auth_adapters item=adapter key=name}
-							<li data-provider="{$name}" {if $current_auth_source == $name}class="selected"{/if}><a href="#" onclick="return $.blog.oauth('{$name}');"><img src="{$adapter.photo_url_20|default:$adapter.photo_url}" alt="">{$adapter.name}</a></li>
-							{/foreach}
-						</ul>
-					{/if}
-					<div class="tab clear-left" data-provider="guest" {if $current_auth_source}style="display:none"{/if}>
-						<p>
-							<label for="comment_name">[`Your name`]</label>
-							<input type="text" name="name" id="comment_name" class="bold" value="">
-						</p>
-						{if !$wa->user()->getId()}
-						<p>
-							<label for="comment_email">[`Email`]</label>
-							<input type="text" name="email" id="comment_email">
-						</p>
-						<p>
-							<label for="comment_site">[`Website`]</label>
-							<input type="text" name="site" id="comment_site">
-						</p>
-						{/if}
-					</div>
-					{foreach from=$auth_adapters item=adapter key=name}
-						<div class="tab" data-provider="{$name}" {if $current_auth_source != $name}style="display:none"{/if}>
-							<p>
-								<label for="name">[`Your name`]</label>
-								<strong><img src="{$adapter.photo_url_20|default:$adapter.photo_url|default:"`$wa_url`wa-content/img/userpic20.jpg"}" class="userpic" />{$current_auth.name|escape}</strong>
-								<a href="{$wa_app_url}logout">[`log out`]</a>
-							</p>
-						</div>
-					{/foreach}
-				{else}
-					{$contact = $wa->contact($wa->user()->getId())}
-					<p>
-						<label>[`Your name`]</label>
-						<img src="{$current_user.photo20}" class="userpic"  alt=""> <strong>{$contact.name|escape}</strong> <a href="{$wa_app_url}logout">[`log out`]</a>
-					</p>
-				{/if}
+      <div class="comment-form-fields">
+        {if !$wa->user()->getId()}
+          {if $auth_adapters}
+            <ul class="menu-h auth-type" id="user-auth-provider">
+              <li data-provider="guest" {if !$current_auth_source}class="selected"{/if}><a href="#">[`Guest`]</a></li>
+              {foreach $auth_adapters as $name => $adapter}
+              <li data-provider="{$name}" {if $current_auth_source == $name}class="selected"{/if}><a href="#" onclick="return $.blog.oauth('{$name}');"><img src="{$adapter.photo_url_20|default:$adapter.photo_url}" alt="">{$adapter.name}</a></li>
+              {/foreach}
+            </ul>
+          {/if}
+          <div class="tab clear-left" data-provider="guest" {if $current_auth_source}style="display:none"{/if}>
+            <p>
+              <label for="comment_name">[`Your name`]</label>
+              <input type="text" name="name" id="comment_name" class="bold" value="">
+            </p>
+            {if !$wa->user()->getId()}
+            <p>
+              <label for="comment_email">[`Email`]</label>
+              <input type="text" name="email" id="comment_email">
+            </p>
+            <p>
+              <label for="comment_site">[`Website`]</label>
+              <input type="text" name="site" id="comment_site">
+            </p>
+            {/if}
+          </div>
+          {foreach $auth_adapters as $name => $adapter}
+            <div class="tab" data-provider="{$name}" {if $current_auth_source != $name}style="display:none"{/if}>
+              <p>
+                <label for="name">[`Your name`]</label>
+                <strong><img src="{$adapter.photo_url_20|default:$adapter.photo_url|default:"`$wa_url`wa-content/img/userpic20.jpg"}" class="userpic" />{$current_auth.name|escape}</strong>
+                <a href="{$wa_app_url}logout">[`log out`]</a>
+              </p>
+            </div>
+          {/foreach}
+        {else}
+          {$contact = $wa->contact($wa->user()->getId())}
+          <p>
+            <label>[`Your name`]</label>
+            <img src="{$current_user.photo20}" class="userpic"  alt=""> <strong>{$contact.name|escape}</strong> <a href="{$wa_app_url}logout">[`log out`]</a>
+          </p>
+        {/if}
 
-				<p>
-					<label for="comment_text">[`Comment`]</label>
-					<textarea id="comment_text" name="text" rows="10" cols="45"></textarea>
-				</p>
-			</div>
-			<div class="comment-submit">
-				{if $request_captcha && !$wa->user()->getId()}
-					{$wa->captcha()}
-				{/if}
-				<input type="hidden" name="auth_provider" value="{$current_auth_source|default:'guest'}">
-				<input type="hidden" name="parent" value="0">
-				<input type="submit" value="[`Add comment`]">
-				<img src="{$wa_url}wa-content/img/loading16.gif" style="display: none;" alt="">
-			</div>
-		</form>
-	{else}
-		<h4>[`Comments for non published posts are disabled`]</h4>
-	{/if}{* /if $post.status eq blogPostModel::STATUS_PUBLISHED *}
-	</div>
+        <p>
+          <label for="comment_text">[`Comment`]</label>
+          <textarea id="comment_text" name="text" rows="10" cols="45"></textarea>
+        </p>
+      </div>
+      <div class="comment-submit">
+        {if $request_captcha && !$wa->user()->getId()}
+          {$wa->captcha()}
+        {/if}
+        <input type="hidden" name="auth_provider" value="{$current_auth_source|default:blogCommentModel::AUTH_GUEST}">
+        <input type="hidden" name="parent" value="0">
+        <input type="submit" value="[`Add comment`]">
+        <img src="{$wa_url}wa-content/img/loading16.gif" style="display: none;" alt="">
+      </div>
+    </form>
+  {else}
+    <h4>[`Comments for non published posts are disabled`]</h4>
+  {/if}{* /if $post.status eq blogPostModel::STATUS_PUBLISHED *}
+  </div>
 
 {/if}{* /if $show_comments *}
 

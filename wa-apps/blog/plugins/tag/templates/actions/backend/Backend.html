@@ -4,7 +4,7 @@
 	</h5>
 	<ul id="blog-tags" class="collapsible" style="list-style-type: none; margin: 5px 0 0;">
 		<li class="tags">
-			{foreach from=$tags item=tag}
+			{foreach $tags as $tag}
 			<a href="?search=tag&amp;tag={$tag.name|escape:'url'}" style="font-size: {$tag.size}%; opacity: {$tag.opacity};" title="{$tag.count|escape}">{$tag.name|escape}</a>
 			{/foreach}
 		</li>

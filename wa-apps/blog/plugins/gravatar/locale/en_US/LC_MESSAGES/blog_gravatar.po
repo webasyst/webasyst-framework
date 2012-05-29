@@ -1,0 +1,56 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: blog/plugins/gravatar\n"
+"POT-Creation-Date: 2012-05-21 11:23+0400\n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: blog/plugins/gravatar\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Language: en_US\n"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-Basepath: .\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPath-1: .\n"
+
+#: /wa-apps/blog/plugins/gravatar/lib/config/plugin.php:12
+msgid "When you include a default image, Gravatar will automatically serve up that image if there is no image associated with the requested email hash."
+msgstr ""
+
+#: /wa-apps/blog/plugins/gravatar/lib/config/plugin.php:16
+msgid "Use default Blog app userpic"
+msgstr ""
+
+#: /wa-apps/blog/plugins/gravatar/lib/config/plugin.php:17
+msgid "(mystery-man) a simple, cartoon-style silhouetted outline of a person (does not vary by email hash)"
+msgstr ""
+
+#: /wa-apps/blog/plugins/gravatar/lib/config/plugin.php:18
+msgid "a geometric pattern based on an email hash"
+msgstr ""
+
+#: /wa-apps/blog/plugins/gravatar/lib/config/plugin.php:19
+msgid "a generated 'monster' with different colors, faces, etc"
+msgstr ""
+
+#: /wa-apps/blog/plugins/gravatar/lib/config/plugin.php:20
+msgid "generated faces with differing features and backgrounds"
+msgstr ""
+
+#: /wa-apps/blog/plugins/gravatar/lib/config/plugin.php:21
+msgid "awesome generated, 8-bit arcade-style pixelated faces"
+msgstr ""
+
+#: /wa-apps/blog/plugins/gravatar/lib/config/plugin.php:4
+msgid "Gravatar"
+msgstr ""
+
+#: /wa-apps/blog/plugins/gravatar/lib/config/plugin.php:5
+msgid "Globally Recognized Avatars. All commentators userpics are replaced with gravatar.com’s userpic (frontend only)"
+msgstr ""
+
+#: /wa-apps/blog/plugins/gravatar/lib/config/plugin.php:11
+msgid "Default image type"
+msgstr ""
+

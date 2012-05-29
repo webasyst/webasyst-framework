@@ -1,12 +1,13 @@
 <?php
 
 return array(
-    'name'        => 'Tags',//_wp('Tags');
-    'description' => "Assign tags to posts",//_wp("Assign tags to posts");
+    'name'        => /*_wp*/('Tags'),
+    'description' => /*_wp*/('Assign tags to posts'),
     'vendor'      => 'webasyst',
     'version'     => '1.0.0',
-    'img'=>'img/tags.png',
+    'img'         => 'img/tags.png',
     'frontend'    => true,
+
     'handlers'  => array(
         'search_posts_backend'   => 'postSearch',
         'search_posts_frontend'  => 'postSearch',

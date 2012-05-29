@@ -1,152 +1,165 @@
 <script type="text/javascript" src="{$wa_app_static_url}js/blogSettings.js?{$wa->version()}"></script>
 <div class="b-stream">
-	<div class="block triple-padded b-stream-title">
-		{if $blog_id}
-			<div class="float-right">
-				<ul class="menu-h">
-					<li>
-						<a href="#" class="dialog-confirm" id="blogdelete-dialog-confirm">
-							<i class="icon16 delete"><!-- icon --></i>[`Delete blog`]
-						</a>
-					</li>
-				</ul>
-			</div>
-		{/if}
-		<h1>
-			{if !empty($blog.name)}{$blog.name|escape}{else}[`New blog`]{/if}
-		</h1>
-	</div>
+  <div class="block triple-padded b-stream-title">
+    {if $blog_id}
+      <div class="float-right">
+        <ul class="menu-h">
+          <li>
+            <a href="#" class="dialog-confirm" id="blogdelete-dialog-confirm">
+              <i class="icon16 delete"><!-- icon --></i>[`Delete blog`]
+            </a>
+          </li>
+        </ul>
+      </div>
+    {/if}
+    <h1>
+      {if !empty($blog.name)}{$blog.name|escape}{else}[`New blog`]{/if}
+    </h1>
+  </div>
 
-	<div class="block triple-padded b-post {$blog.color}">
-		<form action="?module=blog&amp;action=settings&amp;blog={$blog_id}" method="post" id="blog-form">
-		{$wa->csrf()}
-		<div class="fields form">
-			<div class="field-group">
-				<div class="field">
-					<div class="name bold">
-						[`Blog name`]
-					</div>
-					<div class="value bold">
-						<input type="text" id="blog-name" class="large" name="settings[name]" value="{$blog.name|escape}">
-						{if isset($messages.blog_name) && $messages.blog_name}
-							<em id="message-blog-name" class="errormsg">{$messages.blog_name|escape}</em>
-						{else}
-							<em id="message-blog-name"></em>
-						{/if}
-					</div>
-				</div>
-				<div class="field">
-					<div class="name">
-						[`Blog type`]
-					</div>
-					<div class="value b-ibutton-checkbox no-shift">
-						<ul class="menu-h">
-							<li><span id="b-settings-blog-type-open-label" class="b-unselected">[`Private`]</span></li>
-							<li><input type="checkbox" id="b-settings-blog-type" name="settings[status]" {if $blog.status == blogBlogModel::STATUS_PUBLIC || (isset($messages.blog_url) && $messages.blog_url)}checked="checked"{/if}></li>
-							<li><span id="b-settings-blog-type-private-label">[`Public`]</span></li>
-						</ul>
+  <div class="block triple-padded b-post {$blog.color}">
+    <form action="?module=blog&amp;action=settings&amp;blog={$blog_id}" method="post" id="blog-form">
+    {$wa->csrf()}
+    <div class="fields form">
+      <div class="field-group">
+        <div class="field">
+          <div class="name bold">
+            [`Blog name`]
+          </div>
+          <div class="value bold">
+            <input type="text" id="blog-name" class="large" name="settings[name]" value="{$blog.name|escape}">
+            {if isset($messages.blog_name) && $messages.blog_name}
+              <em id="message-blog-name" class="errormsg">{$messages.blog_name|escape}</em>
+            {else}
+              <em id="message-blog-name"></em>
+            {/if}
+          </div>
+        </div>
+        <div class="field">
+          <div class="name">
+            [`Blog type`]
+          </div>
+          <div class="value b-ibutton-checkbox no-shift">
+            <ul class="menu-h">
+              <li><span id="b-settings-blog-type-open-label" class="b-unselected">[`Private`]</span></li>
+              <li><input type="checkbox" id="b-settings-blog-type" name="settings[status]" {if $blog.status == blogBlogModel::STATUS_PUBLIC || (isset($messages.blog_url) && $messages.blog_url)}checked="checked"{/if}></li>
+              <li><span id="b-settings-blog-type-private-label">[`Public`]</span></li>
+            </ul>
 
-						<span class="small" id="b-settings-blog-type-open-hint"><i class="icon10 yes"><!-- icon --></i> [`Blog posts are published and available in the frontend and RSS feed`]</span>
-						<span class="small" id="b-settings-blog-type-private-hint" style="display: none;"><i class="icon10 lock-bw"><!-- icon --></i> [`Blog posts are published and available only within Webasyst backend for users who have rights to access this blog`]</span>
-					</div>
-				</div>
-				<div class="field" id="b-settings-blog-url" {if $blog.status != blogBlogModel::STATUS_PUBLIC && (!isset($messages.blog_url) || !$messages.blog_url)}style="display:none;"{/if}>
+            <span class="small" id="b-settings-blog-type-open-hint"><i class="icon10 yes"><!-- icon --></i> [`Blog posts are published and available in the frontend and RSS feed`]</span>
+            <span class="small" id="b-settings-blog-type-private-hint" style="display: none;"><i class="icon10 lock-bw"><!-- icon --></i> [`Blog posts are published and available only within Webasyst backend for users who have rights to access this blog`]</span>
+          </div>
+        </div>
+        <div class="field" id="b-settings-blog-url" {if $blog.status != blogBlogModel::STATUS_PUBLIC && (!isset($messages.blog_url) || !$messages.blog_url)}style="display:none;"{/if}>
 
-					<div class="name">
-						[`Public URL`]
-					</div>
+          <div class="name">
+            [`Public URL`]
+          </div>
 
-					<div class="value no-shift">
+          <div class="value no-shift">
 
-						{if $blog.id}
+            {if $blog.id}
 
-							{if !isset($messages.blog_url) || !$messages.blog_url}
-								<a id="url-link" target="_blank" href="{$blog.settlement.url|escape}{if $blog.url}{$blog.url|escape}/{/if}">{$blog.settlement.url|escape}<span class="slug">{if $blog.url}{$blog.url}/{else}<!-- slug placeholder -->{/if}</span></a>
-								<a id="inline-edit-url" href="#" class="inline-link"><i class="icon10 edit"><!-- icon --></i><b><i>[`edit`]</i></b></a>
+              {if !isset($messages.blog_url) || !$messages.blog_url}
+                <a id="url-link" target="_blank" href="{$blog.settlement.url|escape}{if $blog.url}{$blog.url|escape}/{/if}">{$blog.settlement.url|escape}<span class="slug">{if $blog.url}{$blog.url}/{else}<!-- slug placeholder -->{/if}</span></a>
+                <a id="inline-edit-url" href="#" class="inline-link"><i class="icon10 edit"><!-- icon --></i><b><i>[`edit`]</i></b></a>
 
-								<span style="display: none;">
-									{$blog.settlement.url|escape}<input type="text" id="blog-url" name="settings[url]" value="{$blog.url|escape}" >/
-								</span>
-							{else}
-								<span>
-									{$blog.settlement.url|escape}<input type="text" id="blog-url" class="error" name="settings[url]" value="{$blog.url|escape}" >/
-								</span>
-							{/if}
+                <span style="display: none;">
+                  {$blog.settlement.url|escape}<input type="text" id="blog-url" name="settings[url]" value="{$blog.url|escape}" >/
+                </span>
+              {else}
+                <span>
+                  {$blog.settlement.url|escape}<input type="text" id="blog-url" class="error" name="settings[url]" value="{$blog.url|escape}" >/
+                </span>
+              {/if}
 
-						{else}
-							<span class="bold">
-								{$blog.settlement.url|escape}<input type="text" id="blog-url" {if isset($messages.blog_url) && $messages.blog_url}class="error"{/if} name="settings[url]" value="{$blog.url|escape}" >/
-							</span>
-						{/if}
+            {else}
+              <span class="bold">
+                {$blog.settlement.url|escape}<input type="text" id="blog-url" {if isset($messages.blog_url) && $messages.blog_url}class="error"{/if} name="settings[url]" value="{$blog.url|escape}" >/
+              </span>
+            {/if}
 
-						{if isset($blog.other_settlements) && !empty($blog.other_settlements)}
-							<div id="other-urls" class="hint">
-								{foreach from=$blog.other_settlements item=settlement name=settlement}
-									{$settlement.url|escape}<span class="slug" {if $settlement.single}data-single="1"{/if}>{if $blog.url && !$settlement.single}{$blog.url}/{else}<!-- slug placeholder -->{/if}</span><br>
-								{/foreach}
-							</div>
-						{/if}
+            {if isset($blog.other_settlements) && !empty($blog.other_settlements)}
+              <div id="other-urls" class="hint">
+                {foreach $blog.other_settlements as $settlement}
+                  {$settlement.url|escape}<span class="slug" {if $settlement.single}data-single="1"{/if}>{if $blog.url && !$settlement.single}{$blog.url}/{else}<!-- slug placeholder -->{/if}</span><br>
+                {/foreach}
+              </div>
+            {/if}
 
-						{if isset($messages.blog_url) && $messages.blog_url}
-							<em id="message-blog-url" class="errormsg">{$messages.blog_url|escape}</em>
-						{else}
-							<em id="message-blog-url"></em>
-						{/if}
+            {if isset($messages.blog_url) && $messages.blog_url}
+              <em id="message-blog-url" class="errormsg">{$messages.blog_url|escape}</em>
+            {else}
+              <em id="message-blog-url"></em>
+            {/if}
 
-					</div>
-				</div>
+          </div>
+        </div>
 
-			</div>
-			<div class="field-group">
-				<div class="field">
-					<div class="name">
-						[`Color`]
-					</div>
-					<div class="value">
-						<ul class="menu-h b-blog-settings-colorbox">
-							{foreach from=$colors item=color}
+      </div>
+      <div class="field-group">
+        <div class="field">
+          <div class="name">
+            [`Color`]
+          </div>
+          <div class="value">
+            <ul class="menu-h b-blog-settings-colorbox">
+              {foreach $colors as $color}
 
-								<li class="{$color}" ><a href="#"><input {if ($blog.color == $color)}checked="checked"{/if} value="{$color}"  type="radio" name="settings[color]"></a></li>
-							{/foreach}
-						</ul>
-						<span class="hint">[`Color coding is used only within Webasyst backend`]</span>
-					</div>
-				</div>
-			</div>
-			<div class="field-group">
-				<div class="field">
-					<div class="name">
-						[`Icon`]
-					</div>
-					<div class="value">
-						<ul class="menu-h">
-							{foreach from=$icons item=icon}
-								<li class="b-setting-icon{if ($blog.icon == $icon)} selected{/if}" id="b-icon-{$icon|escape}"><a href="#"><i class="icon16 {$icon}"><!-- icon --></i></a></li>
-							{/foreach}
-						</ul>
-						<input type="hidden" name="settings[icon]" value="{$blog.icon}">
-						<br>
-						<span class="small">[`Or enter icon URL (should be a 16x16 px image)`]:</span><br>
-						<input id="b-icon-url" type="text" value="{$blog.icon_url|escape}" name="settings[icon_url]">
+                <li class="{$color}" ><a href="#"><input {if ($blog.color == $color)}checked="checked"{/if} value="{$color}"  type="radio" name="settings[color]"></a></li>
+              {/foreach}
+            </ul>
+            <span class="hint">[`Color coding is used only within Webasyst backend`]</span>
+          </div>
+        </div>
+      </div>
+      <div class="field-group">
+        <div class="field">
+          <div class="name">
+            [`Icon`]
+          </div>
+          <div class="value">
+            <ul class="menu-h">
+              {foreach $icons as $icon}
+                <li class="b-setting-icon{if ($blog.icon == $icon)} selected{/if}" id="b-icon-{$icon|escape}"><a href="#"><i class="icon16 {$icon}"><!-- icon --></i></a></li>
+              {/foreach}
+            </ul>
+            <input type="hidden" name="settings[icon]" value="{$blog.icon}">
+            <br>
+            <span class="small">[`Or enter icon URL (should be a 16x16 px image)`]:</span><br>
+            <input id="b-icon-url" type="text" value="{$blog.icon_url|escape}" name="settings[icon_url]">
 
-					</div>
-				</div>
-			</div>
-			<div class="field">
-				<div class="value">
-					<input type="submit" class="button green" value="[`Save`]">
-				</div>
-			</div>
-		</div>
-		</form>
-		{if $blog_id}
-		<form action="?module=blog&amp;action=delete" method="post">
-			{$wa->csrf()}
-			<p><input type="hidden" name="id" id="blog-id" value="{$blog_id}"></p>
-			{include file='./../../dialogs/blogDelete.html' inline}
+          </div>
+        </div>
+      </div>
 
-		</form>
-		{/if}
-		<div class="clear-left"></div>
-	</div>
+
+      {* @event backend_blog_edit.%plugin_id%.settings *}
+      <!-- plugin hook: "backend_blog_edit.settings" -->
+      {foreach $backend_blog_edit as $plugin => $output}
+        {if is_array($output) && isset($output.settings)}
+
+          <!-- begin {$plugin} -->{$output.settings}<!-- end {$plugin} -->
+        {/if}
+      {/foreach}
+
+      <!-- end plugin hook: "backend_blog_edit.settings" -->
+
+      <div class="field">
+        <div class="value">
+          <input type="submit" class="button green" value="[`Save`]">
+        </div>
+      </div>
+    </div>
+    </form>
+    {if $blog_id}
+    <form action="?module=blog&amp;action=delete" method="post">
+      {$wa->csrf()}
+      <p><input type="hidden" name="id" id="blog-id" value="{$blog_id}"></p>
+      {include file='./../../dialogs/blogDelete.html' inline}
+
+    </form>
+    {/if}
+    <div class="clear-left"></div>
+  </div>
 </div>

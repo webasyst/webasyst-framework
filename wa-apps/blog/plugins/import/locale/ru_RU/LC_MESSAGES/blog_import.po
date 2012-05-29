@@ -1,0 +1,177 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: blog/plugins/import\n"
+"POT-Creation-Date: 2012-05-22 18:25+0400\n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: blog/plugins/import\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=((((n%10)==1)&&((n%100)!=11))?(0):(((((n%10)>=2)&&((n%10)<=4))&&(((n%100)<10)||((n%100)>=20)))?(1):2));\n"
+"X-Poedit-Language: ru_RU\n"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-Basepath: .\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPath-1: .\n"
+
+#: /wa-apps/blog/plugins/import/templates/actions/backend/BackendSettings.html:9
+msgid "Source"
+msgstr "Откуда"
+
+#: /wa-apps/blog/plugins/import/templates/actions/backend/BackendSettings.html:12
+msgid "Platform"
+msgstr "Платформа"
+
+#: /wa-apps/blog/plugins/import/templates/actions/backend/BackendSettings.html:15
+msgid "Select platform"
+msgstr "Выберите платформу"
+
+#: /wa-apps/blog/plugins/import/templates/actions/backend/BackendSettings.html:33
+msgid "Target"
+msgstr "Куда"
+
+#: /wa-apps/blog/plugins/import/templates/actions/backend/BackendSettings.html:47
+msgid "Import"
+msgstr "Импортировать"
+
+#: /wa-apps/blog/plugins/import/templates/actions/backend/BackendSettings.html:58
+msgid "Please do not close your browser window and do not leave this page until the entire import process is finished."
+msgstr "Пожалуйста, не закрывайте окно браузера и не уходите с этой страницы, чтобы не прервать процесс импорта."
+
+#: /wa-apps/blog/plugins/import/lib/actions/backend/blogImportPluginBackendSetup.controller.php:16
+msgid "Transport type %s not found"
+msgstr "Платформа %s не найдена"
+
+#: /wa-apps/blog/plugins/import/lib/actions/backend/blogImportPluginBackendSettings.action.php:15
+msgid "Import posts and comments from a WordPress blog"
+msgstr "Импорт записей и комментариев из блога на основе WordPress"
+
+#: /wa-apps/blog/plugins/import/lib/actions/backend/blogImportPluginBackendSettings.action.php:16
+msgid "Import posts from a LiveJournal blog (comments are not imported)"
+msgstr "Импорт записей из ЖЖ (комментарии не будут импортированы)"
+
+#: /wa-apps/blog/plugins/import/lib/actions/backend/blogImportPluginBackendSettings.action.php:43
+msgid "Search for"
+msgstr "Найти"
+
+#: /wa-apps/blog/plugins/import/lib/actions/backend/blogImportPluginBackendSettings.action.php:43
+msgid "Replace with"
+msgstr "Заменить на строку"
+
+#: /wa-apps/blog/plugins/import/lib/actions/backend/blogImportPluginBackendSettings.action.php:43
+msgid "Reg Exp<br /> (advanced)"
+msgstr "Reg Exp"
+
+#: /wa-apps/blog/plugins/import/lib/actions/backend/blogImportPluginBackendSettings.action.php:44
+msgid "Add a rule"
+msgstr "Добавить правило"
+
+#: /wa-apps/blog/plugins/import/lib/classes/blogImportPluginLjTransport.class.php:29
+msgid "LiveJournal user"
+msgstr "Пользователь ЖЖ"
+
+#: /wa-apps/blog/plugins/import/lib/classes/blogImportPluginWordpressTransport.class.php:32
+msgid "Password"
+msgstr "Пароль"
+
+#: /wa-apps/blog/plugins/import/lib/classes/blogImportPluginTransport.class.php:43
+msgid "Target blog not found"
+msgstr "Целевой блог не найден"
+
+#: /wa-apps/blog/plugins/import/lib/classes/blogImportPluginTransport.class.php:154
+msgid "Invalid URL"
+msgstr "Неверный URL"
+
+#: /wa-apps/blog/plugins/import/lib/classes/blogImportPluginTransport.class.php:241
+msgid "I/O error: %s"
+msgstr "Ошибка чтения данных: %s"
+
+#: /wa-apps/blog/plugins/import/lib/classes/blogImportPluginWordpressTransport.class.php:68
+msgid "WordPress version should be at least 1.5.0"
+msgstr "Версия WordPress должна быть не ниже 1.5.0. Пожалуйста, обновите ваш блог WordPress до более новой версии"
+
+#: /wa-apps/blog/plugins/import/lib/classes/blogImportPluginWordpressTransport.class.php:20
+msgid "Wordpress URL"
+msgstr "Wordpress URL"
+
+#: /wa-apps/blog/plugins/import/lib/classes/blogImportPluginWordpressTransport.class.php:21
+msgid "Source blog URL"
+msgstr "Адрес блога, из которого должны быть импортированы записи"
+
+#: /wa-apps/blog/plugins/import/lib/classes/blogImportPluginWordpressTransport.class.php:26
+msgid "Login"
+msgstr "Логин"
+
+#: /wa-apps/blog/plugins/import/lib/classes/blogImportPluginWordpressTransport.class.php:28
+msgid "Wordpress blog user login"
+msgstr "Логин пользователя WordPress"
+
+#: /wa-apps/blog/plugins/import/lib/classes/blogImportPluginWordpressTransport.class.php:34
+msgid "Wordpress blog user password"
+msgstr "Пароль пользователя WordPress"
+
+#: /wa-apps/blog/plugins/import/lib/config/plugin.php:39
+msgid "All imported posts will be authored by this user"
+msgstr "Автором всех импортированных записей будет назначен выбранный пользователь Вебасиста"
+
+#: /wa-apps/blog/plugins/import/lib/config/plugin.php:4
+msgid "Import posts"
+msgstr "Импорт записей"
+
+#: /wa-apps/blog/plugins/import/lib/config/plugin.php:5
+msgid "Transfer posts from popular blog platforms such as Wordpress and LiveJournal"
+msgstr "Импорт записей из блогов, работающих на основе популярных платформ, таких как ЖЖ и Вордпресс"
+
+#: /wa-apps/blog/plugins/import/lib/config/plugin.php:14
+msgid "Filter duplicate posts"
+msgstr "Дубликаты"
+
+#: /wa-apps/blog/plugins/import/lib/config/plugin.php:20
+msgid "By post title"
+msgstr "Фильтровать по заголовку записи"
+
+#: /wa-apps/blog/plugins/import/lib/config/plugin.php:21
+msgid "If a blog post with the same name exists in the target WebAsyst blog, the post will not be imported"
+msgstr "Не импортировать запись, если запись с таким заголовком уже существует"
+
+#: /wa-apps/blog/plugins/import/lib/config/plugin.php:25
+msgid "Don’t filter duplicates"
+msgstr "Импортировать все записи"
+
+#: /wa-apps/blog/plugins/import/lib/config/plugin.php:26
+msgid "All posts will be imported"
+msgstr "Без фильтрации дубликатов"
+
+#: /wa-apps/blog/plugins/import/lib/config/plugin.php:32
+msgid "Blog"
+msgstr "Блог"
+
+#: /wa-apps/blog/plugins/import/lib/config/plugin.php:33
+msgid "Target blog where all posts should be imported"
+msgstr "Целевой блог, в который будут добавлены записи"
+
+#: /wa-apps/blog/plugins/import/lib/config/plugin.php:38
+msgid "Author"
+msgstr "Автор"
+
+#: /wa-apps/blog/plugins/import/lib/config/plugin.php:44
+msgid "Find and replace"
+msgstr "Найти и заменить строки в текстах записей"
+
+#: /wa-apps/blog/plugins/import/lib/actions/backend/blogImportPluginBackendSettings.action.php:59
+msgid "Remove the rule"
+msgstr "Удалить правило"
+
+#: /wa-apps/blog/plugins/import/js/settings.js:150
+msgid "If you leave this page now, the import process is likely to be interrupted. Leave the page?"
+msgstr ""
+
+#: /wa-apps/blog/plugins/import/lib/actions/backend/blogImportPluginBackendRun.controller.php:61
+msgid "Author not found or has insufficient rights"
+msgstr "Автор не найден или не имеет достаточных прав"
+
+#: /wa-apps/blog/plugins/import/lib/classes/blogImportPluginLjTransport.class.php:154
+msgid "LiveJournal does not appear to be responding right now. Please try again later."
+msgstr "Живой Журнал в данный момент недоступен. Пожалуйста, повторите попытку позже."
+

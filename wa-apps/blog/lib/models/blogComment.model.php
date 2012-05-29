@@ -4,6 +4,9 @@ class blogCommentModel extends waNestedSetModel
     const STATUS_DELETED	 = 'deleted';
     const STATUS_PUBLISHED	 = 'approved';
 
+    const AUTH_USER = 'user';
+    const AUTH_GUEST = 'guest';
+
     protected $table = 'blog_comment';
 
     /**
@@ -72,9 +75,9 @@ SQL;
             }
             if (!$item['auth_provider']) {
                 if ($item['contact_id']) {
-                    $item['auth_provider'] = 'user';
+                    $item['auth_provider'] = blogCommentModel::AUTH_USER;
                 } else {
-                    $item['auth_provider'] = 'guest';
+                    $item['auth_provider'] = blogCommentModel::AUTH_GUEST;
                 }
             }
             unset($item);
@@ -181,7 +184,11 @@ SQL;
     public function add($comment, $parent = null)
     {
         if (!isset($comment['ip']) && ($ip = waRequest::getIp())) {
-            $comment['ip'] = intval(ip2long($ip));
+            $ip = ip2long($ip);
+            if ($ip > 2147483647) {
+                $ip -= 4294967296;
+            }
+            $comment['ip'] = $ip;
         }
 
         if (!isset($comment['datetime'])) {
@@ -206,10 +213,8 @@ SQL;
          * @param int $comment.parent
          * @return void
          */
-        if($errors = wa()->event('comment_presave_'.wa()->getEnv(), $comment)) {
-            return $errors;
-        }
-        $res = parent::add($comment, $parent);
+        wa()->event('comment_presave_'.wa()->getEnv(), $comment);
+        $comment['id'] = parent::add($comment, $parent);
         /**
          * @event comment_save_frontend
          * @event comment_save_backend
@@ -219,7 +224,7 @@ SQL;
          * @return void
          */
         wa()->event('comment_save_'.wa()->getEnv(), $comment);
-        return $res;
+        return $comment['id'];
     }
 
 
@@ -258,12 +263,14 @@ SQL;
         return $res;
     }
 
-    public static function validate($comment,$auth = 'guest')
+    public function validate($comment)
     {
         $errors = array();
-        // guest
-        switch($auth) {
-            case 'guest':{
+        if (empty($comment['auth_provider'])) {
+            $comment['auth_provider'] = self::AUTH_GUEST;
+        }
+        switch($comment['auth_provider']) {
+            case self::AUTH_GUEST:{
                 if (!empty($comment['site']) && strpos($comment['site'], '://')===false) {
                     $comment['site'] = "http://" . $comment['site'];
                 }
@@ -298,6 +305,27 @@ SQL;
         if (mb_strlen( $comment['text'] ) > 4096) {
             $errors[]['text'] = _w('Comment length should not exceed 4096 symbols');
         }
+
+        /**
+         * @event comment_validate
+         * @param array[string]mixed $data
+         * @param array['plugin']['%plugin_id%']mixed plugin data
+         * @return array['%plugin_id%']['field']string error
+         */
+        $plugin_erros = wa()->event('comment_validate',$comment);
+        if(is_array($plugin_erros)) {
+            foreach ($plugin_erros as $plugin) {
+                if ($plugin !== true) {
+                    if($plugin) {
+                        $errors[] = $plugin;
+                    } else {
+                        $errors[]['text'] = _w('Invalid data');
+                    }
+                }
+            }
+        }
+
+
         return $errors;
 
     }

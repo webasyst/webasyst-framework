@@ -9,7 +9,16 @@ class blogViewHelper extends waAppViewHelper
         return blogBlog::getUrl();
     }
 
+    /**
+     *
+     * @deprecated
+     */
     public function rss()
+    {
+        return $this->rssUrl();
+    }
+
+    public function rssUrl()
     {
         return $this->wa->getRouteUrl('blog/frontend/rss',array(), true);
     }
@@ -83,10 +92,15 @@ class blogViewHelper extends waAppViewHelper
     {
         if ($blog_id === true) {
             $name = blogRightConfig::RIGHT_ADD_BLOG;
-        } else {
+        } elseif($blog_id) {
             $name = "blog.{$blog_id}";
+        } else {
+            $name = "blog.%";
         }
-        return wa()->getUser()->getRights('blog',$name);
+        $rights = (array)wa()->getUser()->getRights('blog',$name);
+        $rights[] = blogRightConfig::RIGHT_NONE;
+        return max($rights);
+
     }
 
     public function isAdmin()

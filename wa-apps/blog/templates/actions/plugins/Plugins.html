@@ -1,101 +1,45 @@
-{if $plugins && count($plugins)}
-<script type="text/javascript">
-$.wa_blog.plugins_akismet = {
-		list: null,
-		init : function() {
-			self = this;
-			self.list = $('#plugin-list').sortable({
-    		'containment' : 'parent',
-    		'distance' : 5,
-    		'tolerance' : 'pointer',
-    		'update' : function(event, ui) {
-    			$.ajax({
-    				type: 'POST',
-    				url: '?module=plugins&action=sort',
-    				data: {
-    					slug : $(ui.item).attr('id').replace(/^plugin-/,''),
-    					pos: $(ui.item).index()
-    				},
-    				success: function(data, textStatus, jqXHR){
-    					if (!data || !data.status || (data.status != "ok") || !data.data || (data.data != "ok")) {
-    						self.list.sortable('cancel');
-    					}
-    				},
-    				error: function(){
-    					self.list.sortable('cancel');
-    				}
-    			});
-    		}
-		});
-	}
-};
-</script>
-{/if}
-
+{wa_js file="js/compiled/blogPlugins.js"}
+	{$wa_url}wa-content/js/jquery-plugins/jquery.history.js
+	{$wa_app_static_url}js/blogPlugins.js
+{/wa_js}
+  <script type="text/javascript">
+  $.wa_blog.plugins = $.extend(true,$.wa_blog.plugins,{
+    'options':{
+      plugins:{json_encode($plugins)}
+    }
+  });
+  </script>
 <div class="shadowed">
 
-	<div class="sidebar left200px">
-		<div class="b-plugin-list">
+  <div class="sidebar left200px">
+    <div class="b-plugin-list">
 
-			<ul id="plugin-list" class="menu-v with-icons">
-			{foreach from=$plugins item=plugin} <!-- {$plugin.id}  -->
-				<li id="plugin-{$plugin.name}" {if $plugin_slug == $plugin.id}class="selected"{/if}>
-					<a href="?module=plugins&amp;slug={$plugin.id}">
-						<i class="icon16{if !isset($plugin.img)} plugins{else}" style="background-image: url('{wa_url()}{$plugin.img}');{/if}"><!-- icon --></i>{$plugin.name|escape}
-						{if $plugin.description}
-							<span class="hint">{$plugin.description|escape}</span>
-						{/if}
-					</a>
-				</li>
-			{foreachelse}
-				<li>[`No plugins installed`]</li>
-			{/foreach}
-			</ul>
+      <ul id="plugin-list" class="menu-v with-icons">
+      {foreach $plugins as $plugin} <!-- {$plugin.id}  -->
+        <li id="plugin-{$plugin.id}">
+          <a href="?module=plugins{if empty($plugin.blog_settings)}#/settings/generic/{$plugin.id}/{else}#/settings/custom/{$plugin.id}/{/if}">
+            <i class="icon16{if !isset($plugin.img)} plugins{else}" style="background-image: url('{wa_url()}{$plugin.img}');{/if}"><!-- icon --></i>{$plugin.name|escape}
+            {if $plugin.description}
+              <span class="hint">{$plugin.description|escape}</span>
+            {/if}
+          </a>
+        </li>
+      {foreachelse}
+        <li>[`No plugins installed`]</li>
+      {/foreach}
+      </ul>
 
-			<div class="align-center hint hr">
-				[`Plugin order defines the order they are executed. Sort plugin list to change the order.`]
-			</div>
-		</div>
+      <div class="align-center hint hr">
+        [`Plugin order defines the order they are executed. Sort plugin list to change the order.`]
+      </div>
+    </div>
 
-	</div>
+  </div>
 
-	<div class="content left200px">
+  <div class="content left200px">
 
-		<div class="block double-padded b-plugin-content">
-
-		{if isset($plugin_slug)}
-
-			{if $plugin_settings}
-			<div class="fields form">
-
-			<form method="POST" action="?module=plugins&amp;slug={$plugin_slug}">
-				{foreach from=$plugin_settings item=setting key=id}
-					<div class="field">
-						{$setting.control}
-					</div>
-				{/foreach}
-
-				<div class="clear-left"></div>
-				<div class="field">
-					<div class="value submit">
-						{$wa->csrf()}
-						<input type="submit" class="button green" value="[`Save`]">
-					</div>
-				</div>
-			</form>
-			</div>
-			{else}
-				<div class="block double-padded align-center gray">
-					<strong>{$plugins[$plugin_slug]['name']|string_format:'[`Plugin %s is installed and working.`]'}</strong>
-					<br />
-					<br />
-					[`No configuration options are available for this plugin.`]
-				</div>
-			{/if}
-
-			<div class="clear-left"></div>
-
-		{/if}
-		</div>
-	</div>
+    <div class="block double-padded b-plugin-content" id="blog-ajax-settings-container">
+      <div class="clear-left"></div>
+    </div>
+  </div>
 </div>

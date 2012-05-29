@@ -177,7 +177,7 @@ class blogHelper
                     $row['user']['name'] = $row['contact_name'];
                 }
                 if (isset($row['auth_provider'])) {
-                    if ($row['auth_provider'] && ($row['auth_provider'] != 'guest')) {
+                    if ($row['auth_provider'] && ($row['auth_provider'] != blogCommentModel::AUTH_GUEST)) {
                         $row['user']['photo_url'] = "{$app_static_url}img/{$row['auth_provider']}.png";
                         foreach ($photo_fields as $field) {
                             $row['user'][$field] = &$row['user']['photo_url'];
@@ -372,17 +372,19 @@ class blogHelper
     public static function getAvailable($extended = true, $blog_id = null)
     {
         static $blogs_cache = array();
+        $extended = intval($extended)?true:false;
         $backend = (wa()->getEnv()=='backend')?true:false;
         if (!isset($blogs_cache[$extended])) {
             $blog_model = new blogBlogModel();
 
             $blogs = $blog_model->getAvailable($backend,$extended?'name,icon,color,id,url,status':'name,id,url') ;
-            if ($extended) {
-                foreach ($blogs as $id=>&$blog) {
+
+            foreach ($blogs as $id=>&$blog) {
+                if ($extended) {
                     $blog['class'] = $blog['color'];
 
                     if ( strpos($blog['icon'], '.') ) {
-                        $blog['style'] = "background-image: url('{$blog['icon']}');";
+                        $blog['style'] = "background-image: url('{$blog['icon']}'); background-repeat: no-repeat;";
                     }
                     else {
                         $blog['class'] .= ($blog['class']?' ':'').'icon16 '.$blog['icon'];
@@ -390,10 +392,11 @@ class blogHelper
 
                     unset($blog['color']);
                     unset($blog['icon']);
-                    $blog['value'] =$id;
-                    $blog['title'] = $blog['name'];
-                    unset($blog);
                 }
+                $blog['value'] =$id;
+                $blog['title'] = $blog['name'];
+                unset($blog);
+
             }
             $blogs_cache[$extended] = $blogs;
         } else {
@@ -411,7 +414,7 @@ class blogHelper
         if (isset($item['icon'])) {
             if ( strpos($item['icon'], '.') ) {
                 $item['icon_url'] = $item['icon'];
-                $item['icon_html'] = '<i class="icon16" style="background-image: url(\''.$item['icon'].'\');"'.$title.'><!-- icon --></i>';
+                $item['icon_html'] = '<i class="icon16" style="background-image: url(\''.$item['icon'].'\'); background-repeat: no-repeat;"'.$title.'><!-- icon --></i>';
             } else {
                 $item['icon_url'] = false;
                 $item['icon_html'] = '<i class="icon16 '.$item['icon'].'"'.$title.'><!-- icon --></i>';
@@ -448,7 +451,8 @@ class blogHelper
      */
     public static function getUrl($blog_id = null, $route_rule = null, $params = array(), $absolute = true)
     {
-        if (wa()->getEnv() == 'backend') {
+        $env = wa()->getEnv();
+        if (in_array($env, array('cli', 'backend'))) {
             $routing =  wa()->getRouting();
             $domain_routes = $routing->getByApp('blog');
             $current_domain = $routing->getDomain();
@@ -469,7 +473,13 @@ class blogHelper
                         #hack to override current route
                         $route['module'] = 'frontend';
                         $routing->setRoute($route, $domain);
-                        $p_url[] = $routing->getUrl($route_rule, $params, $absolute);
+                        $url_variant = $routing->getUrl($route_rule, $params, $absolute);
+                        if ($url_variant) {
+                            $p_url[] =$url_variant;
+                            if ($env == 'cli') {
+                                break 2;
+                            }
+                        }
                     }
                 }
             }
@@ -478,6 +488,9 @@ class blogHelper
             // restore route
             if (isset($current_routes) && is_array($current_routes) && !empty($current_routes)) {
                 $routing->setRoute(array_shift($current_routes), $current_domain);
+            }
+            if($env == 'cli') {
+                $url = array_shift($url);
             }
         } else {
             $url = wa()->getRouteUrl($route_rule, $params, $absolute);

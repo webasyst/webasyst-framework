@@ -9,10 +9,10 @@ class blogFavoritePlugin extends blogPlugin
         $count = $favorite_model->countByField('contact_id',wa()->getUser()->getId());
 
         $selected = '';
-        if ( waRequest::get('favorites') !== null ) {
+        if ( waRequest::get('search') == $this->id ) {
             $selected = 'class="selected"';
         }
-        $output['menu'] = '<li '.$selected.'><span class="count favorites_count">'.$count.'</span><a href="?search=favorite"><i class="icon16 star"><!-- icon --></i>'._wp('Favorites').'</a></li>';
+        $output['menu'] = '<li '.$selected.'><span class="count favorites_count">'.$count.'</span><a href="?search='.$this->id.'"><i class="icon16 star"><!-- icon --></i>'._wp('Favorites').'</a></li>';
         return $output;
     }
 

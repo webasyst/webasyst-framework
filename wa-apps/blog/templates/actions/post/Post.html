@@ -4,217 +4,213 @@
 {$wa_app_static_url}js/blogPost.js
 {/wa_js}
 
-	<div class="b-stream b-first-post">
-		<div class="block triple-padded b-stream-title">
+  <div class="b-stream b-first-post">
+    <div class="block triple-padded b-stream-title">
 
-			<h1>
-			{if isset($blog) && $blog}
+      <h1>
+      {if isset($blog) && $blog}
 
-				{if $blog.status eq blogBlogModel::STATUS_PUBLIC}
-					{$blog.name|escape}
-					<a href="{$blog.link|escape:'uri'}" target="_blank" title="[`Open on website`]: {$blog.link}"><i class="icon16 new-window"><!-- icon --></i></a>
-				{else}
-					<!-- <span title="[`Private blog`]" class="hint"> </span> -->
-					{$blog.name|escape}
-					<i class="icon16 lock-bw" title="[`Private blog`]"><!-- icon --></i>
-				{/if}
-			{else}
-				{$blog.name|escape}
-			{/if}
-			</h1>
-		</div>
+        {if $blog.status eq blogBlogModel::STATUS_PUBLIC}
+          {$blog.name|escape}
+          <a href="{$blog.link|escape:'uri'}" target="_blank" title="[`Open on website`]: {$blog.link}"><i class="icon16 new-window"><!-- icon --></i></a>
+        {else}
+          <!-- <span title="[`Private blog`]" class="hint"> </span> -->
+          {$blog.name|escape}
+          <i class="icon16 lock-bw" title="[`Private blog`]"><!-- icon --></i>
+        {/if}
+      {else}
+        {$blog.name|escape}
+      {/if}
+      </h1>
+    </div>
 
-		<div class="block triple-padded b-post b-white b-one-post-on-page {$blog.color}" id="b-post-{$post.id}">
-			{assign var=post_edit value=false}
-			{if ($post.rights ge blogRightConfig::RIGHT_FULL) or (($post.contact_id eq $current_contact.id) and ($post.rights ge blogRightConfig::RIGHT_READ_WRITE))}
-				{assign var=post_edit value=ture}
-				<div class="float-right">
-					<ul class="menu-h">
-						<li>
-							<a href="?module=post&amp;action=edit&amp;id={$post.id}"><i class="icon16 edit"><!-- icon --></i>[`Edit post`]</a>
-						</li>
-						<li>
-							<a href="#{*?module=post&amp;action=delete&amp;id={$post.id*}" class="dialog-confirm" id="postdelete-dialog-confirm" title="{$post.title|escape|string_format:'[`Post %s will be deleted permanently. Delete?`]'}"><i class="icon16 delete"><!-- icon --></i>[`Delete`]</a>
-						</li>
-					</ul>
-				</div>
-				{capture append="dialogs"}
-					{include file='./../../dialogs/postDelete.html' inline}
-				{/capture}
-			{/if}
+    <div class="block triple-padded b-post b-white b-one-post-on-page {$blog.color}" id="b-post-{$post.id}">
+      {$post_edit=false}
+      {if ($post.rights ge blogRightConfig::RIGHT_FULL) or (($post.contact_id eq $current_contact.id) and ($post.rights ge blogRightConfig::RIGHT_READ_WRITE))}
+        {$post_edit=true}
+        <div class="float-right">
+          <ul class="menu-h">
+            <li>
+              <a href="?module=post&amp;action=edit&amp;id={$post.id}"><i class="icon16 edit"><!-- icon --></i>[`Edit post`]</a>
+            </li>
+            <li>
+              <a href="#{*?module=post&amp;action=delete&amp;id={$post.id*}" class="dialog-confirm" id="postdelete-dialog-confirm" title="{$post.title|escape|string_format:'[`Post %s will be deleted permanently. Delete?`]'}"><i class="icon16 delete"><!-- icon --></i>[`Delete`]</a>
+            </li>
+          </ul>
+        </div>
+        {capture append="dialogs"}
+          {include file='./../../dialogs/postDelete.html' inline}
+        {/capture}
+      {/if}
 
-			<div class="profile image50px">
-				<div class="image">
-					{if $contact_rights && $post.contact_id}
-					<a href="{$wa_backend_url}contacts/#/contact/{$post.contact_id}">
-						<img src="{$post.user.photo_url_50}" alt="{$post.user.name|escape}">
-					</a>
-					{else}
-						<img src="{$post.user.photo_url_50}" alt="{$post.user.name|escape}">
-					{/if}
-				</div>
-				<div class="details">
-					<h1>
-						{$post.title|default:'[`(empty title)`]'|escape}
-
-
-						{if isset($post.plugins) && isset($post.plugins.post_title) && $post.plugins.post_title}
-
-							{* @event prepare_posts_backend.%plugin_id%.post_title *}
-							<!-- plugin hook: "prepare_posts_backend.*.post_title" -->
-							{foreach from=$post.plugins.post_title item=output key=plugin}
-
-								<!-- begin "prepare_posts_backend.{$plugin}.post_title" -->
-								{$output}
-								<!-- end "prepare_posts_backend.{$plugin}.post_title" -->
-							{/foreach}
-							<!-- end plugin hook: "prepare_posts_backend.*.post_title" -->
-						{/if}
-
-						{if isset($post.plugins) && isset($post.plugins.post_title_right) && $post.plugins.post_title_right}
-
-							{* @event prepare_posts_backend.%plugin_id%.post_title_right *}
-							<!-- plugin hook: "prepare_posts_backend.*.post_title_right" -->
-							{foreach from=$post.plugins.post_title_right item=output key=plugin}
-
-								<!-- begin "prepare_posts_backend.{$plugin}.post_title_right" -->
-								{$output}
-								<!-- end "prepare_posts_backend.{$plugin}.post_title_right" -->
-							{/foreach}
-							<!-- end plugin hook: "prepare_posts_backend.*.post_title_right" -->
-						{/if}
-					</h1>
-
-					<div class="b-post-credentials">
-						{if $contact_rights && $post.contact_id}
-							<a class="b-gray-link" href="{$wa_backend_url}contacts/#/contact/{$post.contact_id}">{$post.user.name|escape}</a>
-						{else}
-							<span>{$post.user.name|escape}</span>
-						{/if}
-
-						<span>{$post.datetime|wa_datetime:"humandatetime"}</span>
-
-						{if $blog.status eq blogBlogModel::STATUS_PUBLIC}
-							{foreach $post.link item=link}
-								<a target="_blank" href="{$link}">{$link}</a><i class="icon10 new-window"><!-- icon --></i>
-							{/foreach}
-						{/if}
-					</div>
-
-				</div>
-			</div>
-
-			<div class="b-post-body">
+      <div class="profile image50px">
+        <div class="image">
+          {if $contact_rights && $post.contact_id}
+          <a href="{$wa_backend_url}contacts/#/contact/{$post.contact_id}">
+            <img src="{$post.user.photo_url_50}" alt="{$post.user.name|escape}">
+          </a>
+          {else}
+            <img src="{$post.user.photo_url_50}" alt="{$post.user.name|escape}">
+          {/if}
+        </div>
+        <div class="details">
+          <h1>
+            {$post.title|default:'[`(empty title)`]'|escape}
 
 
-			{if isset($post.plugins) && isset($post.plugins.before) && $post.plugins.before}
+            {if isset($post.plugins) && isset($post.plugins.post_title) && $post.plugins.post_title}
 
-				{* @event prepare_posts_backend.%plugin_id%.before *}
-				<!-- plugin hook: "prepare_posts_backend.*.before" -->
-				{foreach from=$post.plugins.before item=output key=plugin}
+              {* @event prepare_posts_backend.%plugin_id%.post_title *}
+              <!-- plugin hook: "prepare_posts_backend.*.post_title" -->
+              {foreach $post.plugins.post_title as $plugin => $output}
 
-					<!-- begin "prepare_posts_backend.{$plugin}.before" -->
-					{$output}
-					<!-- end "prepare_posts_backend.{$plugin}.before" -->
-				{/foreach}
-				<!-- end plugin hook: "prepare_posts_backend.*.before" -->
-			{/if}
+                <!-- begin "prepare_posts_backend.{$plugin}.post_title" -->
+                {$output}
+                <!-- end "prepare_posts_backend.{$plugin}.post_title" -->
+              {/foreach}
+              <!-- end plugin hook: "prepare_posts_backend.*.post_title" -->
+            {/if}
 
-			{if false && $wa->blog->option('can_use_smarty')}
-				{include file="string:`$post.text`"}
-			{else}
-				{$post.text}
-			{/if}
+            {if isset($post.plugins) && isset($post.plugins.post_title_right) && $post.plugins.post_title_right}
+
+              {* @event prepare_posts_backend.%plugin_id%.post_title_right *}
+              <!-- plugin hook: "prepare_posts_backend.*.post_title_right" -->
+              {foreach $post.plugins.post_title_right as $plugin => $output}
+
+                <!-- begin "prepare_posts_backend.{$plugin}.post_title_right" -->
+                {$output}
+                <!-- end "prepare_posts_backend.{$plugin}.post_title_right" -->
+              {/foreach}
+              <!-- end plugin hook: "prepare_posts_backend.*.post_title_right" -->
+            {/if}
+          </h1>
+
+          <div class="b-post-credentials">
+            {if $contact_rights && $post.contact_id}
+              <a class="b-gray-link" href="{$wa_backend_url}contacts/#/contact/{$post.contact_id}">{$post.user.name|escape}</a>
+            {else}
+              <span>{$post.user.name|escape}</span>
+            {/if}
+
+            <span>{$post.datetime|wa_datetime:"humandatetime"}</span>
+
+            {if $blog.status eq blogBlogModel::STATUS_PUBLIC}
+              {foreach $post.link item=link}
+                <a target="_blank" href="{$link}">{$link}</a><i class="icon10 new-window"><!-- icon --></i>
+              {/foreach}
+            {/if}
+          </div>
+
+        </div>
+      </div>
+
+      <div class="b-post-body">
 
 
-			{if isset($post.plugins) && isset($post.plugins.after) && $post.plugins.after}
+      {if isset($post.plugins) && isset($post.plugins.before) && $post.plugins.before}
 
-				{* @event prepare_posts_backend.%plugin_id%.after *}
-				<!-- plugin hook: "prepare_posts_backend.*.after" -->
-				{foreach from=$post.plugins.after item=output key=plugin}
+        {* @event prepare_posts_backend.%plugin_id%.before *}
+        <!-- plugin hook: "prepare_posts_backend.*.before" -->
+        {foreach $post.plugins.before as $plugin => $output}
 
-					<!-- begin "prepare_posts_backend.{$plugin}.after" -->
-					{$output}
-					<!-- end "prepare_posts_backend.{$plugin}.after" -->
-				{/foreach}
-				<!-- end plugin hook: "prepare_posts_backend.*.after" -->
-			{/if}
+          <!-- begin "prepare_posts_backend.{$plugin}.before" -->
+          {$output}
+          <!-- end "prepare_posts_backend.{$plugin}.before" -->
+        {/foreach}
+        <!-- end plugin hook: "prepare_posts_backend.*.before" -->
+      {/if}
 
-			</div>
+      {$post.text}
 
-			<div class="b-post-footer-backend">
-			{* @event backend_post.%plugin_id%.footer *}
-			<!-- plugin hook: "backend_post.*.footer" -->
-				{if isset($backend_post)}
-					{foreach from=$backend_post item=output key=plugin}
-						{if isset($output.footer)}
 
-						<!-- begin backend_post.{$plugin}.footer -->
-							{$output.footer}
-						<!-- end backend_post.{$plugin}.footer -->
-						{/if}
-					{/foreach}
-				{/if}
-			<!-- end plugin hook: "backend_post.*.footer" -->
-			</div>
+      {if isset($post.plugins) && isset($post.plugins.after) && $post.plugins.after}
 
-			<a name="comments"></a>
-			<div class="b-comments">
-				<h4>
-					<span class="b-comment-count" {if $post.comment_count == 0}style="display: none;"{/if}>{$post.comment_count} {_w('comment', 'comments', $post.comment_count)}<!-- comment_count placeholder --></span>
-					{if count($post.comments) == 0}
-						<span class="b-not-comment">[`No comments`]</span>
-					{/if}
-				</h4>
+        {* @event prepare_posts_backend.%plugin_id%.after *}
+        <!-- plugin hook: "prepare_posts_backend.*.after" -->
+        {foreach $post.plugins.after as $plugin => $output}
 
-				{if count($post.comments) > 0}
-					{include 'templates/actions/post/include.comments.html' inline}
-				{else}
-				<ul class="menu-v with-icons">
-					<!-- comments placeholder -->
-				</ul>
-				{/if}
+          <!-- begin "prepare_posts_backend.{$plugin}.after" -->
+          {$output}
+          <!-- end "prepare_posts_backend.{$plugin}.after" -->
+        {/foreach}
+        <!-- end plugin hook: "prepare_posts_backend.*.after" -->
+      {/if}
 
-				{if $post.comments_allowed}
-					<h4 class="b-form-home"><a class="b-comment-reply inline-link" href="#"><b><i>[`Add comment`]</i></b></a></h4>
-					<ul id="b-comment-add" class="menu-v with-icons">
-						<li>
-							<a name="reply"></a>
-							<!-- plugin hook: "comment-list-entry" -->
-							<i class="icon16 userpic20" style="background-image: url('{$current_contact.photo20}');"><!-- icon --></i>{$current_contact.name|escape}
-							<form id="b-comment-add-form" action="?module=comments&amp;action=add&amp;id={$post.id}" method="post">
-							<p>
-								{$wa->csrf()}
-								<textarea name="text" cols="60" rows="20"></textarea>
-								<input type="hidden" name="parent" value="0">
-								<br>
-								<input type="button" id="send" value="[`Done`]">
+      </div>
 
-								<span class="b-comment-add-form-status b-ajax-status" style="display: none;">
-									<i class="b-ajax-status-loading icon16 loading"><!--icon --></i>
-								</span>
-							</p>
-							</form>
-						</li>
-					</ul>
-				{/if}
+      <div class="b-post-footer-backend">
+      {* @event backend_post.%plugin_id%.footer *}
+      <!-- plugin hook: "backend_post.*.footer" -->
+        {if isset($backend_post)}
+          {foreach $backend_post as $plugin => $output}
+            {if isset($output.footer)}
 
-			</div>
+            <!-- begin backend_post.{$plugin}.footer -->
+              {$output.footer}
+            <!-- end backend_post.{$plugin}.footer -->
+            {/if}
+          {/foreach}
+        {/if}
+      <!-- end plugin hook: "backend_post.*.footer" -->
+      </div>
 
-		</div>
+      <a name="comments"></a>
+      <div class="b-comments">
+        <h4>
+          <span class="b-comment-count" {if $post.comment_count == 0}style="display: none;"{/if}>{$post.comment_count} {_w('comment', 'comments', $post.comment_count)}<!-- comment_count placeholder --></span>
+          {if count($post.comments) == 0}
+            <span class="b-not-comment">[`No comments`]</span>
+          {/if}
+        </h4>
 
-	</div>
+        {if count($post.comments) > 0}
+          {include 'templates/actions/post/include.comments.html' inline}
+        {else}
+        <ul class="menu-v with-icons">
+          <!-- comments placeholder -->
+        </ul>
+        {/if}
+
+        {if $post.comments_allowed}
+          <h4 class="b-form-home"><a class="b-comment-reply inline-link" href="#"><b><i>[`Add comment`]</i></b></a></h4>
+          <ul id="b-comment-add" class="menu-v with-icons">
+            <li>
+              <a name="reply"></a>
+              <!-- plugin hook: "comment-list-entry" -->
+              <i class="icon16 userpic20" style="background-image: url('{$current_contact.photo20}');"><!-- icon --></i>{$current_contact.name|escape}
+              <form id="b-comment-add-form" action="?module=comments&amp;action=add&amp;id={$post.id}" method="post">
+              <p>
+                {$wa->csrf()}
+                <textarea name="text" cols="60" rows="20"></textarea>
+                <input type="hidden" name="parent" value="0">
+                <br>
+                <input type="button" id="send" value="[`Done`]">
+
+                <span class="b-comment-add-form-status b-ajax-status" style="display: none;">
+                  <i class="b-ajax-status-loading icon16 loading"><!--icon --></i>
+                </span>
+              </p>
+              </form>
+            </li>
+          </ul>
+        {/if}
+
+      </div>
+
+    </div>
+
+  </div>
 
 
 {if isset($dialogs)}
-	<form id="post-form" action="?module=post&amp;action=save" method="post">
-		{$wa->csrf()}
-		<input type="hidden" value="{$post.id}" name="id" id="post-id">
-		<input type="hidden" value="{$post.blog_id}" name="blog_id" id="blog-id">
-		<!-- dialog begin -->
-		{foreach from=$dialogs item=dialog}
-			{$dialog}
-		{/foreach}
-		<!-- dialog end -->
-	</form>
+  <form id="post-form" action="?module=post&amp;action=save" method="post">
+    {$wa->csrf()}
+    <input type="hidden" value="{$post.id}" name="id" id="post-id">
+    <input type="hidden" value="{$post.blog_id}" name="blog_id" id="blog-id">
+    <!-- dialog begin -->
+    {foreach $dialogs as $dialog}
+      {$dialog}
+    {/foreach}
+    <!-- dialog end -->
+  </form>
 {/if}

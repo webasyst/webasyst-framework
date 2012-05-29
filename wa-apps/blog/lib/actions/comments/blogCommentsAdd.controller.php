@@ -56,9 +56,10 @@ class blogCommentsAddController extends waJsonController
 			'post_id'		 => $this->post_id,
 			'contact_id'	 => $contact_id,
 			'text'			 => $this->getRequest()->post('text'),
+            'auth_provider'  => blogCommentModel::AUTH_USER,
         );
 
-        $this->errors += blogCommentModel::validate($comment, 'backend');
+        $this->errors += $comment_model->validate($comment);
         if (count($this->errors) > 0) {
             return ;
         }

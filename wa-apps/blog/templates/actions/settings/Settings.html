@@ -1,212 +1,212 @@
 
 <div class="shadowed">
 
-	{if isset($saved) && $saved}
-	<div class="block double-padded b-message-success">
-		<i class="icon16 yes"><!-- icon --></i>[`Settings updated`]
-	</div>
-	{/if}
+  {if isset($saved) && $saved}
+  <div class="block double-padded b-message-success">
+    <i class="icon16 yes"><!-- icon --></i>[`Settings updated`]
+  </div>
+  {/if}
 
-	<div class="block double-padded">
+  <div class="block double-padded">
 
-		<form action="?blog=&amp;module=settings" method="post">
+    <form action="?blog=&amp;module=settings" method="post">
 
-			{$wa->csrf()}
-
-
-			<div class="fields form">
-
-				<h6 class="heading">[`Personal settings`]</h6>
-				<div class="field-group">
-					<div class="field">
-						<div class="name">
-							[`App icon counter`]
-							<span class="indicator red">1</span>
-						</div>
-						{assign var=type value=$user_settings.type_items_count}
-						<div class="value no-shift">
-							<label class="s-label-with-check">
-								<input type="checkbox" name="type_items_count[overdue]" value="overdue" {if isset($type.overdue) && $type.overdue} checked="checked"{/if}>
-								[`My overdue post drafts`]
-								<span class="hint">[`posts with overdue publication deadline`]</span>
-							</label>
-						</div>
-						<div class="value">
-							<label class="s-label-with-check">
-								<input type="checkbox" name="type_items_count[posts]" value="posts"  {if isset($type.posts) && $type.posts} checked="checked"{/if}>
-								[`New posts published by other users`]
-							</label>
-						</div>
-						<div class="value">
-							<label class="s-label-with-check">
-								<input type="checkbox" name="type_items_count[comments]" value="comments" class="js-primary-checkbox" {if isset($type.comments) && $type.comments} checked="checked"{/if}>
-								[`New comments`]
-							</label>
-							<div class="block small">
-								<label>
-									<input type="checkbox" style="margin-top: -0.4em;" disabled name="type_items_count[comments]" value="comments_to_my_post" {if isset($type.comments) && ($type.comments == 'comments_to_my_post')} checked="checked"{/if}>
-									[`Count new comments on my posts only`]
-								</label>
-							</div>
-						</div>
-					</div>
-				</div>
-
-			{if isset($backend_settings) && backend_settings}
-				{if $routing_settings_url}
-				<h6 class="heading">[`Frontend settings`]</h6>
-				<div class="field-group">
-
-					<div class="field">
-
-						<div class="name">
-								<label>[`URLs & Titles`]</label>
-						</div>
-
-						<div class="value no-shift">
-								{sprintf('[`Setup in the <a href=\"%s\">Blog app settlement settings</a> within the Site app`]',$routing_settings_url|escape)}
-						</div>
-
-					</div>
-
-				</div>
-				{/if}
-
-				<div class="field-group">
-
-					<div class="field">
-
-						<div class="name">
-							<label>[`Comments`]</label>
-						</div>
-
-						<div class="value b-ibutton-checkbox">
-							<ul class="menu-h">
-								<li><span id="settings-comments-switcher-off-label" class="b-unselected">[`Off`]</span></li>
-								<li><input type="checkbox" name="show_comments" id="settings-comments-switcher" {if $backend_settings['show_comments'] == '1'}checked="checked"{/if} value="1"></li>
-								<li><span id="settings-comments-switcher-on-label">[`On`]</span></li>
-							</ul>
-						</div>
-
-					</div>
-
-					<div class="field"{if !$backend_settings['show_comments']} style="display:none;"{/if} id="settings-captcha-field">
-
-						<div class="value b-ibutton-checkbox">
-							<input type="checkbox" name="request_captcha" id="settings-captcha-switcher" {if $backend_settings['request_captcha'] == '1'}checked="checked"{/if} value="1"></li>
-							<label for="settings-captcha-switcher">[`Protect comment submit form with CAPTCHA`]</label>
-						</div>
-
-					</div>
-
-				</div>
+      {$wa->csrf()}
 
 
-				<div class="field-group">
+      <div class="fields form">
 
-					<div class="field">
+        <h6 class="heading">[`Personal settings`]</h6>
+        <div class="field-group">
+          <div class="field">
+            <div class="name">
+              [`App icon counter`]
+              <span class="indicator red">1</span>
+            </div>
+            {$type=$user_settings.type_items_count}
+            <div class="value no-shift">
+              <label class="s-label-with-check">
+                <input type="checkbox" name="type_items_count[overdue]" value="overdue" {if isset($type.overdue) && $type.overdue} checked="checked"{/if}>
+                [`My overdue post drafts`]
+                <span class="hint">[`posts with overdue publication deadline`]</span>
+              </label>
+            </div>
+            <div class="value">
+              <label class="s-label-with-check">
+                <input type="checkbox" name="type_items_count[posts]" value="posts"  {if isset($type.posts) && $type.posts} checked="checked"{/if}>
+                [`New posts published by other users`]
+              </label>
+            </div>
+            <div class="value">
+              <label class="s-label-with-check">
+                <input type="checkbox" name="type_items_count[comments]" value="comments" class="js-primary-checkbox" {if isset($type.comments) && $type.comments} checked="checked"{/if}>
+                [`New comments`]
+              </label>
+              <div class="block small">
+                <label>
+                  <input type="checkbox" style="margin-top: -0.4em;" disabled name="type_items_count[comments]" value="comments_to_my_post" {if isset($type.comments) && ($type.comments == 'comments_to_my_post')} checked="checked"{/if}>
+                  [`Count new comments on my posts only`]
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
 
-						<div class="name">
-							<label>[`RSS`]</label>
-						</div>
+      {if isset($backend_settings) && backend_settings}
+        {if $routing_settings_url}
+        <h6 class="heading">[`Frontend settings`]</h6>
+        <div class="field-group">
 
-						<div class="value no-shift">
-							[`Number of posts in RSS file`]:<br>
-							<input type="text" name="rss_posts_number" value="{$backend_settings['rss_posts_number']|escape}"><br><br>
+          <div class="field">
 
-							<span>[`&lt;author&gt; tag`]:</span>
+            <div class="name">
+                <label>[`URLs & Titles`]</label>
+            </div>
 
-							<div id="s-radio-select-2">
-								<label class="s-label-with-check">
-									<input type="radio" {if $backend_settings['rss_author_tag'] == 'author'}checked="checked"{/if} name="rss_author_tag" value="author">
-									[`Use blog post author's real name`]
-									<span class="hint"><br>[`E.g.`] <strong>{$user_name|escape}</strong><br></span>
-								</label>
-								<label class="s-label-with-check">
-									<input type="radio" {if $backend_settings['rss_author_tag'] == 'blog'}checked="checked"{/if} name="rss_author_tag" value="blog">
-									[`Use blog name`]
-									{if isset($e_g.name) && $e_g.name}
-										<span class="hint"><br>[`E.g.`] <strong>{$e_g.name|escape}</strong><br></span>
-									{/if}
-								</label>
-							</div>
+            <div class="value no-shift">
+                {sprintf('[`Setup in the <a href=\"%s\">Blog app settlement settings</a> within the Site app`]',$routing_settings_url|escape)}
+            </div>
 
-						</div>
+          </div>
 
-					</div>
+        </div>
+        {/if}
 
-				</div>
-			{/if}
+        <div class="field-group">
 
-				<div class="field-group">
+          <div class="field">
 
-					<div class="field">
+            <div class="name">
+              <label>[`Comments`]</label>
+            </div>
 
-						<div class="value submit">
-							<input type="submit" name="save" class="button green" value="[`Save`]">
-						</div>
+            <div class="value b-ibutton-checkbox">
+              <ul class="menu-h">
+                <li><span id="settings-comments-switcher-off-label" class="b-unselected">[`Off`]</span></li>
+                <li><input type="checkbox" name="show_comments" id="settings-comments-switcher" {if $backend_settings['show_comments'] == '1'}checked="checked"{/if} value="1"></li>
+                <li><span id="settings-comments-switcher-on-label">[`On`]</span></li>
+              </ul>
+            </div>
 
-					</div>
+          </div>
 
-				</div>
+          <div class="field"{if !$backend_settings['show_comments']} style="display:none;"{/if} id="settings-captcha-field">
 
-			</div>
-		</form>
+            <div class="value b-ibutton-checkbox">
+              <input type="checkbox" name="request_captcha" id="settings-captcha-switcher" {if $backend_settings['request_captcha'] == '1'}checked="checked"{/if} value="1"></li>
+              <label for="settings-captcha-switcher">[`Protect comment submit form with CAPTCHA`]</label>
+            </div>
 
-	</div>
+          </div>
+
+        </div>
+
+
+        <div class="field-group">
+
+          <div class="field">
+
+            <div class="name">
+              <label>[`RSS`]</label>
+            </div>
+
+            <div class="value no-shift">
+              [`Number of posts in RSS file`]:<br>
+              <input type="text" name="rss_posts_number" value="{$backend_settings['rss_posts_number']|escape}"><br><br>
+
+              <span>[`&lt;author&gt; tag`]:</span>
+
+              <div id="s-radio-select-2">
+                <label class="s-label-with-check">
+                  <input type="radio" {if $backend_settings['rss_author_tag'] == 'author'}checked="checked"{/if} name="rss_author_tag" value="author">
+                  [`Use blog post author's real name`]
+                  <span class="hint"><br>[`E.g.`] <strong>{$user_name|escape}</strong><br></span>
+                </label>
+                <label class="s-label-with-check">
+                  <input type="radio" {if $backend_settings['rss_author_tag'] == 'blog'}checked="checked"{/if} name="rss_author_tag" value="blog">
+                  [`Use blog name`]
+                  {if isset($e_g.name) && $e_g.name}
+                    <span class="hint"><br>[`E.g.`] <strong>{$e_g.name|escape}</strong><br></span>
+                  {/if}
+                </label>
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+      {/if}
+
+        <div class="field-group">
+
+          <div class="field">
+
+            <div class="value submit">
+              <input type="submit" name="save" class="button green" value="[`Save`]">
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+    </form>
+
+  </div>
 
 
 </div>
 
 <script type="text/javascript">
-	$(function() {
+  $(function() {
 
-		setupSwitcherWidget();
+    setupSwitcherWidget();
 
-		function setupSwitcherWidget()
-		{
+    function setupSwitcherWidget()
+    {
 
-			var switcher = $('#settings-comments-switcher');
+      var switcher = $('#settings-comments-switcher');
 
-			if (!switcher.length) {
-				return;
-			}
+      if (!switcher.length) {
+        return;
+      }
 
-			handler.call(switcher.get(0));
+      handler.call(switcher.get(0));
 
-			switcher.iButton({
-				labelOn : '',
-				labelOff : ''
-			}).change(handler);
+      switcher.iButton({
+        labelOn : '',
+        labelOff : ''
+      }).change(handler);
 
-			function handler()
-			{
-				var onLabelSelector = '#' + this.id + '-on-label',
-				offLabelSelector = '#' + this.id + '-off-label';
+      function handler()
+      {
+        var onLabelSelector = '#' + this.id + '-on-label',
+        offLabelSelector = '#' + this.id + '-off-label';
 
-				if (!this.checked) {
-					$(onLabelSelector).addClass('b-unselected');
-					$(offLabelSelector).removeClass('b-unselected');
-					$('#settings-captcha-field').hide(200);
-				} else {
-					$(onLabelSelector).removeClass('b-unselected');
-					$(offLabelSelector).addClass('b-unselected');
-					$('#settings-captcha-field').show(200);
-				}
-			}
-		};
+        if (!this.checked) {
+          $(onLabelSelector).addClass('b-unselected');
+          $(offLabelSelector).removeClass('b-unselected');
+          $('#settings-captcha-field').hide(200);
+        } else {
+          $(onLabelSelector).removeClass('b-unselected');
+          $(offLabelSelector).addClass('b-unselected');
+          $('#settings-captcha-field').show(200);
+        }
+      }
+    };
 
-		$('.js-primary-checkbox').change(function(){
-			var name = $(this).attr('name').replace(/([\]\[])/g,'\\$1');
-			var disabled = $(this).attr('checked')?false:true;
-			$('input[name='+name+']').each(function(){
-				if(!$(this).hasClass('js-primary-checkbox')){
-					$(this).attr('disabled',disabled);
-				}
-			});
-		});
+    $('.js-primary-checkbox').change(function(){
+      var name = $(this).attr('name').replace(/([\]\[])/g,'\\$1');
+      var disabled = $(this).attr('checked')?false:true;
+      $('input[name='+name+']').each(function(){
+        if(!$(this).hasClass('js-primary-checkbox')){
+          $(this).attr('disabled',disabled);
+        }
+      });
+    });
 
-		$('.js-primary-checkbox').change();
+    $('.js-primary-checkbox').change();
 
-	});
+  });
 </script>

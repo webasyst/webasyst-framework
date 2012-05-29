@@ -43,8 +43,19 @@ class blogFrontendRssAction extends blogViewAction
 				'self' => $link,
         ));
         $this->view->assign('blog_name',$this->getResponse()->getTitle());
-        $this->view->assign('posts', $posts);
         $this->view->assign('rss_author_tag',$rss_author_tag);
+
+        if ($this->getConfig()->getOption('can_use_smarty')) {
+            foreach ($posts as &$post) {
+                try {
+                    $post['text'] = $this->view->fetch("string:{$post['text']}",$this->cache_id);
+                } catch (SmartyException $ex) {
+                    $post['text'] = blogPost::handleTemplateException($ex, $post);
+                }
+            }
+            unset($post);
+        }
+        $this->view->assign('posts', $posts);
         $this->getResponse()->addHeader('Content-Type', 'application/rss+xml; charset=utf-8');
     }
 }

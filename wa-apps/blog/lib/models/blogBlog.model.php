@@ -281,31 +281,4 @@ SQL;
         return $settlements;
     }
 
-    public function genUniqueUrl($from)
-    {
-        $from = preg_replace('/\s+/', '-', $from);
-        $url = blogHelper::transliterate($from);
-
-        if (strlen($url) == 0) {
-            $url = rand(1, 10000);
-        }
-
-        $pattern = $this->escape($url, 'like') . '%';
-
-        $alike = $this->query("SELECT url FROM " .
-        $this->getTableName() .
-    			" WHERE url LIKE '$pattern'" .
-    			" ORDER BY LENGTH(url)")
-        ->fetchAll('url');
-
-        // if exists than get last and append random digit
-        if (is_array($alike) && isset($alike[$url])) {
-            $last = array_pop($alike);
-            $url = $last['url'] . rand(0, 9);
-        }
-
-        return $url;
-
-    }
-
 }

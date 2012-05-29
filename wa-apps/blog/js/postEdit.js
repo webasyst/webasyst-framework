@@ -33,6 +33,7 @@
 
 				afterSave: function(data) {
 					$('#b-post-save-button').removeClass('yellow').addClass('green');
+					$('#postpublish-edit').removeClass('yellow').addClass('green');
 					self.postUrlWidget.resetEditReady();
 					self.postUrlWidget.updateSlugs(data.url, data.preview_hash||false);
 					resetEditDatetimeReady.call($('#inline-edit-datetime').get(0), data.formatted_datetime);
@@ -72,6 +73,7 @@
 
 			$.wa.dropdownsCloseEnable();
 			$('.change-blog').click($.wa_blog.editor.changeBlogHandler);
+			$('#postpublish-dialog input[name="publish_blog_id"]').change($.wa_blog.editor.changePublishBlogHandler);
 
 
 			$('#post-title').keyup(function() {
@@ -116,10 +118,14 @@
 			{
 
 				$('.dialog-edit').each(function() {
-					$(this).parents('.block:first').click(function(e) {
+					/*$(this).parents('.block:first').click(function(e) {
 						if ($(e.target).hasClass('dialog-edit')) {
-							linkClickHandler.call(e.target);
+							return linkClickHandler.call(e.target);
 						}
+					});*/
+					$(this).click(function(e) {
+							e.preventDefault();
+							return linkClickHandler.call(e.target);
 					});
 				});
 
@@ -500,12 +506,9 @@
 						});
 					}
 
-					$('#blogs-list .change-blog').click(function() {
-						var id = parseInt($(this).attr('href').replace(/^.*#/,''));
-						$('input[name=blog_id]').val(id);
-
+					changeBlog = function() {
 						postUrlHandler.call($('#post-title').get(0));
-					});
+					};
 
 					$('#url-edit-link').click(setEditReady);
 
@@ -534,7 +537,8 @@
 				return {
 					setEditReady: setEditReady,
 					resetEditReady: resetEditReady,
-					updateSlugs: updateSlugs
+					updateSlugs: updateSlugs,
+					changeBlog:changeBlog
 				};
 
 			}	// setupPostUrlWidget
@@ -557,6 +561,9 @@
 				function init()
 				{
 					$('input[type=submit], input[type=button], a.js-submit').click(function() {
+						if($(this).hasClass('dialog-edit')) {
+							return false;
+						}
 						if($(this).hasClass('js-submit')) {
 							var question = $(this).attr('title')||$(this).text()||'Are you sure?';
 							if(!confirm(question)) {
@@ -768,8 +775,14 @@
 									path : options['wa_url']
 											+ "wa-content/js/codemirror/1/js/",
 									initCallback: function (editor) {
-										editor.frame.contentWindow.document.addEventListener('keydown', $.wa_blog.editor.editorKeyCallback(), false);
-										editor.frame.contentWindow.document.addEventListener('keypress', $.wa_blog.editor.editorKeyCallback(true), false);
+										setTimeout(function() {
+											try{
+												editor.frame.contentWindow.document.addEventListener('keydown', $.wa_blog.editor.editorKeyCallback(), false);
+												editor.frame.contentWindow.document.addEventListener('keypress', $.wa_blog.editor.editorKeyCallback(true), false);
+											} catch(e) {
+												$.wa_blog.editor.log('Exception: '+e.message + '\nline: '+e.fileName+':'+e.lineNumber);
+											}
+										},100);
 									}
 								}
 						);
@@ -967,6 +980,7 @@
 					)
 					{
 						$('#b-post-save-button').removeClass('green').addClass('yellow');
+						$('#postpublish-edit').removeClass('green').addClass('yellow');
 					}
 				};
 			}
@@ -1005,6 +1019,7 @@
 				color_class = 'grey';
 			} else {
 				button.removeClass('yellow').addClass(color_class);
+				$('#postpublish-edit').removeClass('yellow').addClass(color_class);
 			}
 		},
 		onSaveHotkey: function(e)
@@ -1043,24 +1058,39 @@
 		},
 		changeBlogHandler: function() {
 			var id = parseInt($(this).attr('href').replace(/^.*#/,''));
+			if($.wa_blog.editor.selectCurrentBlog(id)) {
+				$('.dialog :input:checked').attr('checked',false);
+				$('.dialog #b-post-publish-blog-'+id).attr('checked',true);
+			}
+			$.wa.dropdownsClose();
+			return false;
+		},
+		changePublishBlogHandler: function() {
+			if($(this).attr('checked')) {
+				var id = parseInt($(this).val());
+				$.wa_blog.editor.selectCurrentBlog(id);
+			}
+		},
+		selectCurrentBlog: function(id)
+		{
 			var blog = $.wa_blog.editor.options.blogs[id];
 			var prev_id = $.wa_blog.editor.options.current_blog_id;
 			if(blog && (prev_id != id)) {
-				$.tmpl('selected-blog',{'blog':blog});
-				$('.current-blog').replaceWith($.tmpl('selected-blog',{'blog':blog}));
+				var current_blog = $.tmpl('selected-blog',{'blog':blog});
+				$('.current-blog').replaceWith(current_blog);
 				$('#blog-selector-'+prev_id).removeClass('selected');
-				$(this).parent().addClass('selected');
+				$('#blog-selector-'+id).addClass('selected');
 
 				var prev_blog = $.wa_blog.editor.options.blogs[prev_id];
-				$.wa_blog.editor.options.current_blog_id = id;
+				$.wa_blog.editor.options.current_blog_id = parseInt(id);
 				var post = $('.b-post');
 				if(prev_blog) {
 					post.removeClass(prev_blog.color);
 				}
 				post.addClass(blog.color);
+				$.wa_blog.editor.postUrlWidget.changeBlog();
+				return true;
 			}
-			$.wa.dropdownsClose();
-			return false;
 		}
 
 	};

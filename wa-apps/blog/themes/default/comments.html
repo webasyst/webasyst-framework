@@ -1,95 +1,95 @@
 
-	{assign var="depth" value=-1}
-	{foreach from=$post.comments item=comment}
-		{if $comment.depth < $depth}
-			{assign var="loop" value=$depth-$comment.depth}
-			{section name="end-comment" loop=$loop}
+  {assign var="depth" value=-1}
+  {foreach $post.comments as $comment}
+    {if $comment.depth < $depth}
+      {assign var="loop" value=$depth-$comment.depth}
+      {section name="end-comment" loop=$loop}
 
-					</li>
-				</ul>
-			{/section}
-			{assign var="depth" value=$comment.depth}
-		{/if}
-		{if $comment.depth == $depth}
+          </li>
+        </ul>
+      {/section}
+      {assign var="depth" value=$comment.depth}
+    {/if}
+    {if $comment.depth == $depth}
 
-			</li>
-			<li>
-		{/if}
-		{if $comment.depth > $depth}
+      </li>
+      <li>
+    {/if}
+    {if $comment.depth > $depth}
 
-		<ul class="menu-v with-icons">
-			<li>
-			{assign var="depth" value=$comment.depth}
-		{/if}
+    <ul class="menu-v with-icons">
+      <li>
+      {assign var="depth" value=$comment.depth}
+    {/if}
 
 <!-- comment body begin -->
-		<div class="comment" id="comment-{$comment.id}"  itemprop="comment" itemscope itemtype="http://schema.org/UserComments">
-			<div class="credentials">
-				<a name="comment-{$comment.id}"{if $comment.site} href="{$comment.site}"{/if}>
-					<img src="{$comment.user.photo_url_20|default:$comment.user.photo_url}" class="userpic{if $comment.auth_provider && ($comment.auth_provider neq 'guest') && ($comment.auth_provider neq 'user')} icon16{/if}" alt="">
-				</a>
-				{if !$comment.site}
-					<span class="username" itemprop="creator">{$comment.user.name|escape}</span>
-				{else}
-					<a href="{$comment.site}" class="username" itemprop="creator">{$comment.user.name|escape}</a>
-				{/if}
+    <div class="comment" id="comment-{$comment.id}"  itemprop="comment" itemscope itemtype="http://schema.org/UserComments">
+      <div class="credentials">
+        <a name="comment-{$comment.id}"{if $comment.site} href="{$comment.site}"{/if}>
+          <img src="{$comment.user.photo_url_20|default:$comment.user.photo_url}" class="userpic{if $comment.auth_provider && ($comment.auth_provider neq blogCommentModel::AUTH_GUEST) && ($comment.auth_provider neq blogCommentModel::AUTH_USER)} icon16{/if}" alt="">
+        </a>
+        {if !$comment.site}
+          <span class="username" itemprop="creator">{$comment.user.name|escape}</span>
+        {else}
+          <a href="{$comment.site}" class="username" itemprop="creator">{$comment.user.name|escape}</a>
+        {/if}
 
-				{* @event prepare_comments_frontend.%plugin_id%.authorname_suffix *}
-				{if isset($comment.plugins) && isset($comment.plugins.authorname_suffix) && $comment.plugins.authorname_suffix}
-					<!-- plugin hook: "prepare_comments_frontend.*.authorname_suffix" -->
-					{foreach from=$comment.plugins.authorname_suffix item=output key=plugin}
+        {* @event prepare_comments_frontend.%plugin_id%.authorname_suffix *}
+        {if !empty($comment.plugins.authorname_suffix)}
+          <!-- plugin hook: "prepare_comments_frontend.*.authorname_suffix" -->
+          {foreach $comment.plugins.authorname_suffix as $plugin => $output}
 
-						<!-- begin "prepare_comments_frontend.{$plugin}.authorname_suffix" -->
-						{$output}
-						<!-- end "prepare_comments_frontend.{$plugin}.authorname_suffix" -->
-					{/foreach}
-					<!-- end plugin hook: "prepare_comments_frontend.*.authorname_suffix" -->
-				{/if}
+            <!-- begin "prepare_comments_frontend.{$plugin}.authorname_suffix" -->
+            {$output}
+            <!-- end "prepare_comments_frontend.{$plugin}.authorname_suffix" -->
+          {/foreach}
+          <!-- end plugin hook: "prepare_comments_frontend.*.authorname_suffix" -->
+        {/if}
 
-				<span class="hint date" title="{$comment.datetime|wa_datetime}" itemprop="commentTime" datetime="{$post.datetime|date_format:'Y-m-d\TH:m'}">{$comment.datetime|wa_datetime:"humandatetime"}</span>
-			</div>
+        <span class="hint date" title="{$comment.datetime|wa_datetime}" itemprop="commentTime" datetime="{$comment.datetime|date_format:'Y-m-d\TH:i'}">{$comment.datetime|wa_datetime:"humandatetime"}</span>
+      </div>
 
-			{* @event prepare_comments_frontend.%plugin_id%.before *}
-			{if isset($comment.plugins) && isset($comment.plugins.before) && $comment.plugins.before}
-				<!-- plugin hook: "prepare_comments_frontend.*.before" -->
-				{foreach from=$comment.plugins.before item=output key=plugin}
+      {* @event prepare_comments_frontend.%plugin_id%.before *}
+      {if  !empty($comment.plugins.before)}
+        <!-- plugin hook: "prepare_comments_frontend.*.before" -->
+        {foreach $comment.plugins.before as $plugin => $output}
 
-					<!-- begin "prepare_comments_frontend.{$plugin}.before" -->
-					{$output}
-					<!-- end "prepare_comments_frontend.{$plugin}.before" -->
-				{/foreach}
-				<!-- end plugin hook: "prepare_comments_frontend.*.before" -->
-			{/if}
+          <!-- begin "prepare_comments_frontend.{$plugin}.before" -->
+          {$output}
+          <!-- end "prepare_comments_frontend.{$plugin}.before" -->
+        {/foreach}
+        <!-- end plugin hook: "prepare_comments_frontend.*.before" -->
+      {/if}
 
-			<div class="text" itemprop="commentText">{$comment.text|escape|nl2br}</div>
+      <div class="text" itemprop="commentText">{$comment.text|escape|nl2br}</div>
 
-			{* @event prepare_comments_frontend.%plugin_id%.after *}
-			{if isset($comment.plugins) && isset($comment.plugins.after) && $comment.plugins.after}
-				<!-- plugin hook: "prepare_comments_frontend.*.after" -->
-				{foreach from=$comment.plugins.after item=output key=plugin}
-					<!-- begin "prepare_comments_frontend.{$plugin}.after" -->
-					{$output}
-					<!-- end "prepare_comments_frontend.{$plugin}.after" -->
-				{/foreach}
-				<!-- end plugin hook: "prepare_comments_frontend.*.after" -->
-			{/if}
+      {* @event prepare_comments_frontend.%plugin_id%.after *}
+      {if !empty($comment.plugins.after)}
+        <!-- plugin hook: "prepare_comments_frontend.*.after" -->
+        {foreach $comment.plugins.after as $plugin => $output}
+          <!-- begin "prepare_comments_frontend.{$plugin}.after" -->
+          {$output}
+          <!-- end "prepare_comments_frontend.{$plugin}.after" -->
+        {/foreach}
+        <!-- end plugin hook: "prepare_comments_frontend.*.after" -->
+      {/if}
 
 
-			<div class="actions">
-				<a class="inline-link comment-reply" href="#"><b><i>[`reply`]</i></b></a>
-			</div>
-		</div>
+      <div class="actions">
+        <a class="inline-link comment-reply" href="#"><b><i>[`reply`]</i></b></a>
+      </div>
+    </div>
 <!-- comment body end -->
 
-		{* sub comment *}
+    {* sub comment *}
 
 
-	{/foreach}
+  {/foreach}
 
-	{section name="end-comment" loop=$depth }
+  {section name="end-comment" loop=$depth }
 
-				</li>
-			</ul>
-	{/section}
-	</li>
+        </li>
+      </ul>
+  {/section}
+  </li>
 </ul>

@@ -318,11 +318,11 @@ msgstr[0] "%d запись из %d"
 msgstr[1] "%d записи из %d"
 msgstr[2] "%d записей из %d"
 
-msgid "%d comment of %d"
-msgid_plural "%d comments of %d"
-msgstr[0] "%d комментарий из %d"
-msgstr[1] "%d комментария из %d"
-msgstr[2] "%d комментариев из %d"
+msgid "%d comment of %d (including deleted)"
+msgid_plural "%d comments of %d (including deleted)"
+msgstr[0] "%d комментарий из %d (включая удаленные)"
+msgstr[1] "%d комментария из %d (включая удаленные)"
+msgstr[2] "%d комментариев из %d (включая удаленные)"
 
 msgid "%d comment"
 msgid_plural "%d comments"
@@ -555,11 +555,11 @@ msgstr "Переместить записи"
 
 #: /wa-apps/blog/templates/dialogs/postSchedule.html:26
 msgid "Cron is working properly. Latest execution time: %s"
-msgstr "Cron работает нормально. Длительность последнего срабатывания: %s"
+msgstr "CRON для приложения «Блог» включен и работает. Время последнего запуска: <strong>%s</strong>"
 
 #: /wa-apps/blog/templates/dialogs/postSchedule.html:30
 msgid "Scheduled publication requires CRON to be properly setup for Webasyst Blog app, which is not the case for this installation. Setup cron for the Blog app with the following command (<a href=\"http://www.webasyst.com/ru/framework/docs/server/cron/\" target=\"_blank\">cron setup instructions</a>):<br /><br /> <strong>%s</strong>"
-msgstr "Для работы запланированной публикации необходимо правильно настроить CRON для приложения Вебасист Блог. В настоящее время это требование не выполнено. Настройте CRON для приложения Блог с помощью следующей команды (<a href=\"http://www.webasyst.com/ru/framework/docs/server/cron/\" target=\"_blank\">настройка cron</a>):<br /><br /> <strong>%s</strong>"
+msgstr "Для работы запланированной публикации необходимо настроить CRON, что позволит приложению «Блог» выполнять действия по расписанию без участия пользователя. Инструкция для CRON (<a href=\"http://www.webasyst.com/ru/framework/docs/server/cron/\" target=\"_blank\">документация по настройке</a>):<br /><br /> <strong>%s</strong>"
 
 #: /wa-apps/blog/lib/classes/blogFrontController.class.php:54
 msgid "Blog not found"
@@ -855,4 +855,12 @@ msgstr "Этот плагин не предоставляет возможнос
 #: /wa-apps/blog/lib/actions/plugins/blogPlugins.action.php:61
 msgid "Plugin %s settings"
 msgstr "Настройки плагина «%s»"
+
+#: /wa-apps/blog/lib/classes/blogPost.class.php:115
+msgid "Syntax error at post template"
+msgstr "Ошибка синтаксиса записи"
+
+#: /wa-apps/blog/templates/dialogs/postPublish.html:6
+msgid "Confirm the blog for publishing this post"
+msgstr "Подтвердите выбор блога"
 

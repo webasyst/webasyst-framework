@@ -868,6 +868,9 @@ class waSystem
             if (isset($plugin_info['img'])) {
                 $plugin_info['img'] = 'wa-apps/'.$app_id.'/plugins/'.$plugin_id.'/'.$plugin_info['img'];
             }
+            if (!isset($plugin_info['app_id'])) {
+                $plugin_info['app_id'] = $app_id;
+            }
             // load locale
             self::pushActivePlugin($plugin_id, $app_id);
             $locale_path = $this->getAppPath('plugins/'.$plugin_id.'/locale', $app_id);

@@ -97,6 +97,7 @@ i.b-post-save-indicator { margin-top: 8px; }
 .b-comments ul.menu-v li p { margin: 0.5em 0; }
 .b-comments ul.menu-v li ul.menu-v { padding-left: 20px; }
 .b-comments h4 { margin: 20px 0 0; font-size: 1.1em; }
+.b-comments .b-comment-text { line-height: 1.3em; }
 .b-comments .b-delete .b-comment-delete { display: none;}
 .b-comments .b-delete .comment-add-parent { display: none;}
 .b-comments .b-delete .b-comment-text { text-decoration: line-through; }

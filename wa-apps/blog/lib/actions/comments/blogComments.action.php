@@ -53,8 +53,8 @@ class blogCommentsAction extends waViewAction
          * Backend comments view page
          * UI hook allow extends backend comments view page
          * @event backend_comments
-         * @params array[int][string]mixed $comments
-         * @params array[int][string]int $comments[%id%][id] comment id
+         * @param array[int][string]mixed $comments
+         * @param array[int][string]int $comments[%id%][id] comment id
          * @return array[string][string]string $return[%plugin_id%]['toolbar'] Comment's toolbar html
          */
         $this->view->assign('backend_comments', wa()->event('backend_comments', $comments));

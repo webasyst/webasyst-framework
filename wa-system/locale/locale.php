@@ -52,6 +52,7 @@ class waGettextParser
                 $this->cache(array($match[0], $file.":".$this->getLine($text, $match[1])));
             }
         }
+
         if ($this->config['project'] == 'webasyst') {
             $function_pattern = '_ws';
         } elseif (strpos($this->config['project'],'plugins')) {
@@ -59,13 +60,13 @@ class waGettextParser
         } else {
             $function_pattern = '_w';
         }
-        if (preg_match_all("/(?:{$function_pattern}|\$_)\(\"((\\\\\"|[^\"])+)\"\)/usi", $text, $matches, PREG_OFFSET_CAPTURE)) {
-            foreach ($matches[1] as $match) {
+        if (preg_match_all("/({$function_pattern}|\\\$_)\(\s*\"((\\\\\"|[^\"])+)\"\s*\)/usi", $text, $matches, PREG_OFFSET_CAPTURE)) {
+            foreach ($matches[2] as $match) {
                 $this->cache(array($match[0], $file.":".$this->getLine($text, $match[1])));
             }
         }
-        if (preg_match_all("/(?:{$function_pattern}|\$_)\('((\\\\'|[^'])+)'\)/usi", $text, $matches, PREG_OFFSET_CAPTURE)) {
-            foreach ($matches[1] as $match) {
+        if (preg_match_all("/({$function_pattern}|\\\$_)\(\s*'((\\\\'|[^'])+)'\s*\)/usi", $text, $matches, PREG_OFFSET_CAPTURE)) {
+            foreach ($matches[2] as $match) {
                 $this->cache(array($match[0], $file.":".$this->getLine($text, $match[1])));
             }
         }
@@ -228,23 +229,25 @@ if ($app_id == 'webasyst') {
     $path = realpath(dirname(__FILE__)."/../../")."/wa-apps/";
     $locale_id = str_replace('/themes/', '_', $locale_id);
     $include = array(
-        $path.$app_id,
+    $path.$app_id,
     );
 } elseif (strpos($app_id, '/plugins/')) {
 
     $path = realpath(dirname(__FILE__)."/../../")."/wa-apps/";
     $locale_id = str_replace('/plugins/', '_', $locale_id);
     $include = array(
-        $path.$app_id."/templates",
-        $path.$app_id."/lib",
+    $path.$app_id."/templates",
+    $path.$app_id."/js",
+    $path.$app_id."/lib",
     );
 } else {
     $path = realpath(dirname(__FILE__)."/../../")."/wa-apps/";
     $locale_id = basename($locale_id);
     $include = array(
-        $path.$app_id."/templates",
-        $path.$app_id."/lib",
-        $path.$app_id."/themes/default",
+    $path.$app_id."/templates",
+    $path.$app_id."/js",
+    $path.$app_id."/lib",
+    $path.$app_id."/themes/default",
     );
 }
 
@@ -271,6 +274,10 @@ if (isset($argv[2]) && $argv[2] == 'verify') {
         include($path);
         $config['verify'] = class_exists('waGettext',false);
     }
+}
+
+if (in_array('debug', $argv)) {
+    $config['debug'] = true;
 }
 
 $parser = new waGettextParser($config);

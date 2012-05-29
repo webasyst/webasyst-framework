@@ -119,8 +119,10 @@ class blogPostSaveController extends waJsonController
         $post['blog_status'] = $blog['status'];
 
         $post['plugin'] = (array)waRequest::post('plugin', null);
-        foreach ($post['plugin'] as $k => $plugin) {
-            $post['plugin'][$k] = trim($plugin);
+        foreach ($post['plugin'] as $k => &$plugin_data) {
+            if(!is_array($plugin_data)) {
+                $plugin_data = trim($plugin_data);
+            }
         }
 
         return $post;

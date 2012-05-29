@@ -1,0 +1,69 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: blog/plugins/category\n"
+"POT-Creation-Date: 2012-05-25 17:07+0400\n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: blog/plugins/category\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=((((n%10)==1)&&((n%100)!=11))?(0):(((((n%10)>=2)&&((n%10)<=4))&&(((n%100)<10)||((n%100)>=20)))?(1):2));\n"
+"X-Poedit-Language: ru_RU\n"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-Basepath: .\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPath-1: .\n"
+
+#: /wa-apps/blog/plugins/category/templates/actions/backend/BackendSettings.html:24
+msgid "Category list"
+msgstr "Список категорий"
+
+#: /wa-apps/blog/plugins/category/templates/actions/backend/BackendSettings.html:30
+msgid "Name"
+msgstr "Название"
+
+#: /wa-apps/blog/plugins/category/templates/actions/backend/BackendSettings.html:31
+msgid "Frontend URL"
+msgstr "Адрес во фронтенде"
+
+#: /wa-apps/blog/plugins/category/templates/actions/backend/BackendSettings.html:39
+msgid "Add a category"
+msgstr "Добавить категорию"
+
+#: /wa-apps/blog/plugins/category/templates/actions/backend/BackendSettings.html:67
+msgid "Edit"
+msgstr "Редактировать"
+
+#: /wa-apps/blog/plugins/category/templates/actions/backend/BackendSettings.html:69
+msgid "Delete"
+msgstr "Удалить"
+
+#: /wa-apps/blog/plugins/category/templates/actions/backend/BackendSettings.html:76
+msgid "Save"
+msgstr "Сохранить"
+
+#: /wa-apps/blog/plugins/category/templates/actions/backend/ToolbarBackend.html:2
+msgid "Categories"
+msgstr "Категории"
+
+#: /wa-apps/blog/plugins/category/templates/actions/backend/ToolbarBackend.html:16
+msgid "Add at least one category in the <a href=\"%s\">plugin settings</a>"
+msgstr "Добавьте хотя бы одну категорию <a href=\"%s\">в настройках плагина</a>"
+
+#: /wa-apps/blog/plugins/category/lib/blogCategory.plugin.php:57
+msgid "not found"
+msgstr "не найдено"
+
+#: /wa-apps/blog/plugins/category/lib/config/plugin.php:4
+msgid "Category"
+msgstr "Категория"
+
+#: /wa-apps/blog/plugins/category/lib/config/plugin.php:5
+msgid "Posts filtering by category"
+msgstr "Фильтрация записей по категориям"
+
+#: /wa-apps/blog/plugins/category/templates/actions/backend/BackendSettings.html:79
+msgid "When done editing, click \"Save\" to apply changes."
+msgstr "После завершения редактирования не забудьте нажать на кнопку «Сохранить»"
+

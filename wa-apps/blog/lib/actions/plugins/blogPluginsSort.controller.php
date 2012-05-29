@@ -40,6 +40,8 @@ class blogPluginsSortController extends waJsonController
 
                 if(waUtils::varExportToFile($result,$plugins_config)) {
                     $response = 'ok';
+                } else {
+                    $response = 'io error';
                 }
             }
         }

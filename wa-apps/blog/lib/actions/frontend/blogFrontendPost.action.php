@@ -44,7 +44,8 @@ class blogFrontendPostAction extends blogViewAction
                 'url' => $post_slug,
                 'status' => $hash ? false : blogPostModel::STATUS_PUBLISHED
         ), array(
-                'comments' => $show_comments ? array(50,20) : false
+                'comments' => $show_comments ? array(50,20) : false,
+                'params' => true,
         ), array('blog'=>$available,)
         )->fetchSearchItem();
 
@@ -161,7 +162,6 @@ class blogFrontendPostAction extends blogViewAction
 
         $this->view->assign('errors', $errors);
         $this->view->assign('form', $form);
-        $this->view->assign('post', $post);
         $this->view->assign('show_comments',$show_comments);
         $this->view->assign('request_captcha',$request_captcha);
 
@@ -195,6 +195,16 @@ class blogFrontendPostAction extends blogViewAction
         }
         $this->view->assign('auth_adapters', $adapters);
         $this->view->getHelper()->globals($this->getRequest()->param());
+
+        if ($this->getConfig()->getOption('can_use_smarty')) {
+            try {
+                $post['text'] = $this->view->fetch("string:{$post['text']}",$this->cache_id);
+            } catch (SmartyException $ex) {
+                $post['text'] = blogPost::handleTemplateException($ex, $post);
+            }
+        }
+
+        $this->view->assign('post', $post);
     }
 
     /**

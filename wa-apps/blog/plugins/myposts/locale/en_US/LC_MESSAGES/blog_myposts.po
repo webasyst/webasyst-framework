@@ -1,0 +1,28 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: blog/plugins/myposts\n"
+"POT-Creation-Date: 2012-05-16 11:38+0400\n"
+"PO-Revision-Date: \n"
+"Last-Translator: Vladimir V. Tuporshin <vofka@webasyst.net>\n"
+"Language-Team: blog/plugins/myposts\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Language: en_US\n"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-Basepath: .\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPath-1: .\n"
+
+#: /wa-apps/blog/plugins/myposts/lib/config/plugin.php:4
+msgid "My posts"
+msgstr ""
+
+#: /wa-apps/blog/plugins/myposts/lib/config/plugin.php:5
+msgid "Backend filtering for self-authored posts"
+msgstr ""
+
+#: /wa-apps/blog/plugins/myposts/lib/blogMyposts.plugins.php:22
+msgid "Posts by me"
+msgstr ""
+

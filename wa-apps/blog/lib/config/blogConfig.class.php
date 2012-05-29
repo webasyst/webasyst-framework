@@ -93,9 +93,10 @@ class blogConfig extends waAppConfig
 
         $user = waSystem::getInstance()->getUser();
         $user_id = $user->getId();
-        $type = explode(':',$user->getSettings($app, 'type_items_count','posts'));
+        $type = explode(':',$user->getSettings($app, 'type_items_count'));
+        $type = array_filter(array_map('trim',$type),'strlen');
         if (!$type) {
-            $type = array('posts');
+            $type = array('posts','comments','overdue');
         }
 
         $activity_datetime = blogHelper::getLastActivity($user_id, false);
@@ -126,16 +127,15 @@ class blogConfig extends waAppConfig
             }
 
             $where = "status = '".blogPostModel::STATUS_DEADLINE."' AND datetime <= '".waDateTime::date("Y-m-d")."'";
-            if (!$user->isAdmin($app)) {
-                $where .= " AND contact_id = {$user_id}";
-                $where .= " AND blog_id IN (".implode(', ',$blogs).")";
-            }
+            $where .= " AND contact_id = {$user_id}";
+            $where .= " AND blog_id IN (".implode(', ',$blogs).")";
             $count_overdue = $post_model->select("count(id)")->where($where)->fetchField();
             $counter['overdue'] = ($count_overdue) ? $count_overdue : 0;
         }
 
         $count = array_sum($counter);
         //debug
+        //$counter['type'] = $type;
         //$counter['activity_datetime'] = $activity_datetime;
         //$counter['current_datetime'] = date("Y-m-d H:i:s",time());
         //waLog::log('$counter = '.var_export($counter,true),"blog-counter-{$user_id}.log");

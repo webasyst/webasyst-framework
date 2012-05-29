@@ -479,30 +479,6 @@ SQL;
         return $this->select('*')->where($where,array('slug'=>$slug))->fetch();
     }
 
-    public function genUniqueUrl($from)
-    {
-        $from = preg_replace('/\s+/', '-', $from);
-        $url = blogHelper::transliterate($from);
-
-        if (strlen($url) == 0) {
-            $url = rand(1, 10000);
-        }
-
-        $pattern = $this->escape($url, 'like') . '%';
-        $sql = "SELECT url FROM {$this->table} WHERE url LIKE '{$pattern}' ORDER BY LENGTH(url)";
-
-        $alike = $this->query($sql)->fetchAll('url');
-
-        // if exists than get last and append random digit
-        if (is_array($alike) && isset($alike[$url])) {
-            $last = array_pop($alike);
-            $url = $last['url'] . rand(0, 9);
-        }
-
-        return $url;
-
-    }
-
     /**
      *
      * Update blog post item
@@ -527,7 +503,7 @@ SQL;
             if (!$current_data) {
                 $current_data = $this->getByField(array($this->id=>$id));
                 if (!$current_data) {
-                    throw new waException(_('Post not found'), 404);
+                    throw new waException(_w('Post not found'), 404);
                 }
             }
 
@@ -536,7 +512,11 @@ SQL;
             }
         } else {
             $current_data = array();
-            $data['contact_id'] = $contact_id;
+            if (empty($data['contact_id'])) {
+                $data['contact_id'] = $contact_id;
+            } else {
+                blogHelper::checkRights($data['blog_id'],$contact_id,($contact_id != $data['contact_id'])?blogRightConfig::RIGHT_FULL:blogRightConfig::RIGHT_READ_WRITE);
+            }
         }
 
         //check rights for non admin
@@ -576,7 +556,7 @@ SQL;
                     if (!isset($data['datetime']) || !$data['datetime']) {
                         if (!isset($current_data['datetime']) || !$current_data['datetime']) {
                             $data['datetime'] = date("Y-m-d H:i:s");
-                        } elseif (isset($current_data['status']) && ($current_data['status'] != self::STATUS_PUBLISHED) && ($current_data['status'] != self::STATUS_SCHEDULED)) {
+                        } elseif (isset($current_data['status']) && !in_array($current_data['status'], array(self::STATUS_PUBLISHED, self::STATUS_SCHEDULED))) {
                             $data['datetime'] = date("Y-m-d H:i:s");
                         } else {
                             unset($data['datetime']);
@@ -679,9 +659,9 @@ SQL;
          * @param array[string]mixed $data
          * @param array[string]int $data['id']
          * @param array[string][string]mixed $data['plugin']['%plugin_id']
-         * @return void
+         * @return array[%plugin_id%][%field%]string Error message for field %field%
          */
-        wa()->event(array_shift($events),$data);
+        $errors = wa()->event(array_shift($events),$data);
 
         if ($id) {
             if ($source_data['blog_id'] != $target_data['blog_id']) {
@@ -853,6 +833,7 @@ SQL;
      * Validate data
      *
      * @param array &$data
+     * @param array $options
      *
      * @return array messages or empty array
      */
@@ -862,7 +843,7 @@ SQL;
 
         if ($data['blog_status'] != blogBlogModel::STATUS_PRIVATE) {
 
-            if ($data['id']) {
+            if (!empty($data['id'])) {
                 $url_validator = new blogSlugValidator(array(
 					'id' => $data['id']
                 ));
@@ -884,7 +865,14 @@ SQL;
                     $url = $this->select('url')->where('id = i:id', array('id' => $data['id']))->fetchField('url');
                     $data['url'] = $url ? $url : $this->genUniqueUrl($data['title']);
 
-                    $messages = array();
+                    unset($messages['url']);
+                    if (!$url_validator->isValid($data['url'])) {
+                        $messages['url'] = current($url_validator->getErrors());
+                    }
+                } elseif(!empty($options['make'])) {
+                    $data['url'] = $this->genUniqueUrl($data['url']);
+
+                    unset($messages['url']);
                     if (!$url_validator->isValid($data['url'])) {
                         $messages['url'] = current($url_validator->getErrors());
                     }
@@ -893,8 +881,8 @@ SQL;
 
         } else {
 
-            if (!$data['id']) {
-                $data['url'] = $this->genUniqueUrl($data['title']);
+            if (empty($data['id'])) {
+                $data['url'] = $this->genUniqueUrl(empty($data['url'])?$data['title']:$data['url']);
             } else {
                 $url = $this->select('url')->where('id = i:id', array('id' => $data['id']))->fetchField('url');
                 $data['url'] = $url ? $url : $this->genUniqueUrl($data['title']);
@@ -904,19 +892,41 @@ SQL;
 
         if (isset($data['datetime']) && !is_null($data['datetime'])) {
 
-            $format = 'date';
-            if (strpos($data['datetime'], ':') !== false) {
-                $format = 'datetime';
+
+            if(!empty($options['datetime'])) {
+                $formats = (array)$options['datetime'];
+            } elseif (isset($options['datetime'])) {
+                $formats = array();
+            } elseif (strpos($data['datetime'], ':') !== false) {
+                $formats = array('fulldatetime','datetime');
+            } else {
+                $formats = array('date');
             }
 
             if ($data['datetime'] != '') {
-                $data['datetime'] = waDateTime::parse($format, $data['datetime'], wa()->getUser()->getTimezone());
-            } else if ($data['status'] != blogPostModel::STATUS_DEADLINE) {
+                $datetime = $data['datetime'];
+                foreach($formats as $format) {
+                    if($datetime = waDateTime::parse($format, $data['datetime'])) {
+                        break;
+                    }
+                }
+                $data['datetime'] = $datetime;
+            } else if ($data['status'] != blogPostModel::STATUS_DRAFT) {
                 $data['datetime'] = false;
             }
             if ($data['datetime'] === false) {
                 $messages['datetime'] = _w('Incorrect format');
             }
+        }
+        /**
+         * @event post_validate
+         * @param array[string]mixed $data
+         * @param array['plugin']['%plugin_id%']mixed plugin data
+         * @return array['%plugin_id%']['field']string error
+         */
+        $messages['plugin'] = wa()->event('post_validate',$data);
+        if(empty($messages['plugin'])) {
+            unset($messages['plugin']);
         }
 
         return $messages;

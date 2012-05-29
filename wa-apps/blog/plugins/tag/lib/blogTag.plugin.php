@@ -58,25 +58,23 @@ class blogTagPlugin extends blogPlugin
     public function frontendSidebar($params)
     {
         $output = array();
-        $output['sidebar'] = array();
-        $output['sidebar']['template']= '
-<div class="tags cloud">
-	{foreach from=$var.tags item=tag}
-		<a href="{$tag.link}" style="font-size: {$tag.size}%; opacity: {$tag.opacity};" title="{$tag.count|escape}">{$tag.name|escape}</a>
-	{/foreach}
-</div>
-';
+
         $config = include($this->path.'/lib/config/config.php');
+
         $tag_model = new blogTagPluginModel();
-        $tags_data = $tag_model->getAllTags($config);
+        if($tags = $tag_model->getAllTags($config)){
+            $output['sidebar'] = '<div class="tags cloud">';
+            $wa = wa();
+            foreach ($tags as $tag) {
+                $tag['link'] = $wa->getRouteUrl('blog/frontend', array('tag'=>urlencode($tag['name'])), true);
+                $tag['name'] = htmlentities($tag['name'],ENT_QUOTES,'utf-8');
+                $output['sidebar'] .= <<<HTML
 
-        $wa = wa();
-        foreach ($tags_data as &$tag) {
-            $tag['link'] = $wa->getRouteUrl('blog/frontend', array('tag'=>urlencode($tag['name'])), true);
+<a href="{$tag['link']}" style="font-size: {$tag['size']}%; opacity: {$tag['opacity']};" title="{$tag['count']}">{$tag['name']}</a>
+HTML;
+            }
+            $output['sidebar'] .= '</div>';
         }
-        unset($tag);
-
-        $output['sidebar']['tags'] = $tags_data;
         return $output;
     }
 
@@ -141,6 +139,7 @@ class blogTagPlugin extends blogPlugin
                 $wa = wa();
                 foreach ($tags_data as &$tag) {
                     $tag['link'] = $wa->getRouteUrl('blog/frontend', array('tag'=>urlencode($tag['name'])), true);
+                    $tag['name'] = htmlspecialchars($tag['name'],ENT_QUOTES,'utf-8');
                 }
                 unset($tag);
 
@@ -148,7 +147,12 @@ class blogTagPlugin extends blogPlugin
                     $html = "";
                     $tag_html = array();
                     foreach ($post_item_tags as $tag_id) {
-                        $tag_html[] = '<a href="'.$tags_data[$tag_id]['link'].'">'.htmlspecialchars($tags_data[$tag_id]['name']).'</a>';
+                        if (isset($tags_data[$tag_id])) {
+                            $t = $tags_data[$tag_id];
+                            $tag_html[] = <<<HTML
+<a href="{$t['link']}">{$t['name']}</a>
+HTML;
+                        }
                     }
                     $html = '<div class="tags">'._wp('Tags').': ';
                     $html .= implode(", ", $tag_html);

@@ -160,7 +160,7 @@ class waHtmlControl
         $params['class'][] = $type;
         $wrappers = array(
             'title_wrapper'=>'%s&nbsp;:',
-            'description_wrapper'=>'<br>%s',
+            'description_wrapper'=>'<br>%s<br>',
             'control_wrapper'=>"%s\n%s\n%s\n",
             'control_separator'=>"<br>",
 
@@ -169,7 +169,8 @@ class waHtmlControl
         $instance = self::getInstance();
         self::makeId($params,$name);
         $control = $instance->$control_name($name,$params);
-        return sprintf($params['control_wrapper'],self::getControlTitle($params),$control,self::getControlDescription($params));
+        $res = sprintf($params['control_wrapper'],self::getControlTitle($params),$control,self::getControlDescription($params));
+        return $res;
     }
 
 
@@ -385,9 +386,9 @@ class waHtmlControl
             $control .= ">&nbsp;<label";
             $control .= self::addCustomParams(array('id'=>'for',),$params);
             $control .= self::addCustomParams(array('description'=>'title','class','style',),$option);
-            $control .= ">{$option_title}</label><br>\n";
+            $control .= ">{$option_title}</label>\n";
 
-            $control .= self::getControlDescription(array_merge($params,$option));
+            $control .= self::getControlDescription(array_merge($params,array('description'=>null),$option));
             if ($id < count($options)) {
                 $control .= $params['control_separator'];
             }
@@ -446,7 +447,7 @@ class waHtmlControl
             if($checked){
                 $checkbox_params['checked'] = isset($checked[$option['value']])?$checked[$option['value']]:null;
             }
-            $control .= self::getControl(self::CHECKBOX,$option['value'],$checkbox_params)."<br>\n";
+            $control .= self::getControl(self::CHECKBOX,$option['value'],$checkbox_params);
         }
         return $control;
     }

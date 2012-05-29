@@ -25,6 +25,7 @@ class waCurrency
 
     public static function getIntInWords($n, $params = array())
     {
+        $n = (int) $n;
         $delim = isset($params['delim']) ? $params['delim'] : array();
         $offset = isset($params['offset']) ? $params['offset'] : array();
         $order = isset($params['order']) ? $params['order'] : array();
@@ -116,7 +117,7 @@ class waCurrency
             waLocale::loadByDomain('webasyst', $locale);
         }
         $locale = waLocale::getInfo($locale);
-        $result = preg_replace('/%(\.?[0-9]?)([w]?)({[n|f|c|s][0-9]?})?/ie', 'self::extract($n, $currency, $locale, "$1", "$2", "$3")', $format);
+        $result = preg_replace('/%([0-9]?\.?[0-9]?)([iw]*)({[n|f|c|s][0-9]?})?/ie', 'self::extract($n, $currency, $locale, "$1", "$2", "$3")', $format);
         if ($locale !== $old_locale) {
             wa()->setLocale($old_locale);
         }
@@ -127,33 +128,55 @@ class waCurrency
     {
         $result = '';
 
-        // Number of fractional digits to show
+        // $precision: [0-9]?\.?[0-9]?
         $precision_arr = explode('.', $precision);
-        if ($precision_arr[0] !== '' || !isset($precision_arr[1])) {
-            // Bad syntax. Fall back to locale defaults.
-            $precision = $locale['frac_digits'];
+        $pad_to_width = false;
+        $trim_to_width = false;
+        if ($precision_arr[0] !== '') {
+            $precision = (int) $precision_arr[0];
+        } else if (isset($precision_arr[1]) && $precision_arr[1] !== '') {
+            $n = ($n - floor($n)) * pow(10, $precision_arr[1]);
+            $precision = 0;
+            $pad_to_width = $precision_arr[1];
+            $trim_to_width = $precision_arr[1];
         } else {
-            if ($precision_arr[1] === '') {
-                // Special syntax to show integer value formatted as a float
-                $n = round($n);
-                $precision = $locale['frac_digits'];
-            } else {
-                // Use specified precision, overriding the default locale settings
-                $precision = (int) $precision_arr[1];
+            $precision = $locale['frac_digits'];
+        }
+
+        //
+        // $format: [iw]*
+        //
+        $format_lower = strtolower($format);
+
+        // 'i' format option: floor() $n to $precision.
+        // When not present then round() is used.
+        // 'w' option implies 'i'
+        if (strstr($format_lower, 'i') !== false || strstr($format_lower, 'w') !== false) {
+            $n = floor($n * pow(10, $precision))/ ((float) pow(10, $precision));
+        } else {
+            $n = round($n, $precision);
+
+            // required to show '%.1' correctly for 0.99
+            if ($trim_to_width !== false && strlen($n) > $trim_to_width) {
+                $n = substr($n, -$trim_to_width);
             }
         }
 
-        if ($format == 'w' || $format == 'W') {
+        // 'w' option: amount written with words
+        if (strstr($format_lower, 'w') !== false) {
             // Amount in words.
-            // TODO: currently only works for integers.
-            $n = round($n);
+            // Currently only works for integers.
             $params = isset($locale['amount_in_words']) ? $locale['amount_in_words'] : array();
             $result = self::getIntInWords($n, $params);
-            if ($format == 'W') {
+            if (strstr($format, 'W') !== false) {
                 $result = mb_strtoupper(mb_substr($result, 0, 1)).mb_substr($result, 1);
             }
         } else {
-            $result = number_format($n, $precision, $locale['decimal_point'], $locale['thousands_sep']);
+            if ($pad_to_width !== false) {
+                $result = str_pad($n, $pad_to_width, '0', STR_PAD_LEFT);
+            } else {
+                $result = number_format($n, $precision, $locale['decimal_point'], $locale['thousands_sep']);
+            }
         }
 
         if (!isset($currency['position'])) {
@@ -163,6 +186,7 @@ class waCurrency
             $currency['delim'] = ' ';
         }
 
+        // $desc: add currency name, or symbol, or code, etc.
         if ($desc) {
             $desc = substr($desc, 1, -1);
             $key = null;

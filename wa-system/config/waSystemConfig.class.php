@@ -171,7 +171,7 @@ class waSystemConfig
             } else {
                 $url = 'http://';
             }
-            $url .= $_SERVER['HTTP_HOST'];
+            $url .= waRequest::server('HTTP_HOST');
             return $url;
     }
 

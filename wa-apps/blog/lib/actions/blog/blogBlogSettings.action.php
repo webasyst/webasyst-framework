@@ -37,11 +37,12 @@ class blogBlogSettingsAction extends waViewAction
                 unset($settings['sort']);
             }
 
-			$settings['id'] = $blog_id;
+            $settings['id'] = $blog_id;
             $validate_massages = $this->validate($settings);
 
             if (!$validate_massages) {
 
+                //TODO handle settings
                 if ($blog_id) {
                     $blog_model->updateById($blog_id, $settings);
                 } else {
@@ -68,11 +69,11 @@ class blogBlogSettingsAction extends waViewAction
 
             if (!$blog = $blog_model->search(array(
 					'blog' => $blog_id
-				), array(
+            ), array(
 					'link' => false
-				))->fetchSearchItem()
-			) {
-            	throw new waException(_w('Blog not found'), 404);
+            ))->fetchSearchItem()
+            ) {
+                throw new waException(_w('Blog not found'), 404);
             }
 
             $blog['other_settlements'] = blogBlogModel::getPureSettlements($blog);
@@ -90,9 +91,8 @@ class blogBlogSettingsAction extends waViewAction
 
             );
 
-            $blog = array_shift($blog_model->prepareView(array(
-            	$blog
-            ), array(
+            $blogs = array( $blog);
+            $blog = array_shift($blog_model->prepareView($blogs, array(
             	'link' => false
             )));
 
@@ -114,6 +114,16 @@ class blogBlogSettingsAction extends waViewAction
                 $this->view->assign('blogs', $blogs);
             }
         }
+
+        /**
+         * Backend blog settings
+         * UI hook allow extends backend blog settings page
+         * @event backend_blog_edit
+         * @param array[string]mixed $blog Blog data
+         * @param array['id']int $blog['id'] Blog ID
+         * @return array[string][string]string $return['%plugin_id%']['settings'] Blog extra settings html fields
+         */
+        $this->view->assign('backend_blog_edit', wa()->event('backend_blog_edit', $blog));
         $this->view->assign('posts_total_count', $posts_total_count);
 
         $this->view->assign('blog_id', $blog_id);
@@ -127,37 +137,37 @@ class blogBlogSettingsAction extends waViewAction
         $messages = array();
 
         if ($data['status'] != blogBlogModel::STATUS_PRIVATE) {
-	        if (isset($data['id'])) {
-	            $url_validator = new blogSlugValidator(array('id' => $data['id']));
-	        } else {
-	            $url_validator = new blogSlugValidator();
-	        }
+            if (isset($data['id'])) {
+                $url_validator = new blogSlugValidator(array('id' => $data['id']));
+            } else {
+                $url_validator = new blogSlugValidator();
+            }
 
-	        $url_validator->setSubject(blogSlugValidator::SUBJECT_BLOG);
+            $url_validator->setSubject(blogSlugValidator::SUBJECT_BLOG);
 
-	        $name_validator = new waStringValidator(
-	        	array(
+            $name_validator = new waStringValidator(
+            array(
 					'max_length' => 255,
 					'required' => true
-	        	), array(
+            ), array(
 					'required' => _w('Blog name must not be empty')
-	        	)
-	        );
+            )
+            );
 
-	        if (!$url_validator->isValid($data['url'])) {
-	            $messages['blog_url'] = current($url_validator->getErrors());
-	        }
-	        if (!$name_validator->isValid($data['name'])) {
-	            $messages['blog_name'] = current($name_validator->getErrors());
-	        }
+            if (!$url_validator->isValid($data['url'])) {
+                $messages['blog_url'] = current($url_validator->getErrors());
+            }
+            if (!$name_validator->isValid($data['name'])) {
+                $messages['blog_name'] = current($name_validator->getErrors());
+            }
         } else {
-        	$blog_model = new blogBlogModel();
-        	if (!$data['id']) {
-        		$data['url'] = $blog_model->genUniqueUrl($data['name']);
-        	} else {
-        		$url = $blog_model->select('url')->where('id = i:id', array('id' => $data['id']))->fetchField('url');
-        		$data['url'] = $url ? $url : $blog_model->genUniqueUrl($data['name']);
-        	}
+            $blog_model = new blogBlogModel();
+            if (!$data['id']) {
+                $data['url'] = $blog_model->genUniqueUrl($data['name']);
+            } else {
+                $url = $blog_model->select('url')->where('id = i:id', array('id' => $data['id']))->fetchField('url');
+                $data['url'] = $url ? $url : $blog_model->genUniqueUrl($data['name']);
+            }
         }
 
         return $messages;

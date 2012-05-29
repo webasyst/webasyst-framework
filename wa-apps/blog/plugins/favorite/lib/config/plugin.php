@@ -1,8 +1,8 @@
 <?php
 
 return array(
-    'name' => 'Favorites',//_wp('Favorites');
-    'description' => 'Favorite posts',//_wp('Favorite posts');
+    'name' => /*_wp*/('Favorites'),
+    'description' => /*_wp*/('Backend favorite posts filtering'),
     'vendor'=>'webasyst',
     'version'=>'1.0.0',
 	'img'=>'img/star.png',

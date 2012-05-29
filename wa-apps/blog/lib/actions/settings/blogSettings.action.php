@@ -97,7 +97,8 @@ class blogSettingsAction extends waViewAction
     {
         return array(
 			'type_items_count' => array(
-					'default' => 'none',
+					'post_default' => 'none',
+					'default' => 'posts:overdue:comments',
 					'validate' => array('vAvailable', array('none', 'posts', 'overdue', 'comments', 'comments_to_my_post')),
                     'callback' => create_function('$a', '
         $a = explode(":",$a);

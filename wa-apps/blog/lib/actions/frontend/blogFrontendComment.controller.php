@@ -30,11 +30,6 @@ class blogFrontendCommentController extends waJsonController
      */
     private $comment_model;
 
-    public function preExecute()
-    {
-
-    }
-
     public function execute()
     {
 
@@ -139,15 +134,7 @@ class blogFrontendCommentController extends waJsonController
             }
         }
 
-
-        if (count($this->errors) > 0) {
-            if (waRequest::get('json')) {
-                $this->getResponse()->addHeader('Content-type', 'application/json');
-            }
-            return false;
-        }
-
-        $this->errors = array_merge($this->errors,blogCommentModel::validate($comment,$comment['auth_provider']));
+        $this->errors += $this->comment_model->validate($comment);
 
         if (count($this->errors) > 0) {
             if (waRequest::get('json')) {
@@ -159,28 +146,7 @@ class blogFrontendCommentController extends waJsonController
         $this->parent_id = (int)waRequest::post('parent', 0);
         try {
             $comment['post_data'] = $this->post;
-            $res = $this->comment_model->add($comment, $this->parent_id);
-            if(is_array($res)) {
-                foreach ($res as $plugin) {
-                    if ($plugin !== true) {
-                        if($plugin) {
-                            $this->errors[] = $plugin;
-                        } else {
-                            $this->errors[]['text'] = _w('Invalid data');
-                        }
-                    }
-                }
-
-            } else {
-                $this->comment_id =$res;
-            }
-
-            if (count($this->errors) > 0) {
-                if (waRequest::get('json')) {
-                    $this->getResponse()->addHeader('Content-type', 'application/json');
-                }
-                return false;
-            }
+            $this->comment_id = $this->comment_model->add($comment, $this->parent_id);
             return true;
         }
         catch (Exception $e) {

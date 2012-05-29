@@ -28,6 +28,6 @@ msgid "Add to favorites"
 msgstr "Добавить в избранные"
 
 #: /wa-apps/blog/plugins/favorite/lib/config/plugin.php:6
-msgid "Favorite posts"
-msgstr "Избранные записи"
+msgid "Backend favorite posts filtering"
+msgstr "Бекенд-фильтр по избранным записям"
 

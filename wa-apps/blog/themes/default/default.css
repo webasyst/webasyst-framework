@@ -219,3 +219,7 @@ div.wa-captcha .errormsg { display: inline; margin-left: 10px; }
 
 .tags a { color: green; }
 .tags.cloud { text-align: center; font-size: 0.9em; padding-top: 20px; margin-top: 30px; border-top: 1px solid #ccc; }
+.categories { padding-top: 20px; margin-top: 30px; border-top: 1px solid #ccc; }
+.categories ul { padding-left: 20px; }
+.categories ul li { line-height: 1.2em; padding-bottom: 10px; font-size: 0.9em; }
+.categories ul li.selected a { color: #000; text-decoration: none; font-weight: bold; }

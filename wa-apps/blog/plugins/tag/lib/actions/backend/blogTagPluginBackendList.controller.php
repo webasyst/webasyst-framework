@@ -9,7 +9,11 @@ class blogTagPluginBackendListController extends waController
 
         $tag_model = new blogTagPluginModel();
         $tags = $tag_model->search($query,$limit);
-
-        echo implode("\n", array_keys($tags));
+        $tags = array_keys($tags);
+        foreach ($tags as &$tag) {
+            $tag = htmlspecialchars($tag);
+        }
+        unset($tag);
+        echo implode("\n", $tags);
     }
 }

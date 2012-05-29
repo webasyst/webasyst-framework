@@ -34,7 +34,8 @@ class blogPostAction extends waViewAction
         if ( ($blog['status'] != blogBlogModel::STATUS_PUBLIC) || ($post['status'] != blogPostModel::STATUS_PUBLISHED) ) {
             blogHelper::checkRights($post['blog_id'],true,blogRightConfig::RIGHT_READ);
         }
-        $blog = array_shift($blog_model->prepareView(array($blog)));
+        $items = $blog_model->prepareView(array($blog));
+        $blog = array_shift($items);
 
         $this->setLayout(new blogDefaultLayout());
         $this->getResponse()->setTitle($post['title']);
@@ -51,8 +52,6 @@ class blogPostAction extends waViewAction
          */
         $this->view->assign('backend_post', wa()->event('backend_post', $post));
 
-        $this->view->assign('post', $post);
-
         $user = $this->getUser();
         $this->view->assign('current_contact', array(
 			'id' => $user->getId(),
@@ -63,5 +62,13 @@ class blogPostAction extends waViewAction
         $this->view->assign('blog_id', $blog['id']);
         $this->view->assign('blog', $blog);
         $this->view->assign('contact_rights',$this->getUser()->getRights('contacts','backend'));
+        if ($this->getConfig()->getOption('can_use_smarty')) {
+            try {
+                $post['text'] = $this->view->fetch("string:{$post['text']}",$this->cache_id);
+            } catch (SmartyException $ex) {
+                $post['text'] = blogPost::handleTemplateException($ex, $post);
+            }
+        }
+        $this->view->assign('post', $post);
     }
 }

@@ -16,7 +16,7 @@ class blogCronScheduleCli extends waCliController
 
         $post_model = new blogPostModel();
         $params = array('datetime'=>date("Y-m-d H:i:s"),'status'=>blogPostModel::STATUS_SCHEDULED);
-        $posts_schedule = $post_model->select("id,blog_id,contact_id,status")->where('datetime <= s:datetime AND status=s:status',$params)->fetchAll();
+        $posts_schedule = $post_model->select("id,blog_id,contact_id,status,datetime")->where('datetime <= s:datetime AND status=s:status',$params)->fetchAll();
         if ($posts_schedule) {
             foreach ($posts_schedule as $post) {
                 try {

@@ -34,11 +34,15 @@ class blogPost
                 $blog_id = $post['blog_id'];
 
                 if (!isset($blog_urls[$blog_id])) {
-                    $blog_urls[$blog_id] = $blog_id;
+                    $blog_urls[$blog_id] = false;
                     $blog_model = new blogBlogModel();
                     if ($blog_data = $blog_model->getById($blog_id)) {
-                        if (strlen($blog_data['url'])) {
-                            $blog_urls[$blog_id] = $blog_data['url'];
+                        if ($blog_data['status'] == blogBlogModel::STATUS_PUBLIC) {
+                            if (strlen($blog_data['url'])) {
+                                $blog_urls[$blog_id] = $blog_data['url'];
+                            } else {
+                                $blog_urls[$blog_id] = $blog_id;
+                            }
                         }
                     }
                 }
@@ -48,29 +52,30 @@ class blogPost
             }
         }
         $route = false;
-
-        switch ($type) {
-            case 'comment':{
-                $route = 'blog/frontend/comment';
-                break;
-            }
-            case 'timeline': {
-                $route = 'blog/frontend';
-                break;
-            }
-            case 'author': {
-                if ($params['contact_id'] = $post['contact_id']) {
-                    $route = 'blog/frontend';
+        if (!isset($params['blog_url']) || ($params['blog_url'] !== false)) {
+            switch ($type) {
+                case 'comment':{
+                    $route = 'blog/frontend/comment';
+                    break;
                 }
-                break;
-            }
-            case 'post':
-            default:{
-                $route = 'blog/frontend/post';
-                break;
+                case 'timeline': {
+                    $route = 'blog/frontend';
+                    break;
+                }
+                case 'author': {
+                    if ($params['contact_id'] = $post['contact_id']) {
+                        $route = 'blog/frontend';
+                    }
+                    break;
+                }
+                case 'post':
+                default:{
+                    $route = 'blog/frontend/post';
+                    break;
+                }
             }
         }
-        return $route?blogHelper::getUrl($blog_id, $route, $params):false;
+        return $route?blogHelper::getUrl($blog_id, $route, $params):array();
     }
 
     static function move($blog_id, $move_blog_id)
@@ -85,6 +90,37 @@ class blogPost
             $blog_model = new blogBlogModel();
             $blog_model->recalculate(array($blog_id, $move_blog_id));
         }
+    }
+
+    public static function handleTemplateException($ex, $post)
+    {
+
+        $output = '';
+        if (wa()->getConfig()->isDebug()) {
+            $pattern = '/Syntax\s+Error\s+in\s+template\s+.*\s+on\s+line\s+(\d+)/';
+            $message = $ex->getMessage();
+            if (preg_match($pattern,$message, $matches)) {
+                $lines = preg_split("/\n/", $post['text']);
+                $line = $matches[1];
+                $context_radius = 5;
+                $lines = array_slice($lines, $line - $context_radius,2*$context_radius-1,true);
+                $output = '<div class="error">'.htmlentities($message,ENT_QUOTES,'utf-8');
+                $output .= '<pre class="error">';
+                $template = "%3s%0".ceil(log10($line)+1)."d\t%s";
+                foreach ($lines as $n => $content) {
+                    $output .= sprintf($template,(($n+1) == $line)?'>>':'',$n,htmlentities($content,ENT_QUOTES,'utf-8'));
+                }
+                $output .= "</pre></div>";
+
+            } else {
+                $output = '<pre class="error">'.htmlentities($ex->getMessage(),ENT_QUOTES,'utf-8')."</pre>";
+            }
+        } else {
+            waLog::log($ex);
+            $output = '<div class="error">'._w('Syntax error at post template').'</div>';
+        }
+        return $output;
+
     }
 
 }

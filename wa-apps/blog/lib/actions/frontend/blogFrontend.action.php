@@ -25,6 +25,9 @@ class blogFrontendAction extends blogViewAction
         }
 
         $this->layout_type = $this->getRequest()->get('layout','default',waRequest::TYPE_STRING_TRIM);
+        if( ($this->layout_type != 'lazyloading') || ($this->page == 1)) {
+            $this->layout_type = 'default';
+        }
         if (($this->layout_type == 'default') && ($this->page > 1)) {
             $this->layout_type = 'page';
         }
@@ -52,14 +55,16 @@ class blogFrontendAction extends blogViewAction
 
         switch ($this->layout_type) {
             case 'lazyloading': {
+                //per page AJAX output without extra decoration (sidebar and etc)
                 break;
             }
+            case 'default': //first blog page output
+            case 'page': //n-th blog page output
             default: {
                 $this->setLayout(new blogFrontendLayout());
                 break;
             }
         }
-
         $this->setThemeTemplate('stream.html');
 
         return $this;
@@ -151,7 +156,6 @@ class blogFrontendAction extends blogViewAction
         }
 
         $this->view->assign('annotation_only',$annotation_only);
-        $this->view->assign('posts', $posts);
         $this->view->assign('page',$this->page);
         $this->view->assign('layout_type',$this->layout_type);
         $this->view->assign('pages', $pages);
@@ -161,6 +165,18 @@ class blogFrontendAction extends blogViewAction
         $this->view->assign('posts_per_page',$posts_per_page);
         $this->view->assign('post_params',$this->search_params);
         $this->view->assign('is_concrete_blog', isset($this->search_params['blog_url']));
+
+        if ($this->getConfig()->getOption('can_use_smarty')) {
+            foreach ($posts as &$post) {
+                try {
+                    $post['text'] = $this->view->fetch("string:{$post['text']}",$this->cache_id);
+                } catch (SmartyException $ex) {
+                    $post['text'] = blogPost::handleTemplateException($ex, $post);
+                }
+            }
+            unset($post);
+        }
+        $this->view->assign('posts', $posts);
 
         if ($this->cache_time && false) {
             $this->cache->set(array_keys($posts));
