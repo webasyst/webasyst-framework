@@ -23,4 +23,9 @@ class waReCaptcha extends waAbstractCaptcha
                                 waRequest::post("recaptcha_response_field"));
         return $response->is_valid;
     }
+
+    public function display()
+    {
+
+    }
 }

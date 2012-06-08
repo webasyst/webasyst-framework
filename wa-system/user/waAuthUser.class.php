@@ -151,11 +151,6 @@ class waAuthUser extends waUser
         return (bool)$this->auth;
     }
     
-    public function getPasswordHash($password)
-    {
-        return md5($password);
-    }
-    
     public function checkChangePassword()
     {
         $change_password = $this->getSettings('webasyst', 'change_password');

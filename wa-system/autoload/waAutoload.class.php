@@ -167,6 +167,9 @@ class waAutoload
       'waWidget' => 'controller/waWidget.class.php',
     
       'waCurrency' => 'currency/waCurrency.class.php',
+
+      'waCaptcha' => 'captcha/waCaptcha.class.php',
+      'waReCaptcha' => 'captcha/recaptcha/waReCaptcha.class.php',
     
       'waDbAdapter' => 'database/waDbAdapter.class.php',
       'waDbCacheIterator' => 'database/waDbCacheIterator.class.php',

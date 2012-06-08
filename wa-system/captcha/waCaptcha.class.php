@@ -1,5 +1,17 @@
 <?php
 
+/*
+ * This file is part of Webasyst framework.
+ *
+ * Licensed under the terms of the GNU Lesser General Public License (LGPL).
+ * http://www.webasyst.com/framework/license/
+ *
+ * @link http://www.webasyst.com/
+ * @author Webasyst LLC
+ * @copyright 2011-2012 Webasyst LLC
+ * @package wa-system
+ * @subpackage captcha
+ */
 class waCaptcha extends waAbstractCaptcha
 {
     protected $options = array(
@@ -7,6 +19,8 @@ class waCaptcha extends waAbstractCaptcha
         'fonts' => array(
             "DroidSans.ttf"
         ),
+        'width' => 120,
+        'height' => 40,
         'font_size' => 25, // in pt
         'background' => array()
     );
@@ -110,8 +124,8 @@ HTML;
             $img_background = $this->options['background'][rand(0, sizeof($this->options['background']) - 1)];
             $im = imagecreatefrompng ($data_path . $img_background);
         } else {
-            $w = 120;
-            $h = 40;
+            $w = $this->options['width'];
+            $h = $this->options['height'];;
             $im = imagecreatetruecolor($w, $h);
             for ($i = 0; $i < $w; $i++) {
                 for ($j = 0; $j < $h; $j++) {
@@ -128,21 +142,24 @@ HTML;
             imageline($im, rand(0, 20), rand(1, 50), rand(150, 180), rand(1, 50), $color);
         }
 
-        $color = imagecolorallocate($im, rand(0, 150), rand(0, 150), rand(0, 150));
-        $x = rand(0, 15);
+        $ix = floor($this->options['font_size'] * 15 / 25);
+        $min_y = round($this->options['height'] * 0.75);
+        $max_y = round($this->options['height'] * 0.88);
+        $x = rand(0, $ix);
         for($i = 0; $i < strlen($code); $i++) {
-            $x += 15;
+            $x += $ix;
             $letter = substr($code, $i, 1);
             if (rand(0, 10) < 5) {
                 $letter = strtoupper($letter);
             }
-            imagettftext ($im, $font_size, rand(2, 4), $x, rand(30, 35), $color, $data_path.$font, $letter);
+            $color = imagecolorallocate($im, rand(0, 150), rand(0, 150), rand(0, 150));
+            imagettftext($im, $font_size, rand(-10, 10), $x, rand($min_y, $max_y), $color, $data_path.$font, $letter);
         }
 
         for ($i=0; $i<$linenum; $i++)
         {
             $color = imagecolorallocate($im, rand(0, 255), rand(0, 200), rand(0, 255));
-            imageline($im, rand(0, 20), rand(1, 50), rand(150, 180), rand(1, 50), $color);
+            imageline($im, rand(0, 20), rand(1, $this->options['height']), rand(150, $this->options['width']), rand(1, $this->options['height']), $color);
         }
 
         imagepng($im);

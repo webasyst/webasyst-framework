@@ -1,39 +1,40 @@
-<?php 
+<?php
 
 class siteSitemapConfig extends waSitemapConfig
 {
     public function execute()
     {
         $domain_model = new siteDomainModel();
-        $domain = $domain_model->getByName(waSystem::getInstance()->getRouting()->getDomain());
+        $domain = $domain_model->getByName($this->domain);
         
         if (!$domain) {
             return;
         }
-        
-        $routing = wa()->getRouting();
-        $routes = $routing->getRoutes($domain['name']);
-        $route_pages = array();
-        foreach ($routes as $r_id => $r) {
-            if (isset($r['_pages'])) {
-                $u = $routing->getUrlByRoute($r, $domain['name']);
-                foreach ($r['_pages'] as $page_id) {
-                    $route_pages[$page_id] = $u;
-                }
-            }
-        }
-         
+        // get all routes of the app site
+        $routes = $this->getRoutes();
         $page_model = new sitePageModel();
-        $pages = $page_model->select('id,name,url,status,create_datetime,update_datetime')->where('domain_id = '.$domain['id'])->order('sort')->fetchAll('id');
-        
-        foreach ($pages as &$p) {
-            if (isset($route_pages[$p['id']])) {
-                $p['url'] = $route_pages[$p['id']].$p['url'];
+        foreach ($routes as $r) {
+            $exclude_ids = isset($r['_exclude']) ? $r['_exclude'] : array();
+            $sql = "SELECT id, name, title, url, create_datetime, update_datetime FROM ".$page_model->getTableName().'
+                WHERE domain_id = i:domain_id AND status = 1'.
+                ($exclude_ids ? " AND id NOT IN (:ids)" : '').
+                ' ORDER BY sort';
+            $pages = $page_model->query($sql, array('domain_id' => $domain['id'], 'ids' => $exclude_ids))->fetchAll('id');
+            // get part of url by route
+            $u = $this->getUrlByRoute($r);
+            foreach ($pages as $p) {
+                if (!$p['url']) {
+                    $priority = 1;
+                    $change = self::CHANGE_WEEKLY;
+                } else {
+                    $priority = 0.2;
+                    $change = self::CHANGE_MONTHLY;
+                }
+                $p['url'] = $u.$p['url'];
                 if (strpos($p['url'], '<') === false) {
-                    $this->addUrl($p['url'], $p['update_datetime'], 'monthly');
+                    $this->addUrl($p['url'], $p['update_datetime'], $change, $priority);
                 }
             }
         }
-        
     }
 }

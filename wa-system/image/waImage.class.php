@@ -23,8 +23,16 @@ class waImage
     const CENTER = 'CENTER';
     const BOTTOM = 'BOTTOM';
 
-    const FILTER_GRAYSCALE = 'grayscale';
-    const FILTER_SEPIA = 'sepia';
+    const ALIGN_TOP_LEFT     = 'ALIGN_TOP_LEFT';
+    const ALIGN_TOP_RIGHT    = 'ALIGN_TOP_RIGHT';
+    const ALIGN_BOTTOM_LEFT  = 'ALIGN_BOTTOM_LEFT';
+    const ALIGN_BOTTOM_RIGHT = 'ALIGN_BOTTOM_RIGHT';
+
+    const ORIENTATION_VERTICAL = 'VERTICAL';
+    const ORIENTATION_HORIZONTAL = 'HORIZONTAL';
+
+    const FILTER_GRAYSCALE = 'GRAYSCALE';
+    const FILTER_SEPIA = 'SEPIA';
 
     const Gd = 'Gd';
     const Imagick = 'Imagick';
@@ -42,7 +50,7 @@ class waImage
 
     public function __construct($file)
     {
-        try    {
+        try {
             $file = realpath($file);
             $image_info = @getimagesize($file);
         }
@@ -308,9 +316,15 @@ class waImage
     /**
      * @param array $options
      *     'watermark' => waImage|string. String means text-watermark
-     *     'opacity' => float|int 0..1. Fully opaque is 1
-     *     'font_file' => null|string path to ttf-font file. Use when text-watermark. If null use default font (in different adapters different default font),
-     *     'font_size' => float Size of font
+     *     'opacity' => float|int 0..1. Fully opaque is 1. Default is 0.3
+     *     'align' => self::ALIGN_* const. Default: self::ALIGN_TOP_LEFT
+     *     'font_file' => string Path to ttf-font file. Use when text-watermark. Default: default font (in different adapters different default font). Note: use when watermark option is text
+     *     'font_size' => float Size of font. Note: use when watermark option is text
+     *     'font_color' => string Hex-formatted of color (without #). Default: ffffff. Note: use when watermark option is text
+     *     'text_orientation' => self::ORIENTATION_* const. Default: self::ORIENTATION_HORIZONTAL. Note: use when watermark option is text
+     *
+     * Note: Watermark option is obligatory
+     *
      * @return waImage
      */
     public function watermark($options)
@@ -318,10 +332,16 @@ class waImage
         if (!isset($options['watermark'])) {
             throw new waException("'watermark' is Obligatory option");
         }
-        $options['opacity'] = isset($options['opacity']) ? $options['opacity'] : 0.3;
+        $options['opacity'] = !empty($options['opacity']) ? $options['opacity'] : 0.3;
+        $options['align'] = !empty($options['align']) ? $options['align'] : self::ALIGN_TOP_LEFT;
         if (!($options['watermark'] instanceof waImage)) {
-            $options['font_file'] = isset($options['font_file']) ? $options['font_file'] : null;
-            $options['font_size'] = isset($options['font_size']) ? $options['font_size'] : 14;
+            $options['font_file'] = !empty($options['font_file']) ? $options['font_file'] : null;
+            $options['font_size'] = !empty($options['font_size']) ? $options['font_size'] : 14;
+            $options['font_color'] = !empty($options['font_color']) ? ltrim($options['font_color'], '#') : '000000';
+            if (strlen($options['font_color']) < 6) {
+                $options['font_color'] = str_pad($options['font_color'], 6, '0');
+            }
+            $options['text_orientation'] = !empty($options['text_orientation']) ? $options['text_orientation'] : self::ORIENTATION_HORIZONTAL;
         }
         $this->_watermark($options);
         return $this;

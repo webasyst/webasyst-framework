@@ -54,19 +54,6 @@ class waUser extends waContact
         return $this['login'];
     }
 
-    /**
-     * Returns hash of the password
-     *
-     * @param string $password
-     * @return string
-     */
-    public function getPasswordHash($password)
-    {
-        return md5($password);
-    }
-
-
-
     public static function getStatusByInfo($info)
     {
         if (!isset($info['login']) || !$info['login']) {
@@ -93,15 +80,12 @@ class waUser extends waContact
 
     public function offsetSet($offset, $value)
     {
+        parent::offsetSet($offset, $value);
         if ($offset == 'password') {
-                $value = $this->getPasswordHash($value);
-                parent::offsetSet($offset, $value);
                 // set new auth token for current user
                 if ($this->id == wa()->getUser()->getId()) {
                     wa()->getAuth()->updateAuth($this);
                 }
-        } else {
-            parent::offsetSet($offset, $value);
         }
     }
 

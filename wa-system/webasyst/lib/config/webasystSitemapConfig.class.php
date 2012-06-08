@@ -23,9 +23,10 @@ class webasystSitemapConfig extends waSitemapConfig
         $system->getResponse()->sendHeaders();
         
         echo '<?xml version="1.0" encoding="UTF-8"?>
-        <sitemapindex xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                 xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/siteindex.xsd"
-                 xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
+<?xml-stylesheet type="text/xsl" href="'.$system->getUrl(true).'wa-content/xml/sitemap-index.xsl"?>
+<sitemapindex xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/siteindex.xsd"
+         xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
         $this->execute();
         echo '</sitemapindex>';
     }

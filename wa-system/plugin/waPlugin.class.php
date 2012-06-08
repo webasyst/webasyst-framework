@@ -29,11 +29,11 @@ class waPlugin
     protected function checkUpdates()
     {
         $app_settings_model = new waAppSettingsModel();
-        $time = $app_settings_model->get($this->app_id, 'plugin.'.$this->id.'.update_time');
+        $time = $app_settings_model->get(array($this->app_id, $this->id), 'update_time');
         if (!$time) {
             try {
                 $this->install();
-                $app_settings_model->set($this->app_id, 'plugin.'.$this->id.'.update_time', 1);
+                $app_settings_model->set(array($this->app_id, $this->id), 'update_time', 1);
             } catch (Exception $e) {
                 waLog::log($e->getMessage());
                 return;
@@ -71,11 +71,8 @@ class waPlugin
         // Remove plugin settings
         $app_settings_model = new waAppSettingsModel();
         $sql = "DELETE FROM ".$app_settings_model->getTableName()."
-                WHERE app_id = s:app_id AND (
-                    name = '".$app_settings_model->escape('plugin.'.$this->id)."' OR
-                    name LIKE '".$app_settings_model->escape('plugin.'.$this->id).".%'
-                )";
-        $app_settings_model->exec($sql, array('app_id' => $this->app_id));
+                WHERE app_id = s:app_id";
+        $app_settings_model->exec($sql, array('app_id' => $this->app_id.".".$this->id));
 
         if (!empty($this->info['rights'])) {
             // Remove rights to plugin

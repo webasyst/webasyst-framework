@@ -106,7 +106,8 @@ CREATE TABLE IF NOT EXISTS `wa_country` (
   UNIQUE KEY `isonumeric` (`isonumeric`,`locale`),
   KEY `name` (`name`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-INSERT INTO `wa_country` (`name`, `iso3letter`, `iso2letter`, `isonumeric`, `locale`) VALUES
+
+INSERT IGNORE INTO `wa_country` (`name`, `iso3letter`, `iso2letter`, `isonumeric`, `locale`) VALUES
 ('Aruba', 'abw', 'aw', '533', 'en_US'),
 ('Afghanistan', 'afg', 'af', '004', 'en_US'),
 ('Angola', 'ago', 'ao', '024', 'en_US'),

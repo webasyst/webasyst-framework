@@ -4,7 +4,6 @@
 class contactsContactsLinksAction extends waViewAction
 {
     public function execute() {
-        $one = false;
         $ids = waRequest::post('id', array(), 'array_int');
         if (!$ids) {
             $ids = (int)waRequest::get('id');
@@ -13,7 +12,6 @@ class contactsContactsLinksAction extends waViewAction
             }
             $ids = array($ids);
         }
-        $one = count($ids) == 1;
 
         // do not try to delete self
         if (in_array($this->getUser()->getId(), $ids)) {
@@ -38,8 +36,8 @@ class contactsContactsLinksAction extends waViewAction
 
         $this->view->assign('apps', wa()->getApps());
         $links  = array();
-        foreach ($result as $app_id => $l) {
-            foreach ($l as $contact_id => $contact_links) {
+        foreach ($result as $app_id => $app_links) {
+            foreach ($app_links as $contact_id => $contact_links) {
                 if ($contact_links) {
                     $links[$contact_id][$app_id] = $contact_links;
                 }

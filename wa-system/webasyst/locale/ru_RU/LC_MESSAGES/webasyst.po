@@ -1699,4 +1699,35 @@ msgstr "У вас нет разрешения на доступ к данной 
 msgid "Please refer to your system administrator."
 msgstr "Пожалуйста, обратитесь к вашему системному администратору."
 
+msgid "Host"
+msgstr "Сервер"
 
+msgid "User"
+msgstr "Пользователь"
+
+msgid "Database Name"
+msgstr "Имя базы данных"
+
+msgid "Continue"
+msgstr "Продолжить"
+
+msgid "MySQL database"
+msgstr "База данных MySQL"
+
+msgid "Enter connection credentials for the MySQL database which will be used by Webasyst to store system and application data."
+msgstr "Введите настройки подключения к базе данных MySQL, в которой Вебасист создаст таблицы для хранения своих данных и данных приложений."
+
+msgid "If you do not know what should be entered here, please contact your hosting provider technical support."
+msgstr "Если вы не знаете, что вводить, обратитесь в службу поддержки вашего хостинг-провайдера."
+
+msgid "Failed to connect to the “%s” database."
+msgstr "Ошибка подключения к базе данных “%s”."
+
+msgid "Failed to connect to specified MySQL database server."
+msgstr "Ошибка подключения к серверу базы данных."
+
+msgid "Error creating file %s"
+msgstr "Ошибка при создании файла %s"
+
+msgid "Not enough access permissions to write in the folder %s"
+msgstr "Недостаточно прав для записи в папку %s"

@@ -67,6 +67,30 @@ class webasystLoginFirstAction extends waViewAction
                         'login' => $login,
                         'password' => $password
                     ));
+
+                    $path = $this->getConfig()->getPath('config');
+                    // check routing.php
+                    if (!file_exists($path.'/routing.php')) {
+                        $apps = wa()->getApps();
+                        $data = array();
+                        $domain = $this->getConfig()->getDomain();
+                        $site = false;
+                        foreach ($apps as $app_id => $app) {
+                            if ($app_id == 'site') {
+                                $site = true;
+                            } elseif (!empty($app['frontend'])) {
+                                $data[$domain][] = array(
+                                    'url' => $app_id.'/',
+                                    'app' => $app_id
+                                );
+                            }
+                        }
+                        if ($site) {
+                            $data[$domain][] = array('url' => '*', 'app' => 'site');
+                        }
+                        waUtils::varExportToFile($data, $path.'/routing.php');
+                    }
+                    // redirect to backend
                     $this->redirect($this->getConfig()->getBackendUrl(true));
                 }
 

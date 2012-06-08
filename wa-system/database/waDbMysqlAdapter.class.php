@@ -42,6 +42,11 @@ class waDbMySQLAdapter extends waDbAdapter
         }
         return $handler;
     }
+
+    public function select_db($database)
+    {
+        return mysql_select_db($database, $this->handler);
+    }
     
     public function query($query)
     {
@@ -112,32 +117,66 @@ class waDbMySQLAdapter extends waDbAdapter
     {
         return mysql_errno($this->handler);
     }
-    
-    public function schema($table)
+
+    public function schema($table, $keys = false)
     {
+        $types = array(
+            'tinyint' => 'integer',
+            'smallint' => 'integer',
+            'int' => 'integer',
+            'varchar' => 'string',
+            'mediumtext' => 'text',
+            'bigtext' => 'text'
+        );
         $res = $this->query("DESCRIBE ".$table);
         if (!$res) {
             $this->exception();
-        } 
-           $result = array();
-           while ($row = mysql_fetch_assoc($res)) {
-               $field = array();
-               $i = strpos($row['Type'], '(');
-               if ($i === false) {
-                   $field['type'] = $row['Type'];
-                   $field['length'] = null;
-               } else {
-                   $field['type'] = substr($row['Type'], 0, $i);
-                   $field['length'] = substr($row['Type'], $i + 1, -1);
-               }
-               $field['null'] = $row['Null'] == 'YES' ? 1 : 0;
-               $field['default'] = $row['Default'] === 'NULL' ? ($field['null'] ? null : '') : $row['Default'];
-               $field['extra'] = $row['Extra']; 
-               $result[$row['Field']] = $field;
-           }
-           return $result;        
+        }
+        $result = array();
+        while ($row = $this->fetch_assoc($res)) {
+            $field = array();
+            $i = strpos($row['Type'], '(');
+            if ($i === false) {
+                $field['type'] = $row['Type'];
+                $field['params'] = null;
+            } else {
+                $field['type'] = substr($row['Type'], 0, $i);
+                $field['params'] = substr($row['Type'], $i + 1, strpos($row['Type'], ')') - $i - 1);
+                if (strpos($row['Type'], ')') != strlen($row['Type']) - 1) {
+                    $field[trim(substr($row['Type'], strpos($row['Type'], ')') + 1))] = 1;
+                }
+            }
+            if (isset($types[$field['type']])) {
+                $field['type'] = $types[$field['type']];
+            }
+            $field['null'] = $row['Null'] == 'YES' ? 1 : 0;
+            $field['default'] = $row['Default'] === 'NULL' ? null : $row['Default'];
+            if ($row['Extra'] == 'auto_increment') {
+                $field['autoincrement'] = 1;
+            }
+            $result[$row['Field']] = $field;
+        }
+        if ($keys) {
+            $res = $this->query("SHOW INDEX FROM ".$table);
+            if (!$res) {
+                $this->exception();
+            }
+            $rows = array();
+            while ($row = $this->fetch_assoc($res)) {
+                if (isset($rows[$row['Key_name']])) {
+                    $rows[$row['Key_name']]['fields'][] = $row['Column_name'];
+                } else {
+                    $rows[$row['Key_name']] = array(
+                        'fields' => array($row['Column_name']),
+                        'unique' => $row['Non_unique'] ? 0 : 1
+                    );
+                }
+            }
+            $result[':keys'] = $rows;
+        }
+        return $result;
     }
-    
+
     protected function exception()
     {
         throw new waDbException(mysql_error($this->handler), mysql_errno($this->handler));

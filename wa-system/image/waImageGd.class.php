@@ -277,8 +277,11 @@ class waImageGd extends waImage
      * @param array $options
      *     'watermark' => waImage|string $watermark
      *     'opacity' => float|int 0..1
-     *     'font_file' => null $font_file
-     *     'font_size' => float Size of font
+     *     'align' => self::ALIGN_* const
+     *     'font_file' => null|string If null - will be used some default font. Note: use when watermark option is text
+     *     'font_size' => float Size of font. Note: use when watermark option is text
+     *     'font_color' => string Hex-formatted of color (without #). Note: use when watermark option is text
+     *     'text_orientation' => self::ORIENTATION_* const. Note: use when watermark option is text
      * @return mixed
      */
     protected function _watermark($options)
@@ -287,16 +290,16 @@ class waImageGd extends waImage
         foreach ($options as $name => $value) {
             $$name = $value;
         }
-
         $opacity = min(max($opacity, 0), 1);
         imagealphablending($this->image, true);
 
         if ($watermark instanceof waImage) {
             $width = $watermark->width;
             $height = $watermark->height;
-            $offset = $this->calcWatermarkOffset($width, $height);
-            $watermark = $this->createGDImageResourse($watermark->file, $watermark->type);
-            imagecopymerge($this->image, $watermark, $offset[0], $offset[1], 0, 0, $width, $height, $opacity * 100);
+            $offset = $this->calcWatermarkOffset($width, $height, $align);
+            $type = $watermark->type;
+            $watermark = $this->createGDImageResourse($watermark->file, $type);
+            imagecopymerge_alpha($this->image, $watermark, $offset[0], $offset[1], 0, 0, $width, $height, $opacity * 100);
             imagedestroy($watermark);
 
         } else {
@@ -305,38 +308,120 @@ class waImageGd extends waImage
                 return;
             }
 
-            $font_color = imagecolorallocatealpha($this->image, 0, 0, 0, floor((1 - $opacity) * 127));
+            $font_color = array(
+                'r' => '0x'.substr($font_color, 0, 2),
+                'g' => '0x'.substr($font_color, 2, 2),
+                'b' => '0x'.substr($font_color, 4, 2),
+                'a' => floor((1 - $opacity) * 127)
+            );
+
             if ($font_file && file_exists($font_file)) {
                 $metrics = imagettfbbox($font_size, 0, $font_file, $text);
                 if ($metrics) {
                     $width = $metrics[2] - $metrics[0];
                     $height = $metrics[1] - $metrics[7];
-                    $offset = $this->calcWatermarkOffset($width, $height);
-                    $offset[1] = $offset[1] + $height;    // correcting cause is imagettftext's calc relatively bottom of text
-                    imagettftext($this->image, $font_size, 0, $offset[0], $offset[1], $font_color, $font_file, $text);
-                }  else {
+                    if ($text_orientation == self::ORIENTATION_VERTICAL) {
+                        list ($width, $height) = array($height, $width);
+                    }
+                    $offset = $this->calcWatermarkOffset($width, $height, $align);
+                    $offset = $this->watermarkOffsetFix($offset, $width, $height, $text_orientation);
+                    $color = imagecolorallocatealpha($this->image, $font_color['r'], $font_color['g'], $font_color['b'], $font_color['a']);
+                    imagettftext($this->image, $font_size, $text_orientation == self::ORIENTATION_VERTICAL ? 90 : 0, $offset[0], $offset[1], $color, $font_file, $text);
+                } else {
                     throw new waException(_ws("Can't read font file $font_file"));
                 }
             } else {
-                $font = 5;
+                $font = floor((5*$font_size)/12);
+                if ($font < 1) {
+                    $font = 1;
+                } else if ($font > 5) {
+                    $font = 5;
+                }
                 $width = imagefontwidth($font) * strlen($text);
                 $height = imagefontheight($font);
-                $offset = $this->calcWatermarkOffset($width, $height);
-                imagestring($this->image, $font, $offset[0], $offset[1], $text, $font_color);
+                if ($text_orientation == self::ORIENTATION_VERTICAL) {
+                    list ($width, $height) = array($height, $width);
+                }
+                $offset = $this->calcWatermarkOffset($width, $height, $align);
+                if ($text_orientation == self::ORIENTATION_VERTICAL) {
+                    imagestring_rotate($this->image, $font, 90, $offset[0], $offset[1], $text, $font_color['r'], $font_color['g'], $font_color['b'], $font_color['a']);
+                } else {
+                    $color = imagecolorallocatealpha($this->image, $font_color['r'], $font_color['g'], $font_color['b'], $font_color['a']);
+                    imagestring($this->image, $font, $offset[0], $offset[1], $text, $color);
+                }
             }
         }
     }
 
-    private function calcWatermarkOffset($width, $height)
+    private function calcWatermarkOffset($width, $height, $align)
     {
-        return array(($this->width - $width) / 2, $height / 2);
+        $offset = '';
+        $margin = 10;
+        switch ($align) {
+            case self::ALIGN_TOP_LEFT:
+                $offset = array($margin, $margin);
+                break;
+            case self::ALIGN_TOP_RIGHT:
+                $offset = array($this->width - $width - $margin, $margin);
+                break;
+            case self::ALIGN_BOTTOM_LEFT:
+                $offset = array($margin, $this->height - $height - $margin);
+                break;
+            case self::ALIGN_BOTTOM_RIGHT:
+                $offset = array($this->width - $width - $margin, $this->height - $height - $margin);
+                break;
+        }
+        return $offset;
+    }
+
+    private function watermarkOffsetFix($offset, $width, $height, $orientation)
+    {
+        if ($orientation == self::ORIENTATION_HORIZONTAL) {
+            $offset[1] += $height;
+        } else {
+            $offset[0] += $width;
+            $offset[1] += $height;
+        }
+        return $offset;
     }
 
     public function __destruct()
     {
-        if (is_resource($this->image))    {
+        if (is_resource($this->image)) {
             imagedestroy($this->image);
         }
     }
 
+}
+
+function imagecopymerge_alpha($dst_im, $src_im, $dst_x, $dst_y, $src_x, $src_y, $src_w, $src_h, $pct)
+{
+    // creating a cut resource
+    $cut = imagecreatetruecolor($src_w, $src_h);
+    // copying relevant section from background to the cut resource
+    imagecopy($cut, $dst_im, 0, 0, $dst_x, $dst_y, $src_w, $src_h);
+    // copying relevant section from watermark to the cut resource
+    imagecopy($cut, $src_im, 0, 0, $src_x, $src_y, $src_w, $src_h);
+    // insert cut resource to destination image
+    imagecopymerge($dst_im, $cut, $dst_x, $dst_y, 0, 0, $src_w, $src_h, $pct);
+}
+
+function imagestring_rotate($dst_im, $font, $angle, $dst_x, $dst_y, $text, $r, $g, $b, $alpha)
+{
+    $width = imagefontwidth($font) * strlen($text);
+    $height = imagefontheight($font);
+
+    // create png with text that has transparent background
+    $png = imagecreate($width, $height);
+    $trans_color = imagecolorallocatealpha($png, 255, 255, 255, 127);
+
+    // draw text and rotate
+    $font_color = imagecolorallocatealpha($png, $r, $g, $b, $alpha);
+    imagestring($png, $font, 0, 0, $text, $font_color);
+    $png = imagerotate($png, $angle, $trans_color);
+    imagealphablending($png, true);
+    imagesavealpha($png, true);
+
+    // copy images
+    imagecopy($dst_im, $png, $dst_x, $dst_y, 0, 0, $height, $width);
 }

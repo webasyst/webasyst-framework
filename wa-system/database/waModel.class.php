@@ -88,11 +88,11 @@ class waModel
                 return $this->fields;
             }
             if (SystemConfig::isDebug()) {
-                $this->fields = $this->describe(true);
+                $this->fields = $this->describe();
             } else {
                 $cache = new waSystemCache('db/'.$this->table);
                 if (!($this->fields = $cache->get())) {
-                    $this->fields = $this->describe(true);
+                    $this->fields = $this->describe();
                     $cache->set($this->fields);
                 }
             }
@@ -102,14 +102,30 @@ class waModel
     }
 
     /**
-     * Вовзращает результат запроса DESCRIBE $table
+     * @param string $database
+     */
+    public function database($database)
+    {
+        return $this->adapter->select_db($database);
+    }
+
+    /**
+     * Return description of the table
      *
-     * @param $normalize
+     * @param string $table
+     * @param bool $keys
      * @return array
      */
-    public function describe($normalize = true)
+    public function describe($table = null, $keys = false)
     {
-        return $this->adapter->schema($this->table);
+        if (!$table) {
+            $table = $this->table;
+        }
+        if ($table) {
+            return $this->adapter->schema($table, $keys);
+        } else {
+            return array();
+        }
     }
 
     public function autocommit($flag)
@@ -178,6 +194,7 @@ class waModel
             $error = "Query Error\nQuery: ".$sql.
                      "\nError: ".$this->adapter->errorCode() .
                      "\nMessage: ".$this->adapter->error();
+            waLog::log($error."\nStack: ".print_r(debug_backtrace(false), true), 'db.log');
             throw new waDbException($error, $this->adapter->errorCode());
         }
 
@@ -223,8 +240,9 @@ class waModel
         // Define type of the query
         $waDbQueryAnalyzer = new waDbQueryAnalyzer($sql);
         if ($this->cache && $this->cache instanceof waiCache && $waDbQueryAnalyzer->getQueryType() == 'select') {
+            $cache  = $this->cache->get();
             // if not cached
-            if(!$this->cache->isCached()) {
+            if($cache === null || !$cache instanceof waDbResultSelect) {
                 $result = $waDbQueryAnalyzer->invokeResult($this->run($sql), $this->adapter);
                 // set cache
                 $this->cache->set($result);
@@ -232,14 +250,8 @@ class waModel
 
                 return $result;
             }
-            // Get from cache
-            $cache  = $this->cache->get();
-            if (!$cache instanceof waDbResultSelect) {
-                $this->cache->delete();
-            } else {
-                $this->cache = null;
-                return $cache;
-            }
+            $this->cache = null;
+            return $cache;
         }
 
         return $waDbQueryAnalyzer->invokeResult($this->run($sql), $this->adapter);
@@ -357,6 +369,7 @@ class waModel
             case 'bigint':
             case 'tinyint':
             case 'int':
+            case 'integer':
                 return (int)$value;
             case 'decimal':
             case 'double':
@@ -381,6 +394,7 @@ class waModel
                 }
                 return "'".$this->escape($value)."'";
             case 'varchar':
+            case 'string':
             case 'text':
             default:
                 return "'".$this->escape($value)."'";
@@ -478,7 +492,7 @@ class waModel
     public function isAutoIncrement()
     {
         if ($this->id && !is_array($this->id) && isset($this->fields[$this->id])) {
-            return $this->fields[$this->id]['extra'] == 'auto_increment';
+            return !empty($this->fields[$this->id]['autoincrement']);
         }
         return false;
     }

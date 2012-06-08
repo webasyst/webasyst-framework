@@ -32,7 +32,7 @@ class waSerializeCache extends waFileCache
 
     protected function readFromFile($file, $t = null)
     {
-        if (file_exists($file)) {
+        if (file_exists($file) && is_writable($file)) {
             $info = unserialize(file_get_contents($file));
             if ($t && $info['time'] < $t) {
                 return null;

@@ -49,7 +49,7 @@ class waContact implements ArrayAccess
             try {
                 $app_settings_model = new waAppSettingsModel();
                 self::$options['default']['locale'] = $app_settings_model->get('webasyst', 'locale');
-            } catch (waDbException $e) {}
+            } catch (waException $e) {}
             if (!isset(self::$options['default']['locale']) || !self::$options['default']['locale']) {
                 self::$options['default']['locale'] = 'ru_RU';
             }
@@ -366,6 +366,9 @@ class waContact implements ArrayAccess
             if ($f) {
                 $this->data[$key] = $f->set($this, $value);
             } else {
+                if ($key == 'password') {
+                    $value = self::getPasswordHash($value);
+                }
                 $this->data[$key] = $value;
             }
         }
@@ -738,6 +741,32 @@ class waContact implements ArrayAccess
         $this->set($field, $value, true);
     }
 
+    public function setPassword($password, $is_hash = false)
+    {
+        if ($is_hash) {
+            $this->data['password'] = $password;
+        } else {
+            $this->data['password'] = self::getPasswordHash($password);
+        }
+    }
+
+    /**
+     * Returns hash of the password
+     * You can override this function in file wa-config/SystemConfig.class.php
+     * (add function wa_password_hash ($password) { return ...})
+     *
+     * @param string $password
+     * @return string
+     */
+    public static function getPasswordHash($password)
+    {
+        if (function_exists('wa_password_hash')) {
+            return wa_password_hash($password);
+        } else {
+            return md5($password);
+        }
+    }
+
     public function set($field_id, $value, $add = false)
     {
         if (strpos($field_id, '.') !== false) {
@@ -757,6 +786,9 @@ class waContact implements ArrayAccess
 
         $f = waContactFields::get($field_id, $this['is_company'] ? 'company' : 'person');
         if (!$f) {
+            if ($field_id == 'password') {
+                $value = self::getPasswordHash($value);
+            }
             $this->data[$field_id] = $value;
         } else {
             $this->data[$field_id] = $f->set($this, $value, array('ext' => $ext, 'subfield' => $subfield), $add);

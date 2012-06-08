@@ -109,6 +109,8 @@ class waAppConfig extends SystemConfig
             } else {
                 throw $e;
             }
+        } catch (waException $e) {
+            return;
         }
         if (!$time) {
             try {

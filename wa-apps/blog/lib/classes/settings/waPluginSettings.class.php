@@ -47,7 +47,9 @@ class waPluginSettings extends waSettings
         if ($this->name) {//load settings from database
             $settings = self::$model->get($this->name);
             foreach ($settings as $field => $value) {
-                $this->loadSetting($field, $value);
+                if($field != 'update_time') {
+                    $this->loadSetting($field, $value);
+                }
             }
         }
         return $this;

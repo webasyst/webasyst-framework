@@ -26,7 +26,7 @@ class contactsContactsDeleteController extends waJsonController
 
         // Deletion of contacts with links to other applications is only allowed to superadmins
         if (!$superadmin && ( $links = wa()->event('links', $contacts))) {
-            foreach ($result as $app_id => $l) {
+            foreach ($links as $app_id => $l) {
                 foreach ($l as $contact_id => $contact_links) {
                     if ($contact_links) {
                         throw new waRightsException('Access denied: only superadmin is allowed to delete contacts with links to other applications.');

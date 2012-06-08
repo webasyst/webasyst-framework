@@ -18,7 +18,7 @@ class blogEmailsubscriptionPlugin extends blogPlugin
 
         // save backend url for cron
         $app_settings_model = new waAppSettingsModel();
-        $app_settings_model->set($this->app_id, 'plugin.'.$this->id.'.backend_url', wa()->getRootUrl(true).wa()->getConfig()->getBackendUrl());
+        $app_settings_model->set(array($this->app_id, $this->id), 'backend_url', wa()->getRootUrl(true).wa()->getConfig()->getBackendUrl());
     }
 
     public function cronAction($params)
@@ -39,7 +39,7 @@ class blogEmailsubscriptionPlugin extends blogPlugin
                 $post_url = blogPost::getUrl($post);
             } else {
                 $app_settings_model = new waAppSettingsModel();
-                $post_url = $app_settings_model->get($this->app_id, 'plugin.'.$this->id.'.backend_url', wa()->getRootUrl(true).wa()->getConfig()->getBackendUrl());
+                $post_url = $app_settings_model->get(array($this->app_id, $this->id), 'backend_url', wa()->getRootUrl(true).wa()->getConfig()->getBackendUrl());
                 $post_url .= "/blog/?module=post&id=".$post_id;
             }
             $blog_name = htmlspecialchars($blog['name']);

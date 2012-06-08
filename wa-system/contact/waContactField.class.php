@@ -319,7 +319,21 @@ abstract class waContactField
 
         // Check if there are duplicates in database
         foreach($this->getStorage()->findDuplicatesFor($this, array_keys($flipped), $contactId ? array($contactId) : array()) as $value => $cid) {
-            $dupl[$flipped[$value]] = $cid;
+            if (isset($flipped[$value])) {
+                $dupl[$flipped[$value]] = $cid;
+            } else {
+                // Must be a duplicate in case-insensitive search
+                foreach($flipped as $v => $i) {
+                    if (mb_strtolower($v) == mb_strtolower($value)) {
+                        $dupl[$i] = $cid;
+                        break;
+                    }
+                }
+                if (!$dupl) {
+                    // Sanity check for debugging purposes
+                    throw new waException("Unable to find duplicate value $value among flipped: ".print_r($flipped, true));
+                }
+            }
         }
 
         if (!$dupl) {

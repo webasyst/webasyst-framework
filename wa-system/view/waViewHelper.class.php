@@ -311,9 +311,9 @@ class waViewHelper
         return '<input type="hidden" name="_csrf" value="'.waRequest::cookie('_csrf', '').'" />';
     }
 
-    public function captcha()
+    public function captcha($options = array())
     {
-        return $this->wa->getCaptcha()->getHtml();
+        return $this->wa->getCaptcha($options)->getHtml();
     }
 
     public function captchaUrl($add_random = true)

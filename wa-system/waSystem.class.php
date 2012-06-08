@@ -138,11 +138,12 @@ class waSystem
     }
 
     /**
+     * @param array $options
      * @return waCaptcha
      */
-    public function getCaptcha()
+    public function getCaptcha($options = array())
     {
-        return $this->getFactory('captcha', 'waCaptcha', array());
+        return $this->getFactory('captcha', 'waCaptcha', $options);
     }
 
     /**
@@ -347,7 +348,8 @@ class waSystem
             } elseif (preg_match('/^([a-z0-9_]+)?\/?captcha\.php$/i', $this->config->getRequestUrl(true, true), $m)) {
                 $app_id = isset($m[1]) ? $m[1] : 'webasyst';
                 if ($this->appExists($app_id)) {
-                    $captcha = new waCaptcha(array('app_id' => $app_id));
+                    $wa = self::getInstance($app_id, null, true);
+                    $captcha = $wa->getCaptcha(array('app_id' => $app_id));
                     $captcha->display();
                 } else {
                     throw new waException("Page not found", 404);
@@ -361,7 +363,7 @@ class waSystem
                 $webasyst_system = self::getInstance('webasyst');
                 $webasyst_system->getFrontController()->execute(null, 'payments', null, true);
             } elseif ($this->getEnv() == 'backend' && !$this->getUser()->isAuth()) {
-                $webasyst_system = self::getInstance('webasyst');
+                $webasyst_system = self::getInstance('webasyst', null, true);
                 $webasyst_system->getFrontController()->execute(null, 'login', waRequest::get('action'), true);
             } elseif ($this->config instanceof waAppConfig) {
                 if ($this->getEnv() == 'backend' && !$this->getUser()->getRights($this->getConfig()->getApplication(), 'backend')) {

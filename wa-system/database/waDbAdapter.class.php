@@ -40,6 +40,11 @@ abstract class waDbAdapter
 
     abstract public function connect($settings);
 
+    public function select_db($database)
+    {
+
+    }
+
     abstract public function close();
 
     abstract public function query($query);

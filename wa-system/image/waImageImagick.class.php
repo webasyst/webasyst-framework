@@ -197,8 +197,11 @@ class waImageImagick extends waImage
      * @param array $options
      *     'watermark' => waImage|string $watermark
      *     'opacity' => float|int 0..1
-     *     'font_file' => null $font_file
-     *     'font_size' => float Size of font
+     *     'align' => self::ALIGN_* const
+     *     'font_file' => null|string If null - will be used some default font. Note: use when watermark option is text
+     *     'font_size' => float Size of font. Note: use when watermark option is text
+     *     'font_color' => string Hex-formatted of color (without #). Note: use when watermark option is text
+     *     'text_orientation' => self::ORIENTATION_* const. Note: use when watermark option is text
      * @return mixed
      */
     protected function _watermark($options)
@@ -210,13 +213,12 @@ class waImageImagick extends waImage
 
         $opacity = min(max($opacity, 0), 1);
         if ($watermark instanceof waImage) {
-
-            $offset = $this->calcWatermarkOffset($watermark->width, $watermark->height);
+            $offset = $this->calcWatermarkOffset($watermark->width, $watermark->height, $align);
             $watermark = new Imagick($watermark->file);
-            $watermark->setImageOpacity($opacity);
+            $watermark->evaluateImage(Imagick::EVALUATE_MULTIPLY, $opacity, Imagick::CHANNEL_ALPHA);
             $this->im->compositeImage(
                     $watermark,
-                    Imagick::COMPOSITE_OVER,
+                    Imagick::COMPOSITE_DEFAULT,
                     $offset[0],
                     $offset[1]);
         } else {
@@ -225,7 +227,7 @@ class waImageImagick extends waImage
                 return;
             }
             $font_size = 24*$font_size/18;    // 24px = 18pt
-            $font_color = new ImagickPixel('#000000');
+            $font_color = new ImagickPixel('#'.$font_color);
 
             $watermark = new ImagickDraw();
             $watermark->setFillColor($font_color);
@@ -235,19 +237,48 @@ class waImageImagick extends waImage
             }
             $watermark->setFontSize($font_size);
 
+            // Throws ImagickException on error
             $metrics = $this->im->queryFontMetrics($watermark, $text);
             $width = $metrics['textWidth'];
             $height = $metrics['textHeight'];
-            $offset = $this->calcWatermarkOffset($width, $height);
-            $offset[1] = $offset[1] + $height;    // correcting cause is annotateImage's calc relatively bottom of text
-
-            $this->im->annotateImage($watermark, $offset[0], $offset[1], 0, $text);
+            if ($text_orientation == self::ORIENTATION_VERTICAL) {
+                list ($width, $height) = array($height, $width);
+            }
+            $offset = $this->calcWatermarkOffset($width, $height, $align);
+            $offset = $this->watermarkOffsetFix($offset, $width, $height, $text_orientation);
+            $this->im->annotateImage($watermark, $offset[0], $offset[1], $text_orientation == self::ORIENTATION_VERTICAL ? -90: 0, $text);
         }
     }
 
-    private function calcWatermarkOffset($width, $height)
+    private function calcWatermarkOffset($width, $height, $align)
     {
-        return array(($this->width - $width) / 2, $height / 2);
+        $offset = '';
+        $margin = 10;
+        switch ($align) {
+            case self::ALIGN_TOP_LEFT:
+                $offset = array($margin, $margin);
+                break;
+            case self::ALIGN_TOP_RIGHT:
+                $offset = array($this->width - $width - $margin, $margin);
+                break;
+            case self::ALIGN_BOTTOM_LEFT:
+                $offset = array($margin, $this->height - $height - $margin);
+                break;
+            case self::ALIGN_BOTTOM_RIGHT:
+                $offset = array($this->width - $width - $margin, $this->height - $height - $margin);
+                break;
+        }
+        return $offset;
     }
 
+    private function watermarkOffsetFix($offset, $width, $height, $orientation)
+    {
+        if ($orientation == self::ORIENTATION_HORIZONTAL) {
+            $offset[1] += $height;
+        } else {
+            $offset[0] += $width;
+            $offset[1] += $height;
+        }
+        return $offset;
+    }
 }
