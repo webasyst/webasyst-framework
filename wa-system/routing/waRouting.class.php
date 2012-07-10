@@ -361,7 +361,7 @@ class waRouting
                 if ($absolute || $this->getDomain() != $domain) {
                     $root_url = self::getUrlByRoute($r, $domain);
                 } else {
-                    $root_url = $this->system->getRootUrl().self::clearUrl($r['url']);
+                    $root_url = $this->system->getRootUrl(false, true).self::clearUrl($r['url']);
                 }
                 if ($i > $max) {
                     $max = $i;
