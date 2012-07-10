@@ -1,7 +1,7 @@
 <?php
 $year =  '((19|20)[\d]{2})';
-$month = '(0\d|1[0-2])';
-$day = '([0-2]\d|3[0-1]|\d)';
+$month = '(0[1-9]|1[0-2])';
+$day = '(0[1-9]|[1-2]\d|3[0-1]|\d)';
 $blog_prefix = 'blog';
 
 return array(
@@ -17,6 +17,10 @@ return array(
 
 	    	'<blog_url>/<post_url>/comment/' => 'frontend/comment',
 	        '<post_url>/comment/' => 'frontend/comment',
+            'login/' => 'login',
+            'forgotpassword/' => 'forgotpassword',
+            'signup/' => 'signup',
+
 	    	'logout/' => 'frontend/logout',
 
 	    	'rss/' => 'frontend/rss',
@@ -35,28 +39,35 @@ return array(
 
 1 => array(
 
-	        '<post_url>/comment/' => 'frontend/comment',
-	    	'logout/' => 'frontend/logout',
+            '<post_url>/comment/' => 'frontend/comment',
+            'logout/' => 'frontend/logout',
+            'login/' => 'login',
+            'forgotpassword/' => 'forgotpassword',
+            'signup/' => 'signup',
 
-	    	'rss/' => 'frontend/rss',
+
+            'rss/' => 'frontend/rss',
 
 			'author/<contact_id>/' => 'frontend',
-
-	    	'<post_url>/' => 'frontend/post',
 
 //timeline
 	    	"<year:{$year}>/<month:{$month}>/<day:{$day}>/"=>'frontend',
 	    	"<year:{$year}>/<month:{$month}>/"=>'frontend',
 	    	"<year:{$year}>/"=>'frontend',
 
+	    	'<post_url>/' => 'frontend/post',
 
 	    	'' => 'frontend',
 ),
 2 => array(
-	        '<post_url>/comment/' => 'frontend/comment',
-	    	'logout/' => 'frontend/logout',
+            '<post_url>/comment/' => 'frontend/comment',
+            'logout/' => 'frontend/logout',
+            'login/' => 'login',
+            'forgotpassword/' => 'forgotpassword',
+            'signup/' => 'signup',
 
-	    	"{$blog_prefix}/rss/" => 'frontend/rss',
+
+            "{$blog_prefix}/rss/" => 'frontend/rss',
 	    	'rss/' => 'frontend/rss',
 
 

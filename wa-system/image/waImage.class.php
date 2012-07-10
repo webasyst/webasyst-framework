@@ -114,9 +114,10 @@ class waImage
      * @param int $width
      * @param int $height
      * @param string $master
+     * @param boolean $deny_exceed_original_sizes
      * @return waImage
      */
-    public function resize($width = null, $height = null, $master = null)
+    public function resize($width = null, $height = null, $master = null, $deny_exceed_original_sizes = true)
     {
         if (!$master)
         {
@@ -188,6 +189,13 @@ class waImage
         $width  = max(round($width), 1);
         $height = max(round($height), 1);
 
+        if ($deny_exceed_original_sizes && ($width > $this->width || $height > $this->height)) {
+            return $this;
+        }
+        if ($width == $this->width && $height == $this->height) {
+            return $this;
+        }
+
         $this->_resize($width, $height);
 
         return $this;
@@ -211,9 +219,10 @@ class waImage
      * @param int $height
      * @param string $offset_x        int|CENTER|BOTTOM
      * @param string $offset_y     int|CENTER|BOTTOM
+     * @param boolean $deny_exceed_original_sizes
      * @return waImage
      */
-    public function crop($width, $height, $offset_x = self::CENTER, $offset_y = self::CENTER)
+    public function crop($width, $height, $offset_x = self::CENTER, $offset_y = self::CENTER, $deny_exceed_original_sizes = true)
     {
         $width = ($width > $this->width) ? $this->width : $width;
         $height = ($height > $this->height) ? $this->height : $height;
@@ -261,6 +270,12 @@ class waImage
             $height = $max_height;
         }
 
+        if ($deny_exceed_original_sizes && ($width > $this->width || $height > $this->height)) {
+            return $this;
+        }
+        if ($width == $this->width && $height == $this->height) {
+            return $this;
+        }
         $this->_crop($width, $height, $offset_x, $offset_y);
 
         return $this;

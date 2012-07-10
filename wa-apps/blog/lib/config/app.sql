@@ -51,12 +51,12 @@ CREATE TABLE IF NOT EXISTS `blog_post` (
   `status` ENUM ('draft', 'deadline', 'scheduled', 'published') NOT NULL DEFAULT 'draft',
   `text` MEDIUMTEXT NOT NULL,
   `text_before_cut` text DEFAULT NULL,
-  `cut_link_label` varchar(255) DEFAULT NULL,   
+  `cut_link_label` varchar(255) DEFAULT NULL,
   `url` varchar(255) NOT NULL DEFAULT '',
   `comments_allowed` tinyint(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`),
   KEY `contact_id` (`contact_id`),
-  KEY `status` (`status`)
+  KEY `blog` (  `status` ,  `blog_id`,  `datetime` )
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
 
 

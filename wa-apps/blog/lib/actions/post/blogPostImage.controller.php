@@ -1,23 +1,23 @@
-<?php 
+<?php
 
 class blogPostImageController extends waJsonController
 {
     protected $name;
-    
+
     protected function process()
     {
         $f = waRequest::file('file');
         $this->name = $f->name;
     	if ($this->processFile($f)) {
-    	    $this->response =  wa()->getDataUrl('img/'.$this->name, true, null, true);    
+    	    $this->response =  wa()->getDataUrl('img/'.$this->name, true, null, true);
     	}
-    }    
-    
+    }
+
     protected function getPath()
     {
     	return wa()->getDataPath('img', true);
     }
-    
+
     protected function isValid($f)
     {
         $allowed = array('jpg', 'jpeg', 'png', 'gif');
@@ -43,25 +43,25 @@ class blogPostImageController extends waJsonController
         }
         return $f->moveTo($this->path, $f->name);
     }
-    
+
     protected $path;
-    
+
     public function execute()
     {
         $this->path = $this->getPath();
-        
+
         if (!is_writable($this->path)) {
         	$p = substr($this->path, strlen(wa()->getDataPath('', true)));
         	$this->errors = sprintf(_w("File could not bet saved due to the insufficient file write permissions for the %s folder."), $p);
         	return false;
         }
-        
+
         $this->errors = array();
         $this->process();
         $this->errors = implode(" \r\n", $this->errors);
     }
-    
-    
+
+
     protected function processFile($f)
     {
         if ($f->uploaded()) {

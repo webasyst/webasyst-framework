@@ -57,18 +57,18 @@ class blogHelper
 
             if ($blog_id) {
                 if ($blog_id === true) {
-                    $rights = $rights_model->get($contact_id,null,blogRightConfig::RIGHT_ADD_BLOG);
+                    $rights = $rights_model->get($contact_id,'blog',blogRightConfig::RIGHT_ADD_BLOG);
                     if (!$rights) {
                         throw new waRightsException(_w('Access denied'),403);
                     }
                 } else {
-                    $rights = $rights_model->get($contact_id,null,"blog.{$blog_id}");
+                    $rights = $rights_model->get($contact_id,'blog',"blog.{$blog_id}");
                     if ($rights < $mode) {
                         throw new waRightsException(_w('Access denied'),403);
                     }
                 }
             } else {
-                $rights = $rights_model->get('blog',"blog.%",$mode);
+                $rights = max($rights_model->get($contact_id, 'blog'));
             }
         } else { //it's frontend
             if ($mode>blogRightConfig::RIGHT_READ) {
@@ -224,71 +224,18 @@ class blogHelper
         }
     }
 
-    public static function getLastActivity($id = null, $sidebar = true)
-    {
-        $storage = wa()->getStorage();
-        $blog_session_datetime = $storage->read('blog_session_datetime');
-        if (!$blog_session_datetime && ($id ||(is_null($id) && ($id = wa()->getUser()->getId())))) {
-            $contact = new waContactSettingsModel();
-            $result = $contact->get($id, 'blog');
-
-            if (!$blog_session_datetime) {
-                $blog_last_datetime = isset($result['blog_last_datetime'])?$result['blog_last_datetime']:false;
-                $blog_session_datetime = $blog_last_datetime ? $blog_last_datetime : self::setLastActivity($id);
-                $storage->write('blog_badge_datetime',$blog_session_datetime);
-            }
-
-            $storage->set('blog_session_datetime',$blog_session_datetime);
-        } else {
-            if ($blog_session_datetime) {
-                self::setLastActivity($id, 0);
-            } else {
-                $storage->write('blog_session_datetime',$blog_session_datetime = self::setLastActivity($id));
-            }
-        }
-
-        if (!$sidebar && ($t = $storage->get('blog_badge_datetime'))) {
-            $blog_session_datetime = $t;
-        }
-
-        return $blog_session_datetime;
-    }
-
-    public static function setLastActivity($id = null, $force = true)
-    {
-        if (is_null($id)) {
-            $id = wa()->getUser()->getId();
-        }
-        $t = null;
-        $storage = wa()->getStorage();
-        if ($id) {
-            if (!$force && (!($blog_last_datetime = $storage->get('blog_last_datetime')) || (( time() - strtotime($blog_last_datetime))>120))) {
-                $force = 1;
-            }
-            if ($force) {
-                $t = date("Y-m-d H:i:s",time()+1);
-                $contact = new waContactSettingsModel();
-                $contact->set($id, 'blog', 'blog_last_datetime', $t);
-                $storage->write('blog_last_datetime', $t);
-                if ($force === true) {
-                    $storage->write('blog_badge_datetime', $t);
-                }
-            } elseif ($force === false) {
-                $storage->write('blog_badge_datetime', $s = date("Y-m-d H:i:s",time()+1));
-            }
-        } elseif ($force) {
-            $storage->set('blog_session_datetime',$t = date("Y-m-d H:i:s",time()+1));
-        }
-        return $t;
-    }
-
-    public static function extendPostState(&$posts)
+    public static function extendPostState(&$posts, $mode = false)
     {
         $user = wa()->getUser();
         $timezone = $user->getTimezone();
         $contact_id = $user->getId();
         $current_datetime =  waDateTime::date("Y-m-d", null, $timezone);
-        $activity_datetime = self::getLastActivity();
+        $activity_datetime = blogActivity::getUserActivity();
+
+        if ('view' === $mode) {
+            $blog_activity = blogActivity::getInstance();
+            $viewed_ids = array();
+        }
         foreach ($posts as &$post) {
             if ($post['datetime']) {
                 if (in_array($post['status'],array(blogPostModel::STATUS_DEADLINE /*,blogPostModel::STATUS_SCHEDULED*/))) {
@@ -299,11 +246,28 @@ class blogHelper
 
                 } elseif (in_array($post['status'],array(blogPostModel::STATUS_PUBLISHED))) {
                     if ($activity_datetime && ($post['datetime'] > $activity_datetime) && (!$contact_id || ($contact_id != $post['contact_id']))) {
-                        $post['new'] = true;
+                        if ('view' === $mode) {
+                            $post['new'] = $blog_activity->isNew("b.{$post['blog_id']}",$post['id']);
+                            if ($post['new'] == blogActivity::STATE_NEW) {
+                                if (!isset($viewed_ids[$post['blog_id']])) {
+                                    $viewed_ids[$post['blog_id']] = array();
+                                }
+                                $viewed_ids[$post['blog_id']][] = $post['id'];
+                            } elseif (!$post['new']) {
+                                unset($post['new']);
+                            }
+                        } else {
+                            $post['new'] = true;
+                        }
                     }
                 }
             }
             unset($post);
+        }
+        if (!empty($viewed_ids)) {
+            foreach ($viewed_ids as $blog_id => $post_ids) {
+                $blog_activity->set("b.{$blog_id}",$post_ids);
+            }
         }
     }
 
@@ -315,20 +279,12 @@ class blogHelper
     public static function extendPostComments(&$posts)
     {
         $comment_model = new blogCommentModel();
-        $comment_count = $comment_model->getCountByPost(array_keys($posts), blogCommentModel::STATUS_PUBLISHED , blogHelper::getLastActivity());
+        $post_ids = array_keys($posts);
+        $comment_count = $comment_model->getCount(null,$post_ids);
+        $comment_new_count = $comment_model->getCount(null,$post_ids, blogActivity::getUserActivity());
         foreach ($posts as $id => &$post) {
-            if (isset($comment_count[ $id ])) {
-                $post['comment_datetime'] = $comment_count[$id]['datetime'];
-                $post['comment_count'] = $comment_count[$id]['count'];
-                $post['comment_str_translate'] = _w('comment', 'comments', $post['comment_count']);
-
-                $post['comment_new_count'] = isset($comment_count[$id]['new'])?intval($comment_count[$id]['new']):0;
-            } else {
-                $post['comment_datetime'] = '';
-                $post['comment_count'] = 0;
-                $post['comment_new_count'] = 0;
-                $post['comment_str_translate'] = '';
-            }
+            $post['comment_count'] = isset($comment_count[$id])?$comment_count[$id]:0;
+            $post['comment_new_count'] = isset($comment_new_count[$id])?$comment_new_count[$id]:0;
             unset($post);
         }
     }

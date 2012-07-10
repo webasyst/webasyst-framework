@@ -19,4 +19,5 @@ interface waiAuth
     public function clearAuth();
     public function checkAuth($data = null);
     public function updateAuth($data);
+    public function getByLogin($login);
 }

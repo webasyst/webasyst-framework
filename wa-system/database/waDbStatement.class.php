@@ -155,9 +155,9 @@ final class waDbStatement
         $offset_increment = 0;
         foreach ($placeholders as $current_offset => $placeholder) {
             $offset = $current_offset + $offset_increment;
-            $placeLength = mb_strlen($placeholder['placeholder']);
-            $query = mb_substr($query, 0, $offset) . $placeholder['value'] . mb_substr($query, $offset+$placeLength);
-            $offset_increment = (($offset_increment - $placeLength) + mb_strlen($placeholder['value']));
+            $placeLength = strlen($placeholder['placeholder']);
+            $query = substr($query, 0, $offset) . $placeholder['value'] . substr($query, $offset+$placeLength);
+            $offset_increment = (($offset_increment - $placeLength) + strlen($placeholder['value']));
         }
         return $query;
     }

@@ -13,10 +13,15 @@ class blogBackendAction extends waViewAction
         $stream = array();
         $search_options = array();
         if ($plugin = waRequest::get('search', false)) {
-            if (!isset($search_options["plugin"])) {
-                $search_options["plugin"] = array();
+
+            $search_options["plugin"] = array();
+            if (is_array($plugin)) {
+                foreach ($plugin as $plugin_id => $plugin_params) {
+                    $search_options["plugin"][$plugin_id] = $plugin_params;
+                }
+            } else {
+                $search_options["plugin"][$plugin] = waRequest::get($plugin, true);
             }
-            $search_options["plugin"][$plugin] = waRequest::get($plugin, true);
         }
 
         if ($blog_id = max(0, waRequest::get('blog', null, waRequest::TYPE_INT))) {
@@ -55,7 +60,7 @@ class blogBackendAction extends waViewAction
         $posts_per_page = max(1, intval($this->getConfig()->getOption('posts_per_page')));
 
         $extend_options = array();
-        $extend_options['status'] = true;
+        $extend_options['status'] = 'view';
         $extend_options['author_link'] = false;
         $extend_options['rights'] = true;
         $extend_options['text'] = 'cut';
@@ -68,7 +73,7 @@ class blogBackendAction extends waViewAction
         if ($page == 1) {
             $stream['title'] = $this->getResponse()->getTitle();
             $this->setLayout(new blogDefaultLayout());
-            $this->view->assign('plugin', $plugin);
+            $this->view->assign('search', $plugin ? urldecode(http_build_query(array('search'=>$plugin))) : null);
 
 
             /**

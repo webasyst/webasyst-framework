@@ -31,6 +31,11 @@ class blogViewHelper extends waAppViewHelper
                 $default_blog_id = null;
             }
             $this->avaialable_blogs = blogHelper::getAvailable(true,$default_blog_id);
+            foreach ($this->avaialable_blogs as &$item) {
+                $item['name'] = htmlspecialchars($item['name'],ENT_QUOTES,'utf-8');
+                $item['link'] = htmlspecialchars($item['link'] ,ENT_QUOTES,'utf-8');
+                $item['title'] = htmlspecialchars($item['title'] ,ENT_QUOTES,'utf-8');
+            }
         }
 
         return $this->avaialable_blogs;
@@ -88,6 +93,25 @@ class blogViewHelper extends waAppViewHelper
         return $posts;
     }
 
+    public function postForm($id = null)
+    {
+        $html = false;
+        if(blogHelper::checkRights() >= blogRightConfig::RIGHT_READ_WRITE) {
+            $url = wa()->getAppUrl('blog').'?module=post&action=edit';
+            $submit = _wd('blog','New post');
+
+            $html = <<<HTML
+        <form action="{$url}" method="POST" id="{$id}">
+        	<input type="text" name="title"/><br/>
+        	<textarea name="text"></textarea><br/>
+        	{$this->wa->getView()->getHelper()->csrf()}
+        	<input type="submit" value="{$submit}"/>
+        </form>
+HTML;
+        }
+        return $html;
+    }
+
     public function rights($blog_id = true)
     {
         if ($blog_id === true) {
@@ -97,7 +121,8 @@ class blogViewHelper extends waAppViewHelper
         } else {
             $name = "blog.%";
         }
-        $rights = (array)wa()->getUser()->getRights('blog',$name);
+        $user = wa()->getUser();
+        $rights = (array)($user->isAdmin('blog')?blogRightConfig::RIGHT_FULL : $user->getRights('blog',$name));
         $rights[] = blogRightConfig::RIGHT_NONE;
         return max($rights);
 
@@ -115,11 +140,11 @@ class blogViewHelper extends waAppViewHelper
 
     public function config()
     {
-        return wa()->getConfig();
+        return wa('blog')->getConfig();
     }
 
     public function option($name)
     {
-        return wa()->getConfig()->getOption($name);
+        return wa('blog')->getConfig()->getOption($name);
     }
 }

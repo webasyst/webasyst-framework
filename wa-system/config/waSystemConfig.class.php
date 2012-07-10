@@ -78,11 +78,19 @@ class waSystemConfig
         if ($u) {
             $domain .= '/'.$u;
         }
-        $file = waConfig::get('wa_path_data').'/public/site/data/'.$domain.'/'.$file;
-        if (file_exists($file)) {
+        $path = waConfig::get('wa_path_data').'/public/site/data/'.$domain.'/'.$file;
+        if (!file_exists($path)) {
+            if (substr($domain, 0, 4) == 'www.') {
+                $domain = substr($domain, 4);
+            } else {
+                $domain = 'www.'.$domain;
+            }
+            $path = waConfig::get('wa_path_data').'/public/site/data/'.$domain.'/'.$file;
+        }
+        if (file_exists($path)) {
             $file_type = waFiles::getMimeType($file);
             header("Content-type: {$file_type}");
-            @readfile($file);
+            @readfile($path);
         } else {
             header("HTTP/1.0 404 Not Found");
         }
@@ -273,7 +281,11 @@ class waSystemConfig
 
     public function getAppsPath($app, $path = null)
     {
-        return $this->getRootPath().DIRECTORY_SEPARATOR.'wa-apps'.DIRECTORY_SEPARATOR.$app.($path ? DIRECTORY_SEPARATOR.$path : '');
+        if ($app == 'webasyst') {
+            return $this->getRootPath().DIRECTORY_SEPARATOR.'wa-system'.DIRECTORY_SEPARATOR.$app.($path ? DIRECTORY_SEPARATOR.$path : '');
+        } else {
+            return $this->getRootPath().DIRECTORY_SEPARATOR.'wa-apps'.DIRECTORY_SEPARATOR.$app.($path ? DIRECTORY_SEPARATOR.$path : '');
+        }
     }
 
 
@@ -305,6 +317,31 @@ class waSystemConfig
     {
         return $this->getConfigFile('routing');
     }
+
+
+    public function getAuth()
+    {
+        $cache = new waRuntimeCache('wa-config/auth');
+        if ($cache->isCached()) {
+            return $cache->get();
+        } else {
+            $data = $this->getConfigFile('auth');
+            $cache->set($data);
+            return $data;
+        }
+    }
+
+    public function setAuth($data)
+    {
+        $path = $this->getPath('config', 'auth');
+        if (waUtils::varExportToFile($data, $path)) {
+            $cache = new waRuntimeCache('wa-config/auth');
+            $cache->set($data);
+            return true;
+        }
+        return false;
+    }
+
 
     public function getRootPath()
     {
@@ -384,12 +421,6 @@ class waSystemConfig
     public static function setDebug()
     {
 
-    }
-
-    public function getMessage($type = 'email')
-    {
-        $settings = $this->getConfigFile('message');
-        return isset($settings[$type]) ? $settings[$type] : array();
     }
 
     public function getLocales($type = false)

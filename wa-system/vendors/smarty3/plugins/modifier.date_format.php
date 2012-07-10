@@ -26,13 +26,16 @@
  * @return string |void
  * @uses smarty_make_timestamp()
  */
-function smarty_modifier_date_format($string, $format = SMARTY_RESOURCE_DATE_FORMAT, $default_date = '',$formatter='auto')
+function smarty_modifier_date_format($string, $format=null, $default_date='', $formatter='auto')
 {
+    if ($format === null) {
+        $format = Smarty::$_DATE_FORMAT;
+    }
     /**
     * Include the {@link shared.make_timestamp.php} plugin
     */
     require_once(SMARTY_PLUGINS_DIR . 'shared.make_timestamp.php');
-    if ($string != '') {
+    if ($string != '' && $string != '0000-00-00' && $string != '0000-00-00 00:00:00') {
         $timestamp = smarty_make_timestamp($string);
     } elseif ($default_date != '') {
         $timestamp = smarty_make_timestamp($default_date);

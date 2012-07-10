@@ -55,7 +55,7 @@
         </div>
         <div class="details">
           <h1>
-            {$post.title|default:'[`(empty title)`]'|escape}
+            {$post.title|escape}
 
 
             {if isset($post.plugins) && isset($post.plugins.post_title) && $post.plugins.post_title}

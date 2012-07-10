@@ -2,17 +2,70 @@
 
 class webasystLoginAction extends waLoginAction
 {
-   
+
+    public function execute()
+    {
+        $this->view->assign('title', $this->getTitle());
+        $this->view->assign('title_style', $this->getTitleStyle());
+
+        $this->view->setOptions(array('left_delimiter' => '{', 'right_delimiter' => '}'));
+        if ($this->template === null) {
+            if (waRequest::isMobile()) {
+                $this->setLayout(null);
+                $this->template = 'LoginMobile.html';
+            } else {
+                $this->template = 'Login.html';
+            }
+            $this->template = wa()->getAppPath('templates/actions/login/', 'webasyst').$this->template;
+        }
+        parent::execute();
+
+        $ref = waRequest::server('HTTP_REFERER');
+        if(waRequest::get('back_to') && $ref) {
+            $this->getStorage()->write('login_back_on_cancel', $ref);
+        } else if (!$ref) {
+            $this->getStorage()->remove('login_back_on_cancel');
+        }
+        $this->view->assign('back_on_cancel', wa()->getStorage()->read('login_back_on_cancel'));
+        $this->view->assign('login', waRequest::post('login', $this->getStorage()->read('auth_login')));
+
+    }
+
+    protected function saveReferer()
+    {
+
+    }
+
+    protected function checkAuthConfig()
+    {
+
+    }
+
     protected function afterAuth()
     {
+        $this->getStorage()->remove('auth_login');
         $redirect = $this->getConfig()->getCurrentUrl();
-        if (!$redirect || $redirect === $this->getConfig()->getBackendUrl(true)) {
+        $backend_url = $this->getConfig()->getBackendUrl(true);
+        if (!$redirect || $redirect === $backend_url) {
             $redirect = $this->getUser()->getLastPage();
         }
-        if (!$redirect || $redirect == $this->getConfig()->getBackendUrl(true).'?module=login') {
-            $redirect = $this->getConfig()->getBackendUrl(true);
+        if (!$redirect || substr($redirect, 0, strlen($backend_url) + 1) == $backend_url.'?') {
+            $redirect = $backend_url;
         }
         $this->redirect(array('url' => $redirect));
+    }
+
+    public function getTitle()
+    {
+        if ( ( $title = $this->getConfig()->getOption('login_form_title'))) {
+            return waLocale::fromArray($title);
+        }
+        return wa()->getSetting('name', 'Webasyst', 'webasyst');
+    }
+
+    public function getTitleStyle()
+    {
+        return $this->getConfig()->getOption('login_form_title_style');
     }
 }
 

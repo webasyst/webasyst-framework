@@ -7,9 +7,12 @@ class siteSettingsAction extends waViewAction
     {   
         $routes = wa()->getRouting()->getRoutes(siteHelper::getDomain());
         $apps = wa()->getApps();
+
+        $auth_apps = array();
                
         foreach ($routes as $route_id => &$route) {
             if (isset($route['app']) && isset($apps[$route['app']])) {
+                $auth_apps[$route['app']] = true;
                 $route['app'] = $apps[$route['app']];
             } elseif (!isset($route['redirect'])) {
                 unset($routes[$route_id]);
@@ -24,8 +27,25 @@ class siteSettingsAction extends waViewAction
                     'icon' => $app['icon'],
                     'name' => $app['name']
                 );
+                if (isset($auth_apps[$app_id])) {
+                    if (empty($app['auth'])) {
+                        unset($auth_apps[$app_id]);
+                    } else {
+                        $auth_apps[$app_id] = $temp[$app_id];
+                    }
+                }
             } 
         }
+
+        $this->view->assign('auth_apps', $auth_apps);
+
+        $auth_config = wa()->getAuthConfig(siteHelper::getDomain());
+        $this->view->assign('auth_config', array(
+            'auth' => isset($auth_config['auth']) ? $auth_config['auth'] : false ,
+            'app' => isset($auth_config['app']) ? $auth_config['app'] : false,
+            'signup_captcha' => isset($auth_config['signup_captcha']) ? $auth_config['signup_captcha'] : false
+        ));
+
         $this->view->assign('apps', $temp);
         $this->view->assign('routes', $routes);
         $this->view->assign('domain_id', siteHelper::getDomainId());
@@ -39,11 +59,11 @@ class siteSettingsAction extends waViewAction
             $domain_config = array();
         }
         $u = parse_url('http://'.$domain);
-        $path = isset($u['path']) ? $u['path'] : '';        
+        //$path = isset($u['path']) ? $u['path'] : '';
         if (!isset($domain_config['apps']) || !$domain_config['apps']) {
             $this->view->assign('domain_apps_type', 0);
-            $domain_config['apps'] = wa()->getFrontendApps($domain, isset($domain_config) && isset($domain_config['name']) ? 
-                $domain_config['name'] : null);
+            $domain_name = !empty($domain_config['name']) ? $domain_config['name'] : null;
+            $domain_config['apps'] = wa()->getFrontendApps($domain, $domain_name);
         } else {
             $this->view->assign('domain_apps_type', 1);            
         }

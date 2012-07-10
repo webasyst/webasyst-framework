@@ -9,7 +9,7 @@
   $.wa_blog.stream = $.extend(true,$.wa_blog.stream,{
     'options':{
       pageless:{
-        url: '?{if $plugin}search={$plugin}{if isset($smarty.get[$plugin])}&amp;{$plugin}{$smarty.get[$plugin]}{/if}{/if}{if isset($blog_id)}{if $plugin}&amp;{/if}blog={$blog_id}{/if}',
+        url: '?{if $search}{$search}{/if}{if !empty($blog_id)}{if $search}&{/if}blog={$blog_id}{/if}',
         target: '.b-stream',
         count: {$pages}
       }
@@ -101,9 +101,9 @@
     <h3 style="display:none">
       {if ($post.rights ge blogRightConfig::RIGHT_FULL) or ($contact_id eq $post.contact_id && $post.rights ge blogRightConfig::RIGHT_READ_WRITE)}
         <input type="checkbox" id="blog-post-checkbox-{$post.id}" class="blog-post-checkbox" name="posts[]" value="{$post.id}">
-        <label for="blog-post-checkbox-{$post.id}">{$post.title|default:'[`(empty title)`]'|escape}</label>
+        <label for="blog-post-checkbox-{$post.id}">{$post.title|escape}</label>
       {else}
-        {$post.title|default:'[`(empty title)`]'|escape}
+        {$post.title|escape}
       {/if}
     </h3>
     <h3>
@@ -117,9 +117,9 @@
         {$post_link = "?module=post&amp;id=`$post.id`"}
       {/if}
       {if $post_link}
-        <a href="{$post_link}"{if isset($post.new) && $post.new} class="highlighted"{/if}>{$post.title|default:'[`(empty title)`]'|escape}</a>
+        <a href="{$post_link}"{if isset($post.new) && $post.new} class="highlighted"{/if}>{$post.title|escape}</a>
       {else}
-        <span{if isset($post.new) && $post.new} class="highlighted"{/if}>{$post.title|default:'[`(empty title)`]'|escape}</span>
+        <span{if isset($post.new) && $post.new} class="highlighted"{/if}>{$post.title|escape}</span>
       {/if}
 
       {if $post.blog_status ne blogBlogModel::STATUS_PUBLIC}
@@ -164,24 +164,6 @@
       </div>
       <div class="details">
 
-        {*
-        {if $post.blog_status eq blogBlogModel::STATUS_PUBLIC}
-        <span title="[`Public post`]" class="hint">
-          <i class="icon10 yes"><!-- icon --></i>
-          <a id="url-link" target="_blank" href="{$post.link}">
-            {$post.link}
-            <i class="icon16 new-window"><!-- icon --></i>
-          </a>
-        </span>
-        {else}
-        <span title="[`Private post`]" class="hint">
-          <i class="icon10 lock-bw"><!-- icon --></i>
-          [`Private post`]
-        </span>
-        {/if}
-        <br>
-        *}
-
         <div class="b-post-credentials">
           {if $contact_rights && $post.contact_id}
             <a class="hint b-gray-link" href="{$wa_backend_url}contacts/#/contact/{$post.contact_id}">{$post.user.name|escape}</a>
@@ -191,28 +173,16 @@
 
           <span>{$post.datetime|wa_datetime:"humandatetime"}</span>
 
-
-          {*
-          {if isset($post.comment_count)}
-            <a href="?module=post&amp;id={$post.id}#comments">{$post.comment_count}&nbsp;{$post.comment_str_translate}</a>
-          {if $post.comment_new_count > 0}
-            <strong class="highlighted">+{$post.comment_new_count}</strong>
-          {/if}
-          {else}<!-- no comments  -->
-            <a href="?module=post&amp;id={$post.id}#comments">[`No comments`]</a>
-          {/if}
-          *}
-
           {if $post.blog_status eq blogBlogModel::STATUS_PUBLIC}
             {foreach $post.link item=link}
               <a target="_blank" href="{$link}">{$link}</a><i class="icon10 new-window"><!-- icon --></i>
             {/foreach}
           {else}
             {if $post.comment_new_count > 0}
-              <a href="?module=post&amp;id={$post.id}#comments">{$post.comment_count}&nbsp;{$post.comment_str_translate}</a>
+              <a href="?module=post&amp;id={$post.id}#comments">{_w('%d comment','%d comments',$post.comment_count,true)}</a>
               <strong class="highlighted">+{$post.comment_new_count}</strong>
             {elseif $post.comment_count}
-              <a href="?module=post&amp;id={$post.id}#comments">{$post.comment_count}&nbsp;{$post.comment_str_translate}</a>
+              <a href="?module=post&amp;id={$post.id}#comments">{_w('%d comment','%d comments',$post.comment_count,true)}</a>
             {else}<!-- no comments  -->
               <a href="?module=post&amp;id={$post.id}#comments">[`No comments`]</a>
             {/if}
@@ -270,12 +240,12 @@
 
 {/foreach}
   <div class="block b-post b-number-of-posts {if $stream.blog}{$stream.blog.color}{else}b-white{/if} pageless-wrapper">
-    {sprintf(_w("%d post of %d", "%d posts of %d", $posts_count,false),$posts_count,$posts_total_count)|escape}
+    {sprintf(_w("%d post of %d", "%d posts of %d", $posts_count,false),$posts_count,$posts_total_count)}
     {if $posts_count < $posts_total_count}
       <br>
       <br>
       <a href="#next" class="pageless-link">[`Show older posts`]</a>
-      <span class="pageless-progress" style="display:none"><i class="icon16 loading"><!-- icon --></i>[`Loading`]&nbsp;{_w("%d post", "%d posts", min($posts_total_count-$posts_count,$posts_per_page))|escape}...</span>
+      <span class="pageless-progress" style="display:none"><i class="icon16 loading"><!-- icon --></i>[`Loading`]&nbsp;{_w("%d post", "%d posts", min($posts_total_count-$posts_count,$posts_per_page))}...</span>
     {/if}
 
   </div>

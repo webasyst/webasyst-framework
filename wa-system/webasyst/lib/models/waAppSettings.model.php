@@ -57,14 +57,13 @@ class waAppSettingsModel extends waModel
     {
         $key = $this->getCacheKey($app_id);
         $this->addCacheCleaner($this->getCache($app_id));
-        if ($r = $this->replace(array(
-            'app_id' => $key,
-            'name' => $name,
-            'value' => $value
-        ))) {
-            self::$cache[$key][$name] = $value;
+        if ($this->getByField(array('app_id' => $key, 'name' => $name))) {
+            $this->updateByField(array('app_id' => $key, 'name' => $name), array('value' => $value));
+        } else {
+            $this->insert(array('app_id' => $key, 'name' => $name, 'value' => $value));
         }
-        return $r;
+        self::$cache[$key][$name] = $value;
+        return true;
     }
 
     public function del($app_id, $name = null)

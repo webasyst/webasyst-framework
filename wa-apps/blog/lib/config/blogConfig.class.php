@@ -8,7 +8,7 @@ class blogConfig extends waAppConfig
         $id = $wa->getUser()->getId();
         if ($id && ($wa->getApp() == 'blog') && ($wa->getEnv() == 'backend')) {
             $this->setCount($this->onCount(false));
-            blogHelper::setLastActivity($id,false);
+            blogActivity::setUserActivity($id,false);
         }
 
     }
@@ -99,7 +99,7 @@ class blogConfig extends waAppConfig
             $type = array('posts','comments','overdue');
         }
 
-        $activity_datetime = blogHelper::getLastActivity($user_id, false);
+        $activity_datetime = blogActivity::getUserActivity($user_id, false);
 
         $blogs = array_keys(blogHelper::getAvailable());
 
@@ -109,16 +109,22 @@ class blogConfig extends waAppConfig
             $post_model = new blogPostModel();
             $post_new_count = $post_model->getAddedPostCount($activity_datetime, $blogs);
             $counter['posts'] = array_sum($post_new_count);
+        } else {
+            $counter['posts'] = false;
         }
 
         if (in_array('comments',$type) && $full) {
             $comment_model = new blogCommentModel();
-            $counter['comments'] = $comment_model->countByParam($blogs, $activity_datetime, blogCommentModel::STATUS_PUBLISHED);
+            $counter['comments'] = $comment_model->getCount($blogs, null, $activity_datetime, 0);
+        } else {
+            $counter['comments'] = false;
         }
 
         if (in_array('comments_to_my_post',$type) && $full) {
             $comment_model = new blogCommentModel();
-            $counter['comments_to_my_post'] = $comment_model->countByParam($blogs, $activity_datetime, blogCommentModel::STATUS_PUBLISHED,$user_id);
+            $counter['comments_to_my_post'] = $comment_model->getCount($blogs, null, $activity_datetime, 0, $user_id);
+        } else {
+            $counter['comments_to_my_post'] = false;
         }
 
         if (in_array('overdue',$type)) {
@@ -131,17 +137,32 @@ class blogConfig extends waAppConfig
             $where .= " AND blog_id IN (".implode(', ',$blogs).")";
             $count_overdue = $post_model->select("count(id)")->where($where)->fetchField();
             $counter['overdue'] = ($count_overdue) ? $count_overdue : 0;
+        } else {
+            $counter['overdue'] = false;
         }
 
         $count = array_sum($counter);
+        $url = $this->getBackendUrl(true).$this->application.'/';
+        if($count) {
+            switch($count) {
+                case $counter['comments']:
+                case $counter['comments_to_my_post']: {
+                    $url .= '?module=comments';
+                    break;
+                }
+                case $counter['overdue']: {
+                    $url .= '?action=calendar';
+                    break;
+                }
+
+            }
+        }
         //debug
         //$counter['type'] = $type;
         //$counter['activity_datetime'] = $activity_datetime;
         //$counter['current_datetime'] = date("Y-m-d H:i:s",time());
         //waLog::log('$counter = '.var_export($counter,true),"blog-counter-{$user_id}.log");
-
-
-        return $count == 0 ? null : $count;
+        return array( 'count' => ($count == 0 ? null : $count),'url'=>$url);
     }
 
     public function getCronJob($name = null)

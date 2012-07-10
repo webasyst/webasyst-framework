@@ -24,14 +24,14 @@ CodeMirror.defineMode("stex", function(cmCfg, modeCfg)
     }
 
     function applyMostPowerful(state) {
-      context = state.cmdState;
+      var context = state.cmdState;
       for (var i = context.length - 1; i >= 0; i--) {
 	  var plug = context[i];
 	  if (plug.name=="DEFAULT")
 	      continue;
 	  return plug.styleIdentifier();
       }
-      return "stex-identifier";
+      return null;
     }
 
     function addPluginPattern(pluginName, cmdStyle, brackets, styles) {
@@ -50,7 +50,7 @@ CodeMirror.defineMode("stex", function(cmCfg, modeCfg)
 	    };
 	    this.openBracket = function(content) {
 		this.bracketNo++;
-		return "stex-bracket";
+		return "bracket";
 	    };
 	    this.closeBracket = function(content) {
 	    };
@@ -59,15 +59,15 @@ CodeMirror.defineMode("stex", function(cmCfg, modeCfg)
 
     var plugins = new Array();
    
-    plugins["importmodule"] = addPluginPattern("importmodule", "stex-command", "{[", ["stex-filepath", "stex-module"]);
-    plugins["documentclass"] = addPluginPattern("documentclass", "stex-command", "{[", ["", "stex-unit"]);
-    plugins["usepackage"] = addPluginPattern("documentclass", "stex-command", "[", ["stex-unit"]);
-    plugins["begin"] = addPluginPattern("documentclass", "stex-command", "[", ["stex-unit"]);
-    plugins["end"] = addPluginPattern("documentclass", "stex-command", "[", ["stex-unit"]);
+    plugins["importmodule"] = addPluginPattern("importmodule", "tag", "{[", ["string", "builtin"]);
+    plugins["documentclass"] = addPluginPattern("documentclass", "tag", "{[", ["", "atom"]);
+    plugins["usepackage"] = addPluginPattern("documentclass", "tag", "[", ["atom"]);
+    plugins["begin"] = addPluginPattern("documentclass", "tag", "[", ["atom"]);
+    plugins["end"] = addPluginPattern("documentclass", "tag", "[", ["atom"]);
 
     plugins["DEFAULT"] = function () {
 	this.name="DEFAULT";
-	this.style="stex-command";
+	this.style="tag";
 
 	this.styleIdentifier = function(content) {
 	};
@@ -82,8 +82,8 @@ CodeMirror.defineMode("stex", function(cmCfg, modeCfg)
     }
 
     function normal(source, state) {
-	if (source.match(/^\\[a-z]+/)) {
-	    cmdName = source.current();
+	if (source.match(/^\\[a-zA-Z@]+/)) {
+	    var cmdName = source.current();
 	    cmdName = cmdName.substr(1, cmdName.length-1);
 	    var plug = plugins[cmdName];
 	    if (typeof(plug) == 'undefined') {
@@ -95,10 +95,23 @@ CodeMirror.defineMode("stex", function(cmCfg, modeCfg)
 	    return plug.style;
 	}
 
+        // escape characters 
+        if (source.match(/^\\[$&%#{}_]/)) {
+          return "tag";
+        }
+
+        // white space control characters
+        if (source.match(/^\\[,;!\/]/)) {
+          return "tag";
+        }
+
 	var ch = source.next();
 	if (ch == "%") {
-	    setState(state, inCComment);
-	    return "stex-comment";
+            // special case: % at end of its own line; stay in same state
+            if (!source.eol()) {
+              setState(state, inCComment);
+            }
+	    return "comment";
 	} 
 	else if (ch=='}' || ch==']') {
 	    plug = peekCommand(state);
@@ -106,17 +119,17 @@ CodeMirror.defineMode("stex", function(cmCfg, modeCfg)
 		plug.closeBracket(ch);
 		setState(state, beginParams);
 	    } else
-		return "stex-error";
-	    return "stex-bracket";
+		return "error";
+	    return "bracket";
 	} else if (ch=='{' || ch=='[') {
 	    plug = plugins["DEFAULT"];	    
 	    plug = new plug();
 	    pushCommand(state, plug);
-	    return "stex-bracket";	    
+	    return "bracket";	    
 	}
 	else if (/\d/.test(ch)) {
 	    source.eatWhile(/[\w.%]/);
-	    return "stex-unit";
+	    return "atom";
 	}
 	else {
 	    source.eatWhile(/[\w-_]/);
@@ -127,17 +140,17 @@ CodeMirror.defineMode("stex", function(cmCfg, modeCfg)
     function inCComment(source, state) {
 	source.skipToEnd();
 	setState(state, normal);
-	return "css-comment";
+	return "comment";
     }
 
     function beginParams(source, state) {
 	var ch = source.peek();
 	if (ch == '{' || ch == '[') {
-	   lastPlug = peekCommand(state);
-	   style = lastPlug.openBracket(ch);
+	   var lastPlug = peekCommand(state);
+	   var style = lastPlug.openBracket(ch);
 	   source.eat(ch);
 	   setState(state, normal);
-	   return "stex-bracket";
+	   return "bracket";
 	}
 	if (/[ \t\r]/.test(ch)) {
 	    source.eat(ch);

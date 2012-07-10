@@ -140,6 +140,37 @@
 		</div>
 		</div>
 
+        <div class="field-group">
+            <div class="field">
+                <div class="name">[`Authorization`]</div>
+                <div class="value">
+                    <input id="s-auth-enabled" name="auth_enabled" type="checkbox" {if !$auth_apps}disabled="disabled"{/if} {if $auth_config['auth']}checked="checked"{/if} />
+                    <label for="s-auth-enabled">[`Enable sign up and login forms for this site`]</label>
+                    {if $auth_apps}
+                    <div id="s-auth-app" {if !$auth_config['auth']} style="display:none"{/if}>
+                        <br>
+                        [`Select the app that will handle authorization forms:`]
+                        <ul class="menu-v">
+                            {foreach $auth_apps as $app}
+                            <li>
+                                <input id="s-auth-app-{$app.id}" type="radio" name="auth_app" value="{$app.id}" {if $app.id == $auth_config['app']}checked="checked"{/if}>
+                                &nbsp;
+                                <label for="s-auth-app-{$app.id}"><i class="icon16" style="background-image:url('{$wa_url}{$app.icon.16}');"></i>{$app.name|escape}</label>
+                            </li>
+                            {/foreach}
+                        </ul>
+                        <br>
+                    <input id="s-auth-captcha" name="auth_captcha" type="checkbox" {if $auth_config['signup_captcha']}checked="checked"{/if} />
+                    <label for="s-auth-captcha">[`Enable captcha for signup form`]</label>
+                </div>
+                    {else}
+                    <br><br>
+                    <em>[`To enable authorization on this website, install and settle at least one app that supports authorization forms.`]</em>
+                    {/if}
+                </div>
+            </div>
+        </div>
+
 		<div class="field">
 				<div class="value">
 					<input type="submit" name="save" class="button green" value="[`Save`]">
@@ -162,8 +193,17 @@ var site_select_apps = '<select class="s-select-app">' +
 	'<option value="" data-img="wa-apps/site/img/arrow.png">[`Redirect`]...</option>' +
 '</select>';
 
+    $("#s-auth-enabled").click(function () {
+        if ($(this).is(":checked")) {
+            $("#s-auth-app").show();
+        } else {
+            $("#s-auth-app").hide();
+        }
+    });
+
+
     $("a#s-apps-add").click(function () {
-    	$('#s-wa-apps').append('<tr><td><a style="display:inline" href="#" onclick="return false"><i class="icon16 sort"></i></a>' +
+        $('#s-wa-apps').append('<tr><td><a style="display:inline" href="#" onclick="return false"><i class="icon16 sort"></i></a>' +
                               '<span></span><input type="text" name="apps[name][]" value="" /></td>' +
                               '<td><span></span><input type="text" name="apps[url][]" value="" /></td>' +
                               '<td class="s-actions">' +

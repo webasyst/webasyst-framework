@@ -19,18 +19,17 @@ class blogCommentsAction extends waViewAction
         $comment_model = new blogCommentModel();
 
         $offset = $comments_per_page * ($page - 1);
-        $prepare_options = array('datetime' => blogHelper::getLastActivity());
+        $prepare_options = array('datetime' => blogActivity::getUserActivity());
         $fields = array("photo_url_{$contact_photo_size}");
+        $blog_ids = array_keys($blogs);
 
-        $comments = $comment_model->getList($offset, $comments_per_page, array_keys($blogs), $fields, $prepare_options);
-        $comments_all_count = $comment_model->countByParam(array_keys($blogs));
+        $comments = $comment_model->getList($offset, $comments_per_page, $blog_ids, $fields, $prepare_options);
+        $comments_all_count = $comment_model->getCount($blog_ids, null, null, null, null, null);
 
         $post_ids = array();
         foreach ($comments as $comment) {
             $post_ids[$comment['post_id']] = true;
         }
-
-        $activity_datetime = blogHelper::getLastActivity();
 
         //get related posts info
         $post_model = new blogPostModel();

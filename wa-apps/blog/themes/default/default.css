@@ -59,7 +59,7 @@ hr { background-color: #ccc; height: 1px; border: 0; }
 .small { font-size: 0.9em; }
 .large { font-size: 1.2em; }
 .bold { font-weight: bold; }
-.highlighted { background:  #FFFFCC; }
+.highlighted { background: #FFFFCC; }
 .hint { color: #aaa; font-size: .9em;}
 .hint a { color: #aaa; }
 .float-left { float: left !important; }
@@ -125,9 +125,9 @@ ul.menu-h li.selected ul * { background: #fff !important; }
 #footer .container { border-top: 1px solid #ddd; padding-left: 0; padding-right: 0; margin: 0 30px; padding-top: 13px; }
 #footer #sub-links { margin-left: 200px; }
 #footer #sub-links ul { list-style: none; padding: 0; margin: 0; }
-#footer #sub-links ul li { float: left;  padding: 0 15px 0 0; }
+#footer #sub-links ul li { float: left; padding: 0 15px 0 0; }
 #footer #copyright { float: left; padding: 0 5px; }
-#footer #poweredby {  text-align: center; float: right; padding-top: 0; padding-right:10px; }
+#footer #poweredby { text-align: center; float: right; padding-top: 0; padding-right:10px; }
 #footer #poweredby a.dots { font-size: 0.8em; text-decoration: none; display: block; width: 54px; height: 9px; background: url("http://www.webasyst.com/wa-content/img/dots/all-dots-default-order.png") no-repeat 0 3px; padding-top: 7px; }
 
 /* Blog app specific
@@ -142,13 +142,14 @@ ul.menu-h li.selected ul * { background: #fff !important; }
 
 #search { margin: 10px 0 20px; }
 
-#timeline ul { padding-left: 0; }
-#timeline ul li { list-style: none; line-height: 1.3em; }
-#timeline ul li ul { padding-left: 9px; padding-top: 6px; font-size: 0.85em; margin-bottom: 15px; }
+#timeline ul.menu-v { padding-left: 6px; }
+#timeline ul.menu-v li { list-style: none; line-height: 1.3em; }
+#timeline ul.menu-v li a { padding: 0; }
+#timeline ul.menu-v li ul { padding-left: 9px; padding-top: 6px; font-size: 0.85em; margin-bottom: 15px; }
 
 .post { margin-bottom: 80px; margin-right: 50px; }
-.post h3 { font-size: 2em; margin-right: 5px;  margin-bottom: 3px; }
-.post h3 a { text-decoration: none;  }
+.post h3 { font-size: 2em; margin-right: 5px; margin-bottom: 3px; }
+.post h3 a { text-decoration: none; }
 .post img { max-width: 100%; }
 .post .text { margin-top: 5px;}
 .post textarea { width: 100%; min-height: 400px; margin-top: 10px; height: 450px; }
@@ -195,7 +196,7 @@ ul.menu-h li.selected ul * { background: #fff !important; }
 .comments ul li a.comment-delete:hover { background: red; color: white; }
 .comments ul li ul { padding-left: 25px; }
 .comments ul li .comment-form { padding: 10px 30px; }
-.comments ul li .comment-form textarea  { min-height: 100px; }
+.comments ul li .comment-form textarea { min-height: 100px; }
 .comments ul.menu-h.auth-type { padding: 0 0 40px; margin-left: -5px; }
 .comments ul.menu-h.auth-type li { padding-right: 10px; }
 .comments ul.menu-h.auth-type li a { padding: 5px 6px; }
@@ -220,6 +221,29 @@ div.wa-captcha .errormsg { display: inline; margin-left: 10px; }
 .tags a { color: green; }
 .tags.cloud { text-align: center; font-size: 0.9em; padding-top: 20px; margin-top: 30px; border-top: 1px solid #ccc; }
 .categories { padding-top: 20px; margin-top: 30px; border-top: 1px solid #ccc; }
-.categories ul { padding-left: 20px; }
-.categories ul li { line-height: 1.2em; padding-bottom: 10px; font-size: 0.9em; }
-.categories ul li.selected a { color: #000; text-decoration: none; font-weight: bold; }
+.categories ul.menu-v { padding-left: 10px; }
+.categories ul.menu-v li { line-height: 1.2em; font-size: 0.9em; margin: 2px 0; }
+.categories ul.menu-v li.selected a { color: #000; text-decoration: none; font-weight: bold; }
+
+/* Sign up & Login forms
+------------------------ */
+
+.wa-auth-adapters ul { padding: 0; min-height: 16px; }
+.wa-auth-adapters ul li { list-style: none; float: left; padding: 0 15px 0 0; }
+.wa-auth-adapters ul li a { display: block; padding: 0px 5px; }
+.wa-auth-adapters ul li a img { position: relative; top: 3px; left: -3px; }
+.wa-auth-adapters p { clear: left; color: #888; font-size: 0.9em; width: 80%; }
+
+.wa-form { float: left; margin: 10px 0; overflow: visible; }
+.wa-form .wa-field { clear: left; margin: 0; padding-top: 3px; }
+.wa-form .wa-field .wa-name { float: left; width: 155px; padding-top: 0.05em; padding-bottom: 10px; font-size: 0.95em; }
+.wa-form .wa-field.wa-separator { height: 10px; }
+.wa-form .wa-field .wa-value { margin-left: 180px; margin-bottom: 5px; position: relative; }
+.wa-form .wa-field .wa-value input.wa-error { border: 2px solid red; }
+.wa-form .wa-field .wa-value .wa-error-msg { font-size: 0.9em; color: red; display: block; }
+.wa-form .wa-field .wa-value input[type="text"],
+.wa-form .wa-field .wa-value input[type="email"],
+.wa-form .wa-field .wa-value input[type="password"] { width: 30%; min-width: 260px;  margin:0;}
+.wa-form .wa-field .wa-value textarea { min-width: 300px; height: 70px; }
+.wa-form .wa-field .wa-value input.wa-captcha-input { width: 100px; min-width: 0; }
+.wa-form .wa-field .wa-value.wa-submit { margin-top: 10px; }

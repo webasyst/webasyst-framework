@@ -120,14 +120,6 @@ class waDbMySQLAdapter extends waDbAdapter
 
     public function schema($table, $keys = false)
     {
-        $types = array(
-            'tinyint' => 'integer',
-            'smallint' => 'integer',
-            'int' => 'integer',
-            'varchar' => 'string',
-            'mediumtext' => 'text',
-            'bigtext' => 'text'
-        );
         $res = $this->query("DESCRIBE ".$table);
         if (!$res) {
             $this->exception();
@@ -145,9 +137,6 @@ class waDbMySQLAdapter extends waDbAdapter
                 if (strpos($row['Type'], ')') != strlen($row['Type']) - 1) {
                     $field[trim(substr($row['Type'], strpos($row['Type'], ')') + 1))] = 1;
                 }
-            }
-            if (isset($types[$field['type']])) {
-                $field['type'] = $types[$field['type']];
             }
             $field['null'] = $row['Null'] == 'YES' ? 1 : 0;
             $field['default'] = $row['Default'] === 'NULL' ? null : $row['Default'];

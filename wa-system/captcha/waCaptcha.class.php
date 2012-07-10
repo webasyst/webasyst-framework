@@ -25,19 +25,22 @@ class waCaptcha extends waAbstractCaptcha
         'background' => array()
     );
 
-    public function getHtml()
+    public function getHtml($error = null)
     {
         $captcha_url = wa()->getRootUrl(false, true).$this->getAppId().'/captcha.php?rid='.uniqid(time());
         $refresh = _ws("Refresh CAPTCHA");
+
+        $class = $error ? ' wa-error': '';
+
         return <<<HTML
 <div class="wa-captcha">
     <p>
         <img class="wa-captcha-img" src="{$captcha_url}" alt="CAPTCHA" title="{$refresh}">
         <strong>&rarr;</strong>
-        <input type="text" name="captcha" class="wa-captcha-input" autocomplete="off">
+        <input type="text" name="captcha" class="wa-captcha-input{$class}" autocomplete="off">
     </p>
     <p>
-        <a class="wa-captcha-refresh">{$refresh}</a>
+        <a href="#" class="wa-captcha-refresh">{$refresh}</a>
     </p>
     <script type="text/javascript">
     $(function() {
@@ -50,6 +53,7 @@ class waCaptcha extends waAbstractCaptcha
                     div.find('.wa-captcha-input').focus();
                 });
             };
+            return false;
         });
     });
     </script>

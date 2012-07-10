@@ -72,7 +72,7 @@ class waDbIbaseAdapter extends waDbAdapter
             return ibase_affected_rows($this->handler);
     }
 
-    public function schema($table)
+    public function schema($table, $keys = false)
     {
     }
 

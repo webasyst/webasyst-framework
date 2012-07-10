@@ -47,6 +47,13 @@ class siteDesignSaveController extends waJsonController
                     $this->errors = _w('Insufficient file access permissions to save theme settings');
                 }
             } else {
+                $f = $theme->getFile($file);
+                if (!empty($theme['parent_theme_id']) && $f['parent']) {
+                    $theme = new waTheme($theme['parent_theme_id']);
+                    if ($theme['type'] == waTheme::ORIGINAL) {
+                        $theme->copy();
+                    }
+                }
                 if (!$theme->changeFile($file, waRequest::post('description'))) {
                     $this->errors = _w('Insufficient file access permissions to save theme settings');
                 }

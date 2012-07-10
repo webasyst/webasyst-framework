@@ -8,7 +8,7 @@ class blogPostModel extends blogItemModel
 
     protected $table = 'blog_post';
 
-    public function getTimeline($blogs = array(),$blog_data = array())
+    public function getTimeline($blogs = array(),$blog_data = array(), $datatime = array())
     {
         $where = array();
         $sql = <<<SQL
@@ -64,6 +64,18 @@ SQL;
                 unset($t['link']);
                 $links[$year] = blogPost::getUrl($t,'timeline');
             }
+
+            $post['selected'] = false;
+            $post['year_selected'] = false;
+            if(isset($datatime['year'])) {
+                if($datatime['year'] == $post['year']) {
+                    if(isset($datatime['month'])) {
+                        $post['selected'] = ($datatime['month'] == $post['month']);
+                    } else {
+                        $post['year_selected'] = true;
+                    }
+                }
+            }
             $post['year_link'] = $links[$year];
             unset($post);
         }
@@ -112,7 +124,7 @@ SQL;
                 case 'cut':
                 default:{
                     $fields['text'] = "IFNULL({$this->table}.text_before_cut, {$this->table}.text)";
-                    $fields['cutted'] = "IF({$this->table}.text_before_cut IS NULL, 0, 1)";
+                    $fields['cutted'] = "(CASE WHEN {$this->table}.text_before_cut IS NULL THEN 0 ELSE 1 END)";
                     break;
                 }
             }
@@ -337,7 +349,17 @@ SQL;
                 blogHelper::extendUser($items,$extend_options['user'],$extend_author_link);
             }
             if (isset($item['id'])) {
-                if (!isset($extend_options['comments'])) {
+
+                $contact_id = wa()->getUser()->getId();
+
+                if (!empty($extend_options['datetime'])) {
+                    $comment_model = new blogCommentModel();
+                    $comment_datetime = $comment_model->getDatetime(array_keys($items));
+                    foreach($items as $id => &$item) {
+                        $item['comment_datetime'] = isset($comment_datetime[$id]) ? $comment_datetime[$id] : 0;
+                        unset($item);
+                    }
+                } elseif (!isset($extend_options['comments'])) {
                     blogHelper::extendPostComments($items);
                 } elseif ($extend_options['comments']) {
                     $fields = array();
@@ -346,45 +368,43 @@ SQL;
                             $fields[] = "photo_url_{$size}";
                         }
                     }
-                    $activity_datetime = blogHelper::getLastActivity();
+                    $activity_datetime = blogActivity::getUserActivity();
                     $comment_model = new blogCommentModel();
-                    $contact_id = wa()->getUser()->getId();
-                    $comment_options = array('user'=>$extend_author_link,'datetime'=>$activity_datetime);
+                    $comment_options = array(
+                    	'user'=>$extend_author_link,
+                    	'datetime'=>$activity_datetime,
+                        'escape'=>!empty($extend_options['escape']),
+                    );
                     foreach ($items as $id => &$item) {
 
                         $item['comments'] = $comment_model->get($id, $fields, $comment_options);
 
-                        $comment_count = 0;
-                        $comment_new_count = 0;
+                        $item['comment_count'] = 0;
+                        $item['comment_new_count'] = 0;
 
                         foreach ($item['comments'] as &$comment) {
                             if ($comment['status'] == blogCommentModel::STATUS_PUBLISHED) {
-                                ++$comment_count;
-                                if (isset($comment['new']) && $comment['new']) {
-                                    ++$comment_new_count;
+                                ++$item['comment_count'];
+                                if (!empty($comment['new'])) {
+                                    ++$item['comment_new_count'];
                                 }
                             }
                             unset($comment);
                         }
-
-                        $item['comment_count'] = $comment_count;
-                        $item['comment_new_count'] = $comment_new_count;
-                        $item['comment_str_translate'] = $comment_count?_w('comment', 'comments', $comment_count):'';
-
                         unset($item);
                     }
 
                 }
 
-                if (isset($extend_options['status']) && $extend_options['status']) {
-                    blogHelper::extendPostState($items);
+                if (!empty($extend_options['status'])) {
+                    blogHelper::extendPostState($items,$extend_options['status']);
                 }
 
-                if (isset($extend_options['rights']) && $extend_options['rights'] && isset($extend_data['blog'])) {
+                if (!empty($extend_options['rights']) && isset($extend_data['blog'])) {
                     blogHelper::extendRights($items,$extend_data['blog'],wa()->getUser()->getId());
                 }
 
-                if (isset($extend_options['params']) && $extend_options['params']) {
+                if (!empty($extend_options['params'])) {
                     $params_model = new blogPostParamsModel();
                     $params = $params_model->getByField('post_id', array_keys($items), true);
                 }
@@ -400,10 +420,10 @@ SQL;
         foreach ($items as $id => &$item) {
             #data holders for plugin events handlers
             $item['plugins'] = array(
-    			'before' => array(),
-    			'after' => array(),
-    			'post_title' => array(),
-    			'post_title_right' => array(),
+            	'before' => array(),
+            	'after' => array(),
+            	'post_title' => array(),
+            	'post_title_right' => array(),
             );
 
             if (isset($item['blog_id'])) {
@@ -430,12 +450,29 @@ SQL;
                 }
             }
 
-            if ((!isset($extend_options['link']) || $extend_options['link'])) {
+            if (isset($item['comment_count'])) {
+                /**
+                 * Backward compatibility with older themes
+                 * @deprecated
+                 */
+                $item['comment_str_translate'] = _w('comment','comments',$item['comment_count']);
+            }
+
+            if (!isset($extend_options['link']) || $extend_options['link']) {
                 if (isset($item['blog_status']) && ($item['blog_status'] != blogBlogModel::STATUS_PUBLIC)) {
                     $item['link'] = false;
                 } else {
                     $item['link'] = blogPost::getUrl($item);
                 }
+            }
+
+            if (empty($item['title'])) {
+                $item['title'] = _w("(empty title)");
+            }
+
+            if (!empty($extend_options['escape'])) {
+                $item['title'] = htmlspecialchars($item['title'],ENT_QUOTES,'utf-8');
+                $item['user']['name'] = htmlspecialchars($item['user']['name'] ,ENT_QUOTES,'utf-8');
             }
 
 
@@ -672,7 +709,7 @@ SQL;
             $data[$this->id] = $id;
         } else {
             $id = $this->insert($data);
-            blogHelper::setLastActivity();
+            blogActivity::setUserActivity();
             $data[$this->id] = $id;
             if (!isset($data['url']) || strlen($data['url']) == 0) {
                 $this->updateById($id, array('url' => $id));
@@ -766,7 +803,7 @@ SQL;
         return $res;
     }
 
-    public function getAddedPostCount($datetime, $blogs = null)
+    public function getAddedPostCount($datetime, $blogs = null,$get_posts = false)
     {
         $where = array();
         $where[] = 'datetime > s:datetime';
@@ -776,10 +813,23 @@ SQL;
         }
         $where[] = 'contact_id != '.$this->escape(wa()->getUser()->getId());
         $where = '('.implode(') AND (',$where).')';
-        $sql = "SELECT blog_id, COUNT(blog_id) as count FROM {$this->table}
-					WHERE {$where}
-					GROUP BY blog_id";
-        return $this->query($sql,array('datetime' => $datetime))->fetchAll('blog_id', true);
+
+        if ($get_posts) {
+            $sql = "SELECT blog_id, {$this->id} FROM {$this->table} WHERE {$where}";
+            $rows = $this->query($sql,array('datetime' => $datetime))->fetchAll();
+            $result = array();
+            foreach ($rows as $row) {
+                $result[$row['blog_id']][] = $row[$this->id];
+            }
+            foreach ($result as $blog_id => $posts) {
+                $result[$blog_id] = implode(':', $posts);
+            }
+            return $result;
+        } else {
+            $sql = "SELECT blog_id, COUNT({$this->id}) FROM {$this->table}
+                    WHERE {$where} GROUP BY blog_id";
+            return $this->query($sql,array('datetime' => $datetime))->fetchAll('blog_id', true);
+        }
     }
 
     static public function getPureUrls($post)

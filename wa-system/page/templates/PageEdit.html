@@ -9,7 +9,12 @@
 <script src="{$wa_url}wa-content/js/elrte/elrte-wa.js"></script>
 {if $lang!='en'}<script src="{$wa_url}wa-content/js/elrte/i18n/elrte.{$lang}.js"></script>{/if}
 
-<script type="text/javascript" src="{$wa_url}wa-content/js/codemirror/1/js/codemirror.js"></script>
+<link rel="stylesheet" href="{$wa_url}wa-content/js/codemirror/lib/codemirror.css">
+<script src="{$wa_url}wa-content/js/codemirror/lib/codemirror.js"></script>
+<script src="{$wa_url}wa-content/js/codemirror/mode/xml/xml.js"></script>
+<script src="{$wa_url}wa-content/js/codemirror/mode/javascript/javascript.js"></script>
+<script src="{$wa_url}wa-content/js/codemirror/mode/css/css.js"></script>
+<script src="{$wa_url}wa-content/js/codemirror/mode/htmlmixed/htmlmixed.js"></script>
 
 <style>
     .wa-page-wysiwyg-html-toggle {
@@ -74,6 +79,12 @@
     .wa-page-gray-toolbar {
         background: #EEE;
     }
+
+    .CodeMirror-scroll {
+        height: auto;
+        overflow-y: hidden;
+        overflow-x: auto;
+    }
 </style>
 
 {if $sidebar}
@@ -83,7 +94,7 @@
             <ul id="wa-pages" class="menu-v collapsible with-icons ui-sortable">
                 {foreach from=$pages item=p}
                 <li id="page-{$p.id}"{if $page && $p.id == $page.id} class="selected"{/if}>
-                    <a href="?module=pages&id={$p.id}">
+                    <a href="{$page_url}{$p.id}">
                         <i class="icon16 notebook"></i>{$p.name|escape}
                         {* <span class="hint">{$p.url|escape}</span> *}
                         {if !$p.status} <span class="wa-page-draft">[s`draft`]</span>{/if}
@@ -91,27 +102,27 @@
                 </li>
                 {/foreach}
                 <li class="top-padded{if !$page} selected{/if}">
-                    <a href="?module=pages&id=" class="small"><i class="icon10 add"></i>[s`New page`]</a>
+                    <a href="{$page_add_url}" class="small"><i class="icon10 add"></i>[s`New page`]</a>
                 </li>
             </ul>
         </div>
     </div>
 {/if}
 <div class="content{if $sidebar} left200px{/if}">
-	<div class="wa-page-editor">
-			<form id="wa-page-form" method="post" action="?module=pages&action=save{if $page}&id={$page.id}{/if}">
-			<div class="block wa-page-gray-toolbar">
-			{if $page}
-			<div class="float-right">
-				<ul class="menu-h">
-					<li><a href="#" class="inline-link" id="wa-page-settings-toggle"><i class="icon16 edit"></i><b><i>[s`Page settings`]</i></b></a></li>
-					<li><a class="wa-page-delete" href="?module=pages&action=delete"><i class="icon16 delete"></i>[s`Delete`]</a></li>
-				</ul>
-			</div>
-			<script type="text/javascript">
-			$(".wa-page-delete").click(function () {
-				if (confirm('[s`This will delete entire page. Are you sure?`]')) {
-					$.post($(this).attr('href'), { id:{$page.id}}, function () {
+    <div class="wa-page-editor">
+            <form id="wa-page-form" method="post" action="?module=pages&action=save{if $page}&id={$page.id}{/if}">
+            <div class="block wa-page-gray-toolbar">
+            {if $page}
+            <div class="float-right">
+                <ul class="menu-h">
+                    <li><a href="#" class="inline-link" id="wa-page-settings-toggle"><i class="icon16 edit"></i><b><i>[s`Page settings`]</i></b></a></li>
+                    <li><a class="wa-page-delete" href="?module=pages&action=delete"><i class="icon16 delete"></i>[s`Delete`]</a></li>
+                </ul>
+            </div>
+            <script type="text/javascript">
+            $(".wa-page-delete").click(function () {
+                if (confirm('[s`This will delete entire page. Are you sure?`]')) {
+                    $.post($(this).attr('href'), { id:{$page.id}}, function () {
                         var li = $("#page-{$page.id}");
                         if (li.prev().length > 0) {
                             var href = li.prev().addClass('selected').find('a').attr('href');
@@ -122,43 +133,43 @@
                         }
                         location.href = href;
                     }, "json");
-				}
-				return false;
-			});
-			</script>
-			{/if}
-			<div>
-				<h2>{if $page}{$page.name|escape}{if !$page.status} <span class="wa-page-draft">[s`draft`]</span>{/if}{else}[s`New page`]{/if}</h2>
-				<div class="wa-page-urls small">
-				    {if $page}
-				       {if !empty($url)}
-						<a href="{$url}{$page.url}?preview={$preview_hash}" title="[s`Preview`]" target="_blank">{$url|escape}{$page.url}</a><i class="icon10 new-window"></i>
-					   {elseif !$routes}
-					   [s`The page is not available on the website because “Site” app is not connected in the website structure.`]
-					   {/if}
-					{/if}
-					<br />
-				</div>
-			</div>
-				<div id="wa-page-settings" style="{if $page}display: none;{/if}">
-					<div class="fields form">
-						<div class="field-group">
-						<div class="field">
-							<div class="name bold">[s`Page name`]</div>
-							<div class="value">
-								<input type="text" class="bold large" name="info[name]" value="{if $page}{$page.name|escape}{/if}" />
-							</div>
-						</div>
+                }
+                return false;
+            });
+            </script>
+            {/if}
+            <div>
+                <h2>{if $page}{$page.name|escape}{if !$page.status} <span class="wa-page-draft">[s`draft`]</span>{/if}{else}[s`New page`]{/if}</h2>
+                <div class="wa-page-urls small">
+                    {if $page}
+                       {if !empty($url)}
+                        <a href="{$url}{$page.url}?preview={$preview_hash}" title="[s`Preview`]" target="_blank">{$url|escape}{$page.url}</a><i class="icon10 new-window"></i>
+                       {elseif !$routes}
+                       [s`The page is not available on the website because app is not connected in the website structure.`]
+                       {/if}
+                    {/if}
+                    <br />
+                </div>
+            </div>
+                <div id="wa-page-settings" style="{if $page}display: none;{/if}">
+                    <div class="fields form">
+                        <div class="field-group">
                         <div class="field">
-	                        <div class="value wa-ibutton-checkbox">
-	                            <ul class="menu-h">
-	                                <li><span id="wa-page-v-open-label" class="wa-page-gray">[s`Draft`]</span></li>
-	                                <li><input type="checkbox" id="wa-page-v" name="info[status]" {if !$page || $page.status}checked="checked"{/if} /></li>
-	                                <li><span id="wa-page-v-private-label">[s`Published`]</span></li>
-	                            </ul>
+                            <div class="name bold">[s`Page name`]</div>
+                            <div class="value">
+                                <input type="text" class="bold large" name="info[name]" value="{if $page}{$page.name|escape}{/if}" />
+                            </div>
+                        </div>
+                        <div class="field">
+                            <div class="value wa-ibutton-checkbox">
+                                <ul class="menu-h">
+                                    <li><span id="wa-page-v-open-label" class="wa-page-gray">[s`Draft`]</span></li>
+                                    <li><input type="checkbox" id="wa-page-v" name="info[status]" {if !$page || $page.status}checked="checked"{/if} /></li>
+                                    <li><span id="wa-page-v-private-label">[s`Published`]</span></li>
+                                </ul>
 
-	                        </div>
-	                    </div>
+                            </div>
+                        </div>
 
                         <div class="field wa-page-url">
                             <div class="name bold">[s`Page URL`]</div>
@@ -184,220 +195,59 @@
                             {/if}
                         </div>
 
-						</div>
+                        </div>
 
-						<div class="field-group">
+                        <div class="field-group">
                         <div class="field">
                             <div class="name">[s`<strong class="title">Title</strong>`] <span class="hint">&lt;title&gt;</span></div>
                             <div class="value"><input type="text" name="info[title]" value="{if $page}{$page.title|escape}{/if}" class="bold" /></div>
                         </div>
-						{foreach from=$params key=n item=p}
-						<div class="field">
-							<div class="name">{$vars[$n]}</div>
-							{if $n == 'description'}
-							<div class="value"><textarea name="params[{$n}]">{$p|escape}</textarea></div>
-							{else}
-							<div class="value"><input type="text" name="params[{$n}]" value="{$p|escape}" /></div>
-							{/if}
-						</div>
-						{/foreach}
-						</div>
+                        {foreach from=$params key=n item=p}
+                        <div class="field">
+                            <div class="name">{$vars[$n]}</div>
+                            {if $n == 'description'}
+                            <div class="value"><textarea name="params[{$n}]">{$p|escape}</textarea></div>
+                            {else}
+                            <div class="value"><input type="text" name="params[{$n}]" value="{$p|escape}" /></div>
+                            {/if}
+                        </div>
+                        {/foreach}
+                        </div>
 
-						<div class="field">
-							<div class="name">[s`Page custom parameters`]</div>
-							<div class="value">
-								<textarea name="other_params">{if $page}{foreach from=$other_params item=v key=k}{$k}={$v|escape}
+                        <div class="field">
+                            <div class="name">[s`Page custom parameters`]</div>
+                            <div class="value">
+                                <textarea name="other_params">{if $page}{foreach from=$other_params item=v key=k}{$k}={$v|escape}
 {/foreach}{/if}</textarea><br />
-								<span class="hint">[s`Optional set of custom <em>key=value</em> parameters which can be used within page.html template or this page content as <em>&#123;$page.key&#125;</em>. Each key=value pair should be on a separate line.`] <a href="[`http://www.webasyst.com/framework/docs/site/pages/`]" target="_blank">[s`Help`]</a> <i class="icon10 new-window"></i></span>
-							</div>
-						</div>
-					</div>
-					<br clear="left" />
-				</div>
-		</div>
-		<div class="wa-editor-core-wrapper">
-			<ul class="wa-page-wysiwyg-html-toggle">
-				<li><a id="wysiwyg" href="#">[s`WYSIWYG`]</a></li>
-				<li class="selected"><a id="html" href="#">HTML</a></li>
-			</ul>
-			<div style="clear:both">
-				<textarea style="display:none" id="wa-page-content" name="info[content]">{if $page}{$page.content|escape}{/if}</textarea>
-			</div>
-		</div>
+                                <span class="hint">[s`Optional set of custom <em>key=value</em> parameters which can be used within page.html template or this page content as <em>&#123;$page.key&#125;</em>. Each key=value pair should be on a separate line.`] <a href="[`http://www.webasyst.com/framework/docs/site/pages/`]" target="_blank">[s`Help`]</a> <i class="icon10 new-window"></i></span>
+                            </div>
+                        </div>
+                    </div>
+                    <br clear="left" />
+                </div>
+        </div>
+        <div class="wa-editor-core-wrapper">
+            <ul class="wa-page-wysiwyg-html-toggle">
+                <li><a id="wysiwyg" href="#">[s`WYSIWYG`]</a></li>
+                <li class="selected"><a id="html" href="#">HTML</a></li>
+            </ul>
+            <div style="clear:both">
+                <textarea style="display:none" id="wa-page-content" name="info[content]">{if $page}{$page.content|escape}{/if}</textarea>
+            </div>
+        </div>
         <div class="block">
              <input id="wa-page-button" type="submit" class="button green" value="[s`Save`]" />
              <em class="hint">Ctrl + S</em>
              <span id="wa-page-status" style="margin-left: 20px; display: none"></span>
         </div>
-		</form>
-		<script type="text/javascript">
-            $(function () {
-			var wa_url = "{$wa_url}";
-			var wa_lang = "{$lang}";
+        </form>
+        <script type="text/javascript">
+        var wa_url = "{$wa_url}";
+        var wa_app = "{$wa->app()}/editor";
+        var wa_lang = "{$lang}";
+        var wa_upload_url = "{$upload_url}";
 
-            var h = $("div.wa-page-editor").height() - $("div.wa-page-editor .wa-gray-toolbar").height() - 50;
-            if (h < 300) {
-                h = 300;
-            }
-            var editorKey = false;
-            var editorKeyCallback = function (press) {
-                if (press) {
-                    return function (e) {
-                        if (!$('#wa-page-button').length) {
-                            return;
-                        }
-                        if (e.ctrlKey && e.which == 115 && !editor_key) {
-                            $('#wa-page-button').click();
-                            e.preventDefault();
-                        }
-                    }
-                } else {
-                    return function (e) {
-                        editor_key = false;
-                        if (!$('#wa-page-button').length) {
-                            return;
-                        }
-                        if (e.ctrlKey && e.which == 83) {
-                            editor_key = true;
-                            $('#wa-page-button').click();
-                            e.preventDefault();
-                        }
-                        if (e.metaKey) {
-                            return;
-                        }
-                        if ((e.which < 33 || e.which > 40) &&
-                                (e.which > 27 || e.which == 8 || e.which == 13) &&
-                                (e.which < 112 || e.which > 124) &&
-                                (!e.ctrlKey || e.which != 67)
-                                ) {
-                            $('#wa-page-button').removeClass('green').addClass('yellow');
-                        }
-                    }
-                }
-            }
-
-            document.editor = CodeMirror.fromTextArea('wa-page-content', {
-                minHeight: h,
-                height: "dynamic",
-                parserfile: ["parsexml.js", "parsecss.js", "tokenizejavascript.js", "parsejavascript.js", "parsehtmlmixed.js"],
-                stylesheet: [wa_url + "wa-content/js/codemirror/1/css/xmlcolors.css",
-                             wa_url + "wa-content/js/codemirror/1/css/jscolors.css",
-                             wa_url + "wa-content/js/codemirror/1/css/csscolors.css"],
-                path: wa_url + "wa-content/js/codemirror/1/js/",
-                initCallback: function (editor) {
-                    editor.frame.contentWindow.document.addEventListener('keydown', editorKeyCallback(), false);
-                    editor.frame.contentWindow.document.addEventListener('keypress', editorKeyCallback(true), false);
-                }
-            });
-
-            h -= 55;
-            if ($("#wa-app").height() < $("#wa").height() - $("#wa-header").height()) {
-                h += $("#wa").height() - $("#wa-header").height() - $("#wa-app").height();
-            }
-            if (h < 300) {
-                h = 300;
-            }
-
-                // init elrte editor
-            elRTE.prototype.beforeSave = function () {};
-            elRTE.prototype.options.toolbars.waPageToolbar = ['wa_style', 'alignment', 'colors', 'format', 'indent', 'lists', 'wa_image', 'wa_links', 'wa_elements', 'wa_tables', 'direction'];
-
-            $("#wa-page-content").elrte({
-                height: h,
-                cssfiles: [wa_url + "wa-content/css/wa/wa-1.0.css"],
-                toolbar: 'waPageToolbar',
-                lang: wa_lang,
-                wa_image_upload: '?module=pages&action=uploadimage',
-                wa_image_upload_path: "{$upload_url}",
-                width: "100%"
-            });
-
-            {literal}
-            var f = $("#wa-page-content").elrte()[0].elrte.filter.source;
-            $("#wa-page-content").elrte()[0].elrte.filter.source = function (html) {
-                var html = f.call($("#wa-page-content").elrte()[0].elrte.filter, html);
-                html = html.replace(/%7B\$wa_url%7D/, '{$wa_url}');
-                html = html.replace(/{[a-z$][^}]*}/gi, function (match, offset, full) {
-                    var i =	full.indexOf('</script', offset + match.length);
-                    var j = full.indexOf('<script', offset + match.length);
-                    if (i == -1 || (j != -1 && j < i)) {
-                        match = match.replace(/&gt;/g, '>');
-                        match = match.replace(/&lt;/g, '<');
-                        match = match.replace(/&amp;/g, '&');
-                        match = match.replace(/&quot;/g, '"');
-                    }
-                    return match;
-                });
-                return html;
-            };
-            $('.el-rte iframe').contents()
-            .keydown(editorKeyCallback())
-            .keypress(editorKeyCallback(true))
-            .keyup(function(e) {
-                //all dialogs should be closed when Escape is pressed
-                if (e.keyCode == 27) {
-                    jQuery(".dialog:visible").trigger('esc');
-                }
-            });
-            $('.el-rte .toolbar li').click(function () {
-                $('#wa-page-button').removeClass('green').addClass('yellow');
-            });
-            {/literal}
-
-            // bind click handlers to buttons
-            $("#wysiwyg").click(function () {
-                $.storage.set('{$wa->app()}/editor', 'wysiwyg');
-                $("ul.wa-page-wysiwyg-html-toggle li.selected").removeClass('selected');
-                $(this).parent().addClass('selected');
-                $("div.CodeMirror-wrapping").hide();
-                $("#wa-page-content").elrte('val', document.editor.getCode());
-                $('.el-rte iframe').contents().find('img[src*="$wa_url"]').each(function () {
-                    var s = decodeURIComponent($(this).attr('src'));
-                    $(this).attr('data-src', s);
-                    {literal}
-                    $(this).attr('src', s.replace(/\{\$wa_url\}/, wa_url));
-                    {/literal}
-                });
-                $(".el-rte").show();
-                $('.el-rte iframe').contents().find('body').focus();
-                return false;
-            });
-
-            $("#html").click(function () {
-                $.storage.set('{$wa->app()}/editor', 'html');
-                $("ul.wa-page-wysiwyg-html-toggle li.selected").removeClass('selected');
-                $(this).parent().addClass('selected');
-                $('.el-rte iframe').contents().find("img[data-src!='']").each(function () {
-                    $(this).attr('src', $(this).attr('data-src'));
-                });
-                document.editor.setCode($("#wa-page-content").elrte('val'));
-                $(".el-rte").hide();
-                $("div.CodeMirror-wrapping").show();
-                return false;
-            });
-
-            // show active editor
-            if ($.storage.get('site/editor') == 'wysiwyg') {
-                $("ul.wa-page-wysiwyg-html-toggle li.selected").removeClass('selected');
-                $("#wysiwyg").parent().addClass('selected');
-                $('.el-rte iframe').contents().find('img[src*="$wa_url"]').each(function () {
-                    var s = decodeURIComponent($(this).attr('src'));
-                    $(this).attr('data-src', s);
-                    {literal}
-                    $(this).attr('src', s.replace(/\{\$wa_url\}/, wa_url));
-                    {/literal}
-                });
-                $("div.CodeMirror-wrapping").hide();
-            } else {
-                $(".el-rte").hide();
-            }
-
-
-            $("div.wa-page-app-url input[type=text]").keyup(function () {
-                $("div.wa-page-app-url span.wa-page-url-part").html($(this).val());
-            });
-
-
+        $(function () {
             $("a.wa-page-exclude").click(function () {
                 var d = $(this).parent();
                 if (d.hasClass('gray')) {
@@ -420,57 +270,8 @@
                 return false;
             });
 
-
-            var iButtonInit = function () {
-                $("#wa-page-v").iButton({
-                    labelOn: "",
-                    labelOff: "",
-                    classContainer: 'ibutton-container mini'
-                });
-            };
-            if ($("#wa-page-settings").is(":visible")) {
-                setTimeout(iButtonInit, 200);
-            } else {
-                $("#wa-page-settings-toggle").one('click', function () {
-                    setTimeout(iButtonInit, 100);
-                });
-            }
-            var status_check = function(item){
-                if ($(item).is(':checked')) {
-                    $('#wa-page-v-open-label').addClass('wa-page-gray');
-                    $('#wa-page-v-private-label').removeClass('wa-page-gray');
-                }
-                else {
-                    $('#wa-page-v-open-label').removeClass('wa-page-gray');
-                    $('#wa-page-v-private-label').addClass('wa-page-gray');
-                }
-            };
-            status_check($('#wa-page-v'));
-            $('#wa-page-v').change(function(){
-                $('#wa-page-button').removeClass('green').addClass('yellow');
-                status_check(this);
-            });
-
-
-
-
             $("#wa-page-form").submit(function () {
-                if ($(".el-rte").length && $(".el-rte").is(':visible')) {
-                    $('.el-rte iframe').contents().find("img[data-src!='']").each(function () {
-                        $(this).attr('src', $(this).attr('data-src'));
-                    });
-                    $("#wa-page-content").val($("#wa-page-content").elrte('val'));
-                    $("#wa-page-content").elrte('val', $("#wa-page-content").val());
-                    $('.el-rte iframe').contents().find('img[src*="$wa_url"]').each(function () {
-                        var s = decodeURIComponent($(this).attr('src'));
-                        $(this).attr('data-src', s);
-                        {literal}
-                        $(this).attr('src', s.replace(/\{\$wa_url\}/, wa_url));
-                        {/literal}
-                    });
-                } else if (document.editor) {
-                    $("#wa-page-content").val(document.editor.getCode());
-                }
+                waPageUpdateTextarea();
                 var form = $(this);
                 $("#wa-page-status").html("<i class='icon16 loading'></i> [s`Saving...`]").fadeIn("slow");
                 $.post(form.attr('action'), form.serialize(), function (response) {
@@ -484,7 +285,7 @@
                         }
 
                         var html = $('<li id="page-' + p.id + '" class="sortable selected">' +
-                                '<a href="?module=pages&id=' + p.id + '"><i class="icon16 notebook"></i>' + p.name +
+                                '<a href="{$page_url}' + p.id + '"><i class="icon16 notebook"></i>' + p.name +
                                 ' </a></li>');
                         if (!response.data.add) {
                             $("#page-" + p.id).replaceWith(html);
@@ -500,7 +301,11 @@
                             ).append('<i class="icon10 new-window"></i><br />');
                         }
                         if (p.add) {
-                            location.href = '?module=pages&id=' + p.id;
+                            {if substr($page_url, 0, 1) == '#'}
+                            $.wa.setHash('{$page_url}' + p.id);
+                            {else}
+                            location.href = '{$page_url}' + p.id;
+                            {/if}
                         }
                     } else if (response.status == 'fail') {
                         if ($.isArray(response.errors)) {
@@ -519,41 +324,15 @@
                         $("#wa-page-content").elrte()[0].elrte.selection.moveToBookmark($("#wa-page-content").elrte()[0].elrte.selection.getBookmark());
                     } catch (e) {}
                 } else {
-                    document.editor.focus();
+                    codemirrorEditor.focus();
                 }
                 return false;
             });
-
-
-            $('#wa-page-settings-toggle').click(function(){
-                $('#wa-page-settings').toggle();
-                return false;
-            });
-
-            $('#wa-page-url-edit-link').click(function (){
-    			$('#wa-page-url-editable').hide();
-    			$('#wa-page-url-edit').show().focus();
-    			return false;
-    		});
-
-            $("#wa-pages").sortable({
-                distance: 5,
-                helper: 'clone',
-                items: 'li',
-                opacity: 0.75,
-                tolerance: 'pointer',
-                stop: function (event, ui) {
-                    var li = $(ui.item);
-                    var id = li.attr('id').replace(/page-/, '');
-                    var pos = li.prevAll('li').size() + 1;
-                    $.post("?module=pages&action=sort", { id: id, pos: pos}, function () {
-                    }, "json");
-                }
-            });
-            });
+        });
         </script>
-		<div class="clear"></div>
-	</div>
+        <script src="{$wa_url}wa-content/js/jquery-wa/wa.page-edit.js"></script>
+        <div class="clear"></div>
+    </div>
 </div>
 {if $sidebar}
 </div>

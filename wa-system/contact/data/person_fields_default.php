@@ -5,6 +5,7 @@ return array (
   'firstname' => array (),
   'middlename' => array (),
   'lastname' => array (),
+  'sex' => array (),
   'company' => array (),
   'email' => array (),
   'phone' => array (),

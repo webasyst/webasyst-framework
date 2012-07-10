@@ -43,8 +43,11 @@ class blogEmailsubscriptionPlugin extends blogPlugin
                 $post_url .= "/blog/?module=post&id=".$post_id;
             }
             $blog_name = htmlspecialchars($blog['name']);
-            $body = sprintf(_wp("New post in the blog “%s”"), $blog_name).': <strong><a href="'.$post_url.'">'.$post_title.'</a></strong>';
-            $message = new waMailMessage($subject, $body);
+            $body = '<html><body>'.sprintf(_wp("New post in the blog “%s”"), $blog_name).': <strong><a href="'.$post_url.'">'.$post_title.'</a></strong></body></html>';
+            $message = new waMailMessage();
+            $message->setEncoder(Swift_Encoding::getBase64Encoding());
+            $message->setSubject($subject);
+            $message->setBody($body);
             $rows = $model->getByField(array('status' => 0, 'post_id' => $post_id), true);
 
             foreach ($rows as $row) {

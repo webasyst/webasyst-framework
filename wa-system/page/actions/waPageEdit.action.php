@@ -5,6 +5,8 @@ class waPageEditAction extends waViewAction
     protected $id;
     protected $model;
     protected $sidebar = true;
+    protected $url = '?module=pages&id=';
+    protected $add_url = '?module=pages&id=';
     protected $ibutton = true;
     public function execute()
     {
@@ -32,6 +34,8 @@ class waPageEditAction extends waViewAction
         $this->view->assign('lang', substr(wa()->getLocale(), 0, 2));
 
         $this->view->assign('sidebar', $this->sidebar);
+        $this->view->assign('page_url', $this->url);
+        $this->view->assign('page_add_url', $this->add_url);
         $this->view->assign('ibutton', $this->ibutton);
 
         if ($this->sidebar) {

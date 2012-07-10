@@ -114,9 +114,9 @@ class waContactRightsModel extends waModel {
         }
         $group_ids = array_map(wa_lambda('$a', 'return -$a;'), $group_ids);
 
-        $sql = "SELECT -group_id AS id, MAX(IF(app_id='webasyst' AND name='backend', 2, 1)) AS status
+        $sql = "SELECT -group_id AS id, MAX(CASE app_id WHEN 'webasyst' THEN 2 ELSE 1 END) AS status
                 FROM `{$this->table}`
-                WHERE -group_id IN (i:ids)
+                WHERE -group_id IN (i:ids) AND name='backend'
                 GROUP BY group_id";
         $result = $this->query($sql, array(
         // everything from $ids and all groups found for users in $ids; can contain duplicates, but it's ok

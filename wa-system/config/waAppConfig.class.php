@@ -101,13 +101,11 @@ class waAppConfig extends SystemConfig
             $app_settings_model = new waAppSettingsModel();
             $time = $app_settings_model->get($this->application, 'update_time');
         } catch (waDbException $e) {
-            // table doesn't exist
-            if ($e->getCode() == 1146) {
-                $time = null;
-            } elseif ($e->getCode() == 2002 && !waSystemConfig::isDebug()) {
+            if ($e->getCode() == 2002 && !waSystemConfig::isDebug()) {
                 return;
             } else {
-                throw $e;
+                // table doesn't exist
+                $time = null;
             }
         } catch (waException $e) {
             return;
@@ -202,10 +200,17 @@ class waAppConfig extends SystemConfig
 
     public function install()
     {
-        // check app.sql
-        $file_sql = $this->getAppPath('lib/config/app.sql');
-        if (file_exists($file_sql)) {
-            self::executeSQL($file_sql, 1);
+        $file_db = $this->getAppPath('lib/config/db.php');
+        if (false && file_exists($file_db)) {
+            $schema = include($file_db);
+            $model = new waModel();
+            $model->createSchema($schema);
+        } else {
+            // check app.sql
+            $file_sql = $this->getAppPath('lib/config/app.sql');
+            if (file_exists($file_sql)) {
+                self::executeSQL($file_sql, 1);
+            }
         }
         $file = $this->getAppConfigPath('install');
         if (file_exists($file)) {

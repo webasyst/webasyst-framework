@@ -53,7 +53,7 @@ function ifempty(&$var, $def=null)
 function int_ok($val)
 {
     // check against objects to avoid nasty object to int convertion errors
-    if (is_object($val)) {
+    if (!is_numeric($val)) {
         return false;
     }
     // typecast trick works fine for anything else except boolean true

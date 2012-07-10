@@ -9,12 +9,10 @@ class blogPostAction extends waViewAction
         }
 
         $post_model = new blogPostModel();
+        $search_options =  array('id' => $post_id);
+        $extend_options = array('comments' => array(20),'user'=>array('photo_url_50'),'status'=>'view');
 
-        $post = $post_model
-        ->search(
-        array('id' => $post_id),
-        array('comments' => array(20),'user'=>array('photo_url_50'))
-        )->fetchSearchItem();
+        $post = $post_model->search($search_options, $extend_options)->fetchSearchItem();
 
         if (!$post) {
             throw new waException(_w('Post not found'), 404);

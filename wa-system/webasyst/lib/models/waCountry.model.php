@@ -176,9 +176,10 @@ class waCountryModel extends waModel implements waLocalizedCollection
                 $isonumeric = $this->escape($row['isonumeric']);
                 $values .= ($values ? ',' : '')."('$name', '$iso3letter', '$iso2letter', '$isonumeric', '$loc')"; 
             }
-            
-            $sql = "REPLACE INTO wa_country (name, iso3letter, iso2letter, isonumeric, locale) VALUES ".$values;
-            $this->exec($sql);
+            if ($values) {
+                $sql = "REPLACE INTO wa_country (name, iso3letter, iso2letter, isonumeric, locale) VALUES ".$values;
+                $this->exec($sql);
+            }
             
             // save lastDbUpdate time
             ftruncate($fd, 0);

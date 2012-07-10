@@ -1,92 +1,60 @@
 <?php
 
-class googleAuth extends waAuthAdapter
+class googleAuth extends waOAuth2Adapter
 {
-    public function auth()
+
+    protected $check_state = true;
+
+    public function getRedirectUri()
     {
-        $app_id = $this->options['app_id'];
-        $app_secret = $this->options['app_secret'];
-        $storage = waSystem::getInstance()->getStorage();
-        $redirect_uri = preg_replace("/\\?.*$/", '', $this->options['url']).'?provider=google';
-
-
-        $code = waRequest::get('code');
-        $storage = waSystem::getInstance()->getStorage();
-
-        if (!$code) {
-            // random state
-            $state = md5(uniqid(rand(), TRUE));
-            $storage->set('auth_google_state', $state); //CSRF protection
-            // login dialog url
-            $url = "https://accounts.google.com/o/oauth2/auth?response_type=code&client_id=".$app_id.
-                "&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.profile&approval_prompt=force".
-                "&redirect_uri=".urlencode($redirect_uri)."&state=".$state;
-            waSystem::getInstance()->getResponse()->redirect($url);
-        }
-
-        if (waRequest::get('state') == $storage->get('auth_google_state')) {
-            // token url
-            $url = 'https://accounts.google.com/o/oauth2/token';
-            $params = array(
-                'code' => $code,
-                'client_id' => $app_id,
-                'client_secret' => $app_secret,
-                'redirect_uri' => $redirect_uri,
-                'grant_type' => 'authorization_code'
-            );
-            $retry = 0;
-            do {
-                $response = $this->post($url, $params);
-            } while (!$response && (++$retry <2));
-            $params = json_decode($response, true);
-            $storage->remove('auth_google_state');
-            if ($params && isset($params['access_token']) && $params['access_token']) {
-
-
-                // get user data
-                $url = "https://www.googleapis.com/oauth2/v1/userinfo?access_token=".$params['access_token'];
-                $retry = 0;
-                do {
-                    $data = json_decode(file_get_contents($url), true);
-                } while (!$data && (++$retry <2));
-
-                if ($data) {
-                    $user_data = array(
-                        'source' => 'google',
-                        'source_id' => $data['id'],
-                        'source_link' => $data['link'],
-                        'name' => $data['name'],
-                        'firstname' => $data['given_name'],
-                        'lastname' => $data['family_name']
-                    );
-                    if (isset($data['locale'])) {
-                        $user_data['locale'] = $data['locale'];
-                    }
-                    if (isset($data['email'])) {
-                        $user_data['email'] = $data['email'];
-                    }
-                    // save user data
-                    $storage->set('auth_user_data', $user_data);
-                }
-            }
-        } else {
-            throw new waException("The state does not match. You may be a victim of CSRF.");
-        }
+        $scope = "https://www.googleapis.com/auth/userinfo.profile";
+        // login dialog url
+        return "https://accounts.google.com/o/oauth2/auth?response_type=code&client_id=".$this->app_id.
+            "&scope=".urlencode($scope)."&approval_prompt=force".
+            "&redirect_uri=".urlencode($this->getCallbackUrl());
     }
 
-
-    protected function post($url, $params)
+    public function getAccessToken($code)
     {
-        $ch = curl_init($url);
-        curl_setopt($ch, CURLOPT_HEADER, 0);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_POST, 1);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $params);
+        $url = 'https://accounts.google.com/o/oauth2/token';
+        $response = $this->post($url, array(
+            'code' => $code,
+            'client_id' => $this->app_id,
+            'client_secret' => $this->app_secret,
+            'redirect_uri' => $this->getCallbackUrl(),
+            'grant_type' => 'authorization_code'
+        ));
+        $params = json_decode($response, true);
+        wa()->getStorage()->remove('auth_google_state');
+        if ($params && isset($params['access_token']) && $params['access_token']) {
+            return $params['access_token'];
+        }
+        return null;
+    }
 
-        $content = curl_exec( $ch );
-        curl_close( $ch );
+    public function getUserData($token)
+    {
+        $url = "https://www.googleapis.com/oauth2/v1/userinfo?access_token=".$token;
+        $response = $this->get($url);
 
-        return $content;
+        if ($response && $response = json_decode($response, true)) {
+            $data = array(
+                'source' => 'google',
+                'source_id' => $response['id'],
+                'url' => $response['link'],
+                'name' => $response['name'],
+                'firstname' => $response['given_name'],
+                'lastname' => $response['family_name']
+            );
+            if (isset($response['locale'])) {
+                $data['locale'] = $response['locale'];
+            }
+            if (isset($response['email'])) {
+                $data['email'] = $response['email'];
+            }
+            return $data;
+        }
+        return array();
     }
 
 }

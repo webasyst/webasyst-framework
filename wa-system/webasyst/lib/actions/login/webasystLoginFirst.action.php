@@ -56,11 +56,12 @@ class webasystLoginFirstAction extends waViewAction
                 $user['email'] = $email;
                 $user['create_method'] = 'install';
                 if ($errors = $user->save()) {
-                    // log errors
-                    waLog::log(implode("\r\n", $errors));
-                    // display errors
-                    $errors = array('all' => implode('<br />', $errors));
-                    $this->view->assign('errors', $errors);
+                    $result = array();
+                    foreach ($errors as $k => $v) {
+                        $result['all'][] = $k.": ".(is_array($v) ? implode(', ', $v) : $v);
+                    }
+                    $result['all'] = implode("\r\n", $result['all']);
+                    $this->view->assign('errors', $result);
                 } else {
                     $user->setRight('webasyst', 'backend', 1);
                     waSystem::getInstance()->getAuth()->auth(array(

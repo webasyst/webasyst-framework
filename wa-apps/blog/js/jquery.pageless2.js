@@ -9,12 +9,18 @@
 		scroll : null,
 		stop : null,
 		bottom_distance: 80,
-		content_distance: 120
+		content_distance: 120,
+		paging_selector: null
 	};
 
 	var start = function() {
-		$container.bind('scroll.pageless resize.pageless', watch).trigger('scroll.pageless');
+		$(settings.target + ' .pageless-wrapper').show();
+		if(settings.paging_selector) {
+			$(settings.paging_selector).hide();
+		}
 		$(settings.target + ' a.pageless-link').live('click',function(){watch(true);return false;});
+		$container.bind('scroll.pageless resize.pageless', watch).trigger('scroll.pageless');
+
 	};
 
 	var stop = function() {
@@ -76,8 +82,9 @@
 	};
 
 	$.pageless = function(option) {
-		if (option == 'start' || option == 'refresh')
+		if (option == 'start' || option == 'refresh'){
 			start.apply(this, []);
+		}
 		if (option == 'url') {
 			settings.url = arguments[1];
 		}

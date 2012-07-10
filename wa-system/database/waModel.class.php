@@ -88,17 +88,42 @@ class waModel
                 return $this->fields;
             }
             if (SystemConfig::isDebug()) {
-                $this->fields = $this->describe();
+                $this->fields = $this->getFields();
             } else {
                 $cache = new waSystemCache('db/'.$this->table);
                 if (!($this->fields = $cache->get())) {
-                    $this->fields = $this->describe();
+                    $this->fields = $this->getFields();
                     $cache->set($this->fields);
                 }
             }
             $runtime_cache->set($this->fields);
         }
         return $this->fields;
+    }
+
+    private function getFields()
+    {
+        return $this->describe();
+        $table = explode('_', $this->table);
+        if ($table[0] == 'wa') {
+            $app_id = 'webasyst';
+        } else {
+            $app_id = $table[0];
+        }
+        $path = wa()->getConfig()->getAppsPath($app_id, 'lib/config/db.php');
+        if (file_exists($path)) {
+            $schema = include($path);
+            $schema = $this->formatSchema($schema);
+            $fields = $schema[$this->table];
+            foreach ($fields as $key => $f) {
+                if (substr($key, 0, 1) == ':') {
+                    unset($fields[$key]);
+                }
+            }
+        } else {
+            $fields = $this->describe();
+        }
+        return $fields;
     }
 
     /**
@@ -189,7 +214,6 @@ class waModel
     {
         $sql = trim($sql);
         $result = $this->adapter->query($sql);
-
         if (!$result) {
             $error = "Query Error\nQuery: ".$sql.
                      "\nError: ".$this->adapter->errorCode() .
@@ -330,12 +354,12 @@ class waModel
         $values = array();
         foreach ($data as $field => $value) {
             if (isset($this->fields[$field])) {
-              $values[] = $this->escapeField($field)." = ".$this->getFieldValue($field, $value);
+              $values[$this->escapeField($field)] = $this->getFieldValue($field, $value);
             }
         }
         if ($values) {
            $sql = "REPLACE INTO ".$this->table. "
-                   SET ".implode(", ", $values);
+                   (".implode(", ", array_keys($values)).") VALUES (".implode(", ", $values).")";
            return $this->exec($sql);
         }
         return true;
@@ -350,11 +374,11 @@ class waModel
             throw new waException(sprintf('Incorrect metadata for field %s', $field));
         }
         $type = strtolower($this->fields[$field]['type']);
-        if ($value === null && isset($this->fields[$field]['null']) && $this->fields[$field]['null']) {
+        if ($value === null && (!isset($this->fields[$field]['null']) || $this->fields[$field]['null'])) {
             return 'NULL';
         }
 
-        return $this->castValue($type, $value, isset($this->fields[$field]['null']) && $this->fields[$field]['null']);
+        return $this->castValue($type, $value, !isset($this->fields[$field]['null']) || $this->fields[$field]['null']);
     }
 
     /**
@@ -751,6 +775,45 @@ class waModel
             $this->adapter->reconnect();
         }
         return true;
+    }
+
+
+    public function createSchema($schema)
+    {
+        $schema = $this->formatSchema($schema);
+        $this->adapter->createSchema($schema);
+    }
+
+    private function formatSchema($schema)
+    {
+        foreach ($schema as $table_id => $table) {
+            foreach ($table as $key => $row) {
+                if ($key == ':keys') {
+                    foreach ($row as $index_id => $index) {
+                        if (!is_array($index)) {
+                            $schema[$table_id][$key][$index_id] = array('fields' => array($index));
+                        } else {
+                            foreach ($index as $i => $v) {
+                                if (is_numeric($i)) {
+                                    $schema[$table_id][$key][$index_id]['fields'][] = $v;
+                                    unset($schema[$table_id][$key][$index_id][$i]);
+                                }
+                            }
+                        }
+                    }
+                } elseif (substr($key, 0, 1) != ':') {
+                    if (isset($row[0])) {
+                        $schema[$table_id][$key]['type'] = $row[0];
+                        unset($schema[$table_id][$key][0]);
+                    }
+                    if (isset($row[1])) {
+                        $schema[$table_id][$key]['params'] = $row[1];
+                        unset($schema[$table_id][$key][1]);
+                    }
+                }
+            }
+        }
+        return $schema;
     }
 }
 

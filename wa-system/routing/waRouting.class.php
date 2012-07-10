@@ -443,6 +443,9 @@ class waRouting
         if ($u1 != $u2 && substr($u, 0, strlen($u1)) == $u1) {
             $u = $u2.substr($u, strlen($u1));
         }
-        return ($absolute ? $domain_parts['host'] : '').$u;
+        if ($absolute) {
+            return $domain_parts['host'].(isset($domain_parts['port']) ? ':'.$domain_parts['port'] : '').$u;
+        }
+        return $u;
     }    
 }

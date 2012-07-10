@@ -130,9 +130,8 @@ class waAutoload
 
       'waAuth' => 'auth/waAuth.class.php',
       'waAuthAdapter' => 'auth/waAuthAdapter.class.php',
-      'waCookieAuthAdapter' => 'auth/waCookieAuthAdapter.class.php',
+      'waOAuth2Adapter' => 'auth/waOAuth2Adapter.class.php',
       'waiAuth' => 'auth/waiAuth.interface.php',
-      'waiAuthAdapter' => 'auth/waiAuthAdapter.interface.php',
 
       'waAutoload' => 'autoload/waAutoload.class.php',
 
@@ -160,6 +159,8 @@ class waAutoload
       'waJsonController' => 'controller/waJsonController.class.php',
       'waUploadJsonController' => 'controller/waUploadJsonController.class.php',
       'waLoginAction' => 'controller/waLoginAction.class.php',
+      'waForgotPasswordAction' => 'controller/waForgotPasswordAction.class.php',
+      'waSignupAction' => 'controller/waSignupAction.class.php',
       'waLongActionController' => 'controller/waLongActionController.class.php',
       'waViewAction' => 'controller/waViewAction.class.php',
       'waViewActions' => 'controller/waViewActions.class.php',

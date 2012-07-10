@@ -13,25 +13,25 @@ return array(
      */
     'posts_per_page'=>10,
 
-	/**
-	 * list of available CSS classes for blog coloring
- 	 */
-	'colors' => array(
-		'b-white',	
-		'b-gray',	
-		'b-yellow',	
-		'b-green',	
-		'b-blue',	
-		'b-red',
-		'b-purple',
-	),
-	
-	/**
-	 * list of available blog icons (CSS classes)
-	 */
-	'icons'	=> array(
-			'blog',
-			'notebook',
+    /**
+     * list of available CSS classes for blog coloring
+      */
+    'colors' => array(
+        'b-white',
+        'b-gray',
+        'b-yellow',
+        'b-green',
+        'b-blue',
+        'b-red',
+        'b-purple',
+    ),
+
+    /**
+     * list of available blog icons (CSS classes)
+     */
+    'icons'    => array(
+            'blog',
+            'notebook',
             'lock',
             'lock-unlocked',
             'broom',
@@ -69,14 +69,14 @@ return array(
             'store',
 ),
 
-	/**
-	 * caching options
-	 */
-	'cache_time'=>1800,
-	
-	/**
-	 * the ability to use Smarty within post body
-	 */
-	'can_use_smarty'=>false,
+    /**
+     * caching options
+     */
+    'cache_time'=>1800,
+
+    /**
+     * the ability to use Smarty within post body
+     */
+    'can_use_smarty'=>false,
 );
 

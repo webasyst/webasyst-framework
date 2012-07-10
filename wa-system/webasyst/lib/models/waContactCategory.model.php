@@ -48,7 +48,7 @@ class waContactCategoryModel extends waModel
      */
     public function getAll($key = null, $normalize = false)
     {
-        $sql = "SELECT * FROM `{$this->table}` ORDER BY name";
+        $sql = "SELECT * FROM {$this->table} ORDER BY name";
         return $this->query($sql)->fetchAll($key = null, $normalize = false);
     }
 

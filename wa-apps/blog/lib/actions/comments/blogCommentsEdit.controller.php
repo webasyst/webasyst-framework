@@ -29,7 +29,7 @@ class blogCommentsEditController extends waJsonController
             }
 
             $changed = $comment_model->updateById($comment_id, array('status'=>$status));
-            $count = $comment_model->countByStatus($comment['post_id']);
+            $count = $comment_model->getCount($comment['blog_id'], $comment['post_id']);
 
             $this->response = array(
     			'count_str' => $count." "._w('comment', 'comments', $count),

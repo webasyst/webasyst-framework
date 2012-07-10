@@ -8,28 +8,43 @@
             <description locale="en_US">Common blog layout</description>
         </file>
         <file path="sidebar.html" custom="0">
-            <description locale="en_US">Common blog sidebar</description>
+            <description locale="en_US">Blog navigation sidebar</description>
         </file>
         <file path="stream.html" custom="0">
-            <description locale="en_US">Post stream</description>
+            <description locale="en_US">Post stream wrapper</description>
+        </file>
+        <file path="stream_search.html" custom="0">
+            <description locale="en_US">Post search results</description>
+        </file>
+        <file path="stream_posts.html" custom="0">
+            <description locale="en_US">Default post list view mode</description>
         </file>
         <file path="post.html" custom="0">
             <description locale="en_US">Post page</description>
         </file>
         <file path="page.html" custom="0">
-            <description locale="en_US">Single page</description>
+            <description locale="en_US">Static info page</description>
         </file>
         <file path="comments.html" custom="0">
             <description locale="en_US">Post comment list</description>
         </file>
+        <file path="comment.html" custom="0">
+            <description locale="en_US">Post comment</description>
+        </file>
+        <file path="login.html" custom="0">
+            <description locale="en_US">Login page</description>
+        </file>
+        <file path="singup.html" custom="0">
+            <description locale="en_US">Sign up page</description>
+        </file>
+        <file path="forgotpassword.html" custom="0">
+            <description locale="en_US">Forgot password page</description>
+        </file>
         <file path="error.html" custom="0">
             <description locale="en_US">404 and other errors</description>
         </file>
-        <file path="stream.html" custom="0">
-            <description locale="en_US">Post stream</description>
-        </file>
         <file path="default.css" custom="0">
-            <description locale="en_US">CSS for common desktop and laptop computers</description>
+            <description locale="en_US">CSS for desktop and laptop computers</description>
         </file>
         <file path="mobile.css" custom="0">
             <description locale="en_US">CSS for multi-touch mobile devices</description>

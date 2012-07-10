@@ -147,14 +147,6 @@ class waDbMysqliAdapter extends waDbAdapter
     
     public function schema($table, $keys = false)
     {
-        $types = array(
-            'tinyint' => 'integer',
-            'smallint' => 'integer',
-            'int' => 'integer',
-            'varchar' => 'string',
-            'mediumtext' => 'text',
-            'bigtext' => 'text'
-        );
         $res = $this->query("DESCRIBE ".$table);
         if (!$res) {
             $this->exception();
@@ -165,7 +157,6 @@ class waDbMysqliAdapter extends waDbAdapter
             $i = strpos($row['Type'], '(');
             if ($i === false) {
                 $field['type'] = $row['Type'];
-                $field['params'] = null;
             } else {
                 $field['type'] = substr($row['Type'], 0, $i);
                 $field['params'] = substr($row['Type'], $i + 1, strpos($row['Type'], ')') - $i - 1);
@@ -173,11 +164,14 @@ class waDbMysqliAdapter extends waDbAdapter
                     $field[trim(substr($row['Type'], strpos($row['Type'], ')') + 1))] = 1;
                 }
             }
-            if (isset($types[$field['type']])) {
-                $field['type'] = $types[$field['type']];
+            if ($row['Null'] != 'YES') {
+                $field['null'] = 0;
             }
-            $field['null'] = $row['Null'] == 'YES' ? 1 : 0;
-            $field['default'] = $row['Default'] === 'NULL' ? null : $row['Default'];
+
+            if ($row['Default'] !== null) {
+                $field['default'] = $row['Default'];
+            }
+
             if ($row['Extra'] == 'auto_increment') {
                 $field['autoincrement'] = 1;
             }
@@ -194,9 +188,11 @@ class waDbMysqliAdapter extends waDbAdapter
                     $rows[$row['Key_name']]['fields'][] = $row['Column_name'];
                 } else {
                     $rows[$row['Key_name']] = array(
-                        'fields' => array($row['Column_name']),
-                        'unique' => $row['Non_unique'] ? 0 : 1
+                        'fields' => array($row['Column_name'])
                     );
+                    if ($row['Key_name'] != 'PRIMARY' && !$row['Non_unique']) {
+                        $rows[$row['Key_name']]['unique'] = 1;
+                    }
                 }
             }
             $result[':keys'] = $rows;

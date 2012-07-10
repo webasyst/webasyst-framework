@@ -13,17 +13,20 @@ class blogFrontendErrorAction extends blogViewAction
             if (!$code) {
                 $code = 500;
             }
-             
+
             $message = $e->getMessage();
         } else {
             $code = 404;
             $message = _ws("Page not found");
         }
         $this->getResponse()->setStatus($code);
-        $this->getResponse()->setTitle($code.'. '.$message);
+        $this->getResponse()->setTitle(htmlentities($code.'. '.$message,ENT_QUOTES,'utf-8'));
 
         $this->view->assign('error_code', $code);
         $this->view->assign('error_message', $message);
+        if ($code == 404) {
+            $this->setLayout(new blogFrontendLayout());
+        }
         $this->setThemeTemplate('error.html', waRequest::param('theme', 'default'));
     }
 }

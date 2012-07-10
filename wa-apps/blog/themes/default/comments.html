@@ -1,95 +1,134 @@
+{* comment list and a comment posting form *}
 
-  {assign var="depth" value=-1}
-  {foreach $post.comments as $comment}
-    {if $comment.depth < $depth}
-      {assign var="loop" value=$depth-$comment.depth}
-      {section name="end-comment" loop=$loop}
+<script type="text/javascript">
+$(document).ready(function() {
+    $("#user-auth-provider a").click(function () {
+        var left = (screen.width-600)/2;
+        var top = (screen.height-400)/2;
+        window.open($(this).attr('href'){if !$require_authorization} + "&guest=1"{/if},'oauth', "width=600,height=400,left="+left+",top="+top+",status=no,toolbar=no,menubar=no");
+        return false;
+    })
+});
+</script>
 
-          </li>
-        </ul>
-      {/section}
-      {assign var="depth" value=$comment.depth}
-    {/if}
-    {if $comment.depth == $depth}
 
-      </li>
-      <li>
-    {/if}
-    {if $comment.depth > $depth}
+<div class="comments">
+    <a name="comments"></a>
+        <h3 class="comment-count" {if $post.comment_count == 0}style="display: none;"{/if}>{_w('%d comment','%d comments',$post.comment_count)}</h3>
 
-    <ul class="menu-v with-icons">
-      <li>
-      {assign var="depth" value=$comment.depth}
-    {/if}
-
-<!-- comment body begin -->
-    <div class="comment" id="comment-{$comment.id}"  itemprop="comment" itemscope itemtype="http://schema.org/UserComments">
-      <div class="credentials">
-        <a name="comment-{$comment.id}"{if $comment.site} href="{$comment.site}"{/if}>
-          <img src="{$comment.user.photo_url_20|default:$comment.user.photo_url}" class="userpic{if $comment.auth_provider && ($comment.auth_provider neq blogCommentModel::AUTH_GUEST) && ($comment.auth_provider neq blogCommentModel::AUTH_USER)} icon16{/if}" alt="">
-        </a>
-        {if !$comment.site}
-          <span class="username" itemprop="creator">{$comment.user.name|escape}</span>
-        {else}
-          <a href="{$comment.site}" class="username" itemprop="creator">{$comment.user.name|escape}</a>
+        {if $post.comment_count == 0}
+            <ul class="menu-v with-icons">
+                <!-- placeholder for new comments -->
+            </ul>
         {/if}
 
-        {* @event prepare_comments_frontend.%plugin_id%.authorname_suffix *}
-        {if !empty($comment.plugins.authorname_suffix)}
-          <!-- plugin hook: "prepare_comments_frontend.*.authorname_suffix" -->
-          {foreach $comment.plugins.authorname_suffix as $plugin => $output}
 
-            <!-- begin "prepare_comments_frontend.{$plugin}.authorname_suffix" -->
-            {$output}
-            <!-- end "prepare_comments_frontend.{$plugin}.authorname_suffix" -->
-          {/foreach}
-          <!-- end plugin hook: "prepare_comments_frontend.*.authorname_suffix" -->
-        {/if}
+        {$depth=-1}
+        {foreach $post.comments as $comment}
+            {if $comment.depth < $depth}
+                {$loop=$depth-$comment.depth}
+                {section name="end-comment" loop=$loop}
 
-        <span class="hint date" title="{$comment.datetime|wa_datetime}" itemprop="commentTime" datetime="{$comment.datetime|date_format:'Y-m-d\TH:i'}">{$comment.datetime|wa_datetime:"humandatetime"}</span>
-      </div>
+                        </li>
+                    </ul>
+                {/section}
+                {$depth=$comment.depth}
+            {/if}
+            {if $comment.depth == $depth}
 
-      {* @event prepare_comments_frontend.%plugin_id%.before *}
-      {if  !empty($comment.plugins.before)}
-        <!-- plugin hook: "prepare_comments_frontend.*.before" -->
-        {foreach $comment.plugins.before as $plugin => $output}
+                </li>
+                <li>
+            {/if}
+            {if $comment.depth > $depth}
 
-          <!-- begin "prepare_comments_frontend.{$plugin}.before" -->
-          {$output}
-          <!-- end "prepare_comments_frontend.{$plugin}.before" -->
+            <ul class="menu-v with-icons">
+                <li>
+                {$depth=$comment.depth}
+            {/if}
+
+            {include file="comment.html" inline}
+            {* sub comment *}
         {/foreach}
-        <!-- end plugin hook: "prepare_comments_frontend.*.before" -->
-      {/if}
+        {section name="end-comment" loop=$depth }
 
-      <div class="text" itemprop="commentText">{$comment.text|escape|nl2br}</div>
-
-      {* @event prepare_comments_frontend.%plugin_id%.after *}
-      {if !empty($comment.plugins.after)}
-        <!-- plugin hook: "prepare_comments_frontend.*.after" -->
-        {foreach $comment.plugins.after as $plugin => $output}
-          <!-- begin "prepare_comments_frontend.{$plugin}.after" -->
-          {$output}
-          <!-- end "prepare_comments_frontend.{$plugin}.after" -->
-        {/foreach}
-        <!-- end plugin hook: "prepare_comments_frontend.*.after" -->
-      {/if}
-
-
-      <div class="actions">
-        <a class="inline-link comment-reply" href="#"><b><i>[`reply`]</i></b></a>
-      </div>
-    </div>
-<!-- comment body end -->
-
-    {* sub comment *}
-
-
-  {/foreach}
-
-  {section name="end-comment" loop=$depth }
-
+                    </li>
+                </ul>
+        {/section}
         </li>
-      </ul>
-  {/section}
-  </li>
-</ul>
+    </ul>
+
+
+</div>
+<div class="comment-form">
+    <a name="comment0"></a>
+    <form action="{$post.comment_link}" method="post">
+        <h4>[`Add comment`]</h4>
+        {$current_user_id=$wa->userId()}
+
+        <div class="comment-form-fields">
+            {if empty($current_user_id)}
+                {if $auth_adapters}
+                    <ul class="menu-h auth-type" id="user-auth-provider">
+                        {if $require_authorization}
+                        <li data-provider="signup" {if !$current_auth_source}class="selected"{/if}><a href="#">[`Sign up`]</a></li>
+                        {else}
+                        <li data-provider="guest" {if !$current_auth_source}class="selected"{/if}><a href="#">[`Guest`]</a></li>
+                        {/if}
+                        {foreach $auth_adapters as $adapter}
+                        <li data-provider="{$adapter->getId()}" {if $current_auth_source == $adapter->getId()}class="selected"{/if}><a href="{$adapter->getCallbackUrl(0)}&app=blog"><img src="{$adapter->getIcon()}" alt="">{$adapter->getName()}</a></li>
+                        {/foreach}
+                    </ul>
+                {/if}
+                {if $require_authorization}
+                <div data-provider="signup" {if $current_auth_source}style="display:none"{/if}>
+                    {sprintf('[`To add a comment please <a href="%s">sign up</a> or <a href="%s">login</a>`]',$wa->signupUrl(),$wa->loginUrl())}
+                </div>
+                {else}
+                <div class="tab clear-left" data-provider="guest" {if $current_auth_source}style="display:none"{/if}>
+                    <p>
+                        <label for="comment_name">[`Your name`]</label>
+                        <input type="text" name="name" id="comment_name" class="bold" value="">
+                    </p>
+                    <p>
+                        <label for="comment_email">[`Email`]</label>
+                        <input type="text" name="email" id="comment_email">
+                    </p>
+                    <p>
+                        <label for="comment_site">[`Website`]</label>
+                        <input type="text" name="site" id="comment_site">
+                    </p>
+                </div>
+                {/if}
+                {foreach $auth_adapters as $adapter}
+                    <div class="tab" data-provider="{$adapter->getId()}" {if $current_auth_source != $adapter->getId()}style="display:none"{/if}>
+                        <p>
+                            <label for="name">[`Your name`]</label>
+                            <strong><img src="{$adapter->getIcon()}" class="userpic" />{$current_auth.name}</strong>
+                            <a href="{$wa_app_url}logout">[`log out`]</a>
+                        </p>
+                    </div>
+                {/foreach}
+            {else}
+                <p>
+                    <label>[`Your name`]</label>
+                    <img src="{$wa->user()->getPhoto(20)}" class="userpic" alt=""> <strong>{$wa->user('name')}</strong> <a href="{$wa_app_url}logout">[`log out`]</a>
+                </p>
+            {/if}
+
+            <p class="comment-body">
+                <label for="comment_text">[`Comment`]</label>
+                <textarea id="comment_text" name="text" rows="10" cols="45"></textarea>
+            </p>
+        </div>
+        <div class="comment-submit">
+            {if $request_captcha && empty($current_user_id)}
+                {$wa->captcha()}
+            {/if}
+            <input type="hidden" name="auth_provider" value="{$current_auth_source|default:blogCommentModel::AUTH_GUEST}">
+            <input type="hidden" name="parent" value="0">
+            <input type="submit" value="[`Add comment`]">
+            <img src="{$wa_url}wa-content/img/loading16.gif" style="display: none;" alt="">
+        </div>
+    </form>
+</div>
+

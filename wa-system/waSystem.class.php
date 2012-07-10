@@ -258,21 +258,30 @@ class waSystem
 
     public function getAuthAdapters($domain = null)
     {
-        if (!$domain) {
-            $domain = $this->config->getDomain();
-        }
-        $config = $this->getConfig()->getConfigFile('auth');
-        if (!isset($config[$domain])) {
-            return array();
-        }
+        $config = $this->getAuthConfig($domain);
         $result = array();
-        foreach ($config[$domain] as $provider => $params) {
-            if ($params) {
-                $result[$provider] = $this->getAuth($provider, $params);
+        if (!empty($config['adapters'])) {
+            foreach ($config['adapters'] as $provider => $params) {
+                if ($params) {
+                    $result[$provider] = $this->getAuth($provider, $params);
+                }
             }
         }
         return $result;
     }
+
+    public function getAuthConfig($domain = null)
+    {
+        if (!$domain) {
+            $domain = $this->getRouting()->getDomain(null, true);
+        }
+        $config = $this->getConfig()->getAuth();
+        if (!isset($config[$domain])) {
+            return array();
+        }
+        return $config[$domain];
+    }
+
 
     /**
      * @return waSessionStorage
@@ -314,15 +323,13 @@ class waSystem
 
     public function login()
     {
-        $class_name = $this->getConfig()->getPrefix().'LoginAction';
+        $class_name = $this->getConfig()->getPrefix().'LoginController';
         if (class_exists($class_name)) {
-            $controller = $this->getFactory('default_controller', 'waDefaultViewController');
-            $controller->setAction($class_name);
+            $controller = new $class_name();
         } else {
-            $controller = new waDefaultViewController();
             // load webasyst
             self::getInstance('webasyst');
-            $controller->setAction('webasystLoginAction');
+            $controller = new webasystLoginController();
         }
         $controller->run();
     }
@@ -355,8 +362,13 @@ class waSystem
                     throw new waException("Page not found", 404);
                 }
             } elseif (!strncmp($this->config->getRequestUrl(true), 'oauth.php', 9)) {
-                $webasyst_system = self::getInstance('webasyst');
-                $webasyst_system->getFrontController()->execute(null, 'login', 'OAuth', true);
+                $app_id = $this->getStorage()->get('auth_app', 'webasyst');
+                $app_system = self::getInstance($app_id);
+                if (class_exists($app_id.'OAuthController')) {
+                    $app_system->getFrontController()->execute(null, 'OAuth');
+                } else {
+                    wa('webasyst')->getFrontController()->execute(null, 'OAuth');
+                }
             } elseif (!strncmp($this->config->getRequestUrl(true), 'payments.php/', 13)) {
                 $url = substr($this->config->getRequestUrl(true), 13);
                 waRequest::setParam('module_id', strtok($url, '/?'));

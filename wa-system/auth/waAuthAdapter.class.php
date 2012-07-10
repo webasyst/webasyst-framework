@@ -1,6 +1,6 @@
 <?php 
 
-abstract class waAuthAdapter implements waiAuth
+abstract class waAuthAdapter
 {
     
     protected $options = array();
@@ -14,34 +14,51 @@ abstract class waAuthAdapter implements waiAuth
         }
     }
 
-    public function auth()
+    public function getOption($name, $default = null)
     {
+        return isset($this->options[$name]) ? $this->options[$name] : null;
+    }
 
-    }
-    
-    public function isAuth()
+    abstract public function auth();
+
+    public function getId()
     {
-        return waSystem::getInstance()->getStorage()->get('auth_user_data');
-    }
-    
-    public function clearAuth()
-    {
-        waSystem::getInstance()->getStorage()->remove('auth_user_data');
+        $class = get_class($this);
+        return substr($class, 0, -4);
     }
 
     public function getName()
     {
-        $class = substr(get_class($this), 0, -4);
-        return ucfirst($class);
+        $class = get_class($this);
+        return ucfirst(substr($class, 0, -4));
     }
 
-    public function checkAuth($data = null)
+    public function getIcon()
     {
-
+        return wa()->getRootUrl().'wa-content/img/auth/'.$this->getId().'.png';
     }
 
-    public function updateAuth($data)
+    public function getCallbackUrl($absolute = true)
     {
+        return wa()->getRootUrl($absolute).'oauth.php?provider='.$this->getId();
+    }
 
+    protected function get($url)
+    {
+        return file_get_contents($url);
+    }
+
+    protected function post($url, $post_data)
+    {
+        $ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_HEADER, 0);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $post_data);
+
+        $content = curl_exec($ch);
+        curl_close($ch);
+
+        return $content;
     }
 }

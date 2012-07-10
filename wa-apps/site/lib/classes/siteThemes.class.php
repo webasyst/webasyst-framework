@@ -289,14 +289,14 @@ class siteThemes extends waTheme
     {
         $link = sprintf(_w('http://www.webasyst.com/framework/docs/site/themes/#%s'),$code);
         $message = $code.($details?", {$details}":'');
-        throw new waException(sprintf(_w("Invalid theme archive structure (%s). <a href=\"%s\" target=\"_blank\">See help</a> for details"),$code,$link));
+        throw new waException(sprintf(_w('Invalid theme archive structure (%s). <a href="%s" target="_blank">See help</a> for details'),$code,$link));
     }
 
     private static function throwArchiveException($code, $details = '')
     {
         $link = sprintf(_w('http://www.webasyst.com/framework/docs/site/themes/#%s'),$code);
         $message = $code.($details?", {$details}":'');
-        throw new waException(sprintf(_w("Failed to extract files from theme archive (%s). <a href=\"%s\" target=\"_blank\">See help</a> for details"),$code,$link));
+        throw new waException(sprintf(_w('Failed to extract files from theme archive (%s). <a href="%s" target="_blank">See help</a> for details'),$code,$link));
     }
 
     /**

@@ -22,6 +22,17 @@ return array(
         'max_length' => 50, 'storage' => 'info', 'type' => 'NameSubfield',
         'fconstructor' => 'fixed',
     )),
+
+    new waContactSelectField('sex', 'Sex', array(
+        'storage' => 'info',
+        'fconstructor' => 'fixed',
+        'translate_options' => true,
+        'options' => array(
+                'm' => 'Male',
+                'f' => 'Female',
+        ),
+    )),
+
     new waContactStringField('company', 'Company', array(
         'max_length' => 150, 'storage' => 'info'
     )),

@@ -908,3 +908,103 @@ msgstr ""
 msgid "http://www.webasyst.com/framework/docs/site/themes/#%s"
 msgstr ""
 
+
+#: /wa-apps/site/templates/actions/settings/Settings.html:146
+msgid "Authorization"
+msgstr ""
+
+#: /wa-apps/site/templates/actions/settings/Settings.html:148
+msgid "Enabled"
+msgstr ""
+
+#: /wa-apps/site/themes/default/error.html:7
+msgid "Error"
+msgstr ""
+
+#: /wa-apps/site/templates/actions/routing/Routing.html:37
+msgid "Locale"
+msgstr ""
+
+#: /wa-apps/site/js/site.themes.js:136
+msgid "rename_title"
+msgstr ""
+
+#: /wa-apps/site/js/site-jquery.min.js:49
+msgid "Cancel"
+msgstr ""
+
+#: /wa-apps/site/js/site.js:215
+msgid "Disable this URL"
+msgstr ""
+
+#: /wa-apps/site/js/site.js:216
+msgid "disable"
+msgstr ""
+
+#: /wa-apps/site/js/site.js:222
+msgid "Enable this URL"
+msgstr ""
+
+#: /wa-apps/site/js/site.js:223
+msgid "enable"
+msgstr ""
+
+#: /wa-apps/site/lib/actions/backend/siteBackendLoc.action.php:26
+msgid "Image will be uploaded into"
+msgstr ""
+
+#: /wa-apps/site/lib/actions/helper/siteHelper.action.php:15
+msgid "Assigns a new title"
+msgstr ""
+
+#: /wa-apps/site/lib/actions/helper/siteHelper.action.php:78
+msgid "Outputs <em>$var</em> datetime in a user-friendly form. Supported <em>$format</em> values: <em>monthdate, date, dtime, datetime, fulldatetime, time, fulltime, humandate, humandatetime</em>"
+msgstr ""
+
+#: /wa-apps/site/lib/actions/routing/siteRouting.action.php:68
+msgid "Auto"
+msgstr ""
+
+#: /wa-apps/site/lib/classes/siteThemes.class.php:292
+msgid "Invalid theme archive structure (%s). <a href=\\"%s\\" target=\\"_blank\\">See help</a> for details"
+msgstr ""
+
+#: /wa-apps/site/lib/classes/siteThemes.class.php:299
+msgid "Failed to extract files from theme archive (%s). <a href=\\"%s\\" target=\\"_blank\\">See help</a> for details"
+msgstr ""
+
+#: /wa-apps/site/themes/default/index.html:24
+msgid "Logout"
+msgstr ""
+
+#: /wa-apps/site/themes/default/index.html:27
+msgid "Sign up"
+msgstr ""
+
+#: /wa-apps/site/themes/default/index.html:28
+msgid "Login"
+msgstr ""
+
+#: /wa-apps/site/themes/default/index.html:45
+msgid "Powered by Webasyst"
+msgstr ""
+
+#: /wa-apps/site/themes/default/sidebar.html:8
+msgid "Edit this layout in your <a href=\"{$wa_backend_url}\">Webasyst backend</a> using “Site” app."
+msgstr ""
+
+#: /wa-apps/site/themes/default/error.html:8
+msgid "The requested resource is not available."
+msgstr ""
+
+#: /wa-apps/site/templates/actions/settings/Settings.html:148
+msgid "Enable sign up and login for this website"
+msgstr ""
+
+#: /wa-apps/site/templates/actions/settings/Settings.html:152
+msgid "Select the app that will handle authorization forms:"
+msgstr ""
+
+#: /wa-apps/site/templates/actions/settings/Settings.html:164
+msgid "To enable authorization on this website, install and settle at least one app that support authorization forms."
+msgstr ""

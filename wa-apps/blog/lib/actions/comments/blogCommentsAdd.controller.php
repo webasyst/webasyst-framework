@@ -74,7 +74,7 @@ class blogCommentsAddController extends waJsonController
             $comment['parent_text'] = $parent?$parent['text']:null;
             $comment['parent_status'] = $parent?$parent['status']:null;
         } else {
-            $count = $comment_model->countByStatus($this->post_id);
+            $count = $comment_model->getCount($post['blog_id'],$this->post_id);
             $this->response['count_str'] = $count." "._w('comment', 'comments', $count);
         }
 

@@ -99,6 +99,10 @@ class waRequest
         return self::server('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest';
     }
 
+    public static function getUserAgent()
+    {
+        return self::server('HTTP_USER_AGENT');
+    }
 
     public static function isMobile($check = true)
     {

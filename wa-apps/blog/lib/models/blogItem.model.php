@@ -7,6 +7,7 @@ abstract class blogItemModel extends waModel
     protected $extend_data = array();
     private $limit = 10;
     private $search_count;
+    protected $url_length = 255;
 
     protected $obligatory_fields = array();
 
@@ -43,11 +44,11 @@ abstract class blogItemModel extends waModel
         if (strlen($url) == 0) {
             $url = self::shortUuid();
         } else {
-            $url = mb_substr($url, 0, $this->fields['url']['length']);
+            $url = mb_substr($url, 0, $this->url_length);
         }
         $url = mb_strtolower($url);
 
-        $pattern = mb_substr($this->escape($url, 'like'),0, $this->fields['url']['length']-3). '%';
+        $pattern = mb_substr($this->escape($url, 'like'),0, $this->url_length-3). '%';
         $sql = "SELECT url FROM {$this->table} WHERE url LIKE '{$pattern}' ORDER BY LENGTH(url)";
 
         $alike = $this->query($sql)->fetchAll('url');
@@ -58,13 +59,13 @@ abstract class blogItemModel extends waModel
             do {
                 $modifier = "-{$counter}";
                 $length  = mb_strlen($modifier);
-                $url = mb_substr($last['url'], 0, $this->fields['url']['length'] - $length).$modifier;
+                $url = mb_substr($last['url'], 0, $this->url_length - $length).$modifier;
             } while ( ($counter++ < 99) && isset($alike[$url]));
             if (isset($alike[$url])) {
                 $short_uuid = self::shortUuid();
                 $length  = mb_strlen($short_uuid);
 
-                $url = mb_substr($last['url'], 0, $this->fields['url']['length'] - $length).$short_uuid;
+                $url = mb_substr($last['url'], 0, $this->url_length - $length).$short_uuid;
             }
         }
 
@@ -78,7 +79,7 @@ abstract class blogItemModel extends waModel
         $this->extend_data = $extend_data;
     }
 
-    protected function buildSearchSQL($fields = array(), $count = true)
+    protected function buildSearchSQL($fields = array(), $count = false)
     {
         $join = '';
         $select_fields = $this->setFields($fields);
@@ -116,11 +117,19 @@ abstract class blogItemModel extends waModel
             }
         }
 
-        $sql = "SELECT ".($join?'DISTINCT ':'').($count?'SQL_CALC_FOUND_ROWS ':'').implode(', ',$select_fields)."\n FROM {$this->table} {$join}";
+        if ($count) {
+            $count_sql = "SELECT COUNT(".($join?'DISTINCT ':'').$this->table.".id) FROM {$this->table} {$join}";
+        }
+
+        $sql = "SELECT ".($join?'DISTINCT ':'').implode(', ',$select_fields)."
+            FROM {$this->table} {$join}";
         if (isset($this->sql_params['where'])) {
             $where = implode(' AND ',$this->sql_params['where']);
             if ($where) {
                 $sql .= "\n WHERE {$where}";
+                if ($count) {
+                    $count_sql .= "\n WHERE {$where}";
+                }
             }
             unset($this->sql_params['where']);
         }
@@ -128,6 +137,9 @@ abstract class blogItemModel extends waModel
         if (isset($this->sql_params['order']) && $this->sql_params['order']) {
             $sql .= "\n ORDER BY {$this->sql_params['order']}";
             unset($this->sql_params['order']);
+        }
+        if ($count) {
+            return array($sql, $count_sql);
         }
         return $sql;
 
@@ -169,17 +181,17 @@ abstract class blogItemModel extends waModel
 
     public function fetchSearchAll($fields = array())
     {
-        $sql = $this->buildSearchSQL($fields, false);
-        $items = $this->query($sql,$this->sql_params)->fetchAll('id');
+        $sql = $this->buildSearchSQL($fields);
+        $items = $this->query($sql,$this->sql_params)->fetchAll($this->id);
         $this->search_count = count($items);
         return $this->prepareView($items);
     }
 
     public function fetchSearchItem($fields = array())
     {
-        $sql = $this->buildSearchSQL($fields, false);
+        $sql = $this->buildSearchSQL($fields);
         $sql .= "\n LIMIT 1";
-        $items = $this->query($sql,$this->sql_params)->fetchAll('id');
+        $items = $this->query($sql,$this->sql_params)->fetchAll($this->id);
 
         $this->search_count = count($items);
 
@@ -194,11 +206,13 @@ abstract class blogItemModel extends waModel
         $this->sql_params['offset'] = max(0,($page-1)*$this->limit);
         $this->sql_params['limit'] = $this->limit;
 
-        $sql = $this->buildSearchSQL($fields);
+        $sqls = $this->buildSearchSQL($fields, true);
+        $sql = $sqls[0];
+        $count_sql = $sqls[1];
         $sql .= "\n LIMIT i:offset, i:limit";
-        $items = $this->query($sql,$this->sql_params)->fetchAll('id');
+        $items = $this->query($sql, $this->sql_params)->fetchAll($this->id);
 
-        $this->search_count = $this->query("SELECT FOUND_ROWS()")->fetchField();
+        $this->search_count = $this->query($count_sql, $this->sql_params)->fetchField();
 
         return $this->prepareView($items);
     }

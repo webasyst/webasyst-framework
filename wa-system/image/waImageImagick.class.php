@@ -221,6 +221,9 @@ class waImageImagick extends waImage
                     Imagick::COMPOSITE_DEFAULT,
                     $offset[0],
                     $offset[1]);
+
+            $watermark->clear();
+            $watermark->destroy();
         } else {
             $text = (string) $watermark;
             if (!$text) {
@@ -247,6 +250,8 @@ class waImageImagick extends waImage
             $offset = $this->calcWatermarkOffset($width, $height, $align);
             $offset = $this->watermarkOffsetFix($offset, $width, $height, $text_orientation);
             $this->im->annotateImage($watermark, $offset[0], $offset[1], $text_orientation == self::ORIENTATION_VERTICAL ? -90: 0, $text);
+            $watermark->clear();
+            $watermark->destroy();
         }
     }
 

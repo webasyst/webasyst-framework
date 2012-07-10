@@ -28,10 +28,19 @@ function wa_header()
         }
 
         $count = '';
+        $app_url = $backend_url.$app_id.'/';
         if ($counts && isset($counts[$app_id])) {
-            $count = '<span class="indicator">'.$counts[$app_id].'</span>';
+            if (is_array($counts[$app_id])) {
+                $app_url = $counts[$app_id]['url'];
+                $n = $counts[$app_id]['count'];
+            } else {
+                $n = $counts[$app_id];
+            }
+            if ($n) {
+                $count = '<span class="indicator">'.$n.'</span>';
+            }
         }
-        $apps_html .= '<li id="wa-app-'.$app_id.'"'.($app_id == $current_app ? ' class="selected"':'').'><a href="'.$backend_url.$app_id.'/">'.$img.' '.$app['name'].$count.'</a></li>';
+        $apps_html .= '<li id="wa-app-'.$app_id.'"'.($app_id == $current_app ? ' class="selected"':'').'><a href="'.$app_url.'">'.$img.' '.$app['name'].$count.'</a></li>';
     }
 
     if ($system->getRequest()->isMobile(false)) {
@@ -104,6 +113,7 @@ function wa_header()
 
     $company_name = htmlspecialchars($app_settings_model->get('webasyst', 'name', 'Webasyst'), ENT_QUOTES, 'utf-8');
 
+    $version = wa()->getVersion();
     $html = <<<HTML
 <script type="text/javascript">var backend_url = "{$backend_url}";</script>
 {$announcements_html}
@@ -133,7 +143,7 @@ function wa_header()
         </ul>
     </div>
 </div>
-<script id="wa-header-js" type="text/javascript" src="{$root_url}wa-content/js/jquery-wa/wa.header.js"></script>
+<script id="wa-header-js" type="text/javascript" src="{$root_url}wa-content/js/jquery-wa/wa.header.js?v{$version}"></script>
 HTML;
     return $html;
 }

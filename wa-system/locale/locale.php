@@ -49,6 +49,7 @@ class waGettextParser
         $matches = array();
         if (preg_match_all("/\[\`([^\`]+)\`\]/usi", $text, $matches, PREG_OFFSET_CAPTURE)) {
             foreach ($matches[1] as $match) {
+                $match[0] = str_replace('"', '\"', $match[0]);
                 $this->cache(array($match[0], $file.":".$this->getLine($text, $match[1])));
             }
         }
@@ -67,6 +68,7 @@ class waGettextParser
         }
         if (preg_match_all("/({$function_pattern}|\\\$_)\(\s*'((\\\\'|[^'])+)'\s*\)/usi", $text, $matches, PREG_OFFSET_CAPTURE)) {
             foreach ($matches[2] as $match) {
+                $match[0] = str_replace('"', '\"', $match[0]);
                 $this->cache(array($match[0], $file.":".$this->getLine($text, $match[1])));
             }
         }
@@ -144,14 +146,14 @@ class waGettextParser
                     }
                     flock($fh, LOCK_EX);
                     foreach ($this->words as $words => $lines) {
-                        /* Ищем вхождения текущей фразы */
-                        if(strpos($locale_content, "msgid \"" . str_replace('"', '\\"',$words) . "\"") !== false) {
+                        // Ищем вхождения текущей фразы
+                        if(strpos($locale_content, "msgid \"" . $words . "\"") !== false) {
                             continue;
                         }
 
-                        /* Если не нашли - записываем */
+                        // Если не нашли - записываем
                         fputs($fh, "\n#: ".$lines."\n");
-                        fputs($fh, "msgid \"" . str_replace('"', '\\"', $words) . "\"\n");
+                        fputs($fh, "msgid \"" . $words . "\"\n");
                         fputs($fh, "msgstr \"\"\n");
                         ++$counter;
                     }

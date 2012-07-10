@@ -6,9 +6,9 @@
   <title>{$wa->title()}</title>
   <meta name="Keywords" content="{$meta_keywords}" />
   <meta name="Description" content="{$meta_description}" />
-  <link href="{$wa_theme_url}default.css" rel="stylesheet" type="text/css"/>
+  <link href="{$wa_theme_url}default.css?1207" rel="stylesheet" type="text/css"/>
   {if $wa->isMobile()}
-  <link href="{$wa_theme_url}mobile.css" rel="stylesheet" type="text/css"/>
+  <link href="{$wa_theme_url}mobile.css?1207" rel="stylesheet" type="text/css"/>
   <meta name="viewport" content="width=device-width; initial-scale=1; maximum-scale=1; user-scalable=0;" />
   {/if}
 </head>
@@ -24,8 +24,8 @@
         <li class="float-right small"><a href="?logout">[`Logout`]</a></li>
         <li class="float-right small"><strong>{$wa->user('name')}</strong></li>
         {else}
-        <li class="float-right small"><a href="?signup">[`Sign up`]</a></li>
-        <li class="float-right small"><a href="?login">[`Login`]</a></li>
+        <li class="float-right small"><a href="{$wa->signupUrl()}">[`Sign up`]</a></li>
+        <li class="float-right small"><a href="{$wa->loginUrl()}">[`Login`]</a></li>
         {/if}
         {/if}
       </ul>

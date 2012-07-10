@@ -1,188 +1,64 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
-"http://www.w3.org/TR/html4/strict.dtd"><html>
-<head>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	<title>{$wa->accountName()}</title>
-	{$wa->css()}
-	<style type="text/css">
-		{if $type == 'password'}
-			.dialog.newpassword .dialog-window {
-				width: 615px;
-				min-width: 615px;
-			}
-			#wa-login .newpassword h1 { margin-top: 10px}
-			#wa-login .newpassword .field .name { width: auto}
-			#wa-login .newpassword .field .value { margin-left: 250px; margin-bottom: 5px}
-		{else}
-			#wa-login p.i-error { margin: 6px 0 10px; color: red }
-		{/if}
-	</style>
-	<script src="{$wa_url}wa-content/js/jquery/jquery-1.4.2.min.js" type="text/javascript"></script>
-	<script src="{$wa_url}wa-content/js/jquery-wa/wa.dialog.js" type="text/javascript"></script>
-	<script type="text/javascript">
-	$(function () {
-		$('#wa-login-dialog').waDialog({ 'esc': false});
-		$('#wa-login-input').focus();
-	});
-	</script>
-</head>
-<body>
-	<div id="wa-login" style="background: url('{if $background && !$stretch}{$wa_url}{$background}{/if}{if !$background}{$wa_url}wa-content/img/noisy-background.jpg{/if}')">
-		{if $background && $stretch}
-		<img id="wa-login-stretched-background" src="{$wa_url}{$background}" />
-		{/if}
-		<div class="dialog {if $type=='password'}newpassword {/if}width500px height300px{if !empty($error)} error{/if}" id="wa-login-dialog">
-			<div class="dialog-background"></div>
-			<div class="dialog-window"{if $type=='forgot'} style="min-height: 130px; height: 160px"{/if}>
-				<div class="dialog-content">
-					<div class="dialog-content-indent">
-					<form method="post" action="">
-						{if !$type}
-						<input type="hidden" name="wa_auth_login" value="1" />
-						<h1{if !empty($title_style)} style="{$title_style}"{/if}>{$title|escape}</h1>
-						{if !empty($error)}
-						<div id="wa-login-error" class="error">{$error|escape}</div>
-						{elseif !empty($options.description)}
-						<div class="wa-login-description"><span>{_ws($options.description)}</span></div>
-						{else}
-						<div id="wa-login-error" class="error"></div>
-						{/if}
-						<div class="fields form">
-							<div class="field">
-								<div class="name">
-									{if $options.login == 'email'}
-									[s`Email`]:
-									{else}
-									[s`Login`]:
-									{/if}
-								</div>
-								<div class="value">
-									<input type="text" class="wa-login-text-input" id="wa-login-input" value="{$login|escape}" name="login" />
-								</div>
-							</div>
-							<div class="field">
-								<div class="name">
-									[s`Password`]:
-								</div>
-								<div class="value">
-									<input type="password" class="wa-login-text-input" name="password" value="" />
-									{if $remember_enabled}
-									<div class="wa-remember-me">
-										<input id="remember-me" name="remember" type="checkbox" {if !empty($remember) || $wa->post('remember')}checked="checked" {/if} value="1" /> <label for="remember-me">[s`Remember me`]</label>
-									</div>
-									{/if}
-								</div>
-							</div>
-							<div class="field">
-								<div class="value submit">
-									<input type="submit" value="[s`Sign In`]" class="button" id="wa-login-submit">
-									{if (!empty($back_on_cancel))}
-										[s`or`]
-										<a class="wa-logincancel" href="{$back_on_cancel}">[s`cancel`]</a>
-									{/if}
-									<a href="?forgot=1" class="wa-forgotpassword">[s`Forgot password?`]</a>
-								</div>
-							</div>
-						</div>
-						{elseif $type=='password'}
-						<h1 style="font-size:1.8em">[s`Recover password for`] {$login}</h1>
-						<div class="fields form">
-							<div class="field">
-								<div class="name">
-									[s`Enter a new password`]:
-								</div>
-								<div class="value">
-									<input type="password" class="wa-login-text-input{if !empty($error)} error{/if}" name="password" />
-								</div>
-							</div>
-							<div class="field">
-								<div class="name">
-									[s`Re-enter password`]:
-								</div>
-								<div class="value">
-									<input type="password" class="wa-login-text-input{if !empty($error)} error{/if}" name="password_confirm" />
-									{if !empty($error)}<em class="errormsg">{$error|escape}</em>{/if}
-								</div>
-							</div>
-							<div class="field">
-								<div class="value submit">
-									<input type="submit" value="[s`Save and log in`]" class="button" id="wa-login-submit">
-								</div>
-							</div>
-						</div>
-						{elseif $type=='forgot'}
-							<h1 style="font-weight:bold;text-align:left;font-size:1.8em;margin-top:0">[s`Password recovery`]</h1>
-							{if !empty($success)}
-								<p>[s`Password recovery instructions have been sent to your email address.`]</p>
-								<br /><br />
-								<a href="?">[s`Back to login page`]</a>
-							{else}
-								{if $options.login == 'email'}
-									[s`Please enter your email:`]
-								{else}
-									[s`Please enter your login name or email:`]
-								{/if}
-								<div class="field">
-									<input style="width: 50%" id="wa-login-input" type="text" class="large{if !empty($errors.login)} error{/if}" name="login" value="{$wa->request('login')|escape}" autocomplete="off" />
-								</div>
-								{if !empty($error)}
-									<p class="i-error">{$error}</p>
-								{/if}
-								<div{if empty($error)} style="margin-top:20px"{/if}>
-										<input type="submit" value="[s`Send`]" class="button green" />
-										[s`or`]
-										<a href="?">[s`cancel`]</a>
-								</div>
-							{/if}
-						{/if}
-					</form>
-					</div>
-				</div>
-
-				<div class="dialog-buttons">
-					<div class="wa-poweredby">
-						<a href="http://www.webasyst.{if $wa->locale()=='ru_RU'}ru{else}net{/if}">
-							WebAsyst
-							<span class="wa-dots">
-							<span class="wa-dot-red"></span>
-							<span class="wa-dot-blue"></span>
-							<span class="wa-dot-yellow"></span>
-							<span class="wa-dot-pink"></span>
-							<span class="wa-dot-green"></span>
-							<span class="wa-dot-cyan"></span></span>
-						</a>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
+<form method="post" action="">
+<input type="hidden" name="wa_auth_login" value="1" />
+<h1{if !empty($title_style)} style="{$title_style}"{/if}>{$title|escape}</h1>
+{if !empty($error)}
+<div id="wa-login-error" class="error">{$error|escape}</div>
+{elseif !empty($options.description)}
+<div class="wa-login-description"><span>{_ws($options.description)}</span></div>
+{else}
+<div id="wa-login-error" class="error"></div>
+{/if}
+<div class="fields form">
+    <div class="field">
+        <div class="name">
+        {if $options.login == 'email'}[s`Email`]{else}[s`Login`]{/if}:
+        </div>
+        <div class="value">
+            <input type="text" class="wa-login-text-input" id="wa-login-input" value="{$login|escape}" name="login" />
+        </div>
+    </div>
+    <div class="field">
+        <div class="name">
+            [s`Password`]:
+        </div>
+        <div class="value">
+            <input type="password" class="wa-login-text-input" name="password" value="" />
+            {if $options.remember_enabled}
+            <div class="wa-remember-me">
+                <input id="remember-me" name="remember" type="checkbox" {if !empty($remember) || $wa->post('remember')}checked="checked" {/if} value="1" /> <label for="remember-me">[s`Remember me`]</label>
+            </div>
+            {/if}
+        </div>
+    </div>
+    <div class="field">
+        <div class="value submit">
+            <input type="submit" value="[s`Sign In`]" class="button" id="wa-login-submit">
+            {if (!empty($back_on_cancel))}
+                [s`or`]
+                <a class="wa-logincancel" href="{$back_on_cancel}">[s`cancel`]</a>
+            {/if}
+            <a href="?forgotpassword" class="wa-forgotpassword">[s`Forgot password?`]</a>
+        </div>
+    </div>
+</div>
+</form>
 <script type="text/javascript">
 $(function() {
-	window.setTimeout(function() { // voodoo magic... does not work without setTimeout() in IE8.
-		var input = $('input:text')[0] || $('input:password')[0];
-		if (input) {
-			input.focus();
-		}
-	}, 1);
-	{if !$type}
-		// When user clicks "forgot password" link, send email (if already typed in)
-		// to show on the next form by default.
-		$('.wa-forgotpassword').click(function() {
-			var val = $('#wa-login-input').val();
-			if (!val) {
-				return true;
-			}
-			var form = $('<form action="'+$(this).attr('href')+'" method="POST">'+
-							'<input type="hidden" name="ignore" value="1">'+
-							'<input type="hidden" name="login" value="">'+
-						 '</form>');
-			form.find('[name="login"]').val(val);
-			form.appendTo('body');
-			form.submit();
-			return false;
-		});
-	{/if}
+    // When user clicks "forgot password" link, send email (if already typed in)
+    // to show on the next form by default.
+    $('.wa-forgotpassword').click(function() {
+        var val = $('#wa-login-input').val();
+        if (!val) {
+            return true;
+        }
+        var form = $('<form action="'+$(this).attr('href')+'" method="POST">'+
+                        '<input type="hidden" name="ignore" value="1">'+
+                        '<input type="hidden" name="login" value="">'+
+                     '</form>');
+        form.find('[name="login"]').val(val);
+        form.appendTo('body');
+        form.submit();
+        return false;
+    });
 });
 </script>
-</body>
-</html>

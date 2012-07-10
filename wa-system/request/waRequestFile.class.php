@@ -102,7 +102,7 @@ class waRequestFile
         switch($name) {
             case 'extension':
                 $path_info = pathinfo($this->data['name']);
-                return $path_info['extension'];
+                return isset($path_info['extension']) ? $path_info['extension'] : '';
             default: // is it a key in $this->data?
                 if ($this->data === null) {
                     throw new waException('No file uploaded.');

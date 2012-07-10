@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WebAsyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2012-04-26 18:22+0400\n"
-"Last-Translator: \n"
+"PO-Revision-Date: 2012-07-10 14:21+0300\n"
+"Last-Translator: Vladimir V. Tuporshin <vofka@webasyst.net>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
@@ -377,6 +377,9 @@ msgstr "Забыли пароль?"
 
 msgid "Login"
 msgstr "Логин"
+
+msgid "Log in"
+msgstr "Вход"
 
 msgid "Sign In"
 msgstr "Войти"
@@ -1731,3 +1734,152 @@ msgstr "Ошибка при создании файла %s"
 
 msgid "Not enough access permissions to write in the folder %s"
 msgstr "Недостаточно прав для записи в папку %s"
+
+msgid "Theme %s for “%s” app not found."
+msgstr "Тема %s для приложения “%s” не найдена."
+
+msgid "Sex"
+msgstr "Пол"
+
+msgid "Male"
+msgstr "Мужской"
+
+msgid "Female"
+msgstr "Женский"
+
+msgid "kB"
+msgstr "кБ"
+
+msgid "MB"
+msgstr "МБ"
+
+msgid "GB"
+msgstr "ГБ"
+
+msgid "TB"
+msgstr "ТБ"
+
+msgid "PB"
+msgstr "ПБ"
+
+msgid "EB"
+msgstr "ЭБ"
+
+#: /wa-system/page/actions/waPage.action.php:27
+msgid "Page not found"
+msgstr "Страница не найдена"
+
+#: /wa-system/page/actions/waPageSave.controller.php:21
+msgid "Error saving web page"
+msgstr "Произошла ошибка при попытке сохранения страницы"
+
+#: /wa-system/page/actions/waPageUploadimage.controller.php:25
+msgid "Files with extensions %s are allowed only."
+msgstr "Допускаются только файлы с расширениями %s"
+
+#: /wa-system/page/templates/PageEdit.html:188
+msgid "The page is not available on the website because “Site” app is not connected in the website structure."
+msgstr "Страница недоступна на сайте, потому что приложение «Сайт» не подключено в правилах маршрутизации этого сайта."
+
+#: /wa-system/page/templates/PageEdit.html:317
+msgid "An error occurred while saving"
+msgstr "Во время сохранения произошла ошибка"
+
+#: /wa-system/controller/waSignupAction.class.php:45
+msgid "User with the same %s is already registered"
+msgstr "Пользователь с таким %s уже зарегистрирован"
+
+#: /wa-system/controller/waFrontController.class.php:85
+msgid "Access denied."
+msgstr "Доступ запрещен."
+
+#: /wa-system/auth/waAuth.class.php:114
+msgid "You are banned!"
+msgstr "Вас отказано в доступе!"
+
+#: /wa-system/api/waAPIController.class.php:20
+msgid "Application \"%s\" not exists"
+msgstr "Приложение «%s» не установлено"
+
+#: /wa-system/api/waAPIController.class.php:29
+msgid "Unknown response format"
+msgstr "Неизвестный формат ответа"
+
+#: /wa-system/request/waRequestFile.class.php:189
+msgid "The uploaded file exceeds the upload_max_filesize directive in php.ini."
+msgstr "Размер файла превышает максимально допустимый для загрузки (настройка upload_max_filesize в файле php.ini)."
+
+#: /wa-system/request/waRequestFile.class.php:191
+msgid "The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the HTML form."
+msgstr "Размер файла превышает максимально допустимый для данной HTML-формы (настройка формы MAX_FILE_SIZE)."
+
+#: /wa-system/request/waRequestFile.class.php:193
+msgid "The uploaded file was only partially uploaded."
+msgstr "Файл был загружен частично."
+
+#: /wa-system/request/waRequestFile.class.php:195
+msgid "No file was uploaded."
+msgstr "Не было загружено ни одного файла."
+
+#: /wa-system/request/waRequestFile.class.php:197
+msgid "Missing a temporary folder."
+msgstr "Ошибка доступа ко временной папке."
+
+#: /wa-system/request/waRequestFile.class.php:199
+msgid "Failed to write file to disk."
+msgstr "Произошла ошибка при записе файла."
+
+#: /wa-system/request/waRequestFile.class.php:201
+msgid "A PHP extension stopped the file upload."
+msgstr "Расшрение PHP прервало загрузку файла."
+
+#: /wa-system/request/waRequestFile.class.php:203
+msgid "Unknown upload error"
+msgstr "Неопознанная ошибка загрузки файла"
+
+#: /wa-system/database/waModel.class.php:642
+msgid "Unknown field %s"
+msgstr "Неизвестное поле %s"
+
+#: /wa-system/image/waImageGd.class.php:331
+msgid "Can't read font file $font_file"
+msgstr "Ошибка загрузки файла $font_file"
+
+#: /wa-system/view/waViewHelper.class.php:500
+msgid "Authorize either by entering your contact information, or through one of the websites listed above."
+msgstr "Авторизуйтесь с помощью одного из перечисленных сервисов, или введя контактную информацию."
+
+#: /wa-system/view/waViewHelper.class.php:392
+msgid "Reset password"
+msgstr "Сбросить пароль"
+
+#: /wa-system/view/waViewHelper.class.php:392
+msgid "I remember it now!"
+msgstr "Я вспомнил пароль!"
+
+msgid "Sign up"
+msgstr "Регистрация"
+
+#: /wa-system/view/waViewHelper.class.php:476
+msgid "\"Sign up\""
+msgstr "\"Зарегистрироваться\""
+
+msgid "Password can not be empty."
+msgstr "Пароль не может быть пустым"
+
+#: /wa-system/controller/waSignupAction.class.php:57
+msgid "%s is required"
+msgstr "Поле «%s» является обязательным"
+
+#: /wa-system/view/waViewHelper.class.php:476
+msgid "or <a href=\"%s\">login</a> if you already have an account"
+msgstr "или <a href=\"%s\">войти</a>, если у вас уже есть аккаунт"
+
+#: /wa-system/validator/waEmailValidator.class.php:30
+msgid "Invalid Email"
+msgstr "Email-адрес введен неправильно"
+
+
+#: /wa-system/controller/waSignupAction.class.php:87
+msgid "Invalid captcha"
+msgstr "Капча введена неверно"

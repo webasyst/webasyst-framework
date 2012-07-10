@@ -57,7 +57,7 @@ class blogFrontendCommentController extends waJsonController
                 var_export($this->errors);exit;
                 //handle error on non ajax
             }
-            $url = blogPost::getUrl($this->post).'#comment-'.intval($this->parent_id?$this->parent_id:$this->comment_id);
+            $url = blogPost::getUrl($this->post).'#comment'.intval($this->parent_id?$this->parent_id:$this->comment_id);
             $this->redirect($url);
         }
     }
@@ -108,9 +108,14 @@ class blogFrontendCommentController extends waJsonController
                 break;
             }
             case 'guest': {
+
                 $comment['name']		 = waRequest::post('name', '', 'string_trim');
                 $comment['email']		 = waRequest::post('email', '', 'string_trim');
                 $comment['site']		 = waRequest::post('site', '', 'string_trim');
+                if ($this->appSettings('require_authorization', false)) {
+                    $this->errors[] = array('name' => _w('Only registered users can add comments'));
+                    break;
+                }
                 if ($this->appSettings('request_captcha',true)) {
                     $captcha = new waCaptcha();
                     if(!wa()->getCaptcha()->isValid()) {
@@ -126,7 +131,7 @@ class blogFrontendCommentController extends waJsonController
                 } elseif ($user_data = $this->getStorage()->get('auth_user_data')) {
                     $comment['name'] = $user_data['name'];
                     $comment['email'] = '';
-                    $comment['site'] = $user_data['source_link'];
+                    $comment['site'] = $user_data['url'];
                 } else {
                     $this->errors[] = _w('Invalid auth provider data');
                 }
@@ -159,9 +164,8 @@ class blogFrontendCommentController extends waJsonController
     {
         $this->getResponse()->addHeader('Content-type', 'application/json');
         if ($this->comment_id && ($comment = $this->comment_model->getById($this->comment_id) )) {
-            $count = $this->comment_model->countByStatus($this->post['id']);
-
-            $this->post['comments'] = $this->comment_model->prepareView(array($comment), array('photo_url_20'),array('user'=>true));
+            $count = $this->comment_model->getCount($comment['blog_id'], $comment['post_id']);
+            $comments = $this->comment_model->prepareView(array($comment), array('photo_url_20'),array('user'=>true,'escape'=>true));
 
             $theme = waRequest::param('theme', 'default');
             $theme_path = wa()->getDataPath('themes', true).'/'.$theme;
@@ -169,9 +173,9 @@ class blogFrontendCommentController extends waJsonController
                 $theme_path = wa()->getAppPath().'/themes/'.$theme;
             }
 
-            $template = 'file:comments.html';
+            $template = 'file:comment.html';
             $view = wa()->getView(array('template_dir' => $theme_path));
-            $view->assign('post', $this->post);
+            $view->assign('comment', array_shift($comments));
 
             $this->response['template']	 = $view->fetch($template);
             $this->response['count_str'] = $count." "._w('comment', 'comments', $count);

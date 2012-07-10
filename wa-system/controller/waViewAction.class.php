@@ -52,15 +52,18 @@ abstract class waViewAction extends waController
     public function setController(waController $controller)
     {
         $this->controller = $controller;
+        if ($this->controller instanceof waViewController) {
+            $layout = $this->controller->getLayout();
+            if ($layout) {
+                $this->layout = $layout;
+            }
+        }
     }
 
     protected function setThemeTemplate($template)
     {
-        $theme_path = $this->getTheme()->getPath();
-        $this->view->assign('wa_theme_url', $this->getThemeUrl());
-        $this->view->setTemplateDir($theme_path);
         $this->template = 'file:'.$template;
-        return file_exists($theme_path.'/'.$template);
+        return $this->view->setThemeTemplate($this->getTheme(), $template);
     }
 
     protected function getThemeUrl()
@@ -76,13 +79,7 @@ abstract class waViewAction extends waController
     public function getTheme()
     {
         if ($this->theme == null) {
-            $theme = waRequest::getTheme();
-            if (strpos($theme, ':') !== false) {
-                list($app_id, $theme) = explode(':', $theme, 2);
-            } else {
-                $app_id = null;
-            }
-            $this->theme = new waTheme($theme, $app_id);
+            $this->theme = new waTheme(waRequest::getTheme());
         }
         return $this->theme;
     }

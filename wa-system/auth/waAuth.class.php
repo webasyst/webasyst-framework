@@ -16,8 +16,6 @@ class waAuth implements waiAuth
 {
     protected $options = array(
         'cookie_expire' => 2592000,
-        'is_user' => true, // only contacts with is_user = 1 can auth
-        'login' => 'login'
     );
 
     public function __construct($options = array())
@@ -25,6 +23,27 @@ class waAuth implements waiAuth
         if (is_array($options)) {
             foreach ($options as $k => $v) {
                 $this->options[$k] = $v;
+            }
+        }
+        if (!isset($this->options['login'])) {
+            $this->options['login'] = wa()->getEnv() == 'backend' ? 'login' : 'email';
+        }
+
+        if (!isset($this->options['is_user'])) {
+            // only contacts with is_user = 1 can auth
+            $this->options['is_user'] = wa()->getEnv() == 'backend';
+        }
+
+        if (!isset($this->options['remember_enabled'])) {
+            if (wa()->getEnv() == 'backend') {
+                try {
+                    $app_settings_model = new waAppSettingsModel();
+                    $this->options['remember_enabled'] = $app_settings_model->get('webasyst', 'rememberme', true);
+                } catch (waException $e) {
+                    $this->options['remember_enabled'] = true;
+                }
+            } else {
+                $this->options['remember_enabled'] = true;
             }
         }
     }
@@ -47,22 +66,36 @@ class waAuth implements waiAuth
 
     public function isAuth()
     {
-        return waSystem::getInstance()->getStorage()->read('auth_user');
+        $info = waSystem::getInstance()->getStorage()->read('auth_user');
+        if (!$info) {
+            $info = $this->_authByCookie();
+            if ($info) {
+                waSystem::getInstance()->getStorage()->write('auth_user', $info);
+            }
+        }
+        // check options
+        if ($info && $info['id'] && (!$this->getOption('is_user') || !empty($info['is_user']))) {
+            return $info;
+        }
+        return false;
     }
 
-
-    protected function getByLogin($login)
+    public function getByLogin($login)
     {
         $result = array();
         $model = new waContactModel();
         if ($this->options['login'] == 'login') {
             $result = $model->getByField('login', $login);
         } elseif ($this->options['login'] == 'email') {
-            $sql = "SELECT c.* FROM wa_contact c
-            JOIN wa_contact_emails e ON c.id = e.contact_id
-            WHERE ".($this->options['is_user'] ? "c.is_user = 1 AND " : "")."e.email LIKE s:email AND e.sort = 0
-            ORDER BY c.id LIMIT 1";
-            $result = $model->query($sql, array('email' => $login))->fetch();
+            if (strpos($login, '@') === false) {
+                $result = $model->getByField('login', $login);
+            } else {
+                $sql = "SELECT c.* FROM wa_contact c
+                JOIN wa_contact_emails e ON c.id = e.contact_id
+                WHERE ".($this->options['is_user'] ? "c.is_user = 1 AND " : "")."e.email LIKE s:email AND e.sort = 0 AND c.password != ''
+                ORDER BY c.id LIMIT 1";
+                $result = $model->query($sql, array('email' => $login))->fetch();
+            }
         }
         if ($result) {
             $this->checkBan($result);
@@ -73,14 +106,16 @@ class waAuth implements waiAuth
     protected function checkBan($data)
     {
         $contact_data_model = new waContactDataModel();
-        $rows = $contact_data_model->getByField(array('contact_id' => $data['id'],
-            'field' => array('banned_datetime', 'banned_reason', 'sort' => 0)), true);
+        $rows = $contact_data_model->getByField(array(
+            'contact_id' => $data['id'],
+            'field' => array('is_banned', 'banned_reason')
+        ), true);
         $result = array();
         foreach ($rows as $row) {
             $result[$row['field']] = $row['value'];
         }
-        if (isset($result['banned_datetime']) && $result['banned_datetime']) {
-            throw new waException(isset($result['banned_reason']) ? $result['banned_reason'] : 'You are banned!');
+        if (!empty($result['is_banned'])) {
+            throw new waException(isset($result['banned_reason']) ? $result['banned_reason'] : _ws('You are banned!'));
         }
     }
 
@@ -128,14 +163,17 @@ class waAuth implements waiAuth
                     throw new waException(_ws('Invalid login or password'));
                 }
             }
-        } elseif ($token = waRequest::cookie('auth_token')) {
-            try {
-                $r = waSystem::getSetting('rememberme', 1, 'webasyst');
-            } catch (waDbException $e) {
-                if ($e->getCode() == 1146) {
-                    return false;
-                }
-            }
+        } else {
+            // try auth by cookie
+            return $this->_authByCookie();
+        }
+        return false;
+    }
+
+
+    protected function _authByCookie()
+    {
+        if ($this->getOption('remember_enabled') && $token = waRequest::cookie('auth_token')) {
             $model = new waContactModel();
             $response = waSystem::getInstance()->getResponse();
             $id = substr($token, 15, -15);
@@ -151,6 +189,7 @@ class waAuth implements waiAuth
         }
         return false;
     }
+
 
     protected function getAuthData($user_info)
     {

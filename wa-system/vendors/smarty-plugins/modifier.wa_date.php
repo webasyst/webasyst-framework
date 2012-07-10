@@ -17,6 +17,10 @@ function smarty_modifier_wa_date($string, $format = 'date', $timezone = null, $l
     if ($locale === null) {
         $locale = waSystem::getInstance()->getUser()->getLocale();
     }
+
+    if (!$string) {
+        return '';
+    }
     return wa_date($format, $string, $timezone, $locale);
 }
 

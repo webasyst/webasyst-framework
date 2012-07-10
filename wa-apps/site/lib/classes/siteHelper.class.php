@@ -34,12 +34,12 @@ class siteHelper
                 $new_domains = array_diff(array_keys($routes), $ds);
                 if ($new_domains) {
                     foreach ($new_domains as $d) {
-                        $domain_model->insert(array('name' => $d), 2);
+                        $domain_model->insert(array('name' => $d));
                     }
                     self::$domains = $domain_model->select('*')->fetchAll('id');
                 }
                 if (!self::$domains) {
-                    $domain_model->insert(array('name' => wa()->getConfig()->getDomain(), 2));
+                    $domain_model->insert(array('name' => wa()->getConfig()->getDomain()));
                     self::$domains = $domain_model->select('*')->fetchAll('id');
                 }
             }

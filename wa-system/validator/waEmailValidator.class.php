@@ -27,7 +27,7 @@ class waEmailValidator extends waRegexValidator
 
     protected function init()
     {
-        $this->setMessage('not_match', 'Invalid Email');
+        $this->setMessage('not_match', _ws('Invalid Email'));
         $this->setPattern(self::REGEX_EMAIL);
     }
     

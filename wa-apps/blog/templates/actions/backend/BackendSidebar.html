@@ -107,7 +107,7 @@
               {elseif $post.status == blogPostModel::STATUS_DEADLINE}
                 <span class="count"><i class="icon16 exclamation"><!-- icon --></i></span>
               {/if}
-              <i class="icon16 userpic20" style="background-image: url('{$post.user.photo_url_20}')"><!-- icon --></i><span{if isset($post.overdue)} class="bold b-draft-overdue"{/if}>{$post.title|escape|truncate:80|default:'[`(empty title)`]'}</span>
+              <i class="icon16 userpic20" style="background-image: url('{$post.user.photo_url_20}')"><!-- icon --></i><span{if isset($post.overdue)} class="bold b-draft-overdue"{/if}>{$post.title|escape|truncate:80}</span>
               {if $post.blog_status == blogBlogModel::STATUS_PRIVATE}
                 <i class="icon10 lock-bw no-overhanging" title="[`Belong to private blog`]"><!-- icon --></i>
               {/if}

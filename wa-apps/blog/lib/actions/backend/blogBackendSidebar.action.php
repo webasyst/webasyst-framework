@@ -27,13 +27,16 @@ class blogBackendSidebarAction extends waViewAction
         $view_all_posts = waRequest::get('all', null) !== null || empty($request);
 
         $blog_model = new blogBlogModel();
-        $blogs = $blog_model->getAvailable($this->user);
 
-        $blogs = $blog_model->prepareView($blogs, array('new'=>true));
+        $blogs = $blog_model->prepareView($blog_model->getAvailable($this->user), array('new'=>true, 'expire'=>1));
+        $blog_ids = array_keys($blogs);
+
         $comment_model = new blogCommentModel();
-        $comment_count = $comment_model->countByParam(array_keys($blogs), null, blogCommentModel::STATUS_PUBLISHED);
-        $activity_datetime = blogHelper::getLastActivity();
-        $comment_new_count = $comment_model->countByParam(array_keys($blogs), $activity_datetime, blogCommentModel::STATUS_PUBLISHED);
+
+        $comment_count = $comment_model->getCount($blog_ids);
+
+        $activity_datetime = blogActivity::getUserActivity();
+        $comment_new_count = $comment_model->getCount($blog_ids, null, $activity_datetime, 1);
 
         $post_count = 0;
 

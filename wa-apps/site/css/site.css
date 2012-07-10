@@ -184,3 +184,6 @@ table.zebra.s-filelist .icon10.new-window { margin-left: .25em;}
    background: #fff;
    margin-top: 5px;
 }
+
+li.inherit a {color: #999}
+li.error a {color: red}

@@ -86,7 +86,7 @@ class blogImportPluginWordpressTransport extends blogImportPluginTransport
         $datetime = $post_data['dateCreated'];
         $post['datetime'] = date("Y-m-d H:i:s", $datetime->timestamp);
 
-        $post['title'] = (!empty($post_data['title'])) ? $post_data['title']: _w('(empty title)');
+        $post['title'] = (!empty($post_data['title'])) ? $post_data['title']: '';
         if(!empty($post_data['mt_text_more'])) {
             $post['text'] = $this->applyFilter($post_data['description'].$post_data['mt_text_more'],'the_content');
             $post['text_before_cut'] = $this->applyFilter($post_data['description'],'the_content');

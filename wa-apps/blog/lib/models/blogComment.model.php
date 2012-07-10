@@ -56,10 +56,17 @@ SQL;
 
     }
 
-    public function prepareView($items, $fields = array(), $options = array())
+    public function prepareView($items, $fields = array(), $extend_options = array())
     {
-        blogHelper::extendUser($items,$fields,isset($options['user']) && $options['user']);
+        blogHelper::extendUser($items, $fields, !empty($extend_options['user']));
         $contact_id = wa()->getUser()->getId();
+
+        if (isset($extend_options['datetime'])) {
+            $blog_activity = blogActivity::getInstance();
+            $viewed_comments = array();
+            $expire = isset($extend_options['expire'])?$extend_options['expire']:false;
+        }
+
         #data holders for plugin hooks
         foreach ($items as &$item) {
             $item['plugins'] = array(
@@ -68,9 +75,18 @@ SQL;
             	'authorname_suffix'=>array(),
             );
             $item['ip'] = long2ip($item['ip']);
-            if (isset($options['datetime'])) {
-                if ( ($item['datetime'] > $options['datetime']) && (!$contact_id || ($contact_id != $item['contact_id'])) ){
-                    $item['new'] = true;
+            if(empty($item['name']) && !empty($item['user']['name'])) {
+                $item['name'] = $item['user']['name'];
+            }
+            if (isset($extend_options['datetime'])) {
+
+                if ( ($item['datetime'] > $extend_options['datetime']) && (!$contact_id || ($contact_id != $item['contact_id'])) ){
+                    $item['new'] = $blog_activity->isNew("c.{$item['post_id']}", $item['id'], $expire);
+                    if($item['new'] == blogActivity::STATE_NEW) {
+                        $viewed_comments[$item['post_id']][] = $item['id'];
+                    } elseif (!$item['new']) {
+                        unset($item['new']);
+                    }
                 }
             }
             if (!$item['auth_provider']) {
@@ -80,7 +96,17 @@ SQL;
                     $item['auth_provider'] = blogCommentModel::AUTH_GUEST;
                 }
             }
+            if (!empty($extend_options['escape'])) {
+                $item['text'] = htmlspecialchars($item['text'],ENT_QUOTES,'utf-8');
+                $item['name'] = htmlspecialchars($item['name'] ,ENT_QUOTES,'utf-8');
+            }
             unset($item);
+        }
+
+        if (!empty($viewed_comments)) {
+            foreach ($viewed_comments as $post_id => $ids) {
+                $blog_activity->set("c.{$post_id}", $ids);
+            }
         }
 
         /**
@@ -100,85 +126,69 @@ SQL;
     }
 
 
-    public function getCount($datetime,$blogs = null)
+    public function getCount($blog_id, $post_id = null, $datetime = null, $expire = null, $post_contact_id = null, $status = self::STATUS_PUBLISHED)
     {
         $where = array();
-        $where[] = "datetime > '{$this->escape($datetime)}'";
-        $where[] = $this->getWhereByField('status',self::STATUS_PUBLISHED);
-        if ($blogs !== null) {
-            $where[] = $this->getWhereByField('blog_id',$blogs);
-        }
-        return $this->select('COUNT(id)')->where('('.implode(') AND (',$where).')')->fetchField();
-    }
-
-    public function getCountByPost($post_ids, $status, $datetime = null)
-    {
-        $param = '';
-        $contact_id = null;
         if ($datetime) {
+            $where[] = "datetime > '{$this->escape($datetime)}'";
             if ($contact_id = wa()->getUser()->getId()) {
-                $param = ',SUM(IF((datetime > :datetime) AND (contact_id != i:contact_id), 1, 0)) as new ';
-            } else {
-                $param = ',SUM(IF(datetime > :datetime, 1, 0)) as new ';
+                $where[] = "contact_id != ".intval($contact_id);
             }
         }
-
-        $where = '';
-        if (!empty($post_ids)) {
-            $where = "WHERE ". $this->getWhereByField('post_id', $post_ids)." AND ".$this->getWhereByField('status',$status);
-        }
-
-        $sql = <<<SQL
-        SELECT post_id, COUNT(post_id) as count, MAX(datetime) as datetime {$param}
-		FROM {$this->table}
-		{$where}
-		GROUP BY post_id
-SQL;
-
-		return $this->query($sql, array('datetime'=>$datetime,'contact_id'=>$contact_id))->fetchAll('post_id');
-    }
-
-    public function countByStatus($post_id, $status = self::STATUS_PUBLISHED)
-    {
-        $sql = "SELECT COUNT({$this->id}) FROM {$this->table}";
-        $where = array();
-        $where[] = $this->getWhereByField('post_id',$post_id);
-        if ($status !== false) {
-            $where[] = $this->getWhereByField('status',$status);
-        }
-
-        $sql .= " WHERE ".implode(' AND ',$where);
-        return $this->query($sql)->fetchField();
-    }
-
-    public function countByParam($blogs = null,$datetime = null,$status = null, $post_contact_id = null)
-    {
-
-        $sql = "SELECT COUNT({$this->table}.id) FROM {$this->table}";
-        $where = array();
-        if ($status) {
-            $where[] = $this->getWhereByField('status',$status,true);
-        }
-        if ($blogs !== null) {
-            $where[] = $this->getWhereByField('blog_id',$blogs,true);
-        }
-        if ($datetime) {
-            $where[] = "{$this->table}.datetime > '{$this->escape($datetime)}'";
-            $where[] = "{$this->table}.contact_id != '{$this->escape($post_contact_id?$post_contact_id:wa()->getUser()->getId())}'";
-        }
-
         if ($post_contact_id = max(0,intval($post_contact_id))) {
             $post_model = new blogPostModel();
             $post_table = $post_model->getTableName();
-            $post_id = $post_model->getTableId();
-            $sql .=" INNER JOIN {$post_table} ON {$post_table}.id = {$this->table}.post_id";
+            $post_table_id = $post_model->getTableId();
+            $sql .=" INNER JOIN {$post_table} ON {$post_table}.{$post_table_id} = {$this->table}.post_id";
             $where[] = "{$post_table}.contact_id = {$post_contact_id}";
         }
-
-        if ($where) {
-            $sql .= " WHERE (".implode(') AND (',$where).')';
+        if ($status) {
+            $where[] = $this->getWhereByField('status', $status);
         }
-        return $this->query($sql)->fetchField();
+        if ($post_id) {
+            $where[] = $this->getWhereByField('post_id', $post_id);
+        }
+        if ($blog_id !== null) {
+            $where[] = $this->getWhereByField('blog_id',$blog_id);
+        }
+
+        if($datetime) {
+            $count_by_post = $post_id && is_array($post_id);
+            if($count_by_post) {
+                $count = array_fill_keys($post_id, 0);
+            } else {
+                $count = 0;
+            }
+            if($comments = $this->select("{$this->id}, post_id")->where('('.implode(') AND (',$where).')')->fetchAll($this->id, true)) {
+                $blog_activity = blogActivity::getInstance();
+                foreach ($comments as $id => $comment_post_id) {
+                    if($blog_activity->isNew("c.{$comment_post_id}", $id, $expire)) {
+                        if($count_by_post){
+                            ++$count[$comment_post_id];
+                        } else {
+                            ++$count;
+                        }
+                    }
+                }
+                $viewed_comments = array();
+            }
+        } elseif ($post_id && is_array($post_id)) {
+            $sql = "SELECT post_id, COUNT(*) FROM {$this->table} WHERE (".implode(') AND (',$where).") GROUP BY post_id";
+            $count = $this->query($sql)->fetchAll('post_id',true);
+        } else {
+            $count = $this->select("COUNT(*)")->where('('.implode(') AND (',$where).')')->fetchField();
+        }
+        return $count;
+    }
+
+    public function getDatetime($post_id = array())
+    {
+        $sql = "SELECT post_id, MAX(datetime) FROM {$this->table}";
+        if($post_id) {
+            $sql .= ' WHERE '.$this->getWhereByField('post_id',$post_id);
+        }
+        $sql .= ' GROUP BY post_id';
+        return $this->query($sql)->fetchAll('post_id',true);
     }
 
     public function add($comment, $parent = null)
@@ -203,7 +213,7 @@ SQL;
 
         $comment[$this->parent] = $parent;
 
-        blogHelper::setLastActivity();
+        blogActivity::setUserActivity();
 
         /**
          * @event comment_presave_frontend
@@ -275,13 +285,13 @@ SQL;
                     $comment['site'] = "http://" . $comment['site'];
                 }
 
-                if (mb_strlen( $comment['name'] ) == 0) {
+                if (empty($comment['name']) || (mb_strlen( $comment['name'] ) == 0) ) {
                     $errors[]['name'] = _w('Name can not be left blank');
                 }
                 if (mb_strlen( $comment['name'] ) > 255) {
                     $errors[]['name'] = _w('Name length should not exceed 255 symbols');
                 }
-                if (mb_strlen( $comment['email'] ) == 0) {
+                if (empty($comment['name']) || (mb_strlen( $comment['email'] ) == 0) ) {
                     $errors[]['email'] = _w('Email can not be left blank');
                 }
                 $validator = new waEmailValidator();
@@ -289,7 +299,7 @@ SQL;
                     $errors[]['email'] = _w('Email is not valid');
                 }
                 $validator = new waUrlValidator();
-                if ($comment['site'] && !$validator->isValid($comment['site'])) {
+                if (!empty($comment['site']) && !$validator->isValid($comment['site'])) {
                     $errors[]['site'] = _w('Site URL is not valid');
                 }
                 break;

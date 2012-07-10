@@ -52,8 +52,8 @@ class blogPostEditAction extends waViewAction
             $blog_id = $blog['id'];
 
             $post = array(
-				'title' => '',
-				'text' => '',
+				'title' => $this->getRequest()->post('title','',waRequest::TYPE_STRING_TRIM),
+				'text' => $this->getRequest()->post('text','',waRequest::TYPE_STRING_TRIM),
 				'continued_text' => null,
 				'categories' => array(),
 				'contact_id' => wa()->getUser()->getId(),

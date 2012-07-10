@@ -42,19 +42,19 @@ SQL;
     {
 
         $sql = <<<SQL
-		UPDATE {$this->table} AS t
+		UPDATE {$this->table}
 		SET t.`qty` = (
 			SELECT COUNT(blog_post_category.post_id)
 			FROM blog_post_category
 			JOIN blog_post ON (blog_post_category.post_id = blog_post.id)
 			WHERE
-				blog_post_category.category_id = t.id
+				blog_post_category.category_id = {$this->table}.id
 			AND
 				blog_post.status = s:status
 		)
 SQL;
         if ($ids) {
-            $sql .= " WHERE t.id IN (:ids)";
+            $sql .= " WHERE {$this->table}.id IN (:ids)";
         }
         $this->query($sql,array('ids'=>(array)$ids,'status'=>blogPostModel::STATUS_PUBLISHED));
     }
@@ -77,11 +77,13 @@ SQL;
         static $counter = 0;
         $from = preg_replace('/\s+/', '-', $from);
         $url = blogHelper::transliterate($from);
+        $field_length = 255;//$this->fields['url']['length']
+
 
         if (strlen($url) == 0) {
             $url = self::shortUuid();
         } else {
-            $url = mb_substr($url, 0, $this->fields['url']['length']);
+            $url = mb_substr($url, 0, $field_length);
         }
         $url = mb_strtolower($url);
         $where = '';
@@ -89,7 +91,7 @@ SQL;
             $where = " AND NOT ({$this->getWhereByField($this->id,$id)})";
         }
 
-        $pattern = mb_substr($this->escape($url, 'like'),0, $this->fields['url']['length']-3). '%';
+        $pattern = mb_substr($this->escape($url, 'like'),0, $field_length-3). '%';
         $sql = "SELECT url FROM {$this->table} WHERE url LIKE '{$pattern}'{$where} ORDER BY LENGTH(url)";
 
         $alike = $this->query($sql)->fetchAll('url');
@@ -100,13 +102,13 @@ SQL;
             do {
                 $modifier = "-{$counter}";
                 $length  = mb_strlen($modifier);
-                $url = mb_substr($last['url'], 0, $this->fields['url']['length'] - $length).$modifier;
+                $url = mb_substr($last['url'], 0, $field_length - $length).$modifier;
             } while ( ($counter++ < 99) && isset($alike[$url]));
             if (isset($alike[$url])) {
                 $short_uuid = self::shortUuid();
                 $length  = mb_strlen($short_uuid);
 
-                $url = mb_substr($last['url'], 0, $this->fields['url']['length'] - $length).$short_uuid;
+                $url = mb_substr($last['url'], 0, $field_length - $length).$short_uuid;
             }
         }
 

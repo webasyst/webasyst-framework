@@ -93,7 +93,7 @@ abstract class waDbAdapter
 
     abstract public function affected_rows();
 
-    abstract public function schema($table);
+    abstract public function schema($table, $keys = false);
     
     public function getIterator($result)
     {
@@ -106,4 +106,20 @@ abstract class waDbAdapter
 
     public function rollback() {}
 
+    public function createSchema($data)
+    {
+        foreach ($data as $table_id => $table) {
+            $this->createTable($table_id, $table);
+        }
+    }
+
+    public function createTable($table, $data)
+    {
+
+    }
+
+    public function createIndex($table, $name, $fields, $unique = false)
+    {
+
+    }
 }

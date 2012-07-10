@@ -28,10 +28,22 @@ class waContactSelectField extends waContactField
             if (!isset($this->options['options'][$id])) {
                 throw new Exception('Unknown id: '.$id);
             }
-            return $this->options['options'][$id];
+
+            if (empty($this->options['translate_options'])) {
+                return $this->options['options'][$id];
+            }
+            return _ws($this->options['options'][$id]);
         }
 
-        return $this->options['options'];
+        if (empty($this->options['translate_options'])) {
+            return $this->options['options'];
+        }
+
+        $options = $this->options['options'];
+        foreach($options as &$o) {
+            $o = _ws($o);
+        }
+        return $options;
     }
 
     public function getInfo() {

@@ -601,6 +601,13 @@ abstract class waContactField
         }
     }
 
+
+    public function getHTML($value = '', $attrs = '')
+    {
+        return '<input '.$attrs.' type="text" name="'.$this->id.'" value="'.htmlspecialchars($value).'">';
+    }
+
+
     public static function __set_state($state)
     {
          return new $state['_type']($state['id'], $state['name'], $state['options']);

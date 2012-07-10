@@ -29,6 +29,11 @@ abstract class waViewActions extends waController
     protected $view;
 
     /**
+     * @var waTheme
+     */
+    protected $theme;
+
+    /**
      * @var waSystem
      */
     protected $system;
@@ -111,8 +116,27 @@ abstract class waViewActions extends waController
     public function setTemplate($template)
     {
         $this->template = $template;
-    }    
-    
+    }
+
+    protected function setThemeTemplate($template)
+    {
+        $this->template = 'file:'.$template;
+        return $this->view->setThemeTemplate($this->getTheme(), $template);
+    }
+
+    /**
+     * Return current theme
+     *
+     * @return waTheme
+     */
+    public function getTheme()
+    {
+        if ($this->theme == null) {
+            $this->theme = new waTheme(waRequest::getTheme());
+        }
+        return $this->theme;
+    }
+
 
     public function display()
     {

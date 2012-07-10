@@ -928,3 +928,70 @@ msgstr "Оформление сайта настраивается <a href=\"{$w
 
 msgid "Image will be uploaded into"
 msgstr "Изображение будет загружено в"
+
+#: /wa-apps/site/templates/actions/settings/Settings.html:146
+msgid "Authorization"
+msgstr "Авторизация"
+
+#: /wa-apps/site/themes/default/error.html:7
+msgid "Error"
+msgstr "Ошибка"
+
+#: /wa-apps/site/js/site.themes.js:136
+msgid "rename_title"
+msgstr "rename_title"
+
+#: /wa-apps/site/js/site-jquery.min.js:49
+msgid "Cancel"
+msgstr "Отмена"
+
+#: /wa-apps/site/js/site.js:215
+msgid "Disable this URL"
+msgstr "Выключить этот адрес"
+
+#: /wa-apps/site/js/site.js:216
+msgid "disable"
+msgstr "выкл"
+
+#: /wa-apps/site/js/site.js:222
+msgid "Enable this URL"
+msgstr "Включить этот адрес"
+
+#: /wa-apps/site/js/site.js:223
+msgid "enable"
+msgstr "вкл"
+
+#: /wa-apps/site/themes/default/index.html:24
+msgid "Logout"
+msgstr "Выход"
+
+#: /wa-apps/site/themes/default/index.html:27
+msgid "Sign up"
+msgstr "Регистрация"
+
+#: /wa-apps/site/themes/default/index.html:28
+msgid "Login"
+msgstr "Вход"
+
+#: /wa-apps/site/themes/default/index.html:45
+msgid "Powered by Webasyst"
+msgstr "Работает на основе Webasyst"
+
+#: /wa-apps/site/themes/default/error.html:8
+msgid "The requested resource is not available."
+msgstr "Запрашиваемый ресурс недоступен."
+
+#: /wa-apps/site/templates/actions/settings/Settings.html:148
+msgid "Enable sign up and login forms for this site"
+msgstr "Включить формы регистрации и входа для этого сайта"
+
+#: /wa-apps/site/templates/actions/settings/Settings.html:152
+msgid "Select the app that will handle authorization forms:"
+msgstr "Выберите приложение, которое будет предоставлять формы регистрации и входа для этого сайта"
+
+#: /wa-apps/site/templates/actions/settings/Settings.html:164
+msgid "To enable authorization on this website, install and settle at least one app that supports authorization forms."
+msgstr "Чтобы включить возможность авторизации на сайте, необходимо установить и поселить на сайте хотя бы одно приложение, которое поддерживает формы регистрации и входа."
+
+msgid "Enable captcha for signup form"
+msgstr "Включить капчу для формы регистрации"

@@ -68,8 +68,11 @@ class waContactEmailStorage extends waContactStorage
             }
             $ext = (is_array($field) && isset($field['ext'])) ? $field['ext'] : '';
             if ($value) {
-                $data[] = $contact->getId().", '".$this->getModel()->escape($value)."', 
-                '".$this->getModel()->escape($ext)."' , ".(int)$sort.", '".$this->getModel()->escape($status)."'";
+                $data[$sort] = array(
+                    'email' => $value,
+                    'ext' => $ext,
+                    'status' => $status
+                );
             } else {
                 $sql = "DELETE FROM ".$this->getModel()->getTableName()." 
                         WHERE contact_id = i:id AND sort = i:sort";
@@ -84,10 +87,27 @@ class waContactEmailStorage extends waContactStorage
                 $this->getModel()->exec($sql, array('id' => $contact->getId(), 'sort' => $sort));            
         } 
         if ($data) {
-            $sql = "INSERT INTO ".$this->getModel()->getTableName()." (contact_id, email, ext, sort, status) 
-                    VALUES (".implode("), (", $data).") 
-                    ON DUPLICATE KEY UPDATE email = VALUES(email), ext = VALUES(ext), sort = VALUES(sort), status = VALUES(status)";
-            return $this->getModel()->exec($sql);
+            // find records to update
+            $rows = $this->getModel()->getByField(array(
+                'contact_id' => $contact->getId(),
+                'sort' => array_keys($data)
+            ), true);
+            foreach ($rows as $row) {
+                $this->getModel()->updateById($row['id'], $data[$row['sort']]);
+                unset($data[$row['sort']]);
+            }
+            foreach ($data as $k => $row) {
+                $data[$k] = $contact->getId().
+                    ", '".$this->getModel()->escape($row['email'])."', '".
+                    $this->getModel()->escape($row['ext'])."', ".(int)$k.", '".
+                    $this->getModel()->escape($row['status'])."'";
+            }
+            if ($data) {
+                // insert new records
+                $sql = "INSERT INTO ".$this->getModel()->getTableName()." (contact_id, email, ext, sort, status)
+                        VALUES (".implode("), (", $data).")";
+                return $this->getModel()->exec($sql);
+            }
         }
         return true;
     }

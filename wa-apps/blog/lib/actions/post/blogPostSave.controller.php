@@ -55,6 +55,21 @@ class blogPostSaveController extends waJsonController
 
         $this->inline = waRequest::post('inline', false);
 
+        if (!is_null($post['datetime'])) {
+
+            $post['datetime'] = (array) $post['datetime'];
+
+            if (count($post['datetime']) == 3) {
+                $post['datetime'][1] = (int) $post['datetime'][1];
+                $post['datetime'][2] = (int) $post['datetime'][2];
+                $date_time = $post['datetime'][0] . ' ' . $post['datetime'][1] . ':' . $post['datetime'][2];
+            } else {
+                $date_time = implode(' ', $post['datetime']);
+            }
+
+            $post['datetime'] = $date_time;
+        }
+
         if (waRequest::post('draft'))
         {
             $post['status'] = blogPostModel::STATUS_DRAFT;
@@ -62,8 +77,13 @@ class blogPostSaveController extends waJsonController
         }
         else if (waRequest::post('deadline'))
         {
-            $post['status'] = blogPostModel::STATUS_DEADLINE;
-            $this->operation = self::OPERATION_SET_DEADLINE;
+            if ($post['datetime']) {
+                $post['status'] = blogPostModel::STATUS_DEADLINE;
+                $this->operation = self::OPERATION_SET_DEADLINE;
+            } else {
+                $post['status'] = blogPostModel::STATUS_DRAFT;
+                $this->operation = self::OPERATION_SAVE_DRAFT;
+            }
         }
         else if (waRequest::post('scheduled'))
         {
@@ -99,21 +119,6 @@ class blogPostSaveController extends waJsonController
             }
         }
 
-        if (!is_null($post['datetime'])) {
-
-            $post['datetime'] = (array) $post['datetime'];
-
-            if (count($post['datetime']) == 3) {
-                $post['datetime'][1] = (int) $post['datetime'][1];
-                $post['datetime'][2] = (int) $post['datetime'][2];
-                $date_time = $post['datetime'][0] . ' ' . $post['datetime'][1] . ':' . $post['datetime'][2];
-            } else {
-                $date_time = implode(' ', $post['datetime']);
-            }
-
-            $post['datetime'] = $date_time;
-
-        }
         $blog_model = new blogBlogModel();
         $blog = $blog_model->getById($post['blog_id']);
         $post['blog_status'] = $blog['status'];

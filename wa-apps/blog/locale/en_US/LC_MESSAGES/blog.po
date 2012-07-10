@@ -863,3 +863,31 @@ msgstr ""
 msgid "Confirm the blog for publishing this post"
 msgstr ""
 
+#: /wa-apps/blog/templates/actions/settings/Settings.html:106
+msgid "Only registered users can add comments"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/settings/Settings.html:107
+msgid "If enabled, all commentators will be authorized and synced with the Contacts app"
+msgstr ""
+
+#: /wa-apps/blog/lib/config/site.php:94
+msgid "Returns post info by <em>post_id</em> as an array with the following structure: (<em>\"id\"</em>, <em>\"contact_id\"</em>, <em>\"contact_name\"</em>, <em>\"datetime\"</em>, <em>\"title\"</em>, <em>\"text\"</em>, <em>\"status\"</em>, <em>\"url\"</em>, <em>\"blog_id\"</em>, <em>\"comments_allowed\"</em>, <em>\"user\"</em>, <em>\"comment_count\"</em>, <em>\"comment_new_count\"</em>, <em>\"plugins\"</em>, <em>\"icon\"</em>, <em>\"color\"</em>, <em>\"blog_status\"</em>, <em>\"blog_url\"</em>, <em>\"blog_name\"</em>, <em>\"link\"</em>)"
+msgstr ""
+
+#: /wa-apps/blog/themes/default/comments.html:84
+msgid "To add a comment please <a href=\"%s\">sign up</a> or <a href=\"%s\">login</a>"
+msgstr ""
+
+#: /wa-apps/blog/themes/default/index.html:40
+msgid "Logout"
+msgstr ""
+
+#: /wa-apps/blog/themes/default/signup.html:6
+msgid "Thank you!"
+msgstr ""
+
+#: /wa-apps/blog/themes/default/signup.html:7
+msgid "You have successfully signed up."
+msgstr ""
+

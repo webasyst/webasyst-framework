@@ -13,7 +13,11 @@ class waPageAction extends waViewAction
             if ($page && in_array($page['id'], waRequest::param('_exclude', array()))) {
                 $page = array();
             }
-
+            foreach ($page as $k => $v) {
+                if ($k != 'content') {
+                    $page[$k] = htmlspecialchars($v);
+                }
+            }
         }
         if (!$page) {
             $this->getResponse()->setStatus(404);

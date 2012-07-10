@@ -12,7 +12,7 @@
  * @package wa-system
  * @subpackage database
  */
-class waDbSQLite3Adapter extends waDbAdapter
+class waDbSqlite3Adapter extends waDbAdapter
 {
 
     const RESULT_ASSOC = SQLITE3_ASSOC;
@@ -31,7 +31,8 @@ class waDbSQLite3Adapter extends waDbAdapter
 
     public function query($query)
     {
-        return $this->handler->query($query);
+        //echo $query;
+        return @$this->handler->query($query);
     }
 
     public function close()
@@ -93,7 +94,7 @@ class waDbSQLite3Adapter extends waDbAdapter
         return $this->handler->lastErrorCode();
     }
 
-    public function schema($table)
+    public function schema($table, $keys = false)
     {
         $res = $this->handler->query("SELECT * FROM sqlite_master WHERE name = '".$table."'");
         $row = $res->fetchArray();
@@ -107,6 +108,7 @@ class waDbSQLite3Adapter extends waDbAdapter
 
         $result = array();
         foreach ($fields as $f) {
+            if (strpos($f, 'PRIMARY KEY') !== false) break;
             $m = explode(" ", trim($f), 3);
             $field = array(
                 'type' => strtolower($m[1]),
@@ -126,4 +128,70 @@ class waDbSQLite3Adapter extends waDbAdapter
         }
         return $result;
     }
+
+    public function createTable($table, $data)
+    {
+        $fields = array();
+        foreach ($data as $field_id => $field) {
+            if (substr($field_id, 0, 1) != ':') {
+                if ($field['type'] == 'enum') {
+                    $vars = explode(', ', $field['params']);
+                    $n = 0;
+                    foreach ($vars as $v) {
+                        $l = strlen(trim($v)) - 2;
+                        if ($l > $n) {
+                            $n = $l;
+                        }
+                    }
+                    $type = 'string('.$n.')';
+                } else {
+                    $type = $field['type'].(!empty($field['params']) ? '('.$field['params'].')' : '');
+                }
+                if (isset($field['null']) && !$field['null']) {
+                    $type .= ' NOT NULL';
+                }
+                if (isset($field['default'])) {
+                    $type .= " DEFAULT '".$field['default']."'";
+                }
+                if (!empty($field['autoincrement'])) {
+                    $type = 'INTEGER PRIMARY KEY AUTOINCREMENT';
+                    unset($data[':keys']['PRIMARY']);
+                }
+                $fields[] = $field_id." ".$type;
+            }
+        }
+        $keys = array();
+        $indexes = array();
+        foreach ($data[':keys'] as $key_id => $key) {
+            if ($key_id == 'PRIMARY') {
+                $keys[] = "PRIMARY KEY (".implode(', ', $key['fields']).')';
+            } else {
+                $indexes[] = array(
+                    'table' => $table,
+                    'name' => $key_id,
+                    'fields' => $key['fields'],
+                    'unique' => isset($key['unique']) ? $key['unique'] : 0
+                );
+            }
+        }
+        $sql = "CREATE TABLE IF NOT EXISTS ".$table." (".implode(",\n", $fields);
+        if ($keys) {
+            $sql .= ", ".implode(",\n", $keys);
+        }
+        $sql .= ")";
+        $this->query($sql);
+
+
+        // create indexes
+        foreach ($indexes as $index) {
+            $this->createIndex($index['table'], $index['name'], $index['fields'], $index['unique']);
+        }
+    }
+
+    public function createIndex($table, $name, $fields, $unique = false)
+    {
+        $sql = "CREATE ".($unique ? 'UNIQUE ' : '')."INDEX IF NOT EXISTS ".$table.'_'.$name.' ON '.$table.'('.implode(', ', $fields).')';;
+        $this->query($sql);
+    }
+
 }

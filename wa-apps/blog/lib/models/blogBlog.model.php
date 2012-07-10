@@ -65,17 +65,35 @@ class blogBlogModel extends blogItemModel
             if (!isset($extend_options['link']) || $extend_options['link']) {
                 $item['link'] = blogBlog::getUrl($item, true);
             }
+
+
+            if (!empty($extend_options['escape'])) {
+                $item['name'] = htmlspecialchars($item['name'],ENT_QUOTES,'utf-8');
+                $item['link'] = htmlspecialchars($item['link'] ,ENT_QUOTES,'utf-8');
+            }
             unset($item);
         }
 
         if (isset($options['new']) && $options['new']) {
             $post_model = new blogPostModel();
-            $posts_update = $post_model->getAddedPostCount(blogHelper::getLastActivity());
+
+            $blog_activity = blogActivity::getInstance();
+            $posts_update = $post_model->getAddedPostCount(blogActivity::getUserActivity(),array_keys($items),true);
 
             if ($posts_update) {
-                foreach ($posts_update as $id => &$count) {
-                    if (isset($items[$id])) {
-                        $items[$id]['new_post'] = $count;
+                foreach ($posts_update as $blog_id => $new) {
+
+                    if (isset($items[$blog_id])) {
+                        $items[$blog_id]['new_post'] = 0;
+                        $post_ids = explode(':',$new);
+                        foreach($post_ids as $post_id) {
+                            if ($blog_activity->isNew("b.{$blog_id}",$post_id, isset($options['expire'])? $options['expire'] : null)) {
+                                ++$items[$blog_id]['new_post'];
+                            }
+                        }
+                        if (!$items[$blog_id]['new_post']) {
+                            unset($items[$blog_id]['new_post']);
+                        }
                     }
                 }
             }
@@ -190,18 +208,18 @@ class blogBlogModel extends blogItemModel
     public function recalculate($ids = array())
     {
         $sql = <<<SQL
-		UPDATE {$this->table} AS t
+		UPDATE {$this->table}
 		SET `qty` = (
 			SELECT COUNT(blog_post.id)
 			FROM blog_post
 			WHERE
-				blog_post.blog_id = t.id
+				blog_post.blog_id = {$this->table}.id
 				AND
 				blog_post.status = s:status
 		)
 SQL;
         if ($ids) {
-            $sql .= "WHERE t.id IN (:ids)";
+            $sql .= "WHERE {$this->table}.id IN (:ids)";
         }
         $this->query($sql,array('status'=>blogPostModel::STATUS_PUBLISHED,'ids'=>(array)$ids));
     }

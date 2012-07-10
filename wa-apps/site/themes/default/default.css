@@ -80,7 +80,7 @@ i.icon16 { background-repeat:no-repeat; height:16px; width:16px; display:inline-
 ul.menu-v { margin: 0 0 20px -6px; padding: 0; }
 ul.menu-v li { list-style: none; padding: 0; margin: 3px 0 8px; line-height: 1.1em; }
 ul.menu-v li a { padding: 5px 6px; display: block;}
-ul.menu-v li ul { padding-left: 15px; margin-bottom: 5px; }
+ul.menu-v li ul .wa-form .wa-field 
 ul.menu-v li ul li { margin: 1px 0 2px; }
 ul.menu-v li.selected a { color: #000; text-decoration: none; background: #eee; }
 ul.menu-v li.selected ul li a { background: inherit; color: #03c; text-decoration: underline; }
@@ -88,6 +88,7 @@ ul.menu-v li.selected ul li a { background: inherit; color: #03c; text-decoratio
 ul.menu-h { margin-left: -5px; padding: 0; }
 ul.menu-h li { list-style: none; float: left; padding: 0 10px 0 0; }
 ul.menu-h li a { display: block; padding: 0px 5px; }
+ul.menu-h li a img.icon16 { position: relative; top: 3px; left: -3px; }
 ul.menu-h li.selected a { color: #000; text-decoration: none; background: #eee; }
 ul.menu-h li.selected ul * { background: #fff !important; }
 
@@ -128,6 +129,28 @@ ul.menu-h li.selected ul * { background: #fff !important; }
 #footer #copyright { float: left; padding: 0 5px; }
 #footer #poweredby {  text-align: center; float: right; padding-top: 0; padding-right:10px; }
 #footer #poweredby a.dots { font-size: 0.8em; text-decoration: none; display: block; width: 54px; height: 9px; background: url("http://www.webasyst.com/wa-content/img/dots/all-dots-default-order.png") no-repeat 0 3px; padding-top: 7px; }
+
+/* Sign up & Login forms
+------------------------ */
+
+.wa-auth-adapters ul { padding: 0; min-height: 16px; }
+.wa-auth-adapters ul li { list-style: none; float: left; padding: 0 15px 0 0; }
+.wa-auth-adapters ul li a { display: block; padding: 0px 5px; }
+.wa-auth-adapters ul li a img { position: relative; top: 3px; left: -3px; }
+.wa-auth-adapters p { clear: left; color: #888; font-size: 0.9em; width: 40%; }
+
+.wa-form { float: left; margin: 10px 0; overflow: visible; }
+.wa-form .wa-field { clear: left; margin: 0; padding-top: 3px; }
+.wa-form .wa-field .wa-name { float: left; width: 155px; padding-top: 0.05em; padding-bottom: 10px; font-size: 0.95em; }
+.wa-form .wa-field.wa-separator { height: 10px; }
+.wa-form .wa-field .wa-value { margin-left: 180px; margin-bottom: 5px; position: relative; }
+.wa-form .wa-field .wa-value input.wa-error { border: 2px solid red; }
+.wa-form .wa-field .wa-value .wa-error-msg { font-size: 0.9em; color: red; display: block; }
+.wa-form .wa-field .wa-value input[type="text"],
+.wa-form .wa-field .wa-value input[type="email"],
+.wa-form .wa-field .wa-value input[type="password"] { width: 30%; min-width: 200px;  margin:0;}
+.wa-form .wa-field .wa-value textarea { min-width: 300px; height: 70px; }
+.wa-form .wa-field .wa-value.wa-submit { margin-top: 10px; }
 
 /* Site app specific
 -------------------- */

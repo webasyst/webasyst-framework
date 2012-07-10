@@ -48,10 +48,10 @@
 .b-number-of-posts { color: gray; padding-left: 30px; padding-top: 15px; font-style: italic; }
 .b-torn-paper { /* overflow: hidden; */ padding: 0 !important; height: 21px; margin-bottom: -21px; box-shadow:none; -moz-box-shadow: none; -webkit-box-shadow: none; border: none;  }
 .b-torn-paper >div { min-width: 760px; position: relative;}
-.b-torn-left, .b-torn, .b-torn-right { position: absolute; top:0; height: 21px;}  
-.b-torn { background: url("../img/paper-torn.png") repeat-x; left:32px; right: 30px; z-index: 1;} 
+.b-torn-left, .b-torn, .b-torn-right { position: absolute; top:0; height: 21px;}
+.b-torn { background: url("../img/paper-torn.png") repeat-x; left:32px; right: 30px; z-index: 1;}
 .b-torn-left { background: url("../img/paper-torn-left.png") no-repeat; left:-1px; width:33px }
-.b-torn-right { background: url("../img/paper-torn-right.png")  no-repeat; right: -1px; width:33px ;} 
+.b-torn-right { background: url("../img/paper-torn-right.png")  no-repeat; right: -1px; width:33px ;}
 
 .b-aux-link { padding-top: 7px; font-size: 0.9em; }
 .b-aux-link i.icon16 { margin: 0.1em 0 0 0; }
@@ -90,8 +90,8 @@ i.b-post-save-indicator { margin-top: 8px; }
 .b-comments ul.menu-v li { padding-top: 15px; }
 .b-comments ul.menu-v li span.hint a { color: #aaa; text-decoration: underline; }
 .b-comments ul.menu-v li a { display: inline; }
-.b-comments ul.menu-v li a.b-comment-reply { color: #999; } 
-.b-comments ul.menu-v li a.b-comment-reply:hover { color: red; } 
+.b-comments ul.menu-v li a.b-comment-reply { color: #999; }
+.b-comments ul.menu-v li a.b-comment-reply:hover { color: red; }
 .b-comments ul.menu-v li a.b-comment-delete { margin: 0 0 0 5px; padding: 0; color: #d99; text-decoration: underline; }
 .b-comments ul.menu-v li a.b-comment-delete:hover { background: red; color: white; }
 .b-comments ul.menu-v li p { margin: 0.5em 0; }

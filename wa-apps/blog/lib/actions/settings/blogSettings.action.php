@@ -69,6 +69,12 @@ class blogSettingsAction extends waViewAction
 					'validate' => array('vAvailable', array('0', '1')),
 					'type' => waRequest::TYPE_INT,
         ),
+			'require_authorization' => array(
+					'default' => '0',
+					'post_default' => '0',
+					'validate' => array('vAvailable', array('0', '1')),
+					'type' => waRequest::TYPE_INT,
+        ),
 			'rss_posts_number' => array(
 					'default' => '10',
 					'type' => waRequest::TYPE_INT,

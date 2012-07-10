@@ -104,6 +104,7 @@ $.wa.site = {
 	pagesAction: function (params) {
 		var p = this.parseParams(params);
 		$("#s-content").load('?module=pages', params + '&domain_id=' + this.domain, function () {
+            $(".s-scrollable-part").scrollTop(0);
 			// set active link in sidebar
 			$.wa.site.active($("#page-" + p.id));
 			$("#s-save-panel .s-bottom-fixed-bar-content-offset").addClass('s-page-editor');			
@@ -317,6 +318,7 @@ $.wa.site = {
 			loadFiles();
 		} else {
 			$("#s-content").load('?module=files', 'domain_id=' + this.domain, function () {
+                $(".s-scrollable-part").scrollTop(0);
 				$("#s-files-tree i.overhanging").click(function () {
 					var i = $(this);
 					if (i.hasClass('rarr')) {
@@ -480,6 +482,7 @@ $.wa.site = {
 	
 	snippetsAction: function (params) {
 		$("#s-content").load('?module=snippets', params, function () {
+            $(".s-scrollable-part").scrollTop(0);
 			$.wa.site.initEditor('content', 'app=');
 			$.wa.site.active($("#s-link-snippets"));
 		});
@@ -492,6 +495,7 @@ $.wa.site = {
 	themesAction: function (params) {
 		this.savePanel(false);
 		$("#s-content").load('?module=themes',params, function () {
+            $(".s-scrollable-part").scrollTop(0);
 			$.wa.site.active($("#s-link-themes"));
 		});
 	},
@@ -499,6 +503,7 @@ $.wa.site = {
 	designAction: function (params) {
 		var p = this.parseParams(params);
 		$("#s-content").load('?module=design', params + '&domain_id=' + this.domain, function () {
+            $(".s-scrollable-part").scrollTop(0);
 			$.wa.site.initEditor('content', true);
 			$.wa.site.active($("#design-" + p.route));
 			$("ul.s-theme li.selected").removeClass('selected');

@@ -41,7 +41,7 @@ class waSessionStorage extends waStorage
             session_name($this->options['session_name']);
         }
 
-        if (!(boolean)ini_get('session.use_cookies') && $session_id = $this->options['session_id'])    {
+        if (!(bool)ini_get('session.use_cookies') && $session_id = $this->options['session_id'])    {
             session_id($session_id);
         }
 
@@ -56,15 +56,19 @@ class waSessionStorage extends waStorage
             session_cache_limiter($this->options['session_cache_limiter']);
         }
 
-        if ($this->options['auto_start'] && !self::$started) {
-            $this->open();
+        if ($this->options['auto_start']) {
+            if (isset($_COOKIE[session_name()])) {
+                $this->open();
+            }
         }
     }
 
     public function open()
     {
-        @session_start();
-        self::$started = true;
+        if (!self::$started) {
+            session_start();
+            self::$started = true;
+        }
     }
 
     public function get($key)
@@ -147,6 +151,6 @@ class waSessionStorage extends waStorage
 
     public function __destruct()
     {
-         $this->close();
+         //$this->close();
     }
 }

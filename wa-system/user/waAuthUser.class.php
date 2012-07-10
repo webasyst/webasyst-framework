@@ -18,7 +18,7 @@ class waAuthUser extends waUser
      * @var waStorage
      */
     protected $storage;
-    protected $auth = null;
+    protected $auth = false;
         
     public function __construct($id = null, $options = array())
     {
@@ -32,31 +32,28 @@ class waAuthUser extends waUser
     public function init()
     {
         parent::init();
-        if (waSystem::getInstance()->getEnv() != 'frontend' || waRequest::param('session', true)) {
-            $this->storage = waSystem::getInstance()->getStorage();
-            if (!isset(self::$options['session_timeout'])) {
-                self::$options['session_timeout'] = 1800;
-            }
 
-            if (ini_get('session.gc_maxlifetime') < self::$options['session_timeout']) {
-                ini_set('session.gc_maxlifetime', self::$options['session_timeout']);
-            }
+        $this->storage = waSystem::getInstance()->getStorage();
+        if (!isset(self::$options['session_timeout'])) {
+            self::$options['session_timeout'] = 1800;
+        }
 
-            $auth = waSystem::getInstance()->getAuth();
-            $info = $auth->isAuth();
-            if (!$info && !waRequest::post('wa_auth_login') && (wa()->getEnv() == 'backend')) {
-                $info = $auth->auth();
+        if (ini_get('session.gc_maxlifetime') < self::$options['session_timeout']) {
+            ini_set('session.gc_maxlifetime', self::$options['session_timeout']);
+        }
+
+        $auth = waSystem::getInstance()->getAuth();
+        $info = $auth->isAuth();
+        if ($info && isset($info['id']) && $info['id']) {
+            $this->auth = true;
+            $this->id = $info['id'];
+            // update last_datetime for contact
+            if (!waRequest::request('background_process')) {
+                $this->updateLastTime();
             }
-            if ($info && isset($info['id']) && (waSystem::getInstance()->getEnv() == 'frontend' || !empty($info['is_user']))) {
-                $this->auth = true;
-                $this->id = $info['id'];
-                if (!waRequest::request('background_process')) {
-                    $this->updateLastTime();
-                }
-                // check CSRF cookie
-                if (!waRequest::cookie('_csrf')) {
-                    waSystem::getInstance()->getResponse()->setCookie('_csrf', uniqid('', true));
-                }
+            // check CSRF cookie
+            if (!waRequest::cookie('_csrf')) {
+                waSystem::getInstance()->getResponse()->setCookie('_csrf', uniqid('', true));
             }
         }
     }
@@ -149,45 +146,6 @@ class waAuthUser extends waUser
     public function isAuth()
     {
         return (bool)$this->auth;
-    }
-    
-    public function checkChangePassword()
-    {
-        $change_password = $this->getSettings('webasyst', 'change_password');
-        if ($change_password) {
-            $a = explode('|', $change_password);
-            $change_password = array();
-            foreach ($a as $part) {
-                /**
-                 * @var $part string
-                 */
-                if (strpos($part, ':') === false) {
-                    $change_password[$part] = true;
-                } else {
-                    $part = explode(':', $part, 2);
-                    $change_password[$part[0]] = $part[1];
-                }
-            }
-            
-            if (isset($change_password['next']) && $change_password['next']) {
-                return true;
-            }
-            
-            if (isset($change_password['date']) && $change_password['date'] <= date("Y-m-d")) {
-                return true;
-            }
-            
-            if (isset($change_password['auth']) && $change_password['auto']) {
-                $last_change_password = $this->getSettings('webasyst', 'last_change_password');
-                switch ($change_password['auto']) {
-                    case 'day':
-                        return time() - strtotime($last_change_password) > 24 * 3600;
-                    case 'week':
-                        
-                }
-            }
-        }
-        return false;
     }
     
     public function logout()

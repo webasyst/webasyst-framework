@@ -107,4 +107,27 @@ abstract class waView
     {
 
     }
+
+    /**
+     * @param waTheme $theme
+     * @param string $template
+     * @return bool
+     */
+    public function setThemeTemplate($theme, $template)
+    {
+        $this->assign('wa_active_theme_path', $theme->getPath());
+        $file = $theme->getFile($template);
+        if (!empty($theme['parent_theme_id'])) {
+            if ($file['parent']) {
+                $theme = new waTheme($theme['parent_theme_id']);
+            } else {
+                $parent_theme = new waTheme($theme['parent_theme_id']);
+                $this->assign('wa_parent_theme_url', $parent_theme->getUrl());
+            }
+        }
+        $theme_path = $theme->getPath();
+        $this->assign('wa_theme_url', $theme->getUrl());
+        $this->setTemplateDir($theme_path);
+        return file_exists($theme_path.'/'.$template);
+    }
 }

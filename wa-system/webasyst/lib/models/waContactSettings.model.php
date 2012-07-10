@@ -46,11 +46,7 @@ class waContactSettingsModel extends waModel
             }
             return $this->exec($sql);
         } else {
-            $sql = "INSERT INTO ".$this->table."
-                    SET contact_id = i:contact_id, app_id = s:app_id,
-                    `name` = s:name, `value` = s:value
-                    ON DUPLICATE KEY UPDATE value = VALUES(value)";
-            return $this->exec($sql, array(
+            return $this->replace(array(
                 'contact_id' => $contact_id,
                 'app_id' => $app_id,
                 'name' => $name,

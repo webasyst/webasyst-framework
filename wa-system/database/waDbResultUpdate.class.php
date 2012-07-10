@@ -12,7 +12,7 @@
  * @package wa-system
  * @subpackage database
  */
-class waDbResultUpdate extends waDbResultInsert 
+class waDbResultUpdate extends waDbResultDelete
 {
 
 }

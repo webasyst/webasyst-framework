@@ -19,11 +19,8 @@ class siteDesignLayout extends waLayout
         $hash = $this->getThemeHash();
 
         $url = wa()->getRouting()->getUrlByRoute($routes[$route_id], $domain);
-        if (strpos($url, '?') === false) {
-            $url .= '?theme_hash='.$hash.'&set_force_theme=';
-        } else {
-            $url .= '&theme_hash='.$hash.'&set_force_theme=';
-        }
+        $url .= strpos($url, '?') === false ? '?' : '&';
+        $url .= 'theme_hash='.$hash.'&set_force_theme=';
 
         $this->view->assign('preview_url', $url);
 

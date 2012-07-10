@@ -88,10 +88,6 @@ class blogBackendCalendarAction extends waViewAction
             $week = (int) waDateTime::date("W", $post['datetime'], $timezone);
             $day = (int) waDateTime::date("w", $post['datetime'], $timezone);
 
-            if (empty($post['title'])) {
-                $post['title'] = _w("(empty title)");
-            }
-
             $days[$week][$day]["posts"][] = $post;
         }
 

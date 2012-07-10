@@ -22,7 +22,6 @@ class waImageGd extends waImage
             self::check();
         }
         parent::__construct($file);
-
         if (!is_resource($this->image)) {
             $this->image = $this->createGDImageResourse($this->file, $this->type);
         }
@@ -294,6 +293,7 @@ class waImageGd extends waImage
         imagealphablending($this->image, true);
 
         if ($watermark instanceof waImage) {
+
             $width = $watermark->width;
             $height = $watermark->height;
             $offset = $this->calcWatermarkOffset($width, $height, $align);
@@ -398,12 +398,19 @@ function imagecopymerge_alpha($dst_im, $src_im, $dst_x, $dst_y, $src_x, $src_y, 
 {
     // creating a cut resource
     $cut = imagecreatetruecolor($src_w, $src_h);
+
+    $trans_color = imagecolorallocate($cut, 255, 255, 255);
+    imagecolortransparent($cut, $trans_color);
+    imagefill($cut, 0, 0, $trans_color);
+
     // copying relevant section from background to the cut resource
     imagecopy($cut, $dst_im, 0, 0, $dst_x, $dst_y, $src_w, $src_h);
     // copying relevant section from watermark to the cut resource
     imagecopy($cut, $src_im, 0, 0, $src_x, $src_y, $src_w, $src_h);
     // insert cut resource to destination image
     imagecopymerge($dst_im, $cut, $dst_x, $dst_y, 0, 0, $src_w, $src_h, $pct);
+
+    imagedestroy($cut);
 }
 
 function imagestring_rotate($dst_im, $font, $angle, $dst_x, $dst_y, $text, $r, $g, $b, $alpha)
@@ -424,4 +431,6 @@ function imagestring_rotate($dst_im, $font, $angle, $dst_x, $dst_y, $text, $r, $
 
     // copy images
     imagecopy($dst_im, $png, $dst_x, $dst_y, 0, 0, $height, $width);
+
+    imagedestroy($png);
 }

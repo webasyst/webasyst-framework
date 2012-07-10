@@ -90,11 +90,21 @@
 
           </div>
 
-          <div class="field"{if !$backend_settings['show_comments']} style="display:none;"{/if} id="settings-captcha-field">
+          <div class="field js-comments-field"{if !$backend_settings['show_comments']} style="display:none;"{/if} id="settings-captcha-field">
 
-            <div class="value b-ibutton-checkbox">
+            <div class="value">
               <input type="checkbox" name="request_captcha" id="settings-captcha-switcher" {if $backend_settings['request_captcha'] == '1'}checked="checked"{/if} value="1"></li>
               <label for="settings-captcha-switcher">[`Protect comment submit form with CAPTCHA`]</label>
+            </div>
+
+          </div>
+
+          <div class="field js-comments-field"{if !$backend_settings['show_comments']} style="display:none;"{/if} id="settings-authorization-field">
+
+            <div class="value">
+              <input type="checkbox" name="require_authorization" id="settings-authorization-switcher" {if $backend_settings['require_authorization'] == '1'}checked="checked"{/if} value="1"></li>
+              <label for="settings-authorization-switcher">[`Only registered users can add comments`]</label><br />
+              <span class="hint">[`If enabled, all commentators will be authorized and synced with the Contacts app`]</span>
             </div>
 
           </div>
@@ -187,11 +197,11 @@
         if (!this.checked) {
           $(onLabelSelector).addClass('b-unselected');
           $(offLabelSelector).removeClass('b-unselected');
-          $('#settings-captcha-field').hide(200);
+          $('.js-comments-field').hide(200);
         } else {
           $(onLabelSelector).removeClass('b-unselected');
           $(offLabelSelector).addClass('b-unselected');
-          $('#settings-captcha-field').show(200);
+          $('.js-comments-field').show(200);
         }
       }
     };

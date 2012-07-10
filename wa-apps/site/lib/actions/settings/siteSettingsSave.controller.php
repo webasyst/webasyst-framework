@@ -74,6 +74,45 @@ class siteSettingsSaveController extends waJsonController
         
         $this->saveFavicon();
         $this->saveRobots();
+
+        $this->saveAuthSettings();
+
+    }
+
+    protected function saveAuthSettings()
+    {
+        $auth_enabled = waRequest::post('auth_enabled');
+        $auth_app = waRequest::post('auth_app');
+        $domain = siteHelper::getDomain();
+        $config = wa()->getConfig()->getAuth();
+        if (!isset($config[$domain])) {
+            if (!$auth_enabled) {
+                return;
+            }
+            $config[$domain] = array();
+        }
+        if ($auth_enabled && $auth_app) {
+            $config[$domain]['auth'] = true;
+            $config[$domain]['app'] = $auth_app;
+            if (waRequest::post('auth_captcha')) {
+                $config[$domain]['signup_captcha'] = true;
+            } elseif (isset($config[$domain]['signup_captcha'])) {
+                unset($config[$domain]['signup_captcha']);
+            }
+        } else {
+            if (isset($config[$domain]['auth'])) {
+                unset($config[$domain]['auth']);
+            }
+            if (isset($config[$domain]['app'])) {
+                unset($config[$domain]['app']);
+            }
+            if (isset($config[$domain]['signup_captcha'])) {
+                unset($config[$domain]['signup_captcha']);
+            }
+        }
+        if (!$this->getConfig()->setAuth($config)) {
+            $this->errors = sprintf(_w('File could not be saved due to the insufficient file write permissions for the "%s" folder.'), 'wa-config/');
+        }
     }
     
     protected function saveFavicon()

@@ -39,7 +39,6 @@ class blogFrontController extends waFrontController
 
                         if ($title || count($blogs)>1) {
                             $main_page = true;
-                            $this->system->getResponse()->setTitle($title);
                         }
                     }
 
@@ -54,11 +53,9 @@ class blogFrontController extends waFrontController
                         if (!$main_page) {
                             $routing =  wa()->getRouting();
                             if ($params['blog_id'] != $routing->getRouteParam('blog_url_type') || isset($params['post_url'])) {
-                                $this->system->getResponse()->setTitle($blog['name']);
-                            } elseif($title) {
-                                $this->system->getResponse()->setTitle($title);
-                            } else {
-                                $this->system->getResponse()->setTitle($blog['name']);
+                                $title = $blog['name'];
+                            } elseif(!$title) {
+                                $title = $blog['name'];
                             }
                         }
                     } else {
@@ -67,6 +64,7 @@ class blogFrontController extends waFrontController
                 } else {
                     throw new waException(_w('Blog not found'), 404);
                 }
+                $this->system->getResponse()->setTitle(htmlentities($title,ENT_QUOTES,'utf-8'));
 
 
                 waRequest::setParam($params);

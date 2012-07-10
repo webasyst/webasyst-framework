@@ -84,7 +84,7 @@ class blogImportPluginLjTransport extends blogImportPluginTransport
                 $post['comments_allowed'] = !empty( $post_data['props']['opt_nocomments'] ) ? 0 : 1;
                 $post['title'] = trim((string)(is_object($property = $post_data['subject'])?$property->scalar:$property));
 
-                $post['title'] = $post['title']?self::translate_lj_user($post['title']) : _w('(empty title)' );
+                $post['title'] = $post['title']?self::translate_lj_user($post['title']) : '';
                 $post['title'] = strip_tags($post['title']);
 
                 $post['plugin']=array();

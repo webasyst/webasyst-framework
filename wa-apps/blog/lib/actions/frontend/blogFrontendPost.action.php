@@ -34,6 +34,7 @@ class blogFrontendPostAction extends blogViewAction
         $post_model = new blogPostModel();
         $show_comments = $this->appSettings('show_comments', true);
         $request_captcha = $show_comments && $this->appSettings('request_captcha', true);
+        $require_authorization = $show_comments && $this->appSettings('require_authorization', false);
         $available =  blogHelper::getAvailable();
 
         // it's preview
@@ -46,6 +47,7 @@ class blogFrontendPostAction extends blogViewAction
         ), array(
                 'comments' => $show_comments ? array(50,20) : false,
                 'params' => true,
+                'escape'=>true,
         ), array('blog'=>$available,)
         )->fetchSearchItem();
 
@@ -112,8 +114,6 @@ class blogFrontendPostAction extends blogViewAction
         }
         $this->getRequest()->setParam('blog_id',$post['blog_id']);
 
-        $current_user = wa()->getUser();
-
         if (isset($post['comments']) && !empty($post['comments'])) {
 
             $depth = 1000;
@@ -164,9 +164,7 @@ class blogFrontendPostAction extends blogViewAction
         $this->view->assign('form', $form);
         $this->view->assign('show_comments',$show_comments);
         $this->view->assign('request_captcha',$request_captcha);
-
-        $current_user['photo20'] = $this->getUser()->getPhoto(20);
-        $this->view->assign('current_user', $current_user);
+        $this->view->assign('require_authorization',$require_authorization);
 
         $this->view->assign('theme', waRequest::param('theme', 'default'));
 
@@ -181,18 +179,9 @@ class blogFrontendPostAction extends blogViewAction
             $current_auth_source = $_SESSION['auth_user_data']['source'];
         }
         $this->view->assign('current_auth_source', $current_auth_source);
-        $this->view->assign('current_auth', $current_auth);
+        $this->view->assign('current_auth', $current_auth,true);
 
-        $auth_adapters = wa()->getAuthAdapters();
-        $adapters = array();
-
-        foreach ($auth_adapters as $name => $adapter) {
-            $adapters[$name] = array (
-				'name' => $adapter->getName(),
-				'photo_url_20' => "{$app_url}img/{$name}.png",
-				'url' => $root_url.'oauth.php?provider='.$name,
-            );
-        }
+        $adapters = wa()->getAuthAdapters();
         $this->view->assign('auth_adapters', $adapters);
         $this->view->getHelper()->globals($this->getRequest()->param());
 
@@ -254,12 +243,5 @@ class blogFrontendPostAction extends blogViewAction
             return $rights >= blogRightConfig::RIGHT_READ_WRITE;
         }
         return false;
-        //     	if ($rights < blogRightConfig::RIGHT_FULL) {
-        //     		var_dump($author_id != $post['contact_id'], $blog['status'] != blogBlogModel::STATUS_PUBLIC);
-        //     		if ($author_id != $post['contact_id'] || $blog['status'] != blogBlogModel::STATUS_PUBLIC) {
-        //     			//restrict access
-        //     			return false;
-        //     		}
-        //     	}
     }
 }

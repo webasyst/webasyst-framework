@@ -19,21 +19,18 @@
 class waTheme implements ArrayAccess
 {
     /**
-     *
      * Original not modified theme
      * @var string
      */
-    const ORIGINAL         = 'original';
+    const ORIGINAL       = 'original';
 
     /**
-     *
      * User theme
      * @var string
      */
     const CUSTOM         = 'custom';
 
     /**
-     *
      * Overriden theme
      * @var string
      */
@@ -44,8 +41,8 @@ class waTheme implements ArrayAccess
      * Undefined theme type
      * @var string
      */
-    const NONE             = 'none';
-    const PATH             = 'theme.xml';
+    const NONE           = 'none';
+    const PATH           = 'theme.xml';
 
     protected $app;
     protected $id;
@@ -64,16 +61,22 @@ class waTheme implements ArrayAccess
      * @param bool|string $app
      * @param bool $force
      */
-    public function __construct($id, $app = true, $force = false)
+    public function __construct($id, $app_id = true, $force = false)
     {
+        if ($app_id === true && strpos($id, ':') !== false) {
+            list($app_id, $id) = explode(':', $id, 2);
+        }
         //TODO validate theme id
         $this->id = $id;
-        $this->app = ($app === true || !$app) ? wa()->getApp() : $app;
+        $this->app = ($app_id === true || !$app_id) ? wa()->getApp() : $app_id;
         $this->initPath($force);
     }
 
     public static function exists($id, $app_id = true)
     {
+        if ($app_id === true && strpos($id, ':') !== false) {
+            list($app_id, $id) = explode(':', $id, 2);
+        }
         $app_id = ($app_id === true || !$app_id) ? wa()->getApp() : $app_id;
 
         $theme_path = wa()->getDataPath('themes', true, $app_id).'/'.$id;
@@ -89,7 +92,7 @@ class waTheme implements ArrayAccess
         $this->extra_info = array();
         $this->url = null;
 
-        $this->path_custom     = wa()->getDataPath('themes', true, $this->app).'/'.$this->id;
+        $this->path_custom   = wa()->getDataPath('themes', true, $this->app).'/'.$this->id;
         $this->path_original = wa()->getAppPath('themes/', $this->app).$this->id;
 
         if (!file_exists($this->path_custom) || (!$force && !file_exists($this->path_custom.'/'.self::PATH))) {
@@ -120,12 +123,13 @@ class waTheme implements ArrayAccess
     {
         if(is_null($this->info)) {
             $path = $this->path.'/'.self::PATH;
-            $extension = pathinfo($path,PATHINFO_EXTENSION);
+            $extension = pathinfo($path, PATHINFO_EXTENSION);
             switch ($extension) {
                 case 'xml': {
                     $locale = self::getLocale();
 
-                    $this->info = array('name'=>array($locale=>$this->id),'files'=>array());
+                    $this->info = array('name'=>array($locale => $this->id),'files'=>array());
+                    $this->info = array('name'=>array($locale => $this->id),'files'=>array());
                     if(!$xml = $this->getXML()) {
                         trigger_error("Invalid theme description {$path}",E_USER_WARNING);
                         break;
@@ -139,7 +143,7 @@ class waTheme implements ArrayAccess
                         $this->info[$field] = (string)$value;
                     }
 
-                    $this->info['system'] = isset($this->info['system'])?(bool)$this->info['system'] : false;
+                    $this->info['system'] = isset($this->info['system'])? (bool)$this->info['system'] : false;
 
                     foreach ($ml_fields as $field) {
                         if ($xml->{$field}) {
@@ -154,6 +158,12 @@ class waTheme implements ArrayAccess
                         }
                     }
 
+                    if (!empty($this->info['parent_theme_id'])) {
+                        $parent_exists = self::exists($this->info['parent_theme_id'], $this->app);
+                    } else {
+                        $parent_exists = false;
+                    }
+
                     $this->info['files'] = array();
                     if ($files = $xml->files) {
                         foreach ($files->children() as $key=>$file) {
@@ -161,6 +171,10 @@ class waTheme implements ArrayAccess
                             $this->info['files'][$path] = array(
                                 'custom' => isset($file['custom']) ? (bool)$file['custom'] : false
                             );
+                            $this->info['files'][$path]['parent'] = isset($file['parent']) && (bool)$file['parent'] ? 1 : 0;
+                            if ($this->info['files'][$path]['parent']) {
+                                $this->info['files'][$path]['parent_exists'] = $parent_exists;
+                            }
                             foreach ($file->description as $value) {
                                 if ($value && ($locale = (string)$value['locale'])) {
                                     $this->info['files'][$path]['description'][$locale] = (string)$value;
@@ -655,7 +669,6 @@ XML;
     }
 
     /**
-     *
      * Hook for offsetSet('files')
      * @param array $file
      */
@@ -683,11 +696,16 @@ XML;
     }
 
     /**
-     * @param offset
+     * @param mixed $offset
+     * @return bool
      */
-    public function offsetExists ($offset)
+    public function offsetExists($offset)
     {
-        return method_exists($this, 'get'.ucfirst($offset))?true:$this->init($offset)?true:isset($this->extra_info[$offset]);
+        if (method_exists($this, 'get'.ucfirst($offset))) {
+            return true;
+        } else {
+            return $this->init($offset) ? true: isset($this->extra_info[$offset]);
+        }
     }
 
     /**
@@ -725,7 +743,8 @@ XML;
     }
 
     /**
-     * @param offset
+     * @param mixed $offset
+     * @return void
      */
     public function offsetUnset ($offset)
     {

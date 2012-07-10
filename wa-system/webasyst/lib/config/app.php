@@ -5,7 +5,7 @@ return array(
     'prefix' => 'webasyst',
     'icon' => 'img/webasyst.gif',
     'analytics' => true,
-    'version' => '1.0.8',
+    'version' => '1.0.9',
     'critical'=>'1.0.0',
     'vendor' => 'webasyst',
 );
