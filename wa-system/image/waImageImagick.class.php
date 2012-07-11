@@ -212,6 +212,9 @@ class waImageImagick extends waImage
         }
 
         $opacity = min(max($opacity, 0), 1);
+        /**
+         * @var waImage $watermark
+         */
         if ($watermark instanceof waImage) {
             $offset = $this->calcWatermarkOffset($watermark->width, $watermark->height, $align);
             $watermark = new Imagick($watermark->file);

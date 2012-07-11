@@ -158,7 +158,11 @@ class waSmarty3View extends waView
     
     public function getCacheId()
     {
-        $cache_id = isset($this->smarty->getParent()->tpl_vars['cache_id']) ? $this->smarty->getParent()->tpl_vars['cache_id'] : null;
+        if ($this->smarty->parent && $this->smarty->parent->getTemplateVars('cache_id')) {
+            $cache_id = $this->smarty->parent->getTemplateVars('cache_id');
+        } else {
+            $cache_id = null;
+        }
         if ($cache_id && isset($cache_id->value)) {
             $cache_id = $cache_id->value;
         }

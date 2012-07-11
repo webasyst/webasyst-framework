@@ -31,7 +31,7 @@
  * that get called when admin manages application access for contact or group. This allows application
  * to control whether given key => value pair to be stored by system or by application.
  */
-class waRightConfig
+abstract class waRightConfig
 {
     protected $app;
     protected $items = array();

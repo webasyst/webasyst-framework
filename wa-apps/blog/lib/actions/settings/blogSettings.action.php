@@ -215,7 +215,7 @@ class blogSettingsAction extends waViewAction
             }
             return $value ? implode(':',$value) : false;
         } else {
-            return (in_array($value, $available)) ? $value : $false;
+            return (in_array($value, $available)) ? $value : false;
         }
     }
 }

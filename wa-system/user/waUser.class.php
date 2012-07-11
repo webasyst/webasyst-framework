@@ -68,7 +68,7 @@ class waUser extends waContact
         return 'offline';
     }
 
-    public function getGroupIds($system = false)
+    public function getGroupIds()
     {
         $model = new waUserGroupsModel();
         $groups = $model->getGroupIds($this->id);

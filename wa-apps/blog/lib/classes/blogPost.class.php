@@ -92,6 +92,12 @@ class blogPost
         }
     }
 
+    /**
+     * @static
+     * @param Exception $ex
+     * @param $post
+     * @return string
+     */
     public static function handleTemplateException($ex, $post)
     {
 

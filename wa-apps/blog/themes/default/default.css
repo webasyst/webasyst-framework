@@ -74,6 +74,7 @@ hr { background-color: #ccc; height: 1px; border: 0; }
 
 i.icon16 { background-repeat:no-repeat; height:16px; width:16px; display:inline-block; text-indent:-9999px; text-decoration:none!important; }
 * i.icon16 { text-decoration:none!important; vertical-align:top; margin: 0.2em 0.25em 0 0; }
+.icon16.loading { background-image: url('/wa-content/img/loading16.gif'); }
 
 /* Menus
 -------- */

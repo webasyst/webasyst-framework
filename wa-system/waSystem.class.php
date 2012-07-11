@@ -340,7 +340,7 @@ class waSystem
             if (preg_match('/^sitemap-?([a-z0-9_]+)?.xml$/i', $this->config->getRequestUrl(true), $m)) {
                 $app_id = isset($m[1]) ? $m[1] : 'webasyst';
                 if ($this->appExists($app_id)) {
-                    $system = self::getInstance($app_id);
+                    self::getInstance($app_id);
                     $class = $app_id.'SitemapConfig';
                     if (class_exists($class)) {
                         /**
@@ -415,7 +415,7 @@ class waSystem
                     }
                     $app = waRequest::param('app');
                 } else {
-                    $webasyst_system = self::getInstance('webasyst');
+                    self::getInstance('webasyst');
                     $path = $this->getConfig()->getRequestUrl(true);
                     if (($i = strpos($path, '?')) !== false) {
                         $path = substr($path, 0, $i);
@@ -707,8 +707,13 @@ class waSystem
         }
     }
 
-
-    public function getFrontendApps($domain, $domain_name = false, $escape = false)
+    /**
+     * @param $domain
+     * @param string $domain_name
+     * @param bool $escape
+     * @return array
+     */
+    public function getFrontendApps($domain, $domain_name = null, $escape = false)
     {
         $routes = $this->getRouting()->getRoutes($domain);
         $path = waRouting::getDomainUrl($domain, false);
@@ -958,8 +963,8 @@ class waSystem
                 if ($name == $handler_event) {
                     // Remember active plugin locale name for _wp() to work
                     self::pushActivePlugin($plugin_id, wa($event_app_id)->getConfig()->getPrefix());
+                    $class_name = $event_app_id.ucfirst($plugin_id).'Plugin';
                     try {
-                        $class_name = $event_app_id.ucfirst($plugin_id).'Plugin';
                         $class = new $class_name($plugin);
                         // Load plugin locale if it exists
                         $locale_path = $this->getAppPath('plugins/'.$plugin_id.'/locale', $event_app_id);
@@ -991,12 +996,12 @@ class waSystem
         }
 
         $theme_paths = array(
-            'original'    => $this->getAppPath('themes',$app_id),
-            'custom'    => $this->getDataPath('themes',true,$app_id,false),
+            'original' => $this->getAppPath('themes', $app_id),
+            'custom'   => $this->getDataPath('themes', true, $app_id, false),
         );
 
         $theme_ids = array();
-        foreach( $theme_paths as $type => $path) {
+        foreach ($theme_paths as $path) {
             if (file_exists($path) && is_dir($path) && ($dir = opendir($path))) {
                 while ($current = readdir($dir)) {
                     if ($current !== '.' && $current !== '..' && is_dir($path.'/'.$current)) {

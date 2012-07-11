@@ -84,7 +84,6 @@ class waPageEditAction extends waViewAction
         );
 
         if ($this->id) {
-            $page_model = $this->getPageModel();
             $params = $this->getPageModel()->getParams($this->id);
         }
 

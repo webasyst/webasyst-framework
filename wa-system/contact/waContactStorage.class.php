@@ -94,7 +94,7 @@ abstract class waContactStorage
     
     /**
      * Delete all data for specified fields.
-     * @param array $fields list of fields to remove
+     * @param string|array $fields list of fields to remove
      * @param string $type company|person|both (defaults to both)
      */
     abstract public function deleteAll($fields, $type=null);

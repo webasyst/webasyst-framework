@@ -103,7 +103,7 @@ abstract class waViewController extends waController
             // Send headers
             waSystem::getInstance()->getResponse()->sendHeaders();
             // Print all blocks
-            foreach ($this->blocks as $name => $content) {
+            foreach ($this->blocks as $content) {
                 echo $content;
             }
         }

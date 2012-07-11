@@ -237,7 +237,7 @@ class waRouting
     protected function dispatchRoutes($routes, $url)
     {
         $result = null;
-        foreach ($routes as $r_id => $r) {
+        foreach ($routes as $r) {
             if ($this->route && isset($this->route['module']) &&
                (!isset($r['module']) || $r['module'] != $this->route['module'])) {
                 continue;
@@ -305,7 +305,6 @@ class waRouting
     public function getUrl($path, $params = array(), $absolute = false)
     {
         if (is_bool($params)) {
-            $all = $absolute;
             $absolute = $params;
             $params = array();
         }
@@ -350,7 +349,6 @@ class waRouting
         }
         $max = -1;
         $result = null;
-        $pattern = '/<([a-z_]+):?([^>]*)?>/ui';
         
         foreach ($routes as $domain => $domain_routes) {
             foreach ($domain_routes as $r) {

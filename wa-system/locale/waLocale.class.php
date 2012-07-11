@@ -289,7 +289,7 @@ class waLocale
         $t = $t['translit_table'];
 
         if (is_array($value)) {
-            foreach($value as $k => &$v) {
+            foreach($value as &$v) {
                 $v = self::transliterate($v, $locale);
             }
             return $value;

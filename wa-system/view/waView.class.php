@@ -108,6 +108,11 @@ abstract class waView
 
     }
 
+    public function setTemplateDir($path)
+    {
+
+    }
+
     /**
      * @param waTheme $theme
      * @param string $template

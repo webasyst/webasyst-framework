@@ -166,7 +166,7 @@ class waTheme implements ArrayAccess
 
                     $this->info['files'] = array();
                     if ($files = $xml->files) {
-                        foreach ($files->children() as $key=>$file) {
+                        foreach ($files->children() as $file) {
                             $path = (string)$file['path'];
                             $this->info['files'][$path] = array(
                                 'custom' => isset($file['custom']) ? (bool)$file['custom'] : false

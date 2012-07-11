@@ -16,7 +16,7 @@ abstract class waAuthAdapter
 
     public function getOption($name, $default = null)
     {
-        return isset($this->options[$name]) ? $this->options[$name] : null;
+        return isset($this->options[$name]) ? $this->options[$name] : $default;
     }
 
     abstract public function auth();

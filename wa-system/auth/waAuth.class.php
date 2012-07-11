@@ -167,7 +167,6 @@ class waAuth implements waiAuth
             // try auth by cookie
             return $this->_authByCookie();
         }
-        return false;
     }
 
 

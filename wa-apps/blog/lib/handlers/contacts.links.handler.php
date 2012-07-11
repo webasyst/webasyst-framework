@@ -2,9 +2,8 @@
 class blogContactsLinksHandler extends waEventHandler
 {
     /**
-     * @param int $params Deleted contact_id
-     * (non-PHPdoc)
-     * @see waEventHandler::execute()
+     * @param array $params deleted contact_id
+     * @return array|void
      */
     public function execute($params)
     {

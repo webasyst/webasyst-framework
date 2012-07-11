@@ -129,27 +129,28 @@ SQL;
     public function getCount($blog_id, $post_id = null, $datetime = null, $expire = null, $post_contact_id = null, $status = self::STATUS_PUBLISHED)
     {
         $where = array();
+        $join = array();
         if ($datetime) {
-            $where[] = "datetime > '{$this->escape($datetime)}'";
+            $where[] = "{$this->table}.datetime > '{$this->escape($datetime)}'";
             if ($contact_id = wa()->getUser()->getId()) {
-                $where[] = "contact_id != ".intval($contact_id);
+                $where[] = "{$this->table}.contact_id != ".intval($contact_id);
             }
         }
         if ($post_contact_id = max(0,intval($post_contact_id))) {
             $post_model = new blogPostModel();
             $post_table = $post_model->getTableName();
             $post_table_id = $post_model->getTableId();
-            $sql .=" INNER JOIN {$post_table} ON {$post_table}.{$post_table_id} = {$this->table}.post_id";
+            $join[] =" INNER JOIN {$post_table} ON {$post_table}.{$post_table_id} = {$this->table}.post_id";
             $where[] = "{$post_table}.contact_id = {$post_contact_id}";
         }
         if ($status) {
-            $where[] = $this->getWhereByField('status', $status);
+            $where[] = $this->getWhereByField('status', $status, true);
         }
         if ($post_id) {
-            $where[] = $this->getWhereByField('post_id', $post_id);
+            $where[] = $this->getWhereByField('post_id', $post_id, true);
         }
         if ($blog_id !== null) {
-            $where[] = $this->getWhereByField('blog_id',$blog_id);
+            $where[] = $this->getWhereByField('blog_id',$blog_id, true);
         }
 
         if($datetime) {
@@ -159,7 +160,8 @@ SQL;
             } else {
                 $count = 0;
             }
-            if($comments = $this->select("{$this->id}, post_id")->where('('.implode(') AND (',$where).')')->fetchAll($this->id, true)) {
+            $sql = "SELECT {$this->table}.{$this->id} AS {$this->id}, post_id FROM {$this->table} ".implode('',$join)." WHERE (".implode(') AND (',$where).")";
+            if($comments = $this->query($sql)->fetchAll($this->id, true)) {
                 $blog_activity = blogActivity::getInstance();
                 foreach ($comments as $id => $comment_post_id) {
                     if($blog_activity->isNew("c.{$comment_post_id}", $id, $expire)) {
@@ -173,10 +175,11 @@ SQL;
                 $viewed_comments = array();
             }
         } elseif ($post_id && is_array($post_id)) {
-            $sql = "SELECT post_id, COUNT(*) FROM {$this->table} WHERE (".implode(') AND (',$where).") GROUP BY post_id";
+            $sql = "SELECT post_id, COUNT(*) FROM {$this->table} ".implode('',$join)." WHERE (".implode(') AND (',$where).") GROUP BY post_id";
             $count = $this->query($sql)->fetchAll('post_id',true);
         } else {
-            $count = $this->select("COUNT(*)")->where('('.implode(') AND (',$where).')')->fetchField();
+            $sql = "SELECT COUNT(*) FROM {$this->table} ".implode('',$join)." WHERE (".implode(') AND (',$where).")";
+            $count = $this->query($sql)->fetchField();
         }
         return $count;
     }

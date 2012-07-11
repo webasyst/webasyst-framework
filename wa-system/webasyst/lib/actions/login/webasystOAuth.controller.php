@@ -6,6 +6,6 @@ class webasystOAuthController extends waOAuthController
     {
         parent::afterAuth($data);
         // display oauth template
-        $this->executeAction(new webasysOAuthAction());
+        $this->executeAction(new webasystOAuthAction());
     }
 }

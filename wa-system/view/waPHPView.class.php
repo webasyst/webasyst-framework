@@ -74,4 +74,10 @@ class waPHPView extends waView
         return file_exists($this->template_dir.'/'.$template);
     }
 
+    public function setTemplateDir($path)
+    {
+        $this->template_dir = $path;
+    }
+
+
 }

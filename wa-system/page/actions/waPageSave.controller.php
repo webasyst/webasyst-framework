@@ -43,7 +43,7 @@ class waPageSaveController extends waPageJsonController
         $url = null;
         $routes = wa()->getRouting()->getByApp($this->getAppId());
         foreach ($routes as $domain => $domain_routes) {
-            foreach ($domain_routes as $r_id => $r) {
+            foreach ($domain_routes as $r) {
                 if (!isset($r['_exclude']) || !in_array($this->id, $r['_exclude'])) {
                     $url = waRouting::getUrlByRoute($r, $domain).$data['url'];
                     break;

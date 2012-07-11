@@ -61,7 +61,10 @@ class blogPostImageController extends waJsonController
         $this->errors = implode(" \r\n", $this->errors);
     }
 
-
+    /**
+     * @param waRequestFile $f
+     * @return bool
+     */
     protected function processFile($f)
     {
         if ($f->uploaded()) {

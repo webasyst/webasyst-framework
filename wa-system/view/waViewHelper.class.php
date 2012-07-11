@@ -457,6 +457,9 @@ class waViewHelper
         $html = '<div class="wa-form"><form action="" method="post">';
         foreach ($fields as $field_id => $f) {
             if ($f) {
+                /**
+                 * @var waContactField $f
+                 */
                 if (isset($errors[$field_id])) {
                     $field_error = is_array($errors[$field_id]) ? implode(', ', $errors[$field_id]): $errors[$field_id];
                 } else {

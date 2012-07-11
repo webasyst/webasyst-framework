@@ -38,6 +38,7 @@ class waRequest
                 foreach ($val as &$v) {
                     $v = self::cast($v, self::TYPE_INT);
                 }
+                reset($val);
                 return $val;
             case self::TYPE_STRING:
             default:
@@ -126,7 +127,7 @@ class waRequest
             'ipad' => 'ipad',
             'galaxy-tab' => 'android.*?GT\-P'
         );
-        foreach ($desktop_platforms as $id => $pattern) {
+        foreach ($desktop_platforms as $pattern) {
             if (preg_match('/'.$pattern.'/i', $user_agent)) {
                 return false;
             }
