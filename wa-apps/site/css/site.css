@@ -57,14 +57,14 @@ a.s-settings-link.selected { background: #eee; }
 .s-content .s-app-settings .hr { margin: 0; }
 .s-content .s-app-settings .heading { margin-bottom: 20px; }
 .s-content .s-page-urls { margin-bottom: 2px; }
-.s-content .s-page-app-url { }
-.s-content .s-page-app-url.gray { color: #AAA; }
-.s-content .s-page-app-url.s-disabled, .s-content .s-page-app-url.s-disabled input { color: #aaa; }
-.s-content .s-page-app-url img { position: relative; top: 2px; margin-left: 2px; }
-.s-content .s-wysiwyg-html-toggle { margin-right: 17px; margin-top: -20px; float: right; margin-bottom:0 }
-.s-content .s-wysiwyg-html-toggle li { list-style: none; float: left; }
-.s-content .s-wysiwyg-html-toggle li a { display: block; color: #888; font-weight: bold; padding: 4px 12px 6px; text-decoration: none; font-size: 0.9em; }
-.s-content .s-wysiwyg-html-toggle li.selected a { background: #fff; }
+.s-content .wa-page-app-url { }
+.s-content .wa-page-app-url.gray { color: #AAA; }
+.s-content .wa-page-app-url.s-disabled, .s-content .wa-page-app-url.s-disabled input { color: #aaa; }
+.s-content .wa-page-app-url img { position: relative; top: 2px; margin-left: 2px; }
+.s-content .wa-page-wysiwyg-html-toggle { margin-right: 17px; margin-top: -20px; float: right; margin-bottom:0 }
+.s-content .wa-page-wysiwyg-html-toggle li { list-style: none; float: left; }
+.s-content .wa-page-wysiwyg-html-toggle li a { display: block; color: #888; font-weight: bold; padding: 4px 12px 6px; text-decoration: none; font-size: 0.9em; }
+.s-content .wa-page-wysiwyg-html-toggle li.selected a { background: #fff; }
 
 /* app design editor header */
 .s-core-app-name { margin: 0; padding: 15px 15px 5px 45px; }
@@ -147,7 +147,7 @@ table.zebra.s-filelist .icon10.new-window { margin-left: .25em;}
 .s-dropdown ul.tabs li.no-tab img { float: left; vertical-align: top; margin:2px 0 0 -32px; width: 24px; height: 24px; }
 
 /* misc */
-.s-gray { color: #aaa; }
+.wa-page-gray { color: #aaa; }
 .s-draft { background: #ccc; color: #fff; font-weight: bold; font-size: 0.8em; padding: 0 2px; }
 .s-label-with-check { display: block; padding:0 0 0.5em 0;}
 .s-label-with-check input { vertical-align: middle; margin: 0 3px 0 0;}
@@ -183,6 +183,12 @@ table.zebra.s-filelist .icon10.new-window { margin-left: .25em;}
    min-height: 300px;
    background: #fff;
    margin-top: 5px;
+}
+
+.CodeMirror-scroll {
+    height: auto;
+    overflow-y: hidden;
+    overflow-x: auto;
 }
 
 li.inherit a {color: #999}

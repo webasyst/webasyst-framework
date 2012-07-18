@@ -115,6 +115,7 @@ class waViewHelper
     {
         if ($this->wa->getEnv() == 'backend') {
             $css = '<link href="'.$this->wa->getRootUrl().'wa-content/css/wa/wa-1.0.css?v'.$this->version(true).'" rel="stylesheet" type="text/css" >
+<!--[if IE 9]><link type="text/css" href="'.$this->wa->getRootUrl().'wa-content/css/wa/wa-1.0.ie9.css" rel="stylesheet"><![endif]-->
 <!--[if IE 8]><link type="text/css" href="'.$this->wa->getRootUrl().'wa-content/css/wa/wa-1.0.ie8.css" rel="stylesheet"><![endif]-->
 <!--[if IE 7]><link type="text/css" href="'.$this->wa->getRootUrl().'wa-content/css/wa/wa-1.0.ie7.css" rel="stylesheet"><![endif]-->'."\n";
         } else {
@@ -337,6 +338,12 @@ class waViewHelper
         return $this->wa->getRouteUrl((isset($auth['app']) ? $auth['app'] : '').'/login');
     }
 
+    public function forgotPasswordUrl()
+    {
+        $auth = $this->wa->getAuthConfig();
+        return $this->wa->getRouteUrl((isset($auth['app']) ? $auth['app'] : '').'/forgotpassword');
+    }
+
     public function loginForm($error = '')
     {
         $auth = $this->wa->getAuth();
@@ -427,22 +434,43 @@ class waViewHelper
     {
         $config = $this->wa->getAuthConfig();
         $config_fields = isset($config['fields']) ? $config['fields']: array(
-            'firstname' => array(),
-            'lastname' => array(),
+            'firstname',
+            'lastname',
             '',
             'email' => array('required' => true),
             'password' => array('required' => true),
         );
+        $format_fields = array();
+        foreach ($config_fields as $k => $v) {
+            if (is_numeric($k)) {
+                if ($v) {
+                    $format_fields[$v] = array();
+                } else {
+                    $format_fields[] = '';
+                }
+            } else {
+                $format_fields[$k] = $v;
+            }
+        }
         $fields = array();
-        foreach ($config_fields as $field_id => $field) {
+        foreach ($format_fields as $field_id => $field) {
             if (!is_numeric($field_id)) {
-                $f = waContactFields::get($field_id);
+                if (strpos($field_id, '.')) {
+                    $field_id_parts = explode('.', $field_id);
+                    $id = $field_id_parts[0];
+                    $field['ext'] = $field_id_parts[1];
+                } else {
+                    $id = $field_id;
+                }
+                $f = waContactFields::get($id);
                 if ($f) {
-                    $fields[$field_id] = $f;
+                    $fields[$field_id] = array($f, $field);
+                } elseif ($field_id == 'login') {
+                    $fields[$field_id] = array(new waContactStringField($field_id, _ws('Login')), $field);
                 } elseif ($field_id == 'password') {
-                    $fields[$field_id] = new waContactPasswordField($field_id, _ws('Password'));
+                    $fields[$field_id] = array(new waContactPasswordField($field_id, _ws('Password')), $field);
                     $field_id .= '_confirm';
-                    $fields[$field_id] = new waContactPasswordField($field_id, _ws('Confirm password'));
+                    $fields[$field_id] = array(new waContactPasswordField($field_id, _ws('Confirm password')), $field);
                 }
             } else {
                 $fields[] = '';
@@ -455,8 +483,9 @@ class waViewHelper
     {
         $fields = $this->signupFields($errors);
         $html = '<div class="wa-form"><form action="" method="post">';
-        foreach ($fields as $field_id => $f) {
-            if ($f) {
+        foreach ($fields as $field_id => $field) {
+            if ($field) {
+                $f = $field[0];
                 /**
                  * @var waContactField $f
                  */
@@ -465,13 +494,17 @@ class waViewHelper
                 } else {
                     $field_error = false;
                 }
-                $html .= '<div class="wa-field">
-                <div class="wa-name">'.$f->getName().'</div>
-                <div class="wa-value">'.$f->getHTML(waRequest::post($field_id), $field_error !== false ? 'class="wa-error"' : '');
-                if ($field_error) {
-                    $html .= '<em class="wa-error-msg">'.$field_error.'</em>';
+                $field[1]['id'] = $field_id;
+                if ($f instanceof waContactCompositeField) {
+                    foreach ($f->getFields() as $sf) {
+                        /**
+                         * @var waContactField $sf
+                         */
+                        $html .= $this->signupFieldHTML($sf, array('parent' => $field_id, 'id' => $sf->getId()), $field_error);
+                    }
+                } else {
+                    $html .= $this->signupFieldHTML($f, $field[1], $field_error);
                 }
-                $html .= '</div></div>';
             } else {
                 $html .= '<div class="wa-field wa-separator"></div>';
             }
@@ -489,6 +522,38 @@ class waViewHelper
             <input type="submit" value='._ws('"Sign up"').'> '.sprintf(_ws('or <a href="%s">login</a> if you already have an account'), $this->getUrl('/login')).'
         </div></div>';
         $html .= '</form></div>';
+        return $html;
+    }
+
+
+    private function signupFieldHTML(waContactField $f, $params, $error = '')
+    {
+        $data = waRequest::post('data');
+        // get value
+        if (isset($params['parent'])) {
+            $parent_value = $data[$params['parent']];
+            $params['value'] = $parent_value[$params['id']];
+        } else {
+            $params['value'] = isset($data[$params['id']]) ? $data[$params['id']] : '';
+        }
+
+        $name = $f->getName();
+        if (isset($params['ext'])) {
+            $exts = $f->getParameter('ext');
+            if (isset($exts[$params['ext']])) {
+                $name .= ' ('._ws($exts[$params['ext']]).')';
+            } else {
+                $name .= ' ('.$params['ext'].')';
+            }
+        }
+        $params['namespace'] = 'data';
+        $html = '<div class="wa-field">
+                <div class="wa-name">'.$name.'</div>
+                <div class="wa-value">'.$f->getHTML($params, $error !== false ? 'class="wa-error"' : '');
+        if ($error) {
+            $html .= '<em class="wa-error-msg">'.$error.'</em>';
+        }
+        $html .= '</div></div>';
         return $html;
     }
 

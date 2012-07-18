@@ -115,14 +115,14 @@ class waContactInfoStorage extends waContactStorage
             return array();
         }
         // Check if field exists, is active and is kept in this storage
-        if ($field instanceof waContactField) {
-            $field = $field->getId();
-        }
-        if (! ( $field = waContactFields::get($field))) {
-            return 0;
+        if (!($field instanceof waContactField)) {
+            $field = waContactFields::get($field);
+            if (!$field) {
+                return array();
+            }
         }
         if ($field->getParameter('storage') != 'info') {
-            return 0;
+            return array();
         }
         $field = $field->getId();
 
@@ -131,6 +131,9 @@ class waContactInfoStorage extends waContactStorage
                 WHERE `$field` IN (:values)".
                     ($excludeIds ? " AND id NOT IN (:excludeIds) " : ' ').
                 "GROUP BY f";
+        if (!$this->model) {
+            $this->model = new waContactModel();
+        }
         $r = $this->model->query($sql, array('values' => $values, 'excludeIds' => $excludeIds));
         return $r->fetchAll('f', true);
     }

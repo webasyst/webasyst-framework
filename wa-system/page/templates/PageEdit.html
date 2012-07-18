@@ -16,6 +16,8 @@
 <script src="{$wa_url}wa-content/js/codemirror/mode/css/css.js"></script>
 <script src="{$wa_url}wa-content/js/codemirror/mode/htmlmixed/htmlmixed.js"></script>
 
+<script src="{$wa_url}wa-content/js/jquery-wa/wa.page-edit.js?v{$wa->version()}"></script>
+
 <style>
     .wa-page-wysiwyg-html-toggle {
         margin-right: 17px;
@@ -113,7 +115,7 @@
             <form id="wa-page-form" method="post" action="?module=pages&action=save{if $page}&id={$page.id}{/if}">
             <div class="block wa-page-gray-toolbar">
             {if $page}
-            <div class="float-right">
+            <div class="float-right ie-menu-h-fix">
                 <ul class="menu-h">
                     <li><a href="#" class="inline-link" id="wa-page-settings-toggle"><i class="icon16 edit"></i><b><i>[s`Page settings`]</i></b></a></li>
                     <li><a class="wa-page-delete" href="?module=pages&action=delete"><i class="icon16 delete"></i>[s`Delete`]</a></li>
@@ -243,11 +245,12 @@
         </form>
         <script type="text/javascript">
         var wa_url = "{$wa_url}";
-        var wa_app = "{$wa->app()}/editor";
+        var wa_app = "{$wa->app()}";
         var wa_lang = "{$lang}";
         var wa_upload_url = "{$upload_url}";
 
         $(function () {
+            waEditorInit();
             $("a.wa-page-exclude").click(function () {
                 var d = $(this).parent();
                 if (d.hasClass('gray')) {
@@ -271,7 +274,7 @@
             });
 
             $("#wa-page-form").submit(function () {
-                waPageUpdateTextarea();
+                waEditorUpdateSource();
                 var form = $(this);
                 $("#wa-page-status").html("<i class='icon16 loading'></i> [s`Saving...`]").fadeIn("slow");
                 $.post(form.attr('action'), form.serialize(), function (response) {
@@ -318,19 +321,10 @@
                         $('#wa-page-button').removeClass('yellow').removeClass('green').addClass('red');
                     }
                 }, "json");
-                // restore focus to editors
-                if ($(".el-rte").length && $(".el-rte").is(':visible')) {
-                    try {
-                        $("#wa-page-content").elrte()[0].elrte.selection.moveToBookmark($("#wa-page-content").elrte()[0].elrte.selection.getBookmark());
-                    } catch (e) {}
-                } else {
-                    codemirrorEditor.focus();
-                }
                 return false;
             });
         });
         </script>
-        <script src="{$wa_url}wa-content/js/jquery-wa/wa.page-edit.js"></script>
         <div class="clear"></div>
     </div>
 </div>

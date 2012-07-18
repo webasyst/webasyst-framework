@@ -40,11 +40,20 @@ class waDbSqlite3Adapter extends waDbAdapter
         return $this->handler->close();
     }
 
+    /**
+     * @param SQLite3Result $result
+     * @return mixed
+     */
     public function free($result)
     {
         return $result->finalize();
     }
 
+    /**
+     * @param SQLite3Result $result
+     * @param $offset
+     * @return bool
+     */
     public function data_seek($result, $offset)
     {
         $result->reset();
@@ -54,6 +63,10 @@ class waDbSqlite3Adapter extends waDbAdapter
         return true;
     }
 
+    /**
+     * @param SQLite3Result $result
+     * @return int
+     */
     public function num_rows($result)
     {
          $num_rows = 0;
@@ -64,6 +77,11 @@ class waDbSqlite3Adapter extends waDbAdapter
           return $num_rows;
     }
 
+    /**
+     * @param SQLite3Result $result
+     * @param int $mode
+     * @return mixed
+     */
     public function fetch_array($result, $mode = self::RESULT_NUM)
     {
         return $result->fetchArray($mode);

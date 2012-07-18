@@ -18,4 +18,9 @@ class blogSignupAction extends waSignupAction
             }
         }
     }
+
+    public function afterSignup(waContact $contact)
+    {
+        $contact->addToCategory($this->getAppId());
+    }
 }

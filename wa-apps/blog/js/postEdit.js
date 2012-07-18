@@ -758,22 +758,12 @@
 						var height = $.wa_blog.editor.calcEditorHeight();
 
 						this.editor = CodeMirror.fromTextArea(
-								''+container, {
+								document.getElementById(container), {
+									mode: "text/html",
+									tabMode: "indent",
+									height: "dynamic",
+									lineWrapping: true,
 									minHeight : height,
-//									height : "dynamic",
-									parserfile : ["parsexml.js", "parsecss.js",
-											"tokenizejavascript.js",
-											"parsejavascript.js",
-											"parsehtmlmixed.js"],
-									stylesheet : [
-											options['wa_url']
-													+ "wa-content/js/codemirror/1/css/xmlcolors.css",
-											options['wa_url']
-													+ "wa-content/js/codemirror/1/css/jscolors.css",
-											options['wa_url']
-													+ "wa-content/js/codemirror/1/css/csscolors.css"],
-									path : options['wa_url']
-											+ "wa-content/js/codemirror/1/js/",
 									initCallback: function (editor) {
 										setTimeout(function() {
 											try{
@@ -786,18 +776,19 @@
 									}
 								}
 						);
-						$('#post_text_wrapper .CodeMirror-wrapping').height(this.correctEditorHeight(height));
+						$('#post_text_wrapper .CodeMirror-scroll').height(this.correctEditorHeight(height));
 					}
 
 					return true;
 				},
 				show: function(textarea) {
-					$('.CodeMirror-wrapping').show();
+					$('.CodeMirror').show();
 					var self = this;
 					setTimeout(function() {
-						if(self.editor && self.editor.editor) {
+						if(self.editor/* && self.editor.editor*/) {
 							var text = $.wa_blog.editor.wysiwygToHtml(textarea.val());
-							self.editor.setCode(text);
+							self.editor.setValue(text);
+							self.editor.refresh();
 						} else {
 							if(typeof(console) == 'object') {
 								console.log('wait for codemirror editor init');
@@ -808,11 +799,11 @@
 
 				},
 				hide: function() {
-					$('.CodeMirror-wrapping').hide();
+					$('.CodeMirror').hide();
 				},
 				update : function(textarea) {
 					if(this.inited) {
-						textarea.val(this.editor.getCode());
+						textarea.val(this.editor.getValue());
 					}
 				},
 				correctEditorHeight: function(height) {

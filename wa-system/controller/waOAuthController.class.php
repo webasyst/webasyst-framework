@@ -24,6 +24,10 @@ class waOAuthController extends waViewController
         }
     }
 
+    /**
+     * @param array $data
+     * @return waContact
+     */
     protected function afterAuth($data)
     {
         $app_id = $this->getStorage()->get('auth_app');
@@ -73,11 +77,15 @@ class waOAuthController extends waViewController
                 file_put_contents($path, $photo);
                 $contact->setPhoto($path);
             }
+        } else {
+            $contact = new waContact($contact_id);
         }
 
         // auth user
         if ($contact_id) {
             wa()->getAuth()->auth(array('id' => $contact_id));
+            return $contact;
         }
+        return false;
     }
 }

@@ -236,7 +236,8 @@ class waContactCompositeField extends waContactField
         return $this->options['fields'];
     }
 
-    public function setParameter($p, $value) {
+    public function setParameter($p, $value)
+    {
         if ($p === 'required') {
             if (!$value || !is_array($value)) {
                 $value = array();
@@ -244,6 +245,7 @@ class waContactCompositeField extends waContactField
         }
         parent::setParameter($p, $value);
     }
+
 }
 
 // EOF

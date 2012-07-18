@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WebAsyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2012-07-10 14:21+0300\n"
+"PO-Revision-Date: 2012-07-18 11:13+0300\n"
 "Last-Translator: Vladimir V. Tuporshin <vofka@webasyst.net>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -1279,6 +1279,9 @@ msgstr "Чикаго"
 msgid "Street"
 msgstr "Улица"
 
+msgid "Street address"
+msgstr "Улица, дом, квартира"
+
 msgid "State"
 msgstr "Регион"
 
@@ -1630,6 +1633,9 @@ msgstr "Отключить показ страницы по этому адре�
 msgid "Page settings"
 msgstr "Настройки страницы"
 
+msgid "Delete"
+msgstr "Удалить"
+
 msgid "This will delete entire page. Are you sure?"
 msgstr "Будет удалена вся страница. Продолжить?"
 
@@ -1873,13 +1879,13 @@ msgstr "Поле «%s» является обязательным"
 
 #: /wa-system/view/waViewHelper.class.php:476
 msgid "or <a href=\"%s\">login</a> if you already have an account"
-msgstr "или <a href=\"%s\">войти</a>, если у вас уже есть аккаунт"
+msgstr "или <a href=\"%s\">войдите</a>, если у вас уже есть аккаунт"
 
 #: /wa-system/validator/waEmailValidator.class.php:30
 msgid "Invalid Email"
 msgstr "Email-адрес введен неправильно"
 
-
 #: /wa-system/controller/waSignupAction.class.php:87
 msgid "Invalid captcha"
 msgstr "Капча введена неверно"
+

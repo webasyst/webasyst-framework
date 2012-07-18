@@ -44,7 +44,7 @@
 	{/if}		
 	</div>	
 	<div class="s-editor-core-wrapper">
-		<textarea id="content" data-type="{if substr($file.id, -3) == 'css'}css{elseif substr($file.id, -2) == 'js'}js{/if}" name="content">{if !empty($content)}{$content|escape}{/if}</textarea>
+		<textarea id="content" data-type="{if substr($file.id, -3) == 'css'}css{elseif substr($file.id, -2) == 'js'}javascript{/if}" name="content">{if !empty($content)}{$content|escape}{/if}</textarea>
 	</div>
 	</form>
 	<div class="clear"></div>

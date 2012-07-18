@@ -12,6 +12,17 @@ class waContactCategoryModel extends waModel
         return $this->insert(array('name' => $name));
     }
 
+    public function getById($value)
+    {
+        $data = parent::getById($value);
+        if ($data && $data['system_id'] && wa()->appExists($data['system_id'])) {
+            $app = wa()->getAppInfo($data['system_id']);
+            $data['name'] = $app['name'];
+            $data['icon'] = $app['icon'][16];
+        }
+        return $data;
+    }
+
     /**
      * Delete category by ID
      * @param int $id
@@ -49,7 +60,18 @@ class waContactCategoryModel extends waModel
     public function getAll($key = null, $normalize = false)
     {
         $sql = "SELECT * FROM {$this->table} ORDER BY name";
-        return $this->query($sql)->fetchAll($key = null, $normalize = false);
+        $data = $this->query($sql)->fetchAll($key, $normalize);
+        foreach ($data as &$row) {
+            if ($row['system_id']) {
+                if (wa()->appExists($row['system_id'])) {
+                    $app = wa()->getAppInfo($row['system_id']);
+                    $row['name'] = $app['name'];
+                    $row['icon'] = $app['icon'][16];
+                }
+            }
+        }
+        unset($row);
+        return $data;
     }
 
     /**

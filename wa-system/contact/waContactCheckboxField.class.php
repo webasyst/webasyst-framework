@@ -28,4 +28,11 @@ class waContactCheckboxField extends waContactField
         $old = $contact->get($this->id);
         return $old ? $old : time();
     }
+
+    public function getHTML($params = array(), $attrs = '')
+    {
+        $value = isset($params['value']) ? $params['value'] : '';
+        return '<input type="checkbox"'.($value ? ' checked="checked"' : '').' name="'.$this->getHTMLName($params).'" value="'.$value.'">';
+    }
+
 }

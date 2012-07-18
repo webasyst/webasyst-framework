@@ -124,6 +124,16 @@ class contactsContactsListController extends waJsonController
                     $this->log('search', 1);
                 }
             }
+
+            // Information about system category in categories view
+            if (substr($hash, 0, 19) === '/contacts/category/') {
+                $category_id = (int) substr($hash, 19);
+                $cm = new waContactCategoryModel();
+                $category = $cm->getById($category_id);
+                if ($category && $category['system_id']) {
+                    $this->response['system_category'] = $category['system_id'];
+                }
+            }
         }
 
         // Update history in user's browser

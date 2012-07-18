@@ -22,3 +22,6 @@ ul.zebra li:first-child + li, ul.zebra li:first-child + li + li + li, ul.zebra l
 
 .field .value.submit { margin-left:180px;}
 #wa-login .field .value input.button { margin-left:2px;}
+
+.float-right.ie-menu-h-fix { display: inline; height: 0; zoom:1; }
+.float-right.ie-menu-h-fix ul.menu-h li { display: block; float: right; }

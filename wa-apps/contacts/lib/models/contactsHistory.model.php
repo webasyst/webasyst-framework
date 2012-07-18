@@ -12,7 +12,7 @@ class contactsHistoryModel extends waModel
       * @return array if $id is specified, then null (if not found) or a single array with keys: id, type, name, hash, contact_id, position, accessed, cnt; if no $id, then a list of such arrays is returned. */
     public function get($id=null) {
         if ($id) {
-            $sql = "SELECT * FROM `{$this->table}` WHERE id=i:id";
+            $sql = "SELECT * FROM {$this->table} WHERE id=i:id";
             return $this->query($sql, array('id' => $id))->fetchRow();
         }
 
@@ -50,7 +50,7 @@ class contactsHistoryModel extends waModel
         }
 
         if ($not_shown) {
-            $sql = "DELETE FROM `{$this->table}` WHERE id IN (i:id)";
+            $sql = "DELETE FROM {$this->table} WHERE id IN (i:id)";
             $this->exec($sql, array('id' => $not_shown));
 
             // reset holes in key sequence
@@ -70,7 +70,7 @@ class contactsHistoryModel extends waModel
     public function save($hash, $name, $type=null, $count=null) {
         $currentUserId = wa()->getUser()->getId();
 
-        $sql = "SELECT id, accessed FROM `{$this->table}` WHERE contact_id=i:uid AND hash=:hash";
+        $sql = "SELECT id, accessed FROM {$this->table} WHERE contact_id=i:uid AND hash=:hash";
         $id = $this->query($sql, array('uid' => $currentUserId, 'hash' => $hash))->fetchAssoc();
         if (!$id) {
             $newRecord = true;
@@ -95,7 +95,7 @@ class contactsHistoryModel extends waModel
             if ($set) {
                 $set = implode(',', $set);
 
-                $sql = "UPDATE `{$this->table}` SET {$set} WHERE id=i:id";
+                $sql = "UPDATE {$this->table} SET {$set} WHERE id=i:id";
                 $this->exec($sql, array(
                     'id' => $id,
                     'name' => $name,
@@ -127,15 +127,15 @@ class contactsHistoryModel extends waModel
 
         if ($position === null) {
             // determine the max position
-            $sql = "SELECT MAX(position) FROM `{$this->table}` WHERE contact_id=i:uid AND id<>i:id";
+            $sql = "SELECT MAX(position) FROM {$this->table} WHERE contact_id=i:uid AND id<>i:id";
             $position = 1 + $this->query($sql, array('uid' => $currentUserId, 'id' => $id))->fetchField();
         } else if ($position > 0) {
             // free space at $position
-            $sql = "UPDATE `{$this->table}` SET position=position+1 WHERE contact_id=:uid AND position>i:position AND id<>i:id";
+            $sql = "UPDATE {$this->table} SET position=position+1 WHERE contact_id=:uid AND position>i:position AND id<>i:id";
             $this->exec($sql, array('uid' => $currentUserId, 'position' => $position, 'id' => $id));
         }
 
-        $sql = "UPDATE `{$this->table}` SET position=:position WHERE id=:id";
+        $sql = "UPDATE {$this->table} SET position=:position WHERE id=:id";
         $this->exec($sql, array('position' => $position, 'id' => $id));
     }
 
@@ -150,12 +150,12 @@ class contactsHistoryModel extends waModel
         }
 
         // How many records are there?
-        $sql = "SELECT COUNT(*) FROM `{$this->table}` WHERE contact_id=i:uid AND position=0".$typeSql;
+        $sql = "SELECT COUNT(*) FROM {$this->table} WHERE contact_id=i:uid AND position=0".$typeSql;
         $total = $this->query($sql, array('uid' => $currentUserId, 'type' => $type))->fetchField();
 
         $limit = $total - $limit;
         if ($limit > 0) {
-            $sql = "DELETE FROM `{$this->table}` WHERE contact_id=:uid AND position=0$typeSql ORDER BY accessed LIMIT i:limit";
+            $sql = "DELETE FROM {$this->table} WHERE contact_id=:uid AND position=0$typeSql ORDER BY accessed LIMIT i:limit";
             $this->exec($sql, array('uid' => $currentUserId, 'limit' => $limit, 'type' => $type));
         }
     }

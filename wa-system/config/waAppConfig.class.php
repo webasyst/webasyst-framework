@@ -60,6 +60,10 @@ class waAppConfig extends SystemConfig
 
     }
 
+    /**
+     * @param string $name
+     * @return mixed
+     */
     public function getOption($name)
     {
         return isset($this->options[$name]) ? $this->options[$name] : null;

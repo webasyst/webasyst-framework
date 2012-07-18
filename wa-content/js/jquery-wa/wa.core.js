@@ -321,6 +321,8 @@ $(document).ajaxError(function(e, xhr, settings, exception) {
 	}
 });
 
+$.ajaxSetup({'cache': false});
+
 $(document).ajaxSend(function (event, xhr, settings) {
 	if (settings.type == 'POST') {
 		var matches = document.cookie.match(new RegExp("(?:^|; )_csrf=([^;]*)"));

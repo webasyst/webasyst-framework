@@ -302,6 +302,7 @@ abstract class waContactField
             }
         }
 
+
         // array of duplicates $sort => contact_id
         $dupl = array();
 
@@ -317,8 +318,10 @@ abstract class waContactField
             }
         }
 
+
         // Check if there are duplicates in database
-        foreach($this->getStorage()->findDuplicatesFor($this, array_keys($flipped), $contactId ? array($contactId) : array()) as $value => $cid) {
+        $rows = $this->getStorage()->findDuplicatesFor($this, array_keys($flipped), $contactId ? array($contactId) : array());
+        foreach($rows as $value => $cid) {
             if (isset($flipped[$value])) {
                 $dupl[$flipped[$value]] = $cid;
             } else {
@@ -601,10 +604,30 @@ abstract class waContactField
         }
     }
 
-
-    public function getHTML($value = '', $attrs = '')
+    protected function getHTMLName($params)
     {
-        return '<input '.$attrs.' type="text" name="'.$this->id.'" value="'.htmlspecialchars($value).'">';
+        $prefix = $suffix = '';
+        if (isset($params['namespace'])) {
+            $prefix .= $params['namespace'].'[';
+            $suffix .= ']';
+        }
+        if (isset($params['parent'])) {
+            if ($prefix) {
+                $prefix .= $params['parent'].'][';
+            } else {
+                $prefix .= $params['parent'].'[';
+                $suffix .= ']';
+            }
+        }
+        $name = isset($params['id']) ? $params['id'] : $this->getId();
+        return $prefix.$name.$suffix;
+    }
+
+
+    public function getHTML($params = array(), $attrs = '')
+    {
+        $value = isset($params['value']) ? $params['value'] : '';
+        return '<input '.$attrs.' type="text" name="'.$this->getHTMLName($params).'" value="'.htmlspecialchars($value).'">';
     }
 
 

@@ -3,5 +3,6 @@ return array(
     'api',
     'payment',
     'auth/waDemoAuth.class.php',
-    'flash'
+    'flash',
+    'webasyst/lib/cli'
 );

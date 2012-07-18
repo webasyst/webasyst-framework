@@ -409,3 +409,239 @@ msgstr ""
 msgid "Invalid theme id %s"
 msgstr ""
 
+
+#: /wa-system/webasyst/templates/actions/login/LoginFirst.html:69
+msgid "Company name"
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/login/LoginConfig.html:6
+msgid "Webasyst"
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/login/LoginConfig.html:19
+msgid "MySQL database"
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/login/LoginConfig.html:20
+msgid "Enter connection credentials for the MySQL database which will be used by Webasyst to store system and application data."
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/login/LoginConfig.html:28
+msgid "Host"
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/login/LoginConfig.html:36
+msgid "User"
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/login/LoginConfig.html:52
+msgid "Database Name"
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/login/LoginConfig.html:60
+msgid "If you do not know what should be entered here, please contact your hosting provider technical support."
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/login/LoginConfig.html:66
+msgid "Continue"
+msgstr ""
+
+#: /wa-system/helper/view.php:90
+msgid "[close]"
+msgstr ""
+
+#: /wa-system/page/actions/waPage.action.php:27
+msgid "Page not found"
+msgstr ""
+
+#: /wa-system/page/actions/waPageEdit.action.php:82
+msgid "META Keywords"
+msgstr ""
+
+#: /wa-system/page/actions/waPageEdit.action.php:83
+msgid "META Description"
+msgstr ""
+
+#: /wa-system/page/actions/waPageSave.controller.php:21
+msgid "Error saving web page"
+msgstr ""
+
+#: /wa-system/page/actions/waPageUploadimage.controller.php:25
+msgid "Files with extensions %s are allowed only."
+msgstr ""
+
+#: /wa-system/page/templates/PageEdit.html:188
+msgid "The page is not available on the website because “Site” app is not connected in the website structure."
+msgstr ""
+
+#: /wa-system/page/templates/PageEdit.html:222
+msgid "http://www.webasyst.com/framework/docs/site/pages/"
+msgstr ""
+
+#: /wa-system/page/templates/PageEdit.html:284
+msgid "draft"
+msgstr ""
+
+#: /wa-system/page/templates/PageEdit.html:317
+msgid "An error occurred while saving"
+msgstr ""
+
+#: /wa-system/datetime/waDateTime.class.php:175
+msgid "Today"
+msgstr ""
+
+#: /wa-system/datetime/waDateTime.class.php:178
+msgid "Yesterday"
+msgstr ""
+
+#: /wa-system/datetime/waDateTime.class.php:181
+msgid "Tomorrow"
+msgstr ""
+
+#: /wa-system/controller/waForgotPasswordAction.class.php:99
+msgid "Password recovery for this email has been banned."
+msgstr ""
+
+#: /wa-system/controller/waForgotPasswordAction.class.php:114
+msgid "No user with this email has been found."
+msgstr ""
+
+#: /wa-system/controller/waSignupAction.class.php:45
+msgid "%s already exists"
+msgstr ""
+
+#: /wa-system/controller/waFrontController.class.php:85
+msgid "Access denied."
+msgstr ""
+
+#: /wa-system/controller/waLoginAction.class.php:73
+msgid "Session has expired. Please reload current page and log in again."
+msgstr ""
+
+#: /wa-system/captcha/waCaptcha.class.php:31
+msgid "Refresh CAPTCHA"
+msgstr ""
+
+#: /wa-system/auth/waAuth.class.php:114
+msgid "You are banned!"
+msgstr ""
+
+#: /wa-system/auth/waAuth.class.php:157
+msgid "Invalid email or password"
+msgstr ""
+
+#: /wa-system/api/waAPIController.class.php:20
+msgid "Application \"%s\" not exists"
+msgstr ""
+
+#: /wa-system/api/waAPIController.class.php:29
+msgid "Unknown response format"
+msgstr ""
+
+#: /wa-system/request/waRequestFile.class.php:189
+msgid "The uploaded file exceeds the upload_max_filesize directive in php.ini."
+msgstr ""
+
+#: /wa-system/request/waRequestFile.class.php:191
+msgid "The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the HTML form."
+msgstr ""
+
+#: /wa-system/request/waRequestFile.class.php:193
+msgid "The uploaded file was only partially uploaded."
+msgstr ""
+
+#: /wa-system/request/waRequestFile.class.php:195
+msgid "No file was uploaded."
+msgstr ""
+
+#: /wa-system/request/waRequestFile.class.php:197
+msgid "Missing a temporary folder."
+msgstr ""
+
+#: /wa-system/request/waRequestFile.class.php:199
+msgid "Failed to write file to disk."
+msgstr ""
+
+#: /wa-system/request/waRequestFile.class.php:201
+msgid "A PHP extension stopped the file upload."
+msgstr ""
+
+#: /wa-system/request/waRequestFile.class.php:203
+msgid "Unknown upload error"
+msgstr ""
+
+#: /wa-system/database/waModel.class.php:642
+msgid "Unknown field %s"
+msgstr ""
+
+#: /wa-system/image/waImageGd.class.php:331
+msgid "Can't read font file $font_file"
+msgstr ""
+
+#: /wa-system/view/waViewHelper.class.php:500
+msgid "Authorize either by entering your contact information, or through one of the websites listed above."
+msgstr ""
+
+#: /wa-system/view/waViewHelper.class.php:392
+msgid "Reset password"
+msgstr ""
+
+#: /wa-system/view/waViewHelper.class.php:392
+msgid "I remember it now!"
+msgstr ""
+
+#: /wa-system/view/waViewHelper.class.php:405
+msgid "Enter a new password"
+msgstr ""
+
+#: /wa-system/view/waViewHelper.class.php:411
+msgid "Re-enter password"
+msgstr ""
+
+#: /wa-system/view/waViewHelper.class.php:419
+msgid "Save and log in"
+msgstr ""
+
+#: /wa-system/view/waViewHelper.class.php:476
+msgid "Sign up"
+msgstr ""
+
+#: /wa-system/view/waViewHelper.class.php:476
+msgid "login"
+msgstr ""
+
+#: /wa-system/view/waViewHelper.class.php:476
+msgid "if you already have an account"
+msgstr ""
+
+#: /wa-system/controller/waSignupAction.class.php:52
+msgid "Password can not be empty."
+msgstr ""
+
+#: /wa-system/controller/waSignupAction.class.php:57
+msgid "%s is required"
+msgstr ""
+
+#: /wa-system/view/waViewHelper.class.php:476
+msgid "or <a href=\"%s\">login</a> if you already have an account"
+msgstr ""
+
+#: /wa-system/validator/waEmailValidator.class.php:30
+msgid "Invalid Email"
+msgstr ""
+
+#: /wa-system/controller/waSignupAction.class.php:78
+msgid "User with the same %s is already registered"
+msgstr ""
+
+#: /wa-system/controller/waSignupAction.class.php:87
+msgid "Invalid captcha"
+msgstr ""
+
+#: /wa-system/controller/waLoginAction.class.php:40
+msgid "Log in"
+msgstr ""
+
+#: /wa-system/view/waViewHelper.class.php:486
+msgid "\"Sign up\""
+msgstr ""

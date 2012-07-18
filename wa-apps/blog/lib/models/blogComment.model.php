@@ -307,6 +307,13 @@ SQL;
                 }
                 break;
             }
+            case self::AUTH_USER:{
+                $user = wa()->getUser();
+                if ($user->getId() && !$user->get('is_user')) {
+                    $user->addToCategory(wa()->getApp());
+                }
+                break;
+            }
             default: {
                 break;
             }

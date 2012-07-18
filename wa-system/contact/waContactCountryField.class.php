@@ -45,9 +45,31 @@ class waContactCountryField extends waContactSelectField
         return $result;
     }
     
-    public function getType() {
+    public function getType()
+    {
         return 'Country';
     }
+
+    public function getHTML($params = array(), $attrs = '')
+    {
+        $url = wa()->getRootUrl().'wa-content/img/country/';
+        $id = 'wa-country-field-'.uniqid();
+        $html = parent::getHTML($params, $attrs.' id="'.$id.'"');
+        $html = '<i style="display:none" class="icon16" style=""></i>'.$html;
+        $html .= '<script>
+if ($) {
+    $("#'.$id.'").change(function () {
+        if ($(this).val()) {
+            $(this).prev().show().css("background", "url('.$url.'" + $(this).val() + ".gif) 0 center no-repeat");
+        } else {
+            $(this).prev().hide();
+        }
+    }).change();
+}
+</script>';
+        return $html;
+    }
+
 }
 
 class waContactCountryFormatter extends waContactFieldFormatter

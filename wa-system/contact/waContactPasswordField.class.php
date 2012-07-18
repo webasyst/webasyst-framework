@@ -2,8 +2,9 @@
 
 class waContactPasswordField extends waContactField
 {
-    public function getHTML($value = '', $attrs = '')
+    public function getHTML($params = array(), $attrs = '')
     {
-        return '<input '.$attrs.' type="password" name="'.$this->id.'" value="'.htmlspecialchars($value).'">';
+        $value = isset($params['value']) ? $params['value'] : '';
+        return '<input '.$attrs.' type="password" name="'.$this->getHTMLName($params).'" value="'.htmlspecialchars($value).'">';
     }
 }

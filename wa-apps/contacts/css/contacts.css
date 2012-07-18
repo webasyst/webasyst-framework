@@ -353,3 +353,11 @@ ul.menu-v li.drag-active ul.menu-v li a { background: inherit !important; }
 	color: #AAA;
 	font-size: .8em;
 }
+
+
+img.c-app16x16icon-menu-v {
+    width: 16px;
+    height: 16px;
+    position: absolute;
+    left: 2px;
+}

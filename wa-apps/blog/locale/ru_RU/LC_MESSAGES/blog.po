@@ -355,7 +355,7 @@ msgstr "Читать далее →"
 
 #: /wa-apps/blog/templates/actions/backend/Backend.html:213
 msgid "Show older posts"
-msgstr "Показать предыдущие записи"
+msgstr "Показать более ранние записи"
 
 #: /wa-apps/blog/templates/actions/backend/BackendCalendar.html:27
 msgid "Overdue posts"

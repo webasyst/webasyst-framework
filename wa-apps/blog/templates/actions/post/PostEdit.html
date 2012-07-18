@@ -337,6 +337,7 @@
 
 <link type="text/css" rel="stylesheet" href="{$wa_url}wa-content/js/elrte/elrte.min.css">
 <link type="text/css" rel="stylesheet" href="{$wa_url}wa-content/js/elrte/elrte-wa.css">
+<link type="text/css" rel="stylesheet" href="{$wa_url}wa-content/js/codemirror/lib/codemirror.css">
 <script type="text/javascript">
   $.wa.locale['Split vertical'] = "[`Split vertical`]";
   $.wa.locale['Image will be uploaded into'] = "[`Image will be uploaded into`]";
@@ -350,7 +351,12 @@
 {$wa_url}wa-content/js/jquery-ui/i18n/jquery.ui.datepicker-{$wa->locale()}.js
 {/if}
 
-{$wa_url}wa-content/js/codemirror/1/js/codemirror.js
+{$wa_url}wa-content/js/codemirror/lib/codemirror.js
+{$wa_url}wa-content/js/codemirror/mode/xml/xml.js
+{$wa_url}wa-content/js/codemirror/mode/javascript/javascript.js
+{$wa_url}wa-content/js/codemirror/mode/css/css.js
+{$wa_url}wa-content/js/codemirror/mode/htmlmixed/htmlmixed.js
+
 
 {$wa_url}wa-content/js/elrte/elrte.min.js
 {$wa_url}wa-content/js/elrte/elrte-wa.js

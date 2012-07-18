@@ -23,7 +23,7 @@ return array(
         'fconstructor' => 'fixed',
     )),
 
-    new waContactSelectField('sex', 'Sex', array(
+    new waContactRadioSelectField('sex', 'Sex', array(
         'storage' => 'info',
         'fconstructor' => 'fixed',
         'translate_options' => true,

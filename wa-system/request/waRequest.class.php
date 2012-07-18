@@ -230,8 +230,12 @@ class waRequest
     public static function getLocale()
     {
         $locales = waLocale::getAll(false);
-        if (($l = self::param('locale')) && in_array($l, $locales)) {
-            return $l;
+        if ($lang = self::param('locale')) {
+            foreach ($locales as $l) {
+                if (!strcasecmp($lang, $l)) {
+                    return $l;
+                }
+            }
         }
         if (!self::server('HTTP_ACCEPT_LANGUAGE')) {
             return $locales[0];
@@ -250,13 +254,20 @@ class waRequest
             } else {
                 $q = 1.0;
             }
-            if (in_array($lang, $locales) && ($q > $max_q)) {
-                $result = $lang;
+            $in_array = false;
+            foreach ($locales as $l) {
+                if (!strcasecmp($lang, $l)) {
+                    $in_array = $l;
+                    break;
+                }
+            }
+            if ($in_array && ($q > $max_q)) {
+                $result = $in_array;
                 $max_q = $q;
             } elseif (empty($matches[2][$i]) && ($q * 0.8 > $max_q)) {
                 $n = strlen($lang);
                 foreach ($locales as $l) {
-                    if (!strncmp($l, $lang, $n)) {
+                    if (!strncasecmp($l, $lang, $n)) {
                         $result = $l;
                         $max_q = $q * 0.8;
                         break;

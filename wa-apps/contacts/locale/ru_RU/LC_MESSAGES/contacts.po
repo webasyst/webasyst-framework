@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WebAsyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2012-05-30 19:25+0400\n"
+"PO-Revision-Date: 2012-07-09 18:19+0400\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -838,4 +838,22 @@ msgstr "Пользователи не могут быть объединены �
 
 msgid "Email %s is successfully confirmed."
 msgstr "Адрес %s успешно подтверждён."
+
+msgid "Merge with another account"
+msgstr "Объединить с другим аккаунтом"
+
+msgid "Incorrect email or password."
+msgstr "Неправильный пароль или Email."
+
+msgid "Unable to merge into self."
+msgstr "Нельзя объединять с самим собой."
+
+msgid "Session has expired."
+msgstr "Сессия истекла."
+
+msgid "Unable to merge:"
+msgstr "Невозможно объединить:"
+
+msgid "Continue"
+msgstr "Продолжить"
 

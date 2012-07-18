@@ -51,7 +51,7 @@ class waContact implements ArrayAccess
                 self::$options['default']['locale'] = $app_settings_model->get('webasyst', 'locale');
             } catch (waException $e) {}
             if (!isset(self::$options['default']['locale']) || !self::$options['default']['locale']) {
-                self::$options['default']['locale'] = 'ru_RU';
+                self::$options['default']['locale'] = waRequest::getLocale();
             }
         }
         if (!isset(self::$options['default']['timezone'])) {
@@ -361,10 +361,30 @@ class waContact implements ArrayAccess
      */
     public function save($data = array(), $validate = false)
     {
+        $add = array();
         foreach ($data as $key => $value) {
-            $f = waContactFields::get($key);
+            if (strpos($key, '.')) {
+                $key_parts = explode('.', $key);
+                $f = waContactFields::get($key_parts[0]);
+                if ($f) {
+                    $key = $key_parts[0];
+                    if ($key_parts[1] && $f->isExt()) {
+                        // add next field
+                        $add[$key] = true;
+                        if (is_array($value)) {
+                            if (!isset($value['value'])) {
+                                $value = array('ext' => $key_parts[1], 'value' => $value);
+                            }
+                        } else {
+                            $value = array('ext' => $key_parts[1], 'value' => $value);
+                        }
+                    }
+                }
+            } else {
+                $f = waContactFields::get($key);
+            }
             if ($f) {
-                $this->data[$key] = $f->set($this, $value);
+                $this->data[$key] = $f->set($this, $value, array(), isset($add[$key]) ? true : false);
             } else {
                 if ($key == 'password') {
                     $value = self::getPasswordHash($value);
@@ -377,7 +397,12 @@ class waContact implements ArrayAccess
         $errors = array();
         $contact_model = new waContactModel();
         foreach ($this->data as $field => $value) {
-            if ($f = waContactFields::get($field, $this['is_company'] ? 'company' : 'person')) {
+            if ($field == 'login') {
+                $f = new waContactStringField('login', _ws('Login'), array('unique' => true, 'storage' => 'info'));
+            } else {
+                $f = waContactFields::get($field, $this['is_company'] ? 'company' : 'person');
+            }
+            if ($f) {
                 if ($f->isMulti() && !is_array($value)) {
                     $value = array($value);
                 }
@@ -764,6 +789,28 @@ class waContact implements ArrayAccess
             return wa_password_hash($password);
         } else {
             return md5($password);
+        }
+    }
+
+    /**
+     * Add contact to the category
+     *
+     * @param int|string $category_id - id or system key (app_id) of the category
+     * @throws waException
+     */
+    public function addToCategory($category_id)
+    {
+        if (!$this->id) {
+            throw new waException('Contact not saved!');
+        }
+        if (!is_numeric($category_id)) {
+            $category_model = new waContactCategoryModel();
+            $category = $category_model->getBySystemId($category_id);
+            $category_id = $category['id'];
+        }
+        $contact_categories_model = new waContactCategoriesModel();
+        if (!$contact_categories_model->inCategory($this->id, $category_id)) {
+            $contact_categories_model->add($this->id, $category_id);
         }
     }
 

@@ -59,6 +59,11 @@ class waContactCategoriesModel extends waModel
         $sql = "DELETE FROM {$this->table} WHERE contact_id IN (i:contacts) AND category_id IN (i:categories)";
         $this->exec($sql, array('contacts' => $contact_ids, 'categories' => $category_ids));
     }
+
+    public function inCategory($contact_id, $category_id)
+    {
+        return $this->getByField(array('contact_id' => $contact_id, 'category_id' => $category_id));
+    }
     
     /** Add each of given contacts to each of given cateroies.
       * @param int|array $contact_ids

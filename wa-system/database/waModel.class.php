@@ -606,7 +606,8 @@ class waModel
             $value = false;
         }
         $sql = "SELECT * FROM ".$this->table;
-        if ($where = $this->getWhereByField($field, $value)) {
+        $where = $this->getWhereByField($field, $value);
+        if ($where != '') {
             $sql .= " WHERE ".$where;
         }
         if ($limit) {
@@ -649,7 +650,12 @@ class waModel
                 }
             }
         } elseif (is_array($value)) {
-            $where[] = ($add_table_name ? $this->table."." : "") . $this->escapeField($field) . " IN ('".implode("','", $this->escape($value))."')";
+            if ($value) {
+                $where[] = ($add_table_name ? $this->table."." : "") . $this->escapeField($field) . " IN ('".implode("','", $this->escape($value))."')";
+            } else {
+                // analog field IN ('') - it's always false
+                $where[] = '0'; // or false
+            }
         } else {
             $where[] = ($add_table_name ? $this->table."." : "") . $this->escapeField($field) .
                        ($value === null ? " IS NULL" : " = ".$this->getFieldValue($field, $value));

@@ -19,7 +19,7 @@ class waContactAddressField extends waContactCompositeField
     {
         if (!isset($this->options['fields'])) {
             $this->options['fields'] = array(
-                new waContactStringField('street', 'Street'),
+                new waContactStringField('street', 'Street address'),
                 new waContactStringField('city', 'City'),
                 new waContactStringField('state', 'State'),
                 new waContactStringField('zip', 'ZIP'),

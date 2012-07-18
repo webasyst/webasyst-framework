@@ -14,19 +14,23 @@
  */
 class waContactSelectField extends waContactField
 {
-    /** Options for this select. array(id => name). Ids are stored in DB, and names are shown to user.
-      * Default implementation uses 'options' parameter passed to constructor in $options
-      * Could be redefined in subclasses to implement custom option list (e.g. from database).
-      * @param $id String (optional, default null) id to return name for.
-      * @return mixed If $id is specified returns string with the name for this id. Id $id is null returns array(id => name) with all available options. */
-    function getOptions($id = null) {
+    /**
+     * Options for this select. array(id => name). Ids are stored in DB, and names are shown to user.
+     * Default implementation uses 'options' parameter passed to constructor in $options
+     * Could be redefined in subclasses to implement custom option list (e.g. from database).
+     * @param string $id - id to return name for.
+     * @throws waException
+     * @return string|array - if $id is specified returns string with the name for this id. Id $id is null returns array(id => name) with all available options.
+     */
+    public function getOptions($id = null)
+    {
         if (!isset($this->options['options']) || !is_array($this->options['options'])) {
             throw new waException('No options for waContactSelectField');
         }
 
         if ($id !== null) {
             if (!isset($this->options['options'][$id])) {
-                throw new Exception('Unknown id: '.$id);
+                throw new waException('Unknown id: '.$id);
             }
 
             if (empty($this->options['translate_options'])) {
@@ -46,7 +50,8 @@ class waContactSelectField extends waContactField
         return $options;
     }
 
-    public function getInfo() {
+    public function getInfo()
+    {
         $data = parent::getInfo();
         $data['options'] = $this->getOptions();
 
@@ -65,6 +70,16 @@ class waContactSelectField extends waContactField
     {
         return 'Select';
     }
-}
 
-// EOF
+    public function getHTML($params = array(), $attrs = '')
+    {
+        $value = isset($params['value']) ? $params['value'] : '';
+        $html = '<select '.$attrs.' name="'.$this->getHTMLName($params).'"><option value=""></option>';
+        foreach ($this->getOptions() as $k => $v) {
+            $html .= '<option'.($k == $value ? ' selected="selected"' : '').' value="'.$k.'">'.htmlspecialchars($v).'</option>';
+        }
+        $html .= '</select>';
+        return $html;
+    }
+
+}

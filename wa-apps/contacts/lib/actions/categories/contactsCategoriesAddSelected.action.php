@@ -7,21 +7,28 @@ class contactsCategoriesAddSelectedAction extends waViewAction
         // Only show categories available to current user
         $crm = new contactsRightsModel();
         $cm = new waContactCategoryModel();
-        $categories = $cm->getNames();
-        if (TRUE !== ( $allowed = $crm->getAllowedCategories())) {
-            foreach($categories as $id => $cat) {
-                if (!isset($allowed[$id])) {
-                    unset($categories[$id]);
-                }
-            }
+
+        // List of categories user is allowed to add contacts to
+        $categories = $cm->getAll('id');
+        $allowed = $crm->getAllowedCategories();
+        if ($allowed === true) {
+            $allowed = $categories;
         }
-        $this->view->assign('categories', $categories);
+        foreach($categories as $id => &$cat) {
+            if (!isset($allowed[$id]) || $cat['system_id']) {
+                unset($categories[$id]);
+            }
+            $cat = $cat['name'];
+        }
+        unset($cat);
 
         // Set of catorories that are always checked and disabled in list
         $d = waRequest::get('disabled');
         if (!is_array($d)) {
             $d = array($d);
         }
+
+        $this->view->assign('categories', $categories);
         $this->view->assign('disabled', array_fill_keys($d, true));
     }
 }

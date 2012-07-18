@@ -381,7 +381,12 @@ class waRouting
                                 $offset += strlen($params[$v]) - strlen($m[0][0]);
                                 $j++;
                             } else {
-                                continue 2;
+                                if (substr($u, $m[0][1] - 1, 1) === '(' &&
+                                    substr($u, $m[0][1] + strlen($m[0][0]), 3) === '/)?') {
+                                    $u = substr($u, 0, $m[0][1] - 1).substr($u, $m[0][1] + strlen($m[0][0]) + 3);
+                                } else {
+                                    continue 2;
+                                }
                             }
                         }
                     }

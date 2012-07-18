@@ -21,7 +21,7 @@ class waSignupAction extends waViewAction
         $errors = array();
         if (waRequest::method() == 'post') {
             // try sign up
-            if ($contact = $this->signup(waRequest::post(), $errors)) {
+            if ($contact = $this->signup(waRequest::post('data'), $errors)) {
                 // assign new contact to view
                 $this->view->assign('contact', $contact);
             }
@@ -78,6 +78,11 @@ class waSignupAction extends waViewAction
                 sprintf(_ws('User with the same %s is already registered'), $field_name)
             );
             $is_error = true;
+        }
+
+        // set unconfirmed status for email
+        if (isset($data['email']) && $data['email']) {
+            $data['email'] = array('value' => $data['email'], 'status' => 'unconfirmed');
         }
 
         // check captcha

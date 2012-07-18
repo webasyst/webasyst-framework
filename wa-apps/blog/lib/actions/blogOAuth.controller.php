@@ -8,7 +8,10 @@ class blogOAuthController extends waOAuthController
         if (isset($params['guest']) && $params['guest']) {
             $this->getStorage()->set('auth_user_data', $data);
         } else {
-            parent::afterAuth($data);
+            $contact = parent::afterAuth($data);
+            if ($contact && !$contact['is_user']) {
+                $contact->addToCategory($this->getAppId());
+            }
         }
 
         wa('webasyst');

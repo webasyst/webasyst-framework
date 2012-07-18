@@ -10,6 +10,7 @@ $.wa.site.themes = {
 		if(self.options.title) {
 			document.title = self.options.title;
 		}
+		$('.js-site-theme').die('click');
 		$('.js-site-theme').live('click', self.dispatch);
 		$("#s-upload-link").click(function () {
 			$(".s-dialog-error").text('');

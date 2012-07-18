@@ -41,6 +41,7 @@ class sitePagesAction extends waPageEditAction
 
         $this->view->assign('domain_id', $domain_id);
         $this->view->assign('domain', $domain);
+        $this->view->assign('upload_url', wa()->getDataUrl('img', true));
 
         $this->view->assign('lang', substr(wa()->getLocale(), 0, 2));
     }

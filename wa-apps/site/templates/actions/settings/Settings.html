@@ -155,7 +155,7 @@
                             <li>
                                 <input id="s-auth-app-{$app.id}" type="radio" name="auth_app" value="{$app.id}" {if $app.id == $auth_config['app']}checked="checked"{/if}>
                                 &nbsp;
-                                <label for="s-auth-app-{$app.id}"><i class="icon16" style="background-image:url('{$wa_url}{$app.icon.16}');"></i>{$app.name|escape}</label>
+                                <label for="s-auth-app-{$app.id}"><img class="s-app16x16icon-menu-v" src="{$wa_url}{$app.icon.16}"></i>{$app.name|escape}</label>
                             </li>
                             {/foreach}
                         </ul>
@@ -425,7 +425,15 @@ var site_select_apps = '<select class="s-select-app">' +
 
 	$("#s-rules").sortable({
 		distance: 5,
-		helper: 'clone',
+		helper: function(e, tr) {
+		    var $originals = tr.children();
+		    var $helper = tr.clone();
+		    $helper.children().each(function(index){
+		      // Set helper cell sizes to match the original sizes
+		      $(this).width($originals.eq(index).width())
+		    });
+		    return $helper;
+		},
 		items: 'tr',
 		opacity: 0.75,
 		tolerance: 'pointer',
