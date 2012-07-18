@@ -2,6 +2,7 @@
 
 /**
  * Контроллер обработки регистраций/входов через социальные сети
+ * @see https://www.webasyst.com/ru/framework/docs/dev/auth-adapters/
  */
 class guestbook2OAuthController extends waOAuthController
 {

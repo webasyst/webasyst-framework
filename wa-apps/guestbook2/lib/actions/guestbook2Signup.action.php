@@ -2,6 +2,7 @@
 
 /**
  * Экшн регистрации /signup
+ * @see https://www.webasyst.com/ru/framework/docs/dev/auth-frontend/
  */
 class guestbook2SignupAction extends waSignupAction
 {

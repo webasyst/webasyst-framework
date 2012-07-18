@@ -63,7 +63,7 @@ class waTheme implements ArrayAccess
      */
     public function __construct($id, $app_id = true, $force = false)
     {
-        if ($app_id === true && strpos($id, ':') !== false) {
+        if (strpos($id, ':') !== false) {
             list($app_id, $id) = explode(':', $id, 2);
         }
         //TODO validate theme id
@@ -74,7 +74,7 @@ class waTheme implements ArrayAccess
 
     public static function exists($id, $app_id = true)
     {
-        if ($app_id === true && strpos($id, ':') !== false) {
+        if (strpos($id, ':') !== false) {
             list($app_id, $id) = explode(':', $id, 2);
         }
         $app_id = ($app_id === true || !$app_id) ? wa()->getApp() : $app_id;
