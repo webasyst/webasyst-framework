@@ -1,0 +1,32 @@
+<h1>[`Guestbook`]</h1>
+
+<form method="post" action="">
+    {if !$wa->user()->getId()}
+    [`Name`]:<br />
+    <input name="name" type="text">
+    {if $wa->isAuthEnabled()}[`or`] <a href="{$wa->getUrl('/login')}">[`authorize`]</a>{/if}<br />
+    {/if}
+    [`Message`]:<br />
+    <textarea rows="4" cols="70" name="text"></textarea><br />
+    <input type="submit" value="[`Post`]">
+</form>
+<br />
+{foreach from=$records item=r}
+<div class="post">
+    <h4>
+        {if $r.contact_id}<img src="{$r.photo_url}" alt="{$r.name}">{/if}
+        {$r.name}
+        <span class="hint">{$r.datetime|wa_datetime}</span>
+    </h4>
+    <p>{$r.text}</p>
+</div>
+{/foreach}
+
+{if $pages_count > 1}
+<ul class="menu-h">
+    {for $p=1 to $pages_count}
+    <li{if $p == $page} class="selected"{/if}><a href="{$url}{if $p > 1}{$p}/{/if}">{$p}</a></li>
+    {/for}
+</ul>
+{/if}
+

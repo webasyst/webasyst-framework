@@ -1,0 +1,61 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+    "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>{$wa->title()}</title>
+    <link href="{$wa_theme_url}default.css" rel="stylesheet" type="text/css"/>
+    {if $wa->isMobile()}
+    <link href="{$wa_theme_url}mobile.css" rel="stylesheet" type="text/css"/>
+    <meta name="viewport" content="width=device-width; initial-scale=1; maximum-scale=1; user-scalable=0;" />
+    {/if}
+    <script src="{$wa_url}wa-content/js/jquery/jquery-1.7.1.min.js"></script>
+</head>
+<body>
+<div id="header" role="navigation sitemap">
+    <div class="container">
+        <ul id="wa-apps">
+            {foreach $wa->apps() as $a}
+            <li{if $a.url==$wa_app_url} class="selected"{/if}><a href="{$a.url}">{$a.name}</a></li>
+            {/foreach}
+            {if $wa->isAuthEnabled()}
+                {if $wa->user()->isAuth()}
+                <li class="float-right small"><a href="?logout">[s`Logout`]</a></li>
+                <li class="float-right small"><strong>{$wa->user('name')}</strong></li>
+                {else}
+                <li class="float-right small"><a href="{$wa->getUrl('/signup')}">[s`Sign up`]</a></li>
+                <li class="float-right small"><a href="{$wa->getUrl('/login')}">[s`Log in`]</a></li>
+                {/if}
+            {/if}
+        </ul>
+        <div class="clear-both"></div>
+    </div>
+</div>
+<div id="main">
+    <div class="container app-header"></div>
+    <div class="container">
+        {$content}
+        <div class="clear-both"></div>
+    </div>
+</div>
+<div id="footer">
+    <div class="container">
+        <div id="poweredby">
+            <a title="[`Powered by Webasyst`]" href="http://www.webasyst.com/" class="dots"></a>
+        </div>
+        <div id="copyright">
+            &copy; {time()|wa_datetime:"Y"}
+            <a href="{$wa_url}">{$wa->accountName()}</a>
+        </div>
+        <!-- <div id="sub-links">
+           suggested place for your footer links
+          <ul>
+            <li><a href="#">About</a></li>
+            <li><a href="#">Terms Of Service</a></li>
+          </ul>
+        </div>
+        -->
+    </div>
+</div>
+</body>
+</html>
