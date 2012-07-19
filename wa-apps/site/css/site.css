@@ -66,6 +66,8 @@ a.s-settings-link.selected { background: #eee; }
 .s-content .wa-page-wysiwyg-html-toggle li a { display: block; color: #888; font-weight: bold; padding: 4px 12px 6px; text-decoration: none; font-size: 0.9em; }
 .s-content .wa-page-wysiwyg-html-toggle li.selected a { background: #fff; }
 
+.fields .s-app16x16icon-menu-v { position: relative; top: 3px; left: -5px; }
+
 /* app design editor header */
 .s-core-app-name { margin: 0; padding: 15px 15px 5px 45px; }
 .s-core-app-name h2.s-short-header { line-height: 0.9em; vertical-align: top; min-width: 166px; font-weight: normal; font-size: 1.3em; }

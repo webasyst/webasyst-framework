@@ -647,14 +647,8 @@ $(function () {
 		}, "json");
 		// restore focus to editors
         if ($(".el-rte").length && $(".el-rte").is(':visible')) {
-            try {
-                $("#content").elrte()[0].elrte.selection.moveToBookmark($("#content").elrte()[0].elrte.selection.getBookmark());
-            } catch (e) {}
-        } else {
-        	wa_editor.focus();
+            //$("#content").elrte()[0].elrte.selection.moveToBookmark($("#content").elrte()[0].elrte.selection.getBookmark());
         }
 		return false;
-	});	
-	
-  	$(document).keydown(waEditorKeyCallback(false, {'save_button': 's-editor-save-button'}));
+	});
 });

@@ -55,7 +55,7 @@ function waEditorUpdateSource(options) {
             $(this).attr('src', $(this).attr('data-src'));
         });
         element.val(element.elrte('val'));
-        element.elrte('val', element.val());
+        //element.elrte('val', element.val());
         $('.el-rte iframe').contents().find('img[src*="$wa_url"]').each(function () {
             var s = decodeURIComponent($(this).attr('src'));
             $(this).attr('data-src', s);
@@ -143,8 +143,8 @@ function waEditorInit(options) {
 	    return html;
 	};
 	$('.el-rte iframe').contents()
-	    .keydown(waEditorKeyCallback())
-	    .keypress(waEditorKeyCallback(true))
+	    .keydown(waEditorKeyCallback(false, options))
+	    .keypress(waEditorKeyCallback(true, options))
 	    .keyup(function(e) {
 	        //all dialogs should be closed when Escape is pressed
 	        if (e.keyCode == 27) {
@@ -154,6 +154,8 @@ function waEditorInit(options) {
 	$('.el-rte .toolbar li').click(function () {
 	    $('#' + options.save_button).removeClass('green').addClass('yellow');
 	});
+
+    $('#wa-page-settings').keydown(waEditorKeyCallback(false, options)).keypress(waEditorKeyCallback(true, options));
 	
 	// bind click handlers to buttons
 	$("#wysiwyg").click(function () {
