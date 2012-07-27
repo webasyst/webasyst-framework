@@ -175,7 +175,7 @@ class waMailDecode
     protected function cleanHTML($html)
     {
         // body only
-        $html = preg_replace("!^.*?<body[^>]*>(.*?)</body>.*?$!isu", "$1", $html);
+        $html = preg_replace("!^.*?<body[^>]*>(.*?)</body>.*?$!is", "$1", $html);
 
         // remove tags
         $html = trim(strip_tags($html, "<a><p><div><br><b><blockquote><strong><i><em><s><u><span><img><sup><font><sub><ul><ol><li><h1><h2><h3><h4><h5><h6><table><tr><td><th><hr><center>"));
@@ -490,8 +490,10 @@ class waMailDecode
                             }
                         }
 
-                        if (isset($this->part['params']['charset']) && strtolower($this->part['params']['charset']) != 'utf-8') {
-                            $this->part['data'] = @iconv($this->part['params']['charset'], "utf-8//IGNORE", $this->part['data']);
+                        if (isset($this->part['params']['charset']) && $this->part['params']['charset']) {
+                            if (strtolower($this->part['params']['charset']) != 'utf-8') {
+                                $this->part['data'] = @iconv($this->part['params']['charset'], "utf-8//IGNORE", $this->part['data']);
+                            }
                         } else {
                             $charset = mb_detect_encoding($this->part['data']);
                             if ($charset && strtolower($charset) != "utf-8" && $temp = iconv($charset, 'UTF-8', $this->part['data'])) {

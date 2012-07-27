@@ -161,7 +161,7 @@ class siteRoutingAction extends waViewAction
                     if(!is_array($v)) {
                         $v = array('name'=>$v);
                     }
-                    $checked = ($k == $value);
+                    $checked = (sprintf('%s',$k) === $value);
                     $last = (++$counter == count($info['items']));
                     if ($last) {
                         $checked = !$selected;
@@ -171,19 +171,20 @@ class siteRoutingAction extends waViewAction
                     $html .= '<label class="s-label-with-check">'.
                                  '<input type="radio" '.
                     ($checked? 'checked="checked"' : '').
-                                    ' name="params['.$info['id'].']" value="'.$k.'" />'.
+                                    ' name="params['.$info['id'].']" value="'.$k.'" '.($last?' class="last"':'').'/>'.
                     htmlspecialchars($v['name']).(isset($v['description'])?(' <span class="hint">'.$v['description'].'</span>'):'').
                              '</label>';
                     if ($last) {
-                        $html .= '<input '.((false) ? '' : 'disabled="disabled"').' name="params['.$info['id'].']"'.($checked && ($value != $k)?' value="'.htmlentities($value,ENT_QUOTES,'utf-8').'"':'').'/>';
+                        $html .= '<input '.(($checked) ? '' : 'disabled="disabled"').' name="params['.$info['id'].']"'.($checked && ($value != $k)?' value="'.htmlentities($value,ENT_QUOTES,'utf-8').'"':'').'/>';
                     }
                 }
                 $html .= '</div>';
                 $html .= '<script type="text/javascript">
                 $("#s-radio-select-'.$route_id.'-'.$id.' input[type=radio]").change(function () {
-                    if ($(this).is(":checked")) {
-                        $("#s-radio-select-'.$route_id.'-'.$id.' select").attr("disabled", "disabled");
-                        $(this).parent().next("input").removeAttr("disabled").focus();
+                    if ($(this).hasClass("last")) {
+                        $("#s-radio-select-'.$route_id.'-'.$id.' input:text").removeAttr("disabled").focus();
+                    } else {
+                        $("#s-radio-select-'.$route_id.'-'.$id.' input:text").attr("disabled", "disabled");
                     }
                 });
                 </script>';

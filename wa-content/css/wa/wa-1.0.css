@@ -650,6 +650,7 @@ i.icon16 { background-repeat:no-repeat; background-image: url(../../../wa-conten
 h1 i.icon16, h2 i.icon16 { margin-top: 0.1em; }
 ul.tabs .icon10 { margin-top: 12px; }
 ul.tabs .icon16 { margin-top: 8px; }
+.dialog-buttons-gradient i.icon16 { margin-left: 4px; }
 .icon16.uarr { background-position:-128px 0; }
 .icon16.darr { background-position:-112px 0; }
 .icon16.rarr { background-position:-144px 0; }

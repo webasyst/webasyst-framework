@@ -16,7 +16,7 @@
 				{foreach from=$t.files key=f item=f_info}
 				<li{if $f_info.parent} class="{if $f_info.parent_exists}inherit{else}error{/if}"{/if} data-file="{$f|escape}">
 					<a href="#/design/route={$route_id|escape}&theme={$t_id}&file={$f|escape}">
-						<i class="icon16 {if $f_info.parent_exists}link{else}script{if substr($f, -4)=='.css'}-css{elseif substr($f, -3)=='.js'}-js{/if}{/if}"></i>{$f|escape}
+						<i class="icon16 {if !empty($f_info.parent_exists)}link{else}script{if substr($f, -4)=='.css'}-css{elseif substr($f, -3)=='.js'}-js{/if}{/if}"></i>{$f|escape}
 					</a>
 				</li>
 				{/foreach}

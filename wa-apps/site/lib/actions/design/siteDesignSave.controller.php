@@ -69,16 +69,18 @@ class siteDesignSaveController extends waJsonController
             $content = waRequest::post('content');
             $file_path = $theme->getPath().'/'.$file;
             if (!file_exists($file_path) || is_writable($file_path)) {
-                if (file_exists($file_path)) {
-                    @file_put_contents($file_path, $content ? $content : '');
-                    $r = true;
+                if ($content || file_exists($file_path)) {
+                    $r = @file_put_contents($file_path, $content);
+                    if ($r !== false) {
+                        $r = true;
+                    }
                 } else {
                     $r = @touch($file_path);
                 }
-                if (!$r) {
-                    $this->errors = _w('Insufficient access permissions to save the file').' '.$file_path;
-                }
             } else {
+                $r = false;
+            }
+            if (!$r) {
                 $this->errors = _w('Insufficient access permissions to save the file').' '.$file_path;
             }
         }

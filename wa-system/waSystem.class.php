@@ -430,7 +430,7 @@ class waSystem
                 $app_system = self::getInstance($app, null, true);
                 if ($app != 'webasyst' && $this->getEnv() == 'backend' && !$this->getUser()->getRights($app_system->getConfig()->getApplication(), 'backend')) {
                     //$this->getResponse()->redirect($this->getConfig()->getBackendUrl(true), 302);
-                    throw new waRightsException('Access to this app denied');
+                    throw new waRightsException('Access to this app denied', 403);
                 }
                 if (waRequest::param('secure') && !$this->getUser()->isAuth()) {
                     $app_system->login();

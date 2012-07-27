@@ -97,7 +97,7 @@ class waFrontController
                 // check rights
                 if (isset($plugin_info['rights']) && $plugin_info['rights']) {
                     if (!$this->system->getUser()->getRights($this->system->getConfig()->getApplication(), 'plugin.'.$plugin)) {
-                        throw new waRightsException("Access denied", 403);
+                        throw new waRightsException(_ws("Access denied"), 403);
                     }
                 }
                 waSystem::pushActivePlugin($plugin, $prefix);

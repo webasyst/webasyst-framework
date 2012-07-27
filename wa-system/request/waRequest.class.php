@@ -227,7 +227,7 @@ class waRequest
     /**
      * Returns locale by header Accept-Language
      */
-    public static function getLocale()
+    public static function getLocale($default = null)
     {
         $locales = waLocale::getAll(false);
         if ($lang = self::param('locale')) {
@@ -237,12 +237,16 @@ class waRequest
                 }
             }
         }
+        if ($default && in_array($default, $locales)) {
+            $result = $default;
+        } else {
+            $result = $locales[0];
+        }
         if (!self::server('HTTP_ACCEPT_LANGUAGE')) {
-            return $locales[0];
+            return $result;
         }
         preg_match_all("/([a-z]{1,8})(?:-([a-z]{1,8}))?(?:\s*;\s*q\s*=\s*(1|1\.0{0,3}|0|0\.[0-9]{0,3}))?\s*(?:,|$)/i",
             self::server('HTTP_ACCEPT_LANGUAGE'), $matches);
-        $result = $locales[0];
         $max_q = 0;
         for ($i = 0; $i < count($matches[0]); $i++) {
             $lang = $matches[1][$i];
@@ -264,8 +268,11 @@ class waRequest
             if ($in_array && ($q > $max_q)) {
                 $result = $in_array;
                 $max_q = $q;
-            } elseif (empty($matches[2][$i]) && ($q * 0.8 > $max_q)) {
+            } elseif ($q * 0.8 > $max_q) {
                 $n = strlen($lang);
+                if (!empty($matches[2][$i])) {
+                    $n -= strlen($matches[2][$i]) + 1;
+                }
                 foreach ($locales as $l) {
                     if (!strncasecmp($l, $lang, $n)) {
                         $result = $l;

@@ -58,7 +58,7 @@ class waTheme implements ArrayAccess
     /**
      * Get theme instance
      * @param $id
-     * @param bool|string $app
+     * @param bool|string $app_id
      * @param bool $force
      */
     public function __construct($id, $app_id = true, $force = false)

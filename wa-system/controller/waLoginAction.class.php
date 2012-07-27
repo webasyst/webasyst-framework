@@ -6,7 +6,7 @@ abstract class waLoginAction extends waViewAction
     {
 
         if (wa()->getAuth()->isAuth()) {
-            $this->redirect(wa()->getAppUrl());
+            $this->afterAuth();
         }
 
         // check XMLHttpRequest (ajax)

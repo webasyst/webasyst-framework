@@ -48,11 +48,11 @@ class waContact implements ArrayAccess
         if (!isset(self::$options['default']['locale'])) {
             try {
                 $app_settings_model = new waAppSettingsModel();
-                self::$options['default']['locale'] = $app_settings_model->get('webasyst', 'locale');
-            } catch (waException $e) {}
-            if (!isset(self::$options['default']['locale']) || !self::$options['default']['locale']) {
-                self::$options['default']['locale'] = waRequest::getLocale();
+                $l = $app_settings_model->get('webasyst', 'locale');
+            } catch (waException $e) {
+                $l = null;
             }
+            self::$options['default']['locale'] = waRequest::getLocale($l);
         }
         if (!isset(self::$options['default']['timezone'])) {
             self::$options['default']['timezone'] = @date_default_timezone_get();

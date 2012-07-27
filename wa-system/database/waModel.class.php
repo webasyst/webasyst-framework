@@ -218,7 +218,7 @@ class waModel
             $error = "Query Error\nQuery: ".$sql.
                      "\nError: ".$this->adapter->errorCode() .
                      "\nMessage: ".$this->adapter->error();
-            waLog::log($error."\nStack: ".print_r(debug_backtrace(false), true), 'db.log');
+            waLog::log($error."\nStack: ".print_r(debug_backtrace(), true), 'db.log');
             throw new waDbException($error, $this->adapter->errorCode());
         }
 

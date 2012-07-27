@@ -5,6 +5,7 @@ jQuery.fn.waDialog = function (options) {
         esc: true,
         buttons: null,
         url: null,
+        url_reload: true,
         'class': null, // className is a synonym
         content: null,
         'width': 0,
@@ -22,10 +23,15 @@ jQuery.fn.waDialog = function (options) {
     var id = d.attr('id');
     if (id && !d.hasClass('dialog')) {
         d.removeAttr('id');
-        $("#" + id).remove();
+        if ($("#" + id).length) {
+            d = $("#" + id);
+            if (options.url && !options.url_reload) {
+                options.url = null;
+            }
+        }
     }
 
-    var cl = (options['class'] || options['className']) ? (options['class'] || options['className']) : d.attr('class');
+    var cl = (options['class'] || options['className']) ? (options['class'] || options['className']) : (d.attr('class') || '');
 
     if (!d.hasClass('dialog')) {
         var content = $(this);

@@ -40,20 +40,23 @@ class waRightsException extends waException
 </head>
 <body>
 {$wa_header}
+<div id="wa-app" class="block double-padded">
 HTML;
+        } else {
+            $response = new waResponse();
+            $response->setStatus(403);
+            $response->sendHeaders();
         }
         $html .= <<<HTML
-<div id="wa-app" class="block double-padded">
   <h1>{$t("Error")} #403</h1>
   <div style="border:1px solid #EAEAEA;padding:10px; margin:10px 0">
   <p style="color:red; font-weight: bold">{$t("You have no permission to access this page.")}</p>
 
   <p>{$t("Please refer to your system administrator.")}</p>
   </div>
-</div>
 HTML;
         if (!waRequest::isXMLHttpRequest()) {
-            $html .= "</body></html>";
+            $html .= "</div></body></html>";
         }
         return $html;
     }

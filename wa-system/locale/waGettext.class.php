@@ -16,9 +16,6 @@ class waGettext
 {
     protected $type;
     protected $file;
-    protected $meta;
-    protected $f;
-    protected $messages;
 
     public function __construct($file)
     {
@@ -40,63 +37,49 @@ class waGettext
     {
         $file = $this->file;
         if (!$contents = @file($file)) {
-            return false;
+            return array();
         }
-        $contents = implode('', $contents);
-        
-        // match all msgid/msgstr entries
-        $matched = preg_match_all(
-            '/(msgid\s+(?:"(?:\\\\"|[^"])*?"\s*)+)\s+' .
-            '(msgid_plural\s+(?:"(?:[^"]|\\\\")*?"\s*)+)?\s*'.
-            '((?:msgstr(?:\[\d\])?\s+(?:"(?:\\\\"|[^"])*"\s*)+\s+)+)/u',
-            $contents, $matches
-        );
-        
-        
-        unset($contents);
-        
-        if (!$matched) {
-            return false;
-        }
-        
-        // get all msgids and msgtrs
-        for ($i = 0; $i < $matched; $i++) {
-            $msgid = preg_replace('/\s*msgid\s*"(.*)"\s*/s', '\\1', $matches[1][$i]);
-            
-            $msgid_plural = preg_replace('/\s*msgid_plural\s*"(.*)"\s*/s', '\\1', $matches[2][$i]);
-            
-            $msgstr= preg_replace('/\s*msgstr\s*"(.*)"\s*/s', '\\1', $matches[3][$i]);
-                        
-            if ($msgid_plural) {
-                $msgstr = preg_replace('/\s*msgstr\[\d\]\s*"((?:\\\\"|[^"])*)"\s*/si', "\\1\n\n", $matches[3][$i]);
-                $msgstr = explode("\n\n", rtrim($msgstr, "\n"));
-            }
-            
-            if (is_array($msgstr)) {
-                foreach ($msgstr as &$m) {
-                    $m = $this->prepare($m);
-                }
-            } else {
-                $msgstr = $this->prepare($msgstr);
-            }
-            
-            // ignore strings without translation
-            if ($msgstr === "") {
+        $messages = array();
+        $buffer = array();
+        foreach ($contents as $string) {
+            $string = trim($string);
+            if (!$string || substr($string, 0, 1) == '#') {
                 continue;
             }
-
-            $this->messages[$this->prepare($msgid)] = $msgstr;
+            if (substr($string, 0, 12) == 'msgid_plural') {
+                $buffer['msgid_plural'] = $this->prepare(substr($string, 13));
+            } elseif (substr($string, 0, 5) == 'msgid') {
+                if ($buffer) {
+                    if (isset($buffer['msgstr']) && $buffer['msgstr']) {
+                        $messages[$buffer['msgid']] = $buffer['msgstr'];
+                    }
+                    $buffer = array();
+                }
+                $buffer['msgid'] = $this->prepare(substr($string, 6));
+            } elseif (substr($string, 0, 6) == 'msgstr') {
+                if (!$buffer) {
+                    continue;
+                }
+                if (isset($buffer['msgid_plural'])) {
+                    if ($msgstr = $this->prepare(substr($string, 10))) {
+                        $buffer['msgstr'][substr($string, 7, 1)] = $msgstr;
+                    }
+                } else {
+                    $buffer['msgstr'] = $this->prepare(substr($string, 7));
+                }
+            } elseif (substr($string, 0, 1) == '"') {
+                if (isset($buffer['msgid_plural'])) {
+                    $buffer['msgstr'][count($buffer['msgstr']) - 1] .= $this->prepare($string);
+                } else {
+                    $buffer['msgstr'] .= $this->prepare($string);
+                }
+            }
         }
-        
-        if (isset($this->messages[''])) {
-            $this->meta = $this->meta2array($this->messages['']);
-            unset($this->messages['']);
-        }
-        
+        $meta = $this->meta2array($messages['']);
+        unset($messages['']);
         return array(
-            'meta' => $this->meta,
-            'messages' => $this->messages,
-            'f' => $this->f
+            'meta' => $meta,
+            'messages' => $messages,
         );
     }
 
@@ -107,18 +90,12 @@ class waGettext
 
     protected function prepare($string, $reverse = false)
     {
-        if ($reverse) {
-            $smap = array('"', "\n", "\t", "\r");
-            $rmap = array('\"', '\\n"' . "\n" . '"', '\\t', '\\r');
-            return (string) str_replace($smap, $rmap, $string);
-        } else {
-            $string = preg_replace('/"\s+"/', '', $string);
-            $smap = array('\\n', '\\r', '\\t', '\"');
-            $rmap = array("\n", "\r", "\t", '"');
-            return (string) str_replace($smap, $rmap, $string);
-        }
+        $string = trim($string, ' "');
+        $smap = array('\\n', '\\r', '\\t', '\"');
+        $rmap = array("\n", "\r", "\t", '"');
+        return str_replace($smap, $rmap, $string);
     }
-    
+
     function meta2array($meta)
     {
         $array = array();
@@ -139,7 +116,7 @@ class waGettext
             }
             $array['Plural-Forms']['plural'] = 'return '.str_replace('n', '$n', $array['Plural-Forms']['plural']).';';
         }
-        
+
         return $array;
-    }    
+    }
 }

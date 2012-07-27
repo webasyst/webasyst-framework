@@ -48,7 +48,7 @@ class siteFrontendAction extends waViewAction
         }
     }
 
-    public function display()
+    public function display($clear_assign = true)
     {
         if (waSystemConfig::isDebug()) {
             return parent::display(false);
