@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE theme PUBLIC "wa-app-theme" "http://www.webasyst.com/wa-content/xml/wa-app-theme.dtd">
+<theme id="default" system="1" vendor="webasyst" app="photos">
+    <name locale="en_US">Default</name>
+    <name locale="ru_RU">Основная тема</name>
+    <files>
+        <file path="index.html" custom="0">
+            <description locale="en_US">Common layout</description>
+        </file>
+        <file path="view-thumbs.html" custom="0">
+            <description locale="en_US">Thumbnail list view</description>
+        </file>
+        <file path="view-plain.html" custom="0">
+            <description locale="en_US">Plain photo list view</description>
+        </file>
+        <file path="photo.html" custom="0">
+            <description locale="en_US">One photo and its details</description>
+        </file>
+        <file path="album.html" custom="0">
+            <description locale="en_US">Album info</description>
+        </file>
+        <file path="search.html" custom="0">
+            <description locale="en_US">Photo search results, e.g. by tag or by rating</description>
+        </file>
+        <file path="page.html" custom="0">
+            <description locale="en_US">Static info page</description>
+        </file>
+        <file path="login.html" custom="0">
+            <description locale="en_US">Login page</description>
+        </file>
+        <file path="singup.html" custom="0">
+            <description locale="en_US">Sign up page</description>
+        </file>
+        <file path="forgotpassword.html" custom="0">
+            <description locale="en_US">Forgot password page</description>
+        </file>
+        <file path="error.html" custom="0">
+            <description locale="en_US">404 and other errors</description>
+        </file>
+        <file path="default.css" custom="0">
+            <description locale="en_US">CSS for desktop and laptop computers</description>
+        </file>
+        <file path="mobile.css" custom="0">
+            <description locale="en_US">CSS for multi-touch mobile devices</description>
+        </file>
+    </files>
+</theme>

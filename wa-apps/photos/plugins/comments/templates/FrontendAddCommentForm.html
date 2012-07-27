@@ -1,0 +1,68 @@
+{if $require_authorization && !$comment_author}
+{sprintf('[`To add a comment please <a href="%s">sign up</a> or <a href="%s">login</a>`]',$wa->signupUrl(),$wa->loginUrl())}
+{else}
+<div class="comment-form" id="add-comment-form">
+    <form action="" method="post">
+        <h4>[`Add comment`]</h4>
+        {$current_user_id=$wa->userId()}
+
+        <div class="comment-form-fields">
+            {if empty($current_user_id)}
+                {if $require_authorization}
+                <div data-provider="signup" {if !$current_auth_source}style="display:none"{/if}>
+                    {sprintf('[`To add a comment please <a href="%s">sign up</a> or <a href="%s">login</a>`]',$wa->signupUrl(),$wa->loginUrl())}
+                </div>
+                {else}
+                <div class="tab clear-left" data-provider="guest" {if !empty($current_auth_source)}style="display:none"{/if}>
+                    <p>
+                        <label for="comment_name">[`Your name`]</label>
+                        <input type="text" name="name" id="comment_name" class="bold" value="">
+                    </p>
+                    <p>
+                        <label for="comment_email">[`Email`]</label>
+                        <input type="text" name="email" id="comment_email">
+                    </p>
+                    <p>
+                        <label for="comment_site">[`Site`]</label>
+                        <input type="text" name="site" id="comment_site">
+                    </p>
+                </div>
+                {/if}
+                {$auth_adapters = array()}
+                {foreach $auth_adapters as $adapter}
+                    <div class="tab" data-provider="{$adapter->getId()}" {if $current_auth_source != $adapter->getId()}style="display:none"{/if}>
+                        <p>
+                            <label for="name">[`Your name`]</label>
+                            <img src="{$comment_author.photo}" class="userpic">
+                            <strong>{$comment_author.name|escape}</strong>
+                            <a href="{$wa_app_url}logout">[`log out`]</a>
+                        </p>
+                    </div>
+                {/foreach}
+            {else}
+                <p>
+                    <label>[`Your name`]</label>
+                    <img src="{$wa->user()->getPhoto(20)}" class="userpic" alt=""> <strong>{$wa->user('name')}</strong> <a href="{$wa_app_url}logout">[`log out`]</a>
+                </p>
+            {/if}
+
+            <p class="comment-body">
+                <label for="comment-text">[`Comment`]</label>
+                <textarea id="comment-text" name="text" rows="10" cols="45"></textarea>
+            </p>
+        </div>
+        <div class="comment-submit">
+            {if (!isset($request_captcha)||$request_captcha) && empty($current_user_id)}
+                {$wa->captcha()}
+            {/if}
+            {*
+            <input type="hidden" name="auth_provider" value="{$current_auth_source|default:'guest'}">
+            *}
+            <input type="hidden" name="comment_id" id="comment-id" value="0">
+            <input type="hidden" name="photo_id" id="photo-id" value="{$photo_id}">
+            <input id="add-comment-button" type="button" value="[`Add comment`]" /> <em class="hint">Ctrl+Enter</em>
+            <img src="{$wa_url}wa-content/img/loading16.gif" style="display: none;" alt="">
+        </div>
+    </form>
+</div>
+{/if}

@@ -1,0 +1,22 @@
+{if $src}
+    <div id="photos_{$plugin_id}_image">
+        <img src="{$src}"><br>
+        <a href="javascript:void(0);" class="small" id="photos_{$plugin_id}_delete_image_link">{_wp('Delete')}</a>
+        <input type="hidden" name="photos_{$plugin_id}[delete_image]" value="0" id="photos_{$plugin_id}_delete_image"><br><br>
+    </div>
+{/if}
+<input type="file" name="photos_{$plugin_id}[image]" class="custom file" value="{$file_name}" id="'{$plugin_id}_photos_{$plugin_id}_photo">
+<span style="display:none;" id="photos_{$plugin_id}_confirm_text">{_wp('Watermark image will be permanently deleted. Delete?')}</span>
+<script>
+$(function() {
+    var plugin_id = "{$plugin_id}";
+    $('#photos_'+plugin_id+'_delete_image_link').click(function() {
+        if (confirm($('#photos_'+plugin_id+'_confirm_text').text())) {
+            var id = this.id.replace('_link', '');
+            $('#'+id).attr('value', 1);
+            $('#photos_'+plugin_id+'_image').remove();
+            $.post('?plugin=watermark&module=image&action=delete');
+        }
+    });
+});
+</script>

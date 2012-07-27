@@ -1,0 +1,191 @@
+<form id="photos-import" method="post" action="?plugin=import&module=run">
+    <div class="fields form" style="width:500px">
+        <h6 class="heading">[`Source`]</h6>
+        <div class="field-group" id="plugin-import-transport-group">
+            <div class="field">
+                <div class="name">[`Platform`]</div>
+                <div class="value no-shift">
+                    <select name="transport" id="plugin-import-transport">
+                        <option value="">[`Select platform`]</option> {foreach $transports as $id => $t}
+                        <option value="{$id}">{$t.name|escape}</option> {/foreach}
+                    </select>
+                    <br>
+                    {foreach $transports as $id => $t}
+                    <span id="plugin-import-transport-{$id}" class="hint plugin-import-transport-description" style="display:none;">{$t.description|escape}</span>
+                    {/foreach}
+                </div>
+            </div>
+        </div>
+
+        <div class="field-group" id="plugin-import-transport-fields">
+        </div>
+        <div class="clear-left"></div>
+        <div class="field-group" id="plugin-import-submit" style="display: none;">
+            <div class="field">
+                <div class="value submit">
+                    <input type="submit" class="button green" value="[`Import`]">
+                    <div class="js-progressbar-container" style="display:none;">
+                        <div class="progressbar blue float-left" style="display: none; width: 70%;">
+                            <div class="progressbar-outer">
+                                <div class="progressbar-inner" style="width: 0%;"></div>
+                            </div>
+                        </div>
+                        <div style="padding-top: 17px;">
+                            <span class="progressbar-description"></span>                        
+                        </div>
+                        <br clear="left" />
+                        <span class="small italic">[`Please do not close your browser window and do not leave this page until the entire import process is finished.`]</span>
+                    </div><br><br>
+                    <em class="errormsg"></em>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<div class="clear-left"></div>
+
+
+<script>{literal}
+    $("#plugin-import-transport").change(function () {
+        $(".plugin-import-transport-description").hide();
+        if ($(this).val()) {
+            $("#plugin-import-transport-" + $(this).val()).show();
+            $("#plugin-import-transport-fields").load("?plugin=import&module=settings&action=transport", { 'id': $(this).val()},function(){$("#plugin-import-submit").show();});
+
+        } else {
+            $("#plugin-import-submit").hide();
+            $("#plugin-import-transport-fields").empty();
+        }
+
+    });
+
+    $.photos.import = {
+        form : null,
+        ajax_pull : {},
+        importHandler : function(element) {
+            var self = this;
+            self.progress = true;
+            self.form = $(element);
+            var data = self.form.serialize();
+            self.form.find('.errormsg').text('');
+            self.form.find(':input').attr('disabled', true);
+            self.form.find(':submit').hide();
+            self.form.find('.progressbar .progressbar-inner').css('width',
+                '0%');
+            self.form.find('.progressbar').show();
+            var url = $(element).attr('action');
+            $.ajax({
+                url : url,
+                data : data,
+                dataType : 'json',
+                type : 'post',
+                success : function(response) {
+                    if(response.error) {
+                        self.form.find(':input').attr('disabled', false);
+                        self.form.find(':submit').show();
+                        self.form.find('.js-progressbar-container').hide();
+                        self.form.find('.photos-ajax-status-loading').remove();
+                        self.progress = false;
+                        self.form.find('.errormsg').text(response.error);
+                    } else {
+                        self.form.find('.progressbar').attr('title', '0.00%');
+                        self.form.find('.progressbar-description').text('0.00%');
+                        self.form.find('.js-progressbar-container').show();
+
+                        self.ajax_pull[response.processId] = new Array();
+                        self.ajax_pull[response.processId]
+                            .push(setTimeout(
+                            function() {
+                                $.wa.errorHandler = function(xhr) {
+                                    if ((xhr.status >= 500) || (xhr.status == 0)) {
+                                        return false;
+                                    }
+                                    return true;
+                                };
+                                self.progressHandler(url, response.processId,
+                                    response);
+                            }, 100));
+                        self.ajax_pull[response.processId].push(setTimeout(
+                            function() {
+                                self.progressHandler(url, response.processId);
+                            }, 2000));
+                    }
+                },
+                error : function(jqXHR, textStatus, errorThrown) {
+                    self.form.find(':input').attr('disabled', false);
+                    self.form.find(':submit').show();
+                    self.form.find('.js-progressbar-container').hide();
+                    self.form.find('.photos-ajax-status-loading').remove();
+                    self.form.find('.progressbar').hide();
+                }
+            });
+            return false;
+        },
+        progressHandler : function(url, processId, response) {
+            // display progress
+            // if not completed do next iteration
+            var self = $.photos.import;
+
+            if (response && response.ready) {
+                $.wa.errorHandler = null;
+                while (timer = self.ajax_pull[processId].pop()) {
+                    if (timer) {
+                        clearTimeout(timer);
+                    }
+                }
+                self.form.find(':input').attr('disabled', false);
+                self.form.find(':submit').show();
+                self.form.find('.photos-ajax-status-loading').remove();
+                self.form.find('.progressbar').hide();
+                self.form.find('.progressbar-description').hide();
+                $.ajax({
+                    url : url,
+                    data : {
+                        'processId' : response.processId,
+                        'cleanup' : 1
+                    },
+                    dataType : 'json',
+                    type : 'post',
+                    success : function(response) {
+                        //response.blog;
+                    }
+                });
+                $.storage.del('photos/hash');
+                location.href = location.href.replace(/#.*$/, '');
+            } else {
+                if (response && response.progress) {
+                    var bar = self.form.find('.progressbar .progressbar-inner');
+                    bar.css('width', response.progress.replace(/,/, '.'));
+                    bar.parents('.progressbar').attr('title', response.progress);
+                    self.form.find('.progressbar-description').text(
+                        response.progress);
+                }
+                var ajax_url = url;
+                var id = processId;
+                self.ajax_pull[id].push(setTimeout(function() {
+                    $.ajax({
+                        url : ajax_url,
+                        data : {
+                            'processId' : id
+                        },
+                        dataType : 'json',
+                        type : 'post',
+                        success : function(response) {
+                            self.progressHandler(url, response
+                                ? response.processId
+                                : id, response);
+                        },
+                        error : function(jqXHR, textStatus, errorThrown) {
+                            self.progressHandler(url, id, null);
+                        }
+                    });
+                }, 3000));
+            }
+        }
+    }
+    $("#photos-import").submit(function () {
+        $.photos.import.importHandler(this);
+        return false;
+    });
+{/literal}
+</script>

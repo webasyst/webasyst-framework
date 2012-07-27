@@ -1,0 +1,40 @@
+{if isset($comment) && $comment}
+    {if !empty($wrap_li)}<li id="comment-{$comment.id}">{/if}
+        <div class="p-comment {if $comment.status == photosCommentModel::STATUS_DELETED}p-delete{/if}">
+
+            {strip}
+                <a href="{if !empty($comment.author.site)}{$comment.author.site}{else}javascript:void(0);{/if}" class="p-comment-author">
+                    <i class="icon16 userpic20" style="background-image: url('{if isset($comment.author.photo) && $comment.author.photo}{$comment.author.photo}{else}/wa-content/img/userpic20.jpg{/if}');"></i>
+                    {$comment.author.name|escape}
+                </a>
+            {/strip}
+            <span class="hint">{$comment.datetime|wa_datetime:'humandatetime'}</span>
+            <a href="javascript:void(0);" class="small p-comment-delete" {if $comment.status == photosCommentModel::STATUS_DELETED}style="display:none"{/if}>[`delete`]</a>
+            <a href="javascript:void(0);" class="small p-comment-restore" {if $comment.status == photosCommentModel::STATUS_PUBLISHED}style="display:none"{/if}>[`restore`]</a>
+
+            {if isset($comment.crop)}
+            <div class="profile image96px">
+                    <div class="image">
+                        <a href="#/photo/{$comment.photo_id}"><img src="{$comment.crop}"></a><br>
+                    </div>
+                <div class="details">
+                    <p>{$comment.text|escape|nl2br}</p>
+                    {if !empty($reply_to)}
+                        <span class="hint">[`in reply to`] <strong>{$reply_to|escape}</strong></span><br><br>
+                    {/if}
+                    <a href="javascript:void(0);" class="small inline-link p-comment-reply"><b><i>[`reply`]</i></b></a>
+                </div>
+            </div>
+            {else}
+                <div class="details">
+                    <p>{$comment.text|escape|nl2br}</p>
+                    {if !empty($reply_to)}
+                        <span class="hint">[`in reply to`] <strong>{$reply_to|escape}</strong></span><br><br>
+                    {/if}
+                    <a href="javascript:void(0);" class="small inline-link p-comment-reply"><b><i>[`reply`]</i></b></a>
+                </div>
+            {/if}
+        </div>
+    {if !empty($wrap_li)}</li>{/if}
+
+{/if}

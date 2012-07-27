@@ -1,0 +1,16 @@
+{foreach $controls as $html}
+    {$html}
+{/foreach}
+<div class="field">
+    <div class="name">[`Author`]</div>
+    <div class="value">
+        <select class="select" name="settings[contact_id]">
+            {foreach $contacts as $id => $name}
+            <option{if $id == $user_id} selected="selected"{/if} value="{$id}">{$name|escape}</option>
+            {/foreach}
+        </select>
+        <br />
+        <span class="hint">[`All imported photos will be authored by this user`]</span>
+    </div>
+</div>
+

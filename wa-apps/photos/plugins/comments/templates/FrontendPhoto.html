@@ -1,0 +1,53 @@
+<div class="comments" id="comments-block" xmlns="http://www.w3.org/1999/html">
+    <h3 {if !$comments}style="display:none;"{/if} class="comments-count comments-header">
+        <span id="photo-comments-count-text">{_wp('%d comment', '%d comments',count($comments))}</span>
+    </h3>
+
+    {$depth=-1}
+    {$parent=array()}
+    {foreach $comments as $comment}
+        {if $comment.depth > $depth}
+            <ul class="menu-v with-icons">
+            {if $comment.depth-$depth > 1}
+                {$loop=$comment.depth-$depth-1}
+                {section name="end-comment" loop=$loop}
+                    <li>
+                        <div class="comment deleted">
+                            <s>[`comment deleted`]</s>
+                        </div>
+                        <ul class="menu-v with-icons">
+                {/section}
+            {/if}
+        {elseif isset($parent[$comment.depth]) && $parent[$comment.depth] != $comment.parent}
+            {section name="end-comment" loop=$depth}
+                </li></ul>
+            {/section}
+            </li></ul><ul class="menu-v with-icons">
+                {section name="end-comment" loop=$comment.depth}
+                <li>
+                    <div class="comment deleted">
+                        <s>[`comment deleted`]</s>
+                    </div>
+                    <ul class="menu-v with-icons">
+                {/section}
+        {else if $comment.depth < $depth}
+            {$loop=$depth-$comment.depth}
+            {section name="end-comment" loop=$loop}
+                </li></ul>
+            {/section}
+            </li>
+        {else if $comment.depth == $depth}
+                </li>
+        {/if}
+        {$depth=$comment.depth}
+        {$parent[$depth]=$comment.parent}
+        <li id="comment-{$comment.id}">{include file='./FrontendComment.html' inline}
+    {foreachelse}
+        <ul class="menu-v with-icons" style="display:none;"><li>
+    {/foreach}
+    {section name="end-comment" loop=$depth }
+        </li></ul>
+    {/section}
+    </li></ul>
+</div>
+{include file='./FrontendAddCommentForm.html' photo_id=$photo_id inline}

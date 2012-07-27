@@ -1,0 +1,450 @@
+<?php
+
+class photosPhoto
+{
+    const AUTHOR_PHOTO_SIZE = 32;
+    const SHARP_AMOUNT = 6;
+
+    public static function getPhotoUrl($photo, $size = null, $absolute = false)
+    {
+        return str_replace('%size%', $size, self::getPhotoUrlTemplate($photo, $absolute));
+    }
+
+    public static function getPhotoUrlTemplate($photo, $absolute = false)
+    {
+        $path = self::getPhotoFolder($photo['id']).'/'.$photo['id'];
+        if ($photo['status'] <= 0) {
+            $path .= '.'.$photo['hash'];
+        }
+        $path .= '/'.$photo['id'].'.%size%.'.$photo['ext'];
+
+        if (waSystemConfig::systemOption('mod_rewrite')) {
+            return wa()->getDataUrl($path, true, 'photos', $absolute);
+        } else {
+            $wa = wa();
+            if (file_exists($wa->getDataPath($path, true, 'photos'))) {
+                return $wa->getDataUrl($path, true, 'photos', $absolute);
+            } else {
+                return $wa->getDataUrl('thumb.php/'.$path, true, 'photos', $absolute);
+            }
+        }
+    }
+
+    public static function getPhotoThumbDir($photo)
+    {
+        $path = self::getPhotoFolder($photo['id']).'/'.$photo['id'];
+        if ($photo['status'] <= 0 && $photo['hash']) {
+            $path .= '.'.$photo['hash'].'/';
+        }
+        return wa()->getDataPath($path, true);
+    }
+
+    public static function getPhotoThumbPath($photo, $size)
+    {
+        $thumb_path = self::getPhotoThumbDir($photo);
+        return $thumb_path.'/'.$photo['id'].'.'.$size.'.'.$photo['ext'];
+    }
+
+    private static function getPhotoFolder($photo_id)
+    {
+        $str = str_pad($photo_id, 4, '0', STR_PAD_LEFT);
+        return substr($str, -2).'/'.substr($str, -4, 2);
+    }
+
+    public static function getPhotoPath($photo)
+    {
+        $file_name = self::getPhotoFolder($photo['id']).'/'.$photo['id'];
+        if ($photo['status'] <= 0 && $photo['hash']) {
+            $file_name .= '.'.$photo['hash'];
+        }
+        $file_name .= '.'.$photo['ext'];
+        return wa()->getDataPath($file_name, false, 'photos');
+    }
+
+    /**
+     * @static
+     * @param array|string $photo
+     * @return string
+     */
+    public static function getOriginalPhotoPath($photo)
+    {
+        if (is_array($photo)) {
+            $file = self::getPhotoPath($photo);
+        } else {
+            $file = $photo;
+        }
+        if (($i = strrpos($file, '.')) !== false) {
+            return substr($file, 0, $i).'.original'.substr($file, $i);
+        } else {
+            return $file.'.original';
+        }
+    }
+
+    public static function generateThumbs($photo, $sizes = array())
+    {
+        $wa = wa();
+
+        $photo_path = self::getPhotoPath($photo);
+        $apply_sharp = wa('photos')->getConfig()->getOption('sharpen');
+
+        $main_thumbnail_size = photosPhoto::getBigPhotoSize();
+        $main_thumbnail_path = self::getPhotoThumbPath($photo, $main_thumbnail_size);
+
+        foreach ((array)$sizes as $size) {
+            if ($size == $main_thumbnail_size) {
+                continue;
+            }
+            $image = self::generateThumb(array(
+                    'path' => $main_thumbnail_path,
+                    'size' => $main_thumbnail_size
+                ),
+                $photo_path,
+                $size
+            );
+            if (!$image) {
+                continue;
+            }
+            // sharp
+            if ($apply_sharp) {
+                $image->sharpen(self::SHARP_AMOUNT);
+            }
+            $image->save(self::getPhotoThumbPath($photo, $size));
+        }
+
+        // sharp for mail thumbnail
+        if ($apply_sharp) {
+            $image = waImage::factory($main_thumbnail_path);
+            $image->sharpen(self::SHARP_AMOUNT);
+            $image->save();
+        }
+        clearstatcache();
+    }
+
+    protected static function _generateThumb($path, $type, $width, $height)
+    {
+        $image = null;
+        switch($type) {
+            case 'crop':
+                $image = waImage::factory($path);
+                $image->resize($width, $height, waImage::INVERSE)->crop($width, $height);
+                break;
+            case 'rectangle':
+                $image = waImage::factory($path);
+                if ($width > $height) {
+                    $w = $image->width;
+                    $h = $image->width*$height/$width;
+                } else {
+                    $h = $image->height;
+                    $w = $image->height*$width/$height;
+                }
+                $image->crop($w, $h)->resize($width, $height);
+                break;
+            case 'max':
+            case 'width':
+            case 'height':
+                $image = waImage::factory($path);
+                $image->resize($width, $height);
+                break;
+            default:
+                break;
+        }
+        return $image;
+    }
+
+    public static function generateThumb($main_thumbnail_info, $original_path, $size)
+    {
+        $main_thumbnail_path = $main_thumbnail_info['path'];
+        $main_thumbnail_size = $main_thumbnail_info['size'];
+        if (!file_exists($main_thumbnail_path)) {
+            $size_info = photosPhoto::parseSize($main_thumbnail_size);
+            $type = $size_info['type'];
+            $width = $size_info['width'];
+            $height = $size_info['height'];
+            if ($image = self::_generateThumb($original_path, $type, $width, $height)) {
+                $image->save($main_thumbnail_path);
+            }
+        }
+
+        $path = $main_thumbnail_path;
+        $image = $width = $height = null;
+        $size_info = photosPhoto::parseSize($size);
+        $type = $size_info['type'];
+        $width = $size_info['width'];
+        $height = $size_info['height'];
+        switch($type) {
+            case 'max':
+                if ($width > $main_thumbnail_size) {
+                    $path = $original_path;    // make thumb from original photo
+                }
+                break;
+            case 'crop':
+            case 'rectangle':
+                if (max($width, $height) > $main_thumbnail_size) {
+                    $path = $original_path;    // make thumb from original photo
+                }
+                break;
+            case 'width':
+            case 'height':
+                $s = !is_null($width) ? $width : $height;
+                if ($s > $main_thumbnail_size) {
+                    $path = $original_path;    // make thumb from original photo
+                }
+                break;
+            default:
+                $type = 'unknown';
+                break;
+        }
+        return self::_generateThumb($path, $type, $width, $height);
+    }
+
+    public static function escapeFields($photo)
+    {
+        // escape
+        $photo['name'] = photosPhoto::escape($photo['name']);
+//         $photo['description'] = photosPhoto::escape($photo['description']);
+        $photo['url'] = photosPhoto::escape($photo['url']);
+        return $photo;
+    }
+
+    /**
+     * Parsing size-code (e.g. 500x400, 500, 96x96, 200x0) into key-value array with info about this size
+     *
+     * @see Client-side has the same function with the same realization
+     * @param string $size
+     * @returns array
+     */
+    public static function parseSize($size)
+    {
+        $type = 'unknown';
+        $ar_size = explode('x', $size);
+        $width = !empty($ar_size[0]) ? $ar_size[0] : null;
+        $height = !empty($ar_size[1]) ? $ar_size[1] : null;
+
+        if (count($ar_size) == 1) {
+            $type = 'max';
+            $height = $width;
+        } else {
+            if ($width == $height) {  // crop
+                $type = 'crop';
+            } else {
+                if ($width && $height) { // rectange
+                    $type = 'rectangle';
+                } else if (is_null($width)) {
+                    $type = 'height';
+                } else if (is_null($height)) {
+                    $type = 'width';
+                }
+            }
+        }
+        return array(
+            'type' => $type,
+            'width' => $width,
+            'height' => $height
+        );
+    }
+
+    /**
+     * Calculate real size of photo thumbnail
+     *
+     * @see Client-side has the same function with the same realization
+     * @param array $photo Key-value object with photo info
+     * @param string $size string size-code or key-value object returned by parseSize
+     * @returns array Key-value object with width and height values
+     */
+    public static function getRealSizesOfThumb($photo, $size = null)
+    {
+        if (!$photo['width'] && !$photo['height']) {
+            return null;
+        }
+        $size = !is_null($size) ? $size : self::getThumbPhotoSize();
+        $rate = $photo['width']/$photo['height'];
+        $revert_rate = $photo['height']/$photo['width'];
+
+        if (!is_array($size)) {
+            $size_info = photosPhoto::parseSize($size);
+        } else {
+            $size_info = $size;
+        }
+        $type = $size_info['type'];
+        $width = $size_info['width'];
+        $height = $size_info['height'];
+        switch($type) {
+            case 'max':
+                if ($photo['width'] > $photo['height']) {
+                    $w = $width;
+                    $h = $revert_rate*$w;
+                } else {
+                    $h = $width; // second param in case of 'max' type has size of max side, so width is now height
+                    $w = $rate*$h;
+                }
+                break;
+            case 'crop':
+                $w = $h = $width; // $width == $height
+                break;
+            case 'rectangle':
+                $w = $width;
+                $h = $height;
+                break;
+            case 'width':
+                $w = $width;
+                $h = $revert_rate*$w;
+                break;
+            case 'height':
+                $h = $height;
+                $w = $rate*$h;
+                break;
+            default:
+                $w = $h = null;
+                break;
+        }
+        $w = round($w);
+        $h = round($h);
+        if ($photo['width'] < $w && $photo['height'] < $h) {
+            return array(
+                'width' => $photo['width'],
+                'height' => $photo['height']
+            );
+        }
+        return array(
+            'width' => $w,
+            'height' => $h
+        );
+    }
+
+    public static function getThumbInfo($photo, $size)
+    {
+        $size_info = photosPhoto::parseSize($size);
+        return array(
+            'size' => photosPhoto::getRealSizesOfThumb($photo, $size_info),
+            'url' => photosPhoto::getPhotoUrl($photo, $size, true),
+            'bound' => array(
+                'width' => $size_info['width'],
+                'height' => $size_info['height']
+        ));
+    }
+
+    public static function getEmbedImgHtml($photo, $size, $attributes = array())
+    {
+        if ($photo['width'] && $photo['height']) {
+
+            $real_sizes = photosPhoto::getRealSizesOfThumb($photo, $size);
+            if ($real_sizes && $real_sizes['width'] && $real_sizes['height']) {
+                $attributes['style'] = !empty($attributes['style']) ? $attributes['style'] : '';
+                $attributes['style'] .= 'width: '.(int)$real_sizes['width'].'px; height: '.(int)$real_sizes['height'].'px; ';
+            }
+        }
+        $photo['src'] = photosPhoto::getPhotoUrl($photo, $size, true);
+        if ($photo['edit_datetime']) {
+            $photo['src'] .= '?'.strtotime($photo['edit_datetime']);
+        }
+        $attr = '';
+        foreach ($attributes as $name => $value) {
+            if (preg_match('/^%(.+)%$/', $value, $matches) && isset($photo[$matches[1]])) {
+                $value = $photo[$matches[1]];
+            }
+            $value = htmlentities($value, ENT_QUOTES, 'utf-8');
+            $attr .= $name.'="'.$value.'" ';
+        }
+        return "<img src=\"{$photo['src']}\" {$attr}>";   // use everywhere only one type of quotes
+    }
+
+    public static function getEmbedPhotoListContext($hash, $size, $limit = null)
+    {
+        $link = photosCollection::getFrontendLink($hash);
+        $collection = new photosCollection($hash);
+        $thumb_key = 'thumb_'.$size;
+        $photos = $collection->getPhotos('*, '.$thumb_key, 0, $limit == null ? 500 : $limit);
+
+        $photo_ids = array_keys($photos);
+        $photo_model = new photosPhotoModel();
+        $public_photo_ids = $photo_model->filterByField($photo_ids, 'status', 1);
+        $all_public = count($photo_ids) == count($public_photo_ids);
+
+        $urls = '';
+        $html = '';
+        $html_with_descriptions = '';
+        foreach ($photos as $photo) {
+            $urls .= $photo[$thumb_key]['url'].PHP_EOL;
+            $img_html = photosPhoto::getEmbedImgHtml($photo, $size);
+            $html_with_descriptions .= '<p>' . ($photo['description'] ? $photo['description'].'<br>' : '') . $img_html.'</p>'.PHP_EOL;
+            $html .= $img_html.'<br>'.PHP_EOL;
+        }
+
+        $params_string = '"'.$hash.'", "'.$size.'"';
+        $smarty_code = '{if $wa->photos}'.PHP_EOL;
+        $smarty_code .= '    {$photos = $wa->photos->photos('.$params_string.')}'.PHP_EOL;
+        $smarty_code .= '    {foreach $photos as $photo}'.PHP_EOL;
+        $smarty_code .= '        <p>{if $photo.description}{$photo.description}<br>{/if}'.PHP_EOL;
+        $smarty_code .= '            <img src=\'{$photo.'.$thumb_key.'.url}\' alt=\'{$photo.name}.{$photo.ext}\'>'.PHP_EOL;
+        $smarty_code .= '        </p>'.PHP_EOL;
+        $smarty_code .= '    {/foreach}'.PHP_EOL;
+        $smarty_code .= '{/if}'.PHP_EOL;
+
+        return array(
+            'urls' => $urls,
+            'html' => $html,
+            'html_with_descriptions' => $html_with_descriptions,
+            'link' => $link,
+            'smarty_code' => $smarty_code,
+            'count' => count($photos),
+            'all_public' => $all_public
+        );
+    }
+
+    public static function getBigPhotoSize()
+    {
+        return wa('photos')->getConfig()->getSize('big');
+    }
+
+    public static function getMiddlePhotoSize()
+    {
+        return wa('photos')->getConfig()->getSize('middle');
+    }
+
+    public static function getThumbPhotoSize()
+    {
+        return wa('photos')->getConfig()->getSize('thumb');
+    }
+
+    public static function getCropPhotoSize()
+    {
+        return wa('photos')->getConfig()->getSize('crop');
+    }
+
+    public static function escape($data)
+    {
+        if (is_array($data)) {
+            foreach ($data as &$item) {
+                $item = self::escape($item);
+            }
+            unset($item);
+        } else {
+            $data = htmlspecialchars($data);
+        }
+        return $data;
+    }
+
+    public static function sprintf_wplural()
+    {
+        $args = func_get_args();
+        $w_args = array_splice($args, 0, 3);
+        $str = call_user_func_array('_w', $w_args);
+        array_unshift($args, $str);
+        return call_user_func_array('sprintf', $args);
+    }
+
+    public static function suggestUrl($str)
+    {
+        $str = preg_replace('/\s+/', '-', $str);
+        if ($str) {
+            foreach (waLocale::getAll() as $lang) {
+                $str = waLocale::transliterate($str, $lang);
+            }
+        }
+        $str = preg_replace('/[^a-zA-Z0-9_-]+/', '', $str);
+        if (!$str) {
+            $str = date('Ymd');
+        }
+        return $str;
+    }
+}

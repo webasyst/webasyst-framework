@@ -1,0 +1,15 @@
+<ul class="menu-v">
+<li>
+    <label>
+    <input type="radio" name="delete-photos" value="0" checked>
+    [`Don't delete photos`] <span class="hint">[`All photos will remain in the photo stream, and only the album will be deleted`]</span>
+    </label>
+</li>
+<li>
+    <label>
+    <input type="radio" name="delete-photos" value="1">
+    {assign var="del_photos_text" value='[`Delete all photos stored in this album (%d)`]'|sprintf:$photos_count}
+    {$del_photos_text}
+    </label>
+</li>
+</ul>

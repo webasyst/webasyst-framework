@@ -1,0 +1,106 @@
+<script type="text/javascript">
+    $(function() {
+        var STATUS_DELETED = '{photosCommentModel::STATUS_DELETED}',
+            STATUS_PUBLISHED = '{photosCommentModel::STATUS_PUBLISHED}';
+
+        // list of all comments
+        $.photos.commentsAction = function () {
+            $.photos.initClearance();
+            var url = '?plugin=comments&module=backend&action=list';
+            $.photos.load(url, function() {
+                var offset = null;
+                $(window).lazyLoad({
+                    container: '#comment-list',
+                    load: function() {
+                        offset = offset || $('#comment-list li').length;
+                        $(window).lazyLoad('sleep');
+                        $.post(url, { offset : offset },
+                            function (html) {
+                                var div = $('<div><'+'/div>').append(html),
+                                    comment_list = div.find('#comment-list li');
+
+                                if (!comment_list.length) {
+                                    $(window).lazyLoad('stop');
+                                    return;
+                                }
+                                $('#comment-list').append(comment_list);
+                                offset += comment_list.length;
+                                $(window).lazyLoad('wake');
+                                div.remove();
+                            },
+                            'html'
+                        );
+                    }
+                });
+            });
+        }
+
+        // reply or add new comment
+        $('.p-comment-reply, .p-comment-delete, .p-comment-restore')
+            .live('click',
+                function() {
+                    var form = $('#add-comment-form'),
+                        self = $(this),
+                        li = self.parents('li:first'),
+                        comment_id = (li.attr('id') || '').replace('comment-', '') || 0;
+
+                    if (self.hasClass('p-comment-reply')) {
+                        $.photos.comments_plugin.prepareAddingForm.call(self, form, comment_id);
+                    } else if (self.hasClass('p-comment-delete')) {
+                        deleteComment(comment_id);
+                    } else if (self.hasClass('p-comment-restore')) {
+                        restoreComment(comment_id);
+                    }
+                }
+            );
+
+        function deleteComment(comment_id)
+        {
+            $.post('?plugin=comments&module=backend&action=changeStatus&id=' + comment_id, { status: STATUS_DELETED },
+                function(r) {
+                    if (r.status == 'ok') {
+                        var comment_li = $('#comment-' + comment_id),
+                            comment_div = comment_li.find('div:first');
+                        comment_div.addClass('p-delete');
+                        comment_div.find('.p-comment-delete').hide();
+                        comment_div.find('.p-comment-restore').show();
+                    }
+                },
+            'json');
+        }
+
+        function restoreComment(comment_id)
+        {
+            $.post('?plugin=comments&module=backend&action=changeStatus&id=' + comment_id, { status: STATUS_PUBLISHED },
+                function(r) {
+                    if (r.status == 'ok') {
+                        var comment_li = $('#comment-' + comment_id),
+                            comment_div = comment_li.find('div:first');
+                        comment_div.removeClass('p-delete');
+                        comment_div.find('.p-comment-delete').show();
+                        comment_div.find('.p-comment-restore').hide();
+                    }
+                },
+            'json');
+        }
+
+        // add comment action
+        $('#add-comment-button').live('click', function() {
+            $.photos.comments_plugin.addComment();
+            return false;
+        });
+        $.photos.comments_plugin.addHotkeyHandler(
+            $('#comment-text'),
+            'ctrl+enter',
+            function() {
+                $.photos.comments_plugin.addComment();
+                return false;
+            }
+        );
+    });
+</script>
+<style type="text/css">
+    .p-comment.p-delete .p-comment-author, .p-comment.p-delete span, .p-comment.p-delete p { text-decoration: line-through; color: #AAA; }
+    #add-comment-form { overflow: visible; }
+    .p-comment #add-comment-form { margin: 20px 0 0 20px; }
+</style>

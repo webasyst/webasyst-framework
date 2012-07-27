@@ -1,0 +1,100 @@
+<div class="sidebar left200px" id="p-sidebar">
+
+  <div class="block">
+    <ul class="menu-v with-icons">
+      {if $rights.upload}
+      <li class="bold bottom-padded">
+        <a href="?module=upload" id="p-upload-link"><i class="icon16 upload"></i>[`Upload photos`]</a>
+      </li>
+      {/if}
+      <li id="sidebar-all-photos">
+        <span class="count" id="count">{if $count > 0}{$count}{/if}</span>
+        <a href="#/">
+          <i class="icon16 pictures"></i>[`Photostream`]
+          <strong class="small highlighted" id="count-new"></strong>
+        </a>
+      </li>
+      <li id="sidebar-rated">
+        <span class="count" id="rated-count">{if $rated_count > 0}{$rated_count}{/if}</span>
+        <a href="#/search/rate>0/">
+          <i class="icon16 star"></i>[`Rated`]
+          <strong class="small highlighted" id="count-new"></strong>
+        </a>
+      </li>
+      {* @event backend_sidebar.%plugin_id%.menu *}
+      {foreach $backend_sidebar as $plugin_id => $item}{if !empty($item.menu)}
+        <li id="sidebar-{$plugin_id}">{$item.menu}</li>
+      {/if}{/foreach}
+    </ul>
+  </div>
+
+  <!-- collections -->
+  <div class="block p-drop" id="album-list-container">
+    {if $rights.upload}
+    <span class="count">
+      <a href="#" id="p-new-album"><i class="icon16 add" title="[`New album`]"></i></a>
+    </span>
+    {/if}
+    <h5 class="heading collapse-handler" id="album-list-handler">
+      <i class="icon16 darr"></i><a href="javascript:void(0);">[`Albums`]</a>
+    </h5>
+    <div class="hierarchical" id="album-list">
+      {$albums}
+    </div>
+  </div>
+  <div class="block" {if !isset($cloud) || empty($cloud)}style="display:none;"{/if} id="tag-cloud-block">
+    <h5 class="heading">
+      <i class="icon16 darr"></i>[`Tags`]
+    </h5>
+    <div class="block tags p-plugin-tag-cloud" id="tag-cloud"></div>
+  </div>
+
+  {* @event backend_sidebar.%plugin_id%.section *}
+  {foreach $backend_sidebar as $plugin_id => $item}{if !empty($item.section)}
+    <div class="block" id="sidebar-section-{$plugin_id}">{$item.section}</div>
+  {/if}{/foreach}
+
+  <div class="hr"></div>
+
+  <!-- not-that-frequently-accessed app sections -->
+  <div class="block">
+    <ul class="menu-v with-icons">
+      {if $wa->user()->getRights($wa->app(), 'pages')}
+      <li id="sidebar-pages"><a href="#/pages/"><i class="icon16 notebook"><!-- icon --></i>[s`Pages`]</a></li>
+      {/if}
+      <li id="sidebar-plugins"><a href="#/plugins/"><i class="icon16 plugins"></i>[`Plugins`]</a></li>
+      <li id="sidebar-settings"><a href="#/settings/"><i class="icon16 settings"></i>[`Settings`]</a></li>
+    </ul>
+  </div>
+
+</div>
+{capture name="template-album-list-item"}{literal}
+  <li class="drag-newposition ui-droppable"></li>
+  <li class="dr {%#o.type == Album.TYPE_STATIC ? 'static' : 'dynamic'%}" rel="{%#o.id%}">
+    <span class="count"></span>
+    <a href="#/album/{%#o.id%}" class="ui-droppable"><i class="icon16 {%#o.type == Album.TYPE_STATIC ? 'pictures' : 'funnel' %}"></i>{%#o.name%}
+         {% if (o.status <= 0) { %}<i class="icon10 lock-bw no-overhanging"></i>{% } %}
+    </a>
+  </li>
+{/literal}{/capture}
+{capture name="template-tag-cloud"}{literal}
+    {% for (var i = 0, n = o.cloud.length, tag = o.cloud[i]; i < n; tag = o.cloud[++i]) { %}
+        <a href="#/tag/{%=tag.name%}/" style="font-size: {%#tag.size%}%; opacity: {%#tag.opacity%}" data-id="{%#tag.id%}">{%=tag.name%}</a>
+    {% } %}
+{/literal}{/capture}
+
+{* js templates block*}
+{foreach $smarty.capture as $template => $template_content}
+{if $template_content && (strpos($template, 'template-')===0)}
+<script id="{$template}" type="text/html">
+{$template_content|replace:'</':'<\/'}
+</script>{capture name=$template}{/capture}
+{/if}
+{/foreach}
+
+<script type="text/javascript">
+    $('#tag-cloud').html(tmpl('template-tag-cloud', {
+        cloud: {json_encode($cloud)}
+    }));
+    $.photos_sidebar.init();
+</script>

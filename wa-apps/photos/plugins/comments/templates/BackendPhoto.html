@@ -1,0 +1,43 @@
+<a name="comments"></a>
+<div class="p-comments" id="comments-block">
+    <h4 {if !$comments}style="display:none;"{/if} class="comments-header">
+        <span id="photo-comments-count-text">{_wp('%d comment', '%d comments', count($comments))}</span>
+        <span id="photo-new-comments-count" class="highlighted">{if $photo_comments_new_count > 0}+{$photo_comments_new_count}{/if}</span>
+    </h4>
+
+    {assign var="depth" value=-1}
+    {foreach $comments as $comment}
+        {if $comment.depth > $depth}
+            <ul class="menu-v with-icons">
+        {else if $comment.depth < $depth}
+            {assign var="loop" value=$depth-$comment.depth}
+            {section name="end-comment" loop=$loop}
+                </li></ul>
+            {/section}
+        {else if $comment.depth == $depth}
+            </li>
+        {/if}
+        {assign var="depth" value=$comment.depth}
+        <li id="comment-{$comment.id}">{include file='./Comment.html' inline}
+    {foreachelse}
+        <ul class="menu-v with-icons" style="display:none;"><li>
+    {/foreach}
+    {section name="end-comment" loop=$depth}
+        </li></ul>
+    {/section}
+    </li></ul>
+
+    <h4><a href="javascript:void(0);" class="inline-link p-comment-reply"><b><i>[`Add comment`]</i></b></a></h4>
+    <ul class="menu-v with-icons">
+        <li id="add-comment-form-acceptor">
+            {include file='./AddCommentForm.html' photo_id=$photo_id inline}
+        </li>
+    </ul>
+</div>
+<script type="text/javascript">
+try{
+    $.photos.comments_plugin.updateSidebarCounter({$comments_count}, {$comments_count_new});
+}catch(e){
+    ;
+}
+</script>
