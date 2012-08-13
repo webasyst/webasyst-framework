@@ -55,6 +55,10 @@ class blogPostSaveController extends waJsonController
 
         $this->inline = waRequest::post('inline', false);
 
+        if (waRequest::post('scheduled') && !empty($post['schedule_datetime'])) {
+            $post['datetime'] = $post['schedule_datetime'];
+        }
+
         if (!is_null($post['datetime'])) {
 
             $post['datetime'] = (array) $post['datetime'];
@@ -88,7 +92,6 @@ class blogPostSaveController extends waJsonController
         else if (waRequest::post('scheduled'))
         {
             $post['status'] = blogPostModel::STATUS_SCHEDULED;
-            $post['datetime'] = $post['schedule_datetime'];
         }
         else if (waRequest::post('published'))
         {

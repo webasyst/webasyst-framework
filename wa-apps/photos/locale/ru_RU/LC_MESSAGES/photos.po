@@ -3,13 +3,12 @@ msgstr ""
 "Project-Id-Version: photos\n"
 "POT-Creation-Date: 2012-06-27 11:16+0400\n"
 "PO-Revision-Date: \n"
-"Last-Translator: Vladimir V. Tuporshin <vofka@webasyst.net>\n"
+"Last-Translator: \n"
 "Language-Team: photos\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=((((n%10)==1)&&((n%100)!=11))?(0):(((((n%10)>=2)&&((n%10)<=4))&&(((n%100)<10)||((n%100)>=20)))?(1):2));\n"
-"X-Poedit-Language: ru_RU\n"
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
 "X-Poedit-SearchPath-0: .\n"
@@ -68,11 +67,11 @@ msgstr "Редактировать"
 
 #: /wa-apps/photos/templates/layouts/Default.html:159
 msgid "Left"
-msgstr "Налево"
+msgstr "Влево"
 
 #: /wa-apps/photos/templates/layouts/Default.html:160
 msgid "Right"
-msgstr "Направо"
+msgstr "Вправо"
 
 #: /wa-apps/photos/themes/default/photo.html:15
 msgid "Tags"
@@ -315,7 +314,7 @@ msgstr "Опубликованный"
 
 #: /wa-apps/photos/templates/actions/album/AlbumSettings.html:37
 msgid "Album is visible in the public gallery"
-msgstr "Альбом виден в общедоступной фотогалерее"
+msgstr "Альбом доступен в фотогалерее на сайте"
 
 #: /wa-apps/photos/templates/actions/upload/Upload.html:48
 msgid "Private"
@@ -323,7 +322,7 @@ msgstr "Приватный"
 
 #: /wa-apps/photos/templates/actions/album/AlbumSettings.html:47
 msgid "Album is visible only to authorized users of the Photos app, or by a private link"
-msgstr "Альбом доступен только авторизованным пользователям приложения «Фото» и по временной приватной ссылке"
+msgstr "Альбом доступен только авторизованным пользователям приложения «Фото» или по временной приватной ссылке"
 
 #: /wa-apps/photos/templates/actions/upload/Upload.html:51
 msgid "Privacy settings"
@@ -339,7 +338,7 @@ msgstr "Выключите галочки для всех групп, чтобы
 
 #: /wa-apps/photos/templates/actions/album/AlbumSettings.html:62
 msgid "There are no user groups in your Webasyst installation. Add groups in the Contacts app to be able to manage access to photos"
-msgstr "В вашей установке Вебасиста нет ни одной группы пользователей. Чтобы управлять доступом к фотографиям, добавьте хотя бы одну группы пользователей в приложении «Контакты»."
+msgstr "В вашей установке Вебасиста нет ни одной группы пользователей. Чтобы управлять доступом к фотографиям, добавьте хотя бы одну группы пользователей в приложении «Контакты»"
 
 #: /wa-apps/photos/templates/actions/photo/PhotoList.html:85
 msgid "Album settings"
@@ -427,7 +426,7 @@ msgstr "Все фотографии сохранятся в фотопотоке
 
 #: /wa-apps/photos/templates/actions/dialog/DeleteAlbum.html:11
 msgid "Delete all photos stored in this album (%d)"
-msgstr "Удалить все фотографии из этого альбома (%d)."
+msgstr "Удалить все фотографии из этого альбома (%d)"
 
 #: /wa-apps/photos/templates/actions/dialog/DialogEmbedPhotoList.html:9
 msgid "selected photos"
@@ -513,20 +512,20 @@ msgid "Access to photos"
 msgstr "Доступ к фотографиям"
 
 #: /wa-apps/photos/templates/actions/photo/PhotoManageAccess.html:25
-msgid "Photo is visible in the public gallery"
-msgstr "Фотография доступна в фотогалерее на сайте"
+msgid "Visible in the public gallery"
+msgstr "Фотографии доступны в фотогалерее на сайте"
 
 #: /wa-apps/photos/templates/actions/photo/PhotoManageAccess.html:35
-msgid "Album is visible only to authorized users of the Webasyst Photos app"
-msgstr "Альбом доступен только авторизованным пользователям приложения «Фото»."
+msgid "Visible only to authorized users of the Webasyst Photos app"
+msgstr "Фотографии доступны только авторизованным пользователям приложения «Фото»"
 
 #: /wa-apps/photos/templates/actions/photo/PhotoManageAccess.html:41
 msgid "Select user groups you want to have see this album"
-msgstr "Выберите группы пользователей, которым вы хотите показать этот альбом."
+msgstr "Выберите группы пользователей, которым вы хотите показать этот альбом"
 
 #: /wa-apps/photos/templates/actions/upload/Upload.html:66
 msgid "There are no user groups thus you cant't manage access to photos"
-msgstr "Группы пользователей не созданы, поэтому настройка прав доступа недоступна."
+msgstr "Группы пользователей не созданы, поэтому настройка прав доступа недоступна"
 
 #: /wa-apps/photos/templates/actions/upload/Upload.html:10
 msgid "Select photos"
@@ -541,16 +540,16 @@ msgid "Photos automatically appear in the public gallery"
 msgstr "Фотографии автоматически появляются в фотогалерее на сайте"
 
 #: /wa-apps/photos/templates/actions/upload/Upload.html:50
-msgid "Only authorized users of the Webasyst Photos app can see these photos. Photos can be shared via sending a secure private link, or via embedded into external websites and apps."
-msgstr "Только авторизованные пользователи бекенда смогут увидеть эти фотографии. Показать фото другим можно будет по временной приватной ссылке."
+msgid "Only authorized users of the Webasyst Photos app can see these photos. Photos can be shared via sending a secure private link, or via embedded into external websites and apps"
+msgstr "Только авторизованные пользователи бекенда смогут увидеть эти фотографии. Показать фото другим можно будет по временной приватной ссылке"
 
 #: /wa-apps/photos/templates/actions/upload/Upload.html:57
 msgid "Select user groups you want to have access to these photos:"
 msgstr "Выберите группы пользователей, которым будет предоставлен доступ к фотографиям:"
 
 #: /wa-apps/photos/templates/actions/upload/Upload.html:63
-msgid "Uncheck all groups to make photos visible to you only"
-msgstr "Выключите галочки для всех групп, чтобы доступ к фото был только у вас"
+msgid "Uncheck all groups to make photos visible to you only."
+msgstr "Выключите галочки для всех групп, чтобы доступ к фото был только у вас."
 
 #: /wa-apps/photos/templates/actions/upload/Upload.html:81
 msgid "Don't add to album"
@@ -894,7 +893,7 @@ msgstr "Обычный размер"
 
 #: /wa-apps/photos/templates/layouts/Default.html:373
 msgid "Private photos selected"
-msgstr "Выбраные приватные фотографии"
+msgstr "Выбраны приватные фотографии"
 
 #: /wa-apps/photos/templates/layouts/Default.html:375
 msgid "%d of %d selected photos are <strong>private photos</strong>, and they are not recommended for permanent linking (embedding). Private photo URLs may be changed by the Photos app at any time."
@@ -973,7 +972,7 @@ msgstr "Оригинал"
 
 #: /wa-apps/photos/templates/layouts/Default.html:369
 msgid "Remove tags"
-msgstr "Снять теги"
+msgstr "Убрать теги"
 
 #: /wa-apps/photos/themes/default/view-thumbs.html:36
 msgid "Show more photos"
@@ -1074,4 +1073,16 @@ msgstr "Такой адрес уже используется"
 #: /wa-apps/photos/lib/actions/photo/photosPhotoLoad.controller.php:25
 msgid "Photo doesn't exists"
 msgstr "Фотография не найдена"
+
+#: /wa-apps/photos/templates/actions/dialog/DialogAlbumSettings.html:60
+msgid "Uncheck all groups to make this album visible to you only."
+msgstr ""
+
+#: /wa-apps/photos/templates/actions/dialog/DeleteAlbum.html:12
+msgid "Not available for smart albums."
+msgstr "Опция недоступна для «умных» альбомов."
+
+#: /wa-apps/photos/templates/actions/photo/PhotoList.html:53
+msgid "Select all photos"
+msgstr "Выбрать все фото"
 

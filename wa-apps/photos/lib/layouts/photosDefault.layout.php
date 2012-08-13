@@ -11,7 +11,6 @@ class photosDefaultLayout extends waLayout
 
         $album_model = new photosAlbumModel();
         $albums = $album_model->getAlbums();
-
         /**
          * Extend photo toolbar in photo-page
          * Add extra item to toolbar
@@ -21,26 +20,16 @@ class photosDefaultLayout extends waLayout
          */
         $this->view->assign('backend_photo_toolbar', wa()->event('backend_photo_toolbar'));
 
+
         $tree = new photosViewTree($albums);
         $this->view->assign('albums', $tree->display());
-
-        $photo_model = new photosPhotoModel();
-
-        $config = $this->getConfig();
-        $last_login_datetime = $config->getLastLoginTime();
-
-        //$album_photos_model = new photosAlbumPhotosModel();
-        //$last_uploaded = $album_photos_model->lastUploadedCounters($last_login_datetime);
 
         $collection = new photosCollection();
         $collection_rated = new photosCollection('search/rate>0');
 
         $this->view->assign('count', $collection->count());
-        //$this->view->assign('count_new', $collection->count($last_login_datetime));
         $this->view->assign('rated_count', $collection_rated->count());
-        //$this->view->assign('rated_count_new', $collection_rated->count($last_login_datetime));
-        //$this->view->assign('last_uploaded', $last_uploaded);
-        $this->view->assign('last_login_datetime', $last_login_datetime);
+        $this->view->assign('last_login_datetime', $this->getConfig()->getLastLoginTime());
 
         /**
          * Extend sidebar

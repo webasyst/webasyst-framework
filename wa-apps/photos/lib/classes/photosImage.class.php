@@ -32,10 +32,22 @@ class photosImage
         $this->image = waImage::factory($file);
     }
 
-    public function save()
+    public function __destruct()
     {
+        $this->image->__destruct();
+    }
+
+    public function save($file = null, $quality = null)
+    {
+        $config = wa('photos')->getConfig();
+        if($quality === null) {
+            $quality = $config->getOption('save_quality');
+            if(!$quality) {
+                $quality = 100;
+            }
+        }
         // check save_original option
-        if (wa('photos')->getConfig()->getOption('save_original')) {
+        if ($config->getOption('save_original')) {
             // get original file name
             $original_file = photosPhoto::getOriginalPhotoPath($this->file);
             // save original file if it not exists
@@ -44,7 +56,7 @@ class photosImage
             }
         }
         // save image
-        return $this->image->save();
+        return $this->image->save($file, $quality);
     }
 
     public function __get($name)

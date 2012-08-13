@@ -16,7 +16,7 @@ class photosDialogAlbumsAction extends waViewAction
         $this->view->assign('photo_albums', $photo_albums);
 
         $album_model = new photosAlbumModel();
-        $albums = $album_model->getAlbums(false, null, $this->getRights('edit') ? false : true, false);
+        $albums = $album_model->getAlbums(false, photosAlbumModel::TYPE_STATIC, $this->getRights('edit') ? false : true, false);
         $this->view->assign('albums', $albums);
         $this->view->assign('photo', $photo);
     }

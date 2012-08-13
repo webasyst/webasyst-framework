@@ -71,10 +71,19 @@ class waGettext
                 if (isset($buffer['msgid_plural'])) {
                     $buffer['msgstr'][count($buffer['msgstr']) - 1] .= $this->prepare($string);
                 } else {
-                    $buffer['msgstr'] .= $this->prepare($string);
+                    if (!isset($buffer['msgstr'])) {
+                        $buffer['msgid'] .= $this->prepare($string);
+                    } else {
+                        $buffer['msgstr'] .= $this->prepare($string);
+                    }
                 }
             }
         }
+
+        if ($buffer && !empty($buffer['msgstr'])) {
+            $messages[$buffer['msgid']] = $buffer['msgstr'];
+        }
+
         $meta = $this->meta2array($messages['']);
         unset($messages['']);
         return array(
@@ -90,7 +99,7 @@ class waGettext
 
     protected function prepare($string, $reverse = false)
     {
-        $string = trim($string, ' "');
+        $string = trim(trim($string), '"');
         $smap = array('\\n', '\\r', '\\t', '\"');
         $rmap = array("\n", "\r", "\t", '"');
         return str_replace($smap, $rmap, $string);

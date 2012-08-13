@@ -23,11 +23,7 @@
                         }
                         $.photos.updatePhotoOriginalBlock(photo);
 
-                        replaceImg($('#photo'), src, function() {
-                            $('#photo-stream .selected img, #stack-stream .selected img').each(function() {
-                                var src = $(this).attr('src').replace(/\?.+/, '') + salt;
-                                $(this).attr('src', src);
-                            });
+                        $.photos.updatePhotoImgs(photo, function() {
                             $.photos.unsetCover();
                         });
                     }

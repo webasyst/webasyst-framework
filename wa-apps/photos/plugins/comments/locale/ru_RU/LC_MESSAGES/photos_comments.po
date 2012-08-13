@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: photos/plugins/comments\n"
 "POT-Creation-Date: 2012-07-13 20:44+0400\n"
 "PO-Revision-Date: \n"
-"Last-Translator: Vladimir V. Tuporshin <vofka@webasyst.net>\n"
+"Last-Translator: \n"
 "Language-Team: photos/plugins/comments\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
@@ -85,4 +85,36 @@ msgstr[2] "%d комментариев"
 
 msgid "comment deleted"
 msgstr "комментарий удален"
+
+#: /wa-apps/photos/plugins/comments/lib/models/photosComment.model.php:192
+msgid "Name can not be left blank"
+msgstr "Имя не может быть пустым"
+
+#: /wa-apps/photos/plugins/comments/lib/models/photosComment.model.php:195
+msgid "Name length should not exceed 255 symbols"
+msgstr "Имя не должно быть длиннее 255 символов"
+
+#: /wa-apps/photos/plugins/comments/lib/models/photosComment.model.php:198
+msgid "Email can not be left blank"
+msgstr "Email-адрес не может быть пустым"
+
+#: /wa-apps/photos/plugins/comments/lib/models/photosComment.model.php:202
+msgid "Email is not valid"
+msgstr "Некорректный email-адрес"
+
+#: /wa-apps/photos/plugins/comments/lib/models/photosComment.model.php:206
+msgid "Site URL is not valid"
+msgstr "Некорректный URL сайта"
+
+#: /wa-apps/photos/plugins/comments/lib/models/photosComment.model.php:209
+msgid "Invalid captcha code"
+msgstr "Неверный код CAPTCHA"
+
+#: /wa-apps/photos/plugins/comments/lib/models/photosComment.model.php:214
+msgid "Comment text can not be left blank"
+msgstr "Текст комментария не может быть пустым"
+
+#: /wa-apps/photos/plugins/comments/lib/models/photosComment.model.php:217
+msgid "Comment length should not exceed 4096 symbols"
+msgstr "Комментарий не должен быть длиннее 4096 символов"
 

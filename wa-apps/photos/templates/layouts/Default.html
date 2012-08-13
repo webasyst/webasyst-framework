@@ -115,6 +115,7 @@
         {% } %}
         <!-- end plugin hook: "backend_photo.bottom" -->
         </div>
+        <img id="preload-photo" src="" data-photo-id="" style="display:none;">
 {/literal}{/capture}
 
 {capture name="template-photo-content-control"}{literal}
@@ -136,7 +137,7 @@
 
 {capture name="template-photo-stack"}{literal}
     {% for (var i = 0, s = o.stack[0], n = o.stack.length; i < n; s = o.stack[++i]) { %}
-        <li class='dr{%#(s.id == o.photo_id) ? ' selected' : ''%}' data-photo-id={%#s.id%}><a href="#{%#o.hash%}/photo/{%#s.id%}/"><img src="{%#s.thumb_crop.url%}{% if (s.edit_datetime) { %}?{%#Date.parseISO(s.edit_datetime)%}{% } %}"></a><img src="{%#s.thumb.url%}{% if (s.edit_datetime) { %}?{%#Date.parseISO(s.edit_datetime)%}{% } %}" style="display:none;"></li>
+        <li class='dr{%#(s.id == o.photo_id) ? ' selected' : ''%}' data-photo-id={%#s.id%}><a href="#{%#o.hash%}/photo/{%#s.id%}/"><img src="{%#s.thumb_crop.url%}{% if (s.edit_datetime) { %}?{%#Date.parseISO(s.edit_datetime)%}{% } %}"></a><img src="{%#s.thumb.url%}{% if (s.edit_datetime) { %}?{%#Date.parseISO(s.edit_datetime)%}{% } %}" style="display:none;" class="thumb"></li>
     {% } %}
 {/literal}{/capture}
 
@@ -278,7 +279,7 @@
 {% for (var i = 0, n = photos.length, photo = photos[i]; i < n; photo = photos[++i]) { %}
     {% if (photo && photo.id) { %}
         <li class="{% if (photo.visible) { delete photo.visible; %}visible{% } %} {% if (current_photo_id == photo.id) { %}selected{% } %}" data-photo-id="{%#photo.id%}">
-            <a href="{% if (hash) { %}#{%#hash%}{% }else{ %}#{% } %}/photo/{%#photo.id%}/"><img src="{%#photo.thumb_crop.url%}{% if (photo.edit_datetime) { %}?{%#Date.parseISO(photo.edit_datetime)%}{% } %}"><img src="{%#photo.thumb.url%}{% if (photo.edit_datetime) { %}?{%#Date.parseISO(photo.edit_datetime)%}{% } %}" style="display:none;"></a>
+            <a href="{% if (hash) { %}#{%#hash%}{% }else{ %}#{% } %}/photo/{%#photo.id%}/"><img src="{%#photo.thumb_crop.url%}{% if (photo.edit_datetime) { %}?{%#Date.parseISO(photo.edit_datetime)%}{% } %}"><img src="{%#photo.thumb.url%}{% if (photo.edit_datetime) { %}?{%#Date.parseISO(photo.edit_datetime)%}{% } %}" style="display:none;" class="thumb"></a>
         </li>
     {% } else { %}
         <li class="dummy {% if (photo && photo.visible) { %}visible{% } %}"><img src="{%#wa_static_url%}img/image-not-found.png"></li>
@@ -351,8 +352,10 @@
 </div>
 <script type="text/javascript">
     $.photos.init({
-        last_login_time: Date.parseISO('{$last_login_datetime}'),
-        title_suffix: " — {$wa->accountName()}"
+        last_login_datetime: Date.parseISO('{$last_login_datetime}'),
+        last_login_time: {json_encode(strtotime($last_login_datetime))},
+        title_suffix: " — {$wa->accountName()}",
+        photo_list_render_chunk: 25
     });
     var Album = {
         TYPE_STATIC: '{photosAlbumModel::TYPE_STATIC}',
@@ -379,19 +382,32 @@
             </div>
             <div class="dialog-buttons">
                 <div class="dialog-buttons-gradient">
-                    <input class="button green" type="submit" value="[`Save`]"> or <a class="cancel" href="javascript:void(0);">[`cancel`]</a>
+                    <input class="button green" type="submit" value="[`Save`]"> [`or`] <a class="cancel" href="javascript:void(0);">[`cancel`]</a>
                 </div>
             </div>
         </form>
     </div>
 </div>
 
-<div id="photo-blog" style="display:none;">
-<h1>[`Private photos selected`] <i class="icon16 exclamation"></i></h1>
 
-<p>[`%d of %d selected photos are <strong>private photos</strong>, and they are not recommended for permanent linking (embedding). Private photo URLs may be changed by the Photos app at any time.`]</p>
-
-[`Embed anyway`] or <a>cancel</a>
+<div id="photo-blog-dialog" class="dialog width400px height200px">
+    <div class="dialog-background"></div>
+    <div class="dialog-window">
+        <form action="">
+            <div class="dialog-content">
+               <div class="dialog-content-indent">
+                  <h1>[`Private photos selected`] <i class="icon16 exclamation"></i></h1>
+                  <p>[`Image URLs of private photos are temporary. Permanent linking (embedding) is not recommended.`]</p>
+               </div>
+            </div>
+            <div class="dialog-buttons">
+                <div class="dialog-buttons-gradient">
+                    <input class="button yellow" type="submit" value="[`Embed anyway`]"> [`or`] <a class="cancel" href="javascript:void(0);">[`cancel`]</a>
+                </div>
+            </div>
+        </form>
+    </div>
 </div>
+
 </body>
 </html>

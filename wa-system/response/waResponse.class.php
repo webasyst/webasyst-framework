@@ -101,8 +101,9 @@ class waResponse {
       public function addHeader($name, $value, $replace = true)
       {
           switch ($name) {
+              case 'Expires':
               case 'Last-Modified':
-                  $value = gmdate("D, d M Y H:i:s", strtotime($value))." GMT";
+                  $value = gmdate("D, d M Y H:i:s", is_int($value)?$value:strtotime($value))." GMT";
                   break;
           }
           if ($replace || !isset($this->headers[$name])) {

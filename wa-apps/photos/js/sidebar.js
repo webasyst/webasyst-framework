@@ -47,13 +47,12 @@
                         }
                     });
                 };
-                if ($("#album-create-dialog").length) {
-                    showDialog();
-                } else {
-                    var d = $("<div></div>");
+                var d = $('#album-settings-create-acceptor');
+                if (!d.length) {
+                    d = $("<div id='album-create-dialog-acceptor'></div>");
                     $("body").append(d);
-                    d.load("?module=dialog&action=createAlbum", showDialog);
                 }
+                d.load("?module=dialog&action=createAlbum", showDialog);
                 return false;
             });
         },

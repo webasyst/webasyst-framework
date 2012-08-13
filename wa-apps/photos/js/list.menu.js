@@ -61,21 +61,22 @@
                     $('input[name^=photo_id]:checked').each(function () {
                         photo_ids.push($(this).val());
                     });
-                    var tags = {};
-                    for (var i = 0; i < $.photos.photo_stream_cache._photo_stream.length; i++) {
-                        var p = $.photos.photo_stream_cache._photo_stream[i];
-                        if (jQuery.inArray(p.id, photo_ids) != -1) {
-                            if (!p.tags) {
-                                tags = {};
-                                break;
+                    var tags = {},
+                        photo_stream = $.photos.photo_stream_cache.getAll();
+                    // union tags
+                    for (var i = 0, n = $.photos.photo_stream_cache.length(); i < n; i++) {
+                        var p = photo_stream[i];
+                        if ($.inArray(p.id, photo_ids) != -1) {
+                            var p_tags = p.tags;
+                            if ($.isEmptyObject(p_tags)) {
+                                continue;
+                            }
+                            if ($.isEmptyObject(tags)) {
+                                tags = p_tags;
                             } else {
-                                if (jQuery.isEmptyObject(tags)) {
-                                    tags = p.tags;
-                                } else {
-                                    for (var tag_id in tags) {
-                                        if (!p.tags[tag_id]) {
-                                            delete tags[tag_id];
-                                        }
+                                for (var tag_id in p_tags) {
+                                    if (p_tags.hasOwnProperty(tag_id)) {
+                                        tags[tag_id] = p_tags[tag_id];
                                     }
                                 }
                             }
@@ -123,10 +124,12 @@
                                     photo_list = $('#photo-list li.selected'),
                                     html;
                                 for (var id in photo_tags) {
-                                    html = tmpl('template-photo-list-photo-tags', {
-                                        tags: photo_tags[id]
-                                    });
-                                    photo_list.filter('[data-photo-id='+id+']:first').find('.tags>span').html(html);
+                                    if (photo_tags.hasOwnProperty(id)) {
+                                        html = tmpl('template-photo-list-photo-tags', {
+                                            tags: photo_tags[id]
+                                        });
+                                        photo_list.filter('[data-photo-id='+id+']:first').find('.tags>span').html(html);
+                                    }
                                 }
                                 photo_list.trigger('select', false);
                                 d.trigger('change_loading_status', false).trigger('close');
@@ -254,6 +257,9 @@
             );
             return false;
         },
+        selectPhotosAction: function() {
+            $('#photo-list li:not(.selected)').trigger('select', true);
+        },
         beforeAnyAction: function(name) {
             if (name != 'make-stack') {
                 if (!$.photos.isSelectedAnyPhoto()) {
@@ -261,6 +267,16 @@
                     return false;
                 }
             }
+        },
+        onFire: function() {
+            $('#organize-menu').trigger('recount');
+        }
+
+    });
+    $.photos.menu.register('list','#selector-menu', {
+
+        selectPhotosAction: function() {
+            $('#photo-list li:not(.selected)').trigger('select', true);
         }
     });
 
@@ -402,46 +418,110 @@
         },
         blogPostAction: function() {
           var form = $('#blog-post-form');
-          var photo_list = $('#photo-list li.selected'),
-          photo_ids = photo_list.map(function() {
+          var photo_ids = $('#photo-list li.selected').map(function() {
               return $(this).attr('data-photo-id');
           }).toArray();
-          form.find('[name="title"]:input').val($('#photo-list-name').text());
-          var content = '',id;
-          if(blog_smarty_enabled) {
-              var photos_hash = ''+(photo_ids.length?("/id/"+photo_ids.join(',')):window.location.hash.replace(/.*#/,'').replace(/\/$/,''));
-              content = "\n"+
-              "{if $wa->photos}\n"+
-              "{$photos_size='big'}\n"+
-              "\t{$photos = $wa->photos->photos('"+photos_hash+"', $photos_size)}\n"+
-              "\t{foreach $photos as $photo}\n"+
-              "\t\t<p>{if $photo.description}{$photo.description}<br>{/if}\n"+
-              "\t\t<img src='{$photo[\"thumb_`$photos_size`\"]['url']}' alt='{$photo.name}.{$photo.ext}'></p>\n"+
-              "\t{/foreach}\n" +
-              "{/if}\n";
+          var counter =[0,0];
+          for(var i=0;i<photo_ids.length;i++) {
+              var photo = $.photos.photo_stream_cache.getById(photo_ids[i]);
+              if (!photo) {
+                  photo = $.photos.photo_stack_cache.getById(photo_ids[i]);
+              }
+              if(photo) {
+                  if(photo.hash) {
+                      photo_ids[i] += ':'+photo.hash;
+                  }
+                  ++counter[photo.status];
+              }
+          }
 
+          var content = '';
+          if(true) {
+              var album = $.photos.getAlbum(),
+              hash = $.photos.hash,
+              context_parameters = {
+                      photo_ids: photo_ids.join(','),
+                      hash: hash,
+                      size:obligatory_size//XXX
+                  };
+
+              if (album && album.status <= 0) {
+                  hash = hash.replace(/\/*$/, '')+':'+album.hash + '/';
+                  context_parameters.hash = hash;
+              }
+              context_parameters.hash = null;
+              $('#photo-blog-dialog :submit').attr('disabled',true);
+
+              $.post("?module=photo&action=embedList",
+                  context_parameters,
+                  function (r) {
+                      if (r.status == 'ok') {
+                          var context = r.data.context;
+                          form.find('[name="title"]:input').val($('#photo-list-name').text());
+                          form.find('[name="text"]:input').val(blog_smarty_enabled?context.smarty_code:context.html_with_descriptions);
+                          if(counter[0]) {
+                              $('#photo-blog-dialog :submit').attr('disabled',false);
+                          } else {
+                              form.submit();
+                          }
+                      }
+                  },
+              "json");
           } else {
-              if(!photo_ids.length) {
-                  photo_ids = $('#photo-list li').map(function() {
-                      return $(this).attr('data-photo-id');
-                  }).toArray();
-              }
-              while(id = photo_ids.shift()) {
-                  var photo = $.photos.photo_stream_cache.getById(id);
-                  if (!photo) {
-                      photo = $.photos.photo_stack_cache.getById(id);
+              form.find('[name="title"]:input').val($('#photo-list-name').text());
+              var id;
+              if(blog_smarty_enabled) {
+                  var photos_hash = ''+(photo_ids.length?("/id/"+photo_ids.join(',')):window.location.hash.replace(/.*#/,'').replace(/\/$/,''));
+                  content = "\n"+
+                  "{if $wa->photos}\n"+
+                  "{$photos_size='big'}\n"+
+                  "\t{$photos = $wa->photos->photos('"+photos_hash+"', $photos_size)}\n"+
+                  "\t{foreach $photos as $photo}\n"+
+                  "\t\t<p>{if $photo.description}{$photo.description}<br>{/if}\n"+
+                  "\t\t<img src='{$photo[\"thumb_`$photos_size`\"]['url']}' alt='{$photo.name}.{$photo.ext}'></p>\n"+
+                  "\t{/foreach}\n" +
+                  "{/if}\n";
+
+              } else {
+                  if(!photo_ids.length) {
+                      photo_ids = $('#photo-list li').map(function() {
+                          return $(this).attr('data-photo-id');
+                      }).toArray();
                   }
-                  if(photo) {
-                      content += '<p>'+(photo.description ? photo.description + '<br>\n': '\n') +
-                      '    <img src="'+photo.thumb_big.url+'" alt="'+photo.name+'.'+photo.ext+'" width="'+photo.thumb_big.size.width+'" height="'+photo.thumb_big.size.height+'">\n</p>\n';
+                  while(id = photo_ids.shift()) {
+                      var photo = $.photos.photo_stream_cache.getById(id);
+                      if (!photo) {
+                          photo = $.photos.photo_stack_cache.getById(id);
+                      }
+                      if(photo) {
+                          content += '<p>'+(photo.description ? photo.description + '<br>\n': '\n') +
+                          '    <img src="'+photo.thumb_big.url+'" alt="'+photo.name+'.'+photo.ext+'" width="'+photo.thumb_big.size.width+'" height="'+photo.thumb_big.size.height+'">\n</p>\n';
+                      }
                   }
               }
           }
-          if(content) {
-              form.find('[name="text"]:input').val(content);
-              form.submit();
+          if(counter[0]) {
+              $('#photo-blog-dialog').waDialog({
+              'onLoad':function(){
+                  $('#photo-blog-dialog :submit').attr('disabled',true);
+                  var notice = $('#photo-blog-dialog p');
+                  var count = [counter[0],photo_ids.length];
+                  notice.html(notice.html().replace(/(%d)/g,function(){return count.shift();}));
+                  //count photos
+              },
+              'onSubmit':function(){
+                  form.submit();
+                  return false;
+              }
+          });
+          } else {
+              //form.submit();
           }
+
           return false;
+        },
+        onFire: function() {
+            $('#share-menu').trigger('recount');
         }
     });
 
@@ -506,7 +586,7 @@
             setTimeout(function(){checkbox.attr('checked',checked);},50);
             $.storage.set('photos/list/hide_name',checked);
         },
-        onFire: function(container) {
+        onFire: function() {
             var counter = $('#save-menu-block .count.indicator');
             if(counter.length) {
                 counter.text('0');

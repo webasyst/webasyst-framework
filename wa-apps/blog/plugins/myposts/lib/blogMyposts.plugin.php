@@ -6,7 +6,7 @@ class blogMypostsPlugin extends blogPlugin
     {
         $output = array();
         $post_model = new blogPostModel();
-        $blogs = blogHelper::getAvailable();
+        $blogs = blogHelper::getAvailable(false);
         $search_options = array(
         	'contact_id' => wa()->getUser()->getId(),
         	'status'     => blogPostModel::STATUS_PUBLISHED,

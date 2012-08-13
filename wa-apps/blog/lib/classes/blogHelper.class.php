@@ -333,7 +333,7 @@ class blogHelper
         if (!isset($blogs_cache[$extended])) {
             $blog_model = new blogBlogModel();
 
-            $blogs = $blog_model->getAvailable($backend,$extended?'name,icon,color,id,url,status':'name,id,url') ;
+            $blogs = $blog_model->getAvailable($backend,$extended?'name,icon,color,id,url,status':'name,id,url', null ,$extended);
 
             foreach ($blogs as $id=>&$blog) {
                 if ($extended) {

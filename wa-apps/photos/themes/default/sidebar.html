@@ -1,8 +1,8 @@
 <ul class="menu-v">
-    <li {if $wa->param('action') neq 'page'} class="selected"{/if}>
+    <li {if $wa->param('action') neq 'page' && !$wa->param('hash')} class="selected"{/if}>
         <a href="{$wa_app_url}">[`All photos`]</a>
     </li>
-    <li>
+    <li {if $wa->param('action') neq 'page' && $wa->param('hash') == 'favorites'} class="selected"{/if}>
         <a href="{$wa_app_url}favorites/">[`Editors’ choice`]</a>
     </li>
 
@@ -29,7 +29,7 @@
     <hr>
     <div class="tags align-center">
         {foreach $cloud as $tag}
-            <a href="{$wa_app_url}tag/{$tag.name}/" style="font-size: {$tag.size}%; opacity: {$tag.opacity}">{$tag.name}</a>
+            <a href="{$wa_app_url}tag/{$tag.uri_name}/" style="font-size: {$tag.size}%; opacity: {$tag.opacity}">{$tag.name}</a>
         {/foreach}
     </div>
 {/if}

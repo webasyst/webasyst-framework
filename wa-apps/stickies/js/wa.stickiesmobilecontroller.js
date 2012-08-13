@@ -41,7 +41,8 @@
 
 	$.wa.stickiesmobilecontroller = {
 			options: {
-				'separator':'/'
+				'separator':'/',
+				'debug':false
 			},
 			init: function (options) {
 				var self = this;
@@ -404,7 +405,7 @@
 				}
 			},
 			trace: function (message, params) {
-				if(console && true){
+				if(console && this.options.debug){
 					console.log(message,params);
 				}
 			}

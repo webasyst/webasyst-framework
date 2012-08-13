@@ -89,7 +89,17 @@ $(function(){
     });
 
     // view current auth profile
-    var provider = $('ul#user-auth-provider li.selected').attr('data-provider');
+    var provider = 'guest';
+    var selected = $('ul#user-auth-provider li.selected');
+    if(selected.length){
+        provider = selected.attr('data-provider') || provider;
+    } else {
+        selected = $('#user-auth-provider');
+        if(selected.length){
+            provider = selected.attr('data-provider') || provider;
+        }
+
+    }
     if(provider) {
         $('.tab').hide();
         if(provider == 'signup') {

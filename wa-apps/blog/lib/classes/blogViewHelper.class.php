@@ -101,11 +101,14 @@ class blogViewHelper extends waAppViewHelper
             $submit = _wd('blog','New post');
 
             $html = <<<HTML
+
         <form action="{$url}" method="POST" id="{$id}">
+        <p>
         	<input type="text" name="title"/><br/>
-        	<textarea name="text"></textarea><br/>
+        	<textarea name="text" cols="60" rows="20"></textarea><br/>
         	{$this->wa->getView()->getHelper()->csrf()}
         	<input type="submit" value="{$submit}"/>
+        </p>
         </form>
 HTML;
         }

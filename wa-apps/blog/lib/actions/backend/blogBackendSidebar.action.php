@@ -28,7 +28,7 @@ class blogBackendSidebarAction extends waViewAction
 
         $blog_model = new blogBlogModel();
 
-        $blogs = $blog_model->prepareView($blog_model->getAvailable($this->user), array('new'=>true, 'expire'=>1));
+        $blogs = $blog_model->getAvailable($this->user,array(),null, array('new'=>true, 'expire'=>1,'link' => false));
         $blog_ids = array_keys($blogs);
 
         $comment_model = new blogCommentModel();

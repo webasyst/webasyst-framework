@@ -14,10 +14,6 @@ class photosImageeffectsPluginBackendController extends waJsonController
         if (!$id) {
             throw new waException(_w("Can't apply a filter to photo: unknown photo id"));
         }
-        $photo_rights_model = new photosPhotoRightsModel();
-        if (!$photo_rights_model->checkRights($id, true)) {
-            throw new waException(_w("You don't have sufficient access rights"));
-        }
         if (!isset($this->filters[$filter])) {
             throw new waException(_w("Can't apply a filter to photo: unknown filter"));
         }
@@ -27,8 +23,9 @@ class photosImageeffectsPluginBackendController extends waJsonController
         $photo_rights_model = new photosPhotoRightsModel();
         $photo = $photo_model->getById($id);
 
-        if (!$photo_rights_model->checkRights($photo['id'])) {
-            throw new waException(_w('Access denied!'));
+        $photo_rights_model = new photosPhotoRightsModel();
+        if (!$photo_rights_model->checkRights($photo, true)) {
+            throw new waException(_w("You don't have sufficient access rights"));
         }
 
         $photo_path = photosPhoto::getPhotoPath($photo);

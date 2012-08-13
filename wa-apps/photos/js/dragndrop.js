@@ -217,10 +217,12 @@
                 refreshPositions: true,
                 revert: "invalid",
                 helper: function() {
-                    var self = $(this);
-                    return self.clone().addClass('ui-draggable').css({
-                        position: 'absolute'
-                    }).prependTo('#album-list > ul');
+                    var self = $(this),
+                        clone = self.clone().addClass('ui-draggable').css({
+                            position: 'absolute'
+                        }).prependTo('#album-list > ul');
+                    clone.find('a:first').append('<i class="icon10 no-bw" style="margin-left: 0; margin-right: 0; display:none;"></i>');
+                    return clone;
                 },
                 cursor: "move",
                 cursorAt: { left: 5 },
@@ -289,9 +291,30 @@
                     }
                     $.post('?module=album&action=move', {
                         id: id,
-                        parent_id: parent_id,
-                        before_id: before_id
-                    });
+                        before_id: before_id,
+                        parent_id: parent_id
+                    }, function(r) {
+                        var current_album = $.photos.getAlbum(),
+                            album = r.data.album,
+                            counters = r.data.counters;
+                        if (current_album && current_album.id == album.id) {
+                            var frontend_link = r.data.frontend_link;
+                            if (frontend_link) {
+                                $('#photo-list-frontend-link').attr('href', frontend_link).text(frontend_link);
+                            }
+                            if (album.type == Album.TYPE_DYNAMIC) {
+                                $.photos.load("?module=album&action=photos&id=" + album.id, $.photos.onLoadPhotoList);
+                            }
+                        }
+                        var album_list = $('#album-list');
+                        if (!$.isEmptyObject(counters)) {
+                            for (var album_id in counters) {
+                                if (counters.hasOwnProperty(album_id)) {
+                                    album_list.find('li[rel='+album_id+']').find('.count').text(counters[album_id]);
+                                }
+                            }
+                        }
+                    }, 'json');
 
                     var $parent_list = dr.parent('ul');
                     var li_count = $parent_list.children('li.dr[rel!='+id+']').length;
@@ -320,7 +343,8 @@
                     var self = $(this).parent(),  // li
                         is_photo = false;
                     ui.draggable = $.photos_dragndrop._fixUiDraggable(ui.draggable);
-                    // photo-list item
+                    
+                    // photo
                     if (ui.draggable.parents('#photo-list').length || ui.draggable.is('#photo')) {
                         if (!self.hasClass('static')) {
                             ui.helper.find('span').hide().end().find('i').show();   // show 'cross'-icon
@@ -333,6 +357,15 @@
 
                     if (is_photo) {
                         return false;
+                    }
+                    
+                    // album
+                    if (ui.draggable.hasClass('static') && !self.hasClass('static'))
+                    {
+                        ui.helper.find('i.no-bw').show();
+                        return false;
+                    } else {
+                        ui.helper.find('i.no-bw').hide();
                     }
 
                     var dr = $(ui.draggable);
@@ -381,10 +414,17 @@
                         list;
 
                     ui.draggable = $.photos_dragndrop._fixUiDraggable(ui.draggable);
+                    
                     // copy photo to album (only static is legal)
-
                     if (ui.draggable.parents('#photo-list').length || ui.draggable.is('#photo')) {
-                        var album_id = this.href.replace(/.*#[^\d]*/, ''),
+                        var m = this.href.match(/.*#\/album\/([\d]+)/);
+                        if (m === null || !parseInt(m[1], 10)) {
+                            if (console) {
+                                console.log("Link: " + this.href + " is not correct");
+                            }
+                            return;
+                        }
+                        var album_id = parseInt(m[1], 10),
                             photo_ids = null;
                         if (self.hasClass('static')) {
                             if (ui.draggable.is('#photo')) {
@@ -394,19 +434,21 @@
                             }
                         }
                         if (photo_ids) {
-                            //$.photos.addToAlbums(photo_ids, album_id);
                             $.photos.addToAlbums({
                                 photo_id: photo_ids,
-                                album_id: album_id,
-                                onDeniedExist: function() {
-                                    alert($_("You don't have sufficient access rights"));
-                                }
+                                album_id: album_id
                             });
                             $('#photo-list li.selected').trigger('select', false);
                         }
                         return false;
                     }
 
+                    // album
+                    if (ui.draggable.hasClass('static') && !self.hasClass('static'))
+                    {
+                        return false;
+                    }
+                    
                     var dr = $(ui.draggable);
                     if (self.attr('rel') == dr.attr('rel')) {
                         return false;
@@ -432,7 +474,28 @@
                     $.post('?module=album&action=move', {
                         id: id,
                         parent_id: parent_id
-                    });
+                    }, function(r) {
+                        var current_album = $.photos.getAlbum(),
+                            album = r.data.album,
+                            counters = r.data.counters;
+                        if (current_album && current_album.id == album.id) {
+                            var frontend_link = r.data.frontend_link;
+                            if (frontend_link) {
+                                $('#photo-list-frontend-link').attr('href', frontend_link).text(frontend_link);
+                            }
+                            if (album.type == Album.TYPE_DYNAMIC) {
+                                $.photos.load("?module=album&action=photos&id=" + album.id, $.photos.onLoadPhotoList);
+                            }
+                        }
+                        var album_list = $('#album-list');
+                        if (!$.isEmptyObject(counters)) {
+                            for (var album_id in counters) {
+                                if (counters.hasOwnProperty(album_id)) {
+                                    album_list.find('li[rel='+album_id+']').find('.count').text(counters[album_id]);
+                                }
+                            }
+                        }
+                    }, 'json');
 
                     var $parent_list = dr.parent('ul');
                     var li_count = $parent_list.children('li.dr[rel!='+id+']').length;

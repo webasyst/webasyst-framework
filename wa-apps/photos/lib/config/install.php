@@ -1,10 +1,8 @@
 <?php
 
 $path = wa()->getDataPath(null, true, 'photos');
-waFiles::create($path);
-
-copy($this->getAppPath('lib/config/data/.htaccess'), $path.'/.htaccess');
-file_put_contents($path.'/thumb.php', '<?php
+waFiles::copy($this->getAppPath('lib/config/data/.htaccess'), $path.'/.htaccess');
+waFiles::write($path.'/thumb.php', '<?php
 $file = realpath(dirname(__FILE__)."/../../../")."/wa-apps/photos/lib/config/data/thumb.php";
 
 if (file_exists($file)) {

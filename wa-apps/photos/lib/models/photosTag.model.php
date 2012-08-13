@@ -82,20 +82,29 @@ class photosTagModel extends waModel
 
     public function getCloud($key = null)
     {
-        $max_count = $select_result = $this->select('MAX(count) as cnt')->fetchField('cnt');
-        $min_count = $select_result = $this->select('MIN(count) as cnt')->where('count > 0')->fetchField('cnt');
-        $diff = $max_count - $min_count;
-        $diff = $diff <= 0 ? 1 : $diff;
-        $step_size = (self::CLOUD_MAX_SIZE - self::CLOUD_MIN_SIZE) / $diff;
-        $step_opacity = (self::CLOUD_MAX_OPACITY - self::CLOUD_MIN_OPACITY) / $diff;
-
         $tags = $this->where('count > 0')->fetchAll($key);
-        foreach ($tags as &$tag) {
-            $tag['size'] = ceil(self::CLOUD_MIN_SIZE + ($tag['count'] - $min_count) * $step_size);
-            $tag['opacity'] = number_format((self::CLOUD_MIN_OPACITY + ($tag['count'] - $min_count) * $step_opacity) / 100, 2, '.', '');
+        if (!empty($tags)) {
+            $first = current($tags);
+            $max_count = $min_count = $first['count'];
+            foreach ($tags as $tag) {
+                if ($tag['count'] > $max_count) {
+                    $max_count = $tag['count'];
+                }
+                if ($tag['count'] < $min_count) {
+                    $min_count = $tag['count'];
+                }
+            }
+            $diff = $max_count - $min_count;
+            $diff = $diff <= 0 ? 1 : $diff;
+            $step_size = (self::CLOUD_MAX_SIZE - self::CLOUD_MIN_SIZE) / $diff;
+            $step_opacity = (self::CLOUD_MAX_OPACITY - self::CLOUD_MIN_OPACITY) / $diff;
+            foreach ($tags as &$tag) {
+                $tag['size'] = ceil(self::CLOUD_MIN_SIZE + ($tag['count'] - $min_count) * $step_size);
+                $tag['opacity'] = number_format((self::CLOUD_MIN_OPACITY + ($tag['count'] - $min_count) * $step_opacity) / 100, 2, '.', '');
+                $tag['uri_name'] = urlencode($tag['name']);
+            }
+            unset($tag);
         }
-        unset($tag);
-
         return $tags;
     }
 }

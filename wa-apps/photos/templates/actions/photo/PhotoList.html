@@ -48,6 +48,11 @@
             </li>
         </ul>
     </div>
+    <div class="block" id="selector-menu-block" style="display: none;">
+        <ul class="menu-v descriptions-view-menu thumbs-view-menu" id="selector-menu">
+            <li data-action='select-photos'><a href="#" class="inline-link small"><i class="icon16 checkboxes"></i><b><i>[`Select all photos`]</i></b></a></li>
+        </ul>
+    </div>
 </div>
 
 <div class="content left200px right200px" id="p-content">
@@ -81,14 +86,13 @@
             <!-- plugin hook: backend-list-view-toggle -->
 
             <li class="p-inline-mixed-string">
-
                 {if isset($album)}
                     {if $album.status <= 0}
                         <i class="icon10 lock-bw"></i>
-                        [`Private album`]{if $album.edit_rights}: <a target="_blank" href="{$frontend_link}" class="gray">{$frontend_link}</a>
+                        [`Private album`]{if $album.edit_rights}: <a target="_blank" href="{$frontend_link}" id="photo-list-frontend-link" class="gray">{$frontend_link}</a>
                         <i class="icon10 new-window"><!-- icon --></i>{/if}
                     {else}
-                        [`Public album`]: <a target="_blank" href="{$frontend_link}">{$frontend_link}</a>
+                        [`Public album`]: <a target="_blank" href="{$frontend_link}" id="photo-list-frontend-link">{$frontend_link}</a>
                         <i class="icon10 new-window"><!-- icon --></i>
                     {/if}
                     {if $album.edit_rights}
@@ -100,7 +104,7 @@
                         <a href="#" id="p-album-delete" class="gray">[`Delete album`]</a>
                     {/if}
                 {else if (isset($frontend_link))}
-                    [`Public link`]: <a target="_blank" href="{$frontend_link}">{$frontend_link}</a>
+                    [`Public link`]: <a target="_blank" href="{$frontend_link}" id="photo-list-frontend-link">{$frontend_link}</a>
                     <i class="icon10 new-window"><!-- icon --></i>
                 {/if}
             </li>
@@ -118,7 +122,7 @@
     {% for (var i=0, p=o.photos[0], n=o.photos.length; i<n; p=o.photos[++i]) { %}
     <li class="{% if (p.stack_count > 0) { %} stacked{% } %}
                 {% if (i == n - 1) { %} last{% } %}
-                {% if (last_login_time < Date.parseISO(p.upload_datetime)) { %}highlighted{% } %}" data-photo-id="{%#p.id%}"
+                {% if (last_login_time < p.upload_timestamp) { %}highlighted{% } %}" data-photo-id="{%#p.id%}"
     >
         <div class="p-image">{% if (p.stack_count > 0) { %}
             <div class="p-stack layer1"></div>
@@ -126,7 +130,7 @@
             <div class="p-stack layer3"></div>{% } %}
                 <div class="p-image-corner top left">
                     {% if (p.status <= 0) { %}
-                    <i class="icon16 lock" title="[`Private photo`]"></i>
+                    <i class="icon16 lock-bw p-private-photo" title="[`Private photo`]"></i>
                     {% } %}
                     {/literal}{* @event prepare_photos_backend[top_left][%plugin_id%]  *}{literal}
                     {% for (var plugin in p.hooks.top_left) { %}
@@ -208,7 +212,7 @@
             <a href="#{%#o.hash%}/photo/{%#p.id%}/">
                 <div class="p-image-corner top left">
                     {% if (p.status <= 0) { %}
-                    <i class="icon16 lock" title="[`Private photo`]"></i>
+                    <i class="icon16 lock-bw p-private-photo" title="[`Private photo`]"></i>
                     {% } %}
                 </div>
                 <div class="p-image-corner top right">
@@ -241,7 +245,7 @@
 {capture name="template-photo-list-photo-tags"}{literal}
 {% var tags = o.tags, i = 0; %}
 {% if (!tags || ($.isArray(tags) && !tags.length)) return ''; %}
-{% for (var tag_id in tags) { %}{% var t = tags[tag_id]; %}{% if (i++ > 0) { %},{% } %} <a href='#/tag/{%=t%}/'>{%=t%}</a>{% } %}
+{% for (var tag_id in tags) { %}{% var t = tags[tag_id]; %}{% if (i++ > 0) { %},{% } %} <a href='#/tag/{%=encodeURIComponent(t)%}/'>{%=t%}</a>{% } %}
 {/literal}{/capture}
 
 
@@ -260,6 +264,7 @@
 {$loaded = count($photos) + $offset}
 {/if}
 {if isset($album)}{$total_count=$album.count}{/if}
+{$photos_per_page = $wa->photos->option("photos_per_page")}
 <script type="text/javascript">
     {if !empty($string)}
     $.photos.photo_list_string = {json_encode($string)};
@@ -267,10 +272,11 @@
     $.photos.photo_list_string = {
         'loaded':'{_w('%d photo','%d photos',$loaded)}',
         'of':'{if !empty($total_count)}{$total_count|string_format:"[`of %d`]"}{else}{/if}',
-        'chunk':'{_w('%d photo','%d photos',min($total_count - $loaded,$wa->photos->option("photos_per_page")))}'
+        'chunk':'{_w('%d photo','%d photos',min($total_count - $loaded,$photos_per_page))}'
     };
     {/if}
     $.photos.setAlbum({if isset($album)}{json_encode($album)}{else}null{/if});
     $.photos.photo_stream_cache.set({json_encode(array_values($photos))});
     $.photos.total_count = {if !empty($total_count)}{$total_count}{else}null{/if};
+    $.photos.photos_per_page = {$photos_per_page};
 </script>

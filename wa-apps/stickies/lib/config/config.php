@@ -12,9 +12,6 @@ return array(
 	),
 	'sizes'		 => array(
 		100,
-		150,
-		200,
-		300,
 		400,
 	),
 	'backgrounds' => array(
@@ -25,4 +22,3 @@ return array(
 		'brick'=>'url("wa_app_static_url/img/brick.jpg")',
 	),
 );
-?>

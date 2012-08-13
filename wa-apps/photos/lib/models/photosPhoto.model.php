@@ -425,15 +425,21 @@ class photosPhotoModel extends waModel
             return;
         }
         $old_path = photosPhoto::getPhotoPath($photo);
+        $old_thumbs_dir = photosPhoto::getPhotoThumbDir($photo);
+
         $data = array('status' => $status);
         if ($status <= 0) {
             $data['hash'] = md5(uniqid(time(), true));
+        } else {
+            $data['hash'] = '';
         }
         $photo = $data + $photo;
         $path = photosPhoto::getPhotoPath($photo);
         if (!rename($old_path, $path)) {
             throw new waException('error');
         }
+        waFiles::delete($old_thumbs_dir);   // strictly needed
+
         $this->updateById($photo_id, $data);
         $this->upRights($photo_id, $groups);
     }

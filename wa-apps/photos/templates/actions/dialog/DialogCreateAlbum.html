@@ -4,7 +4,6 @@
         <form method="post" action="?module=album&action=save">
         <div class="dialog-content">
             <div class="dialog-content-indent">
-
                 <h1>[`New album`]</h1>
 
                 <div class="fields form">
@@ -132,7 +131,7 @@
                                         <td colspan="2">
                                             <div class="block double-padded align-center">
                                             {foreach $cloud as $tag}
-                                                <label><span class="p-tag" style="font-size: {$tag.size}%;" data-id="{$tag.id}"><input type="checkbox" name="tag[]" value="{$tag.name}" {if isset($tag.checked)}checked{/if}> {$tag.name|escape}</span></label>
+                                                <label><span class="p-tag" style="font-size: {$tag.size}%;" data-id="{$tag.id}"><input type="checkbox" name="tag[]" value="{$tag.name|escape}" {if isset($tag.checked)}checked{/if}> {$tag.name|escape}</span></label>
                                             {/foreach}
                                             </div>
                                         </td>
@@ -195,6 +194,9 @@
            }
            return false;
         });
+
+        var height_static = $('.dialog-window', d).height(),
+            height_dynamic = height_static + 150;
         $('input[name=type]').change(function() {
             if (this.value == '1') {
                 $('#ac-dynamic-field-group').show();
@@ -204,9 +206,26 @@
                         $('#ac-album-rate-value').val(rate);
                     }
                 });
+                $('.dialog-window', d).height(height_dynamic);
             } else {
                 $('#ac-dynamic-field-group').hide();
+                $('.dialog-window', d).height(height_static);
             }
         });
+
+        // check corresponding checkbox when change control
+        $('select[name^=rate]', d).change(function() {
+            $('#ac-condition-rate').attr('checked', true);
+        });
+        $('#ac-album-rate', d).click(function() {
+            $('#ac-condition-rate').attr('checked', true);
+        });
+        $('input[name^=tag]', d).die().live('change', function() {
+            $('#ac-condition-tag').attr('checked', true);
+        });
+        $('select[name=access]', d).click(function() {
+            $('#ac-condition-access').attr('checked', true);
+        });
+
     });
 </script>

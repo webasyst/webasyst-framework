@@ -43,7 +43,7 @@ class photosAlbumSaveController extends waJsonController
             if ($status <= 0) {
                 $data['hash'] = md5(uniqid(time(), true));
             } else {
-                $data['url'] = $this->generateUrl($name);
+                $data['url'] = $this->album_model->suggestUniqueUrl(photosPhoto::suggestUrl($name));
             }
             if ($type == photosAlbumModel::TYPE_DYNAMIC) {
                 $data['conditions'] = $this->getPrepareConditions();
@@ -176,36 +176,11 @@ class photosAlbumSaveController extends waJsonController
         // check url
         $parent_id = $album['parent_id'];
         if ($data['url'] != null) {
-            if ($this->urlExists($data['url'], $parent_id)) {
+            if ($this->album_model->urlExists($data['url'], $this->id, $parent_id)) {
                 $this->errors['url'] = _w('URL is in use');
             }
         }
         return empty($this->errors);
-    }
-
-    private function urlExists($url, $parent_id = 0)
-    {
-        $where = "url = s:url AND parent_id = i:parent_id";
-        if ($this->id) {
-            $where .= " AND id != i:id";
-        }
-        return !!$this->album_model->select('id')->where($where, array(
-            'url' => $url,
-            'parent_id' => $parent_id,
-            'id' => $this->id
-        ))->fetch();
-    }
-
-    private function generateUrl($name)
-    {
-        $counter = 1;
-        $original_url = photosPhoto::suggestUrl($name);
-        $url = $original_url;
-        while ($this->urlExists($url)) {
-            $url = "{$original_url}_{$counter}";
-            $counter++;
-        }
-        return $url;
     }
 
     private function getPrepareConditions()

@@ -21,6 +21,8 @@ class photosCollection
     protected $post_fields = array();
     protected $models = array();
 
+    protected $album;
+
     protected $update_count = array();
 
 
@@ -281,6 +283,7 @@ class photosCollection
         }
         $album_model = new photosAlbumModel();
         $album = $album_model->getById($id);
+        $this->setAlbum($album);
 
         // album not found or incorrect hash
         if (!$album || (isset($hash) && $hash !== $album['hash'])) {
@@ -298,7 +301,7 @@ class photosCollection
         $this->update_count = array(
             'model' => $album_model,
             'id' => $id,
-            'count' => $count_model->getCount($id)
+            'count' => (int)$count_model->getCount($id)
         );
 
         if ($album['type']) {
@@ -500,6 +503,16 @@ class photosCollection
         return rtrim($link, '/').'/';
     }
 
+    private function setAlbum($album)
+    {
+        $this->album = $album;
+    }
+
+    public function getAlbum()
+    {
+        return $this->album;
+    }
+
     protected function searchPrepare($query, $auto_title = true)
     {
         $query = urldecode($query);
@@ -672,6 +685,7 @@ class photosCollection
                 'top_right' => array(),
                 'name' => array(),
             );
+            $photo['upload_timestamp'] = strtotime($photo['upload_datetime']);
             unset($photo);
         }
         /**

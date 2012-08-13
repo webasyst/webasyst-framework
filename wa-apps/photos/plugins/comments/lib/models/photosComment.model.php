@@ -172,4 +172,51 @@ class photosCommentModel extends waNestedSetModel
         return parent::add($comment, $comment_id);
     }
 
+
+
+    public function validate($comment)
+    {
+        $errors = array();
+
+        if($comment['contact_id']) {
+            $user = wa()->getUser();
+            if ($user->getId() && !$user->get('is_user')) {
+                $user->addToCategory(wa()->getApp());
+            }
+        } else {
+            if (!empty($comment['site']) && strpos($comment['site'], '://')===false) {
+                $comment['site'] = "http://" . $comment['site'];
+            }
+
+            if (empty($comment['name']) || (mb_strlen( $comment['name'] ) == 0) ) {
+                $errors[]['name'] = _wp('Name can not be left blank');
+            }
+            if (mb_strlen( $comment['name'] ) > 255) {
+                $errors[]['name'] = _wp('Name length should not exceed 255 symbols');
+            }
+            if (empty($comment['name']) || (mb_strlen( $comment['email'] ) == 0) ) {
+                $errors[]['email'] = _wp('Email can not be left blank');
+            }
+            $validator = new waEmailValidator();
+            if (!$validator->isValid($comment['email'])) {
+                $errors[]['email'] = _wp('Email is not valid');
+            }
+            $validator = new waUrlValidator();
+            if (!empty($comment['site']) && !$validator->isValid($comment['site'])) {
+                $errors[]['site'] = _wp('Site URL is not valid');
+            }
+            if (!wa()->getUser()->isAuth() && !wa()->getCaptcha()->isValid()) {
+                $errors[] = array('captcha' => _wp('Invalid captcha code'));
+            }
+        }
+
+        if (mb_strlen( $comment['text'] ) == 0) {
+            $errors[]['text'] = _wp('Comment text can not be left blank');
+        }
+        if (mb_strlen( $comment['text'] ) > 4096) {
+            $errors[]['text'] = _wp('Comment length should not exceed 4096 symbols');
+        }
+        return $errors;
+    }
+
 }

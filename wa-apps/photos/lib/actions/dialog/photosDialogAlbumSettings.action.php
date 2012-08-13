@@ -13,7 +13,7 @@ class photosDialogAlbumSettingsAction extends waViewAction
         }
 
         $album_right_model = new photosAlbumRightsModel();
-        if (!$album_right_model->checkRights($id, true)) {
+        if (!$album_right_model->checkRights($album, true)) {
             throw new waException(_w("You don't have sufficient access rights"), 403);
         }
 
@@ -21,8 +21,9 @@ class photosDialogAlbumSettingsAction extends waViewAction
             $album['conditions'] = photosCollection::parseConditions($album['conditions']);
         }
 
+
         $absolute_full_url = photosFrontendAlbum::getLink($album);
-        $pos = strrpos($absolute_full_url, $album['full_url']);
+        $pos = strrpos($absolute_full_url, $album['url']);
         $full_base_url = $pos !== false ? rtrim(substr($absolute_full_url, 0, $pos),'/').'/' : '';
         $album['full_base_url'] = $full_base_url;
         $this->view->assign('album', $album);

@@ -92,10 +92,10 @@ class blogBlogSettingsAction extends waViewAction
             );
 
             $blogs = array( $blog);
-            $blog = array_shift($blog_model->prepareView($blogs, array(
+            $blogs = $blog_model->prepareView($blogs, array(
             	'link' => false
-            )));
-
+            ));
+            $blog = array_shift($blogs);
             $blog['other_settlements'] = blogBlogModel::getPureSettlements($blog);
             $blog['settlement'] = array_shift($blog['other_settlements']);
 

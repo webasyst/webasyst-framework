@@ -8,8 +8,7 @@ CREATE TABLE IF NOT EXISTS `stickies_sheet` (
   `create_datetime` datetime NOT NULL,
   `creator_contact_id` int(11),
   `qty` int(11) DEFAULT 0,
-  PRIMARY KEY (id),
-  UNIQUE KEY `sort` (`sort`)
+  PRIMARY KEY (id)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- sticky table

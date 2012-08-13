@@ -244,11 +244,11 @@ ul.view-thumbs li p { font-size: 0.9em; line-height: 1.3em; }
 .comment-form-fields label { width: 160px; display: block; clear: left; float: left; margin: 0 10px 0 0; color: #aaa;}
 .comment-form-fields input { width: 20em;}
 .comment-form textarea { min-width: 70%; min-height: 160px; }
-.comment-form .comment-submit { padding:0 0 20px 110px;}
+.comment-form .comment-submit { padding:0 0 20px 170px;}
 .comment-form .userpic { width: 20px; height: 20px; float: left; margin-right: 5px; }
 .comment-form ul.menu-h.auth-type li a img { float: left; margin-right: 3px; position: relative; top: 2px; }
 .comment-form ul.menu-h.auth-type { padding-bottom: 20px; }
-.comment-form label { width: 100px; display: block; clear: left; float: left; margin: 0 10px 0 0; color: #AAA; }
+.comment-form label { width: 160px; display: block; clear: left; float: left; margin: 0 10px 0 0; color: #AAA; }
 .comment-form input[type=text] { width: 20em; }
 
 .comments { margin-bottom: 30px; }

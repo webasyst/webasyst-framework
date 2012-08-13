@@ -374,7 +374,8 @@
   $.wa.locale = $.extend($.wa.locale, {
     'input_maxlength':{json_encode('[`Max %d characters`]')}
   });
-  $.wa_blog.editor.options = $.extend(true,$.wa_blog.editor.options,{
+  $.wa_blog_options = $.extend(true,$.wa_blog_options,{
+    'editor': {
     'blogs':{json_encode($blogs)},
     'current_blog_id':{$blog.id},
     'editor_id':'post_text',
@@ -382,7 +383,7 @@
     'wa_app_static_url':"{$wa_app_static_url}",
     'cut_link_label_defaul': "[`Continue reading →`]",
     'version':'{$wa->version()}'
-  });
+  }});
 </script>
 
 {foreach $smarty.capture as $name => $template}

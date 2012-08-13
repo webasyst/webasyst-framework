@@ -17,10 +17,10 @@ class photosAlbumPhotosAction extends waViewAction
 
         // check rights
         $album_rights_model = new photosAlbumRightsModel();
-        if (!$album_rights_model->checkRights($id)) {
+        if (!$album_rights_model->checkRights($album)) {
             throw new waRightsException(_w("You don't have sufficient access rights"));
         }
-        $album['edit_rights'] = $album_rights_model->checkRights($id, true);
+        $album['edit_rights'] = $album_rights_model->checkRights($album, true);
 
         $hash = '/album/'.$id;
         $frontend_link = photosCollection::getFrontendLink($hash);
@@ -36,10 +36,7 @@ class photosAlbumPhotosAction extends waViewAction
         if ($album['type'] == photosAlbumModel::TYPE_DYNAMIC) {
             $album['conditions'] = photosCollection::parseConditions($album['conditions']);
         }
-//         $config = $this->getConfig();
-//         $last_login_datetime = $config->getLastLoginTime();
-//         $last_uploaded = $album_photos_model->lastUploadedCounters($last_login_datetime, $album['id']);
-//         $album['count_new'] = isset($last_uploaded[$album['id']]) ? $last_uploaded[$album['id']] : 0;
+        $album['count_new'] = 0;
 
 
         $this->template = 'templates/actions/photo/PhotoList.html';

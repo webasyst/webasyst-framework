@@ -26,13 +26,14 @@ class photosPhotoLoadController extends waJsonController
         }
 
         $photo_rights_model = new photosPhotoRightsModel();
-        if (!$photo_rights_model->checkRights($id)) {
+        if (!$photo_rights_model->checkRights($this->photo)) {
             throw new waRightsException(_w("You don't have sufficient access rights"));
         }
 
         $this->photo = photosPhoto::escapeFields($this->photo);
         $this->photo['upload_datetime_formatted'] = waDateTime::format('humandate', $this->photo['upload_datetime']);
-        $this->photo['edit_rights'] = $photo_rights_model->checkRights($id, true);
+        $this->photo['upload_timestamp'] = strtotime($this->photo['upload_datetime']);
+        $this->photo['edit_rights'] = $photo_rights_model->checkRights($this->photo, true);
         $this->photo['private_url'] = photosPhotoModel::getPrivateUrl($this->photo);
 
         $this->photo['thumb'] = photosPhoto::getThumbInfo($this->photo, photosPhoto::getThumbPhotoSize());
@@ -106,13 +107,16 @@ class photosPhotoLoadController extends waJsonController
         $this->response['hooks'] = $hooks;
 
         if ($hash !== null) {
-            $this->response['photo_stream'] = $this->getPhotoStream($hash);
+            $collection = new photosCollection($hash);
+            $this->response['photo_stream'] = $this->getPhotoStream($collection);
+            if ($collection->getAlbum()) {
+                $this->response['album'] = $collection->getAlbum();
+            }
         }
     }
 
-    public function getPhotoStream($hash)
+    public function getPhotoStream(photosCollection $collection)
     {
-        $collection = new photosCollection($hash);
         $parent = $this->photo_model->getStackParent($this->photo);
         $current_photo = $parent ? $parent : $this->photo;
         $offset = $collection->getPhotoOffset($current_photo);
@@ -124,7 +128,7 @@ class photosPhotoLoadController extends waJsonController
 
         return array(
             'photos' => $photos,
-            'parent_id' => $current_photo['id']
+            'current_photo_id' => $current_photo['id']
         );
     }
 }

@@ -41,9 +41,14 @@ class blogActivity
      */
     private static $instance;
 
+    /**
+     * @var string
+     */
+    private static $app_id = 'blog';
+
     private function __construct($time = null)
     {
-        $this->data = wa()->getStorage()->get(wa()->getApp());
+        $this->data = wa()->getStorage()->get(__CLASS__);
         if (!$this->data) {
             $this->data = array();
         }
@@ -76,7 +81,7 @@ class blogActivity
 
     public function __destruct()
     {
-        wa()->getStorage()->set(wa()->getApp(), $this->data);
+        wa()->getStorage()->set(__CLASS__, $this->data);
         self::$instance = null;
     }
 
@@ -184,31 +189,31 @@ class blogActivity
     public static function getUserActivity($id = null, $sidebar = true)
     {
         $storage = wa()->getStorage();
-        $blog_session_datetime = $storage->read('blog_session_datetime');
-        if (!$blog_session_datetime && ($id ||(is_null($id) && ($id = wa()->getUser()->getId())))) {
+        $app_session_datetime = $storage->read(self::$app_id."_session_datetime");
+        if (!$app_session_datetime && ($id ||(is_null($id) && ($id = wa()->getUser()->getId())))) {
             $contact = new waContactSettingsModel();
-            $result = $contact->get($id, 'blog');
+            $result = $contact->get($id, self::$app_id);
 
-            if (!$blog_session_datetime) {
-                $blog_last_datetime = isset($result['blog_last_datetime'])?$result['blog_last_datetime']:false;
-                $blog_session_datetime = $blog_last_datetime ? $blog_last_datetime : self::setUserActivity($id);
-                $storage->write('blog_badge_datetime',$blog_session_datetime);
+            if (!$app_session_datetime) {
+                $app_last_datetime = isset($result[self::$app_id."_last_datetime"])?$result[self::$app_id."_last_datetime"]:false;
+                $app_session_datetime = $app_last_datetime ? $app_last_datetime : self::setUserActivity($id);
+                $storage->write(self::$app_id."_badge_datetime",$app_session_datetime);
             }
 
-            $storage->set('blog_session_datetime',$blog_session_datetime);
+            $storage->set(self::$app_id."_session_datetime",$app_session_datetime);
         } else {
-            if ($blog_session_datetime) {
+            if ($app_session_datetime) {
                 self::setUserActivity($id, 0);
             } else {
-                $storage->write('blog_session_datetime',$blog_session_datetime = self::setUserActivity($id));
+                $storage->write(self::$app_id."_session_datetime",$app_session_datetime = self::setUserActivity($id));
             }
         }
 
-        if (!$sidebar && ($t = $storage->get('blog_badge_datetime'))) {
-            $blog_session_datetime = $t;
+        if (!$sidebar && ($t = $storage->get(self::$app_id."_badge_datetime"))) {
+            $app_session_datetime = $t;
         }
 
-        return $blog_session_datetime;
+        return $app_session_datetime;
     }
 
     public static function setUserActivity($id = null, $force = true)
@@ -219,22 +224,22 @@ class blogActivity
         $t = null;
         $storage = wa()->getStorage();
         if ($id) {
-            if (!$force && (!($blog_last_datetime = $storage->get('blog_last_datetime')) || (( time() - strtotime($blog_last_datetime))>120))) {
+            if (!$force && (!($app_last_datetime = $storage->get(self::$app_id."_last_datetime")) || (( time() - strtotime($app_last_datetime))>120))) {
                 $force = 1;
             }
             if ($force) {
                 $t = date("Y-m-d H:i:s",time()+1);
                 $contact = new waContactSettingsModel();
-                $contact->set($id, 'blog', 'blog_last_datetime', $t);
-                $storage->write('blog_last_datetime', $t);
+                $contact->set($id, self::$app_id, self::$app_id."_last_datetime", $t);
+                $storage->write(self::$app_id."_last_datetime", $t);
                 if ($force === true) {
-                    $storage->write('blog_badge_datetime', $t);
+                    $storage->write(self::$app_id."_badge_datetime", $t);
                 }
             } elseif ($force === false) {
-                $storage->write('blog_badge_datetime', $s = date("Y-m-d H:i:s",time()+1));
+                $storage->write(self::$app_id."_badge_datetime", $s = date("Y-m-d H:i:s",time()+1));
             }
         } elseif ($force) {
-            $storage->set('blog_session_datetime',$t = date("Y-m-d H:i:s",time()+1));
+            $storage->set(self::$app_id."_session_datetime",$t = date("Y-m-d H:i:s",time()+1));
         }
         return $t;
     }

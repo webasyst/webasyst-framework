@@ -197,4 +197,11 @@ class photosAlbumPhotosModel extends waModel
         return $this->query($sql)->fetchAll('album_id', true);
     }
 
+    public function getCountByAlbum()
+    {
+        $photo = new photosPhotoModel();
+        $sql = "SELECT COUNT(1) as cnt, a.album_id FROM {$this->table} a JOIN {$photo->getTableName()} p ON (p.{$photo->getTableId()} = a.photo_id) WHERE NOT p.parent_id GROUP BY a.album_id";
+        return $this->query($sql)->fetchAll('album_id', true);
+    }
+
 }

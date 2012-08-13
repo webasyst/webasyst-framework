@@ -40,7 +40,7 @@ class waTransactionModel extends waModel
   public function getRefundable($order_id, $paymentsystem_id)
   {
     $sql = "SELECT * FROM ".$this->table." WHERE order_id=i:order_id AND paymentsystem_id=s:paymentsystem_id
-      AND state='CAPTURED' ORDER BY create_datetime DESC";
+        AND (type='AUTH_ONLY' OR type='AUTH+CAPTURE') AND state='CAPTURED' ORDER BY create_datetime DESC";
     $result = $this->query($sql, array('order_id'=>$order_id, 'paymentsystem_id'=>$paymentsystem_id))->fetchAll();
     return $result;
   }

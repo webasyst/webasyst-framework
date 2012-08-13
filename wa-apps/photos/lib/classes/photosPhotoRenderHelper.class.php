@@ -74,10 +74,11 @@ class photosPhotoRenderHelper
     {
         $this->hash = isset($options['hash']) && $options['hash'] !== false ? $options['hash'] : false;
         $this->album = isset($options['album']) && $options['album'] ? $options['album'] : null;
+        $need_photo_stream = isset($options['need_photo_stream']) ? $options['need_photo_stream'] : true;
 
         $this->workUpPhoto();
 
-        if ($this->hash !== false) {
+        if ($need_photo_stream) {
             $this->rendered_blocks['photo_stream'] = $this->renderPhotoStream();
         }
         // addition fields for photo here

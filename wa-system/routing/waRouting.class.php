@@ -6,28 +6,32 @@ class waRouting
      * @var waSystem
      */
     protected $system;
-    protected $routes;
+    protected $routes = array();
     protected $domain;
     protected $route;
     protected $root_url;
-    
+
     public function __construct(waSystem $system, $routes = array())
     {
         $this->system = $system;
         if (!$routes) {
             $routes = $this->system->getConfig()->getConfigFile('routing');
+            if (!is_array($routes)) {
+                waLog::log("Invalid or missed routing config file");
+                $routes = array();
+            }
         }
         $this->setRoutes($routes);
     }
-    
-    public function setRoutes($routes) 
-    {       
+
+    public function setRoutes($routes)
+    {
         foreach ($routes as $domain => $domain_routes) {
             $this->routes[$domain] = $this->formatRoutes($domain_routes, false);
         }
     }
-    
-    
+
+
     public function setRoute($route, $domain = null)
     {
         $this->route = $route;
@@ -35,7 +39,7 @@ class waRouting
             $this->domain = $domain;
         }
     }
-    
+
     protected function formatRoutes($routes, $is_app = false)
     {
         $result = array();
@@ -86,7 +90,7 @@ class waRouting
         }
         return $result;
     }
-    
+
     public function getRoutes($domain = null)
     {
         $domain = $this->getDomain($domain, true);
@@ -98,7 +102,7 @@ class waRouting
         }
         return array();
     }
-    
+
     public function getDomain($domain = null, $check = false)
     {
         if ($domain) {
@@ -126,12 +130,12 @@ class waRouting
         }
         return $this->domain;
     }
-    
+
     public function getRootUrl()
     {
         return $this->root_url;
     }
-    
+
     public function dispatch()
     {
         $url = $this->system->getConfig()->getRequestUrl();
@@ -158,14 +162,14 @@ class waRouting
                     $u = substr($u, 0, $m[0][1] + $offset).$s.substr($u, $m[0][1] + $offset + strlen($m[0][0]));
                     $offset += strlen($s) - strlen($m[0][0]);
                 }
-            }            
-            $this->root_url = self::clearUrl($u);            
+            }
+            $this->root_url = self::clearUrl($u);
             $url = substr($url, strlen($this->root_url));
             $this->dispatchRoutes($this->getAppRoutes($r['app'], $r), $url);
         }
         return $r;
     }
-    
+
     public function getRouteParam($name)
     {
         if ($this->route && isset($this->route[$name])) {
@@ -173,7 +177,7 @@ class waRouting
         }
         return null;
     }
-    
+
     public function getCurrentUrl()
     {
         $url = $this->system->getConfig()->getRequestUrl();
@@ -185,42 +189,46 @@ class waRouting
 
     /**
      * Returns routes for pages
-     * @TODO: add file cache
-     * @param string $app APP_ID
+     * @param string $app_id APP_ID
      * @return array
      */
-    protected function getPageRoutes($app)
+    protected function getPageRoutes($app_id)
     {
-        $class = $app.'PageModel';
-        /**
-         * @var waPageModel $model
-         */
-        $model = new $class();
-        $query = $model->select('id, url');
-        $where = array();
-        if (waRequest::param('_exclude')) {
-            $where[] = "id NOT IN ('".implode("','", $model->escape(waRequest::param('_exclude')))."')";
+        static $_page_routes;
+
+        if ($_page_routes === null) {
+            $class = $app_id.'PageModel';
+            /**
+             * @var waPageModel $model
+             */
+            $model = new $class();
+            $query = $model->select('id, url');
+            $where = array();
+            if (waRequest::param('_exclude')) {
+                $where[] = "id NOT IN ('".implode("','", $model->escape(waRequest::param('_exclude')))."')";
+            }
+            if (!waRequest::get('preview')) {
+                $where[] = "status = 1";
+            }
+            if ($where) {
+                $query = $query->where(implode(" AND ", $where));
+            }
+            $rows = $query->fetchAll();
+            $page_routes = array();
+            foreach ($rows as $row) {
+                $page_routes[] = array(
+                    'url' => $row['url'],
+                    'module' => 'frontend',
+                    'action' => 'page',
+                    'page_id' => $row['id']
+                );
+            }
+            $_page_routes[$app_id] = $page_routes;
         }
-        if (!waRequest::get('preview')) {
-            $where[] = "status = 1";
-        }
-        if ($where) {
-            $query = $query->where(implode(" AND ", $where));
-        }
-        $rows = $query->fetchAll();
-        $page_routes = array();
-        foreach ($rows as $row) {
-            $page_routes[] = array(
-                'url' => $row['url'],
-                'module' => 'frontend',
-                'action' => 'page',
-                'page_id' => $row['id']
-            );
-        }
-        return $page_routes;
+        return $_page_routes[$app_id];
     }
 
-    
+
     protected function getAppRoutes($app, $route = array())
     {
         $routes = wa($app)->getConfig()->getRouting($route);
@@ -233,13 +241,13 @@ class waRouting
         }
         return $routes;
     }
-        
+
     protected function dispatchRoutes($routes, $url)
     {
         $result = null;
         foreach ($routes as $r) {
             if ($this->route && isset($this->route['module']) &&
-               (!isset($r['module']) || $r['module'] != $this->route['module'])) {
+            (!isset($r['module']) || $r['module'] != $this->route['module'])) {
                 continue;
             }
             $vars = array();
@@ -287,7 +295,7 @@ class waRouting
                 break;
             }
         }
-       
+
         // Default routing via GET parameters
         if (waRequest::param('module') === null && ($module = waRequest::get('module'))) {
             waRequest::setParam('module', $module);
@@ -296,12 +304,12 @@ class waRouting
             waRequest::setParam('action', $action);
         }
         if (waRequest::param('plugin') === null && ($plugin = waRequest::get('plugin'))) {
-               waRequest::setParam('plugin', $plugin);
+            waRequest::setParam('plugin', $plugin);
         }
         return $result;
     }
-    
-    
+
+
     public function getUrl($path, $params = array(), $absolute = false)
     {
         if (is_bool($params)) {
@@ -321,9 +329,9 @@ class waRouting
         }
         $routes = array();
         if (!$this->route || $this->route['app'] != $app ||
-               (!isset($this->route['module']) && isset($params['module']) && $params['module'] != 'frontend') ||
-               (isset($this->route['module']) && isset($params['module']) && $this->route['module'] != $params['module'])
-           ){
+        (!isset($this->route['module']) && isset($params['module']) && $params['module'] != 'frontend') ||
+        (isset($this->route['module']) && isset($params['module']) && $this->route['module'] != $params['module'])
+        ){
             // find base route
             if (isset($params['domain'])) {
                 $routes[$params['domain']] = $this->getRoutes($params['domain']);
@@ -334,10 +342,10 @@ class waRouting
             // filter by app and module
             foreach ($routes as $domain => $domain_routes) {
                 foreach ($domain_routes as $r_id => $r) {
-                    if (!isset($r['app']) || 
-                        $r['app'] != $app || 
-                        (isset($params['module']) && isset($r['module']) && $r['module'] != $params['module'])) {
-                        unset($routes[$domain][$r_id]); 
+                    if (!isset($r['app']) ||
+                    $r['app'] != $app ||
+                    (isset($params['module']) && isset($r['module']) && $r['module'] != $params['module'])) {
+                        unset($routes[$domain][$r_id]);
                     }
                 }
                 if (!$routes[$domain]) {
@@ -349,7 +357,7 @@ class waRouting
         }
         $max = -1;
         $result = null;
-        
+
         foreach ($routes as $domain => $domain_routes) {
             foreach ($domain_routes as $r) {
                 $i = $this->countParams($r, $params);
@@ -382,7 +390,7 @@ class waRouting
                                 $j++;
                             } else {
                                 if (substr($u, $m[0][1] - 1, 1) === '(' &&
-                                    substr($u, $m[0][1] + strlen($m[0][0]), 3) === '/)?') {
+                                substr($u, $m[0][1] + strlen($m[0][0]), 3) === '/)?') {
                                     $u = substr($u, 0, $m[0][1] - 1).substr($u, $m[0][1] + strlen($m[0][0]) + 3);
                                 } else {
                                     continue 2;
@@ -396,13 +404,13 @@ class waRouting
                             $max = $j;
                             $result = $root_url.self::clearUrl($u);
                         }
-                    }       
+                    }
                 }
             }
         }
         return $result;
     }
-    
+
     protected function countParams($r, $params)
     {
         $n = 0;
@@ -450,5 +458,5 @@ class waRouting
             return $domain_parts['host'].(isset($domain_parts['port']) ? ':'.$domain_parts['port'] : '').$u;
         }
         return $u;
-    }    
+    }
 }

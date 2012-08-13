@@ -47,7 +47,7 @@
                                             <input id="u-access-private" type="radio" value="0" name="status" >
                                             [`Private`]
                                             <span class="hint">
-                                                [`Only authorized users of the Webasyst Photos app can see these photos. Photos can be shared via sending a secure private link, or via embedded into external websites and apps.`]
+                                                [`Only authorized users of the Webasyst Photos app can see these photos. Photos can be shared via sending a secure private link, or via embedded into external websites and apps`].
                                                 <a href="#" class="inline-link p-privacy-settings-link"><b><i>[`Privacy settings`]</i></b></a>
                                             </span>
                                         </label>
@@ -60,10 +60,10 @@
                                                     <label for="user-group-{$g_id}"><input id="user-group-{$g_id}" name="groups[]" type="checkbox" value="{$g_id}" checked disabled> <span>{$g_name}</span></label><br>
                                                     {/foreach}
                                                 </div>
-                                                <em>[`Uncheck all groups to make photos visible to you only`].</em>
+                                                <em>[`Uncheck all groups to make photos visible to you only.`]</em>
                                             {else}
                                                 <input type="hidden" name="groups[]" value="0" disabled>
-                                                <em>[`There are no user groups thus you cant't manage access to photos`].</em>
+                                                <em>[`There are no user groups thus you cant't manage access to photos`]</em>
                                             {/if}
                                         </div>
                                     </div>

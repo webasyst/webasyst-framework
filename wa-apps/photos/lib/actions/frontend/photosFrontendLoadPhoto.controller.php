@@ -16,16 +16,17 @@ class photosFrontendLoadPhotoController extends waJsonController
     {
         $url = waRequest::param('url');
         $album = waRequest::param('album');
-        $hash = waRequest::param('hash');
+        $this->hash = waRequest::param('hash');
         if (!$url) {
             throw new waException(_w('Page not found', 404));
         }
         $this->photo_model = new photosPhotoModel();
         $photo = $this->getPhoto($url);
+
         if (!$photo) {
             throw new waException(_w('Page not found'), 404);
         }
-        if (!$this->private_hash && !$this->inCollection($photo, $hash)) {
+        if (!$this->private_hash && !$this->inCollection($photo, $this->hash)) {
             throw new waException(_w('Page not found'), 404);
         }
         $photo = photosPhoto::escapeFields($photo);
@@ -45,7 +46,8 @@ class photosFrontendLoadPhotoController extends waJsonController
         $render_helper = new photosPhotoRenderHelper($photo, $this->private_hash);
         $result = $render_helper->workUp(array(
             'album' => $album,
-            'hash' => $hash
+            'hash' => $this->hash,
+            'need_photo_stream' => false
         ));
         if ($size) {
             $result['photo']['thumb_custom'] = photosPhoto::getThumbInfo($result['photo'], $size);
@@ -74,6 +76,8 @@ class photosFrontendLoadPhotoController extends waJsonController
         if (!$photo) {
             $this->private_hash = photosPhotoModel::parsePrivateUrl($url);
             $photo = $this->photo_model->getByField('hash', $this->private_hash);
+            $parent = $this->photo_model->getStackParent($photo);
+            $this->hash = photosPhotoModel::getPrivateHash($parent ? $parent : $photo);
         }
         return $photo;
     }

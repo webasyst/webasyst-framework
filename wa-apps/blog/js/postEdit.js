@@ -486,7 +486,7 @@
 
 						var postUrlDescriptor = getDescriptor(blogId, postId, this.value);
 
-						if (!postUrlDescriptor.is_private_blog) {
+						if (postUrlDescriptor && !postUrlDescriptor.is_private_blog) {
 							show(postUrlDescriptor);
 						} else {
 							hide();

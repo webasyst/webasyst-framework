@@ -31,21 +31,19 @@ class stickiesBackendAction extends waViewAction
 		 */
 		$config = $this->getConfig();
 
-		$stick_sizes = $config->getStickiesSizes();
-		$this->view->assign('stick_sizes',$stick_sizes);
+		$stick_sizes = $config->getOption('sizes');
 		$this->view->assign('stick_min_size',min($stick_sizes));
 		$this->view->assign('stick_max_size',max($stick_sizes));
 
-		$stick_colors = $config->getStickiesColors();
+		$stick_colors = $config->getOption('colors');
 		$this->view->assign('stick_colors',array_keys($stick_colors));
 		$this->view->assign('stick_colors_css',$stick_colors);
 
-		$sheet_backgrounds = $config->getSheetBackgrounds();
-		$this->view->assign('sheet_backgrounds',$sheet_backgrounds);
+		$this->view->assign('sheet_backgrounds',$config->getOption('backgrounds'));
 
 		$this->view->assign('rights_add_sheet',$this->allow_add);
 	}
-	
+
 	public function getTemplate()
 	{
 		$template = parent::getTemplate();

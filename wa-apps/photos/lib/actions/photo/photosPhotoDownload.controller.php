@@ -20,7 +20,12 @@ class photosPhotoDownloadController extends waViewController
         }
 
         if ($path) {
-            waFiles::readFile($path,basename($photo['name'].'.'.$photo['ext']), waRequest::get('attach') ? true : false);
+            if ($attach = waRequest::get('attach')?true:false) {
+                $response = $this->getResponse();
+                $response->addHeader('Expires', 'tomorrow');
+                $response->addHeader('Cache-Control', (($photo['status'] == 1)?'public':'private').', max-age='.(86400*30));
+            }
+            waFiles::readFile($path, $attach?null:basename($photo['name'].'.'.$photo['ext']), true, !$attach);
         } else {
             throw new waException(_w("Photo not found"), 404);
         }

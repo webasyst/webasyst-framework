@@ -86,7 +86,7 @@ class photosWatermarkPlugin extends photosPlugin
                 $path = wa()->getDataPath('data/', true);
                 $file_name = 'watermark.'.$file->extension;
                 if (!file_exists($path) || !is_writable($path)) {
-                    throw new Exception(sprintf(_wp('File could not be saved due to the insufficient file write permissions for the "%s" folder.'), 'wa-data/public/photos/data/'));
+                    throw new Exception(sprintf(_wp('File could not be saved due to the insufficient file write permissions for the %s folder.'), 'wa-data/public/photos/data/'));
                 } elseif (!$file->moveTo($path, $file_name)) {
                     throw new Exception(_wp('Failed to upload file.'));
                 }

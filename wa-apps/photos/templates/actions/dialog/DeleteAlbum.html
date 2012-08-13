@@ -7,9 +7,9 @@
 </li>
 <li>
     <label>
-    <input type="radio" name="delete-photos" value="1">
+    <input type="radio" name="delete-photos" value="1" {if $album.type == photosAlbumModel::TYPE_DYNAMIC}disabled{/if}>
     {assign var="del_photos_text" value='[`Delete all photos stored in this album (%d)`]'|sprintf:$photos_count}
-    {$del_photos_text}
+    {$del_photos_text}{if $album.type == photosAlbumModel::TYPE_DYNAMIC}<em class="hint"> [`Not available for smart albums.`]</em>{/if}
     </label>
 </li>
 </ul>

@@ -17,7 +17,7 @@
 	};
 
 	$.wa.stickiescontroller = {
-			debug: true,
+			debug: false,
 			currentLayout: null,
 
 			stickResizeTimer: {},
@@ -258,7 +258,7 @@
 				var self = this;
 				$('.sticky-status.nosaved').each( function (i) {
 					var id=parseInt($(this).attr('id').match(/\d+$/));
-					self.log('force save', id);
+					self.trace('force save', id);
 					$('#sticky_content_'+id).change();
 				});
 			},
@@ -313,7 +313,7 @@
 			},
 			sheetEditAction: function(params) {
 				this.checkChanges();
-				this.log('sheetEditAction', params);
+				this.trace('sheetEditAction', params);
 				$('#sheet_item_' + parseInt(params)+' .stickies-settings-form').toggle(0);
 
 				if ($('#sheet_item_' + parseInt(params)+' .stickies-settings-form').is(':visible')) {
@@ -362,6 +362,10 @@
 					},
 					function (data) {
 						self.trace('SortAction result', data);
+						if(data.error) {
+							self.error('Error occurred while sorting boards'.translate(), 'error');
+							sheet.sortable('cancel');
+						}
 					},
 					function (data) {
 						self.log('SortAction cancel', {'data':data,'before':self.sheetsOrder,'after':params});
@@ -537,7 +541,7 @@
 				}
 //				this.log('Current font size '+id,font);
 				$textarea.css('font-size', font);
-				this.log('updateFontSize', font);
+				this.trace('updateFontSize', font);
 				$textarea.css('lineHeight', $twin.css('lineHeight'));
 
 				return;
@@ -809,7 +813,7 @@
 			},
 
 			stickCalculatePosition: function(stick) {
-				this.log('stickCalculatePosition');
+				this.trace('stickCalculatePosition');
 				var container = stick.parent(),
 					left_procent = 100 * parseInt(stick.css('left')) / parseInt(container.width()),
 					top_procent = 100 * parseInt(stick.css('top')) / parseInt(container.height());
@@ -903,19 +907,24 @@
 
 			error: function (message,type) {
 				var container = $('#wa-system-notice');
-				if(container){
+				if (container) {
 					//TODO use correct message box
 					var delay = 1500;
 					switch(type){
 						case 'error':{
 							delay = 6000;
+							message = '<i class="icon16 bug"></i>'+message;
+							break;
+						}
+						case 'warning':{
+							message = '<i class="icon16 no"></i>'+message;
 							break;
 						}
 					}
 					container.html(message);
 					container.slideDown().delay(delay).slideUp();
 
-				}else{
+				} else {
 					alert(message);
 				}
 

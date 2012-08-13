@@ -9,12 +9,12 @@
 
 	<link rel="apple-touch-icon" href="apps/mobile/img/iphone_icon.png">
 
-	<link	type="text/css"	rel="stylesheet" href="{{$wa_url}}wa-content/css/wa/wa-mobile-1.0.css" />
+	<link	type="text/css"	rel="stylesheet" href="{{$wa_url}}wa-content/css/wa/wa-mobile-1.0.css">
 	<link	type="text/css"	rel="stylesheet" href="{{$wa_app_static_url}}css/mobile.css">
 
 	<script type="text/javascript"	src="{{$wa_url}}wa-content/js/jquery/jquery-1.5.2.min.js"></script>
 	<script type="text/javascript"	src="{{$wa_url}}wa-content/js/jquery-wa/wa.core.js"></script>
-	<script type="text/javascript"	src="{{$wa_url}}wa-content/js/jquery-plugins/jquery.tmpl.js"></script>
+	<script type="text/javascript"	src="{{$wa_url}}wa-content/js/jquery-plugins/jquery.tmpl.min.js"></script>
 	<script type="text/javascript"	src="{{$wa_url}}wa-content/js/jquery-plugins/jquery.cookie.js"></script>
 
 	<script type="text/javascript"	src="{{$wa_app_static_url}}js/wa.stickiesmobilecontroller.js"></script>
@@ -37,7 +37,7 @@
 			background-image: -webkit-gradient(linear,left top,left bottom,
 									color-stop(0, 		{{$color.border}}),
 									color-stop(1, 		{{$color.body}}));
-  			-ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='{{$color.border}}', EndColorStr='{{$color.body}}')";
+			-ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='{{$color.border}}', EndColorStr='{{$color.body}}')";
 		}
 		i.sticky-bar-{{$color_key}} { background-color:{{$color.header}} ; border-color: {{$color.border}};}
 		p.-sticky-content-{{$color_key}} { background:{{$color.body}}}

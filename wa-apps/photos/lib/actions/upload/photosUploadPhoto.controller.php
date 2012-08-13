@@ -142,6 +142,7 @@ class photosUploadPhotoController extends waJsonController
         $photo_path = photosPhoto::getPhotoPath($data);
         if ((file_exists($photo_path) && !is_writable($photo_path)) ||
             (!file_exists($photo_path) && !waFiles::create($photo_path))) {
+            $this->model->deleteById($photo_id);
             throw new waException(sprintf(_w("The insufficient file write permissions for the %s folder."), substr($photo_path, strlen($this->getConfig()->getRootPath()))));
         }
 

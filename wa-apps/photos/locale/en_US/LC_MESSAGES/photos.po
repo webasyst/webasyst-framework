@@ -1038,7 +1038,6 @@ msgstr ""
 msgid "Unsaved changes will be lost if you leave this page now. Are you sure?"
 msgstr ""
 
-
 #: /wa-apps/photos/lib/config/site.php:101
 msgid "Rendered HTML block of links to albums which current photo belongs to"
 msgstr ""
@@ -1106,3 +1105,32 @@ msgstr ""
 #: /wa-apps/photos/lib/actions/photo/photosPhotoLoad.controller.php:25
 msgid "Photo doesn't exists"
 msgstr ""
+
+#: /wa-apps/photos/templates/actions/dialog/DialogManageAccess.html:25
+msgid "Visible in the public gallery"
+msgstr ""
+
+#: /wa-apps/photos/templates/actions/dialog/DialogManageAccess.html:35
+msgid "Visible only to authorized users of the Webasyst Photos app"
+msgstr ""
+
+#: /wa-apps/photos/templates/actions/dialog/DialogAlbumSettings.html:60
+msgid "Uncheck all groups to make this album visible to you only."
+msgstr ""
+
+#: /wa-apps/photos/templates/actions/dialog/DeleteAlbum.html:12
+msgid "Not available for smart albums."
+msgstr ""
+
+#: /wa-apps/photos/templates/actions/upload/Upload.html:50
+msgid "Only authorized users of the Webasyst Photos app can see these photos. Photos can be shared via sending a secure private link, or via embedded into external websites and apps"
+msgstr ""
+
+#: /wa-apps/photos/templates/actions/upload/Upload.html:63
+msgid "Uncheck all groups to make photos visible to you only."
+msgstr ""
+
+#: /wa-apps/photos/templates/actions/photo/PhotoList.html:53
+msgid "Select all photos"
+msgstr ""
+

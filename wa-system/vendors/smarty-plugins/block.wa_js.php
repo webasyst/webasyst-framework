@@ -66,30 +66,41 @@ function smarty_block_wa_js($params, $content, &$smarty) {
                 }
             }
         }
-        if ($r && !$mtime && waFiles::create($app_path.'/'.$params['file'])) {
-            // check Google Closure Compiler
-            // https://developers.google.com/closure/compiler/docs/gettingstarted_app
+        if ($files_combine) {
+            if ($r && !$mtime && waFiles::create($app_path.'/'.$params['file'])) {
+                // check Google Closure Compiler
+                // https://developers.google.com/closure/compiler/docs/gettingstarted_app
 
-            if ($compiler = waSystemConfig::systemOption('js_compiler')) {
-                $cmd = 'java -jar "'.$compiler.'"';
-                foreach ($files_combine as $file) {
-                    $cmd .= ' --js "'.$root_path.'/'.$file.'"';
+                if ($compiler = waSystemConfig::systemOption('js_compiler')) {
+                    $cmd = 'java -jar "'.$compiler.'"';
+                    foreach ($files_combine as $file) {
+                        $cmd .= ' --js "'.$root_path.'/'.$file.'"';
+                    }
+                    $cmd .= ' --js_output_file "'.$app_path.'/'.$params['file'].'"';
+                    system($cmd,$res);
+                    $r = !$res;
+                    if(!$r) {
+                        waLog::log("Error occured while compress files:\n\t".implode("\n\t",$files_combine)."\n\t{$params['file']}\n\ncommand:\n{$cmd}",__FUNCTION__.'.log');
+                    }
+                } else {
+                    $r = false;
                 }
-                $cmd .= ' --js_output_file '.$app_path.'/'.$params['file'];
-                $res = system($cmd, $out);
-                waLog::log("Error occured while compress files:\n\t".implode("\n\t",$files_combine)."\n\t{$params['file']}",__FUNCTION__.'.log');
-                $r = !$out;
-            }
-            if(!$r) {
-                $data = "";
-                foreach ($files_combine as $file) {
-                    $data .= file_get_contents($root_path.'/'.$file).";\n";
+                if(!$r) {
+                    $data = "";
+                    foreach ($files_combine as $file) {
+                        $data .= file_get_contents($root_path.'/'.$file).";\n";
+                    }
+                    $r = @file_put_contents($app_path.'/'.$params['file'], $data);
+                    if(!$r) {
+                        waLog::log("Error occured while compress files:\n\t".implode("\n\t",$files_combine)."\n\t{$params['file']}",__FUNCTION__.'.log');
+                    }
                 }
-                $r = @file_put_contents($app_path.'/'.$params['file'], $data);
             }
         }
         if ($r) {
-            $result .= '<script type="text/javascript" src="' . $wa->getAppStaticUrl().$params['file'] . '?v'.$wa->getVersion().'"></script>'."\n";
+            if ($files_combine) {
+                $result .= '<script type="text/javascript" src="' . $wa->getAppStaticUrl().$params['file'] . '?v'.$wa->getVersion().'"></script>'."\n";
+            }
             return $result;
         }
     }

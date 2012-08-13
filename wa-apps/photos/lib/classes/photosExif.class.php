@@ -16,7 +16,12 @@ class photosExif
             'GPSLatitude',
             'Orientation'
         );
-        $exif_data = @exif_read_data($path);
+
+        if(function_exists('exif_read_data')) {
+            $exif_data = @exif_read_data($path);
+        } else {
+            $exif_data = array();
+        }
         $info = array();
         foreach ($fields as $f) {
             if (isset($exif_data[$f])) {

@@ -1,4 +1,5 @@
 $.storage = new $.store();
+$.wa_blog_options = $.wa_blog_options ||{};
 $.wa_blog = $.extend(true, $.wa_blog, {
 	rights : {
 		admin : false
@@ -24,7 +25,7 @@ $.wa_blog = $.extend(true, $.wa_blog, {
 				if (i != 'common') {
 					if (blog[i].init && (typeof (blog[i].init) == 'function')) {
 						try {
-							blog[i].init();
+							blog[i].init($.wa_blog_options[i]||{});
 						} catch (e) {
 							if (typeof (console) == 'object') {
 								console.log(e);

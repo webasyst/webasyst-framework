@@ -1,8 +1,8 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
 <head>
-<meta http-equiv="X-UA-Compatible" content="IE=8" />
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" >
+<meta http-equiv="X-UA-Compatible" content="IE=8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <title>[`Stickies`] &mdash; {{$wa->accountName()}}</title>
 {{$wa->css()}}
 
@@ -24,7 +24,7 @@ i.bg-{{$background_key}} {background: {{$background|replace:'wa_app_static_url/'
 </style>
 
 <script type="text/javascript" src="{{$wa_url}}wa-content/js/jquery/jquery-1.4.2.min.js"></script>
-{{wa_js file="js/compiled/stickies-jquery.js"}}
+{{wa_js file="js/compiled/stickies.js"}}
 	{{$wa_url}}wa-content/js/jquery-ui/jquery.ui.core.min.js
 	{{$wa_url}}wa-content/js/jquery-ui/jquery.ui.widget.min.js
 	{{$wa_url}}wa-content/js/jquery-ui/jquery.ui.mouse.min.js
@@ -32,14 +32,12 @@ i.bg-{{$background_key}} {background: {{$background|replace:'wa_app_static_url/'
 	{{$wa_url}}wa-content/js/jquery-ui/jquery.ui.droppable.min.js
 	{{$wa_url}}wa-content/js/jquery-ui/jquery.ui.resizable.min.js
 	{{$wa_url}}wa-content/js/jquery-ui/jquery.ui.sortable.min.js
-	
+
 	{{$wa_url}}wa-content/js/jquery-plugins/jquery.history.js
 	{{$wa_url}}wa-content/js/jquery-plugins/jquery.tmpl.min.js
 	{{$wa_url}}wa-content/js/jquery-plugins/jquery.cookie.js
-{{/wa_js}}
-
-{{wa_js file="js/compiled/stickies.js"}}
 	{{$wa_url}}wa-content/js/jquery-wa/wa.core.js
+
 	{{$wa_app_static_url}}js/wa.stickiescontroller.js
 	{{$wa_app_static_url}}js/generic.js
 {{/wa_js}}
@@ -54,35 +52,36 @@ i.bg-{{$background_key}} {background: {{$background|replace:'wa_app_static_url/'
 
 		<div id="wa-app-stickies-stickies" class="stickies-content">
 <!-- sticky {{capture name="sticky-template-js"}} -->
-			<div class="sticky{{literal}}{{if sticky.color}} sticky-${sticky.color}{{/if}}{{/literal}} sticky-${sticky.color}" 
-				id="sticky_${sticky.id}" 
-				style="top: ${sticky.position_top}%; 
-					left: ${sticky.position_left}%; 
+			<div class="sticky{{literal}}{{if sticky.color}} sticky-${sticky.color}{{/if}}{{/literal}} sticky-${sticky.color}"
+				id="sticky_${sticky.id}"
+				style="top: ${sticky.position_top}%;
+					left: ${sticky.position_left}%;
 					height:${Math.max({{$stick_min_size+22}},Math.min({{$stick_max_size+22}},parseInt(sticky.size_height)+22))}px;
 					width:${Math.max({{$stick_min_size+5}},Math.min({{$stick_max_size+5}},parseInt(sticky.size_width)+5))}px;
 					z-index: ${zindex||1};">
 				<div class="sticky-inner" style="display:block;height: 100%; width:100%;">
 					<div class="sticky-header">
-						<a 
+						<a
 							href="{{$wa_app_url}}#/sticky/delete/${sticky.id}"
 							class="stick-delete js-menu-item js-menu-no-proceed"
 							title="[`Delete`]"
 						>
-							<i class="icon10 close"></i>
+							<i class="icon10 close"><!-- icon --></i>
 						</a>
-						<a 
+						<a
 							href="{{$wa_app_url}}#/sticky/settings/${sticky.id}"
 							title="[`Settings`]"
 							class="sticky-setting js-menu-item js-menu-no-proceed"
 						>
-							<i class="icon10 settings"></i>
+							<i class="icon10 settings"><!-- icon --></i>
 						</a>
 						<span class="sticky-status" id="sticky_status_${sticky.id}" title="[`Sticky status`]"></span>
 					</div>
 					<div class="sticky-content" style="display:block;  height:${sticky.size_height-20}px; width:${sticky.size_width-6}px;">
-						<textarea name="content" 
-							class="sticky-content" 
-							id="sticky_content_${sticky.id}" 
+						<textarea name="content"
+							class="sticky-content"
+							id="sticky_content_${sticky.id}"
+							cols="40" rows="5"
 							style="font-size: ${sticky.font_size}px; line-height: ${sticky.font_size}px;">${sticky.content}</textarea>
 					</div>
 					<div class="sticky-resizable-se"></div>
@@ -96,17 +95,17 @@ i.bg-{{$background_key}} {background: {{$background|replace:'wa_app_static_url/'
 					<h5>[`Color`]</h5>
 					<ul class="thumbs color-vars" id="color-vars-${sticky.id}">
 <!-- {{foreach from=$stick_colors item=color_value}}{{$color_value}} -->
-						<li 
+						<li
 							id="color-vars-${sticky.id}-{{$color_value}}"
 							class="{{literal}}{{if sticky.color == '{{/literal}}{{$color_value}}{{literal}}'}}selected{{/if}}{{/literal}}"
 						>
 							<a
-								
+
 								class="js-menu-item js-menu-no-proceed"
 								href="{{$wa_app_url}}#/sticky/color/${sticky.id}/{{$color_value}}"
 								title="{{$color_value}}"
 							>
-								<i class="sticky-{{$color_value}}"></i>
+								<i class="sticky-{{$color_value}}"><!-- icon --></i>
 							</a>
 						</li>
 <!-- {{/foreach}} end  color variants -->
@@ -126,14 +125,14 @@ i.bg-{{$background_key}} {background: {{$background|replace:'wa_app_static_url/'
 <!-- app toolbar, menu & body -->
 
 	<div id="wa-app">
-		
+
 		<div class="stickies-sidebar" id="stickies-events">
 			<div class="block sticky-createnew">
 				<ul class="menu-v" id="wa-app-stickies-add">
 <!-- add sticky {{capture name="add-sticky-template-js"}} -->
 					<li>
-			          	<a href="{{$wa_app_url}}#/sticky/add/${sheet_id}" class="wa-ui-icon-link js-menu-item js-menu-no-proceed">
-							<i class="icon16 add"></i>
+					  	<a href="{{$wa_app_url}}#/sticky/add/${sheet_id}" class="wa-ui-icon-link js-menu-item js-menu-no-proceed">
+							<i class="icon16 add"><!-- icon --></i>
 							[`New sticky`]
 						</a>
 					</li>
@@ -142,34 +141,34 @@ i.bg-{{$background_key}} {background: {{$background|replace:'wa_app_static_url/'
 				</ul>
 			</div>
 			<div class="stickies-sidebar-scrolable">
-			
-			<div class="block" id="stickies-sheets">  
-        		<ul class="menu-v" id="wa-app-stickies-sheets">			
+
+			<div class="block" id="stickies-sheets">
+				<ul class="menu-v" id="wa-app-stickies-sheets">
 <!-- sheet list {{capture name="sheet-template-js"}} -->
 					<li id="sheet_item_${sheet.id}" class="js-sheet-item {{literal}}{{if current_sheet_id == sheet.id}}selected{{else}}{{/if}}{{/literal}}">
 						<span class="count">
-							<i class="icon16 loading" style="display: none;"></i>
+							<i class="icon16 loading" style="display: none;"><!-- icon --></i>
 <!-- 						{{literal}}{{if current_sheet_id == sheet.id}}{{/literal}} -->
-							<a 
-   								href="{{$wa_app_url}}#/sheet/edit/${sheet.id}"
-   								class="inline-icon js-menu-item js-menu-no-proceed"
-   								title="[`Settings`]"
-   							>
-								<i class="icon16 settings"></i>
+							<a
+								href="{{$wa_app_url}}#/sheet/edit/${sheet.id}"
+								class="inline-icon js-menu-item js-menu-no-proceed"
+								title="[`Settings`]"
+							>
+								<i class="icon16 settings"><!-- icon --></i>
 							</a>
 <!-- 							{{literal}}{{else}}{{/literal}} -->
 								${sheet.qty}
 <!--							{{literal}}{{/if}}{{/literal}} -->
 						</span>
-   						<a
-   							id="sheet_item_name_${sheet.id}" 
-   							href="{{$wa_app_url}}#/sheet/${sheet.id}"
-   						>{{literal}}{{if sheet.name}}${sheet.name}{{else}}&lt;[`no name`]&gt;{{/if}} {{/literal}}</a>
-<!--   						{{literal}}{{if current_sheet_id == sheet.id}}{{/literal}} -->
+						<a
+							id="sheet_item_name_${sheet.id}"
+							href="{{$wa_app_url}}#/sheet/${sheet.id}"
+						>{{literal}}{{if sheet.name}}${sheet.name}{{else}}&lt;[`no name`]&gt;{{/if}} {{/literal}}</a>
+<!--						{{literal}}{{if current_sheet_id == sheet.id}}{{/literal}} -->
 						<div class="stickies-settings-form">
-							<form 
-								id="sheet_item__settings_${sheet.id}" 
-								class="js-form-submit" 
+							<form
+								id="sheet_item__settings_${sheet.id}"
+								class="js-form-submit"
 								action="{{$wa_app_url}}#/sheet/save/${sheet.id}"
 							>
 							<p><label for="sticky-name-${sheet.id}">[`Name`]</label></p>
@@ -180,11 +179,11 @@ i.bg-{{$background_key}} {background: {{$background|replace:'wa_app_static_url/'
 <!-- {{foreach from=$sheet_backgrounds item=background key=background_key}}{{$background_key}} -->
 
 								<li id="background-vars-${sheet.id}-{{$background_key}}" {{literal}}{{if sheet.background_id=='{{/literal}}{{$background_key}}{{literal}}'}}class="selected"{{/if}}{{/literal}} >
-									<a	class="js-menu-item js-menu-no-proceed" 
+									<a	class="js-menu-item js-menu-no-proceed"
 										href="{{$wa_app_url}}#/sheet/background/${sheet.id}/{{$background_key}}"
 										title="{{$background_key}}"
 									>
-										<i class="bg-{{$background_key}}"></i>
+										<i class="bg-{{$background_key}}"><!-- icon --></i>
 									</a>
 								</li>
 <!-- {{/foreach}}end variants -->
@@ -193,18 +192,18 @@ i.bg-{{$background_key}} {background: {{$background|replace:'wa_app_static_url/'
 							<p>
 								<input type="hidden" name="sheet_id" value="${sheet.id}" />
 								<input type="submit" value="[`Save`]"/>
-								<a  class="js-menu-item js-menu-no-proceed" href="{{$wa_app_url}}#/sheet/delete/${sheet.id}">[`Delete board`]</a>
+								<a class="js-menu-item js-menu-no-proceed" href="{{$wa_app_url}}#/sheet/delete/${sheet.id}">[`Delete board`]</a>
 							</p>
 							</form>
 						</div>
-<!--            		{{literal}}{{/if}}{{/literal}} -->
+<!--					{{literal}}{{/if}}{{/literal}} -->
 					</li>
 <!-- {{/capture}}placeholder -->
 <!-- sheet add {{capture name="sheet-add-template-js"}} -->
-<!-- {{if $rights_add_sheet}} Allow add new board --> 		
+<!-- {{if $rights_add_sheet}} Allow add new board -->
 					<li class="top-padded">
 						<a class="small inline-link js-menu-item js-menu-no-proceed" href="{{$wa_app_url}}#/sheet/add">
-							<i class="icon10 add"></i>
+							<i class="icon10 add"><!-- icon --></i>
 							<b><i>[`New board`]</i></b>
 						</a>
 					</li>
@@ -212,19 +211,18 @@ i.bg-{{$background_key}} {background: {{$background|replace:'wa_app_static_url/'
 <!-- {{/if}} -->
 <!-- {{/capture}}placeholder -->
 					<li>&nbsp;</li>
-				</ul>		
+				</ul>
 			</div>
 		</div>
-		
-		
+
+
 		<div id="wa-system-notice" style="display: none;">
 		</div>
-		</div>	
-			
-	</div><!-- wa -->
-</div><!-- wa-app -->	
+		</div>
 
-<!-- <span class="stick-status saved|nosaved|process" href="#save" title="[`Sticky status`]"><i></i></span>-->
+	</div><!-- wa -->
+</div><!-- wa-app -->
+
 {{foreach from=$smarty.capture item=template key=name}}
 <script type="text/x-jquery-tmpl" id="{{$name}}">
 <!-- begin {{$name}} {{$template|replace:'</':'<\/'}} end {{$name}} -->

@@ -87,3 +87,39 @@ msgid_plural "%d comments"
 msgstr[0] ""
 msgstr[1] ""
 
+#: /wa-apps/photos/plugins/comments/templates/FrontendPhoto.html:29
+msgid "comment deleted"
+msgstr ""
+
+#: /wa-apps/photos/plugins/comments/lib/models/photosComment.model.php:192
+msgid "Name can not be left blank"
+msgstr ""
+
+#: /wa-apps/photos/plugins/comments/lib/models/photosComment.model.php:195
+msgid "Name length should not exceed 255 symbols"
+msgstr ""
+
+#: /wa-apps/photos/plugins/comments/lib/models/photosComment.model.php:198
+msgid "Email can not be left blank"
+msgstr ""
+
+#: /wa-apps/photos/plugins/comments/lib/models/photosComment.model.php:202
+msgid "Email is not valid"
+msgstr ""
+
+#: /wa-apps/photos/plugins/comments/lib/models/photosComment.model.php:206
+msgid "Site URL is not valid"
+msgstr ""
+
+#: /wa-apps/photos/plugins/comments/lib/models/photosComment.model.php:209
+msgid "Invalid captcha code"
+msgstr ""
+
+#: /wa-apps/photos/plugins/comments/lib/models/photosComment.model.php:214
+msgid "Comment text can not be left blank"
+msgstr ""
+
+#: /wa-apps/photos/plugins/comments/lib/models/photosComment.model.php:217
+msgid "Comment length should not exceed 4096 symbols"
+msgstr ""
+

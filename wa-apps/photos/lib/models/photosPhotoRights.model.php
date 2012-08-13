@@ -5,22 +5,23 @@ class photosPhotoRightsModel extends waModel
     protected $table = 'photos_photo_rights';
 
     /**
-     * @param int $photo_id
+     * @param array|int $photo photo or id of photo
      * @param boolean $check_edit
      * @return boolean
      */
-    public function checkRights($photo_id, $check_edit = false)
+    public function checkRights($photo, $check_edit = false)
     {
-        $user = wa()->getUser();
-        if ($check_edit) {
+        if (!is_array($photo)) {
             $photo_model = new photosPhotoModel();
-            $photo = $photo_model->getById($photo_id);
-            if (!$photo) {
-                return false;
-            }
-            if ($check_edit && $photo['contact_id'] != $user->getId() && !$user->getRights('photos', 'edit')) {
-                return false;
-            }
+            $photo = $photo_model->getById((int)$photo);
+        }
+        if (!$photo) {
+            return false;
+        }
+        $photo_id = $photo['id'];
+        $user = wa()->getUser();
+        if ($check_edit && $photo['contact_id'] != $user->getId() && !$user->getRights('photos', 'edit')) {
+            return false;
         }
         if ($user->isAdmin()) {
             $where = "(group_id >= 0 OR group_id = -".(int)$user->getId().")";

@@ -2,11 +2,6 @@
 
 class blogPostGetPostUrlController extends waJsonController
 {
-    protected function preExecute()
-    {
-        $this->getResponse()->addHeader('Content-type', 'application/json');
-    }
-
     public function execute()
     {
         $post_title = waRequest::post('post_title', '', waRequest::TYPE_STRING_TRIM);
@@ -77,6 +72,7 @@ class blogPostGetPostUrlController extends waJsonController
             $item = htmlspecialchars($item, ENT_QUOTES);
         }
         unset($item);
+        $this->getResponse()->addHeader('Content-type', 'application/json');
     }
 }
 //EOF

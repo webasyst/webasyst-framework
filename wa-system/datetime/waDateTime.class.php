@@ -122,15 +122,15 @@ class waDateTime
             $month = $date_time->format('F');
             $local = _ws($month, $month, 2);
             $result = str_replace(
-                array(
+            array(
                     "@$month@",
-                    $month
-                ),
-                array(
-                    mb_strtolower($local),
-                    $local
-                ),
-                $result
+            $month
+            ),
+            array(
+            mb_strtolower($local),
+            $local
+            ),
+            $result
             );
         }
         return $result;
@@ -166,22 +166,30 @@ class waDateTime
                 $time = date("Y-m-d H:i:s", $time);
             }
             $date_time = new DateTime($time);
+            $base_date_time = new DateTime(date("Y-m-d H:i:s",strtotime('-1 day')));
             if ($timezone) {
-                $date_time->setTimezone(new DateTimeZone($timezone));
+                $date_timezone = new DateTimeZone($timezone);
+                $date_time->setTimezone($date_timezone);
+                $base_date_time->setTimezone($date_timezone);
             }
-            // today
-            $date = $date_time->format("Y-m-d");
-            if (date('Y-m-d') == $date) {
-                $result = _ws('Today');
-            // yesterday
-            } elseif (date('Y-m-d', strtotime("- 1 day")) == $date) {
+
+            $day = $date_time->format('z');
+            if ($base_date_time->format('z') == $day) {
                 $result = _ws('Yesterday');
-            // tomorrow
-            } elseif (date('Y-m-d', strtotime("+ 1 day")) == $date) {
-                $result = _ws('Tomorrow');
             } else {
-                $result = self::date(self::getFormat('humandate', $locale), $time, $timezone, $locale);
+                $base_date_time->modify('+1 day');
+                if ($base_date_time->format('z') == $day) {
+                    $result = _ws('Today');
+                } else {
+                    $base_date_time->modify('+1 day');
+                    if ($base_date_time->format('z') == $day) {
+                        $result = _ws('Tomorrow');
+                    } else {
+                        $result = self::date(self::getFormat('humandate', $locale), $time, $timezone, $locale);
+                    }
+                }
             }
+
             return  $result.' '.self::date(self::getFormat('time', $locale), $time, $timezone, $locale);
         }
 
@@ -205,9 +213,9 @@ class waDateTime
             'fulldatetime' => 'Y-m-d H:i:s',
             'timestamp' => 'U',
         );
-        
-        
-       
+
+
+
 
         if (isset($date_formats[$format])) {
             return $date_formats[$format];
@@ -218,6 +226,8 @@ class waDateTime
         } elseif (stripos("ymdhisfjnucrzt", $format) !== false) {
             return $format;
         } else {
+            var_dump("waDateTime format '{$format}' undefined",stripos("ymdhisfjnucrzt", $format));exit;
+            trigger_error("waDateTime format '{$format}' undefined",E_USER_NOTICE);
             return "Y-m-d H:i:s";
         }
     }
@@ -227,19 +237,19 @@ class waDateTime
         $format = self::getFormat($format, $locale);
         $pattern = array(
 
-            //day
+        //day
             'd',        //day of the month
             'j',        //3 letter name of the day
             'l',        //full name of the day
             'z',        //day of the year
 
-            //month
+        //month
             'F',        //Month name full
             'M',        //Month name short
             'n',        //numeric month no leading zeros
             'm',        //numeric month leading zeros
 
-            //year
+        //year
             'Y',         //full numeric year
             'y'        //numeric year: 2 digit
         );
@@ -247,11 +257,11 @@ class waDateTime
             'dd','d','DD','o',
             'MM','M','m','mm',
             'yy','y'
-        );
-        foreach($pattern as &$p) {
-            $p = '/'.$p.'/';
-        }
-        return preg_replace($pattern, $replace, $format);
+            );
+            foreach($pattern as &$p) {
+                $p = '/'.$p.'/';
+            }
+            return preg_replace($pattern, $replace, $format);
     }
 
     public static function parse($format, $string, $timezone = null, $locale = null)
@@ -308,7 +318,7 @@ class waDateTime
             $result = $info['Y']."-".$info['m']."-".$info['d']." ".$info['H'].":".$info['i'].":".$info['s'];
             $result_format = "Y-m-d H:i:s";
         }
-        
+
         if ($timezone === null) {
             $timezone = wa()->getUser()->getTimezone();
         }

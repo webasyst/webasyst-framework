@@ -14,6 +14,8 @@ class photosConfig extends waAppConfig
         return isset($this->sizes[$name]) ? $this->sizes[$name] : null;
     }
 
+    private $last_activity_time;
+
     public function getSizes($type = 'all')
     {
         $custom_sizes = $this->getOption('sizes');
@@ -28,22 +30,16 @@ class photosConfig extends waAppConfig
 
     public function onInit()
     {
-        if ($contact_id = wa()->getUser()->getId()) {
-            $last_login_time = $this->getLastLoginTime();
-            if (!$last_login_time || !strtotime($last_login_time)) {
-                $last_login_time = $this->setLastLoginTime($contact_id);
-                $this->countPhotosInAlbum();
-            }
-        }
+        $this->getLastLoginTime();
+        $this->setCount();
     }
 
-    protected function countPhotosInAlbum()
+    public function onCount()
     {
-        $album_count_model = new photosAlbumCountModel();
-        foreach ($album_count_model->getAlbumsWithoutCalculatedCount() as $album_id) {
-            $collection = new photosCollection('/album/'.$album_id);
-            $collection->count();
-        }
+        return null;
+        $photo_model = new photosPhotoModel();
+        $count = $photo_model->countAll($t = $this->getLastLoginTime(false));
+        return $count ? $count : null;
     }
 
     public function getPhotoPath($photo_id, $extension, $thumb = false)
@@ -80,19 +76,65 @@ class photosConfig extends waAppConfig
         }
     }
 
-    public function getLastLoginTime()
+
+
+
+    public function getLastLoginTime($app = true)
     {
-        return wa()->getStorage()->read('photos_last_login_time');
+        $expire_interval = $this->getOption('expire_interval');
+        $expire_interval = ($expire_interval === null) ? 180 : max(0, intval($expire_interval));
+        if (!$this->last_activity_time || !$app) {
+            $storage = wa()->getStorage();
+            $now = time();
+            if ($activity = $storage->get('photos_last_activity_time')) {
+                list($datetime, $timestamp) = $activity;
+                if ($app && (($now - $timestamp) > $expire_interval) ){
+                    $datetime = ($now - $expire_interval);
+                    $storage->set('photos_last_activity_time', array($datetime,$now));
+                    if ($contact_id = wa()->getUser()->getId()) {
+                        $contact_settings = new waContactSettingsModel();
+                        $contact_settings->set($contact_id, 'photos', 'last_login_time', date("Y-m-d H:i:s", $now));
+                    }
+                }
+            } else {
+                if ($contact_id = wa()->getUser()->getId()) {
+                    $contact_settings = new waContactSettingsModel();
+                    if ($last_login_time = $contact_settings->getOne($contact_id, 'photos', 'last_login_time')) {
+                        if ($datetime = strtotime($last_login_time)) {
+                            $datetime = max($datetime, $now - $expire_interval);
+                        } else {
+                            $datetime = $now - $expire_interval;
+                        }
+                    } else {
+                        $datetime = $now - $expire_interval;
+                    }
+                    if ($app) {
+                        $contact_settings->set($contact_id, 'photos', 'last_login_time', date("Y-m-d H:i:s", $now));
+                    }
+                } else {
+                    $datetime = $now - $expire_interval;
+                }
+                if ($app) {
+                    $storage->set('photos_last_activity_time', array($datetime,$now));
+                }
+            }
+            if ($app) {
+                $storage->set('photos_last_attend_time', $now);
+                $this->last_activity_time = date("Y-m-d H:i:s", $datetime);
+            } else {
+                $datetime = max($datetime,$storage->get('photos_last_attend_time'));
+                return date("Y-m-d H:i:s", $datetime);
+            }
+        }
+        return $this->last_activity_time;
     }
 
-    public function setLastLoginTime($contact_id)
+    public function setLastLoginTime($datetime)
     {
-        $contact_id = $contact_id ? $contact_id : wa()->getUser()->getId();
-        $datetime = date("Y-m-d H:i:s", time());
+        $contact_id = wa()->getUser()->getId();
 
-        $contact = new waContactSettingsModel();
-        $contact->set($contact_id, 'photos', 'last_login_time', $datetime);
-        wa()->getStorage()->write('photos_last_login_time', $datetime);
+        $contact_settings = new waContactSettingsModel();
+        $contact_settings->set($contact_id, 'photos', 'last_login_time', $datetime);
         return $datetime;
     }
 

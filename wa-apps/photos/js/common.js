@@ -234,22 +234,31 @@ Date.parseISO = function (string) {
 };
 
 /**
- * Replace old src with new src in img tag with or not preloading
+ * Replace old src with new src in img tag with or not preloading. Also taking into account competition problem
+ * 
  * @param jquery object img
  * @param string new_src
- * @param mixed fn If parameter is null than just change src without preloading otherwise preloading
- *     If fn is function that call after scr changed
+ * @param mixed fn. Optinality. 
+ *     If parameter is null than just change src (without preloading). 
+ *     If fn is function than it is callback after src changed (with preloading)
+ *     If omitted (undefined) - with preloading
+ * @param string namespace. Optionality. 
+ *     Need for solving competition problem. Render only image of last calling of this namespace. 
+ *     If omitted try to use id of tag or generate random namespace 
  */
-function replaceImg (img, new_src, fn) {
-    replaceImg.current_src = new_src;
+function replaceImg (img, new_src, fn, namespace) {
+    namespace = namespace || img.attr('id') || ('' + Math.random()).slice(2);
+    replaceImg.loading_map = replaceImg.loading_map || {};
+    replaceImg.loading_map[namespace] = new_src;
     img.unbind('load');
     if (fn === null) {
         img.attr('src', new_src);
     } else {
-        img.clone().attr('src', new_src).load(function() {
+        $('<img>').attr('src', new_src).load(function() {
             // setTimeout need for fix FF "blink" problem with image rendering
             setTimeout(function() {
-                if (replaceImg.current_src == new_src) {  // render img only of last calling of function
+                // render img only of last calling of function for this namespace
+                if (replaceImg.loading_map[namespace] == new_src) {
                     img.attr('src', new_src);
                     if (typeof fn == 'function') {
                         fn.call(img);

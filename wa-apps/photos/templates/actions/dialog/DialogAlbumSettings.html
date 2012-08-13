@@ -57,10 +57,10 @@
                                                     <label for="album-group-{$group_id}"><input id="album-group-{$group_id}" name="groups[]" value="{$group_id}" type="checkbox" {if isset($rights[0]) || isset($rights[$group_id])}checked{/if} {if isset($rights[0])}disabled{/if}> <span>{$group.name|escape}</span></label><br>
                                                 {/foreach}
                                             </div>
-                                            <em>[`Uncheck all groups to make this album visible to you only`].</em>
+                                            <em>[`Uncheck all groups to make this album visible to you only.`]</em>
                                         {else}
                                             <input type="hidden" name="groups[]" value="0" {if isset($rights[0])}disabled{/if} >
-                                            <em>[`There are no user groups in your Webasyst installation. Add groups in the Contacts app to be able to manage access to photos`].</em>
+                                            <em>[`There are no user groups in your Webasyst installation. Add groups in the Contacts app to be able to manage access to photos`]</em>
                                         {/if}
                                     </div>
                                 </label>
@@ -231,5 +231,19 @@
                 }
             });
         }
+
+        // check corresponding checkbox when change control
+        $('select[name^=rate]', d).change(function() {
+            $('#condition-rate').attr('checked', true);
+        });
+        $('#album-rate', d).click(function() {
+            $('#condition-rate').attr('checked', true);
+        });
+        $('input[name^=tag]', d).die().live('change', function() {
+            $('#condition-tag').attr('checked', true);
+        });
+        $('select[name=access]', d).click(function() {
+            $('#condition-access').attr('checked', true);
+        });
     });
 </script>

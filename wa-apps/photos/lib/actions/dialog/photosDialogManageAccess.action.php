@@ -15,7 +15,7 @@ class photosDialogManageAccessAction extends waViewAction
             $photo_id = current($photo_id);
             $photo = $photo_model->getById($photo_id);
             $photo_right_model = new photosPhotoRightsModel();
-            if (!$photo_right_model->checkRights($photo_id, true)) {
+            if (!$photo_right_model->checkRights($photo, true)) {
                 $rights = array(
                     0 => array(
                         'group_id' => 0,

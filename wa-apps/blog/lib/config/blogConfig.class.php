@@ -101,7 +101,7 @@ class blogConfig extends waAppConfig
 
         $activity_datetime = blogActivity::getUserActivity($user_id, false);
 
-        $blogs = array_keys(blogHelper::getAvailable());
+        $blogs = array_keys(blogHelper::getAvailable(false));
 
         $counter = array();
 

@@ -15,7 +15,7 @@ class photosDialogConfirmDeleteAlbumAction extends photosDialogConfirmViewAction
         }
         $album_model = new photosAlbumModel();
         $album = $album_model->getById($album_id);
-        $this->view->assign('album_name', $album['name']);
+        $this->view->assign('album', $album);
 
         $collection = new photosCollection('/album/'.$album_id);
         $this->view->assign('photos_count', $collection->count());

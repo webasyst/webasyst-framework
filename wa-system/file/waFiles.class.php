@@ -255,6 +255,7 @@ class waFiles
     public static function readFile($file, $attach = null, $exit = true, $md5 = false)
     {
         if (file_exists($file)) {
+            $response = wa()->getResponse();
             $file_type = self::getMimeType($attach ? $attach : $file);
             if ($md5) {
                 $md5 = base64_encode(md5_file($file));
@@ -310,27 +311,32 @@ class waFiles
                         }
 
                         $range_length = $to-$from+1;
-                        header("HTTP/1.1 206 Partial Content");
-                        header("Content-Length: {$range_length}");
-                        header("Content-Range: bytes {$from}-{$to}/{$file_size}");
+                        $response->setStatus(206);
+                        $response->addHeader("Content-Length", $range_length);
+                        $response->addHeader("Content-Range", "bytes {$from}-{$to}/{$file_size}");
                     } else {
-                        header("Content-Length: {$file_size}");
+                        $response->addHeader("Content-Length", $file_size);
                         if ($md5) {
-                            header("Content-MD5: {$md5}");
+                            $response->addHeader("Content-MD5", $md5);
                         }
                     }
 
-                    header("Cache-Control: no-cache, must-revalidate");
-                    header("Content-type: {$file_type}");
-                    header("Content-Disposition: attachment; filename=\"{$send_as}\";");
+                    $response->addHeader("Cache-Control", "no-cache, must-revalidate");
+                    $response->addHeader("Content-type", "{$file_type}");
+                    $response->addHeader("Content-Disposition", "attachment; filename=\"{$send_as}\";");
+                    $response->addHeader("Last-Modified", filemtime($file));
 
-                    header("Accept-Ranges: bytes");
-                    header('Connection: close');
+                    $response->addHeader("Accept-Ranges", "bytes");
+                    $response->addHeader("Connection", "close");
 
                     $fp = fopen($file, 'rb');
                     if ($from) {
                         fseek($fp,$from);
                     }
+
+
+                    $response->sendHeaders();
+                    $response = null;
 
                     //TODO: adjust chunk size
                     $chunk = 1048576;//1M
@@ -349,28 +355,36 @@ class waFiles
                     $path = substr($file, strlen($nginx_path));
                     $path = preg_replace('@([/\\\\]+)@','/','/'.$nginx_base.'/'.$path);
 
-                    header("Content-type: {$file_type}");
-                    header("Content-Disposition: attachment; filename=\"{$send_as}\";");
-                    header("Accept-Ranges: bytes");
-                    header("Content-Length: {$file_size}");
-                    header("Expires: 0");
-                    header("Cache-Control: no-cache, must-revalidate");
-                    header("Pragma: public");
-                    header("Connection: close");
+                    $response->addHeader("Content-type", $file_type);
+                    $response->addHeader("Content-Disposition", "attachment; filename=\"{$send_as}\";");
+                    $response->addHeader("Accept-Ranges", "bytes");
+                    $response->addHeader("Content-Length", $file_size);
+                    $response->addHeader("Expires", "0");
+                    $response->addHeader("Cache-Control", "no-cache, must-revalidate", false);
+                    $response->addHeader("Pragma", "public");
+                    $response->addHeader("Connection", "close");
                     if ($md5){
-                        header("Content-MD5: {$md5}");
+                        $response->addHeader("Content-MD5", $md5);
                     }
 
-                    header("X-Accel-Redirect: {$path}");
+                    $response->addHeader("X-Accel-Redirect", $path);
+                    //@future
+                    //$response->addHeader("X-Accel-Limit-Rate", $rate_limit);
                 }
             } else {
-                header("Content-type: {$file_type}");
+                $response->addHeader("Content-type", $file_type);
+                $response->addHeader("Last-Modified", filemtime($file));
                 if ($md5) {
-                    header("Content-MD5: {$md5}");
+                    $response->addHeader("Content-MD5", $md5);
                 }
+                $response->sendHeaders();
+                $response = null;
                 @readfile($file);
             }
             if ($exit) {
+                if($response) {
+                    $response->sendHeaders();
+                }
                 exit();
             } elseif($sid) {
                 wa()->getStorage()->open();
@@ -393,6 +407,27 @@ class waFiles
             fwrite($fp,"Deny from all\n");
             fclose($fp);
         }
+    }
+
+
+    /**
+     *
+     * Format file size into sting
+     * @param int $file_size
+     * @param string $format
+     * @param string|mixed $dimensions
+     */
+    public static function formatSize($file_size, $format='%0.2f', $dimensions='Bytes,KBytes,MBytes,GBytes')
+    {
+        if (!is_array($dimensions)) {
+            $dimensions = explode(',',$dimensions);
+        }
+        $dimensions = array_map('trim',$dimensions);
+        $dimension = array_shift($dimensions);
+        while ( ($file_size > 768) && ($dimension = array_shift($dimensions)) ){
+            $file_size = $file_size/1024;
+        }
+        return sprintf($format,$file_size).' '._ws($dimension);
     }
 }
 

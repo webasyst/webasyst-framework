@@ -58,6 +58,8 @@ class photosFrontendCollectionViewAction extends photosFrontendViewAction
             $title = photosPhoto::escape($collection->getTitle());
             waRequest::setParam('title', $title);
             $this->view->assign('title', $title);
+        } else {
+            $this->view->assign('title', '');
         }
         $this->workupPhotos($photos);
 
@@ -89,6 +91,7 @@ class photosFrontendCollectionViewAction extends photosFrontendViewAction
              * @return array[string][string]string $return[%plugin_id%]['section'] Sidebar section item
              */
             $this->view->assign('frontend_sidebar', wa()->event('frontend_sidebar'));
+            $this->view->assign('disable_sidebar', false);
         }
 
         $v = wa()->getVersion();

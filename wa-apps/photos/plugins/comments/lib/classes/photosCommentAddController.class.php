@@ -30,7 +30,10 @@ class photosCommentAddController extends waJsonController
         $contact_data = $this->getContactData();
 
         $data = array_merge($data, $contact_data);
-        if (!$this->validate($data)) {
+
+        $this->errors += $this->comment_model->validate($data);
+
+        if ($this->errors) {
             return false;
         }
 
@@ -101,10 +104,5 @@ class photosCommentAddController extends waJsonController
             'name' => $this->author->getName(),
             'photo' => $this->author->getPhoto(photosCommentModel::SMALL_AUTHOR_PHOTO_SIZE)
         );
-    }
-
-    protected function validate(&$data)
-    {
-        return true;
     }
 }

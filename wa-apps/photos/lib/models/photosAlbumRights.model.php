@@ -31,14 +31,22 @@ class photosAlbumRightsModel extends waModel
         return true;
     }
 
-    public function checkRights($album_id, $check_edit = false)
+    /**
+     * @param array|int $album album or id of album
+     * @param bool $check_edit
+     */
+    public function checkRights($album, $check_edit = false)
     {
-        $album_model = new photosAlbumModel();
-        $album = $album_model->getById($album_id);
-        $user = wa()->getUser();
+        if (!is_array($album)) {
+            $album_model = new photosAlbumModel();
+            $album = $album_model->getById((int)$album);
+        }
         if (!$album) {
             return false;
-        } elseif ($check_edit && $album['contact_id'] != $user->getId() && !$user->getRights('photos', 'edit')) {
+        }
+        $album_id = $album['id'];
+        $user = wa()->getUser();
+        if ($check_edit && $album['contact_id'] != $user->getId() && !$user->getRights('photos', 'edit')) {
             return false;
         }
         if ($user->isAdmin()) {

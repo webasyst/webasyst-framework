@@ -19,6 +19,7 @@
 .p-image .p-image-corner.right { right:3px; }
 .p-image .p-image-corner.bottom { bottom:3px; }
 .p-image .p-image-corner .indicator { top: 0.1em; font-size: 11px; color: #000; }
+.p-image .p-image-corner i.p-private-photo { background-color: #fff; margin-left: -3px; margin-top: -3px; border: 2px solid #fff; }
 .p-image .photo-loupe-wrapper { overflow: hidden; }
 .p-image.p-one-photo img { max-width: 100%; position: relative; }
 .p-description { line-height: 1.3em; margin-top: 0.5em; }
@@ -35,7 +36,7 @@ input.p-photo-h1-edit { font-family: Helvetica,Arial,sans-serif; font-weight: bo
 
 .p-rate { white-space: nowrap; }
 .p-rate a { text-decoration: none !important; }
-.p-rate a i.icon16 { margin: 0.35em 0.25em 0 0; }g
+.p-rate a i.icon16 { margin: 0.35em 0.25em 0 0; }
 .p-rate a.p-rate-clear { color: #aaa; font-size: 12px; position: relative; top: 5px; }
 h1 .p-rate a { margin-left: 0.3em; font-size: 13px; }
 h1 .p-rate a.p-rate-clear { top: -5px; }
@@ -52,7 +53,7 @@ ul.thumbs { margin-left: -8px; margin-top: 16px; }
 ul.thumbs li { margin-right: 10px; margin-left: 4px; padding: 0 0 10px 4px; }
 ul.thumbs li i.icon10 { margin-right: -0.2em; }
 ul.thumbs .p-image a { position: relative; z-index: 20;display: block;}
-ul.thumbs .p-details { margin: 0.1em 0 0.2em; overflow: hidden; }
+ul.thumbs .p-details { margin: 0.1em 0 0; overflow: hidden; padding-bottom: 0.2em; }
 ul.thumbs .p-details input { margin: 0; }
 ul.thumbs p { margin-bottom: 0.3em; line-height: 1.0em !important; margin-top: 0 !important; }
 ul.thumbs .p-description { line-height: 1.0em !important; margin-top: 0 !important;  margin-bottom: 0.5em; }

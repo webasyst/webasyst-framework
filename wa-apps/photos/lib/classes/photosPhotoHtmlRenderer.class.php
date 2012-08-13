@@ -145,8 +145,9 @@ class photosPhotoHtmlRenderer
     {
         $html = '';
         $i = 0;
+        $wa_app_url = wa()->getAppUrl(null, true);
         foreach ($tags as $name) {
-            $html .= ($i++ > 0 ? ', ' : '') . '<a href="tag/'.photosPhoto::escape($name).'">'.photosPhoto::escape($name).'</a>';
+            $html .= ($i++ > 0 ? ', ' : '') . '<a href="'.$wa_app_url.'tag/'.urlencode($name).'">'.photosPhoto::escape($name).'</a>';
         }
         return $html;
     }
@@ -178,7 +179,7 @@ class photosPhotoHtmlRenderer
         $wa_app_url = wa()->getAppUrl(null, false);
         $datetime = waDateTime::format('humandatetime', $author['photo_upload_datetime']);
         $html = '<a href="'.$wa_app_url.'author/'.$author['id'].'/">'.photosPhoto::escape($author['name']).'</a> '
-                    ._w(`on`).' '.$datetime;
+                    ._w('on').' '.$datetime;
         return $html;
     }
 }

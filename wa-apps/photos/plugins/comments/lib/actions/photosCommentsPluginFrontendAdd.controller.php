@@ -38,14 +38,4 @@ class photosCommentsPluginFrontendAddController extends photosCommentAddControll
             );
         }
     }
-
-    protected function validate(&$data)
-    {
-        $captcha = wa()->getCaptcha();
-        if (!$this->author->isAuth() && !wa()->getCaptcha()->isValid()) {
-            $this->errors[] = array('captcha' => _w('Invalid captcha code'));
-            return false;
-        }
-        return true;
-    }
 }

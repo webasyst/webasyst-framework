@@ -32,7 +32,12 @@ class photosPhotoAssignTagsController extends waJsonController
                 }
                 $photo_tag_model->assign($allowed_photo_id, $tag_model->getIds($tags, true));
             }
-            $this->response['tags'] = $photo_tag_model->getTags((array)$allowed_photo_id);
+            $allowed_photo_id = (array)$allowed_photo_id;
+            $tags = $photo_tag_model->getTags($allowed_photo_id);
+            if (!$tags && $allowed_photo_id) {
+                $tags = array_fill_keys($allowed_photo_id, array());
+            }
+            $this->response['tags'] = $tags;
         }
         if ($denied_photo_id) {
             $this->response['alert_msg'] = photosPhoto::sprintf_wplural(

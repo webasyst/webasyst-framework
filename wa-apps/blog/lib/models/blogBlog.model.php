@@ -113,7 +113,7 @@ class blogBlogModel extends blogItemModel
         return $items;
     }
 
-    public function getAvailable($user = true,$fields = array(), $blog_id = null)
+    public function getAvailable($user = true,$fields = array(), $blog_id = null, $extended = array('link'=>false))
     {
         $where = array();
         $blog_rights = true;
@@ -139,19 +139,22 @@ class blogBlogModel extends blogItemModel
         }
         $select = implode(', ',$this->setFields($fields, false));
         $blogs = $this->select($select)->where(implode(' OR ',$where))->order('sort')->fetchAll('id');
-        foreach ($blogs as $id=>&$blog) {
-            if ($user) {
-                if ($blog_rights === true) {
-                    $blog['rights'] = blogRightConfig::RIGHT_FULL;
+        if ($extended) {
+            foreach ($blogs as $id=>&$blog) {
+                if ($user) {
+                    if ($blog_rights === true) {
+                        $blog['rights'] = blogRightConfig::RIGHT_FULL;
+                    } else {
+                        $blog['rights'] = isset($blog_rights[$id])?$blog_rights[$id]:blogRightConfig::RIGHT_READ;
+                    }
                 } else {
-                    $blog['rights'] = isset($blog_rights[$id])?$blog_rights[$id]:blogRightConfig::RIGHT_READ;
+                    $blog['rights'] = blogRightConfig::RIGHT_READ;
                 }
-            } else {
-                $blog['rights'] = blogRightConfig::RIGHT_READ;
+                unset($blog);
             }
-            unset($blog);
+            $blogs = $this->prepareView($blogs, is_array($extended)?$extended:array());
         }
-        return $this->prepareView($blogs);
+        return $blogs;
     }
 
     /**

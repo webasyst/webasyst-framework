@@ -1,5 +1,8 @@
 {if $require_authorization && !$comment_author}
-{sprintf('[`To add a comment please <a href="%s">sign up</a> or <a href="%s">login</a>`]',$wa->signupUrl(),$wa->loginUrl())}
+<div class="comment-form">
+	<h4>[`Add comment`]</h4>
+	{sprintf('[`To add a comment please <a href="%s">sign up</a> or <a href="%s">login</a>`]',$wa->signupUrl(),$wa->loginUrl())}
+</div>
 {else}
 <div class="comment-form" id="add-comment-form">
     <form action="" method="post">
