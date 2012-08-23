@@ -1520,8 +1520,8 @@ msgstr "все"
 msgid "Error"
 msgstr "Ошибка"
 
-msgid "Enter any login and password"
-msgstr "Введите любые логин и пароль"
+msgid "Enter any login and password so<br> we can create a user account for you"
+msgstr "Введите любые логин и пароль,<br> чтобы мы создали вам аккаунт"
 
 msgid "All contacts"
 msgstr "Все контакты"
@@ -1888,4 +1888,10 @@ msgstr "Email-адрес введен неправильно"
 #: /wa-system/controller/waSignupAction.class.php:87
 msgid "Invalid captcha"
 msgstr "Капча введена неверно"
+
+msgid "Template settings"
+msgstr "Настройки шаблона"
+
+msgid "Design"
+msgstr "Дизайн"
 

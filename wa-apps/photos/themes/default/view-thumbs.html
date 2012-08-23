@@ -51,7 +51,7 @@
     </div>
 
     {* switch on/off lazy loading *}
-    {if $page == 1}
+    {if $page == 1 && !$wa->globals('disable_pageless')}
         <script type="text/javascript">
         $(function() {
             $.photos.setLazyLoad({

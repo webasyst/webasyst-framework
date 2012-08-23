@@ -1,5 +1,10 @@
 <?php
 
+/**
+ *
+ * @link http://www.webasyst.com/framework/docs/dev/localisation/
+ *
+ */
 class waGettextParser
 {
     protected $config = array(
@@ -216,7 +221,7 @@ TEXT;
 // start script
 
 if (count($argv) < 2) {
-    die("Usage: php locale.php APP_ID\n");
+    die("Usage: php locale.php APP_ID[/plugins/PLUGIN_ID]\n");
 }
 
 $app_id = $argv[1];
@@ -260,7 +265,7 @@ if (!file_exists($path)) {
 
 $config = array(
     'project' => $app_id,
-    'include' => ".+\.(html|js|php)",
+    'include' => ".+\.(html|(?<!min\.)js|php)",
     'path' => $path.$app_id."/locale",
     'locales' => array()
 );

@@ -493,7 +493,7 @@ class photosAlbumModel extends waModel
         }
     }
 
-    public function deleteByField($field, $value) {
+    public function deleteByField($field, $value = null) {
         $album_ids = array_keys($this->getByField($field, $value, $this->id));
         foreach ($album_ids as $album_id) {
             $this->delete($album_id);

@@ -18,10 +18,19 @@ class waOAuthController extends waViewController
         if (isset($config['adapters'][$provider])) {
             $auth = wa()->getAuth($provider, $config['adapters'][$provider]);
             $data = $auth->auth();
-            $this->afterAuth($data);
+            $result = $this->afterAuth($data);
+            // close popup or show error
+            $this->displayAuth($result);
         } else {
             throw new waException('Unknown auth provider');
         }
+    }
+
+    protected function displayAuth($result)
+    {
+        // display oauth popup template
+        wa('webasyst');
+        $this->executeAction(new webasystOAuthAction());
     }
 
     /**
@@ -44,11 +53,20 @@ class waOAuthController extends waViewController
         }
         // try find user by email
         if (!$contact_id && isset($data['email'])) {
-            $sql = "SELECT c.id FROM wa_contact_email e
+            $sql = "SELECT c.id FROM wa_contact_emails e
             JOIN wa_contact c ON e.contact_id = c.id
             WHERE e.email = s:email AND e.sort = 0 AND c.password != ''";
             $contact_model = new waContactModel();
             $contact_id = $contact_model->query($sql, array('email' => $data['email']))->fetchField('id');
+            // save source_id
+            if ($contact_id) {
+                $contact_data_model->insert(array(
+                    'contact_id' => $contact_id,
+                    'field' => $data['source'].'_id',
+                    'value' => $data['source_id'],
+                    'sort' => 0
+                ));
+            }
         }
         // create new contact
         if (!$contact_id) {

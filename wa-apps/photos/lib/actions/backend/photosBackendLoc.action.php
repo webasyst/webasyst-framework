@@ -40,6 +40,9 @@ class photosBackendLocAction extends waViewAction
             'subtitle',//_w("subtitle");
             'Saving', //_w('Saving')
             'Saved', //_w('Saved')
+            'Pages', // _w('Pages')
+            'Empty result', //_w('Empty result')
+            'This will reset all changes you applied to the image after upload, and will restore the image to its original. Are you sure?',//_w('This will reset all changes you applied to the image after upload, and will restore the image to its original. Are you sure?')
         ) as $s) {
             $strings[$s] = _w($s);
         }

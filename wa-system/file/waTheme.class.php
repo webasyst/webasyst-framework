@@ -169,7 +169,7 @@ class waTheme implements ArrayAccess
                         foreach ($files->children() as $file) {
                             $path = (string)$file['path'];
                             $this->info['files'][$path] = array(
-                                'custom' => isset($file['custom']) ? (bool)$file['custom'] : false
+                                'custom' => isset($file['custom']) && (string)$file['custom'] ? true : false
                             );
                             $this->info['files'][$path]['parent'] = isset($file['parent']) && (bool)$file['parent'] ? 1 : 0;
                             if ($this->info['files'][$path]['parent']) {
@@ -228,6 +228,9 @@ class waTheme implements ArrayAccess
         }
         $this->init();
         if (isset($this->info['files'][$path])) {
+            if (empty($this->info['files'][$path]['custom']) || !$this->info['files'][$path]['custom']) {
+                throw new waException("Theme's required files can not be deleted");
+            }
             unset($this->info['files'][$path]);
             if (!isset($this->changed['files'])) {
                 $this->changed['files'] = array();

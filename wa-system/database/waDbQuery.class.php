@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 /*
  * This file is part of Webasyst framework.
@@ -12,7 +12,7 @@
  * @package wa-system
  * @subpackage database
  */
-class waDbQuery 
+class waDbQuery
 {
     /**
      * @var waModel
@@ -20,26 +20,27 @@ class waDbQuery
     protected $model;
 
     protected $select = '*';
-    protected $order, $where, $limit;
-    
+    protected $order, $limit;
+    protected $where = array();
+
     public function __construct(waModel $model)
     {
         $this->model = $model;
     }
-    
+
     /**
      * @param string|array $select
-     * @return waDbQuery 
+     * @return waDbQuery
      */
     public function select($select)
     {
         $this->select = $select;
         return $this;
     }
-    
+
     /**
      * @param mixed $where
-     * @return waDbQuery 
+     * @return waDbQuery
      */
     public function where($where)
     {
@@ -52,56 +53,56 @@ class waDbQuery
             } else {
                 $statement->bindArray($params);
             }
-            $this->where = $statement->getQuery();
-        } else {
-            $this->where = $where;
+            $this->where[] = $statement->getQuery();
+        } elseif($where) {
+            $this->where[] = $where;
         }
         return $this;
     }
-    
+
     /**
      * @param string $limit
-     * @return waDbQuery 
+     * @return waDbQuery
      */
     public function limit($limit)
     {
         $this->limit = $limit;
         return $this;
-    }    
-    
+    }
+
     /**
      * @param string $order
-     * @return waDbQuery 
+     * @return waDbQuery
      */
     public function order($order)
     {
         $this->order = $order;
         return $this;
     }
-    
+
     public function fetchAll($key = null, $normalize = false)
     {
         $sql = $this->getSQL();
         return $this->model->query($sql)->fetchAll($key, $normalize);
     }
-    
+
     public function fetch()
     {
         $sql = $this->getSQL();
-        return $this->model->query($sql)->fetch();    
+        return $this->model->query($sql)->fetch();
     }
-    
+
     public function fetchField($field = false, $seek = false)
     {
         $sql = $this->getSQL();
-        return $this->model->query($sql)->fetchField($field, $seek);    
+        return $this->model->query($sql)->fetchField($field, $seek);
     }
-    
+
     protected function getSQL()
     {
         $sql = "SELECT ".$this->select." FROM ".$this->model->getTableName();
         if ($this->where) {
-            $sql .= " WHERE ".$this->where;
+            $sql .= " WHERE (".implode(") AND (", $this->where).")";
         }
         if ($this->order) {
             $sql .= " ORDER BY ".$this->order;
@@ -111,7 +112,7 @@ class waDbQuery
         }
         return $sql;
     }
-    
+
     /**
      * @return waDbResultSelect
      */

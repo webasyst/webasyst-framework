@@ -178,7 +178,7 @@ class waImageImagick extends waImage
         return $type;
     }
 
-    protected function _filter($type)
+    protected function _filter($type, $params = array())
     {
         switch ($type) {
             case self::FILTER_GRAYSCALE:
@@ -186,6 +186,15 @@ class waImageImagick extends waImage
                 break;
             case self::FILTER_SEPIA:
                 $this->im->sepiaToneImage(80);
+                break;
+            case self::FILTER_CONTRAST:
+                $max_origin_level = 20;
+                $level = isset($params['level']) ? $params['level'] :
+                        (isset($params[0]) ? $params[0] : 3);
+                if ($level > 0) {
+                    $level = ($max_origin_level/100)*$level;
+                    $this->im->sigmoidalcontrastImage(true, $level, 100, imagick::CHANNEL_ALL);
+                }
                 break;
             default:
                 $this->im->setImageColorSpace(Imagick::COLORSPACE_GRAY);

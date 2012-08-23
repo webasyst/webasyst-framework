@@ -4,6 +4,7 @@ class webasystForgotPasswordAction extends waForgotPasswordAction
 {
     public function execute()
     {
+        $this->view->setOptions(array('left_delimiter' => '{', 'right_delimiter' => '}'));
         if ($this->layout) {
             if (waRequest::get('key')) {
                 $this->layout->assign('dialog_class', 'newpassword');

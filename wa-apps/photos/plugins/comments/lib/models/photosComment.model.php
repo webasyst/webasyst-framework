@@ -80,8 +80,9 @@ class photosCommentModel extends waNestedSetModel
         return $list;
     }
 
-    public function getAll(array $options = array())
+    public function getAll($key = null, $normalize = null)
     {
+        $options = $key ? $key : array();
         $key = isset($options['key']) ? $options['key'] : null;
         $normalize = isset($options['normalize']) ? $options['normalize'] : false;
         unset($options['key'], $options['normalize']);
@@ -159,7 +160,7 @@ class photosCommentModel extends waNestedSetModel
         return $photos[$photo_id];
     }
 
-    public function add($comment, $comment_id)
+    public function add($comment, $parent = null)
     {
         if (!isset($comment['datetime'])) {
             $comment['datetime'] = date('Y-m-d H:i:s');
@@ -169,7 +170,7 @@ class photosCommentModel extends waNestedSetModel
                 $comment['site'] = 'http://'.$comment['site'];
             }
         }
-        return parent::add($comment, $comment_id);
+        return parent::add($comment, $parent);
     }
 
 

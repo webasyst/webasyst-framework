@@ -228,9 +228,9 @@ class waSystem
     public function getAuth($provider = null, $params = array())
     {
         if ($provider) {
-            $file = $this->config->getPath('system').'/auth/'.$provider.'/'.$provider.'Auth.class.php';
+            $file = $this->config->getPath('system').'/auth/adapters/'.$provider.'Auth.class.php';
             if (!file_exists($file)) {
-                $file = $this->config->getPath('plugins').'/auth/'.$provider.'/'.$provider.'Auth.class.php';
+                $file = $this->config->getPath('plugins').'/auth/adapters/'.$provider.'Auth.class.php';
             }
             if (file_exists($file)) {
                 require_once($file);

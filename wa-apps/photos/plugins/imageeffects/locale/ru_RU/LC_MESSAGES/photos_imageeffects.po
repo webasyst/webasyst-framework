@@ -30,3 +30,7 @@ msgstr "Эффекты"
 msgid "Black & White, Sepia and other image effects"
 msgstr "Черно-белый, сепия и другие фильтры обработки изображений"
 
+
+#: /wa-apps/photos/plugins/imageeffects/templates/PhotoToolbar.html:3
+msgid "Contrast"
+msgstr ""

@@ -125,8 +125,8 @@
                 var n = data.originalFiles.length;
                 if (data.context) {
                     data.context.each(function (index) {
-                        var file = ($.isArray(data.result.files) &&
-                                data.result.files[index]) || {error: 'emptyResult'};
+                        var file = (data.result && $.isArray(data.result.files) &&
+                                data.result.files[index]) || {error: $_('Empty result')};
                         if (file.error) {
                             that._adjustMaxNumberOfFiles(1);
                         }

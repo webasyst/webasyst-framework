@@ -26,3 +26,7 @@ msgstr ""
 msgid "Image effects"
 msgstr ""
 
+
+#: /wa-apps/photos/plugins/imageeffects/templates/PhotoToolbar.html:3
+msgid "Contrast"
+msgstr ""

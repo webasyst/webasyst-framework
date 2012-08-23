@@ -240,9 +240,9 @@
                                 var photo_id = allowed_photo_id[i],
                                     corner_top = photo_list.filter('[data-photo-id='+photo_id+']:first').find('.p-image-corner.top.left');
                                 // update icon in top-left corner
-                                corner_top.find('.lock').remove();
+                                corner_top.find('.lock-bw').remove();
                                 if (status <= 0) {
-                                    corner_top.append('<i class="icon16 lock" title="' + $_('Private photo') + '"></i>');
+                                    corner_top.append('<i class="icon16 lock-bw p-private-photo" title="' + $_('Private photo') + '"></i>');
                                 }
                             }
                             $.photos._updateStreamCache(allowed_photo_id, {

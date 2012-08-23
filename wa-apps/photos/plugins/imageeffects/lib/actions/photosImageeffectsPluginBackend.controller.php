@@ -4,7 +4,8 @@ class photosImageeffectsPluginBackendController extends waJsonController
 {
     private $filters = array(
         'grayscale' => waImage::FILTER_GRAYSCALE,
-        'sepia' => waImage::FILTER_SEPIA
+        'sepia' => waImage::FILTER_SEPIA,
+        'contrast' => waImage::FILTER_CONTRAST
     );
 
     public function execute()
@@ -17,6 +18,11 @@ class photosImageeffectsPluginBackendController extends waJsonController
         if (!isset($this->filters[$filter])) {
             throw new waException(_w("Can't apply a filter to photo: unknown filter"));
         }
+
+        $plugin = wa('photos')->getPlugin('imageeffects');
+        $filter_params = $plugin->getSettings($filter);
+        $filter_params = $filter_params ? $filter_params : array();
+
         $filter = $this->filters[$filter];
 
         $photo_model = new photosPhotoModel();
@@ -29,9 +35,9 @@ class photosImageeffectsPluginBackendController extends waJsonController
         }
 
         $photo_path = photosPhoto::getPhotoPath($photo);
-
         $image = new photosImage($photo_path);
-        if ($image->filter($filter)->save()) {
+
+        if ($image->filter($filter, $filter_params)->save()) {
             waFiles::delete(photosPhoto::getPhotoThumbDir($photo));
             $edit_datetime = date('Y-m-d H:i:s');
             $photo_model->updateById($id, array(

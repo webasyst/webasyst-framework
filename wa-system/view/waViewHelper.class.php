@@ -129,19 +129,23 @@ class waViewHelper
         return $this->wa->getResponse()->getJs(true);
     }
 
-    public function version($system = false)
+    /**
+     * @param bool|string $app_id - true for system version
+     * @return string
+     */
+    public function version($app_id = null)
     {
-        if ($system) {
+        if ($app_id === true) {
             $app_info = $this->wa->getAppInfo('webasyst');
             return isset($app_info['version']) ? $app_info['version'] : '0.0.1';
         } else {
             if ($this->version === null) {
-                $app_info = $this->wa->getAppInfo();
+                $app_info = $this->wa->getAppInfo($app_id);
                 $this->version = isset($app_info['version']) ? $app_info['version'] : '0.0.1';
                 if (SystemConfig::isDebug()) {
                     $this->version .= ".".time();
-                } elseif (!$system) {
-                    $file = $this->wa->getAppPath('lib/config/build.php');
+                } elseif (!$app_id) {
+                    $file = $this->wa->getAppPath('lib/config/build.php', $app_id);
                     if (file_exists($file)) {
                         $build = include($file);
                         $this->version .= '.'.$build;

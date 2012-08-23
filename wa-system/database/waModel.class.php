@@ -218,7 +218,12 @@ class waModel
             $error = "Query Error\nQuery: ".$sql.
                      "\nError: ".$this->adapter->errorCode() .
                      "\nMessage: ".$this->adapter->error();
-            waLog::log($error."\nStack: ".print_r(debug_backtrace(), true), 'db.log');
+            $trace = debug_backtrace();
+            $stack = "";
+            foreach ($trace as $i => $row) {
+                $stack .= $i.". ".$row['file'].":".$row['line']."\n".$row['class'].$row['type'].$row['function']."()\n";
+            }
+            waLog::log($error."\nStack:\n".$stack, 'db.log');
             throw new waDbException($error, $this->adapter->errorCode());
         }
 
@@ -699,11 +704,11 @@ class waModel
      */
     public function deleteByField($field, $value = null)
     {
-        $sql = "DELETE FROM ".$this->table;
         if ($where = $this->getWhereByField($field, $value)) {
-            $sql .= " WHERE ".$where;
+            $sql = "DELETE FROM ".$this->table." WHERE ".$where;
+            return $this->exec($sql);
         }
-        return $this->exec($sql);
+        return true;
     }
 
 

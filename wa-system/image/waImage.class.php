@@ -33,6 +33,7 @@ class waImage
 
     const FILTER_GRAYSCALE = 'GRAYSCALE';
     const FILTER_SEPIA = 'SEPIA';
+    const FILTER_CONTRAST = 'CONTRAST';
 
     const Gd = 'Gd';
     const Imagick = 'Imagick';
@@ -318,13 +319,17 @@ class waImage
     }
 
     /**
+     * @param string $type waImage FILTER_* constant
+     * @param array $params Depends of $type
      *
-     * @param string $type
-     * @return waImage
+     * Params
+     * waImage::FILTER_CONTRAST
+     *   '0'|'level' Level of contrast. 0 is none, 100 is max
+     *
      */
-    public function filter($type)
+    public function filter($type, $params = array())
     {
-        $this->_filter($type);
+        $this->_filter($type, $params);
         return $this;
     }
 

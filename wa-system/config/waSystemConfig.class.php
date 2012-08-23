@@ -196,14 +196,12 @@ class waSystemConfig
     protected function configure()
     {
         @mb_internal_encoding('UTF-8');
-        @ini_set('magic_quotes_gpc', 'off');
-        @ini_set('magic_quotes_runtime', 'off');
-        if (function_exists('set_magic_quotes_runtime')) {
-            // User @ for hide warning for PHP 5.3, because set_magic_quotes_runtime is deprecated
+        @ini_set('register_globals', 'off');
+        // magic quotes
+        @ini_set("magic_quotes_runtime",0);
+        if (version_compare('5.4', PHP_VERSION, '>') && function_exists('set_magic_quotes_runtime') && get_magic_quotes_runtime()){
             @set_magic_quotes_runtime(false);
         }
-        @ini_set('register_globals', 'off');
-
         // IIS
         if (!isset($_SERVER['REQUEST_URI'])) {
             $_SERVER['REQUEST_URI'] = $_SERVER['PHP_SELF'];

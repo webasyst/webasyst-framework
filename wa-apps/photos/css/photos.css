@@ -11,6 +11,8 @@
 #p-toolbar ul.menu-h li.selected a.inline-link b { border-bottom: 0; }
 #p-toolbar ul.menu-v li a i.icon16 { margin-top: -0.2em; }
 #p-toolbar ul.menu-v.p-no-photo-selected li a { color: #aaa; }
+#p-toolbar .p-original ul.menu-h li { padding: 0; margin: 0; vertical-align: top; }
+#p-toolbar .p-original ul.menu-h li a, #p-toolbar .p-original ul.menu-h li i { float: left; margin-bottom: 2px; }
 
 .p-image { position: relative; display: inline-block; }
 .p-image .p-image-corner { position:absolute; z-index:99; font-size: 0.8em; color: #fff; font-weight: bold; }

@@ -1,10 +1,12 @@
 <li data-action="imageeffects-sepia"><a href="#"><i class="icon16 sepia"></i>[`Sepia`]</a></li>
 <li data-action="imageeffects-blackwhite"><a href="#"><i class="icon16 blackwhite"></i>[`Black &amp; White`]</a></li>
+<li data-action="imageeffects-contrast"><a href="#"><i class="icon16 constrast"></i>[`Contrast`]</a></li>
 <script type="text/javascript">{literal}
     $(function() {
         $.photos.menu.extend('photo','#edit-menu', {
                 'imageeffectsSepiaAction':function() {filter('sepia');},
-                'imageeffectsBlackwhiteAction': function() {filter('grayscale');}
+                'imageeffectsBlackwhiteAction': function() {filter('grayscale');},
+                'imageeffectsContrastAction': function() {filter('contrast');}
         });
         function filter(filter_name) {
             var id = $.photos.getPhotoId();

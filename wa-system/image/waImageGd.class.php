@@ -256,7 +256,7 @@ class waImageGd extends waImage
         return array($save, $type);
     }
 
-    protected function _filter($type)
+    protected function _filter($type, $params = array())
     {
         switch ($type) {
             case self::FILTER_GRAYSCALE:
@@ -265,6 +265,14 @@ class waImageGd extends waImage
             case self::FILTER_SEPIA:
                 imagefilter($this->image, IMG_FILTER_GRAYSCALE);
                 imagefilter($this->image, IMG_FILTER_COLORIZE, 0x70, 0x42, 0x14, 0x25);
+                break;
+            case self::FILTER_CONTRAST:
+                $level = isset($params['level']) ? $params['level'] :
+                         (isset($params[0]) ? $params[0] : 3);
+                if ($level > 0) {
+                    $level = -$level;
+                    imagefilter($this->image, IMG_FILTER_CONTRAST, $level);
+                }
                 break;
             default:
                 imagefilter($this->image, IMG_FILTER_GRAYSCALE);

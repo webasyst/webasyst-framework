@@ -1134,3 +1134,18 @@ msgstr ""
 msgid "Select all photos"
 msgstr ""
 
+#: /wa-apps/photos/lib/classes/photosPhotoHtmlRenderer.class.php:182
+msgid "on"
+msgstr ""
+
+#: /wa-apps/photos/templates/layouts/Default.html:311
+msgid "Restore"
+msgstr ""
+
+#: /wa-apps/photos/lib/actions/backend/photosBackendLoc.action.php:44
+msgid "Empty result"
+msgstr ""
+
+#: /wa-apps/photos/lib/actions/backend/photosBackendLoc.action.php:45
+msgid "This will reset all changes you applied to the image after upload, and will restore the image to its original. Are you sure?"
+msgstr ""

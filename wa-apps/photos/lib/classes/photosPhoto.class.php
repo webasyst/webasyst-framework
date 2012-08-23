@@ -360,6 +360,16 @@ class photosPhoto
         $public_photo_ids = $photo_model->filterByField($photo_ids, 'status', 1);
         $all_public = count($photo_ids) == count($public_photo_ids);
 
+        // change default collection sort if hash looks like id/1,2,3,4
+        if (strstr($hash, 'id/') !== false) {
+            $photo_ids = explode(',', preg_replace('/\/*id\//', '', $hash));
+            $old_photos = $photos;
+            $photos = array();
+            foreach ($photo_ids as $photo_id) {
+                $photos[$photo_id] = $old_photos[$photo_id];
+            }
+        }
+
         $urls = '';
         $html = '';
         $html_with_descriptions = '';

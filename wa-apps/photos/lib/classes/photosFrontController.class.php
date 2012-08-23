@@ -5,6 +5,13 @@ class photosFrontController extends waFrontController
     public function execute($plugin = null, $module = null, $action = null, $default = false)
     {
         try {
+            if (!waRequest::param('page_id')) {
+                $request_url = parse_url($this->system->getRootUrl().$this->system->getConfig()->getRequestUrl());
+                if (!empty($request_url['path']) && empty($request_url['query']) && (substr($request_url['path'], -1) != '/' )) {
+                    $request_url['path'].='/';
+                    $this->system->getResponse()->redirect(implode('',$request_url),301);
+                }
+            }
             if ($module == 'frontend' && $action != 'album') {
                 // request params
                 $id = waRequest::param('id', '', waRequest::TYPE_STRING_TRIM);

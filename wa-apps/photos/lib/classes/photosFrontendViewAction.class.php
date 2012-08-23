@@ -9,6 +9,7 @@ class photosFrontendViewAction extends waViewAction
         if (!waRequest::isXMLHttpRequest()) {
             $this->setLayout(new photosDefaultFrontendLayout());
         }
+        $this->view->getHelper()->globals($this->getRequest()->param());
 
         return $this;
     }

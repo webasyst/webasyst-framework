@@ -24,9 +24,13 @@ jQuery.fn.waDialog = function (options) {
     if (id && !d.hasClass('dialog')) {
         d.removeAttr('id');
         if ($("#" + id).length) {
-            d = $("#" + id);
-            if (options.url && !options.url_reload) {
-                options.url = null;
+            if (options.url) {
+                d = $("#" + id);
+                if (!options.url_reload) {
+                    options.url = null;
+                }
+            } else {
+                $("#" + id).remove();
             }
         }
     }

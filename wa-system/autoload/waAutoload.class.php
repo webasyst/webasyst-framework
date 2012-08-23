@@ -278,6 +278,10 @@ class waAutoload
       'waPageSaveController' => 'page/actions/waPageSave.controller.php',
       'waPageSortController' => 'page/actions/waPageSort.controller.php',
       'waPageDeleteController' => 'page/actions/waPageDelete.controller.php',
-      'waPageUploadimageController' => 'page/actions/waPageUploadimage.controller.php'
+      'waPageUploadimageController' => 'page/actions/waPageUploadimage.controller.php',
+
+      'waDesignAction' => 'design/actions/waDesign.action.php',
+      'waDesignSaveController' => 'design/actions/waDesignSave.controller.php',
+      'waDesignDeleteController' => 'design/actions/waDesignDelete.controller.php',
     );
 }

@@ -255,4 +255,14 @@
         }
 
     });
+    
+    $('#restore-original').live('click', function() {
+        if (confirm($_('This will reset all changes you applied to the image after upload, and will restore the image to its original. Are you sure?'))) {
+            $.photos.setCover();
+            $.photos.restoreOriginal($.photos.getPhotoId(), function() {
+                $.photos.unsetCover();
+            });
+        }
+    });
+    
 })(jQuery);

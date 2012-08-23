@@ -483,6 +483,8 @@
                         if (value) {
                             self.text(value.truncate(255));
                             self.parent().find('.full-description:first').html(value);
+                        } else {
+                            self.parent().find('.full-description:first').html('');
                         }
                         if (match && data.changed) {
                             id = match[1];
@@ -1901,6 +1903,24 @@
             }
         },
 
+        restoreOriginal: function(id, fn) {
+            fn = fn || function() {};
+            $.post('?module=photo&action=restore', { id: id }, 
+                function(r) {
+                    if (r.status == 'ok') {
+                        var photo = r.data.photo;
+                        if (photo.parent_id == 0) {
+                            photo = $.photos.photo_stream_cache.updateById(id, photo);
+                        } else {
+                            photo = $.photos.photo_stack_cache.updateById(id, photo);
+                        }
+                        $.photos.updatePhotoOriginalBlock(photo);
+                        $.photos.updatePhotoImgs(photo, fn);
+                    }
+                },
+            'json');
+        },
+        
         rotate: function(id, direction, fn) {
             fn = fn || function() {};
             $.post('?module=photo&action=rotate', { id: id, direction: direction },
@@ -1931,7 +1951,7 @@
                 $('#photo'), 
                 proper_thumb.url + salt, 
                 function() {
-                    $('#photo').width(proper_thumb.size.width).height(proper_thumb.size.height)
+                    $('#photo').width(proper_thumb.size.width).height(proper_thumb.size.height);
                     $('#photo-stream .selected img, #stack-stream .selected img').each(function() {
                         var self = $(this);
                         if (self.hasClass('thumb')) {
@@ -2900,7 +2920,7 @@ $(function () {
     $('.p-one-photo .next').live('click', function () {
         $.photos.shift_next = true;
     });
-
+    
     $('.dialog').die().live('change_loading_status', function(e, status) {
         var status = status || false,
             self = $(this),
