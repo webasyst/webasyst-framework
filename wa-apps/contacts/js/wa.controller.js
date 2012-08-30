@@ -583,7 +583,7 @@
                 return;
             }
             $('<div id="confirm-remove-from-category-dialog" class="small"></div>').waDialog({
-                content: $('<h2></h2>').text($_('Exclude contacts from category &ldquo;%s&rdquo;?').replace('%s', $('h1.wa-page-heading').text())),
+                content: $('<h2></h2>').text($_('Exclude contacts from category "%s"?').replace('%s', $('h1.wa-page-heading').text())),
                 buttons: $('<div></div>')
                 .append(
                     $('<input type="submit" class="button red" value="'+$_('Exclude')+'">').click(function() {
