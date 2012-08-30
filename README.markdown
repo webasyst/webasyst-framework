@@ -38,8 +38,6 @@ http://www.webasyst.com/
 		cd wa-config
 		cp apps.php.example apps.php
 		cp config.php.example config.php
-		cp db.php.example db.php
-		cp locale.php.example locale.php
 		cp SystemConfig.class.php.example SystemConfig.class.php
 
 2. Enable framework installation folder (PATH) for writing
@@ -52,7 +50,6 @@ http://www.webasyst.com/
 3. MySQL Database:
 
 	Create a new database for Webasyst Framework and its apps.
-	Open wa-config/db.php in a text editor and enter database connection credentials.
 
 4. Run Webasyst Framework in a web browser (e.g. http://localhost/webasyst/).
 

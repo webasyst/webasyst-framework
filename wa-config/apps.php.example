@@ -2,4 +2,7 @@
 
 return array(
     'contacts' => true,
+    'site' => true,
+    'blog' => true,
+    'photos' => true,
 );
