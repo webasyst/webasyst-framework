@@ -13,6 +13,7 @@
     <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
     {* @event frontend_assets.%plugin_id% *}
     {foreach $frontend_assets as $item}{if !empty($item)}{$item}{/if}{/foreach}
+    {$wa->headJs()}
 </head>
 <body>
     <div id="header" role="navigation sitemap">

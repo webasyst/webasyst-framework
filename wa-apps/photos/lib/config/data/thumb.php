@@ -42,15 +42,6 @@ if (preg_match('@((?:\d{2}/){2}([0-9]+)(?:\.[0-9a-f]+)?)/\\2\.(\d+(?:x\d+)?)\.([
     $sizes = explode('x', $matches[3]);
 
     $gen_thumbs = $app_config->getOption('thumbs_on_demand');
-    if ($gen_thumbs) {
-        // check max size
-        foreach ($sizes as $s) {
-            if ($s > $app_config->getOption('max_size')) {
-                $file = false;
-                break;
-            }
-        }
-    }
     $size = implode('x', $sizes);
 
     if ($file && !$gen_thumbs) {
@@ -69,18 +60,17 @@ if ($file && file_exists($protected_path.$file) && !file_exists($public_path.$re
     if(!file_exists($target_dir_path)){
         waFiles::create($target_dir_path.'/');
     }
+    $max_size = $app_config->getOption('max_size');
     $image = photosPhoto::generateThumb(array(
             'path' => $main_thumb_file_path,
             'size' => $main_thumbnail_size
         ),
         $protected_path.$file,
-        $size
+        $size,
+        $app_config->getOption('sharpen'),
+        $max_size ? $max_size : false
     );
     if ($image) {
-        // sharp
-        if ($app_config->getOption('sharpen')) {
-            $image->sharpen(photosPhoto::SHARP_AMOUNT);
-        }
         $image->save($public_path.$request_file);
         clearstatcache();
     }

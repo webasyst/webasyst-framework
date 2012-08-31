@@ -268,6 +268,7 @@ function replaceImg (img, new_src, fn, namespace) {
             }, 100);
         });
     }
+    return namespace;
 };
 
 String.prototype.truncate = function(length, strip_tags) {

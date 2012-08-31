@@ -6,6 +6,7 @@ class photosTagPhotosAction extends waViewAction
     {
 
         $tag_name = waRequest::get('tag');
+        $tag_name = urldecode($tag_name);
         $tag_model = new photosTagModel();
         $tag = $tag_model->getByName($tag_name);
 

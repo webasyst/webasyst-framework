@@ -28,6 +28,10 @@ class photosFrontendAction extends photosFrontendCollectionViewAction
             $template = 'view-thumbs.html';
         }
 
+        if ($type != 'all' && $type != 'favorites') {
+            waRequest::setParam('nofollow', true);
+        }
+
         $layout = $this->getLayout();
         if ($layout) {
             $layout->assign('hash', $this->hash);

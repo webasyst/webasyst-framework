@@ -1149,3 +1149,7 @@ msgstr ""
 #: /wa-apps/photos/lib/actions/backend/photosBackendLoc.action.php:45
 msgid "This will reset all changes you applied to the image after upload, and will restore the image to its original. Are you sure?"
 msgstr ""
+
+#: /wa-apps/photos/templates/layouts/Default.html:311
+msgid "Revert to original"
+msgstr ""

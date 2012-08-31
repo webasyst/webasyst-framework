@@ -30,3 +30,7 @@ msgstr ""
 #: /wa-apps/photos/plugins/imageeffects/templates/PhotoToolbar.html:3
 msgid "Contrast"
 msgstr ""
+
+#: /wa-apps/photos/plugins/imageeffects/templates/PhotoToolbar.html:4
+msgid "Brightness"
+msgstr ""

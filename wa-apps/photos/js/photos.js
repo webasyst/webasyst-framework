@@ -399,7 +399,7 @@
                 var li = $('#album-list li[rel=' + album.id + ']'); 
                 li.find('.count:first').text(album.count);
                 li.find('.count-new:first').text('');
-                
+                $('#album-list-container').trigger('uncollapse_section', li);
             }
             if(!view) {
                 view = 'thumbs';
@@ -502,11 +502,8 @@
                     }
                 }).trigger('editable');
                 
-                // fix prevent browser-action
-                $('#photo-list').find('.p-description textarea, .p-photo-details textarea, .p-photo-details input').live('select', function() {
-                    return false;
-                });
             });
+            
             var album_name = $('#photo-list-name');
             if (album_name.hasClass('editable')) {
                 album_name.inlineEditable({
@@ -673,6 +670,11 @@
                 return false;
             });
 
+            // fix prevent browser-action
+            $('#photo-list').find('.p-description textarea, .p-photo-details textarea, .p-photo-details input').live('select', function() {
+                return false;
+            });
+            
             $.photos.hotkey_manager.set('rate');
             // if we go from some photo back to collection do not scroll top
             if ($.photos.hash != $.photos.photo_stream_cache.hash) {

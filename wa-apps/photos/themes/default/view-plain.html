@@ -48,10 +48,11 @@
 </div>
 
 {* switch on/off lazy loading *}
-{if $page == 1 && !$wa->globals('disable_pageless')}
+{if !$lazy_load && !$wa->globals('disable_pageless')}
     <script type="text/javascript">
     $(function() {
         $.photos.setLazyLoad({
+            auto: true,  // auto load next pages(true|false) (if omitted than considered as true)
             total_count: {$total_photos_count}
         });
     });

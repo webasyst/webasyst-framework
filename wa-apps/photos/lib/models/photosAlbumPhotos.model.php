@@ -204,4 +204,28 @@ class photosAlbumPhotosModel extends waModel
         return $this->query($sql)->fetchAll('album_id', true);
     }
 
+    /**
+     * Get photos from album(s) or photos that aren't inside any album
+     *
+     * @param int|array|null $album_id Get photos from this album(s). If $album is null that get photos that aren't inside any album
+     * @param boolean $public_only
+     */
+    public function getPhotos($album_id = null, $public_only = true)
+    {
+        if ($album_id === null) {
+            $join = "LEFT JOIN";
+            $where = "ap.album_id IS NULL";
+        } else {
+            $join = "INNER JOIN";
+            $where = $this->getWhereByField('album_id', $album_id);
+        }
+        if ($where) {
+            if ($public_only) {
+                $where .= " AND p.status = 1";
+            }
+            $sql = "SELECT p.*, ap.album_id FROM photos_photo p $join {$this->table} ap ON p.id = ap.photo_id WHERE $where ORDER BY ap.album_id";
+            return $this->query($sql)->fetchAll();
+        }
+        return array();
+    }
 }

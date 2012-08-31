@@ -6,14 +6,28 @@ class photosViewHelper extends waAppViewHelper
      *
      * Get data array from photos collection
      * @param string $hash selector hash
-     * @param int|string $size numerical size or size name
+     * @param int|string|null $size numerical size or size name
+     * @param int $offset optional parameter
+     * @param int $limit optional parameter
+     *
+     * If $limit is omitted but $offset is not than $offset is interpreted as 'limit' and method returns first 'limit' items
+     * If $limit and $offset are omitted that method returns first 500 items
+     *
      * @return array
      */
-    public function photos($hash, $size = null)
+    public function photos($hash, $size = null, $offset = null, $limit = null)
     {
         $size = !is_null($size) ? $size : photosPhoto::getThumbPhotoSize();
         $collection = new photosCollection($hash);
-        return $collection->getPhotos("*,thumb_".$size, 0, 500, true);
+        if (!$limit && $offset) {
+            $limit = $offset;
+            $offset = 0;
+        }
+        if (!$offset && !$limit) {
+            $offset = 0;
+            $limit = 500;
+        }
+        return $collection->getPhotos("*,thumb_".$size, $offset, $limit, true);
     }
 
     /**

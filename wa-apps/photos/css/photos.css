@@ -55,7 +55,7 @@ ul.thumbs { margin-left: -8px; margin-top: 16px; }
 ul.thumbs li { margin-right: 10px; margin-left: 4px; padding: 0 0 10px 4px; }
 ul.thumbs li i.icon10 { margin-right: -0.2em; }
 ul.thumbs .p-image a { position: relative; z-index: 20;display: block;}
-ul.thumbs .p-details { margin: 0.1em 0 0; overflow: hidden; padding-bottom: 0.2em; }
+ul.thumbs .p-details { margin: 0; overflow: hidden; padding-bottom: 0.2em; }
 ul.thumbs .p-details input { margin: 0; }
 ul.thumbs p { margin-bottom: 0.3em; line-height: 1.0em !important; margin-top: 0 !important; }
 ul.thumbs .p-description { line-height: 1.0em !important; margin-top: 0 !important;  margin-bottom: 0.5em; }

@@ -16,7 +16,9 @@ class photosPlugin extends waPlugin
         foreach ($settings_config as $name => $row) {
             $row = array_merge($row, $params);
             $row['value'] = $this->getSettings($name);
-            $controls[$name] = waHtmlControl::getControl($row['control_type'], $name, $row);
+            if (isset($row['control_type'])) {
+                $controls[$name] = waHtmlControl::getControl($row['control_type'], $name, $row);
+            }
         }
         return $controls;
     }

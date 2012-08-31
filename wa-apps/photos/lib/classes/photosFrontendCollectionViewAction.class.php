@@ -75,6 +75,7 @@ class photosFrontendCollectionViewAction extends photosFrontendViewAction
         $this->view->assign('is_xhr', $is_xhr);
         if ($is_xhr) {
             $this->view->assign('disable_sidebar', true);
+            $this->view->assign('frontend_collection', array());
         } else {
             /**
              * @event frontend_collection
@@ -93,6 +94,8 @@ class photosFrontendCollectionViewAction extends photosFrontendViewAction
             $this->view->assign('frontend_sidebar', wa()->event('frontend_sidebar'));
             $this->view->assign('disable_sidebar', false);
         }
+
+        $this->view->assign('lazy_load', !is_null(waRequest::get('lazy')));
 
         $v = wa()->getVersion();
         $this->getResponse()->addJs('js/lazy.load.js?v='.$v, true);

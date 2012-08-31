@@ -19,7 +19,7 @@ return array(
 		'value'=>1,
 ),
 	'app.installer' => array(
-		'version' => '>=1.0.9.16345',
+		'version' => '>=1.0.9.16622',
 		'strict' => true
 	),
 

@@ -99,14 +99,11 @@ class photosPhoto
                     'size' => $main_thumbnail_size
                 ),
                 $photo_path,
-                $size
+                $size,
+                $apply_sharp
             );
             if (!$image) {
                 continue;
-            }
-            // sharp
-            if ($apply_sharp) {
-                $image->sharpen(self::SHARP_AMOUNT);
             }
             $image->save(self::getPhotoThumbPath($photo, $size));
         }
@@ -120,16 +117,24 @@ class photosPhoto
         clearstatcache();
     }
 
-    protected static function _generateThumb($path, $type, $width, $height)
+    protected static function _generateThumb($path, $type, $width, $height, $sharpen = false)
     {
         $image = null;
         switch($type) {
             case 'crop':
-                $image = waImage::factory($path);
+                if ($path instanceof waImage) {
+                    $image = $path;
+                } else {
+                    $image = waImage::factory($path);
+                }
                 $image->resize($width, $height, waImage::INVERSE)->crop($width, $height);
                 break;
             case 'rectangle':
-                $image = waImage::factory($path);
+                if ($path instanceof waImage) {
+                    $image = $path;
+                } else {
+                    $image = waImage::factory($path);
+                }
                 if ($width > $height) {
                     $w = $image->width;
                     $h = $image->width*$height/$width;
@@ -142,16 +147,23 @@ class photosPhoto
             case 'max':
             case 'width':
             case 'height':
-                $image = waImage::factory($path);
+                if ($path instanceof waImage) {
+                    $image = $path;
+                } else {
+                    $image = waImage::factory($path);
+                }
                 $image->resize($width, $height);
                 break;
             default:
                 break;
         }
+        if ($sharpen) {
+            $image->sharpen(photosPhoto::SHARP_AMOUNT);
+        }
         return $image;
     }
 
-    public static function generateThumb($main_thumbnail_info, $original_path, $size)
+    public static function generateThumb($main_thumbnail_info, $original_path, $size, $sharpen = false, $max_size = false)
     {
         $main_thumbnail_path = $main_thumbnail_info['path'];
         $main_thumbnail_size = $main_thumbnail_info['size'];
@@ -163,38 +175,83 @@ class photosPhoto
             if ($image = self::_generateThumb($original_path, $type, $width, $height)) {
                 $image->save($main_thumbnail_path);
             }
+            $main_thumbnail_width = $image->width;
+            $main_thumbnail_height = $image->height;
+        } else {
+            $image = waImage::factory($main_thumbnail_path);
+            $main_thumbnail_width = $image->width;
+            $main_thumbnail_height = $image->height;
         }
 
         $path = $main_thumbnail_path;
-        $image = $width = $height = null;
+        $width = $height = null;
         $size_info = photosPhoto::parseSize($size);
         $type = $size_info['type'];
         $width = $size_info['width'];
         $height = $size_info['height'];
+
+        if (!$width && !$height) {
+            return null;
+        }
+
         switch($type) {
             case 'max':
-                if ($width > $main_thumbnail_size) {
-                    $path = $original_path;    // make thumb from original photo
+                if (is_numeric($max_size) && $width > $max_size) {
+                    return null;
+                }
+                if ($width > max($main_thumbnail_width, $main_thumbnail_height)) {
+                    $image = waImage::factory($original_path);  // make thumb from original photo
                 }
                 break;
             case 'crop':
+                if (is_numeric($max_size) && $width > $max_size) {
+                    return null;
+                }
             case 'rectangle':
-                if (max($width, $height) > $main_thumbnail_size) {
-                    $path = $original_path;    // make thumb from original photo
+                if (is_numeric($max_size) && ($width > $max_size || $height > $max_size)) {
+                    return null;
+                }
+                if ($width > $main_thumbnail_width || $height > $main_thumbnail_height) {
+                    $image = waImage::factory($original_path);  // make thumb from original photo
                 }
                 break;
             case 'width':
+                $w = !is_null($width) ? $width : $height;
+                $original_image = waImage::factory($original_path);
+                $h = $original_image->height * ($w/$original_image->width);
+                $w = round($w);
+                $h = round($h);
+                if ($w == $main_thumbnail_width && $h == $main_thumbnail_height) {
+                    return $image;
+                }
+                if (is_numeric($max_size) && ($w > $max_size || $h > $max_size)) {
+                    return null;
+                }
+                if ($w > $main_thumbnail_width || $h > $main_thumbnail_height) {
+                    $image = $original_image;  // make thumb from original photo
+                }
+                break;
             case 'height':
-                $s = !is_null($width) ? $width : $height;
-                if ($s > $main_thumbnail_size) {
-                    $path = $original_path;    // make thumb from original photo
+                $h = !is_null($width) ? $width : $height;
+                $original_image = waImage::factory($original_path);
+                $w = $original_image->width * ($h/$original_image->height);
+                $w = round($w);
+                $h = round($h);
+                if ($w == $main_thumbnail_width && $h == $main_thumbnail_height) {
+                    return $image;
+                }
+                if (is_numeric($max_size) && ($w > $max_size || $h > $max_size)) {
+                    return null;
+                }
+                if ($w > $main_thumbnail_width || $h > $main_thumbnail_height) {
+                    $image = $original_image;  // make thumb from original photo
                 }
                 break;
             default:
                 $type = 'unknown';
                 break;
         }
-        return self::_generateThumb($path, $type, $width, $height);
+        return self::_generateThumb($image, $type, $width, $height, $sharpen);
     }
 
     public static function escapeFields($photo)
@@ -366,7 +423,10 @@ class photosPhoto
             $old_photos = $photos;
             $photos = array();
             foreach ($photo_ids as $photo_id) {
-                $photos[$photo_id] = $old_photos[$photo_id];
+                $photo_id = intval($photo_id);        // need in case of private photo (cause of hash suffix)
+                if (isset($old_photos[$photo_id])) {
+                    $photos[$photo_id] = $old_photos[$photo_id];
+                }
             }
         }
 

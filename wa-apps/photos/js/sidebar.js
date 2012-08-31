@@ -12,6 +12,25 @@
             $("#album-list-container .collapse-handler").each(function() {
                 $.photos_sidebar._collapseSidebarSection(this, 'restore');
             });
+            $('#album-list-container').die('uncollapse_section').live('uncollapse_section', function(e, album_item) {
+                album_item = $(album_item);
+                var container = $(this),
+                    container_handler = container.find('>.collapse-handler'),
+                    section_handler = album_item.find('>i.collapse-handler');
+                
+                $.photos_sidebar._collapseSidebarSection(section_handler, 'uncollapse');
+                
+                var item = album_item.parent().parent();
+                while (item.length && item.get(0) != this) {
+                    var item_handler = item.find('>i.collapse-handler');
+                    if (!item_handler.length) {
+                        break;
+                    }
+                    $.photos_sidebar._collapseSidebarSection(item_handler, 'uncollapse');
+                    item = item.parent().parent();
+                }
+                $.photos_sidebar._collapseSidebarSection(container_handler, 'uncollapse');
+            });
         },
 
         initHandlers: function() {
@@ -57,6 +76,29 @@
             });
         },
 
+        countSubtree: function(item) {
+            var counter = item.find('>.count:not(.subtree)'),
+                subtree_counter = item.find('>.subtree');
+            if (!subtree_counter.length) {
+                subtree_counter = counter.clone().addClass('subtree').hide();
+                counter.after(subtree_counter);
+            }
+            var total_count = parseInt(counter.text(), 10) || 0;
+            item.find('li.static>.count:not(.subtree)').each(function() {
+                var count = parseInt($(this).text(), 10) || 0;
+                total_count += count;
+            });
+            subtree_counter.text(total_count).show();
+            counter.hide();
+            return total_count;
+        },
+        
+        countItem: function(item) {
+            var counter = item.find('>.count:not(.subtree)').show(),
+                subtree_counter = item.find('>.subtree').hide();
+            return parseInt(counter.text(), 10) || 0;
+        },
+        
         _collapseSidebarSection: function(el, action) {
             if (!action) {
                 action = 'coollapse';
@@ -75,20 +117,23 @@
             if (!arr.length) {
                 return;
             }
-
             var newStatus,
                 id = el.attr('id'),
                 oldStatus = arr.hasClass('darr') ? 'shown' : 'hidden',
 
                 hide = function() {
-                    el.parent().find('ul:first').hide();
+                    var item = el.parent();
+                    item.find('ul:first').hide();
                     arr.removeClass('darr').addClass('rarr');
+                    $.photos_sidebar.countSubtree(item);
                     newStatus = 'hidden';
                 },
 
                 show = function() {
-                    el.parent().find('ul:first').show();
+                    var item = el.parent();
+                    item.find('ul:first').show();
                     arr.removeClass('rarr').addClass('darr');
+                    $.photos_sidebar.countItem(item);
                     newStatus = 'shown';
                 };
 

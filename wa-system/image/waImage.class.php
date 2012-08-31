@@ -34,6 +34,7 @@ class waImage
     const FILTER_GRAYSCALE = 'GRAYSCALE';
     const FILTER_SEPIA = 'SEPIA';
     const FILTER_CONTRAST = 'CONTRAST';
+    const FILTER_BRIGHTNESS = 'BRIGHTNESS';
 
     const Gd = 'Gd';
     const Imagick = 'Imagick';

@@ -5,7 +5,8 @@ class photosImageeffectsPluginBackendController extends waJsonController
     private $filters = array(
         'grayscale' => waImage::FILTER_GRAYSCALE,
         'sepia' => waImage::FILTER_SEPIA,
-        'contrast' => waImage::FILTER_CONTRAST
+        'contrast' => waImage::FILTER_CONTRAST,
+        'brightness' => waImage::FILTER_BRIGHTNESS
     );
 
     public function execute()

@@ -268,10 +268,19 @@ class waImageGd extends waImage
                 break;
             case self::FILTER_CONTRAST:
                 $level = isset($params['level']) ? $params['level'] :
-                         (isset($params[0]) ? $params[0] : 3);
+                        (isset($params[0]) ? $params[0] : 3);
                 if ($level > 0) {
+                    $level = min($level, 100);
                     $level = -$level;
                     imagefilter($this->image, IMG_FILTER_CONTRAST, $level);
+                }
+                break;
+            case self::FILTER_BRIGHTNESS:
+                $level = isset($params['level']) ? $params['level'] :
+                        (isset($params[0]) ? $params[0] : 3);
+                if ($level > 0) {
+                    $level = min($level, 100);
+                    imagefilter($this->image, IMG_FILTER_BRIGHTNESS, $level);
                 }
                 break;
             default:

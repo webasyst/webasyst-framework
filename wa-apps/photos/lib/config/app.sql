@@ -12,11 +12,11 @@ CREATE TABLE IF NOT EXISTS `photos_photo` (
   `contact_id` int(11) NOT NULL,
   `upload_datetime` datetime NOT NULL,
   `edit_datetime` datetime DEFAULT NULL,
-  `status` SMALLINT NOT NULL DEFAULT '0',
-  `hash` VARCHAR( 32 ) NOT NULL DEFAULT '',
+  `status` SMALLINT(6) NOT NULL DEFAULT '0',
+  `hash` VARCHAR(32) NOT NULL DEFAULT '',
   `url` varchar(255) DEFAULT NULL,
   `parent_id` INT(11) NOT NULL DEFAULT '0',
-  `stack_count` INT NOT NULL DEFAULT '0',
+  `stack_count` INT(11) NOT NULL DEFAULT '0',
   `sort` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY  (`id`),
   UNIQUE KEY `url` (`url`)
@@ -50,12 +50,12 @@ CREATE TABLE IF NOT EXISTS `photos_tag` (
 DROP TABLE IF EXISTS `photos_album`;
 CREATE TABLE IF NOT EXISTS `photos_album` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `parent_id` int(11) NOT NULL,
+  `parent_id` int(11) NOT NULL DEFAULT '0',
   `type` int(1) NOT NULL DEFAULT '0',
   `name` varchar(255) NOT NULL,
   `note` varchar(255) NULL DEFAULT NULL,
-  `description` varchar(255) DEFAULT NULL,
-  `hash` VARCHAR( 32 ) NOT NULL DEFAULT '',
+  `description` text,
+  `hash` VARCHAR(32) NOT NULL DEFAULT '',
   `url` varchar(255) DEFAULT NULL,
   `full_url` varchar(255) DEFAULT NULL,
   `status` smallint(6) NOT NULL DEFAULT '0',
@@ -69,6 +69,7 @@ CREATE TABLE IF NOT EXISTS `photos_album` (
   UNIQUE KEY `full_url` (`full_url`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
 
+DROP TABLE IF EXISTS `photos_album_params`;
 CREATE TABLE IF NOT EXISTS `photos_album_params` (
   `album_id` int(11) NOT NULL,
   `name` varchar(255) NOT NULL,
@@ -88,7 +89,7 @@ DROP TABLE IF EXISTS `photos_album_photos`;
 CREATE TABLE IF NOT EXISTS `photos_album_photos` (
   `album_id` int(11) NOT NULL,
   `photo_id` int(11) NOT NULL,
-  `sort` int(11) default '0',
+  `sort` int(11) NOT NULL default '0',
   PRIMARY KEY (`album_id`,`photo_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 

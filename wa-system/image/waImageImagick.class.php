@@ -192,8 +192,18 @@ class waImageImagick extends waImage
                 $level = isset($params['level']) ? $params['level'] :
                         (isset($params[0]) ? $params[0] : 3);
                 if ($level > 0) {
+                    $level = min($level, 100);
                     $level = ($max_origin_level/100)*$level;
                     $this->im->sigmoidalcontrastImage(true, $level, 100, imagick::CHANNEL_ALL);
+                }
+                break;
+            case self::FILTER_BRIGHTNESS:
+                $level = isset($params['level']) ? $params['level'] :
+                        (isset($params[0]) ? $params[0] : 3);
+                if ($level > 0) {
+                    $level = min($level, 100);
+                    $level = 100 + $level;
+                    $this->im->modulateImage($level, 0, 100);
                 }
                 break;
             default:
@@ -259,12 +269,53 @@ class waImageImagick extends waImage
             if ($text_orientation == self::ORIENTATION_VERTICAL) {
                 list ($width, $height) = array($height, $width);
             }
-            $offset = $this->calcWatermarkOffset($width, $height, $align);
-            $offset = $this->watermarkOffsetFix($offset, $width, $height, $text_orientation);
+
+            $offset = $this->calcWatermarkTextOffset($width, $height, $align, $text_orientation);
+
             $this->im->annotateImage($watermark, $offset[0], $offset[1], $text_orientation == self::ORIENTATION_VERTICAL ? -90: 0, $text);
             $watermark->clear();
             $watermark->destroy();
         }
+    }
+
+    private function calcWatermarkTextOffset($width, $height, $align, $text_orientation)
+    {
+        $offset = '';
+        $margin = 10;
+        switch ($align) {
+            case self::ALIGN_TOP_LEFT:
+                if ($text_orientation == self::ORIENTATION_HORIZONTAL) {
+                    $offset = array($margin, 2*$margin + round($height/2));
+                } else {
+                    $offset = array($margin + $width, $margin + $height);
+                }
+                break;
+            case self::ALIGN_TOP_RIGHT:
+                if ($text_orientation == self::ORIENTATION_HORIZONTAL) {
+                    $offset = array($this->width - $width - $margin, $margin + $height);
+                } else {
+                    $offset = array($this->width - round($width/2) - $margin, $margin + $height);
+                }
+                break;
+            case self::ALIGN_BOTTOM_LEFT:
+                if ($text_orientation == self::ORIENTATION_HORIZONTAL) {
+                    $offset = array($margin, $this->height - round($height/2) - $margin);
+                } else {
+                    $offset = array($margin + $width, $this->height - $margin);
+                }
+                break;
+            case self::ALIGN_BOTTOM_RIGHT:
+                if ($text_orientation == self::ORIENTATION_HORIZONTAL) {
+                    $offset = array($this->width - $width - $margin, $this->height - round($height/2) - $margin);
+                } else {
+                    $offset = array($this->width - round($width/2) - $margin, $this->height - $margin);
+                }
+                break;
+        }
+
+        $offset[0] = round($offset[0]);
+        $offset[1] = round($offset[1]);
+        return $offset;
     }
 
     private function calcWatermarkOffset($width, $height, $align)
@@ -285,17 +336,8 @@ class waImageImagick extends waImage
                 $offset = array($this->width - $width - $margin, $this->height - $height - $margin);
                 break;
         }
-        return $offset;
-    }
-
-    private function watermarkOffsetFix($offset, $width, $height, $orientation)
-    {
-        if ($orientation == self::ORIENTATION_HORIZONTAL) {
-            $offset[1] += $height;
-        } else {
-            $offset[0] += $width;
-            $offset[1] += $height;
-        }
+        $offset[0] = round($offset[0]);
+        $offset[1] = round($offset[1]);
         return $offset;
     }
 }

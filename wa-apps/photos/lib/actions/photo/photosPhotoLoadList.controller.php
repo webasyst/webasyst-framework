@@ -13,6 +13,9 @@ class photosPhotoLoadListController extends waJsonController
         // TODO: check collection rights (if collection is album)
 
         $collection = new photosCollection($hash);
+        if (strstr($hash, 'rate>0') !== false) {
+            $collection->orderBy('p.rate DESC, p.id');
+        }
 
         if ($id) {
             $photo_model = new photosPhotoModel();

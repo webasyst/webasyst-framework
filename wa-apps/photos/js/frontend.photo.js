@@ -374,6 +374,7 @@ $(function() {
             },
             loadNewPhoto: function f(photo_id, add_history) {
                 $.photos.abortPrevLoading();
+                $.photos.beforeLoadPhoto(photo_id);
                 f.xhr = $.get('loadPhoto?size=' + this.options.size,
                     function(r) {
                         if (r.status == 'ok') {
@@ -438,6 +439,7 @@ $(function() {
                     offset_indicator = stack_nav.find('.offset');
                 offset_indicator.text($.photos.photo_stack_cache.getCurrentIndex() + 1);
 
+                $.photos.beforeLoadPhoto(photo.id);
                 // at the beginning cover with thumb photo
                 if (photo.thumb_custom.size !== null) {
                     $('#photo').width(photo.thumb_custom.size.width).height(photo.thumb_custom.size.height);
@@ -471,6 +473,8 @@ $(function() {
                 $.photos.setTitle(photo.name);
                 $('#stack-nav').hide();
                 $.photos.photo_stack_cache.clear();
+
+                $.photos.beforeLoadPhoto(photo.id);
                 
                 var is_preloaded = $.photos.isPhotoPreloaded(photo);
                 if (is_preloaded) {
@@ -510,6 +514,9 @@ $(function() {
                 if (next_photo) {
                     $.photos.preloadPhoto(next_photo);
                 }
+            },
+            beforeLoadPhoto: function(photo_id) {
+                $(window).trigger('photos.changeurl', [location.href]);
             },
             afterLoadPhoto: function(photo) {
                 if (slide_back_needed) {

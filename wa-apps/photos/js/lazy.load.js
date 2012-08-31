@@ -39,7 +39,8 @@
         this.data('lazyLoadSettings', $.extend({
             distance: 50,
             load: function() {},
-            container: container
+            container: container,
+            state: 'wake'
         }, options || {}));
 
         var settings = this.data('lazyLoadSettings');
@@ -54,8 +55,9 @@
         function init()
         {
             initHandler();
+            $.fn.lazyLoad.call($(this), settings.state);
         }
-
+        
         function scrollHandler()
         {
             if (settings.stopped) {
