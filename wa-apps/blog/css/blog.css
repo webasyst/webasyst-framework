@@ -16,7 +16,10 @@
 .b-stream .b-stream-title ul.menu-h li { margin: 0; }
 .b-stream .b-stream-title ul.menu-h li.b-stream-title-drop { width: 300px;}
 .b-stream .b-stream-title ul.menu-h li.selected a { background: #fff; }
+.b-stream .b-stream-title ul.menu-h li.b-search-form { padding: 0; margin-left: 10px; }
+.b-stream .b-stream-title ul.menu-h li.b-search-form input { min-width: 150px; }
 .b-stream .b-stream-title .hint  { color: #444; }
+.b-stream .b-stream-title select { font-size: 16px; position: relative; top: -2px; }
 .b-stream ul.menu-h li:hover { background: transparent; }
 
 .b-white { background: #fff; }
@@ -133,6 +136,8 @@ table.b-calendar td.b-not-this-month { background: #eee; }
 table.b-calendar td.b-not-this-month:hover { background: #e2e2e2; }
 table.b-calendar td i.icon10 { margin-top: 0.2em; margin-right: 0.2em; }
 table.b-calendar td span.b-date { float: right; color: #aaa; font-size: 0.8em; }
+table.b-calendar td.drop-active { border: 1px solid #b3b3b3; }
+table.b-calendar td.drag-active { background: #f0f0c5 }
 
 /* misc
 ------- */

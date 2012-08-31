@@ -14,6 +14,27 @@
 			$('.js-manage-done').click(function(eventObject){
 				return self.manageCompleteHandler.apply(self,[this,eventObject]);
 			});
+			$('input.search').keydown(function(eventObject) {
+			    if (eventObject.keyCode == 13) {
+			        var query = $(this).val(),
+			            match = location.search.match(/[&\?](text=.*?&|text=.*)/); 
+			        if (match) {
+			            var text = match[1];
+			            if (query) {
+			                var new_text = text.substr(-1) == '&' ? 'text='+encodeURIComponent(query)+'&' : 'text='+encodeURIComponent(query);
+			                location.search = location.search.replace(text, new_text);
+			            } else {
+			                if (text.substr(-1) != '&') {
+			                    text = '[&\?]' + text;
+			                }
+			                location.search = location.search.replace(new RegExp(text), '');
+			            }
+			        } else if (query) {
+		                location.search += (location.search ? '&' : '?') + 'text=' + encodeURIComponent(query);
+			        }
+			        return false;
+			    }
+			});
 			$('input.blog-post-checkbox').live('click',function(eventObject){
 				return self.counterHandler.apply(self,[this,eventObject]);
 			});

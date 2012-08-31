@@ -11,7 +11,16 @@ class blogBackendAction extends waViewAction
         $blogs = $blog_model->getAvailable($this->getUser());
 
         $stream = array();
+        $title_suffix = '';
+
         $search_options = array();
+        // native search
+        if ($text = waRequest::get('text', '')) {
+            $text = urldecode($text);
+            $search_options['text'] = $text;
+            $title_suffix = " / $text";
+        }
+        // plugins' search
         if ($plugin = waRequest::get('search', false)) {
 
             $search_options["plugin"] = array();
@@ -49,8 +58,7 @@ class blogBackendAction extends waViewAction
 
             $search_options['blog_id']=array_keys($blogs);
         }
-
-        $this->getResponse()->setTitle($stream['title']);
+        $this->getResponse()->setTitle($stream['title'].$title_suffix);
 
         $search = false;
 
@@ -92,6 +100,7 @@ class blogBackendAction extends waViewAction
 
         $this->view->assign('blogs', $blogs);
         $this->view->assign('blog_id', $blog_id);
+        $this->view->assign('text', $text);
 
         $this->view->assign('stream', $stream);
 

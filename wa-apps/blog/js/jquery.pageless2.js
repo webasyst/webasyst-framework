@@ -10,6 +10,7 @@
 		stop : null,
 		bottom_distance: 80,
 		content_distance: 120,
+		auto: true,
 		paging_selector: null
 	};
 
@@ -75,7 +76,14 @@
 		if (currentPage >= parseInt(settings.count) + 1) {
 			stop.apply(this, []);
 		} else if(!loading) {
-			if ((force === true) || (distanceToBottom() < settings.bottom_distance) || (distanceFromContent() > settings.content_distance)) {
+		    var apply = false;
+		    if(force === true) {
+		        apply = true;
+		    } else if(settings.auto){
+		        apply = (distanceToBottom() < settings.bottom_distance) || (distanceFromContent() > settings.content_distance);
+		    }
+
+			if (apply) {
 				scroll.apply(this, []);
 			}
 		}

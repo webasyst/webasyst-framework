@@ -40,17 +40,17 @@ class blogPostSaveController extends waJsonController
     private function getPreparedPost()
     {
         $post = array(
-			'id'                 => waRequest::post('post_id', null, waRequest::TYPE_INT),
-			'title'				 => substr(waRequest::post('title', '', waRequest::TYPE_STRING_TRIM), 0, 255),
-			'text'				 => waRequest::post('text'),
-			'blog_id'			 => waRequest::post('blog_id'),
-			'contact_id'		 => waRequest::post('contact_id'),
-			'datetime'			 => waRequest::post('datetime'),
-			'url'				 => waRequest::post('url','', waRequest::TYPE_STRING_TRIM),
-			'draft'				 => waRequest::post('draft'),
-			'comments_allowed'	 => max(0,min(1,waRequest::post('comments_allowed', 0, waRequest::TYPE_INT))),
-			'public'			 => waRequest::post('public'),
-			'schedule_datetime'	 => waRequest::post('schedule_datetime'),
+            'id'                 => waRequest::post('post_id', null, waRequest::TYPE_INT),
+            'title'              => substr(waRequest::post('title', '', waRequest::TYPE_STRING_TRIM), 0, 255),
+            'text'               => waRequest::post('text'),
+            'blog_id'            => waRequest::post('blog_id'),
+            'contact_id'         => waRequest::post('contact_id'),
+            'datetime'           => waRequest::post('datetime'),
+            'url'                => waRequest::post('url','', waRequest::TYPE_STRING_TRIM),
+            'draft'              => waRequest::post('draft'),
+            'comments_allowed'   => max(0,min(1,waRequest::post('comments_allowed', 0, waRequest::TYPE_INT))),
+            'public'             => waRequest::post('public'),
+            'schedule_datetime'  => waRequest::post('schedule_datetime'),
         );
 
         $this->inline = waRequest::post('inline', false);
@@ -197,18 +197,18 @@ class blogPostSaveController extends waJsonController
             if (!$this->inline) {
                 if ($post['status'] != blogPostModel::STATUS_PUBLISHED) {
                     $params = array(
-						'module' => 'post',
-						'action' => 'edit',
-						'id' => $post['id'],
+                        'module' => 'post',
+                        'action' => 'edit',
+                        'id' => $post['id'],
                     );
                 } elseif ($post['blog_status'] == blogBlogModel::STATUS_PUBLIC) {
                     $params = array(
-						'blog' => $post['blog_id'],
+                        'blog' => $post['blog_id'],
                     );
                 } else {
                     $params = array(
-						'module' => 'post',
-						'id' => $post['id'],
+                        'module' => 'post',
+                        'id' => $post['id'],
                     );
                 }
                 $this->response['redirect'] = $this->getRedirectUrl($params);
@@ -218,10 +218,10 @@ class blogPostSaveController extends waJsonController
                 $this->response['url'] = $post['url'];
                 if ($post['status'] != blogPostModel::STATUS_PUBLISHED) {
                     $options = array(
-        				'contact_id' => $post['contact_id'],
-        				'blog_id' => $post['blog_id'],
-        				'post_id' => $post['id'],
-        				'user_id' => wa()->getUser()->getId()
+                        'contact_id' => $post['contact_id'],
+                        'blog_id' => $post['blog_id'],
+                        'post_id' => $post['id'],
+                        'user_id' => wa()->getUser()->getId()
                     );
                     $preview_hash = blogPostModel::getPreviewHash($options);
                     $this->response['preview_hash'] = base64_encode($preview_hash.$options['user_id']);
@@ -255,9 +255,9 @@ class blogPostSaveController extends waJsonController
     {
         $this->post_model->updateById($post['id'], array("schedule_datetime" => null));
         $this->response['redirect'] = $this->getRedirectUrl(array(
-			'module' => 'post',
-			'action' => 'edit',
-			'id' => $post['id'],
+            'module' => 'post',
+            'action' => 'edit',
+            'id' => $post['id'],
         ));
     }
 

@@ -29,6 +29,10 @@ class waPageAction extends waViewAction
             $this->setThemeTemplate('error.html');
         } else {
             $this->getResponse()->setTitle($page['title']);
+            $this->getResponse()->setMeta(array(
+                'keywords' => isset($page['keywords']) ? $page['keywords'] : '',
+                'description' => isset($page['description']) ? $page['description'] : ''
+            ));
             $this->view->assign('page', $page);
 
             try {

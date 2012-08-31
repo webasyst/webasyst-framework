@@ -3,6 +3,9 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>{$wa->title()}</title>
+    <meta name="Keywords" content="{$wa->meta('keywords')}" />
+    <meta name="Description" content="{$wa->meta('description')}" />
+
     {foreach $links as $role => $link}
     <link rel="{$role}" href="{$link}">
     {/foreach}
@@ -27,6 +30,7 @@
         {if !empty($output.head)}{$output.head}{/if}
     {/foreach}
 
+    {$wa->headJs()}
 </head>
 <body>
     <div id="header" role="navigation sitemap">

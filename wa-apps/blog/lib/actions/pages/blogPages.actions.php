@@ -1,14 +1,14 @@
 <?php
 
-class blogPagesAction extends waPageEditAction
+class blogPagesActions extends waPageActions
 {
     protected $ibutton = false;
 
-    public function execute()
+    public function defaultAction()
     {
         $this->setLayout(new blogDefaultLayout());
         $this->getResponse()->setTitle(_ws('Pages'));
 
-        parent::execute();
+        parent::defaultAction();
     }
 }

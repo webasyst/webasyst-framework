@@ -130,25 +130,27 @@
       <!-- not-that-frequently-accessed app sections -->
       <div class="block">
         <ul class="menu-v with-icons">
-          {if $wa->user()->getRights($wa->app(), 'pages')}
-          <li {if $module == 'pages'}class="selected"{/if}><a href="?module=pages"><i class="icon16 notebook"><!-- icon --></i>[s`Pages`]</a></li>
-          {/if}
-          {if $wa->user()->isAdmin($wa->app())}
-          <li {if $action == 'plugins'}class="selected"{/if}><a href="?module=plugins"><i class="icon16 plugins"><!-- icon --></i>[`Plugins`]</a></li>
-          {/if}
-          <li {if $module == 'settings'}class="selected"{/if}><a href="?module=settings"><i class="icon16 settings"><!-- icon --></i>[`Settings`]</a></li>
+            {if $wa->user()->getRights($wa->app(), 'pages')}
+            <li {if $module == 'pages'}class="selected"{/if}><a href="?module=pages"><i class="icon16 notebook"><!-- icon --></i>[s`Pages`]</a></li>
+            {/if}
+            {if $wa->user()->getRights($wa->app(), 'design')}
+            <!--
+            <li {if $module == 'design' || $module == 'themes'}class="selected"{/if}><a href="?module=design"><i class="icon16 design"></i>[s`Design`]</a></li>
+            -->
+            {/if}
+            {if $wa->user()->isAdmin($wa->app())}
+            <li {if $action == 'plugins'}class="selected"{/if}><a href="?module=plugins"><i class="icon16 plugins"><!-- icon --></i>[`Plugins`]</a></li>
+            {/if}
+            <li {if $module == 'settings'}class="selected"{/if}><a href="?module=settings"><i class="icon16 settings"><!-- icon --></i>[`Settings`]</a></li>
 
-          {* @event backend_sidebar.%plugin_id%.system *}
-          <!-- plugin hook: "backend_sidebar.system" -->
-          {foreach $backend_sidebar as $plugin => $output}
+            {* @event backend_sidebar.%plugin_id%.system *}
+            <!-- plugin hook: "backend_sidebar.system" -->
+            {foreach $backend_sidebar as $plugin => $output}
             {if is_array($output) && isset($output.system)}
-
               <!-- begin {$plugin} -->{$output.system}<!-- end {$plugin} -->
             {/if}
-          {/foreach}
-
-          <!-- end plugin hook: "backend_sidebar.system" -->
-
+            {/foreach}
+            <!-- end plugin hook: "backend_sidebar.system" -->
         </ul>
       </div>
 

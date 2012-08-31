@@ -1,10 +1,10 @@
 <?php
 class blogPostModel extends blogItemModel
 {
-    const STATUS_DRAFT		 = 'draft';
-    const STATUS_DEADLINE	 = 'deadline';
-    const STATUS_SCHEDULED	 = 'scheduled';
-    const STATUS_PUBLISHED	 = 'published';
+    const STATUS_DRAFT         = 'draft';
+    const STATUS_DEADLINE     = 'deadline';
+    const STATUS_SCHEDULED     = 'scheduled';
+    const STATUS_PUBLISHED     = 'published';
 
     protected $table = 'blog_post';
 
@@ -13,11 +13,11 @@ class blogPostModel extends blogItemModel
         $where = array();
         $sql = <<<SQL
 SELECT
-	COUNT(*) AS "count",
-	EXTRACT(YEAR_MONTH FROM datetime) AS "timeline",
-	EXTRACT(MONTH FROM datetime) AS "month",
-	EXTRACT(YEAR FROM datetime) AS "year",
-	blog_id
+    COUNT(*) AS "count",
+    EXTRACT(YEAR_MONTH FROM datetime) AS "timeline",
+    EXTRACT(MONTH FROM datetime) AS "month",
+    EXTRACT(YEAR FROM datetime) AS "year",
+    blog_id
 FROM {$this->table}
 SQL;
         $use_blog_id = true;
@@ -135,13 +135,14 @@ SQL;
     /**
      * Generic search post entries method
      * @param array $options <pre>array(
-     * 	['year'=>2011|array(2009,2011)|array(2007,2008,...),]
-     * 	['month'=>11|array(06,09),]
-     * 	['day'=>30|array(12,23),]
-     * 	['datetime'=>30|array(12,23),]
-     * 	['status'=>false|int|array(),]
-     * 	['contact_id'=>int,]
-     * 	['blog_id'=>int|array,]
+     *     ['year'=>2011|array(2009,2011)|array(2007,2008,...),]
+     *     ['month'=>11|array(06,09),]
+     *     ['day'=>30|array(12,23),]
+     *     ['datetime'=>30|array(12,23),]
+     *     ['status'=>false|int|array(),]
+     *     ['contact_id'=>int,]
+     *     ['blog_id'=>int|array,]
+     *     ['text'=>string]
      * )</pre>
      * <p>Date option if single exact match, interval if array of two items, one of items in array more then two items<p>
      * <p>Status has default self::STATUS_PUBLISHED if not specified, all statuses if false or specified in array</p>
@@ -287,6 +288,10 @@ SQL;
         } else {
             $this->sql_params['order'] = "{$this->table}.datetime DESC";
         }
+        if (!empty($options['text'])) {
+            $this->sql_params['like'] =  "%".str_replace(array('%', '_'), array('\%', '\_'), $options['text'])."%";
+            $this->sql_params['where'][] = "(blog_post.title LIKE s:like OR blog_post.text LIKE s:like)";
+        }
         if (!isset($extend_options['plugin']) || $extend_options['plugin']) {
             /**
              * Build post search query
@@ -371,8 +376,8 @@ SQL;
                     $activity_datetime = blogActivity::getUserActivity();
                     $comment_model = new blogCommentModel();
                     $comment_options = array(
-                    	'user'=>$extend_author_link,
-                    	'datetime'=>$activity_datetime,
+                        'user'=>$extend_author_link,
+                        'datetime'=>$activity_datetime,
                         'escape'=>!empty($extend_options['escape']),
                     );
                     foreach ($items as $id => &$item) {
@@ -420,10 +425,10 @@ SQL;
         foreach ($items as $id => &$item) {
             #data holders for plugin events handlers
             $item['plugins'] = array(
-            	'before' => array(),
-            	'after' => array(),
-            	'post_title' => array(),
-            	'post_title_right' => array(),
+                'before' => array(),
+                'after' => array(),
+                'post_title' => array(),
+                'post_title_right' => array(),
             );
 
             if (isset($item['blog_id'])) {
@@ -558,12 +563,12 @@ SQL;
 
         //check rights for non admin
         $source_data = array(
-				'contact_id'=>isset($current_data['contact_id'])?$current_data['contact_id']:$data['contact_id'],
-				'blog_id'=>isset($current_data['blog_id'])?$current_data['blog_id']:$data['blog_id'],
+                'contact_id'=>isset($current_data['contact_id'])?$current_data['contact_id']:$data['contact_id'],
+                'blog_id'=>isset($current_data['blog_id'])?$current_data['blog_id']:$data['blog_id'],
         );
         $target_data = array(
-				'contact_id'=>isset($data['contact_id'])?$data['contact_id']:$source_data['contact_id'],
-				'blog_id'=>isset($data['blog_id'])?$data['blog_id']:$source_data['blog_id'],
+                'contact_id'=>isset($data['contact_id'])?$data['contact_id']:$source_data['contact_id'],
+                'blog_id'=>isset($data['blog_id'])?$data['blog_id']:$source_data['blog_id'],
         );
 
         //check editor rights
@@ -868,10 +873,10 @@ SQL;
         }
 
         $options = $options += array(
-        	'contact_id' => '',
-        	'blog_id' => '',
-        	'post_id' => '',
-        	'user_id' => '',
+            'contact_id' => '',
+            'blog_id' => '',
+            'post_id' => '',
+            'user_id' => '',
         );
 
         $hash = md5($hash.$options['contact_id'].$options['blog_id'].$options['post_id'].$options['user_id']);
@@ -895,7 +900,7 @@ SQL;
 
             if (!empty($data['id'])) {
                 $url_validator = new blogSlugValidator(array(
-					'id' => $data['id']
+                    'id' => $data['id']
                 ));
             } else {
                 if (isset($options['transliterate']) && $options['transliterate'] && !$data['url'] && $data['title']) {
@@ -965,6 +970,10 @@ SQL;
                 $data['datetime'] = false;
             }
             if ($data['datetime'] === false) {
+                $messages['datetime'] = _w('Incorrect format');
+            }
+            $parsed = date_parse_from_format('Y-m-d', $data['datetime']);
+            if (!checkdate($parsed['month'], $parsed['day'], $parsed['year'])) {
                 $messages['datetime'] = _w('Incorrect format');
             }
         }

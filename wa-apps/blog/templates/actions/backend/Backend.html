@@ -9,7 +9,7 @@
   $.wa_blog.stream = $.extend(true,$.wa_blog.stream,{
     'options':{
       pageless:{
-        url: '?{if $search}{$search}{/if}{if !empty($blog_id)}{if $search}&{/if}blog={$blog_id}{/if}',
+        url: location.href.replace(/[&\?]page=[\d]+/, ''),
         target: '.b-stream',
         count: {$pages}
       }
@@ -46,10 +46,15 @@
           {if (empty($blog_id) && ($wa->blog->rights(false) ge blogRightConfig::RIGHT_READ_WRITE)) || (!empty($blog_id) && ($wa->blog->rights($blog_id) ge blogRightConfig::RIGHT_READ_WRITE))}
           <li>
             <a href="#manage" class="inline-link" id="blog_manage_posts">
-              <i class="icon16 checkboxes"><!-- icon --></i><b><i>[`Manage posts`]</i></b>
+              <i class="icon16 checkboxes"><!-- icon --></i><b><i>[`Select posts`]</i></b>
             </a>
           </li>
           {/if}
+
+          <li class="b-search-form">
+            <input type="search" name="text" class="search" placeholder="[`Search posts`]" value="{$text}">
+          </li>
+
         </ul>
         <ul class="menu-h" id="blog-stream-manage-menu" style="display:none">
           {$move_blog_count = 0}
@@ -85,7 +90,9 @@
       <h1>
         {$stream.title|escape}
         {if $stream.link}
-          <a href="{$stream.link}" target="_blank" title="[`Open on website`]: {$stream.link}"><i class="icon16 new-window"><!-- icon --></i></a>
+          <a href="{$stream.link}" target="_blank" title="[`Open on website`]: {$stream.link}">
+            {if empty($text)}<i class="icon16 new-window"><!-- icon --></i>{/if}
+          </a>
         {elseif $stream.blog && $stream.blog.status neq blogBlogModel::STATUS_PUBLIC}
           <i class="icon16 lock-bw" title="[`Private blog`]"><!-- icon --></i>
         {/if}

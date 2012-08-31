@@ -41,7 +41,7 @@
           <li class="pageless-wrapper">
             {sprintf(_w("%d comment of %d (including deleted)", "%d comments of %d (including deleted)", $comments_count,false),$comments_count,$comments_total_count)}
             {if $comments_count < $comments_total_count}
-              <br>
+              <br><br>
               <a href="#next" class="pageless-link">[`Show older comments`]</a>
               <span class="pageless-progress" style="display:none"><img src="{$wa_url}wa-content/img/loading16.gif" alt="">[`Loading`]&nbsp;{_w("%d comment", "%d comments", min($comments_total_count-$comments_count,$comments_per_page))}...</span>
             {/if}

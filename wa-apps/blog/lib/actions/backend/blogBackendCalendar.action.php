@@ -138,6 +138,43 @@ class blogBackendCalendarAction extends waViewAction
             $next_overdue = false;
         }
 
+        $months = array(
+            1 => _ws('January'),
+            2 => _ws('February'),
+            3 => _ws('March'),
+            4 => _ws('April'),
+            5 => _ws('May'),
+            6 => _ws('June'),
+            7 => _ws('July'),
+            8 => _ws('August'),
+            9 => _ws('September'),
+            10 => _ws('October'),
+            11 => _ws('November'),
+            12 => _ws('December')
+        );
+        $current_year  = date('Y', $month_date);
+        $current_month = date('Y', $month_date);
+        $boundaries = $post_model->select("MIN(datetime) as min, MAX(datetime) as max")->fetch();
+
+        if ($boundaries) {
+            $years = range(
+                min(
+                    date('Y', strtotime($boundaries['min'])),
+                    $current_year
+                ),
+                max(
+                    date('Y', strtotime($boundaries['max'])),
+                    $current_year,
+                    date('Y')
+                )
+            );
+        } else {
+            $now_year = date('Y');
+            $years = range(
+                min($current_year, $now_year), max($current_year, $now_year)
+            );
+        }
+
         $this->view->assign("prev_overdue", $prev_overdue);
         $this->view->assign("next_overdue", $next_overdue);
 
@@ -147,12 +184,28 @@ class blogBackendCalendarAction extends waViewAction
 
         $this->view->assign("week_first_sunday", waLocale::getFirstDay() == 7);
         $this->view->assign("current_month", date("n", $month_date));
+        $this->view->assign("current_year",  date("Y", $month_date));
         $this->view->assign("prev_month", date("Y-m", strtotime("-1 month", $month_date)));
         $this->view->assign("next_month", date("Y-m", strtotime("+1 month", $month_date)));
-        $this->view->assign("current_month_local", _ws(date("F", $month_date))." ".date("Y", $month_date));
+
+        $this->view->assign("years", $years);
+        $this->view->assign("months", $months);
 
         // cast to user timezone
         $this->view->assign("today", waDateTime::date("j", null, $timezone));
         $this->view->assign("today_month", waDateTime::date("n", null, $timezone));
+
+        $this->nocache();
+    }
+
+    private function nocache()
+    {
+        header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
+        header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
+        header("Cache-Control: no-cache, must-revalidate");
+        header("Cache-Control: post-check=0,pre-check=0");
+        header("Cache-Control: max-age=0");
+        header("Cache-Control: no-store");
+        header("Pragma: no-cache");
     }
 }

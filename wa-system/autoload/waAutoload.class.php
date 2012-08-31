@@ -152,6 +152,7 @@ class waAutoload
       'waContactsCollection' => 'contact/waContactsCollection.class.php',
     
       'waAction' => 'controller/waAction.class.php',
+      'waActions' => 'controller/waActions.class.php',
       'waController' => 'controller/waController.class.php',
       'waDefaultViewController' => 'controller/waDefaultViewController.class.php',
       'waFrontController' => 'controller/waFrontController.class.php',
@@ -280,8 +281,9 @@ class waAutoload
       'waPageDeleteController' => 'page/actions/waPageDelete.controller.php',
       'waPageUploadimageController' => 'page/actions/waPageUploadimage.controller.php',
 
-      'waDesignAction' => 'design/actions/waDesign.action.php',
-      'waDesignSaveController' => 'design/actions/waDesignSave.controller.php',
-      'waDesignDeleteController' => 'design/actions/waDesignDelete.controller.php',
+      'waPageActions' => 'page/actions/waPage.actions.php',
+
+      'waDesignActions' => 'design/actions/waDesign.actions.php',
+      'waThemesActions' => 'design/actions/waThemes.actions.php',
     );
 }

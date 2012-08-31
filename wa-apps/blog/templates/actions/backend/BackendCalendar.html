@@ -1,17 +1,24 @@
-{if $allow_add}
+{wa_js file="js/compiled/blog-calendar.js"}
+{$wa_app_static_url}js/blogCalendar.js
+{$wa_url}wa-content/js/jquery-ui/jquery.ui.core.min.js
+{$wa_url}wa-content/js/jquery-ui/jquery.ui.widget.min.js
+{$wa_url}wa-content/js/jquery-ui/jquery.ui.mouse.min.js
+{$wa_url}wa-content/js/jquery-ui/jquery.ui.draggable.min.js
+{$wa_url}wa-content/js/jquery-ui/jquery.ui.droppable.min.js
+{/wa_js}
 <script type="text/javascript">
-  $(function(){
-    $(".b-calendar td").click(function(event){
-      if (event.target.tagName == $(this).get(0).tagName ) {
-        window.location.href = "?module=post&action=edit&date="+$(this).attr("id").replace(/^date-/,'');
-      }
-    });
-    $('.b-calendar td').each(function(){
-      $(this).attr('title','[`Click to create a post scheduled to be published on this day`]');
-    });
-  });
+    $.wa_blog_options.calendar = {
+        allow_add: {if $allow_add}true{else}false{/if},
+        td_title: '[`Click to create a post scheduled to be published on this day`]',
+        statuses: {
+            'deadline':  '{blogPostModel::STATUS_DEADLINE}',
+            'draft':     '{blogPostModel::STATUS_DRAFT}',
+            'scheduled': '{blogPostModel::STATUS_SCHEDULED}',
+            'public':    '{blogBlogModel::STATUS_PUBLIC}',
+            'private':   '{blogBlogModel::STATUS_PRIVATE}'
+        }
+    };
 </script>
-{/if}
 <div class="b-stream">
   <div class="block triple-padded b-stream-title">
     <div class="block half-padded float-left">
@@ -27,7 +34,16 @@
       {/if}
     </div>
     <h1 class="align-center">
-      {$current_month_local}
+      <select name="month" class="month">
+        {foreach $months as $key => $value}
+          <option value="{$key}" {if $current_month == $key}selected{/if}>{$value}</option>
+        {/foreach}
+      </select>
+      <select name="year" class="year">
+        {foreach $years as $year}
+          <option value="{$year}" {if $current_year == $year}selected{/if}>{$year}</option>
+        {/foreach}
+      </select>
     </h1>
   </div>
 
@@ -53,7 +69,7 @@
           <td id="date-{$day.date.date}"{if $day.date.month != $current_month} class="b-not-this-month"{elseif $day.date.month == $today_month && $day.date.day == $today} class="b-today"{/if}>
             <span class="b-date">{$day.date.day}</span>
             {foreach $day.posts as $post}
-              <span title="{$post.blog_name|escape}">
+              <span title="{$post.blog_name|escape}" class="status-{$post.status}" data-post-id="{$post.id}">
               {strip}
                 {if isset($post.alert)}
                   <i class="icon10 exclamation" title="[`Overdue`]"><!-- icon --></i>
@@ -61,7 +77,7 @@
                   <i class="icon10 exclamation" title="[`Overdue`]"><!-- icon --></i>
                 {elseif $post.status == blogPostModel::STATUS_DRAFT}
                   <i class="icon10 edit-bw" title="[`Draft`]"><!-- icon --></i>
-                {elseif $post.status eq blogPostModel::STATUS_SCHEDULED}
+                {elseif $post.status == blogPostModel::STATUS_SCHEDULED}
                   <i class="icon10 clock" title="[`Scheduled for publication`]"><!-- icon --></i><strong class="small italic">{$post.datetime|wa_datetime:'time'}</strong>&nbsp;
                 {elseif $post.blog_status == blogBlogModel::STATUS_PUBLIC}
                   <i class="icon10 yes" title="[`Published`]"><!-- icon --></i>
@@ -103,3 +119,4 @@
     </table>
   </div>
 </div>
+<script>$.wa.locale['Overdue'] = '[`Overdue`]';</script>

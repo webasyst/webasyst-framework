@@ -50,6 +50,10 @@ class waViewHelper
                  */
                 $domain_config = include($domain_config_path);
                 if (isset($domain_config['apps']) && $domain_config['apps']) {
+                    foreach ($domain_config['apps'] as &$row) {
+                        $row['name'] = htmlspecialchars($row['name']);
+                    }
+                    unset($row);
                     return $domain_config['apps'];
                 }
                 return $this->wa->getFrontendApps($domain, isset($domain_config['name']) ? $domain_config['name'] : null, true);
@@ -60,6 +64,39 @@ class waViewHelper
             return $this->wa->getUser()->getApps();
         }
     }
+
+    public function headJs()
+    {
+        $domain = $this->wa->getRouting()->getDomain(null, true);
+        $domain_config_path = $this->wa->getConfig()->getConfigPath('domains/'.$domain.'.php', true, 'site');
+        if (file_exists($domain_config_path)) {
+            /**
+             * @var $domain_config array
+             */
+            $domain_config = include($domain_config_path);
+            $html = '';
+            if (!empty($domain_config['head_js'])) {
+                $html .= $domain_config['head_js'];
+            }
+            if (!empty($domain_config['google_analytics'])) {
+                $html .= <<<HTML
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', '{$domain_config['google_analytics']}']);
+  _gaq.push(['_trackPageview']);
+  (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+HTML;
+            }
+            return $html;
+        }
+        return '';
+    }
+
 
     public function isAuthEnabled()
     {
@@ -233,6 +270,15 @@ class waViewHelper
             return $this->wa->getResponse()->getTitle();
         } else {
             return $this->wa->getResponse()->setTitle($title);
+        }
+    }
+
+    public function meta($name, $value = null)
+    {
+        if ($value) {
+            $this->wa->getResponse()->setMeta($name, $value);
+        } else {
+            return $this->wa->getResponse()->getMeta($name);
         }
     }
 
