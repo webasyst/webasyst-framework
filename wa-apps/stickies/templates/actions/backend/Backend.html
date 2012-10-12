@@ -24,7 +24,7 @@ i.bg-{{$background_key}} {background: {{$background|replace:'wa_app_static_url/'
 </style>
 
 <script type="text/javascript" src="{{$wa_url}}wa-content/js/jquery/jquery-1.4.2.min.js"></script>
-{{wa_js file="js/compiled/stickies.js"}}
+{{wa_js file="js/wa.stickiescontroller.min.js"}}
 	{{$wa_url}}wa-content/js/jquery-ui/jquery.ui.core.min.js
 	{{$wa_url}}wa-content/js/jquery-ui/jquery.ui.widget.min.js
 	{{$wa_url}}wa-content/js/jquery-ui/jquery.ui.mouse.min.js
@@ -66,14 +66,14 @@ i.bg-{{$background_key}} {background: {{$background|replace:'wa_app_static_url/'
 							class="stick-delete js-menu-item js-menu-no-proceed"
 							title="[`Delete`]"
 						>
-							<i class="icon10 close"><!-- icon --></i>
+							<i class="icon10 close"></i>
 						</a>
 						<a
 							href="{{$wa_app_url}}#/sticky/settings/${sticky.id}"
 							title="[`Settings`]"
 							class="sticky-setting js-menu-item js-menu-no-proceed"
 						>
-							<i class="icon10 settings"><!-- icon --></i>
+							<i class="icon10 settings"></i>
 						</a>
 						<span class="sticky-status" id="sticky_status_${sticky.id}" title="[`Sticky status`]"></span>
 					</div>
@@ -105,7 +105,7 @@ i.bg-{{$background_key}} {background: {{$background|replace:'wa_app_static_url/'
 								href="{{$wa_app_url}}#/sticky/color/${sticky.id}/{{$color_value}}"
 								title="{{$color_value}}"
 							>
-								<i class="sticky-{{$color_value}}"><!-- icon --></i>
+								<i class="sticky-{{$color_value}}"></i>
 							</a>
 						</li>
 <!-- {{/foreach}} end  color variants -->
@@ -132,7 +132,7 @@ i.bg-{{$background_key}} {background: {{$background|replace:'wa_app_static_url/'
 <!-- add sticky {{capture name="add-sticky-template-js"}} -->
 					<li>
 					  	<a href="{{$wa_app_url}}#/sticky/add/${sheet_id}" class="wa-ui-icon-link js-menu-item js-menu-no-proceed">
-							<i class="icon16 add"><!-- icon --></i>
+							<i class="icon16 add"></i>
 							[`New sticky`]
 						</a>
 					</li>
@@ -147,14 +147,14 @@ i.bg-{{$background_key}} {background: {{$background|replace:'wa_app_static_url/'
 <!-- sheet list {{capture name="sheet-template-js"}} -->
 					<li id="sheet_item_${sheet.id}" class="js-sheet-item {{literal}}{{if current_sheet_id == sheet.id}}selected{{else}}{{/if}}{{/literal}}">
 						<span class="count">
-							<i class="icon16 loading" style="display: none;"><!-- icon --></i>
+							<i class="icon16 loading" style="display: none;"></i>
 <!-- 						{{literal}}{{if current_sheet_id == sheet.id}}{{/literal}} -->
 							<a
 								href="{{$wa_app_url}}#/sheet/edit/${sheet.id}"
 								class="inline-icon js-menu-item js-menu-no-proceed"
 								title="[`Settings`]"
 							>
-								<i class="icon16 settings"><!-- icon --></i>
+								<i class="icon16 settings"></i>
 							</a>
 <!-- 							{{literal}}{{else}}{{/literal}} -->
 								${sheet.qty}
@@ -183,7 +183,7 @@ i.bg-{{$background_key}} {background: {{$background|replace:'wa_app_static_url/'
 										href="{{$wa_app_url}}#/sheet/background/${sheet.id}/{{$background_key}}"
 										title="{{$background_key}}"
 									>
-										<i class="bg-{{$background_key}}"><!-- icon --></i>
+										<i class="bg-{{$background_key}}"></i>
 									</a>
 								</li>
 <!-- {{/foreach}}end variants -->
@@ -203,7 +203,7 @@ i.bg-{{$background_key}} {background: {{$background|replace:'wa_app_static_url/'
 <!-- {{if $rights_add_sheet}} Allow add new board -->
 					<li class="top-padded">
 						<a class="small inline-link js-menu-item js-menu-no-proceed" href="{{$wa_app_url}}#/sheet/add">
-							<i class="icon10 add"><!-- icon --></i>
+							<i class="icon10 add"></i>
 							<b><i>[`New board`]</i></b>
 						</a>
 					</li>
@@ -239,8 +239,9 @@ translate['no name'] = '[`no name`]';
 translate['Stickies'] = '[`Stickies`]';
 
 var accountName = '{{$wa->accountName()}}';
-
+var default_background = '{{key($sheet_backgrounds)}}';
 $(document).ready( function() {
+
 	$( function() {
 		$.wa.stickiescontroller.init();
 	});

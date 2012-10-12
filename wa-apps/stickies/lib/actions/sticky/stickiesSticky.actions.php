@@ -42,7 +42,7 @@ class StickiesStickyActions extends stickiesJsonActionsController
 		$this->sticky_model->available($sticky['id']);
 
 		$sheet = $this->sheet_model->getById($sticky['sheet_id']);
-		
+
 		$this->response = array(
 			'sticky'=>$sticky,
 			'sheet'=>$sheet,
@@ -104,12 +104,12 @@ class StickiesStickyActions extends stickiesJsonActionsController
 			$sticky = $this->sticky_model->getById($this->sticky_id);
 			if ($sticky) {
 //				if ( isset($data['size_width']) && $data['size_width'] != $sticky['size_width'] ||
-//					isset($data['size_height']) && $data['size_height'] != $sticky['size_height']) 
+//					isset($data['size_height']) && $data['size_height'] != $sticky['size_height'])
 //				{
 //					$this->log('sticky_resize', 1);
 //				}
 //				if ( isset($data['position_top']) && $data['position_top'] != $sticky['position_top'] ||
-//					isset($data['position_left']) && $data['position_left'] != $sticky['position_left']) 
+//					isset($data['position_left']) && $data['position_left'] != $sticky['position_left'])
 //				{
 //					$this->log('sticky_move', 1);
 //				}
@@ -120,7 +120,7 @@ class StickiesStickyActions extends stickiesJsonActionsController
 					$this->log('sticky_edit', 1);
 				}
 			}
-			
+
 			if($res = $this->sticky_model->modify($this->sticky_id,$data)){
 				$data['id'] = $this->sticky_id;
 				$this->response = $data;

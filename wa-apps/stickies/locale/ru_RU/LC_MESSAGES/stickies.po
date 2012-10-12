@@ -140,3 +140,11 @@ msgstr "Доски"
 msgid "My stickies"
 msgstr "Мои стикеры"
 
+
+#: /wa-apps/stickies/js/compiled/stickies.js:118
+msgid "Cancel"
+msgstr ""
+
+#: /wa-apps/stickies/lib/models/stickiesSheet.model.php:83
+msgid "Board not found"
+msgstr ""

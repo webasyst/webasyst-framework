@@ -9,22 +9,30 @@
 
 	<link rel="apple-touch-icon" href="apps/mobile/img/iphone_icon.png">
 
-	<link	type="text/css"	rel="stylesheet" href="{{$wa_url}}wa-content/css/wa/wa-mobile-1.0.css">
-	<link	type="text/css"	rel="stylesheet" href="{{$wa_app_static_url}}css/mobile.css">
+	<link type="text/css" rel="stylesheet" href="{{$wa_url}}wa-content/css/wa/wa-mobile-1.0.css">
+	<link type="text/css" rel="stylesheet" href="{{$wa_app_static_url}}css/mobile.css">
+{{wa_js file="js/wa.stickiesmobilecontroller.min.js"}}
+	{{$wa_url}}wa-content/js/jquery/jquery-1.8.1.min.js
+	{{$wa_url}}wa-content/js/jquery-wa/wa.core.js
+	{{$wa_url}}wa-content/js/jquery-plugins/jquery.tmpl.min.js
+	{{$wa_url}}wa-content/js/jquery-plugins/jquery.cookie.js
 
-	<script type="text/javascript"	src="{{$wa_url}}wa-content/js/jquery/jquery-1.5.2.min.js"></script>
-	<script type="text/javascript"	src="{{$wa_url}}wa-content/js/jquery-wa/wa.core.js"></script>
-	<script type="text/javascript"	src="{{$wa_url}}wa-content/js/jquery-plugins/jquery.tmpl.min.js"></script>
-	<script type="text/javascript"	src="{{$wa_url}}wa-content/js/jquery-plugins/jquery.cookie.js"></script>
+	{{$wa_app_static_url}}js/wa.stickiesmobilecontroller.js
 
-	<script type="text/javascript"	src="{{$wa_app_static_url}}js/wa.stickiesmobilecontroller.js"></script>
-
-	<script type="text/javascript"	src="{{$wa_app_static_url}}js/generic.js"></script>
-
-
-	<script type="text/javascript"	src="{{$wa_url}}wa-content/js/jquery-mobile/jquery.mobile-1.0a4.min.js"></script>
+	{{$wa_app_static_url}}js/generic.js
 
 
+	{{$wa_url}}wa-content/js/jquery-mobile/jquery.mobile-1.1.1.min.js
+{{/wa_js}}
+
+    {{if $wa->isMobile() == 'iphone'}}
+    <script>
+        $(document).on("click", "a", function(e) {
+            e.preventDefault();
+            location.href = $(this).attr("href");
+        });
+    </script>
+    {{/if}}
 
 	<style type="text/css">
 {{foreach from=$stick_colors_css item=color key=color_key}}
@@ -60,25 +68,10 @@
 		<a href="{{$wa_backend_url}}" rel="external"  data-role="button" data-iconpos="notext" data-icon="mobile-apps">
 			<!-- [`Apps`] -->
 		</a>
-		{{*
-		<a href="#add" data-role="button" data-icon="plus" data-iconpos="notext" data-theme="a" class="ui-btn-right">
-			[`New board`]
-		</a>
-		*}}
-		<h1>
-			{{*<a href="{{$wa_app_url}}" data-role="button" data-inline="true">*}}
-				[`Stickies`]
-			{{*</a>*}}
-		</h1>
 	</div>
 
 	<div data-role="content">
 	</div>
-{{*
-	<div data-role="footer">
-		(c)WebAsyst
-	</div>
-*}}
 </div>
 
 <!-- {{capture name="sheet-list"}} Sheets subpage template -->
@@ -87,11 +80,6 @@
 		<a href="{{$wa_backend_url}}" rel="external"  data-role="button" data-iconpos="notext" data-icon="mobile-apps">
 			[`Apps`]
 		</a>
-{{*
-		<a href="#add" data-role="button" data-icon="plus" data-iconpos="notext" data-theme="a" class="ui-btn-right">
-			[`New board`]
-		</a>
-*}}
 		<h1>
 			{{*<a href="{{$wa_app_url}}" data-icon="refresh" rel="external" data-role="button" data-inline="true">*}}
 				[`Stickies`]
@@ -103,7 +91,7 @@
 		<ul data-role="listview" data-inset="true"{{* data-filter="true"*}} data-theme="e">
 <!--		{{literal}}{{each sheets}}{{/literal}} -->
 			<li>
-				<a href="#sheet/${$value.id}" data-ajax="json">
+				<a href="#/sheet/${$value.id}/"{{* data-ajax="json"*}}>
 					{{literal}}{{if $value.name}}${$value.name}{{else}}&lt;[`no name`]&gt;{{/if}} {{/literal}}
 				</a>
 				<span class="ui-li-count">
@@ -119,7 +107,7 @@
 <!-- {{capture name="sheet"}} Sheet subpage template -->
 <div data-role="page" id="sheet/${current_sheet.id}" class="${current_sheet.background_id}" >
 	<div data-role="header"		 data-position="inline"		 data-backbtn="false">
-		<a	href="#sheets"
+		<a	href="#/sheets/"
 			data-role="button"
 			data-ajax="json"
 			data-theme="a"
@@ -128,17 +116,6 @@
 		>
 			[`Boards`]
 		</a>
-{{*		<a	href="#sticky/add/${current_sheet.id}"
-			data-role="button"
-			data-ajax="json"
-			data-icon="plus"
-			data-iconpos="notext"
-			data-theme="a"
-			class="ui-btn-right"
-		>
-			[`Add`]
-		</a>
-*}}
 		<h1 id="sheet-title">{{literal}}{{if current_sheet.name}}${current_sheet.name}{{else}}&lt;[`no name`]&gt;{{/if}} {{/literal}}</h1>
 	</div>
 
@@ -146,14 +123,13 @@
 		<ul	data-role="listview"
 			data-inset="true"
 			data-theme="c"
-			{{*data-filter="true"*}}
 			data-counttheme="e"
 			class="wa-mobile-list-icon"
 			data-ajax="json"
 		>
 <!--		{{literal}}{{each stickies}}{{/literal}}	-->
 			<li>
-				<a href="#sticky/${$value.id}" data-ajax="json">
+				<a href="#/sticky/${$value.id}/" data-ajax="json">
 				<i class="sticky-bar-${$value.color||"default"}"></i>
 					{{literal}} {{if $value.content}}${$value.content}{{else}}&nbsp;{{/if}} {{/literal}}
 				</a>
@@ -171,7 +147,7 @@
 		 data-position="inline"
 		 data-backbtn="false"
 	>
-		<a	href="#sheet/${sticky.sheet_id}"
+		<a	href="#/sheet/${sticky.sheet_id}/"
 			data-role="button"
 			data-theme="a"
 			data-icon="arrow-l"
@@ -189,19 +165,6 @@
 			>
 				${sticky.content}
 			</p>
-{{*
-			<a	href="#settings"
-				data-role="button"
-				data-icon="gear"
-				data-inline="true"
-				data-iconpos="notext"
-			>
-				[`Settings`]
-			</a>
-*}}
-			<div id="sticky-content-edit-${sticky.id}" style="display:none;">
-				<textarea cols="40" rows="8" name="textarea" id="textarea">${sticky.content}</textarea>
-			</div>
 		</div>
 	</div>
 </div>
@@ -229,9 +192,8 @@ $(document).bind("mobileinit", function(){
 		autoInitialize: false,
 		loadingMessage: '[`Please wait`]'
 	});
-	//$.wa.stickiesmobilecontroller.init();
 });
-
+var default_background = '{{key($sheet_backgrounds)}}';
 
 </script>
 </body>

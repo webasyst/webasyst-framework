@@ -45,6 +45,10 @@
 				'max_height':400
 			},
 
+			options: {
+                'default_background':''
+			},
+
 			init: function (options) {
 				var self = this;
 				if (typeof($.History) != "undefined"){
@@ -64,6 +68,10 @@
 						$.wa.setHash(h);
 					}
 				}
+
+                if (default_background) {
+                    self.options.default_background = default_background;
+                }
 
 				$("textarea.sticky-content").live('keyup change focus', function(event) {
 					var id = parseInt($(this).attr('id').match(/\d+$/));
@@ -570,7 +578,7 @@
 				$('#wa-app-stickies-add').empty();
 
 				if(data.current_sheet){
-					$('#stickies').attr('class',data.current_sheet.background_id||'cork');//TODO setup default backgound id
+					$('#stickies').attr('class',data.current_sheet.background_id||this.options.default_background);
 					$.tmpl('add-sticky',{'sheet_id':data.current_sheet_id}).appendTo('#wa-app-stickies-add');
 				}
 				this.sheetsOrder = new Array();
