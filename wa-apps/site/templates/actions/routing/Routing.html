@@ -1,84 +1,216 @@
-<script type="text/javascript">
-    document.title = {json_encode($app.name)} + ' [`settings`] — ' + {json_encode($domain)};
-</script>
-<div class="s-editor s-white s-app-settings">
-	<form id="s-settings-form" method="post" action="?module=routing&action=params&domain_id={$domain_id}&route={$route_id}">
-	<div class="float-left">
-		<div class="block s-grey-toolbar">
-			<h4>[`{$app.name|escape} app settled at`] /{$route.url|escape}</h4>
-		</div>
-		<div class="block double-padded">
-			<div class="fields form">
-				{$themes=siteHelper::getThemes($app_id, true)}
-				{if $themes}
-				<div class="field-group">
-				<div class="field">
-					<div class="name">[`Settlement name`]</div>
-					<div class="value">
-						<input type="text" name="params[_name]" value="{$route._name|escape}" class="bold" /><br />
-						<span class="hint">[`Name is used in the <em>$wa->apps</em> navigation menu of this website`]</span>
-					</div>
-				</div>
-				<div class="field">
-					<div class="name">[`Design theme`]</div>
-					<div class="value">
-						{html_options name="params[theme]" options=$themes selected=$route.theme}
-					</div>
-				</div>
-				<div class="field">
-					<div class="name">[`Mobile design theme`]</div>
-					<div class="value">
-						{html_options name="params[theme_mobile]" options=$themes selected=$route.theme_mobile}
-						<br />
-						<span class="hint">[`Design theme for mobile multi-touch devices such as iPhone and Android`]</span>
-					</div>
-				</div>
-                <div class="field">
-                    <div class="name">[`Locale`]</div>
-                    <div class="value">
-                        {html_options name="params[locale]" options=$locales selected=$route.locale}
-                    </div>
-                </div>              				
-				</div>
-				{/if}
-				{if !empty($params)}
-					{foreach $params item=p}
-					<div class="field">
-						<div class="name">{$p.name|escape}</div>
-						<div class="value">{$p.value}</div>
-					</div>
-					{/foreach}
-				{/if}				
-				<div class="field">
-					<div class="name">[`Custom parameters`]</div>
-					<div class="value">
-						<textarea name="other_params">{foreach from=$route key=key item=value}{if !in_array($key, array('app', 'url', 'theme', 'theme_mobile', 'locale')) && substr($key, 0, 1) != '_' && !isset($params[$key])}{$key|escape}={if $value===false}0{else}{$value|escape}{/if}
-
-{/if}{/foreach}</textarea>
-						<br />
-						<span class="hint">[`Optional set of custom <em>key=value</em> parameters which can be used within design templates and pages of this settlement as <em>&#123;$wa->globals("key")&#125;</em>. Each key=value pair should be on a separate line.`] <a href="[`http://www.webasyst.com/framework/docs/site/design/`]" target="_blank">[`Help`]</a> <i class="icon10 new-window"></i></span>
-					</div>
-				</div>
-				<div class="field">
-					<div class="value">
-						<input type="submit" name="save" class="button green" value="[`Save`]" />
-						<span id="s-settings-form-status"></span>
-					</div>
-				</div>					
-			</div>
-		</div>
-	</div>
-	</form>
-<div class="clear"></div>
+<div class="content">
+    <div class="s-editor s-white">
+        <div class="block s-grey-toolbar">
+            <h4 style="margin-left: 4px; margin-top:2px;">[`Routing`]</h4>
+        </div>
+        <div class="block s-routing-header">
+            <a href="#" class="inline-link" id="s-routing-addrule"><i class="icon16 add"></i><b><i>[`New rule`]</i></b></a>
+        </div>
+        <div>
+            <div class="sidebar" style="width:75%;">
+                <table id="s-rules" class="zebra s-routing">
+                    {foreach from=$routes key=route_id item=route}
+                    <tr id="route-{$route_id}">
+                        <td class="s-url">
+                            <span><a style="display:inline" href="#"><i class="icon16 sort"></i></a></span> <span class="s-domain-url">{$url}/</span><span class="s-editable-url" style="color:#000">{$route.url|escape}</span>
+                            <a href="#" class="s-route-action s-route-edit" title="[`Edit URL`]"><i class="icon10 edit"></i></a>
+                        </td>
+                        <td class="s-app">
+                            {if isset($route.app)}
+                            <img src="{$wa_url}{$route.app.icon.24}" class="s-app24x24icon-menu-v" alt="">{$route.app.name}
+                            {else}
+                            <img src="{$wa_app_static_url}img/arrow.png" class="s-app24x24icon-menu-v" alt="">
+                            <span class="redirect">{$route.redirect|escape}</span>
+                            {/if}
+                        </td>
+                        <td class="s-actions align-right">
+                            {if isset($route.app)}
+                            <a href="#" class="s-route-action s-route-settings" title="[`App settings`]"><i class="icon16 settings"></i></a>
+                            {/if}
+                        </td>
+                    </tr>
+                    {/foreach}
+                    <!-- /fields -->
+                </table>
+                <p class="block double-padded align-center hint">
+               		[`Rules are processed one by one in the given order. The first rule matching current HTTP request will be processed. Use * symbol in the URL fields for wildcard.`]
+                	<a href="[`http://www.webasyst.com/framework/docs/site/structure/`]" target="_blank">[`Help`]</a> <i class="icon10 new-window"></i>
+                </p>
+            </div>
+            <div id="s-route-params" class="content bordered-left" style="margin-left:75%;">
+            	<div class="block double-padded align-center hint">
+            		<br />
+            		<img src="{$wa_url}wa-apps/site/img/gear.png"><br /><br />
+            		[`Select route to manage its settings`]
+            		<div class="clear"></div>
+            	</div>
+            </div>
+        </div>
+        <div class="clear-left"></div>
+    </div>
 </div>
-
 <script type="text/javascript">
-	$("#s-settings-form").submit(function () {
-		var f = $(this);
-		$("#s-settings-form-status").html('<i style="vertical-align:middle" class="icon16 loading"></i> [`Saving...`]').fadeIn("slow");
-		$.post(f.attr('action'), f.serialize(), function () {
-			$("#s-settings-form-status").html('<i style="vertical-align:middle" class="icon16 yes"></i>[`Saved`]').fadeOut('slow');
-		});
-		return false;
-	});
+var site_select_apps = '<select class="s-select-app">' +
+{foreach $apps as $app_id => $app}
+'<option {if $app_id=="site"}selected="selected"{/if} value="{$app_id}" data-img="{$app.icon.24}">{$app.name|escape}</option>' +
+{/foreach}
+'<option value="" data-img="wa-apps/site/img/arrow.png">[`Redirect`]...</option>' +
+'</select>';
+
+function site_routing_full()
+{
+    $("#s-route-params").html('<div class="block double-padded align-center hint"><br />' +
+            '<img src="{$wa_url}wa-apps/site/img/gear.png"><br /><br />[`Select route to manage its settings`]' +
+            '<div class="clear"></div></div>'
+    ).animate({ 'margin-left': '75%'}, 'slow');
+    $(".s-editor .sidebar").animate({ 'width':'75%'}, 'slow');
+    $("#s-rules").removeClass('s-routing-minimized');
+    $("#s-rules .s-domain-url").show();
+    $("#s-rules tr.selected").removeClass('selected');
+}
+
+
+$("a#s-routing-addrule").click(function () {
+    var tr = $('<tr>' +
+            '<td class="s-url"><span><a style="display:inline" href="#"><i class="icon16 sort"></i></a></span> <span class="s-domain-url">{$url|escape}/</span><input class="s-url" type="text" value=""></td>' +
+            '<td class="s-app"><img src="{$wa_url}{$apps.site.icon.24}" alt=""/>' + site_select_apps + '</td>' +
+            '<td class="s-actions align-right"><input class="s-route-save" type="button" value="[`Save`]"></td>' +
+            '</tr>');
+    $("#s-rules").prepend(tr);
+    site_routing_full();
+    return false;
+});
+
+$("#s-rules").delegate("a.s-route-settings", 'click', function () {
+    $("#s-rules tr.selected").removeClass('selected');
+    $(this).parents('tr').addClass('selected');
+    var route = $(this).parents('tr').attr('id').replace(/^route-/, '');
+    $(".s-editor .sidebar").animate({ 'width':'25%'}, 'slow');
+    $("#s-rules").addClass('s-routing-minimized');
+    $("#s-route-params").animate({ 'margin-left':'25%'}, 'slow');
+    $("#s-rules .s-domain-url").hide();
+    $("#s-route-params").load('?module=routing&action=edit', 'domain_id={$domain_id}&route=' + route, function () {
+
+    });
+    return false;
+});
+
+$("#s-rules").delegate("input.s-route-save", 'click', function () {
+    var t = $(this).parents('tr');
+    var params = {
+        url: t.find('input.s-url').val()
+    };
+    if (t.attr('id')) {
+        params['route'] = t.attr('id').replace(/^route-/, '');
+        if (t.find('span.redirect input').length) {
+            params['redirect'] = t.find('span.redirect input').val();
+        }
+    } else {
+        params['app'] = t.find('select.s-select-app').val();
+        if (!params['app']) {
+            params['redirect'] = t.find('span.redirect input').val();
+        }
+    }
+    $.post("?module=routing&action=save&domain_id={$domain_id}", params, function (response) {
+        if (response.status == 'ok') {
+            t.find('input.s-url').replaceWith('<span class="s-editable-url" style="color:#000">' + response.data.url +
+                    ' <a href="#" class="s-route-action s-route-edit" title="[`Edit URL`]"><i class="icon10 edit"></i></a></span>');
+
+            if (t.find('select.s-select-app').length) {
+                if (response.data.redirect) {
+                    t.find('select.s-select-app').remove();
+                } else {
+                    t.find('select.s-select-app').replaceWith(t.find('select.s-select-app option:selected').html());
+                }
+            }
+            t.find('td.s-actions input').hide();
+            if (!t.attr('id')) {
+                t.find('td.s-actions').append(
+                        (response.data.app ? '<a href="#/routing/route=' + response.data.route + '" class="s-route-settings" title="[`App settings`]"><i class="icon16 settings"></i></a> ' : ''));
+
+                t.attr('id', 'route-' + response.data.route);
+                if (response.data.app) {
+                    var html = '<li id="design-' + response.data.route + '" class="app-'+ response.data.app.id +'">' +
+                            '<a href="#/design/route=' + response.data.route + '" class="bold">' +
+                            '<img class="s-app16x16icon-menu-v" src="{$wa_url}' + response.data.app.icon['16'] + '" alt="">' + response.data.app.name +
+                            ' <span class="hint">' + $.wa.site.options.root_url + '/' + response.data.url + '</span></a></li>';
+                    if ($("#s-design li.app-" + response.data.app.id).length) {
+                        $(html).insertAfter($("#s-design li.app-" + response.data.app.id + ':last'));
+                    } else {
+                        $("#s-design").append(html);
+                    }
+                }
+            } else {
+                t.find('td.s-actions a').show();
+                if ($("#design-" + response.data.route).length > 0) {
+                    $("#design-" + response.data.route + ' span.hint').html($.wa.site.options.root_url + '/' + response.data.url);
+                }
+            }
+            if (response.data.redirect) {
+                t.find('td.s-app span.redirect').html(response.data.redirect);
+            }
+        }
+    }, "json");
+});
+
+$("select.s-select-app").live('change', function () {
+    if ($(this).val()) {
+        if ($(this).next('.redirect').length) {
+            $(this).next('.redirect').remove();
+        }
+    } else {
+        if ($(this).next('.redirect').length) {
+            $(this).next().find('input').val('');
+        } else {
+            $('<span class="redirect"> <input type="text" /></span>').insertAfter(this);
+        }
+        $(this).next().find('input').focus();
+    }
+    $(this).prev().attr('src', "{$wa_url}" + $(this).find(':selected').attr('data-img')).show();
+});
+
+$("a.s-route-edit").live('click', function () {
+    var t = $(this).parents('tr');
+    t.find('.s-route-edit').hide();
+    t.find('span.s-editable-url').replaceWith($('<input class="s-url" type="text">').val(t.find('span.s-editable-url').text()));
+    if (t.find('td.s-app span.redirect').length > 0) {
+        var input = $('<input type="text" />').val(t.find('span.redirect').text());
+        t.find('span.redirect').empty().append(input);
+    }
+    t.find('td.s-actions a').hide();
+    if (!t.find('td.s-actions input').length) {
+        t.find('td.s-actions').append('<input class="s-route-save" type="button" value="[`Save`]">');
+    }
+    t.find('td.s-actions input').show();
+    return false;
+});
+
+$("#s-rules").sortable({
+    distance: 5,
+    helper: function(e, tr) {
+        var $originals = tr.children();
+        var $helper = tr.clone();
+        $helper.children().each(function(index){
+            // Set helper cell sizes to match the original sizes
+            $(this).width($originals.eq(index).width())
+        });
+        return $helper;
+    },
+    items: 'tr',
+    opacity: 0.75,
+    tolerance: 'pointer',
+    stop: function (event, ui) {
+        var tr = $(ui.item);
+        var id = tr.attr('id').replace(/route-/, '');
+        var pos = tr.prevAll('tr').size();
+        $.post("?module=routing&action=sort&domain_id={$domain_id}" , { route: id, pos: pos}, function () {
+        }, "json");
+    }
+});
+
+$("#s-rules").delegate("td.s-url input", 'keydown', function (e) {
+    if (e.which == 13) {
+        $(this).parents('tr').find('input.s-route-save').click();
+    }
+});
 </script>

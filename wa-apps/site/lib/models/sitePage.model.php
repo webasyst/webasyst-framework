@@ -4,45 +4,29 @@ class sitePageModel extends waPageModel
 {
     protected $app_id = 'site';
     protected $table = 'site_page';
+    protected $domain_field = 'domain_id';
 
 
-    public function getByUrl($domain_id, $url, $exclude = array())
+    public function getByUrl($domain_id, $route, $url)
     {
         $sql = "SELECT * FROM ".$this->table."
-                WHERE domain_id = i:domain_id AND url = s:url";
-        if ($exclude && is_array($exclude)) {
-            $sql .= " AND id NOT IN (i:exclude)";
-        }
-        return $this->query($sql, array('domain_id' => $domain_id,
-                                        'url' => $url, 'exclude' => $exclude))->fetch();
+                WHERE domain_id = i:domain_id AND route = s:route AND full_url = s:url";
+        return $this->query($sql, array('domain_id' => $domain_id, 'route' => $route, 'url' => $url))->fetch();
     }
 
-
-    public function move($id, $sort)
+    public function updateDomain($old_domain, $new_domain)
     {
-        if (!$id) {
-            return false;
-        }
-        $sort = (int)$sort;
-        // get page
-        $page = $this->getById($id);
-        $domain_id = (int)$page['domain_id'];
-        // get real sort
-        $sql = "SELECT sort FROM ".$this->table."
-                WHERE domain_id = ".$domain_id." ORDER BY sort LIMIT ".($sort ? $sort - 1 : 0).', 1';
-        $sort = $this->query($sql)->fetchField('sort');
-
-        if ($page) {
-            if ($page['sort'] < $sort) {
-                $sql = "UPDATE ".$this->table." SET sort = sort - 1
-                        WHERE domain_id = ".$domain_id." AND sort > ".$page['sort']." AND sort <= ".$sort;
-            } elseif ($page['sort'] > $sort) {
-                $sql = "UPDATE ".$this->table." SET sort = sort + 1
-                        WHERE domain_id = ".$domain_id." AND sort >= ".$sort." AND sort < ".$page['sort'];
-            }
-            $this->exec($sql);
-            $this->updateById($id, array('sort' => $sort));
-        }
-        return false;
+        // nothing
     }
+
+    public function updateRoute($domain, $old_route, $new_route)
+    {
+        $domain_model = new siteDomainModel();
+        $domain = $domain_model->getByName($domain);
+        if ($domain) {
+            return $this->updateByField(array(
+                'domain_id' => $domain['id'], 'route' => $old_route), array('route' => $new_route));
+        }
+    }
+
 }

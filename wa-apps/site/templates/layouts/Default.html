@@ -30,12 +30,12 @@
 <script src="{$wa_url}wa-content/js/codemirror/mode/css/css.js"></script>
 <script src="{$wa_url}wa-content/js/codemirror/mode/htmlmixed/htmlmixed.js"></script>
 
-<script src="{$wa_url}wa-content/js/jquery-wa/wa.page-edit.js?v{$wa->version()}"></script>
+<script src="{$wa_url}wa-content/js/jquery-wa/wa.editor.js?v{$wa->version()}"></script>
 
 <script type="text/javascript" src="?action=loc&amp;v{$wa->version()}"></script>
 </head>
 <body>
-<div id="wa">
+<div id="wa"{if substr($domains[$domain_id].style, 0, 1) == '.'}style="background:url({$wa_url}wa-data/public/site/background/{$domain_id}{$domains[$domain_id].style})"{else} class="s-{$domains[$domain_id].style}"{/if}>
 	<div class="s-scrollable-part{if empty($editor)} s-no-editor{/if}">
 		<div class="s-scrollable-content">
 			{$wa->header()}
@@ -45,14 +45,17 @@
 				</div>
 				<div class="content left200px">
 					<div id="s-content" class="shadowed s-content">
-						<div class="block triple-padded"><i class="icon16 loading"></i>[`Loading`]...</div>
+						<div class="block triple-padded">
+						  [`Loading`]...
+						  <i class="icon16 loading"></i>
+				        </div>
 					</div>
 				</div>
 			</div>
 		</div>
 	</div>
 	<div id="s-save-panel" style="display:none" class="s-bottom-fixed-bar" >
-		<div class="s-bottom-fixed-bar-content-offset s-page-editor">
+		<div class="s-bottom-fixed-bar-content-offset">
 			<div class="s-dropdown">
 				<div class="s-drop-link">
 					<a class="inline-link" id="s-helper-link" href="#">
@@ -65,7 +68,7 @@
 			<div class="block">
 				<input id="s-editor-save-button" type="button" class="button green" value="[`Save`]">
 				<em class="hint">Ctrl + S</em>
-				<span id="process-message" style="margin-left: 20px; display: none"></span>
+				<span id="wa-editor-status" style="margin-left: 20px; display: none"></span>
 			</div>
 		</div>
 	</div>

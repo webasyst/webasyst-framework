@@ -16,7 +16,7 @@ class siteDefaultLayout extends waLayout
             'admin' => $this->getUser()->isAdmin('site'),
             'files' => $this->getRights('files'),
             'themes' => $this->getRights('themes'),
-            'snippets' => $this->getRights('snippets'),
+            'blocks' => $this->getRights('blocks'),
         ));
     }
 

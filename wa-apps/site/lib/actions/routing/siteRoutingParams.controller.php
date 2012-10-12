@@ -53,7 +53,7 @@ class siteRoutingParamsController extends waJsonController
 
         $params = waRequest::post('params', array());
         foreach ($params as $key => $value) {
-            if ($key != '_name' || $value != $name) {
+            if ($key != '_name' || $value != $name || (isset($routes[$domain][$route_id]['_name']) && $value != $routes[$domain][$route_id]['_name'])) {
                 $routes[$domain][$route_id][$key] = $value;
             }
         }

@@ -1,30 +1,13 @@
-<div class="block double-padded s-site-selector">
-
-		<ul id="s-domains-menu" class="menu-h dropdown clickable">
-			<li>
-				<h1>
-					<a id="s-domain" onclick="return false" href="http://{$domains[$domain_id].name|escape}/" class="inline-link">
-						<i class="icon16 favicon" style="background-image:url(http://{$domains[$domain_id].name|escape}/favicon.ico)"></i><b><i>{$domains[$domain_id].title}</i></b>
-						<i class="icon10 darr no-overhanging"></i>
-					</a>
-				</h1>
-				<ul class="menu-v with-icons">
-					{foreach from=$domains item=d key=d_id}
-					<li>
-						<a href="?domain_id={$d_id}">
-							<i class="icon16 favicon" style="background-image:url(http://{$d.name|escape}/favicon.ico)"></i>{$d.title|escape}
-						</a>
-					</li>
-					{/foreach}
-                    {if $rights.admin}
-					<li class="s-add-new-site"><a href="#" class="small"><i class="icon10 add"></i>[`New site`]</a> </li>
-					{/if}
-				</ul>
-
-			</li>
-		</ul>
-		<a href="{if $domain_id}http://{$domains[$domain_id].name|escape}/{else}{$wa_url}{/if}" target="_blank" class="s-settings-link"><i class="icon10 new-window"></i><u>[`Open website`]</u></a>
-		<a href="#/settings/" id="s-settings-link" class="s-settings-link"><i class="icon10 info"></i><u>[`Site info`]</u></a>
+<div class="block double-padded">
+        <ul class="menu-v with-icons">
+            {foreach from=$domains item=d key=d_id}
+            <li{if $d_id == $domain_id} class="selected"{/if}>
+                <a href="?domain_id={$d_id}">
+                    <i class="icon16 favicon" style="background-image:url(http://{$d.name|escape}/favicon.ico)"></i>{$d.title|escape}
+                </a>
+            </li>
+            {/foreach}
+        </ul>
 </div>
 
 <div style="display:none" id="addsite-dialog">
@@ -45,46 +28,29 @@
 	</form>
 </div>
 
-<div class="block">
-	{* <a href="{if $domain_id}http://{$domains[$domain_id].name|escape}/{else}{$wa_url}{/if}" target="_blank" class="count"><i class="icon16 new-window"></i></a> *}
-	<a href="#/settings/routing/" class="count" title="[`Routing`]"><i class="icon16 settings"></i></a>
-	<h5 class="heading" data-hash="design"><i class="icon16 darr"></i>[`Apps`]</h5>
-	<ul id="s-design" class="menu-v s-links collapsible with-icons">
-		{foreach from=$apps item=app}
-		{foreach from=$app.routes key=r_id item=route}
-		<li id="design-{$r_id}" class="app-{$app.id}">
-			<a href="#/design/route={$r_id}" class="bold">
-				<img class="s-app16x16icon-menu-v" src="{$wa_url}{$app.icon.16}" alt="">{$app.name}
-				<span class="hint">{$domain_root_url}/{$route.url|escape}</span>
-			</a>
-		</li>
-		{/foreach}
-		{/foreach}
-	</ul>
+
+<div class="s-site-mgmt-tab">
+	<div class="block">
+    	<h5 class="heading">
+            {$domains[$domain_id].title|escape}
+            <span class="count"><a id="s-domain" href="http://{$domains[$domain_id].name|escape}/" title="[`Open website in a new window`]" target="_blank"><i class="icon16 new-window"></i></a></span>
+        </h5>
+    </div>
+    <ul class="menu-v s-links with-icons">
+        <li id="s-link-pages"><a href="#/pages/"><i class="icon16 notebook"></i>[s`Pages`]</a></li>
+        <li id="s-link-design"><a href="#/design/"><i class="icon16 palette"></i>[s`Design`]</a></li>
+        <li id="s-link-routing"><a href="#/routing/"><i class="icon16 split"></i>[`Routing`]</a></li>
+        <li id="s-link-settings"><a href="#/settings/"><i class="icon16 settings"></i>[`Settings`]</a></li>
+    </ul>
 </div>
 
-<div class="block">
-	<span class="count"><a href="#/pages/add/" title="[`New page`]"><i class="icon16 add"></i></a></span>
-	<h5 class="heading" data-hash="pages"><i class="icon16 darr"></i>[`Pages`]</h5>
-	<ul id="s-pages" class="menu-v s-links collapsible with-icons">
-		{foreach from=$pages item=p}
-		<li id="page-{$p.id}">
-			<a href="#/pages/id={$p.id}">
-				<i class="icon16 notebook"></i>{$p.name|escape}
-				<span class="hint">{if $p.url !== null}{$domain_root_url}/{$p.url|escape}{/if}</span>
-				{if !$p.status} <span class="s-draft">[`draft`]</span>{/if}
-			</a>
-		</li>
-		{/foreach}
-	</ul>
-</div>
 
-<div class="hr"></div>
-
-<div class="block padded">
-	<ul class="menu-v s-links">
-		{if $rights.snippets}<li id="s-link-snippets"><a href="#/snippets/"><i class="icon16 zone"></i>[`Snippets`]</a></li>{/if}
+<div class="block double-padded">
+	<ul class="menu-v with-icons s-links">
+		{if $rights.blocks}<li id="s-link-blocks"><a href="#/blocks/"><i class="icon16 zone"></i>[`Blocks`]</a></li>{/if}
 		{if $rights.files}<li id="s-link-files"><a href="#/files/"><i class="icon16 upload"></i>[`Files`]</a></li>{/if}
-		{if $rights.themes}<li id="s-link-themes"><a href="#/themes/"><i class="icon16 palette"></i>[`Themes`]</a></li>{/if}
+		{if $rights.admin}
+    	    	<li class="s-add-new-site top-padded"><a href="#" class="small"><i class="icon10 add"></i>[`New site`]</a> </li>
+        	{/if}
 	</ul>
 </div>

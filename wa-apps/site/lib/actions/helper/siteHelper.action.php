@@ -25,7 +25,7 @@ class siteHelperAction extends waViewAction
                     '$wa->post("<em>key</em>")' => _w('Returns POST parameter value (same as PHP $_POST["<em>key</em>"])'),
                     '$wa->server("<em>key</em>")' => _w('Returns SERVER parameter value (same as PHP $_SERVER["KEY"])'),
                     '$wa->session("<em>key</em>")' => _w('Returns SESSION var value (same as PHP $_SESSION["<em>key</em>"])'),
-                    '$wa->snippet("<em>id</em>")' => _w('Embeds HTML snippet by ID'),
+                    '$wa->block("<em>id</em>")' => _w('Embeds HTML block by ID'),
                     '$wa->user("<em>field</em>")' => _w('Returns authorized user data from associated record in “Contacts” app. "<em>field</em>" (string) is optional and indicates the field id to be returned. If not  Returns <em>false</em> if user is not authorized'),
                     '$wa->userAgent("<em>key</em>")' => _w('Returns User Agent info by specified “<em>key</em>” parameter:').'<br />'.
                     _w('— <em>"platform"</em>: current visitor device platform name, e.g. <em>windows, mac, linux, ios, android, blackberry</em>;').'<br />'.

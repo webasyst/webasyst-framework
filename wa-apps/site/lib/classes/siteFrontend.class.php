@@ -10,9 +10,10 @@ class siteFrontend
         if ($url === null) {
             $url = wa()->getRouting()->getCurrentUrl();
         }
+        $route = wa()->getRouting()->getRoute('url');
         $page_model = new sitePageModel();
         if (substr($url, -1) !== '/' && strpos(substr($url, -5), '.') === false) {
-            if ($page = $page_model->getByUrl($this->getDomainId(), $url.'/')) {
+            if ($page = $page_model->getByUrl($this->getDomainId(), $route, $url.'/')) {
                 $url = waSystem::getInstance()->getConfig()->getRequestUrl(false);
                 if (($i = strpos($url, '?')) === false) {
                     wa()->getResponse()->redirect($url.'/');
@@ -21,7 +22,7 @@ class siteFrontend
                 }
             }
         }
-        $page = $page_model->getByUrl($this->getDomainId(), $url, waRequest::param('_exclude', array()));
+        $page = $page_model->getByUrl($this->getDomainId(), $route, $url);
         if (!$page) {
             return array();
         }

@@ -32,6 +32,7 @@ class siteBackendLocAction extends waViewAction
         $strings['Enable this URL'] = _ws('Enable this URL');
         $strings['enable'] = _ws('enable');
         $strings['disable'] = _ws('disable');
+        $strings['Save'] = _ws('Save');
 
         $this->view->assign('strings', $strings ? $strings : new stdClass()); // stdClass is used to show {} instead of [] when there's no strings
         

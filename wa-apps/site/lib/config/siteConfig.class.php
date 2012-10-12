@@ -12,7 +12,7 @@ class siteConfig extends waAppConfig
                 return wa()->getUser()->isAdmin($this->application);
             case 'domains':
             case 'themes':
-            case 'snippets':
+            case 'blocks':
                 return wa()->getUser()->isAdmin($this->application); 
         }
         return true;

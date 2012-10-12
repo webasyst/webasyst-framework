@@ -16,6 +16,7 @@ class siteRoutingDeleteController extends waJsonController
             $all_routes = file_exists($path) ? include($path) : array();
             $all_routes[$domain] = $routes;
             waUtils::varExportToFile($all_routes, $path);
+            $this->log('route_delete');
         }
     }
 }

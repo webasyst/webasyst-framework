@@ -10,52 +10,10 @@
 		</ul>
 	</div>
 
-	<h4>{if $title}{$title|escape} <span class="hint">{$domain|escape}</span>{else}{$domain|escape}{/if}</h4>
-
-<ul id="s-settings-tabs" class="tabs s-grey-toolbar s-grey-toolbar">
-	<li class="selected"><a href="#routing">[`Routing`]</a></li>
-	<li><a href="#settings">[`Settings`]</a></li>
-</ul>
-</div>
-<div class="tab-content" id="tab-routing">
-	<div class="block s-routing-header">
-		<a href="#" class="inline-link" id="s-routing-addrule"><i class="icon16 add"></i> <b><i>[`New rule`]</i></b></a>
-	</div>
-	<table id="s-rules" class="zebra s-routing">
-			{foreach from=$routes key=route_id item=route}
-			<tr id="route-{$route_id}">
-				<td class="s-url">
-					<span><a style="display:inline" href="#"><i class="icon16 sort"></i></a></span> <span>{$url}/</span><span class="s-editable-url" style="color:#000">{$route.url|escape}</span>
-				</td>
-				<td class="s-app">
-					{if isset($route.app)}
-					<img src="{$wa_url}{$route.app.icon.24}" class="s-app24x24icon-menu-v" alt="">{$route.app.name}
-					{else}
-					<img src="{$wa_app_static_url}img/arrow.png" class="s-app24x24icon-menu-v" alt="">
-					<span class="redirect">{$route.redirect|escape}</span>
-					{/if}
-				</td>
-				<td class="s-actions">
-				    {if isset($route.app)}
-				    <a href="#/routing/route={$route_id}" class="s-route-settings" title="[`App settings`]"><i class="icon16 settings"></i></a>
-				    {/if}
-					<a href="#" class="s-route-edit" title="[`Edit URL`]"><i class="icon16 edit"></i></a>
-					<a href="#" class="s-route-delete" title="[`Delete rule`]"><i class="icon16 delete"></i></a>
-				</td>
-			</tr>
-			{/foreach}
-	<!-- /fields -->
-	</table>
-	<div class="align-center">
-		<span class="hint">
-			[`Rules are processed one by one in the given order. The first rule that matches current HTTP request will be used.<br /> Alter rule order using drag-and-drop. Use * for wildcard.`]
-			<a href="[`http://www.webasyst.com/framework/docs/site/structure/`]" target="_blank">[`Help`]</a> <i class="icon10 new-window"></i>
-		</span>
-	</div>
-	<div class="clear-left"></div>
+	<h4 style="margin-left: 4px; margin-top:2px;">[`Settings`]</h4>
 </div>
 
-<div class="tab-content" style="display:none" id="tab-settings">
+<div>
 	<div class="block double-padded fields form">
 		<form target="s-settings-iframe" id="s-settings-form" method="post" action="?module=settings&action=save&domain_id={$domain_id}" enctype="multipart/form-data">
 
@@ -64,12 +22,14 @@
 			<div class="name bold">[`Site URL`]</div>
 			<div class="value">
 				<strong>http://</strong><input type="text" class="bold" name="url" value="{$domain|escape}" /><br />
-				<span class="hint">[`Should represent the real URL of this Webasyst installation.`] [`E.g. <em>domain.com</em> if Webasyst is installed into domain.com's root folder, <em>domain.com/wa</em> if Webasyst is installed into /wa/ subfolder on domain.com. Do not put slash at the end of the URL.`]</span>
+				<span class="hint">
+					[`A valid URL pointing to this Webasyst installation.`]<br />
+					[`E.g. <em>domain.com</em> if Webasyst is installed into domain.com's root folder, <em>domain.com/wa</em> if Webasyst is installed into /wa/ subfolder on domain.com. Do not put slash at the end of the URL.`]</span>
 			</div>
 		</div>
 		<div class="field">
 			<div class="name bold">[`Site name`]</div>
-			<div class="value">
+			<div class="value no-shift">
 				<input id="s-domain-title" type="checkbox" {if !$title}checked="checked"{/if} /> <label for="s-domain-title">[`Matches Site URL`]</label>
 				<div {if !$title}style="display:none"{/if}>
 					<input type="text" class="bold" name="title" value="{$title|escape}" /><br />
@@ -77,16 +37,13 @@
 				</div>
 			</div>
 		</div>
-		</div>
-
-		<div class="field-group">
 		<div class="field">
 			<div class="name">
 				<strong>&#123;$wa-&gt;apps()&#125; [`menu`]</strong>
 				<br />
 				<span class="hint"> [`The array defining core website navigation menu`]</span>
 			</div>
-			<div class="value">
+			<div class="value no-shift">
 				<input type="radio" name="wa_apps_type" {if !$domain_apps_type}checked{/if} id="waapps-auto" value="0" /><label for="waapps-auto"> [`All settled apps`] <span class="hint">[`Automatically define navigation menu according to the routing rules`]</span></label>
 			</div>
 			<div class="value">
@@ -122,28 +79,94 @@
 
 		<div class="field-group">
 		<div class="field">
-			<div class="name">[`Favicon`]</div>
+			<div class="name">[`Background`]</div>
 			<div class="value">
-				<i class="icon16 favicon"
-					style="background-image: url('{$favicon}');"></i>
-				[`Upload another favicon`] (.ico, 16x16): <input name="favicon" type="file" />
-				{if isset($favicon_message)}<br /><span class="small" style="color: #f00;">{$favicon_message}</span>{/if}
+				<ul class="menu-h s-site-background-selector">
+                    {$classes = array('white', 'grey', 'blue', 'yellow', 'red', 'green', 'purple')}
+                    {foreach $classes as $c}
+                    <li class="s-{$c}"><a href="javascript:void(0)"><input type="radio" name="background" value="{$c}"{if $style==$c} checked="checked"{/if}></a></li>
+                    {/foreach}
+                    <li style="">
+                        <a href="javascript:void(0)" style="margin-right: 5px;{if substr($style, 0, 1) == '.'}background:url({$wa_url}wa-data/public/site/background/{$domain_id}{$style}){/if}">
+                            <input name="background" type="radio" value="{if substr($style, 0, 1) == '.'}{$style}{/if}"{if substr($style, 0, 1) == '.'} checked="checked"{/if}>
+                        </a>
+                        <span class="small">[`Custom`]:</span>
+                        <input id="background_file" type="file" name="background_file">
+                    </li>
+                </ul>
+                <script type="text/javascript">
+                    $(".s-site-background-selector a").click(function (e) {
+                        if (e.target.tagName != 'INPUT') {
+                            $(this).children('input').click();
+                        }
+                    });
+                    $(".s-site-background-selector input:radio").click(function (e) {
+                        var c = $(this).val();
+                        if (c) {
+                            if (c.substr(0, 1) == '.') {
+                                $("#wa").removeAttr('class');
+                                $("#wa").css('background', 'url({$wa_url}wa-data/public/site/background/{$domain_id}' + c + ')');
+                            } else {
+                                $("#wa").removeAttr('style');
+                                $("#wa").attr('class', 's-' + c);
+                            }
+                        } else {
+                            $("#wa").removeAttr('class');
+                        }
+                        return true;
+                    });
+                    $("#background_file").change(function () {
+                       $(this).parent().children('a').click();
+                    });
+                </script>
+				<span class="hint">[`Background is for customizing your Site app backend, which is useful when you have multiple websites powered by the single Webasyst installation. Selected background will not be shown in the frontend.`]</span>
 			</div>
 		</div>
-		<div class="field">
-			<div class="name">robots.txt</div>
-			<div class="value">
-				<textarea name="robots">{$robots|escape}</textarea>
-				<br />
-				{if isset($robots_message)}<span class="small" style="color: #f00;">{$robots_message}</span>{else}<span class="hint">[`Contents of this site's robots.txt file.`]</span>{/if}
-			</div>
-		</div>
-		</div>
+        <div class="field">
+            <div class="name">[`Custom head JS`]</div>
+            <div class="value">
+            	[`Google Analytics Property ID`]: 
+                <input type="text" name="google_analytics" value="{$google_analytics|escape}">
+                <br />
+                <span class="hint">[`E.g. <strong>UA-123456-1</strong><br />If you are using <a href="https://www.google.com/analytics/">Google Analytics</a> to track your website visits and conversions, instead of embedding Google Analytics JS code manually, enter your Google Analytics Property ID here. A valid Google Analytics code will be automatically embedded into every app and every design theme before the closing &lt;/head&gt; tag.`]</span>
+                <br /><br />
+            </div>
+            <div class="value no-shift">
+            	[`Additional JS code to be added before the closing &lt;/head&gt; tag:`]<br />
+            	<span class="hint">&lt;script&gt;</span><br />
+                <textarea name="head_js">{$head_js|escape}</textarea><br />
+                <span class="hint">
+                	&lt;/script&gt;<br />
+                	&lt;/head&gt;
+                </span>
+            </div>
+        </div>
+        </div>
+
+        <div class="field-group">
+        <div class="field">
+            <div class="name">[`Favicon`]</div>
+            <div class="value">
+                <i class="icon16 favicon"
+                    style="background-image: url('{$favicon}');"></i>
+                [`Upload another favicon`] (.ico, 16x16): <input name="favicon" type="file" />
+                {if isset($favicon_message)}<br /><span class="small" style="color: #f00;">{$favicon_message}</span>{/if}
+            </div>
+        </div>
+        <div class="field">
+            <div class="name">robots.txt</div>
+            <div class="value">
+                <textarea name="robots">{$robots|escape}</textarea>
+                <br />
+                {if isset($robots_message)}<span class="small" style="color: #f00;">{$robots_message}</span>{else}<span class="hint">[`Contents of this site's robots.txt file.`]</span>{/if}
+            </div>
+        </div>
+        </div>
 
         <div class="field-group">
             <div class="field">
                 <div class="name">[`Authorization`]</div>
-                <div class="value">
+                <div class="value no-shift">
                     <input id="s-auth-enabled" name="auth_enabled" type="checkbox" {if !$auth_apps}disabled="disabled"{/if} {if $auth_config['auth']}checked="checked"{/if} />
                     <label for="s-auth-enabled">[`Enable sign up and login forms for this site`]</label>
                     {if $auth_apps}
@@ -162,6 +185,39 @@
                         <br>
                     <input id="s-auth-captcha" name="auth_captcha" type="checkbox" {if $auth_config['signup_captcha']}checked="checked"{/if} />
                     <label for="s-auth-captcha">[`Enable captcha for signup form`]</label>
+                    
+                    <hr>
+                    
+                    <input id="s-auth-adapters" name="auth_adapters" type="checkbox" {if !empty($auth_config['adapters'])}checked="checked"{/if}>
+                    <label for="s-auth-adapters">
+                    	[`Third-party authorization`]
+                    	<span class="hint">[`Enables your site visitors to quickly sign up or sign in via accounts on external popular platforms, e.g. Facebook and Twitter. <a href="http://www.webasyst.com/framework/docs/dev/auth-adapters/" target="_blank">Setup instructions</a> <i class="icon10 new-window"></i>`]</span>
+                    </label>
+                    <br>
+                    <div id="s-auth-adapters-list" style="padding-left: 20px;{if empty($auth_config['adapters'])}display:none{/if}">
+                        <ul class="menu-v">
+                        {foreach $auth_adapters as $adapter_id => $adapter}
+                        <li>
+                            <input class="adapter" id="s-auth-adapter-{$adapter_id}" name="adapter_ids[]" value="{$adapter_id}" type="checkbox" {if !empty($auth_config['adapters'][$adapter_id])}checked="checked"{/if}>
+                            <label for="s-auth-adapter-{$adapter_id}">
+                                <img style="vertical-align: middle; padding-bottom: 3px;" alt="{$adapter->getName()}" src="{$adapter->getIcon()}">
+                                {$adapter->getName()}
+                            </label>
+                            <div class="adapter-controls"{if empty($auth_config['adapters'][$adapter_id])} style="display:none"{/if}>
+                            {foreach $adapter->getControls() as $control_id => $control_name}
+                            <div class="field">
+                                <div class="name" style="width: 120px;">
+                                	<span class="small">{$control_name}</span>
+                                </div>
+                                <div class="value" style="margin-left: 130px;"><input type="text" name="adapters[{$adapter_id}][{$control_id}]" value="{if !empty($auth_config['adapters'][$adapter_id])}{$auth_config['adapters'][$adapter_id][$control_id]}{/if}" style="font-size: 0.9em;"></div>
+                            </div>
+                            {/foreach}
+                            </div>
+                            <div class="clear"></div>
+                        </li>
+                        {/foreach}
+                        </ul>
+                    </div>
                 </div>
                     {else}
                     <br><br>
@@ -171,27 +227,38 @@
             </div>
         </div>
 
-		<div class="field">
-				<div class="value">
-					<input type="submit" name="save" class="button green" value="[`Save`]">
-					<span id="s-settings-form-status" style="display:none">[`Saved`]</span>
-				</div>
-		</div>
-		</form>
-		<iframe style="display:none" name="s-settings-iframe" id="s-settings-iframe"></iframe>
-	</div>
+        <div class="field">
+                <div class="value">
+                    <input type="submit" name="save" class="button green" value="[`Save`]">
+                    <span id="s-settings-form-status" style="display:none">[`Saved`]</span>
+                </div>
+        </div>
+        </form>
+        <iframe style="display:none" name="s-settings-iframe" id="s-settings-iframe"></iframe>
+    </div>
 
 </div>
 <div class="clear"></div>
 </div>
 </div>
 <script type="text/javascript">
-var site_select_apps = '<select class="s-select-app">' +
-{foreach from=$apps item=item}
-	'<option {if $item.id=="site"}selected="selected"{/if} value="{$item.id}" data-img="{$item.icon.24}">{$item.name|escape}</option>' +
-{/foreach}
-	'<option value="" data-img="wa-apps/site/img/arrow.png">[`Redirect`]...</option>' +
-'</select>';
+
+    $("input.adapter").click(function () {
+        var el = $(this).parent().find('div.adapter-controls');
+        if ($(this).is(':checked')) {
+            el.show();
+        } else {
+            el.hide();
+        }
+    });
+
+    $("#s-auth-adapters").click(function () {
+        if ($(this).is(':checked')) {
+            $("#s-auth-adapters-list").show();
+        } else {
+            $("#s-auth-adapters-list").hide();
+        }
+    });
 
     $("#s-auth-enabled").click(function () {
         if ($(this).is(":checked")) {
@@ -249,49 +316,12 @@ var site_select_apps = '<select class="s-select-app">' +
         }
     });
 
-	$("a#s-routing-addrule").click(function () {
-		var tr = $('<tr>' +
-				   '<td class="s-url"><span><a style="display:inline" href="#"><i class="icon16 sort"></i></a></span> <span>{$url|escape}/</span><input class="s-url" type="text" value=""></td>' +
-				   '<td class="s-app"><img src="{$wa_url}{$apps.site.icon.24}" alt=""/>' + site_select_apps + '</td>' +
-				   '<td class="s-actions"><input class="s-route-save" type="button" value="[`Save`]"></td>' +
-				   '</tr>');
-		$("#s-rules").prepend(tr);
-		return false;
-	});
-
 	$("#s-domain-title").click(function () {
 		if ($(this).is(":checked")) {
 			$(this).parent().children('div').hide().children('input').attr('disabled', 'disabled');
 		} else {
 			$(this).parent().children('div').show().children('input').removeAttr('disabled');
 		}
-	});
-	$("#s-rules").delegate("a.s-route-delete", 'click', function () {
-		if (confirm('[`This will delete the rule from website structure. Are you sure?`]')) {
-			var route = $(this).parents('tr').attr('id').replace(/^route-/, '');
-			$.post("?module=routing&action=delete&domain_id={$domain_id}", { "route": route}, function (response) {
-				if (response.status == 'ok') {
-					$("#route-" + route).remove();
-					$("#design-" + route).remove();
-				}
-			}, "json");
-		}
-		return false;
-	});
-
-
-	$("#s-settings-tabs a").click(function () {
-		var id = $(this).attr('href').replace(/^.*#/, '');
-		$("#s-settings-tabs li.selected").removeClass('selected');
-		$(this).parent().addClass('selected');
-		$("div.tab-content:visible").hide();
-		$("#tab-" + id).show();
-		if (id == 'settings') {
-			$.wa.setHash("#/settings/");
-		} else {
-			$.wa.setHash("#/settings/routing/");
-		}
-		return false;
 	});
 
 	$("#s-settings-form").submit(function () {
@@ -331,124 +361,5 @@ var site_select_apps = '<select class="s-select-app">' +
 			}
 		}, "json")
 		return false;
-	});
-
-	$("#s-rules").delegate("input.s-route-save", 'click', function () {
-		var t = $(this).parents('tr');
-		var params = {
-			url: t.find('input.s-url').val()
-		};
-		if (t.attr('id')) {
-			params['route'] = t.attr('id').replace(/^route-/, '');
-			if (t.find('span.redirect input').length) {
-				params['redirect'] = t.find('span.redirect input').val();
-			}
-		} else {
-			params['app'] = t.find('select.s-select-app').val();
-			if (!params['app']) {
-				params['redirect'] = t.find('span.redirect input').val();
-			}
-		}
-		$.post("?module=routing&action=save&domain_id={$domain_id}", params, function (response) {
-			if (response.status == 'ok') {
-				t.find('input.s-url').replaceWith('<span class="s-editable-url" style="color:#000">' + response.data.url + '</span>');
-
-				if (t.find('select.s-select-app').length) {
-					if (response.data.redirect) {
-						t.find('select.s-select-app').remove();
-					} else {
-						t.find('select.s-select-app').replaceWith(t.find('select.s-select-app option:selected').html());
-					}
-				}
-				t.find('td.s-actions input').hide();
-				if (!t.attr('id')) {
-	                t.find('td.s-actions').append(
-	                (response.data.app ? '<a href="#/routing/route=' + response.data.route + '" class="s-route-settings" title="[`App settings`]"><i class="icon16 settings"></i></a> ' : '') +
-	                '<a href="#" class="s-route-edit" title="[`Edit URL`]"><i class="icon16 edit"></i></a> ' +
-                    '<a href="#" class="s-route-delete" title="[`Delete rule`]"><i class="icon16 delete"></i></a>');
-
-					t.attr('id', 'route-' + response.data.route);
-					if (response.data.app) {
-						var html = '<li id="design-' + response.data.route + '" class="app-'+ response.data.app.id +'">' +
-						'<a href="#/design/route=' + response.data.route + '" class="bold">' +
-						'<img class="s-app16x16icon-menu-v" src="{$wa_url}' + response.data.app.icon['16'] + '" alt="">' + response.data.app.name +
-						' <span class="hint">' + $.wa.site.options.root_url + '/' + response.data.url + '</span></a></li>';
-						if ($("#s-design li.app-" + response.data.app.id).length) {
-							$(html).insertAfter($("#s-design li.app-" + response.data.app.id + ':last'));
-						} else {
-							$("#s-design").append(html);
-						}
-					}
-				} else {
-					t.find('td.s-actions a').show();
-					if ($("#design-" + response.data.route).length > 0) {
-						$("#design-" + response.data.route + ' span.hint').html($.wa.site.options.root_url + '/' + response.data.url);
-					}
-				}
-				if (response.data.redirect) {
-					t.find('td.s-app span.redirect').html(response.data.redirect);
-				}
-			}
-		}, "json");
-	});
-
-	$("select.s-select-app").live('change', function () {
-		if ($(this).val()) {
-			if ($(this).next('.redirect').length) {
-				$(this).next('.redirect').remove();
-			}
-		} else {
-			if ($(this).next('.redirect').length) {
-				$(this).next().find('input').val('');
-			} else {
-				$('<span class="redirect"> <input type="text" /></span>').insertAfter(this);
-			}
-			$(this).next().find('input').focus();
-		}
-		$(this).prev().attr('src', "{$wa_url}" + $(this).find(':selected').attr('data-img')).show();
-	});
-
-	$("a.s-route-edit").live('click', function () {
-		var t = $(this).parents('tr');
-		t.find('span.s-editable-url').replaceWith($('<input class="s-url" type="text">').val(t.find('span.s-editable-url').text()));
-		if (t.find('td.s-app span.redirect').length > 0) {
-			var input = $('<input type="text" />').val(t.find('span.redirect').text());
-			t.find('span.redirect').empty().append(input);
-		}
-		t.find('td.s-actions a').hide();
-		if (!t.find('td.s-actions input').length) {
-			t.find('td.s-actions').append('<input class="s-route-save" type="button" value="[`Save`]">');
-		}
-		t.find('td.s-actions input').show();
-		return false;
-	});
-
-	$("#s-rules").sortable({
-		distance: 5,
-		helper: function(e, tr) {
-		    var $originals = tr.children();
-		    var $helper = tr.clone();
-		    $helper.children().each(function(index){
-		      // Set helper cell sizes to match the original sizes
-		      $(this).width($originals.eq(index).width())
-		    });
-		    return $helper;
-		},
-		items: 'tr',
-		opacity: 0.75,
-		tolerance: 'pointer',
-		stop: function (event, ui) {
-			var tr = $(ui.item);
-			var id = tr.attr('id').replace(/route-/, '');
-			var pos = tr.prevAll('tr').size();
-			$.post("?module=routing&action=sort&domain_id={$domain_id}" , { route: id, pos: pos}, function () {
-			}, "json");
-		}
-	});
-
-	$("#s-rules").delegate("td.s-url input", 'keydown', function (e) {
-		if (e.which == 13) {
-			$(this).parents('tr').find('input.s-route-save').click();
-		}
 	});
 </script>

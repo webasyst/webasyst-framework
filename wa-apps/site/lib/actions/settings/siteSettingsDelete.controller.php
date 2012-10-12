@@ -35,6 +35,7 @@ class siteSettingsDeleteController extends waJsonController
                     waFiles::delete(wa()->getDataPath('data/'.$domain['name']), true);
                     // delete site from db
                     $domain_model->deleteById($domain_id);
+                    $this->log('site_delete');
                 } 
             }
         }

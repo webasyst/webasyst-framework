@@ -54,7 +54,8 @@ class siteHelper
             if ($full) {
                 $result[$id] = array(
                     'name' => $d['name'],
-                    'title' => $result[$id] 
+                    'title' => $result[$id],
+                    'style' => $d['style']
                 );
             }
         }

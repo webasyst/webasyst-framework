@@ -4,18 +4,14 @@ class siteSettingsAction extends waViewAction
 {   
     
     public function execute()
-    {   
-        $routes = wa()->getRouting()->getRoutes(siteHelper::getDomain());
+    {
         $apps = wa()->getApps();
-
         $auth_apps = array();
-               
-        foreach ($routes as $route_id => &$route) {
+
+        $routes = wa()->getRouting()->getRoutes(siteHelper::getDomain());
+        foreach ($routes as $route) {
             if (isset($route['app']) && isset($apps[$route['app']])) {
                 $auth_apps[$route['app']] = true;
-                $route['app'] = $apps[$route['app']];
-            } elseif (!isset($route['redirect'])) {
-                unset($routes[$route_id]);
             }
         }
         
@@ -43,14 +39,17 @@ class siteSettingsAction extends waViewAction
         $this->view->assign('auth_config', array(
             'auth' => isset($auth_config['auth']) ? $auth_config['auth'] : false ,
             'app' => isset($auth_config['app']) ? $auth_config['app'] : false,
-            'signup_captcha' => isset($auth_config['signup_captcha']) ? $auth_config['signup_captcha'] : false
+            'signup_captcha' => isset($auth_config['signup_captcha']) ? $auth_config['signup_captcha'] : false,
+            'adapters' => isset($auth_config['adapters']) ? $auth_config['adapters'] : array()
         ));
 
+        $this->view->assign('auth_adapters', $this->getAuthAdapters());
+
         $this->view->assign('apps', $temp);
-        $this->view->assign('routes', $routes);
         $this->view->assign('domain_id', siteHelper::getDomainId());
         $this->view->assign('domain', siteHelper::getDomain());
-        $this->view->assign('domains', siteHelper::getDomains(true));        
+        $s = siteHelper::getDomain('style');
+        $this->view->assign('style', $s ? $s : 'white');
         $domain = siteHelper::getDomain();
         $domain_config_path = $this->getConfig()->getConfigPath('domains/'.$domain.'.php');
         if (file_exists($domain_config_path)) {
@@ -68,9 +67,32 @@ class siteSettingsAction extends waViewAction
             $this->view->assign('domain_apps_type', 1);            
         }
         $this->view->assign('domain_apps', $domain_config['apps']);
+        foreach (array('head_js', 'google_analytics') as $key) {
+            $this->view->assign($key, isset($domain_config[$key]) ? $domain_config[$key] : '');
+        }
         $this->getStaticFiles($domain);
         $this->view->assign('url', $this->getDomainUrl($domain));
         $this->view->assign('title', siteHelper::getDomain('title'));
+    }
+
+
+    protected function getAuthAdapters()
+    {
+        $path = $this->getConfig()->getPath('system').'/auth/adapters/';
+        $dh = opendir($path);
+        $result = array();
+        while (($f = readdir($dh)) !== false) {
+            if ($f === '.' || $f === '..' || is_dir($path.$f)) {
+                continue;
+            } elseif (substr($f, -14) == 'Auth.class.php') {
+                require_once($path.$f);
+                $id = substr($f, 0, -14);
+                $class_name = $id."Auth";
+                $result[$id] = new $class_name(array('app_id' => '', 'app_secret' => ''));
+            }
+        }
+        closedir($dh);
+        return $result;
     }
     
     

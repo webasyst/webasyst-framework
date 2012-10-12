@@ -15,6 +15,7 @@ class siteDomainsSaveController extends waJsonController
         $data['name'] = $name;
 
         $this->response['id'] = $domain_model->insert($data);
+        $this->log('site_add');
         // add default routing
         $path = $this->getConfig()->getPath('config', 'routing');
         if (file_exists($path)) { 

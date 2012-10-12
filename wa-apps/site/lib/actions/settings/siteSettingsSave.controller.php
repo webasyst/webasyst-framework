@@ -26,13 +26,21 @@ class siteSettingsSaveController extends waJsonController
             $domain_config = include($domain_config_path);
         } else {
             $domain_config = array();
-        }        
-        
-        $title = waRequest::post('title');
-        if ($title != siteHelper::getDomain('title')) {
-            $domain_model = new siteDomainModel();
-            $domain_model->updateById(siteHelper::getDomainId(), array('title' => $title));
         }
+
+        $title = waRequest::post('title');
+        $style = waRequest::post('background');
+        if (!$style || substr($style, 0, 1) == '.') {
+            if ($s = $this->saveBackground()) {
+                $style = '.'.$s;
+            }
+        }
+        $domain_model = new siteDomainModel();
+        $domain_model->updateById(siteHelper::getDomainId(), array(
+            'title' => $title,
+            'style' => $style
+        ));
+
         $save_config = false;
         if ($title) {
             $domain_config['name'] = $title;
@@ -66,9 +74,17 @@ class siteSettingsSaveController extends waJsonController
                 $save_config = true;
             }
         }
+
+        // save other settings
+        foreach (array('head_js', 'google_analytics') as $key) {
+            if (!empty($domain_config[$key]) || waRequest::post($key)) {
+                $domain_config[$key] = waRequest::post($key);
+                $save_config = true;
+            }
+        }
         
         if ($save_config && !waUtils::varExportToFile($domain_config, $domain_config_path)) {
-            $this->errors = sprintf(_w('Navigation menu could not be saved due to the insufficient file write permissions for the "%s" folder.'), 'wa-config/apps/site/domains');
+            $this->errors = sprintf(_w('Settings could not be saved due to the insufficient file write permissions for the "%s" folder.'), 'wa-config/apps/site/domains');
         }
         
         
@@ -76,7 +92,7 @@ class siteSettingsSaveController extends waJsonController
         $this->saveRobots();
 
         $this->saveAuthSettings();
-
+        $this->log('site_edit');
     }
 
     protected function saveAuthSettings()
@@ -110,10 +126,46 @@ class siteSettingsSaveController extends waJsonController
                 unset($config[$domain]['signup_captcha']);
             }
         }
+        // save auth adapters
+        if (waRequest::post('auth_adapters') && waRequest::post('adapter_ids')) {
+            $config[$domain]['adapters'] = array();
+            $adapters = waRequest::post('adapters', array());
+            foreach (waRequest::post('adapter_ids') as $adapter_id) {
+                $config[$domain]['adapters'][$adapter_id] = $adapters[$adapter_id];
+            }
+        } else {
+            if (isset($config[$domain]['adapters'])) {
+                unset($config[$domain]['adapters']);
+            }
+        }
         if (!$this->getConfig()->setAuth($config)) {
             $this->errors = sprintf(_w('File could not be saved due to the insufficient file write permissions for the "%s" folder.'), 'wa-config/');
         }
     }
+
+
+    protected function saveBackground()
+    {
+        $background = waRequest::file('background_file');
+        if ($background && $background->uploaded()) {
+            $allowed = array('jpg', 'jpeg', 'png', 'gif');
+            if (!in_array($background->extension, $allowed)) {
+                $this->errors = sprintf(_ws("Files with extensions %s are allowed only."), '*.'.implode(', *.', $allowed));
+            } else {
+                $path = wa()->getDataPath('background/', true);
+                $ext = $background->extension;
+                if (!file_exists($path) || !is_writable($path)) {
+                    $this->errors = sprintf(_w('File could not be saved due to the insufficient file write permissions for the "%s" folder.'), 'wa-data/public/site/data/'.siteHelper::getDomain());
+                } elseif (!$background->moveTo($path, siteHelper::getDomainId().'.'.$ext)) {
+                    $this->errors = _w('Failed to upload file.');
+                } else {
+                    return $ext;
+                }
+            }
+        }
+        return false;
+    }
+
     
     protected function saveFavicon()
     {

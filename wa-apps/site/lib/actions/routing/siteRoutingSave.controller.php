@@ -35,6 +35,7 @@ class siteRoutingSaveController extends waJsonController
             $this->response['route'] = $route;
             $this->response['url'] = htmlspecialchars($url);
             $this->save($domain, $routes);
+            $this->log('route_add');
         } elseif (($redirect = waRequest::post('redirect')) !== null) {
             $route = waRequest::post('route');
             if ($route !== null) {
@@ -57,14 +58,33 @@ class siteRoutingSaveController extends waJsonController
             $this->response['url'] = htmlspecialchars($url);
             $this->response['redirect'] = htmlspecialchars($redirect);
             $this->save($domain, $routes);
+            $this->log('route_edit');
         } elseif (($route = waRequest::post('route')) !== null) {
             if (isset($routes[$route]) && $routes[$route]['url'] != $url) {
+                $this->updatePagesRoute($routes[$route], $url);
                 $routes[$route]['url'] = $url;
                 $this->save($domain, $routes);
+                $this->log('route_edit');
             }
             $this->response['route'] = $route; 
             $this->response['url'] = htmlspecialchars($url);
         }
+    }
+
+    protected function updatePagesRoute($route, $url)
+    {
+        $app = wa()->getAppInfo($route['app']);
+        if (empty($app['pages'])) {
+            return;
+        }
+        // init app
+        wa($app['id']);
+        $class = $app['id'].'PageModel';
+        /**
+         * @var waPageModel $model
+         */
+        $model = new $class();
+        $model->updateRoute(siteHelper::getDomain(), $route['url'], $url);
     }
     
     protected function getRouteCount($routes) 
