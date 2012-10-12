@@ -9,7 +9,7 @@
 $path = realpath(dirname(__FILE__)."/../../../../../");
 $config_path =$path."/wa-config/SystemConfig.class.php";
 if (!file_exists($config_path)) {
-    header("Location: ../../../../../wa-apps/photos/img/image-not-found.png");
+    header("Location: ../../../../../../wa-apps/photos/img/image-not-found.png");
     exit;
 }
 

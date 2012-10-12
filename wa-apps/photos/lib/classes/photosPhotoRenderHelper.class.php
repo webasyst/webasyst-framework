@@ -125,7 +125,7 @@ class photosPhotoRenderHelper
     private function renderAlbums()
     {
         $album_photos_model = new photosAlbumPhotosModel();
-        $albums = $album_photos_model->getAlbums($this->photo['id'], array('id', 'name', 'full_url'));
+        $albums = $album_photos_model->getAlbums($this->photo['id'], array('id', 'name', 'full_url'), true);
         $albums = isset($albums[$this->photo['id']]) ? $albums[$this->photo['id']] : array();
 
         return $this->renderer->getAlbums($albums);

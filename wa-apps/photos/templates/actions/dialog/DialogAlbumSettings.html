@@ -20,8 +20,12 @@
                                 [`Frontend URL`]
                             </div>
                             <div class="value">
-                                {if $album.full_base_url}{$album.full_base_url}{/if}<input type="text" name="url" value="{$album.url}">/
-                                <em class="errormsg"></em>
+                                {if isset($album.full_base_url)}
+                                    {if $album.full_base_url}{$album.full_base_url}{/if}<input type="text" name="url" value="{$album.url}">/
+                                {else}
+                                    <span class="hint">[`This album will not be visible in the public gallery because there are no routing rules for the Photos app in your website settings. Use Site app (Routing section) to settle Photos app on your website and to start publishing photos.`]</span>
+                                    <em class="errormsg"></em>
+                                {/if}
                             </div>
                         </div>
                     </div>
@@ -168,8 +172,7 @@
                                 </label>
                             </div>
                             <div class="value">
-                                <textarea id="custom-settings" name="params" rows="10" cols="5">{if $params}{foreach $params as $k=>$v}{if $k!='order'}{$k}={$v|escape}
-    {/if}{/foreach}{/if}</textarea><br>
+                                <textarea id="custom-settings" name="params" rows="10" cols="5">{if $params}{foreach $params as $k=>$v}{if $k!='order'}{$k}={$v|escape|cat:"\n"}{/if}{/foreach}{/if}</textarea><br>
                                 <span class="hint">[`Optional set of custom <em>key=value</em> parameters which can be used within a frontend's theme template as <em>&#123;$album.key&#125;</em>. Each key=value pair should be on a separate line.`]</span>
                             </div>
                         </div>

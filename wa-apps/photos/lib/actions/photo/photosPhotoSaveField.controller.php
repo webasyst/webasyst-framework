@@ -63,6 +63,7 @@ class photosPhotoSaveFieldController extends waJsonController
                     // change count of rated
                     if ($name == 'rate') {
                         $this->response['count'] = $this->photo_model->countRated();
+                        $this->log('photos_rate', 1);
                     }
                 } else {
                     // update only parent photo(s)

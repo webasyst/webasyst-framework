@@ -5,6 +5,7 @@ class photosDefaultFrontendLayout extends waLayout
     public function execute()
     {
         $action = waRequest::param('action', 'default');
+        $disable_sidebar = waRequest::param('disable_sidebar', false);
         $this->view->assign('action', $action);
 
         $this->view->assign('breadcrumbs', waRequest::param('breadcrumbs', array()));
@@ -15,6 +16,7 @@ class photosDefaultFrontendLayout extends waLayout
         }
 
         $this->view->assign('nofollow', waRequest::param('nofollow', false));
+        $this->view->assign('disable_sidebar', $disable_sidebar);
 
         /**
          * Include plugins js and css
@@ -29,6 +31,15 @@ class photosDefaultFrontendLayout extends waLayout
          * @return array[string][string]string $return[%plugin_id%]['footer'] Footer section
          */
         $this->view->assign('frontend_layout', wa()->event('frontend_layout'));
+
+
+        /**
+         * @event frontend_sidebar
+         * @return array[string][string]string $return[%plugin_id%]['menu'] Sidebar menu item
+         * @return array[string][string]string $return[%plugin_id%]['section'] Sidebar section item
+         */
+        $this->view->assign('frontend_sidebar', wa()->event('frontend_sidebar'));
+
         $this->setThemeTemplate('index.html');
     }
 }

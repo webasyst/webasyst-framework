@@ -53,6 +53,7 @@ class photosImageeffectsPluginBackendController extends waJsonController
                 $photo['original_exists'] = false;
             }
             $this->response['photo'] = $photo;
+            $this->log('photo_edit', 1);
         }
     }
 }

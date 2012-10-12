@@ -121,16 +121,18 @@
 {capture name="template-photo-content-control"}{literal}
     {% var photo = o.photo, frontend_link_template = o.frontend_link_template; %}
     <li class="p-inline-mixed-string">
-        {% if (photo.status <= 0) { %}
-            <i class="icon10 lock-bw"></i>
-            <span class="hink">[`Private link`]: <a id="photo-frontend-link" target="_blank" href="{%#frontend_link_template.replace('%url%', photo.private_url)%}" class="gray">{%#frontend_link_template.replace('%url%', photo.private_url)%}</a></span>
-        {% } else { %}
-            [`Public link`]:
-            <a id="photo-frontend-link" target="_blank" href="{%#frontend_link_template.replace('%url%', photo.url)%}">{%#frontend_link_template.replace('%url%/', '<span id="photo-frontend-url">%url%</span>').replace('%url%', photo.url+'/')%}</a><input type="text" id="photo-frontend-url-input" style="display:none;"><span class="slash" style="display:none;">/<em class="errormsg" style="display:none;"></em></span>
-            <i class="icon10 new-window"><!-- icon --></i>
-            <a href="javascript:void(0);" class="gray inline-link" id="photo-frontend-url-edit-link">
-                <i class="icon10 edit"></i><b><i>edit</i></b>
-            </a>
+        {% if (o.frontend_link_template) { %}
+            {% if (photo.status <= 0) { %}
+                <i class="icon10 lock-bw"></i>
+                <span class="hink">[`Private link`]: <a id="photo-frontend-link" target="_blank" href="{%#frontend_link_template.replace('%url%', photo.private_url)%}" class="gray">{%#frontend_link_template.replace('%url%', photo.private_url)%}</a></span>
+            {% } else { %}
+                [`Public link`]:
+                <a id="photo-frontend-link" target="_blank" href="{%#frontend_link_template.replace('%url%', photo.url)%}">{%#frontend_link_template.replace('%url%/', '<span id="photo-frontend-url">%url%</span>').replace('%url%', photo.url+'/')%}</a><input type="text" id="photo-frontend-url-input" style="display:none;"><span class="slash" style="display:none;">/<em class="errormsg" style="display:none;"></em></span>
+                <i class="icon10 new-window"></i>
+                <a href="javascript:void(0);" class="gray inline-link" id="photo-frontend-url-edit-link">
+                    <i class="icon10 edit"></i><b><i>edit</i></b>
+                </a>
+            {% } %}
         {% } %}
     </li>
 {/literal}{/capture}
@@ -292,7 +294,7 @@
         <a href="{%#o.author.backend_url%}" title="{%#$_('Photo downloaded by') + ' ' + o.author.name + ' ' + o.photo.upload_datetime_formatted %}"><img src="{%#o.author.photo_url%}"></a>
     </div>
     <div class="details">
-        <a href="index.php?app=contacts">{%#o.author.name%}</a><br>[`uploaded on`] {%#o.photo.upload_datetime_formatted %}
+        <a href="{/literal}{$wa_backend_url}contacts/#/contact/{literal}{%#o.author.id%}">{%#o.author.name%}</a><br>[`uploaded on`] {%#o.photo.upload_datetime_formatted %}
     </div>
 {/literal}
 {/capture}

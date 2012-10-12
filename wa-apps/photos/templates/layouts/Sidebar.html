@@ -58,7 +58,10 @@
   <div class="block">
     <ul class="menu-v with-icons">
       {if $wa->user()->getRights($wa->app(), 'pages')}
-      <li id="sidebar-pages"><a href="#/pages/"><i class="icon16 notebook"><!-- icon --></i>[s`Pages`]</a></li>
+      <li id="sidebar-pages"><a href="#/pages/"><i class="icon16 notebook"></i>[s`Pages`]</a></li>
+      {/if}
+      {if $wa->user()->getRights($wa->app(), 'design')}
+      <li id="sidebar-design"><a href="#/design/"><i class="icon16 design"></i>[s`Design`]</a></li>
       {/if}
       <li id="sidebar-plugins"><a href="#/plugins/"><i class="icon16 plugins"></i>[`Plugins`]</a></li>
       <li id="sidebar-settings"><a href="#/settings/"><i class="icon16 settings"></i>[`Settings`]</a></li>

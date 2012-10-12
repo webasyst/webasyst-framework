@@ -500,7 +500,7 @@ class photosCollection
             $params[$hash[0]] = $hash[0];
         }
         $link = wa()->getRouteUrl('photos/frontend', $params, true);
-        return rtrim($link, '/').'/';
+        return $link ? rtrim($link, '/').'/' : null;
     }
 
     private function setAlbum($album)
@@ -630,6 +630,9 @@ class photosCollection
                                         break;;
                                     case 'big':
                                         $size = photosPhoto::getBigPhotoSize();
+                                        break;
+                                    case 'mobile':
+                                        $size = photosPhoto::getMobilePhotoSize();
                                         break;
                                 }
                             }

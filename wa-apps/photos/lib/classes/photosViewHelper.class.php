@@ -15,7 +15,7 @@ class photosViewHelper extends waAppViewHelper
      *
      * @return array
      */
-    public function photos($hash, $size = null, $offset = null, $limit = null)
+    public function photos($hash = '', $size = null, $offset = null, $limit = null)
     {
         $size = !is_null($size) ? $size : photosPhoto::getThumbPhotoSize();
         $collection = new photosCollection($hash);
@@ -27,7 +27,7 @@ class photosViewHelper extends waAppViewHelper
             $offset = 0;
             $limit = 500;
         }
-        return $collection->getPhotos("*,thumb_".$size, $offset, $limit, true);
+        return $collection->getPhotos("*,frontend_link,thumb_".$size, $offset, $limit, true);
     }
 
     /**
@@ -89,7 +89,7 @@ class photosViewHelper extends waAppViewHelper
         $attributes['data-size'] = $size;
         $attributes['data-photo-id'] = $photo['id'];
         $attributes['class'] = !empty($attributes['class']) ? $attributes['class'] : '';
-        $attributes['class'] .= ' photo';    // !Important: obligatory class. Need in frontend JS
+        $attributes['class'] .= ' photo_img';    // !Important: obligatory class. Need in frontend JS
         return photosPhoto::getEmbedImgHtml($photo, $size, $attributes);
     }
 }

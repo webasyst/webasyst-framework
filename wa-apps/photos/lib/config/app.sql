@@ -111,9 +111,13 @@ CREATE TABLE IF NOT EXISTS `photos_photo_rights` (
 DROP TABLE IF EXISTS `photos_page`;
 CREATE TABLE IF NOT EXISTS `photos_page` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
+  `parent_id` int(11) DEFAULT NULL,
+  `domain` varchar(255) DEFAULT NULL,
+  `route` varchar(255) DEFAULT NULL,
   `name` varchar(255) NOT NULL,
   `title` varchar(255) NOT NULL DEFAULT '',
   `url` varchar(255) DEFAULT NULL,
+  `full_url` varchar(255) DEFAULT NULL,
   `content` text NOT NULL,
   `create_datetime` datetime NOT NULL,
   `update_datetime` datetime NOT NULL,

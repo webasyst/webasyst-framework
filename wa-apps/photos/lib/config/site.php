@@ -118,5 +118,40 @@ return array(
                 '...' => _w('Available vars are listed in the cheat sheet for photo.html template')
             )
         ),
+    ),
+    'blocks' => array(
+        'latest_photos' => array(
+            'description' => _w('Latest uploaded photos'),
+            'content' => '{$photos = $wa->photos->photos()}
+<style>
+  ul.view-thumbs { list-style: none; padding: 0;
+margin: 0; }
+  ul.view-thumbs li { display: inline-block; position: relative; vertical-align: top; width: 250px; margin-right: 20px; margin-bottom: 30px; }
+  ul.view-thumbs li a { text-decoration:none; }
+  ul.view-thumbs li .image { position: relative; display: inline-block; max-width: 100%;}
+  ul.view-thumbs li .image img { max-width: 100%; height: auto !important; }
+  ul.view-thumbs li h5 { font-size: 1.1em; }
+  ul.view-thumbs li img.shadowed { -moz-box-shadow: 0 1px 3px #aaa; -webkit-box-shadow: 0 1px 3px #AAA; box-shadow: 0 1px 3px #AAA; margin-bottom: 5px; }
+</style>
+<ul class="view-thumbs">
+{foreach from=$photos item=photo}
+  <li{if $photo.stack_count > 0} class="stacked"{/if}>
+    <div class="image">
+    {if empty($photo.frontend_link)}
+      {$wa->photos->getImgHtml($photo, "200x0", ["class"=>"shadowed"])}
+    {else}
+      <a href="{$photo.frontend_link|default:\'#\'}">
+        {$wa->photos->getImgHtml($photo, "200x0", ["class"=>"shadowed"])}
+      </a>
+    {/if}
+    </div>
+    <h5>{$photo.name}</h5>
+    {if $photo.description}
+      <p>{$photo.description}</p>
+    {/if}
+  </li>
+{/foreach}
+</ul>'
+        )
     )
 );

@@ -7,6 +7,7 @@
                 <h1>[`Share photo`]</h1>
                 <div class="fields form p-dialog-form">
                     <div class="field-group">
+                        {if $photo.frontend_link}
                         <div class="field">
                             <div class="name">
                                 <strong>[`Link`]</strong>
@@ -16,6 +17,7 @@
                                 <a href="{$photo.frontend_link}" target="_blank"><i class="icon16 new-window"></i></a>
                             </div>
                         </div>
+                        {/if}
                         <div class="field">
                             <div class="name">
                                 <strong>[`HTML`]</strong>

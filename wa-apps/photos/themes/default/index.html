@@ -3,7 +3,11 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>{$wa->title()}</title>
-    <link href="{$wa_theme_url}default.css" rel="stylesheet" type="text/css">
+    <link href="{$wa_theme_url}default.css?{$wa->version()}" rel="stylesheet" type="text/css">
+    {if $wa->isMobile()}
+        <link href="{$wa_theme_url}mobile.css?{$wa->version()}" rel="stylesheet" type="text/css">
+        <meta name="viewport" content="width=device-width; initial-scale=1; maximum-scale=1; user-scalable=0;">
+    {/if}
     <script type="text/javascript" src="{$wa_url}wa-content/js/jquery/jquery-1.7.1.min.js"></script>
     <script type="text/javascript" src="{$wa_url}wa-content/js/jquery-wa/wa.core.js"></script>
     {if $nofollow}
@@ -40,18 +44,25 @@
         {foreach $frontend_layout as $item}{if !empty($item.header)}{$item.header}{/if}{/foreach}
         <div class="container app-header">
             {if isset($breadcrumbs)}
-            <div class="breadcrumps">
-                <a href="{$wa_app_url}">[`Photos`]</a>
+            <div class="breadcrumbs">
+                <a href="{$wa_app_url}">{$wa->param('_name', '[`Photos`]')}</a>
                 {if $breadcrumbs}
-                    {foreach $breadcrumbs as $breadcrump}
-                        » <a href="{$breadcrump.full_url}">{$breadcrump.name}</a>
+                    {foreach $breadcrumbs as $breadcrumb}
+                        » <a href="{$breadcrumb.full_url}">{$breadcrumb.name}</a>
                     {/foreach}
                 {else} » {/if}
             </div>
             {/if}
         </div>
         <div class="container"{if $action == 'photo'} itemscope itemtype="http://schema.org/Photograph"{/if}>
-            {$content}
+            {if !$disable_sidebar}
+            <div class="sidebar left">
+                {include file='sidebar.html' inline}
+            </div>
+            {/if}
+            <div class="content {if empty($disable_sidebar)}left{/if}">
+                {$content}
+            </div>
         </div>
     </div>
     <div id="footer">
@@ -61,8 +72,6 @@
             </div>
             <div id="copyright">&copy; {time()|wa_datetime:"Y"} <a href="{$wa_url}">{$wa->accountName()}</a></div>
         </div>
-        {* @event frontend_layout.%plugin_id%.footer *}
-        {foreach $frontend_layout as $item}{if !empty($item.footer)}{$item.footer}{/if}{/foreach}
     </div>
 </body>
 </html>

@@ -1,21 +1,60 @@
-{if $require_authorization && !$comment_author}
-<div class="comment-form">
-	<h4>[`Add comment`]</h4>
-	{sprintf('[`To add a comment please <a href="%s">sign up</a> or <a href="%s">login</a>`]',$wa->signupUrl(),$wa->loginUrl())}
-</div>
-{else}
+<script type="text/javascript">
+$(document).ready(function() {
+    var form = $('#add-comment-form');
+    var provider_list = $('#user-auth-provider');
+    
+    provider_list.find('a').click(function () {
+        var self = $(this);
+        var li = self.parents('li:first');
+        var provider = li.attr('data-provider');
+        if (provider != 'guest' && provider != 'signup') {
+            var left = (screen.width-600)/2;
+            var top = (screen.height-400)/2;
+            window.open(self.attr('href'){if !$require_authorization} + "&guest=1"{/if},'oauth', "width=600,height=400,left="+left+",top="+top+",status=no,toolbar=no,menubar=no");
+        } else if (provider == 'guest') {
+            provider_list.find('li.selected').removeClass('selected');
+            li.addClass('selected');
+            
+            var tabs = form.find('.tab');
+            tabs.hide();
+            tabs.find('input').attr('disabled', true);
+            tabs.filter('[data-provider=guest]').show().find('input').attr('disabled', false);
+            
+            form.find('input[name=auth_provider]').val(provider);
+            $('.wa-captcha').show();
+            
+        }
+        return false;
+    })
+    var provider = $('#user-auth-provider .selected').attr('data-provider') || 'guest';
+    if (provider != 'guest') {
+        $('.wa-captcha').hide();
+    }
+});
+</script>
 <div class="comment-form" id="add-comment-form">
     <form action="" method="post">
         <h4>[`Add comment`]</h4>
         {$current_user_id=$wa->userId()}
-
         <div class="comment-form-fields">
-            {if empty($current_user_id)}
+            {if empty($comment_author)}
                 {if $require_authorization}
                 <div data-provider="signup" {if !$current_auth_source}style="display:none"{/if}>
                     {sprintf('[`To add a comment please <a href="%s">sign up</a> or <a href="%s">login</a>`]',$wa->signupUrl(),$wa->loginUrl())}
                 </div>
-                {else}
+                {else if $auth_adapters}
+                    <ul class="menu-h auth-type" id="user-auth-provider">
+                        {if $require_authorization}
+                        <li data-provider="signup" {if !$current_auth_source}class="selected"{/if}><a href="#">[`Sign up`]</a></li>
+                        {else}
+                        <li data-provider="guest" {if !$current_auth_source}class="selected"{/if}><a href="#">[`Guest`]</a></li>
+                        {/if}
+                        {foreach $auth_adapters as $adapter}
+                        {$adapter_id = $adapter->getId()}
+                        <li data-provider="{$adapter_id}" {if $current_auth_source == $adapter_id}class="selected"{/if}><a href="{$adapter->getCallbackUrl(0)}&app=photos"><img src="{$adapter->getIcon()}" alt="">{$adapter->getName()}</a></li>
+                        {/foreach}
+                    </ul>
+                {/if}
                 <div class="tab clear-left" data-provider="guest" {if !empty($current_auth_source)}style="display:none"{/if}>
                     <p>
                         <label for="comment_name">[`Your name`]</label>
@@ -30,22 +69,27 @@
                         <input type="text" name="site" id="comment_site">
                     </p>
                 </div>
+                {if $require_authorization}
+                <div class="tab" data-provider="signup" {if $current_auth_source != 'signup'}style="display:none"{/if}>
+                    {sprintf('[`To add a comment please <a href="%s">sign up</a> or <a href="%s">login</a>`]',$wa->signupUrl(),$wa->loginUrl())}
+                </div>
                 {/if}
-                {$auth_adapters = array()}
                 {foreach $auth_adapters as $adapter}
-                    <div class="tab" data-provider="{$adapter->getId()}" {if $current_auth_source != $adapter->getId()}style="display:none"{/if}>
-                        <p>
-                            <label for="name">[`Your name`]</label>
-                            <img src="{$comment_author.photo}" class="userpic">
-                            <strong>{$comment_author.name|escape}</strong>
-                            <a href="{$wa_app_url}logout">[`log out`]</a>
-                        </p>
-                    </div>
+                    {if $current_auth_source == $adapter->getId()}
+                        <div class="tab" data-provider="{$current_auth_source}">
+                            <p>
+                                <label for="name">[`Your name`]</label>
+                                <img src="{$adapter->getIcon()}" class="userpic">
+                                <strong>{$current_auth.name|escape}</strong>
+                                <a href="{$wa_app_url}logout/">[`log out`]</a>
+                            </p>
+                        </div>
+                    {/if}
                 {/foreach}
             {else}
                 <p>
                     <label>[`Your name`]</label>
-                    <img src="{$wa->user()->getPhoto(20)}" class="userpic" alt=""> <strong>{$wa->user('name')}</strong> <a href="{$wa_app_url}logout">[`log out`]</a>
+                    <img src="{$wa->user()->getPhoto(20)}" class="userpic" alt=""> <strong>{$wa->user('name')}</strong> <a href="{$wa_app_url}logout/">[`log out`]</a>
                 </p>
             {/if}
 
@@ -55,12 +99,10 @@
             </p>
         </div>
         <div class="comment-submit">
-            {if (!isset($request_captcha)||$request_captcha) && empty($current_user_id)}
+            {if empty($comment_author)}
                 {$wa->captcha()}
             {/if}
-            {*
             <input type="hidden" name="auth_provider" value="{$current_auth_source|default:'guest'}">
-            *}
             <input type="hidden" name="comment_id" id="comment-id" value="0">
             <input type="hidden" name="photo_id" id="photo-id" value="{$photo_id}">
             <input id="add-comment-button" type="button" value="[`Add comment`]" /> <em class="hint">Ctrl+Enter</em>
@@ -68,4 +110,3 @@
         </div>
     </form>
 </div>
-{/if}

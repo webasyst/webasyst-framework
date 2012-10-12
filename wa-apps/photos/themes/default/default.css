@@ -82,10 +82,11 @@ i.icon16 { background-repeat:no-repeat; height:16px; width:16px; display:inline-
 ul.menu-v { margin: 0 0 20px -6px; padding: 0; }
 ul.menu-v li { list-style: none; padding: 0; margin: 3px 0 8px; line-height: 1.1em; }
 ul.menu-v li a { padding: 5px 6px; display: block;}
-ul.menu-v li ul { padding-left: 15px; margin-bottom: 5px; }
-ul.menu-v li ul li { margin: 1px 0 2px; }
 ul.menu-v li.selected a { color: #000; text-decoration: none; background: #eee; }
 ul.menu-v li.selected ul li a { background: inherit; color: #03c; text-decoration: underline; }
+ul.menu-v li ul.menu-v { margin-left: 10px; margin-top: 5px; margin-bottom: 15px; }
+ul.menu-v li ul.menu-v li a { padding: 2px 6px; font-size: 0.9em; }
+ul.menu-v li ul.menu-v li ul.menu-v li a { font-size: 0.8em; }
 
 ul.menu-h { margin-left: -5px; padding: 0; }
 ul.menu-h li { list-style: none; float: left; padding: 0 10px 0 0; }
@@ -139,7 +140,7 @@ ul.menu-h li.selected ul * { background: #fff !important; }
 .content.right300px { margin-right: 300px; }
 .sidebar p { line-height: 1.3em; }
 
-.breadcrumps { padding-top: 20px; }
+.breadcrumbs { padding-top: 20px; }
 
 h1.search-criteria { margin-bottom: 1em; }
 .album-note { display: block; margin-top: -10px; color: #aaa; font-style: italic; }
@@ -249,7 +250,6 @@ ul.view-thumbs li p { font-size: 0.9em; line-height: 1.3em; }
 .comment-form ul.menu-h.auth-type li a img { float: left; margin-right: 3px; position: relative; top: 2px; }
 .comment-form ul.menu-h.auth-type { padding-bottom: 20px; }
 .comment-form label { width: 160px; display: block; clear: left; float: left; margin: 0 10px 0 0; color: #AAA; }
-.comment-form input[type=text] { width: 20em; }
 
 .comments { margin-bottom: 30px; }
 .comments h3 { margin: 0 0 20px; }

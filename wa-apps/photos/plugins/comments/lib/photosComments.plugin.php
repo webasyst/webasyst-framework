@@ -17,6 +17,7 @@ class photosCommentsPlugin extends photosPlugin
             'comments'=> $this->comment()->getFullTree($photo_id, $options),
             'comments_count' => (int)$this->comment()->getCounters(null, $photo_id),
             'photo_comments_new_count'=> (isset($counters[$photo_id]) ? $counters[$photo_id] : 0),
+            'contact_rights' => wa()->getUser()->getRights('contacts', 'backend')
         ));
         return array(
             'bottom' => $this->view()->fetch($this->path.'/templates/BackendPhoto.html'),
@@ -79,6 +80,7 @@ class photosCommentsPlugin extends photosPlugin
 
     public function frontendPhoto($photo)
     {
+        $this->view = $this->view();
         $photo_model = new photosPhotoModel();
         $photo_id = $photo['id'];
         if ($parent_id = $photo_model->getStackParentId($photo)) {
@@ -88,17 +90,41 @@ class photosCommentsPlugin extends photosPlugin
             'author' => true
         ));
 
+        $storage = wa()->getStorage();
+
+        $adapters = array();
+        $current_auth = null;
+        $current_auth_source = null;
+
         $user = wa()->getUser();
         if ($user->isAuth()) {
             $comment_author = photosCommentModel::getAuthorInfo($user->getId(), photosCommentModel::BIG_AUTHOR_PHOTO_SIZE);
-            $this->view()->assign('comment_author', $comment_author);
+            $storage->del('auth_user_data');
+            $this->view->assign('comment_author', $comment_author);
         } else {
-            $this->view()->assign('comment_author', null);
+
+            $current_auth = $storage->read('auth_user_data');
+
+            $adapters = wa()->getAuthAdapters();
+            if (!$adapters && $current_auth) {
+                $current_auth = null;
+                $storage->del('auth_user_data');
+            }
+
+            $current_auth_source = $current_auth ? $current_auth['source'] : null;
+
+            $this->view->assign('comment_author', null);
         }
 
-        $this->view()->assign('require_authorization', $this->getSettings('require_authorization'));
-        $this->view()->assign('comments', $comments);
-        $this->view()->assign('photo_id', $photo_id);
+        $app_url = wa()->getAppStaticUrl();
+
+        $this->view->assign('current_auth_source', $current_auth_source);
+        $this->view->assign('current_auth', $current_auth);
+
+        $this->view->assign('auth_adapters', $adapters);
+        $this->view->assign('require_authorization', $this->getSettings('require_authorization'));
+        $this->view->assign('comments', $comments);
+        $this->view->assign('photo_id', $photo_id);
 
         return array(
             'bottom' => $this->view()->fetch($this->path.'/templates/FrontendPhoto.html')

@@ -23,9 +23,11 @@ class photosDialogAlbumSettingsAction extends waViewAction
 
 
         $absolute_full_url = photosFrontendAlbum::getLink($album);
-        $pos = strrpos($absolute_full_url, $album['url']);
-        $full_base_url = $pos !== false ? rtrim(substr($absolute_full_url, 0, $pos),'/').'/' : '';
-        $album['full_base_url'] = $full_base_url;
+        if ($absolute_full_url) {
+            $pos = strrpos($absolute_full_url, $album['url']);
+            $full_base_url = $pos !== false ? rtrim(substr($absolute_full_url, 0, $pos),'/').'/' : '';
+            $album['full_base_url'] = $full_base_url;
+        }
         $this->view->assign('album', $album);
 
         $collection = new photosCollection('album/'.$id);

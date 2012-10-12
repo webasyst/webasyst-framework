@@ -1,14 +1,24 @@
 {if isset($comment) && $comment}
     {if !empty($wrap_li)}<li id="comment-{$comment.id}">{/if}
         <div class="p-comment {if $comment.status == photosCommentModel::STATUS_DELETED}p-delete{/if}">
-
-            {strip}
-                <a href="{if !empty($comment.author.site)}{$comment.author.site}{else}javascript:void(0);{/if}" class="p-comment-author">
-                    <i class="icon16 userpic20" style="background-image: url('{if isset($comment.author.photo) && $comment.author.photo}{$comment.author.photo}{else}/wa-content/img/userpic20.jpg{/if}');"></i>
-                    {$comment.author.name|escape}
-                </a>
-            {/strip}
-            <span class="hint">{$comment.datetime|wa_datetime:'humandatetime'}</span>
+        
+            {capture name=author_name}{strip}
+                <i class="icon16 userpic20" style="background-image: url('{if isset($comment.author.photo) && $comment.author.photo}{$comment.author.photo}{else}/wa-content/img/userpic20.jpg{/if}');"></i>
+                {$comment.author.name|escape}
+            {/strip}{/capture}
+            
+            {if $contact_rights && !empty($comment.author.id)}
+              <a href="{$wa_backend_url}contacts/#/contact/{$comment.author.id}" class="bold">{$smarty.capture.author_name}</a>
+            {elseif $comment.site}
+              <a href="{$comment.site}">{$smarty.capture.author_name}</a>
+            {else}
+              {$smarty.capture.author_name}
+            {/if}
+            
+            {if !$comment.author.id && $comment.email}
+              <span class="hint">{$comment.email|escape}</span>
+            {/if}
+            <span class="hint">{$comment.datetime|wa_datetime:'humandatetime'}{if $comment.ip}, {long2ip($comment.ip)}{/if}</span>
             <a href="javascript:void(0);" class="small p-comment-delete" {if $comment.status == photosCommentModel::STATUS_DELETED}style="display:none"{/if}>[`delete`]</a>
             <a href="javascript:void(0);" class="small p-comment-restore" {if $comment.status == photosCommentModel::STATUS_PUBLISHED}style="display:none"{/if}>[`restore`]</a>
 

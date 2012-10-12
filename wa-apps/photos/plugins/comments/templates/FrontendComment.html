@@ -14,9 +14,9 @@
         </div>
         <div class="text" itemprop="commentText">{$comment.text|escape|nl2br}</div>
         <div class="actions">
-			{if empty($require_authorization) || !$require_authorization || $comment_author}
+            {if empty($require_authorization) || !$require_authorization || $comment_author}
                 <a href="javascript:void(0);" class="inline-link comment-reply"><b><i>[`reply`]</i></b></a>
-        	{/if}
+            {/if}
         </div>
     </div>
     {if isset($wrap_li) && $wrap_li}</li>{/if}

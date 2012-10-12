@@ -79,6 +79,7 @@ class photosPhotoRotateController extends waJsonController
                             $photo['original_exists'] = false;
                         }
                         $this->response['photo'] = $photo;
+                        $this->log('photo_edit', 1);
 
                         $obligatory_sizes = $this->getConfig()->getSizes();
                         try {

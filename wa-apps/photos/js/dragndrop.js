@@ -460,7 +460,8 @@
                         if (self.children('ul').length) {
                             list =  self.children('ul');
                         } else {
-                            list = $('<ul class="menu-v with-icons dr"></ul>').appendTo(self);
+                            list = $('<ul class="menu-v with-icons dr"><li class="drag-newposition"></li></ul>').appendTo(self);
+                            list.find('.drag-newposition').mouseover(); // init droppable
                             $('<i class="icon16 darr overhanging"></i>').insertBefore(self.children('a'));
                         }
                     }

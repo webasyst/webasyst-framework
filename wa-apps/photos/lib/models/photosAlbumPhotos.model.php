@@ -105,7 +105,7 @@ class photosAlbumPhotosModel extends waModel
         return array_keys($photo_model->getPhotos((array)$photo_id));
     }
 
-    public function getAlbums($photo_id, $fields = null)
+    public function getAlbums($photo_id, $fields = null, $public_only = false)
     {
         if ($fields) {
             if (is_array($fields)) {
@@ -121,18 +121,23 @@ class photosAlbumPhotosModel extends waModel
 
         $sql = "SELECT $fields, ap.photo_id FROM {$this->table} ap INNER JOIN photos_album a ON a.id = ap.album_id";
 
-        $user = wa()->getUser();
-        $sql .= " JOIN photos_album_rights r ON a.id = r.album_id AND ";
-        if ($user->isAdmin('photos')) {
-            $sql .= '(r.group_id >= 0 OR r.group_id = -'.$user->getId().')';
+        if ($public_only) {
+            $sql .= " WHERE a.status = 1 AND a.type = " . photosAlbumModel::TYPE_STATIC;
         } else {
-            $group_ids = $user->getGroups();
-            $group_ids[] = 0;
-            $group_ids[] = -$user->getId();
-            $sql .= 'r.group_id IN ('.implode(",", $group_ids).')';
+            $user = wa()->getUser();
+            $sql .= " JOIN photos_album_rights r ON a.id = r.album_id AND ";
+            if ($user->isAdmin('photos')) {
+                $sql .= '(r.group_id >= 0 OR r.group_id = -'.$user->getId().')';
+            } else {
+                $group_ids = $user->getGroups();
+                $group_ids[] = 0;
+                $group_ids[] = -$user->getId();
+                $sql .= 'r.group_id IN ('.implode(",", $group_ids).')';
+            }
+            $sql .= " WHERE 1";
         }
         if ($where = $this->getWhereByField('photo_id', $photo_id)) {
-            $sql .= " WHERE $where";
+            $sql .= " AND $where";
         }
         $data = $this->query($sql);
         $result = array();

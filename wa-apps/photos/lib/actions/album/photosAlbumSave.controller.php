@@ -135,6 +135,7 @@ class photosAlbumSaveController extends waJsonController
     private function save($data)
     {
         if (!$this->id) {
+            $this->log('album_create', 1);
             $this->id = $this->album_model->add($data);
         } else {
             $album = $this->album_model->getById($this->id);

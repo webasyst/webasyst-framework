@@ -46,6 +46,14 @@ class photosCommentAddController extends waJsonController
         }
         $data['photo_id'] = $photo_id;
 
+        if (!isset($data['ip']) && ($ip = waRequest::getIp())) {
+            $ip = ip2long($ip);
+            if ($ip > 2147483647) {
+                $ip -= 4294967296;
+            }
+            $data['ip'] = $ip;
+        }
+
         $id = $this->comment_model->add($data, $comment_id);
         $this->added_comment = $this->comment_model->getById($id);
 
@@ -79,9 +87,6 @@ class photosCommentAddController extends waJsonController
             $photo_id = $parent_comment['photo_id'];
         }
         $text = waRequest::post('text', '', waRequest::TYPE_STRING_TRIM);
-        if (!$text) {
-            return;
-        }
         return array(
             'photo_id' => $photo_id,
             'comment_id' => $comment_id,

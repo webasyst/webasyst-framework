@@ -1,0 +1,64 @@
+<script type="text/javascript" src="{$wa_app_static_url}js/lazy.load.js?v={$wa->version()}"></script>
+
+<h1>{$title|escape}</h1>
+
+<a id="p-upload-link" href="#" data-role="button">[`Upload photo`]</a>
+<form id="fileupload" method="POST" enctype="multipart/form-data" action="?module=upload&amp;action=photo" target="fileupload-iframe" style="display: none;">
+<input type="hidden" name="status" value="1">
+<input type="hidden" name="groups[]" value="0">
+<input type="file" name="files[]">
+</form>
+<iframe id="fileupload-iframe" name="fileupload-iframe" src="" style="display: none;"></iframe>
+<ul class="" id="photo-list" data-role="listview" data-divider-theme="d" data-theme="d"></ul>
+<div class="lazyloading-wrapper"></div>
+
+
+{literal}
+<script type="text/html" id="template-photo-counter">
+    {%=o.string.loaded%}&nbsp;{%=o.string.of%}
+    {% if (o.count < o.total_count) { %}
+      <br>
+      <br>
+      <a href="#next" class="lazyloading-link">[`Show more photos`]</a>
+      <span class="lazyloading-progress" style="display:none">
+           <i class="icon16 loading"></i>
+           [`Loading`]{% if (o.string.chunk) { %}&nbsp;{%=o.string.chunk%}{% } %}...
+      </span>
+    {% } %}
+</script>
+{/literal}
+
+{literal}
+<script type="text/html" id="template-photo-list">
+    {% for (var i=0, p=o.photos[0], n=o.photos.length; i<n; p=o.photos[++i]) { %}
+    <li class="{% if (p.stack_count > 0) { %} stacked{% } %} data-photo-id="{%#p.id%}" data-corners="false" data-shadow="false" data-icon="false" data-wrapperels="div" data-theme="d">
+        <div class="p-image">{% if (p.stack_count > 0) { %}
+            <div class="p-stack layer1"></div>
+            <div class="p-stack layer2"></div>
+            <div class="p-stack layer3"></div>{% } %}
+                <img src="{%#p.thumb_mobile.url%}{% if (p.edit_datetime) { %}?{%#Date.parseISO(p.edit_datetime)%}{% } %}" />
+        </div>
+        <strong>{%#p.name%}</strong>
+        <div class="p-description">{%#p.description%}</div>
+    </li>
+    {% } %}
+</script>
+{/literal}
+
+{literal}
+<script id="template-photo-list-photo-tags"  type="text/html">
+{% var tags = o.tags, i = 0; %}
+{% if (!tags || ($.isArray(tags) && !tags.length)) return ''; %}
+{% for (var tag_id in tags) { %}{% var t = tags[tag_id]; %}{% if (i++ > 0) { %},{% } %} <a href='#/tag/{%=encodeURIComponent(t)%}/'>{%=t%}</a>{% } %}
+</script>
+{/literal}
+
+<script>
+$.photos_mobile.photos = {json_encode(array_values($photos))};
+$.photos_mobile.setLazyLoad({
+    auto: true,  // auto load next pages(true|false) (if omitted than considered as true)
+    total_count: {if !empty($total_count)}{$total_count}{else}null{/if},
+    count: $.photos_mobile.photos.length
+});
+
+</script>

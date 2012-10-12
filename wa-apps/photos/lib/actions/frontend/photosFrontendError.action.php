@@ -4,7 +4,7 @@ class photosFrontendErrorAction extends waViewAction
 {
     public function execute()
     {
-        $e = $this->getRequest()->param('exception');
+        $e = $this->params;
 
         if ($e && ($e instanceof Exception) ) {
             /**

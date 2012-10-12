@@ -80,20 +80,6 @@ class photosCommentModel extends waNestedSetModel
         return $list;
     }
 
-    public function getAll($key = null, $normalize = null)
-    {
-        $options = $key ? $key : array();
-        $key = isset($options['key']) ? $options['key'] : null;
-        $normalize = isset($options['normalize']) ? $options['normalize'] : false;
-        unset($options['key'], $options['normalize']);
-
-        $comments = parent::getAll($key, $normalize);
-
-        $this->extendItems($comments, $options);
-
-        return $comments;
-    }
-
     private function extendItems(&$items, array $options = array())
     {
         if (!empty($options)) {
@@ -103,11 +89,15 @@ class photosCommentModel extends waNestedSetModel
             foreach ($items as &$item) {
                 if ($options['author']) {
                     $author = array(
-                        'name' => $item['name'],
+                        'name' =>  $item['name'],
                         'email' => $item['email'],
-                        'site' => $item['site']
+                        'site' =>  $item['site'],
+                        'auth_provider' => $item['auth_provider']
                     );
                     $item['author'] = array_merge($author, self::getAuthorInfo($item['contact_id']));
+                    if ($item['auth_provider'] && $item['auth_provider'] != 'guest') {
+                        $item['author']['photo'] = self::getAuthProvoderIcon($item['auth_provider']);
+                    }
                 }
                 if ($options['crop']) {
                     $item['crop'] = self::getPhotoCrop($item['photo_id']);
@@ -147,6 +137,11 @@ class photosCommentModel extends waNestedSetModel
         return $authors_info[$id][$photo_size];
     }
 
+    static public function getAuthProvoderIcon($provider)
+    {
+        return wa()->getRootUrl().'wa-content/img/auth/'.$provider.'.png';
+    }
+
     static public function getPhotoCrop($photo_id)
     {
         static $photos = array();
@@ -184,7 +179,7 @@ class photosCommentModel extends waNestedSetModel
             if ($user->getId() && !$user->get('is_user')) {
                 $user->addToCategory(wa()->getApp());
             }
-        } else {
+        } elseif ($comment['auth_provider'] == 'guest') {
             if (!empty($comment['site']) && strpos($comment['site'], '://')===false) {
                 $comment['site'] = "http://" . $comment['site'];
             }
@@ -209,12 +204,17 @@ class photosCommentModel extends waNestedSetModel
             if (!wa()->getUser()->isAuth() && !wa()->getCaptcha()->isValid()) {
                 $errors[] = array('captcha' => _wp('Invalid captcha code'));
             }
+        } else {
+            $auth_adapters = wa()->getAuthAdapters();
+            if (!isset($auth_adapters[$comment['auth_provider']])) {
+                $errors[] = _w('Invalid auth provider');
+            }
         }
 
-        if (mb_strlen( $comment['text'] ) == 0) {
+        if (mb_strlen($comment['text']) == 0) {
             $errors[]['text'] = _wp('Comment text can not be left blank');
         }
-        if (mb_strlen( $comment['text'] ) > 4096) {
+        if (mb_strlen($comment['text']) > 4096) {
             $errors[]['text'] = _wp('Comment length should not exceed 4096 symbols');
         }
         return $errors;

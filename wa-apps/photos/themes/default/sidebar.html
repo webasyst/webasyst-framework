@@ -13,12 +13,8 @@
 {* static info page list *}
 {$photos_pages=$wa->photos->pages()}
 {if $photos_pages}
-    <hr>{$page_id = $wa->param('page_id')}
-    <ul class="menu-v" id="page-list">
-        {foreach $photos_pages as $p}
-            <li {if $page_id eq $p.id} class="selected"{/if}><a href="{$p.url}" title="{$p.title}">{$p.name}</a></li>
-        {/foreach}
-    </ul>
+    <hr>
+    {wa_print_tree tree=$photos_pages attrs = 'id="page-list"' elem ='<a href=":url" title=":title">:name</a>' selected=$wa->param('page_id')}
 {/if}
 
 {if $albums = $wa->photos->albums()}

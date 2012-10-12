@@ -35,6 +35,7 @@ class photosFrontendAlbumAction extends photosFrontendCollectionViewAction
 
         waRequest::setParam('breadcrumbs', $this->album_model->getBreadcrumbs($this->album['id'], true));
         waRequest::setParam('nofollow', $this->album['status'] <= 0 ? true : false);
+        waRequest::setParam('disable_sidebar', true);
 
         $this->setThemeTemplate('album.html');
         $this->view->assign('album', $this->album);

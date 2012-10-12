@@ -71,6 +71,7 @@ class photosFrontendPhotoAction extends photosFrontendViewAction
         waRequest::setParam('title', $this->photo['name']);
         waRequest::setParam('nofollow', $this->isNeedNofollow());
         waRequest::setParam('breadcrumbs', $this->getBreadcrumbs());
+        waRequest::setParam('disable_sidebar', true);
 
         // pull out work's up result
         $this->view->assign('photo',        $result['photo']);

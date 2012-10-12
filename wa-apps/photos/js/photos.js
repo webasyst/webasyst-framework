@@ -209,13 +209,51 @@
         },
 
         pagesAction: function(id) {
-            $.photos.initClearance();
-            $.photos.load('?module=pages' + (id ? '&id=' + id : ''), $.photos.onLoadPages, '<div class="content left200px"></div>');
+            if ($('#wa-page-container').length) {
+                waLoadPage(id);
+            } else {
+                $.photos.initClearance();
+                $.photos.load('?module=pages', $.photos.onLoadPages, '<div class="content left200px"></div>');
+            }
         },
 
-        pagesAddAction: function() {
+
+        designAction: function(params) {
             $.photos.initClearance();
-            $.photos.load('?module=pages&id=', $.photos.onLoadPages, '<div class="content left200px"></div>');
+            if (params) {
+                if ($('#wa-design-container').length) {
+                    $.photos.setTitle($_('Themes'));
+                    $.photos.scrollTop();
+                    waDesignLoad();
+                } else {
+                    $.photos.load('?module=design', 'domain_id=' + this.domain, function () {
+                        waDesignLoad();
+                        $.photos.setTitle($_('Themes'));
+                        $.photos.scrollTop();
+                    }, '<div class="content left200px"></div>');
+                }
+            } else {
+                $.photos.load('?module=design' + (params ? '&' + params : ''), function () {
+                    waDesignLoad('');
+                    $.photos.setTitle($_('Design'));
+                    $.photos.scrollTop();
+                }, '<div class="content left200px"></div>');
+            }
+        },
+
+        designThemesAction: function(params) {
+            $.photos.initClearance();
+            if ($('#wa-design-container').length) {
+                $.photos.setTitle($_('Themes'));
+                $.photos.scrollTop();
+                waDesignLoad();
+            } else {
+                $.photos.load('?module=design', 'domain_id=' + this.domain, function () {
+                    waDesignLoad();
+                    $.photos.setTitle($_('Themes'));
+                    $.photos.scrollTop();
+                }, '<div class="content left200px"></div>');
+            }
         },
 
         pluginsAction: function(id) {
@@ -302,10 +340,6 @@
         
         onLoadPages: function() {
             $.photos.setTitle($_('Pages'));
-            
-            $('#pages-form').submit(function() {
-                //XXXXXXXXXXXXXXX
-            });
             $.photos.scrollTop();
         },
         
@@ -2854,7 +2888,7 @@
              * @param string hook_name. Name of hook (search in files for tag: '@hook'
              * @param function handler
              * @param string name. Need for available to unbind. If omitted generate random name
-             * @returns name
+             * @returns {*} name
              * 
              * ...or in case of hash-table hooks to handlers correspongins
              * @param object map

@@ -26,6 +26,7 @@ class photosPhotoAddToAlbumsController extends waJsonController
             $early_albums = array_keys($this->album_photos_model->getByField('photo_id', $photo_id, 'album_id'));
             // TODO: check rights for editing (take into account deleting!)
             $this->album_photos_model->set($photo_id, $album_id);
+            $this->log('photos_move', 1);
 
             $albums = $this->getAlbumsCounters();
             $old_albums = array();
@@ -54,6 +55,7 @@ class photosPhotoAddToAlbumsController extends waJsonController
             if ($allowed_album_id && $allowed_photo_id) {
                 $this->album_photos_model->add($allowed_photo_id, $allowed_album_id);
                 $this->response['albums'] = array_values($this->getAlbumsCounters());
+                $this->log('photos_move', 1);
             }
 
             if ($denied_photo_id) {

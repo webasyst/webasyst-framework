@@ -1,10 +1,5 @@
-<div class="sidebar left">
-    {include file='sidebar.html' inline}
-</div>
 {* static info page *}
-<div class="content {if empty($disable_sidebar)}left{/if}">
-    <h1>{$page.title}</h1>
-    <div id="page" role="main">
-        {$page.content}
-    </div>
+<h1>{$page.title}</h1>
+<div id="page" role="main">
+    {$page.content}
 </div>

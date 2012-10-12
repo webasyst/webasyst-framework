@@ -13,6 +13,8 @@ CREATE TABLE IF NOT EXISTS `photos_comment` (
   `name` varchar(50) DEFAULT NULL,
   `email` varchar(50) DEFAULT NULL,
   `site` varchar(100) DEFAULT NULL,
+  `auth_provider` varchar(100) DEFAULT NULL,
+  `ip`  int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `contact_id` (`contact_id`),
   KEY `photo_id` (`photo_id`),

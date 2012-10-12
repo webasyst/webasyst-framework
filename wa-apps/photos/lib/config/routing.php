@@ -37,7 +37,7 @@ return array(
         'login/' => 'login',
         'forgotpassword/' => 'forgotpassword',
         'signup/' => 'signup',
-        'logout' => 'frontend/logout',
+        'logout/' => 'frontend/logout',
         '<url>/loadPhoto' => 'frontend/loadPhoto',
         '<url>/' => 'frontend/album',
     ),
@@ -75,7 +75,7 @@ return array(
         'login/' => 'login',
         'forgotpassword/' => 'forgotpassword',
         'signup/' => 'signup',
-        'logout' => 'frontend/logout',
+        'logout/' => 'frontend/logout',
 
         '<url>/loadList' => 'frontend/loadList',
         '<url>/loadPhoto' => 'frontend/loadPhoto',

@@ -10,13 +10,13 @@ class photosFrontendAlbum
             $link = $wa->getRouteUrl('photos/frontend/album', array(
                 'url' => $album['full_url']
             ), true);
-            return rtrim($link, '/').'/';
+            return $link ? rtrim($link, '/').'/' : null;
         } else {
             $album = (string) $album;
             $link = $wa->getRouteUrl('photos/frontend/album', array(
                 'url' => $album
             ), true);
-            return rtrim($link, '/').'/';
+            return $link ? rtrim($link, '/').'/' : null;
         }
     }
 

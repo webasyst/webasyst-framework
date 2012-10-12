@@ -8,6 +8,7 @@ class photosPagesActions extends waPageActions
         if (!$this->getRights('pages')) {
             throw new waRightsException("Access denued");
         }
+        $this->options['ajax'] = true;
     }
 
     protected $url = '#/pages/';

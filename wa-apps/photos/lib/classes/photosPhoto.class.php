@@ -138,9 +138,17 @@ class photosPhoto
                 if ($width > $height) {
                     $w = $image->width;
                     $h = $image->width*$height/$width;
+                    if ($h > $image->height) {
+                        $h = $image->height;
+                        $w = $image->height*$width/$height;
+                    }
                 } else {
                     $h = $image->height;
                     $w = $image->height*$width/$height;
+                    if ($w > $image->width) {
+                        $w = $image->width;
+                        $h = $image->width*$height/$width;
+                    }
                 }
                 $image->crop($w, $h)->resize($width, $height);
                 break;
@@ -481,6 +489,11 @@ class photosPhoto
         return wa('photos')->getConfig()->getSize('crop');
     }
 
+    public static function getMobilePhotoSize()
+    {
+        return wa('photos')->getConfig()->getSize('mobile');
+    }
+
     public static function escape($data)
     {
         if (is_array($data)) {
@@ -515,6 +528,6 @@ class photosPhoto
         if (!$str) {
             $str = date('Ymd');
         }
-        return $str;
+        return strtolower($str);
     }
 }

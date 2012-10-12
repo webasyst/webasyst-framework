@@ -713,7 +713,7 @@ $(function() {
 
     $.photos.init({
         size: $('#photo').attr('data-size'),
-        photo_container: $('.photo'),
+        photo_container: $('.image'),
         photo_stream: $('#photo-stream'),
         stack_stream: $('#stack-nav ul.photostream'),
         next_link_title: $('#photo').parents('a:first').attr('title')

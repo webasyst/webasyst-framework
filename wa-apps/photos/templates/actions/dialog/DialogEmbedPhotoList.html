@@ -23,6 +23,7 @@
                 <h1>[`Share photos`] <span class="gray">({$context['count']})</span><span style="display:none;"><i class="icon16 loading"></i></span></h1>
                 <div class="fields form p-dialog-form">
                     <div class="field-group">
+                        {if $context['link']}
                         <div class="field">
                             <div class="name bold">
                                 <strong>[`Link`]</strong>
@@ -32,6 +33,7 @@
                                 <a href="{$context['link']}" target="_blank" class="link"><i class="icon16 new-window"></i></a>
                             </div>
                         </div>
+                        {/if}
                         <div class="field">
                             <div class="name">
                                 <strong>[`HTML`]</strong><br><br>

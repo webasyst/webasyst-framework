@@ -167,6 +167,7 @@
                 var that = $(this).data('fileupload'),
                     template;
                 that._adjustMaxNumberOfFiles(data.files.length);
+
                 if (data.context) {
                     data.context.each(function (index) {
                         if (data.errorThrown !== 'abort') {
@@ -269,6 +270,9 @@
                     $('#p-upload-filescount').hide();
                     $("#upload-error").show();
                 }
+                // log action
+                $.get('?module=backend&action=log&action_to_log=photos_upload');
+
                 if (!self.data('is_error') && !self.data('is_aborted')) {
                     var album_id = parseInt($("#upload-album-id").val(), 10);
                     if (album_id) {

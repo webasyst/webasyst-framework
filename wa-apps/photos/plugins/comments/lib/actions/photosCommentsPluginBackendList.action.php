@@ -16,6 +16,7 @@ class photosCommentsPluginBackendListAction extends waViewAction
 
         $this->view->assign('comments_author', photosCommentModel::getAuthorInfo(wa()->getUser()->getId()));
         $this->view->assign('comments', $comments);
+        $this->view->assign('contact_rights', wa()->getUser()->getRights('contacts', 'backend'));
 
         // get and send to view sidebar counters for updating
         $plugin = wa()->getPlugin('comments');

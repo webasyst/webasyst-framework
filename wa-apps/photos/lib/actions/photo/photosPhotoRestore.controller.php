@@ -65,6 +65,7 @@ class photosPhotoRestoreController extends waJsonController
                     }
 
                     $this->response['photo'] = $photo;
+                    $this->log('photo_reverttooriginal', 1);
                 }
             } else {
                 throw new waException("Error while restore. Operation canceled");

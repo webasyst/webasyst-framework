@@ -87,16 +87,18 @@
 
             <li class="p-inline-mixed-string">
                 {if isset($album)}
-                    {if $album.status <= 0}
-                        <i class="icon10 lock-bw"></i>
-                        [`Private album`]{if $album.edit_rights}: <a target="_blank" href="{$frontend_link}" id="photo-list-frontend-link" class="gray">{$frontend_link}</a>
-                        <i class="icon10 new-window"><!-- icon --></i>{/if}
-                    {else}
-                        [`Public album`]: <a target="_blank" href="{$frontend_link}" id="photo-list-frontend-link">{$frontend_link}</a>
-                        <i class="icon10 new-window"><!-- icon --></i>
+                    {if $frontend_link}
+                        {if $album.status <= 0}
+                            <i class="icon10 lock-bw"></i>
+                            [`Private album`]{if $album.edit_rights}: <a target="_blank" href="{$frontend_link}" id="photo-list-frontend-link" class="gray">{$frontend_link}</a>
+                            <i class="icon10 new-window"></i>{/if}
+                        {else}
+                            [`Public album`]: <a target="_blank" href="{$frontend_link}" id="photo-list-frontend-link">{$frontend_link}</a>
+                            <i class="icon10 new-window"></i>
+                        {/if}
+                        &nbsp;&nbsp;
                     {/if}
                     {if $album.edit_rights}
-                        &nbsp;&nbsp;
                         <i class="icon10 settings p-published-album-layout-icon"></i>
                         <a href="#" id="p-album-settings" class="gray">[`Album settings`]</a>
                         &nbsp;
@@ -105,7 +107,7 @@
                     {/if}
                 {else if (isset($frontend_link))}
                     [`Public link`]: <a target="_blank" href="{$frontend_link}" id="photo-list-frontend-link">{$frontend_link}</a>
-                    <i class="icon10 new-window"><!-- icon --></i>
+                    <i class="icon10 new-window"></i>
                 {/if}
             </li>
         </ul>
@@ -193,7 +195,7 @@
       <br>
       <a href="#next" class="lazyloading-link">[`Show more photos`]</a>
       <span class="lazyloading-progress" style="display:none">
-           <i class="icon16 loading"><!-- icon --></i>
+           <i class="icon16 loading"></i>
            [`Loading`]{% if (o.string.chunk) { %}&nbsp;{%=o.string.chunk%}{% } %}...
       </span>
     {% } %}

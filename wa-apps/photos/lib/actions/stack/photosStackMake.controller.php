@@ -60,6 +60,7 @@ class photosStackMakeController extends waJsonController
              * @params array[int][int]int $stack[%parent_id%][]
              */
             wa()->event('make_stack', $stack);
+            $this->log('photos_stack', 1);
         }
         $this->response['parent_id'] = $parent_id;
     }

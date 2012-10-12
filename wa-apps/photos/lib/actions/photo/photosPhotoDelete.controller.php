@@ -30,6 +30,7 @@ class photosPhotoDeleteController extends waJsonController
                  */
                 wa()->event('photo_delete', $id);
             }
+            $this->log('photos_delete', 1);
         }
 
         $denied_parent_id = array();

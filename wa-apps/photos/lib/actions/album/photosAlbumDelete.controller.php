@@ -13,6 +13,7 @@ class photosAlbumDeleteController extends waJsonController
 
         $album_model = new photosAlbumModel();
         $album_model->delete($album_id);
+        $this->log('album_delete', 1);
 
     }
 }

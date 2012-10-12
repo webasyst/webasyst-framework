@@ -6,7 +6,7 @@
 .p-comments ul.menu-v li span.hint a { color: #aaa; text-decoration: underline; }
 .p-comments ul.menu-v li a { display: inline; text-decoration: underline; }
 .p-comments ul.menu-v li a.p-comment-delete { margin: 0 0 0 5px; padding: 0; color: #d99; text-decoration: underline; }
-.p-comments ul.menu-v li a.p-comment-delete:hover { background: red; color: white; }
+.p-comments ul.menu-v li a.p-comment-delete:hover { background: red; color: white !important; }
 .p-comments ul.menu-v li p { margin: 0.5em 0; }
 .p-comments ul.menu-v li ul.menu-v { padding-left: 20px; }
 .p-comments h4 { margin: 20px 0 0; font-size: 1.1em; }

@@ -7,6 +7,7 @@ class photosConfig extends waAppConfig
         'middle' => '750',
         'thumb' => '200x0',
         'crop' => '96x96',
+        'mobile' => '512'
     );
 
     public function getSize($name)

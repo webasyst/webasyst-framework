@@ -23,9 +23,13 @@ class photosFrontendAction extends photosFrontendCollectionViewAction
             'favorites',
             'id')))
         {
+            waRequest::setParam('disable_sidebar', true);
             $template = 'search.html';
         } else {
-            $template = 'view-thumbs.html';
+            $template = 'home.html';
+            if (!file_exists($this->getTheme()->getPath().'/'.$template)) {
+                $template = 'view-thumbs.html'; // for backward compatibility reason
+            }
         }
 
         if ($type != 'all' && $type != 'favorites') {

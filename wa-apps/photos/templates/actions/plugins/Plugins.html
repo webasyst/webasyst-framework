@@ -6,7 +6,7 @@
                 {foreach $plugins as $plugin}
                     <li id="plugin-{$plugin.id}" {if $plugin@first}class="selected"{/if} {if !empty($plugin.photos_settings)}data-settings="1"{/if}>
                         <a href="#/plugins/{$plugin.id}/">
-                            <i class="icon16{if !isset($plugin.img)} plugins{else}" style="background-image: url('{wa_url()}{$plugin.img}');{/if}"><!-- icon --></i>{$plugin.name|escape}
+                            <i class="icon16{if !isset($plugin.img)} plugins{else}" style="background-image: url('{wa_url()}{$plugin.img}');{/if}"></i>{$plugin.name|escape}
                             {if $plugin.description}
                                 <span class="hint">{$plugin.description|escape}</span>
                             {/if}

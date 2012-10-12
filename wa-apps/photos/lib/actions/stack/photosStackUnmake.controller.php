@@ -12,6 +12,7 @@ class photosStackUnmakeController extends waJsonController
             }
             $photo_model = new photosPhotoModel();
             $photo_model->unstack($id);
+            $this->log('photos_unstack', 1);
         }
     }
 }

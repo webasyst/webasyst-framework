@@ -89,7 +89,7 @@ $.photos.comments_plugin = {
             }
             var html = r.data.html;
             var parent_li = $('#comment-' + comment_id),
-                ul = $('ul:first', parent_li),
+                ul = $('ul:not(#user-auth-provider):first', parent_li),
                 comments_block = null;
 
             if (!parent_li.length) {
@@ -115,8 +115,8 @@ $.photos.comments_plugin = {
                     $('#comment-id', form).val(0);
                 }
             } else if(!$('#add-comment-form').is('form')) {
-                if(!$('#comments-block > #add-comment-form').length) {
-                    $('#comments-block').append(form);
+                if(!$('#comments-block').nextAll('#add-comment-form').length) {
+                    $('#comments-block').after(form);
                     $('#comment-id', form).val(0);
                 }
             }

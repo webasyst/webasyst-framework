@@ -34,6 +34,6 @@ class photosFrontendPhoto
             }
             $link = $wa->getRouteUrl('photos/frontend/photo', $params, true);
         }
-        return rtrim($link, '/').'/';
+        return $link ? rtrim($link, '/').'/' : null;
     }
 }
