@@ -1,10 +1,10 @@
-#wa { background: #fff url(../img/clothes.jpg); }
+#wa { background: #fff url(../img/cloth.jpg); }
 
 .c-sidebar { padding-top: 34px; }
-.c-sidebar ul.menu-v li.selected a { background: #ccc;}
+.c-sidebar ul.menu-v li.selected a { background: rgba(120,120,120,0.25);}
 .c-sidebar ul.menu-v li i.c-new-list { margin-top: 0; }
 
-.c-list { background: #fff; border: 1px solid #fff;}
+.c-list { background: #fff; }
 .c-list h1 i.icon16 { margin-top: 6px; margin-left: 0.3em; }
 .c-list ul.menu-v { margin: 15px 0 0; }
 .c-list ul.menu-v li { padding-left: 28px; margin: 0 0 8px -10px; font-size: 1.05em; }
@@ -35,11 +35,19 @@
 .c-list-icons ul.menu-h li a i.icon16 { margin: 0; }
 .c-list-icons ul.menu-h li.selected a { border: 3px solid #FDDA3B; background: #ffd; }
 
-.c-white { background: #fff; border: 1px solid #ddd; }
-.c-gray { background: #eee; border: 1px solid #ccc; }
-.c-yellow { background: #ffc; border: 1px solid #dda; }
-.c-green { background: #dfc; border: 1px solid #ad9; }
-.c-blue { background: #cef; border: 1px solid #acd; }
-.c-red { background: #fcc; border: 1px solid #daa; }
-.c-purple { background: #edf; border: 1px solid #cbd; }
+.c-white { background: #fff; }
+.c-gray { background: #eee; }
+.c-yellow { background: #ffc; }
+.c-green { background: #dfc; }
+.c-blue { background: #cef; }
+.c-red { background: #fcc; }
+.c-purple { background: #edf; }
+
+ul.menu-h li.c-white { border: 1px solid #ddd; }
+ul.menu-h li.c-gray { border: 1px solid #ccc; }
+ul.menu-h li.c-yellow { border: 1px solid #dda; }
+ul.menu-h li.c-green { border: 1px solid #ad9; }
+ul.menu-h li.c-blue { border: 1px solid #acd; }
+ul.menu-h li.c-red {  border: 1px solid #daa; }
+ul.menu-h li.c-purple { border: 1px solid #cbd; }
 

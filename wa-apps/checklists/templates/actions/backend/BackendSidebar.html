@@ -3,7 +3,7 @@
  * Can be reordered via drag and drop if user has the right to create new lists.
  *}
 <div class="block c-sidebar">
-	<ul class="menu-v with-icons compact" id="sidebar-lists">
+	<ul class="menu-v with-icons" id="sidebar-lists">
 		{foreach from=$lists item=l name=sb}
 			<li id="list{$l.id}" rel="{$l.sort}"{if !empty($l.current)} class="selected"{/if}>
 				<span class="count" id="cnt{$l.id}">{$l.count}</span>
