@@ -1,20 +1,19 @@
 body { min-width:960px;}
-#wa { background: #f3f3f3; }
+#wa { background: url('../img/gray-noisy-bg.jpg') repeat; }
 
 #wa-app { padding-top: 13px; margin-top: -13px; } /* lift up a bit for a nice shadow*/
 #wa-app .sidebar { padding-top: 20px; }
 
 #c-core { ;/* page core content container */ }
-#c-core .contacts-background { background-image:url("../img/background.jpg"); border: 1px solid #ccc;-moz-box-shadow: 0px 1px 15px #bbb; -webkit-box-shadow: 0px 1px 15px #bbb;box-shadow: 0px 1px 15px #bbb; margin: 15px; }
-#c-core h1 { display: inline-block; max-width: 100%;
-    overflow: hidden; }
+#c-core .contacts-background { background: #fff; border: 1px solid #ccc;-moz-box-shadow: 0px 1px 15px #bbb; -webkit-box-shadow: 0px 1px 15px #bbb;box-shadow: 0px 1px 15px #bbb; margin: 15px; }
+#c-core h1 { display: inline-block; max-width: 100%; overflow: hidden; }
 
 .c-actions { float: right; }
 
 .c-core-header { background: #fcfcfc; border-bottom: 1px solid #ddd; }
 .c-core-header.red { background: #fcc; border-bottom: 1px solid #c88; }
 .c-core-header.yellow { background: #eed; border-bottom: 1px solid #cc8; }
-.c-core-content {  }
+.c-core-content { background: #eee; }
 
 .c-profile-userpic { float: left; }
 .c-profile-summary { margin-left: 116px; margin-bottom: 10px; }

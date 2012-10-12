@@ -473,9 +473,9 @@
                     if (options && options.search) {
                         $("#list-main .item-search").show();
                         $("#list-main .item-search a").attr('href', '#/contacts/search/results/' + params[0] + '/');
-                        if (!this.free) {
-                            $('<a style="display:block" href="#/contacts/search/form/' + params[0] + '/">'+$_('edit search')+'</a>').insertAfter(el);
-                        }
+                        //if (!this.free) {
+                        //    $('<a style="display:block" href="#/contacts/search/form/' + params[0] + '/">'+$_('edit search')+'</a>').insertAfter(el);
+                        //}
                         p.search = 1;
                     }
                 }

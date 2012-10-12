@@ -857,3 +857,15 @@ msgstr "Невозможно объединить:"
 msgid "Continue"
 msgstr "Продолжить"
 
+
+#: /wa-apps/contacts/templates/actions/backend/BackendSidebar.html:19
+msgid "Person"
+msgstr ""
+
+#: /wa-apps/contacts/templates/actions/backend/BackendSidebar.html:29
+msgid "Import..."
+msgstr ""
+
+#: /wa-apps/contacts/js/wa.controller.js:586
+msgid "Exclude contacts from category \"%s\"?"
+msgstr ""
