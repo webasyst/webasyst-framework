@@ -47,6 +47,7 @@
 .b-post span.b-draft-label { background: #555; color: #fff; font-weight: bold; padding: 1px 2px; }
 .b-post h1 span.b-draft-label, .b-post h3 span.b-draft-label { font-size: 0.6em; position: relative; top: -3px; }
 .b-post .b-post-body { margin-top: 10px; }
+.b-post .b-post-body hr { clear: none; }
 
 .b-number-of-posts { color: gray; padding-left: 30px; padding-top: 15px; font-style: italic; }
 .b-torn-paper { /* overflow: hidden; */ padding: 0 !important; height: 21px; margin-bottom: -21px; box-shadow:none; -moz-box-shadow: none; -webkit-box-shadow: none; border: none;  }
@@ -94,9 +95,9 @@ i.b-post-save-indicator { margin-top: 8px; }
 .b-comments ul.menu-v li span.hint a { color: #aaa; text-decoration: underline; }
 .b-comments ul.menu-v li a { display: inline; }
 .b-comments ul.menu-v li a.b-comment-reply { color: #999; }
-.b-comments ul.menu-v li a.b-comment-reply:hover { color: red; }
+.b-comments ul.menu-v li a.b-comment-reply:hover { color: red !important; }
 .b-comments ul.menu-v li a.b-comment-delete { margin: 0 0 0 5px; padding: 0; color: #d99; text-decoration: underline; }
-.b-comments ul.menu-v li a.b-comment-delete:hover { background: red; color: white; }
+.b-comments ul.menu-v li a.b-comment-delete:hover { background: red; color: white !important; }
 .b-comments ul.menu-v li p { margin: 0.5em 0; }
 .b-comments ul.menu-v li ul.menu-v { padding-left: 20px; }
 .b-comments h4 { margin: 20px 0 0; font-size: 1.1em; }

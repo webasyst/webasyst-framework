@@ -6,7 +6,7 @@
         <ul class="menu-h">
           <li>
             <a href="#" class="dialog-confirm" id="blogdelete-dialog-confirm">
-              <i class="icon16 delete"><!-- icon --></i>[`Delete blog`]
+              <i class="icon16 delete"></i>[`Delete blog`]
             </a>
           </li>
         </ul>
@@ -46,8 +46,8 @@
               <li><span id="b-settings-blog-type-private-label">[`Public`]</span></li>
             </ul>
 
-            <span class="small" id="b-settings-blog-type-open-hint"><i class="icon10 yes"><!-- icon --></i> [`Blog posts are published and available in the frontend and RSS feed`]</span>
-            <span class="small" id="b-settings-blog-type-private-hint" style="display: none;"><i class="icon10 lock-bw"><!-- icon --></i> [`Blog posts are published and available only within Webasyst backend for users who have rights to access this blog`]</span>
+            <span class="small" id="b-settings-blog-type-open-hint"><i class="icon10 yes"></i> [`Blog posts are published and available in the frontend and RSS feed`]</span>
+            <span class="small" id="b-settings-blog-type-private-hint" style="display: none;"><i class="icon10 lock-bw"></i> [`Blog posts are published and available only within Webasyst backend for users who have rights to access this blog`]</span>
           </div>
         </div>
         <div class="field" id="b-settings-blog-url" {if $blog.status != blogBlogModel::STATUS_PUBLIC && (!isset($messages.blog_url) || !$messages.blog_url)}style="display:none;"{/if}>
@@ -58,42 +58,47 @@
 
           <div class="value no-shift">
 
-            {if $blog.id}
-
-              {if !isset($messages.blog_url) || !$messages.blog_url}
-                <a id="url-link" target="_blank" href="{$blog.settlement.url|escape}{if $blog.url}{$blog.url|escape}/{/if}">{$blog.settlement.url|escape}<span class="slug">{if $blog.url}{$blog.url}/{else}<!-- slug placeholder -->{/if}</span></a>
-                <a id="inline-edit-url" href="#" class="inline-link"><i class="icon10 edit"><!-- icon --></i><b><i>[`edit`]</i></b></a>
-
-                <span style="display: none;">
-                  {$blog.settlement.url|escape}<input type="text" id="blog-url" name="settings[url]" value="{$blog.url|escape}" >/
-                </span>
-              {else}
-                <span>
-                  {$blog.settlement.url|escape}<input type="text" id="blog-url" class="error" name="settings[url]" value="{$blog.url|escape}" >/
-                </span>
-              {/if}
-
+            {if empty($blog.settlement.url)}
+                [`Posts of this blog are not visible in the public frontend because there are no routing rules for the Blog app in your website settings. Use Site app (Routing section) to settle Blog app on your website and to start publishing.`]
             {else}
-              <span class="bold">
-                {$blog.settlement.url|escape}<input type="text" id="blog-url" {if isset($messages.blog_url) && $messages.blog_url}class="error"{/if} name="settings[url]" value="{$blog.url|escape}" >/
-              </span>
-            {/if}
-
-            {if isset($blog.other_settlements) && !empty($blog.other_settlements)}
-              <div id="other-urls" class="hint">
-                {foreach $blog.other_settlements as $settlement}
-                  {$settlement.url|escape}<span class="slug" {if $settlement.single}data-single="1"{/if}>{if $blog.url && !$settlement.single}{$blog.url}/{else}<!-- slug placeholder -->{/if}</span><br>
-                {/foreach}
-              </div>
-            {/if}
-
-            {if isset($messages.blog_url) && $messages.blog_url}
-              <em id="message-blog-url" class="errormsg">{$messages.blog_url|escape}</em>
-            {else}
-              <em id="message-blog-url"></em>
+                {if $blog.id}
+    
+                  {if !isset($messages.blog_url) || !$messages.blog_url}
+                    <a id="url-link" target="_blank" href="{$blog.settlement.url|escape}{if $blog.url}{$blog.url|escape}/{/if}">{$blog.settlement.url|escape}<span class="slug">{if $blog.url}{$blog.url}/{else}<!-- slug placeholder -->{/if}</span></a>
+                    <a id="inline-edit-url" href="#" class="inline-link"><i class="icon10 edit"></i><b><i>[`edit`]</i></b></a>
+    
+                    <span style="display: none;">
+                      {$blog.settlement.url|escape}<input type="text" id="blog-url" name="settings[url]" value="{$blog.url|escape}" >/
+                    </span>
+                  {else}
+                    <span>
+                      {$blog.settlement.url|escape}<input type="text" id="blog-url" class="error" name="settings[url]" value="{$blog.url|escape}" >/
+                    </span>
+                  {/if}
+    
+                {else}
+                  <span class="bold">
+                    {$blog.settlement.url|escape}<input type="text" id="blog-url" {if isset($messages.blog_url) && $messages.blog_url}class="error"{/if} name="settings[url]" value="{$blog.url|escape}" >/
+                  </span>
+                {/if}
+    
+                {if isset($blog.other_settlements) && !empty($blog.other_settlements)}
+                  <div id="other-urls" class="hint">
+                    {foreach $blog.other_settlements as $settlement}
+                      {$settlement.url|escape}<span class="slug" {if $settlement.single}data-single="1"{/if}>{if $blog.url && !$settlement.single}{$blog.url}/{else}<!-- slug placeholder -->{/if}</span><br>
+                    {/foreach}
+                  </div>
+                {/if}
+    
+                {if isset($messages.blog_url) && $messages.blog_url}
+                  <em id="message-blog-url" class="errormsg">{$messages.blog_url|escape}</em>
+                {else}
+                  <em id="message-blog-url"></em>
+                {/if}
             {/if}
 
           </div>
+          
         </div>
 
       </div>
@@ -121,7 +126,7 @@
           <div class="value">
             <ul class="menu-h">
               {foreach $icons as $icon}
-                <li class="b-setting-icon{if ($blog.icon == $icon)} selected{/if}" id="b-icon-{$icon|escape}"><a href="#"><i class="icon16 {$icon}"><!-- icon --></i></a></li>
+                <li class="b-setting-icon{if ($blog.icon == $icon)} selected{/if}" id="b-icon-{$icon|escape}"><a href="#"><i class="icon16 {$icon}"></i></a></li>
               {/foreach}
             </ul>
             <input type="hidden" name="settings[icon]" value="{$blog.icon}">

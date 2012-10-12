@@ -12,7 +12,7 @@
             &nbsp;
             <label for="b-post-publish-blog-{$blog_item_id}">
                 {$blog_item.icon_html|default:''}{$blog_item.name|escape}
-                {if $blog_item.status ==  blogBlogModel::STATUS_PRIVATE}<i class="icon10 lock-bw no-overhanging"><!-- icon --></i>{/if}
+                {if $blog_item.status ==  blogBlogModel::STATUS_PRIVATE}<i class="icon10 lock-bw no-overhanging"></i>{/if}
             </label>
             {if !$blog_item@last}<br>{/if}
           </li>

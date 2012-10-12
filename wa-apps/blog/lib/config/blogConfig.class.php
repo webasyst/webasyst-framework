@@ -105,7 +105,7 @@ class blogConfig extends waAppConfig
 
         $counter = array();
 
-        if (in_array('posts',$type) && $full) {
+        if (in_array('posts',$type) && $full && $blogs) {
             $post_model = new blogPostModel();
             $post_new_count = $post_model->getAddedPostCount($activity_datetime, $blogs);
             $counter['posts'] = array_sum($post_new_count);
@@ -113,21 +113,21 @@ class blogConfig extends waAppConfig
             $counter['posts'] = false;
         }
 
-        if (in_array('comments',$type) && $full) {
+        if (in_array('comments',$type) && $full && $blogs) {
             $comment_model = new blogCommentModel();
             $counter['comments'] = $comment_model->getCount($blogs, null, $activity_datetime, 0);
         } else {
             $counter['comments'] = false;
         }
 
-        if (in_array('comments_to_my_post',$type) && $full) {
+        if (in_array('comments_to_my_post',$type) && $full && $blogs) {
             $comment_model = new blogCommentModel();
             $counter['comments_to_my_post'] = $comment_model->getCount($blogs, null, $activity_datetime, 0, $user_id);
         } else {
             $counter['comments_to_my_post'] = false;
         }
 
-        if (in_array('overdue',$type)) {
+        if (in_array('overdue',$type) && $blogs) {
             if (!isset($post_model)) {
                 $post_model = new blogPostModel();
             }

@@ -21,7 +21,7 @@
             {_w('%d post','%d posts',$loaded_post_count)}&nbsp;{_w('of %d post','of %d posts',$post_count)}
             <br>
             <a href="?page={$page+1}" class="pageless-link">[`Show older posts`]</a>
-            <div class="pageless-progress" style="display:none;"><i class="icon16 loading"><!-- icon --></i>[`Loading...`]</div>
+            <div class="pageless-progress" style="display:none;"><i class="icon16 loading"></i>[`Loading...`]</div>
         {elseif isset($page) && $pages}
             {_w('%d post','%d posts',$post_count)}
         {/if}

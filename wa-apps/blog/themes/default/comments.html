@@ -2,11 +2,18 @@
 
 <script type="text/javascript">
 $(document).ready(function() {
-    $("#user-auth-provider a").click(function () {
-        var left = (screen.width-600)/2;
-        var top = (screen.height-400)/2;
-        window.open($(this).attr('href'){if !$require_authorization} + "&guest=1"{/if},'oauth', "width=600,height=400,left="+left+",top="+top+",status=no,toolbar=no,menubar=no");
-        return false;
+    var provider_list = $('#user-auth-provider');
+    
+    provider_list.find('a').click(function () {
+        var self = $(this);
+        var provider = self.parents('li:first').attr('data-provider');
+        
+        if (provider != 'guest' && provider != 'signup') {
+            var left = (screen.width-600)/2;
+            var top = (screen.height-400)/2;
+            window.open($(this).attr('href'){if !$require_authorization} + "&guest=1"{/if},'oauth', "width=600,height=400,left="+left+",top="+top+",status=no,toolbar=no,menubar=no");
+            return false;
+        }
     })
 });
 </script>
@@ -67,7 +74,11 @@ $(document).ready(function() {
 
         <div class="comment-form-fields">
             {if empty($current_user_id)}
-                {if $auth_adapters}
+                {if $require_authorization}
+                <div id="user-auth-provider" data-provider="signup" {if $current_auth_source neq 'signup'}style="display:none"{/if}>
+                    {sprintf('[`To add a comment please <a href="%s">sign up</a> or <a href="%s">login</a>`]',$wa->signupUrl(),$wa->loginUrl())}
+                </div>
+                {elseif $auth_adapters}
                     <ul class="menu-h auth-type" id="user-auth-provider">
                         {if $require_authorization}
                         <li data-provider="signup" {if !$current_auth_source}class="selected"{/if}><a href="#">[`Sign up`]</a></li>
@@ -79,11 +90,7 @@ $(document).ready(function() {
                         <li data-provider="{$adapter_id}" {if $current_auth_source == $adapter_id}class="selected"{/if}><a href="{$adapter->getCallbackUrl(0)}&app=blog"><img src="{$adapter->getIcon()}" alt="">{$adapter->getName()}</a></li>
                         {/foreach}
                     </ul>
-                {elseif $require_authorization}
-                <div id="user-auth-provider" data-provider="signup" {if $current_auth_source neq 'signup'}style="display:none"{/if}>
-                    {sprintf('[`To add a comment please <a href="%s">sign up</a> or <a href="%s">login</a>`]',$wa->signupUrl(),$wa->loginUrl())}
-                </div>
-                {else}
+                {/if}
                 <div id="user-auth-provider" class="tab clear-left" data-provider="guest" {if $current_auth_source}style="display:none"{/if}>
                     <p>
                         <label for="comment_name">[`Your name`]</label>
@@ -98,7 +105,6 @@ $(document).ready(function() {
                         <input type="text" name="site" id="comment_site">
                     </p>
                 </div>
-                {/if}
                 {if $require_authorization}
                 <div class="tab" data-provider="signup" {if $current_auth_source != 'signup'}style="display:none"{/if}>
                     {sprintf('[`To add a comment please <a href="%s">sign up</a> or <a href="%s">login</a>`]',$wa->signupUrl(),$wa->loginUrl())}

@@ -45,10 +45,12 @@ class blogBlogSettingsAction extends waViewAction
                 //TODO handle settings
                 if ($blog_id) {
                     $blog_model->updateById($blog_id, $settings);
+                    $this->log('blog_modify');
                 } else {
                     $settings['sort'] = (int)$blog_model->select('MAX(`sort`)')->fetchField() + 1;
                     $blog_id = $blog_model->insert($settings);
                     $this->getUser()->setRight($this->getApp(), "blog.{$blog_id}", blogRightConfig::RIGHT_FULL);
+                    $this->log('blog_add');
                 }
 
                 // refresh qty post in blogs

@@ -70,8 +70,8 @@ class blogPostEditAction extends waViewAction
 
         }
 
-
-        $post['other_links'] = blogPostModel::getPureUrls($post);
+        $all_links = blogPostModel::getPureUrls($post);
+        $post['other_links'] = $all_links;
         $post['link'] = array_shift($post['other_links']);
 
         $post['remaining_time'] = null;
@@ -98,6 +98,7 @@ class blogPostEditAction extends waViewAction
             $this->view->assign('preview_hash', base64_encode($preview_hash.$options['user_id']));
         }
 
+        $this->view->assign('no_settlements', empty($all_links) ? true : false);
         $this->view->assign('params', $this->getPostParams($post['id']));
         $this->view->assign('blog', $blog);
         $this->view->assign('users', $users);

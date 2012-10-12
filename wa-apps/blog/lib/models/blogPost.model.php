@@ -36,7 +36,6 @@ SQL;
 GROUP BY EXTRACT(YEAR_MONTH FROM datetime)
 ORDER BY "timeline" DESC
 SQL;
-
         $posts = $this->query($sql)->fetchAll('timeline');
 
         $links = array();
@@ -44,10 +43,6 @@ SQL;
         foreach ($posts as &$post) {
             if (isset($post['month'])) {
                 $post['month'] = sprintf('%02d',$post['month']);
-            }
-            if (isset($params['id'])) {
-                $post['blog_id'] = $params['id'];
-
             }
             if ($use_blog_id) {
                 if ($blog_data && isset($blog_data[$post['blog_id']])) {
@@ -915,7 +910,10 @@ SQL;
 
                 $messages['url'] = current($url_validator->getErrors());
 
-                if ($data['id'] && $url_validator->isError(blogSlugValidator::ERROR_REQUIRED)) {
+                if ($url_validator->isError(blogSlugValidator::ERROR_REQUIRED) &&
+                        ($data['id'] || (!$data['id'] && $data['status'] == blogPostModel::STATUS_DRAFT))
+                )
+                {
 
                     $url = $this->select('url')->where('id = i:id', array('id' => $data['id']))->fetchField('url');
                     $data['url'] = $url ? $url : $this->genUniqueUrl($data['title']);
@@ -961,8 +959,20 @@ SQL;
             if ($data['datetime'] != '') {
                 $datetime = $data['datetime'];
                 foreach($formats as $format) {
-                    if($datetime = waDateTime::parse($format, $data['datetime'])) {
-                        break;
+                    try {
+                        if($datetime = waDateTime::parse($format, $data['datetime'])) {
+                            break;
+                        }
+
+                    } catch(Exception $ex) {
+                        $messages['datetime'] = _w('Incorrect format');
+                        waLog::log($ex->getMessage());
+                    }
+
+                }
+                if(preg_match('/^([\d]{4})\-([\d]{1,2})\-([\d]{1,2})(\s|$)/',$datetime, $matches)) {
+                    if (!checkdate($matches[2], $matches[3], $matches[1])) {
+                        $messages['datetime'] = _w('Incorrect format');
                     }
                 }
                 $data['datetime'] = $datetime;
@@ -970,10 +980,6 @@ SQL;
                 $data['datetime'] = false;
             }
             if ($data['datetime'] === false) {
-                $messages['datetime'] = _w('Incorrect format');
-            }
-            $parsed = date_parse_from_format('Y-m-d', $data['datetime']);
-            if (!checkdate($parsed['month'], $parsed['day'], $parsed['year'])) {
                 $messages['datetime'] = _w('Incorrect format');
             }
         }

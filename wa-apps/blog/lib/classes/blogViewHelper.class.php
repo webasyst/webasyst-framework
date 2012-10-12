@@ -62,6 +62,7 @@ class blogViewHelper extends waAppViewHelper
             $extend_data = array('blog'=>$available_blogs);
             $post = $post_model->search($search_options,null,$extend_data)->fetchSearchItem($fields);
         }
+        self::escape($post,array('text'=>true));
         return $post;
     }
 
@@ -90,7 +91,40 @@ class blogViewHelper extends waAppViewHelper
                 $posts = $post_model->search($search_options,null,$extend_data)->fetchSearchPage(1,$number_of_posts,$fields);
             }
         }
+        self::escape($posts,array('*'=>array('text'=>true,'plugins'=>true)));
         return $posts;
+    }
+
+    public function comments($blog_id = null, $limit = 10)
+    {
+        $contact_photo_size = 20;
+
+        $limit = max(1, intval($limit));
+
+        $blogs = blogHelper::getAvailable(true, $blog_id);
+
+        $comment_model = new blogCommentModel();
+
+        $prepare_options = array('datetime' => blogActivity::getUserActivity());
+        $fields = array("photo_url_{$contact_photo_size}");
+        $blog_ids = array_keys($blogs);
+
+        $comments = $comment_model->getList(0, $limit, $blog_ids, $fields);
+
+        $post_ids = array();
+        foreach ($comments as $comment) {
+            $post_ids[$comment['post_id']] = true;
+        }
+
+        //get related posts info
+        $post_model = new blogPostModel();
+        $search_options = array('id'=> array_keys($post_ids));
+        $extend_options = array('user'=>false, 'link'=>true, 'rights'=>true, 'plugin'=>false, 'comments'=>false);
+        $extend_data = array('blog'=>$blogs);
+        $posts = $post_model->search($search_options, $extend_options, $extend_data)->fetchSearchAll(false);
+        $comments = blogCommentModel::extendRights($comments, $posts);
+        self::escape($comments,array('*'=>array('posts'=>array('text'=>true),'plugins'=>true)));
+        return $comments;
     }
 
     public function postForm($id = null)
@@ -131,6 +165,16 @@ HTML;
 
     }
 
+    public function timeline($blog_ids = array(), $datetime = array())
+    {
+        $blogs = blogHelper::getAvailable();
+        if (empty($blog_ids)) {
+            $blog_ids = array_keys($blogs);
+        }
+        $blog_post_model = new blogPostModel();
+        return $blog_post_model->getTimeline($blog_ids, $blogs, $datetime);
+    }
+
     public function isAdmin()
     {
         return wa()->getUser()->isAdmin('blog');
@@ -149,5 +193,27 @@ HTML;
     public function option($name)
     {
         return wa('blog')->getConfig()->getOption($name);
+    }
+
+    private static function escape(&$data, $pass = array())
+    {
+        if (is_array($data)) {
+            foreach($data as $key => &$item) {
+                if (isset($pass[$key])) {
+                    $pass_item = $pass[$key];
+
+                } else if (isset($pass['*'])) {
+                    $pass_item = $pass['*'];
+                } else {
+                    $pass_item = array();
+                }
+                if ($pass_item !== true) {
+                    self::escape($item, $pass_item);
+                }
+            }
+            unset($item);
+        } else {
+            $data = htmlspecialchars($data, ENT_QUOTES,'utf-8');
+        }
     }
 }

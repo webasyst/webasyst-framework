@@ -890,3 +890,27 @@ msgstr ""
 msgid "You have successfully signed up."
 msgstr ""
 
+
+#: /wa-apps/blog/templates/layouts/Mobile.html:19
+msgid "Apps"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/post/PostEdit.html:226
+msgid "Posts of this blog are not visible in the public frontend because there are no routing rules for the Blog app in your website settings. Use Site app (Routing section) to settle Blog app on your website and to start publishing."
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/settings/Settings.html:67
+msgid "Setup in the <a href=\\"%s\\">Blog app settlement settings</a> within the Site app"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/backend/Backend.html:49
+msgid "Select posts"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/backend/Backend.html:55
+msgid "Search posts"
+msgstr ""
+
+#: /wa-apps/blog/js/postEdit.js:86
+msgid "input_maxlength"
+msgstr ""

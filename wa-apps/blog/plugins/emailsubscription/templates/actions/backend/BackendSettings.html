@@ -7,7 +7,7 @@
             {assign var=cron_schedule_time value=waSystem::getSetting('cron_schedule',0,'blog')}
             <p class="hint">
                 {if $cron_schedule_time}
-                <i class="icon10 yes"><!-- icon --></i>
+                <i class="icon10 yes"></i>
                 {$cron_schedule_time|wa_datetime:'humandatetime'|string_format:'[`Cron is working properly. Latest execution time: %s`]'}
                 {else}
                 {assign var=cron_commands value=$wa->blog->config()->getCronJob('scheduled_posts')}

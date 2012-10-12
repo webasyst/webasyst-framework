@@ -112,6 +112,7 @@ class blogFrontendCommentController extends waJsonController
                 $comment['name']		 = waRequest::post('name', '', 'string_trim');
                 $comment['email']		 = waRequest::post('email', '', 'string_trim');
                 $comment['site']		 = waRequest::post('site', '', 'string_trim');
+                $this->getStorage()->del('auth_user_data');
                 if ($this->appSettings('require_authorization', false)) {
                     $this->errors[] = array('name' => _w('Only registered users can add comments'));
                     break;

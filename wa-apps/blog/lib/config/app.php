@@ -13,7 +13,8 @@ return array(
     'themes' => true,
     'plugins' => true,
     'pages' => true,
-    'version' => '1.0.0',
+    'mobile' => true,
+    'version' => '1.0.1',
     'critical' => '0.0.2',
     'vendor' => 'webasyst',
     'csrf' => true

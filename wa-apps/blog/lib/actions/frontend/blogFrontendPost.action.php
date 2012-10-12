@@ -171,13 +171,11 @@ class blogFrontendPostAction extends blogViewAction
         $app_url = wa()->getAppStaticUrl();
         $root_url = wa()->getRootUrl();
 
-        $current_auth = false;
-        $current_auth_source = false;
-        if (isset($_SESSION['auth_user_data'])) {
-            $current_auth = $_SESSION['auth_user_data'];
-            $current_auth['photo_url_20'] = ($current_auth['source'] == 'guest')?false:"{$app_url}img/{$current_auth['source']}.png";
-            $current_auth_source = $_SESSION['auth_user_data']['source'];
-        }
+        $storage = wa()->getStorage();
+        $current_auth = $storage->read('auth_user_data');
+        $current_auth_source = $current_auth ? $current_auth['source'] : null;
+
+
         $this->view->assign('current_auth_source', $current_auth_source);
         $this->view->assign('current_auth', $current_auth,true);
 

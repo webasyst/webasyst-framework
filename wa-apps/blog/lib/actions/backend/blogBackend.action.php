@@ -71,7 +71,9 @@ class blogBackendAction extends waViewAction
         $extend_options['status'] = 'view';
         $extend_options['author_link'] = false;
         $extend_options['rights'] = true;
-        $extend_options['text'] = 'cut';
+        if (!$this->getRequest()->isMobile()) {
+            $extend_options['text'] = 'cut';
+        }
 
         $post_model = new blogPostModel();
         $posts = $post_model
@@ -80,7 +82,7 @@ class blogBackendAction extends waViewAction
 
         if ($page == 1) {
             $stream['title'] = $this->getResponse()->getTitle();
-            $this->setLayout(new blogDefaultLayout());
+            $this->chooseLayout();
             $this->view->assign('search', $plugin ? urldecode(http_build_query(array('search'=>$plugin))) : null);
 
 
@@ -136,6 +138,21 @@ class blogBackendAction extends waViewAction
             $url = array_shift($urls);
         }
         return $url;
+    }
+
+    private function chooseLayout()
+    {
+        $this->setLayout(!$this->getRequest()->isMobile() ? new blogDefaultLayout() : new blogMobileLayout());
+    }
+
+
+    protected function getTemplate()
+    {
+        $template = parent::getTemplate();
+        if ($this->getRequest()->isMobile()) {
+            $template = str_replace('actions', 'actions-mobile', $template);
+        }
+        return $template;
     }
 
 }

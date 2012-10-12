@@ -9,7 +9,7 @@
 
         <br>
         <div class="datetime">
-          <i class="icon16 clock" style="margin-top: 0.3em;"><!-- icon --></i>
+          <i class="icon16 clock" style="margin-top: 0.3em;"></i>
           {assign var="show_date" value = $post.datetime|wa_datetime:'U' >= time()|date_format:'Y-m-d'|wa_datetime:'U'}
           <input class="datepicker" name="schedule_datetime[]" type="text" disabled="disabled" value="{if $post.datetime && $show_date}{$post.datetime|wa_date}{/if}" size="8">&nbsp;
           <input type="text" name="schedule_datetime[]" class="time" disabled="disabled" value="{if $show_date && $post.datetime}{$post.datetime|wa_datetime:'H'}{else}10{/if}" size="2" maxlength="2" autocomplete="off">:<input type="text" data-role="datetime_minutes" disabled="disabled" name="schedule_datetime[]" class="time" value="{if $show_date && $post.datetime}{$post.datetime|wa_datetime:'i'}{else}00{/if}" size="2" maxlength="2" autocomplete="off">
@@ -22,7 +22,7 @@
         {assign var=cron_schedule_time value=waSystem::getSetting('cron_schedule',0,'blog')}
         <p class="hint">
         {if $cron_schedule_time}
-          <i class="icon10 yes"><!-- icon --></i>
+          <i class="icon10 yes"></i>
           {$cron_schedule_time|wa_datetime:'humandatetime'|string_format:'[`Cron is working properly. Latest execution time: %s`]'}
         {else}
           {assign var=cron_commands value=$wa->blog->config()->getCronJob('scheduled_posts')}

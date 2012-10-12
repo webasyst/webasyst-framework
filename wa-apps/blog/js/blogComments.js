@@ -124,7 +124,7 @@
 			var id = parseInt($(item).attr('id').replace(/^[\D]+/,''));
 			var url = '?module=comments&action=edit';
 			var self =this;
-			$(element).hide().after('<i class="b-ajax-status-loading icon16 loading"><!-- icon --></i>');
+			$(element).hide().after('<i class="b-ajax-status-loading icon16 loading"></i>');
 			$.ajax({
 						url : url,
 						type: 'POST',

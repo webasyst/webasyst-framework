@@ -11,15 +11,21 @@
 		bottom_distance: 80,
 		content_distance: 120,
 		auto: true,
-		paging_selector: null
+		beforeLoad: null,
+        afterLoad: null,
+        renderContent: null,
+		paging_selector: null,
+        pageless_wrapper: null
 	};
 
 	var start = function() {
-		$(settings.target + ' .pageless-wrapper').show();
+	    var pageless_wrapper = settings.pageless_wrapper;
+	    
+	    pageless_wrapper.show();
 		if(settings.paging_selector) {
 			$(settings.paging_selector).hide();
 		}
-		$(settings.target + ' a.pageless-link').live('click',function(){watch(true);return false;});
+        pageless_wrapper.find('a.pageless-link').live('click', function() { watch(true); return false; });
 		$container.bind('scroll.pageless resize.pageless', watch).trigger('scroll.pageless');
 
 	};
@@ -34,25 +40,38 @@
 
 	var scroll = function() {
 		// show loader
-		var handler = $(settings.target + ' .pageless-wrapper .pageless-link');
-		var progress = $(settings.target + ' .pageless-wrapper .pageless-progress');
+        var pageless_wrapper = settings.pageless_wrapper;
+		var handler  = pageless_wrapper.find('.pageless-link');
+		var progress = pageless_wrapper.find('.pageless-progress');
 		if(progress.length) {
 			handler.hide();
 			progress.show();
 		} else {
-			handler.replaceWith('<i class="icon16 loading"><!-- icon --></i>'+handler.text());
+			handler.replaceWith('<i class="icon16 loading"></i>'+handler.text());
 		}
 		loading = true;
 
+		if (typeof settings.beforeLoad === 'function') {
+		    settings.beforeLoad();
+		}
 		$.get(settings.url, {
 			page : currentPage++
 		}, function(response, textStatus, jqXHR) {
-			$(settings.target + ' .pageless-wrapper').remove();
-			$(settings.target).append(response.data?response.data.content:response);
+		    var html = response.data?response.data.content:response;
+            if (typeof settings.renderContent === 'function') {
+                settings.renderContent(html, $(settings.target));
+            } else {
+                pageless_wrapper.remove();
+                $(settings.target).append(html);
+                pageless_wrapper = settings.pageless_wrapper = $(settings.target + ' .pageless-wrapper');
+            }
 			if (settings.scroll && (typeof (settings.scroll) == 'function')) {
 				settings.scroll.apply(this, [ response, settings.target ]);
 			}
 			loading = false;
+            if (typeof settings.afterLoad === 'function') {
+                settings.afterLoad();
+            }
 			watch();
 		});// ,'html');
 	};
@@ -65,7 +84,7 @@
 	};
 
 	var distanceFromContent = function() {
-		var handler = $(settings.target + ' .pageless-wrapper');
+	    var handler = settings.pageless_wrapper;
 		if(handler.length) {
 			return $(window).height() - handler.position().top + $container.scrollTop();
 		}
@@ -98,6 +117,11 @@
 		}
 		if ($.isPlainObject(option)) {
 			$.extend(settings, option);
+			if (settings.pageless_wrapper === null) {
+			    settings.pageless_wrapper = $(settings.target + ' .pageless-wrapper');
+			} else if (settings.pageless_wrapper === false) {
+			    settings.pageless_wrapper = $();
+			}
 			start.apply(this, []);
 		}
 	};

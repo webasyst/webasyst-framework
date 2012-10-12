@@ -172,9 +172,9 @@ class blogPostSaveController extends waJsonController
             $descriptor = preg_split("/$template/", $post['text'], 2, PREG_SPLIT_DELIM_CAPTURE);
             if ($descriptor) {
                 if (count($descriptor) == 2) {
-                    $post['text_before_cut'] = $descriptor[0];
+                    $post['text_before_cut'] = blogPost::closeTags($descriptor[0]);
                 } elseif (count($descriptor) > 2) {
-                    $post['text_before_cut'] = $descriptor[0];
+                    $post['text_before_cut'] = blogPost::closeTags($descriptor[0]);
                     if (isset($descriptor[2])) {
                         $post['cut_link_label'] = $descriptor[2];
                     }
@@ -186,8 +186,14 @@ class blogPostSaveController extends waJsonController
                     $this->inline = false;
                 }
                 $this->post_model->updateItem($post['id'], $post);
+                if ($prev_post['status'] != blogPostModel::STATUS_PUBLISHED && $post['status'] == blogPostModel::STATUS_PUBLISHED) {
+                    $this->log('post_publish', 1);
+                } else {
+                    $this->log('post_edit', 1);
+                }
             } else {
                 $post['id'] = $this->post_model->updateItem(null, $post);
+                $this->log('post_publish', 1);
             }
 
             $this->saveParams($post['id']);

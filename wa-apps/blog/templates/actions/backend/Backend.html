@@ -39,14 +39,14 @@
           {if isset($blog_id) && $blog_id && ($wa->blog->rights($blog_id) ge blogRightConfig::RIGHT_FULL)}
           <li>
             <a href="?module=blog&amp;action=settings&amp;blog={$blog_id}">
-              <i class="icon16 blog"><!-- icon --></i>[`Blog settings`]
+              <i class="icon16 blog"></i>[`Blog settings`]
             </a>
           </li>
           {/if}
           {if (empty($blog_id) && ($wa->blog->rights(false) ge blogRightConfig::RIGHT_READ_WRITE)) || (!empty($blog_id) && ($wa->blog->rights($blog_id) ge blogRightConfig::RIGHT_READ_WRITE))}
           <li>
             <a href="#manage" class="inline-link" id="blog_manage_posts">
-              <i class="icon16 checkboxes"><!-- icon --></i><b><i>[`Select posts`]</i></b>
+              <i class="icon16 checkboxes"></i><b><i>[`Select posts`]</i></b>
             </a>
           </li>
           {/if}
@@ -65,7 +65,7 @@
           {if $move_blog_count>((!isset($blog_id) || !$blog_id)?1:0)}
           <li>
             <a id="postmove-dialog-confirm" href="#" class="dialog-confirm">
-              <i class="icon16 move"><!-- icon --></i>[`Move to blog`] <span class="indicator js-blog-selected-posts-counter">0</span>
+              <i class="icon16 move"></i>[`Move to blog`] <span class="indicator js-blog-selected-posts-counter">0</span>
             </a>
             {capture append="dialogs"}
               {include file='./../../dialogs/postMove.html' inline}
@@ -74,7 +74,7 @@
           {/if}
           <li>
             <a id="postdelete-dialog-confirm" href="#" class="dialog-confirm">
-              <i class="icon16 delete"><!-- icon --></i>[`Delete`] <span class="indicator js-blog-selected-posts-counter">0</span>
+              <i class="icon16 delete"></i>[`Delete`] <span class="indicator js-blog-selected-posts-counter">0</span>
             </a>
             {capture append="dialogs"}
               {include file='./../../dialogs/postDelete.html' post=false inline}
@@ -91,10 +91,10 @@
         {$stream.title|escape}
         {if $stream.link}
           <a href="{$stream.link}" target="_blank" title="[`Open on website`]: {$stream.link}">
-            {if empty($text)}<i class="icon16 new-window"><!-- icon --></i>{/if}
+            {if empty($text)}<i class="icon16 new-window"></i>{/if}
           </a>
         {elseif $stream.blog && $stream.blog.status neq blogBlogModel::STATUS_PUBLIC}
-          <i class="icon16 lock-bw" title="[`Private blog`]"><!-- icon --></i>
+          <i class="icon16 lock-bw" title="[`Private blog`]"></i>
         {/if}
       </h1>
 
@@ -130,7 +130,7 @@
       {/if}
 
       {if $post.blog_status ne blogBlogModel::STATUS_PUBLIC}
-        <i class="icon16 lock-bw" title="[`Private post`]"><!-- icon --></i>
+        <i class="icon16 lock-bw" title="[`Private post`]"></i>
       {/if}
 
       {if isset($post.plugins) && isset($post.plugins.post_title) && $post.plugins.post_title}
@@ -182,7 +182,7 @@
 
           {if $post.blog_status eq blogBlogModel::STATUS_PUBLIC}
             {foreach $post.link item=link}
-              <a target="_blank" href="{$link}">{$link}</a><i class="icon10 new-window"><!-- icon --></i>
+              <a target="_blank" href="{$link}">{$link}</a><i class="icon10 new-window"></i>
             {/foreach}
           {else}
             {if $post.comment_new_count > 0}
@@ -222,7 +222,7 @@
       {assign var=cut_link_label value=$post.cut_link_label|default:'[`Continue reading →`]'}
       {if $post.blog_status eq blogBlogModel::STATUS_PUBLIC && count($post.link)}
         <a href="{$post.link[0]}" target="_blank">{$cut_link_label}</a>
-        <i class="icon10 new-window"><!-- icon --></i>
+        <i class="icon10 new-window"></i>
       {else}
         <a href="?module=post&amp;id={$post.id}">{$cut_link_label}</a>
       {/if}
@@ -252,7 +252,7 @@
       <br>
       <br>
       <a href="#next" class="pageless-link">[`Show older posts`]</a>
-      <span class="pageless-progress" style="display:none"><i class="icon16 loading"><!-- icon --></i>[`Loading`]&nbsp;{_w("%d post", "%d posts", min($posts_total_count-$posts_count,$posts_per_page))}...</span>
+      <span class="pageless-progress" style="display:none"><i class="icon16 loading"></i>[`Loading`]&nbsp;{_w("%d post", "%d posts", min($posts_total_count-$posts_count,$posts_per_page))}...</span>
     {/if}
 
   </div>

@@ -14,6 +14,11 @@
 
 		transliterated: false,
 
+		blog_statuses: {
+			'private': 'private',
+			'public': 'public'
+		},
+
 		init : function(options) {
 
 			var self = this;
@@ -345,6 +350,8 @@
 
 				var postUrlHandler;
 				var cachedSlug = null;
+				var cache = {};
+				var changeBlog = function() {}
 
 				init();
 
@@ -357,29 +364,32 @@
 				 * @param postTitle
 				 * @returns object descriptor
 				 */
-				function getDescriptor(blogId, postId, postTitle)
+				function getDescriptor(blogId, postId, postTitle, fn)
 				{
-
 					var descriptor = null,
-						request = { 'post_title': postTitle, 'post_id': postId, 'blog_id': blogId };
+						request = { 'post_title': postTitle, 'post_id': postId, 'blog_id': blogId },
+						cache_key = [blogId, postId, postTitle].join('&');
 
-					if (cachedSlug != null) {
-						request['slug'] = cachedSlug;
-					}
-
-					$.ajax({
-						url : '?module=post&action=getPostUrl',
-						data: request,
-						dataType: 'json',
-						type: 'post',
-						async: false,
-						success: function(response) {
-							descriptor = response['data'];
-							$.wa_blog.editor.transliterated = true;
+					if (cache[cache_key]) {
+						fn(cache[cache_key]);
+					} else {
+						if (cachedSlug != null) {
+							request['slug'] = cachedSlug;
 						}
-					});
-
-					return descriptor;
+						$.ajax({
+							url : '?module=post&action=getPostUrl',
+							data: request,
+							dataType: 'json',
+							type: 'post',
+							async: false,
+							success: function(response) {
+								descriptor = response['data'];
+								cache[cache_key] = descriptor;
+								$.wa_blog.editor.transliterated = true;
+								fn(descriptor);
+							}
+						});
+					}
 				}
 
 				/**
@@ -390,6 +400,11 @@
 				 */
 				function show(descriptor)
 				{
+					if (!descriptor) {
+						$('#post-url-field').show('fast');
+						return;
+					}
+
 					var wholeUrl = descriptor.link + descriptor.slug + '/';
 
 					$('#url-link').text(wholeUrl);
@@ -399,13 +414,12 @@
 					);
 					$('#pure-url').text(descriptor.link);
 
-					if (descriptor.slug && cachedSlug == null) {
+					if (descriptor.slug && !cachedSlug) {
 						$('#post-url').val(descriptor.slug);
-						//$('#post-url').removeClass('error');
 						cachedSlug = descriptor.slug;
+					} else {
+						$('#post-url').val(cachedSlug);
 					}
-
-					//$('#message-post-url').text('');
 
 					var className = descriptor.is_adding ? 'small'
 										: descriptor.is_published ? 'small' : 'hint';
@@ -436,7 +450,7 @@
 						var icon = $('#post-url-field').children(':first');
 
 						if (icon.is('.icon10')) {
-							tmpl = '<i class="' + icon.attr('class') + '"><!-- icon --></i> ' + tmpl;
+							tmpl = '<i class="' + icon.attr('class') + '"></i> ' + tmpl;
 						}
 
 						$('#other-urls').html($.tmpl(tmpl, data));
@@ -474,23 +488,30 @@
 				 */
 				function init()
 				{
+					if (!$('#post-url-field').length || $('#post-url-field').hasClass('no-settlements')) {
+						changeBlog = function(blog_status) {
+							if (blog_status == $.wa_blog.editor.blog_statuses['public']) {
+								show();
+							} else {
+								hide();
+							}
+						};
+						return;
+					}
 					postUrlHandler = function() {
-
-						if (!this.value) {
+						var postId = $('input[name=post_id]').val();
+						if (!postId && !this.value) {
 							hide();
 							return;
 						}
-
 						var blogId = $('input[name=blog_id]').val();
-						var postId = $('input[name=post_id]').val();
-
-						var postUrlDescriptor = getDescriptor(blogId, postId, this.value);
-
-						if (postUrlDescriptor && !postUrlDescriptor.is_private_blog) {
-							show(postUrlDescriptor);
-						} else {
-							hide();
-						}
+						getDescriptor(blogId, postId, this.value, function(descriptor) {
+							if (descriptor && !descriptor.is_private_blog) {
+								show(descriptor);
+							} else {
+								hide();
+							}
+						});
 					};
 
 					var postId = $('#post-form').find('input[name=post_id]').val();
@@ -1068,9 +1089,10 @@
 			var prev_id = $.wa_blog.editor.options.current_blog_id;
 			if(blog && (prev_id != id)) {
 				var current_blog = $.tmpl('selected-blog',{'blog':blog});
+
 				$('.current-blog').replaceWith(current_blog);
 				$('#blog-selector-'+prev_id).removeClass('selected');
-				$('#blog-selector-'+id).addClass('selected');
+				var blog_selector = $('#blog-selector-'+id).addClass('selected')
 
 				var prev_blog = $.wa_blog.editor.options.blogs[prev_id];
 				$.wa_blog.editor.options.current_blog_id = parseInt(id);
@@ -1079,7 +1101,8 @@
 					post.removeClass(prev_blog.color);
 				}
 				post.addClass(blog.color);
-				$.wa_blog.editor.postUrlWidget.changeBlog();
+
+				$.wa_blog.editor.postUrlWidget.changeBlog(blog_selector.attr('data-blog-status'));
 				return true;
 			}
 		}

@@ -145,6 +145,9 @@ class blogFrontendAction extends blogViewAction
 
             $layout->assign('links',$links);
             if (!$is_search) {
+                /*
+                 * TODO: fix assigning sidebar_timeline for next version of blog
+                 * */
                 $layout->assign('sidebar_timeline', $post_model->getTimeline($this->search_params['blog_id'],$blogs,$this->search_params));
             }
 
@@ -153,7 +156,6 @@ class blogFrontendAction extends blogViewAction
             }
             $layout->assign('is_search',$is_search);
         }
-
 
         $this->view->assign('is_search',$is_search);
         $this->view->assign('page',$this->page);

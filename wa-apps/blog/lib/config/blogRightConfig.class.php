@@ -10,11 +10,13 @@ class blogRightConfig extends waRightConfig
     const RIGHT_ADD_BLOG	 = 'add_blog';
 
     const RIGHT_PAGES	 = 'pages';
+    const RIGHT_DESIGN	 = 'design';
 
     public function init()
     {
         $this->addItem(self::RIGHT_ADD_BLOG, _w('Can create new blogs'), 'checkbox');
-        $this->addItem(self::RIGHT_PAGES, _w('Can edit pages'), 'checkbox');
+        $this->addItem(self::RIGHT_PAGES, _ws('Can edit pages'), 'checkbox');
+        $this->addItem(self::RIGHT_DESIGN, _ws('Can edit design'), 'checkbox');
 
         $blog_model = new blogBlogModel();
         $blogs = $blog_model->getAll();

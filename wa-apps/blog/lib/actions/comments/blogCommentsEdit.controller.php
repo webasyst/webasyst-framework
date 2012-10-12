@@ -30,7 +30,13 @@ class blogCommentsEditController extends waJsonController
 
             $changed = $comment_model->updateById($comment_id, array('status'=>$status));
             $count = $comment_model->getCount($comment['blog_id'], $comment['post_id']);
-
+            if ($changed) {
+                if ($status == blogCommentModel::STATUS_DELETED) {
+                    $this->log('comment_delete', 1);
+                } else {
+                    $this->log('comment_restore', 1);
+                }
+            }
             $this->response = array(
     			'count_str' => $count." "._w('comment', 'comments', $count),
 			    'status' =>$status,

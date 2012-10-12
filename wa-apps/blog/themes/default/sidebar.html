@@ -12,19 +12,15 @@
 {if ( ( ($action eq 'default') && empty($action_info.search))|| ($action eq 'error') || ($action eq 'page'))}
     {* static info page list *}
     <div id="site-pages">
-        {$blog_pages=$wa->blog->pages()}
+        {$blog_pages=$wa->photos->pages()}
         {if $blog_pages}
-            <ul class="menu-v" id="page-list">
-                {foreach $blog_pages as $p}
-                    <li{if isset($page_id) and $page_id eq $p.id} class="selected"{/if}><a href="{$p.url}" title="{$p.title}">{$p.name}</a></li>
-                {/foreach}
-            </ul>
+        {if !isset($page_id)}{$page_id = null}{/if}
+        {wa_print_tree tree=$blog_pages attrs = 'id="page-list"' elem ='<a href=":url" title=":title">:name</a>' selected=$page_id}
         {/if}
     </div>
 {/if}
 
 <p class="small" role="contentinfo">
-    {$info_mes=sprintf('[`Edit blog layout in your <a href="%s">Webasyst backend</a> using “Site” app.`]',$wa_backend_url) }
     {if $action eq 'default'}
         {if !empty($action_info.search.contact_id)}
             {$c= $wa->contact($action_info.search.contact_id)}
@@ -40,15 +36,19 @@
 
             <br>
             {$c->get('url','html')}
-        {else}
-            {$info_mes}
         {/if}
-    {elseif ($action eq 'error') || ($action eq 'page')}
-        {$info_mes}
     {/if}
 </p>
+
 {if ($action eq 'default') && empty($action_info.search)}
     {* timeline navigation *}
+    
+    {$datetime = [
+        'year' => $wa->param('year'),
+        'month' => $wa->param('month')
+    ]}
+    {$sidebar_timeline = $wa->blog->timeline($wa->param('blog_id'), $datetime)}
+    
     <div id="timeline">
     {if !empty($sidebar_timeline)}
         <ul class="menu-v">

@@ -24,7 +24,7 @@ class blogMypostsPlugin extends blogPlugin
 <li{$selected}>
 	<span class="count my_count">{$count}</span>
 	<a href="?search={$this->id}">
-		<i class="icon16 userpic20" style="background-image: url('{$img_url}');"><!-- icon --></i>{$title}
+		<i class="icon16 userpic20" style="background-image: url('{$img_url}');"></i>{$title}
 	</a>
 </li>
 HTML;

@@ -172,15 +172,23 @@ $.wa_blog = $.extend(true, $.wa_blog, {
 			return false;
 		},
 		show : function(Element) {
-			var list = $(Element).parent().find('ul.collapsible');
+			Element = $(Element);
+			var list = Element.parent().find('ul.collapsible');
 			list.show();
-			$(Element).find('.rarr').removeClass('rarr').addClass('darr');
+			if (list.attr('id') == 'blog-drafts') {
+				Element.find('.count').hide();
+			}
+			Element.find('.rarr').removeClass('rarr').addClass('darr');
 			$.storage.set(this.options.key + list.attr('id'), null);
 		},
 		hide : function(Element) {
-			var list = $(Element).parent().find('ul.collapsible');
+			Element = $(Element);
+			var list = Element.parent().find('ul.collapsible');
+			if (list.attr('id') == 'blog-drafts') {
+				Element.find('.count').show();
+			}
 			list.hide();
-			$(Element).find('.darr').removeClass('darr').addClass('rarr');
+			Element.find('.darr').removeClass('darr').addClass('rarr');
 			$.storage.set(this.options.key + list.attr('id'), 2);
 
 		},

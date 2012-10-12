@@ -12,11 +12,11 @@
 
         {if $blog.status eq blogBlogModel::STATUS_PUBLIC}
           {$blog.name|escape}
-          <a href="{$blog.link|escape:'uri'}" target="_blank" title="[`Open on website`]: {$blog.link}"><i class="icon16 new-window"><!-- icon --></i></a>
+          <a href="{$blog.link|escape:'uri'}" target="_blank" title="[`Open on website`]: {$blog.link}"><i class="icon16 new-window"></i></a>
         {else}
           <!-- <span title="[`Private blog`]" class="hint"> </span> -->
           {$blog.name|escape}
-          <i class="icon16 lock-bw" title="[`Private blog`]"><!-- icon --></i>
+          <i class="icon16 lock-bw" title="[`Private blog`]"></i>
         {/if}
       {else}
         {$blog.name|escape}
@@ -31,10 +31,10 @@
         <div class="float-right">
           <ul class="menu-h">
             <li>
-              <a href="?module=post&amp;action=edit&amp;id={$post.id}"><i class="icon16 edit"><!-- icon --></i>[`Edit post`]</a>
+              <a href="?module=post&amp;action=edit&amp;id={$post.id}"><i class="icon16 edit"></i>[`Edit post`]</a>
             </li>
             <li>
-              <a href="#{*?module=post&amp;action=delete&amp;id={$post.id*}" class="dialog-confirm" id="postdelete-dialog-confirm" title="{$post.title|escape|string_format:'[`Post %s will be deleted permanently. Delete?`]'}"><i class="icon16 delete"><!-- icon --></i>[`Delete`]</a>
+              <a href="#{*?module=post&amp;action=delete&amp;id={$post.id*}" class="dialog-confirm" id="postdelete-dialog-confirm" title="{$post.title|escape|string_format:'[`Post %s will be deleted permanently. Delete?`]'}"><i class="icon16 delete"></i>[`Delete`]</a>
             </li>
           </ul>
         </div>
@@ -96,7 +96,7 @@
 
             {if $blog.status eq blogBlogModel::STATUS_PUBLIC}
               {foreach $post.link item=link}
-                <a target="_blank" href="{$link}">{$link}</a><i class="icon10 new-window"><!-- icon --></i>
+                <a target="_blank" href="{$link}">{$link}</a><i class="icon10 new-window"></i>
               {/foreach}
             {/if}
           </div>
@@ -177,7 +177,7 @@
             <li>
               <a name="reply"></a>
               <!-- plugin hook: "comment-list-entry" -->
-              <i class="icon16 userpic20" style="background-image: url('{$current_contact.photo20}');"><!-- icon --></i>{$current_contact.name|escape}
+              <i class="icon16 userpic20" style="background-image: url('{$current_contact.photo20}');"></i>{$current_contact.name|escape}
               <form id="b-comment-add-form" action="?module=comments&amp;action=add&amp;id={$post.id}" method="post">
               <p>
                 {$wa->csrf()}

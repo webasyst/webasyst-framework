@@ -1,7 +1,7 @@
 $.wa_blog.plugins_akismet = {
 	options : {
 		spam_template : '<a href="#" class="small b-comment-spam">%s</a>',
-		loading_template : '<i class="b-ajax-status-loading icon16 loading"><!-- icon --></i>'
+		loading_template : '<i class="b-ajax-status-loading icon16 loading"></i>'
 	},
 	init : function() {
 		var self = this;

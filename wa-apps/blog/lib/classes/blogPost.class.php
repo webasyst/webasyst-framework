@@ -129,4 +129,46 @@ class blogPost
 
     }
 
+    /**
+     * Closing all opened tags
+     * Simple algorithm - closing without open tags' order
+     * @param string $content
+     * @param array $ignored_tags
+     */
+    public static function closeTags($content, $ignored_tags = array('br', 'hr', 'img'))
+    {
+        $pos = 0;
+        $open_tags = array();
+
+        $count = 0;
+        while (($pos = strpos($content, '<', $pos)) !== false) {
+            if (preg_match("|^<(/?)([a-z\d]+)\b[^>]*>|i", substr($content, $pos), $match)) {
+                $tag = strtolower($match[2]);
+                if (in_array($tag, $ignored_tags) === false) {
+                    if (empty($match[1])) {
+                        if (isset($open_tags[$tag])) {
+                            $open_tags[$tag] += 1;
+                        } else {
+                            $open_tags[$tag] = 1;
+                        }
+                    } else if (isset($match[1]) && $match[1] == '/') {
+                        if (isset($open_tags[$tag])) {
+                            $open_tags[$tag] -= 1;
+                        }
+                    }
+                }
+                $pos += strlen($match[0]);
+            } else {
+                $pos += 1;
+            }
+            $count++;
+        }
+        // close tags
+        foreach ($open_tags as $tag => $cnt) {
+            $content .= str_repeat("</$tag>", $cnt);
+        }
+
+        return $content;
+    }
+
 }

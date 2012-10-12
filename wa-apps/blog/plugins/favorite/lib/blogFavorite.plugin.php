@@ -12,7 +12,7 @@ class blogFavoritePlugin extends blogPlugin
         if ( waRequest::get('search') == $this->id ) {
             $selected = 'class="selected"';
         }
-        $output['menu'] = '<li '.$selected.'><span class="count favorites_count">'.$count.'</span><a href="?search='.$this->id.'"><i class="icon16 star"><!-- icon --></i>'._wp('Favorites').'</a></li>';
+        $output['menu'] = '<li '.$selected.'><span class="count favorites_count">'.$count.'</span><a href="?search='.$this->id.'"><i class="icon16 star"></i>'._wp('Favorites').'</a></li>';
         return $output;
     }
 
@@ -33,9 +33,9 @@ class blogFavoritePlugin extends blogPlugin
             foreach ($posts as  $id => &$post) {
 
                 if (isset($favorite[$id])) {
-                    $post['plugins']['post_title'][$this->id] = '<span class="favorite-plugin"><a href="#" ><i class="icon16 star" title="'._wp('Remove from favorites').'"><!-- icon --></i></a></span>';
+                    $post['plugins']['post_title'][$this->id] = '<span class="favorite-plugin"><a href="#" ><i class="icon16 star" title="'._wp('Remove from favorites').'"></i></a></span>';
                 } else {
-                    $post['plugins']['post_title'][$this->id] = '<span class="favorite-plugin"><a href="#" ><i class="icon16 star-empty" title="'._wp('Add to favorites').'"><!-- icon --></i></a></span>';
+                    $post['plugins']['post_title'][$this->id] = '<span class="favorite-plugin"><a href="#" ><i class="icon16 star-empty" title="'._wp('Add to favorites').'"></i></a></span>';
                 }
                 unset($post);
             }

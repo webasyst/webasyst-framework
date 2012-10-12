@@ -1,7 +1,7 @@
 $.wa_blog = $.extend(true, $.wa_blog, {
 	plugins_import : {
 		options : {
-			loader : '<i class="b-ajax-status-loading icon16 loading"><!-- icon --></i>'
+			loader : '<i class="b-ajax-status-loading icon16 loading"></i>'
 		},
 		progress: false,
 		form : null,

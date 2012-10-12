@@ -17,9 +17,7 @@
                 <a href="{$post.user.posts_link}">
                     <img src="{$post.user.photo_url_20}" class="userpic" alt="">
                 </a>
-                <a href="{$post.user.posts_link}" class="username" rel="author" itemprop="author">
-                    {$post.user.name}
-                </a>
+                <a href="{$post.user.posts_link}" class="username" rel="author" itemprop="author">{$post.user.name}</a>
             {else}
                 <img src="{$post.user.photo_url_20}" class="userpic" alt="">
                 <span class="username" rel="author" itemprop="author">{$post.user.name}</span>

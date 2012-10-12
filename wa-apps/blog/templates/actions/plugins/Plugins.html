@@ -18,7 +18,7 @@
       {foreach $plugins as $plugin} <!-- {$plugin.id}  -->
         <li id="plugin-{$plugin.id}">
           <a href="?module=plugins{if empty($plugin.blog_settings)}#/settings/generic/{$plugin.id}/{else}#/settings/custom/{$plugin.id}/{/if}">
-            <i class="icon16{if !isset($plugin.img)} plugins{else}" style="background-image: url('{wa_url()}{$plugin.img}');{/if}"><!-- icon --></i>{$plugin.name|escape}
+            <i class="icon16{if !isset($plugin.img)} plugins{else}" style="background-image: url('{wa_url()}{$plugin.img}');{/if}"></i>{$plugin.name|escape}
             {if $plugin.description}
               <span class="hint">{$plugin.description|escape}</span>
             {/if}

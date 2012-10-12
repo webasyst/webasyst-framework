@@ -13,9 +13,9 @@
     {$rss=$wa->blog->rssUrl()}
     {if $rss}<link rel="alternate" type="application/rss+xml" title="[`RSS`] &mdash; {$wa->accountName()}" href="{$rss}">{/if}
 
-    <link href="{$wa_theme_url}default.css" rel="stylesheet" type="text/css">
+    <link href="{$wa_theme_url}default.css?{$wa->version()}" rel="stylesheet" type="text/css">
     {if $wa->isMobile()}
-        <link href="{$wa_theme_url}mobile.css" rel="stylesheet" type="text/css">
+        <link href="{$wa_theme_url}mobile.css?{$wa->version()}" rel="stylesheet" type="text/css">
         <meta name="viewport" content="width=device-width; initial-scale=1; maximum-scale=1; user-scalable=0;">
     {/if}
 
@@ -107,11 +107,6 @@
                 <a title="[`Powered by Webasyst`]" href="http://www.webasyst.com/" class="dots"></a>
             </div>
             <div id="copyright">&copy; {time()|wa_datetime:"Y"} <a href="{$wa_url}">{$wa->accountName()}</a></div>
-
-            {* @event (frontend_action_default|frontend_action_post|frontend_action_page|frontend_action_error).%plugin_id%.footer *}
-            {foreach $frontend_action as $plugin => $output}
-                {if !empty($output.footer)}{$output.footer}{/if}
-            {/foreach}
         </div>
     </div>
 </body>

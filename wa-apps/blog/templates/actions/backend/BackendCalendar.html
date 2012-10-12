@@ -23,14 +23,14 @@
   <div class="block triple-padded b-stream-title">
     <div class="block half-padded float-left">
       {if $prev_overdue}
-        <i class="icon16 exclamation" title="[`Overdue posts`]"><!-- icon --></i>
+        <i class="icon16 exclamation" title="[`Overdue posts`]"></i>
       {/if}
-      <a href="?action=calendar&amp;month={$prev_month}"><i class="icon16 larr"><!-- icon --></i></a>
+      <a href="?action=calendar&amp;month={$prev_month}"><i class="icon16 larr"></i></a>
     </div>
     <div class="block half-padded float-right">
-      <a href="?action=calendar&amp;month={$next_month}"><i class="icon16 rarr"><!-- icon --></i></a>
+      <a href="?action=calendar&amp;month={$next_month}"><i class="icon16 rarr"></i></a>
       {if $next_overdue}
-        <i class="icon16 exclamation" title="[`Overdue posts`]"><!-- icon --></i>
+        <i class="icon16 exclamation" title="[`Overdue posts`]"></i>
       {/if}
     </div>
     <h1 class="align-center">
@@ -72,17 +72,17 @@
               <span title="{$post.blog_name|escape}" class="status-{$post.status}" data-post-id="{$post.id}">
               {strip}
                 {if isset($post.alert)}
-                  <i class="icon10 exclamation" title="[`Overdue`]"><!-- icon --></i>
+                  <i class="icon10 exclamation" title="[`Overdue`]"></i>
                 {elseif $post.status == blogPostModel::STATUS_DEADLINE}
-                  <i class="icon10 exclamation" title="[`Overdue`]"><!-- icon --></i>
+                  <i class="icon10 exclamation" title="[`Overdue`]"></i>
                 {elseif $post.status == blogPostModel::STATUS_DRAFT}
-                  <i class="icon10 edit-bw" title="[`Draft`]"><!-- icon --></i>
+                  <i class="icon10 edit-bw" title="[`Draft`]"></i>
                 {elseif $post.status == blogPostModel::STATUS_SCHEDULED}
-                  <i class="icon10 clock" title="[`Scheduled for publication`]"><!-- icon --></i><strong class="small italic">{$post.datetime|wa_datetime:'time'}</strong>&nbsp;
+                  <i class="icon10 clock" title="[`Scheduled for publication`]"></i><strong class="small italic">{$post.datetime|wa_datetime:'time'}</strong>&nbsp;
                 {elseif $post.blog_status == blogBlogModel::STATUS_PUBLIC}
-                  <i class="icon10 yes" title="[`Published`]"><!-- icon --></i>
+                  <i class="icon10 yes" title="[`Published`]"></i>
                 {elseif $post.blog_status == blogBlogModel::STATUS_PRIVATE}
-                  <i class="icon10 lock-bw" title="[`Private post`]"><!-- icon --></i>
+                  <i class="icon10 lock-bw" title="[`Private post`]"></i>
                 {/if}
               {/strip}
               {$target=''}
