@@ -550,7 +550,7 @@ class waSystem
             $path = preg_replace('!\.\.[/\\\]!','', $path);
         }
         $file = waConfig::get('wa_path_cache').'/apps/'.$app_id.($path ? '/'.$path : '');
-        waFiles::create($file);
+        waFiles::create($path ? dirname($file) : $file);
         return $file;
     }
 
@@ -639,7 +639,7 @@ class waSystem
                 self::$apps = array();
                 foreach ($all_apps as $app => $enabled) {
                     if ($enabled) {
-                        waLocale::loadByDomain($app);
+                        waLocale::loadByDomain($app, $locale);
                         $app_config = $this->getAppPath('lib/config/app.php', $app);
                         if (!file_exists($app_config)) {
                             if (false && SystemConfig::isDebug()) {
@@ -987,9 +987,10 @@ class waSystem
     /**
      * Return list of application themes
      * @param string $app_id default is current application
+     * @param string $app_id optional to get
      * @return array
      */
-    public function getThemes($app_id = null)
+    public function getThemes($app_id = null, $domain = null)
     {
         if ($app_id === null) {
             $app_id = $this->getConfig()->getApplication();
@@ -1004,7 +1005,8 @@ class waSystem
         foreach ($theme_paths as $path) {
             if (file_exists($path) && is_dir($path) && ($dir = opendir($path))) {
                 while ($current = readdir($dir)) {
-                    if ($current !== '.' && $current !== '..' && is_dir($path.'/'.$current)) {
+                    if ($current !== '.' && $current !== '..' &&
+                        is_dir($path.'/'.$current) && file_exists($path.'/'.$current.'/theme.xml')) {
                         $theme_ids[] = $current;
                     }
                 }
@@ -1016,7 +1018,7 @@ class waSystem
         array_unique($theme_ids);
         foreach($theme_ids as $id) {
             $theme = new waTheme($id,$app_id);
-            if ($theme->getPath()) {
+            if ($theme->path) {
                 $themes[$id] = $theme;
             }
             unset($theme);
