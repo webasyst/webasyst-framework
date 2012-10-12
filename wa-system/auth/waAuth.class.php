@@ -151,7 +151,7 @@ class waAuth implements waiAuth
                     $response->setCookie('auth_token', $this->getToken($user_info), time() + 2592000, null, '', false, true);
                     $response->setCookie('remember', 1);
                 } else {
-                    $response->setCookie('remember', null, -1);
+                    $response->setCookie('remember', 0);
                 }
 
                 // return array with compact user info

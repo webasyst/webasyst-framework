@@ -19,6 +19,9 @@ class webasystLoginAction extends waLoginAction
             $this->template = wa()->getAppPath('templates/actions/login/', 'webasyst').$this->template;
         }
         parent::execute();
+        if ($this->layout) {
+            $this->layout->assign('error', $this->view->getVars('error'));
+        }
 
         $ref = waRequest::server('HTTP_REFERER');
         if(waRequest::get('back_to') && $ref) {
@@ -46,6 +49,9 @@ class webasystLoginAction extends waLoginAction
         $this->getStorage()->remove('auth_login');
         $redirect = $this->getConfig()->getCurrentUrl();
         $backend_url = $this->getConfig()->getBackendUrl(true);
+        if (waRequest::isMobile()) {
+            $this->redirect(array('url' => $backend_url));
+        }
         if (!$redirect || $redirect === $backend_url) {
             $redirect = $this->getUser()->getLastPage();
         }

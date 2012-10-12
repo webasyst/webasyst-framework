@@ -13,6 +13,8 @@ class webasystLoginLayout extends waLayout
         $this->view->assign('stretch', $stretch);
         $this->view->assign('background', $background);
 
+        $this->view->assign('env', wa()->getEnv());
+
         $this->template = wa()->getAppPath('templates/layouts/Login.html', 'webasyst');
     }
 }

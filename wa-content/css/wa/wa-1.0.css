@@ -64,7 +64,7 @@ h6 { font-size: 1em; }
 h1, h2, h3, h4, h5, h6 { line-height:1.2em; margin-bottom:.3em; }
 ul, ol { padding-top:0; }
 ol { list-style: decimal; }
-hr { /* border-color: #ccc; border-style: solid; border-width: 1px 0 0; clear: both; height: 0; */ }
+hr { border-color: #ccc; border-style: solid; border-width: 1px 0 0; clear: both; height: 0; margin-top: 20px; }
 table { /* border:1px solid #bbb; margin-bottom:10px; width:100%;*/  }
 th, td { /* padding:.2em 0.75em; text-align:left;  */}
 thead th { /* border-bottom:1px solid #aaa; background:#bbb;  padding:.4em 1em .2em;*/ }
@@ -135,11 +135,12 @@ a#wa-my-username { font-weight: bold; text-decoration: none; }
 
 /* Webasyst backend authorization form
 -------------------------------------------------- */
-#wa-login { width: 100%; height: 100%; min-height: 100%; min-width: 600px; overflow: hidden; background: url('../../../wa-content/img/noisy-background.jpg'); }
+#wa-login { width: 100%; height: 100%; min-height: 100%; min-width: 600px; overflow: hidden; background: url('../../../wa-content/img/cloth-background.jpg'); }
+#wa-login form { overflow: visible; }
 #wa-login-dialog { display: block; /* always visible */ }
 #wa-login-stretched-background { min-width: 100%; min-height: 100%; max-width: 100%; max-height: 100%; }
-#wa-login .dialog .dialog-background { opacity: 0.7; }
-#wa-login .dialog .dialog-window { -moz-box-shadow: 0px 0px 50px #444; -webkit-box-shadow: 0px 0px 50px #444; box-shadow: 0px 0px 50px #444; }
+#wa-login .dialog .dialog-background { opacity: 0.13; }
+#wa-login .dialog .dialog-window { -moz-box-shadow: 0px 7px 50px #111; -webkit-box-shadow: 0px 7px 50px #111; box-shadow: 0px 7px 50px #111; }
 #wa-login .dialog .dialog-content { overflow: hidden; }
 #wa-login .dialog.error .dialog-window { border-color: #e41; }
 #wa-login .dialog.password .dialog-window { background: #f3f3f3; }
@@ -152,11 +153,12 @@ a#wa-my-username { font-weight: bold; text-decoration: none; }
 #wa-login .field .value { margin-left: 105px; margin-bottom: 10px; }
 #wa-login .field .value input.wa-login-text-input { font-size: 2em; width: 300px; font-weight: bold; }
 #wa-login .field .value .wa-remember-me { padding: 5px 0 0; }
-#wa-login .field .value input.button { font-size: 18px !important; height: 48px; margin-left: -10px; }
+#wa-login .field .value input.button { font-size: 18px !important; height: 48px; margin-left: -10px; padding-top: 2px; }
 #wa-login .dialog a.wa-forgotpassword { color: #aaa; margin: 15px 10px 0 0; float: right; }
 #wa-login .dialog.password a.wa-forgotpassword { float: left; }
 #wa-login .wa-poweredby { margin-top: 10px; text-align: center; }
 #wa-login .wa-poweredby a { text-decoration: none; font-size: 0.9em; color: #ccc;display: block;}
+#wa-login .wa-poweredby a:hover { color: #ccc !important; }
 #wa-login .wa-poweredby a span { font-size:9px; margin:0; display: block; float: left; width:9px; height: 9px; }
 #wa-login .wa-poweredby a span.wa-dots {  display: block; float: none; margin: 0 auto ; padding: 5px 0 0 3px; overflow: hidden; width: 55px;}
 .wa-dot-red { background-image:url(../../img/dots/red.png); }
@@ -168,10 +170,10 @@ a#wa-my-username { font-weight: bold; text-decoration: none; }
 
 /* Webasyst initial installation routine
 -------------------------------------------------- */
-#wa-installer { width: 100%; height: 100%; min-height: 100%; min-width: 600px; overflow: hidden; background: url('../../../wa-content/img/noisy-background.jpg'); }
-#wa-install-dialog { display: block; /* always visible */ }
-#wa-installer .dialog .dialog-background { opacity: 0.7; }
-#wa-installer .dialog .dialog-window { -moz-box-shadow: 0px 0px 50px #444; -webkit-box-shadow: 0px 0px 50px #444; box-shadow: 0px 0px 50px #444; }
+#wa-installer { width: 100%; height: 100%; min-height: 100%; min-width: 600px; overflow: hidden; background: url('../../../wa-content/img/cloth-background.jpg'); }
+#wa-install-dialog { display: block /* always visible */; }
+#wa-installer .dialog .dialog-background { opacity: 0.13; }
+#wa-installer .dialog .dialog-window { top: 13%; -moz-box-shadow: 0px 7px 50px #000; -webkit-box-shadow: 0px 7px 50px #000; box-shadow: 0px 7px 50px #000; }
 #wa-installer .i-welcome { text-align: center; margin: 110px 90px 0; }
 #wa-installer .i-welcome h1 { text-align: center; }
 #wa-installer .i-welcome h1.i-url { margin-left: -2em /* http:// */; }
@@ -181,6 +183,7 @@ a#wa-my-username { font-weight: bold; text-decoration: none; }
 #wa-installer .i-error { color: red; font-weight: bold; }
 #wa-installer .i-progress-indicator { float: right; margin-top: 10px; margin-right: 20px; }
 #wa-installer .i-progress-indicator span { text-decoration: none; font-size: 1.3em; color: #ddd; margin-left: 5px; }
+#wa-installer .field-group { margin: 0 0 20px; }
 #wa-installer .field .name { color: #000; }
 #wa-installer a.wa-help-link { color: #aaa; margin-left: 10px; font-size: 0.9em; text-decoration: none; }
 #wa-installer a.wa-help-link span { text-decoration: underline; }
@@ -191,7 +194,7 @@ a#wa-my-username { font-weight: bold; text-decoration: none; }
 #wa-recovery { width: 100%; height: 100%; min-height: 100%; min-width: 600px; overflow: hidden; background: url('../../../wa-content/img/recovery-mode-background.png'); }
 #wa-recovery-dialog { display: block; /* always visible */ }
 #wa-recovery .dialog .dialog-background { opacity: 0.5; }
-#wa-recovery .dialog .dialog-window { -moz-box-shadow: 0px 0px 50px #444; -webkit-box-shadow: 0px 0px 50px #444; box-shadow: 0px 0px 50px #444; padding-bottom: 0; }
+#wa-recovery .dialog .dialog-window { -moz-box-shadow: 0px 7px 50px #000; -webkit-box-shadow: 0px 7px 50px #000; box-shadow: 0px 7px 50px #000; padding-bottom: 0; }
 #wa-recovery .r-welcome { text-align: center; margin: 110px 90px 0; }
 #wa-recovery .r-welcome input.button { font-size: 18px !important; height: 48px; margin-left: -10px; }
 #wa-recovery .r-hint { color: #aaa; padding-top: 15px; font-size: 0.95em; }
@@ -330,7 +333,7 @@ position:relative; top:0.05em; margin:0 0 -0.5em; }
 .bordered-left { border-left: 1px solid #ccc; }
 .bordered-right { border-right: 1px solid #ccc; }
 .bordered-bottom { border-bottom: 1px solid #ccc; }
-.shadowed {  background: none repeat scroll 0 0 #F7F7F7; border: 1px solid #CCCCCC; -moz-box-shadow: 0 3px 13px #BBBBBB; -webkit-box-shadow: 0 3px 13px #BBBBBB; box-shadow: 0 3px 13px #BBBBBB; margin: 15px;}
+.shadowed {  background: none repeat scroll 0 0 #F7F7F7; border: 1px solid #CCCCCC; -moz-box-shadow: 0 3px 13px rgba(0, 0, 0, 0.3); -webkit-box-shadow: 0 3px 13px rgba(0, 0, 0, 0.3); box-shadow: 0 3px 13px rgba(0, 0, 0, 0.3); margin: 15px;}
 
 /* FIELDS: name-value data display & forms
 -------------------------------------------- */
@@ -553,6 +556,8 @@ table.zebra.single-lined tr:nth-child(2n+1) td div i.shortener { box-shadow: -10
 table.zebra.single-lined tr:hover td div i.shortener { box-shadow: -10px 0 10px #ffffe5 inset;  }
 table.full-width { width: 100%; }
 table.bottom-bordered { border-bottom: 1px solid #aaa; }
+table.zebra tr td.hover-only-links a { display: none; }
+table.zebra tr:hover td.hover-only-links a { display: inline; }
 
 /* PAGING: 1 2 3 ... 43 prev next
 -------------------------------------------- */
@@ -566,7 +571,7 @@ table.bottom-bordered { border-bottom: 1px solid #aaa; }
 -------------------------------------------- */
 .dialog { display: none; }
 .dialog-background { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: #fff; opacity: 0.8; filter: alpha(opacity=80); z-index: 99; }
-.dialog-window { position: fixed; top: 20%; left: 20%; right: 20%; bottom: 20%; background: #fff; opacity: 1; z-index: 100; border: 13px solid #f3f3f3; overflow: hidden; -moz-box-shadow: 0px 0px 70px #bbb; -webkit-box-shadow: 0px 0px 70px #bbb; box-shadow: 0px 0px 70px #bbb; padding: 0 0 60px; min-width: 500px; min-height: 300px; -moz-border-radius: 10px; -webkit-border-radius: 10px; border-radius: 10px; }
+.dialog-window { position: fixed; top: 20%; left: 20%; right: 20%; bottom: 20%; background: #fff; opacity: 1; z-index: 100; border: 9px solid #f3f3f3; overflow: hidden; -moz-box-shadow: 0px 0px 70px #bbb; -webkit-box-shadow: 0px 0px 70px #bbb; box-shadow: 0px 0px 70px #bbb; padding: 0 0 60px; min-width: 500px; min-height: 300px; -moz-border-radius: 10px; -webkit-border-radius: 10px; border-radius: 10px; }
 .dialog.small, .dialog.large { font-size: 1em !important; }
 .dialog.small .dialog-window { top: 30%; left: 30%; right: 30%; bottom: 30%; min-width: 300px; min-height: 200px; }
 .dialog.large .dialog-window { top: 10%; left: 5%; right: 5%; bottom: 10%; min-width: 700px; min-height: 400px; }
@@ -586,7 +591,7 @@ table.bottom-bordered { border-bottom: 1px solid #aaa; }
 .dialog.height450px .dialog-window { height: 450px; min-height: 450px; }
 .dialog.height500px .dialog-window { height: 500px; min-height: 500px; }
 .dialog-window > form {height: 100%}
-.dialog-buttons { position: absolute; bottom: 0; height: 60px; z-index: 101; width: 100% }
+.dialog-buttons { position: absolute; bottom: 0; height: 55px; z-index: 101; width: 100% }
 .dialog-content { height: 100%; overflow: auto; overflow-x:hidden;}
 .dialog-content-indent { padding: 20px; }
 .dialog-buttons-gradient { background: #fff; padding: 10px 10px 0; -moz-box-shadow: 0px -5px 5px #fff; -webkit-box-shadow: 0px -5px 5px #fff; box-shadow: 0px -5px 5px #fff; }
@@ -640,6 +645,8 @@ table.bottom-bordered { border-bottom: 1px solid #aaa; }
  * 
  * Yusuke Kamiyamane's icons sets are astonishing, offering over 3K icons.
  * If built-in icons are not enough for your app, we advise you to consider icons from Fugue and Diagona icon sets.
+ *
+ * Fugue and Diagona icon sets are available under a Creative Commons Attribution 3.0 License.
 */
 
 /* 16x16
@@ -685,7 +692,7 @@ ul.tabs .icon16 { margin-top: 8px; }
 .icon16.delete { background-position:-96px -16px; }
 .icon16.delete-bw { background-position:-112px -16px; }
 .icon16.link { background-position:-48px 0; }
-.icon16.design { background-position:-368px -16px; }
+.icon16.design { background-position: -272px -16px; }
 .icon16.plugins { background-position:-192px -80px; }
 .icon16.settings { background-position:-320px -32px; }
 .icon16.funnel { background-position:-256px -64px; }
@@ -732,6 +739,7 @@ ul.tabs .icon16 { margin-top: 8px; }
 .icon16.video { background-position:-304px -16px; }
 .icon16.cart { background-position:0 -48px; }
 .icon16.script { background-position:0 -64px; }
+.icon16.script-lock { background-position:-32px -64px; }
 .icon16.script-block { background-position:-16px -64px; }
 .icon16.comments { background-position:-32px -112px; }
 .icon16.marker { background-position:-240px -64px; }

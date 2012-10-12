@@ -56,6 +56,8 @@ abstract class waController
      *
      * @param string $action
      * @param int $count
+     * @param int $contact_id
+     * @param mixed $params
      * @return bool|int
      */
     public function log($action, $count = null, $contact_id = null, $params = null)

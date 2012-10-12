@@ -5,6 +5,9 @@
  * @link http://www.webasyst.com/framework/docs/dev/localisation/
  *
  */
+
+require_once dirname(__FILE__).'/waGettext.class.php';
+
 class waGettextParser
 {
     protected $config = array(
@@ -52,7 +55,7 @@ class waGettextParser
         $text = file_get_contents($file);
         $file = substr($file, strlen(realpath(dirname(__FILE__)."/../../")));
         $matches = array();
-        if (preg_match_all("/\[\`([^\`]+)\`\]/usi", $text, $matches, PREG_OFFSET_CAPTURE)) {
+        if (preg_match_all("/\[".($this->config['project'] == 'webasyst' ? "s?" : "")."\`([^\`]+)\`\]/usi", $text, $matches, PREG_OFFSET_CAPTURE)) {
             foreach ($matches[1] as $match) {
                 $match[0] = str_replace('"', '\"', $match[0]);
                 $this->cache(array($match[0], $file.":".$this->getLine($text, $match[1])));
@@ -142,8 +145,12 @@ class waGettextParser
 
                 if (!file_exists($locale_path)) {
                     $this->create($locale);
+                    $strings = array();
+                } else {
+                    $gettext = new waGettext($locale_path, true);
+                    $strings = $gettext->read();
+                    $strings = $strings['messages'];
                 }
-                $locale_content = file_get_contents($locale_path);
                 $counter = 0;
                 if ($fh = fopen($locale_path, "a+")) {
                     if ($this->config['debug']) {
@@ -152,10 +159,9 @@ class waGettextParser
                     flock($fh, LOCK_EX);
                     foreach ($this->words as $words => $lines) {
                         // Ищем вхождения текущей фразы
-                        if(strpos($locale_content, "msgid \"" . $words . "\"") !== false) {
+                        if (isset($strings[stripslashes($words)])) {
                             continue;
                         }
-
                         // Если не нашли - записываем
                         fputs($fh, "\n#: ".$lines."\n");
                         fputs($fh, "msgid \"" . $words . "\"\n");
@@ -269,18 +275,19 @@ $config = array(
     'path' => $path.$app_id."/locale",
     'locales' => array()
 );
+$locales_path = realpath(dirname(__FILE__)."/../../")."/wa-config/locale.php";
+if (file_exists($locales_path)) {
+    $locales = include($locales_path);
+} else {
+    $locales = array('en_US', 'ru_RU', );
+}
 
-$locales = include(realpath(dirname(__FILE__)."/../../")."/wa-config/locale.php");
 foreach ($locales as $l) {
     $config['locales'][$l] = $locale_id;
 }
 
 if (isset($argv[2]) && $argv[2] == 'verify') {
-    $path = dirname(__FILE__).'/waGettext.class.php';
-    if (file_exists($path)) {
-        include($path);
-        $config['verify'] = class_exists('waGettext',false);
-    }
+    $config['verify'] = 1;
 }
 
 if (in_array('debug', $argv)) {

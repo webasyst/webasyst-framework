@@ -32,12 +32,25 @@ class waRouting
     }
 
 
+    public function getDomains()
+    {
+        return array_keys($this->routes);
+    }
+
     public function setRoute($route, $domain = null)
     {
         $this->route = $route;
         if ($domain !== null) {
             $this->domain = $domain;
         }
+    }
+
+    public function getRoute($name = null)
+    {
+        if ($name) {
+            return isset($this->route[$name]) ? $this->route[$name] : null;
+        }
+        return $this->route;
     }
 
     protected function formatRoutes($routes, $is_app = false)
@@ -192,32 +205,28 @@ class waRouting
      * @param string $app_id APP_ID
      * @return array
      */
-    protected function getPageRoutes($app_id)
+    protected function getPageRoutes($app_id, $route = array())
     {
         static $_page_routes;
 
-        if ($_page_routes === null) {
+        if ($_page_routes === null || !isset($_page_routes[$app_id])) {
             $class = $app_id.'PageModel';
             /**
              * @var waPageModel $model
              */
             $model = new $class();
-            $query = $model->select('id, url');
-            $where = array();
-            if (waRequest::param('_exclude')) {
-                $where[] = "id NOT IN ('".implode("','", $model->escape(waRequest::param('_exclude')))."')";
-            }
+            $query = $model->select('id, full_url');
+
+            $query->where("domain = ? AND route = ?", array(self::getDomain(), $route['url']));
+
             if (!waRequest::get('preview')) {
-                $where[] = "status = 1";
-            }
-            if ($where) {
-                $query = $query->where(implode(" AND ", $where));
+                $query->where("status = 1");
             }
             $rows = $query->fetchAll();
             $page_routes = array();
             foreach ($rows as $row) {
                 $page_routes[] = array(
-                    'url' => $row['url'],
+                    'url' => $row['full_url'],
                     'module' => 'frontend',
                     'action' => 'page',
                     'page_id' => $row['id']
@@ -233,8 +242,8 @@ class waRouting
     {
         $routes = wa($app)->getConfig()->getRouting($route);
         $routes = $this->formatRoutes($routes, true);
-        if (wa($app)->getConfig()->getInfo('pages')) {
-            $page_routes = $this->getPageRoutes($app);
+        if (wa($app)->getConfig()->getInfo('pages') && $app != 'site') {
+            $page_routes = $this->getPageRoutes($app, $route);
             if ($page_routes) {
                 $routes = array_merge($page_routes, $routes);
             }

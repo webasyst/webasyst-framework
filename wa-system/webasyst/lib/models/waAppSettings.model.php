@@ -1,10 +1,20 @@
 <?php
-/**
- * @version SVN: $Id$
+
+/*
+ * This file is part of Webasyst framework.
+ *
+ * Licensed under the terms of the GNU Lesser General Public License (LGPL).
+ * http://www.webasyst.com/framework/license/
+ *
+ * @link http://www.webasyst.com/
+ * @author Webasyst LLC
+ * @copyright 2011 Webasyst LLC
+ * @package wa-system
+ * @subpackage webasyst
  */
 class waAppSettingsModel extends waModel
 {
-    protected static $cache = array();
+    protected static $settings = array();
     protected $table = 'wa_app_settings';
 
 
@@ -26,58 +36,62 @@ class waAppSettingsModel extends waModel
     public function get($app_id, $name = null, $default = '')
     {
         $key = $this->getCacheKey($app_id);
-        if (!isset(self::$cache[$app_id])) {
-            $sql = "SELECT app_id, name, value
-                    FROM ".$this->table."
-                    WHERE app_id = '".$this->escape($app_id)."' OR app_id LIKE '".$this->escape($app_id).".%'";
-            $this->setCache($this->getCache($app_id));
-            //self::$cache[$app_id] =
-            $data = $this->query($sql)->fetchAll();
-            self::$cache[$app_id] = array();
+        if (!isset(self::$settings[$app_id])) {
+            $cache = $this->getCache($app_id);
+            if ($cache->isCached()) {
+                $data = $cache->get();
+            } else {
+                $sql = "SELECT app_id, name, value
+                        FROM ".$this->table."
+                        WHERE app_id = '".$this->escape($app_id)."' OR app_id LIKE '".$this->escape($app_id).".%'";
+                $data = $this->query($sql)->fetchAll();
+                $cache->set($data);
+            }
+            self::$settings[$app_id] = array();
             foreach ($data as $row) {
-                self::$cache[$row['app_id']][$row['name']] = $row['value'];
+                self::$settings[$row['app_id']][$row['name']] = $row['value'];
             }
         }
 
         if (is_null($name)) {
-            return  isset(self::$cache[$key]) ? self::$cache[$key] : array();
+            return  isset(self::$settings[$key]) ? self::$settings[$key] : array();
         }
         else {
-            return isset(self::$cache[$key][$name]) ? self::$cache[$key][$name] : $default;
+            return isset(self::$settings[$key][$name]) ? self::$settings[$key][$name] : $default;
         }
     }
 
     protected function getCache($app_id)
     {
         // cache one day
-        return new waSerializeCache('app_settings/'.$app_id, SystemConfig::isDebug() ? 600 : 86400, 'webasyst');
+        return new waVarExportCache('app_settings/'.$app_id, SystemConfig::isDebug() ? 600 : 86400, 'webasyst');
     }
 
     public function set($app_id, $name, $value)
     {
         $key = $this->getCacheKey($app_id);
-        $this->addCacheCleaner($this->getCache($app_id));
+        $this->getCache($app_id)->delete();
         if ($this->getByField(array('app_id' => $key, 'name' => $name))) {
             $this->updateByField(array('app_id' => $key, 'name' => $name), array('value' => $value));
         } else {
             $this->insert(array('app_id' => $key, 'name' => $name, 'value' => $value));
         }
-        self::$cache[$key][$name] = $value;
+        self::$settings[$key][$name] = $value;
         return true;
     }
 
     public function del($app_id, $name = null)
     {
         $key = $this->getCacheKey($app_id);
-        $this->addCacheCleaner($this->getCache($app_id));
+        $this->getCache($app_id)->delete();
         $params = array('app_id' => $key);
         if ($name === null) {
-            if (isset(self::$cache[$key])) {
-                unset(self::$cache[$key]);
+            if (isset(self::$settings[$key])) {
+                unset(self::$settings[$key]);
             }
         } else {
-            if (isset(self::$cache[$key][$name])) {
-                unset(self::$cache[$key][$name]);
+            if (isset(self::$settings[$key][$name])) {
+                unset(self::$settings[$key][$name]);
             }
             $params['name'] = $name;
         }

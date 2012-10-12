@@ -1,0 +1,15 @@
+{if !empty($file)}
+<h1><span class="grey">{$file.theme_path}</span>{$file.id}</h1>
+<textarea id="wa-design-original" style="width: 100%; height: 200px;">
+{$file.content}
+</textarea>
+<script>
+    CodeMirror.fromTextArea(document.getElementById('wa-design-original'), {
+        mode: "text/{if substr($file.id, -3) == 'css'}css{elseif substr($file.id, -2) == 'js'}javascript{else}html{/if}",
+        tabMode: "indent",
+        //height: "dynamic",
+        lineWrapping: true,
+        readOnly: true
+    });
+</script>
+{/if}

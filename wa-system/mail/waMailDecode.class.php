@@ -79,6 +79,7 @@ class waMailDecode
             while ($this->state != self::STATE_END) {
                 if (!$part) {
                     if ($this->is_last) {
+                        fclose($this->source);
                         throw new waException("Письмо не было завершено, а данные в файле уже кончились.");
                     }
                     $this->read();
@@ -90,6 +91,7 @@ class waMailDecode
             }
             if (!$this->is_last) {
                 if (!$this->options['headers_only']) {
+                    fclose($this->source);
                     throw new waException("Конец письма уже достигнут. Есть какие-то данные еще.");
                 }
             }
@@ -114,10 +116,14 @@ class waMailDecode
                 $v = $parser->parse();
             } elseif ($h == 'from') {
                 if ($v) {
-                    $parser = new waMailAddressParser($v);
-                    $v = $parser->parse();
-                    if (isset($v[0])) {
-                        $v = $v[0];
+                    try {
+                        $parser = new waMailAddressParser($v);
+                        $v = $parser->parse();
+                        if (isset($v[0])) {
+                            $v = $v[0];
+                        }
+                    } catch (Exception $e) {
+                        $v = array('name' => $v, 'email' => '');
                     }
                 }
             }
@@ -235,6 +241,19 @@ class waMailDecode
                     $this->state = self::STATE_PART;
                     return true;
                 }
+                // check string for --------\r\n
+                $i1 = strpos($this->buffer, "\r", $this->buffer_offset);
+                $i2 = strpos($this->buffer, "\n", $this->buffer_offset);
+                if ($i1 !== false || $i2 !== false) {
+                    $i = min($i1, $i2);
+                    $str = substr($this->buffer, $this->buffer_offset, $i - $this->buffer_offset);
+                    if ($str === str_repeat("-", strlen($str))) {
+                        $this->buffer_offset = $i;
+                        $this->state = self::STATE_PART;
+                        return true;
+                    }
+                }
+
                 if (substr($this->buffer, $this->buffer_offset, 5) === 'From ') {
                     $this->buffer_offset += 5;
                     $this->state = self::STATE_HEADER_VALUE;
@@ -460,13 +479,27 @@ class waMailDecode
                     $this->buffer_offset = 0;
                     $this->read();
                 }
-                fwrite($fp, substr($this->buffer, $this->buffer_offset, $i - $this->buffer_offset));
+                // if last part
+                if ($i === false) {
+                    // try find incorrect boundary end
+                    if (substr(rtrim($this->buffer, "\r\n"), -2) == '--') {
+                        $j = strrpos(rtrim($this->buffer, "\r\n"), "\n");
+                        $this->buffer = rtrim(substr($this->buffer, 0, $j), "\r\n");
+                    }
+                    // write part to attach file
+                    fwrite($fp, substr($this->buffer, $this->buffer_offset));
+                    $this->buffer = '';
+                    $this->buffer_offset = 0;
+                    $this->state = self::STATE_END;
+                } else {
+                    fwrite($fp, substr($this->buffer, $this->buffer_offset, $i - $this->buffer_offset));
+                    $this->buffer_offset = $i;
+                    $this->state = self::STATE_PART;
+                }
                 fclose($fp);
                 if (!isset($this->part['headers']['content-disposition'])) {
                     $this->body[$this->part['type']."/".$this->part['subtype']] = file_get_contents($path);
                 }
-                $this->buffer_offset = $i;
-                $this->state = self::STATE_PART;
                 if (isset($this->part['parent'])) {
                     $this->part_index = $this->part['parent'];
                     $this->part = &$this->parts[$this->part['parent']];
@@ -489,8 +522,8 @@ class waMailDecode
                                     break;
                             }
                         }
-
                         if (isset($this->part['params']['charset']) && $this->part['params']['charset']) {
+                            $this->part['params']['charset'] = preg_replace("/^[=\"]+/i", "", $this->part['params']['charset']);
                             if (strtolower($this->part['params']['charset']) != 'utf-8') {
                                 $this->part['data'] = @iconv($this->part['params']['charset'], "utf-8//IGNORE", $this->part['data']);
                             }
@@ -513,7 +546,9 @@ class waMailDecode
                                 unset($temp);
                             }
                         }
-                        $this->body[$this->part['type'].'/'.$this->part['subtype']] = $this->part['data'];
+                        if (!isset($this->body[$this->part['type'].'/'.$this->part['subtype']])) {
+                            $this->body[$this->part['type'].'/'.$this->part['subtype']] = $this->part['data'];
+                        }
                 }
                 if (isset($this->part['parent'])) {
                     $this->part_index = $this->part['parent'];

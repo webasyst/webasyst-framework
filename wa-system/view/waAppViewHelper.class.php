@@ -12,16 +12,19 @@ class waAppViewHelper
         $this->wa = $system;
     }
 
-    public function pages($with_params = true)
+    public function pages($parent_id = 0, $with_params = true)
     {
+        if (is_bool($parent_id)) {
+            $with_params = $parent_id;
+            $parent_id = 0;
+        }
         try {
             $page_model = $this->getPageModel();
-            $exclude_ids = waRequest::param('_exclude');
-            $sql = "SELECT id, name, title, url, create_datetime, update_datetime FROM ".$page_model->getTableName().'
-                    WHERE status = 1'.
-                    ($exclude_ids ? " AND id NOT IN (:ids)" : '').
-                    ' ORDER BY sort';
-            $pages = $page_model->query($sql, array('ids' => $exclude_ids))->fetchAll('id');
+            $sql = "SELECT id, parent_id, name, title, full_url, url, create_datetime, update_datetime FROM ".$page_model->getTableName().'
+                    WHERE status = 1 AND domain = s:domain AND route = s:route ORDER BY sort';
+            $pages = $page_model->query($sql, array(
+                'domain' => wa()->getRouting()->getDomain(),
+                'route' => wa()->getRouting()->getRoute('url')))->fetchAll('id');
 
             if ($with_params) {
                 $page_params_model = $page_model->getParamsModel();
@@ -36,7 +39,7 @@ class waAppViewHelper
             $url = $this->wa->getAppUrl(null, true);
 
             foreach ($pages as &$page) {
-                $page['url'] = $url.$page['url'];
+                $page['url'] = $url.$page['full_url'];
                 if (!isset($page['title']) || !$page['title']) {
                     $page['title'] = $page['name'];
                 }
@@ -45,6 +48,21 @@ class waAppViewHelper
                         $page[$k] = htmlspecialchars($v);
                     }
                 }
+            }
+            unset($page);
+            // make tree
+            foreach ($pages as $page_id => $page) {
+                if ($page['parent_id'] && isset($pages[$page['parent_id']])) {
+                    $pages[$page['parent_id']]['childs'][] = &$pages[$page_id];
+                }
+            }
+            foreach ($pages as $page_id => $page) {
+                if ($page['parent_id']) {
+                    unset($pages[$page_id]);
+                }
+            }
+            if ($parent_id) {
+                return isset($pages[$parent_id]['childs']) ? $pages[$parent_id]['childs'] : array();
             }
             return $pages;
         } catch (Exception $e) {

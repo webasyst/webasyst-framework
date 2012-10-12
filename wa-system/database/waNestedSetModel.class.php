@@ -14,7 +14,7 @@
  */
 class waNestedSetModel extends waModel
 {
-    
+
     protected $left = 'left';
     protected $right = 'right';
     protected $depth = 'depth';
@@ -30,6 +30,9 @@ class waNestedSetModel extends waModel
      */
     public function add($data, $parent = null)
     {
+        if (($parent === null) && !empty($data[$this->parent])) {
+            $parent = $data[$this->parent];
+        }
         $parent = (int) $parent;
         if ($parent) {
             // get parent's right value
@@ -38,20 +41,20 @@ class waNestedSetModel extends waModel
                 throw new waDbException("Parent does not exist");
             }
             $right = $result[$this->right];
-            
+
             // move next elements' right to make room
-            $this->exec("UPDATE `{$this->table}` 
+            $this->exec("UPDATE `{$this->table}`
                             SET `{$this->right}` = `{$this->right}` + 2
                             WHERE `{$this->right}` >= i:right", array('right' => $right));
             // move next elements' left
-            $this->exec("UPDATE `{$this->table}` 
+            $this->exec("UPDATE `{$this->table}`
                             SET `{$this->left}` = `{$this->left}` + 2
                             WHERE `{$this->left}` > i:left", array('left' => $right));
             $data = array_merge($data, array(
-                $this->left  => $right,
-                $this->right => $right + 1,
-                $this->depth => $result[$this->depth] + 1,
-                $this->parent => $result[$this->id],
+            $this->left  => $right,
+            $this->right => $right + 1,
+            $this->depth => $result[$this->depth] + 1,
+            $this->parent => $result[$this->id],
             ));
             return $this->insert($data);
         }
@@ -61,64 +64,69 @@ class waNestedSetModel extends waModel
                 $result = 0;
             }
             $data = array_merge($data, array(
-                $this->left  => $result + 1,
-                $this->right => $result + 2,
-                $this->depth => 0,
-                $this->parent => 0,
+            $this->left  => $result + 1,
+            $this->right => $result + 2,
+            $this->depth => 0,
+            $this->parent => 0,
             ));
-           return $this->insert($data);
+            return $this->insert($data);
         }
     }
-    
+
     /**
-     * get subtree 
-     * 
+     * get subtree
+     *
      * @param $id int
      * @param $depth int related depth default is unlimited
      */
     public function getTree($id, $depth = null)
     {
-        $id = (int) $id;
-        $result = $this->getById($id);
-        
-        $left  = (int) $result[$this->left];
-        $right = (int) $result[$this->right];
-        $sql = <<<SQL
-        SELECT * FROM `{$this->table}` 
-         WHERE 
-             `{$this->left}` >= i:left 
-             AND 
-             `{$this->right}` <= i:right
-SQL;
-        if($depth) {
-            $depth += (int) $result[$this->depth];
-            $sql .= <<<SQL
-            AND
-            `{$this->depth}` <= i:depth
-SQL;
+        if(($id = max(0, (int) $id))) {
+            $result = $this->getById($id);
+
+            $left  = (int) $result[$this->left];
+            $right = (int) $result[$this->right];
+        } else {
+            $left = $right = 0;
+        }
+        $sql = "SELECT * FROM `{$this->table}`";
+        $where = array();
+        if($id) {
+            $where[] = "`{$this->left}` >= i:left";
+            $where[] = "`{$this->right}` <= i:right";
+        }
+        if ($depth !== null) {
+            $depth = max(0, intval($depth));
+            if ($id) {
+                $depth += (int) $result[$this->depth];
+            }
+            $where[] = "`{$this->depth}` <= i:depth";
+        }
+        if($where) {
+            $sql .= " WHERE (".implode(') AND (', $where).')';
         }
         $sql .= " ORDER BY `{$this->left}`";
-        
+
         $tree = $this->query($sql,
-                array('left' => $left, 'right' => $right,'depth'=>$depth)
-                )->fetchAll($this->id);
-        
+        array('left' => $left, 'right' => $right,'depth'=>$depth)
+        )->fetchAll($this->id);
+
         return $tree;
     }
-    
+
     /**
      * get parent for node
-     * 
+     *
      * @param $id
      */
     public function getParent($id)
     {
         return $this->getByField($this->parent, $id);
     }
-    
+
     /**
      * get parents's path for node
-     * 
+     *
      * @param $id
      * @param $depth
      */
@@ -127,21 +135,21 @@ SQL;
         $id = (int) $id;
         $element = $this->getById($id);
         $left = (int) $element[$this->left];
-        
+
         $limit = '';
         if ($depth) {
             $limit = 'LIMIT '.$depth;
         }
-        
+
         $result = $this->query("SELECT * FROM `{$this->table}`
                                   WHERE `{$this->left}` < i:left AND `{$this->right}` > i:left
                                   ORDER BY `{$this->depth}` DESC
                                   $limit",array('left' => $left))->fetchAll($this->id);
-        return $result;
+                                  return $result;
     }
-    
+
     /**
-     * 
+     *
      * @param $id
      * @param $parent
      */
@@ -155,66 +163,66 @@ SQL;
         }
 
         if ($element[$this->left] > $parent[$this->left] &&
-            $element[$this->right] < $parent[$this->right]) {
+        $element[$this->right] < $parent[$this->right]) {
             // already into
             return false;
         }
-        
+
         $left = (int) $element[$this->left];
         $right = (int) $element[$this->right];
         $parent_left = (int) $parent[$this->left];
         $parent_right = (int) $parent[$this->right];
-        
+
         $this->updateById($id, array($this->parent => $parent[$this->id]));
         $this->exec("
                 UPDATE `{$this->table}`
-                    SET `{$this->depth}` = `{$this->depth}` + i:parent_depth - i:depth + 1                   
+                    SET `{$this->depth}` = `{$this->depth}` + i:parent_depth - i:depth + 1
                     WHERE
                         `{$this->left}` BETWEEN i:left AND i:right
             ", array('left' => $left, 'right' => $right, 'parent_depth' => $parent[$this->depth], 'depth' => $element[$this->depth]));
-        
+
         $params = array(
-            'left' => $left, 
-            'right' => $right, 
-            'parent_left' => $parent_left, 
+            'left' => $left,
+            'right' => $right,
+            'parent_left' => $parent_left,
             'parent_right' => $parent_right,
             'width' => $right - $left + 1,
             'step' => $parent_right - $left,
         );
-        
+
         // right
         if ($left > $parent_left) {
             $this->exec("
                 UPDATE `{$this->table}`
-                    SET `{$this->left}` = `{$this->left}` + IF(`{$this->left}` BETWEEN i:left AND i:right, i:step, i:width)                     
+                    SET `{$this->left}` = `{$this->left}` + IF(`{$this->left}` BETWEEN i:left AND i:right, i:step, i:width)
                     WHERE
-                        `{$this->left}` >= i:parent_right AND `{$this->left}` <= i:right      
+                        `{$this->left}` >= i:parent_right AND `{$this->left}` <= i:right
             ", $params);
             $this->exec("
                 UPDATE `{$this->table}`
                     SET `{$this->right}` = `{$this->right}` + IF(`{$this->right}` BETWEEN i:left AND i:right, i:step, i:width)
                     WHERE
-                        `{$this->right}` >= i:parent_right AND `{$this->right}` <= i:right   
+                        `{$this->right}` >= i:parent_right AND `{$this->right}` <= i:right
             ", $params);
         }
         // left
         else {
             $this->exec("
                 UPDATE `{$this->table}`
-                    SET `{$this->left}` = `{$this->left}` + IF(`{$this->left}` BETWEEN i:left AND i:right, i:step, -i:width)                     
+                    SET `{$this->left}` = `{$this->left}` + IF(`{$this->left}` BETWEEN i:left AND i:right, i:step, -i:width)
                     WHERE
-                        `{$this->left}` >= i:left AND `{$this->left}` < i:parent_right      
+                        `{$this->left}` >= i:left AND `{$this->left}` < i:parent_right
             ", $params);
             $this->exec("
                 UPDATE `{$this->table}`
                     SET `{$this->right}` = `{$this->right}` + IF(`{$this->right}` BETWEEN i:left AND i:right, i:step, -i:width)
                     WHERE
-                        `{$this->right}` >= i:left AND `{$this->right}` < i:parent_right   
+                        `{$this->right}` >= i:left AND `{$this->right}` < i:parent_right
             ", $params);
         }
         return true;
     }
-    
+
     /**
      * delete subtree
      * @param $id
@@ -232,11 +240,11 @@ SQL;
         $this->exec("DELETE FROM `{$this->table}` WHERE `{$this->left}` BETWEEN i:left AND i:right", array('left' => $left, 'right' => $right));
         $width = $right - $left + 1;
         // update right
-        $this->exec("UPDATE `{$this->table}` 
+        $this->exec("UPDATE `{$this->table}`
                         SET `{$this->right}` = `{$this->right}` - i:width
                         WHERE `{$this->right}` > i:right", array('right' => $right, 'width' => $width));
         // update left
-        $this->exec("UPDATE `{$this->table}` 
+        $this->exec("UPDATE `{$this->table}`
                         SET `{$this->left}` = `{$this->left}` - i:width
                         WHERE `{$this->left}` > i:left", array('left' => $right, 'width' => $width));
         return $this;

@@ -16,9 +16,11 @@ class waGettext
 {
     protected $type;
     protected $file;
+    protected $all;
 
-    public function __construct($file)
+    public function __construct($file, $all = false)
     {
+        $this->all = $all;
         $this->file = $file;
         $path_info = pathinfo($this->file);
         $this->type = $path_info['extension'];
@@ -50,7 +52,7 @@ class waGettext
                 $buffer['msgid_plural'] = $this->prepare(substr($string, 13));
             } elseif (substr($string, 0, 5) == 'msgid') {
                 if ($buffer) {
-                    if (isset($buffer['msgstr']) && $buffer['msgstr']) {
+                    if (isset($buffer['msgstr']) && ($buffer['msgstr'] || $this->all)) {
                         $messages[$buffer['msgid']] = $buffer['msgstr'];
                     }
                     $buffer = array();
@@ -80,7 +82,7 @@ class waGettext
             }
         }
 
-        if ($buffer && !empty($buffer['msgstr'])) {
+        if ($buffer && isset($buffer['msgstr']) && ($buffer['msgstr'] || $this->all)) {
             $messages[$buffer['msgid']] = $buffer['msgstr'];
         }
 
@@ -99,7 +101,10 @@ class waGettext
 
     protected function prepare($string, $reverse = false)
     {
-        $string = trim(trim($string), '"');
+        $string = trim($string);
+        if (substr($string, 0, 1) == '"' && substr($string, -1) == '"') {
+            $string = substr($string, 1, -1);
+        }
         $smap = array('\\n', '\\r', '\\t', '\"');
         $rmap = array("\n", "\r", "\t", '"');
         return str_replace($smap, $rmap, $string);

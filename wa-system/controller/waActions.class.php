@@ -46,7 +46,7 @@ abstract class waActions extends waController
         $this->postExecute();
     }
 
-    public function display(array $data, $template = null)
+    public function display(array $data, $template = null, $return = false)
     {
         $view = waSystem::getInstance()->getView();
 
@@ -72,7 +72,11 @@ abstract class waActions extends waController
             // send headers
             $this->getResponse()->sendHeaders();
             // display
-            $view->display($template);
+            if ($return) {
+                return $view->fetch($template);
+            } else {
+                $view->display($template);
+            }
         }
     }
 

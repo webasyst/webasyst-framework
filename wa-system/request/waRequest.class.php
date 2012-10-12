@@ -137,7 +137,7 @@ class waRequest
             "android"       => "android",
             "blackberry"    => "blackberry",
             "iphone"        => "(iphone|ipod)",
-            "opera"         => "opera mini",
+            "opera"         => "opera (mini|mobi)",
             "palm"          => "(avantgo|blazer|elaine|hiptop|palm|plucker|xiino)",
             "windows"       => "windows\sce;\s(iemobile|ppc|smartphone)",
             "generic"       => "(kindle|mobile|mmp|midp|o2|pda|pocket|psp|symbian|smartphone|treo|up.browser|up.link|vodafone|wap)"
@@ -287,11 +287,11 @@ class waRequest
 
     public static function getTheme()
     {
-        $key = wa()->getConfig()->getApplication();
+        $key = $app_id =  wa()->getConfig()->getApplication();
         $key .= '/'.wa()->getRouting()->getDomain().'/theme';
         if (($theme_hash = self::get('theme_hash')) && ($theme = self::get('set_force_theme')) !== null) {
             $app_settings_model = new waAppSettingsModel();
-            $hash = $app_settings_model->get('site', 'theme_hash');
+            $hash = $app_settings_model->get($app_id, 'theme_hash');
             if ($theme_hash == md5($hash)) {
                 if ($theme && waTheme::exists($theme)) {
                     wa()->getStorage()->set($key, $theme);

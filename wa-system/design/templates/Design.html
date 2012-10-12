@@ -1,0 +1,301 @@
+{if $options.codemirror}
+<link rel="stylesheet" href="{$wa_url}wa-content/js/codemirror/lib/codemirror.css">
+<script src="{$wa_url}wa-content/js/codemirror/lib/codemirror.js"></script>
+<script src="{$wa_url}wa-content/js/codemirror/mode/xml/xml.js"></script>
+<script src="{$wa_url}wa-content/js/codemirror/mode/javascript/javascript.js"></script>
+<script src="{$wa_url}wa-content/js/codemirror/mode/css/css.js"></script>
+<script src="{$wa_url}wa-content/js/codemirror/mode/htmlmixed/htmlmixed.js"></script>
+{/if}
+
+{if $options.js}
+<script src="{$wa_url}wa-content/js/jquery-wa/wa.editor.js?v{$wa->version()}"></script>
+{/if}
+
+<style>
+    .wa-design { margin-bottom: 80px; }
+
+    .wa-editor-core-wrapper { background: white;}
+    .wa-design-gray-toolbar { background: #eee; padding-left: 15px; padding-bottom: 13px; }    
+    .wa-design-gray-toolbar h4 { font-size: 1.3em;}
+    .wa-design-save-panel { position: fixed; bottom: 0; left: 0; right: 0; background: #eee; padding-left: 420px; }
+    
+    .wa-app-block { margin: 0; padding: 15px 15px 5px 42px;}
+    .wa-app-block span.hint { white-space: nowrap;}
+    .wa-app-block h2.short-header { line-height: 0.9em; vertical-align: top; min-width: 166px; font-weight: normal; font-size: 1.3em; }
+    .wa-app-block h2.short-header img { float: left; margin: -5px 7px 0 -32px; width: 24px; height: 24px; vertical-align: middle;box-sizing:border-box; -moz-box-sizing:border-box; -webkit-box-sizing:border-box}
+    .wa-app-block h2.short-header .hint { font-size: 0.66em; }
+
+    .wa-dropdown { float: right; margin: 5px 20px 0 0; }
+    .wa-dropdown .wa-dropdown-content { padding: 20px;  width: auto; width: 560px;  min-height: 180px; max-height: 310px; overflow: auto; overflow-x: hidden;}
+    .wa-dropdown .wa-dropdown-content .field .name .inline-link b i { font-weight: bold; }
+    .wa-dropdown .wa-dropdown-content .field.subfield .name { margin-left: 20px; }
+    .wa-dropdown .wa-dropdown-content .field.subfield .name .inline-link b i { font-weight: normal; font-size: 0.9em; }
+    .wa-dropdown .wa-drop-link { position: relative; padding: 6px 0 0 ; display: block;}
+    .wa-dropdown .wa-dropdown-block { display: none; position: absolute; bottom:1.4em; right:0; background: #F3F3F3; border: 2px solid #AAAAAA; box-shadow: 0 2px 10px #777; -webkit-box-shadow: 0 2px 10px #777; -moz-box-shadow: 0 2px 10px #777; -o-box-shadow: 0 2px 10px #777; z-index: 100;}
+    .wa-dropdown ul.tabs { height: 45px; padding-top: 6px; }
+    .wa-dropdown ul.tabs li.selected a { background: #fff;}
+    .wa-dropdown ul.tabs li.no-tab { min-width: 70px;}
+    .wa-dropdown ul.tabs li a { position: relative; padding:5px 15px 8px; height: 30px;}
+    .wa-dropdown ul.tabs li.no-tab { padding:4px 0.8em 0 40px;}
+    .wa-dropdown ul.tabs li.no-tab .hint { font-weight: bold;}
+    .wa-dropdown ul.tabs li.no-tab p { margin: 0 ; line-height: 16px; white-space: nowrap;}
+    .wa-dropdown ul.tabs li.no-tab img { float: left; vertical-align: top; margin:2px 0 0 -32px; width: 24px; height: 24px; }
+    .wa-dropdown .field .name { word-wrap: break-word; }
+
+    li.error a { color: red; }
+
+    .wa-themes { background: url({$wa_url}wa-content/img/cloth-background-light.jpg); box-shadow: 0 6px 10px -5px #777 inset; }
+    .wa-themes ul.thumbs { padding: 40px 20px; margin-top: 0; }
+    .wa-themes ul.thumbs li { text-align: center; margin-right: 5px; }
+    .wa-themes ul.thumbs li a h5 { text-shadow: 0 1px 0px #eee; color: #000; font-size: 1.1em; margin-bottom: 10px; }
+    .wa-themes ul.thumbs li a .wa-theme-cover { width: 200px; height: 220px; overflow: hidden; box-shadow: 0 2px 9px #777; margin: 0 auto 10px; background: #fff; }
+    .wa-themes ul.thumbs li a .wa-theme-cover span.hint { margin-top: 100px; display: block; }
+    .wa-themes ul.thumbs li a:hover .wa-theme-cover { box-shadow: 0 4px 13px #666; }
+    .wa-themes ul.thumbs li i.icon10 { display: none; }
+    .wa-themes ul.thumbs li:hover i.icon10 { display: inline-block; position: absolute; margin-left: 5px; display: none\9; }
+    .wa-themes ul.thumbs li strong { padding: 2px 4px 1px; color: #000; background: #ffb; }
+    .wa-themes ul.thumbs li strong.wa-theme-in-use { color: #fff; font-style: italic; background: #5a4; }
+    .wa-themes ul.thumbs li strong.wa-theme-installed { background: #aaa; color: #fff; }
+
+    .wa-theme-preview i.icon16 { margin-right: 5px; }
+
+    .wa-theme-about h1 { margin-bottom: 20px; }
+    .wa-theme-about p { line-height: 1.5em; }
+    .wa-theme-about pre { background: none repeat scroll 0 0 #EEEEEE; border-left: 3px solid #CCCCCC; color: #777777; font-size: 0.9em; padding: 20px; }
+
+    ul.menu-h.wa-theme-filter-colors li { border-radius: 20px; padding: 8px; margin-right: 5px; box-shadow: 0 1px 2px #777; }
+    ul.menu-h.wa-theme-filter-colors li.wa-themes-all { border-color: transparent; box-shadow: none; }
+    ul.menu-h.wa-theme-filter-colors li.wa-themes-white { background: #fff; }
+    ul.menu-h.wa-theme-filter-colors li.wa-themes-black { background: #444; }
+    ul.menu-h.wa-theme-filter-colors li.wa-themes-red { background: #ce4444; }
+    ul.menu-h.wa-theme-filter-colors li.wa-themes-green { background: #5dc166; }
+    ul.menu-h.wa-theme-filter-colors li.wa-themes-blue { background: #33a5d4; }
+    ul.menu-h.wa-theme-filter-colors li.wa-themes-yellow { background: #e7d400; }
+    ul.menu-h.wa-theme-filter-colors li.wa-themes-purple { background: #8963a9; }
+
+    ul.menu-h.wa-theme-filter-price li { font-size: 0.9em; margin-top: 3px; padding: 5px 0; }
+    ul.menu-h.wa-theme-filter-price li.selected a { background: #ddd; }
+    .wa-theme ul.menu-v a.disabled { color: #aaa; }
+    
+    ul.with-icons.wa-theme { padding: 0 5px 0 3px; margin-top: 12px; }
+    ul.with-icons.wa-theme li a { padding-left: 33px; }
+    .wa-theme-routes { padding-left:22px; }
+    .wa-theme-block { margin-top: 20px;}
+    .wa-theme-block ul.wa-theme li { padding: 4px 2px 4px 24px;}
+    .wa-theme-block ul.wa-theme li.top-padded { padding-top: 15px; }
+    .wa-theme-block ul.wa-theme li a { padding-left: 30px; word-break: break-all; }
+    .wa-theme-block h4 { margin: 10px 10px 0;}
+    
+    .CodeMirror-scroll {
+        height: auto;
+        overflow-y: hidden;
+        overflow-x: auto;
+    }
+        
+</style>
+
+{if $options.container}
+<div class="shadowed wa-design">
+{/if}
+    <div id="wa-design-sidebar" class="sidebar left200px" style="min-height:300px">
+        {include file="`$template_path`Sidebar.html"}
+    </div>
+    <div id="wa-design-container" class="content left200px bordered-left blank">
+        <div  class="block double-padded">
+            [s`Loading`]... <i class="icon16 loading"></i>
+        </div>
+        <div class="clear"></div>
+    </div>
+    <script>
+
+        function waDesignConfirm() {
+            if ($("#wa-design-button").length && $('#wa-design-button').hasClass('yellow')) {
+                if (!confirm("[s`Unsaved changes will be lost if you leave this page now. Are you sure?`]")) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        $("#wa-theme-upload-link").click(function () {
+            if (!waDesignConfirm()) return false;
+            $(".wa-theme-dialog-error").text('');
+            $("#wa-theme-upload-dialog div.loading").hide();
+            $("#wa-theme-upload-dialog").waDialog({
+                disableButtonsOnSubmit: true,
+                onSubmit: function () {
+                    $("#wa-theme-upload-dialog div.loading").show();
+                    $("#wa-theme-upload-iframe").one('load', function () {
+                        $("#wa-input-file").replaceWith('<input id="wa-input-file" type="file" name="theme_files[]" multiple="" >');
+                        $("#wa-input-file").bind('change', function () {
+                            $("#wa-theme-upload-form").submit();
+                        });
+                        var response;
+                        try {
+                            response = $.parseJSON($(this).contents().text());
+                            if (response.status == 'fail') {
+                                $("#wa-theme-upload-dialog div.loading").hide();
+                                $("#wa-input-file").replaceWith('<input id="wa-input-file" type="file" name="theme_files[]" multiple="" >');
+                                handleError(response);
+                            } else if (response.status == 'ok') {
+                                $("#wa-theme-upload-dialog").hide();
+                                $(".wa-theme-dialog-error").text('');
+                                location.reload();
+                            }
+                        } catch(e) {
+                            alert(e.message + $(this).contents().text());
+                        }
+                    });
+
+                },
+                onLoad: function () {
+
+                }
+            });
+            return false;
+        });
+
+        function handleError(data) {
+            var error = '';
+            if ( typeof data.errors == 'string') {
+                error += (error?'\n':'') + data.errors;
+            } else {
+                for(error_item in data.errors) {
+                    error += (error?'\n':'') + data.errors[error_item][0];
+                }
+            }
+            if($(".dialog:visible").length) {
+                $(".dialog:visible .wa-theme-dialog-error").html(error+'<br><br>');
+            } else if($(".wa-theme-dialog-error:first:visible").length) {
+                $(".wa-theme-dialog-error:first:visible").html('<br><br>'+error+'<br><br>');
+            } else {
+                alert('Error:'+error);
+            }
+            $("#wa-theme-name-dialog input[type=submit]").removeAttr('disabled');
+            $("#wa-theme-upload-dialog input[type=submit]").removeAttr('disabled');
+        };
+
+        $(".wa-theme-preview").click(function () {
+            var url = $(this).attr('href');
+            if (!$(this).hasClass('used')) {
+                $("#wa-current-theme").html($(this).parents('div:first').find('h4').text());
+                $("#wa-design-preview").waDialog({
+                    esc: false,
+                    onSubmit: function () {
+                        $("#wa-design-preview").hide();
+                        $("body").append($('<iframe style="display:none" src="' + url.replace(/(set_force_theme=).*$/, '$1') + '" />').load(function () {
+                            $(this).remove();
+                        }));
+                        return false;
+                    }
+                });
+            }
+        });
+
+        $("#wa-design-sidebar h2 a").click(function () {
+            if (!waDesignConfirm()) return false;
+        });
+
+        $("div.wa-theme-block ul li").on('click', 'a', function () {
+            if (!waDesignConfirm()) return false;
+            $("#wa-design-sidebar li.selected").removeClass('selected');
+            $(this).parent().addClass('selected');
+            $.wa.setHash($(this).attr('href'));
+            {if $options.is_ajax}
+                return false;
+            {else}
+                waDesignLoad();
+            {/if}
+        });
+
+        $("#wa-theme-link").on('click', function () {
+            if (!waDesignConfirm()) return false;
+            $("div.wa-theme-block ul li.selected").removeClass('selected');
+            $(this).parent().addClass('selected');
+            $.wa.setHash($(this).attr('href'));
+            {if !$options.is_ajax}
+            waDesignLoad();
+            {/if}
+            return false;
+        });
+
+        var wa_design_not_load = false;
+        function waDesignLoad(hash) {
+            if (wa_design_not_load) {
+                wa_design_not_load = false;
+                return;
+            }
+            if (hash  === undefined) {
+                var hash = location.hash.replace(/\/$/, '');
+                hash = hash.replace(/.*\/([^\/])/, '$1');
+            }
+            if (hash.length) {
+                if (hash == 'themes') {
+                    $("#wa-design-container").load("?module=design&action=themes", function () {
+                        if ($(".s-scrollable-part").length) {
+                            $(".s-scrollable-part").scrollTop(0);
+                        } else {
+                            $(document).scrollTop(0);
+                        }
+                    });
+                } else {
+                    if (hash.indexOf('action=') == -1) {
+                        hash = 'action=edit&' + hash;
+                    }
+                    $("#wa-design-container").load("?module=design&" + hash, function (responseText, textStatus, XMLHttpRequest) {
+                        if ($(".s-scrollable-part").length) {
+                            $(".s-scrollable-part").scrollTop(0);
+                        } else {
+                            $(document).scrollTop(0);
+                        }
+                        try{
+                            if (response = $.parseJSON(responseText)) {
+                                if(response.data && response.data.redirect) {
+                                    var href = location.href.replace(/(\?|#).*$/,'') + response.data.redirect;
+                                    location.replace(href);
+                                }
+                            }
+                        }catch(e) {}
+                    });
+                }
+            } else {
+                $("div.wa-theme-block ul li a:first").click();
+            }
+        }
+        $(document).ready(function () {
+            $("div.wa-theme-block h4.heading").click(function (e, not_save) {
+                var h = $(this);
+                var k = '{$wa->app()}/design/theme-' + h.attr('data-hash');
+                var is_save = !(not_save || false)
+                if (is_save) {
+                    if (!$.storage.get(k)) {
+                        $.storage.set(k, 1);
+                    } else {
+                        $.storage.del(k);
+                    }
+                }
+                var ul = h.parent().children('ul.wa-theme');
+                if (h.find('i').hasClass('darr')) {
+                    h.find('i').removeClass('darr').addClass('rarr');
+                    ul.hide();
+                } else {
+                    h.find('i').removeClass('rarr').addClass('darr');
+                    ul.show();
+                }
+            });
+            $("div.wa-theme-block h4.heading").each(function () {
+                if ($.storage.get('{$wa->app()}/design/theme-' + $(this).attr('data-hash'))) {
+                    $(this).trigger('click', true);
+                }
+            });
+            $('#wa-design-sidebar a[href="' + location.hash + '"]').parent().addClass('selected');
+            {if !$options.is_ajax}
+                waDesignLoad();
+            {/if}
+        });
+
+    </script>
+{if $options.container}
+</div>
+{/if}
+

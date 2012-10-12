@@ -12,3 +12,8 @@ CLI;
         fclose($fp);
     }
 }
+$paths = array('log','cache','config','installer');
+foreach ($paths as $path) {
+    $path = waSystem::getInstance()->getConfig()->getPath($path);
+    waFiles::protect($path);
+}

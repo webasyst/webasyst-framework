@@ -1,0 +1,53 @@
+<div class="block wa-design-gray-toolbar">
+    {*
+    <div class="block half-padded float-right">
+        <ul class="menu-h wa-theme-filter-price">
+            <li class="selected"><a href="#" class="inline-link"><b><i>[s`All`]</i></b></a></li>
+            <li><a href="#" class="inline-link"><b><i>[s`Paid`]</i></b></a></li>
+            <li><a href="#" class="inline-link"><b><i>[s`Free`]</i></b></a></li>
+        </ul>
+    </div>
+
+    <div class="block float-left">
+        <select>
+            <option>[s`All categories`]</option>
+            <option>[s`Installed themes only`]</option>
+            <option>--</option>
+            <option>Apparel</option>
+            <option>Automobile</option>
+            <option>Computers & Mobile</option>
+            <option>Hardware</option>
+            <option>Music</option>
+            <option>Photo equipment</option>
+            <option>Software</option>
+        </select>
+    </div>
+
+    <div class="block half-padded float-left">
+        <ul class="menu-h wa-theme-filter-colors">
+            <li class="wa-themes-all"><input type="radio" checked="checked" name="wa-theme-color">
+            [s`All colors`]</li>
+            <li class="wa-themes-white"><input type="radio" name="wa-theme-color"></li>
+            <li class="wa-themes-black"><input type="radio" name="wa-theme-color"></li>
+            <li class="wa-themes-red"><input type="radio" name="wa-theme-color"></li>
+            <li class="wa-themes-green"><input type="radio" name="wa-theme-color"></li>
+            <li class="wa-themes-blue"><input type="radio" name="wa-theme-color"></li>
+            <li class="wa-themes-yellow"><input type="radio" name="wa-theme-color"></li>
+            <li class="wa-themes-purple"><input type="radio" name="wa-theme-color"></li>
+        </ul>
+    </div>
+    *}
+
+    <h4>{$app.name|string_format:'[s`Design themes for %s`]'|escape} <i class="icon16 loading"></i></h4>
+    <span class="hint">[s`Theme list is downloaded from webasyst.com website.`]</span>
+
+</div>
+<div class="wa-themes">
+    <script type="text/javascript">
+    $('div.wa-themes:first').load('{$wa_backend_url}installer/?module=themes&action=view&slug={$app_id}',function(){
+        $('.wa-design-gray-toolbar h4 i').hide();
+    });
+    </script>
+    <div class="clear"></div>
+</div>
+

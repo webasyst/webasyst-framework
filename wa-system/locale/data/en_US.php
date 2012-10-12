@@ -22,5 +22,6 @@ return array(
             10 => '-',
             100 => ' and '
         ),
-    )
+    ),
+	'currency' => 'USD',
 );

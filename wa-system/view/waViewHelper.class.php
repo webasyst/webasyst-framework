@@ -346,19 +346,82 @@ HTML;
         return $this->wa->getEnv();
     }
 
-    public function snippet($id)
+    public function block($id)
     {
         if ($id &&  $this->wa->appExists('site')) {
             wa('site');
-            $model = new siteSnippetModel();
-            $snippet = $model->getById($id);
+            $model = new siteBlockModel();
+            $block = $model->getById($id);
 
-            if ($snippet) {
-                //$cache_id = $this->view->getCacheId();
-                return $this->view->fetch('string:'.$snippet['content']);//, $cache_id ? $cache_id : null);
+            if (!$block && strpos($id, '.') !== false) {
+                list($app_id, $id) = explode('.', $id);
+                $path = $this->wa->getConfig()->getAppsPath($app_id, 'lib/config/site.php');
+                if (file_exists($path)) {
+                    $site_config = include($path);
+                    if (isset($site_config['blocks'][$id])) {
+                        if (!is_array($site_config['blocks'][$id])) {
+                            $block = array('content' => $site_config['blocks'][$id]);
+                        } else {
+                            $block = $site_config['blocks'][$id];
+                        }
+                    }
+                }
+            }
+            if ($block) {
+                try {
+                    return $this->view->fetch('string:'.$block['content']);
+                } catch (Exception $e) {
+                    if (waSystemConfig::isDebug()) {
+                        return '<pre class="error">'.htmlentities($e->getMessage(),ENT_QUOTES,'utf-8')."</pre>";
+                    } else {
+                        waLog::log($e->__toString());
+                        return '<div class="error">'._ws('Syntax error at block').' '.$id.'</div>';
+                    }
+                }
             }
         }
         return '';
+    }
+
+    public function snippet($id)
+    {
+        return $this->block($id);
+    }
+
+
+    public function sendEmail($to, &$errors)
+    {
+        if (!$to) {
+            $to = waMail::getDefaultFrom();
+        }
+        if (!$to) {
+            $errors['all'] = 'Recipient (administrator) email is not valid';
+            return false;
+        }
+        if (!$this->wa->getCaptcha()->isValid()) {
+            $errors['captcha'] = _ws('Invalid captcha');
+        }
+        $email = $this->post('email');
+        $email_validator = new waEmailValidator();
+        $subject = trim($this->post('subject', 'Website request'));
+        $body = trim($this->post('body'));
+        if (!$body) {
+            $errors['body'] = 'Please define your request';
+        }
+        if (!$email_validator->isValid($email)) {
+            $errors['email'] = implode(', ', $email_validator->getErrors());
+        }
+        if (!$errors) {
+            $m = new waMailMessage($subject, $body);
+            $m->setTo($to);
+            $m->setFrom(array($email => $this->post('name')));
+            if (!$m->send()) {
+                $errors['all'] = 'An error occurred while attempting to send your request. Please try again in a minute.';
+            } else {
+                return true;
+            }
+        }
+        return false;
     }
 
     public function csrf()
@@ -366,9 +429,13 @@ HTML;
         return '<input type="hidden" name="_csrf" value="'.waRequest::cookie('_csrf', '').'" />';
     }
 
-    public function captcha($options = array())
+    public function captcha($options = array(), $error = null)
     {
-        return $this->wa->getCaptcha($options)->getHtml();
+        if (!is_array($options)) {
+            $error = $options;
+            $options = array();
+        }
+        return $this->wa->getCaptcha($options)->getHtml($error);
     }
 
     public function captchaUrl($add_random = true)
@@ -640,7 +707,6 @@ HTML;
 
         return $html;
     }
-
 
     public function __get($app)
     {

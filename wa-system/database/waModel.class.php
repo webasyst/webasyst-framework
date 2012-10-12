@@ -75,7 +75,7 @@ class waModel
             $this->getMetadata();
         }
     }
-    
+
     /**
      * Get meta description of the table and generate fields array
      * @return array
@@ -221,7 +221,10 @@ class waModel
             $trace = debug_backtrace();
             $stack = "";
             foreach ($trace as $i => $row) {
-                $stack .= $i.". ".$row['file'].":".$row['line']."\n".$row['class'].$row['type'].$row['function']."()\n";
+                $stack .= $i.". ".$row['file'].":".$row['line']."\n".
+                    (isset($row['class']) ? $row['class'] : '').
+                    (isset($row['type']) ? $row['type'] : '').
+                    $row['function']."()\n";
             }
             waLog::log($error."\nStack:\n".$stack, 'db.log');
             throw new waDbException($error, $this->adapter->errorCode());
@@ -469,7 +472,7 @@ class waModel
         }
         return true;
     }
-    
+
     public function multiInsert($data)
     {
         $values = array();
@@ -498,7 +501,7 @@ class waModel
                     } else {
                         $row_values[$this->escapeField($field)] = $this->getFieldValue($field, $value);
                     }
-                } 
+                }
             }
             $fields = array_keys($row_values);
             if ($multi_field) {
@@ -616,7 +619,9 @@ class waModel
             $sql .= " WHERE ".$where;
         }
         if ($limit) {
-            $sql .= " LIMIT ".(int)$limit; 
+            $sql .= " LIMIT ".(int)$limit;
+        } elseif (!$all) {
+            $sql .= " LIMIT 1";
         }
 
         $result = $this->query($sql);
@@ -629,9 +634,9 @@ class waModel
     }
 
     /**
-     * 
+     *
      * Returns WHERE condition for the SQL query
-     * 
+     *
      * @param string|array $field
      * @param string|array $value
      * @param bool $add_table_name - add or not table's name in the query
@@ -669,7 +674,7 @@ class waModel
     }
 
     /**
-     * Returns the number of rows in the table with the specified field 
+     * Returns the number of rows in the table with the specified field
      *
      * @param string $field
      * @param string $value
@@ -774,9 +779,9 @@ class waModel
     }
 
     /**
-     * Checks whether or not the connection to the server is working. 
+     * Checks whether or not the connection to the server is working.
      * If it has gone down, an automatic reconnection is attempted.
-     * 
+     *
      * @return bool
      */
     public function ping()

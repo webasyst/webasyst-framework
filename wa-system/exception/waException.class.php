@@ -84,7 +84,7 @@ HTML;
         $result .= var_export($_REQUEST, true);
         $result .= "</pre></div></div>
 <div><h2>Params</h2><pre>";
-        $result .= var_export(waSystem::getInstance()->getRequest()->param(), true);
+        $result .= var_export(waRequest::param(), true);
         $result .= "</pre></div></div>";
         return $result;
     }

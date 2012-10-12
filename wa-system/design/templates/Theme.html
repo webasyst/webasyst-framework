@@ -1,0 +1,224 @@
+<div class="block double-padded blank wa-theme" id="wa-theme-{$theme.id}">
+
+    <h1 class="wa-theme-name">{$theme.name|escape} <span class="hint">{if $theme.type eq waTheme::ORIGINAL}{$theme.original|escape}{else}{$theme.custom|escape}{/if}</span></h1>
+    <p class="small">
+        [s`Last modified`]: <strong>{if $theme.type eq waTheme::ORIGINAL}[s`not modified`]{else}{$theme.mtime|wa_datetime:"humandatetime"}{/if}</strong>
+    </p>
+    <p class="hint">
+        {if $theme.used}[s`This design theme is in use on`]
+            {foreach $theme.used as $url}
+                {if !$url.met}
+                    <a href="{$url.preview}" target="_blank">{$url.preview}</a> <i class="icon10 new-window"></i>
+                {/if}
+            {/foreach}
+        {else}
+            [s`This design theme is not in use. Apply this theme in your website <span class="js-theme-routing-url">Routing settings</span>.`]
+        {/if}
+    </p>
+
+
+    <ul class="menu-v with-icons">
+        <li><a href="?module=design&amp;action=themeDownload&amp;theme={$theme.id}" class="bold"><i class="icon16 download"></i>[s`Download`] <span class="hint">.tar.gz</span></a></li>
+        <li><a class="theme-copy" href="#"><i class="icon16 split"></i>[s`Duplicate`]</a></li>
+        <li><a class="theme-reset{if $theme.type neq waTheme::OVERRIDDEN} disabled{/if}" href="#" title="[s`This will reset all customizations you applied to this design theme. Are you sure?`]"><i class="icon16 broom"></i>[s`Revert theme to original`]</a></li>
+        <li><a class="theme-rename" href="#"><i class="icon16 edit"></i>[s`Rename`]</a></li>
+        <li><i class="icon16 link"></i>[s`Parent theme`]: <strong>{if $theme.parent_theme_id}{$theme.parent_theme_id}{else}[s`not set`]{/if}</strong>  <a class="theme-parent inline" href="#">[s`Change`]</a></li>
+        <li><a class="theme-delete{if $theme.system} disabled{/if}" href="#" title="[s`This will permanently delete theme without the ability to recover. Are you sure?`]"><i class="icon16 delete"></i>[s`Delete theme`]</a></li>
+    </ul>
+    <div class="clear"></div>
+</div>
+
+
+<div class="dialog height200px" id="wa-theme-name-dialog">
+    <div class="dialog-background"> </div>
+    <div class="dialog-window"">
+        <form>
+            <div class="dialog-content">
+                <div class="dialog-content-indent">
+                    <h1 id="wa-dialog-title">[s`Rename`]</h1>
+                    <span class="wa-theme-dialog-error" style="color: red;font-weight: bold;"></span>
+                    <div class="fields form">
+                        <div class="field">
+                            <div class="name">
+                                [s`Theme name`]
+                            </div>
+                            <div class="value">
+                                <input type="text" id="wa-theme-rename-name" name="name" class="bold large" value="{$theme.name|escape}" >
+                            </div>
+                        </div>
+                        <div class="field">
+                            <div class="name">
+                                [s`Theme ID`]
+                            </div>
+                            <div class="value">
+                                {$path}/<input type="text" id="wa-theme-rename-id" name="id" value="{$theme.id}" ><br>
+                                <span class="small">[s`IMPORTANT: Change Theme ID only if you are sure what you are doing. If this theme is in use by any of your websites, you will have to manually update these websites’ app settings to use this or another theme after altering the Theme ID parameter. Otherwise websites may stop working with the “Unable to load template file” error.`]</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="clear"></div>
+            </div>
+            <div class="dialog-buttons">
+                <div class="dialog-buttons-gradient">
+                    <input type="submit" class="button green" value="[s`Save`]">
+                    [s`or`] <a href="#/design/themes/" class="cancel">[s`cancel`]</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<div class="dialog height150px" id="wa-theme-parent-dialog">
+    <div class="dialog-background"> </div>
+    <div class="dialog-window">
+        <form>
+            <div class="dialog-content">
+                <div class="dialog-content-indent">
+                    <h1 id="wa-dialog-title">[s`Parent theme`]</h1>
+                    <span class="wa-theme-dialog-error" style="color: red;font-weight: bold;"></span>
+                    <div class="fields form">
+                        <div class="field">
+                            <div class="name">
+                                [s`Parent theme`]
+                            </div>
+                            <div class="value">
+                                <input type="hidden" name="id" value="{$theme.id}">
+                                <select name="parent_theme_id">
+                                    <option value=""{if !$theme.parent_theme_id} selected="selected"{/if}>[s`Not set`]</option>
+                                {foreach $parent_themes as $app_id => $info}
+                                    <optgroup label="{$info.name|escape}" title="{$app_id}">
+                                        {foreach $info.themes as $parent_theme_id => $theme_name}
+                                            {$parent_theme_id = "`$app_id`:`$parent_theme_id`"}
+                                            <option value="{$parent_theme_id}" title="{$parent_theme_id}"{if $parent_theme_id eq $theme.parent_theme_id} selected="selected"{else if ($parent_theme_id eq "`$theme.app_id`:`$theme.id`") || ($parent_theme_id eq $theme.id)} disabled="disabled"{/if}>{$theme_name|escape}</option>
+                                        {/foreach}
+                                    </optgroup>
+                                {/foreach}
+                                </select>
+                                <br>
+                                <span class="small">[s`IMPORTANT: Theme parenting allows linking HTML templates, CSS files and images from other design themes. If you are about to change parent for a design theme which already has a parent, be aware that existing file links and connections may become corrupted. A design theme can have not more than one parent theme.`]</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="clear"></div>
+            </div>
+            <div class="dialog-buttons">
+                <div class="dialog-buttons-gradient">
+                    <input type="submit" class="button green" value="[s`Save`]">
+                    [s`or`] <a href="#/design/themes/" class="cancel">[s`cancel`]</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var theme_id = "{$theme.id}";
+    $(".theme-rename").on('click', function () {
+        $("#wa-theme-name-dialog").waDialog({
+            disableButtonsOnSubmit: true,
+            onSubmit: function () {
+                $.post("?module=design&action=themeRename", {
+                    theme: theme_id, id: $("#wa-theme-rename-id").val(), name: $("#wa-theme-rename-name").val()
+                }, function (response) {
+                    $("#wa-theme-name-dialog").hide();
+                    if (response.status == 'ok') {
+                        if(response.data.redirect) {
+                            location.href = location.href.replace(/(\?|#).*$/,'') + response.data.redirect;
+                            location.reload();
+                        } else {
+                            location.reload();
+                        }
+                    } else {
+                        alert(response.errors);
+                    }
+                }, "json");
+                return false;
+            }
+        });
+        return false;
+    });
+    $(".theme-parent").on('click', function () {
+        $("#wa-theme-parent-dialog").waDialog({
+            disableButtonsOnSubmit: true,
+            onSubmit: function () {
+                console.log(this);
+                var data = $(this).serialize();
+                console.log(data);
+                $.post("?module=design&action=themeParent", data, function (response) {
+                    $("#wa-theme-parent-dialog").hide();
+                    if (response.status == 'ok') {
+                        location.reload();
+                    } else {
+                        alert(response.errors);
+                    }
+                }, "json");
+                return false;
+            }
+        });
+        return false;
+    });
+
+    $(".theme-copy").on('click', function () {
+        $.post("?module=design&action=themeCopy", { theme: theme_id}, function (response) {
+            if (response.status == 'ok') {
+                if(response.data.redirect) {
+                    location.href = location.href.replace(/(\?|#).*$/,'') + response.data.redirect;
+                    location.reload();
+                } else {
+                    location.reload(true);
+                }
+            } else {
+                alert(response.errors);
+            }
+        }, "json");
+        return false;
+    });
+
+    $(".theme-reset").on('click', function () {
+        if (!$(this).hasClass('disabled') && confirm($(this).attr('title'))) {
+            $.post("?module=design&action=themeReset", { theme: theme_id}, function (response) {
+                if (response.status == 'ok') {
+                    if(response.data.redirect) {
+                        location.href = location.href.replace(/(\?|#).*$/,'') + response.data.redirect;
+                        location.reload();
+                    } else {
+                        location.reload();
+                    }
+                } else {
+                    alert(response.errors);
+                }
+            }, "json");
+        }
+        return false;
+    });
+
+    $(".theme-delete").on('click', function () {
+        if (!$(this).hasClass('disabled') && confirm($(this).attr('title'))) {
+            $.post("?module=design&action=themeDelete", { theme: theme_id}, function (response) {
+                if (response.status == 'ok') {
+                    if(response.data.theme_id) {
+                        $('#wa-theme-block-'+response.data.theme_id).remove();
+                    }
+                    if(response.data.redirect) {
+                        location.href = location.href.replace(/(\?|#).*$/,'') + response.data.redirect;
+                        location.reload();
+                    } else {
+                        location.reload();
+                    }
+                } else {
+                    alert(response.errors);
+                }
+            }, "json");
+
+        }
+        return false;
+    });
+    var url = $('#wa-theme-routing-url');
+    if(url.length) {
+        $('#wa-theme-{$theme.id} .js-theme-routing-url').removeClass('js-theme-routing-url').wrap('<a href="'+url.attr('href')+'"></a>');
+    }
+
+</script>

@@ -1,9 +1,20 @@
 <?php
 
+/**
+ * @see https://code.google.com/apis/console/
+ */
 class googleAuth extends waOAuth2Adapter
 {
 
     protected $check_state = true;
+
+    public function getControls()
+    {
+        return array(
+            'app_id' => 'Client ID',
+            'app_secret' => 'Client secret'
+        );
+    }
 
     public function getRedirectUri()
     {

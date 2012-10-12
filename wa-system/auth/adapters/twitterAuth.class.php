@@ -2,6 +2,15 @@
 
 class twitterAuth extends waAuthAdapter
 {
+
+    public function getControls()
+    {
+        return array(
+            'app_id' => 'Consumer key',
+            'app_secret' => 'Consumer secret'
+        );
+    }
+
     public function auth()
     {
         $storage = waSystem::getInstance()->getStorage();

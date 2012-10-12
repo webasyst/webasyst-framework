@@ -2,17 +2,18 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WebAsyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2012-07-18 11:13+0300\n"
-"Last-Translator: Vladimir V. Tuporshin <vofka@webasyst.net>\n"
+"PO-Revision-Date: 2012-10-12 09:54+0400\n"
+"Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=((((n%10)==1)&&((n%100)!=11))?(0):(((((n%10)>=2)&&((n%10)<=4))&&(((n%100)<10)||((n%100)>=20)))?(1):2));\n"
-"X-Poedit-Language: Russian\n"
-"X-Poedit-Country: Russian Federation\n"
+"Plural-Forms: nplurals=3; plural=((((n%10)==1)&&((n%100)!=11))?(0):(((((n%10)"
+">=2)&&((n%10)<=4))&&(((n%100)<10)||((n%100)>=20)))?(1):2));\n"
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
+"Language: ru_RU\n"
+"X-Generator: Poedit 1.5.4\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
 
@@ -181,7 +182,7 @@ msgstr[0] "цент"
 msgstr[1] "цента"
 msgstr[2] "центов"
 
-#waDate
+# waDate
 msgid "January"
 msgid_plural "January"
 msgstr[0] "Январь"
@@ -1374,7 +1375,7 @@ msgid "Login is required"
 msgstr "Логин обязателен"
 
 # Dashboard text
-msgid "Hi, %s!"
+msgid "Hi %s!"
 msgstr "Привет, %s!"
 
 msgid "This is your Dashboard."
@@ -1383,17 +1384,21 @@ msgstr "Это ваша Панель управления."
 msgid "So far it is empty, but soon it will have useful content."
 msgstr "Сейчас она пустая, но скоро на ней появится полезный контент."
 
-msgid "Until then use icons on the top of this page to work with available applications."
-msgstr "А пока используйте значки наверху этой страницы для работы с доступными приложениями."
+msgid ""
+"Until then use icons on the top of this page to work with available "
+"applications."
+msgstr ""
+"А пока используйте значки наверху этой страницы для работы с доступными "
+"приложениями."
 
-msgid "Thank you for using WebAsyst!"
+msgid "Thank you for using Webasyst!"
 msgstr "Спасибо за использование Вебасист!"
 
-msgid "Login WebAsyst"
+msgid "Login Webasyst"
 msgstr "Вход в Вебасист"
 
-msgid "Create a login and password which you will use to enter WebAsyst."
-msgstr "Введите логин и пароль, с которыми вы будете входить в бекенд Вебасиста."
+msgid "Create the first user in your Webasyst installation."
+msgstr "Создайте первого пользователя-администратора."
 
 msgid "Enter"
 msgstr "Войти"
@@ -1432,17 +1437,19 @@ msgstr "показать на карте"
 msgid "logout"
 msgstr "выйти"
 
-#: /wa-system/webasyst/lib/actions/login/webasystLoginForgot.action.php:43
-msgid "Sorry, we can not recover password for this login name or email. Please refer to your system administrator."
-msgstr "Извините, мы не можем восстановить пароль для указанного логина или email адреса. Пожалуйста, обращайтесь к вашему системному администратору."
-
 #: /wa-system/webasyst/templates/mail/RecoveringPassword.html:1
 msgid "To recover your password please follow this link:"
 msgstr "Для восстановления пароля перейдите по ссылке:"
 
 #: /wa-system/webasyst/templates/mail/RecoveringPassword.html:4
-msgid "IMPORTANT NOTE: If you did not request your password recovery, someone else might be trying to log in using your email address. For security purposes we recommend you to log in to your account and to change your password."
-msgstr "ВАЖНО: Если вы не просили восстановить пароль, то значит кто-то другой пытался подключиться используя ваш логин или email. В целях безопасности мы рекомендуем вам зайти сейчас в ваш аккаунт и изменить пароль."
+msgid ""
+"IMPORTANT NOTE: If you did not request your password recovery, someone else "
+"might be trying to log in using your email address. For security purposes we "
+"recommend you to log in to your account and to change your password."
+msgstr ""
+"ВАЖНО: Если вы не просили восстановить пароль, то значит кто-то другой "
+"пытался подключиться используя ваш логин или email. В целях безопасности мы "
+"рекомендуем вам зайти сейчас в ваш аккаунт и изменить пароль."
 
 #: /wa-system/webasyst/templates/actions/login/LoginPassword.html:57
 msgid "Enter a new password"
@@ -1478,12 +1485,6 @@ msgstr "Восстановление пароля"
 msgid "Back to login page"
 msgstr "Вернуться на страницу входа"
 
-msgid "This field must be unique. The value entered is already set for %NAME_LINK%."
-msgstr "Это поле уникальное. Введенное значение уже установлено для контакта %NAME_LINK%."
-
-msgid "This field must be unique. The value entered is already set for another contact."
-msgstr "Это поле уникальное. Введенное значение уже установлено для другого контакта."
-
 msgid "Duplicates are not allowed for this field."
 msgstr "Дубликаты недопустимы для этого поля."
 
@@ -1494,7 +1495,8 @@ msgid "At least one of these fields must be filled"
 msgstr "Хотя бы одно из этих полей должно быть заполнено"
 
 msgid "Password recovery instructions have been sent to your email address."
-msgstr "Инструкции по восстановлению пароля были отправлены на ваш электронный адрес."
+msgstr ""
+"Инструкции по восстановлению пароля были отправлены на ваш электронный адрес."
 
 msgid "No user with this login name or email has been found."
 msgstr "Пользователь с таким логином или email адресом не найден."
@@ -1520,7 +1522,8 @@ msgstr "все"
 msgid "Error"
 msgstr "Ошибка"
 
-msgid "Enter any login and password so<br> we can create a user account for you"
+msgid ""
+"Enter any login and password so<br> we can create a user account for you"
 msgstr "Введите любые логин и пароль,<br> чтобы мы создали вам аккаунт"
 
 msgid "All contacts"
@@ -1539,7 +1542,7 @@ msgstr "Подполе %s обязательное."
 
 #: /wa-system/contact/waContactField.class.php:308
 msgid "This field is required"
-msgstr "Это поле обязательное."
+msgstr "Это поле обязательное"
 
 #: /wa-system/image/waImage.class.php:51
 msgid "Not an image or invalid image: "
@@ -1575,7 +1578,7 @@ msgstr "Не удовлетворяет условиям."
 
 #: /wa-system/validator/waValidator.class.php:36
 msgid "Required"
-msgstr "Обязательное"
+msgstr "Нужно заполнить"
 
 #: /wa-system/validator/waValidator.class.php:97
 msgid "Invalid"
@@ -1622,7 +1625,8 @@ msgid "Pages"
 msgstr "Страницы"
 
 msgid "When done editing, click “Save” to apply changes."
-msgstr "После завершения редактирования не забудьте нажать на кнопку «Сохранить»"
+msgstr ""
+"После завершения редактирования не забудьте нажать на кнопку «Сохранить»"
 
 msgid "Enable this URL"
 msgstr "Включить показ страницы по этому адресу"
@@ -1654,17 +1658,21 @@ msgstr "URL страницы"
 msgid "Page name"
 msgstr "Название страницы"
 
-msgid "Optional set of custom <em>key=value</em> parameters which can be used within page.html template or this page content as <em>&#123;$page.key&#125;</em>. Each key=value pair should be on a separate line."
-msgstr "Необязательный набор параметров вида <em>key=value</em>, к значениям которых можно обращаться в шаблоне page.html или в содержимом текущей страницы как <em>&#123;$page.key&#125;</em>. Каждая пара key=value должна быть указана на отдельной строке."
+msgid ""
+"Optional set of custom <em>key=value</em> parameters which can be used "
+"within page.html template or this page content as <em>&#123;$page.key&#125;</"
+"em>. Each key=value pair should be on a separate line."
+msgstr ""
+"Необязательный набор параметров вида <em>key=value</em>, к значениям которых "
+"можно обращаться в шаблоне page.html или в содержимом текущей страницы как "
+"<em>&#123;$page.key&#125;</em>. Каждая пара key=value должна быть указана на "
+"отдельной строке."
 
 msgid "http://www.webasyst.com/framework/docs/site/pages/"
 msgstr "http://www.webasyst.com/ru/framework/docs/site/pages/"
 
 msgid "WYSIWYG"
 msgstr "Визуальный редактор"
-
-msgid "The page is not available on the website because “%s” app is not connected in the website structure."
-msgstr "Страница недоступна, потому что приложение «%s» не подключено в структуре веб-сайта"
 
 msgid "New page"
 msgstr "Новая страница"
@@ -1723,11 +1731,19 @@ msgstr "Продолжить"
 msgid "MySQL database"
 msgstr "База данных MySQL"
 
-msgid "Enter connection credentials for the MySQL database which will be used by Webasyst to store system and application data."
-msgstr "Введите настройки подключения к базе данных MySQL, в которой Вебасист создаст таблицы для хранения своих данных и данных приложений."
+msgid ""
+"Enter connection credentials for the MySQL database which will be used by "
+"Webasyst to store system and application data."
+msgstr ""
+"Введите настройки подключения к базе данных MySQL, в которой Вебасист "
+"создаст таблицы для хранения своих данных и данных приложений."
 
-msgid "If you do not know what should be entered here, please contact your hosting provider technical support."
-msgstr "Если вы не знаете, что вводить, обратитесь в службу поддержки вашего хостинг-провайдера."
+msgid ""
+"If you do not know what should be entered here, please contact your hosting "
+"provider technical support."
+msgstr ""
+"Если вы не знаете, что здесь ввести, обратитесь в службу поддержки вашего "
+"хостинг-провайдера."
 
 msgid "Failed to connect to the “%s” database."
 msgstr "Ошибка подключения к базе данных “%s”."
@@ -1784,8 +1800,12 @@ msgid "Files with extensions %s are allowed only."
 msgstr "Допускаются только файлы с расширениями %s"
 
 #: /wa-system/page/templates/PageEdit.html:188
-msgid "The page is not available on the website because “Site” app is not connected in the website structure."
-msgstr "Страница недоступна на сайте, потому что приложение «Сайт» не подключено в правилах маршрутизации этого сайта."
+msgid ""
+"This page will not be visible in the public frontend, because this app is "
+"not connected in the website structure."
+msgstr ""
+"Страница будет недоступна на сайте, потому что приложение не подключено в "
+"правилах маршрутизации этого сайта."
 
 #: /wa-system/page/templates/PageEdit.html:317
 msgid "An error occurred while saving"
@@ -1813,11 +1833,17 @@ msgstr "Неизвестный формат ответа"
 
 #: /wa-system/request/waRequestFile.class.php:189
 msgid "The uploaded file exceeds the upload_max_filesize directive in php.ini."
-msgstr "Размер файла превышает максимально допустимый для загрузки (настройка upload_max_filesize в файле php.ini)."
+msgstr ""
+"Размер файла превышает максимально допустимый для загрузки (настройка "
+"upload_max_filesize в файле php.ini)."
 
 #: /wa-system/request/waRequestFile.class.php:191
-msgid "The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the HTML form."
-msgstr "Размер файла превышает максимально допустимый для данной HTML-формы (настройка формы MAX_FILE_SIZE)."
+msgid ""
+"The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in "
+"the HTML form."
+msgstr ""
+"Размер файла превышает максимально допустимый для данной HTML-формы "
+"(настройка формы MAX_FILE_SIZE)."
 
 #: /wa-system/request/waRequestFile.class.php:193
 msgid "The uploaded file was only partially uploaded."
@@ -1850,10 +1876,6 @@ msgstr "Неизвестное поле %s"
 #: /wa-system/image/waImageGd.class.php:331
 msgid "Can't read font file $font_file"
 msgstr "Ошибка загрузки файла $font_file"
-
-#: /wa-system/view/waViewHelper.class.php:500
-msgid "Authorize either by entering your contact information, or through one of the websites listed above."
-msgstr "Авторизуйтесь с помощью одного из перечисленных сервисов, или введя контактную информацию."
 
 #: /wa-system/view/waViewHelper.class.php:392
 msgid "Reset password"
@@ -1895,3 +1917,393 @@ msgstr "Настройки шаблона"
 msgid "Design"
 msgstr "Дизайн"
 
+msgid "Can edit pages"
+msgstr "Редактирование страниц"
+
+msgid "Can edit design"
+msgstr "Редактирование дизайна"
+
+#: /wa-system/webasyst/templates/actions/login/LoginFirst.html:25
+msgid ""
+"The information provided in this form will be stored in your local Webasyst "
+"installation only, and will not be sent anywhere outside your server."
+msgstr ""
+"Информация, введенная в этой форме, будет сохранена только внутри этой "
+"установки Webasyst и не будет отправлена за пределы вашего сервера."
+
+#: /wa-system/view/waViewHelper.class.php:675
+msgid ""
+"Authorize either by entering your contact information, or through one of the "
+"websites listed above."
+msgstr ""
+"Авторизуйтесь, указав свои контактные данные, или воспользовавшись "
+"перечисленными выше сервисами."
+
+#: /wa-system/contact/waContactField.class.php:349
+msgid ""
+"This field must be unique. The value entered is already set for %NAME_LINK%."
+msgstr ""
+"Значение этого поля должно быть уникальным. Введенное значение уже "
+"используется для %NAME_LINK%."
+
+#: /wa-system/contact/waContactField.class.php:350
+msgid ""
+"This field must be unique. The value entered is already set for another "
+"contact."
+msgstr ""
+"Значение этого поля должно быть уникальным. Введенное значение уже "
+"используется для другого контакта."
+
+#: /wa-system/design/templates/Theme.html:23
+msgid "Rename"
+msgstr "Переименовать"
+
+#: /wa-system/design/templates/Theme.html:28
+msgid "Theme name"
+msgstr "Название темы"
+
+#: /wa-system/design/templates/Theme.html:36
+msgid "Theme ID"
+msgstr "ID темы"
+
+#: /wa-system/design/templates/Theme.html:40
+msgid ""
+"IMPORTANT: Change Theme ID only if you are sure what you are doing. If this "
+"theme is in use by any of your websites, you will have to manually update "
+"these websites’ app settings to use this or another theme after altering the "
+"Theme ID parameter. Otherwise websites may stop working with the “Unable to "
+"load template file” error."
+msgstr ""
+"ВАЖНО: изменяйте ID темы, только еслио вы полностью уверены в своих "
+"действиях. Если эта тема используется в ваших сайтах, вам придется вручную "
+"обновить настройки этих сайтов для использования этой или другой темы после "
+"изменения ID темы. В противном случае ваши сайты могут оказаться нерабочими "
+"из-за ошибки «Невозможно загрузить файл шаблона»."
+
+#: /wa-system/design/templates/Sidebar.html:20
+msgid "not in use"
+msgstr "не используется"
+
+#: /wa-system/design/templates/Sidebar.html:32
+msgid "Theme settings"
+msgstr "Настройки темы"
+
+#: /wa-system/design/templates/Sidebar.html:40
+msgid "Design themes"
+msgstr "Темы оформления"
+
+#: /wa-system/design/templates/Sidebar.html:51
+msgid "Upload theme"
+msgstr "Загрузить тему"
+
+#: /wa-system/design/templates/Sidebar.html:53
+msgid ""
+"Theme must be uploaded as a valid Webasyst design theme archive (.tar.gz "
+"archive with theme files and theme.xml manifest file)."
+msgstr ""
+"Загружаемая тема должна представлять собой правильный архив темы Webasyst "
+"(архив в формате .tar.gz с файлами темы и файлом-манифестом theme.xml)."
+
+#: /wa-system/design/templates/Sidebar.html:56
+msgid "Uploading..."
+msgstr "Загрузка..."
+
+#: /wa-system/design/templates/Sidebar.html:62
+msgid "Upload"
+msgstr "Загрузить"
+
+#: /wa-system/design/templates/ThemesRow.html:10
+msgid "Used on"
+msgstr "Используется на"
+
+#: /wa-system/design/templates/ThemesRow.html:18
+msgid "Theme updated"
+msgstr "Тема обновлена"
+
+#: /wa-system/design/templates/ThemesRow.html:49
+msgid ""
+"All themes files will be deleted permanently without the ability to recover. "
+"Are you sure?"
+msgstr "Все файлы темы будут удалены без возможности восстановления. Удалить?"
+
+#: /wa-system/design/templates/ThemesRow.html:52
+msgid "rollback to the original theme"
+msgstr "восстановить оригинальную тему"
+
+#: /wa-system/design/templates/ThemesRow.html:57
+msgid ""
+"This will permanently delete theme without the ability to recover. Are you "
+"sure?"
+msgstr "Тема будет удалена без возможности восстановления. Удалить?"
+
+#: /wa-system/design/templates/ThemesRow.html:58
+msgid "Delete theme"
+msgstr "Удалить тему"
+
+#: /wa-system/page/templates/PageEdit.html:147
+msgid "Cheat sheet"
+msgstr "Шпаргалка"
+
+#: /wa-system/design/templates/DesignEdit.html:150
+msgid "Theme preview"
+msgstr "Предварительный просмотр"
+
+#: /wa-system/design/templates/DesignEdit.html:151
+msgid ""
+"Design theme “<strong id=\"wa-current-theme\"></strong>” is enabled for your "
+"current session. For all other users theme \"@TODO\" still remains as "
+"default."
+msgstr ""
+"Тема оформления «<strong id=\"wa-current-theme\"></strong>» активирована для "
+"вашего сеанса пользователя. Для всех остальных пользователей основной "
+"остается тема \"@TODO\"."
+
+#: /wa-system/design/templates/DesignEdit.html:156
+msgid "Finish preview session"
+msgstr "Завершить предварительный просмотр"
+
+#: /wa-system/design/templates/Themes.html:5
+msgid "All"
+msgstr "Все"
+
+#: /wa-system/design/templates/Themes.html:6
+msgid "Paid"
+msgstr "Платная"
+
+#: /wa-system/design/templates/Themes.html:7
+msgid "Free"
+msgstr "Бесплатная"
+
+#: /wa-system/design/templates/Themes.html:13
+msgid "All categories"
+msgstr "Все категории"
+
+#: /wa-system/design/templates/Themes.html:14
+msgid "Installed themes only"
+msgstr "Только установленные темы"
+
+#: /wa-system/design/templates/Themes.html:29
+msgid "All colors"
+msgstr "Все цвета"
+
+#: /wa-system/design/templates/Themes.html:41
+msgid "Design themes for %s"
+msgstr "Темы оформления для %s"
+
+#: /wa-system/design/templates/Themes.html:42
+msgid "Theme list is downloaded from webasyst.com website."
+msgstr "Список тем загружается с сайта webasyst.com."
+
+#: /wa-system/design/actions/waDesign.actions.php:240
+msgid "Insufficient file access permissions to save theme settings"
+msgstr "Недостаточные права доступа для сохранения настроек темы."
+
+#: /wa-system/design/actions/waDesign.actions.php:267
+msgid "Insufficient access permissions to save the file"
+msgstr "Недостаточные права доступа для сохранения файла."
+
+#: /wa-system/design/actions/waDesign.actions.php:291
+msgid ""
+"Only latin characters (a—z, A—Z), numbers (0—9) and underline character (_) "
+"are allowed."
+msgstr ""
+"Допускается использовать только латинские буквы (a—z, A—Z), цифры (0—9) и "
+"символ подчеркивания (_)."
+
+#: /wa-system/design/actions/waDesign.actions.php:298
+msgid "File should have one of the allowed extensions:"
+msgstr "Имя файла должно иметь одно из следующих расширений:"
+
+#: /wa-system/page/templates/Page.html:103
+msgid "Unsettled"
+msgstr "Исключено из списка поселений"
+
+#: /wa-system/page/templates/Page.html:110
+msgid "Select route"
+msgstr "Выберите адрес поселения"
+
+#: /wa-system/page/actions/waPage.actions.php:262
+msgid "no-title"
+msgstr "без названия"
+
+#: /wa-system/controller/waForgotPasswordAction.class.php:111
+msgid ""
+"Sorry, we can not recover password for this login name or email. Please "
+"refer to your system administrator."
+msgstr ""
+"Извините, восстановить пароль для указанного имени пользователя или email-"
+"адреса не удалось. Обратитесь к системному администратору."
+
+#: /wa-system/design/actions/waDesign.actions.php:312
+msgid "Please enter a filename"
+msgstr "Введите имя файла"
+
+#: /wa-system/view/waViewHelper.class.php:378
+msgid "Syntax error at block"
+msgstr "Синтаксическая ошибка в блоке"
+
+#: /wa-system/design/templates/Sidebar.html:12
+msgid "Preview"
+msgstr "Предпросмотр"
+
+#: /wa-system/page/templates/PageEdit.html:88
+msgid ""
+"This page is unsettled (unpublished), i.e. not connected to any of your "
+"site’s routing rules. Drag this page out of the Unpublished section in the "
+"left sidebar to connect it to any of your existing site’s routes."
+msgstr ""
+"Страница не опубликована, потому что не прикреплена ни к одному поселению "
+"приложения (правилу маршрутизации). Перетащите страницу из секции "
+"«Неопубликованные», чтобы подключить ее к существующему правилу "
+"маршрутизации."
+
+#: /wa-system/page/templates/Page.html:87
+msgid "Unpublished"
+msgstr "Неопубликованные"
+
+#: /wa-system/page/templates/Page.html:94
+msgid ""
+"There are <strong><span>%d</span> unsettled page(s)</strong>, i.e. pages "
+"which are not connected to any of the site’s routing rules. These pages are "
+"not displayed on your site. To publish these pages now, select the new route "
+"for them:"
+msgstr ""
+"<strong><span>%d</span> страниц</strong> не прикреплены ни к одному "
+"поселению (правилу маршрутизации), и поэтому не показываются на сайте. Чтобы "
+"опубликовать все эти страницы сейчас, укажите правило маршрутизации, к "
+"которому их нужно прикрепить:"
+
+#: /wa-system/page/templates/Page.html:112
+msgid "Unpublished pages"
+msgstr "Неопубликованные страницы"
+
+#: /wa-system/design/templates/Design.html:105
+msgid "Loading"
+msgstr "Загрузка"
+
+#: /wa-system/design/templates/Design.html:113
+msgid "Unsaved changes will be lost if you leave this page now. Are you sure?"
+msgstr "Несохраненные изменения будут потеряны. Продолжить?"
+
+#: /wa-system/design/templates/DesignEdit.html:9
+msgid "View original"
+msgstr "Посмотреть оригинал"
+
+#: /wa-system/design/templates/DesignEdit.html:19
+msgid "Close"
+msgstr "Закрыть"
+
+#: /wa-system/design/templates/DesignEdit.html:34
+msgid "File will be deleted without the ability to recover. Are you sure?"
+msgstr "Файл будет удален без возможности восстановления. Удалить?"
+
+#: /wa-system/design/templates/DesignEdit.html:66
+msgid "Create new file"
+msgstr "Создать новый файл"
+
+#: /wa-system/design/templates/DesignEdit.html:67
+msgid "Link from parent theme"
+msgstr "Файл из родительской темы"
+
+#: /wa-system/design/templates/DesignEdit.html:74
+msgid "File name"
+msgstr "Имя файла"
+
+#: /wa-system/design/templates/DesignEdit.html:78
+msgid "File should have one of the allowed extensions: .html, .css, .js"
+msgstr "Допустимые расширения файла: .html, .css, .js"
+
+#: /wa-system/design/templates/DesignEdit.html:87
+msgid "Optional template description"
+msgstr "Опциональное описание шаблона"
+
+#: /wa-system/design/templates/DesignEdit.html:95
+msgid "Select file"
+msgstr "Выберите файл"
+
+#: /wa-system/design/templates/DesignEdit.html:107
+msgid "all available parent theme files are already linked"
+msgstr "все файлы родительской темы уже подключены"
+
+#: /wa-system/design/templates/DesignEdit.html:112
+msgid "Select a file and click Save button below."
+msgstr "Выберите файл и нажмите кнопку «Сохранить» ниже."
+
+#: /wa-system/design/templates/Sidebar.html:31
+msgid "New file"
+msgstr "Новый файл"
+
+#: /wa-system/design/templates/Sidebar.html:34
+msgid "About"
+msgstr "О теме оформления"
+
+#: /wa-system/design/templates/Theme.html:5
+msgid "Last modified"
+msgstr "Последнее изменение"
+
+#: /wa-system/design/templates/Theme.html:5
+msgid "not modified"
+msgstr "не изменялась"
+
+#: /wa-system/design/templates/Theme.html:8
+msgid "This design theme is in use on"
+msgstr "Эта тема оформления используется по адресу"
+
+#: /wa-system/design/templates/Theme.html:15
+msgid ""
+"This design theme is not in use. Apply this theme in your website <span "
+"class=\"js-theme-routing-url\">Routing settings</span>."
+msgstr ""
+"Эта тема оформления не используется. Чтобы подключить данную тему на сайте, "
+"выберите ее в <span class=\"js-theme-routing-url\">настройках маршрутизации</"
+"span> вашего сайта."
+
+#: /wa-system/design/templates/Theme.html:21
+msgid "Download"
+msgstr "Скачать"
+
+#: /wa-system/design/templates/Theme.html:22
+msgid "Duplicate"
+msgstr "Создать копию"
+
+#: /wa-system/design/templates/Theme.html:23
+msgid ""
+"This will reset all customizations you applied to this design theme. Are you "
+"sure?"
+msgstr ""
+"Все изменения, которые вы вносили в тему оформления, будут потеряны. "
+"Сбросить все изменения?"
+
+#: /wa-system/design/templates/Theme.html:23
+msgid "Revert theme to original"
+msgstr "Восстновить из оригинала"
+
+#: /wa-system/design/templates/Theme.html:84
+msgid "Parent theme"
+msgstr "Родительская тема оформления"
+
+#: /wa-system/design/templates/Theme.html:25
+msgid "not set"
+msgstr "не задана"
+
+#: /wa-system/design/templates/Theme.html:25
+msgid "Change"
+msgstr "Сменить"
+
+#: /wa-system/design/templates/Theme.html:89
+msgid "Not set"
+msgstr "Не задана"
+
+#: /wa-system/design/templates/Theme.html:100
+msgid ""
+"IMPORTANT: Theme parenting allows linking HTML templates, CSS files and "
+"images from other design themes. If you are about to change parent for a "
+"design theme which already has a parent, be aware that existing file links "
+"and connections may become corrupted. A design theme can have not more than "
+"one parent theme."
+msgstr ""
+"ВАЖНО: Подключение родительской темы позволит использовать в данной теме "
+"оформления HTML-шаблоны, CSS-стили и изображения из родительской темы. Если "
+"родительская тема уже задана, то имейте ввиду, что ее смена может привести к "
+"ошибкам доступа к уже используемым файлам родительской темы. Для любой темы "
+"оформления можно задать не более одной родительской темы."

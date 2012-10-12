@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!ELEMENT theme (name+,description*,files*)>
+<!ELEMENT theme (name+,description*,files*,about*)>
 <!ATTLIST theme 
 	id		 CDATA #REQUIRED
 	system	 (1|0) "1"
 	vendor	 CDATA #IMPLIED
+	author	 CDATA #IMPLIED
 	app		 CDATA #REQUIRED
 	version	 CDATA #IMPLIED
 >
@@ -20,4 +21,8 @@
 <!ATTLIST file 
 	path CDATA #REQUIRED
 	custom	 (1|0) "0"
+>
+<!ELEMENT about (#PCDATA)>
+<!ATTLIST about 
+	locale CDATA #REQUIRED
 >

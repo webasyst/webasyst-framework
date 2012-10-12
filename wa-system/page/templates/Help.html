@@ -1,0 +1,56 @@
+<ul class="tabs">
+    {if $app}<li class="no-tab"><img src="{$wa_url}{$app.icon.24}" alt=""><p class="bold">{$file|escape}</p><p><span class="hint">{$app.name|escape}</span></p></li>{/if}
+    {if $vars}<li id="wa-help-vars" class="selected"><a href="#">{$app.name|escape}</a></li>{/if}
+    <li id="wa-help-wa"{if !$vars} class="selected"{/if}><a href="#">$wa</a></li>
+    <li id="wa-help-smarty"><a href="#">Smarty</a></li>
+</ul>
+{if $vars}
+<div id="wa-help-vars-content" class="tab-content wa-dropdown-content">
+    <div class="fields">
+        {foreach from=$vars item=desc key=v}
+        <div class="field">
+            <div class="name"><a href="#" class="inline-link"><b><i>&#123;{$v}&#125;</i></b></a></div>
+            {if !is_array($desc)}<div class="value"><span class="hint">{$desc}</span></div>{/if}
+        </div>
+        {if is_array($desc)}
+        {foreach from=$desc item=sub_desc key=sub_v}
+        <div class="field subfield">
+            <div class="name"><a href="#" class="inline-link"><b><i>&#123;{$sub_v}&#125;</i></b></a></div>
+            <div class="value"><span class="hint">{$sub_desc}</span></div>
+        </div>
+        {/foreach}
+        {/if}
+        {/foreach}
+    </div>
+</div>
+{/if}
+<div id="wa-help-wa-content" class="tab-content wa-dropdown-content" {if $vars}style="display:none"{/if}>
+<div class="fields">
+    {foreach from=$wa_vars item=desc key=v}
+    <div class="field">
+        <div class="name"><a href="#" class="inline-link"><b><i>&#123;{$v}&#125;</i></b></a></div>
+        <div class="value"><span class="hint">{$desc}</span></div>
+    </div>
+    {/foreach}
+</div>
+</div>
+<div id="wa-help-smarty-content" class="tab-content wa-dropdown-content" style="display:none">
+    <div class="fields">
+        {foreach from=$smarty_vars item=desc key=v}
+        <div class="field">
+            <div class="name"><a href="#" class="inline-link"><b><i>{$v|escape}</i></b></a></div>
+            <div class="value"><span class="hint">{$desc}</span></div>
+        </div>
+        {/foreach}
+    </div>
+</div>
+
+<script type="text/javascript">
+    $("#wa-editor-help ul.tabs li a").click(function () {
+        $("#wa-editor-help ul.tabs li.selected").removeClass('selected');
+        var id = $(this).parent().addClass('selected').attr('id') + '-content';
+        $("#wa-editor-help div.tab-content").hide();
+        $('#' + id).show();
+        return false;
+    });
+</script>

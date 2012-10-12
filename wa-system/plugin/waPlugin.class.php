@@ -33,11 +33,73 @@ class waPlugin
         if (!$time) {
             try {
                 $this->install();
-                $app_settings_model->set(array($this->app_id, $this->id), 'update_time', 1);
             } catch (Exception $e) {
                 waLog::log($e->getMessage());
+                throw $e;
+            }
+            $ignore_all = true;
+        } else {
+            $ignore_all = false;
+        }
+
+        $is_debug = waSystemConfig::isDebug();
+
+        if (!$is_debug) {
+            $cache = new waVarExportCache('updates', 0, $this->app_id.".".$this->id);
+            if ($cache->isCached() && $cache->get() <= $time) {
                 return;
             }
+        }
+        $path = $this->path.'/lib/updates';
+        $cache_database_dir = wa()->getConfig()->getPath('cache').'/db';
+        if (file_exists($path)) {
+            $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($path), RecursiveIteratorIterator::SELF_FIRST);
+            $files = array();
+            foreach ($iterator as $file) {
+                /**
+                 * @var SplFileInfo $file
+                 */
+                if ($file->isFile() && preg_match('/^[0-9]+\.php$/', $file->getFilename())) {
+                    $t = substr($file->getFilename(), 0, -4);
+                    if ($t > $time) {
+                        $files[$t] = $file->getPathname();
+                    }
+                }
+            }
+            ksort($files);
+            if (!$is_debug) {
+                // get last time
+                if ($files) {
+                    $keys = array_keys($files);
+                    $cache->set(end($keys));
+                } else {
+                    $cache->set($time ? $time : 1);
+                }
+            }
+            foreach ($files as $t => $file) {
+                try {
+                    if (!$ignore_all) {
+                        include($file);
+                        waFiles::delete($cache_database_dir);
+                        $app_settings_model->set(array($this->app_id, $this->id), 'update_time', $t);
+                    }
+                } catch (Exception $e) {
+                    if ($is_debug) {
+                        echo $e;
+                    }
+                    // log errors
+                    waLog::log($e->__toString());
+                    break;
+                }
+            }
+        } else {
+            $t = 1;
+        }
+        if ($ignore_all) {
+            if (!isset($t) || !$t) {
+                $t = 1;
+            }
+            $app_settings_model->set(array($this->app_id, $this->id), 'update_time', $t);
         }
     }
     

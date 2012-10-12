@@ -49,11 +49,14 @@ class webasystLoginFirstAction extends waViewAction
                 }
                 // create user
                 $user = new waUser();
-                $user['firstname'] = $login;
+                $firstname = waRequest::post('firstname');
+                $user['firstname'] = $firstname ? $firstname : $login;
+                $user['lastname'] = waRequest::post('lastname');
                 $user['is_user'] = 1;
                 $user['login'] = $login;
                 $user['password'] = $password;
                 $user['email'] = $email;
+                $user['locale'] = wa()->getLocale();
                 $user['create_method'] = 'install';
                 if ($errors = $user->save()) {
                     $result = array();

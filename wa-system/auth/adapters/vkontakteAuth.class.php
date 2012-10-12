@@ -16,9 +16,17 @@ class vkontakteAuth extends waOAuth2Adapter
         return self::OAUTH_URL."authorize?client_id=".$this->app_id."&redirect_uri=".urlencode($url);
     }
 
+    public function getControls()
+    {
+        return array(
+            'app_id' => 'ID приложения',
+            'app_secret' => 'Защищенный ключ'
+        );
+    }
+
     public function getAccessToken($code)
     {
-        $url = self::OAUTH_URL."token?client_id=".$this->app_id."&code=".$code."&client_secret=".$this->app_secret;
+        $url = self::OAUTH_URL."token?client_id=".$this->app_id."&code=".$code."&client_secret=".$this->app_secret."&redirect_uri=".urlencode($this->getCallbackUrl());
         $response = $this->get($url);
         return json_decode($response, true);
     }

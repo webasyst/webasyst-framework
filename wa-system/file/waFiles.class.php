@@ -55,8 +55,9 @@ class waFiles
     public static function copy($source_path, $dest_path,$skip_pattern = null)
     {
         if (is_dir($source_path)) {
-            try{
-                if($dir=opendir($source_path)) {
+            try {
+                if ($dir=opendir($source_path)) {
+                    self::create($dest_path);
                     while (false!==($path=readdir($dir))) {
                         if (($path != '.' ) && ($path != '..')) {
                             $destiny=$dest_path.'/'.$path;
@@ -72,7 +73,7 @@ class waFiles
                                 if(!is_dir($source) && file_exists($destiny)){//skip file move on resume
                                     self::delete($destiny);
                                 }
-                                self::copy($source,$destiny,$skip_pattern);
+                                self::copy($source, $destiny, $skip_pattern);
                             }else{
                                 throw new Exception("Not found {$source_path}/{$path}");
                             }
@@ -81,19 +82,19 @@ class waFiles
                     closedir($dir);
                 }
             } catch (Exception $e){
-                if($dir && is_resource($dir)) {
+                if ($dir && is_resource($dir)) {
                     closedir($dir);
                 }
                 throw $e;
             }
         } else {
-            self::create($dest_path);
-            if(@copy($source_path, $dest_path)) {
+            self::create(dirname($dest_path));
+            if (@copy($source_path, $dest_path)) {
                 //TODO copy file permissions
-            }else{
-                if(file_exists($dest_path) && (filesize($source_path)===0)){
+            } else {
+                if (file_exists($dest_path) && (filesize($source_path)===0)) {
                     //It's ok - it's windows
-                }else{
+                } else {
                     throw new Exception("error on copy from {$source_path} to {$dest_path}");
                 }
             }
@@ -114,13 +115,13 @@ class waFiles
 
     /**
      * Create file if not exists or empty if exists and write content into the file.
-     * @param string $source_path full path to file
+     * @param string $path full path to file
      * @param string $content data to write
      */
-    public static function write($source_path, $content)
+    public static function write($path, $content)
     {
-        self::create(dirname($source_path));
-        $h = fopen($source_path, "w+");
+        self::create(dirname($path));
+        $h = fopen($path, "w+");
         if ($h) {
             fwrite($h, $content);
             fclose($h);
@@ -128,10 +129,11 @@ class waFiles
     }
 
     /**
-     * @param $dir
+     * @param string $dir
+     * @param bool $recursive
      * @return array list of all files in given directory
      */
-    public static function listdir($dir) {
+    public static function listdir($dir, $recursive = false) {
         if (!file_exists($dir) || !is_dir($dir)) {
             return array();
         }
@@ -145,7 +147,14 @@ class waFiles
             if ($file == '.' || $file == '..') {
                 continue;
             }
-            $result[] = $file;
+            if ($recursive && is_dir($dir.'/'.$file)) {
+                $files = self::listdir($dir.'/'.$file, $recursive);
+                foreach ($files as $sub_file) {
+                    $result[] = $file.'/'.$sub_file;
+                }
+            } else {
+                $result[] = $file;
+            }
         }
         closedir($dh);
         return $result;
@@ -258,7 +267,7 @@ class waFiles
             $response = wa()->getResponse();
             $file_type = self::getMimeType($attach ? $attach : $file);
             if ($md5) {
-                $md5 = base64_encode(md5_file($file));
+                $md5 = base64_encode(pack('H*',md5_file($file)));
             }
             @ini_set( 'async_send', 1 );
             $sid = wa()->getStorage()->close();
@@ -401,12 +410,7 @@ class waFiles
      */
     public static function protect($path)
     {
-        self::create($path);
-        $path .= '/.htaccess';
-        if (!file_exists($path) && ($fp = fopen($path,'w'))) {
-            fwrite($fp,"Deny from all\n");
-            fclose($fp);
-        }
+        self::write($path.'/.htaccess', "Deny from all\n");
     }
 
 

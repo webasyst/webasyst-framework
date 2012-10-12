@@ -26,6 +26,7 @@
  * @property int $size
  * @property string $tmp_name
  * @property string $error
+ * @property string $extension
  */
 class waRequestFile
 {

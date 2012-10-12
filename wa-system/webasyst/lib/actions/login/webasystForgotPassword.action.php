@@ -14,6 +14,9 @@ class webasystForgotPasswordAction extends waForgotPasswordAction
         }
         $this->template = wa()->getAppPath('templates/actions/forgot/ForgotPassword.html', 'webasyst');
         parent::execute();
+        if ($this->layout) {
+            $this->layout->assign('error', $this->view->getVars('error'));
+        }
     }
 
     protected function getResetPasswordUrl($hash)

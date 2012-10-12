@@ -14,6 +14,14 @@ class yandexAuth extends waOAuth2Adapter
         return "https://oauth.yandex.ru/authorize?response_type=code&client_id=".$this->app_id;
     }
 
+    public function getControls()
+    {
+        return array(
+            'app_id' => 'Id приложения',
+            'app_secret' => 'Пароль приложения'
+        );
+    }
+
     public function getAccessToken($code)
     {
         $url = "https://oauth.yandex.ru/token";

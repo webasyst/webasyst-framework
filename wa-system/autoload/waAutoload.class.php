@@ -274,16 +274,8 @@ class waAutoload
       'waPageModel' => 'page/models/waPage.model.php',
       'waPageParamsModel' => 'page/models/waPageParams.model.php',
       'waPageAction' => 'page/actions/waPage.action.php',
-      'waPageEditAction' => 'page/actions/waPageEdit.action.php',
-      'waPageJsonController' => 'page/actions/waPageJson.controller.php',
-      'waPageSaveController' => 'page/actions/waPageSave.controller.php',
-      'waPageSortController' => 'page/actions/waPageSort.controller.php',
-      'waPageDeleteController' => 'page/actions/waPageDelete.controller.php',
-      'waPageUploadimageController' => 'page/actions/waPageUploadimage.controller.php',
-
       'waPageActions' => 'page/actions/waPage.actions.php',
 
       'waDesignActions' => 'design/actions/waDesign.actions.php',
-      'waThemesActions' => 'design/actions/waThemes.actions.php',
     );
 }

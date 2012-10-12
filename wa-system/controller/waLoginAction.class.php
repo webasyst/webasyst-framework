@@ -20,7 +20,7 @@ abstract class waLoginAction extends waViewAction
 
         // check remember enabled
         if (waRequest::method() == 'get') {
-            $this->view->assign('remember', waRequest::cookie('remember'));
+            $this->view->assign('remember', waRequest::cookie('remember', 1));
         }
 
         $this->saveReferer();

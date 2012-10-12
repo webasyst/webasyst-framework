@@ -195,7 +195,7 @@ class waContactsCollection
                          */
                         if ($f == 'photo_url' || substr($f, 0, 10) == 'photo_url_') {
                             if ($f == 'photo_url') {
-                                $size = null;    
+                                $size = null;
                             } else {
                                 $size = substr($f, 10);
                             }
@@ -230,16 +230,16 @@ class waContactsCollection
                     }
                     continue;
                 }
-                
+
                 $data_fields = $fields;
                 foreach ($data_fields as $k => $field_id) {
                     $f = waContactFields::get($field_id);
                     if ($f && $f instanceof waContactCompositeField) {
                         unset($data_fields[$k]);
                         $data_fields = array_merge($data_fields, $f->getField());
-                    }                    
+                    }
                 }
-                
+
                 $model = $this->getModel($table);
                 $post_data = $model->getData($ids, $data_fields);
 
@@ -577,7 +577,7 @@ class waContactsCollection
                 $sql .= (isset($join['type']) ? " ".$join['type'] : '')." JOIN ".$join['table']." ".$alias." ON ".$on;
             }
         }
-        
+
         if ($with_primary_email) {
             $sql .= " JOIN wa_contact_emails _e ON c.id = _e.contact_id";
         }
@@ -606,7 +606,7 @@ class waContactsCollection
         if (!is_array($fields)) {
             $fields = implode(",", $fields);
             $fields = array_map("trim", $fields);
-        }   
+        }
         $primary_email = false;
         $insert_fields = $select_fields = array();
         foreach ($fields as $k => $v) {
@@ -626,7 +626,7 @@ class waContactsCollection
                     }
                 }
             }
-            
+
         }
         $sql = "INSERT ".($ignore ? "IGNORE " : "")."INTO ".$table." (".implode(",", $insert_fields).")
                 SELECT DISTINCT ".implode(",", $select_fields)." ".$this->getSQL($primary_email).$this->getOrderBy();

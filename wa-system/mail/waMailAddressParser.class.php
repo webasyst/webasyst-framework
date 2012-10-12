@@ -107,7 +107,7 @@ class waMailAddressParser
                         $this->expected = "";
                         $this->skip();
                     }
-                    if ($this->string[$this->offset] == '<') {
+                    if ($this->offset < $this->n && $this->string[$this->offset] == '<') {
                         $this->offset++;
                         $this->expected = '>';
                         $this->buffer_name = str_replace(array("\r\n", "\n", "\t", "  "), " ", trim($this->buffer));

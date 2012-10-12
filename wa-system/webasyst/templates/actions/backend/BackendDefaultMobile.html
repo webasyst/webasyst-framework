@@ -1,18 +1,30 @@
-<!DOCTYPE html> 
-<html> 
-<head> 
+<!DOCTYPE html>
+<html>
+<head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<meta name="apple-mobile-web-app-capable" content="yes" />
 	<meta name="viewport" content="width=device-width; initial-scale=1; maximum-scale=1; user-scalable=0;" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
 	<title>{$wa->accountName()}</title>
-	<script type="text/javascript" src="{$wa_url}wa-content/js/jquery/jquery-1.5.2.min.js"></script>
-	<script type="text/javascript" src="{$wa_url}wa-content/js/jquery-mobile/jquery.mobile-1.0a4.1.min.js"></script>
+	<script type="text/javascript" src="{$wa_url}wa-content/js/jquery/jquery-1.8.1.min.js"></script>
+	<script type="text/javascript" src="{$wa_url}wa-content/js/jquery-mobile/jquery.mobile-1.1.1.min.js"></script>
 	<link rel="stylesheet" href="{$wa_url}wa-content/css/wa/wa-mobile-1.0.css" />
-	<link rel="apple-touch-icon" href="{$wa_url}wa-content/img/favicon-iphone.png" />	
-</head> 
-<body> 
-<div id="wa">
-	<div data-role="page" id="apps">
+	<link rel="apple-touch-icon-precomposed" sizes="144x144" href="{$wa_url}wa-content/img/apple-touch-icon-144x144-precomposed.png">
+	<link rel="apple-touch-icon-precomposed" sizes="114x114" href="{$wa_url}wa-content/img/apple-touch-icon-114x114-precomposed.png">
+	<link rel="apple-touch-icon-precomposed" sizes="72x72" href="{$wa_url}wa-content/img/apple-touch-icon-72x72-precomposed.png">
+	<link rel="apple-touch-icon-precomposed" href="{$wa_url}wa-content/img/apple-touch-icon-57x57-precomposed.png">
+    {if $wa->isMobile() == 'iphone'}
+    <script>
+    $(document).on("click", "a", function(e) {
+        e.preventDefault();
+        location.href = $(this).attr("href");
+    });
+    </script>
+    {/if}
+</head>
+<body>
+<div id="wa" class="wa-app-list" data-role="page">
+	<div id="apps">
 		<div data-role="header" data-position="inline">
 		 	<a href="{$backend_url}?nomobile=1"  rel="external" data-role="button" data-iconpos="notext"  data-icon="mobile-desktop-only"></a>
 			<a href="{$backend_url}?action=logout" rel="external" data-icon="arrow-r" class="ui-btn-right">[`Logout`]</a>
@@ -23,9 +35,9 @@
 				{foreach from=$apps key=app_id item=app}
 					<li><a href="{$backend_url}{$app_id}" rel="external">
 						{if $app.img}<img src="{$wa_url}{$app.img}" />{/if}
-						<h3>{$app.name}&nbsp;{if empty($app.mobile)}<i class="icon10 desktop"></i>{/if}</h3>
+						<h3{if empty($app.mobile)} class="wa-only-desktop"{/if}>{$app.name}</h3>
 					</a></li>
-				{/foreach}				
+				{/foreach}
 			</ul>
 		</div>
 	</div>

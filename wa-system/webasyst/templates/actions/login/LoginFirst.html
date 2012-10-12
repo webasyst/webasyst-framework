@@ -19,8 +19,11 @@
 				<div class="dialog-content">
 					<div class="dialog-content-indent">					
 												
-						<h1>[`Login WebAsyst`] <i class="icon16 lock"></i></h1>
-						<p>[`Create a login and password which you will use to enter WebAsyst.`]</p>
+						<h1>[`Login Webasyst`] <i class="icon16 lock"></i></h1>
+						<p>
+							[`Create the first user in your Webasyst installation.`]
+							<span class="gray">[`The information provided in this form will be stored in your local Webasyst installation only, and will not be sent anywhere outside your server.`]</span>
+						</p>
 						{if !empty($errors.all)}
 						<p class="i-error">{$errors.all}</p>
 						{/if}
@@ -28,16 +31,16 @@
 						  <div class="field-group">
 							<div class="field">
 								<div class="name">
-									[`Login name`]:
+									<strong>[`Login name`]</strong>
 								</div>
 								<div class="value">
-									<input type="text" class="large{if !empty($errors.login)} error{/if}" name="login" value="{$wa->post('login')}" autocomplete="off" />
+									<input type="text" class="large{if !empty($errors.login)} error{/if}" name="login" value="{$wa->request('login')}" autocomplete="off" />
 									<em class="errormsg">{if !empty($errors.login)}{$errors.login}{/if}</em>
 								</div>
 							</div>
 							<div class="field">
 								<div class="name">
-									[`Password`]:
+									<strong>[`Password`]</strong>
 								</div>
 								<div class="value">
 									<input type="password" name="password" class="large{if !empty($errors.password)} error{/if}" />
@@ -46,36 +49,51 @@
 							</div>
 							<div class="field">
 								<div class="name">
-									[`Confirm password`]:
+									<strong>[`Confirm password`]</strong>
 								</div>
 								<div class="value">
 									<input type="password" name="password_confirm" class="large{if !empty($errors.password)} error{/if}" />
 									<em class="errormsg">{if !empty($errors.password)}{$errors.password}{/if}</em>
 								</div>
 							</div>
+						  </div>
+						  <div class="field-group">
+							<div class="field">
+                                  <div class="name">
+                                      [`First name`]
+                                  </div>
+                                  <div class="value">
+                                      <input type="text" name="firstname" value="{$wa->request('firstname')}" />
+                                  </div>
+                            </div>
+                            <div class="field">
+                                  <div class="name">
+                                      [`Last name`]
+                                  </div>
+                                  <div class="value">
+                                      <input type="text" name="lastname" value="{$wa->request('lastname')}" />
+                                  </div>
+                            </div>						  
 							<div class="field">
 								<div class="name">
-									[`Email`]:
+									[`Email`]
 								</div>
 								<div class="value">
-									<input type="text" {if !empty($errors.email)}class="error"{/if} name="email" value="{$wa->post('email')}" />
+									<input type="text" {if !empty($errors.email)}class="error"{/if} name="email" value="{$wa->request('email')}" />
 									<em class="errormsg">{if !empty($errors.email)}{$errors.email}{/if}</em>
 								</div>
 							</div>
-						  </div>
-						  <div class="field-group">							
                             <div class="field">
                                 <div class="name">
-                                    [`Company name`]:
+                                    [`Company name`]
                                 </div>
                                 <div class="value">
-                                    <input type="text" name="account_name" value="{$wa->post('account_name', _ws('Webasyst'))}" />
+                                    <input type="text" name="account_name" value="{$wa->request('account_name', _ws('Webasyst'))}" />
                                 </div>
                             </div>							
 						  </div>
 
 						</div>
-						
 									
 					</div>
 				</div>

@@ -14,6 +14,14 @@ abstract class waAuthAdapter
         }
     }
 
+    public function getControls()
+    {
+        return array(
+            'app_id' => 'App ID',
+            'app_secret' => 'App Secret'
+        );
+    }
+
     public function getOption($name, $default = null)
     {
         return isset($this->options[$name]) ? $this->options[$name] : $default;

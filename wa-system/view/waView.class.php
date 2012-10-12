@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 /*
  * This file is part of Webasyst framework.
@@ -21,10 +21,10 @@ abstract class waView
      * @var waSystem
      */
     protected $system;
-    
+
     protected $options = array();
     protected $helper;
-    
+
     public function __construct(waSystem $system, $options = array())
     {
         $this->system = $system;
@@ -120,19 +120,18 @@ abstract class waView
      */
     public function setThemeTemplate($theme, $template)
     {
-        $this->assign('wa_active_theme_path', $theme->getPath());
+        $this->assign('wa_active_theme_path', $theme->path);
+        $this->assign('wa_active_theme_url', $theme->url);
         $file = $theme->getFile($template);
-        if (!empty($theme['parent_theme_id'])) {
+        if ($parent_theme = $theme->parent_theme) {
             if ($file['parent']) {
-                $theme = new waTheme($theme['parent_theme_id']);
+                $theme = $parent_theme;
             } else {
-                $parent_theme = new waTheme($theme['parent_theme_id']);
-                $this->assign('wa_parent_theme_url', $parent_theme->getUrl());
+                $this->assign('wa_parent_theme_url', $parent_theme->url);
             }
         }
-        $theme_path = $theme->getPath();
-        $this->assign('wa_theme_url', $theme->getUrl());
-        $this->setTemplateDir($theme_path);
-        return file_exists($theme_path.'/'.$template);
+        $this->assign('wa_theme_url', $theme->url);
+        $this->setTemplateDir($theme->path);
+        return file_exists($theme->path.'/'.$template);
     }
 }
