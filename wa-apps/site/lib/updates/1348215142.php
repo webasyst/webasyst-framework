@@ -82,7 +82,9 @@ if (file_exists($routing_path)) {
                             break 2;
                         }
                     }
-                    $model->exec($sql, $data);
+                    if (!isset($data['ids']) || $data['ids']) {
+                        $model->exec($sql, $data);
+                    }
                 }
             }
         }
