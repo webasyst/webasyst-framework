@@ -89,3 +89,7 @@ msgstr "Ошибка"
 #: /wa-apps/guestbook2/themes/default/error.html:4
 msgid "The requested resource is not available."
 msgstr "Запрашиваемая страница недоступна."
+
+#: /wa-apps/guestbook2/templates/layouts/Backend.html:18
+msgid "Records"
+msgstr "Записи"

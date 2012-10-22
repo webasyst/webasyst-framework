@@ -10,5 +10,8 @@ class guestbook2RightConfig extends waRightConfig
     {
         // Право удалять записи
         $this->addItem('delete', 'Can delete posts', 'checkbox');
+
+        // Право редактировать дизайн (шаблоны и темы)
+        $this->addItem('design', _ws('Can edit design'), 'checkbox');
     }
 }

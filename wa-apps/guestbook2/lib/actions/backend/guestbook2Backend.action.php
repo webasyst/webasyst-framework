@@ -9,6 +9,9 @@ class guestbook2BackendAction extends waViewAction
 {
     public function execute()
     {
+
+        $this->setLayout(new guestbook2BackendLayout());
+
         // Создаем экземпляр модели для получения данных из БД
         $model = new guestbook2Model();
         // Получаем все записи гостевой книги из БД
