@@ -12,5 +12,6 @@ class photosDesignActions extends waDesignActions
             throw new waRightsException("Access denued");
         }
         $this->options['is_ajax'] = true;
+        $this->options['js']['storage'] = false;
     }
 }

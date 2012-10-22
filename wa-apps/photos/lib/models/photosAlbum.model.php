@@ -412,7 +412,7 @@ class photosAlbumModel extends waModel
     public function getChildcrumbs($id, $escape = false)
     {
 
-        $sql = "SELECT full_url, name FROM {$this->table} WHERE parent_id = i:id AND status = 1";
+        $sql = "SELECT id, full_url, name, note FROM {$this->table} WHERE parent_id = i:id AND status = 1";
         $result = $this->query($sql, array(
             'id' => $id
         ));
@@ -420,7 +420,8 @@ class photosAlbumModel extends waModel
         foreach ($result as $album) {
             $childcrumbs[] = array(
                 'name' => $escape ? photosPhoto::escape($album['name']) : $album['name'],
-                'full_url' => photosFrontendAlbum::getLink($album)
+                'full_url' => photosFrontendAlbum::getLink($album),
+                'note' => $escape ? photosPhoto::escape($album['note']) : $album['note']
             );
         }
         return $childcrumbs;

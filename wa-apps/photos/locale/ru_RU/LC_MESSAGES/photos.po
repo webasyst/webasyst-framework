@@ -1274,3 +1274,27 @@ msgstr ""
 #: /wa-apps/photos/templates/actions/album/AlbumSettings.html:26
 msgid "This album will not be visible in the public gallery because there are no routing rules for the Photos app in your website settings. Use Site app (Routing section) to settle Photos app on your website and to start publishing photos."
 msgstr "Альбом не будут опубликован на вашем сайте, потому что приложение «Фото» не подключено правилами маршрутизации. Чтобы публиковать фотографии и альбомы, поселите приложение «Фото» в разделе «Маршрутизация» внутри приложения «Сайт»."
+
+#: /wa-apps/photos/templates/layouts/Mobile.html:22
+msgid "Apps"
+msgstr ""
+
+#: /wa-apps/photos/templates/actions-mobile/photo/PhotoList.html:5
+msgid "Upload photo"
+msgstr ""
+
+#: /wa-apps/photos/js/photos.js:253
+msgid "Themes"
+msgstr ""
+
+#: /wa-apps/photos/js/photos.js:238
+msgid "Design"
+msgstr ""
+
+#: /wa-apps/photos/lib/config/site.php:38
+msgid "Returns photo list array by search criteria, e.g. <em>\"tag/vacations\"</em>, <em>\"album/12\"</em>, <em>\"id/1,5,7\"</em>. <em>size</em> parameter indicates thumbnail size. <em>limit</em> parameter is MySQL-like: can be either a number (max number of photos to be returned) or a pair of offset, limit (start from and the max number of records to be returned)"
+msgstr ""
+
+#: /wa-apps/photos/lib/config/site.php:124
+msgid "Latest uploaded photos"
+msgstr ""
