@@ -210,12 +210,16 @@ class waDbMysqliAdapter extends waDbAdapter
                     $type .= ' NOT NULL';
                 }
                 if (isset($field['default'])) {
-                    $type .= " DEFAULT '".$field['default']."'";
+                    if ($field['default'] == 'CURRENT_TIMESTAMP') {
+                        $type .= " DEFAULT ".$field['default'];
+                    } else {
+                        $type .= " DEFAULT '".$field['default']."'";
+                    }
                 }
                 if (!empty($field['autoincrement'])) {
                     $type .= ' AUTO_INCREMENT';
                 }
-                $fields[] = $field_id." ".$type;
+                $fields[] = $this->escapeField($field_id)." ".$type;
             }
         }
         $keys = array();
@@ -225,7 +229,15 @@ class waDbMysqliAdapter extends waDbAdapter
             } else {
                 $k = (!empty($key['unique']) ? "UNIQUE " : "")."KEY ".$key_id;
             }
-            $keys[] = $k." (".implode(', ', $key['fields']).')';
+            $key_fields = array();
+            foreach ($key['fields'] as $f) {
+                if (is_array($f)) {
+                    $key_fields[] = $this->escapeField($f[0])." (".$f[1].")";
+                } else {
+                    $key_fields[] = $this->escapeField($f);
+                }
+            }
+            $keys[] = $k." (".implode(', ', $key_fields).')';
         }
         $sql = "CREATE TABLE IF NOT EXISTS ".$table." (".implode(",\n", $fields);
         if ($keys) {
@@ -233,6 +245,9 @@ class waDbMysqliAdapter extends waDbAdapter
         }
         $sql .= ") ENGINE=MyISAM DEFAULT CHARSET=utf8";
         $this->query($sql);
+        if (!$this->query($sql)) {
+            $this->exception();
+        }
     }
 
     protected function exception()
