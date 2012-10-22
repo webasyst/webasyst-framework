@@ -184,11 +184,16 @@ class waDbMysqliAdapter extends waDbAdapter
             }
             $rows = array();
             while ($row = $this->fetch_assoc($res)) {
+                if ($row['Sub_part']) {
+                    $f = array($row['Column_name'], $row['Sub_part']);
+                } else {
+                    $f = $row['Column_name'];
+                }
                 if (isset($rows[$row['Key_name']])) {
-                    $rows[$row['Key_name']]['fields'][] = $row['Column_name'];
+                    $rows[$row['Key_name']]['fields'][] = $f;
                 } else {
                     $rows[$row['Key_name']] = array(
-                        'fields' => array($row['Column_name'])
+                        'fields' => array($f)
                     );
                     if ($row['Key_name'] != 'PRIMARY' && !$row['Non_unique']) {
                         $rows[$row['Key_name']]['unique'] = 1;

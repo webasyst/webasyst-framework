@@ -152,13 +152,20 @@ class waDbMySQLAdapter extends waDbAdapter
             }
             $rows = array();
             while ($row = $this->fetch_assoc($res)) {
+                if ($row['Sub_part']) {
+                    $f = array($row['Column_name'], $row['Sub_part']);
+                } else {
+                    $f = $row['Column_name'];
+                }
                 if (isset($rows[$row['Key_name']])) {
-                    $rows[$row['Key_name']]['fields'][] = $row['Column_name'];
+                    $rows[$row['Key_name']]['fields'][] = $f;
                 } else {
                     $rows[$row['Key_name']] = array(
-                        'fields' => array($row['Column_name']),
-                        'unique' => $row['Non_unique'] ? 0 : 1
+                        'fields' => array($f)
                     );
+                    if ($row['Key_name'] != 'PRIMARY' && !$row['Non_unique']) {
+                        $rows[$row['Key_name']]['unique'] = 1;
+                    }
                 }
             }
             $result[':keys'] = $rows;

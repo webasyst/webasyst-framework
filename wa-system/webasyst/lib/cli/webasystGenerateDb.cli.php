@@ -15,8 +15,8 @@ class webasystGenerateDbCli extends waCliController
             $params = waRequest::param();
             if (count($params) == 1) {
                 $this->generateSchema($app_id);
-            } elseif (count($params) == 2) {
-                $this->generateSchema($app_id, $params[1]);
+            } elseif (isset($params['update'])) {
+                $this->generateSchema($app_id, '--update');
             } else {
                 array_shift($params);
                 $this->generateSchema($app_id, $params);

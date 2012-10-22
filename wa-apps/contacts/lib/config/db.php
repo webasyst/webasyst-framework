@@ -13,7 +13,7 @@ return array(
             'PRIMARY' => 'id',
             'contact_id' => 'contact_id',
             'accessed' => array('contact_id', 'accessed'),
-            'hash' => array('contact_id', array('hash', 24)),
+            'hash' => array('contact_id', array('hash', '24')),
             'position' => array('contact_id', 'position'),
         ),
     ),
