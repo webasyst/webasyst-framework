@@ -62,6 +62,8 @@ a.s-settings-link.selected { background: #eee; }
 .s-content .wa-page-wysiwyg-html-toggle li a { display: block; color: #888; font-weight: bold; padding: 4px 12px 6px; text-decoration: none; font-size: 0.9em; }
 .s-content .wa-page-wysiwyg-html-toggle li.selected a { background: #fff; }
 .s-content ul.menu-v li.selected a { background: #eaeaea; }
+.s-content h4.heading,
+.s-content .wa-theme-routes span.hint a { word-wrap: break-word; }
 
 .fields .s-app16x16icon-menu-v { position: relative; top: 3px; left: -5px; }
 

@@ -117,6 +117,25 @@ $.wa.site = {
         }
     },
 
+    newsiteAction: function (params) {
+        var params = this.parseParams(params)
+        $("#domain-name").val(params.domain || '');
+        $("#addsite-dialog").waDialog({
+            onSubmit: function () {
+                var f = $(this);
+                $.post(f.attr('action'), f.serialize(), function (response) {
+                    if (response.status == 'ok') {
+                        location.href = '?domain_id=' + response.data.id + '#/settings/';
+                    }
+                }, "json");
+                return false;
+            }
+        });
+        if ($("#s-content .triple-padded .loading").length) {
+            this.defaultAction();
+        }
+    },
+
     designAction: function (params) {
         if ($('#wa-design-container').length) {
             waDesignLoad(params === undefined ? '' : params);
@@ -494,17 +513,7 @@ $.wa.site = {
 
 $(function () {
 	$(".s-add-new-site").live('click', function () {
-		$("#addsite-dialog").waDialog({
-			onSubmit: function () {
-				var f = $(this);
-				$.post(f.attr('action'), f.serialize(), function (response) {
-					if (response.status == 'ok') {
-						location.href = '?domain_id=' + response.data.id + '#/settings/';
-					}
-				}, "json");
-				return false;
-			}
-		});
+        $.wa.site.newsiteAction();
 		return false;
 	});
 
