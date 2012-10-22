@@ -1065,10 +1065,6 @@ msgstr ""
 msgid "Posts of this blog are not visible in the public frontend because there are no routing rules for the Blog app in your website settings. Use Site app (Routing section) to settle Blog app on your website and to start publishing."
 msgstr "Записи этого блога не будут видны в общедоступной части сайта, потому что приложение «Блог» не подключено правилами маршрутизации сайта. Чтобы записи публиковались на сайте, поселите приложение «Блог» в разделе «Маршрутизация» приложения «Сайт»."
 
-#: /wa-apps/blog/templates/actions/settings/Settings.html:67
-msgid "Setup in the <a href=\\"%s\\">Blog app settlement settings</a> within the Site app"
-msgstr ""
-
 #: /wa-apps/blog/templates/actions/settings/Settings.html:107
 msgid "If enabled, all commentators will be authorized and synced with the Contacts app"
 msgstr ""
@@ -1115,4 +1111,16 @@ msgstr ""
 
 #: /wa-apps/blog/themes/default/comments.html:110
 msgid "To add a comment please <a href=\"%s\">sign up</a> or <a href=\"%s\">login</a>"
+msgstr ""
+
+#: /wa-apps/blog/js/compiled/blog-jquery.js:35
+msgid "Cancel"
+msgstr ""
+
+#: /wa-apps/blog/lib/config/site.php:157
+msgid "Latest blog posts"
+msgstr ""
+
+#: /wa-apps/blog/lib/config/site.php:192
+msgid "Latest comments of all blog posts"
 msgstr ""

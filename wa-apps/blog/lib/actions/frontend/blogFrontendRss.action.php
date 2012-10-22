@@ -22,6 +22,7 @@ class blogFrontendRssAction extends blogViewAction
                     break;
                 }
             }
+            $options['params'] = true;
 
             $post_model = new blogPostModel();
             $posts = $post_model

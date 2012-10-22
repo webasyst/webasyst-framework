@@ -96,11 +96,11 @@ msgstr ""
 
 #: /wa-apps/blog/templates/actions/backend/BackendSettings.html:33
 msgid "Blog posts are published and available in the frontend and RSS feed"
-msgstr ""
+msgstr "Blog posts are published and become available in the frontend and via the RSS feed."
 
 #: /wa-apps/blog/templates/actions/backend/BackendSettings.html:34
 msgid "Blog posts are published and available only within Webasyst backend for users who have rights to access this blog"
-msgstr ""
+msgstr "Blog posts are published and become available only within the Webasyst backend for users who have the rights to access this blog."
 
 #: /wa-apps/blog/templates/actions/backend/BackendSettings.html:42
 msgid "Color"
@@ -108,7 +108,7 @@ msgstr ""
 
 #: /wa-apps/blog/templates/actions/backend/BackendSettings.html:50
 msgid "Color coding is used only within Webasyst backend"
-msgstr ""
+msgstr "Color coding is used only in the Webasyst backend."
 
 #: /wa-apps/blog/templates/actions/backend/BackendSettings.html:57
 msgid "Icon"
@@ -148,11 +148,11 @@ msgstr ""
 
 #: /wa-apps/blog/templates/actions/plugins/Plugins.html:39
 msgid "Plugin order defines the order they are executed. Sort plugin list to change the order."
-msgstr ""
+msgstr "Plugins' positions in the list define their execution order. Re-sort the list to change this order."
 
 #: /wa-apps/blog/templates/actions/plugins/Plugins.html:62
 msgid "Plugin does not offer configuration settings."
-msgstr ""
+msgstr "Plugin has no configuration settings."
 
 msgid "To add posts, you must first <a href=\"%s\"> create a new blog</a>."
 msgstr ""
@@ -230,7 +230,7 @@ msgstr ""
 
 #: /wa-apps/blog/templates/actions/post/PostEdit.html:201
 msgid "Autopublication is scheduled for"
-msgstr ""
+msgstr "Auto-publication is scheduled for"
 
 #: /wa-apps/blog/templates/actions/post/PostEdit.html:226
 msgid "Unpublish"
@@ -250,27 +250,27 @@ msgstr ""
 
 #: /wa-apps/blog/lib/actions/frontend/blogFrontendAddComment.controller.php:48
 msgid "Name can not be left blank"
-msgstr ""
+msgstr "Name cannot be left blank"
 
 #: /wa-apps/blog/lib/actions/frontend/blogFrontendAddComment.controller.php:54
 msgid "Email can not be left blank"
-msgstr ""
+msgstr "Email address cannot be left blank"
 
 #: /wa-apps/blog/lib/actions/frontend/blogFrontendAddComment.controller.php:58
 msgid "Email is not valid"
-msgstr ""
+msgstr "Invalid email address"
 
 #: /wa-apps/blog/lib/actions/frontend/blogFrontendAddComment.controller.php:62
 msgid "Site URL is not valid"
-msgstr ""
+msgstr "invalid site URL"
 
 #: /wa-apps/blog/lib/actions/post/blogPostAddComment.controller.php:20
 msgid "Comment text can not be left blank"
-msgstr ""
+msgstr "Comment text cannot be left blank"
 
 #: /wa-apps/blog/lib/actions/frontend/blogFrontendAddComment.controller.php:70
 msgid "Comment length should not exceed 4096 symbols"
-msgstr ""
+msgstr "Comment length should not exceed 4096 characters"
 
 #: /wa-apps/blog/lib/actions/frontend/blogFrontendAddComment.controller.php:100
 msgid "Database error"
@@ -278,7 +278,7 @@ msgstr ""
 
 #: /wa-apps/blog/lib/models/blogPost.model.php:173
 msgid "URL must not contain /"
-msgstr ""
+msgstr "URL should not contain /"
 
 #: /wa-apps/blog/lib/models/blogPost.model.php:176
 msgid "This address is already in use"
@@ -300,7 +300,7 @@ msgstr ""
 
 #: /wa-apps/blog/lib/actions/frontend/blogFrontendAddComment.controller.php:51
 msgid "Name length should not exceed 255 symbols"
-msgstr ""
+msgstr "Name length should not exceed 255 characters"
 
 #: wa-apps/blog/lib/classes/blogPost.class.php:235
 msgid "%d post"
@@ -368,7 +368,7 @@ msgstr ""
 
 #: /wa-apps/blog/templates/actions/backend/BackendSidebar.html:103
 msgid "Belong to private blog"
-msgstr ""
+msgstr "Belong to private blogs"
 
 #: /wa-apps/blog/templates/actions/blog/BlogSettings.html:39
 msgid "Blog type"
@@ -396,7 +396,7 @@ msgstr ""
 
 #: /wa-apps/blog/templates/actions/comments/include.comment.html:43
 msgid "Comment for unpublished post"
-msgstr ""
+msgstr "Comment to an unpublished post"
 
 #: /wa-apps/blog/templates/actions/comments/include.comment.html:47
 msgid "in reply to"
@@ -416,7 +416,7 @@ msgstr ""
 
 #: /wa-apps/blog/templates/actions/post/PostEdit.html:57
 msgid "Deadline is for plan purposes only. It will not automatically published the post, but will highlight the post if publication date is overdue."
-msgstr ""
+msgstr "Deadline is used for planning purposes only. It will not automatically published the post, but it will highlight the post if the publication date is overdue."
 
 #: /wa-apps/blog/templates/dialogs/postSchedule.html:18
 msgid "format"
@@ -432,7 +432,7 @@ msgstr ""
 
 #: /wa-apps/blog/templates/actions/post/PostEdit.html:96
 msgid "Optional set of custom <em>key=value</em> parameters which can be used within a frontend's theme template as <em>&#123;$post.key&#125;</em>. Each key=value pair should be on a separate line."
-msgstr ""
+msgstr "Optional set of custom <em>key=value</em> parameters, which can be used in frontend theme templates as <em>&#123;$post.key&#125;</em>. Each key=value pair must be specified on a separate line."
 
 #: /wa-apps/blog/templates/actions/post/PostEdit.html:245
 msgid "HTML"
@@ -548,11 +548,11 @@ msgstr ""
 
 #: /wa-apps/blog/templates/dialogs/postSchedule.html:26
 msgid "Cron is working properly. Latest execution time: %s"
-msgstr ""
+msgstr "Cron is working properly. Latest execution time: %s."
 
 #: /wa-apps/blog/templates/dialogs/postSchedule.html:30
 msgid "Scheduled publication requires CRON to be properly setup for Webasyst Blog app, which is not the case for this installation. Setup cron for the Blog app with the following command (<a href=\"http://www.webasyst.com/ru/framework/docs/server/cron/\" target=\"_blank\">cron setup instructions</a>):<br /><br /> <strong>%s</strong>"
-msgstr ""
+msgstr "Scheduled publication requires cron to be properly set up for the Blog app, which is currently not the case. Set up cron using the following command (<a href=\"http://www.webasyst.com/en/framework/docs/server/cron/\" target=\"_blank\">cron setup instructions</a>):<br /><br /> <strong>%s</strong>"
 
 #: /wa-apps/blog/lib/classes/blogFrontController.class.php:54
 msgid "Blog not found"
@@ -564,11 +564,11 @@ msgstr ""
 
 #: /wa-apps/blog/lib/actions/blog/blogBlogSettings.action.php:149
 msgid "Blog name must not be empty"
-msgstr ""
+msgstr "Blog name cannot be empty"
 
 #: /wa-apps/blog/lib/actions/comments/blogCommentsAdd.controller.php:51
 msgid "Isn't allowed comment to this post"
-msgstr ""
+msgstr "This post does not allow posting comments."
 
 #: /wa-apps/blog/lib/actions/frontend/blogFrontendComment.controller.php:193
 msgid "Comment not found"
@@ -604,11 +604,11 @@ msgstr ""
 
 #: /wa-apps/blog/lib/actions/post/blogPostImage.controller.php:25
 msgid "Files with extensions %s are allowed only."
-msgstr ""
+msgstr "Only files with name extensions %s are allowed."
 
 #: /wa-apps/blog/lib/actions/post/blogPostImage.controller.php:55
 msgid "File could not bet saved due to the insufficient file write permissions for the %s folder."
-msgstr ""
+msgstr "File could not be saved due to insufficient file write permissions for folder %s."
 
 #: /wa-apps/blog/lib/actions/post/blogPostImage.controller.php:77
 msgid "Failed to upload file %s."
@@ -620,11 +620,11 @@ msgstr ""
 
 #: /wa-apps/blog/lib/classes/blogSlugValidator.class.php:31
 msgid "%subject% URL must not be empty"
-msgstr ""
+msgstr "%subject% URL cannot be empty"
 
 #: /wa-apps/blog/lib/classes/blogSlugValidator.class.php:32
 msgid "%subject% URL is in use. Please enter another URL"
-msgstr ""
+msgstr "%subject% URL is in use. Please enter another URL."
 
 #: /wa-apps/blog/lib/classes/blogSlugValidator.class.php:33
 msgid "%subject% URL is invalid"
@@ -656,15 +656,15 @@ msgstr ""
 
 #: /wa-apps/blog/lib/config/site.php:23
 msgid "All blogs. Plain URLs (%s)"
-msgstr ""
+msgstr "All blogs. Plain URLs (%s)."
 
 #: /wa-apps/blog/lib/config/site.php:24
 msgid "<br />Post URLs: <strong>%s</strong>, e.g. %s<br />Blog post list URLs: <strong>%s</strong>, e.g. %s"
-msgstr ""
+msgstr "<br />Post URLs: <strong>%s</strong>; e.g., %s<br />Blog post list URLs: <strong>%s</strong>; e.g., %s"
 
 #: /wa-apps/blog/lib/config/site.php:27
 msgid "All blogs. Hierarchical URLs (%s)"
-msgstr ""
+msgstr "All blogs. Hierarchical URLs (%s)."
 
 #: /wa-apps/blog/lib/config/site.php:31
 msgid "One blog"
@@ -680,11 +680,11 @@ msgstr ""
 
 #: /wa-apps/blog/lib/config/site.php:65
 msgid "Returns the array of all public blogs. Each blog is an array presenting the blog data"
-msgstr ""
+msgstr "Returns the array of all public blogs. Each blog is an array containing the blog data."
 
 #: /wa-apps/blog/lib/config/site.php:66
 msgid "Returns the array of all posts by <em>blog_id</em>. If <em>blog_id</em> is <em>null</em>, the array of all public posts is returned. Optional parameter <em>number_of_posts</em> limits the number of elements returned"
-msgstr ""
+msgstr "Returns the array of all posts by <em>blog_id</em>. If <em>blog_id</em> is <em>null</em>, the array of all public posts is returned. Optional parameter <em>number_of_posts</em> limits the number of returned elements."
 
 #: /wa-apps/blog/lib/handlers/contacts.links.handler.php:16
 msgid "Posts"
@@ -692,7 +692,7 @@ msgstr ""
 
 #: /wa-apps/blog/lib/models/blogBlog.model.php:125
 msgid "Blog URL is in use. Please enter another URL"
-msgstr ""
+msgstr "Blog URL is in use. Please enter another URL."
 
 #: /wa-apps/blog/lib/models/blogPost.model.php:784
 msgid "Incorrect format"
@@ -716,7 +716,7 @@ msgstr ""
 
 #: /wa-apps/blog/themes/default/index.html:33
 msgid "Login"
-msgstr ""
+msgstr "Log in"
 
 #: /wa-apps/blog/themes/default/index.html:44
 msgid "Subscribe"
@@ -752,7 +752,7 @@ msgstr ""
 
 #: /wa-apps/blog/themes/default/post.html:158
 msgid "Comments for non published posts are disabled"
-msgstr ""
+msgstr "Comments for unpublished posts are disabled."
 
 #: /wa-apps/blog/themes/default/sidebar.html:51
 msgid "Edit blog layout in your <a href=\"%s\">Webasyst backend</a> using “Site” app."
@@ -764,7 +764,7 @@ msgstr ""
 
 #: /wa-apps/blog/templates/actions/post/PostEdit.html:335
 msgid "Image will be uploaded into"
-msgstr ""
+msgstr "Image will be uploaded to"
 
 #: /wa-apps/blog/lib/config/site.php:39
 msgid "Post sub-URL format (%s)"
@@ -808,7 +808,7 @@ msgstr ""
 
 #: /wa-apps/blog/templates/actions/settings/Settings.html:65
 msgid "Setup in the <a href=\"%s\">Blog app settlement settings</a> within the Site app"
-msgstr ""
+msgstr "Set up in <a href=\"%s\">Blog app settlement settings</a> of the Site app"
 
 #: /wa-apps/blog/lib/actions/frontend/blogFrontendComment.controller.php:145
 msgid "Invalid data"
@@ -820,7 +820,7 @@ msgstr ""
 
 #: /wa-apps/blog/templates/actions/settings/Settings.html:101
 msgid "Protect comment submit form with CAPTCHA"
-msgstr ""
+msgstr "Protect the comment submission form with CAPTCHA"
 
 #: /wa-apps/blog/lib/actions/frontend/blogFrontendComment.controller.php:122
 msgid "Invalid captcha code"
@@ -844,7 +844,7 @@ msgstr ""
 
 #: /wa-apps/blog/templates/actions/plugins/Plugins.html:89
 msgid "Plugin %s is installed and working."
-msgstr ""
+msgstr "Plugin %s is installed and enabled."
 
 #: /wa-apps/blog/templates/actions/plugins/Plugins.html:92
 msgid "No configuration options are available for this plugin."
@@ -856,19 +856,19 @@ msgstr ""
 
 #: /wa-apps/blog/lib/classes/blogPost.class.php:115
 msgid "Syntax error at post template"
-msgstr ""
+msgstr "Syntax error in post template"
 
 #: /wa-apps/blog/templates/dialogs/postPublish.html:6
 msgid "Confirm the blog for publishing this post"
-msgstr ""
+msgstr "Confirm the blog selection to publish this post"
 
 #: /wa-apps/blog/templates/actions/settings/Settings.html:106
 msgid "Only registered users can add comments"
-msgstr ""
+msgstr "Only registered users can add comments."
 
 #: /wa-apps/blog/templates/actions/settings/Settings.html:107
 msgid "If enabled, all commentators will be authorized and synced with the Contacts app"
-msgstr ""
+msgstr "If enabled, all comment authors will be authorized and synced with the Contacts app."
 
 #: /wa-apps/blog/lib/config/site.php:94
 msgid "Returns post info by <em>post_id</em> as an array with the following structure: (<em>\"id\"</em>, <em>\"contact_id\"</em>, <em>\"contact_name\"</em>, <em>\"datetime\"</em>, <em>\"title\"</em>, <em>\"text\"</em>, <em>\"status\"</em>, <em>\"url\"</em>, <em>\"blog_id\"</em>, <em>\"comments_allowed\"</em>, <em>\"user\"</em>, <em>\"comment_count\"</em>, <em>\"comment_new_count\"</em>, <em>\"plugins\"</em>, <em>\"icon\"</em>, <em>\"color\"</em>, <em>\"blog_status\"</em>, <em>\"blog_url\"</em>, <em>\"blog_name\"</em>, <em>\"link\"</em>)"
@@ -876,7 +876,7 @@ msgstr ""
 
 #: /wa-apps/blog/themes/default/comments.html:84
 msgid "To add a comment please <a href=\"%s\">sign up</a> or <a href=\"%s\">login</a>"
-msgstr ""
+msgstr "To add a comment, please <a href=\"%s\">sign up</a> or <a href=\"%s\">log in</a>."
 
 #: /wa-apps/blog/themes/default/index.html:40
 msgid "Logout"
@@ -890,18 +890,13 @@ msgstr ""
 msgid "You have successfully signed up."
 msgstr ""
 
-
 #: /wa-apps/blog/templates/layouts/Mobile.html:19
 msgid "Apps"
 msgstr ""
 
 #: /wa-apps/blog/templates/actions/post/PostEdit.html:226
 msgid "Posts of this blog are not visible in the public frontend because there are no routing rules for the Blog app in your website settings. Use Site app (Routing section) to settle Blog app on your website and to start publishing."
-msgstr ""
-
-#: /wa-apps/blog/templates/actions/settings/Settings.html:67
-msgid "Setup in the <a href=\\"%s\\">Blog app settlement settings</a> within the Site app"
-msgstr ""
+msgstr "Posts of this blog are not visible in the public frontend, because there are no routing rules for the Blog app in your website settings. Use Site app (Routing section) to settle Blog app on your website and to start publishing posts."
 
 #: /wa-apps/blog/templates/actions/backend/Backend.html:49
 msgid "Select posts"
@@ -914,3 +909,16 @@ msgstr ""
 #: /wa-apps/blog/js/postEdit.js:86
 msgid "input_maxlength"
 msgstr ""
+
+#: /wa-apps/blog/js/compiled/blog-jquery.js:35
+msgid "Cancel"
+msgstr ""
+
+#: /wa-apps/blog/lib/config/site.php:157
+msgid "Latest blog posts"
+msgstr ""
+
+#: /wa-apps/blog/lib/config/site.php:192
+msgid "Latest comments of all blog posts"
+msgstr ""
+

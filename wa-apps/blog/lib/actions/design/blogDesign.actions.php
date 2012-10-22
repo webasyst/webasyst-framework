@@ -7,8 +7,7 @@ class blogDesignActions extends waDesignActions
         if (!$this->getRights('design')) {
             throw new waRightsException("Access denued");
         }
-        $this->design_url = '?module=design#/';
-        $this->themes_url = '?module=design#/themes';
+        $this->options['js']['storage'] = false;
     }
 
     public function defaultAction()
