@@ -7,10 +7,13 @@ class waDesignActions extends waActions
     protected $themes_url = '#/themes/';
 
     protected $options = array(
-        'codemirror' => true,
         'container' => true,
         'save_panel' => true,
-        'js' => true,
+        'js' => array(
+            'codemirror' => true,
+            'editor' => true,
+            'storage' => true
+        ),
         'is_ajax' => false
     );
 
@@ -27,19 +30,7 @@ class waDesignActions extends waActions
         $routes = $this->getRoutes();
         $themes_routes = $this->getThemesRoutes($themes, $routes);
 
-        // sort themes
-        $temp_themes = array();
-        foreach ($themes_routes as $theme_id => $r) {
-            $temp_themes[$theme_id] = $themes[$theme_id];
-        }
-
-        foreach ($themes as $theme_id => $theme) {
-            if (!isset($temp_themes[$theme_id])) {
-                $temp_themes[$theme_id] = $theme;
-            }
-        }
-
-        $themes = $temp_themes;
+        $themes = $this->sortThemes($themes, $themes_routes);
 
         $template = $this->getConfig()->getRootPath().'/wa-system/design/templates/Design.html';
 
@@ -63,10 +54,26 @@ class waDesignActions extends waActions
             'themes_routes' => $themes_routes,
             'app_id' => $app_id,
             'app' => $app,
-            'routes' => $routes,
             'routing_url' => $routing_url,
             'options' => $this->options
         ), $template);
+    }
+
+    protected function sortThemes($themes, $themes_routes)
+    {
+        // sort themes
+        $result = array();
+        foreach ($themes_routes as $theme_id => $r) {
+            $result[$theme_id] = $themes[$theme_id];
+        }
+
+        foreach ($themes as $theme_id => $theme) {
+            if (!isset($temp_themes[$theme_id])) {
+                $result[$theme_id] = $theme;
+            }
+        }
+
+        return $result;
     }
 
 
@@ -98,6 +105,10 @@ class waDesignActions extends waActions
                     throw new waException(sprintf(_ws('Theme %s for “%s” app not found.'), $theme_id, $app['name']));
                 }
                 $path = $theme->parent_theme->getPath();
+                $parent_file = $theme->parent_theme->getFile($f);
+                if (empty($file['description'])) {
+                    $file['description'] = $parent_file['description'];
+                }
             } else {
                 $path = $theme->getPath();
             }
@@ -139,15 +150,17 @@ class waDesignActions extends waActions
         $preview_url = '';
         foreach ($routes as $r) {
             $t_id = isset($r['theme']) ? $r['theme']: 'default';
-            if (isset($themes[$t_id]) && !isset($themes[$t_id]['preview_url'])) {
-                $url = $r['_url'];
-                $url .= strpos($url, '?') === false ? '?' : '&';
-                $url .= 'theme_hash='.$hash.'&set_force_theme=';
-                if (!$preview_url) {
-                    $preview_url = $url;
+            if (isset($themes[$t_id])) {
+                if (!isset($themes[$t_id]['preview_url'])) {
+                    $url = $r['_url'];
+                    $url .= strpos($url, '?') === false ? '?' : '&';
+                    $url .= 'theme_hash='.$hash.'&set_force_theme=';
+                    if (!$preview_url) {
+                        $preview_url = $url;
+                    }
+                    $themes[$t_id]['is_used'] = true;
+                    $themes[$t_id]['preview_url'] = $url.$t_id;
                 }
-                $themes[$t_id]['is_used'] = true;
-                $themes[$t_id]['preview_url'] = $url.$t_id;
                 $themes_routes[$t_id][$r['_url']] = $r['_url_title'];
             }
         }

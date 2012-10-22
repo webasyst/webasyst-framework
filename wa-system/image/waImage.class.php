@@ -91,6 +91,25 @@ class waImage
         return null;
     }
 
+    private static function getDefaultAdapter()
+    {
+        $adapter = null;
+        $adapters = array();
+        if (self::$default_adapter) {
+            $adapters[] = self::$default_adapter;
+        }
+        $adapters[] = self::Imagick;
+        $adapters[] = self::Gd;
+        foreach($adapters as $adapter) {
+            if (extension_loaded(strtolower($adapter))) {
+                break;
+            } else {
+                $adapter = null;
+            }
+        }
+        return $adapter;
+    }
+
     /**
      *
      * @param string $file
@@ -101,7 +120,7 @@ class waImage
     public static function factory($file, $adapter = false)
     {
         if (!$adapter) {
-            $adapter = self::$default_adapter;
+            $adapter = self::getDefaultAdapter();
         }
 
         $class = 'waImage'.$adapter;

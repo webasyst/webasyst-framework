@@ -85,6 +85,13 @@ abstract class waDbAdapter
         return true;
     }
 
+
+    public function multipleInsert($table, $fields, $values)
+    {
+        $sql = "INSERT INTO ".$table." (".implode(',', $fields).") VALUES (".implode('), (', $values).")";
+        return $this->query($sql);
+    }
+
     abstract public function error();
 
     abstract public function errorCode();    

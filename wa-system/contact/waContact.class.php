@@ -433,6 +433,7 @@ class waContact implements ArrayAccess
 
         // Saving to all storages
         try {
+
             $is_add = false;
             if (!$this->id) {
                 $is_add = true;

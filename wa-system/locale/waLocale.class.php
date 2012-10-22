@@ -133,6 +133,9 @@ class waLocale
     public static function getInfo($locale)
     {
         if (!isset(self::$locale_info[$locale])) {
+            if (strpbrk($locale, '/\:')) {
+                return null;
+            }
             $path = dirname(__FILE__)."/data/".$locale.".php";
             if (file_exists($path)) {
                 self::$locale_info[$locale] = include($path);
@@ -187,7 +190,7 @@ class waLocale
                 'ru_RU' => self::getInfo('ru_RU'),
             );
         }
-        
+
         if ($type === true) {
             $type = 'all';
         }

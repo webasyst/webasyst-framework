@@ -46,7 +46,6 @@ class waContactDataStorage extends waContactStorage
     
     public function save(waContact $contact, $fields)
     {
-        
         $contact_id = $contact->getId();
         $data = array(); 
         foreach ($fields as $field => $value) {

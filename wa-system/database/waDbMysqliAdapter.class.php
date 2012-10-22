@@ -199,7 +199,42 @@ class waDbMysqliAdapter extends waDbAdapter
         }
         return $result;
     }
-    
+
+    public function createTable($table, $data)
+    {
+        $fields = array();
+        foreach ($data as $field_id => $field) {
+            if (substr($field_id, 0, 1) != ':') {
+                $type = $field['type'].(!empty($field['params']) ? '('.$field['params'].')' : '');
+                if (isset($field['null']) && !$field['null']) {
+                    $type .= ' NOT NULL';
+                }
+                if (isset($field['default'])) {
+                    $type .= " DEFAULT '".$field['default']."'";
+                }
+                if (!empty($field['autoincrement'])) {
+                    $type .= ' AUTO_INCREMENT';
+                }
+                $fields[] = $field_id." ".$type;
+            }
+        }
+        $keys = array();
+        foreach ($data[':keys'] as $key_id => $key) {
+            if ($key_id == 'PRIMARY') {
+                $k = "PRIMARY KEY";
+            } else {
+                $k = (!empty($key['unique']) ? "UNIQUE " : "")."KEY ".$key_id;
+            }
+            $keys[] = $k." (".implode(', ', $key['fields']).')';
+        }
+        $sql = "CREATE TABLE IF NOT EXISTS ".$table." (".implode(",\n", $fields);
+        if ($keys) {
+            $sql .= ", ".implode(",\n", $keys);
+        }
+        $sql .= ") ENGINE=MyISAM DEFAULT CHARSET=utf8";
+        $this->query($sql);
+    }
+
     protected function exception()
     {
         throw new waDbException($this->error(), $this->errorCode());

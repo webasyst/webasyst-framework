@@ -105,10 +105,18 @@ class waPlugin
     
     protected function install()
     {
-        // check plugin.sql
-        $file_sql = $this->path.'/lib/config/plugin.sql';
-        if (file_exists($file_sql)) {
-            waAppConfig::executeSQL($file_sql, 1);
+
+        $file_db = $this->path.'/lib/config/db.php';
+        if (file_exists($file_db)) {
+            $schema = include($file_db);
+            $model = new waModel();
+            $model->createSchema($schema);
+        } else {
+            // check plugin.sql
+            $file_sql = $this->path.'/lib/config/plugin.sql';
+            if (file_exists($file_sql)) {
+                waAppConfig::executeSQL($file_sql, 1);
+            }
         }
         // check install.php
         $file = $this->path.'/lib/config/install.php';
@@ -125,10 +133,21 @@ class waPlugin
         if (file_exists($file)) {
             include($file);
         }
-        // check plugin.sql
-        $file_sql = $this->path.'/lib/config/plugin.sql';
-        if (file_exists($file_sql)) {
-            waAppConfig::executeSQL($file_sql, 2);
+
+        $file_db = $this->path.'/lib/config/db.php';
+        if (file_exists($file_db)) {
+            $schema = include($file_db);
+            $model = new waModel();
+            foreach ($schema as $table => $fields) {
+                $sql = "DROP TABLE IF EXISTS ".$table;
+                $model->exec($sql);
+            }
+        } else {
+            // check plugin.sql
+            $file_sql = $this->path.'/lib/config/plugin.sql';
+            if (file_exists($file_sql)) {
+                waAppConfig::executeSQL($file_sql, 2);
+            }
         }
         // Remove plugin settings
         $app_settings_model = new waAppSettingsModel();

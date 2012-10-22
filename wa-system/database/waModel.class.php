@@ -488,7 +488,7 @@ class waModel
                 if (!$fields) {
                     $fields = array_keys($row_values);
                 }
-                $values[] = '('.implode(',', $row_values).")";
+                $values[] = implode(',', $row_values);
             }
         } else {
             $multi_field = false;
@@ -507,15 +507,14 @@ class waModel
             if ($multi_field) {
                 foreach ($data[$multi_field] as $v) {
                     $row_values[$this->escapeField($multi_field)] = $this->getFieldValue($multi_field, $v);
-                    $values[] = '('.implode(',', $row_values).")";
+                    $values[] = implode(',', $row_values);
                 }
             } else {
-                $values[] = '('.implode(',', $row_values).")";
+                $values[] = implode(',', $row_values);
             }
         }
         if ($values) {
-            $sql = "INSERT INTO ".$this->table." (".implode(',', $fields).") VALUES ".implode(',', $values);
-            return $this->exec($sql);
+            return $this->adapter->multipleInsert($this->table, $fields, $values);
         }
         return true;
     }

@@ -159,6 +159,7 @@ class Swift_Transport_StreamBuffer extends Swift_ByteStream_AbstractFilterableIn
                         ' Timed Out'
                     );
                 }
+                waLog::log(print_r($metas, true), "smtp.log");
             }
 
             return $line;

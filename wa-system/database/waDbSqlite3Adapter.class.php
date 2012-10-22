@@ -112,6 +112,13 @@ class waDbSqlite3Adapter extends waDbAdapter
         return $this->handler->lastErrorCode();
     }
 
+    public function multipleInsert($table, $fields, $values)
+    {
+        $sql = "INSERT INTO ".$table." (".implode(',', $fields).") SELECT ".implode(' UNION SELECT ', $values);
+        return $this->query($sql);
+    }
+
+
     public function schema($table, $keys = false)
     {
         $res = $this->handler->query("SELECT * FROM sqlite_master WHERE name = '".$table."'");
@@ -126,22 +133,30 @@ class waDbSqlite3Adapter extends waDbAdapter
 
         $result = array();
         foreach ($fields as $f) {
-            if (strpos($f, 'PRIMARY KEY') !== false) break;
             $m = explode(" ", trim($f), 3);
+            if ($m[0] == 'PRIMARY' && $m[1] == 'KEY') break;
             $field = array(
                 'type' => strtolower($m[1]),
                 'extra' => isset($m[2]) ? $m[2] : ''
             );
-              $i = strpos($field['type'], '(');
-               if ($i === false) {
-                   $field['length'] = null;
-               } else {
-                   $field['type'] = substr($field['type'], 0, $i);
-                   $field['length'] = substr($field['type'], $i + 1, -1);
-               }
-               if ($field['type'] == 'integer') {
-                   $field['type'] = 'int';
-               }
+            if (strpos($field['extra'], 'NOT NULL') !== false) {
+                $field['null'] = 0;
+            } else {
+                $field['null'] = 1;
+            }
+            if (strpos($field['extra'], 'AUTOINCREMENT') !== false) {
+                $field['autoincrement'] = 1;
+            }
+            $i = strpos($field['type'], '(');
+            if ($i === false) {
+               $field['length'] = null;
+            } else {
+               $field['type'] = substr($field['type'], 0, $i);
+               $field['length'] = substr($field['type'], $i + 1, -1);
+            }
+            if ($field['type'] == 'integer') {
+               $field['type'] = 'int';
+            }
             $result[$m[0]] = $field;
         }
         return $result;

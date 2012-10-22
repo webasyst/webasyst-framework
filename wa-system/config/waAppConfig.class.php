@@ -16,7 +16,7 @@ class waAppConfig extends SystemConfig
 {
     protected $application = null;
     protected $info = array();
-    protected $log_actions = array();
+    protected $log_actions = null;
     protected $prefix;
     protected $plugins = null;
     protected $themes = null;
@@ -45,12 +45,31 @@ class waAppConfig extends SystemConfig
 
     public function getLogActions()
     {
-        $path = $this->getAppPath().'/lib/config/logs.php';
-        if (!file_exists($path)) {
-            return array();
-        }
-        if (!$this->log_actions) {
-            $this->log_actions = include($path);
+        if ($this->log_actions === null) {
+            $path = $this->getAppPath().'/lib/config/logs.php';
+            if (file_exists($path)) {
+                $this->log_actions = include($path);
+            } else {
+                $this->log_actions = array();
+            }
+            // add system actions for design and pages
+            if (!empty($this->info['themes'])) {
+                $actions = array('template_add', 'template_edit', 'template_delete',
+                'theme_upload', 'theme_download', 'theme_delete', 'theme_reset', 'theme_duplicate', 'theme_rename',);
+                foreach ($actions as $action) {
+                    if (!isset($this->log_actions[$action])) {
+                        $this->log_actions[$action] = array();
+                    }
+                }
+            }
+            if (!empty($this->info['pages'])) {
+                $actions = array('page_add', 'page_edit', 'page_delete', 'page_move');
+                foreach ($actions as $action) {
+                    if (!isset($this->log_actions[$action])) {
+                        $this->log_actions[$action] = array();
+                    }
+                }
+            }
         }
         return $this->log_actions;
     }
@@ -208,7 +227,7 @@ class waAppConfig extends SystemConfig
     public function install()
     {
         $file_db = $this->getAppPath('lib/config/db.php');
-        if (false && file_exists($file_db)) {
+        if (file_exists($file_db)) {
             $schema = include($file_db);
             $model = new waModel();
             $model->createSchema($schema);
@@ -264,10 +283,21 @@ class waAppConfig extends SystemConfig
         if (file_exists($file)) {
             include($file);
         }
-        // check app.sql
-        $file_sql = $this->getAppPath('lib/config/app.sql');
-        if (file_exists($file_sql)) {
-            self::executeSQL($file_sql, 2);
+
+        $file_db = $this->getAppPath('lib/config/db.php');
+        if (file_exists($file_db)) {
+            $schema = include($file_db);
+            $model = new waModel();
+            foreach ($schema as $table => $fields) {
+                $sql = "DROP TABLE IF EXISTS ".$table;
+                $model->exec($sql);
+            }
+        } else {
+            // check app.sql
+            $file_sql = $this->getAppPath('lib/config/app.sql');
+            if (file_exists($file_sql)) {
+                self::executeSQL($file_sql, 2);
+            }
         }
         // Remove all app settings
         $app_settings_model = new waAppSettingsModel();
