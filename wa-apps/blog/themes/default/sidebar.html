@@ -12,7 +12,7 @@
 {if ( ( ($action eq 'default') && empty($action_info.search))|| ($action eq 'error') || ($action eq 'page'))}
     {* static info page list *}
     <div id="site-pages">
-        {$blog_pages=$wa->photos->pages()}
+        {$blog_pages=$wa->blog->pages()}
         {if $blog_pages}
         {if !isset($page_id)}{$page_id = null}{/if}
         {wa_print_tree tree=$blog_pages attrs = 'id="page-list"' elem ='<a href=":url" title=":title">:name</a>' selected=$page_id}
@@ -42,13 +42,13 @@
 
 {if ($action eq 'default') && empty($action_info.search)}
     {* timeline navigation *}
-    
+
     {$datetime = [
         'year' => $wa->param('year'),
         'month' => $wa->param('month')
     ]}
     {$sidebar_timeline = $wa->blog->timeline($wa->param('blog_id'), $datetime)}
-    
+
     <div id="timeline">
     {if !empty($sidebar_timeline)}
         <ul class="menu-v">
