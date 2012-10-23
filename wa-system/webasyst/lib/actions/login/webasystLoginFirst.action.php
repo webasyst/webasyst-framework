@@ -84,7 +84,7 @@ class webasystLoginFirstAction extends waViewAction
                                 $site = true;
                             } elseif (!empty($app['frontend'])) {
                                 $data[$domain][] = array(
-                                    'url' => $app_id.'/',
+                                    'url' => $app_id.'/*',
                                     'app' => $app_id
                                 );
                             }
