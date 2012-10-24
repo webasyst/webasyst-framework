@@ -816,7 +816,11 @@ msgid "Theme preview"
 msgstr ""
 
 #: /wa-system/design/templates/DesignEdit.html:211
-msgid "Design theme “<strong id=\"wa-current-theme\"></strong>” is enabled for your current session. For all other users theme \"@TODO\" still remains as default."
+msgid ""
+"Design theme “<strong id=\"wa-current-theme\"></strong>” is temporary "
+"enabled for you to see how it looks with your frontend. You can navigate "
+"through your website as you normally do. Other users don't see that you are "
+"previewing this design theme."
 msgstr ""
 
 #: /wa-system/design/templates/DesignEdit.html:216

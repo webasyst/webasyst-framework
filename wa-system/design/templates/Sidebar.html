@@ -9,7 +9,9 @@
 </div>
 {foreach $themes as $t_id => $t}
 <div class="wa-theme-block" id="wa-theme-block-{$t_id|escape}">
+    {if $t.preview_url}
     <span class="count"><a href="{$t.preview_url|escape}" target="_blank" class="wa-theme-preview{if $t.used} used{/if}" title="[s`Preview`]"><i class="icon16 new-window"></i></a></span>
+    {/if}
     <h4 class="heading" data-hash="{$t_id}"><i class="icon16 darr"></i>{$t.name}</h4>
     <div class="wa-theme-routes">
     {if isset($themes_routes[$t_id])}

@@ -116,6 +116,25 @@
         </div>
         <div class="clear"></div>
     </div>
+    <div class="dialog" id="wa-design-preview">
+        <div class="dialog-background"> </div>
+        <div class="dialog-window" style="height: 150px; min-height: 150px; width: 400px; min-width: 400px">
+            <form>
+                <input type="hidden" id="wa-preview-key" value="" />
+                <div class="dialog-content">
+                    <div class="dialog-content-indent">
+                        <h1>[s`Theme preview`]</h1>
+                        <p>[s`Design theme “<strong id="wa-current-theme"></strong>” is temporary enabled for you to see how it looks with your frontend. You can navigate through your website as you do it usually. Other users don't see that you are previewing this design theme.`]</p>
+                    </div>
+                </div>
+                <div class="dialog-buttons">
+                    <div class="dialog-buttons-gradient">
+                        <input type="submit" class="button" value="[s`Finish preview session`]">
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
     <script>
 
         function waDesignConfirm() {
