@@ -684,7 +684,7 @@ HTML;
             return '';
         }
         $html = '<div class="wa-auth-adapters"><ul>';
-        $url = $this->url().'oauth.php?app='.$this->app().'&provider=';
+        $url = $this->wa->getRootUrl(false, true).'oauth.php?app='.$this->app().'&provider=';
         foreach ($adapters as $adapter) {
             /**
              * @var waAuthAdapter $adapter
