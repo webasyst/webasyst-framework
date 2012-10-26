@@ -48,7 +48,7 @@ abstract class waAuthAdapter
 
     public function getCallbackUrl($absolute = true)
     {
-        return wa()->getRootUrl($absolute).'oauth.php?provider='.$this->getId();
+        return wa()->getRootUrl($absolute, true).'oauth.php?provider='.$this->getId();
     }
 
     protected function get($url)
