@@ -226,14 +226,14 @@
                     $.photos.scrollTop();
                     waDesignLoad();
                 } else {
-                    $.photos.load('?module=design', 'domain_id=' + this.domain, function () {
+                    $.photos.load('?module=design' + (params ? '&' + params : ''), function () {
                         waDesignLoad();
                         $.photos.setTitle($_('Themes'));
                         $.photos.scrollTop();
                     }, '<div class="content left200px"></div>');
                 }
             } else {
-                $.photos.load('?module=design' + (params ? '&' + params : ''), function () {
+                $.photos.load('?module=design', function () {
                     waDesignLoad('');
                     $.photos.setTitle($_('Design'));
                     $.photos.scrollTop();
@@ -248,7 +248,7 @@
                 $.photos.scrollTop();
                 waDesignLoad();
             } else {
-                $.photos.load('?module=design', 'domain_id=' + this.domain, function () {
+                $.photos.load('?module=design', function () {
                     waDesignLoad();
                     $.photos.setTitle($_('Themes'));
                     $.photos.scrollTop();
