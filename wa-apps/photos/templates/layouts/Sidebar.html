@@ -75,6 +75,7 @@
     <span class="count"></span>
     <a href="#/album/{%#o.id%}" class="ui-droppable"><i class="icon16 {%#o.type == Album.TYPE_STATIC ? 'pictures' : 'funnel' %}"></i>{%#o.name%}
          {% if (o.status <= 0) { %}<i class="icon10 lock-bw no-overhanging"></i>{% } %}
+         <strong class="small highlighted count-new"></strong>
     </a>
   </li>
 {/literal}{/capture}

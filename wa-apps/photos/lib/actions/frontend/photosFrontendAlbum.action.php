@@ -30,10 +30,11 @@ class photosFrontendAlbumAction extends photosFrontendCollectionViewAction
         $params = photosPhoto::escape($params);
         $this->album += $params;
 
+        $breadcrumbs = $this->album_model->getBreadcrumbs($this->album['id'], true);
+
         // "childcrumbs" - list of childs (sub-albums). Use in 'plain' template
         $childcrumbs = $this->album_model->getChildcrumbs($this->album['id'], true);
-
-        waRequest::setParam('breadcrumbs', $this->album_model->getBreadcrumbs($this->album['id'], true));
+        waRequest::setParam('breadcrumbs', $breadcrumbs);
         waRequest::setParam('nofollow', $this->album['status'] <= 0 ? true : false);
         waRequest::setParam('disable_sidebar', true);
 

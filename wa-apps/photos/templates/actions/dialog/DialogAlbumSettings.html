@@ -37,7 +37,7 @@
                             <div class="value no-shift">
                                 <label for="access-public">
                                     <i class="icon10 yes overhanging"></i>
-                                    <input id="access-public" type="radio" {if $album.status == 1}checked{/if} name="status" value="1">
+                                    <input id="access-public" type="radio" {if !empty($parent) && $parent.status <= 0}disabled{else if $album.status == 1}checked{/if} name="status" value="1">
                                     [`Public`]
                                     <span class="hint">[`Album is visible in the public gallery`]</span>
                                 </label>

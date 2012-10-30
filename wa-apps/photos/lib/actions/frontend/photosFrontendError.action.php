@@ -25,6 +25,9 @@ class photosFrontendErrorAction extends waViewAction
 
         $this->view->assign('error_code', $code);
         $this->view->assign('error_message', $message);
+        if ($code == 404) {
+            $this->setLayout(new photosDefaultFrontendLayout());
+        }
         $this->setThemeTemplate('error.html', waRequest::param('theme', 'default'));
     }
 }

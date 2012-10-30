@@ -21,7 +21,6 @@ class photosDialogAlbumSettingsAction extends waViewAction
             $album['conditions'] = photosCollection::parseConditions($album['conditions']);
         }
 
-
         $absolute_full_url = photosFrontendAlbum::getLink($album);
         if ($absolute_full_url) {
             $pos = strrpos($absolute_full_url, $album['url']);
@@ -29,6 +28,9 @@ class photosDialogAlbumSettingsAction extends waViewAction
             $album['full_base_url'] = $full_base_url;
         }
         $this->view->assign('album', $album);
+        if ($album['parent_id']) {
+            $this->view->assign('parent', $album_model->getById($album['parent_id']));
+        }
 
         $collection = new photosCollection('album/'.$id);
         $photos_count = $collection->count();

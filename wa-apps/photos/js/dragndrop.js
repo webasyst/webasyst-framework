@@ -42,7 +42,7 @@
                     ui.position.top = e.pageY;
                 }
             };
-            
+
             var onStart = draggable_common_opts.start,
                 onStop  = draggable_common_opts.stop;
 
@@ -297,6 +297,13 @@
                         var current_album = $.photos.getAlbum(),
                             album = r.data.album,
                             counters = r.data.counters;
+
+                        if (album.status <= 0 &&
+                            $.photos_dragndrop.privateDescendants(album.id))
+                        {
+                            $.photos.dispatch('album/'+album.id+'/');
+                        }
+
                         if (current_album && current_album.id == album.id) {
                             var frontend_link = r.data.frontend_link;
                             if (frontend_link) {
@@ -306,7 +313,6 @@
                                 $.photos.load("?module=album&action=photos&id=" + album.id, $.photos.onLoadPhotoList);
                             }
                         }
-                        var album_list = $('#album-list');
                         if (!$.isEmptyObject(counters)) {
                             for (var album_id in counters) {
                                 if (counters.hasOwnProperty(album_id)) {
@@ -330,6 +336,33 @@
             });
         },
 
+        privateDescendants: function(album_id, include_parent) {
+            include_parent = typeof include_parent === 'boolean' ? include_parent : true;
+            var album_list = $('#album-list');
+            var li = album_list.find('li[rel='+album_id+']');
+            var list;
+            if (include_parent) {
+                list = li;
+            } else {
+                list = $();
+            }
+            changed = false;
+            list.add(li.find('li.dr')).each(function() {
+                var self = $(this).find('>a');
+                if (!self.find('i.lock-bw').length) {
+                    var next = self.find('.pictures').next();
+                    var html = '<i class="icon10 lock-bw no-overhanging"></i>';
+                    if (next.length) {
+                        changed = true;
+                        next.before(html);
+                    } else {
+                        self.append(html);
+                    }
+                }
+            });
+            return changed;
+        },
+
         _initDropInsideAlbums: function() {
             // drop inside album
             $("li.dr a", $('#album-list')).liveDroppable({
@@ -343,7 +376,7 @@
                     var self = $(this).parent(),  // li
                         is_photo = false;
                     ui.draggable = $.photos_dragndrop._fixUiDraggable(ui.draggable);
-                    
+
                     // photo
                     if (ui.draggable.parents('#photo-list').length || ui.draggable.is('#photo')) {
                         if (!self.hasClass('static')) {
@@ -358,7 +391,7 @@
                     if (is_photo) {
                         return false;
                     }
-                    
+
                     // album
                     if (ui.draggable.hasClass('static') && !self.hasClass('static'))
                     {
@@ -414,7 +447,7 @@
                         list;
 
                     ui.draggable = $.photos_dragndrop._fixUiDraggable(ui.draggable);
-                    
+
                     // copy photo to album (only static is legal)
                     if (ui.draggable.parents('#photo-list').length || ui.draggable.is('#photo')) {
                         var m = this.href.match(/.*#\/album\/([\d]+)/);
@@ -448,7 +481,7 @@
                     {
                         return false;
                     }
-                    
+
                     var dr = $(ui.draggable);
                     if (self.attr('rel') == dr.attr('rel')) {
                         return false;
@@ -479,6 +512,13 @@
                         var current_album = $.photos.getAlbum(),
                             album = r.data.album,
                             counters = r.data.counters;
+
+                        if (album.status <= 0 &&
+                            $.photos_dragndrop.privateDescendants(album.id))
+                        {
+                            $.photos.dispatch('album/'+album.id+'/');
+                        }
+
                         if (current_album && current_album.id == album.id) {
                             var frontend_link = r.data.frontend_link;
                             if (frontend_link) {
@@ -541,7 +581,7 @@
                 self_width = self.width(),
                 self_height = self.height(),
                 self_position = self.position();
-            
+
             if ($.photos.list_template == 'template-photo-thumbs') {
                 if (pageX > self_position.left + self_width*0.5) {
                     self.removeClass('drag-active').addClass('drag-active-last');

@@ -268,25 +268,36 @@ class photosAlbumModel extends waModel
 
         // correct full_url of this item and all of new descendants if parent has changed
         if ($old_parent_id != $parent_id) {
-            $sql = "SELECT id, full_url FROM {$this->table} WHERE id = i:id";
+            $sql = "SELECT id, full_url, status FROM {$this->table} WHERE id = i:id";
             $data = $this->query($sql, array(
                 'id' => $parent_id
             ))->fetch();
 
             $parent_full_url = $data ? $data['full_url'] : '';
-            $sql = "SELECT id, url FROM {$this->table} WHERE id = i:id";
+            $parent_status = $data ? $data['status'] : 1;
+
+            $sql = "SELECT id, url, status FROM {$this->table} WHERE id = i:id";
             $data = $this->query($sql, array(
                 'id' => $album_id
             ))->fetch();
 
-            $full_url = $parent_full_url . '/' . $url;
-            $full_url = ltrim($full_url, '/');
-
-            $this->updateById($album_id, array(
-                'full_url' => $full_url
-            ));
-            $album['full_url'] = $full_url;
-            $this->correctFullUrlOfDescendants($album_id, $full_url);
+            $update = array();
+            if ($parent_status == 1 && $data['status'] == 1) {
+                $update['full_url'] = ltrim($parent_full_url . '/' . $url, '/');
+            } else if ($data['status'] == 1) {
+                $update['full_url'] = null;
+                $update['status'] = 0;
+                $update['hash'] = md5(uniqid(time(), true));
+            }
+            if ($update) {
+                $this->updateById($album_id, $update);
+                $album = array_merge($album, $update);
+                if ($update['full_url']) {
+                    $this->correctFullUrlOfDescendants($album_id, $update['full_url']);
+                } else {
+                    $this->privateDescendants($album_id);
+                }
+            }
         }
 
         return $album;
@@ -301,22 +312,20 @@ class photosAlbumModel extends waModel
         return $this->query($sql, array('type' => $type))->fetchAll();
     }
 
-    public function updateUrl($id, $url)
+    private function updateUrl($id, $url)
     {
         $sql = "SELECT id, parent_id, url, full_url FROM {$this->table} WHERE id = i:id";
         $data = $this->query($sql, array(
             'id' => $id
         ))->fetch();
 
-        // update url, full_url
-        $full_url = trim($data['full_url'], '/');
-        $pos = strrpos($full_url, $data['url']);
-
-        if ($pos === false) {
-            $full_url = $url;
+        if ($data['parent_id']) {
+            $parent = $this->getById($data['parent_id']);
+            $full_url = trim($parent['full_url'], '/').'/'.$data['url'];
         } else {
-            $full_url = substr($full_url, 0, $pos) . $url;
+            $full_url = $url;
         }
+
         $this->updateById($id, array(
             'url' => $url,
             'full_url' => $full_url
@@ -334,7 +343,7 @@ class photosAlbumModel extends waModel
         );
         while ($parent_ids) {
             $where = $this->getWhereByField('parent_id', $parent_ids);
-            $sql = "SELECT id, parent_id, url, full_url FROM {$this->table} WHERE $where";
+            $sql = "SELECT id, parent_id, url, full_url FROM {$this->table} WHERE $where AND status = 1";
             $result = $this->query($sql);
 
             $parent_ids = array();
@@ -350,6 +359,46 @@ class photosAlbumModel extends waModel
         }
     }
 
+    private function privateDescendants($parent_id)
+    {
+        $update = array();
+        $parent_ids = array((int)$parent_id);
+        while ($parent_ids) {
+            $sql = "SELECT id, status FROM {$this->table} WHERE parent_id IN(".implode(',', $parent_ids).")";
+            $parent_ids = array();
+            foreach ($this->query($sql) as $item)
+            {
+                if ($item['status'] == 1) {
+                    $update[$item['id']] = array('status' => 0, 'hash' => md5(uniqid(time(), true)), 'full_url' => null);
+                }
+                $parent_ids[] = $item['id'];
+            }
+        }
+        foreach ($update as $id => $data) {
+            $this->updateById($id, $data);
+        }
+    }
+
+    private function updateDescendants($parent_id, $data = array(), $include_parent = false)
+    {
+        if (empty($data)) {
+            return false;
+        }
+
+        $descandants = array();
+        if ($include_parent) {
+            $descandants[] = $parent_id;
+        }
+
+        $parent_ids = array((int)$parent_id);
+        $counter = 1;
+        while ($parent_ids) {
+            $parent_ids = array_keys($this->getByField('parent_id', $parent_ids, 'id'));
+            $descandants = array_merge($descandants, $parent_ids);
+        }
+        return $this->updateById($descandants, $data);
+    }
+
     /**
      * Update taking in account recursive nature of 'full_url' fields
      *
@@ -362,8 +411,16 @@ class photosAlbumModel extends waModel
             $url = $data['url'];
             unset($data['url']);
         }
+        if ($data['status'] <= 0) {
+            $data['full_url'] = null;
+        } else {
+            unset($data['full_url']);
+        }
+
         $this->updateById($id, $data);
-        if (isset($url)) {
+        if ($data['status'] <= 0) {
+            $this->privateDescendants($id);
+        } elseif (isset($url)) {
             $this->updateUrl($id, $url);
         }
     }
@@ -381,14 +438,15 @@ class photosAlbumModel extends waModel
         $breadcrumbs = array();
 
         while ($album_id) {
-            $sql = "SELECT id, full_url, parent_id, name FROM {$this->table} WHERE id = i:id AND status = 1";
+            $sql = "SELECT id, full_url, parent_id, name, status FROM {$this->table} WHERE id = i:id AND status = 1";
             $album = $this->query($sql, array(
                 'id' => $album_id
             ))->fetch();
             if ($album) {
                 $breadcrumbs[] = array(
                     'name' => $escape ? photosPhoto::escape($album['name']) : $album['name'],
-                    'full_url' => photosFrontendAlbum::getLink($album)
+                    'full_url' => photosFrontendAlbum::getLink($album),
+                    'status' => $album['status']
                 );
                 $album_id = $album['parent_id'];
             } else {

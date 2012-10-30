@@ -100,7 +100,7 @@
                 this.defaultAction();
             }
         },
-        
+
         menu: {
             stack:{
                 'list':[],
@@ -133,7 +133,7 @@
                 }
             },
             enable: function(type, selector, actions) {
-                selector = selector || '*'; 
+                selector = selector || '*';
                 if (this.stack[type]){
                     for (var id = 0; id < this.stack[type].length; id++) {
                         var item = this.stack[type][id];
@@ -337,12 +337,12 @@
             });
             $.photos.scrollTop();
         },
-        
+
         onLoadPages: function() {
             $.photos.setTitle($_('Pages'));
             $.photos.scrollTop();
         },
-        
+
         renderPhotoList: function() {
             var target = $("#photo-list");
             target.empty();
@@ -355,7 +355,7 @@
         renderPhotoListChunk: function(target, offset, options, callback) {
             var chunk  = $.photos.options.photo_list_render_chunk || 10;
             var length = $.photos.photo_stream_cache.length();
-            
+
             options = options || {};
             if(!options.hide_name) {
                 //XXX use event instead or etc
@@ -367,7 +367,7 @@
                 last_login_time: $.photos.options.last_login_time,
                 options:options
             }));
-                
+
             if(offset < length) {
                 setTimeout(function() {
                     $.photos.renderPhotoListChunk(target, offset, options, callback);
@@ -385,10 +385,10 @@
                     }));
                     $.photos.photo_list_string = string;
                 }
-                
+
             }
         },
-        
+
         selectPhotoListView: function(view) {
             view = view.replace(/-view$/,'');
             $.photos.list_template = 'template-photo-'+view;
@@ -430,7 +430,7 @@
                 if((view != 'thumbs') && (view != 'descriptions')){
                     view = 'thumbs';
                 }
-                var li = $('#album-list li[rel=' + album.id + ']'); 
+                var li = $('#album-list li[rel=' + album.id + ']');
                 li.find('.count:first').text(album.count);
                 li.find('.count-new:first').text('');
                 $('#album-list-container').trigger('uncollapse_section', li);
@@ -445,10 +445,10 @@
             }
             $.photos.list_template = 'template-photo-'+view;
 
-            
+
             $.photos.renderPhotoList();
             $.photos.fixRightToolbar();
-            
+
             $.photos.setTitle($('#photo-list-name').text());
             $.photos.menu.init('list');
             $.photos.selectPhotoListView(view);
@@ -535,9 +535,9 @@
                         return !this.hasClass('editable');
                     }
                 }).trigger('editable');
-                
+
             });
-            
+
             var album_name = $('#photo-list-name');
             if (album_name.hasClass('editable')) {
                 album_name.inlineEditable({
@@ -708,7 +708,7 @@
             $('#photo-list').find('.p-description textarea, .p-photo-details textarea, .p-photo-details input').live('select', function() {
                 return false;
             });
-            
+
             $.photos.hotkey_manager.set('rate');
             // if we go from some photo back to collection do not scroll top
             if ($.photos.hash != $.photos.photo_stream_cache.hash) {
@@ -752,8 +752,8 @@
                 $('#photo').width(proper_thumb.size.width).height(proper_thumb.size.height);
             }
             replaceImg(
-                $('#photo'), 
-                photo.thumb.url + (photo.edit_datetime ? '?' + Date.parseISO(photo.edit_datetime) : ''), 
+                $('#photo'),
+                photo.thumb.url + (photo.edit_datetime ? '?' + Date.parseISO(photo.edit_datetime) : ''),
                 null
             );
             $.photos.setNextPhotoLink();
@@ -782,7 +782,7 @@
                 albums = data.albums,
                 exif = data.exif,
                 photo = data.photo;
-            
+
             $.photos.renderPhotoImg(photo);
             $('#photo-author').html(tmpl('template-photo-author', {
                 photo: photo,
@@ -796,13 +796,13 @@
             $('#photo-albums').html(tmpl('template-photo-albums', {
                 albums: albums
             }));
-            
+
             $.photos.initPhotoContentControlWidget({
                 frontend_link_template: frontend_link_template,
                 photo: photo
             });
         },
-        
+
         loadNewPhoto: function(id)
         {
             $.photos.initClearance();
@@ -812,13 +812,13 @@
                     var data = r.data,
                         photo = data.photo;
                     $.photos.renderViewPhoto(data);
-                    
+
                     // preloading next photo
                     var next_photo = $.photos.photo_stream_cache.getNext();
                     if (next_photo) {
                         $.photos.preloadPhoto(next_photo);
                     }
-                    
+
                     if (data.album) {
                         $.photos.setAlbum(data.album);
                     }
@@ -843,7 +843,7 @@
 
             $.photos.setTitle(photo.name);
             $('#content').html(tmpl('template-p-block'));
-    
+
             $.photos.initPhotoToolbar({
                 photo: photo,
                 author: author,
@@ -872,7 +872,7 @@
             }
             $.photos.setNextPhotoLink();
         },
-        
+
         loadPhotoCompletly: function(photo)
         {
             $.photos.photo_stream_cache.setCurrent(photo);
@@ -912,8 +912,8 @@
                     $('#photo').width(proper_thumb.size.width).height(proper_thumb.size.height);
                 }
                 replaceImg(
-                    $('#photo'), 
-                    photo.thumb.url + (photo.edit_datetime ? '?' + Date.parseISO(photo.edit_datetime) : ''), 
+                    $('#photo'),
+                    photo.thumb.url + (photo.edit_datetime ? '?' + Date.parseISO(photo.edit_datetime) : ''),
                     null
                 );
             }
@@ -945,7 +945,7 @@
             );
             f.xhr = xhr;
         },
-        
+
         updateViewPhoto: function(data, is_preloaded)
         {
             var author = data.author,
@@ -975,7 +975,7 @@
             }));
 
             $.photos.updatePhotoOriginalBlock(photo);
-            
+
             // update-exif
             $('#photo-exif').html(tmpl('template-photo-exif', {
                 exif: exif
@@ -1021,7 +1021,7 @@
                 $.photos.anchor = '';
             }
         },
-        
+
         renderPhotoImg: function(photo) {
             var proper_thumb = $.photos._chooseProperThumb(photo);
             replaceImg(
@@ -1038,7 +1038,7 @@
                 }
             );
         },
-        
+
         updateViewPhotoMenu: function(stack, edit)
         {
             // update toolbars menus
@@ -1057,24 +1057,24 @@
                 $('#photo-tags').parent().hide();
             }
         },
-        
+
         preloadPhoto: function(photo) {
             var preload_photo_img = $('#preload-photo');
             preload_photo_img.attr('data-photo-id', '');
             replaceImg(
-                preload_photo_img, 
-                photo.thumb_big.url, 
+                preload_photo_img,
+                photo.thumb_big.url,
                 function() {
                     preload_photo_img.attr('data-photo-id', photo.id);
                 }
             );
         },
-        
+
         isPhotoPreloaded: function(photo) {
             return $('#preload-photo').attr('data-photo-id') == photo.id;
         },
-        
-        abortPrevLoading: function() { 
+
+        abortPrevLoading: function() {
             if (typeof $.photos._loadPhotoCompletly.xhr === 'object' && typeof $.photos._loadPhotoCompletly.xhr.abort === 'function')
             {
                 $.photos._loadPhotoCompletly.xhr.abort();
@@ -1092,7 +1092,7 @@
                 $.photos.hooks_manager.trigger('onAbortPrevLoading');
             }
         },
-        
+
         updateThumbRate: function(li, rate) {
             var rate_item = li.find('.p-details .p-rate');
             if (!rate) {
@@ -1328,14 +1328,14 @@
         initPhotoTagsWidget: function(tags) {
             var tags_input = $('#photo-tags'),
                 default_text = $_('add a tag');
-            
+
             if (typeof tags !== 'undefined') {
                 if (typeof tags === 'object' && tags) {
                     tags = $.photos.joinObject(tags, ',');
                 }
                 tags_input.importTags(tags);
             }
-            
+
             tags_input.data('current_value', tags_input.val());
             try {
                 tags_input.tagsInput({
@@ -1372,7 +1372,7 @@
 
             });
         },
-        
+
         initPhotoContentControlWidget: function(data) {
             if (typeof data === 'object' && data) {
                 $('#photo-content-control').html(tmpl('template-photo-content-control', data));
@@ -1406,7 +1406,7 @@
                             text = self.text() + '/',
                             photo_id = $.photos.getPhotoId(),
                             value = $(input).val();
-                        
+
                         function restoreReadableView() {
                             self.text(text);
                             span.hide();
@@ -1657,7 +1657,7 @@
                 }
             }
         },
-        
+
         updatePhotoTags: function(tags)
         {
             var tags_input = $('#photo-tags');
@@ -1669,7 +1669,7 @@
                 tags_input.importTags(tags);
             }
         },
-        
+
         updatePhotoFrontendUrl: function(edit_status) {
             var frontend_url = $('#photo-frontend-url');
             if (edit_status) {
@@ -1686,7 +1686,7 @@
                 photo: photo
             }));
         },
-        
+
         initPhotoToolbar: function(data)
         {
             $('#p-toolbar').html(
@@ -1712,7 +1712,7 @@
                 };
             }
             $("#p-block").html(tmpl('template-photo', data)).addClass('rendered');
-            
+
             if (typeof size === 'object' && size) {
                 // restore real sizes for this thumb
                 photo.thumb.size = {
@@ -1730,7 +1730,7 @@
                 }
             );
         },
-        
+
         initPhotoWidgets: function(data)
         {
             var photo = data.photo,
@@ -1831,7 +1831,7 @@
                 target.empty().append(wrapper);
                 target = target.find(':last-child');
             }
-            
+
             if (typeof data == 'function') {
                 target.load(url, data);
             } else {
@@ -1922,7 +1922,7 @@
                             info = response.data.update[i]['data'];
                             for (var i = 0, n = id.length; i < n; ++i) {
                                 updated_info = $.photos.photo_stream_cache.updateById(id[i], info);
-                            } 
+                            }
                         }
                     }
                    //callback
@@ -1941,7 +1941,7 @@
 
         restoreOriginal: function(id, fn) {
             fn = fn || function() {};
-            $.post('?module=photo&action=restore', { id: id }, 
+            $.post('?module=photo&action=restore', { id: id },
                 function(r) {
                     if (r.status == 'ok') {
                         var photo = r.data.photo;
@@ -1956,7 +1956,7 @@
                 },
             'json');
         },
-        
+
         rotate: function(id, direction, fn) {
             fn = fn || function() {};
             $.post('?module=photo&action=rotate', { id: id, direction: direction },
@@ -1984,8 +1984,8 @@
             var proper_thumb = $.photos._chooseProperThumb(photo),
                 salt = photo.edit_datetime ? '?' + Date.parseISO(photo.edit_datetime) : '';
             replaceImg(
-                $('#photo'), 
-                proper_thumb.url + salt, 
+                $('#photo'),
+                proper_thumb.url + salt,
                 function() {
                     $('#photo').width(proper_thumb.size.width).height(proper_thumb.size.height);
                     $('#photo-stream .selected img, #stack-stream .selected img').each(function() {
@@ -2006,7 +2006,7 @@
                 }
             );
         },
-        
+
         deletePhotos: function(photo_id, fn) {
             var original_photo_id = photo_id;
 
@@ -2133,7 +2133,7 @@
         },
 
         /**
-         * Serialize data in format of jQuery.serializeArray function 
+         * Serialize data in format of jQuery.serializeArray function
          */
         serializeData: function(data, name) {
             if (typeof data === 'object' && !$.isArray(data) && typeof name === 'undefined') {
@@ -2142,7 +2142,7 @@
                     if (data.hasOwnProperty(name)) {
                         result.push({
                             name: name,
-                            value: data[name] 
+                            value: data[name]
                         });
                     }
                 }
@@ -2180,12 +2180,12 @@
                 name: 'photos_length',
                 value: original_photo_id.length
             });
-            
+
             function _saveAccess(photo_id) {
                 var post_data = [],
                     denied_photo_id = [],
                     allowed_photo_id = [];
-    
+
                 // serializeArray
                 for (var i = 0, n = photo_id.length; i < n; ++i) {
                     post_data.push({
@@ -2309,7 +2309,7 @@
                     if (r.status == 'ok') {
                         var cloud = r.data.cloud,
                             tag_cloud_block = $('#tag-cloud-block');
-                        
+
                         if (($.isArray(cloud) && !cloud.length) || !cloud) {
                             tag_cloud_block.hide();
                         } else {
@@ -2318,13 +2318,13 @@
                             }));
                             tag_cloud_block.show();
                         }
-                        
+
                         // update stream cache
                         var photo_tags = r.data.tags || {},
                             photo_id,
                             tags;
-                        
-                        for (photo_id in photo_tags) { 
+
+                        for (photo_id in photo_tags) {
                             if (photo_tags.hasOwnProperty(photo_id)) {
                                 tags = photo_tags[photo_id];
                                 $.photos._updateStreamCache(photo_id, {
@@ -2420,9 +2420,9 @@
                 if ( arrowsHandlerDown.hold ||
                      target_type == 'text' || target_type == 'textarea' ||
                      (code != 37 && code != 39)
-                   ) 
-                { 
-                    return; 
+                   )
+                {
+                    return;
                 }
                 if (code == 39) { // right arrow
                     var next = $.photos.photo_stream_cache.getNext();
@@ -2481,9 +2481,9 @@
                     code = e.keyCode;
                 if ( rateHandlerDown.hold ||
                      target_type == 'text' || target_type == 'textarea'
-                   ) 
-                { 
-                    return; 
+                   )
+                {
+                    return;
                 }
                 var rate = hotkeyToRate(code);
                 if (typeof rate !== 'number') {
@@ -2580,7 +2580,7 @@
                             }
                             var target = $("#photo-list");
                             if (!r.data.photos.length) {
-                                
+
                                 $(".lazyloading-wrapper .lazyloading-progress").hide();
                                 $(".lazyloading-wrapper .lazyloading-link").hide();
                                 $(window).lazyLoad('stop');
@@ -2588,7 +2588,7 @@
                             }
                             var list_offset = $.photos.photo_stream_cache.length();
                             $.photos.photo_stream_cache.append(r.data.photos);
-                            target.find("li.last").removeClass('last'); 
+                            target.find("li.last").removeClass('last');
                             $.photos.renderPhotoListChunk(target, list_offset, {string: r.data.string}, function(){
                                 if(!$.photos.total_count || ($.photos.total_count>$.photos.photo_stream_cache.length())) {
                                     $(window).lazyLoad('wake');
@@ -2690,13 +2690,13 @@
                 subtree = li.find('ul:first'),
                 ul_wrapper = li.parents('ul:first'),
                 children;
-            
+
             // make children to jump one level up
             li.hide();
             if (subtree.length) {
                 li.prev('.drag-newposition:first').remove();
                 li.next('.drag-newposition:first').remove();
-                
+
                 children = subtree.children('li');
                 children.hide().insertAfter(li);
                 subtree.remove();
@@ -2705,7 +2705,7 @@
             } else {
                 li.next('.drag-newposition:first').remove().end().remove();
             }
-            
+
             // if parent now has not children than delete collcapse-handler icon and ul wrapper
             if (ul_wrapper.length) {
                 var items = ul_wrapper.find('li:not(.drag-newposition)');
@@ -2718,7 +2718,7 @@
                     ul_wrapper.remove();
                 }
             }
-            
+
             // remove from album-list in upload-form
             var upload_form_select = $('#p-upload-step2 select[name=album_id]');
             upload_form_select.find('option[value='+album_id+']').remove();
@@ -2884,15 +2884,15 @@
             handlers: {},
             /**
              * bind handler to hook (or handlers to hooks by hash-table). Function is polymorphous.
-             * 
+             *
              * @param string hook_name. Name of hook (search in files for tag: '@hook'
              * @param function handler
              * @param string name. Need for available to unbind. If omitted generate random name
              * @returns {*} name
-             * 
+             *
              * ...or in case of hash-table hooks to handlers correspongins
              * @param object map
-             * 
+             *
              */
             bind: function(hook_name, handler, name) {
                 if (arguments.length == 1 && arguments[0] && typeof arguments[0] === 'object') {
@@ -2931,7 +2931,7 @@
             /**
              * Trigger hook
              * @param hook_name
-             * 
+             *
              * @param argument
              * @param argument
              * ... (unlimited list of params)
@@ -2956,19 +2956,19 @@ $(function () {
     $('.p-one-photo .next').live('click', function () {
         $.photos.shift_next = true;
     });
-    
+
     $('.dialog').die().live('change_loading_status', function(e, status) {
         var status = status || false,
             self = $(this),
             submit_input = self.find('input[type=submit]');
-        
+
         if (status) {
             submit_input.attr('disabled', true).after('<i style="vertical-align: middle" class="icon16 loading"></i>');
         } else {
             submit_input.attr('disabled', false).next('i').remove();
         }
     });
-    
+
     /**
      * Selection photos in photo-list section
      */
@@ -3042,7 +3042,7 @@ $(function () {
         }
         $('#share-menu-block, #organize-menu-block').trigger('recount');
     }
-    
+
     $("#photo-list li input").live('click', photoListItemCheckHandler);
 
     // when select photo by hand (see below). Firefox version

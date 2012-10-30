@@ -142,6 +142,12 @@ class photosAlbumSaveController extends waJsonController
             if (!$album) {
                 throw new Exception("Album doesn't exist");
             }
+            if ($album['parent_id']) {
+                $parent = $this->album_model->getById($album['parent_id']);
+                if ($parent && $parent['status'] <= 0) {
+                    $data['status'] = 0;
+                }
+            }
             $name = $album['name'];
             if (empty($data['name'])) {
                 $data['name'] = $name;

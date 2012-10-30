@@ -62,8 +62,7 @@ class photosFrontController extends waFrontController
             parent::execute($plugin, $module, $action, $default);
         } catch(Exception $e) {
             if ($module == 'frontend') {
-                $action = new photosFrontendErrorAction($e);
-                $action->display();
+                parent::execute(null, 'frontend', 'error');
             } else {
                 throw $e;
             }
