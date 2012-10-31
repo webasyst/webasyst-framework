@@ -1500,7 +1500,7 @@
                 forwardLink: '#photo-stream .ff',
                 photoStream: photo_stream,
                 duration: duration,
-                onForward: function() {
+                onForward: function f() {
                     if (is_end) {
                         return;
                     }
@@ -1512,8 +1512,11 @@
                         next = last_visible.nextAll(),
                         next_count = next.length;
                     if (next_count < max_availabe_rest_count) {
+                        if (typeof f.xhr == 'object') {
+                            return;
+                        }
                         var photo_id = last.attr('data-photo-id');
-                        $.post('?module=photo&action=loadList',
+                        f.xhr = $.post('?module=photo&action=loadList',
                             {
                                 id: photo_id,
                                 direction: 1,
@@ -1533,11 +1536,12 @@
                                         photos: photos
                                     }));
                                 }
+                                delete f.xhr;
                             },
                         'json');
                     }
                 },
-                onBackward: function() {
+                onBackward: function f() {
                     if (is_start) {
                         return;
                     }
@@ -1549,8 +1553,11 @@
                         prev = first_visible.prevAll(),
                         prev_count = prev.length;
                     if (prev_count < max_availabe_rest_count) {
+                        if (typeof f.xhr == 'object') {
+                            return;
+                        }
                         var photo_id = first.attr('data-photo-id');
-                        $.post('?module=photo&action=loadList',
+                        f.xhr = $.post('?module=photo&action=loadList',
                             {
                                 id: photo_id,
                                 direction: -1,
@@ -1570,6 +1577,7 @@
                                         photos: photos
                                     }));
                                 }
+                                delete f.xhr;
                             },
                         'json');
                     }
