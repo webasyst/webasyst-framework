@@ -1,5 +1,5 @@
 DirectoryIndex index.php
-Options -Indexes
+Options -Indexes -MultiViews
 
 AddDefaultCharset utf-8
 
