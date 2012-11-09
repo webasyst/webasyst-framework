@@ -893,3 +893,15 @@ msgstr "Edit this layout in your <a href=\"{$wa_backend_url}\">Webasyst backend<
 msgid "The requested resource is not available."
 msgstr ""
 
+
+#: /wa-apps/site/templates/actions/routing/RoutingEdit.html:48
+msgid "Privacy"
+msgstr ""
+
+#: /wa-apps/site/templates/actions/routing/RoutingEdit.html:51
+msgid "Private settlement"
+msgstr ""
+
+#: /wa-apps/wa-apps/site/locale/ru_RU/LC_MESSAGES/site.posite/templates/actions/routing/RoutingEdit.html:52
+msgid "When this option is enabled, the settlement is treated as hidden (not published), i.e. accessible by the direct URL but not included either in the $wa->apps array or in the main Sitemaps file. The private setting is useful for temporary settlements, such as “Under Construction” pages, and for other settlements which should not be included in the core website navigation menu or indexed by search engines."
+msgstr ""

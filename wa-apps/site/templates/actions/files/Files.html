@@ -262,8 +262,8 @@
 				var name = $("#s-name").val();
 				$.post('?module=files&action=rename', { path: $.wa.site.filesPath(), name: name}, function (response) {
 					if (response.status == 'ok') {
-						$("#s-files-tree li.selected a b").html(response.data.name);
-						$("#s-files-tree li.selected a").attr('href', response.data.hash);
+						$("#s-files-tree li.selected > a b").html(response.data.name);
+						$("#s-files-tree li.selected > a").attr('href', response.data.hash);
 						$.wa.setHash(response.data.hash);
 						$("#s-rename-dialog").hide();
 					} else if (response.status == 'fail') {

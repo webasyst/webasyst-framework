@@ -14,12 +14,11 @@ class siteSitemapConfig extends waSitemapConfig
         $routes = $this->getRoutes();
         $page_model = new sitePageModel();
         foreach ($routes as $r) {
-            $exclude_ids = isset($r['_exclude']) ? $r['_exclude'] : array();
-            $sql = "SELECT id, name, title, url, create_datetime, update_datetime FROM ".$page_model->getTableName().'
-                WHERE domain_id = i:domain_id AND status = 1'.
-                ($exclude_ids ? " AND id NOT IN (:ids)" : '').
-                ' ORDER BY sort';
-            $pages = $page_model->query($sql, array('domain_id' => $domain['id'], 'ids' => $exclude_ids))->fetchAll('id');
+            $sql = "SELECT id, parent_id, name, title, url, create_datetime, update_datetime
+            FROM ".$page_model->getTableName().'
+            WHERE domain_id = i:domain_id AND route = s:route AND status = 1
+            ORDER BY sort';
+            $pages = $page_model->query($sql, array('domain_id' => $domain['id'], 'route' => $r['url']))->fetchAll('id');
             // get part of url by route
             $u = $this->getUrlByRoute($r);
             foreach ($pages as $p) {
@@ -27,7 +26,7 @@ class siteSitemapConfig extends waSitemapConfig
                     $priority = 1;
                     $change = self::CHANGE_WEEKLY;
                 } else {
-                    $priority = 0.2;
+                    $priority = $p['parent_id'] ? 0.2 : 0.6;
                     $change = self::CHANGE_MONTHLY;
                 }
                 $p['url'] = $u.$p['url'];

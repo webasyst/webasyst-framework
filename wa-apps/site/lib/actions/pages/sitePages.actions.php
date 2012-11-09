@@ -12,7 +12,7 @@ class sitePagesActions extends waPageActions
         'show_url' => true,
         'save_panel' => false,
         'js' => false,
-        'ajax' => true,
+        'is_ajax' => true,
         'data' => array()
     );
 

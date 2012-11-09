@@ -14,25 +14,31 @@ class siteRoutingSaveController extends waJsonController
                 $url = '*';
             }
 
-            $route = $this->getRouteCount($routes);
-            
+            $route_id = $this->getRouteCount($routes);
+            $route = array('url' => $url, 'app' => $app_id);
+            $app_info = wa()->getAppInfo($app_id);
+            if (isset($app_info['routing_params']) && is_array($app_info['routing_params'])) {
+                foreach ($app_info['routing_params'] as $k => $v) {
+                    $route[$k] = $v;
+                }
+            }
+
             if ($url == '*') {
-                $routes[$route] = array('url' => $url, 'app' => $app_id);
+                $routes[$route_id] = $route;
             } else {
                 if (substr($url, -1) == '/') {
                     $url .= '*';
                 } elseif (substr($url, -1) != '*' && strpos(substr($url, -5), '.') === false) {
                     $url .= '/*';
                 }
-                $routes = array($route => array('url' => $url, 'app' => $app_id)) + $routes;
+                $routes = array($route_id => $route) + $routes;
             }
-            $app_info = wa()->getAppInfo($app_id);
             $this->response['app'] = array(
                 'id' => $app_id,
                 'icon' => $app_info['icon'],
                 'name' => $app_info['name']
             );
-            $this->response['route'] = $route;
+            $this->response['route'] = $route_id;
             $this->response['url'] = htmlspecialchars($url);
             $this->save($domain, $routes);
             $this->log('route_add');

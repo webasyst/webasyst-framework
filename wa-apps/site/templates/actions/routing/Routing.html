@@ -26,6 +26,8 @@
                         <td class="s-actions align-right">
                             {if isset($route.app)}
                             <a href="#" class="s-route-action s-route-settings" title="[`App settings`]"><i class="icon16 settings"></i></a>
+                            {else}
+                            <a href="#" class="s-route-action s-route-delete" title="[`Delete`]"><i class="icon16 delete"></i></a>
                             {/if}
                         </td>
                     </tr>
@@ -95,6 +97,18 @@ $("#s-rules").delegate("a.s-route-settings", 'click', function () {
     return false;
 });
 
+$("#s-rules").delegate("a.s-route-delete", 'click', function () {
+    if (confirm('[`This will delete the rule from website structure. Are you sure?`]')) {
+        var route = $(this).parents('tr').attr('id').replace(/^route-/, '');
+        $.post("?module=routing&action=delete&domain_id={$domain_id}", { "route": route}, function (response) {
+            if (response.status == 'ok') {
+                $("#route-" + route).remove();
+            }
+        }, "json");
+    }
+    return false;
+});
+
 $("#s-rules").delegate("input.s-route-save", 'click', function () {
     var t = $(this).parents('tr');
     var params = {
@@ -125,9 +139,11 @@ $("#s-rules").delegate("input.s-route-save", 'click', function () {
             }
             t.find('td.s-actions input').hide();
             if (!t.attr('id')) {
-                t.find('td.s-actions').append(
-                        (response.data.app ? '<a href="#/routing/route=' + response.data.route + '" class="s-route-settings" title="[`App settings`]"><i class="icon16 settings"></i></a> ' : ''));
-
+                if (response.data.app) {
+                    t.find('td.s-actions').append('<a href="#/routing/route=' + response.data.route + '" class="s-route-settings" title="[`App settings`]"><i class="icon16 settings"></i></a> ');
+                } else {
+                    t.find('td.s-actions').append('<a href="#" class="s-route-action s-route-delete" title="[`Delete`]"><i class="icon16 delete"></i></a>');
+                }
                 t.attr('id', 'route-' + response.data.route);
                 if (response.data.app) {
                     var html = '<li id="design-' + response.data.route + '" class="app-'+ response.data.app.id +'">' +
