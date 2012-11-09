@@ -17,9 +17,9 @@
                 var container = $(this),
                     container_handler = container.find('>.collapse-handler'),
                     section_handler = album_item.find('>i.collapse-handler');
-                
+
                 $.photos_sidebar._collapseSidebarSection(section_handler, 'uncollapse');
-                
+
                 var item = album_item.parent().parent();
                 while (item.length && item.get(0) != this) {
                     var item_handler = item.find('>i.collapse-handler');
@@ -45,35 +45,42 @@
                 return false;
             });
 
-            $("#p-new-album").click(function () {
-                var showDialog = function () {
-                    $('#album-create-dialog').waDialog({
-                        onLoad: function (d) {
-                            $(this).find('input[type=text]').val('');
-                        },
-                        onSubmit: function (d) {
-                            var f = $(this);
-                            $.post(f.attr('action'), f.serialize(), function (r) {
-                                if (r.status == 'ok') {
-                                    $.photos.onCreateAlbum(r.data);
-                                    d.trigger('close');
-                                    if (r.data.id) {
-                                        $.photos.goToHash('/album/' + r.data.id);
-                                    }
-                                }
-                            }, "json");
-                            return false;
+            $('#album-list-container').off('click', '.p-new-album').
+                on('click', '.p-new-album',
+                    function () {
+                        var self = $(this);
+                        var parent_id = 0;
+                        if (!self.is('#p-new-album')) {
+                            parent_id = parseInt(self.parents('li:first').attr('rel'), 10) || 0;
                         }
-                    });
-                };
-                var d = $('#album-settings-create-acceptor');
-                if (!d.length) {
-                    d = $("<div id='album-create-dialog-acceptor'></div>");
-                    $("body").append(d);
-                }
-                d.load("?module=dialog&action=createAlbum", showDialog);
-                return false;
-            });
+                        var showDialog = function () {
+                            $('#album-create-dialog').waDialog({
+                                onLoad: function (d) {
+                                    $(this).find('input[type=text]').val('');
+                                },
+                                onSubmit: function (d) {
+                                    var f = $(this);
+                                    $.post(f.attr('action'), f.serialize(), function (r) {
+                                        if (r.status == 'ok') {
+                                            $.photos.onCreateAlbum(r.data, parent_id);
+                                            d.trigger('close');
+                                            if (r.data.id) {
+                                                $.photos.goToHash('/album/' + r.data.id);
+                                            }
+                                        }
+                                    }, "json");
+                                    return false;
+                                }
+                            });
+                        };
+                        var d = $('#album-create-dialog-acceptor');
+                        if (!d.length) {
+                            d = $("<div id='album-create-dialog-acceptor'></div>");
+                            $("body").append(d);
+                        }
+                        d.load("?module=dialog&action=createAlbum&parent_id="+parent_id, showDialog);
+                        return false;
+                });
         },
 
         countSubtree: function(item) {
@@ -92,13 +99,13 @@
             counter.hide();
             return total_count;
         },
-        
+
         countItem: function(item) {
             var counter = item.find('>.count:not(.subtree)').show(),
                 subtree_counter = item.find('>.subtree').hide();
             return parseInt(counter.text(), 10) || 0;
         },
-        
+
         _collapseSidebarSection: function(el, action) {
             if (!action) {
                 action = 'coollapse';

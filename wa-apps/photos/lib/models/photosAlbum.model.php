@@ -95,6 +95,14 @@ class photosAlbumModel extends waModel
         return $result;
     }
 
+    public function getFirstChild($album_id)
+    {
+        if (!$album_id) {
+            return false;
+        }
+        return $this->query("SELECT * FROM {$this->table} WHERE parent_id = ".(int)$album_id." ORDER BY sort LIMIT 1")->fetchAssoc();
+    }
+
     private function getChildAlbums($album_id, $data, &$result, $prefix = '')
     {
         foreach ($data[$album_id]['albums'] as $id) {

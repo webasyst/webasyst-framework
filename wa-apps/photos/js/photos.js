@@ -2671,14 +2671,33 @@
         photo_stream_cache: new PhotoStream(),
 
         // visual corrections after creating new album
-        onCreateAlbum: function(album) {
+        onCreateAlbum: function(album, parent_id) {
             // update album-list in left sidebar
             var html = tmpl('template-album-list-item', album);
-            $('#album-list ul:first').prepend(html);
+            if (!parent_id) {
+                $('#album-list ul:first').prepend(html);
+            } else {
+                var li = $('#album-list li[rel='+parent_id+']');
+                var ul = li.find('ul:first');
+                if (!ul.length) {
+                    li.append('<ul class="menu-v with-icons"></ul>');
+                    ul = li.find('ul:first');
+                    li.find('.count:first').after('<i class="icon16 darr overhanging collapse-handler" id="album-'+parent_id+'-handler"></i>');
+                }
+                ul.prepend(html);
+            }
 
             // update album-list in upload-form
             if(!album.type) {
-                $('#p-upload-step2 select[name=album_id]').find('optgroup').prepend('<option value="'+album.id+'">'+album.name+'</option>');
+                var select = $('#p-upload-step2 select[name=album_id]');
+                if (!parent_id) {
+                    select.find('optgroup').prepend('<option value="'+album.id+'">'+album.name+'</option>');
+                } else {
+                    var item = select.find('option[value='+parent_id+']');
+                    var text = item.text();
+                    var prefix = text.replace(/[^-]/g, '') + '-';
+                    item.after('<option value="'+album.id+'">'+prefix+' '+album.name+'</option>');
+                }
             }
         },
 

@@ -14,6 +14,13 @@ class photosAlbumSaveController extends waJsonController
     public function execute()
     {
         $this->id = waRequest::post('id', null, waRequest::TYPE_INT);
+        $this->album_model = new photosAlbumModel();
+
+        $parent = null;
+        $parent_id = waRequest::get('parent_id', 0, waRequest::TYPE_INT);
+        if ($parent_id) {
+            $parent = $this->album_model->getById($parent_id);
+        }
 
         $group_ids = null;
         $status = waRequest::post('status', 0, waRequest::TYPE_INT);
@@ -26,14 +33,20 @@ class photosAlbumSaveController extends waJsonController
             }
         }
 
-        $this->album_model = new photosAlbumModel();
-
         if (!$this->id) {
             if (!$this->getRights('upload')) {
                 throw new waException(_w("You don't have sufficient access rights"));
             }
-            $name = waRequest::post('name', '', waRequest::TYPE_STRING_TRIM);
+            if ($parent && $parent['status'] <= 0 && $status == 1) {
+                throw new waException(_w("Parent album is private"));
+            }
+
             $type = waRequest::post('type', 0, waRequest::TYPE_INT);
+            if ($parent && $parent['type'] == photosAlbumModel::TYPE_DYNAMIC && $type == photosAlbumModel::TYPE_STATIC) {
+                throw new waException(_w("Parent album is smart"));
+            }
+
+            $name = waRequest::post('name', '', waRequest::TYPE_STRING_TRIM);
             $data = array(
                 'name' => $name,
                 'status' => $status,
@@ -49,6 +62,10 @@ class photosAlbumSaveController extends waJsonController
                 $data['conditions'] = $this->getPrepareConditions();
             }
             $this->save($data);
+            if ($parent) {
+                $child = $this->album_model->getFirstChild($parent['id']);
+                $this->album_model->move($this->id, $child ? $child['id'] : 0, $parent['id']);
+            }
             $this->response = array(
                 'id' => $this->id,
                 'name' => photosPhoto::escape($name),

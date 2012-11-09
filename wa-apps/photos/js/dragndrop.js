@@ -316,7 +316,7 @@
                         if (!$.isEmptyObject(counters)) {
                             for (var album_id in counters) {
                                 if (counters.hasOwnProperty(album_id)) {
-                                    album_list.find('li[rel='+album_id+']').find('.count').text(counters[album_id]);
+                                    album_list.find('li[rel='+album_id+']').find('.count:first').text(counters[album_id]);
                                 }
                             }
                         }
@@ -532,7 +532,7 @@
                         if (!$.isEmptyObject(counters)) {
                             for (var album_id in counters) {
                                 if (counters.hasOwnProperty(album_id)) {
-                                    album_list.find('li[rel='+album_id+']').find('.count').text(counters[album_id]);
+                                    album_list.find('li[rel='+album_id+']').find('.count:first').text(counters[album_id]);
                                 }
                             }
                         }

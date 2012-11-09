@@ -5,6 +5,9 @@
 #p-sidebar { padding-top: 39px; }
 #p-sidebar ul.menu-v li.p-not-published a { color: #777; }
 
+#p-sidebar .dr a .count .add { display: none; }
+#p-sidebar .dr a:hover .count .add { display: block; }
+
 #p-toolbar { padding-top: 70px; font-size: 0.9em; line-height: 1.2em; }
 #p-toolbar.p-fixed { position: fixed; padding-top: 0; top: 0; right: 0; }
 #p-toolbar.p-full-screen-toolbar { background: #eee; }

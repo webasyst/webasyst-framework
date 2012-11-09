@@ -134,7 +134,10 @@ class photosViewTreeElement
                 '';
         }
         $result .= $view_type == 'backend' ?
-                '<a href="'.$this->getHash().'"><i class="icon16 '.$this->getIcon().'"></i>'.photosPhoto::escape($this->data['name']).' '.$this->getStatusIcon().' <strong class="small highlighted count-new">'.(!empty($this->data['count_new']) ? '+' . $this->data['count_new'] : '').'</strong></a>' :
+                '<a href="'.$this->getHash().'"><i class="icon16 '.$this->getIcon().'"></i>'.photosPhoto::escape($this->data['name']).' '.$this->getStatusIcon().
+                    ' <strong class="small highlighted count-new">'.(!empty($this->data['count_new']) ? '+' . $this->data['count_new'] : '').'</strong>'.
+                    ' <span class="count"><i class="icon10 add p-new-album"></i></span>'.
+                '</a>' :
                 '<a href="'.photosFrontendAlbum::getLink($this->data).'">'.photosPhoto::escape($this->data['name']).'</a>';
         if ($this->childs) {
             $result .= $view_type == 'backend' ?
