@@ -74,7 +74,7 @@ class waSitemapConfig
             $xml .= "\t<changefreq>".$changefreq."</changefreq>\n";
         }
         if ($priority) {
-            $xml .= "\t<priority>".min(1.0,max(0.0,$priority))."</priority>\n";
+            $xml .= "\t<priority>".str_replace(',', '.', min(1.0, max(0.0, $priority)))."</priority>\n";
         }
         $xml .= "</url>\n";
         echo $xml;
@@ -85,7 +85,7 @@ class waSitemapConfig
         $app_id = wa()->getApp();
         $routes = $this->routing->getRoutes($this->domain);
         foreach ($routes as $r_id => $r) {
-            if (!isset($r['app']) || $r['app'] != $app_id) {
+            if (!isset($r['app']) || $r['app'] != $app_id || !empty($r['private'])) {
                 unset($routes[$r_id]);
             }
         }

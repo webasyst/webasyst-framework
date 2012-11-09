@@ -335,6 +335,14 @@ class waMailDecode
                         $this->part = &$this->parts[$this->part_index];
                         $this->state = self::STATE_HEADER;
                     } else {
+                        if ($this->is_last) {
+                            $this->skipLineBreak();
+                            $this->parts[] = array('parent' => $this->part_index, 'type' => 'text', 'subtype' => 'plain');
+                            $this->part_index = count($this->parts) - 1;
+                            $this->part = &$this->parts[$this->part_index];
+                            $this->state = self::STATE_PART_DATA;
+                            return true;
+                        }
                         return false;
                     }
                 } else {
@@ -361,6 +369,10 @@ class waMailDecode
                     if (($i = strpos($this->buffer, $boundary, $this->buffer_offset)) === false) {
                         if ($this->is_last) {
                             $this->state = self::STATE_END;
+                            return array(
+                                'type' => self::TYPE_PART,
+                                'value' => substr($this->buffer, $this->buffer_offset)
+                            );
                         }
                         // need more data
                         return false;
@@ -549,6 +561,10 @@ class waMailDecode
                         if (!isset($this->body[$this->part['type'].'/'.$this->part['subtype']])) {
                             $this->body[$this->part['type'].'/'.$this->part['subtype']] = $this->part['data'];
                         }
+                        break;
+                    default:
+                        $this->part['data'] = $part['value'];
+                        unset($part);
                 }
                 if (isset($this->part['parent'])) {
                     $this->part_index = $this->part['parent'];

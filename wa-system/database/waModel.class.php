@@ -473,7 +473,17 @@ class waModel
         return true;
     }
 
+    /**
+     * @deprecated
+     * @param $data
+     * @return bool
+     */
     public function multiInsert($data)
+    {
+        return $this->multipleInsert($data);
+    }
+
+    public function multipleInsert($data)
     {
         $values = array();
         $fields = array();

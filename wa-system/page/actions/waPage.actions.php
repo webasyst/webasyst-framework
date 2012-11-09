@@ -13,7 +13,7 @@ class waPageActions extends waActions
         'show_url' => false,
         'save_panel' => true,
         'js' => true,
-        'ajax' => false,
+        'is_ajax' => false,
         'data' => array()
     );
 
@@ -119,11 +119,7 @@ class waPageActions extends waActions
         }
 
         $routes = $this->getRoutes();
-        if (!isset($routes[$domain.'/'.$route])) {
-            $domain = false;
-        }
-
-        if ($domain) {
+        if ($domain && isset($routes[$domain.'/'.$route])) {
             $url = 'http://'.$domain.'/'.wa()->getRouting()->clearUrl($route).$url;
         } else {
             $url = null;

@@ -203,6 +203,13 @@
     var wa_app = "{$wa->app()}";
 
     $(function () {
+        {if $options.is_ajax}
+            {if $page}
+            document.title = "{$page.name|escape} — {$wa->appName()}";
+            {else}
+            document.title = "[`New page`] — {$wa->appName()}";
+            {/if}
+        {/if}
         waEditorInit({
             upload_url: "{$upload_url}",
             lang: "{$lang}"

@@ -722,6 +722,9 @@ class waSystem
         $all_apps = $this->getApps();
         foreach ($routes as $r) {
             if (isset($r['app']) && isset($all_apps[$r['app']])) {
+                if (!empty($r['private'])) {
+                    continue;
+                }
                 $url = $r['url'];
                 $url = waRouting::clearUrl($url);
                 if (strpos($url, '<') !== false) {

@@ -473,6 +473,9 @@ class waContact implements ArrayAccess
                 $locale = isset($contact_info['locale']) ? $contact_info['locale'] : '';
             }
         }
+        if (wa()->getEnv() == 'frontend' && waRequest::param('locale')) {
+            return waRequest::param('locale');
+        }
         // try get locale by header Accept-Language (only for current user)
         if (!$locale && $this instanceof waAuthUser) {
             $locale = waRequest::getLocale();

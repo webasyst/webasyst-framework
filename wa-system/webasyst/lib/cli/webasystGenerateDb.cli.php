@@ -15,10 +15,13 @@ class webasystGenerateDbCli extends waCliController
             $params = waRequest::param();
             if (count($params) == 1) {
                 $this->generateSchema($app_id);
-            } elseif (isset($params['update'])) {
-                $this->generateSchema($app_id, '--update');
             } else {
                 array_shift($params);
+                foreach ($params as $k => $v) {
+                    if (!is_numeric($k)) {
+                        unset($params[$k]);
+                    }
+                }
                 $this->generateSchema($app_id, $params);
             }
         } else {
@@ -38,9 +41,11 @@ class webasystGenerateDbCli extends waCliController
         } else {
             $path = wa()->getConfig()->getAppsPath($app_id, 'lib/config/db.php');
         }
-        if ($tables == '--update' || $tables == '-update') {
+        if (waRequest::param('update') !== null) {
             $schema = include($path);
-            $tables = array_keys($schema);
+            if (!$tables) {
+                $tables = array_keys($schema);
+            }
         } elseif ($tables) {
             if (!is_array($tables)) {
                 $tables = array($tables);
@@ -58,6 +63,7 @@ class webasystGenerateDbCli extends waCliController
         }
 
         $schema = array();
+
         foreach ($tables as $t) {
             echo $t."\n";
             $schema[$t] = $this->model->describe($t, 1);

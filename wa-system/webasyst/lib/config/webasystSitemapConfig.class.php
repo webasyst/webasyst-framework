@@ -6,7 +6,17 @@ class webasystSitemapConfig extends waSitemapConfig
     {
         $system = waSystem::getInstance();
         $apps = $system->getApps();
-        foreach ($apps as $app_id => $app) {
+        $routes = $this->routing->getRoutes($this->domain);
+        $domain_apps = array();
+        foreach ($routes as $r) {
+            if (isset($r['app']) && empty($r['private']) && isset($apps[$r['app']])) {
+                if (!isset($domain_apps[$r['app']])) {
+                    $domain_apps[$r['app']] = $apps[$r['app']];
+                }
+            }
+        }
+
+        foreach ($domain_apps as $app_id => $app) {
             if (file_exists($system->getAppPath('lib/config/'.$app_id.'SitemapConfig.class.php', $app_id))) {
                 echo '<sitemap>
 <loc>'.$system->getRootUrl(true).'sitemap-'.$app_id.'.xml</loc>

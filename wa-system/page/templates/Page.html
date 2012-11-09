@@ -27,6 +27,8 @@
 
 <style>
     .wa-pages { margin-bottom: 80px; }
+    .wa-pages h4.heading { word-wrap: break-word; position: relative; }
+    .wa-pages h4.heading span.count { position: absolute; right: 0; }
     
     .wa-page-gray { color: #AAA;}
     .wa-page-draft { background: #CCC; color: white; font-weight: bold; font-size: 0.8em; padding: 0 2px; }
@@ -84,8 +86,8 @@
         {foreach $routes as $r => $route}
         <div class="block block-pages">
         <h4 class="heading">
+        	<span class="count"><span style="display: none;"></span><i class="icon10 add wa-page-add no-parent"></i></span>
             <i class="icon16 darr"></i>{if $r}{$r|escape}{else}[s`Unpublished`]{/if}
-            <span class="count"><span style="display: none;"></span><i class="icon10 add wa-page-add no-parent"></i></span>
             {if !$r && count($routes) > 1}
             <a id="wa-page-settle" style="margin-left: 10px;" href="#"><i class="icon16 exclamation"></i></a>
             <div id="wa-page-settle-dialog" style="display: none;">
@@ -232,7 +234,7 @@
             var p = $(this).parent();
             if (p.attr('id')) {
                 var id = $(this).parent().attr('id').replace(/page-/, '');
-                {if $options.ajax}
+                {if $options.is_ajax}
                 $.wa.setHash("{$page_url}" + id);
                 return false;
                 {else}
@@ -247,7 +249,7 @@
                 }
                 $(this).parent().addClass('selected');
             }
-            return {if $options.ajax}false{else}true{/if};
+            return {if $options.is_ajax}false{else}true{/if};
         });
 
         var page_id = location.hash.replace(/.*?\/(\d+)\/?/, '$1');
