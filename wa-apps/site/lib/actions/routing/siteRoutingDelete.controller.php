@@ -10,6 +10,10 @@ class siteRoutingDeleteController extends waJsonController
         $route_id = waRequest::post('route');
         
         if (isset($routes[$route_id])) {
+            if (isset($routes[$route_id]['app'])) {
+                $robots = new siteRobots($domain);
+                $robots->delete($routes[$route_id]['app'], $routes[$route_id]['url']);
+            }
             unset($routes[$route_id]);
             // save
             $path = $this->getConfig()->getPath('config', 'routing');

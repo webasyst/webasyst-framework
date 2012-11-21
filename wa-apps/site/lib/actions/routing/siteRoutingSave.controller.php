@@ -27,9 +27,9 @@ class siteRoutingSaveController extends waJsonController
                 $routes[$route_id] = $route;
             } else {
                 if (substr($url, -1) == '/') {
-                    $url .= '*';
+                    $route['url'] .= '*';
                 } elseif (substr($url, -1) != '*' && strpos(substr($url, -5), '.') === false) {
-                    $url .= '/*';
+                    $route['url'] .= '/*';
                 }
                 $routes = array($route_id => $route) + $routes;
             }
@@ -39,8 +39,10 @@ class siteRoutingSaveController extends waJsonController
                 'name' => $app_info['name']
             );
             $this->response['route'] = $route_id;
-            $this->response['url'] = htmlspecialchars($url);
+            $this->response['url'] = htmlspecialchars($route['url']);
             $this->save($domain, $routes);
+            $robots = new siteRobots($domain);
+            $robots->add($app_id, $route['url']);
             $this->log('route_add');
         } elseif (($redirect = waRequest::post('redirect')) !== null) {
             $route = waRequest::post('route');
@@ -68,6 +70,8 @@ class siteRoutingSaveController extends waJsonController
         } elseif (($route = waRequest::post('route')) !== null) {
             if (isset($routes[$route]) && $routes[$route]['url'] != $url) {
                 $this->updatePagesRoute($routes[$route], $url);
+                $robots = new siteRobots($domain);
+                $robots->update($routes[$route]['app'], $routes[$route]['url'], $url);
                 $routes[$route]['url'] = $url;
                 $this->save($domain, $routes);
                 $this->log('route_edit');
