@@ -53,12 +53,27 @@ class photosViewHelper extends waAppViewHelper
      * Get photos albums tree
      * @return string
      */
-    public function albums()
+    public function albums($return_html = true)
     {
         $album_model = new photosAlbumModel();
         $albums = $album_model->getAlbums(true);
-        $tree = new photosViewTree($albums);
-        return $tree->display('frontend');
+        if ($return_html) {
+            $tree = new photosViewTree($albums);
+            return $tree->display('frontend');
+        } else {
+            foreach ($albums as $album_id => $album) {
+                $albums[$album_id]['url'] = photosFrontendAlbum::getLink($album);
+                if ($album['parent_id'] && isset($albums[$album['parent_id']])) {
+                    $albums[$album['parent_id']]['childs'][] = &$albums[$album_id];
+                }
+            }
+            foreach ($albums as $album_id => $album) {
+                if ($album['parent_id']) {
+                    unset($albums[$album_id]);
+                }
+            }
+            return $albums;
+        }
     }
 
     /**
