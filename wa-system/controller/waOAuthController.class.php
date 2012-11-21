@@ -91,9 +91,20 @@ class waOAuthController extends waViewController
                 $photo_url_parts = explode('/', $photo_url);
                 // copy photo to tmp dir
                 $path = wa()->getTempPath('auth_photo/'.$contact_id.'.'.end($photo_url_parts), $app_id);
-                $photo = file_get_contents($photo_url);
-                file_put_contents($path, $photo);
-                $contact->setPhoto($path);
+                if (function_exists('curl_init')) {
+                    $ch = curl_init($photo_url);
+                    curl_setopt($ch, CURLOPT_HEADER, 0);
+                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+                    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 25);
+                    $photo = curl_exec($ch);
+                    curl_close($ch);
+                } else {
+                    $photo = file_get_contents($photo_url);
+                }
+                if ($photo) {
+                    file_put_contents($path, $photo);
+                    $contact->setPhoto($path);
+                }
             }
         } else {
             $contact = new waContact($contact_id);

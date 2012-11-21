@@ -34,6 +34,8 @@ abstract class waOAuth2Adapter extends waAuthAdapter
             // @todo: error
             return array();
         }
+        // close session
+        wa()->getStorage()->close();
         // get token
         if ($token = $this->getAccessToken($code)) {
             // get user info

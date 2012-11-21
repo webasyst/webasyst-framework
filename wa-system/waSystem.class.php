@@ -323,15 +323,15 @@ class waSystem
 
     public function login()
     {
-        $class_name = $this->getConfig()->getPrefix().'LoginController';
-        if (class_exists($class_name)) {
-            $controller = new $class_name();
+        $prefix = $this->getConfig()->getPrefix().'Login';
+        if (class_exists($prefix.'Controller') || class_exists($prefix.'Action')) {
+            $this->getFrontController()->execute(null, 'login');
         } else {
             // load webasyst
             self::getInstance('webasyst');
             $controller = new webasystLoginController();
+            $controller->run();
         }
-        $controller->run();
     }
 
     public function dispatch()
@@ -432,7 +432,7 @@ class waSystem
                     //$this->getResponse()->redirect($this->getConfig()->getBackendUrl(true), 302);
                     throw new waRightsException('Access to this app denied', 403);
                 }
-                if (waRequest::param('secure') && !$this->getUser()->isAuth()) {
+                if ((waRequest::param('secure') || waRequest::param('auth')) && !$this->getUser()->isAuth()) {
                     $app_system->login();
                 } else {
                     $app_system->getFrontController()->dispatch();

@@ -46,6 +46,9 @@ class facebookAuth extends waOAuth2Adapter
         $url = "https://graph.facebook.com/me?access_token=".$token."&fields=id,picture,link,first_name,last_name,email,name,locale,username,gender";
         $response = $this->get($url);
         if ($response && $response = json_decode($response, true)) {
+            if (isset($response['error'])) {
+                throw new waException($response['error']['message'], $response['error']['code']);
+            }
             $data = array(
                 'source' => 'facebook',
                 'source_id' => $response['id'],

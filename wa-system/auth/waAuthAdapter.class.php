@@ -51,8 +51,20 @@ abstract class waAuthAdapter
         return wa()->getRootUrl($absolute, true).'oauth.php?provider='.$this->getId();
     }
 
-    protected function get($url)
+    protected function get($url, &$status = null)
     {
+        if (function_exists('curl_init')) {
+            $ch = curl_init($url);
+            curl_setopt($ch, CURLOPT_HEADER, 0);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+            curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 25);
+            $content = curl_exec($ch);
+            $status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            curl_close($ch);
+            return $content;
+        }
         return file_get_contents($url);
     }
 

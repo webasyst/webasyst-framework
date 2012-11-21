@@ -76,7 +76,7 @@ abstract class waLoginAction extends waViewAction
     protected function checkXMLHttpRequest()
     {
         // Voodoo magic: reload page when user performs an AJAX request after session died.
-        if (waRequest::isXMLHttpRequest() && waRequest::param('secure')) {
+        if (waRequest::isXMLHttpRequest() && (waRequest::param('secure') || waRequest::param('auth'))) {
             //
             // The idea behind this is quite complicated.
             //
