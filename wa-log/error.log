@@ -1,0 +1,61 @@
+
+2012-11-27 14:52:40: <div style="width:99%; position:relative">
+<h2 id='Title'>Access denied for user 'root'@'localhost' (using password: YES)</h2>
+<div id="Context" style="display: block;"><h3>Error with code 1045 in '/home/webasyst/public_html/wa-system/database/waDbMysqliAdapter.class.php' around line 33:</h3><pre>
+   28	    {
+   29	        $host = $settings['host'];
+   30	        $port = isset($settings['port']) ? $settings['port'] : ini_get("mysqli.default_port");
+   31	        $handler = @new mysqli($host, $settings['user'], $settings['password'], $settings['database'], $port);
+   32	        if ($handler->connect_error) {
+ >>33	            throw new waDbException($handler->connect_error, $handler->connect_errno);
+   34	        }
+   35	        
+   36	        $charset = isset($settings['charset']) ? $settings['charset'] : 'utf8';
+   37	        @$handler->query("SET NAMES '" . $charset . "' COLLATE '".$charset."_bin'");
+   38	        if (isset($settings['sql_mode'])) {
+</pre></div>
+<div id="Trace"><h2>Call stack</h2><pre>#0 /home/webasyst/public_html/wa-system/database/waDbAdapter.class.php(30): waDbMysqliAdapter->connect(Array)
+#1 /home/webasyst/public_html/wa-system/database/waDbConnector.class.php(49): waDbAdapter->__construct(Array)
+#2 /home/webasyst/public_html/wa-system/database/waModel.class.php(73): waDbConnector::getConnection('default', false)
+#3 /home/webasyst/public_html/wa-system/config/waAppConfig.class.php(232): waModel->__construct()
+#4 /home/webasyst/public_html/wa-system/config/waAppConfig.class.php(141): waAppConfig->install()
+#5 /home/webasyst/public_html/wa-system/config/waAppConfig.class.php(38): waAppConfig->checkUpdates()
+#6 /home/webasyst/public_html/wa-system/config/waSystemConfig.class.php(387): waAppConfig->__construct('backend', '/home/webasyst/...')
+#7 /home/webasyst/public_html/wa-system/waSystem.class.php(81): waSystemConfig::getAppConfig('webasyst', 'backend', '/home/webasyst/...', 'ru_RU')
+#8 /home/webasyst/public_html/wa-system/waSystem.class.php(378): waSystem::getInstance('webasyst', NULL, true)
+#9 /home/webasyst/public_html/index.php(7): waSystem->dispatch()
+#10 {main}</pre></div>
+<div id="Request"><h2>Request</h2><pre>array (
+)</pre></div></div>
+<div><h2>Params</h2><pre>array (
+)</pre></div></div>
+2012-11-27 14:53:05: <div style="width:99%; position:relative">
+<h2 id='Title'>Unknown database 'wa'</h2>
+<div id="Context" style="display: block;"><h3>Error with code 1049 in '/home/webasyst/public_html/wa-system/database/waDbMysqliAdapter.class.php' around line 33:</h3><pre>
+   28	    {
+   29	        $host = $settings['host'];
+   30	        $port = isset($settings['port']) ? $settings['port'] : ini_get("mysqli.default_port");
+   31	        $handler = @new mysqli($host, $settings['user'], $settings['password'], $settings['database'], $port);
+   32	        if ($handler->connect_error) {
+ >>33	            throw new waDbException($handler->connect_error, $handler->connect_errno);
+   34	        }
+   35	        
+   36	        $charset = isset($settings['charset']) ? $settings['charset'] : 'utf8';
+   37	        @$handler->query("SET NAMES '" . $charset . "' COLLATE '".$charset."_bin'");
+   38	        if (isset($settings['sql_mode'])) {
+</pre></div>
+<div id="Trace"><h2>Call stack</h2><pre>#0 /home/webasyst/public_html/wa-system/database/waDbAdapter.class.php(30): waDbMysqliAdapter->connect(Array)
+#1 /home/webasyst/public_html/wa-system/database/waDbConnector.class.php(49): waDbAdapter->__construct(Array)
+#2 /home/webasyst/public_html/wa-system/database/waModel.class.php(73): waDbConnector::getConnection('default', false)
+#3 /home/webasyst/public_html/wa-system/config/waAppConfig.class.php(232): waModel->__construct()
+#4 /home/webasyst/public_html/wa-system/config/waAppConfig.class.php(141): waAppConfig->install()
+#5 /home/webasyst/public_html/wa-system/config/waAppConfig.class.php(38): waAppConfig->checkUpdates()
+#6 /home/webasyst/public_html/wa-system/config/waSystemConfig.class.php(387): waAppConfig->__construct('backend', '/home/webasyst/...')
+#7 /home/webasyst/public_html/wa-system/waSystem.class.php(81): waSystemConfig::getAppConfig('webasyst', 'backend', '/home/webasyst/...', 'ru_RU')
+#8 /home/webasyst/public_html/wa-system/waSystem.class.php(378): waSystem::getInstance('webasyst', NULL, true)
+#9 /home/webasyst/public_html/index.php(7): waSystem->dispatch()
+#10 {main}</pre></div>
+<div id="Request"><h2>Request</h2><pre>array (
+)</pre></div></div>
+<div><h2>Params</h2><pre>array (
+)</pre></div></div>

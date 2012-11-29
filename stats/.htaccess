@@ -1,0 +1,7 @@
+AuthName " statistics"
+AuthType Basic
+AuthUserFile /home/webasyst/.stats-htpasswd
+require valid-user
+<Files .stats-htpasswd>
+deny from all
+</Files>
