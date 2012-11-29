@@ -17,6 +17,7 @@ CREATE TABLE `dictionaries_items` (
 	`value` varchar(255) COLLATE utf8_unicode_ci NOT NULL,
 	`desc` varchar(1024) COLLATE utf8_unicode_ci NOT NULL,
 	`visible` tinyint(4) NOT NULL,
+	`done` DATETIME NULL DEFAULT NULL ,
 	`sort` int(11) NOT NULL DEFAULT '0',
 PRIMARY KEY (`id`),
 KEY `name` (`name`)

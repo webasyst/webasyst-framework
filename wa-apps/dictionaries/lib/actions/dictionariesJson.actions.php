@@ -15,7 +15,7 @@ class dictionariesJsonActions extends waJsonActions
     public function ItemsaveAction()
     {
         $item = array();
-        foreach(array('dictionary_id', 'name', 'sort') as $k) {
+        foreach(array('dictionary_id', 'name', 'value', 'desc', 'visible', 'sort') as $k) {
             $v = waRequest::post($k, null);
             if ($v !== null) {
                 $item[$k] = $v;

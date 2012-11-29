@@ -35,7 +35,7 @@ class dictionariesModel extends waModel
     /** Set count of the list with given id to match number of unchecked items in the list */
     public function updateCount($id)
     {
-        $sql = "SELECT COUNT(*) FROM {$this->items_table} WHERE list_id=:id AND done IS NULL";
+        $sql = "SELECT COUNT(*) FROM {$this->items_table} WHERE dictionary_id=:id AND done IS NULL";
         $count = $this->query($sql, array('id' => $id))->fetchField();
         return $this->updateById($id, array('count' => $count));
     }

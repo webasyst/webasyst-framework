@@ -4,7 +4,7 @@
 (function(){
 	/** Update unchecked list items count in sidebar */
 	var updateCount = function() {
-		$('#cnt'+$.cl.list_id).text($('#c-checklist :checkbox:not(:checked)').length);
+		$('#cnt'+$.cl.dictionary_id).text($('#c-checklist :checkbox:not(:checked)').length);
 	};
 
 	/** Insert item into ul#c-checklist */
@@ -21,6 +21,8 @@
 						'<label>'+
 							'<input type="checkbox" name="'+item.id+'" class="c-item-checkbox"'+(item.done ? ' checked="true"' : '')+'> '+
 							'<span class="c-item-name">'+item.name+'</span>'+
+							'<span class="c-item-name">'+item.value+'</span>'+
+							'<span class="c-item-name">'+item.desc+'</span>'+
 						'</label>'+
 						(item.when ? '<span class="hint c-completed-when">'+item.when+'</span>' : '')+
 						(item.who ? '<span class="hint c-completed-by">'+item.who+'</span>' : '')+
@@ -76,7 +78,7 @@
 		btn.parent().append('<i class="icon16 loading">');
 
 		$.post('?module=json&action=startover', {
-			id: $.cl.list_id
+			id: $.cl.dictionary
 		}, function(items) {
 			items = items.data;
 			$('#c-checklist .item').remove();
@@ -133,8 +135,17 @@
 			return false;
 		}
 
-		var input = $('#c-add-form :text');
-		if (!input.val()) {
+		var inputname = $('.inputname');
+		var inputval = $('.inputval');
+		var inputdesc = $('.inputdesc');
+
+		if ($('.inputvisible:checked').val() !== undefined) {
+		    var inputvisible = 1;
+		} else {
+		    var inputvisible = 0;
+		} 
+
+		if (!inputname.val()) {
 			return false;
 		}
 
@@ -142,8 +153,11 @@
 		btn.parent().append('<i class="icon16 loading">');
 
 		$.post('?module=json&action=itemsave', {
-			list_id: $.cl.list_id,
-			name: input.val()
+			dictionary_id: $.cl.dictionary_id,
+			name: inputname.val(),
+			value: inputval.val(),
+			desc: inputdesc.val(),
+			visible: inputvisible
 		}, function(item) {
 			item = item.data;
 			insertItem(item);
@@ -153,7 +167,7 @@
 			maybeStartOver();
 		}, 'json');
 
-		input.val('').focus();
+		inputname.val('').focus();
 		return false;
 	};
 	$('#c-add-form :submit').click(addItem);
@@ -241,7 +255,7 @@
 	});
 
 	// highlight list in sidebar
-	$('#cnt'+$.cl.list_id).parent().addClass('selected').siblings('.selected').removeClass('selected');
+	$('#cnt'+$.cl.dictionary_id).parent().addClass('selected').siblings('.selected').removeClass('selected');
 
 	// make list sortable
 	if ($.cl.can_edit) {
@@ -286,7 +300,7 @@
 			return false;
 		}
 		$(this).find('.icon16').removeClass('delete').addClass('loading');
-		$.post('?module=json&action=deletelist', {id: $.cl.list_id}, function() {
+		$.post('?module=json&action=deletelist', {id: $.cl.dictionary_id}, function() {
 			window.location.search = '';
 		});
 		return false;

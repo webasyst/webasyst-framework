@@ -23,7 +23,10 @@
 	<ul class="menu-v">
 		{if $can_edit}
 			<li class="c-add-form" id="c-add-form">
-				<input type="text">
+				<input class="inputname emptyonclick" type="text" name= "name" value="Input Name">
+				<input class="inputval emptyonclick" type="text" name="value" value="Input Value">
+				<input class="inputdesc emptyonclick" type="text" name="desc" value="Input Description">
+				visible: <input class="inputvisible" type="checkbox" name="visible" checked="checked">
 				<input type="submit" value="[`Add`]">
 			</li>
 		{/if}
@@ -37,10 +40,11 @@
 
 	<div class="clear-left"></div>
 </div>
+
 <script type="text/javascript">
 	// data for script have to be generated inside template
 	$.cl = {
-		list_id: {$list.id},
+		dictionary_id: {$list.id},
 		items: {json_encode($items)},
 		can_edit: {if $can_edit}1{else}0{/if},
 		loc: {
@@ -51,6 +55,21 @@
 			'delconfirm': "[`List “%s” will be deleted permanently. Delete?`]"
 		}
 	};
+
+{literal}
+$(function () {
+            $("input.emptyonclick").mouseenter(function (){
+                var value = $(this).val();
+                $(this).val("");
+
+                $(this).mouseleave(function(){
+                    if ($(this).val().length == 0)
+                        $(this).val(value);
+                });
+            });
+});
+{/literal}
 </script>
+
 <script type="text/javascript" src="{$wa_app_static_url}js/list.js?{$wa->version()}"></script>
 
