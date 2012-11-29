@@ -1,0 +1,71 @@
+{*
+ * List of available lists in sidebar.
+ * Can be reordered via drag and drop if user has the right to create new lists.
+ *}
+<div class="block c-sidebar">
+	<ul class="menu-v with-icons" id="sidebar-lists">
+		{foreach from=$lists item=l name=sb}
+			<li id="list{$l.id}" rel="{$l.sort}"{if !empty($l.current)} class="selected"{/if}>
+				<span class="count" id="cnt{$l.id}">{$l.count}</span>
+				<a href="?action=list&id={$l.id}"
+					{if $smarty.foreach.sb.iteration lte 10}
+						{* !!! Hotkeys are experimental an will probably change in future *}
+						accesskey="{substr($smarty.foreach.sb.iteration, -1)}"
+					{/if}>{$l.icon}{$l.name|escape}</a></li>
+			</li>
+		{/foreach}
+		{if !$lists}
+			<li>
+				<span class="hint">[`No lists available`]</span>
+			</li>
+		{/if}
+	</ul>
+	{if $can_add_lists}
+		<ul class="menu-v with-icons compact" id="sidebar-new-list">
+			<li class="top-padded small">
+				{* !!! TODO: accesskeys are experimental *}
+				<a href="?action=editor" accesskey="n"><i class="icon10 add c-new-list"></i>[`New list`]</a>
+			</li>
+		</ul>
+	{/if}
+</div>
+
+{if $can_add_lists && $lists && count($lists) > 1}
+<script type="text/javascript">
+(function() {
+	// reset accesskeys each time order in sidebar changes
+	// (!!! experimental an will probably change in future)
+	var resetAccesskeys = function() {
+		$('#sidebar-lists li').each(function(i) {
+			if (i > 9) {
+				return false;
+			}
+			var k = (''+(i+1)).substr(-1);
+			$(this).find('a').attr('accesskey', k);
+		});
+	};
+
+	// make sidebar sortable
+	$('#sidebar-lists').sortable({
+		distance: 5,
+		opacity: 0.75,
+		stop: function(e, ui) {
+			var li = ui.item;
+			var data = {
+				id: li.attr('id').substr(4),
+			};
+			if (li.next().length) {
+				data.sort = li.next().attr('rel');
+			} else if (li.prev().length) {
+				data.sort = 1 + li.prev().attr('rel');
+			} else {
+				return; // no reason to sort list if there's only one item
+			}
+			$.post('?module=json&action=listmove', data);
+			resetAccesskeys();
+		}
+	});
+})();
+</script>
+{/if}
+

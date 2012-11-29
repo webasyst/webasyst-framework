@@ -1,0 +1,9 @@
+.c-list { zoom:1;}
+
+.c-list ul.menu-h.float-right li { position: relative; height: 20px; display: inline;}
+.c-list ul.menu-h.float-right li a { zoom:1; height: 20px;}
+.c-list ul.menu-h.float-right li a i.icon16 { display: block; float: left;}
+
+.c-list-icons ul.menu-h li { display: block; float: left; }
+.c-list-icons ul.menu-h li a { position: relative; height: 16px; width: 16px;}
+.c-list-icons ul.menu-h li a i { position: absolute; top: 4px; left: 4px;}
