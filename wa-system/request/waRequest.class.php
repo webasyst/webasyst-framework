@@ -227,10 +227,13 @@ class waRequest
     /**
      * Returns locale by header Accept-Language
      */
-    public static function getLocale($default = null)
+    public static function getLocale($default = null, $browser_only = false)
     {
+        if ($default === true || $default === 1) {
+            $browser_only = true;
+        }
         $locales = waLocale::getAll(false);
-        if ($lang = self::param('locale')) {
+        if (!$browser_only && $lang = self::param('locale')) {
             foreach ($locales as $l) {
                 if (!strcasecmp($lang, $l)) {
                     return $l;

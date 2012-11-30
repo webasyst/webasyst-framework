@@ -13,14 +13,27 @@ class siteViewHelper extends waAppViewHelper
             $domain = $domain_model->getByName(waSystem::getInstance()->getRouting()->getDomain(null, true));
 
             $page_model = new sitePageModel();
-            $exclude_ids = waRequest::param('_exclude');
             $sql = "SELECT id, parent_id, name, title, full_url, url, create_datetime, update_datetime FROM ".$page_model->getTableName().'
-                    WHERE domain_id = i:domain_id AND route = s:route AND status = 1'.
-                    ($exclude_ids ? " AND id NOT IN (:ids)" : '').
-                    ' ORDER BY sort';
+                    WHERE domain_id = i:domain_id AND route = s:route AND status = 1 ORDER BY sort';
+
+            if (wa()->getApp() == 'site') {
+                $route = wa()->getRouting()->getRoute('url');
+                $url = $this->wa->getAppUrl(null, true);
+            } else {
+                $routes = wa()->getRouting()->getByApp('site', $domain['name']);
+                if ($routes) {
+                    $route = current($routes);
+                    $route = $route['url'];
+                    $url = wa()->getRootUrl(false, true).waRouting::clearUrl($route);
+                } else {
+                    return array();
+                }
+            }
+
             $pages = $page_model->query($sql, array(
                 'domain_id' => $domain['id'],
-                'ids' => $exclude_ids, 'route' => wa()->getRouting()->getRoute('url')))->fetchAll('id');
+                'route' => $route)
+            )->fetchAll('id');
 
             if ($with_params) {
                 $page_params_model = new sitePageParamsModel();
@@ -29,8 +42,6 @@ class siteViewHelper extends waAppViewHelper
                     $pages[$row['page_id']][$row['name']] = $row['value'];
                 }
             }
-            // get current rool url
-            $url = $this->wa->getAppUrl(null, true);
             foreach ($pages as &$page) {
                 $page['url'] = $url.$page['full_url'];
                 if (!isset($page['title']) || !$page['title']) {
