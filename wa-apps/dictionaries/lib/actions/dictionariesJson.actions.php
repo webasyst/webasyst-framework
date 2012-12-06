@@ -252,11 +252,33 @@ class dictionariesJsonActions extends waJsonActions {
 
 	foreach ($result AS $i => $row) {
 		$responce['rows'][$i]['id']=$row['id'];
-		$responce['rows'][$i]['cell']=array($row['name'],$row['value'],$row['desc']);
+		$responce['rows'][$i]['cell']=array($row['name'],$row['value'],$row['desc'],$row['visible'],$row['sort']);
 	}
 
 	$this->response = $responce;
 
     }
+
+    public function editrowsAction()
+    {
+	$lim = new dictionariesItemsModel();
+
+	$id = waRequest::post('id', '', 'string');
+	$row['name'] = waRequest::post('name', '', 'string');
+	$row['value'] = waRequest::post('value', '', 'string');
+	$row['desc'] = waRequest::post('desc', '', 'string');
+	$row['visible'] = waRequest::post('visible', 1, 'int');
+	$row['sort'] = waRequest::post('sort', 0, 'int');
+
+	if (isset($row['id']) && $row['id'] != "new_row") {
+		$lim->updateById($id, $row);
+	}
+	else {
+		$row['dictionary_id'] = waRequest::get('id', 0, 'int');
+		$lim->insert($row);
+	}
+	
+    }
+
 }
 

@@ -91,13 +91,17 @@ $(window).load(function(){
 
    $("#mylist2").jqGrid({
     url:'?module=json&action=getrows&id={/literal}{$list.id}{literal}',
-    width:"650",
+    editurl: '?module=json&action=editrows&id={/literal}{$list.id}{literal}',
+//    width:"650",
+    autowidth: true,
     datatype: "json",
-    colNames:['Name','Value', 'Description'],
+    colNames:['Name','Value', 'Description', 'Visible', 'Sort'],
     colModel:[
-        {name:'name', index:'name'},
-        {name:'value', index:'value', sortable:false},
-        {name:'desc',index:'desc', sortable:false}
+        {name:'name', index:'name',editable:true},
+        {name:'value', index:'value',editable:true, sortable:true},
+        {name:'desc',index:'desc',editable:true, sortable:true},
+        {name:'visible',index:'visible',editable:true, sortable:true},
+        {name:'sort',index:'sort',editable:true, sortable:true}
     ],
 
    jsonReader : { 
@@ -126,6 +130,7 @@ $(window).load(function(){
 
    }); 
     $("#mylist2").jqGrid('navGrid','#pager2',{edit:false,add:false,del:false});
+    $("#mylist2").jqGrid('inlineNav',"#pager2");
 });
 {/literal}
 </script>

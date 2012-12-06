@@ -12,6 +12,7 @@ class dictionariesItemsModel extends waModel
         ))->fetchAll('id');
     }
 
+
     public function getCountByList($list_id)
     {
         $sql = "SELECT COUNT(*) AS count FROM {$this->table} WHERE dictionary_id=i:dictionary_id ORDER BY sort";
