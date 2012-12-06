@@ -17,7 +17,7 @@ return array(
 	'dictionary_id' => array('int', 11, 'unsigned' => 1, 'null' => 0),
         'name' => array('varchar', 100, 'null' => 0),
         'value' => array('varchar', 255, 'null' => 0),
-        'desc' => array('varchar', 1024, 'null' => 0),
+        'description' => array('varchar', 1024, 'null' => 0),
         'visible' => array('tinyint', 4, 'null' => 0),
         'sort' => array('DATETIME', 'null' => 1, 'default' => 'NULL'),
         'sort' => array('int', 11, 'null' => 0, 'default' => '0'),

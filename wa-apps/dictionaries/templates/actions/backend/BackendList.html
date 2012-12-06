@@ -25,7 +25,7 @@
 			<li class="c-add-form" id="c-add-form">
 				<input class="inputname emptyonclick" type="text" name= "name" value="Input Name">
 				<input class="inputval emptyonclick" type="text" name="value" value="Input Value">
-				<input class="inputdesc emptyonclick" type="text" name="desc" value="Input Description">
+				<input class="inputdesc emptyonclick" type="text" name="description" value="Input Description">
 				visible: <input class="inputvisible" type="checkbox" name="visible" checked="checked">
 				<input type="submit" value="[`Add`]">
 			</li>
@@ -92,17 +92,17 @@ $(window).load(function(){
    $("#mylist2").jqGrid({
     url:'?module=json&action=getrows&id={/literal}{$list.id}{literal}',
     editurl: '?module=json&action=editrows&id={/literal}{$list.id}{literal}',
-//    width:"650",
-    autowidth: true,
+    width:"800",
+//    autowidth: true,
     height: "auto",
     datatype: "json",
     colNames:['Name','Value', 'Description', 'Visible', 'Sort'],
     colModel:[
         {name:'name', index:'name',editable:true},
         {name:'value', index:'value',editable:true, sortable:true},
-        {name:'desc',index:'desc',editable:true, sortable:true},
-        {name:'visible',index:'visible',editable:true, sortable:true},
-        {name:'sort',index:'sort',editable:true, sortable:true}
+        {name:'description',index:'description',editable:true, sortable:true},
+        {name:'visible',index:'visible',editable:true, sortable:true,width:40,align:"center"},
+        {name:'sort',index:'sort',editable:true, sortable:true,width:40,align:"center"}
     ],
 
    jsonReader : { 

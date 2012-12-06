@@ -14,7 +14,7 @@ class dictionariesJsonActions extends waJsonActions {
     public function ItemsaveAction()
     {
         $item = array();
-        foreach(array('dictionary_id', 'name', 'value', 'desc', 'visible', 'sort') as $k) {
+        foreach(array('dictionary_id', 'name', 'value', 'description', 'visible', 'sort') as $k) {
             $v = waRequest::post($k, null);
             if ($v !== null) {
                 $item[$k] = $v;
@@ -252,7 +252,7 @@ class dictionariesJsonActions extends waJsonActions {
 
 	foreach ($result AS $i => $row) {
 		$responce['rows'][$i]['id']=$row['id'];
-		$responce['rows'][$i]['cell']=array($row['name'],$row['value'],$row['desc'],$row['visible'],$row['sort']);
+		$responce['rows'][$i]['cell']=array($row['name'],$row['value'],$row['description'],$row['visible'],$row['sort']);
 	}
 
 	$this->response = $responce;
@@ -266,11 +266,11 @@ class dictionariesJsonActions extends waJsonActions {
 	$id = waRequest::post('id', '', 'string');
 	$row['name'] = waRequest::post('name', '', 'string');
 	$row['value'] = waRequest::post('value', '', 'string');
-	$row['desc'] = waRequest::post('desc', '', 'string');
+	$row['description'] = waRequest::post('description', '', 'string');
 	$row['visible'] = waRequest::post('visible', 1, 'int');
 	$row['sort'] = waRequest::post('sort', 0, 'int');
 
-	if (isset($row['id']) && $row['id'] != "new_row") {
+	if (isset($id) && $id != "new_row") {
 		$lim->updateById($id, $row);
 	}
 	else {

@@ -22,7 +22,7 @@
 							'<input type="checkbox" name="'+item.id+'" class="c-item-checkbox"'+(item.done ? ' checked="true"' : '')+'> '+
 							'<span class="c-item-name">'+item.name+'</span>'+
 							'<span class="c-item-name">'+item.value+'</span>'+
-							'<span class="c-item-name">'+item.desc+'</span>'+
+							'<span class="c-item-name">'+item.description+'</span>'+
 						'</label>'+
 						(item.when ? '<span class="hint c-completed-when">'+item.when+'</span>' : '')+
 						(item.who ? '<span class="hint c-completed-by">'+item.who+'</span>' : '')+
@@ -161,7 +161,7 @@
 			dictionary_id: $.cl.dictionary_id,
 			name: inputname.val(),
 			value: inputval.val(),
-			desc: inputdesc.val(),
+			description: inputdesc.val(),
 			visible: inputvisible
 		}, function(item) {
 			item = item.data;
