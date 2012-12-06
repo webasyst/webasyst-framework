@@ -32,6 +32,8 @@
 
 		// li will be inserted inserted before this item
 		var insertBefore = null;
+
+
 		$('#c-checklist li.item').each(function() {
 			var self = $(this);
 			var sort = parseInt(self.attr('rel'));
@@ -49,6 +51,9 @@
 			$('#c-checklist').append(li);
 		}
 		$('#c-checklist').sortable('refresh');
+
+
+
 	};
 
 	// List items

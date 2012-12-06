@@ -3,8 +3,7 @@
 /**
  * Collection of backend actions that output JSON data
  */
-class dictionariesJsonActions extends waJsonActions
-{
+class dictionariesJsonActions extends waJsonActions {
     /** Default action when no other action is specified. */
     public function defaultAction()
     {
@@ -202,6 +201,62 @@ class dictionariesJsonActions extends waJsonActions
 
         $this->log('list_delete', 1);
         $this->response = 'done';
+    }
+
+
+
+    public function getrowsAction() {
+
+        if (! ( $id = waRequest::get('id', 0, 'int'))) {
+            throw new waException('No id given.');
+        }
+
+        $lim = new dictionariesItemsModel();
+
+        $callbackParams['page'] = waRequest::get('page', 1, 'int'); // get the requested page
+        $callbackParams['limit'] = waRequest::get('rows', 100, 'int'); // get how many rows we want to have into the grid
+        $callbackParams['sidx'] = waRequest::get('sidx', 'name', 'string'); // get index row - i.e. user click to sort
+        $callbackParams['sord'] = waRequest::get('sord', 'asc', 'string'); // get the direction
+
+	$callbackParams['search'] = waRequest::get('_search', 'false', 'string');
+
+	if ($callbackParams['search'] == 'true') {
+		$callbackParams['searchField'] = waRequest::get('searchField', 'name', 'string');
+		$callbackParams['searchString'] = waRequest::get('searchString', '', 'string');
+	}
+
+
+        if(strlen($callbackParams['sidx'])<1) $callbackParams['sidx'] ='name';
+	if(strlen($callbackParams['sord'])<1) $callbackParams['sord'] ='asc';
+
+
+	$count = $lim->getCountByList($id);
+	$count = $count['count'];
+
+
+
+        if( $count >0 ) {
+            $total_pages = ceil($count/$callbackParams['limit']);
+        } else {
+            $total_pages = 0;
+        }
+        if ($callbackParams['page'] > $total_pages) $callbackParams['page']=$total_pages;
+
+        $callbackParams['start'] = $callbackParams['limit']*$callbackParams['page'] - $callbackParams['limit']; // do not put $limit*($page - 1)
+
+	$result = $lim->getSortedByList($id, $callbackParams);
+
+        $responce['page'] = $callbackParams['page'];
+        $responce['total'] = $total_pages;
+        $responce['records'] = $count;
+
+	foreach ($result AS $i => $row) {
+		$responce['rows'][$i]['id']=$row['id'];
+		$responce['rows'][$i]['cell']=array($row['name'],$row['value'],$row['desc']);
+	}
+
+	$this->response = $responce;
+
     }
 }
 

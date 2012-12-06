@@ -35,16 +35,29 @@
 		</li>
 	</ul>
 
-	<ul class="menu-v" id="c-checklist">
-	</ul>
+
+	<!--ul class="menu-v" id="c-checklist">
+	</ul-->
+
+<table id="mylist2"></table>
+
+
+<div id="pager2"></div>
 
 	<div class="clear-left"></div>
 </div>
-
 <script type="text/javascript">
-	// data for script have to be generated inside template
 	$.cl = {
 		dictionary_id: {$list.id},
+/*
+		items: {
+			'edit': "[`Edit`]",
+			'del': "[`Delete`]",
+			'max': "[`Max 255 characters`]",
+			'prompt': "[`Edit list item`]",
+			'delconfirm': "[`List “%s” will be deleted permanently. Delete?`]"
+		},
+*/
 		items: {json_encode($items)},
 		can_edit: {if $can_edit}1{else}0{/if},
 		loc: {
@@ -55,6 +68,8 @@
 			'delconfirm': "[`List “%s” will be deleted permanently. Delete?`]"
 		}
 	};
+
+
 
 {literal}
 $(function () {
@@ -67,9 +82,58 @@ $(function () {
                         $(this).val(value);
                 });
             });
+
+});
+
+$(window).load(function(){
+//    $.jgrid.no_legacy_api = true;
+//    $.jgrid.useJSON = true; 
+
+   $("#mylist2").jqGrid({
+    url:'?module=json&action=getrows&id={/literal}{$list.id}{literal}',
+    width:"650",
+    datatype: "json",
+    colNames:['Name','Value', 'Description'],
+    colModel:[
+        {name:'name', index:'name'},
+        {name:'value', index:'value', sortable:false},
+        {name:'desc',index:'desc', sortable:false}
+    ],
+
+   jsonReader : { 
+     root: "data.rows", 
+     page: "data.page", 
+     total: "data.total", 
+     records: "data.records", 
+     repeatitems: true, 
+     cell: "cell", 
+     id: "id",
+   },
+    rowNum:10,
+    rowList:[10,20,30],
+    pager: '#pager2',
+    sortname: 'name',
+    sortorder: "asc",
+    viewrecords: true,
+/*    caption:"Employless",*/
+
+    "loadError":function(xhr,status, err){ 
+	try {jQuery.jgrid.info_dialog(jQuery.jgrid.errors.errcap,'<div class="ui-state-error">'+ xhr.responseText +'</div>', jQuery.jgrid.edit.bClose,
+	    {buttonalign:'right'}
+    );} catch(e) 
+	{ alert(xhr.responseText);} 	
+    }
+
+   }); 
+    $("#mylist2").jqGrid('navGrid','#pager2',{edit:false,add:false,del:false});
 });
 {/literal}
 </script>
 
 <script type="text/javascript" src="{$wa_app_static_url}js/list.js?{$wa->version()}"></script>
+<script type="text/javascript" src="{$wa_app_static_url}js/jquery.jqGrid.min.js?{$wa->version()}"></script>
+<script type="text/javascript" src="{$wa_app_static_url}js/i18n/grid.locale-ru.js?{$wa->version()}"></script>
+
+
+
 
