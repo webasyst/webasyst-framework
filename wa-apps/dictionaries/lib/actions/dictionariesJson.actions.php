@@ -242,7 +242,7 @@ class dictionariesJsonActions extends waJsonActions {
         }
         if ($callbackParams['page'] > $total_pages) $callbackParams['page']=$total_pages;
 
-        $callbackParams['start'] = $callbackParams['limit']*$callbackParams['page'] - $callbackParams['limit']; // do not put $limit*($page - 1)
+        $callbackParams['start'] = (($callbackParams['limit']*$callbackParams['page'] - $callbackParams['limit'])>=0)?($callbackParams['limit']*$callbackParams['page'] - $callbackParams['limit']):0; // do not put $limit*($page - 1)
 
 	$result = $lim->getSortedByList($id, $callbackParams);
 
