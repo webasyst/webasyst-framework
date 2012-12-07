@@ -264,14 +264,21 @@ class dictionariesJsonActions extends waJsonActions {
 	$lim = new dictionariesItemsModel();
 
 	$id = waRequest::post('id', '', 'string');
+	$oper = waRequest::post('oper', '', 'string');
+
 	$row['name'] = waRequest::post('name', '', 'string');
 	$row['value'] = waRequest::post('value', '', 'string');
 	$row['description'] = waRequest::post('description', '', 'string');
 	$row['visible'] = waRequest::post('visible', 1, 'int');
 	$row['sort'] = waRequest::post('sort', 0, 'int');
 
-	if (isset($id) && $id != "new_row") {
+	if (isset($id) && $id != "new_row" && $oper!='del') {
 		$lim->updateById($id, $row);
+	}
+	elseif ($oper=='del') {
+//var_dump($id);
+//exit;
+		$this->DeleteitemAction();
 	}
 	else {
 		$row['dictionary_id'] = waRequest::get('id', 0, 'int');
