@@ -1,0 +1,42 @@
+{* Requirements list *}
+{if !empty($item.requirements)}
+    {capture name='warning'}
+        {assign var=warning_meets value=''}
+        {if !isset($class)}{assign var=class value="hint"}{/if}
+        {if !isset($icon)}{assign var=icon value=false}{/if}
+
+        <ul class="menu-v">
+            {foreach $item.requirements as $requirement}
+                {if $requirement.warning && !$requirement.passed} {assign var=warning_meets value=true}
+                    <li>
+                        <span class="small {$class}" title="{$requirement.name|escape}">
+                            {if $icon}<i class="icon10 no{if $requirement.passed}-bw{/if}"></i>{/if}
+                            {$requirement.warning|default:$requirement.note|escape}
+                        </span>
+                    </li>
+                {/if}
+            {/foreach}
+        </ul>
+    {/capture}
+    {if $warning_meets && $smarty.capture.warning}
+        {$smarty.capture.warning}
+    {/if}
+{/if}
+
+{* changelog list *}
+{if !empty($item.changelog) && !empty($changelog)}
+    <p class="hint js-changelog">
+    {foreach $item.changelog as $record}
+        <strong{if $record@first} style="display:none;"{/if}><br>{$record.version}</strong><br>
+		{$record.content}
+        {if !$record@last}<br><br>{/if}
+    	{if $record@first && !$record@last}
+            <a class="inline-link js-changelog-more" href="#"><b><i>[`more`]</i></b></a>
+            <span style="display: none;">
+        {/if}
+        {if !$record@first && $record@last}
+            </span>
+        {/if}
+    {/foreach}
+    </p>
+{/if}

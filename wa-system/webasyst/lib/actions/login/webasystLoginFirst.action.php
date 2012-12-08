@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 class webasystLoginFirstAction extends waViewAction
 {
@@ -83,10 +83,15 @@ class webasystLoginFirstAction extends waViewAction
                             if ($app_id == 'site') {
                                 $site = true;
                             } elseif (!empty($app['frontend'])) {
-                                $data[$domain][] = array(
+                                $routing = array(
                                     'url' => $app_id.'/*',
-                                    'app' => $app_id
+                                    'app' => $app_id,
                                 );
+
+                                if (!empty($app['routing_params']) && is_array($app['routing_params'])) {
+                                    $routing = array_merge($routing, $app['routing_params']);
+                                }
+                                $data[$domain][] = $routing;
                             }
                         }
                         if ($site) {

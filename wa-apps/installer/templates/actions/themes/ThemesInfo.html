@@ -1,0 +1,35 @@
+
+<div class="wa-theme-cover">
+{if !empty($theme.cover)}
+    <img style="height:260px;width:200px;"  src="{$theme.cover}" alt="">
+{/if}
+</div>
+
+<h5>{$theme.name|escape}</h5><a href="#" class="js-themes-all inline-link">&larr;</a>
+{if !$theme.path}
+    {if !empty($theme.payware) && empty($theme.payware.purchased)}
+        {if !empty($theme.purchase_link)}
+            <form action="{$theme.purchase_link|default:''}" method="post">
+                <input type="hidden" name="app_id[]" value="{"`$theme.app`/themes/`$theme.id`"}">
+                <input type="hidden" name="hash" value="{$identity_hash}">
+                <input type="submit" class="button green" value="[`Buy for`] {$theme.payware.price.current}">
+            </form>
+        {else}
+            <span class="hint">[`This theme is not available for purchase`]</span>
+        {/if}
+    {else}
+        <a href="{$wa_backend_url}installer/?module=update&amp;action=manager&amp;install=1&amp;app_id[{"`$theme.app`/themes/`$theme.id`"}]={$theme.vendor}" class="button green">[`Install`]</a>
+    {/if}
+{/if}
+
+<p>{$theme.description}</p>
+<pre>{var_export($theme, true)|escape}</pre>
+<div class="clear"></div>
+
+<script type="text/javascript">
+    $('div.wa-themes:first a.js-themes-all').bind('click.installer',function() {
+        $('div.wa-themes:first').load('{$wa_backend_url}installer/?module=themes&action=view&slug={$theme.app}');
+        $('.wa-design-gray-toolbar').show();
+        return false;
+    });
+</script>

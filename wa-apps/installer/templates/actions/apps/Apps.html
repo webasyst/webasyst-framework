@@ -1,0 +1,105 @@
+{extends file='../backend/Backend.html'}
+{block name="content"}
+{if $error}
+<div class="ui-error"><i class="icon16 error"></i>{$error}</div>
+{/if}
+{if $apps}
+<table class="i-apps">
+<tbody>
+{foreach $apps as $app}
+{if !($app.current && (!isset($app.enabled) || !$app.enabled)) && (!isset($app.downloadable) || $app.downloadable) || !empty($extended)}{assign var=app_id value=$app.slug}
+
+
+    <tr>
+        <td class="i-app-icon">
+            {if isset($app.downloadable)}
+                <a href="?module=apps&amp;action=info&amp;slug={$app.slug}&amp;vendor={$app.vendor}{if !empty($app.edition)}&amp;edition={$app.edition}{/if}">
+                    <img src="{if $app.current}{"`$wa_url`wa-apps/`$app_id`/`$app.current.img`"}{elseif $app.img_cached}{"`$wa_url`wa-data/public/installer/images/`$app.img_cached`"}{else}{$app.img}{/if}" alt="">
+                </a>
+            {else}
+                <img src="{if $app.current}{"`$wa_url`wa-apps/`$app_id`/`$app.current.img`"}{elseif $app.img_cached}{"`$wa_url`wa-data/public/installer/images/`$app.img_cached`"}{else}{$app.img}{/if}" alt="">
+            {/if}
+        </td>
+        <td class="i-app-name">
+            {if isset($app.downloadable)}
+                <h5><a href="?module=apps&amp;action=info&amp;slug={$app.slug}&amp;vendor={$app.vendor}{if !empty($app.edition)}&amp;edition={$app.edition}{/if}">{$app.name}</a>{if isset($app.status_label) && $app.status_label} <span class="highlighted i-app-label">{$app.status_label}</span>{/if}</h5>
+            {else}
+                <h5>{$app.name}{if isset($app.status_label) && $app.status_label} <span class="highlighted i-app-label">{$app.status_label}</span>{/if}</h5>
+            {/if}
+            {if $app.author}<span class="hint">{$app.author}</span>{/if}
+            <p class="small">{$app.description}</p>
+        </td>
+        <td>
+            {if $app.current}
+                {if $app.enabled}
+                    <em class="i-app-installed">[`Installed`]</em>
+                    <span class="hint">{$app.current.version|default:'unknown'}</span>
+                    {if !empty($app.payware) && empty($app.payware.purchased)}
+                        <br>
+                        <span class="hint">[`License expired or invalid`]</span>
+                        <br>
+                        {if !empty($app.purchase_link)}
+                            <form action="{$app.purchase_link}" method="post">
+                                <input type="hidden" name="app_id[]" value="{$app.slug}">
+                                <input type="hidden" name="hash" value="{$identity_hash}">
+                                <input type="submit" class="button green" value="[`Renew license`]">
+                            </form>
+                        {else}
+                            <span class="hint">[`This application is not available for purchase`]</span>
+                        {/if}
+                    {/if}
+                {else}
+                    <em class="i-app-installed">[`Application is disabled`]</em>
+                {/if}
+            {elseif $app.applicable}
+
+            {*<a href="?module=apps&amp;action=install&amp;app_id[{$app.slug}]={$app.vendor}" class="button green">[`Install`]</a>*}
+                {if !empty($app.payware) && empty($app.payware.purchased)}
+                    {if !empty($app.purchase_link)}
+                        <form action="{$app.purchase_link|default:''}" method="post">
+                            <input type="hidden" name="app_id[]" value="{$app.slug}">
+                            <input type="hidden" name="hash" value="{$identity_hash}">
+                            <input type="submit" class="button green" value="[`Buy for`] {$app.payware.price.current}">
+                        </form>
+                    {else}
+                        <span class="hint">[`This application is not available for purchase`]</span>
+                    {/if}
+                {else}
+                    <a href="?module=update&amp;action=manager&amp;install=1&amp;app_id[{$app.slug}]={$app.vendor}{if !empty($app.edition)}:{$app.edition}{/if}" class="button green">[`Install`]</a>
+                {/if}
+
+            {else}
+                <a href="#" title="[`App can not be updated due to unresolved conflicts:`]" class="button grey">[`Install`]</a>
+            {/if}
+
+            {if !$app.system && $app.current}
+                <a class="i-app-delete"  href="?module=apps&amp;action=remove&amp;app_id[{$app.slug}]={$app.vendor}{if !empty($app.edition)}:{$app.edition}{/if}" onClick="return confirm(this.title);" title="[`This will delete application source code and data without the ability to recover. Are you sure?`]">
+                    <i class="icon16 delete"></i>[`Delete`]
+                </a>
+            {/if}
+
+            {if !$app.current}{include file="../../includes/requirements.html" item=$app inline}{/if}
+        </td>
+            {if isset($extended) && $extended}
+        <td class="min-width">
+            {if !$app.enabled && $app.current}
+
+                <a href="?module=apps&amp;action=enable&amp;app_id[]={$app.slug}" onClick="return confirm(this.title);" title="Enable?">
+                    <i class="icon16 plus"></i>
+                </a>
+            {elseif !$app.system && $app.current}
+                <a href="?module=apps&amp;action=disable&amp;app_id[]={$app.slug}" onClick="return confirm(this.title);" title="Disable?">
+                    <i class="icon16 minus"></i>
+                </a>
+            {/if}
+        </td>
+    {/if}
+    </tr>
+{/if}{/foreach}
+</tbody>
+</table>
+<div class="block double-padded align-center hint">
+    [`Application list is downloaded from webasyst.com website. Every application is installed in a single "Install" button click.`]
+</div>
+{/if}
+{/block}

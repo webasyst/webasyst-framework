@@ -1,0 +1,93 @@
+
+{extends file='../backend/Backend.html'}
+{block name="head-js"}
+    <script type="text/javascript">
+    {literal}
+$(document).ready( function() {
+    $('input:hidden[name^=app_id]').each(function(index){
+        $(this).attr('disabled',true);
+    });
+    $(':submit[id^=update_]').click(function(){
+        var item_id = $(this).attr('id').match(/update_([\w_\/]+)$/);
+        if(item_id && item_id[1]){
+            if(item_id[1] == 'all'){
+                $('input:hidden:disabled[name^=app_id]').removeAttr('disabled');
+            }else{
+                $('#checkbox_'+item_id[1].replace(/(\/)/g,'\\/')).removeAttr('disabled');
+            }
+        }
+    });
+    $('a.js-changelog-more').click(function(){
+        $(this).parents('.js-changelog').find(':hidden').show();
+        $(this).hide();
+        return false;
+    });
+
+});
+{/literal}
+
+
+    </script>
+{/block}
+
+{block name="content"}
+    {if $error}
+        <div class="ui-error"><i class="icon16 error"></i>{$error}</div>
+    {/if}
+    <form action="?module=update&amp;action=manager" method="POST">
+        <table class="zebra i-updates">
+            <thead>
+                {if $update_counter_applicable}
+                    <tr class="i-top-extra-row">
+                        <td class="min-width"></td>
+                        <td></td>
+                        <td>
+                            <input type="submit" value="[`Update all`] ({$update_counter_applicable})" id="update_all" >
+                        </td>
+                    </tr>
+                {/if}
+
+                <tr>
+                    <th class="min-width"></th>
+                    <th>[`Application`]</th>
+                    <th class="i-update-column">[`Version`]</th>
+                </tr>
+            </thead>
+            <tbody>
+
+                {if !$update_counter }
+                    <tr>
+                        <td colspan="3" class="align-center" style="background: #fff;">
+                            <div class="block triple-padded">[`All apps are up to date.`]</div>
+                        </td>
+                    </tr>
+                {/if}
+
+                {foreach $apps as $app}
+                    {if $app.current && $app.enabled}
+                        {assign var=app_id value=$app.slug}
+                        {include file="../update/Update.row.html" item=$app item_id=$app_id item_type='app' inline}
+
+                        {if isset($app.extras) && isset($app.extras.plugins)}
+                            {foreach $app.extras.plugins as $plugin}
+                                {if !empty($plugin.current)}
+                                    {include file="../update/Update.row.html" item=$plugin item_id=$plugin.slug item_type='plugin' inline}
+                                {/if}
+                            {/foreach}
+                        {/if}
+
+                        {if isset($app.extras) && isset($app.extras.themes)}
+                            {foreach $app.extras.themes as $theme}
+                                {if !empty($theme.current)}
+                                    {include file="../update/Update.row.html" item=$theme item_id=$theme.slug item_type='theme' inline}
+                                {/if}
+                            {/foreach}
+                        {/if}
+
+                    {/if}
+                {/foreach}
+            </tbody>
+        </table>
+    </form>
+{/block}
+

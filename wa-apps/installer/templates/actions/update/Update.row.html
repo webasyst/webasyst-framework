@@ -1,0 +1,95 @@
+<tr{* {if $app.action == 'critical'} class="critical"{/if} *}>
+
+    <td>
+		{if $item_type eq 'app'}
+            <img src="{"`$wa_url`wa-apps/`$item_id`/`$item.current.img`"}" alt="">
+		{else}
+            &nbsp;
+		{/if}
+    </td>
+
+    <td>
+		{if $item_type eq 'plugin' ||  $item_type eq 'theme' }{* app extra *}
+			{if isset($item.current.img) && $item.current.img}
+	            <img src="{"`$wa_url`wa-apps/`$item_id`/`$item.current.img`"}" alt="">
+			{else}
+	            <i class="icon16 {if $item_type eq 'plugin'}plugins{else}design{/if}"></i>
+			{/if}
+	        <span class="small"{if $item.author} title="{$item.author|escape}"{/if}>{$item.name|default:$item_id|escape}</span>
+			{if $item.description}
+	            <span class="hint">{$item.description|escape}</span>
+			{/if}
+		{else}
+	        <strong>{$item.name|default:$item_id|escape}</strong>
+			{if $item.author}
+                <span class="hint">{$item.author}</span>
+         	{/if}
+         	{if $item.description}
+                <br>
+                <span class="small">{$item.description|escape}</span>
+         	{/if}
+     	{/if}
+    </td>
+
+    <td class="i-update-column">
+		{if ($item.action == 'update') || ($item.action == 'critical')}
+
+            {if $item.version}
+                <strong>{$item.version}</strong>
+            {/if}
+            {if $item.current.version}
+                <span class="hint">{$item.current.version|string_format:'[`Your current version is %s.`]'}</span>
+            {/if}
+            {if !empty($item.payware) && empty($item.payware.purchased)}
+				{if $item_type eq 'app' }
+				    <span class="hint">[`Updates are not available for this item.`]</span>
+				{else}
+                    <span class="hint">[`Updates are not available for this item.`]</span>
+                {/if}
+            {/if}
+
+            <br>
+            <br>
+         	{if $item.applicable}
+            	{if !empty($item.payware) && empty($item.payware.purchased)}
+                	{if !empty($app.purchase_link)}
+                        <a href="{$app.purchase_link|default:''}?app_id[]={$app.slug}&amp;hash={$identity_hash}" class="button green">[`Renew for`] {$app.payware.price.current}</a>
+                	{else}
+                        <span class="hint">[`This application is not available for purchase`]</span>
+                    {/if}
+                 {else}
+                    <input type="hidden" name="app_id[{$item.slug}]" value="{$item.vendor}{if isset($item.edition) && $item.edition}:{$item.edition}{/if}" id="checkbox_{$item.slug|replace:'/':'___'}">
+                    <input type="submit" id="update_{$item.slug|replace:'/':'___'}" value="[`Update`]" >
+             	{/if}
+     		{else}
+                <input type="submit" id="update_{$item.slug|replace:'/':'___'}" value="[`Update`]" disabled="disabled">
+{*              <span class="small highlighted">[`App can not be updated due to unresolved conflicts:`]</span>*}
+     		{/if}
+
+     	{elseif $item.action != 'none'}
+        	{if $item.current.version}
+                <strong>{$item.current.version}</strong>
+        	{/if}
+            <span class="hint">[`Latest version`]</span>
+        	{if $item_type eq 'app'}
+                <br>
+         	{/if}
+            <br>
+     	{else}
+
+        	{if $item.current.version}
+                <strong>{$item.current.version}</strong>
+        	{/if}
+            <br>
+        	{if $item_type eq 'app'}
+                <span class="hint">[`Updates are not available for this application.`]</span>
+        	{else}
+                <span class="hint">[`Updates are not available for this item.`]</span>
+        	{/if}
+            <br>
+            <br>
+     	{/if}
+     	{$changelog = true}
+		{include file="../../includes/requirements.html" inline}
+    </td>
+</tr>

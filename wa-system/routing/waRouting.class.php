@@ -91,7 +91,7 @@ class waRouting
         return $result;
     }
 
-    public function getByApp($app_id)
+    public function getByApp($app_id, $domain = null)
     {
         $result = array();
         foreach ($this->routes as $d => $routes) {
@@ -100,6 +100,9 @@ class waRouting
                     $result[$d][$r_id] = $r;
                 }
             }
+        }
+        if ($domain) {
+            return isset($result[$domain]) ? $result[$domain] : array();
         }
         return $result;
     }

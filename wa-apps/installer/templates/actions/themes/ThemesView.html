@@ -1,0 +1,145 @@
+<ul class="thumbs li250px">
+    {$dialogs = array()}
+    {foreach $themes as $theme}
+        <li>
+
+            <a href="#/themes/{$theme.id}" class="js-theme-info">
+                <div class="wa-theme-cover">
+                    {if !empty($theme.cover)}
+                        <img src="{$theme.cover}" />
+                    {else}
+                        <span class="hint">[`No thumbnail available`]</span>
+                    {/if}
+                </div>
+                <h5 class="wa-theme-name">{$theme.name|escape}</h5>
+            </a>
+            {if $theme.path}
+                {if !empty($theme.used)}
+                    <strong class="wa-theme-in-use">
+                        [s`In use`]
+                    </strong>
+                    {capture append="dialogs"}
+                        <div class="dialog width400px" id="wa-theme-use-dialog-{$theme.id}">
+                            <div class="dialog-background"> </div>
+                            <div class="dialog-window">
+                                <form>
+                                    <div class="dialog-content">
+                                        <div class="dialog-content-indent">
+                                            <h1 id="wa-dialog-title">{$theme.name|escape}</h1>
+                                            {sprintf("[`Theme %s is now in use on`]",$theme.name)|escape}
+                                            {foreach $theme.used as $url}
+                                                {if !$url.met}
+                                                    <a href="{$url.preview}" target="_blank">{$url.preview}</a><i class="icon10 new-window"></i>
+                                                {/if}
+                                            {/foreach}
+                                        </div>
+                                        <div class="clear"></div>
+                                    </div>
+                                    <div class="dialog-buttons">
+                                        <div class="dialog-buttons-gradient">
+                                            <input type="submit" value="[s`Close`]" class="button close">
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    {/capture}
+                {else}
+                    <strong class="wa-theme-installed">[`Installed`]</strong>
+                    <i class="icon10 settings"></i>
+                    {capture append="dialogs"}
+                        <div class="dialog width400px js-setup" id="wa-theme-use-dialog-{$theme.id}">
+                            <div class="dialog-background"> </div>
+                            <div class="dialog-window">
+                                <form method="get" action="#">
+                                    <div class="dialog-content">
+                                        <div class="dialog-content-indent">
+                                            <h1 id="wa-dialog-title">{$theme.name|escape}</h1>
+                                            {sprintf("[`Theme “%s” is installed, but not used by any apps. To start using this theme, apply it in your Site app's Routing settings.`]",$theme.name)}
+                                        </div>
+                                        <div class="clear"></div>
+                                    </div>
+                                    <div class="dialog-buttons">
+                                        <div class="dialog-buttons-gradient">
+                                            <input type="submit" value="[`Setup routing`]" class="button green">
+                                            <span>[`or`]</span>
+                                            <a href="#" class="cancel">[s`cancel`]</a>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    {/capture}
+                {/if}
+            {elseif !empty($theme.payware)}
+                {if !empty($app.purchase_link)}
+                    <form action="{$app.purchase_link|default:''}" method="post" id="js-theme-buy-{$theme.id}">
+                        <strong>{$app.payware.price.current|escape}</strong>
+                        <input type="hidden" name="app_id[]" value="{$theme.slug}">
+                        <input type="hidden" name="hash" value="{$identity_hash}">
+                        <input type="submit" class="button green" value="[`Buy`] {$app.payware.price.current}">
+                    </form>
+                {/if}
+            {else}
+                <form id="js-theme-install-{$theme.id}" action="{$wa_backend_url}installer/" method="get" title="{sprintf('[`Install theme "%s" for the %s app?`]',$theme.name,$app['name'])|escape}">
+                    <input type="hidden" name="module" value="update">
+                    <input type="hidden" name="action" value="manager">
+                    <input type="hidden" name="module" value="update">
+                    <input type="hidden" name="module" value="update">
+
+                    <input type="hidden" name="app_id[{$theme.slug}]" value="{$app.vendor}{if !empty($app.edition)}:{$app.edition}{/if}">
+                    <input type="submit" name="install" value="[`Install`]">
+                </form>
+            {/if}
+        </li>
+    {/foreach}
+</ul>
+
+{foreach $dialogs as $dialog_id => $dialog}
+    {$dialog}
+{/foreach}
+<div class="clear"></div>
+<script type="text/javascript">
+$("div.wa-themes ul li").on('click', 'a.js-theme-info', function () {
+    try {
+        var theme_id = $(this).attr('href').replace(/^#\/themes\//,'');
+        var dialog = $('#wa-theme-use-dialog-' + theme_id);
+        var install = $('#js-theme-install-' + theme_id);
+        var buy = $('#js-theme-buy-' + theme_id);
+        if(dialog.length) {
+            dialog.waDialog({
+                height:'100px',
+                onLoad: function() {
+                    if($(this).hasClass('js-setup')) {
+                        var url = $('#wa-theme-routing-url');
+                        if(url.length) {
+                            var href = url.attr('href');
+                            $(this).find('form').attr('action',href);
+                        } else {
+                            $(this).find(':submit').hide().next().hide();
+                        }
+                    }
+                    $(this).find('div.dialog-window').css('height', $(this).find('.dialog-content-indent').height()+50+'px');
+                },
+                onSubmit: function (d) {
+                    if(!d.hasClass('js-setup')) {
+                        d.trigger('close');
+                        return false;
+                    }
+               }
+            });
+        } else if (install.length){
+            var question = install.attr('title');
+            if(!question || confirm(question)) {
+                install.submit();
+            }
+        } else if (buy.length) {
+            buy.submit();
+        }
+        return false;
+    }catch(e){
+        console.log(e);
+    }
+    return false;
+});
+</script>

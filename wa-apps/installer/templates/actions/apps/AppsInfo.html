@@ -1,0 +1,89 @@
+{extends file='../backend/Backend.html'}
+{block name="content"}
+{if $error}
+<div class="ui-error"><i class="icon16 error"></i>{$error}</div>
+{/if}
+{if $app}
+<div class="block i-help-panel">
+<a href="?module=apps"><i class="icon16 larr"></i>[`All applications`]</a>
+</div>
+
+<div class="block i-app-page">
+    <div class="i-app-install">
+
+    </div>
+    <div class="profile">
+        <div class="image">
+            <img src="{if $app.current}{"`$wa_url`wa-apps/`$app.slug`/`$app.current.img`"}{else}{$app.img}{/if}" alt="">
+        </div>
+        <div class="details">
+            <h1>{$app.name}{if isset($app.status_label) && $app.status_label} <span class="highlighted i-app-label">{$app.status_label}</span>{/if}</h1>
+            <p class="hint">
+                    {if $app.author}[`Developer`]: <strong>{$app.author}</strong><br>{/if}
+                    [`Version`]: <strong>{$app.version}</strong><br>
+                    [`Update`]: <strong>{$app.file_ctime|date_format:'d.m.Y'}</strong><br>
+                    [`Size`]: <strong>{$app.file_size|wa_format_file_size:'%0.2f':'[`B,KB,MB`]'}</strong><br>
+                    {if $app.license}[`License`]: <strong>{$app.license}</strong><br>{/if}
+                    {if !empty($app.payware) && $app.current}[`Payware`]: <strong>{if empty($app.payware.purchased)}[`License expired or invalid`]{else}[`Correct license`]{/if}</strong><br>{/if}
+            </p>
+
+            {if $app.current}
+                {if $app.enabled}
+                    <em class="i-app-installed">[`Installed`]  ([`Version`] {$app.current.version})</em>
+                    {if !$app.system && $app.current}
+                        {if !empty($app.payware) && empty($app.payware.purchased)}
+                            {if !empty($app.purchase_link)}
+                                <form action="{$app.purchase_link|default:''}" method="post">
+                                    <input type="hidden" name="app_id[]" value="{$app.slug}">
+                                    <input type="hidden" name="hash" value="{$identity_hash}">
+                                    <input type="submit" class="button green" value="[`Renew license`]">
+                                </form>
+                            {else}
+                                <span class="hint">[`This application is not available for purchase`]</span>
+                            {/if}
+                        {/if}
+
+                        <a class="i-app-delete" href="?module=apps&amp;action=remove&amp;app_id[{$app.slug}]={$app.vendor}{if !empty($app.edition)}:{$app.edition}{/if}" onClick="return confirm(this.title);" title="[`This will delete application source code and data without the ability to recover. Are you sure?`]">
+                            <i class="icon16 delete"></i>
+                            [`Delete`]
+                        </a>
+                    {/if}
+                {else}
+                    <em class="i-app-installed">[`Application is disabled`]</em>
+                {/if}
+            {elseif $app.applicable}
+                {*<a href="?module=apps&amp;action=install&amp;app_id[{$app.slug}]={$app.vendor}" class="button green">[`Install`]</a>*}
+                {if empty($app.payware) || !empty($app.payware.purchased)}
+                    <a href="?module=update&amp;action=manager&amp;install=1&amp;app_id[{$app.slug}]={$app.vendor}{if !empty($app.edition)}:{$app.edition}{/if}" class="button green">[`Install`]</a>
+                    <span class="hint">[`Application will be downloaded from Webasyst server and added into your installation.`]</span>
+                {else}
+                    {if !empty($app.purchase_link)}
+                        <form action="{$app.purchase_link|default:''}" method="post">
+                            <input type="hidden" name="app_id[]" value="{$app.slug}">
+                            <input type="hidden" name="hash" value="{$identity_hash}">
+                            <input type="submit" class="button green" value="[`Buy for`] {$app.payware.price.current}">
+                        </form>
+                    {else}
+                        <span class="hint">[`This application is not available for purchase`]</span>
+                    {/if}
+                {/if}
+
+            {else}
+                <a href="#" class="button grey" title="[`App can not be updated due to unresolved conflicts:`]">[`Install`]</a>
+            {/if}
+            {if !$app.current}
+                {include file="templates/includes/requirements.html" item=$app inline}
+            {/if}
+            <br>
+            <br>
+        </div>
+    </div>
+    {if  isset($app.description_full) && $app.description_full}
+        <div class="block">
+            {$app.description_full}
+        </div>
+    {/if}
+
+</div>
+{/if}
+{/block}

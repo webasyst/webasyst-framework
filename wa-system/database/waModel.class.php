@@ -612,7 +612,7 @@ class waModel
 
     public function getById($value)
     {
-        return $this->getByField($this->id, $value);
+        return $this->getByField($this->id, $value, is_array($value));
     }
 
     public function getByField($field, $value = null, $all = false, $limit = false)

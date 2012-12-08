@@ -1,0 +1,103 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+"http://www.w3.org/TR/html4/strict.dtd"><html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>{$title|default:$wa->appName()} — {$wa->accountName()}</title>
+    {$wa->css()}
+    <link href="{$wa_app_static_url}css/installer.css?v={$wa->version()}" rel="stylesheet" type="text/css">
+
+    <script src="{$wa_url}wa-content/js/jquery/jquery-1.7.1.min.js" type="text/javascript"></script>
+
+{wa_js file="js/installer-jquery.min.js"}
+    {$wa_url}wa-content/js/jquery-ui/jquery.ui.core.min.js
+    {$wa_url}wa-content/js/jquery-ui/jquery.ui.widget.min.js
+    {$wa_url}wa-content/js/jquery-ui/jquery.ui.mouse.min.js
+    {$wa_url}wa-content/js/jquery-ui/jquery.ui.sortable.min.js
+    {$wa_url}wa-content/js/jquery-ui/jquery.ui.position.min.js
+{/wa_js}
+{block name='head-js'}{/block}
+</head>
+
+<body>
+    <div id="wa">
+
+        {$wa->header()}
+
+        <div id="wa-app">
+
+            <div class="sidebar left200px">
+              <div class="block i-sidebar">
+                <ul class="menu-v with-icons">
+                    <li{if $smarty.get.module == 'apps'} class="selected"{/if}>
+                        {*
+                        {if isset($install_counter) && $install_counter}<span class="count indicator">{$install_counter}</span>{/if}
+                        *}
+                        <a href="?module=apps" class="bold">
+                            <i class="icon16 apps"></i>[`Applications`]
+                        </a>
+                    </li>
+                    <li{if $smarty.get.module == 'plugins'} class="selected"{/if}>
+                        <a href="?module=plugins" class="bold">
+                            <i class="icon16 plugins"></i>[`Plugins`]
+                        </a>
+                    </li>
+                    <li{if $smarty.get.module == 'themes'} class="selected"{/if}>
+                        <a href="?module=themes" class="bold">
+                            <i class="icon16 palette"></i>[`Themes`]
+                        </a>
+                    </li>
+                    <li class="top-padded {if $smarty.get.module == 'update'}selected{/if}">
+                        {if isset($update_counter) && $update_counter}<span class="count indicator red">{$update_counter}</span>{/if}
+                        <a href="?module=update" class="bold">
+                            <i class="icon16 update"></i>[`Updates`]
+                        {if $smarty.get.module == 'update'}
+                            <i id="menu-item-selected-state-icon" style="margin-left: 0px;"></i>
+                        {/if}
+                        </a>
+                    </li>
+                    <li{if $smarty.get.module == 'settings'} class="selected"{/if}>
+                        <a href="?module=settings" class="bold">
+                            <i class="icon16 settings"></i>[`Settings`]
+                        </a>
+                    </li>
+                </ul>
+              </div>
+            </div><!-- .sidebar -->
+
+
+            <!-- CONTENT -->
+            <div class="content left200px">
+                <div class="shadowed">
+                {if !empty($messages)}
+                {foreach $messages as $message}
+                <div class="block double-padded i-message-{$message.result}">
+                    {if $message.result == 'success'}<i class="icon16 yes"></i>
+                    {elseif $message.result == 'fail'}
+                    <i class="icon16 no"></i>
+                    {/if}
+                    {$message.text|escape}
+                </div>
+                {/foreach}
+                {/if}
+
+{block name='content'}
+                    <div class="block">
+                    <h1>[`Installer`]</h1>
+                    <p>Installer futures list or dashboard</p>
+                    </div>
+{/block}
+
+                </div>
+
+            </div>
+
+
+
+        </div><!-- #wa-app -->
+
+    </div><!-- #wa -->
+
+</body>
+
+</html>

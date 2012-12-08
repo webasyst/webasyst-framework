@@ -974,7 +974,8 @@ XML;
             if(!isset($data[$locale])) {
                 $locale = 'en_US';
                 if(!isset($data[$locale])) {
-                    $locale = reset(array_keys($data));
+                    reset($data);
+                    $locale = key($data);
                 }
             }
         }

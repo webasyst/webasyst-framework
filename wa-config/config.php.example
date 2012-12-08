@@ -1,6 +1,7 @@
 <?php
 return array (
   'debug' => true,
-  'backend_url' => 'admin',
-  'mod_rewrite' => true
+  'backend_url' => 'main',
+  'mod_rewrite' => true,
+  'locale' => 'ru_RU'
 );
