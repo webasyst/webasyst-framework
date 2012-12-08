@@ -66,11 +66,6 @@ class contactsCategoriesController extends waJsonController
         $ccm = new waContactCategoriesModel();
         $ccm->add($contacts, $categories);
 
-        foreach ($categories as $category_id) {
-            $c = new waContactsCollection("/category/".$category_id);
-            $this->response['count'][$category_id] = $c->count();
-        }
-
         $contacts = count($contacts);
         $categories = count($categories);
         $this->response['message'] = sprintf(_w("%d contact has been added", "%d contacts have been added", $contacts), $contacts);

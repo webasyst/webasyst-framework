@@ -14,7 +14,7 @@ class siteSitemapConfig extends waSitemapConfig
         $routes = $this->getRoutes();
         $page_model = new sitePageModel();
         foreach ($routes as $r) {
-            $sql = "SELECT id, parent_id, name, title, url, create_datetime, update_datetime
+            $sql = "SELECT id, parent_id, name, title, full_url as url, create_datetime, update_datetime
             FROM ".$page_model->getTableName().'
             WHERE domain_id = i:domain_id AND route = s:route AND status = 1
             ORDER BY sort';

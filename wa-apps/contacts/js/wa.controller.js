@@ -561,11 +561,6 @@
                 contacts: contact_ids,
                 categories: category_ids
             }, function(response) {
-                if (response.data && response.data.count) {
-                    for (var category_id in response.data.count) {
-                        $('#list-category li[rel="category' + category_id+ '"] span.count').html(response.data.count[category_id]);
-                    }
-                }
                 $.wa.controller.showMessage(response.data.message, true);
             }, 'json');
         },

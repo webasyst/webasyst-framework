@@ -1,0 +1,600 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: contacts\n"
+"POT-Creation-Date: 2012-10-12 17:44+0400\n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: contacts\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Language: en_US\n"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-Basepath: .\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPath-1: .\n"
+
+#: /wa-apps/contacts/js/fieldTypes.js:430
+msgid "&lt;no name&gt;"
+msgstr ""
+
+#: /wa-apps/contacts/templates/actions/backend/BackendBlank.html:3
+msgid "No view selected."
+msgstr ""
+
+#: /wa-apps/contacts/templates/actions/backend/BackendSidebar.html:13
+msgid "New contact"
+msgstr ""
+
+#: /wa-apps/contacts/templates/actions/backend/BackendSidebar.html:19
+msgid "Person"
+msgstr ""
+
+#: /wa-apps/contacts/js/wa.grid.js:283
+msgid "Company"
+msgstr ""
+
+#: /wa-apps/contacts/templates/actions/backend/BackendSidebar.html:29
+msgid "Import..."
+msgstr ""
+
+#: /wa-apps/contacts/templates/actions/backend/BackendSidebar.html:62
+msgid "clear"
+msgstr ""
+
+#: /wa-apps/contacts/templates/actions/backend/BackendSidebar.html:44
+msgid "Recently added"
+msgstr ""
+
+#: /wa-apps/contacts/templates/actions/backend/BackendSidebar.html:57
+msgid "Advanced search"
+msgstr ""
+
+#: /wa-apps/contacts/templates/actions/backend/BackendSidebar.html:63
+msgid "Recent Searches"
+msgstr "Recent searches"
+
+#: /wa-apps/contacts/templates/actions/backend/BackendSidebar.html:69
+msgid "search by name or email"
+msgstr ""
+
+#: /wa-apps/contacts/templates/actions/backend/BackendSidebar.html:124
+msgid "All contacts"
+msgstr ""
+
+#: /wa-apps/contacts/templates/actions/backend/BackendSidebar.html:94
+msgid "My filters"
+msgstr ""
+
+#: /wa-apps/contacts/templates/actions/backend/BackendSidebar.html:104
+msgid "Lists"
+msgstr ""
+
+#: /wa-apps/contacts/templates/actions/categories/CategoriesEditor.html:6
+msgid "New category"
+msgstr ""
+
+#: /wa-apps/contacts/templates/actions/backend/BackendSidebar.html:136
+msgid "Categories"
+msgstr ""
+
+#: /wa-apps/contacts/templates/actions/backend/BackendSidebar.html:147
+msgid "Categories are for classifying contacts, e.g. customers, providers, partners, etc. Webasyst users can be customized to have access to certain contact categories only."
+msgstr "Categories are for classifying contacts; e.g., customers, providers, partners, etc. Webasyst users can be set up to have access to certain contact categories only."
+
+#: /wa-apps/contacts/templates/actions/backend/BackendSidebar.html:162
+msgid "All users"
+msgstr ""
+
+#: /wa-apps/contacts/templates/actions/groups/GroupsEditor.html:6
+msgid "New user group"
+msgstr ""
+
+#: /wa-apps/contacts/templates/actions/backend/BackendSidebar.html:170
+msgid "Groups"
+msgstr ""
+
+#: /wa-apps/contacts/templates/actions/backend/BackendSidebar.html:181
+msgid "User groups are for organizing Webasyst users and setting common access rights for groups."
+msgstr "User groups are for organizing Webasyst users and setting up common access rights for groups."
+
+#: /wa-apps/contacts/js/wa.grid.js:10
+msgid "Photo"
+msgstr ""
+
+#: /wa-apps/contacts/templates/actions/contacts/ContactsInfo.html:14
+msgid "No photo"
+msgstr ""
+
+#: /wa-apps/contacts/templates/actions/photo/PhotoEditor.html:5
+msgid "Change photo"
+msgstr ""
+
+#: /wa-apps/contacts/templates/actions/photo/PhotoEditor.html:32
+msgid "Upload image (JPG, GIF or PNG):"
+msgstr ""
+
+#: /wa-apps/contacts/js/wa.contactEditor.js:384
+msgid "or"
+msgstr ""
+
+#: /wa-apps/contacts/js/wa.contactEditor.js:370
+msgid "cancel"
+msgstr ""
+
+#: /wa-apps/contacts/templates/actions/contacts/ContactsInfo.html:39
+msgid "Edit contact"
+msgstr ""
+
+#: /wa-apps/contacts/js/wa.controller.js:826
+msgid "Delete"
+msgstr ""
+
+#: /wa-apps/contacts/templates/actions/contacts/ContactsInfo.html:65
+msgid "Contact"
+msgstr ""
+
+#: /wa-apps/contacts/templates/actions/contacts/ContactsInfo.html:72
+msgid "Create user account"
+msgstr ""
+
+#: /wa-apps/contacts/templates/actions/contacts/ContactsInfo.html:74
+msgid "User"
+msgstr ""
+
+#: /wa-apps/contacts/templates/actions/contacts/ContactsInfo.html:86
+msgid "Field constructor"
+msgstr ""
+
+#: /wa-apps/contacts/templates/actions/contacts/ContactsInfo.html:96
+msgid "Contact id"
+msgstr ""
+
+#: /wa-apps/contacts/templates/actions/contacts/ContactsInfo.html:97
+msgid "Added"
+msgstr ""
+
+#: /wa-apps/contacts/templates/actions/contacts/ContactsInfo.html:99
+msgid "Author"
+msgstr ""
+
+#: /wa-apps/contacts/templates/actions/contacts/ContactsInfo.html:101
+msgid "Method"
+msgstr ""
+
+#: /wa-apps/contacts/templates/actions/contacts/ContactsInfo.html:102
+msgid "Application"
+msgstr ""
+
+#: /wa-apps/contacts/templates/actions/contacts/ContactsLinks.html:58
+msgid "Delete contacts"
+msgstr ""
+
+#: /wa-apps/contacts/templates/actions/contacts/ContactsLinks.html:4
+msgid "Contact deletion cannot be undone."
+msgstr ""
+
+#: /wa-apps/contacts/templates/actions/contacts/ContactsLinks.html:7
+msgid "IMPORTANT NOTE:"
+msgstr ""
+
+#: /wa-apps/contacts/templates/actions/contacts/ContactsLinks.html:9
+msgid "All selected contacts have links to other applications."
+msgstr ""
+
+#: /wa-apps/contacts/templates/actions/contacts/ContactsLinks.html:15
+msgid "Deletion of these contacts is allowed to Administrator only."
+msgstr "Deletion of these contacts is allowed to an Administrator only."
+
+#: /wa-apps/contacts/templates/actions/contacts/ContactsLinks.html:17
+msgid "After deletion of these contacts other applications will refer to not existing contacts."
+msgstr "After deletion of these contacts other applications will refer to non-existing contacts."
+
+#: /wa-apps/contacts/templates/actions/contacts/ContactsLinks.html:60
+msgid "Delete anyway"
+msgstr ""
+
+#: /wa-apps/contacts/templates/actions/contacts/ContactsLinks.html:11
+msgid "%d of %d selected contacts shown below have links to other applications."
+msgstr ""
+
+#: /wa-apps/contacts/templates/actions/contacts/ContactsLinks.html:62
+msgid "Delete %d of %d selected"
+msgstr ""
+
+#: /wa-apps/contacts/templates/actions/contacts/ContactsUser.html:295
+msgid "Delete user account"
+msgstr ""
+
+#: /wa-apps/contacts/templates/actions/contacts/ContactsUser.html:39
+msgid "Login"
+msgstr ""
+
+#: /wa-apps/contacts/templates/actions/contacts/ContactsUser.html:22
+msgid "Password"
+msgstr ""
+
+#: /wa-apps/contacts/templates/actions/contacts/ContactsUser.html:55
+msgid "Confirm password"
+msgstr ""
+
+#: /wa-apps/contacts/js/wa.contactEditor.js:364
+msgid "Save"
+msgstr ""
+
+#: /wa-apps/contacts/templates/actions/contacts/ContactsUser.html:42
+msgid "change password"
+msgstr ""
+
+#: /wa-apps/contacts/templates/actions/contacts/ContactsUser.html:49
+msgid "New password"
+msgstr ""
+
+#: /wa-apps/contacts/templates/actions/contacts/ContactsUser.html:69
+msgid "Status"
+msgstr ""
+
+#: /wa-apps/contacts/templates/actions/contacts/ContactsUser.html:73
+msgid "Online"
+msgstr ""
+
+#: /wa-apps/contacts/templates/actions/contacts/ContactsUser.html:76
+msgid "Never logged in"
+msgstr ""
+
+#: /wa-apps/contacts/templates/actions/contacts/ContactsUser.html:78
+msgid "Last login"
+msgstr ""
+
+#: /wa-apps/contacts/templates/actions/contacts/ContactsUser.html:87
+msgid "Belongs to groups"
+msgstr ""
+
+#: /wa-apps/contacts/js/fieldTypes.js:384
+msgid "&lt;none&gt;"
+msgstr ""
+
+#: /wa-apps/contacts/templates/actions/contacts/ContactsUser.html:97
+msgid "customize groups"
+msgstr ""
+
+#: /wa-apps/contacts/js/wa.grid.js:65
+msgid "Access"
+msgstr ""
+
+#: /wa-apps/contacts/js/wa.grid.js:68
+msgid "Administrator"
+msgstr ""
+
+#: /wa-apps/contacts/templates/actions/contacts/ContactsUser.html:134
+msgid "This access level is inherited from groups. To change you must customize these group settings or group membership for this user."
+msgstr "This access level is inherited from groups. To change it, you must customize those group's settings or group membership for this user."
+
+#: /wa-apps/contacts/templates/actions/contacts/ContactsUser.html:137
+msgid "You can not revoke administrative access level for yourself. Only another Administrator can do this."
+msgstr "You cannot revoke administrative access level for yourself. Only another Administrator can do this."
+
+#: /wa-apps/contacts/js/wa.grid.js:70
+msgid "No access"
+msgstr ""
+
+#: /wa-apps/contacts/js/wa.grid.js:72
+msgid "Limited access"
+msgstr ""
+
+#: /wa-apps/contacts/templates/actions/contacts/ContactsUser.html:193
+msgid "Can not set &ldquo;No access&rdquo; because some access rights are inherited from groups. To revoke access rights, customize group settings or group membership for this user."
+msgstr "Cannot set &ldquo;No access&rdquo;, because some access rights are inherited from groups. To revoke access rights, customize group settings or group membership for this user."
+
+#: /wa-apps/contacts/templates/actions/groups/GroupsRights.html:24
+msgid "Set up access rights for each application"
+msgstr "Set up access rights for each application."
+
+#: /wa-apps/contacts/templates/actions/groups/GroupsEditor.html:116
+msgid "Saved"
+msgstr ""
+
+#: /wa-apps/contacts/templates/actions/contacts/ContactsUser.html:164
+msgid "Full access is inherited from groups."
+msgstr ""
+
+#: /wa-apps/contacts/templates/actions/groups/GroupsRights.html:43
+msgid "Full access"
+msgstr ""
+
+#: /wa-apps/contacts/templates/actions/groups/GroupsRights.html:47
+msgid "Customize"
+msgstr ""
+
+#: /wa-apps/contacts/templates/actions/groups/GroupsRights.html:54
+msgid "NOTE:"
+msgstr ""
+
+#: /wa-apps/contacts/templates/actions/groups/GroupsRights.html:54
+msgid "Limited and Full access levels in Contacts application DO NOT allow managing user accounts and categories. These access rights are granted to Administrator only."
+msgstr "Limited and Full access levels in Contacts application DO NOT allow managing user accounts and categories. These access rights are granted to an Administrator only."
+
+#: /wa-apps/contacts/lib/actions/contacts/contactsContactsUser.controller.php:64
+msgid "Login is required."
+msgstr "Login name is required."
+
+#: /wa-apps/contacts/lib/actions/contacts/contactsContactsUser.controller.php:74
+msgid "Passwords do not match."
+msgstr ""
+
+#: /wa-apps/contacts/templates/actions/contacts/ContactsUser.html:293
+msgid "Are you sure?"
+msgstr ""
+
+#: /wa-apps/contacts/templates/actions/contacts/ContactsUser.html:293
+msgid "Contact will not be deleted, but the user won't be able to log in anymore."
+msgstr "The contact will not be deleted, but the user will not be able to log in any more."
+
+#: /wa-apps/contacts/templates/actions/categories/CategoriesAddSelected.html:2
+msgid "No categories available"
+msgstr ""
+
+#: /wa-apps/contacts/templates/actions/categories/CategoriesAddSelected.html:4
+msgid "Add contacts to categories"
+msgstr ""
+
+#: /wa-apps/contacts/templates/actions/categories/CategoriesAddSelected.html:30
+msgid "Add"
+msgstr ""
+
+#: /wa-apps/contacts/templates/actions/groups/GroupsEditor.html:19
+msgid "Name:"
+msgstr ""
+
+#: /wa-apps/contacts/templates/actions/groups/GroupsEditor.html:134
+msgid "<no name>"
+msgstr ""
+
+#: /wa-apps/contacts/templates/actions/categories/CategoriesEditor.html:4
+msgid "Edit category &ldquo;%s&rdquo;"
+msgstr ""
+
+#: /wa-apps/contacts/templates/actions/photo/PhotoEditor.html:3
+msgid "Change photo for contact"
+msgstr ""
+
+#: /wa-apps/contacts/templates/actions/photo/PhotoEditor.html:31
+msgid "Select an image file (JPG, GIF or PNG) to change photo:"
+msgstr ""
+
+#: /wa-apps/contacts/templates/actions/photo/PhotoEditor.html:55
+msgid "Delete photo"
+msgstr ""
+
+#: /wa-apps/contacts/templates/actions/photo/PhotoEditor.html:58
+msgid "Are you sure you want to delete this photo?"
+msgstr ""
+
+#: /wa-apps/contacts/templates/actions/photo/PhotoEditor.html:126
+msgid "Close"
+msgstr ""
+
+#: /wa-apps/contacts/templates/actions/groups/GroupsRights.html:5
+msgid "Access rights for group &ldquo;%s&rdquo;"
+msgstr ""
+
+#: /wa-apps/contacts/templates/actions/groups/GroupsRights.html:14
+msgid "Select access level"
+msgstr ""
+
+#: /wa-apps/contacts/templates/actions/groups/GroupsRights.html:23
+msgid "Full access to all applications and user management."
+msgstr ""
+
+#: /wa-apps/contacts/templates/actions/groups/GroupsEditor.html:23
+msgid "Select users you want to add to this group:"
+msgstr ""
+
+#: /wa-apps/contacts/templates/actions/groups/GroupsEditor.html:26
+msgid "Included"
+msgstr ""
+
+#: /wa-apps/contacts/templates/actions/groups/GroupsEditor.html:38
+msgid "Not included"
+msgstr ""
+
+#: /wa-apps/contacts/templates/actions/groups/GroupsEditor.html:4
+msgid "Edit group &ldquo;%s&rdquo;"
+msgstr ""
+
+#: /wa-apps/contacts/js/wa.controller.js:654
+msgid "Loading..."
+msgstr ""
+
+#: /wa-apps/contacts/js/wa.controller.js:310
+msgid "Delete this category?"
+msgstr ""
+
+#: /wa-apps/contacts/js/wa.controller.js:368
+msgid "No contacts will be deleted."
+msgstr ""
+
+#: /wa-apps/contacts/js/wa.controller.js:313
+msgid "Delete category"
+msgstr ""
+
+#: /wa-apps/contacts/js/wa.controller.js:368
+msgid "Delete this group?"
+msgstr ""
+
+#: /wa-apps/contacts/js/wa.controller.js:371
+msgid "Delete group"
+msgstr ""
+
+#: /wa-apps/contacts/js/wa.controller.js:477
+msgid "edit search"
+msgstr ""
+
+#: /wa-apps/contacts/js/wa.controller.js:586
+msgid "Exclude contacts from category \"%s\"?"
+msgstr ""
+
+#: /wa-apps/contacts/js/wa.controller.js:589
+msgid "Exclude"
+msgstr ""
+
+#: /wa-apps/contacts/js/wa.controller.js:629
+msgid "Checking links to other applications..."
+msgstr ""
+
+#: /wa-apps/contacts/js/wa.controller.js:680
+msgid "Edit group"
+msgstr ""
+
+#: /wa-apps/contacts/js/wa.controller.js:683
+msgid "Customize access"
+msgstr ""
+
+#: /wa-apps/contacts/js/wa.controller.js:695
+msgid "Edit category"
+msgstr ""
+
+#: /wa-apps/contacts/js/wa.controller.js:707
+msgid "Save as a filter"
+msgstr ""
+
+#: /wa-apps/contacts/js/wa.controller.js:716
+msgid "Edit list"
+msgstr ""
+
+#: /wa-apps/contacts/js/wa.controller.js:728
+msgid "Edit filter"
+msgstr ""
+
+#: /wa-apps/contacts/lib/config/contactsAnalyticsConfig.class.php:60
+msgid "Contacts"
+msgstr ""
+
+#: /wa-apps/contacts/js/wa.controller.js:797
+msgid "Actions with selected"
+msgstr ""
+
+#: /wa-apps/contacts/js/wa.controller.js:803
+msgid "Add to category"
+msgstr ""
+
+#: /wa-apps/contacts/js/wa.controller.js:807
+msgid "Exclude from this category"
+msgstr ""
+
+#: /wa-apps/contacts/js/wa.controller.js:811
+msgid "Exclude from this list"
+msgstr ""
+
+#: /wa-apps/contacts/js/wa.controller.js:815
+msgid "Add to list"
+msgstr ""
+
+#: /wa-apps/contacts/js/wa.controller.js:819
+msgid "Merge"
+msgstr ""
+
+#: /wa-apps/contacts/js/wa.controller.js:823
+msgid "Export"
+msgstr ""
+
+#: /wa-apps/contacts/js/fieldTypes.js:1386
+msgid "This field is required."
+msgstr "This is a required field."
+
+#: /wa-apps/contacts/js/fieldTypes.js:321
+msgid "not set"
+msgstr ""
+
+#: /wa-apps/contacts/lib/actions/contacts/contactsContactsList.controller.php:103
+msgid "no name"
+msgstr ""
+
+#: /wa-apps/contacts/js/fieldTypes.js:479
+msgid "At least one of these fields must be filled"
+msgstr "At least one of these fields must be filled in."
+
+#: /wa-apps/contacts/js/fieldTypes.js:722
+msgid "delete"
+msgstr ""
+
+#: /wa-apps/contacts/js/fieldTypes.js:880
+msgid "Add another"
+msgstr ""
+
+#: /wa-apps/contacts/js/fieldTypes.js:1199
+msgid "required"
+msgstr ""
+
+#: /wa-apps/contacts/js/fieldTypes.js:1327
+msgid "Incorrect URL format."
+msgstr ""
+
+#: /wa-apps/contacts/js/fieldTypes.js:1347
+msgid "Incorrect Email address format."
+msgstr "Incorrect email address format."
+
+#: /wa-apps/contacts/js/fieldTypes.js:1389
+msgid "Must be a number."
+msgstr ""
+
+#: /wa-apps/contacts/js/wa.grid.js:278
+msgid "Sort by"
+msgstr ""
+
+#: /wa-apps/contacts/js/wa.grid.js:282
+msgid "Name"
+msgstr ""
+
+#: /wa-apps/contacts/js/wa.grid.js:473
+msgid "Show %s records on a page"
+msgstr "Show %s records per page"
+
+#: /wa-apps/contacts/js/wa.grid.js:488
+msgid "Pages"
+msgstr ""
+
+#: /wa-apps/contacts/js/wa.grid.js:505
+msgid "prev"
+msgstr ""
+
+#: /wa-apps/contacts/js/wa.grid.js:508
+msgid "next"
+msgstr ""
+
+#: /wa-apps/contacts/js/wa.contactEditor.js:279
+msgid "other"
+msgstr ""
+
+#: /wa-apps/contacts/js/wa.contactEditor.js:291
+msgid "which?"
+msgstr ""
+
+#: /wa-apps/contacts/lib/actions/contacts/contactsContactsLinks.action.php:18
+msgid "You can not delete yourself."
+msgstr "You cannot delete yourself."
+
+#: /wa-apps/contacts/lib/actions/contacts/contactsContactsLinks.action.php:18
+msgid "Please eliminate yourself from deletion list."
+msgstr "Please remove yourself from the deletion list."
+
+#: /wa-apps/contacts/lib/actions/contacts/contactsContactsUser.controller.php:67
+msgid "This login is already set for user %NAME_LINK%"
+msgstr "This login name is already set for user %NAME_LINK%."
+
+#: /wa-apps/contacts/lib/actions/categories/contactsCategoriesDelete.controller.php:19
+msgid "Category has been deleted"
+msgstr "Category has been deleted."
+
+#: /wa-apps/contacts/lib/actions/groups/contactsGroupsDelete.controller.php:19
+msgid "Group has been deleted"
+msgstr "Group has been deleted."
+
+#: /wa-apps/contacts/lib/config/contactsRightConfig.class.php:14
+msgid "Can add contacts"
+msgstr ""
+
+#: /wa-apps/contacts/lib/config/contactsRightConfig.class.php:15
+msgid "Available categories"
+msgstr ""
+
