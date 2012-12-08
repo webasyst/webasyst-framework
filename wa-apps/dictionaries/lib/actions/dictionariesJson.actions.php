@@ -104,8 +104,8 @@ class dictionariesJsonActions extends waJsonActions {
     {
         $list = array(
             'name' => waRequest::post('name', ''),
-            'color_class' => waRequest::post('color_class', 'c-yellow'),
-            'icon' => waRequest::post('icon', 'notebook'),
+            'color_class' => waRequest::post('color_class', 'c-gray'),
+            'icon' => waRequest::post('icon', 'books'),
         );
 
         if(strlen($list['name']) <= 0) {

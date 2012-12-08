@@ -4,7 +4,9 @@
 (function(){
 	/** Update unchecked list items count in sidebar */
 	var updateCount = function() {
-		$('#cnt'+$.cl.dictionary_id).text($('#c-checklist :checkbox:not(:checked)').length);
+        var items = $.cl.items;
+        $('#cnt'+ $.cl.dictionary_id).text($.cl.items.length);
+		//$('#cnt'+$.cl.dictionary_id).text($('#c-checklist :checkbox:not(:checked)').length);
 	};
 
 	/** Insert item into ul#c-checklist */
@@ -261,7 +263,7 @@
 
 	// highlight list in sidebar
 	$('#cnt'+$.cl.dictionary_id).parent().addClass('selected').siblings('.selected').removeClass('selected');
-
+    
 	// make list sortable
 	if ($.cl.can_edit) {
 		$('#c-checklist').sortable({

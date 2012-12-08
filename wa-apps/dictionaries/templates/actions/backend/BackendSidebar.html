@@ -6,12 +6,12 @@
 	<ul class="menu-v with-icons" id="sidebar-lists">
 		{foreach from=$lists item=l name=sb}
 			<li id="list{$l.id}" rel="{$l.sort}"{if !empty($l.current)} class="selected"{/if}>
-				<span class="count" id="cnt{$l.id}">{$l.count}</span>
+				<span class="count" id="cnt{$l.id}"></span>
 				<a href="?action=list&id={$l.id}"
 					{if $smarty.foreach.sb.iteration lte 10}
 						{* !!! Hotkeys are experimental an will probably change in future *}
 						accesskey="{substr($smarty.foreach.sb.iteration, -1)}"
-					{/if}>{$l.icon}{$l.name|escape}</a></li>
+					{/if}><i class="icon16 books"></i>{$l.name|escape}</a></li>
 			</li>
 		{/foreach}
 		{if !$lists}

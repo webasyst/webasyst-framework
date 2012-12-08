@@ -87,8 +87,8 @@ class dictionariesBackendActions extends waViewActions
             $list = array(
                 'id' => '',
                 'name' => '',
-                'color_class' => 'c-white',
-                'icon' => 'notebook',
+                'color_class' => 'c-gray',
+                'icon' => 'books',
                 'count' => 0,
             );
         }

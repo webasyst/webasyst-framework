@@ -9,13 +9,6 @@ class dictionariesBackendSidebarAction extends waViewAction
     {
         $lm = new dictionariesModel();
         $lists = $lm->getAllowed();
-        foreach($lists as $id => &$list) {
-            if (strtolower(substr($list['icon'], 0, 7)) == 'http://') {
-                $list['icon'] = '<i class="icon16" style="background-image:url('.htmlspecialchars($list['icon']).')"></i>';
-            } else {
-                $list['icon'] = '<i class="icon16 '.$list['icon'].'"></i>';
-            }
-        }
 
         $id = waRequest::request('id');
         if ( ( $id = waRequest::request('id')) && isset($lists[$id])) {
