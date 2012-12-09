@@ -3,6 +3,7 @@
  *}
 <div class="block double-padded c-list {$list.color_class}{if $can_edit} cl-editable{/if}">
 	{if $can_edit}
+    <!--
 		<ul class="menu-h float-right">
 			<li>
 				<a href="?action=editor&id={$list.id}"><i class="icon16 settings"></i>[`List settings`]</a>
@@ -11,6 +12,7 @@
 				<a href="#" id="deletelist"><i class="icon16 delete"></i>[`Delete`]</a>
 			</li>
 		</ul>
+     -->
 	{/if}
 
 	<h1 id="name">
@@ -20,21 +22,23 @@
 		{/if*}
 	</h1>
 
+<!--
 	<ul class="menu-v">
 		{if $can_edit}
 			<li class="c-add-form" id="c-add-form">
-				<input class="inputname emptyonclick" type="text" name= "name" value="Input Name">
-				<input class="inputval emptyonclick" type="text" name="value" value="Input Value">
-				<input class="inputdesc emptyonclick" type="text" name="description" value="Input Description">
-				visible: <input class="inputvisible" type="checkbox" name="visible" checked="checked">
-				<input type="submit" value="[`Add`]">
+				<input class="inputname emptyonclick" type="text" name= "name" value="Название">
+				<input class="inputval emptyonclick" type="text" name="value" value="Описание">
+				<input class="inputdesc emptyonclick" type="text" name="description" value="Комментарий">
+                    <div class="value submit">
+                        <input class="button green" id="submit" value="[`Add`]" type="submit">
+                    </div>
 			</li>
 		{/if}
 		<li class="c-start-over-form" id="c-start-over-form" style="display:none">
 			<input type="submit" value="[`Start over`]">
 		</li>
 	</ul>
-
+-->
 	<!--ul class="menu-v" id="c-checklist">
 	</ul-->
 
@@ -95,13 +99,11 @@ $(window).load(function(){
 //    autowidth: true,
     height: "auto",
     datatype: "json",
-    colNames:['Name','Value', 'Description', 'Visible', 'Sort'],
+    colNames:['Название','Описание', 'Комментарий'],
     colModel:[
         {name:'name', index:'name',editable:true},
         {name:'value', index:'value',editable:true, sortable:true},
         {name:'description',index:'description',editable:true, sortable:true},
-        {name:'visible',index:'visible',editable:true, sortable:true,width:40,align:"center"},
-        {name:'sort',index:'sort',editable:true, sortable:true,width:40,align:"center"}
     ],
 
    jsonReader : { 
