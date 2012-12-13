@@ -18,6 +18,7 @@
 .c-list ul.menu-v li.c-done span.c-completed-by  { display: inline; }
 .c-list ul.menu-v li.c-add-form { padding-left:13px; padding-bottom: 10px; display: none; }
 .c-list ul.menu-v li.c-add-form input { margin: 0; }
+.c-list ul.menu-v li.c-add-form input[type="text"] { min-width: 250px; }
 .c-list ul.menu-v li a.c-edit-item { display: none; }
 .c-list ul.menu-v li a.c-delete-item { display: none; }
 .c-list ul.menu-v li a.c-edit-item { display: none; }

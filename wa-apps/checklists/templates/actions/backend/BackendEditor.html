@@ -2,6 +2,9 @@
   * List settings page.
   *}
 <div class="block double-padded c-list {$list.color_class}">
+	{if !$list.id}
+		<h1>[`New list`]</h1>
+	{/if}
 	<div class="fields form">
 	  <div class="field-group">
 		<div class="field">
