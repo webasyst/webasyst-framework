@@ -485,6 +485,9 @@ class waModel
 
     public function multipleInsert($data)
     {
+        if (!$data) {
+            return true;
+        }
         $values = array();
         $fields = array();
         if (isset($data[0])) {

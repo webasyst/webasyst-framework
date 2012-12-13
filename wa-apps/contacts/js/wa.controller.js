@@ -572,7 +572,8 @@
 
         /** Dialog to choose categories to add selected contacts to. */
         dialogAddSelectedToCategory: function() {
-            if ($.wa.grid.getSelected().length <= 0 || $('#list-category li:not(.empty):not(.selected)').size() <= 0) {
+            if ($.wa.grid.getSelected().length <= 0 || $('#list-category li:not(.empty):not(.selected):not(.hint)').size() <= 0) {
+                $.wa.controller.showMessage('<span class="errormsg">'+$_('No categories available')+'</span>', true);
                 return;
             }
             var self = this;

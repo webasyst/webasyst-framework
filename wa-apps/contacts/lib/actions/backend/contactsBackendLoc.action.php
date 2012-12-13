@@ -22,6 +22,7 @@ class contactsBackendLocAction extends waViewAction
             'Add to list',
             'Administrator',
             'All customers',
+            'No categories available',
             'Are you sure you want to delete this form?',
             'At least one of these fields must be filled',
             'Cancel',
@@ -84,6 +85,7 @@ class contactsBackendLocAction extends waViewAction
             'Exclude contacts from category &ldquo;%s&rdquo;?',
             'Exclude contacts from list &ldquo;%s&rdquo;?',
             'Exclude',
+            'select region',
         ) as $s) {
             $strings[$s] = _w($s);
         }

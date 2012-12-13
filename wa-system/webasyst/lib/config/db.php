@@ -144,11 +144,10 @@ return array(
         'iso3letter' => array('varchar', 3, 'null' => 0),
         'iso2letter' => array('varchar', 2, 'null' => 0),
         'isonumeric' => array('varchar', 3, 'null' => 0),
-        'locale' => array('varchar', 5, 'null' => 0),
         ':keys' => array(
-            'PRIMARY' => array('locale', 'iso2letter'),
-            'iso3letter' => array('iso3letter', 'locale', 'unique' => 1),
-            'isonumeric' => array('isonumeric', 'locale', 'unique' => 1),
+            'PRIMARY' => array('iso3letter'),
+            'iso2letter' => array('iso2letter', 'unique' => 1),
+            'isonumeric' => array('isonumeric', 'unique' => 1),
             'name' => 'name',
         ),
     ),
@@ -180,6 +179,14 @@ return array(
         'datetime_out' => array('datetime'),
         ':keys' => array(
             'PRIMARY' => 'id',
+        ),
+    ),
+    'wa_region' => array(
+        'country_iso3' => array('varchar', 3, 'null' => 0),
+        'code' => array('varchar', 8, 'null' => 0),
+        'name' => array('varchar', 255, 'null' => 0),
+        ':keys' => array(
+            'PRIMARY' => array('country_iso3', 'code'),
         ),
     ),
     'wa_transaction' => array(

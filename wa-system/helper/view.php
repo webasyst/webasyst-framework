@@ -117,7 +117,7 @@ function wa_header()
     $html = <<<HTML
 <script type="text/javascript">var backend_url = "{$backend_url}";</script>
 {$announcements_html}
-<div id="wa-header" class="minimize1d">
+<div id="wa-header">
     <div id="wa-account">
         <h3>{$company_name}</h3>
         {$top_url}

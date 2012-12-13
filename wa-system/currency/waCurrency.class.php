@@ -110,12 +110,10 @@ class waCurrency
             $locale = $old_locale;
         }
         $currency = waCurrency::getInfo($currency);
-        if ($format == '%w' || $format == '%W') {
-            if ($locale !== $old_locale) {
-                wa()->setLocale($locale);
-            }
-            waLocale::loadByDomain('webasyst', $locale);
+        if ($locale !== $old_locale) {
+            wa()->setLocale($locale);
         }
+        waLocale::loadByDomain('webasyst', $locale);
         $locale = waLocale::getInfo($locale);
         $result = preg_replace('/%([0-9]?\.?[0-9]?)([iw]*)({[n|f|c|s][0-9]?})?/ie', 'self::extract($n, $currency, $locale, "$1", "$2", "$3")', $format);
         if ($locale !== $old_locale) {

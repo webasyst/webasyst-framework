@@ -63,7 +63,7 @@ $.wa.contactEditor.baseFieldType = {
         }
 
         if (this.currentMode == 'edit') {
-            this.domElement.find('input.val').val(this.fieldValue);
+            this.domElement.find('.val').val(this.fieldValue);
         } else {
             this.domElement.find('.val').html(this.fieldValue);
         }
@@ -74,7 +74,7 @@ $.wa.contactEditor.baseFieldType = {
     getValue: function() {
         var result = this.fieldValue;
         if (this.currentMode == 'edit' && this.domElement !== null) {
-            var input = this.domElement.find('input.val');
+            var input = this.domElement.find('.val');
             if (input.length > 0) {
                 result = '';
                 if (!input.hasClass('empty')) { // default values use css class .empty to grey out value
@@ -125,29 +125,7 @@ $.wa.contactEditor.baseFieldType = {
             nameAddition = (this.fieldData.required ? '<span class="req-star">*</span>' : '')+':';
         }
 
-        var result = $.wa.contactEditor.wrapper(inlineElement, this.fieldData.name+nameAddition);
-
-        // In-place editor initialization (when this field is not a subfield)
-        /*
-        if (mode == 'view' && this.fieldData.id != null) {
-            var that = this;
-            result.find('span.info-field').click(function(e) {
-                var target = $(e.target);
-                if (target.parents('a').size() > 0 || target.hasClass('no-inline-editor')) {
-                    return false;
-                }
-                var buttons = $.wa.contactEditor.inplaceEditorButtons([that.fieldData.id], function(noValidationErrors) {
-                    if (typeof noValidationErrors != 'undefined' && !noValidationErrors) {
-                        return;
-                    }
-                    that.setMode('view');
-                    buttons.remove();
-                });
-                result.after(buttons);
-                that.setMode('edit');
-            });
-        }*/
-        return result;
+        return $.wa.contactEditor.wrapper(inlineElement, this.fieldData.name+nameAddition);
     },
 
     /** When used as a part of multi or composite field, corresponding wrapper
@@ -162,7 +140,7 @@ $.wa.contactEditor.baseFieldType = {
         var result = null;
         if (mode == 'edit') {
             result = $('<span><input class="val" type="text"></span>');
-            result.find('input.val').val(this.fieldValue);
+            result.find('.val').val(this.fieldValue);
         } else {
             result = $('<span class="val"></span>');
             result.text(this.fieldValue);
@@ -288,11 +266,10 @@ $.wa.contactEditor.factoryTypes.String = $.extend({}, $.wa.contactEditor.baseFie
         if (mode == 'edit') {
             if (this.fieldData.input_height <= 1) {
                 result = $('<span><input class="val" type="text"></span>');
-                result.find('input.val').val(value);
             } else {
                 result = $('<span><textarea class="val" rows="'+this.fieldData.input_height+'"></textarea></span>');
-                result.find('textarea.val').val(value);
             }
+            result.find('.val').val(value);
         } else {
             result = $('<span class="val"></span>').text(value);
         }
@@ -302,21 +279,6 @@ $.wa.contactEditor.factoryTypes.String = $.extend({}, $.wa.contactEditor.baseFie
 $.wa.contactEditor.factoryTypes.Text = $.extend({}, $.wa.contactEditor.factoryTypes.String);
 $.wa.contactEditor.factoryTypes.Phone = $.extend({}, $.wa.contactEditor.baseFieldType);
 $.wa.contactEditor.factoryTypes.Select = $.extend({}, $.wa.contactEditor.baseFieldType, {
-    setValue: function(data) {
-        this.fieldValue = data;
-
-        if(this.currentMode == 'edit') {
-            return this.domElement.find('select').val(data);
-        }
-    },
-    getValue: function() {
-        if(this.currentMode != 'edit') {
-            return this.fieldValue;
-        }
-
-        return this.domElement.find('select').val();
-    },
-
     notSet: function() {
         return '&lt;'+(this.fieldData.defaultOption || $_('not set'))+'&gt;';
     },
@@ -336,6 +298,82 @@ $.wa.contactEditor.factoryTypes.Select = $.extend({}, $.wa.contactEditor.baseFie
                 options += '<option value="'+id+'"'+(id == this.fieldValue ? ' selected' : '')+'>'+this.fieldData.options[id]+'</option>';
             }
             return $('<div><select class="val">'+options+'</select></div>');
+        }
+    }
+});
+$.wa.contactEditor.factoryTypes.Region = $.extend({}, $.wa.contactEditor.factoryTypes.Select, {
+    notSet: function() {
+        if (this.fieldData.options && this.fieldValue && !this.fieldData.options[this.fieldValue]) {
+            return this.fieldValue;
+        }
+        return '&lt;'+$_('select region')+'&gt;';
+    },
+
+    unbindEventHandlers: function() {},
+
+    setCurrentCountry: function() {
+        var old_country = this.current_country;
+        this.current_country = this.parentEditorData.parent.subfieldEditors.country.getValue();
+        if (old_country !== this.current_country) {
+            delete this.fieldData.options;
+            return true;
+        }
+        return false;
+    },
+
+    getRegionsControllerUrl: function(country) {
+        return ($.wa.contactEditor.regionsUrl || '?module=backend&action=regions&country=')+country;
+    },
+
+    newInlineFieldElement: function(mode) {
+        // Do not show anything in view mode if field is empty
+        if(mode == 'view' && !this.fieldValue) {
+            return null;
+        }
+
+        this.unbindEventHandlers();
+
+        if(mode == 'view') {
+            return $('<div></div>').append($('<span class="val"></span>').text((this.fieldData.options && this.fieldData.options[this.fieldValue]) || this.fieldValue));
+        } else {
+            var region_field = this;
+
+            // This field depends on currently selected country in address
+            if (this.parentEditorData.parent && this.parentEditorData.parent.subfieldEditors.country) {
+                this.setCurrentCountry();
+                var handler;
+                $('#contact-info-block').on('change', 'select', handler = function() {
+                    if (region_field.setCurrentCountry()) {
+                        region_field.domElement.empty().append(region_field.newInlineFieldElement(mode).children());
+                    }
+                });
+                region_field.unbindEventHandlers = function() {
+                    $('#contact-info-block').off('change', 'select', handler);
+                    region_field.unbindEventHandlers = function() {};
+                };
+            }
+
+            if (this.fieldData.options === undefined && this.current_country && this.fieldData.region_countries[this.current_country]) {
+                // Load list of regios via AJAX and then show select
+                var country = this.current_country;
+                $.get(this.getRegionsControllerUrl(country), function(r) {
+                    if (mode !== region_field.currentMode || country !== region_field.current_country) {
+                        return;
+                    }
+                    region_field.fieldData.options = r.data.options || false;
+                    region_field.fieldData.oOrder = r.data.oOrder || [];
+                    region_field.domElement.empty().append(region_field.newInlineFieldElement(mode).children());
+                }, 'json');
+                return $('<div></div>').append($('<i class="icon16 loading"></i>'));
+            } else if (this.fieldData.options) {
+                // Show as select
+                return $('<div></div>').append($.wa.contactEditor.factoryTypes.Select.newInlineFieldElement.call(this, mode));
+            } else {
+                // show as input
+                var result = $('<div></div>').append($.wa.contactEditor.baseFieldType.newInlineFieldElement.call(this, mode));
+                $.wa.defaultInputValue(result.find('.val'), this.fieldData.name+(this.fieldData.required ? ' ('+$_('required')+')' : ''), 'empty');
+                return result;
+            }
         }
     }
 });
@@ -690,32 +728,6 @@ $.wa.contactEditor.factoryTypes.Multifield = $.extend({}, $.wa.contactEditor.bas
         }
     },
 
-    /** Obsolete and not used
-    initInplaceEditor: function(element, i) {
-        // initialize in-place editors
-        var that = this;
-        element.find('span.info-field').unbind('click').click(function(e) {
-            var target = $(e.target);
-            if (target.parents('a').size() > 0 || target.hasClass('no-inline-editor')) {
-                return true;
-            }
-            var sf = that.subfieldEditors[i];
-            var domParent = sf.parentEditorData.domElement.parent('.multifield-subfields').addClass('in-place-editor');
-            var buttons = $.wa.contactEditor.inplaceEditorButtons([that.fieldData.id], function(noValidationErrors) {
-                if (typeof noValidationErrors != 'undefined' && !noValidationErrors) {
-                    return;
-                }
-                sf.setMode('view', false);
-                sf.parentEditorData.domElement.replaceWith(that.newSubFieldElement('view', i));
-                buttons.remove();
-                domParent.removeClass('in-place-editor');
-            });
-            element.after(buttons);
-            sf.setMode('edit', false);
-            sf.parentEditorData.domElement.replaceWith(that.newSubFieldElement('edit', i));
-        });
-    }, */
-
     /** Return button to delete subfield. */
     deleteSubfieldButton: function(sf) {
         var that = this;
@@ -757,6 +769,7 @@ $.wa.contactEditor.factoryTypes.Multifield = $.extend({}, $.wa.contactEditor.bas
         if(!sf.parentEditorData) {
             sf.parentEditorData = {};
         }
+        sf.parentEditorData.parent = this;
         sf.parentEditorData.empty = false;
         var ext;
 
@@ -987,6 +1000,7 @@ $.wa.contactEditor.factoryTypes.Composite = $.extend({}, $.wa.contactEditor.base
             editor.parentEditorData = {};
             editor.initialize();
             editor.parentEditorData.sfid = sfid;
+            editor.parentEditorData.parent = this;
             this.subfieldEditors[sfid] = editor;
             val.data[sfid] = editor.getValue();
         }

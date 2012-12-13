@@ -360,3 +360,4 @@ img.c-app16x16icon-menu-v {
     position: absolute;
     left: 2px;
 }
+.wa-message-text .errormsg { display: inline; }

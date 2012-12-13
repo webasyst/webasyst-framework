@@ -9,7 +9,7 @@ class waOAuthController extends waViewController
         if ($app) {
             $this->getStorage()->set('auth_app', $app);
             $params = waRequest::get();
-            unset($params['app']); unset($params['provoder']);
+            unset($params['app']); unset($params['provider']);
             if ($params) {
                 $this->getStorage()->set('auth_params', $params);
             }

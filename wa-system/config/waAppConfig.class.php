@@ -356,7 +356,9 @@ class waAppConfig extends SystemConfig
 
     protected function getPHPFiles($path)
     {
-        $dh = opendir($path);
+        if (! ( $dh = opendir($path))) {
+            throw new waException('Filed to open dir: '.$path);
+        }
         $result = array();
         while (($f = readdir($dh)) !== false) {
             if ($this->isIgnoreFile($f)) {

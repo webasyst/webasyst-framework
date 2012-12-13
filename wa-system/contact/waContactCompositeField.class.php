@@ -91,7 +91,7 @@ class waContactCompositeField extends waContactField
             $value = array();
             foreach ($this->options['fields'] as $field) {
                 if (isset($data['data'][$field->getId()])) {
-                    $value[] = htmlspecialchars($field->getName()).": ".$field->format($data['data'][$field->getId()], 'value');
+                    $value[] = htmlspecialchars($field->getName()).": ".$field->format($data['data'][$field->getId()], 'value', $data['data']);
                 }
             }
             $data['value'] = implode("<br>\n", $value);

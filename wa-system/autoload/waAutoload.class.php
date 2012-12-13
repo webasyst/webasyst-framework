@@ -76,7 +76,7 @@ class waAutoload
         } elseif (substr($class, 0, 9) === 'waContact') {
             return $this->base_path.'/wa-system/contact/'.$class.'.class.php';
         } elseif (substr($class, 0, 4) === 'waDb') {
-            return $this->base_path.'/wa-system/database/'.$class.'.class.php';    
+            return $this->base_path.'/wa-system/database/'.$class.'.class.php';
         } elseif (substr($class, 0, 2) == 'wa') {
             $dir = preg_replace("/^wai?([A-Z][a-z]+).*?$/", "$1", $class);
             $path = $this->base_path.'/wa-system/'.strtolower($dir).'/'.$class.'.'.(substr($class, 0, 3) === 'wai' ? 'interface' : 'class').'.php';
@@ -142,15 +142,15 @@ class waAutoload
       'waSystemCache' => 'cache/waSystemCache.class.php',
       'waVarExportCache' => 'cache/waVarExportCache.class.php',
       'waiCache' => 'cache/waiCache.interface.php',
-    
+
       'waAnalyticsConfig' => 'config/waAnalyticsConfig.class.php',
       'waAppConfig' => 'config/waAppConfig.class.php',
       'waConfig' => 'config/waConfig.class.php',
       'waRightConfig' => 'config/waRightConfig.class.php',
       'waSystemConfig' => 'config/waSystemConfig.class.php',
-    
+
       'waContactsCollection' => 'contact/waContactsCollection.class.php',
-    
+
       'waAction' => 'controller/waAction.class.php',
       'waActions' => 'controller/waActions.class.php',
       'waController' => 'controller/waController.class.php',
@@ -167,12 +167,12 @@ class waAutoload
       'waViewActions' => 'controller/waViewActions.class.php',
       'waViewController' => 'controller/waViewController.class.php',
       'waWidget' => 'controller/waWidget.class.php',
-    
+
       'waCurrency' => 'currency/waCurrency.class.php',
 
       'waCaptcha' => 'captcha/waCaptcha.class.php',
       'waReCaptcha' => 'captcha/recaptcha/waReCaptcha.class.php',
-    
+
       'waDbAdapter' => 'database/waDbAdapter.class.php',
       'waDbCacheIterator' => 'database/waDbCacheIterator.class.php',
       'waDbConnector' => 'database/waDbConnector.class.php',
@@ -190,69 +190,69 @@ class waAutoload
       'waDbStatement' => 'database/waDbStatement.class.php',
       'waModel' => 'database/waModel.class.php',
       'waNestedSetModel' => 'database/waNestedSetModel.class.php',
-    
+
       'waDateTime' => 'datetime/waDateTime.class.php',
-    
+
       'waEventHandler' => 'event/waEventHandler.class.php',
-    
+
       'waDbException' => 'exception/waDbException.class.php',
       'waException' => 'exception/waException.class.php',
       'waRightsException' => 'exception/waRightsException.class.php',
-    
+
       'waFiles' => 'file/waFiles.class.php',
       'waTheme' => 'file/waTheme.class.php',
-    
+
       'waLayout' => 'layout/waLayout.class.php',
-    
+
       'waGettext' => 'locale/waGettext.class.php',
       'waLocale' => 'locale/waLocale.class.php',
       'waLocaleAdapter' => 'locale/waLocaleAdapter.class.php',
-    
+
       'waAppPayment' => 'payment/waAppPayment.class.php',
       'waPayment' => 'payment/waPayment.class.php',
-    
+
       'waRequest' => 'request/waRequest.class.php',
       'waRequestFile' => 'request/waRequestFile.class.php',
       'waRequestFileIterator' => 'request/waRequestFileIterator.class.php',
-    
+
       'waResponse' => 'response/waResponse.class.php',
-    
+
       'waSessionStorage' => 'storage/waSessionStorage.class.php',
       'waStorage' => 'storage/waStorage.class.php',
-    
+
       'waAuthUser' => 'user/waAuthUser.class.php',
       'waUser' => 'user/waUser.class.php',
-    
+
       'waArrayObject' => 'util/waArrayObject.class.php',
       'waArrayObjectDiff' => 'util/waArrayObjectDiff.class.php',
       'waCSV' => 'util/waCSV.class.php',
       'waHtmlControl' => 'util/waHtmlControl.class.php',
       'waLocalizedCollection' => 'util/waLocalizedCollection.php',
       'waUtils' => 'util/waUtils.class.php',
-    
+
       'waEmailValidator' => 'validator/waEmailValidator.class.php',
       'waRegexValidator' => 'validator/waRegexValidator.class.php',
       'waStringValidator' => 'validator/waStringValidator.class.php',
       'waUrlValidator' => 'validator/waUrlValidator.class.php',
       'waValidator' => 'validator/waValidator.class.php',
-    
+
       'waIdna' => 'vendors/idna/waIdna.class.php',
       'Smarty' => 'vendors/smarty3/Smarty.class.php',
-    
+
       'waSmarty3View' => 'view/waSmarty3View.class.php',
       'waView' => 'view/waView.class.php',
       'waViewHelper' => 'view/waViewHelper.class.php',
       'waAppViewHelper' => 'view/waAppViewHelper.class.php',
-    
+
       'waWidgets' => 'widget/waWidgets.class.php',
-    
+
       'waWorkflow' => 'workflow/waWorkflow.class.php',
       'waWorkflowAction' => 'workflow/waWorkflowAction.class.php',
       'waWorkflowEntity' => 'workflow/waWorkflowEntity.class.php',
       'waWorkflowState' => 'workflow/waWorkflowState.class.php',
-    
+
       'waSystem' => 'waSystem.class.php',
-    
+
       'waAppSettingsModel' => 'webasyst/lib/models/waAppSettings.model.php',
       'waAnnouncementModel' => 'webasyst/lib/models/waAnnouncement.model.php',
       'waContactModel' => 'webasyst/lib/models/waContact.model.php',
@@ -268,6 +268,7 @@ class waAutoload
       'waGroupModel' => 'webasyst/lib/models/waGroup.model.php',
       'waLoginLogModel' => 'webasyst/lib/models/waLoginLog.model.php',
       'waUserGroupsModel' => 'webasyst/lib/models/waUserGroups.model.php',
+      'waRegionModel' => 'webasyst/lib/models/waRegion.model.php',
       'waTransactionModel' => 'webasyst/lib/models/waTransaction.model.php',
       'waTransactionDataModel' => 'webasyst/lib/models/waTransactionData.model.php',
 

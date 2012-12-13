@@ -138,8 +138,14 @@ class waDbMySQLAdapter extends waDbAdapter
                     $field[trim(substr($row['Type'], strpos($row['Type'], ')') + 1))] = 1;
                 }
             }
-            $field['null'] = $row['Null'] == 'YES' ? 1 : 0;
-            $field['default'] = $row['Default'] === 'NULL' ? null : $row['Default'];
+            if ($row['Null'] != 'YES') {
+                $field['null'] = 0;
+            }
+
+            if ($row['Default'] !== null) {
+                $field['default'] = $row['Default'];
+            }
+
             if ($row['Extra'] == 'auto_increment') {
                 $field['autoincrement'] = 1;
             }

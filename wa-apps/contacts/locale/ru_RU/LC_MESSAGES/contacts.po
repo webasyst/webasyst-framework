@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WebAsyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2012-07-09 18:19+0400\n"
+"PO-Revision-Date: 2012-12-11 17:52+0400\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -857,6 +857,8 @@ msgstr "Невозможно объединить:"
 msgid "Continue"
 msgstr "Продолжить"
 
+msgid "select region"
+msgstr "выберите регион"
 
 #: /wa-apps/contacts/templates/actions/backend/BackendSidebar.html:19
 msgid "Person"
@@ -869,3 +871,4 @@ msgstr ""
 #: /wa-apps/contacts/js/wa.controller.js:586
 msgid "Exclude contacts from category \"%s\"?"
 msgstr ""
+

@@ -15,13 +15,13 @@
 class waDateTime
 {
 
-    public function getTimeZones()
+    public static function getTimeZones()
     {
         $cache_file = wa()->getConfig()->getPath('cache', 'config/timezones'.wa()->getLocale());
         if (file_exists($cache_file) && filemtime($cache_file) > filemtime(dirname(__FILE__)."/data/timezones.php")) {
             return include($cache_file);
         } else {
-            $data = $this->getAllTimeZones();
+            $data = self::getAllTimeZones();
             $timezones = array();
             foreach ($data as $timezone_id => $info) {
                 foreach ($info[1] as &$c) {
@@ -35,7 +35,7 @@ class waDateTime
         }
     }
 
-    protected function getAllTimeZones()
+    protected static function getAllTimeZones()
     {
         $file = dirname(__FILE__)."/data/timezones.php";
         if (file_exists($file)) {

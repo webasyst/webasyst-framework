@@ -58,8 +58,10 @@ class facebookAuth extends waOAuth2Adapter
                 'lastname' => $response['last_name'],
                 //'login' => $response['username'],
                 'locale' => $response['locale'],
-                'photo_url' => $response['picture']
             );
+            if (!empty($response['picture']) && isset($response['picture']['url'])) {
+                $data['photo_url'] = $response['picture']['url'];
+            }
             if (!empty($response['gender'])) {
                 $data['sex'] = $response['gender'] == 'male' ? 'm' : 'f';
             }

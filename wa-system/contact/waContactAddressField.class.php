@@ -21,7 +21,7 @@ class waContactAddressField extends waContactCompositeField
             $this->options['fields'] = array(
                 new waContactStringField('street', 'Street address'),
                 new waContactStringField('city', 'City'),
-                new waContactStringField('state', 'State'),
+                new waContactRegionField('region', 'State'),
                 new waContactStringField('zip', 'ZIP'),
                 new waContactCountryField('country', 'Country', array(
                     'defaultOption' => 'Select country',
@@ -32,7 +32,7 @@ class waContactAddressField extends waContactCompositeField
             $this->options['formats']['js'] = new waContactAddressOneLineFormatter();
         }
     }
-    
+
     public function format($data, $format = null)
     {
         if (!isset($data['value'])) {
@@ -42,20 +42,20 @@ class waContactAddressField extends waContactCompositeField
                  * @var $field waContactField
                  */
                 if (isset($data['data'][$field->getId()])) {
-                    $value[] = $field->format($data['data'][$field->getId()], 'value');
+                    $value[] = $field->format($data['data'][$field->getId()], 'value', $data['data']);
                 }
             }
             $data['value'] = implode(", ", $value);
         }
         return parent::format($data, $format);
-    }    
+    }
 }
 
 /** Format address on one line. */
 class waContactAddressOneLineFormatter extends waContactFieldFormatter
 {
-    public function format($data) {
-        $parts = $this->getParts($data);
+    public function format($data, $format=null) {
+        $parts = $this->getParts($data, $format);
         $data['value'] = implode(', ', $parts['parts']);
         if ($data['value'] && $parts['pic']) {
             $data['value'] = $parts['pic'].' '.$data['value'];
@@ -66,7 +66,7 @@ class waContactAddressOneLineFormatter extends waContactFieldFormatter
         return $data;
     }
 
-    protected function getParts($data)
+    protected function getParts($data, $format=null)
     {
         $result = array(
             // country flag image
@@ -93,9 +93,9 @@ class waContactAddressOneLineFormatter extends waContactFieldFormatter
             }
         }
 
-        if (isset($data['data']['street']) || isset($data['data']['city']) || isset($data['data']['state']) || isset($data['data']['country']) || $countryName) {
+        if (isset($data['data']['street']) || isset($data['data']['city']) || isset($data['data']['region']) || isset($data['data']['country']) || $countryName) {
             $searchURL = '';
-            foreach (array('street', 'city', 'state') as $id) {
+            foreach (array('street', 'city', 'region') as $id) {
                 if (!isset($data['data'][$id])) {
                     continue;
                 }
@@ -115,7 +115,11 @@ class waContactAddressOneLineFormatter extends waContactFieldFormatter
              */
             $id = $field->getId();
             if (isset($data['data'][$id]) && trim($data['data'][$id])) {
-                $result['parts'][$id] = htmlspecialchars($id == 'country' ? $countryName : trim($data['data'][$id]));
+                if ($id === 'country') {
+                    $result['parts'][$id] = $countryName;
+                } else {
+                    $result['parts'][$id] = $field->format($data['data'][$id], $format, $data['data']);
+                }
             }
         }
 

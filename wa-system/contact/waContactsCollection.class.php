@@ -604,7 +604,7 @@ class waContactsCollection
     public function saveToTable($table, $fields = 'id', $ignore = false)
     {
         if (!is_array($fields)) {
-            $fields = implode(",", $fields);
+            $fields = explode(",", $fields);
             $fields = array_map("trim", $fields);
         }
         $primary_email = false;

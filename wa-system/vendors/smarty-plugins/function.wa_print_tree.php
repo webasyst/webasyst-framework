@@ -1,6 +1,6 @@
 <?php
 
-function smarty_function_wa_print_tree($params, $template)
+function smarty_function_wa_print_tree($params, &$smarty)
 {
     $data = $params['tree'];
 
@@ -27,7 +27,7 @@ function smarty_function_wa_print_tree($params, $template)
                     $params['depth']--;
                 }
                 $params['tree'] = $row['childs'];
-                $html .= smarty_function_wa_print_tree($params, $template);
+                $html .= smarty_function_wa_print_tree($params, $smarty);
                 if (isset($params['depth'])) {
                     $params['depth']++;
                 }

@@ -161,12 +161,16 @@ abstract class waRightConfig
             <script>(function() {
                 // Make indicators change when user changes personal access
                 var updateIndicator = function() {
-                    var self = $(this);
-                    var tr = self.parents("table.c-access-app tr");
+                    var self = $(this),
+                        tr = self.parents("table.c-access-app tr"),
+                        changed = false;
                     if (tr.find("input[type=\"checkbox\"]:checked").size() > 0) {
-                        tr.find("i.icon10.no").removeClass("no").addClass("yes");
+                        changed = tr.find("i.icon10.no").removeClass("no").addClass("yes").length > 0;
                     } else {
-                        tr.find("i.icon10.yes").removeClass("yes").addClass("no");
+                        changed = tr.find("i.icon10.yes").removeClass("yes").addClass("no").length > 0;
+                    }
+                    if (changed) {
+                        self.parents("form").trigger("wa.change");
                     }
                 };
                 $("table.c-access-app input[type=\"checkbox\"]:enabled").click(updateIndicator);';

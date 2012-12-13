@@ -816,7 +816,7 @@ class waSystem
         return $this->config->getRootUrl($absolute, $script);
     }
 
-    public static function getSetting($name, $default = '', $app_id = null)
+    public static function getSetting($name, $default = '', $app_id)
     {
         if (!isset(self::$models['app_settings'])) {
             self::$models['app_settings'] = new waAppSettingsModel();
