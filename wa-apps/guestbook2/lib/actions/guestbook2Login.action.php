@@ -1,8 +1,9 @@
 <?php
 
 /**
- * Экш формы логина /login
- * @see https://www.webasyst.com/ru/framework/docs/dev/auth-frontend/
+ * Login form action /login
+ * Экшен формы логина /login
+ * @see https://www.webasyst.com/framework/docs/dev/auth-frontend/
  */
 class guestbook2LoginAction extends waLoginAction
 {

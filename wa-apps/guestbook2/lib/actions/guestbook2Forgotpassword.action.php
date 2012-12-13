@@ -1,8 +1,9 @@
 <?php
 
 /**
- * Экш восстановления пароля /forgotpassword
- * @see https://www.webasyst.com/ru/framework/docs/dev/auth-frontend/
+ * Password recovery action /forgotpassword
+ * Экшен восстановления пароля /forgotpassword
+ * @see https://www.webasyst.com/framework/docs/dev/auth-frontend/
  */
 class guestbook2ForgotpasswordAction extends waForgotPasswordAction
 {

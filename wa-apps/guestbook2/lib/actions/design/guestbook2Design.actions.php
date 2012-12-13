@@ -7,7 +7,7 @@ class guestbook2DesignActions extends waDesignActions
     {
         // check access rights
         if (!$this->getRights('design')) {
-            throw new waRightsException("Access denued");
+            throw new waRightsException(_ws("Access denied"));
         }
     }
 
