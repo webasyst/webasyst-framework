@@ -1,0 +1,55 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: dummy\n"
+"POT-Creation-Date: 2012-10-12 17:45+0400\n"
+"PO-Revision-Date: \n"
+"Last-Translator:  dummy\n"
+"Language-Team:  dummy\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Language: en_US\n"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-Basepath: .\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPath-1: .\n"
+
+#: /wa-apps/dummy/templates/actions/backend/Backend.html:29
+msgid "All records"
+msgstr ""
+
+#: /wa-apps/dummy/templates/actions/backend/Backend.html:58
+msgid "Add record"
+msgstr ""
+
+#: /wa-apps/dummy/lib/config/dummyRightConfig.class.php:24
+msgid "Records"
+msgstr ""
+
+#: /wa-apps/dummy/templates/actions/backend/Backend.html:45
+msgid "Loading..."
+msgstr ""
+
+#: /wa-apps/dummy/templates/actions/backend/Backend.html:63
+msgid "Title"
+msgstr ""
+
+#: /wa-apps/dummy/templates/actions/backend/Backend.html:67
+msgid "Content"
+msgstr ""
+
+#: /wa-apps/dummy/templates/actions/backend/Backend.html:77
+msgid "Add"
+msgstr ""
+
+#: /wa-apps/dummy/templates/actions/backend/Backend.html:77
+msgid "or"
+msgstr ""
+
+#: /wa-apps/dummy/templates/actions/backend/Backend.html:78
+msgid "cancel"
+msgstr ""
+
+#: /wa-apps/dummy/lib/config/dummyRightConfig.class.php:15
+msgid "Add new records"
+msgstr ""

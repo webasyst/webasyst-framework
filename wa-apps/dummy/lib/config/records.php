@@ -1,5 +1,6 @@
 <?php
  
+// record list
 // список всех записей
 return array(
 	1 => array(
