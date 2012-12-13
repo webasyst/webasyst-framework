@@ -39,7 +39,6 @@ class blogBlogSettingsAction extends waViewAction
 
             $settings['id'] = $blog_id;
             $validate_massages = $this->validate($settings);
-
             if (!$validate_massages) {
 
                 //TODO handle settings
@@ -138,7 +137,9 @@ class blogBlogSettingsAction extends waViewAction
     {
         $messages = array();
 
-        if ($data['status'] != blogBlogModel::STATUS_PRIVATE) {
+        $no_settlement = waRequest::post('no_settlement', 0, waRequest::TYPE_INT);
+
+        if ($data['status'] != blogBlogModel::STATUS_PRIVATE && !$no_settlement) {
             if (isset($data['id'])) {
                 $url_validator = new blogSlugValidator(array('id' => $data['id']));
             } else {
@@ -149,10 +150,10 @@ class blogBlogSettingsAction extends waViewAction
 
             $name_validator = new waStringValidator(
             array(
-					'max_length' => 255,
-					'required' => true
+                'max_length' => 255,
+                'required' => true
             ), array(
-					'required' => _w('Blog name must not be empty')
+                'required' => _w('Blog name must not be empty')
             )
             );
 
@@ -173,6 +174,5 @@ class blogBlogSettingsAction extends waViewAction
         }
 
         return $messages;
-
     }
 }

@@ -5,7 +5,7 @@ class blogDesignActions extends waDesignActions
     public function __construct()
     {
         if (!$this->getRights('design')) {
-            throw new waRightsException("Access denued");
+            throw new waRightsException(_ws("Access denied"));
         }
         $this->options['js']['storage'] = false;
     }

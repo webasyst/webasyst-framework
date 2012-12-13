@@ -12,6 +12,7 @@ msgstr ""
 ">=2)&&((n%10)<=4))&&(((n%100)<10)||((n%100)>=20)))?(1):2));\n"
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
+"X-Generator: Poedit 1.5.4\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
 
@@ -1029,98 +1030,33 @@ msgstr "Выйти"
 msgid "Search posts"
 msgstr "Найти запись"
 
+#: /wa-apps/blog/templates/actions/post/PostEdit.html:177
+msgid ""
+"Posts of this blog are not visible in the public frontend because there are "
+"no routing rules for the Blog app in your website settings. Use Site app "
+"(Routing section) to settle Blog app on your website and to start publishing."
+msgstr ""
+"Записи в этом блоге не видны пользователям фронтенда, потому что для "
+"приложения «Блог» не заданы правила достаточные маршрутизации. Поселите "
+"«Блог» в настройках маршрутизации приложения «Сайт», чтобы начать "
+"публиковать записи нового блога."
+
 #: /wa-apps/blog/templates/layouts/Mobile.html:19
 msgid "Apps"
-msgstr ""
-
-#: /wa-apps/blog/templates/dialogs/blogDelete.html:9
-msgid "The blog %s contains <strong>%d posts</strong>. What should be done with these posts?"
-msgstr ""
-
-#: /wa-apps/blog/templates/dialogs/postDeadline.html:13
-msgid "Deadline is for planning purposes only. It will not publish the post automatically, but will highlight the post in the calendar if it is not published in time."
-msgstr ""
-
-#: /wa-apps/blog/templates/dialogs/postDelete.html:8
-msgid "The post <b>%s</b> will be permanently deleted without the ability to recover. Delete?"
-msgstr ""
-
-#: /wa-apps/blog/templates/dialogs/postDelete.html:11
-msgid "Selected posts will be permanently deleted without the ability to recover. Delete?"
-msgstr ""
-
-#: /wa-apps/blog/templates/dialogs/postSchedule.html:30
-msgid "Scheduled publication requires CRON to be properly setup for Webasyst Blog app, which is not the case for this installation. Setup cron for the Blog app with the following command (<a href=\"http://www.webasyst.com/ru/framework/docs/server/cron/\" target=\"_blank\">cron setup instructions</a>):<br /><br /> <strong>%s</strong>"
-msgstr ""
-
-#: /wa-apps/blog/templates/actions/plugins/Plugins.html:33
-msgid "Plugin order defines the order they are executed. Sort plugin list to change the order."
-msgstr ""
-
-#: /wa-apps/blog/templates/actions/blog/BlogSettings.html:50
-msgid "Blog posts are published and available only within Webasyst backend for users who have rights to access this blog"
-msgstr ""
-
-#: /wa-apps/blog/templates/actions/post/PostEdit.html:226
-msgid "Posts of this blog are not visible in the public frontend because there are no routing rules for the Blog app in your website settings. Use Site app (Routing section) to settle Blog app on your website and to start publishing."
-msgstr "Записи этого блога не будут видны в общедоступной части сайта, потому что приложение «Блог» не подключено правилами маршрутизации сайта. Чтобы записи публиковались на сайте, поселите приложение «Блог» в разделе «Маршрутизация» приложения «Сайт»."
-
-#: /wa-apps/blog/templates/actions/settings/Settings.html:107
-msgid "If enabled, all commentators will be authorized and synced with the Contacts app"
-msgstr ""
-
-#: /wa-apps/blog/templates/actions/post/PostEdit.html:57
-msgid "Deadline is for plan purposes only. It will not automatically published the post, but will highlight the post if publication date is overdue."
-msgstr ""
-
-#: /wa-apps/blog/templates/actions/post/PostEdit.html:95
-msgid "Optional set of custom <em>key=value</em> parameters which can be used within a frontend's theme template as <em>&#123;$post.key&#125;</em>. Each key=value pair should be on a separate line."
-msgstr ""
-
-#: /wa-apps/blog/js/postEdit.js:86
-msgid "input_maxlength"
-msgstr ""
-
-#: /wa-apps/blog/lib/config/site.php:27
-msgid "<br />Post URLs: <strong>%s</strong>, e.g. %s<br />Blog post list URLs: <strong>%s</strong>, e.g. %s"
-msgstr ""
-
-#: /wa-apps/blog/lib/config/site.php:93
-msgid "Returns blog info by <em>blog_id</em> as an array with the following structure: (<em>\"id\"</em>, <em>\"url\"</em>, <em>\"name\"</em>, <em>\"status\"</em>, <em>\"icon\"</em>, <em>\"qty\"</em>, <em>\"color\"</em>, <em>\"sort\"</em>, <em>\"icon_url\"</em>, <em>\"icon_html\"</em>, <em>\"link\"</em>)"
-msgstr ""
-
-#: /wa-apps/blog/lib/config/site.php:94
-msgid "Returns post info by <em>post_id</em> as an array with the following structure: (<em>\"id\"</em>, <em>\"contact_id\"</em>, <em>\"contact_name\"</em>, <em>\"datetime\"</em>, <em>\"title\"</em>, <em>\"text\"</em>, <em>\"status\"</em>, <em>\"url\"</em>, <em>\"blog_id\"</em>, <em>\"comments_allowed\"</em>, <em>\"user\"</em>, <em>\"comment_count\"</em>, <em>\"comment_new_count\"</em>, <em>\"plugins\"</em>, <em>\"icon\"</em>, <em>\"color\"</em>, <em>\"blog_status\"</em>, <em>\"blog_url\"</em>, <em>\"blog_name\"</em>, <em>\"link\"</em>)"
-msgstr ""
-
-#: /wa-apps/blog/lib/config/site.php:95
-msgid "Returns the array of all public blogs. Each blog is an array presenting the blog data"
-msgstr ""
-
-#: /wa-apps/blog/lib/config/site.php:96
-msgid "Returns the array of all posts by <em>blog_id</em>. If <em>blog_id</em> is <em>null</em>, the array of all public posts is returned. Optional parameter <em>number_of_posts</em> limits the number of elements returned"
-msgstr ""
-
-#: /wa-apps/blog/lib/actions/post/blogPostImage.controller.php:55
-msgid "File could not bet saved due to the insufficient file write permissions for the %s folder."
-msgstr ""
-
-#: /wa-apps/blog/themes/default/sidebar.html:24
-msgid "Edit blog layout in your <a href=\"%s\">Webasyst backend</a> using “Site” app."
-msgstr ""
-
-#: /wa-apps/blog/themes/default/comments.html:110
-msgid "To add a comment please <a href=\"%s\">sign up</a> or <a href=\"%s\">login</a>"
-msgstr ""
+msgstr "Приложения"
 
 #: /wa-apps/blog/js/compiled/blog-jquery.js:35
 msgid "Cancel"
+msgstr "Отмена"
+
+#: /wa-apps/blog/js/postEdit.js:91
+msgid "input_maxlength"
 msgstr ""
 
 #: /wa-apps/blog/lib/config/site.php:157
 msgid "Latest blog posts"
-msgstr ""
+msgstr "Последние записи блога"
 
 #: /wa-apps/blog/lib/config/site.php:192
 msgid "Latest comments of all blog posts"
-msgstr ""
+msgstr "Последние комментарии ко всем записям"

@@ -68,7 +68,6 @@ abstract class waSettings implements Countable, ArrayAccess, Iterator, Serializa
     {
         $this->settingsParams = &$settingsParams;
     }
-    abstract public static function getInstance();
 
 
     abstract protected function load();

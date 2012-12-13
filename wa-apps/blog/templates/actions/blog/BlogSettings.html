@@ -60,6 +60,7 @@
 
             {if empty($blog.settlement.url)}
                 [`Posts of this blog are not visible in the public frontend because there are no routing rules for the Blog app in your website settings. Use Site app (Routing section) to settle Blog app on your website and to start publishing.`]
+                <input type="hidden" name="no_settlement" value="1">
             {else}
                 {if $blog.id}
     
