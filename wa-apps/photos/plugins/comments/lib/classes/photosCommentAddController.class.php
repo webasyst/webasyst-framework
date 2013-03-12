@@ -70,6 +70,7 @@ class photosCommentAddController extends waJsonController
 
         $this->view->assign('wrap_li', true);
         $this->view->assign('comment', $comment);
+        $this->view->assign('contact_rights', wa()->getUser()->getRights('contacts', 'backend'));
         $this->response['html'] = $this->view->fetch($this->template);
 
     }

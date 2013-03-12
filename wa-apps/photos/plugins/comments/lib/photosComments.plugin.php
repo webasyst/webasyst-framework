@@ -11,11 +11,11 @@ class photosCommentsPlugin extends photosPlugin
         $this->sidebarCounters();
 
         $counters = $this->getLastCounters($photo_id);
+
         $this->view()->assign(array(
             'photo_id'=> $photo_id,
             'comments_author'=> photosCommentModel::getAuthorInfo(wa()->getUser()->getId()),
             'comments'=> $this->comment()->getFullTree($photo_id, $options),
-            'comments_count' => (int)$this->comment()->getCounters(null, $photo_id),
             'photo_comments_new_count'=> (isset($counters[$photo_id]) ? $counters[$photo_id] : 0),
             'contact_rights' => wa()->getUser()->getRights('contacts', 'backend')
         ));
@@ -42,6 +42,7 @@ class photosCommentsPlugin extends photosPlugin
             $counter['new'] = $this->getLastCounters();
             $counter['all'] = $this->comment()->getCounters();
         }
+
         $this->view()->assign('comments_count', $counter['all']);
         $this->view()->assign('comments_count_new', $counter['new']);
     }
@@ -221,11 +222,9 @@ HTML;
     /**
      *
      * @param int $photo_id
-     * @todo complete code - temporaly disabled future
      */
     private function getLastCounters($photo_id = null)
     {
-        return $photo_id?0:array();
         $last_login_datetime = wa()->getConfig()->getLastLoginTime();
         return $this->comment()->getCounters($last_login_datetime, $photo_id);
     }

@@ -9,7 +9,7 @@
             
             {if $contact_rights && !empty($comment.author.id)}
               <a href="{$wa_backend_url}contacts/#/contact/{$comment.author.id}" class="bold">{$smarty.capture.author_name}</a>
-            {elseif $comment.site}
+            {elseif !empty($comment.site)}
               <a href="{$comment.site}">{$smarty.capture.author_name}</a>
             {else}
               {$smarty.capture.author_name}

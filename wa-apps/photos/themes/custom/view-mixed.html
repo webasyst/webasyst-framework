@@ -1,0 +1,189 @@
+<div class="content">
+    {* @event frontend_collection.%plugin_id%.thumbs_list *}
+    {if !empty($frontend_collection)}{foreach $frontend_collection as $item}{if !empty($item.thumbs_list)}{$item.thumbs_list}{/if}{/foreach}{/if}
+
+{if !empty($photos)}
+    {assign var="brick_packs" value=[
+        '1' => [
+            [
+                ['size'=>'320x320']
+            ]
+        ],
+        '2' => [
+            [
+                ['size'=>'320x155', 'class'=>'margined-bottom'],
+                ['size'=>'320x155']
+            ],
+            [
+                ['size'=>'155x320', 'class'=>'margined-right'],
+                ['size'=>'155x320']
+            ]
+        ],
+        '3' => [
+            [
+                ['size'=>'155x320', 'class'=>'margined-right'],
+                ['size'=>'155x155', 'class'=>'margined-bottom'],
+                ['size'=>'155x155']
+            ]
+        ],
+        '4' => [
+            [
+                ['size'=>'155x155', 'class'=>'margined-right margined-bottom'],
+                ['size'=>'155x155', 'class'=>'margined-bottom'],
+                ['size'=>'155x155', 'class'=>'margined-right'],
+                ['size'=>'155x155']
+            ]
+        ],
+        '5' => [
+            [
+                ['size'=>'320x100', 'class'=>'margined-bottom'],
+                ['size'=>'100x100', 'class'=>'margined-right margined-bottom'],
+                ['size'=>'100x100', 'class'=>'margined-right margined-bottom'],
+                ['size'=>'100x100', 'class'=>'margined-bottom'],
+                ['size'=>'320x100']
+            ]
+        ],
+        '6' => [
+            [
+                ['size'=>'210x210', 'class'=>'margined-right margined-bottom'],
+                ['size'=>'100x100', 'class'=>'margined-bottom'],
+                ['size'=>'100x100', 'class'=>'margined-bottom'],
+                ['size'=>'100x100', 'class'=>'margined-right'],
+                ['size'=>'100x100', 'class'=>'margined-right'],
+                ['size'=>'100x100']
+            ]
+        ],
+        '7' => [
+            [
+                ['size'=>'320x100', 'class'=>'margined-bottom'],
+                ['size'=>'100x100', 'class'=>'margined-right margined-bottom'],
+                ['size'=>'100x100', 'class'=>'margined-right margined-bottom'],
+                ['size'=>'100x100', 'class'=>'margined-bottom'],
+                ['size'=>'100x100', 'class'=>'margined-right'],
+                ['size'=>'100x100', 'class'=>'margined-right'],
+                ['size'=>'100x100']
+            ]
+        ],
+        '8' => [
+            [
+                ['size'=>'210x100', 'class'=>'margined-right margined-bottom'],
+                ['size'=>'100x100', 'class'=>'margined-bottom'],
+                ['size'=>'100x100', 'class'=>'margined-right margined-bottom'],
+                ['size'=>'100x100', 'class'=>'margined-right margined-bottom'],
+                ['size'=>'100x100', 'class'=>'margined-bottom'],
+                ['size'=>'100x100', 'class'=>'margined-right'],
+                ['size'=>'100x100', 'class'=>'margined-right'],
+                ['size'=>'100x100']
+            ]
+        ],
+        '9' => [
+            [
+                ['size'=>'100x100', 'class'=>'margined-right margined-bottom'],
+                ['size'=>'100x100', 'class'=>'margined-right margined-bottom'],
+                ['size'=>'100x100', 'class'=>'margined-bottom'],
+                ['size'=>'100x100', 'class'=>'margined-right margined-bottom'],
+                ['size'=>'100x100', 'class'=>'margined-right margined-bottom'],
+                ['size'=>'100x100', 'class'=>'margined-bottom'],
+                ['size'=>'100x100', 'class'=>'margined-right'],
+                ['size'=>'100x100', 'class'=>'margined-right'],
+                ['size'=>'100x100']
+            ]
+        ]
+    ]}
+    {$pack_type = 1}
+    {$brick = $brick_packs[$pack_type]}
+{/if}
+
+<UL class="view-mixed{if $wa->param('action') eq 'album'} album-float-left-view{/if}" id="photo-list">
+
+    {$photos_count = count($photos)}
+    {$photos_rest = $photos_count}
+    {$brick_num  = -1}
+
+    {foreach from=$photos item=photo}
+        {if $brick_num == -1 || $brick_num >= $pack_type-1}
+            {if $brick_num != -1}
+                </ul>
+            </LI>
+            {/if}
+            <LI class="brick">
+                <ul>
+            {$brick_num = 0}
+            {if $photos_rest <= 9}
+                {$pack_type = $photos_rest}
+                {$brick_pack = $brick_packs[$pack_type]}
+                {$max = count($brick_pack) -1}
+                {$brick_pack = $brick_pack[rand(0, $max)]}
+            {else}
+                {$pack_type = rand(1, 9)}
+                {$brick_pack = $brick_packs[$pack_type]}
+                {$max = count($brick_pack) -1}
+                {$brick_pack = $brick_pack[rand(0, $max)]}
+            {/if}
+        {else}
+            {$brick_num = $brick_num+1}
+        {/if}
+
+        <li class="image" itemscope itemtype ="http://schema.org/Photograph">
+          <a href="{$photo.frontend_link}">
+            <div class="corner top left">
+                {* @event prepare_photos_frontend.top_left.%plugin_id% *}
+                {foreach $photo.hooks.top_left as $plugin => $output}{$output}{/foreach}
+            </div>
+            <div class="corner top right">
+                {* @event prepare_photos_frontend.top_right.%plugin_id% *}
+                {foreach $photo.hooks.top_right as $plugin => $output}{$output}{/foreach}
+                {if $photo.stack_count > 0}<span class="indicator">{$photo.stack_count}</span>{/if}
+            </div>
+            {$brick = $brick_pack[$brick_num]}
+            {if isset($brick.class)}
+                {$class = $brick.class}
+            {else}
+                {$class = ''}
+            {/if}
+            {$wa->photos->getImgHtml($photo, $brick.size, ['itemprop' => 'image', 'class' => $class])}
+          </a>
+        </li>
+        {$photos_rest = $photos_rest - 1}
+    {/foreach}
+    {if $brick_num != -1}</ul></LI>{/if}
+</UL>
+	<div class="clear-both"></div>
+
+    <div class="lazyloading-wrapper" style="display:none;">
+        {if $page < $pages_count}
+            {_w('%d photo', '%d photos', (count($photos) + $offset))}&nbsp;{_w('of %d', 'of %d', $total_photos_count)}
+            <br>
+            <a href="?page={$page+1}" class="lazyloading-link">[`Show more photos`]</a>
+        {elseif $page && $pages_count}
+            {_w('of %d', 'of %d', $total_photos_count)}
+        {/if}
+        <span class="lazyloading-progress" style="display:none">
+           <i class="icon16 loading"></i>
+           [`Loading`] {_w('%d photo', '%d photos', min($photos_per_page, 9999))}...
+        </span>
+    </div>
+
+    {* switch on/off lazy loading *}
+    {if !$lazy_load && !$wa->globals('disable_pageless')}
+        <script type="text/javascript">
+        $(function() {
+            $.photos.setLazyLoad({
+                auto: true, // auto load next pages(true|false) (if omitted than considered as true)
+                total_count: {$total_photos_count}
+            });
+        });
+        </script>
+    {/if}
+
+    {* and paging in case JS is disabled… *}
+    {if $pages_count > 1}
+    <div class="block lazyloading-paging">
+        <ul class="menu-h">
+        {for $p=1 to $pages_count}
+            <li{if $p == $page} class="selected"{/if}><a href="?page={$p}">{$p}</a></li>
+        {/for}
+        </ul>
+    </div>
+    {/if}
+</div>

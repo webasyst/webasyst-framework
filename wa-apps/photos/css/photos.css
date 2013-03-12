@@ -142,44 +142,11 @@ select#upload-album-id { position: absolute /* to handle long album names */;}
 .p-ibutton-checkbox .p-unselected { color:  #AAA; }
 #embed-photo-dialog h1 { float:left; }
 .p-message-success { background: #dfd; font-weight: bold; }
-/*
 
-.field .value textarea { min-width: 350px; }
-.field .value input[type="text"].small-int { min-width: 0px; width: 3em; }
-
-.sidebar .count.indicator { display:none; }
-*/
-
-
-.fileinput-button input {
-    position: absolute;
-    top: 0;
-    right: 0;
-    margin: 0;
-    border: solid transparent;
-    border-width: 0 0 100px 200px;
-    opacity: 0;
-    filter: alpha(opacity=0);
-    -moz-transform: translate(-300px, 0) scale(4);
-    direction: ltr;
-    cursor: pointer;
-}
-
-.fileinput-button {
-    position: relative;
-    overflow: hidden;
-    margin-right: 4px;
-}
+.fileinput-button { position: relative; overflow: hidden; margin-right: 4px; }
+.fileinput-button input { position: absolute; top: 0; right: 0; margin: 0; border: solid transparent; border-width: 0 0 100px 200px; opacity: 0; filter: alpha(opacity=0); -moz-transform: translate(-300px, 0) scale(4);  direction: ltr; cursor: pointer; }
 
 #p-upload-photolist ul.zebra li .p-upload-onephoto-progress { background: #def; border-right: 2px solid #7ac; }
 #p-upload-photolist ul.zebra li.error { padding: 0; }
 #p-upload-photolist ul.zebra li.error .p-upload-onephoto-progress { position: static; background: #e88; border-right: 2px solid #f00;}
 #p-upload-photolist ul.zebra li.error .p-upload-onephoto-progress .p-photo-filename { white-space: normal; }
-
-/* editors */
-
-#wa .CodeMirror, #wa .CodeMirror-wrapping { padding: 10px; }
-#wa .el-rte .toolbar { background: #fff; border-top: 0; border-left: 0; border-right: 0; border-bottom: 1px solid #ccc; }
-#wa .el-rte .workzone { border: 0; padding: 10px; }
-#wa .el-rte .toolbar ul li.wa_split_vertical { background: url('../img/split-vertical.png') no-repeat center; }
-.b-elrte-wa-split-vertical { display: block; width: 30%; border-bottom: 1px dashed #aaa; color: #aaa; text-align: center; font-size: 80%; padding: 5px; margin-bottom: 10px; }

@@ -1,0 +1,35 @@
+/*
+ * Webasyst CUSTOM theme family
+ *
+ * Photos app CSS for multi-touch mobile devices
+ * (requires linking base custom.css, custom.mobile.css files from the Site app, and custom.photos.css)
+ *
+ * @link http://www.webasyst.com/
+ * @author Webasyst LLC
+ * @copyright 2012 Webasyst LLC
+ * @package Webasyst
+ */
+ 
+.container.paper { overflow-x: hidden; }
+#gallery-nav { margin-top: 0; }
+
+.image img { height: auto !important; }
+ul.view-thumbs li { width: auto; }
+ul.view-thumbs li img.shadowed { box-shadow: none; }
+ul.view-thumbs li h5 { display: none; }
+ul.view-mixed { margin-left: -15px; }
+
+.sidebar { margin-bottom: 20px; }
+.sidebar.left { width: 100%; float: none; }
+.sidebar.right, .sidebar.right300px { width: 100%; float: none; }
+.content.left { margin-left: 0; }
+.content.right, .content.right300px { margin-right: 0; }
+.sidebar p { clear: both; }
+
+.stream-nav { display: none; }
+
+.comment-form-fields label { width: auto; float: none; }
+.comment-form-fields input { width: 80%; }
+.comment-form textarea { width: 100%; }
+.comment-form .comment-submit { padding-left: 0; }
+.comment-form .wa-captcha img { margin-bottom: 10px; }
