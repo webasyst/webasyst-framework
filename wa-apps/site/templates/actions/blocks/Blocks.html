@@ -5,7 +5,7 @@ document.title = {if $block && $block.id}'[`Block`] ' + {json_encode($block.id)}
 
     <div class="block not-padded">
             <ul id="ul-blocks" class="menu-v with-icons">
-                {foreach from=$blocks item=b}
+                {foreach $blocks as $b}
                 <li data-block-id="{$b.id}" class="{if !isset($b.app)}sortable{/if}{if $block && $b.id == $block.id} selected{/if}">
                     <a href="#/blocks/id={$b.id}">{strip}
                         {if isset($b.app) || isset($b.app_icon)}

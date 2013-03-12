@@ -25,6 +25,6 @@
 #footer #sub-links { margin-left: 0; margin-top: 30px; }
 #footer #sub-links ul li { float: none; margin-bottom: 5px; }
 
-.content img { max-width: 100%; }
+.content img { max-width: 100%; height: auto !important; }
 
 #page { margin: 0 0 20px; }

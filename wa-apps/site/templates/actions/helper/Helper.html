@@ -7,13 +7,13 @@
 {if $vars}
 <div id="s-helper-vars-content" class="tab-content s-dropdown-content">
 	<div class="fields">
-		{foreach from=$vars item=desc key=v}
+		{foreach $vars as $v=>$desc}
 		<div class="field">
 			<div class="name"><a href="#" class="inline-link"><b><i>&#123;{$v}&#125;</i></b></a></div>
 			{if !is_array($desc)}<div class="value"><span class="hint">{$desc}</span></div>{/if}
 		</div>
 		{if is_array($desc)}
-			{foreach from=$desc item=sub_desc key=sub_v}
+			{foreach $desc as $sub_v=>$sub_desc}
 			<div class="field subfield">
 				<div class="name"><a href="#" class="inline-link"><b><i>&#123;{$sub_v}&#125;</i></b></a></div>
 				<div class="value"><span class="hint">{$sub_desc}</span></div>
@@ -26,7 +26,7 @@
 {/if}
 <div id="s-helper-wa-content" class="tab-content s-dropdown-content" {if $vars}style="display:none"{/if}>
 	<div class="fields">
-		{foreach from=$wa_vars item=desc key=v}
+		{foreach $wa_vars as $v=>$desc}
 		<div class="field">
 			<div class="name"><a href="#" class="inline-link"><b><i>&#123;{$v}&#125;</i></b></a></div>
 			<div class="value"><span class="hint">{$desc}</span></div>
@@ -36,7 +36,7 @@
 </div>
 <div id="s-helper-smarty-content" class="tab-content s-dropdown-content" style="display:none">
     <div class="fields">
-        {foreach from=$smarty_vars item=desc key=v}
+        {foreach $smarty_vars as $v=>$desc}
 	   <div class="field">
             <div class="name"><a href="#" class="inline-link"><b><i>{$v|escape}</i></b></a></div>
             <div class="value"><span class="hint">{$desc}</span></div>

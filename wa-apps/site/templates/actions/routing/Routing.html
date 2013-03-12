@@ -9,7 +9,7 @@
         <div>
             <div class="sidebar" style="width:75%;">
                 <table id="s-rules" class="zebra s-routing">
-                    {foreach from=$routes key=route_id item=route}
+                    {foreach $routes as $route_id=>$route}
                     <tr id="route-{$route_id}">
                         <td class="s-url">
                             <span><a style="display:inline" href="#"><i class="icon16 sort"></i></a></span> <span class="s-domain-url">{$url}/</span><span class="s-editable-url" style="color:#000">{$route.url|escape}</span>

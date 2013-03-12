@@ -87,6 +87,12 @@ class siteRoutingEditAction extends waViewAction
             $value = $info['default'];
         }
         switch ($info['type']) {
+            case 'input':
+                $html = '<input type="text" name="params['.$info['id'].']" value="'.htmlspecialchars($value).'">';
+                return $html;
+            case 'textarea':
+                $html = '<textarea name="params['.$info['id'].']">'.htmlspecialchars($value).'</textarea>';
+                return $html;
             case 'select':
                 $html = '<select name="params['.$info['id'].']">';
                 foreach ($info['items'] as $k => $v) {
@@ -98,6 +104,9 @@ class siteRoutingEditAction extends waViewAction
                             '</option>';
                 }
                 $html .= '</select>';
+                if (isset($info['description'])) {
+                    $html .= '<p class="hint">'.$info['description'].'</p>';
+                }
                 return $html;
             case 'radio':
                 foreach ($info['items'] as $k => $v) {
@@ -151,6 +160,45 @@ class siteRoutingEditAction extends waViewAction
                 });
                 </script>';
                 return $html;
+
+            case 'radio_checkbox':
+                $html = '<div id="s-radio-checkbox-'.$route_id.'-'.++$id.'">';
+                foreach ($info['items'] as $k => $v) {
+                    if(!is_array($v)) {
+                        $v = array('name'=>$v);
+                    }
+                    $html .= '<label class="s-label-with-check">'.
+                        '<input type="radio" '.
+                        ($value == $k || (is_array($value) && isset($v['items'])) ? 'checked="checked"' : '').
+                        ' name="params['.$info['id'].']" value="'.$k.'" />'.
+                        htmlspecialchars($v['name']).(isset($v['description'])?(' <span class="hint">'.$v['description'].'</span>'):'').
+                        '</label>';
+                    if (isset($v['items'])) {
+                        $disabled = !is_array($value);
+                        $html .= '<div class="block"><ul class="menu-v compact small">';
+                        foreach ($v['items'] as $k2 => $v2) {
+                            if (!is_array($v2)) {
+                                $v2 = array('name' => $v2);
+                            }
+                            $html .= '<li><label class="s-label-with-check">'.
+                                '<input '.(is_array($value) && in_array($k2, $value) ? 'checked' :'' ).' '.($disabled ? 'disabled="disabled"' : '').' type="checkbox" name="params['.$info['id'].'][]" value="'.$k2.'" />'.htmlspecialchars($v2['name']).
+                                (isset($v2['description'])?(' <span class="hint">'.$v2['description'].'</span>'):'').
+                                '</label></li>';
+                        }
+                        $html .= '</ul></div>';
+                    }
+                }
+                $html .= '</div>';
+                $html .= '<script type="text/javascript">
+                $("#s-radio-checkbox-'.$route_id.'-'.$id.' input[type=radio]").change(function () {
+                    if ($(this).is(":checked")) {
+                        $("#s-radio-checkbox-'.$route_id.'-'.$id.' input:checkbox").attr("disabled", "disabled").removeAttr("checked");
+                        $(this).parent().next("div").find("input").removeAttr("disabled");
+                    }
+                });
+                </script>';
+                return $html;
+
             case 'radio_text':
                 $html = '<div id="s-radio-select-'.$route_id.'-'.++$id.'">';
                 $counter = 0;

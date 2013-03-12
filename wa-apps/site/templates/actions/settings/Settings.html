@@ -50,7 +50,7 @@
 				<input type="radio" name="wa_apps_type" {if $domain_apps_type}checked{/if} id="waapps-select" value="1" /><label for="waapps-select"> [`Setup manually`]</label>
 				<div {if !$domain_apps_type}style="display:none"{/if}>
                     <table id="s-wa-apps" class="zebra s-settings-apps">
-						{foreach from=$domain_apps item=row}
+						{foreach $domain_apps as $row}
 						<tr>
 	   					   <td class="s-app"><a style="display:inline" href="#" onclick="return false"><i class="icon16 sort"></i></a>
 						      <span>{$row.name|escape}</span>

@@ -1,0 +1,126 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+"http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<title>{$wa->title()|escape}</title>
+	<meta name="Keywords" content="{$wa->meta('keywords')|escape}" />
+	<meta name="Description" content="{$wa->meta('description')|escape}" />
+	<link href="{$wa_theme_url}custom.css?{$wa->version()}" rel="stylesheet" type="text/css"/>
+    <script type="text/javascript" src="{$wa_url}wa-content/js/jquery/jquery-1.8.2.min.js"></script>
+	{if $wa->isMobile()}
+		<link href="{$wa_theme_url}custom.mobile.css?{$wa->version()}" rel="stylesheet" type="text/css"/>
+		<meta name="viewport" content="width=device-width; initial-scale=1; maximum-scale=1; user-scalable=0;" />
+    {else}
+        <script type="text/javascript" src="{$wa_theme_url}custom.js"></script>    
+	{/if}
+	{include file="`$wa_active_theme_path`/head.html" inline}
+	{$wa->headJs()}
+</head>
+<body id="{$wa_app}">
+
+	<!--
+	<div class="custom-margins">
+		<div class="container">
+			optional content above the paper, e.g. your company address, phone numbers, language toggle, live chat widget
+		</div>
+	</div>
+	-->
+
+	<div class="custom-margins">
+		<div class="container paper">
+		
+			<!-- HEADER -->
+			<div id="header" role="navigation sitemap">
+
+        		{if $wa->shop}
+        			<!-- shopping cart info -->
+        			{$cart_total = $wa->shop->cart->total()}
+   		     		<div id="cart" class="float-right{if !$cart_total} empty{/if}">
+   		     			<a href="{$wa->getUrl('shop/frontend/cart')}">
+   		     				<i class="icon16 cart{if !$cart_total} empty{/if}"></i>
+   		     				[s`Shopping cart`]:
+   		     				<strong class="cart-total">{wa_currency($cart_total, $wa->shop->currency())}</strong>
+   		     			</a>
+   		     		</div>
+        		{/if}
+        		{if $wa->isAuthEnabled()}
+        			<!-- auth links -->
+   		     		{if $wa->user()->isAuth()}
+   	    	 			<div class="block float-right hint">
+   	    	 			    {if $wa->shop}
+   	    	 			       <a href="{$wa->getUrl('shop/frontend/my')}" class="bold">{$wa->user('name')}</a></li>
+   	    	 			    {else}
+       	    	 				<strong>{$wa->user('name')}</strong>
+       	    	 		    {/if}
+   	    	 				<a href="?logout">[s`Log out`]</a>
+   	    	 			</div>
+        			{else}
+	        			<div class="block float-right hint">
+	        				<a href="{$wa->loginUrl()}">[s`Log in`]</a>
+	        				<a href="{$wa->signupUrl()}">[s`Sign up`]</a>
+    	    			</div>
+        			{/if}
+        		{/if}
+        		{if $wa->blog}
+        			<!-- subscription links -->
+        			{$rss = $wa->blog->rssUrl()}
+        			{if $rss}
+	        			<div class="block float-right hint">
+		        			<a href="{$rss}" title="[s`Subscribe`]" class="bold"><i class="icon16 rss"></i>[s`Subscribe`]</a>
+		        			<!--
+		        			&nbsp;
+		        			<a href="#" title="[`Facebook`]"><i class="icon16 facebook"></i></a>
+		        			<a href="#" title="[`Twitter`]"><i class="icon16 twitter"></i></a>
+		        			-->
+	    	    		</div>
+	        		{/if}
+                {/if}
+        		<div class="clear-both"></div>
+		
+				<!-- website logo/title -->
+				<h2><a href="{$wa_url}">{$wa->accountName()}</a></h2>
+				<!-- main website sections -->
+	    		<ul id="wa-apps">
+        			{foreach $wa->apps() as $a}
+        				<li{if $a.url==$wa_app_url} class="selected"{/if}><a href="{$a.url}">{$a.name}</a></li>
+        			{/foreach}
+        
+      			</ul>
+      			<div class="clear-both"></div>
+      			
+      		</div>
+      		
+      		<!-- MAIN CONTENT -->
+			<div id="main">
+				{include file="`$wa_active_theme_path`/content.html" inline}
+			</div>  
+			
+			<div class="clear-both"></div>
+			
+		</div>
+	</div>
+	
+	<!-- FOOTER -->
+	<div class="custom-margins">
+		<div class="container" id="footer">
+			<div id="poweredby" class="float-right">
+				<a title="[s`Powered by Webasyst`]" href="http://www.webasyst.com/" class="dots"></a>
+			</div>
+			<div id="copyright" class="float-left">
+				&copy; {time()|wa_datetime:"Y"}
+				<a href="{$wa_url}">{$wa->accountName()}</a>
+			</div>
+			<!--
+       		<div id="sub-links" class="float-left">
+        		<ul>
+    	      		<li><a href="#">About</a></li>
+	          		<li><a href="#">Terms of service</a></li>
+	          		<li><a href="#">Privacy policy</a></li>
+        		</ul>
+      		</div>
+			-->
+    	</div>
+	</div>
+</body>
+</html>

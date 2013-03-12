@@ -34,6 +34,8 @@ a.s-settings-link.selected { background: #eee; }
 .s-site-mgmt-tab ul.menu-v li a { padding: 7px 0 6px 30px; }
 .s-site-mgmt-tab ul.menu-v li.selected a { padding-left: 31px; background: rgba(0, 0, 0, 0.08); margin-left: -24px; }
 
+ul.menu-v.with-icons li a { word-break: break-all; }
+
 /* content part */
 .s-content .s-editor { background: #eee; zoom:1; }
 .s-content .s-editor.s-editor-shadow {-moz-box-shadow:0 5px 3px #d9d9d9 inset; -webkit-box-shadow:0 5px 3px #d9d9d9 inset;  box-shadow:0 5px 3px #d9d9d9 inset; }
@@ -65,8 +67,8 @@ a.s-settings-link.selected { background: #eee; }
 .s-content .wa-page-wysiwyg-html-toggle li.selected a { background: #fff; }
 .s-content ul.menu-v li.selected a { background: #eaeaea; }
 .s-content .wa-theme-routes span.hint a { word-wrap: break-word; }
-.s-content h4.heading { word-wrap: break-word; position: relative; }
-.s-content h4.heading span.count { position: absolute; right: 0; }
+.s-content h4.heading { word-wrap: break-word; word-break: break-all; margin-right: 15px; position: relative; }
+.s-content h4.heading span.count { position: absolute; right: -15px; }
 
 .fields .s-app16x16icon-menu-v { position: relative; top: 3px; left: -5px; }
 
@@ -183,10 +185,6 @@ table.zebra.s-filelist .icon10.new-window { margin-left: .25em;}
 .s-ibutton-checkbox ul.menu-h li { padding: 1px 0 10px; vertical-align: middle;}
 .s-ibutton-checkbox ul.menu-h li span { position: relative; }
 .s-app16x16icon-menu-v { width: 16px; height: 16px; }
-
-#wa .CodeMirror, #wa .CodeMirror-wrapping { padding: 10px; }
-#wa .el-rte .toolbar { background: #fff; border-top: 0; border-left: 0; border-right: 0; border-bottom: 1px solid #ccc; }
-#wa .el-rte .workzone { border: 0; padding: 10px; }
 
 /* themes */
 

@@ -92,7 +92,7 @@
                             <div class="name"><strong>[`Title`]</strong> <span class="hint">&lt;title&gt;</span></div>
                             <div class="value"><input type="text" name="info[title]" value="{if $page}{$page.title|escape}{/if}" class="bold" /></div>
                         </div>
-						{foreach from=$params key=n item=p}
+						{foreach $params as $n=>$p}
 						<div class="field">
 							<div class="name">{$vars[$n]}</div>
 							{if $n == 'description'}
@@ -107,7 +107,7 @@
 						<div class="field">
 							<div class="name">[`Page custom parameters`]</div>
 							<div class="value">
-								<textarea name="other_params">{if $page}{foreach from=$other_params item=v key=k}{$k}={$v|escape}
+								<textarea name="other_params">{if $page}{foreach $other_params as $k=>$v}{$k}={$v|escape}
 {/foreach}{/if}</textarea><br />
 								<span class="hint">[`Optional set of custom <em>key=value</em> parameters which can be used within page.html template or this page content as <em>&#123;$page.key&#125;</em>. Each key=value pair should be on a separate line.`] <a href="[`http://www.webasyst.com/framework/docs/site/pages/`]" target="_blank">[`Help`]</a> <i class="icon10 new-window"></i></span>
 							</div>

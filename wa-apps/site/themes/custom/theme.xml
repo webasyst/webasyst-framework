@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE theme PUBLIC "wa-app-theme" "http://www.webasyst.com/wa-content/xml/wa-app-theme.dtd" >
+<theme id="custom" system="0" vendor="webasyst" author="Webasyst" app="site" version="1.0.0">
+  <name locale="en_US">CUSTOM</name>
+  <name locale="ru_RU">CUSTOM</name>
+  <files>
+    <file path="index.html">
+		<description locale="en_US">Core layout of the CUSTOM theme family</description>
+		<description locale="ru_RU">Основной макет тем дизайна семейства CUSTOM</description>
+    </file>
+    <file path="custom.css">
+		<description locale="en_US">Core CSS of the CUSTOM theme family</description>
+		<description locale="ru_RU">Основной файл CSS-стилей семейства тем дизайна CUSTOM</description>
+    </file>
+    <file path="custom.mobile.css">
+		<description locale="en_US">Additional CSS for multi-touch mobile devices</description>
+		<description locale="ru_RU">Дополнительный CSS для мобильных устройств</description>
+    </file>
+	<file path="content.html" custom="0">
+		<description locale="en_US">Main layout for the Site app content</description>
+		<description locale="en_US">Основной вывод приложения «Сайт»</description>
+	</file>
+	<file path="head.html" custom="0">
+		<description locale="en_US">Site app's &lt;head&gt; instructions</description>
+		<description locale="en_US">Блок &lt;head&gt; приложения «Сайт»</description>
+	</file>
+    <file path="page.html">
+		<description locale="en_US">Static page content and navigation</description>
+		<description locale="ru_RU">Содержимое открытой страницы и навигация по страницам</description>
+    </file>
+    <file path="login.html" custom="0">
+		<description locale="en_US">Login page</description>
+		<description locale="ru_RU">Страница входа для пользователей</description>
+	</file>
+    <file path="signup.html" custom="0">
+        <description locale="en_US">Sign up page</description>
+        <description locale="ru_RU">Страница регистрации пользователей</description>
+    </file>
+    <file path="forgotpassword.html" custom="0">
+        <description locale="en_US">Forgot password page</description>
+        <description locale="ru_RU">Страница сброса пароля</description>
+    </file>
+    <file path="error.html">
+		<description locale="en_US">404 and other errors</description>
+		<description locale="ru_RU">404 и другие ошибки</description>
+    </file>
+  </files>
+  <about locale="en_US">
+<![CDATA[
+<p><b>CUSTOM</b> is a universal design theme family for all basic Webasyst apps: Site, Blog, Photos, Shop-Script, and others. The parent (main) theme of the family, which includes the basic set of CSS rules and the common layout template index.html, is the CUSTOM (i.e. this) theme for the Site application. All CUSTOM design themes used in other applications (e.g., Blog or Photos) utilize common CSS rules and file index.html of the parent (main) theme.</p>
+<p>CUSTOM design themes are optimized for all modern web browsers, including iOS and Android based mobile devices.</p>
+
+<h3>.hero</h3>
+<p>The theme offers the .hero class, which is recommended for use for highlighting key content on a page. With this class, content is displayed stretched across the entire visible page width:</p>
+<pre>
+&lt;div <strong>class="hero"</strong>&gt;
+    … Important content; e.g., online store's special offers,
+      blog post, best photo, etc. …
+&lt;/div&gt;
+… Other content here …
+</pre>
+<p>Auxiliary classes .red, .green, .blue, .purple, .yellow, .black allow you to specify the color for a .hero banner, and an extra class .superhero will visually make the banner appear over the edges of the main content area:</p>
+<pre>
+&lt;div <strong>class="hero superhero yellow"</strong>&gt;
+    &lt;h1&gt;This Week's Special Offer!&lt;/h1&gt;
+    &lt;img src="…" /&gt;
+&lt;/div&gt;
+</pre>
+]]>
+  </about>
+  <about locale="ru_RU">
+<![CDATA[
+<p><b>CUSTOM</b> — это универсальное семейство тем дизайна для всех базовых приложений фреймворка Вебасист: Сайт, Блог, Фото, Shop-Script и других. Родительской (основной) темой семейства, включающей в себя базовый набор CSS-стилей и общий макет дизайна index.html, является тема CUSTOM для приложения «Сайт» (данная тема). Все темы дизайна CUSTOM для других приложений (Блог, Фото и других) используют базовый CSS и index.html из родительской (основной) темы.</p>
+<p>Темы дизайна семейства CUSTOM оптимизированы для всех современных браузеров и мобильных устройств на основе iOS и Android.</p>
+
+<h3>.hero</h3>
+<p>Тема дизайна предоставляет класс .hero, который рекомендуется использовать для выделения ключевого содержимого страницы. Класс визуально оформляет содержимое в виде «растяжки» на всю ширину основной видимой области страницы:</p>
+<pre>
+&lt;div <strong>class="hero"</strong>&gt;
+    … Важное содержимое страницы, например, спецпредложения магазина,
+      ключевой блог-пост, лучшая фотография …
+&lt;/div&gt;
+… Менее важная информация …
+</pre>
+<p>Дополнительные классы .red, .green, .blue, .purple, .yellow, .black позволяют указать цвет баннера .hero, а отдельный дополнительный класс .superhero позволяет выделить баннер более явно так, что его края визуально будут нависать над областью основного содержимого:</p>
+<pre>
+&lt;div <strong>class="hero superhero yellow"</strong>&gt;
+    &lt;h1&gt;Спецпредложение недели!&lt;/h1&gt;
+    &lt;img src="…" /&gt;
+&lt;/div&gt;
+</pre>
+
+]]>
+  </about>
+</theme>
