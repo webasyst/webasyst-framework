@@ -333,10 +333,11 @@ $(document).ajaxSend(function (event, xhr, settings) {
 		if (typeof(settings.data) == 'string') {
 			if (settings.data.indexOf('_csrf=') == -1) {
 				settings.data += (settings.data.length > 0 ? '&' : '') + '_csrf=' + csrf;
+                xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
 			}
 		} else if (typeof(settings.data) == 'object') {
 			settings.data['_csrf'] = csrf;
-		}
+        }
 	}
 });
 

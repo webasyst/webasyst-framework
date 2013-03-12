@@ -1,8 +1,10 @@
 <?php
 
 return array(
-    'symbol' => '€',
     'code' => 'EUR',
+    'sign' => '€',
+    'sign_position' => 0,
+    'sign_delim' => '',
     'title' => 'Euro',
     'name' => array(
         'euro',
