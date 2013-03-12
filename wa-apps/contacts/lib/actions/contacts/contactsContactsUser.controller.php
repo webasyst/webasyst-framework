@@ -57,7 +57,7 @@ class contactsContactsUserController extends waJsonController
         }
 
         if (waRequest::post('invite')) {
-            $user['password'] = uniqid(time(), true);
+            $user['password'] = uniqid(time(), true); // !!! this is bad and easy to brute force
         } else {
             $login = trim(waRequest::post('login'));
             if (strlen($login) <= 0) {

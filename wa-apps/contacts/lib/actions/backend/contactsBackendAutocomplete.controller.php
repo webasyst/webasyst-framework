@@ -8,6 +8,7 @@ class contactsBackendAutocompleteController extends waJsonController
     public function execute()
     {
         $term = waRequest::request('term');
+        $limit = waRequest::request('limit', 30, 'int');
         if(mb_strlen($term) < 2) {
             return;
         }
@@ -20,7 +21,7 @@ class contactsBackendAutocompleteController extends waJsonController
 
         $this->response = array();
         $term_safe = htmlspecialchars($term);
-        foreach($contacts->getContacts('id,name,company,email', 0, 30) as $c) {
+        foreach($contacts->getContacts('id,name,company,email', 0, $limit) as $c) {
             $name = $this->prepare($c['name'],$term_safe);
             $email = $this->prepare(ifset($c['email'][0], ''),$term_safe);
             $company = $this->prepare($c['company'],$term_safe);

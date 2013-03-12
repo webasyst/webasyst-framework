@@ -1,240 +1,249 @@
 <div class="contacts-background">
-	<div class="block padded c-core-header" style="display:none">
-		<a href="javascript:void(0)" id="c-e-last-view" class="no-underline"></a>
-	</div>
-	<!-- content -->
-	<div class="block not-padded c-core-content">
-		<div class="block">
-			{{* This block is used to confirm deletion *}}
-			<div id="contact-top-block" class="wa-box" style="display:none"></div>
+    <div class="block padded c-core-header" style="display:none">
+        <a href="javascript:void(0)" id="c-e-last-view" class="no-underline"></a>
+    </div>
+    <!-- content -->
+    <div class="block not-padded c-core-content">
+        <div class="block">
+            {{* This block is used to confirm deletion *}}
+            <div id="contact-top-block" class="wa-box" style="display:none"></div>
 
-			<div class="profile image96px" style="min-height: 120px">
-				{{* Photo and a link to change it. *}}
-				<div class="photo image">
-					<img src="{{$contact->getPhoto()}}" alt="{{if $contact.photo}}[`Photo`]{{else}}[`No photo`]{{/if}}" />
-					{{if empty($readonly)}}
-						<div class="wa-contact-photo-buttons">
-							<div class="photo-change-link">
-								<a href="#/contact/photo/{{$contact->getId()}}">[`Change photo`]</a>
-							</div>
-							<div class="photo-upload-form" style="display:none">
-								<div id="photo-iframe-wrapper" style="display:none"><iframe id="photo-iframe" name="sendfile" width="1" height="1"></iframe></div>
-								<form id="imageform" target="sendfile" action="?module=photo&action=tmpimage" method="post" enctype="multipart/form-data">
-									<div class="c-image-form-file">
-										[`Upload image (JPG, GIF or PNG):`]
-										<input id="fileselect" type="file" name="photo" />
-										<i id="photo-loading-image" class="icon16 loading" style="margin-left:16px;display:none"></i>
-										<input id="photo-id-input" type="hidden" name="id" value="{{$contact->getId()}}">
-										[`or`] <a href="#" onclick="$('.wa-contact-photo-buttons .photo-upload-form').hide();$('.wa-contact-photo-buttons .photo-change-link').show();return false;">[`cancel`]</a>
-									</div>
-								</form>
-							</div>
-						</div>
-					{{/if}}
-				</div>
-				<div class="details">
-					<ul class="menu-h c-actions">
-						{{if empty($readonly)}}
-							<li id="c-editor-edit-link"><a href="javascript:void(0);" id="edit-contact">
-								<i class="icon16 edit"></i> [`Edit contact`]</a>
-							</li>
-						{{/if}}
-						{{if empty($own_profile)}}
-							<li>
-								<a href="javascript:void(0);" id="delete-contact"><i class="icon16 delete"></i> [`Delete`]</a>
-							</li>
-						{{/if}}
-					</ul>
+            <div class="profile image96px" style="min-height: 120px">
+                {{* Photo and a link to change it. *}}
+                <div class="photo image">
+                    <img src="{{$contact->getPhoto()}}" alt="{{if $contact.photo}}[`Photo`]{{else}}[`No photo`]{{/if}}" />
+                    {{if empty($readonly)}}
+                        <div class="wa-contact-photo-buttons">
+                            <div class="photo-change-link">
+                                <a href="#/contact/photo/{{$contact->getId()}}">[`Change photo`]</a>
+                            </div>
+                            <div class="photo-upload-form" style="display:none">
+                                <div id="photo-iframe-wrapper" style="display:none"><iframe id="photo-iframe" name="sendfile" width="1" height="1"></iframe></div>
+                                <form id="imageform" target="sendfile" action="?module=photo&action=tmpimage" method="post" enctype="multipart/form-data">
+                                    <div class="c-image-form-file">
+                                        [`Upload image (JPG, GIF or PNG):`]
+                                        <input id="fileselect" type="file" name="photo" />
+                                        <i id="photo-loading-image" class="icon16 loading" style="margin-left:16px;display:none"></i>
+                                        <input id="photo-id-input" type="hidden" name="id" value="{{$contact->getId()}}">
+                                        [`or`] <a href="#" onclick="$('.wa-contact-photo-buttons .photo-upload-form').hide();$('.wa-contact-photo-buttons .photo-change-link').show();return false;">[`cancel`]</a>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    {{/if}}
+                </div>
+                <div class="details">
+                    <ul class="menu-h c-actions">
+                        {{if empty($readonly)}}
+                            <li id="c-editor-edit-link"><a href="javascript:void(0);" id="edit-contact">
+                                <i class="icon16 edit"></i> [`Edit contact`]</a>
+                            </li>
+                        {{/if}}
+                        {{if empty($own_profile)}}
+                            <li>
+                                <a href="javascript:void(0);" id="delete-contact"><i class="icon16 delete"></i> [`Delete`]</a>
+                            </li>
+                        {{/if}}
+                    </ul>
 
-					<h1 id="contact-fullname">{{$contact.name|escape}}</h1>
-					<p class="status"></p>
-					<ul id="contact-info-top" class="menu-v compact">
-						{{if $top}}
-							{{foreach from=$top item=top_field}}
-								<li>{{if $top_field.id != 'im'}}<i class="icon16 {{$top_field.id}}"></i>{{/if}}{{$top_field.value}}</li>
-							{{/foreach}}
-						{{/if}}
-					</ul>
+                    <h1 id="contact-fullname">{{$contact.name|escape}}</h1>
+                    <p class="status"></p>
+                    <ul id="contact-info-top" class="menu-v compact">
+                        {{if $top}}
+                            {{foreach from=$top item=top_field}}
+                                <li>{{if $top_field.id != 'im'}}<i class="icon16 {{$top_field.id}}"></i>{{/if}}{{$top_field.value}}</li>
+                            {{/foreach}}
+                        {{/if}}
+                    </ul>
 
-				</div>
-			</div>
-		</div>
+                </div>
+            </div>
+        </div>
 
-		{{* Tab controls *}}
-		<ul class="tabs" id="c-info-tabs">
-			<li id="t-contact" class="selected"><a href="javascript:void(0)">[`Contact`]</a></li>
+        {{* Tab controls *}}
+        <ul class="tabs" id="c-info-tabs">
+            <li id="t-contact" class="selected"><a href="javascript:void(0)">[`Contact`]</a></li>
 
-			{{* User tab *}}
-			{{if $superadmin || !empty($own_profile)}}
-				<li id="t-user">
-					<a href="javascript:void(0)">
-						{{if !$contact.is_user}}
-							[`Create user account`]
-						{{else}}
-							[`User`]
-						{{/if}}
-					</a>
-				</li>
-			{{/if}}
-		</ul>
+            {{* User tab *}}
+            {{if $superadmin || !empty($own_profile)}}
+                <li id="t-user">
+                    <a href="javascript:void(0)">
+                        {{if !$contact.is_user}}
+                            [`Create user account`]
+                        {{else}}
+                            [`User`]
+                        {{/if}}
+                    </a>
+                </li>
+            {{/if}}
+        </ul>
 
-		{{* Contact tab content *}}
-		<div id="tc-contact" class="tab-content">
-			<div class="block double-padded">
-				{{if $versionFull && $admin}}
-					<ul class="menu-h c-actions">
-						<li><a href="#/fconstructor/"><i class="icon16 fav"></i> [`Field constructor`]</a></li>
-					</ul>
-				{{/if}}
-				<div class="fields">
-					<div id="contact-info-block">
-						<!-- Contents generated by JS later -->
-					</div>
+        {{* Contact tab content *}}
+        <div id="tc-contact" class="tab-content">
+            <div class="block double-padded">
+                {{if $versionFull && $admin}}
+                    <ul class="menu-h c-actions">
+                        <li><a href="#/fconstructor/"><i class="icon16 fav"></i> [`Field constructor`]</a></li>
+                    </ul>
+                {{/if}}
+                <div class="fields">
+                    <div id="contact-info-block">
+                        <!-- Contents generated by JS later -->
+                    </div>
 
-					{{* Not editable info block *}}
-					<ul class="hint" style="list-style-type: none; margin: 30px 0 0 0">
-						<li>[`Contact id`]: {{$contact.id}}</li>
-						<li>[`Added`]: {{$contact_create_time}}</li>
-						{{if !empty($author)}}
-							<li>[`Author`]: {{$author.name|escape}}</li>
-						{{/if}}
-						<li>[`Method`]: {{$contact.create_method}}</li>
-						<li>[`Application`]: {{$contact.create_app_id}}</li>
-					</ul>
-				</div>
-				<div class="clear-left"></div>
-			</div>
-		</div>
+                    {{* Not editable info block *}}
+                    <ul class="hint" style="list-style-type: none; margin: 30px 0 0 0">
+                        <li>[`Contact id`]: {{$contact.id}}</li>
+                        <li>[`Added`]: {{$contact_create_time}}</li>
+                        {{if !empty($author)}}
+                            <li>[`Author`]: {{$author.name|escape}}</li>
+                        {{/if}}
+                        <li>[`Method`]: {{$contact.create_method}}</li>
+                        <li>[`Application`]: {{$contact.create_app_id}}</li>
+                    </ul>
+                </div>
+                <div class="clear-left"></div>
+            </div>
+        </div>
 
-		{{* User tab content *}}
-		{{if $superadmin || !empty($own_profile)}}
-			<div id="tc-user" class="tab-content hidden">
-				<div class="block double-padded">
-					{{include file="templates/actions/contacts/ContactsUser.html"}}
-				</div>
-			</div>
-		{{/if}}
+        {{* User tab content *}}
+        {{if $superadmin || !empty($own_profile)}}
+            <div id="tc-user" class="tab-content hidden">
+                <div class="block double-padded">
+                    {{include file="templates/actions/contacts/ContactsUser.html"}}
+                </div>
+            </div>
+        {{/if}}
 
-		{{* Tabs from other applications  *}}
+        {{* Tabs from other applications  *}}
 
-		{{if !empty($links) && $wa_view->templateExists("templates/actions/contacts/ContactsInfoTabs.html")}}
-			{{include file="templates/actions/contacts/ContactsInfoTabs.html"}}
-		{{/if}}
+        {{if !empty($links) && $wa_view->templateExists("templates/actions/contacts/ContactsInfoTabs.html")}}
+            {{include file="templates/actions/contacts/ContactsInfoTabs.html"}}
+        {{/if}}
 
-		<div class="clear-left"></div>
-	</div>{{* div.block.not-padded.c-core-content *}}
+        <div class="clear-left"></div>
+    </div>{{* div.block.not-padded.c-core-content *}}
 </div>{{* div.contacts-background *}}
 
 <script type="text/javascript">
-	// 'Back to' link
-	if($.wa.controller.lastView && $.wa.controller.lastView.title) {
-		if (window.location.hash.indexOf('/no-bc') < 0) {
-			$('#c-e-last-view')
-				.text($.wa.controller.lastView.title)
-				.prepend('<i class="icon10 larr"></i>')
-				.attr('href', $.wa.controller.lastView.hash || '#/')
-				.parent()
-				.show();
-		} else {
-			$('#c-e-last-view').parent().show().hide(); // chromium bug workaround O_o
-		}
-	}
+    // 'Back to' link
+    if($.wa.controller.lastView && $.wa.controller.lastView.title) {
+        if (window.location.hash.indexOf('/no-bc') < 0) {
+            $('#c-e-last-view')
+                .text($.wa.controller.lastView.title)
+                .prepend('<i class="icon10 larr"></i>')
+                .attr('href', $.wa.controller.lastView.hash || '#/')
+                .parent()
+                .show();
+        } else {
+            $('#c-e-last-view').parent().show().hide(); // chromium bug workaround O_o
+        }
+    }
 
-	// attach tab controls to tabs
-	$('#c-info-tabs li').each(function(k, tab) {
-		tab = $(tab);
-		tab.click(function() {
-			$.wa.controller.switchToTab(tab, function() {
-				var id = tab.attr('id').substr(2);
-				var hash = $.wa.controller.cleanHash('#/contact/' + $.wa.contactEditor.contact_id + '/' + (id == 'contact' ? '' : id+'/'));
-				if (id == 'contact' || $.wa.controller.cleanHash().indexOf(hash) != 0) {
-					if (hash != $.wa.controller.cleanHash()) {
-						$.wa.controller.stopDispatch(1);
-						$.wa.setHash(hash);
-					}
-				}
-				var input = $('#tc-'+id+' input:visible')[0];
-				if (input) {
-					input.focus();
-				}
-			});
-		});
-	});
+    var edit_mode = window.location.hash.indexOf('/contact/edit') >= 0;
+    var delete_mode = !edit_mode && window.location.hash.indexOf('/contact/delete') >= 0;
 
-	$.wa.contactEditor.contact_id = {{$contact.id}};
-	$.wa.contactEditor.current_user_id = {{$current_user_id}};
-	$.wa.contactEditor.contactType = '{{if $contact.is_company}}company{{else}}person{{/if}}';
-	$.wa.contactEditor.limitedCategories = {{$limitedCategories}};
-	$.wa.contactEditor.justCreated = false;
+    // attach tab controls to tabs
+    $('#c-info-tabs li').each(function(k, tab) {
+        tab = $(tab);
+        tab.click(function() {
+            $.wa.controller.switchToTab(tab, function() {
+                var id = tab.attr('id').substr(2);
+                var hash = $.wa.controller.cleanHash('#/contact/' + $.wa.contactEditor.contact_id + '/' + (id == 'contact' ? '' : id+'/'));
+                if (id == 'contact' || $.wa.controller.cleanHash().indexOf(hash) != 0) {
+                    if (hash != $.wa.controller.cleanHash()) {
+                        $.wa.controller.stopDispatch(1);
+                        $.wa.setHash(hash);
+                    }
+                }
+                var input = $('#tc-'+id+' input:visible')[0];
+                if (input) {
+                    input.focus();
+                }
+            });
+        });
+    });
 
-	{{if $tab}}
-		// Switch to active tab
-		$('#t-{{$tab}}').click();
-	{{/if}}
+    $.wa.contactEditor.contact_id = {{$contact.id}};
+    $.wa.contactEditor.current_user_id = {{$current_user_id}};
+    $.wa.contactEditor.contactType = '{{if $contact.is_company}}company{{else}}person{{/if}}';
+    $.wa.contactEditor.limitedCategories = {{$limitedCategories}};
+    $.wa.contactEditor.justCreated = false;
 
-	$.wa.contactEditor.initFactories({{json_encode($contactFields)}});
-	$.wa.contactEditor.initAllEditors();
-	$.wa.contactEditor.initFieldEditors({{json_encode($fieldValues)}});
-	$.wa.contactEditor.initContactInfoBlock('view');
+    {{if $tab}}
+        // Switch to active tab
+        $('#t-{{$tab}}').click();
+    {{/if}}
 
-	{{if empty($readonly)}}
-		// Edit button onclick
-		$('#edit-contact').click(function() {
-			$.wa.controller.switchToTab('contact');
-			$.wa.contactEditor.switchMode('edit');
-			return false;
-		});
-	{{/if}}
+    $.wa.contactEditor.initFactories({{json_encode($contactFields)}});
+    $.wa.contactEditor.initAllEditors();
+    $.wa.contactEditor.initFieldEditors({{json_encode($fieldValues)}});
+    $.wa.contactEditor.initContactInfoBlock('view');
 
-	{{if empty($own_profile)}}
-		// AJAX checking dialog before user deletion
-		$("#delete-contact").click(function () {
-			$.wa.controller.contactsDelete([{{$contact.id}}]);
-			return false;
-		});
-	{{/if}}
+    {{if empty($readonly)}}
+        // Edit button onclick
+        $('#edit-contact').click(function() {
+            $.wa.controller.switchToTab('contact');
+            $.wa.contactEditor.switchMode('edit');
+            return false;
+        });
+        if (edit_mode) {
+            $.wa.contactEditor.switchMode('edit');
+        }
+    {{/if}}
 
-	{{if isset($history) && $history}}
-		// Update history
-		$.wa.history.updateHistory({{json_encode($history)}});
-	{{/if}}
+    {{if empty($own_profile)}}
+        // AJAX checking dialog before user deletion
+        $("#delete-contact").click(function () {
+            $.wa.controller.contactsDelete([{{$contact.id}}]);
+            return false;
+        });
+        if (delete_mode) {
+            $.wa.controller.contactsDelete([{{$contact.id}}]);
+        }
+    {{/if}}
 
-	{{if !$contact['photo']}}
-		// show photo upload form
-		$(".wa-contact-photo-buttons .photo-change-link a").click(function() {
-			$(".wa-contact-photo-buttons .photo-upload-form").show();
-			$(".wa-contact-photo-buttons .photo-change-link").hide();
-			return false;
-		});
+    {{if isset($history) && $history}}
+        // Update history
+        $.wa.history.updateHistory({{json_encode($history)}});
+    {{/if}}
 
-		// auto submit for file uploading form
-		$('#fileselect').change(function(){
-			// show 'loading...' image
-			$('#photo-loading-image').show();
-			$('#imageform').submit();
-		});
+    {{if !$contact['photo']}}
+        // show photo upload form
+        $(".wa-contact-photo-buttons .photo-change-link a").click(function() {
+            $(".wa-contact-photo-buttons .photo-upload-form").show();
+            $(".wa-contact-photo-buttons .photo-change-link").hide();
+            return false;
+        });
 
-		// upload handler
-		$('iframe#photo-iframe').load(function(){
-			var url = $('iframe#photo-iframe').contents().find("body").html();
-			if (!url) {
-				// this is the initial iframe load event, we don't need it
-				return;
-			}
+        // auto submit for file uploading form
+        $('#fileselect').change(function(){
+            // show 'loading...' image
+            $('#photo-loading-image').show();
+            $('#imageform').submit();
+        });
 
-			$('#photo-loading-image').hide();
-			if (url.substr(0, 6) == 'error:') {
-				alert('Error uploading image: '+url.substr(6));
-				$(".wa-contact-photo-buttons .photo-upload-form").hide();
-				$(".wa-contact-photo-buttons .photo-change-link").show();
+        // upload handler
+        $('iframe#photo-iframe').load(function(){
+            var url = $('iframe#photo-iframe').contents().find("body").html();
+            if (!url) {
+                // this is the initial iframe load event, we don't need it
+                return;
+            }
 
-				// Reset the file upload selector
-				$('#imageform')[0].reset();
-				return;
-			}
+            $('#photo-loading-image').hide();
+            if (url.substr(0, 6) == 'error:') {
+                alert('Error uploading image: '+url.substr(6));
+                $(".wa-contact-photo-buttons .photo-upload-form").hide();
+                $(".wa-contact-photo-buttons .photo-change-link").show();
 
-			$.wa.setHash('#/contact/photo/{{$contact.id}}/uploaded/');
-		});
-	{{/if}}
+                // Reset the file upload selector
+                $('#imageform')[0].reset();
+                return;
+            }
+
+            $.wa.setHash('#/contact/photo/{{$contact.id}}/uploaded/');
+        });
+    {{/if}}
 </script>
 

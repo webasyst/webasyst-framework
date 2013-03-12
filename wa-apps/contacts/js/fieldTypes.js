@@ -292,12 +292,118 @@ $.wa.contactEditor.factoryTypes.Select = $.extend({}, $.wa.contactEditor.baseFie
         if(mode == 'view') {
             return $('<span class="val"></span>').text(this.fieldData.options[this.fieldValue] || this.fieldValue);
         } else {
-            var options = '<option value="">'+this.notSet()+'</option>';
+            var options = '';
+            var selected = false, attrs;
             for(var i = 0; i<this.fieldData.oOrder.length; i++) {
                 var id = this.fieldData.oOrder[i];
-                options += '<option value="'+id+'"'+(id == this.fieldValue ? ' selected' : '')+'>'+this.fieldData.options[id]+'</option>';
+                if (!selected && id == this.fieldValue && this.fieldValue) {
+                    selected = true;
+                    attrs = ' selected';
+                } else {
+                    attrs = '';
+                }
+                if (id === '') {
+                    attrs += ' disabled';
+                }
+                options += '<option value="'+id+'"'+attrs+'>'+this.fieldData.options[id]+'</option>';
             }
-            return $('<div><select class="val">'+options+'</select></div>');
+            return $('<div><select class="val"><option value=""'+(selected ? '' : ' selected')+'>'+this.notSet()+'</option>'+options+'</select></div>');
+        }
+    }
+});
+$.wa.contactEditor.factoryTypes.Conditional = $.extend({}, $.wa.contactEditor.factoryTypes.Select, {
+
+    unbindEventHandlers: function() {},
+
+    getValue: function() {
+        var result = this.fieldValue;
+        if (this.currentMode == 'edit' && this.domElement !== null) {
+            var input = this.domElement.find('.val:visible');
+            if (input.length > 0) {
+                result = input.val();
+            }
+        }
+        return result;
+    },
+
+    newInlineFieldElement: function(mode) {
+        // Do not show anything in view mode if field is empty
+        if(mode == 'view' && !this.fieldValue) {
+            return null;
+        }
+        this.unbindEventHandlers();
+
+        if(mode == 'view') {
+            return $('<div></div>').append($('<span class="val"></span>').text((this.fieldData.options && this.fieldData.options[this.fieldValue]) || this.fieldValue));
+        } else {
+            var cond_field = this;
+
+            // find the the field we depend on
+            var parent_field_id_parts = cond_field.fieldData.parent_field.split(':');
+            var parent_field = $.wa.contactEditor.fieldEditors[parent_field_id_parts.shift()];
+            while (parent_field && parent_field_id_parts.length) {
+                subfields = parent_field.subfieldEditors;
+                if (subfields instanceof Array) {
+                    // This is a multi-field. Select the one that we're part of (if any)
+                    parent_field = null;
+                    for (var i = 0; i < subfields.length; i++) {
+                        if (subfields[i] === cond_field.parentEditor) {
+                            parent_field = subfields[i];
+                            break;
+                        }
+                    }
+                } else {
+                    // This is a composite field. Select subfield by the next id part
+                    parent_field = subfields[parent_field_id_parts.shift()];
+                }
+            }
+
+            if (parent_field && parent_field.domElement) {
+                var input = $('<input type="text" class="val">');
+                var select = $('<select class="val"></select>').hide();
+                var change_handler;
+
+                var getVal = function() {
+                    if (input.is(':visible')) {
+                        return input.val();
+                    } else {
+                        return select.val();
+                    }
+                };
+
+                // Listen to change events from field we depend on.
+                // setTimeout() to ensure that field created its new domElement.
+                setTimeout(function() {
+                    var parent_val_element = parent_field.domElement.find('.val').change(change_handler = function() {
+                        var old_val = getVal();
+                        var parent_value = parent_val_element.val().toLowerCase();
+                        var values = cond_field.fieldData.parent_options[parent_value];
+                        if (values) {
+                            input.hide();
+                            select.show().children().remove();
+                            for (i = 0; i < values.length; i++) {
+                                select.append($('<option></option>').attr('value', values[i]).text(values[i]).attr('selected', cond_field.fieldValue == values[i]));
+                            }
+                            select.val(old_val);
+                        } else {
+                            input.val(old_val).show().removeClass('empty');
+                            select.hide();
+                        }
+                    });
+                    change_handler.call(parent_val_element);
+                }, 0);
+
+                cond_field.unbindEventHandlers = function() {
+                    if (change_handler) {
+                        parent_field.domElement.find('.val').unbind('change', change_handler);
+                    }
+                    cond_field.unbindEventHandlers = function() {};
+                };
+
+                return $('<div></div>').append(input).append(select);
+            } else {
+                return $('<input type="text" class="val">').val(cond_field.fieldValue);
+            }
         }
     }
 });
@@ -997,6 +1103,7 @@ $.wa.contactEditor.factoryTypes.Composite = $.extend({}, $.wa.contactEditor.base
             }
             var options = $.extend({}, sfData, {id: null, multi: false});
             editor.initializeFactory(options);
+            editor.parentEditor = this;
             editor.parentEditorData = {};
             editor.initialize();
             editor.parentEditorData.sfid = sfid;
@@ -1210,7 +1317,7 @@ $.wa.contactEditor.factoryTypes.Address = $.extend({}, $.wa.contactEditor.factor
             var element = sf.newInlineFieldElement('edit');
             sf.domElement = element;
             wrapper.append($('<div class="address-subfield"></div>').append(element));
-            $.wa.defaultInputValue(element.find('.val'), sf.fieldData.name+(sf.fieldData.required ? ' ('+$_('required')+')' : ''), 'empty');
+            $.wa.defaultInputValue(element.find('input.val'), sf.fieldData.name+(sf.fieldData.required ? ' ('+$_('required')+')' : ''), 'empty');
         }
         return wrapper;
     }

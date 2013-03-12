@@ -139,7 +139,14 @@
                 {{foreach from=$categories item=c}}
                      <li rel="category{{$c.id}}">
                          <span class="count">{{$c.cnt}}</span>
-                         <a href="#/contacts/category/{{$c.id}}/">{{if !empty($c.icon)}}<img class="c-app16x16icon-menu-v" src="{{$wa_url}}{{$c.icon}}" />{{else}}<i class="icon16 contact">{{/if}}</i><b>{{$c.name|escape}}</b></a>
+                         <a href="#/contacts/category/{{$c.id}}/">
+                            {{if !empty($c.icon) && strpos($c.icon, '/') !== false}}
+                                <img class="c-app16x16icon-menu-v" src="{{if substr($c.icon, 0, 4) == 'http'}}{{$c.icon}}{{else}}{{$wa_url}}{{$c.icon}}{{/if}}" />
+                            {{else}}
+                                <i class="icon16 {{ifempty($c.icon, 'contact')}}"></i>
+                            {{/if}}
+                            <b>{{$c.name|escape}}</b>
+                        </a>
                      </li>
                 {{/foreach}}
             {{else}}
