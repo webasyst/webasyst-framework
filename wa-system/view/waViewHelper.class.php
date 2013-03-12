@@ -114,6 +114,11 @@ HTML;
         }
     }
 
+    public function userRights($name)
+    {
+        return $this->wa->getUser()->getRights($this->wa->getApp(), $name);
+    }
+
     public function userId()
     {
         return $this->wa->getUser()->getId();
@@ -228,9 +233,14 @@ HTML;
         return $this->wa->getConfig()->getHostUrl();
     }
 
-    public function currentUrl($absolute = false)
+    public function currentUrl($absolute = false, $without_params = false)
     {
         $url = $this->wa->getConfig()->getCurrentUrl();
+        if ($without_params) {
+            if (($i = strpos($url, '?')) !== false) {
+                return substr($url, 0, $i);
+            }
+        }
         if ($absolute) {
             return $this->domainUrl().$url;
         } else {
@@ -476,7 +486,7 @@ HTML;
             }
         }
         return '<div class="wa-form">
-            <form action="" method="post">
+            <form action="'.$this->loginUrl().'" method="post">
                 <div class="wa-field">
                     <div class="wa-name">'.$field_name.'</div>
                     <div class="wa-value">
@@ -599,7 +609,7 @@ HTML;
     public function signupForm($errors = array())
     {
         $fields = $this->signupFields($errors);
-        $html = '<div class="wa-form"><form action="" method="post">';
+        $html = '<div class="wa-form"><form action="'.$this->signupUrl().'" method="post">';
         foreach ($fields as $field_id => $field) {
             if ($field) {
                 $f = $field[0];
@@ -636,7 +646,7 @@ HTML;
             $html .= '</div></div>';
         }
         $html .= '<div class="wa-field"><div class="wa-value wa-submit">
-            <input type="submit" value='._ws('"Sign up"').'> '.sprintf(_ws('or <a href="%s">login</a> if you already have an account'), $this->getUrl('/login')).'
+            <input type="submit" value="'._ws('Sign up').'"> '.sprintf(_ws('or <a href="%s">login</a> if you already have an account'), $this->getUrl('/login')).'
         </div></div>';
         $html .= '</form></div>';
         return $html;
@@ -664,6 +674,9 @@ HTML;
             }
         }
         $params['namespace'] = 'data';
+        if ($f->isMulti()) {
+            $f->setParameter('multi', false);
+        }
         $html = '<div class="wa-field">
                 <div class="wa-name">'.$name.'</div>
                 <div class="wa-value">'.$f->getHTML($params, $error !== false ? 'class="wa-error"' : '');
@@ -711,16 +724,17 @@ HTML;
     public function __get($app)
     {
         if (!isset(self::$helpers[$app])) {
+            $wa = $this->wa;
             if ($this->app() !== $app) {
                 if (wa()->appExists($app)) {
-                    wa($app);
+                    $wa = wa($app);
                 } else {
                     return null;
                 }
             }
             $class = $app.'ViewHelper';
             if (class_exists($class)) {
-                self::$helpers[$app] = new $class($this->wa);
+                self::$helpers[$app] = new $class($wa);
             } else {
                 self::$helpers[$app] = null;
             }

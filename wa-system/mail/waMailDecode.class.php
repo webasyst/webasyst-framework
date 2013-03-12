@@ -100,10 +100,10 @@ class waMailDecode
 
         $headers = $this->parts[0]['headers'];
         foreach ($headers as $h => &$v) {
-            $v = $this->decodeHeader($v);
             if (is_array($v)) {
-                $v = implode("", $v);
+                $v = implode("\n", $v);
             }
+            $v = $this->decodeHeader($v);
             if ($h == 'subject') {
                 if (strpos($v, ' ') === false) {
                     $v = str_replace('_', ' ', $v);

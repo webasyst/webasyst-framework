@@ -28,12 +28,13 @@ abstract class waContactFieldFormatter
     public function __construct($options = null)
     {
         $this->_type = get_class($this);
+        $this->options = $options;
     }
 
     public static function __set_state($state)
     {
          return new $state['_type']($state['options']);
     }
-} 
+}
 
 // EOF

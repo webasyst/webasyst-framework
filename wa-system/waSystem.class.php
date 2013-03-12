@@ -512,7 +512,7 @@ class waSystem
         return $version;
     }
 
-    public function getApp()
+    public static function getApp()
     {
         if (self::$current != 'wa-system') {
             return self::$current;
@@ -816,8 +816,11 @@ class waSystem
         return $this->config->getRootUrl($absolute, $script);
     }
 
-    public static function getSetting($name, $default = '', $app_id)
+    public static function getSetting($name, $default = '', $app_id = null)
     {
+        if ($app_id === null) {
+            $app_id = self::getApp();
+        }
         if (!isset(self::$models['app_settings'])) {
             self::$models['app_settings'] = new waAppSettingsModel();
         }

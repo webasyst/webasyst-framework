@@ -56,29 +56,34 @@ class waContactCompositeField extends waContactField
         if (!$this->isMulti()) {
             $data = array($data);
         }
-        foreach ($data as $sort => $value) {
-            if (isset($value['data'])) {
-                $v = &$value['data'];
-            } elseif (isset($value['value'])) {
-                $v = &$value['value'];
-            } else {
-                $v = &$value;
-            }
-            foreach ($this->options['fields'] as $field) {
-                /**
-                 * @var waContactField $field
-                 */
-                $subId = $field->getId();
-                $str = isset($v[$subId]) ? trim($v[$subId]) : '';
-                if ($str) {
-                    if ( ( $e = $field->validate($v[$subId]))) {
-                        $errors[$sort][$subId] = $e;
+        if (is_array($data)) {
+            foreach ($data as $sort => $value) {
+                if (isset($value['data'])) {
+                    $v = &$value['data'];
+                } elseif (isset($value['value'])) {
+                    $v = &$value['value'];
+                } else {
+                    $v = &$value;
+                }
+                foreach ($this->options['fields'] as $field) {
+                    /**
+                     * @var waContactField $field
+                     */
+                    $subId = $field->getId();
+                    $str = isset($v[$subId]) ? trim($v[$subId]) : '';
+                    if ($str) {
+                        if ( ( $e = $field->validate($v[$subId]))) {
+                            $errors[$sort][$subId] = $e;
+                        }
+                    } else if (isset($this->options['required']) && in_array($subId, $this->options['required'])) {
+                        $errors[$sort][$subId] = sprintf(_ws('%s subfield is required.'), $field->getName());
                     }
-                } else if (isset($this->options['required']) && in_array($subId, $this->options['required'])) {
-                    $errors[$sort][$subId] = sprintf(_ws('%s subfield is required.'), $field->getName());
                 }
             }
+        } else if ($data !== null) {
+            return array(_w('Data must be an array.'));
         }
+
         if (!$this->isMulti() && $errors) {
             return $errors[0];
         }
@@ -231,9 +236,19 @@ class waContactCompositeField extends waContactField
         return $value;
     }
 
-    public function getFields()
+    public function getFields($subfield_name = null)
     {
-        return $this->options['fields'];
+        $fields = array();
+        foreach($this->options['fields'] as $f) {
+            if ($f->getId() === $subfield_name) {
+                return $f;
+            }
+            $fields[$f->getId()] = $f;
+        }
+        if ($subfield_name !== null) {
+            return null;
+        }
+        return $fields;
     }
 
     public function setParameter($p, $value)
@@ -246,6 +261,30 @@ class waContactCompositeField extends waContactField
         parent::setParameter($p, $value);
     }
 
+    public function getHtmlOne($params = array(), $attrs = '')
+    {
+        $result = array();
+        $params_subfield = $params;
+        $value = ifset($params['value'], array());
+        $data = ifset($value['data'], array());
+        $params_subfield['composite_value'] = $data;
+
+        if (!isset($params['id'])) {
+            $params['id'] = $this->getId();
+        }
+
+        foreach ($this->options['fields'] as $field) {
+            $params_subfield['id'] = $field->getId();
+            $params_subfield['parent'] = $params['id'];
+            $params_subfield['value'] = ifset($data[$field->getId()]);
+            if ($field instanceof waContactHiddenField) {
+                $result[] = $field->getHTML($params_subfield, $attrs);
+            } else {
+                $result[] = '<span class="field"><span>'.$field->getName().'</span>'.$field->getHTML($params_subfield, $attrs).'</span>';
+            }
+        }
+        return implode($result);
+    }
 }
 
 // EOF

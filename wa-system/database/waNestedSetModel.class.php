@@ -20,6 +20,26 @@ class waNestedSetModel extends waModel
     protected $depth = 'depth';
     protected $parent = 'parent';
 
+    public function getTableLeft()
+    {
+        return $this->left;
+    }
+
+    public function getTableRight()
+    {
+        return $this->right;
+    }
+
+    public function getTableDepth()
+    {
+        return $this->depth;
+    }
+
+    public function getTableParent()
+    {
+        return $this->parent;
+    }
+
     /**
      * Add node to tree
      *

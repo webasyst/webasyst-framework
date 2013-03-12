@@ -27,8 +27,8 @@
 
 <style>
     .wa-pages { margin-bottom: 80px; }
-    .wa-pages h4.heading { word-wrap: break-word; position: relative; }
-    .wa-pages h4.heading span.count { position: absolute; right: 0; }
+    .wa-pages h4.heading { word-wrap: break-word; word-break: break-all; position: relative; margin-right: 15px; }
+    .wa-pages h4.heading span.count { position: absolute; right: -15px; }
     
     .wa-page-gray { color: #AAA;}
     .wa-page-draft { background: #CCC; color: white; font-weight: bold; font-size: 0.8em; padding: 0 2px; }
@@ -38,6 +38,8 @@
     .wa-page-wysiwyg-html-toggle li a { display: block; color: #888; font-weight: bold; padding: 4px 12px 6px; text-decoration: none; font-size: 0.9em; }
 
     .wa-page-urls a i { margin: 0}
+    
+    .block-pages ul.menu-v.with-icons li a { word-break: break-all; }
 
     a.wa-page-link .count i.icon10 { display: none; }
     a.wa-page-link:hover .count i.icon10 { display: block; }
@@ -52,8 +54,10 @@
     #wa-editor-status i.icon16 { margin-top: 6px; }
 
     .wa-dropdown { float: right; margin: 2px 20px 0 0; }
-    .wa-dropdown .wa-dropdown-content { padding: 20px;  width: auto; width: 560px;  min-height: 180px; max-height: 310px; overflow: auto; overflow-x: hidden;}
+    .wa-dropdown .wa-dropdown-content { padding: 20px;  width: auto; width: 760px;  min-height: 180px; max-height: 310px; overflow: auto; overflow-x: hidden;}
     .wa-dropdown .wa-dropdown-content .field .name .inline-link b i { font-weight: bold; }
+    .wa-dropdown .wa-dropdown-content .field .name { width: 340px; }
+    .wa-dropdown .wa-dropdown-content .field .value { margin-left: 350px; }
     .wa-dropdown .wa-dropdown-content .field.subfield .name { margin-left: 20px; }
     .wa-dropdown .wa-dropdown-content .field.subfield .name .inline-link b i { font-weight: normal; font-size: 0.9em; }
     .wa-dropdown .wa-drop-link { position: relative; padding: 6px 0 0 ; display: block;}

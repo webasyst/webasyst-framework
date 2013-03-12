@@ -57,7 +57,7 @@ class waContactAddressOneLineFormatter extends waContactFieldFormatter
     public function format($data, $format=null) {
         $parts = $this->getParts($data, $format);
         $data['value'] = implode(', ', $parts['parts']);
-        if ($data['value'] && $parts['pic']) {
+        if ($data['value'] && $parts['pic'] && (!isset($this->options['image']) || $this->options['image'])) {
             $data['value'] = $parts['pic'].' '.$data['value'];
         }
         if ($data['value'] && $parts['marker']) {
@@ -140,7 +140,7 @@ class waContactAddressSeveralLinesFormatter extends waContactAddressOneLineForma
             $v = '';
 
             // add country flag before the first line
-            if ($i === 0 && $parts['pic']) {
+            if ($i === 0 && $parts['pic'] && (!isset($this->options['image']) || $this->options['image'])) {
                 $v = $parts['pic'].' ';
             }
 

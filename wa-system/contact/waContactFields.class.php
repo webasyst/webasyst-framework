@@ -242,6 +242,7 @@ class waContactFields
      * Add a new field to custom_fields.php if its id is unique (throws waException otherwise)
      * @throws waException
      * @param waContactField $field
+     * @deprecated use ::updateField() instead
      */
     public static function createField($field)
     {
@@ -255,23 +256,7 @@ class waContactFields
             throw new waException('Field already exists: '.$id);
         }
 
-        $cp = self::getCustomParameters($field);
-        self::resetCustomParameters($field);
-
-
-        $file = wa()->getConfig()->getConfigPath('custom_fields.php', true, 'contacts');
-        if (is_readable($file)) {
-            $fields = include($file);
-        } else {
-            $fields = array();
-        }
-        $fields[] = $field;
-        file_put_contents($file, "<?php\nreturn ".var_export($fields, TRUE).";\n// EOF");
-        self::$fieldStatus[$id] = false;
-
-        $field->setParameters($cp);
-        self::$personDisabled[$id] = $field;
-        self::$companyDisabled[$id] = $field;
+        self::updateField($field);
     }
 
     /**
@@ -279,7 +264,7 @@ class waContactFields
      * @param $id waContactField|int field ID or field instance.
      * @throws waException
      */
-    public function deleteField($id)
+    public static function deleteField($id)
     {
         self::ensureStaticVars();
         if (is_object($id) && $id instanceof waContactField) {
@@ -330,45 +315,46 @@ class waContactFields
     }
 
     /**
-     * Update existing custom field without affecting *_fields_order.php
+     * Update existing field without affecting *_fields_order.php
+     * or add it to custom fields if not exists yet.
      * @throws waException
      * @param waContactField $field
      */
-    public function updateField($field)
+    public static function updateField($field)
     {
         if (! ( $field instanceof waContactField)) {
             throw new waException('Invalid contact field '.print_r($field, TRUE));
         }
-        $id = $field->getId();
         self::ensureStaticVars();
-        if (FALSE !== self::isSystemField($id)) {
-            throw new waException('Unable to update field: '.$id);
-        }
-
-        // get a clean copy of field instance
+        $id = $field->getId();
         $field = clone $field;
         self::resetCustomParameters($field);
 
-        // Field is not system, update custom_fields
-        self::resetCustomParameters($field);
+        // Update custom_fields config.
+        // We don't care if a field is system or not: we write to custom config anyway.
+        // Custom config overwrites system fields.
         $file = wa()->getConfig()->getConfigPath('custom_fields.php', true, 'contacts');
         if (is_readable($file)) {
             $fields = include($file);
         } else {
             $fields = array();
         }
+        $changed = false;
         foreach ($fields as $k => $v) {
-            /**
-             * @var waContactField $v
-             */
+            /** @var waContactField $v */
             if ($v->getId() == $id) {
                 $fields[$k] = $field;
+                $changed = true;
                 break;
             }
+        }
+        if (!$changed) {
+            $fields[] = $field;
         }
         file_put_contents($file, "<?php\nreturn ".var_export($fields, TRUE).";\n// EOF");
 
         // Update static vars
+        self::$fieldStatus[$id] = false;
         if (isset(self::$personFields[$id])) {
             $cp = self::getCustomParameters(self::$personFields[$id]);
             self::$personFields[$id] = clone $field;
@@ -376,7 +362,6 @@ class waContactFields
         } else {
             self::$personDisabled[$id] = $field;
         }
-
         if (isset(self::$companyFields[$id])) {
             $cp = self::getCustomParameters(self::$companyFields[$id]);
             self::$companyFields[$id] = clone $field;

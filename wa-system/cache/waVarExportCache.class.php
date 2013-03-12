@@ -37,6 +37,7 @@ class waVarExportCache extends waFileCache
                     $this->delete();
                     return null;
                 }
+                return $r;
             }
         }
         return null;

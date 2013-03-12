@@ -80,6 +80,9 @@ abstract class waViewController extends waController
     public function executeAction(waViewAction $action, $name = 'content', waDecorator $decorator = null)
     {
         $action->setController($this);
+        if ($action->getLayout()) {
+            $this->setLayout($action->getLayout());
+        }
         $content = $decorator ? $decorator->display($action) : $action->display();
         if (isset($this->blocks[$name])) {
             $this->blocks[$name] .= $content;

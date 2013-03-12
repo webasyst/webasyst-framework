@@ -189,12 +189,12 @@ abstract class waContactField
 
     /**
      * Prepare value to be stored in DB.
-     * For multi fields return list of arrays(value=>..., ext=>...); ext is optional, see $this->isExt()
-     *
-     * $value can be a string, an array(value=>..., ext=>...) or list of these.
+     * Data returned will be validated and later passed to $this->getStorage()->set().
+     * For non-multi fields return string or array(value=>string, ext=>string).
+     * For multi fields return list of arrays(value=>string, ext=>string); ext is optional, see $this->isExt()
      *
      * @param waContact $contact
-     * @param $value
+     * @param mixed $value can be a string, an array(value=>..., ext=>...) or list of these.
      * @param array $params
      * @param bool $add
      * @return array
@@ -202,6 +202,12 @@ abstract class waContactField
     public function set(waContact $contact, $value, $params = array(), $add = false)
     {
         if ($this->isMulti()) {
+            //
+            // This scary chunk of code brings $value into common form for multi fields:
+            // list of arrays (value => string, ext => string)
+            // 'ext' is only present if enabled, see $this->isExt().
+            // 'value' is passed through $this->setValue() for preparation.
+            //
             $is_ext = $this->isExt();
             $ext = isset($params['ext']) ? $params['ext'] : '';
             if (!is_array($value)) {
@@ -209,7 +215,7 @@ abstract class waContactField
                 if ($is_ext) {
                     $value['ext'] = $ext;
                 }
-                $value = array($value);
+                $value = array($this->setValue($value));
             } elseif (isset($value['value'])) {
                 if ($is_ext && !isset($value['ext'])) {
                     $value['ext'] = $ext;
@@ -217,11 +223,12 @@ abstract class waContactField
                 if (!$is_ext && isset($value['ext'])) {
                     unset($value['ext']);
                 }
+                $value['value'] = $this->setValue($value['value']);
                 $value = array($value);
             } else {
                 foreach ($value as &$v) {
                     if (!is_array($v)) {
-                        $v = array('value' => $v);
+                        $v = array('value' => $this->setValue($v));
                         if ($is_ext) {
                             $v['ext'] = $ext;
                         }
@@ -232,6 +239,7 @@ abstract class waContactField
                         if ($is_ext && !isset($v['ext'])) {
                             $v['ext'] = $ext;
                         }
+                        $v['value'] = $this->setValue(ifset($v['value'], ''));
                     }
                 }
                 unset($v);
@@ -261,6 +269,22 @@ abstract class waContactField
         } else {
             return $this->setValue($value);
         }
+    }
+
+    /**
+     * Helper for $this->set() to format value of a field before inserting into DB
+     * (actually even before validation, so beware).
+     *
+     * $value is a single value passed to waContact['field_id'] via assignment.
+     * No extension, just the value, e.g.: 'a@b.com', not array('value' => 'a@b.com', 'ext' => 'work').
+     * Note that for composite fields this behaves a little differently, see waContactCompositeField.
+     *
+     * @param mixed $value
+     * @return mixed possibly changed $value
+     */
+    protected function setValue($value)
+    {
+        return $value;
     }
 
     /**
@@ -295,13 +319,16 @@ abstract class waContactField
 
         // array of plain string values
         $values = array();
-        foreach($data as $sort => $value) {
-            $value = $this->format($value, 'value');
-            if ($value || $value === 0) { // do not check empty values to be unique
-                $values[$sort] = $value;
+        if (is_array($data)) {
+            foreach($data as $sort => $value) {
+                $value = $this->format($value, 'value');
+                if ($value || $value === 0) { // do not check empty values to be unique
+                    $values[$sort] = $value;
+                }
             }
+        } else if ($data !== null) {
+            return array(_w('Data must be an array.'));
         }
-
 
         // array of duplicates $sort => contact_id
         $dupl = array();
@@ -405,16 +432,20 @@ abstract class waContactField
                 if ($validator instanceof waValidator) {
                     if ($this->isMulti()) {
                         $allEmpty = true;
-                        foreach ($data as $sort => $value) {
-                            $value = $this->format($this->setValue($value), 'value');
-                            if (!$value && $value !== '0') {
-                                continue;
-                            }
+                        if (is_array($data)) {
+                            foreach ($data as $sort => $value) {
+                                $value = $this->format($value, 'value');
+                                if (!$value && $value !== '0') {
+                                    continue;
+                                }
 
-                            $allEmpty = false;
-                            if (!$validator->isValid($value)) {
-                                $errors[$sort] = implode("<br />", $validator->getErrors());
+                                $allEmpty = false;
+                                if (!$validator->isValid($value)) {
+                                    $errors[$sort] = implode("<br />", $validator->getErrors());
+                                }
                             }
+                        } else if ($data !== null) {
+                            return array(_w('Data must be an array.'));
                         }
 
                         if ($this->getParameter('required') && $allEmpty) {
@@ -427,6 +458,8 @@ abstract class waContactField
                         $value = $this->format($data, 'value');
                         if (!$validator->isValid($value)) {
                             $errors = implode("<br />", $validator->getErrors());
+                        } else if ($this->getParameter('required') && empty($value)) {
+                            $errors = _ws('This field is required');
                         }
                     }
                 }
@@ -505,11 +538,6 @@ abstract class waContactField
             }
         }
         return $data;
-    }
-
-    protected function setValue($value)
-    {
-        return $value;
     }
 
     /**
@@ -619,17 +647,68 @@ abstract class waContactField
                 $suffix .= ']';
             }
         }
+        if (isset($params['multi_index'])) {
+            $prefix .= $params['multi_index'].'][';
+        }
         $name = isset($params['id']) ? $params['id'] : $this->getId();
         return $prefix.$name.$suffix;
     }
 
+    public function getHtmlOne($params = array(), $attrs = '')
+    {
+        $value = isset($params['value']) ? $params['value'] : '';
+        $ext = null;
+
+        if (is_array($value)) {
+            $ext = $this->getParameter('force_single') ? null : ifset($value['ext'], '');
+            $value = ifset($value['value'], '');
+        }
+
+        $name_input = $name = $this->getHTMLName($params);
+        if ($this->isMulti() && $ext) {
+            $name_input .= '[value]';
+        }
+
+        $result = '<input '.$attrs.' type="text" name="'.htmlspecialchars($name_input).'" value="'.htmlspecialchars($value).'">';
+        if ($ext) {
+            // !!! add a proper <select>?
+            $result .= '<input type="hidden" name="'.htmlspecialchars($name.'[ext]').'" value="'.htmlspecialchars($ext).'">';
+        }
+
+        return $result;
+    }
 
     public function getHTML($params = array(), $attrs = '')
     {
-        $value = isset($params['value']) ? $params['value'] : '';
-        return '<input '.$attrs.' type="text" name="'.$this->getHTMLName($params).'" value="'.htmlspecialchars($value).'">';
-    }
+        if ($this->isMulti()) {
+            if (!empty($params['value']) && is_array($params['value']) && !empty($params['value'][0])) {
+                // Multi-field with at least one value
+                $params_one = $params;
+                $i = 0;
+                $result = array();
+                while (isset($params['value'][$i])) {
+                    if (!empty($params['value'][1])) {
+                        $params_one['multi_index'] = $i;
+                    }
+                    $params_one['value'] = $params['value'][$i];
+                    $result[] = $this->getHtmlOne($params_one, $attrs);
+                    $i++;
 
+                    // Show single field when forced to show one value even for multi fields
+                    if ($this->getParameter('force_single')) {
+                        return $result[0];
+                    }
+                }
+                return '<p>'.implode('</p><p>', $result).'</p>';
+            } else {
+                // Multi-field with no values
+                return '<p>'.$this->getHtmlOne($params, $attrs).'</p>';
+            }
+        }
+
+        // Non-multi field
+        return $this->getHtmlOne($params, $attrs);
+    }
 
     public static function __set_state($state)
     {

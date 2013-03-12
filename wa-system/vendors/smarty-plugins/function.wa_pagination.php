@@ -29,7 +29,12 @@ function smarty_function_wa_pagination($params, &$smarty)
             $p = $p < $page ? $page - $n : $total - $nb + 1;
             $html .= '<li>...</li>';
         } else {
-            $html .= '<li'.($p == $page ? ' class="selected"' : '').'><a href="'.$url.($url && $p == 1 ? '' : '?page='.$p).'">'.$p.'</a></li>';
+            $url_params = preg_replace('/&?page=[0-9]+?/i', '', waRequest::server('QUERY_STRING', ''));
+            if (substr($url_params, -1) == '&') {
+                $url_params = substr($url_params, 0, -1);
+            }
+            $page_url = $url.($url && $p == 1 ? ($url_params ? '?'.$url_params : '') : '?page='.$p.($url_params ? '&'.$url_params : ''));
+            $html .= '<li'.($p == $page ? ' class="selected"' : '').'><a href="'.$page_url.'">'.$p.'</a></li>';
             $p++;
         }
     }

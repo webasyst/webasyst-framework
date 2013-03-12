@@ -18,7 +18,7 @@ class waContactCategoryModel extends waModel
         if ($data && $data['system_id'] && wa()->appExists($data['system_id'])) {
             $app = wa()->getAppInfo($data['system_id']);
             $data['name'] = $app['name'];
-            $data['icon'] = $app['icon'][16];
+            $data['icon'] = wa()->getRootUrl(true).$app['icon'][16];
         }
         return $data;
     }
@@ -66,7 +66,7 @@ class waContactCategoryModel extends waModel
                 if (wa()->appExists($row['system_id'])) {
                     $app = wa()->getAppInfo($row['system_id']);
                     $row['name'] = $app['name'];
-                    $row['icon'] = $app['icon'][16];
+                    $row['icon'] = wa()->getRootUrl(true).$app['icon'][16];
                 }
             }
         }

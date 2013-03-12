@@ -15,12 +15,24 @@
 class waCurrency
 {
 
+    protected static $data = array();
+
     public static function getInfo($currency)
     {
         if (!$currency) {
             return array();
         }
-        return include(dirname(__FILE__)."/data/".$currency.".php");
+        $file = dirname(__FILE__)."/data/".$currency.".php";
+        if (file_exists($file)) {
+            $info = include($file);
+            $info['title'] = _ws($info['title']);
+        } else {
+            $info = array(
+                'sign' => $currency,
+                'title' => $currency
+            );
+        }
+        return $info;
     }
 
     public static function getIntInWords($n, $params = array())
@@ -115,11 +127,19 @@ class waCurrency
         }
         waLocale::loadByDomain('webasyst', $locale);
         $locale = waLocale::getInfo($locale);
-        $result = preg_replace('/%([0-9]?\.?[0-9]?)([iw]*)({[n|f|c|s][0-9]?})?/ie', 'self::extract($n, $currency, $locale, "$1", "$2", "$3")', $format);
+        self::$data['n'] = $n; self::$data['locale'] = $locale; self::$data['currency'] = $currency;
+        $result = preg_replace_callback('/%([0-9]?\.?[0-9]?)([iw]*)({[n|f|c|s][0-9]?})?/i', array('self', 'replace_callback'),
+            $format);
         if ($locale !== $old_locale) {
             wa()->setLocale($old_locale);
         }
         return $result;
+    }
+
+    private static function replace_callback($matches)
+    {
+        return self::extract(self::$data['n'], self::$data['currency'], self::$data['locale'], 
+                $matches[1], $matches[2], isset($matches[3]) ? $matches[3] : '');
     }
 
     protected static function extract($n, $currency, $locale, $precision, $format, $desc)
@@ -130,6 +150,7 @@ class waCurrency
         $precision_arr = explode('.', $precision);
         $pad_to_width = false;
         $trim_to_width = false;
+        $frac_only_exists = true;
         if ($precision_arr[0] !== '') {
             $precision = (int) $precision_arr[0];
         } else if (isset($precision_arr[1]) && $precision_arr[1] !== '') {
@@ -138,6 +159,9 @@ class waCurrency
             $pad_to_width = $precision_arr[1];
             $trim_to_width = $precision_arr[1];
         } else {
+            if ($precision === '.') {
+                $frac_only_exists = false;
+            }
             $precision = $locale['frac_digits'];
         }
 
@@ -173,31 +197,35 @@ class waCurrency
             if ($pad_to_width !== false) {
                 $result = str_pad($n, $pad_to_width, '0', STR_PAD_LEFT);
             } else {
+                if ($frac_only_exists && ($n == (int)$n) && $precision_arr[0] === '') {
+                    $precision = 0;
+                }
                 $result = number_format($n, $precision, $locale['decimal_point'], $locale['thousands_sep']);
             }
         }
 
-        if (!isset($currency['position'])) {
-            $currency['position'] = 0;
+        // by default at the end
+        if (!isset($currency['sign_position'])) {
+            $currency['sign_position'] = 1;
         }
-        if (!isset($currency['delim'])) {
-            $currency['delim'] = ' ';
+        if (!isset($currency['sign_delim'])) {
+            $currency['sign_delim'] = ' ';
         }
 
-        // $desc: add currency name, or symbol, or code, etc.
+        // $desc: add currency name, or sign, or code, etc.
         if ($desc) {
             $desc = substr($desc, 1, -1);
             $key = null;
             if (substr($desc, 0, 1) === 'c') {
                 $result .= ' '.$currency['code'];
             } elseif (substr($desc, 0, 1) === 's') {
-                switch ($currency['position']) {
-                    case 1:
-                        $result = $currency['symbol'].$currency['delim'].$result;
-                        break;
+                switch ($currency['sign_position']) {
                     case 0:
+                        $result = $currency['sign'].$currency['sign_delim'].$result;
+                        break;
+                    case 1:
                     default:
-                        $result .= $currency['delim'].$currency['symbol'];
+                        $result .= $currency['sign_delim'].$currency['sign'];
                 }
             } elseif (substr($desc, 0, 1) === 'f') {
                 $key = 'frac_name';
@@ -218,8 +246,34 @@ class waCurrency
         return $result;
     }
 
-    public function getAll()
+    public static function getAll($type = 'title')
     {
+        // @todo: support wa-config/currency.php
+        $data = array();
+        $path = dirname(__FILE__)."/data/";
+        if ($dh = opendir($path)) {
+            while (($file = readdir($dh)) !== false) {
+                if (is_file($path.$file) && substr($file, -4) === '.php' && $file != 'formats.php') {
+                    $currency = substr($file, 0, -4);
+                    $data[$currency] = self::getInfo($currency);
+                }
+            }
+            closedir($dh);
+        }
+        if ($type === true) {
+            $type = 'all';
+        }
+        switch ($type) {
+            case 'code':
+            case 'sign':
+            case 'title':
+                foreach ($data as &$d) {
+                    $d = $d[$type];
+                }
+                return $data;
+            default:
+                return $data;
+        }
 
     }
 }

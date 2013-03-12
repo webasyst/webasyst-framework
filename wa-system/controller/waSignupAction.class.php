@@ -72,12 +72,14 @@ class waSignupAction extends waViewAction
             );
             $is_error = true;
         }
-        $contact = $auth->getByLogin($data[$field_id]);
-        if ($contact) {
-            $errors[$field_id] = array(
-                sprintf(_ws('User with the same %s is already registered'), $field_name)
-            );
-            $is_error = true;
+        if (!$is_error) {
+            $contact = $auth->getByLogin($data[$field_id]);
+            if ($contact) {
+                $errors[$field_id] = array(
+                    sprintf(_ws('User with the same %s is already registered'), $field_name)
+                );
+                $is_error = true;
+            }
         }
 
         // set unconfirmed status for email

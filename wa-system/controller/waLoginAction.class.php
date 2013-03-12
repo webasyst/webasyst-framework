@@ -9,6 +9,7 @@ abstract class waLoginAction extends waViewAction
             $this->afterAuth();
         }
 
+
         // check XMLHttpRequest (ajax)
         $this->checkXMLHttpRequest();
 
@@ -17,6 +18,7 @@ abstract class waLoginAction extends waViewAction
         }
 
         $auth = wa()->getAuth();
+
 
         // check remember enabled
         if (waRequest::method() == 'get') {
@@ -47,11 +49,13 @@ abstract class waLoginAction extends waViewAction
         if (!isset($auth['auth']) || !$auth['auth']) {
             throw new waException(_ws('Page not found'), 404);
         }
+        /*
         // check auth app and url
         $login_url = wa()->getRouteUrl((isset($auth['app']) ? $auth['app'] : '').'/login');
         if (wa()->getConfig()->getRequestUrl(false) != $login_url) {
             $this->redirect($login_url);
         }
+        */
     }
 
     protected function saveReferer()

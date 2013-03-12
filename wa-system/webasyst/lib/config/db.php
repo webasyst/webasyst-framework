@@ -61,6 +61,8 @@ return array(
         'id' => array('int', 11, 'null' => 0, 'autoincrement' => 1),
         'name' => array('varchar', 255, 'null' => 0),
         'system_id' => array('varchar', 64),
+        'app_id' => array('varchar', 32),
+        'icon' => array('varchar', 255),
         'cnt' => array('int', 11, 'null' => 0, 'default' => '0'),
         ':keys' => array(
             'PRIMARY' => 'id',
@@ -72,7 +74,7 @@ return array(
         'contact_id' => array('int', 11, 'null' => 0),
         'field' => array('varchar', 32, 'null' => 0),
         'ext' => array('varchar', 32, 'null' => 0, 'default' => ''),
-        'value' => array('varchar', 255, 'null' => 0, 'default' => ''),
+        'value' => array('varchar', 255, 'null' => 0),
         'sort' => array('int', 11, 'null' => 0, 'default' => '0'),
         ':keys' => array(
             'PRIMARY' => 'id',
@@ -107,6 +109,18 @@ return array(
             'PRIMARY' => 'id',
             'contact_sort' => array('contact_id', 'sort', 'unique' => 1),
             'email' => 'email',
+        ),
+    ),
+    'wa_contact_field_values' => array(
+        'id' => array('int', 11, 'null' => 0, 'autoincrement' => 1),
+        'parent_field' => array('varchar', 64, 'null' => 0),
+        'parent_value' => array('varchar', 255, 'null' => 0),
+        'field' => array('varchar', 64, 'null' => 0),
+        'value' => array('varchar', 255, 'null' => 0),
+        'sort' => array('int', 11, 'null' => 0, 'default' => '0'),
+        ':keys' => array(
+            'PRIMARY' => 'id',
+            'parent_field' => array('parent_field', 'parent_value'),
         ),
     ),
     'wa_contact_rights' => array(
@@ -144,10 +158,11 @@ return array(
         'iso3letter' => array('varchar', 3, 'null' => 0),
         'iso2letter' => array('varchar', 2, 'null' => 0),
         'isonumeric' => array('varchar', 3, 'null' => 0),
+        'fav_sort' => array('int', 11),
         ':keys' => array(
-            'PRIMARY' => array('iso3letter'),
-            'iso2letter' => array('iso2letter', 'unique' => 1),
+            'PRIMARY' => 'iso3letter',
             'isonumeric' => array('isonumeric', 'unique' => 1),
+            'iso2letter' => array('iso2letter', 'unique' => 1),
             'name' => 'name',
         ),
     ),
@@ -185,14 +200,15 @@ return array(
         'country_iso3' => array('varchar', 3, 'null' => 0),
         'code' => array('varchar', 8, 'null' => 0),
         'name' => array('varchar', 255, 'null' => 0),
+        'fav_sort' => array('int', 11),
         ':keys' => array(
             'PRIMARY' => array('country_iso3', 'code'),
         ),
     ),
     'wa_transaction' => array(
         'id' => array('int', 11, 'null' => 0, 'autoincrement' => 1),
-        'paymentsystem_id' => array('varchar', 50, 'null' => 0),
-        'application_id' => array('varchar', 50, 'null' => 0),
+        'plugin' => array('varchar', 50, 'null' => 0),
+        'app_id' => array('varchar', 50, 'null' => 0),
         'merchant_id' => array('varchar', 50),
         'native_id' => array('varchar', 255, 'null' => 0),
         'create_datetime' => array('datetime', 'null' => 0),
@@ -209,8 +225,8 @@ return array(
         'currency_id' => array('varchar', 3),
         ':keys' => array(
             'PRIMARY' => 'id',
-            'paymentsystem_id' => 'paymentsystem_id',
-            'application_id' => 'application_id',
+            'plugin' => 'plugin',
+            'app_id' => 'app_id',
             'merchant_id' => 'merchant_id',
             'transaction_native_id' => 'native_id',
             'parent_id' => 'parent_id',
@@ -249,6 +265,14 @@ return array(
         ':keys' => array(
             'PRIMARY' => 'id',
             'code' => array('code', 'app_id', 'unique' => 1),
+        ),
+    ),
+    'wa_widget_params' => array(
+        'widget_id' => array('int', 11, 'null' => 0),
+        'name' => array('varchar', 32, 'null' => 0),
+        'value' => array('text', 'null' => 0),
+        ':keys' => array(
+            'PRIMARY' => array('widget_id', 'name'),
         ),
     ),
 );

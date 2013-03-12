@@ -237,6 +237,13 @@ if ($app_id == 'webasyst') {
     $include = array(
     substr($path, 0, -1)
     );
+} elseif (strpos($app_id, 'wa-plugins/')===0) {
+
+    $path = realpath(dirname(__FILE__)."/../../").'/';
+    $locale_id = str_replace(array('wa-plugins/','/'), array('','_'), $locale_id);
+    $include = array(
+    $path.'/'.$app_id,
+    );
 } elseif (strpos($app_id, '/themes/')) {
 
     $path = realpath(dirname(__FILE__)."/../../")."/wa-apps/";

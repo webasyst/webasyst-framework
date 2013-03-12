@@ -267,6 +267,20 @@ class waContact implements ArrayAccess
         }
     }
 
+    public function getFirst($field_id)
+    {
+        $value = $this->get($field_id);
+        if (strpos($field_id, '.') !== false) {
+            $field_parts = explode('.', $field_id, 2);
+            $field_id = $field_parts[0];
+        }
+        $field = waContactFields::get($field_id, 'enabled');
+        if ($field && $field->isMulti()) {
+            return isset($value[0]) ? $value[0] : ($field instanceof waContactCompositeField ? array() : '');
+        }
+        return $value;
+    }
+
     /**
      * Returns code for the user
      * @return string
@@ -691,7 +705,12 @@ class waContact implements ArrayAccess
                 return false;
             }
             $right_model = new waContactRightsModel();
-            return $right_model->get($this->id, $app_id, $name);
+            $r = $right_model->get($this->id, $app_id, $name);
+            // check .all
+            if (!$r && strpos($name, '.') !== false) {
+                return $right_model->get($this->id, $app_id, substr($name, 0, strpos($name, '.')).'.all');
+            }
+            return $r;
         }
     }
 

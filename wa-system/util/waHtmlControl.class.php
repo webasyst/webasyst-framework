@@ -16,6 +16,8 @@ class waHtmlControl
     const CHECKBOX = 'checkbox';
     const GROUPBOX = 'groupbox';
     const INTERVAL = 'interval';
+    const CONTACT = 'contact';
+    const CONTACTFIELD = 'contactfield';
     const CUSTOM = 'custom';
     const HIDDEN = 'hidden';
 
@@ -35,6 +37,8 @@ class waHtmlControl
             self::CHECKBOX,
             self::HIDDEN,
             self::GROUPBOX,
+            self::CONTACT,
+            self::CONTACTFIELD,
         );
     }
 
@@ -123,19 +127,11 @@ class waHtmlControl
             $name = $name ? $name : $params['name'];
             unset($params['name']);
         }
-        if (isset($params['namespace'])) {
-            if (is_array($params['namespace'])) {
-                $namespace = array_shift($params['namespace']);
-                while (($namspace_chunk = array_shift($params['namespace'])) !== null) {
-                    $namespace .= "[{$namspace_chunk}]";
-                }
-            } else {
-                $namespace = $params['namespace'];
-            }
-
+        if ($namespace = self::makeNamespace($params)) {
             $name = "{$namespace}[{$name}]";
             unset($params['namespace']);
         }
+
         #usage dual standart for options value=>title
         if (isset($params['options']) && is_array($params['options'])) {
             foreach ($params['options'] as $key => & $data) {
@@ -171,11 +167,25 @@ class waHtmlControl
 
         );
         $params = array_merge($wrappers, $params);
-        $instance = self::getInstance();
         self::makeId($params, $name);
+        $instance = self::getInstance();
         $control = $instance->$control_name($name, $params);
-        $res = sprintf($params['control_wrapper'], self::getControlTitle($params), $control, self::getControlDescription($params));
-        return $res;
+        if (is_array($control)) {
+            $controls = array_values($control);
+            $control = '';
+            foreach ($controls as $id => $chunk) {
+                $control .= sprintf($params['control_wrapper'], $chunk['title'], $chunk['control'], $chunk['description']);
+                if ($id < count($controls)) {
+                    $control .= $params['control_separator'];
+                }
+            }
+        } else {
+            $control = sprintf($params['control_wrapper'], self::getControlTitle($params), $control, self::getControlDescription($params));
+            if ($control === false) {
+                $control = "Invalid param 'control_wrapper' for {$type}:{$name}";
+            }
+        }
+        return $control;
     }
 
     /**
@@ -223,8 +233,11 @@ class waHtmlControl
             if (isset(self::$custom_controls[$type])) {
                 return call_user_func_array(self::$custom_controls[$type], array($name, $params));
             } else {
-                $type = strtolower($type);
-                return "Control type <b>{$type}</b> undefined";
+                $message = "Control type <b>{$type}</b> undefined";
+                if ($types = array_keys(self::$custom_controls)) {
+                    $message .= ", use one of this: ".implode(', ', $types);
+                }
+                return $message;
             }
         } else {
             throw new Exception("Call undefined function {$function_name} at ".__CLASS__);
@@ -269,6 +282,22 @@ class waHtmlControl
         $params['id'] = preg_replace(array('/[_]{2,}/', '/[_]{1,}$/'), array('_', ''), str_replace(array('[', ']'), '_', $params['id']));
     }
 
+    private static final function makeNamespace($params)
+    {
+        $namespace = null;
+        if (!empty($params['namespace'])) {
+            if (is_array($params['namespace'])) {
+                $namespace = array_shift($params['namespace']);
+                while (($namspace_chunk = array_shift($params['namespace'])) !== null) {
+                    $namespace .= "[{$namspace_chunk}]";
+                }
+            } else {
+                $namespace = $params['namespace'];
+            }
+        }
+        return $namespace;
+    }
+
     /**
      * Add namespace for control params
      * name="control_name" became name="namespace[control_name]" for string and name="namespace1[namespace2]...[control_name ] for array
@@ -293,9 +322,15 @@ class waHtmlControl
     private static function getControlTitle($params)
     {
         $title = '';
-        if (isset($params['title']) && $params['title_wrapper']) {
+        if (isset($params['title']) && !empty($params['title_wrapper'])) {
             $option_title = htmlentities(self::_wp($params['title']), ENT_QUOTES, self::$default_charset);
-            $title = sprintf($params['title_wrapper'], "<label for=\"{$params['id']}\">{$option_title}</label>\n");
+            if (!empty($params['id'])) {
+                $params['id'] = htmlentities($params['id'], ENT_QUOTES, self::$default_charset);
+                $option_title = "<label for=\"{$params['id']}\">{$option_title}</label>\n";
+            }
+            $title = sprintf($params['title_wrapper'], $option_title);
+        } elseif ($params['title_wrapper'] === false) {
+            $title = null;
         }
         return $title;
     }
@@ -314,7 +349,7 @@ class waHtmlControl
         $control = '';
         $control_name = htmlentities($name, ENT_QUOTES, self::$default_charset);
         $control .= "<input id=\"{$params['id']}\" type=\"text\" name=\"{$name}\" ";
-        $control .= self::addCustomParams(array('class', 'style', 'size', 'maxlength', 'value'), $params);
+        $control .= self::addCustomParams(array('class', 'style', 'size', 'maxlength', 'value', 'placeholder', 'readonly', 'autocomplete', 'autofocus'), $params);
         $control .= ">";
         return $control;
     }
@@ -344,7 +379,7 @@ class waHtmlControl
         $control_name = htmlentities($name, ENT_QUOTES, self::$default_charset);
         $value = htmlentities((string) $params['value'], ENT_QUOTES, self::$default_charset);
         $control .= "<textarea name=\"{$name}\"";
-        $control .= self::addCustomParams(array('class', 'style', 'cols', 'rows', 'wrap', 'id', ), $params);
+        $control .= self::addCustomParams(array('class', 'style', 'cols', 'rows', 'wrap', 'id', 'placeholder', 'readonly', 'autofocus', ), $params);
         $control .= ">{$value}</textarea>";
         return $control;
     }
@@ -360,7 +395,7 @@ class waHtmlControl
         $control = '';
         $control_name = htmlentities($name, ENT_QUOTES, self::$default_charset);
         $control .= "<input type=\"password\" name=\"{$name}\"";
-        $control .= self::addCustomParams(array('class', 'style', 'size', 'maxlength', 'value', 'id'), $params);
+        $control .= self::addCustomParams(array('class', 'style', 'size', 'maxlength', 'value', 'id', 'placeholder', 'readonly', 'autofocus'), $params);
         $control .= ">";
         return $control;
     }
@@ -380,15 +415,19 @@ class waHtmlControl
             } elseif (isset($params['checked'])) {
                 unset($params['checked']);
             }
-            self::makeId($params, $name, $id);
+            self::makeId($params, $name, md5($option_value));
             $option_value = htmlentities((string) $option_value, ENT_QUOTES, self::$default_charset);
             $control .= "<input type=\"radio\" name=\"{$name}\" value=\"{$option_value}\"";
-            $control .= self::addCustomParams(array('class', 'style', 'id', 'checked'), $params);
-            $option_title = htmlentities(self::_wp($option['title']), ENT_QUOTES, self::$default_charset);
-            $control .= ">&nbsp;<label";
-            $control .= self::addCustomParams(array('id' => 'for', ), $params);
-            $control .= self::addCustomParams(array('description' => 'title', 'class', 'style', ), $option);
-            $control .= ">{$option_title}</label>\n";
+            $control .= self::addCustomParams(array('class', 'style', 'id', 'checked', 'readonly', ), $params);
+            if (!empty($option['title'])) {
+                $option_title = htmlentities(self::_wp($option['title']), ENT_QUOTES, self::$default_charset);
+                $control .= ">&nbsp;<label";
+                $control .= self::addCustomParams(array('id' => 'for', ), $params);
+                $control .= self::addCustomParams(array('description' => 'title', 'class', 'style', ), $option);
+                $control .= ">{$option_title}</label>\n";
+            } else {
+                $control .= ">\n";
+            }
 
             $control .= self::getControlDescription(array_merge($params, array('description' => null), $option));
             if ($id < count($options)) {
@@ -403,8 +442,8 @@ class waHtmlControl
         $control = '';
         $id = 0;
         $options = isset($params['options']) ? (is_array($params['options']) ? $params['options'] : array($params['options'])) : array();
-        $control .= "<select name=\"{$name}\"";
-        $control .= self::addCustomParams(array('class', 'style', 'id'), $params);
+        $control .= "<select name=\"{$name}\" autocomplete=\"off\"";
+        $control .= self::addCustomParams(array('class', 'style', 'id', 'readonly', 'autofocus'), $params);
         $control .= ">\n";
         $groupbox = null;
         foreach ($options as $option) {
@@ -414,7 +453,7 @@ class waHtmlControl
             }
             if (!empty($option['group']) && ($option['group'] != $groupbox)) {
                 $groupbox = htmlentities((string) $option['group'], ENT_QUOTES, self::$default_charset);
-                $control .= "\n<optgroup label=\"{$groupbox}\">\n";
+                $control .= "\n<optgroup label=\"{$groupbox}\"".self::addCustomParams(array('class', 'style'), $option).">\n";
             }
 
             ++$id;
@@ -445,24 +484,34 @@ class waHtmlControl
     {
         $control = '';
         $options = isset($params['options']) ? (is_array($params['options']) ? $params['options'] : array($params['options'])) : array();
-        $checked = isset($params['checked']) ? (is_array($params['checked']) ? $params['checked'] : array($params['checked'])) : array();
         if (!is_array($params['value'])) {
             $params['value'] = array();
         }
         self::addNamespace($params, $name);
+
+        $wrappers = array(
+            'title_wrapper'       => '&nbsp;%s',
+            'description_wrapper' => '<span class="hint">%s</span>',
+            'control_wrapper'     => '%2$s'."\n".'%1$s'."\n".'%3$s'."\n",
+            'control_separator'   => "<br>",
+
+        );
+        $params = array_merge($params, ifempty($params['options_wrapper'], $wrappers));
         $checkbox_params = $params;
         if (isset($params['options'])) {
             unset($checkbox_params['options']);
         }
-        $values = $params['value'];
+        $id = 0;
         foreach ($options as $option) {
             //TODO check that $option is array
-            $checkbox_params['value'] = isset($values[$option['value']]) ? $values[$option['value']] : null;
-            $checkbox_params['title'] = $option['title'];
-            if ($checked) {
-                $checkbox_params['checked'] = isset($checked[$option['value']]) ? $checked[$option['value']] : null;
-            }
+            $checkbox_params['value'] = 1;
+            $checkbox_params['checked'] = in_array($option['value'], $params['value']);
+            $checkbox_params['title'] = ifset($option['title']);
+            $checkbox_params['description'] = ifempty($option['description']);
             $control .= self::getControl(self::CHECKBOX, $option['value'], $checkbox_params);
+            if (++$id < count($options)) {
+                $control .= $params['control_separator'];
+            }
         }
         return $control;
     }
@@ -517,13 +566,111 @@ class waHtmlControl
             $control .= ">";
         }
         $control .= "<input type=\"checkbox\" name=\"{$name}\"";
-        $control .= self::addCustomParams(array('value', 'class', 'style', 'checked', 'id', 'title'), $params);
+        $control .= self::addCustomParams(array('value', 'class', 'style', 'checked', 'id', 'title', 'readonly', ), $params);
         $control .= ">";
         if (isset($params['label']) && $params['label']) {
             $control .= '&nbsp;'.htmlentities(self::_wp($params['label']), ENT_QUOTES, self::$default_charset)."</label>";
         }
 
         return $control;
+    }
+
+    private function getContactControl($name, $params = array())
+    {
+        $control = array();
+        if ($name) {
+            self::addNamespace($params, $name);
+        }
+        $params['namespace'] = $namespace = self::makeNamespace($params);
+        $contact = wa()->getUser();
+        $values = isset($params['value']) ? (array) $params['value'] : array();
+        $custom_params = array('class', 'style', 'placeholder', 'id', 'readonly', );
+        $id = 0;
+        foreach ((array) $params['options'] as $field) {
+            $params['namespace'] = $namespace;
+            $control[$id] = array(
+                'title'       => '',
+                'control'     => '',
+                'description' => '',
+            );
+            $field_id = is_array($field) ? $field['value'] : $field;
+            if (!isset($values[$field_id])) {
+                $values[$field_id] = $contact->get($field_id);
+            }
+
+            $params['value'] = $values[$field_id];
+            if (strpos($field_id, ':')) {
+                list($field_id, $subfield_id) = explode(':', $field_id, 2);
+            } else {
+                $subfield_id = null;
+            }
+            if ($contact_field = waContactFields::get($field_id)) {
+                if (is_array($params['value'])) {
+                    $params['value'] = current($params['value']);
+                }
+
+                self::makeId($params, $field_id);
+                $params['title'] = $contact_field->getName();
+                $attrs = $this->addCustomParams($custom_params, $params);
+                if ($subfield_id) {
+                    self::makeId($params, $subfield_id);
+                    $params['namespace'] = self::makeNamespace($params + array('name'));
+                }
+
+                unset($params['id']);
+                if ($subfield_id) {
+                    if ($contact_subfield = $contact_field->getFields($subfield_id)) {
+                        $control[$id]['title'] .= ' '.$contact_subfield->getName();
+                        $params['id'] = "{$field_id}:{$subfield_id}";
+                        $control[$id]['control'] = $contact_subfield->getHTML($params, $attrs);
+                    } else {
+                        $params['title'] .= ':'.$subfield_id;
+                        $control[$id]['title'] = $this->getControlTitle($params);
+                        $control[$id]['control'] .= sprintf('<span class="error">%s<span>', _w('Contact subfield not found'));
+                    }
+                } else {
+                    $control[$id]['control'] = $contact_field->getHTML($params, $attrs);
+
+                    $control[$id]['title'] = $this->getControlTitle($params);
+                }
+            } else {
+
+                $params['title'] = $field_id;
+                $control[$id]['title'] = $this->getControlTitle($params);
+                $control[$id]['control'] .= sprintf('<span class="error">%s<span>', _w('Contact field not found'));
+            }
+            ++$id;
+        }
+        return $control;
+    }
+
+    private function getContactfieldControl($name, $params = array())
+    {
+        $params['options'] = array();
+
+        $params['options'][] = array(
+            'title' => '—',
+            'value' => '',
+        );
+        $fields = waContactFields::getAll();
+        foreach ($fields as $field) {
+            if ($field instanceof waContactCompositeField) {
+                $subfields = $field->getFields();
+                foreach ($subfields as $subfield) {
+                    $params['options'][] = array(
+                        'group' => $field->getName(),
+                        'title' => $subfield->getName(),
+                        'value' => $field->getId().'.'.$subfield->getId(),
+                    );
+                }
+            } else {
+                $params['options'][] = array(
+                    'title' => $field->getName(),
+                    'value' => $field->getId(),
+                );
+            }
+        }
+        return $this->getSelectControl($name, $params);
     }
 
     /**
@@ -576,9 +723,15 @@ class waHtmlControl
                 if ($param_value !== false) {
                     if (in_array($param, array('title', 'description'))) {
                         $param_value = self::_wp($param_value);
+                    } elseif (in_array($param, array('disabled', 'readonly'))) {
+                        $param_value = $param;
                     }
                     $param_value = htmlentities((string) $param_value, ENT_QUOTES, self::$default_charset);
-                    $params_string .= " {$target}=\"{$param_value}\"";
+                    if (in_array($param, array('autofocus'))) {
+                        $params_string .= " {$target}";
+                    } else {
+                        $params_string .= " {$target}=\"{$param_value}\"";
+                    }
                 }
             }
         }

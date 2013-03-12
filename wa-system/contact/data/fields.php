@@ -75,6 +75,8 @@ return array(
         'ext' => array(
             'work' => 'Work',
             'home' => 'Home',
+            'shipping' => 'Shipping',
+            'billing' => 'Billing',
         )
     )),
 

@@ -49,7 +49,9 @@ class waPageAction extends waViewAction
                 $message = preg_replace('/"[a-z0-9]{32,}"/'," of content Site page with id {$page['id']}",$e->getMessage());
                 throw new SmartyCompilerException($message, $e->getCode());
             }
-            $this->layout->assign('page_id', $page['id']);
+            if ($this->layout) {
+                $this->layout->assign('page_id', $page['id']);
+            }
             $this->view->assign('page', $page);
             $this->setThemeTemplate('page.html');
         }

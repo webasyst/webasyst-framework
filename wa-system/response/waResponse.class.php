@@ -86,6 +86,7 @@ class waResponse {
           'http_only' => $http_only,
         );
         setcookie($name, $value, $expire, $path, $domain, $secure, $http_only);
+          $_COOKIE[$name] = $value;
       }
 
 
@@ -149,7 +150,7 @@ class waResponse {
       public function setMeta($name, $value = null)
       {
           if (is_array($name)) {
-              $this->metas += $name;
+              $this->metas = $name + $this->metas;
           } else {
               $this->metas[$name] = $value;
           }
@@ -168,6 +169,11 @@ class waResponse {
       {
           if ($app_id) {
               $url = wa()->getAppStaticUrl($app_id).$url;
+              $app_info = wa()->getAppInfo($app_id === true ? null : $app_id);
+              $url .= '?'.(isset($app_info['version']) ? $app_info['version'] : '0.0.1');
+              if (waSystemConfig::isDebug()) {
+                  $url .= '.'.time();
+              }
           } else {
               $url = wa()->getRootUrl().$url;
           }
@@ -192,6 +198,11 @@ class waResponse {
       {
           if ($app_id) {
               $url = wa()->getAppStaticUrl($app_id).$url;
+              $app_info = wa()->getAppInfo($app_id === true ? null : $app_id);
+              $url .= '?'.(isset($app_info['version']) ? $app_info['version'] : '0.0.1');
+              if (waSystemConfig::isDebug()) {
+                  $url .= '.'.time();
+              }
           } else {
               $url = wa()->getRootUrl().$url;
           }

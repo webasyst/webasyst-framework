@@ -18,7 +18,7 @@ class waContactStringField extends waContactField
     {
         if (!isset($this->options['validators'])) {
             $this->options['validators'] = new waStringValidator($this->options);
-        }    
+        }
     }
 
     public function getInfo()
@@ -27,7 +27,7 @@ class waContactStringField extends waContactField
         $info['input_height'] = $this->getParameter('input_height');
         return $info;
     }
-    
+
     /**
      * Get the current value of parameter $p.
      * Used by a field constructor to access field parameters.
@@ -71,6 +71,16 @@ class waContactStringField extends waContactField
         } else {
             parent::setParameter($p, $value);
         }
+    }
+
+    public function getHtmlOne($params = array(), $attrs = '')
+    {
+        if ($this->getParameter('input_height') <= 1) {
+            return parent::getHtmlOne($params, $attrs);
+        }
+
+        $value = isset($params['value']) ? $params['value'] : '';
+        return '<textarea '.$attrs.' name="'.$this->getHTMLName($params).'">'.htmlspecialchars($value).'</textarea>';
     }
 }
 

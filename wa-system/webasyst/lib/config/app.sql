@@ -382,8 +382,8 @@ CREATE TABLE IF NOT EXISTS `wa_login_log` (
 DROP TABLE IF EXISTS `wa_transaction`;
 CREATE TABLE IF NOT EXISTS `wa_transaction` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `paymentsystem_id` varchar(50) NOT NULL,
-  `application_id` varchar(50) NOT NULL,
+  `plugin` varchar(50) NOT NULL,
+  `app_id` varchar(50) NOT NULL,
   `merchant_id` varchar(50) DEFAULT NULL,
   `native_id` varchar(255) NOT NULL,
   `create_datetime` datetime NOT NULL,
@@ -399,8 +399,8 @@ CREATE TABLE IF NOT EXISTS `wa_transaction` (
   `amount` FLOAT NULL,
   `currency_id` VARCHAR(3) NULL, 
   PRIMARY KEY (`id`),
-  KEY `paymentsystem_id` (`paymentsystem_id`),
-  KEY `application_id` (`application_id`),
+  KEY `plugin` (`plugin`),
+  KEY `app_id` (`app_id`),
   KEY `merchant_id` (`merchant_id`),
   KEY `transaction_native_id` (`native_id`),
   KEY `parent_id` (`parent_id`),

@@ -7,8 +7,8 @@ class waContactRadioSelectField extends waContactSelectField
         $value = isset($params['value']) ? $params['value'] : '';
         $html = '';
         foreach ($this->getOptions() as $k => $v) {
-            $html .= '<label><input type="radio"'.($k == $value ? ' checked="checked"' : '').' name="'.$this->getHTMLName($params).'" value="'.$k.'"> '.htmlspecialchars($v).'</label><br>';
+            $html .= '<label><input type="radio"'.($k == $value ? ' checked="checked"' : '').' name="'.$this->getHTMLName($params).'" value="'.$k.'"> '.htmlspecialchars($v).'</label>';
         }
-        return $html;
+        return '<p>'.$html.'</p>';
     }
 }

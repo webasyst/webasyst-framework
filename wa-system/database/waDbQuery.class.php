@@ -116,7 +116,7 @@ class waDbQuery
     /**
      * @return waDbResultSelect
      */
-    protected function query()
+    public function query()
     {
         return $this->model->query($this->getSQL());
     }

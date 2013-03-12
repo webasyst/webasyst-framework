@@ -40,27 +40,27 @@ class waTheme implements ArrayAccess
      * Original not modified theme
      * @var string
      */
-    const ORIGINAL       = 'original';
+    const ORIGINAL = 'original';
 
     /**
      * User theme
      * @var string
      */
-    const CUSTOM         = 'custom';
+    const CUSTOM = 'custom';
 
     /**
      * Overriden theme
      * @var string
      */
-    const OVERRIDDEN     = 'overridden';
+    const OVERRIDDEN = 'overridden';
 
     /**
      *
      * Undefined theme type
      * @var string
      */
-    const NONE           = 'none';
-    const PATH           = 'theme.xml';
+    const NONE = 'none';
+    const PATH = 'theme.xml';
 
     protected $app;
     protected $id;
@@ -110,7 +110,7 @@ class waTheme implements ArrayAccess
         }
         $app_id = ($app_id === true || !$app_id) ? wa()->getApp() : $app_id;
         self::verify($id);
-        $path_custom   = wa()->getDataPath('themes/', true, $app_id).$id;
+        $path_custom = wa()->getDataPath('themes/', true, $app_id).$id;
         $path_original = wa()->getAppPath('themes/', $app_id).$id;
         if (!file_exists($path_custom) || (!$check_only_path && !file_exists($path_custom.'/'.self::PATH))) {
             $path_custom = false;
@@ -119,7 +119,7 @@ class waTheme implements ArrayAccess
         if (!file_exists($path_original) || (!$check_only_path && !file_exists($path_original.'/'.self::PATH))) {
             $path_original = false;
         }
-        return  ($path_custom || $path_original)?true:false;
+        return ($path_custom || $path_original) ? true : false;
     }
 
     private function initPath($force = false)
@@ -128,7 +128,7 @@ class waTheme implements ArrayAccess
         $this->extra_info = array();
         $this->url = null;
 
-        $this->path_custom   = wa()->getDataPath('themes/', true, $this->app).$this->id;
+        $this->path_custom = wa()->getDataPath('themes/', true, $this->app).$this->id;
         $this->path_original = wa()->getAppPath('themes/', $this->app).$this->id;
 
         if (!file_exists($this->path_custom) || (!$force && !file_exists($this->path_custom.'/'.self::PATH))) {
@@ -139,7 +139,7 @@ class waTheme implements ArrayAccess
             $this->path_original = false;
         }
 
-        if($this->path_custom && $this->path_original) {
+        if ($this->path_custom && $this->path_original) {
             $this->type = self::OVERRIDDEN;
             $this->path = $this->path_custom;
         } elseif ($this->path_custom) {
@@ -161,91 +161,92 @@ class waTheme implements ArrayAccess
 
     private function init($param = null)
     {
-        if(is_null($this->info)) {
+        if (is_null($this->info)) {
             $path = $this->path.'/'.self::PATH;
             $extension = pathinfo($path, PATHINFO_EXTENSION);
             switch ($extension) {
-                case 'xml': {
-                    $locale = self::getLocale();
+                case 'xml':
+                    {
+                        $locale = self::getLocale();
 
-                    $this->info = array(
-                    	'name'=>array($locale => $this->id),
-                    	'files'=>array(),
-                        'parent_theme_id'=>'',
-                        'version'=>'',
-                    );
-                    if(!$xml = $this->getXML()) {
-                        trigger_error("Invalid theme description {$path}",E_USER_WARNING);
+                        $this->info = array(
+                            'name'            => array($locale => $this->id),
+                            'files'           => array(),
+                            'parent_theme_id' => '',
+                            'version'         => '',
+                        );
+                        if (!$xml = $this->getXML()) {
+                            trigger_error("Invalid theme description {$path}", E_USER_WARNING);
+                            break;
+                        }
+                        $ml_fields = array('name', 'description', 'about');
+
+                        foreach ($ml_fields as $field) {
+                            $this->info[$field] = array();
+                        }
+                        foreach ($xml->attributes() as $field => $value) {
+                            $this->info[$field] = (string) $value;
+                        }
+
+                        $this->info['system'] = isset($this->info['system']) ? (bool) $this->info['system'] : false;
+
+                        foreach ($ml_fields as $field) {
+                            if ($xml->{$field}) {
+                                foreach ($xml->{$field} as $value) {
+                                    if ($value && ($locale = (string) $value['locale'])) {
+                                        $this->info[$field][$locale] = (string) $value;
+                                    }
+                                }
+                            } elseif ($field == 'name') {
+                                $locale = self::getLocale();
+                                $this->info[$field][$locale] = $this->id;
+                            }
+                        }
+                        if (!empty($this->info['parent_theme_id'])) {
+                            $parent_exists = self::exists($this->info['parent_theme_id'], $this->app);
+                        } else {
+                            $parent_exists = false;
+                        }
+
+                        $this->info['files'] = array();
+                        if ($files = $xml->files) {
+                            foreach ($files->children() as $file) {
+                                $path = (string) $file['path'];
+                                $this->info['files'][$path] = array(
+                                    'custom' => isset($file['custom']) && (string) $file['custom'] ? true : false
+                                );
+                                $this->info['files'][$path]['parent'] = isset($file['parent']) && (bool) $file['parent'] ? 1 : 0;
+                                if ($this->info['files'][$path]['parent']) {
+                                    $this->info['files'][$path]['parent_exists'] = $parent_exists;
+                                }
+                                foreach ($file->description as $value) {
+                                    if ($value && ($locale = (string) $value['locale'])) {
+                                        $this->info['files'][$path]['description'][$locale] = (string) $value;
+                                    }
+                                }
+                            }
+                            ksort($this->info['files']);
+                        }
                         break;
                     }
-                    $ml_fields = array('name','description','about');
-
-                    foreach ($ml_fields as $field) {
-                        $this->info[$field] = array();
-                    }
-                    foreach ($xml->attributes() as $field=>$value) {
-                        $this->info[$field] = (string)$value;
-                    }
-
-                    $this->info['system'] = isset($this->info['system'])? (bool)$this->info['system'] : false;
-
-                    foreach ($ml_fields as $field) {
-                        if ($xml->{$field}) {
-                            foreach ($xml->{$field} as $value) {
-                                if ($value && ($locale = (string)$value['locale'])) {
-                                    $this->info[$field][$locale] = (string)$value;
-                                }
-                            }
-                        } elseif($field == 'name') {
-                            $locale = self::getLocale();
-                            $this->info[$field][$locale] = $this->id;
+                case 'php':
+                    {
+                        if (file_exists($path)) {
+                            $this->info = include($path);
                         }
+                        break;
                     }
-
-                    if (!empty($this->info['parent_theme_id'])) {
-                        $parent_exists = self::exists($this->info['parent_theme_id'], $this->app);
-                    } else {
-                        $parent_exists = false;
+                default:
+                    {
+                        $this->info = array();
+                        break;
                     }
-
-                    $this->info['files'] = array();
-                    if ($files = $xml->files) {
-                        foreach ($files->children() as $file) {
-                            $path = (string)$file['path'];
-                            $this->info['files'][$path] = array(
-                                'custom' => isset($file['custom']) && (string)$file['custom'] ? true : false
-                            );
-                            $this->info['files'][$path]['parent'] = isset($file['parent']) && (bool)$file['parent'] ? 1 : 0;
-                            if ($this->info['files'][$path]['parent']) {
-                                $this->info['files'][$path]['parent_exists'] = $parent_exists;
-                            }
-                            foreach ($file->description as $value) {
-                                if ($value && ($locale = (string)$value['locale'])) {
-                                    $this->info['files'][$path]['description'][$locale] = (string)$value;
-                                }
-                            }
-                        }
-                        ksort($this->info['files']);
-                    }
-                    break;
-                }
-                case 'php': {
-                    if (file_exists($path)) {
-                        $this->info = include($path);
-                    }
-                    break;
-                }
-                default: {
-                    $this->info = array();
-                    break;
-                }
             }
         }
-        return ($param===null)?true:isset($this->info[$param]);
+        return ($param === null) ? true : isset($this->info[$param]);
 
         //TODO check info and construct params
     }
-
     /**
      * Append file into theme
      *
@@ -273,7 +274,7 @@ class waTheme implements ArrayAccess
      */
     public function removeFile($path)
     {
-        if(preg_match('@(^|[\\/])..[\\/]@', $path)){
+        if (preg_match('@(^|[\\/])..[\\/]@', $path)) {
             throw new waException("Invalid theme's file path");
         }
         $this->init();
@@ -297,7 +298,7 @@ class waTheme implements ArrayAccess
         if (!isset($this->info['files'][$file]) || !$this->info['files'][$file]['custom']) {
             return true;
         }
-        if(is_array($description)){
+        if (is_array($description)) {
             if ($this->info['files'][$file]['description'] == $description) {
                 return true;
             }
@@ -306,7 +307,7 @@ class waTheme implements ArrayAccess
                 return true;
             }
         }
-        $this->setFiles(array($file=>array('description'=>$description)));
+        $this->setFiles(array($file => array('description' => $description)));
         return $this->save();
     }
 
@@ -314,7 +315,7 @@ class waTheme implements ArrayAccess
     {
         $path = $this->path.'/'.self::PATH;
         if (file_exists($path)) {
-            if($as_dom) {
+            if ($as_dom) {
                 $xml = new DOMDocument(1.0, 'UTF-8');
                 $xml->load($path);
             } else {
@@ -446,6 +447,9 @@ XML;
                     //nothing todo
                     break;
                 }
+            }
+            if ($res) {
+                self::protect($this->app, $this->path_custom ? true : false);
             }
         }
         return $res;
@@ -606,13 +610,17 @@ XML;
         }
     }
 
-    protected static function protect($app)
+    protected static function protect($app, $custom = true)
     {
         // create .htaccess to ney access to *.php and *.html files
-        $path = wa()->getDataPath('themes/.htaccess', true, $app, false);
+
+        if ($custom) {
+            $path = wa()->getDataPath('themes/.htaccess', true, $app, false);
+        } else {
+            $path = wa()->getAppPath('themes/.htaccess', $app);
+        }
         if (!file_exists($path)) {
-            waFiles::create($path);
-            $htaccess = '<FilesMatch "\.(php\d*|html?|xml)$">
+            waFiles::create($path);$htaccess = '<FilesMatch "\.(php\d*|html?|xml)$">
     Deny from all
 </FilesMatch>
 ';

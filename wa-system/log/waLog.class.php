@@ -6,6 +6,7 @@ class waLog
     public static function log($message, $file = 'error.log') {
         $path = waSystem::getInstance()->getConfig()->getPath('log').'/'.$file;
         if (!file_exists($path)) {
+            waFiles::create($path);
             touch($path);
             chmod($path, 0666);
         } elseif (!is_writable($path)) {

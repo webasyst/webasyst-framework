@@ -71,7 +71,7 @@ class waContactSelectField extends waContactField
         return 'Select';
     }
 
-    public function getHTML($params = array(), $attrs = '')
+    public function getHtmlOne($params = array(), $attrs = '')
     {
         $value = isset($params['value']) ? $params['value'] : '';
         $html = '<select '.$attrs.' name="'.$this->getHTMLName($params).'"><option value=""></option>';
@@ -81,5 +81,5 @@ class waContactSelectField extends waContactField
         $html .= '</select>';
         return $html;
     }
-
 }
+

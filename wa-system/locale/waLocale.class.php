@@ -156,9 +156,9 @@ class waLocale
         if ($decimals === false) {
             $decimals = 0;
             if (($i = strpos($n, '.')) !== false) {
-                $decimals = strlen($n) - $i - 1;
+                $decimals = strlen(rtrim($n, '0')) - $i - 1;
             } elseif (($i = strpos($n, ',')) !== false) {
-                $decimals = strlen($n) - $i - 1;
+                $decimals = strlen(rtrim($n, '0')) - $i - 1;
             }
         } elseif ($decimals === null) {
             $decimals = $locale_info['frac_digits'];

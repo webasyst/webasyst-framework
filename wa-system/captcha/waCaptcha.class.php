@@ -53,6 +53,7 @@ class waCaptcha extends waAbstractCaptcha
                     div.find('.wa-captcha-input').focus();
                 });
             };
+            div.find('input').val('');
             return false;
         });
     });

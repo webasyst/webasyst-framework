@@ -24,13 +24,13 @@ class waModel
      * Writable or not
      * @var boolean
      */
-    protected $writable   = true;
+    protected $writable = true;
 
     /**
      * Name of the table
      * @var string
      */
-    protected $table    = false;
+    protected $table = false;
 
     protected $fields = array();
 
@@ -44,7 +44,7 @@ class waModel
      * Cache
      * @var waiCache
      */
-    private $cache   = null;
+    private $cache = null;
 
     /**
      * Array of caches to clean after execution of query INSERT, UPDATE or DELETE
@@ -59,7 +59,6 @@ class waModel
      */
     protected $type;
 
-
     //private $readonly   = false;
 
     /**
@@ -69,7 +68,7 @@ class waModel
     public function __construct($type = null, $writable = false)
     {
         $this->writable = $writable;
-        $this->type     = $type ? $type : 'default';
+        $this->type = $type ? $type : 'default';
         $this->adapter = waDbConnector::getConnection($this->type, $this->writable);
         if ($this->table && !$this->fields) {
             $this->getMetadata();
@@ -99,6 +98,22 @@ class waModel
             $runtime_cache->set($this->fields);
         }
         return $this->fields;
+    }
+
+    /**
+     * @return array field_id => default value (if set) or empty string
+     */
+    public function getEmptyRow()
+    {
+        $result = array();
+        foreach ($this->getMetadata() as $fld_id => $fld) {
+            if (isset($fld['default'])) {
+                $result[$fld_id] = $fld['default'];
+            } else {
+                $result[$fld_id] = '';
+            }
+        }
+        return $result;
     }
 
     private function getFields()
@@ -216,15 +231,17 @@ class waModel
         $result = $this->adapter->query($sql);
         if (!$result) {
             $error = "Query Error\nQuery: ".$sql.
-                     "\nError: ".$this->adapter->errorCode() .
+                     "\nError: ".$this->adapter->errorCode().
                      "\nMessage: ".$this->adapter->error();
             $trace = debug_backtrace();
             $stack = "";
+            $default = array('file' => 'n/a', 'line' => 'n/a');
             foreach ($trace as $i => $row) {
+                $row = array_merge($row, $default);
                 $stack .= $i.". ".$row['file'].":".$row['line']."\n".
-                    (isset($row['class']) ? $row['class'] : '').
-                    (isset($row['type']) ? $row['type'] : '').
-                    $row['function']."()\n";
+                     (isset($row['class']) ? $row['class'] : '').
+                     (isset($row['type']) ? $row['type'] : '').
+                     $row['function']."()\n";
             }
             waLog::log($error."\nStack:\n".$stack, 'db.log');
             throw new waDbException($error, $this->adapter->errorCode());
@@ -236,7 +253,7 @@ class waModel
     /**
      * Execute query
      * @param string $sql
-     * @param array $params
+     * @param mixed $params
      * @return resource|boolean
      */
     public function exec($sql, $params = null)
@@ -245,11 +262,17 @@ class waModel
             return true;
         }
         $waDbQueryAnalyzer = new waDbQueryAnalyzer($sql);
-        switch($waDbQueryAnalyzer->getQueryType()) {
+        switch ($waDbQueryAnalyzer->getQueryType()) {
             case 'update': case 'replace': case 'delete': case 'insert': $this->cleanCache();
         }
 
+        if (func_num_args() > 2) {
+            $params = array_slice(func_get_args(), 1);
+        }
         if ($params !== null) {
+            if (!is_array($params)) {
+                $params = array($params);
+            }
             return $this->prepare($sql)->exec($params);
         }
 
@@ -265,16 +288,22 @@ class waModel
      */
     public function query($sql, $params = null)
     {
+        if (func_num_args() > 2) {
+            $params = array_slice(func_get_args(), 1);
+        }
         if ($params !== null) {
+            if (!is_array($params)) {
+                $params = array($params);
+            }
             return $this->prepare($sql)->query($params);
         }
 
         // Define type of the query
         $waDbQueryAnalyzer = new waDbQueryAnalyzer($sql);
         if ($this->cache && $this->cache instanceof waiCache && $waDbQueryAnalyzer->getQueryType() == 'select') {
-            $cache  = $this->cache->get();
+            $cache = $this->cache->get();
             // if not cached
-            if($cache === null || !$cache instanceof waDbResultSelect) {
+            if ($cache === null || !$cache instanceof waDbResultSelect) {
                 $result = $waDbQueryAnalyzer->invokeResult($this->run($sql), $this->adapter);
                 // set cache
                 $this->cache->set($result);
@@ -339,12 +368,12 @@ class waModel
         $values = array();
         foreach ($data as $f => $value) {
             if (isset($this->fields[$f])) {
-              $values[] = $this->escapeField($f)." = ".$this->getFieldValue($f, $value);
+                $values[] = $this->escapeField($f)." = ".$this->getFieldValue($f, $value);
             }
         }
 
         if ($values && $where) {
-            $sql = "UPDATE ".($options ? $options." " : "").$this->table. "
+            $sql = "UPDATE ".($options ? $options." " : "").$this->table."
                    SET ".implode(", ", $values)."
                    WHERE ".$where;
             if ($return_object) {
@@ -356,19 +385,18 @@ class waModel
         return null;
     }
 
-
     public function replace($data)
     {
         $values = array();
         foreach ($data as $field => $value) {
             if (isset($this->fields[$field])) {
-              $values[$this->escapeField($field)] = $this->getFieldValue($field, $value);
+                $values[$this->escapeField($field)] = $this->getFieldValue($field, $value);
             }
         }
         if ($values) {
-           $sql = "REPLACE INTO ".$this->table. "
+            $sql = "REPLACE INTO ".$this->table."
                    (".implode(", ", array_keys($values)).") VALUES (".implode(", ", $values).")";
-           return $this->exec($sql);
+            return $this->exec($sql);
         }
         return true;
     }
@@ -402,11 +430,14 @@ class waModel
             case 'tinyint':
             case 'int':
             case 'integer':
-                return (int)$value;
+                return (int) $value;
             case 'decimal':
             case 'double':
             case 'float':
-                return str_replace(',', '.', (double)$value);
+                if (strpos($value, ',') !== false) {
+                    $value = str_replace(',', '.', $value);
+                }
+                return str_replace(',', '.', (double) $value);
             case 'date':
                 if (!$value) {
                     if ($is_null) {
@@ -449,26 +480,32 @@ class waModel
             }
         }
         if ($values) {
-           $sql = "INSERT ".($type === 2 ? "IGNORE ":"")." INTO ".$this->table. "
+            $sql = "INSERT ".($type === 2 ? "IGNORE " : "")." INTO ".$this->table."
                    (".implode(", ", array_keys($values)).") VALUES (".implode(", ", $values).")";
-           if ($type === 1 || $type === true) {
-               $sql .= " ON DUPLICATE KEY UPDATE ";
-               unset($values[$this->id]);
-               $comma = false;
-               foreach ($values as $field => $v) {
-                   if ($comma) {
-                       $sql .= ",";
-                   } else {
-                       $comma = true;
-                   }
-                   $sql .= $field." = VALUES(".$field.")";
-               }
-           }
-           if (!$this->isAutoIncrement()) {
-               return $this->exec($sql);
-           } else {
-               return $this->query($sql)->lastInsertId();
-           }
+            if ($type === 1 || $type === true) {
+                $sql .= " ON DUPLICATE KEY UPDATE ";
+                if (is_array($this->id)) {
+                    foreach ($this->id as $id) {
+                        unset($values[$id]);
+                    }
+                } else {
+                    unset($values[$this->id]);
+                }
+                $comma = false;
+                foreach ($values as $field => $v) {
+                    if ($comma) {
+                        $sql .= ",";
+                    } else {
+                        $comma = true;
+                    }
+                    $sql .= $field." = VALUES(".$field.")";
+                }
+            }
+            if (!$this->isAutoIncrement()) {
+                return $this->exec($sql);
+            } else {
+                return $this->query($sql)->lastInsertId();
+            }
         }
         return true;
     }
@@ -532,7 +569,6 @@ class waModel
         return true;
     }
 
-
     public function isAutoIncrement()
     {
         if ($this->id && !is_array($this->id) && isset($this->fields[$this->id])) {
@@ -561,11 +597,12 @@ class waModel
      */
     public function escape($data, $type = null)
     {
-        if (is_array($data)){
-            foreach($data as $key => $value){
+        if (is_array($data)) {
+            foreach ($data as $key => $value) {
                 if ($type === 'int') {
-                    $data[$key] = (int)$value;
+                    $data[$key] = (int) $value;
                 } elseif ($type === 'like') {
+                    $value = str_replace('\\', '\\\\', $value);
                     $data[$key] = str_replace(array('%', '_'), array('\%', '\_'), $this->adapter->escape($value));
                 } else {
                     $data[$key] = $this->adapter->escape($value);
@@ -575,8 +612,9 @@ class waModel
         }
         switch ($type) {
             case 'int':
-                return (int)$data;
+                return (int) $data;
             case 'like':
+                $data = str_replace('\\', '\\\\', $data);
                 return str_replace(array('%', '_'), array('\%', '\_'), $this->adapter->escape($data));
             default:
                 return $this->adapter->escape($data);
@@ -615,7 +653,7 @@ class waModel
 
     public function getById($value)
     {
-        return $this->getByField($this->id, $value, is_array($value));
+        return $this->getByField($this->id, $value, is_array($value) ? $this->id : false);
     }
 
     public function getByField($field, $value = null, $all = false, $limit = false)
@@ -631,7 +669,7 @@ class waModel
             $sql .= " WHERE ".$where;
         }
         if ($limit) {
-            $sql .= " LIMIT ".(int)$limit;
+            $sql .= " LIMIT ".(int) $limit;
         } elseif (!$all) {
             $sql .= " LIMIT 1";
         }
@@ -665,21 +703,21 @@ class waModel
                     throw new waException(sprintf(_ws('Unknown field %s'), $f));
                 }
                 if (is_array($v)) {
-                    $where[] = ($add_table_name ? $this->table."." : "") . $this->escapeField($f) . " IN ('".implode("','", $this->escape($v))."')";
+                    $where[] = ($add_table_name ? $this->table."." : "").$this->escapeField($f)." IN ('".implode("','", $this->escape($v))."')";
                 } else {
-                    $where[] = ($add_table_name ? $this->table."." : "") . $this->escapeField($f) .
+                    $where[] = ($add_table_name ? $this->table."." : "").$this->escapeField($f).
                                ($v === null ? " IS NULL" : " = ".$this->getFieldValue($f, $v));
                 }
             }
         } elseif (is_array($value)) {
             if ($value) {
-                $where[] = ($add_table_name ? $this->table."." : "") . $this->escapeField($field) . " IN ('".implode("','", $this->escape($value))."')";
+                $where[] = ($add_table_name ? $this->table."." : "").$this->escapeField($field)." IN ('".implode("','", $this->escape($value))."')";
             } else {
                 // analog field IN ('') - it's always false
                 $where[] = '0'; // or false
-            }
+                }
         } else {
-            $where[] = ($add_table_name ? $this->table."." : "") . $this->escapeField($field) .
+            $where[] = ($add_table_name ? $this->table."." : "").$this->escapeField($field).
                        ($value === null ? " IS NULL" : " = ".$this->getFieldValue($field, $value));
         }
         return implode(" AND ", $where);
@@ -728,7 +766,6 @@ class waModel
         return true;
     }
 
-
     /**
      * Prepare query and returns object of waDbStatement
      *
@@ -739,7 +776,6 @@ class waModel
     {
         return new waDbStatement($this, $sql);
     }
-
 
     /**
      * Checks exists or not field in the table
@@ -805,7 +841,6 @@ class waModel
         return true;
     }
 
-
     public function createSchema($schema)
     {
         $schema = $this->formatSchema($schema);
@@ -844,4 +879,3 @@ class waModel
         return $schema;
     }
 }
-

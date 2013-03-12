@@ -168,4 +168,7 @@ INSERT IGNORE INTO wa_region (country_iso3, code, name) VALUES
 ('can', 'ON', 'Ontario'),
 ('can', 'PE', 'Prince Edward Island'),
 ('can', 'QC', 'Quebec'),
-('can', 'SK', 'Saskatchewan');
+('can', 'SK', 'Saskatchewan'),
+('can', 'NT', 'Northwest Territories'),
+('can', 'YT', 'Yukon'),
+('can', 'NU', 'Nunavut');

@@ -183,6 +183,17 @@ class waRouting
             $url = substr($url, strlen($this->root_url));
             $this->dispatchRoutes($this->getAppRoutes($r['app'], $r), $url);
         }
+
+        // Default routing via GET parameters
+        if (waRequest::param('module') === null && ($module = waRequest::get('module'))) {
+            waRequest::setParam('module', $module);
+        }
+        if (waRequest::param('action') === null && ($action = waRequest::get('action'))) {
+            waRequest::setParam('action', $action);
+        }
+        if (waRequest::param('plugin') === null && ($plugin = waRequest::get('plugin'))) {
+            waRequest::setParam('plugin', $plugin);
+        }
         return $r;
     }
 
@@ -307,17 +318,6 @@ class waRouting
                 break;
             }
         }
-
-        // Default routing via GET parameters
-        if (waRequest::param('module') === null && ($module = waRequest::get('module'))) {
-            waRequest::setParam('module', $module);
-        }
-        if (waRequest::param('action') === null && ($action = waRequest::get('action'))) {
-            waRequest::setParam('action', $action);
-        }
-        if (waRequest::param('plugin') === null && ($plugin = waRequest::get('plugin'))) {
-            waRequest::setParam('plugin', $plugin);
-        }
         return $result;
     }
 
@@ -414,7 +414,11 @@ class waRouting
                         if ($j == $max && $this->getDomain() && $domain != $this->getDomain() && $result) {
                         } else {
                             $max = $j;
-                            $result = $root_url.self::clearUrl($u);
+                            $u = self::clearUrl($u);
+                            if (substr($result, -1) == '/' && substr($u, 0, 1) == '/') {
+                                $u = substr($u, 1);
+                            }
+                            $result = $root_url.$u;
                         }
                     }
                 }
