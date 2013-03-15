@@ -1,0 +1,37 @@
+<form id="paymentForm" class="{$payment_type}-form" action="{$form_url}" method="post" onsubmit="return check{$payment_type}form()">
+
+    <div class="fields">
+        <div class="field">
+            <div class="name">[`Mobile phone`]:</div>
+            <div class="value">
+                <input type="text" style="width: 20px; min-width: 20px;" class="grey" disabled="disabled" value="+7" id="{$payment_type|escape}-phone-prefix"><input type="text" value="{$mobile_phone|escape}" id="{$payment_type|escape}-phone" name="to">
+                <div><span class="hint">[`International 10-digit format, e.g. 79161231234`]</span></div>
+            </div>
+        </div>
+    </div>
+
+    {foreach from=$hidden_fields key=name item=value}
+    <input type="hidden" name="{$name}" value="{$value|escape}" />
+    {/foreach}
+
+    <div class="pay-button">
+        <input type="submit" value="[`Proceed to QIWI secure website to make payment`]" />
+        <div class="{$payment_type|escape}-error" style="color: red; margin-left: 2em; display: inline-block; "></div>
+    </div>
+
+</form>
+
+<script type="text/javascript">
+function check{$payment_type|escape}form() {
+    var phone = $.trim($('#{$payment_type|escape}-phone').val()), {literal}re = new RegExp('^\\d{6,13}$');{/literal};
+    if (!phone) {
+        $('.{$payment_type|escape}-error').text('[`Please specify your mobile phone number`]');
+        return false;
+    } else if (!re.test(phone)) {
+        $('.{$payment_type|escape}-error').text('[`Invalid phone number, please use only digits without delimiters and spaces`]');
+        return false;
+    }
+    $('.{$payment_type|escape}-error').html('');
+    return true;
+}
+</script>

@@ -42,10 +42,10 @@ class waContactAddressField extends waContactCompositeField
                  * @var $field waContactField
                  */
                 if (isset($data['data'][$field->getId()])) {
-                    $value[] = $field->format($data['data'][$field->getId()], 'value', $data['data']);
+                    $value[] = trim($field->format($data['data'][$field->getId()], 'value', $data['data']));
                 }
             }
-            $data['value'] = implode(", ", $value);
+            $data['value'] = implode(", ", array_filter($value, 'strlen'));
         }
         return parent::format($data, $format);
     }

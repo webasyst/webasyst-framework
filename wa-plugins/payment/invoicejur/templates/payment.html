@@ -1,0 +1,27 @@
+<form action="" method="POST" target="_blank">
+
+    <p>Чтобы сформировать счет на оплату, пожалуйста, заполните также следующие поля:</p>
+
+    <div class="wa-form">
+        <div class="wa-field">
+            <div class="wa-name">
+                Название компании
+            </div>
+            <div class="wa-name">
+                {if $printform}{$data.company}{/if}<input type="{if $printform}hidden{else}text{/if}" name="company" value="{$data.company}">
+            </div>
+        </div>
+        <div class="wa-field">
+            <div class="wa-name">
+                ИНН
+            </div>
+            <div class="wa-name">
+                {if $printform}{$data.inn}{/if}<input type="{if $printform}hidden{else}text{/if}" name="inn" value="{$data.inn}">
+            </div>
+        </div>
+    </div>
+    <br style="clear: both;">
+
+    <input type="hidden" name="printform" value="1">
+    <input type="submit" value="Распечатать счет на оплату">
+</form>

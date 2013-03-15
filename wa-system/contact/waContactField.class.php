@@ -514,6 +514,8 @@ abstract class waContactField
                     }
                 } else if (!is_array($data)) {
                     $data = htmlspecialchars($data);
+                } else {
+                    $data = '';
                 }
                 continue;
             }
@@ -648,7 +650,7 @@ abstract class waContactField
             }
         }
         if (isset($params['multi_index'])) {
-            $prefix .= $params['multi_index'].'][';
+            $suffix = ']['.$params['multi_index'].$suffix;
         }
         $name = isset($params['id']) ? $params['id'] : $this->getId();
         return $prefix.$name.$suffix;

@@ -339,7 +339,7 @@ abstract class waSystemPlugin
         }
         foreach ($settings as $name => $value) {
             $this->settings[$name] = $value;
-            $this->getAdapter()->setSettings($this->key, $name, $value);
+            $this->getAdapter()->setSettings($this->id, $this->key, $name, $value);
         }
         return $data;
     }

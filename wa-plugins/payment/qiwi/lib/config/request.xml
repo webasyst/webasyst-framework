@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+    <soap:Body>
+        <ns2:updateBill xmlns:ns2="http://client.ishop.mw.ru/">
+            <login>###</login>
+            <password>MD5</password>
+            <txn>shop_%id%_%order_id%</txn>
+            <status>60</status>
+        </ns2:updateBill>
+    </soap:Body>
+</soap:Envelope>

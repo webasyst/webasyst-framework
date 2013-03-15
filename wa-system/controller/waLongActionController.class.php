@@ -256,9 +256,19 @@ abstract class waLongActionController extends waController
             $this->_save();
         }
         $this->_transaction = true;
+        $time = $last_save = explode(' ', microtime());
         while ($continue && !$this->isDone()) {
             $continue = $this->step();
+            $time = explode(' ', microtime());
+            // Do not save more often than once a sec
+            if ($time[0] + $time[1] - $last_save[0] - $last_save[1] > 1) {
+                $this->_save();
+                $last_save = $time;
+            }
+        }
+        if ($last_save !== $time) {
             $this->_save();
+            $last_save = $time;
         }
 
         $this->_transaction = false;
@@ -483,7 +493,7 @@ abstract class waLongActionController extends waController
     }
 
     /** Saves current persistent data. */
-    private function _save()
+    private function _save($attempts = 3)
     {
 
         // invariant:
@@ -506,8 +516,22 @@ abstract class waLongActionController extends waController
         // Now 'new' represents good data after current transaction.
         // We can now spoil 'old' since we have 'new'.
 
-        copy($this->_files['new']['file'], $this->_files['old']['file']);
-        copy($this->_files['new']['data'], $this->_files['old']['data']);
+        $failed = !copy($this->_files['new']['file'], $this->_files['old']['file']);
+        $failed = !copy($this->_files['new']['data'], $this->_files['old']['data']) || $failed;
+
+        //clearstatcache();
+        //$failed = filesize($this->_files['old']['data']) <= 0 || $failed; // too risky to check this on windows
+
+        if ($failed) {
+            if ($attempts > 0) {
+                clearstatcache();
+                usleep(mt_rand(300, 900));
+                $this->_save($attempts - 1);
+                return;
+            } else {
+                throw new waException('Unable to save data files.');
+            }
+        }
 
         // Now both 'new' and 'old' represent good data after current transaction.
 

@@ -1,0 +1,175 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: wa-plugins/shipping/Courier\n"
+"POT-Creation-Date: 2013-02-09 22:43+0400\n"
+"PO-Revision-Date: \n"
+"Last-Translator:  wa-plugins/shipping/Courier\n"
+"Language-Team:  wa-plugins/shipping/Courier\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Language: en_US\n"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-Basepath: .\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPath-1: .\n"
+
+#: //wa-plugins/shipping/Courier/lib/config/plugin.php:3
+msgid "Courier"
+msgstr ""
+
+#: //wa-plugins/shipping/Courier/lib/config/plugin.php:4
+msgid "Courier shipping module. Shipping rate is calculated based on the shipping region, and either order total amount or order total weight."
+msgstr ""
+
+#: //wa-plugins/shipping/Courier/lib/config/settings.php:20
+msgid "Сроки поставки"
+msgstr ""
+
+#: //wa-plugins/shipping/Courier/lib/config/settings.php:21
+msgid "* формат даты доставки не утвержден (точное время или интервал)"
+msgstr ""
+
+#: //wa-plugins/shipping/Courier/lib/config/settings.php:24
+msgid "сегодня"
+msgstr ""
+
+#: //wa-plugins/shipping/Courier/lib/config/settings.php:25
+msgid "1 день"
+msgstr ""
+
+#: //wa-plugins/shipping/Courier/lib/config/settings.php:26
+msgid "2-3 дня"
+msgstr ""
+
+#: //wa-plugins/shipping/Courier/lib/config/settings.php:27
+msgid "1 неделя"
+msgstr ""
+
+#: //wa-plugins/shipping/Courier/lib/config/settings.php:28
+msgid "не указывюется"
+msgstr ""
+
+#: //wa-plugins/shipping/Courier/lib/CourierShipping.class.php:90
+msgid "Доставка невозможна в выбранную страну"
+msgstr ""
+
+#: //wa-plugins/shipping/Courier/lib/CourierShipping.class.php:92
+msgid "Доставка невозможна в выбранный регион"
+msgstr ""
+
+#: //wa-plugins/shipping/Courier/lib/CourierShipping.class.php:130
+msgid "регулярная доставка"
+msgstr ""
+
+#: //wa-plugins/shipping/Courier/lib/CourierShipping.class.php:131
+msgid "delivery description"
+msgstr ""
+
+#: //wa-plugins/shipping/Courier/lib/CourierShipping.class.php:188
+msgid "Лист доставки"
+msgstr ""
+
+#: //wa-plugins/shipping/Courier/lib/CourierShipping.class.php:189
+msgid "Лист доставки для курьера"
+msgstr ""
+
+#: //wa-plugins/shipping/Courier/templates/form.html:14
+msgid "print_form_edit_before_print"
+msgstr ""
+
+#: //wa-plugins/shipping/Courier/templates/form.html:15
+msgid "print_form_edit_title"
+msgstr ""
+
+#: //wa-plugins/shipping/Courier/templates/form.html:16
+msgid "btn_ok"
+msgstr ""
+
+#: //wa-plugins/shipping/Courier/templates/form.html:58
+msgid "print_form_address_not_found"
+msgstr ""
+
+#: //wa-plugins/shipping/Courier/templates/form.html:58
+msgid "btn_search_again"
+msgstr ""
+
+#: //wa-plugins/shipping/Courier/templates/form.html:81
+msgid "Print"
+msgstr ""
+
+#: //wa-plugins/shipping/Courier/templates/form.html:95
+msgid "ordr_comment"
+msgstr ""
+
+#: //wa-plugins/shipping/Courier/templates/form.html:101
+msgid "ordr_id"
+msgstr ""
+
+#: //wa-plugins/shipping/Courier/templates/form.html:109
+msgid "ordr_shipping_address"
+msgstr ""
+
+#: //wa-plugins/shipping/Courier/templates/form.html:120
+msgid "ordr_payment_type"
+msgstr ""
+
+#: //wa-plugins/shipping/Courier/templates/form.html:121
+msgid "ordr_shipping_type"
+msgstr ""
+
+#: //wa-plugins/shipping/Courier/templates/form.html:122
+msgid "email_ordr_ordered_products"
+msgstr ""
+
+#: //wa-plugins/shipping/Courier/templates/settings.html:2
+msgid "Country"
+msgstr ""
+
+#: //wa-plugins/shipping/Courier/templates/settings.html:11
+msgid "Пожалуйста, выбрите страну, для которой Вы хотите настроить модуль доставки"
+msgstr ""
+
+#: //wa-plugins/shipping/Courier/templates/settings.html:15
+msgid "Region"
+msgstr ""
+
+#: //wa-plugins/shipping/Courier/templates/settings.html:32
+msgid "Calculation method"
+msgstr ""
+
+#: //wa-plugins/shipping/Courier/templates/settings.html:34
+msgid "By weight"
+msgstr ""
+
+#: //wa-plugins/shipping/Courier/templates/settings.html:36
+msgid "By price"
+msgstr ""
+
+#: //wa-plugins/shipping/Courier/templates/settings.html:38
+msgid "Shipping rate is calculated based on eight order total amount or order total weight"
+msgstr ""
+
+#: //wa-plugins/shipping/Courier/templates/settings.html:44
+msgid "Currency"
+msgstr ""
+
+#: //wa-plugins/shipping/Courier/templates/settings.html:58
+msgid "Pricing"
+msgstr ""
+
+#: //wa-plugins/shipping/Courier/templates/settings.html:64
+msgid "Order weight, KG"
+msgstr ""
+
+#: //wa-plugins/shipping/Courier/templates/settings.html:66
+msgid "Shipping rate, USD"
+msgstr ""
+
+#: //wa-plugins/shipping/Courier/templates/settings.html:79
+msgid "Order total"
+msgstr ""
+
+#: //wa-plugins/shipping/Courier/templates/settings.html:81
+msgid "Shipping rate"
+msgstr ""

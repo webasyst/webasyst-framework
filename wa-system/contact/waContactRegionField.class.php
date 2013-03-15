@@ -37,16 +37,16 @@ class waContactRegionField extends waContactField
     public function format($data, $format = null, $full_composite=null)
     {
         if (empty($full_composite['country'])) {
-            return $data;
+            return $format === 'value' ? htmlspecialchars($data) : $data;
         }
         if (!$this->rm) {
             $this->rm = new waRegionModel();
         }
         $row = $this->rm->get($full_composite['country'], $data);
         if (!$row) {
-            return $data;
+            return $format === 'value' ? htmlspecialchars($data) : $data;
         }
-        return $row['name'];
+        return $format === 'value' ? htmlspecialchars($row['name']) : $row['name'];
     }
 
     public function getHtmlOne($params = array(), $attrs = '')
@@ -184,7 +184,7 @@ class waContactRegionField extends waContactField
                 if (r.data && r.data.options && r.data.oOrder) {
                     input.hide();
                     select.show().children().remove();
-                    select.append($('<option></option>').text("{$empty_option}"));
+                    select.append($('<option value=""></option>').text("{$empty_option}"));
                     var o, selected = false;
                     for (i = 0; i < r.data.oOrder.length; i++) {
                         o = $('<option></option>').attr('value', r.data.oOrder[i]).text(r.data.options[r.data.oOrder[i]]).attr('disabled', r.data.oOrder[i] === '');

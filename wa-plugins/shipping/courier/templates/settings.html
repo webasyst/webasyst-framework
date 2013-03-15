@@ -1,0 +1,88 @@
+<div class="field">
+    <div class="name">[`Country`]</div>
+    <div class="value">
+        <select name="{$namespace|escape}[rate_zone][country]">
+            <option value=""></option>
+            {foreach $countires as $country}
+            <option value="{$country.iso3letter|escape}"{if !empty($values.rate_zone.country) && ($values.rate_zone.country == $country.iso3letter)} selected="selected"{/if}>{$country.name|escape}</option>
+            {/foreach}
+        </select>
+        <br>
+        <span class="hint">[`Пожалуйста, выбрите страну, для которой Вы хотите настроить модуль доставки`]</span>
+    </div>
+</div>
+<div class="field">
+    <div class="name">[`Region`]</div>
+    <div class="value">
+        {if empty($regions)}
+        <input name="{$namespace|escape}[rate_zone][region]" value="77" type="text">
+        {else}
+        <select name="{$namespace|escape}[rate_zone][region]">
+            <option value=""></option>
+            {foreach $regions as $region}
+            <option value="{$region.code|escape}"{if $values.rate_zone.region == $region.code} selected="selected"{/if}>{$region.name|escape}</option>
+            {/foreach}
+        </select>
+        {/if}
+    </div>
+</div>
+
+
+<div class="field">
+    <div class="name">[`Calculation method`]</div>
+    <div class="value">
+        <label><input name="{$namespace|escape}[rate_by]" value="weight"{if $values.rate_by == 'weight'} checked="checked"{/if} type="radio"> [`By weight`]</label>
+        <br>
+        <label><input name="{$namespace|escape}[rate_by]" value="price"{if $values.rate_by == 'price'} checked="checked" {/if}type="radio"> [`By price`]</label>
+        <br>
+        <span class="hint">[`Shipping rate is calculated based on eight order total amount or order total weight`]</span>
+    </div>
+</div>
+
+
+<div class="field">
+    <div class="name">[`Currency`]</label>
+    </div>
+    <div class="value">
+        <select name="{$namespace|escape}[currency]" autocomplete="off">
+            <option value="">-</option>
+            {foreach $currencies as $currency}
+            <option value="{$currency.code|escape}"{if $values.currency == $currency.code} selected="selected"{/if}>{"`$currency.title` (`$currency.code`)"|escape}</option>
+            {/foreach}
+        </select>
+    </div>
+</div>
+
+
+<div class="field">
+    <div class="name">[`Pricing`]</label>
+    </div>
+    <div class="value">
+        <table class="zebra">
+            <thead>
+                <tr>
+                    <th colspan="2">[`Order weight, KG`]</th>
+                    <th>&nbsp;</th>
+                    <th>[`Shipping rate, USD`]</th>
+                    <th>&nbsp;</th>
+                </tr>
+            </thead>
+            <tfoot>
+                <tr class="white">
+                    <td colspan="5"><a class="js-action inline-link small" data-parent="tr" data-container="table" href="#/shipping/controlOptionAdd/"><i class="icon10 add"></i> <b><i>Add rate</i></b></a></td>
+                </tr>
+            </tfoot>
+            <tbody>
+                {foreach $values.rate as $rate}
+                <tr>
+                    <td class="min-width">&gt;</td>
+                    <td title="[`Order total`]"><input type="text" value="{$rate.limit|escape}" class="refreshable input" name="{$namespace|escape}[rate][{$rate@index}][limit]"></td>
+                    <td>→</td>
+                    <td title="[`Shipping rate`]"><input type="text" value="{$rate.cost|escape}" name="{$namespace|escape}[rate][{$rate@index}][cost]"></td>
+                    <td><a class="js-action" data-parent="tr" href="#/shipping/controlOptionRemove/"><i class="icon16 delete"></i></a></td>
+                </tr>
+                {/foreach}
+            </tbody>
+        </table>
+    </div>
+</div>
