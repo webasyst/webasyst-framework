@@ -120,6 +120,7 @@ class waContactAddressOneLineFormatter extends waContactFieldFormatter
                 } else {
                     $result['parts'][$id] = $field->format($data['data'][$id], $format, $data['data']);
                 }
+                $result['parts'][$id] = htmlspecialchars($result['parts'][$id]);
             }
         }
 

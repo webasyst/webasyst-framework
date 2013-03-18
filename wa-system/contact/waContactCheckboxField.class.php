@@ -29,6 +29,15 @@ class waContactCheckboxField extends waContactField
         return $old ? $old : time();
     }
 
+    public function format($data, $format = null)
+    {
+        $result = parent::format($data, $format);
+        if (in_array('list', explode(',', $format))) {
+            return $result ? _ws('Yes') : _ws('No');
+        }
+        return $result;
+    }
+
     public function getHTML($params = array(), $attrs = '')
     {
         $value = isset($params['value']) ? $params['value'] : '';
@@ -36,3 +45,4 @@ class waContactCheckboxField extends waContactField
     }
 
 }
+

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WebAsyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2013-03-05 10:49+0400\n"
+"PO-Revision-Date: 2013-03-18 12:55+0400\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -3261,4 +3261,10 @@ msgstr "Евро"
 
 msgid "select region"
 msgstr "выберите регион"
+
+msgid "Yes"
+msgstr "Да"
+
+msgid "No"
+msgstr "Нет"
 
