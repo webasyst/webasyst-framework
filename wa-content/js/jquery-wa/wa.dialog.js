@@ -101,7 +101,7 @@ jQuery.fn.waDialog = function (options) {
         d.prepend('<div class="dialog-background"> </div>');
     }
 
-    d.bind('close', function () {
+    d.unbind('close').bind('close', function () {
         if (options.onClose) {
             options.onClose.call($(this));
         }
@@ -173,7 +173,7 @@ jQuery.fn.waDialog = function (options) {
         });
     }
 
-    d.bind('wa-resize', function () {
+    d.unbind('wa-resize').bind('wa-resize', function () {
         var el = jQuery(this).find('.dialog-window');
         var dw = el.width();
         var dh = el.height();
@@ -196,7 +196,7 @@ jQuery.fn.waDialog = function (options) {
     }).trigger('wa-resize');
 
     if (options.esc) {
-        d.bind('esc', function () {
+        d.unbind('esc').bind('esc', function () {
             d.trigger('close');
         });
     }

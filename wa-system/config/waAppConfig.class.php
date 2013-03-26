@@ -55,7 +55,7 @@ class waAppConfig extends SystemConfig
             // add system actions for design and pages
             if (!empty($this->info['themes'])) {
                 $actions = array('template_add', 'template_edit', 'template_delete',
-                'theme_upload', 'theme_download', 'theme_delete', 'theme_reset', 'theme_duplicate', 'theme_rename',);
+                    'theme_upload', 'theme_download', 'theme_delete', 'theme_reset', 'theme_duplicate', 'theme_rename', );
                 foreach ($actions as $action) {
                     if (!isset($this->log_actions[$action])) {
                         $this->log_actions[$action] = array();
@@ -94,9 +94,9 @@ class waAppConfig extends SystemConfig
     public function init()
     {
         $files = array(
-        $this->getAppPath().'/lib/config/config.php', // defaults
-        $this->getPath('config').'/apps/'.$this->application.'/config.php' // custom
-        );
+            $this->getAppPath().'/lib/config/config.php', // defaults
+            $this->getPath('config').'/apps/'.$this->application.'/config.php' // custom
+            );
         foreach ($files as $file_path) {
             if (file_exists($file_path)) {
                 $config = include($file_path);
@@ -109,7 +109,7 @@ class waAppConfig extends SystemConfig
         }
 
         $this->info = include($this->getAppPath().'/lib/config/app.php');
-        if (wa()->getEnv() == 'backend' &&  isset($this->info['csrf']) && $this->info['csrf'] && waRequest::method() == 'post') {
+        if (wa()->getEnv() == 'backend' && isset($this->info['csrf']) && $this->info['csrf'] && waRequest::method() == 'post') {
             if (waRequest::post('_csrf') != waRequest::cookie('_csrf')) {
                 throw new waException('CSRF Protection', 403);
             }
@@ -356,7 +356,7 @@ class waAppConfig extends SystemConfig
 
     protected function getPHPFiles($path)
     {
-        if (! ( $dh = opendir($path))) {
+        if (!($dh = opendir($path))) {
             throw new waException('Filed to open dir: '.$path);
         }
         $result = array();
@@ -372,7 +372,6 @@ class waAppConfig extends SystemConfig
         closedir($dh);
         return $result;
     }
-
 
     protected function isIgnoreFile($f)
     {
@@ -397,7 +396,6 @@ class waAppConfig extends SystemConfig
                 return $result;
         }
     }
-
 
     public function getAppPath($path = null)
     {
@@ -517,17 +515,42 @@ class waAppConfig extends SystemConfig
         return $this->plugins;
     }
 
+    /**
+     *
+     * Update general plugin sort
+     * @param string $plugin plugin id
+     * @param int $sort 0 is first
+     */
+    public function setPluginSort($plugin, $sort)
+    {
+        $path = $this->getConfigPath('plugins.php', true);
+        if (file_exists($path) && ($plugins = include($path)) && !empty($plugins[$plugin])) {
+            $sort = max(0, min(intval($sort), count($plugins) - 1));
+            $order = array_flip(array_keys($plugins));
+            if ($order[$plugin] != $sort) {
+                $b = array($plugin => $plugins[$plugin]);
+                unset($plugins[$plugin]);
+                $a = array_slice($plugins, 0, $sort, true);
+                $c = array_slice($plugins, $sort, null, true);
+                $plugins = array_merge($a, $b, $c);
+                if (waUtils::varExportToFile($plugins, $path)) {
+                    waFiles::delete(waConfig::get('wa_path_cache')."/apps/".$this->application.'/config', true);
+                } else {
+                    throw new waException("Fail while update plugins sort order");
+                }
+            }
+        }
+    }
+
     public function checkRights($module, $action)
     {
         return true;
     }
 
-
     public function onCount()
     {
         return null;
     }
-
 
     public function setCount($n = null)
     {

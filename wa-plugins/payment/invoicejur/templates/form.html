@@ -124,7 +124,13 @@ var lang_strings = {
 					</tr>
 					<tr>
 						<td align=right width="20%"><font class=sc>Адрес</font></td>
-						<td><font class=sc><b class="inline_edit">{$order.billing_address.city}, {$order.billing_address.zip}, {$order.billing_address.street}</b></font></td>
+						<td><font class=sc><b class="inline_edit">
+                        {if !empty($order.billing_address.address)}
+						{$order.billing_address.city}, {$order.billing_address.zip}, {$order.billing_address.street}
+                        {else}
+                        {$order.shipping_address.city}, {$order.shipping_address.zip}, {$order.shipping_address.street}
+                        {/if}
+                        </b></font></td>
 					</tr>
 				</tbody>
 			</table>

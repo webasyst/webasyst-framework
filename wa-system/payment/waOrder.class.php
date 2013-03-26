@@ -26,6 +26,7 @@
  * @property array[string]string $shipping_address['street']
  * @property array[string]string $shipping_address['city']
  * @property array[string]string $shipping_address['region']
+ * @property array[string]string $shipping_address['region_name']
  * @property array[string]string $shipping_address['country']
  * @property array[string]string $shipping_address['country_name']
  * @property array[string]string $shipping_address['address']
@@ -38,6 +39,7 @@
  * @property array[string]string $billing_address['street']
  * @property array[string]string $billing_address['city']
  * @property array[string]string $billing_address['region']
+ * @property array[string]string $billing_address['region_name']
  * @property array[string]string $billing_address['country']
  * @property array[string]string $billing_address['country_name']
  * @property array[string]string $billing_address['address']
@@ -179,11 +181,24 @@ class waOrder implements ArrayAccess
 
     private function init_address(&$address)
     {
+        static $model;
         if (empty($address['country_name'])) {
             $address['country_name'] = waCountryModel::getInstance()->name(ifempty($address['country']));
         }
+        if (empty($address['region_name'])) {
+
+            $address['region_name'] = '';
+            if (!empty($address['country']) && !empty($address['region'])) {
+                if (!$model) {
+                    $model = new waRegionModel();
+                }
+                if ($region = $model->get($address['country'], $address['region'])) {
+                    $address['region_name'] = $region['name'];
+                }
+            }
+        }
         if (empty($address['address'])) {
-            $fields = array('street', 'city', 'region', 'zip', 'country_name', );
+            $fields = array('street', 'city', 'region_name', 'zip', 'country_name', );
             $address['address'] = '';
             $chunks = array();
             foreach ($fields as $field) {

@@ -76,7 +76,7 @@ function wa_print_r_helper($value, $level = 0)
         } else if ($value === null) {
             return 'NULL';
         }
-        return $value;
+        return htmlspecialchars($value);
     }
 
     $br = "\n"; // line break with tabs
@@ -86,12 +86,12 @@ function wa_print_r_helper($value, $level = 0)
 
     if (is_object($value)) {
         // Skip huge core objects
-        /*$class = get_class($value);
-         do {
-         if(in_array($class, array('CmsObject', 'Smarty', 'CMSModule'))) {
-         return get_class($value)." Object (skipped as a descendant of $class)";
-         }
-         } while ( ( $class = get_parent_class($class))); */
+        $class = get_class($value);
+        do {
+            if(in_array($class, array('Smarty'))) {
+                return get_class($value)." Object (skipped as a descendant of $class)";
+            }
+        } while ( ( $class = get_parent_class($class)));
         $str = get_class($value).' Object'.$br.'{';
     } else {
         $str = 'Array'.$br.'(';

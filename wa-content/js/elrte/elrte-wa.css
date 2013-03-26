@@ -2,6 +2,7 @@
 .el-rte .toolbar ul li.wa_horizontalrule{background-position:-199px -29px}
 .el-rte .toolbar ul li.wa_table{background-position:-421px -30px}
 .el-rte .toolbar ul li.wa_tableprops{background-position:-602px -29px}
+.el-rte .toolbar ul li.wa_tbcellprops{background-position:-806px -27px}
 .el-rte .toolbar ul li.wa_image{background-position:-384px -2px}
 .field .value .el-borderselect input[type=text] {min-width: 50px}
 .el-rte .toolbar ul li {z-index: auto}

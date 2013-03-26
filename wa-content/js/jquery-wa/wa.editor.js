@@ -79,18 +79,21 @@ function waEditorCodeMirrorInit(options)
     $(".CodeMirror-scroll").css('min-height', options.height + 'px');
 }
 
-
 function waEditorUpdateSource(options) {
     var options = options || {};
     options = jQuery.extend({
         'id': 'wa-page-content'
     }, options);
     var element = $('#' + options.id);
+
     if ($(".el-rte").length && $(".el-rte").is(':visible')) {
         $('.el-rte iframe').contents().find("img[data-src!='']").each(function () {
             $(this).attr('src', $(this).attr('data-src'));
         });
         element.val(element.elrte('val'));
+        if (wa_editor) {
+            wa_editor.setValue(element.val());
+        }
         //element.elrte('val', element.val());
         $('.el-rte iframe').contents().find('img[src*="$wa_url"]').each(function () {
             var s = decodeURIComponent($(this).attr('src'));

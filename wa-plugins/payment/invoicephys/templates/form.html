@@ -85,6 +85,7 @@ var lang_strings = {
                     <br>
                     <table cellspacing=0 cellpadding=2 width="100%" border=0>
                         <tbody>
+                            {if !empty($order.billing_address.address)}
                             <tr>
                                 <td><strong>Плательщик</strong></td>
                             </tr>
@@ -94,6 +95,18 @@ var lang_strings = {
                             <tr>
                                 <td class="inline_edit">{$order.billing_address.address|escape}</td>
                             </tr>
+                            {else}
+
+                            <tr>
+                                <td><strong>Плательщик</strong></td>
+                            </tr>
+                            <tr>
+                                <td class="inline_edit">{$order.shipping_address.name|escape}</td>
+                            </tr>
+                            <tr>
+                                <td class="inline_edit">{$order.shipping_address.address|escape}</td>
+                            </tr>
+                            {/if}
                         </tbody>
                     </table>
                     <br>

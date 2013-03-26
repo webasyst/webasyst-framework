@@ -785,6 +785,14 @@ class waModel
      */
     public function fieldExists($field)
     {
+        if (is_array($field)) {
+            try {
+                $this->query("SELECT ".$this->escapeField($field[1])." FROM ".$field[0]." WHERE 0");
+                return true;
+            } catch (waDbException $e) {
+                return false;
+            }
+        }
         return isset($this->fields[$field]);
     }
 

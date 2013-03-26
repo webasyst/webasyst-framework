@@ -129,7 +129,8 @@ class waContactConditionalField extends waContactField
             $option_hide_unmatched = $this->getParameter('hide_unmatched') ? 'true' : 'false';
             $js = <<<EOJS
 <script>if($){ $(function() {
-    var parent_field = $('[name="{$name_parent}"]');
+    var parent_field_selector = '[name="{$name_parent}"]';
+    var parent_field = $(parent_field_selector);
     if (parent_field.length <= 0) {
         return;
     }
@@ -164,8 +165,8 @@ class waContactConditionalField extends waContactField
         }
     };
 
-    var handler;
-    parent_field.change(handler = function() {
+    // Parent field on-change handler
+    var handler = function() {
         var old_val = getVal();
         var parent_value = $(this).val().toLowerCase();
         if ({$option_hide_unmatched}) {
@@ -184,6 +185,8 @@ class waContactConditionalField extends waContactField
                 input[0].removeAttribute('name');
             }
         } else if ({$option_hide_unmatched}) {
+            showInput();
+            input.val('');
             input.closest('.field').hide();
         } else {
             if (!input.is(':visible')) {
@@ -191,8 +194,15 @@ class waContactConditionalField extends waContactField
                 input.val(old_val);
             }
         }
-    });
+    };
     handler.call(parent_field);
+
+    var wrapper = parent_field.closest('.field');
+    if (wrapper.length) {
+        wrapper.on('change', parent_field_selector, handler);
+    } else {
+        parent_field.change(handler);
+    }
 });};</script>
 EOJS;
         }

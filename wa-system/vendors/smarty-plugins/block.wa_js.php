@@ -120,6 +120,7 @@ function smarty_block_wa_js($params, $content, &$smarty) {
             $result .= '<script type="text/javascript" src="' . $f . '"></script>'."\n";
 
             // Add datepicker localization automatically
+            // !!! This is not really a good idea since it will break in non-debug mode anyways
             if (substr($f, $n) == $jquery_ui_path.'datepicker.min.js' && $locale != 'en_US') {
                 $result .= '<script type="text/javascript" src="' . $wa->getRootUrl() . 'wa-content/js/jquery-ui/i18n/jquery.ui.datepicker-'.$locale.'.js"></script>'."\n";
             }

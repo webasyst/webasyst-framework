@@ -350,7 +350,7 @@ class waContactsCollection
                 continue;
             }
             $part = str_replace(array($escapedBS, $escapedAmp), array('\\\\', '\\&'), $part);
-            $parts = preg_split("/(\\\$=|\^=|\*=|==|!=|>=|<=|=|>|<)/uis", $part, 2, PREG_SPLIT_DELIM_CAPTURE);
+            $parts = preg_split("/(\\\$=|\^=|\*=|==|!=|>=|<=|=|>|<|@=)/uis", $part, 2, PREG_SPLIT_DELIM_CAPTURE);
             if ($parts) {
                 if ($parts[0] == 'email') {
                     if (!isset($this->joins['email'])) {
@@ -368,6 +368,15 @@ class waContactsCollection
                         $title[] = $parts[0].$parts[1].$parts[2];
                     }
                     $this->where[] = 'c.'.$parts[0].$this->getExpression($parts[1], $parts[2]);
+                } else if ($parts[0] == 'category') {
+                    if (!isset($this->joins['categories'])) {
+                        $this->joins['categories'] = array(
+                            'table' => 'wa_contact_categories',
+                            'alias' => 'cc'
+                        );
+                    }
+                    $title[] = _ws('Category').$parts[1].$parts[2];
+                    $this->where[] = 'cc.category_id'.$this->getExpression($parts[1], $parts[2]);
                 } else {
                     $alias = "d".($this->alias_index['data']++);
                     $field_parts = explode('.', $parts[0]);
@@ -553,13 +562,18 @@ class waContactsCollection
                 return " LIKE '%".$model->escape($value)."'";
             case "*=":
                 return " LIKE '%".$model->escape($value)."%'";
+            case '@=':
+                $values = array();
+                foreach (explode(',', $value) as $v) {
+                    $values[] = "'".$model->escape($v)."'";
+                }
+                return ' IN ('.implode(',', $values).')';
             case "==":
             case "=";
             default:
                 return " = '".$model->escape($value)."'";
         }
     }
-
 
     public function getSQL($with_primary_email = false)
     {

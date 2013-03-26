@@ -200,6 +200,9 @@ class waAutoload
         'waModel'                  => 'database/waModel.class.php',
         'waNestedSetModel'         => 'database/waNestedSetModel.class.php',
 
+        'waSMS'                    => 'sms/waSMS.class.php',
+        'waSMSAdapter'             => 'sms/waSMSAdapter.class.php',
+
         'waDateTime'               => 'datetime/waDateTime.class.php',
 
         'waEventHandler'           => 'event/waEventHandler.class.php',

@@ -264,7 +264,7 @@ class russianpostShipping extends waShipping
 
     public function getPrintForms()
     {
-        return array(
+        return extension_loaded('gd') ? array(
             113 => array(
                 'name'        => 'Форма №113',
                 'description' => 'Бланк почтового перевода наложенного платежа',
@@ -273,14 +273,18 @@ class russianpostShipping extends waShipping
                 'name'        => 'Форма №116',
                 'description' => 'Бланк сопроводительного адреса к посылке',
             ),
-        );
+        ) : array();
     }
 
     public function displayPrintForm($id, waOrder $order, $params = array())
     {
         $method = 'displayPrintForm'.$id;
         if (method_exists($this, $method)) {
-            return $this->$method($order, $params);
+            if (extension_loaded('gd')) {
+                return $this->$method($order, $params);
+            } else {
+                throw new waException('PHP extension GD not loaded');
+            }
         } else {
             throw new waException('Print form not found');
         }
@@ -402,8 +406,10 @@ class russianpostShipping extends waShipping
                     header("Content-type: image/gif");
                     imagegif($image);
                     exit;
-                    }break;
-                case 'back' : $image_info = null;
+                }
+                break;
+            case 'back':
+                $image_info = null;
 
                 if ($image = $this->read('f116_back.gif', $image_info)) {
                     header("Content-type: image/gif");
@@ -411,135 +417,162 @@ class russianpostShipping extends waShipping
                     exit;
                 }
                 break;
-            case 'print' : if (!$strict && !$order) {
-                $this->view()->assign('action', 'preview');
-            }
-            $this->view()->assign('editable', false);
-            $this->view()->assign('order', $order);
-            break;
-        default : $this->view()->assign(array(
-            'src_front' => http_build_query(array_merge($request, array('side' => 'front'))),
-            'src_back'  => http_build_query(array_merge($request, array('side' => 'back'))),
-        ));
-        if (!$strict && !$order) {
-            $this->view()->assign('action', 'preview');
+            case 'print':
+                if (!$strict && !$order) {
+                    $this->view()->assign('action', 'preview');
+                }
+                $this->view()->assign('editable', false);
+                $this->view()->assign('order', $order);
+                break;
+            default:
+                $this->view()->assign(array(
+                    'src_front' => http_build_query(array_merge($request, array('side' => 'front'))),
+                    'src_back'  => http_build_query(array_merge($request, array('side' => 'back'))),
+                ));
+                if (!$strict && !$order) {
+                    $this->view()->assign('action', 'preview');
+                }
+                $this->view()->assign('editable', waRequest::post() ? false : true);
+                $this->view()->assign('order', $order);
+                break;
         }
-        $this->view()->assign('editable', waRequest::post() ? false : true);
-        $this->view()->assign('order', $order);
-        break;
+        return $this->view()->fetch($this->path.'/templates/form116.html');
     }
-    return $this->view()->fetch($this->path.'/templates/form116.html');
-}
 
-public function tracking($tracking_id = null)
-{
-return 'Отслеживание отправления: <a href="http://emspost.ru/ru/tracking/?id='.$tracking_id.'" target="_blank">http://emspost.ru/ru/tracking/?id='.$tracking_id.'</a>';
-}
+    public function tracking($tracking_id = null)
+    {
+        return 'Отслеживание отправления: <a href="http://emspost.ru/ru/tracking/?id='.$tracking_id.'" target="_blank">http://emspost.ru/ru/tracking/?id='.$tracking_id.'</a>';
+    }
 
-public function allowedCurrency()
-{
-return 'RUB';
-}
+    public function allowedCurrency()
+    {
+        return 'RUB';
+    }
 
-public function allowedWeightUnit()
-{
-return 'kg';
-}
+    public function allowedWeightUnit()
+    {
+        return 'kg';
+    }
 
-public function saveSettings($settings = array())
-{
-$fields = array(
-    'halfkilocost',
-    'overhalfkilocost',
-);
-foreach ($fields as $field) {
-    if (ifempty($settings[$field])) {
-        foreach ($settings[$field] as & $value) {
-            if (strpos($value, ',') !== false) {
-                $value = str_replace(',', '.', $value);
+    public function saveSettings($settings = array())
+    {
+        $fields = array(
+            'halfkilocost',
+            'overhalfkilocost',
+        );
+        foreach ($fields as $field) {
+            if (ifempty($settings[$field])) {
+                foreach ($settings[$field] as & $value) {
+                    if (strpos($value, ',') !== false) {
+                        $value = str_replace(',', '.', $value);
+                    }
+                    $value = str_replace(',', '.', (double) $value);
+                }
+                unset($value);
             }
-            $value = str_replace(',', '.', (double) $value);
         }
-        unset($value);
+        return parent::saveSettings($settings);
     }
-}
-return parent::saveSettings($settings);
-}
 
-private function printOnImage(&$image, $text, $x, $y, $font_size = 35)
-{
-$y += $font_size;
-static $font_path = null;
-static $text_color = null;
-if (is_null($font_path)) {
-    $font_path = $this->path.'/lib/config/data/arial.ttf';
-    $font_path = (file_exists($font_path) && function_exists('imagettftext')) ? $font_path : false;
-}
-if (is_null($text_color)) {
+    private function printOnImage(&$image, $text, $x, $y, $font_size = 35)
+    {
+        $y += $font_size;
+        static $font_path = null;
+        static $text_color = null;
+        static $mode;
+        static $convert = false;
 
-    $text_color = ($this->COLOR && false) ? ImageColorAllocate($image, 32, 32, 96) : ImageColorAllocate($image, 16, 16, 16);
-}
-if ($font_path) {
-    imagettftext($image, $font_size, 0, $x, $y, $text_color, $font_path, $text);
-} else {
-    imagestring($image, $font_size, $x, $y, $text, $text_color);
-}
-}
-private function printOnImagePersign(&$image, $text, $x, $y, $cell_size = 34, $font_size = 35)
-{
-$size = mb_strlen($text, 'UTF-8');
-for ($i = 0; $i < $size; $i++) {
-    $this->printOnImage($image, mb_substr($text, $i, 1, 'UTF-8'), $x, $y, $font_size);
-    $x += $cell_size;
-}
-}
-private function read($file, &$info)
-{
-if ($file) {
-    $file = $this->path.'/lib/config/data/'.$file;
-}
-$info = @getimagesize($file);
-if (!$info)
-    return false;
-switch ($info[2]) {
-    case 1:
-        // Create recource from gif image
-        $srcIm = @imagecreatefromgif($file);
-        break;
-    case 2:
-        // Create recource from jpg image
-        $srcIm = @imagecreatefromjpeg($file);
-        break;
-    case 3:
-        // Create resource from png image
-        $srcIm = @imagecreatefrompng($file);
-        break;
-    case 5:
-        // Create resource from psd image
-        break;
-    case 6:
-        // Create recource from bmp image imagecreatefromwbmp
-        $srcIm = @imagecreatefromwbmp($file);
-        break;
-    case 7:
-        // Create resource from tiff image
-        break;
-    case 8:
-        // Create resource from tiff image
-        break;
-    case 9:
-        // Create resource from jpc image
-        break;
-    case 10:
-        // Create resource from jp2 image
-        break;
-    default:
-        break;
-}
+        if (is_null($font_path)) {
+            $font_path = $this->path.'/lib/config/data/arial.ttf';
+            $font_path = (file_exists($font_path) && function_exists('imagettftext')) ? $font_path : false;
+        }
+        if (is_null($text_color)) {
+            $text_color = ($this->COLOR && false) ? ImageColorAllocate($image, 32, 32, 96) : ImageColorAllocate($image, 16, 16, 16);
+        }
 
-if (!$srcIm)
-    return false;
-else
-    return $srcIm;
-}
+        if (empty($mode)) {
+            if ($font_path) {
+                $info = gd_info();
+                if (!empty($info['JIS-mapped Japanese Font Support'])) {
+                    //any2eucjp
+                    $convert = true;
+                }
+                if (!empty($info['FreeType Support']) && version_compare(preg_replace('/[^0-9\.]/', '', $info['GD Version']), '2.0.1', '>=')) {
+                    $mode = 'ftt';
+                } else {
+                    $mode = 'ttf';
+                }
+            } else {
+                $mode = 'string';
+            }
+        }
+        if ($convert) {
+            $text = iconv('utf-8', 'EUC-JP', $text);
+        }
+
+        switch ($mode) {
+            case 'ftt':
+                imagefttext($image, $font_size, 0, $x, $y, $text_color, $font_path, $text);
+                break;
+            case 'ttf':
+                imagettftext($image, $font_size, 0, $x, $y, $text_color, $font_path, $text);
+                break;
+            case 'string':
+                imagestring($image, $font_size, $x, $y, $text, $text_color);
+                break;
+        }
+    }
+    private function printOnImagePersign(&$image, $text, $x, $y, $cell_size = 34, $font_size = 35)
+    {
+        $size = mb_strlen($text, 'UTF-8');
+        for ($i = 0; $i < $size; $i++) {
+            $this->printOnImage($image, mb_substr($text, $i, 1, 'UTF-8'), $x, $y, $font_size);
+            $x += $cell_size;
+        }
+    }
+    private function read($file, &$info)
+    {
+        if ($file) {
+            $file = $this->path.'/lib/config/data/'.$file;
+        }
+        $info = @getimagesize($file);
+        if (!$info)
+            return false;
+        switch ($info[2]) {
+            case 1:
+                // Create recource from gif image
+                $srcIm = @imagecreatefromgif($file);
+                break;
+            case 2:
+                // Create recource from jpg image
+                $srcIm = @imagecreatefromjpeg($file);
+                break;
+            case 3:
+                // Create resource from png image
+                $srcIm = @imagecreatefrompng($file);
+                break;
+            case 5:
+                // Create resource from psd image
+                break;
+            case 6:
+                // Create recource from bmp image imagecreatefromwbmp
+                $srcIm = @imagecreatefromwbmp($file);
+                break;
+            case 7:
+                // Create resource from tiff image
+                break;
+            case 8:
+                // Create resource from tiff image
+                break;
+            case 9:
+                // Create resource from jpc image
+                break;
+            case 10:
+                // Create resource from jp2 image
+                break;
+            default:
+                break;
+        }
+        return !$srcIm ? false : $srcIm;
+    }
 }

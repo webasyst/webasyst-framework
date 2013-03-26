@@ -9,7 +9,7 @@
  * @copyright 2011 Webasyst LLC
  * @package Webasyst
  */
-  
+
 @import "../jquery-ui/jquery-ui-1.7.2.custom.css"; /* jQuery UI is used throughout Webasyst apps */
 
 
@@ -17,7 +17,7 @@
  * RESET
  * -----
  * Based on Eric Meyer's Reset
- * http://meyerweb.com/eric/tools/css/reset/ 
+ * http://meyerweb.com/eric/tools/css/reset/
  * v2.0 | 20110126
  * License: none (public domain)
 */
@@ -64,7 +64,7 @@ thead th { /* border-bottom:1px solid #aaa; background:#bbb;  padding:.4em 1em .
 tbody th, tbody td {/*  border-top:1px solid #bbb; border-bottom:1px solid #bbb; background:#fff; */ }
 tfoot th, tfoot td { /* border-top:2px solid #666; background:#eee;  */}
 form { overflow:hidden; }
-input, textarea, select { margin:0;} 
+input, textarea, select { margin:0;}
 input, textarea { font-size: 1em; color: #000; font-family: 'Lucida Grande', Helvetica, Arial, sans-serif; }
 input[type="button"]:focus { outline:none; outline-offset:-2px; }
 fieldset { border:1px solid #bbb; padding:10px; position:relative; background:#e9e9e9; margin-bottom:10px; }
@@ -225,7 +225,7 @@ a#wa-my-username { font-weight: bold; text-decoration: none; }
 .sidebar.right250px { float:right; width: 250px; }
 .sidebar.right300px { float:right; width: 300px; }
 .sidebar.right400px { float:right; width: 400px; }
-.sidebar-fixed, .sidebar-fixed.left200px { position:fixed; height:100%; left:0; width:200px; } /* scroll-independent sidebars */ 
+.sidebar-fixed, .sidebar-fixed.left200px { position:fixed; height:100%; left:0; width:200px; } /* scroll-independent sidebars */
 .sidebar-fixed.left100px { left:0; width:100px; }
 .sidebar-fixed.left250px { left:0; width:250px; }
 .sidebar-fixed.left300px { left:0; width:300px; }
@@ -252,7 +252,7 @@ a#wa-my-username { font-weight: bold; text-decoration: none; }
  * E.g. template/page editor with always visible ‘Save’ button
  * in the Site app
 -------------------------------------------- */
-.frame.viewport { position: absolute; overflow: auto; bottom: 50px; left: 0; right: 0; top: 0;} 
+.frame.viewport { position: absolute; overflow: auto; bottom: 50px; left: 0; right: 0; top: 0;}
 .frame.viewport.no-toolbar { bottom: 0; /* in case on some pages toolbar is not shown */ }
 .frame.toolbar { position: absolute; bottom: 0; left: 0; right: 0; float: none; background: #f7f7f7; height: 50px; border-top: 1px solid #ddd; }
 
@@ -297,6 +297,7 @@ a#wa-my-username { font-weight: bold; text-decoration: none; }
 .hint a, a.hint { text-decoration: underline !important; }
 .hr { border-top: 1px solid #ccc; margin: 5px 10px; padding: 0; }
 .nowrap { white-space: nowrap; }
+.break-words { word-break: break-all; }
 a.inline-link { text-decoration:none !important; }
 a.inline-link b { border-bottom: 1px dotted; font-weight:normal; position:relative; top:-0.13em; }
 a.inline-link b i { font-style:normal; position:relative; top:0.13em; }
@@ -387,8 +388,8 @@ input.large { font-size: 1.2em; font-weight: bold; }
 input.small { font-size: 0.8em; width: 100px !important; min-width: 100px !important; }
 input.empty { color: #aaa; }
 input.error, textarea.error, select.error { border: 2px solid red; color: red; }
-.button { -moz-border-radius: 24px; -webkit-border-radius: 24px; border-radius: 24px; color:#111; text-shadow:0 1px 1px #fff; font-weight:bold; 
-border: 4px solid #ccc; -moz-box-shadow: -1px -1px 0 #444444 inset; -webkit-box-shadow: -1px -1px 0 #444444 inset;box-shadow: -1px -1px 0 #444444 inset; white-space:nowrap; font-size:13px!important; line-height:20px; height:34px; padding:0 15px 3px; 
+.button { -moz-border-radius: 24px; -webkit-border-radius: 24px; border-radius: 24px; color:#111; text-shadow:0 1px 1px #fff; font-weight:bold;
+border: 4px solid #ccc; -moz-box-shadow: -1px -1px 0 #444444 inset; -webkit-box-shadow: -1px -1px 0 #444444 inset;box-shadow: -1px -1px 0 #444444 inset; white-space:nowrap; font-size:13px!important; line-height:20px; height:34px; padding:0 15px 3px;
 background: rgb(255,255,255);
 background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIwJSIgeTI9IjEwMCUiPgogICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iI2ZmZmZmZiIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiNkZGRkZGQiIHN0b3Atb3BhY2l0eT0iMSIvPgogIDwvbGluZWFyR3JhZGllbnQ+CiAgPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEiIGhlaWdodD0iMSIgZmlsbD0idXJsKCNncmFkLXVjZ2ctZ2VuZXJhdGVkKSIgLz4KPC9zdmc+);
 background: -moz-linear-gradient(top,  rgba(255,255,255,1) 0%, rgba(221,221,221,1) 100%);
@@ -467,7 +468,7 @@ ul.menu-v.with-icons.stack { margin: 0 0 20px; }
 ul.menu-v.with-icons.stack li { margin: 1px 3px 5px -1px; }
 ul.menu-v.with-icons.stack li a { padding-bottom: 7px; padding-left: 26px; padding-top: 7px; }
 ul.menu-v li.gray a, ul.menu-v li.grey a { color: #aaa; }
-ul.menu-v li.gray:hover a, ul.menu-v li.grey:hover a { color: red; }
+ul.menu-v li.gray a:hover, ul.menu-v li.grey a:hover { color: red; }
 
 /* .menu-h is for horizontal menus: view mode, filters, etc. */
 ul.menu-h { margin: 0; padding:0; max-width:100%; }
@@ -681,7 +682,7 @@ table.light td.no-border { border: none; }
 .tooltip.width300px { width: 300px; }
 .tooltip.width400px { width: 400px; }
 
-/* WYSIWYG / HTML toggle 
+/* WYSIWYG / HTML toggle
 -------------------------------------------- */
 .wysiwyg-html { border-top: 1px solid #ccc; border-bottom: 1px solid #ccc; background: #fff; }
 .wysiwyg-html ul.mode-toggle { float: right; margin: -26px 17px 0 0; }
@@ -698,10 +699,10 @@ table.light td.no-border { border: none; }
  * Add icons to your app as such: <i class="icon16 add"></i>
  * i.icon16 .%iconname% for 16x16
  * i.icon10 .%iconname% for 10x10
- * 
+ *
  * Icons are mostly powered by Fugue and Diagona icons by Yusuke Kamiyamane:
  * http://p.yusukekamiyamane.com/
- * 
+ *
  * Yusuke Kamiyamane's icons sets are astonishing, offering over 3K icons.
  * If built-in icons are not enough for your app, we advise you to consider icons from Fugue and Diagona icon sets.
  *
@@ -724,6 +725,7 @@ ul.tabs .icon10 { margin-top: 12px; }
 ul.tabs .icon16 { margin-top: 8px; }
 .dialog-buttons-gradient i.icon16 { margin-left: 4px; }
 .icon16.country { margin-top: 0.3em; }
+i.icon16.hidden { display: none; }
 .fields .field .name i.icon10 { margin-top: 0.1em; }
 .fields .field .value .icon16.country { margin-top: 0.1em; margin-left: 0.3em; }
 .icon16.uarr { background-position:-128px 0; }
