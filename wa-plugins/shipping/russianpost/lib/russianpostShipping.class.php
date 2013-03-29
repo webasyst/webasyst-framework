@@ -367,6 +367,25 @@ class russianpostShipping extends waShipping
         return $view;
     }
 
+    private function splitAddress(waOrder $order)
+    {
+        $address_chunks = array(
+            $order->shipping_address['street'],
+            $order->shipping_address['city'],
+            $order->shipping_address['region_name'],
+            ($order->shipping_address['country'] != 'rus') ? $order->shipping_address['country_name'] : '',
+        );
+        $address_chunks = array_filter($address_chunks, 'strlen');
+        $address = array(implode(', ', $address_chunks), '');
+        if (preg_match('/^(.{25,40})[,\s]+(.+)$/u', $address[0], $matches)) {
+
+            array_shift($matches);
+            $matches[0] = rtrim($matches[0], ', ');
+            $address = $matches;
+        }
+        return $address;
+    }
+
     private function displayPrintForm116(waOrder $order, $params = array())
     {
         $strict = true;
@@ -375,16 +394,14 @@ class russianpostShipping extends waShipping
             case 'front':
                 $image_info = null;
                 if ($image = $this->read('f116_front.gif', $image_info)) {
-
+                    $address = $this->splitAddress($order);
                     $this->printOnImage($image, waRequest::request('order_amount', $order->total), 294, 845, 24);
                     $this->printOnImage($image, waRequest::request('order_price', $order->total), 294, 747, 24);
                     //customer
-                    $this->printOnImage($image, waRequest::request('shipping_name', $order->shipping_address['name']), 390, 915);
-                    $this->printOnImage($image, waRequest::request('shipping_address_1', $order->shipping_address['address_1']), 390, 975);
-                    $this->printOnImage($image, waRequest::request('shipping_address_2', $order->shipping_address['address_2']), 300, 1040);
-
+                    $this->printOnImage($image, waRequest::request('shipping_name', $order->contact_name), 390, 915);
+                    $this->printOnImage($image, waRequest::request('shipping_address_1', $address[0]), 390, 975);
+                    $this->printOnImage($image, waRequest::request('shipping_address_2', $address[1]), 300, 1040);
                     $this->printOnImagePersign($image, waRequest::request('shipping_zip', $order->shipping_address['zip']), 860, 1105, 55, 35);
-                    //$this->printOnImagePersign($image, $this->zip, 860, 1105, 55, 35);
 
                     //company
                     $this->printOnImage($image, $this->company_name, 420, 1170);
@@ -396,10 +413,10 @@ class russianpostShipping extends waShipping
                     $this->printOnImage($image, waRequest::request('order_price_d', waCurrency::format('%2', $order->total, $order->currency)), 590, 2003);
                     $this->printOnImage($image, waRequest::request('order_amount_d', waCurrency::format('%2', $order->total, $order->currency)), 1280, 2003);
 
-                    $this->printOnImage($image, waRequest::request('shipping_name', $order->shipping_address['name']), 390, 2085);
+                    $this->printOnImage($image, waRequest::request('shipping_name', $order->contact_name), 390, 2085);
 
-                    $this->printOnImage($image, waRequest::request('shipping_address_1', $order->shipping_address['address_1']), 390, 2170);
-                    $this->printOnImage($image, waRequest::request('shipping_address_2', $order->shipping_address['address_2']), 300, 2260);
+                    $this->printOnImage($image, waRequest::request('shipping_address_1', $address[0]), 390, 2170);
+                    $this->printOnImage($image, waRequest::request('shipping_address_2', $address[1]), 300, 2260);
 
                     $this->printOnImagePersign($image, waRequest::request('shipping_zip', $order->shipping_address['zip']), 1230, 2260, 55, 35);
 
@@ -434,6 +451,7 @@ class russianpostShipping extends waShipping
                 }
                 $this->view()->assign('editable', waRequest::post() ? false : true);
                 $this->view()->assign('order', $order);
+                $this->view()->assign('address',$this->splitAddress($order));
                 break;
         }
         return $this->view()->fetch($this->path.'/templates/form116.html');

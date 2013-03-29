@@ -229,13 +229,7 @@ class qiwiPayment extends waPayment implements waIPayment, waIPaymentCapture, wa
     protected function formalizeData($result)
     {
         if ($this->prefix) {
-            $metacharacters = array('?', '+', '*', '.', '(', ')', '[', ']', '{', '}', '<', '>', '^', '$', '@');
-            foreach ($metacharacters as & $char) {
-                $char = "\\{$char}";
-                unset($char);
-            }
-            $cleanup_pattern = '@('.implode('|', $metacharacters).')@';
-            $pattern = preg_replace($cleanup_pattern, '\\\\$1', $this->prefix);
+            $pattern = wa_make_pattern($this->prefix, '@');
             $pattern = "@^{$pattern}(.+)$@";
             $order_id = null;
             if (preg_match($pattern, $this->order_id, $matches)) {

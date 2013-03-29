@@ -27,10 +27,10 @@ img {
     padding-left: 20px;
     padding-top: 0px;
 }
-@media print 
+@media print
 {
     body { padding: 0; margin: 0; }
-    .noprint 
+    .noprint
     {
         display:none;
     }
@@ -105,17 +105,17 @@ function load(show_id){
 	<tr>
 		<td>Получатель заказа</td>
 		<td><input size="80" type="text" name="shipping_name"
-			value="{$order.shipping_address.name|escape:'html'}" /></td>
+			value="{$order.contact_name|escape:'html'}" /></td>
 	</tr>
 	<tr>
 		<td>Адрес (строка 1)</td>
 		<td><input size="80" type="text" name="shipping_address_1"
-			value="{$order.shipping_address.address_1|escape:'html'}" /></td>
+			value="{$address.0|escape:'html'}" /></td>
 	</tr>
 	<tr>
 		<td>Адрес (строка 2)</td>
 		<td><input size="80" type="text" name="shipping_address_2"
-			value="{$order.shipping_address.address_2|escape:'html'}" /></td>
+			value="{$address.1|escape:'html'}" /></td>
 	</tr>
 	<tr>
 		<td>Почтовый индекс</td>

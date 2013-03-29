@@ -10,6 +10,7 @@ body {
     font-family: times new roman;
     font-size: 11px;
 }
+.nowrap { white-space: nowrap; }
 @media screen {
 
     input,.noprint {
@@ -148,7 +149,7 @@ var lang_strings = {
 						<td><font class=sc>Ед.изм.</font></td>
 						<td><font class=sc>Кол-во</font></td>
 						<td><font class=sc>Цена</font></td>
-						<td width="5%"><font class=sc>Сумма</font></td>
+						<td width="5%" align=right><font class=sc>Сумма</font></td>
 					</tr>
 
 					{foreach $order.items as $item}
@@ -158,7 +159,7 @@ var lang_strings = {
 						<td><font class=sc>шт.</font></td>
 						<td><font class=sc>{$item.quantity}</font></td>
 						<td><font class=sc>{$item.price|wa_format_amount:$order.currency:'%2'}</font></td>
-						<td align=right><font class=sc>{$item.total|wa_format_amount:$order.currency:'%2'}</font></td>
+						<td class="nowrap" align=right><font class=sc>{$item.total|wa_format_amount:$order.currency:'%2'}</font></td>
 					</tr>
 					{/foreach}
 					{if $order.shipping}
@@ -167,8 +168,8 @@ var lang_strings = {
 						<td><font class=sc><b><nobr>Доставка {$order.shipping_name}</nobr></b></font></td>
 						<td><font class=sc>шт.</font></td>
 						<td><font class=sc>1</font></td>
-						<td><font class=sc>{$order.shipping|wa_format_amount:$order.currency:'%2'}</font></td>
-						<td align=right><font class=sc>{$order.shipping|wa_format_amount:$order.currency:'%2'}</font></td>
+						<td class="nowrap"><font class=sc>{$order.shipping|wa_format_amount:$order.currency:'%2'}</font></td>
+						<td class="nowrap" align=right><font class=sc>{$order.shipping|wa_format_amount:$order.currency:'%2'}</font></td>
 					</tr>
 					{/if}
 
@@ -179,7 +180,7 @@ var lang_strings = {
 				<tbody>
 					<tr bgcolor=white>
 						<td align=right width="90%"><font class=sc><b>ИТОГО:</b></font></td>
-						<td align=right width="10%"><font class=sc><b>{$order.subtotal|wa_format_amount:$order.currency:'%2'}</b></font></td>
+						<td align=right width="10%" class="nowrap"><font class=sc><b>{$order.subtotal|wa_format_amount:$order.currency:'%2'}</b></font></td>
 					</tr>
 					{if $order.discount > 0}
 					<tr bgcolor=white>
@@ -195,7 +196,7 @@ var lang_strings = {
 					{/if}
 					<tr bgcolor=white>
 						<td align=right width="90%"><font class=sc><b>Всего к оплате</b></font></td>
-						<td align=right width="10%"><font class=sc><b>{$order.total|wa_format_amount:$order.currency:'%2'}</b></font></td>
+						<td class="nowrap" align=right width="10%"><font class=sc><b>{$order.total|wa_format_amount:$order.currency:'%2'}</b></font></td>
 					</tr>
 				</tbody>
 			</table>

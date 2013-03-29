@@ -144,7 +144,6 @@ class yandexmoneyPayment extends waPayment implements waIPayment
 
         }
 
-
         $transaction_data = $this->saveTransaction($transaction_data, $request);
 
         $result = $this->execAppCallback($app_payment_method, $transaction_data);
@@ -277,7 +276,6 @@ class yandexmoneyPayment extends waPayment implements waIPayment
             'native_id'   => ifset($transaction_raw_data['invoiceId']),
             'amount'      => ifset($transaction_raw_data['orderSumAmount']),
             'currency_id' => ifset($transaction_raw_data['orderSumCurrencyPaycash']) == 643 ? 'RUB' : 'N/A',
-            'date_time'   => date('Y-m-d H:i:s'),
             'customer_id' => ifempty($transaction_raw_data['customerNumber'], ifset($transaction_raw_data['CustomerNumber'])),
             'result'      => 1,
             'order_id'    => $this->order_id,

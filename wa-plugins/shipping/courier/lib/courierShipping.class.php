@@ -143,13 +143,13 @@ class courierShipping extends waShipping
         $address = $this->getAddress();
         $variants = $this->allowedAddress();
         if (empty($address['country'])) {
-            $address['country'] = empty($variants['country']) ? false : $variants['country'];
+            $address['country'] = ifempty($variants['country'], false);
         } elseif (!empty($variants['country']) && ($address['country'] != $variants['country'])) {
             $address['country'] = false;
         }
 
         if (empty($address['region'])) {
-            $address['region'] = $variants['region'];
+            $address['region'] = ifset($variants['region'], false);
         } elseif ($address['region'] != $variants['region']) {
             $address['region'] = false;
         }

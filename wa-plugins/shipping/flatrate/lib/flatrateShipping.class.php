@@ -45,8 +45,6 @@ class flatrateShipping extends waShipping
              'description' => '',
              'estimated_delivery_date' => strtotime($this->delivery),
              'currency' => $this->currency,
-             'rate_min' => $this->cost,
-             'rate_max' => $this->cost,
              'rate' => $this->cost,
              ),
              'expedited' => array(
@@ -54,8 +52,6 @@ class flatrateShipping extends waShipping
              'description' => '',
              'estimated_delivery_date' => strtotime($this->delivery),
              'currency' => $this->currency,
-             'rate_min' => $this->cost,
-             'rate_max' => $this->cost,
              'rate' => $this->cost,
              ),
              */

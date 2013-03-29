@@ -278,7 +278,6 @@ class webmoneyPayment extends waPayment implements waIPayment
         $transaction_data['order_id'] = $transaction_raw_data['LMI_PAYMENT_NO'];
         $transaction_data['amount'] = $transaction_raw_data['LMI_PAYMENT_AMOUNT'];
         $transaction_data['currency_id'] = $transaction_raw_data['LMI_CURRENCY'];
-        $transaction_data['view_data'] = $view_data;
 
         return $transaction_data;
     }
