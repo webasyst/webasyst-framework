@@ -136,7 +136,7 @@ class waLocale
             if (strpbrk($locale, '/\:')) {
                 return null;
             }
-            $path = dirname(__FILE__)."/data/".$locale.".php";
+            $path = wa()->getConfig()->getPath('system')."/locale/data/".$locale.".php";
             if (file_exists($path)) {
                 self::$locale_info[$locale] = include($path);
             } else {

@@ -5,7 +5,7 @@
  */
 class waContactForm
 {
-    /** @var array field_id => waContactField */
+    /** @var waContactField[] field_id => waContactField */
     public $fields;
 
     /** @var array */
@@ -256,7 +256,7 @@ class waContactForm
     /**
      * Get specified form field or all of them.
      * @param string $field_id
-     * @return array|waContactField
+     * @return waContactField|waContactField[]
      */
     public function fields($field_id = null)
     {
@@ -321,7 +321,8 @@ class waContactForm
                 continue;
             }
 
-            $result .= '<div class="'.$class_field.'"><div class="'.$class_name.'">'.$f->getName().'</div><div class="'.$class_value.'">';
+            $result .= '<div class="'.$class_field.($f->isRequired() ? ' '.(wa()->getEnv() == 'frontend' ? 'wa-required' : 'required') : '').'"><div class="'.$class_name.'">'.
+                $f->getName().'</div><div class="'.$class_value.'">';
             $result .= "\n".$this->html($fid, $with_errors);
             $result .= "\n</div></div>";
         }

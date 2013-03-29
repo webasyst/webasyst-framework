@@ -145,6 +145,12 @@ abstract class waContactField
         return isset($this->options['unique']) && $this->options['unique'];
     }
 
+    public function isRequired()
+    {
+        return isset($this->options['required']) && $this->options['required'];
+    }
+
+
     public function isExt()
     {
         return $this->isMulti() && isset($this->options['ext']);

@@ -41,11 +41,11 @@
                 {/foreach}
                 {if $wa->isAuthEnabled()}
                     {if $wa->user()->isAuth()}
-                    <li class="float-right small"><a href="?logout">[`Logout`]</a></li>
+                    <li class="float-right small"><a href="?logout">[s`Log out`]</a></li>
                     <li class="float-right small"><strong>{$wa->user('name')}</strong></li>
                     {else}
-                    <li class="float-right small"><a href="{$wa->signupUrl()}">[`Sign up`]</a></li>
-                    <li class="float-right small"><a href="{$wa->loginUrl()}">[`Login`]</a></li>
+                    <li class="float-right small"><a href="{$wa->signupUrl()}">[s`Sign up`]</a></li>
+                    <li class="float-right small"><a href="{$wa->loginUrl()}">[s`Log in`]</a></li>
                     {/if}
                 {/if}
             </ul>

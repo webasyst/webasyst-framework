@@ -4,6 +4,34 @@ function smarty_function_wa_print_tree($params, &$smarty)
 {
     $data = $params['tree'];
 
+    $unfolded = isset($params['unfolded']) ? $params['unfolded'] : true;
+    if (!$unfolded) {
+        $params['depth'] = 0;
+        if (!empty($params['selected'])) {
+            $iterator = new RecursiveIteratorIterator(
+                new RecursiveArrayIterator($data)
+            );
+            $depth = 0;
+            $params['expanded'] = array();
+            foreach ($iterator as $k => $id) {
+                if ($k == 'id') {
+                    $d = $iterator->getDepth();
+                    while ($d <= $depth) {
+                        array_pop($params['expanded']);
+                        $depth -= 2;
+                    }
+                    $params['expanded'][] = $id;
+                    $depth = $d;
+                    if ($id == $params['selected']) {
+                        break;
+                    }
+                }
+            }
+        }
+        unset($params['unfolded']);
+    }
+
+
     $html = '<ul class="menu-v'.(isset($params['class']) ? ' '.$params['class'] : '').'"'.(isset($params['attrs']) ? ' '.$params['attrs'] : '').'>';
     if (isset($params['attrs'])) {
         unset($params['attrs']);
@@ -12,6 +40,7 @@ function smarty_function_wa_print_tree($params, &$smarty)
         unset($params['class']);
     }
     preg_match_all('/:([a-z_]+)/', $params['elem'], $match);
+
     foreach ($data as $row) {
         $html .= '<li'.(isset($params['selected']) && $row['id'] == $params['selected'] ? ' class="selected"' : '').'>';
         $elem = $params['elem'];
@@ -22,13 +51,14 @@ function smarty_function_wa_print_tree($params, &$smarty)
         }
         $html .= $elem;
         if (!empty($row['childs'])) {
-            if (!isset($params['depth']) || $params['depth']) {
-                if (isset($params['depth'])) {
+            $expanded = isset($params['expanded']) && in_array($row['id'], $params['expanded']);
+            if (!isset($params['depth']) || $params['depth'] > 0 || $expanded) {
+                if (isset($params['depth']) && !$expanded) {
                     $params['depth']--;
                 }
                 $params['tree'] = $row['childs'];
                 $html .= smarty_function_wa_print_tree($params, $smarty);
-                if (isset($params['depth'])) {
+                if (isset($params['depth']) && !$expanded) {
                     $params['depth']++;
                 }
             }

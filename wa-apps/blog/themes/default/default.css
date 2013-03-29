@@ -132,6 +132,36 @@ ul.menu-h li.selected ul * { background: #fff !important; }
 #footer #poweredby { text-align: center; float: right; padding-top: 0; padding-right:10px; }
 #footer #poweredby a.dots { font-size: 0.8em; text-decoration: none; display: block; width: 54px; height: 9px; background: url("http://www.webasyst.com/wa-content/img/dots/all-dots-default-order.png") no-repeat 0 3px; padding-top: 7px; }
 
+/* Sign up & Login forms
+------------------------ */
+
+.wa-auth-adapters ul { padding: 0; min-height: 16px; }
+.wa-auth-adapters ul li { list-style: none; float: left; padding: 0 15px 0 0; }
+.wa-auth-adapters ul li a { display: block; padding: 0px 5px; }
+.wa-auth-adapters ul li a img { position: relative; top: 3px; left: -3px; }
+.wa-auth-adapters p { clear: left; color: #888; font-size: 0.9em; width: 80%; }
+
+.wa-form { float: left; margin: 10px 0; overflow: visible; }
+.wa-form .wa-field { clear: left; margin: 0; padding-top: 3px; }
+.wa-form .wa-field .wa-name { float: left; width: 155px; padding-top: 0.05em; padding-bottom: 10px; font-size: 0.95em; }
+.wa-form .wa-field.wa-separator { height: 10px; }
+.wa-form .wa-field .wa-value { margin-left: 180px; margin-bottom: 5px; position: relative; }
+.wa-form .wa-field .wa-value input.wa-error { border: 2px solid red; }
+.wa-form .wa-field .wa-value .wa-error-msg { font-size: 0.9em; color: red; display: block; }
+.wa-form .wa-field .wa-value input[type="text"],
+.wa-form .wa-field .wa-value input[type="email"],
+.wa-form .wa-field .wa-value input[type="password"] { width: 30%; min-width: 260px;  margin:0;}
+.wa-form .wa-field .wa-value textarea { min-width: 300px; height: 70px; }
+.wa-form .wa-field .wa-value input.wa-captcha-input { width: 100px; min-width: 0; }
+.wa-form .wa-field .wa-value.wa-submit { margin-top: 10px; }
+
+.wa-captcha { padding: 7px 0 10px; }
+.wa-captcha p { clear: left; margin: 0; }
+.wa-captcha strong { font-size: 1.2em; }
+.wa-captcha p img { float: left !important; margin-right: 5px; margin-top: -8px; }
+.wa-captcha .wa-captcha-refresh { font-size: 0.8em; text-decoration: underline; color: #aaa; }
+.wa-captcha .errormsg { display: inline; margin-left: 10px; }
+
 /* Blog app specific
 -------------------- */
 
@@ -226,26 +256,3 @@ div.wa-captcha .errormsg { display: inline; margin-left: 10px; }
 .categories ul.menu-v { padding-left: 10px; }
 .categories ul.menu-v li { line-height: 1.2em; font-size: 0.9em; margin: 2px 0; }
 .categories ul.menu-v li.selected a { color: #000; text-decoration: none; font-weight: bold; }
-
-/* Sign up & Login forms
------------------------- */
-
-.wa-auth-adapters ul { padding: 0; min-height: 16px; }
-.wa-auth-adapters ul li { list-style: none; float: left; padding: 0 15px 0 0; }
-.wa-auth-adapters ul li a { display: block; padding: 0px 5px; }
-.wa-auth-adapters ul li a img { position: relative; top: 3px; left: -3px; }
-.wa-auth-adapters p { clear: left; color: #888; font-size: 0.9em; width: 80%; }
-
-.wa-form { float: left; margin: 10px 0; overflow: visible; }
-.wa-form .wa-field { clear: left; margin: 0; padding-top: 3px; }
-.wa-form .wa-field .wa-name { float: left; width: 155px; padding-top: 0.05em; padding-bottom: 10px; font-size: 0.95em; }
-.wa-form .wa-field.wa-separator { height: 10px; }
-.wa-form .wa-field .wa-value { margin-left: 180px; margin-bottom: 5px; position: relative; }
-.wa-form .wa-field .wa-value input.wa-error { border: 2px solid red; }
-.wa-form .wa-field .wa-value .wa-error-msg { font-size: 0.9em; color: red; display: block; }
-.wa-form .wa-field .wa-value input[type="text"],
-.wa-form .wa-field .wa-value input[type="email"],
-.wa-form .wa-field .wa-value input[type="password"] { width: 30%; min-width: 260px;  margin:0;}
-.wa-form .wa-field .wa-value textarea { min-width: 300px; height: 70px; }
-.wa-form .wa-field .wa-value input.wa-captcha-input { width: 100px; min-width: 0; }
-.wa-form .wa-field .wa-value.wa-submit { margin-top: 10px; }

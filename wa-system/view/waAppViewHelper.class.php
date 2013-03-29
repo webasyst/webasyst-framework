@@ -23,7 +23,7 @@ class waAppViewHelper
             $sql = "SELECT id, parent_id, name, title, full_url, url, create_datetime, update_datetime FROM ".$page_model->getTableName().'
                     WHERE status = 1 AND domain = s:domain AND route = s:route ORDER BY sort';
             $pages = $page_model->query($sql, array(
-                'domain' => wa()->getRouting()->getDomain(),
+                'domain' => wa()->getRouting()->getDomain(null, true),
                 'route' => wa()->getRouting()->getRoute('url')))->fetchAll('id');
 
             if ($with_params) {

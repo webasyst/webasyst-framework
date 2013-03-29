@@ -41,6 +41,12 @@ class waRequest
                 reset($val);
                 return $val;
             case self::TYPE_STRING:
+                if (is_array($val)) {
+                    $val = reset($val);
+                    if (is_array($val)) {
+                        $val = null;
+                    }
+                }
             default:
                 return $val;
         }

@@ -96,7 +96,7 @@ class waForgotPasswordAction extends waViewAction
         $error = '';
         $auth = wa()->getAuth();
         if (waRequest::method() == 'post' && !waRequest::post('ignore')) {
-            if ($contact = $this->findContact(waRequest::post('login'), $auth)) {
+            if ($contact = $this->findContact(waRequest::post('login', '', waRequest::TYPE_STRING), $auth)) {
                 if ($contact->get('is_banned')) {
                     $error = _ws('Password recovery for this email has been banned.');
                 } elseif ($email = $contact->get('email', 'default')) {

@@ -15,7 +15,7 @@
         {$blog_pages=$wa->blog->pages()}
         {if $blog_pages}
         {if !isset($page_id)}{$page_id = null}{/if}
-        {wa_print_tree tree=$blog_pages attrs = 'id="page-list"' elem ='<a href=":url" title=":title">:name</a>' selected=$page_id}
+        {wa_print_tree tree=$blog_pages attrs = 'id="page-list"' class="menu-v" elem ='<a href=":url" title=":title">:name</a>' selected=$page_id}
         {/if}
     </div>
 {/if}

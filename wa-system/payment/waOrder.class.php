@@ -15,6 +15,9 @@
  * @property double $shipping
  * @property string $shipping_name
  *
+ * @property string description
+ * @property string description_en
+ *
  * @property string $datetime
  * @property string $update_datetime
  * @property string $paid_datetime
@@ -176,7 +179,9 @@ class waOrder implements ArrayAccess
     {
         $this->init_address($this->data['billing_address']);
         $this->init_address($this->data['shipping_address']);
-
+        if (empty($this->data['description_en'])) {
+            $this->data['description_en'] = waLocale::transliterate(ifset($this->data['description'], ''));
+        }
     }
 
     private function init_address(&$address)

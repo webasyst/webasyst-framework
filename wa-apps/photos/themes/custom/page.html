@@ -5,7 +5,7 @@
     {else}
         {$p_id = $page.id}
     {/if}
-    {wa_print_tree tree=$wa->photos->pages($p_id, false) elem ='<a href=":url">:name</a>' selected=$page.id}
+    {wa_print_tree tree=$wa->photos->pages($p_id, false) class="menu-v" elem ='<a href=":url">:name</a>' selected=$page.id}
 </div>
 <div class="content right">
     <h1>{$page.title}</h1>

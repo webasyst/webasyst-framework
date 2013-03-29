@@ -14,12 +14,12 @@
 {$photos_pages=$wa->photos->pages()}
 {if $photos_pages}
     <hr>
-    {wa_print_tree tree=$photos_pages attrs = 'id="page-list"' elem ='<a href=":url" title=":title">:name</a>' selected=$wa->param('page_id')}
+    {wa_print_tree tree=$photos_pages class="menu-v" attrs = 'id="page-list"' elem ='<a href=":url" title=":title">:name</a>' selected=$wa->param('page_id')}
 {/if}
 
 {if $albums = $wa->photos->albums(0)}
     <hr>
-    {wa_print_tree tree=$albums class="album-tree" elem ='<a href=":url">:name</a>'}
+    {wa_print_tree tree=$albums class="menu-v album-tree" elem ='<a href=":url">:name</a>'}
 {/if}
 {if $cloud = $wa->photos->tags()}
     <hr>

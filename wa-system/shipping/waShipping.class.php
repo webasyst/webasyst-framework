@@ -149,11 +149,9 @@ abstract class waShipping extends waSystemPlugin
      * @return array[string]array
      * @return array[string]['name']string
      * @return array[string]['desription']string
-     * @return array[string]['estimated_delivery_date']string
+     * @return array[string]['est_delivery']string
      * @return array[string]['currency']string
-     * @return array[string]['rate_min']string
-     * @return array[string]['rate_max']string
-     * @return array[string]['rate']string
+     * @return array[string]['rate']mixed float or array for min-max
      */
     public function getRates($items = array(), $address = array(), $params = array())
     {
@@ -161,7 +159,12 @@ abstract class waShipping extends waSystemPlugin
             $this->address = $address;
         }
         $this->params = array_merge($this->params, $params);
-        return $this->addItems($items)->calculate();
+        try {
+            $rates = $this->addItems($items)->calculate();
+        } catch (waException $ex) {
+            $rates = $ex->getMessage();
+        }
+        return $rates;
     }
 
     /**

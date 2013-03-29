@@ -293,10 +293,16 @@ abstract class waSystemPlugin
 </div>
 ',
         );
+        $options = ifempty($params['options'], array());
+        unset($params['options']);
         $params = array_merge($default, $params);
+
         foreach ($this->config() as $name => $row) {
             $row = array_merge($row, $params);
             $row['value'] = $this->getSettings($name);
+            if (isset($options[$name])) {
+                $row['options'] = $options[$name];
+            }
             if (isset($params['value']) && isset($params['value'][$name])) {
                 $row['value'] = $params['value'][$name];
             }

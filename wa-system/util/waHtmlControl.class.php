@@ -447,13 +447,13 @@ class waHtmlControl
         $control .= ">\n";
         $groupbox = null;
         foreach ($options as $option) {
-            if ($groupbox && (empty($option['group']) || ($option['group'] != $groupbox))) {
+            if ($groupbox && (empty($option['group']) || (strcasecmp($option['group'], $groupbox) != 0))) {
                 $groupbox = false;
                 $control .= "\n</optgroup>\n";
             }
             if (!empty($option['group']) && ($option['group'] != $groupbox)) {
-                $groupbox = htmlentities((string) $option['group'], ENT_QUOTES, self::$default_charset);
-                $control .= "\n<optgroup label=\"{$groupbox}\"".self::addCustomParams(array('class', 'style'), $option).">\n";
+                $groupbox = (string) $option['group'];
+                $control .= "\n<optgroup label=\"".htmlentities($groupbox, ENT_QUOTES, self::$default_charset)."\"".self::addCustomParams(array('class', 'style'), $option).">\n";
             }
 
             ++$id;
@@ -470,7 +470,7 @@ class waHtmlControl
             $control .= "<option value=\"{$option_value}\"";
             $control .= self::addCustomParams(array('selected'), $params);
             $control .= self::addCustomParams(array('class', 'style', 'description' => 'title', ), $option);
-            $option_title = htmlentities(self::_wp($option['title']), ENT_QUOTES, self::$default_charset);
+            $option_title = htmlentities(self::_wp(ifset($option['title'], $option_value)), ENT_QUOTES, self::$default_charset);
             $control .= ">{$option_title}</option>\n";
         }
         if ($groupbox) {

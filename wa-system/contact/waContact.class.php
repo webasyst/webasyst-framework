@@ -35,7 +35,18 @@ class waContact implements ArrayAccess
 
         $this->init();
 
-        $this->id = (int)$id;
+        if (is_array($id)) {
+            if (isset($id['id'])) {
+                $this->id = $id['id'];
+            }
+            foreach ($id as $k => $v) {
+                if ($k != 'id') {
+                    $this->set($k, $v);
+                }
+            }
+        } else {
+            $this->id = (int)$id;
+        }
     }
 
     public static function getOption($name, $default = null)

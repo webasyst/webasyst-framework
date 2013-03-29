@@ -117,6 +117,22 @@ class waContactModel extends waModel
         // Delete contact
         return $this->deleteById($id);
     }
+
+    public function getByEmail($email, $with_password = null)
+    {
+        $sql = "SELECT c.* FROM ".$this->table." c JOIN wa_contact_emails e ON c.id = e.contact_id
+        WHERE e.email = s:0";
+        if ($with_password !== null) {
+            if ($with_password) {
+                $sql .= ' AND c.password IS NOT NULL';
+            } else {
+                $sql .= ' AND c.password IS NULL';
+            }
+        }
+        $sql .= ' LIMIT 1';
+        return $this->query($sql, $email)->fetch();
+    }
+
 }
 
 // EOF
