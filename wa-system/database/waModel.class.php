@@ -698,15 +698,19 @@ class waModel
         $where = array();
         if (is_array($field)) {
             $add_table_name = $value;
+            if ($add_table_name) {
+                $prefix = is_string($add_table_name) ? $add_table_name."." : $this->table.".";
+            } else {
+                $prefix = "";
+            }
             foreach ($field as $f => $v) {
                 if (!isset($this->fields[$f])) {
                     throw new waException(sprintf(_ws('Unknown field %s'), $f));
                 }
                 if (is_array($v)) {
-                    $where[] = ($add_table_name ? $this->table."." : "").$this->escapeField($f)." IN ('".implode("','", $this->escape($v))."')";
+                    $where[] = $prefix.$this->escapeField($f)." IN ('".implode("','", $this->escape($v))."')";
                 } else {
-                    $where[] = ($add_table_name ? $this->table."." : "").$this->escapeField($f).
-                               ($v === null ? " IS NULL" : " = ".$this->getFieldValue($f, $v));
+                    $where[] = $prefix.$this->escapeField($f).($v === null ? " IS NULL" : " = ".$this->getFieldValue($f, $v));
                 }
             }
         } elseif (is_array($value)) {

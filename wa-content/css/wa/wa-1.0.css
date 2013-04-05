@@ -217,16 +217,19 @@ a#wa-my-username { font-weight: bold; text-decoration: none; }
 
 .sidebar, .sidebar.left200px { float:left; width: 200px; } /* 200px is the default sidebar width */
 .sidebar.left100px { float:left; width: 100px; }
+.sidebar.left150px { float:left; width: 150px; }
 .sidebar.left250px { float:left; width: 250px; }
 .sidebar.left300px { float:left; width: 300px; }
 .sidebar.left400px { float:left; width: 400px; }
 .sidebar.right200px { float:right; width: 200px; }
 .sidebar.right100px { float:right; width: 100px; }
+.sidebar.right150px { float:right; width: 150px; }
 .sidebar.right250px { float:right; width: 250px; }
 .sidebar.right300px { float:right; width: 300px; }
 .sidebar.right400px { float:right; width: 400px; }
 .sidebar-fixed, .sidebar-fixed.left200px { position:fixed; height:100%; left:0; width:200px; } /* scroll-independent sidebars */
 .sidebar-fixed.left100px { left:0; width:100px; }
+.sidebar-fixed.left150px { left:0; width:150px; }
 .sidebar-fixed.left250px { left:0; width:250px; }
 .sidebar-fixed.left300px { left:0; width:300px; }
 .sidebar-fixed.left400px { left:0; width:400px; }
@@ -237,6 +240,7 @@ a#wa-my-username { font-weight: bold; text-decoration: none; }
 .content { margin-left:0; }
 .content.left200px { margin-left:200px; }
 .content.left100px { margin-left:100px; }
+.content.left150px { margin-left:150px; }
 .content.left250px { margin-left:250px; }
 .content.left300px { margin-left:300px; }
 .content.left400px { margin-left:400px; }
@@ -332,6 +336,8 @@ input.long { min-width: 350px !important; width: 350px !important; }
 .block.double-padded { padding: 20px; }
 .block.triple-padded { padding: 30px; }
 .block.top-padded { padding-top: 20px; }
+.block.left-padded { padding-left: 20px; }
+.block.right-padded { padding-right: 20px; }
 .block.bottom-padded { padding-bottom: 20px; }
 .collapsible { padding-left: 12px; }
 .hierarchical { margin-left: 14px; }
@@ -448,6 +454,8 @@ ul.menu-v.collapsible { padding-left: 12px; }
 ul.menu-v.compact li { padding-top: 1px; padding-bottom: 1px; }
 ul.menu-v.compact li a { margin-bottom: 0; margin-top: 0; padding-bottom: 2px; padding-top: 2px; }
 ul.menu-v.compact img.overhanging { margin-top: -6px; top: 4px;margin-right: 4px; }
+ul.menu-v.compact i.icon10 { margin-top: 1px; }
+ul.menu-v.compact i.icon16 { margin-top: -2px; }
 ul.menu-v li.drag-newparent a { background:#eec !important; }
 ul.menu-v li.drag-newposition { height: 2px; background: inherit; padding: 0; margin: -2px -10px 0 -5px; } /* placeholder for menu-v sort order change */
 ul.menu-v li.drag-newposition.active { background: #bb8; }

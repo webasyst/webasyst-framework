@@ -12,6 +12,8 @@ jQuery.fn.waDialog = function (options) {
         'height': 0,
         'min-width': 0,
         'min-height': 0,
+        offsetTop: null,
+        offsetLeft: null,
         disableButtonsOnSubmit: false,
         onLoad: null,
         onCancel: null,
@@ -190,8 +192,8 @@ jQuery.fn.waDialog = function (options) {
         if (w < 0) w = 0;
 
         el.css({
-            'left': Math.round(w*100)+'%',
-            'top': Math.round(h*100)+'%'
+            'left': options.offsetLeft || (Math.round(w*100)+'%'),
+            'top': options.offsetTop || (Math.round(h*100)+'%')
         });
     }).trigger('wa-resize');
 

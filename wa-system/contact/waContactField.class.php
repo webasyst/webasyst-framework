@@ -686,12 +686,37 @@ abstract class waContactField
         return $result;
     }
 
+    public function getHtmlOneWithErrors($errors, $params = array(), $attrs = '')
+    {
+        // Validation errors?
+        $errors_html = '';
+        if (!empty($errors)) {
+            if (!is_array($errors)) {
+                $errors = array((string) $errors);
+            }
+            foreach($errors as $error_msg) {
+                if (is_array($error_msg)) {
+                    $error_msg = implode("<br>\n", $error_msg);
+                }
+                $errors_html .= "\n".'<em class="errormsg">'.htmlspecialchars($error_msg).'</em>';
+            }
+
+            $attrs = preg_replace('~class="~', 'class="error ', $attrs);
+            if (false === strpos($attrs, 'class="error')) {
+                $attrs .= ' class="error"';
+            }
+        }
+
+        return $this->getHtmlOne($params, $attrs).$errors_html;
+    }
+
     public function getHTML($params = array(), $attrs = '')
     {
         if ($this->isMulti()) {
             if (!empty($params['value']) && is_array($params['value']) && !empty($params['value'][0])) {
                 // Multi-field with at least one value
                 $params_one = $params;
+                unset($params_one['validation_errors']);
                 $i = 0;
                 $result = array();
                 while (isset($params['value'][$i])) {
@@ -699,7 +724,14 @@ abstract class waContactField
                         $params_one['multi_index'] = $i;
                     }
                     $params_one['value'] = $params['value'][$i];
-                    $result[] = $this->getHtmlOne($params_one, $attrs);
+
+                    // Validation errors?
+                    $errors = null;
+                    if (!empty($params['validation_errors']) && is_array($params['validation_errors']) && !empty($params['validation_errors'][$i])) {
+                        $errors = $params['validation_errors'][$i];
+                    }
+
+                    $result[] = $this->getHtmlOneWithErrors($errors, $params_one, $attrs);
                     $i++;
 
                     // Show single field when forced to show one value even for multi fields
@@ -710,12 +742,12 @@ abstract class waContactField
                 return '<p>'.implode('</p><p>', $result).'</p>';
             } else {
                 // Multi-field with no values
-                return '<p>'.$this->getHtmlOne($params, $attrs).'</p>';
+                return '<p>'.$this->getHtmlOneWithErrors(ifempty($params['validation_errors']), $params, $attrs).'</p>';
             }
         }
 
         // Non-multi field
-        return $this->getHtmlOne($params, $attrs);
+        return $this->getHtmlOneWithErrors(ifempty($params['validation_errors']), $params, $attrs);
     }
 
     public static function __set_state($state)

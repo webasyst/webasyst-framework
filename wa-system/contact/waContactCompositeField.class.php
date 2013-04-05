@@ -75,7 +75,7 @@ class waContactCompositeField extends waContactField
                         if ( ( $e = $field->validate($v[$subId]))) {
                             $errors[$sort][$subId] = $e;
                         }
-                    } else if (isset($this->options['required']) && in_array($subId, $this->options['required'])) {
+                    } else if ($field->isRequired() || (isset($this->options['required']) && in_array($subId, $this->options['required']))) {
                         $errors[$sort][$subId] = sprintf(_ws('%s subfield is required.'), $field->getName());
                     }
                 }
@@ -273,17 +273,42 @@ class waContactCompositeField extends waContactField
             $params['id'] = $this->getId();
         }
 
+        if (wa()->getEnv() == 'backend') {
+            $required_class = 'required ';
+        } else {
+            $required_class = 'wa-required ';
+        }
+
         foreach ($this->options['fields'] as $field) {
             $params_subfield['id'] = $field->getId();
             $params_subfield['parent'] = $params['id'];
             $params_subfield['value'] = ifset($data[$field->getId()]);
-            if ($field instanceof waContactHiddenField) {
-                $result[] = $field->getHTML($params_subfield, $attrs);
+
+            $errors_html = '';
+            $attrs_one = $attrs;
+            if (!empty($params['validation_errors']) && !empty($params['validation_errors'][$field->getId()])) {
+                $params_subfield['validation_errors'] = $params['validation_errors'][$field->getId()];
+                $attrs_one = preg_replace('~class="~', 'class="error ', $attrs_one);
+                if (false === strpos($attrs_one, 'class="error')) {
+                    $attrs_one .= ' class="error"';
+                }
             } else {
-                $result[] = '<span class="field"><span>'.$field->getName().'</span>'.$field->getHTML($params_subfield, $attrs).'</span>';
+                unset($params_subfield['validation_errors']);
+            }
+
+            if ($field instanceof waContactHiddenField) {
+                $result[] = $field->getHTML($params_subfield, $attrs_one);
+            } else {
+                $result[] = '<span class="'.($field->isRequired() ? $required_class : '').'field"><span>'.$field->getName().'</span>'.$field->getHTML($params_subfield, $attrs_one).$errors_html.'</span>';
             }
         }
         return implode($result);
+    }
+
+    public function getHtmlOneWithErrors($errors, $params = array(), $attrs = '')
+    {
+        $params['validation_errors'] = $errors;
+        return $this->getHtmlOne($params, $attrs);
     }
 }
 

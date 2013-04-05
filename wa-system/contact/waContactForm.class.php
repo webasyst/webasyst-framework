@@ -297,16 +297,11 @@ class waContactForm
             }
 
             // HTML with no errors?
-            if (!$with_errors || empty($this->errors[$field_id])) {
-                return $this->fields[$field_id]->getHTML($opts);
+            if ($with_errors && !empty($this->errors[$field_id]) && !empty($this->errors[$field_id])) {
+                $opts['validation_errors'] = $this->errors[$field_id];
             }
 
-            // HTML with errors
-            $result = $this->fields[$field_id]->getHTML($opts, 'class="error"');
-            foreach($this->errors[$field_id] as $error_msg) {
-                $result .= "\n".'<em class="errormsg">'.htmlspecialchars($error_msg).'</em>';
-            }
-            return $result;
+            return $this->fields[$field_id]->getHTML($opts);
         }
 
         // Whole form

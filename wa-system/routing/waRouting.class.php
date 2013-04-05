@@ -231,7 +231,7 @@ class waRouting
             $model = new $class();
             $query = $model->select('id, full_url');
 
-            $query->where("domain = ? AND route = ?", array(self::getDomain(), $route['url']));
+            $query->where("domain = ? AND route = ?", array(self::getDomain(null, true), $route['url']));
 
             if (!waRequest::get('preview')) {
                 $query->where("status = 1");

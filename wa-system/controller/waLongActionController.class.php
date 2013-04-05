@@ -346,8 +346,7 @@ abstract class waLongActionController extends waController
     /** Checks if there's a Runner for $this->processId.
      * If there is one then initializes $this->_data, $this->_runner = false
      * If there are no Runner then initializes $this->_data, $this->_fd, $this->_runner = true
-     * Called when old Runner dies to initialize new one.
-     * @return string status of this instance: 'runner', 'messenger' or 'no process' if data files not found. */
+     * @return string status of this instance: 'runner', 'messenger', or 'no process' if data files not found. */
     private function _obtainLock()
     {
         $this->_files = $this->_getFilenames();
@@ -356,7 +355,7 @@ abstract class waLongActionController extends waController
             return 'no process';
         }
 
-        // Main Lock needs stats, so we load data first
+        // Main Lock needs stats, so we load $this->data first
         $attempts_limit = max(1, $this->_read_attempt_limit);
         $attempts = $attempts_limit;
         $data = null;
@@ -365,34 +364,39 @@ abstract class waLongActionController extends waController
                 usleep(mt_rand(500, 1500));
             }
             --$attempts;
-            if (!file_exists($this->_files['old']['data'])) {
-                return 'no process';
-            }
 
-            if (!($fd = fopen($this->_files['old']['data'], 'rb'))) {
-                continue;
-            }
-            if (!flock($fd, LOCK_SH)) {
+            // Either 'new' data file, or 'old' data file has to be ok.
+            // When both of them are corrupt, something went terribly wrong.
+            foreach(array($this->_files['new']['data'], $this->_files['old']['data']) as $file) {
+                if (!file_exists($file)) {
+                    return 'no process';
+                }
+
+                if (!($fd = fopen($file, 'rb'))) {
+                    continue;
+                }
+                if (!flock($fd, LOCK_SH)) {
+                    fclose($fd);
+                    continue;
+                }
+                $data = $this->unserializeData(file_get_contents($file));
+                if (!$data) {
+                    flock($fd, LOCK_UN);
+                    fclose($fd);
+                    continue;
+                }
+                $this->_data = $data;
+                flock($fd, LOCK_UN);
                 fclose($fd);
-                continue;
+                break 2;
             }
-            $data = $this->unserializeData(file_get_contents($this->_files['old']['data']));
-            if (!$data) {
-                flock($fd, LOCK_UN); // being paranoid
-                fclose($fd);
-                continue;
-            }
-            $this->_data = $data;
-            flock($fd, LOCK_UN); // being paranoid
-            fclose($fd);
-            break;
         }
         if (!$data && $attempts <= 0) {
-            throw new waException('Messenger is unable to read data from '.$this->_files['old']['data'], 302);
+            throw new waException('Unable to read data from '.$this->_files['old']['data'].', '.$this->_files['new']['data'], 302);
         }
 
         if (!$this->_mainLock($this->_files['new']['file'], $this->_files['old']['file'])) {
-            // A live Runner exists. $this->data is already loaded.
+            // A live Runner exists. We're the Messenger. $this->data is already loaded.
             $this->_runner = FALSE;
             return 'messenger';
         }
@@ -499,7 +503,7 @@ abstract class waLongActionController extends waController
         // invariant:
         // 1) if new_data unserializes successfully, then new_data and new_file contain
         // consistent (non-corrupt) state of the process.
-        // 2) if new_data failes to unserialize, then old_data and old_file contain
+        // 2) if new_data fails to unserialize, then old_data and old_file contain
         // consistent state.
 
         // At this point 'old' represents good data before current transaction even started;
@@ -558,7 +562,7 @@ abstract class waLongActionController extends waController
         // work reliably at all. We're sure we can trust flock only if we've already seen it working
         // OR if we've just created unique processId and nobody else knows it yet.
 
-        $waitTime = max($this->_data['avg_time'] * 2, 3);
+        $waitTime = max(ifset($this->_data['avg_time'], 0) * 2, 3);
         if (!$this->_newProcess && !file_exists($this->_files['flock_ok']) && time() < filemtime($filename) + $waitTime) {
             // Recent modification found. Lock failed.
             return false;
@@ -588,7 +592,7 @@ abstract class waLongActionController extends waController
         // Bad luck, we cannot trust the flock.
         // Fail to lock if the second file was modified reasonably recently.
         // (we must check the second file since the first one is touched by fopen(..., 'ab')
-        $waitTime = min($this->_data['avg_time'] * 3, 20);
+        $waitTime = min(ifset($this->_data['avg_time'], 0) * 3, 20);
         if (time() < filemtime($filename2) + $waitTime) {
             // Recent modification found. Releasing...
             flock($this->_fd, LOCK_UN); // being paranoid
