@@ -418,7 +418,10 @@ class waAppConfig extends SystemConfig
     public function getRouting($route = array())
     {
         if ($this->routes === null) {
-            $path = $this->getAppConfigPath('routing');
+            $path = $this->getConfigPath('routing.php', true, $this->application);
+            if (!file_exists($path)) {
+                $path = $this->getConfigPath('routing.php', false, $this->application);
+            }
             if (file_exists($path)) {
                 $this->routes = include($path);
             } else {
