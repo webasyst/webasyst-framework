@@ -160,7 +160,27 @@ abstract class waShipping extends waSystemPlugin
         }
         $this->params = array_merge($this->params, $params);
         try {
-            $rates = $this->addItems($items)->calculate();
+            $match = true;
+            foreach ($this->allowedAddress() as $address) {
+                $match = true;
+                foreach ($address as $field => $value) {
+                    if (!empty($value) && !empty($this->address[$field])) {
+                        if (is_array($value)) {
+                            if (!in_array($this->address[$field], $value)) {
+                                $match = false;
+                                break;
+                            }
+                        } elseif ($value != $this->address[$field]) {
+                            $match = false;
+                            break;
+                        }
+                    }
+                }
+                if ($match) {
+                    break;
+                }
+            }
+            $rates = $match ? $this->addItems($items)->calculate() : _ws('Shipping not available');
         } catch (waException $ex) {
             $rates = $ex->getMessage();
         }
@@ -213,7 +233,17 @@ abstract class waShipping extends waSystemPlugin
      */
     abstract public function allowedWeightUnit();
 
+    /**
+     *
+     * List of allowed address paterns
+     * @return array
+     */
     public function allowedAddress()
+    {
+        return array();
+    }
+
+    public function requestedAddressFields()
     {
         return array();
     }

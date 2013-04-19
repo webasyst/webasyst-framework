@@ -5,6 +5,7 @@
  * @property-read float $cost
  * @property-read string $currency
  * @property-read string $delivery
+ * @property-read string $promt_address
  *
  */
 class flatrateShipping extends waShipping
@@ -80,24 +81,26 @@ class flatrateShipping extends waShipping
 
     /**
      * Returns the general tracking information (HTML)
-     * @see waShipping::allowedWeightUnit()
+     * @see waShipping::tracking()
+     * @example return 'Online shipment tracking: <a href="link">link</a>';
      */
     public function tracking($tracking_id = null)
     {
-        return ''; // return 'Online shipment tracking: <a href="link">link</a>';
-        }
+        return '';
+    }
 
     /**
      * Returns the list of printable forms this module offers
+     * @example <pre> return array(
+     *    'flatrate_form' => array(
+     *        'name' => _wp('Sample consignment note'),
+     *        'description' => _wp('Sample consignment description'),
+     *    ),
+     * );</pre>
      */
     public function getPrintForms()
     {
-        return array(
-            'flatrate_form' => array(
-                'name' => /*_wp*/('Sample consignment note'),
-                'description' => /*_wp*/(''),
-            ),
-        );
+        return array();
     }
 
     /**
@@ -124,5 +127,10 @@ class flatrateShipping extends waShipping
         return array(
 
         );
+    }
+
+    public function requestedAddressFields()
+    {
+        return $this->promt_address ? array() : false;
     }
 }

@@ -28,7 +28,7 @@ class waCurrency
             $info['title'] = _ws($info['title']);
         } else {
             $info = array(
-                'sign' => $currency,
+                'sign'  => $currency,
                 'title' => $currency
             );
         }
@@ -45,9 +45,11 @@ class waCurrency
         $i = "";
         $result = "";
 
-        if (!$n) return _ws($n);
+        if (!$n) {
+            return _ws($n);
+        }
         while ($n) {
-            $part = (int)substr($n, -3);
+            $part = strlen($n) <= 3 ? (int) $n : (int) substr($n, -3);
             $postfix = $result ? (isset($delim["1".$i]) ? $delim["1".$i] : " ") : "";
             $current_plural = ($i && isset($plural["1".$i])) ? $plural["1".$i] : 1;
             if ($i) {
@@ -77,7 +79,7 @@ class waCurrency
                     if (isset($offset[$part])) {
                         $part_result = substr($part_result, 0, $offset[$part]);
                     }
-                    $part_result .= _ws($part, $part, (int)$current_plural);
+                    $part_result .= _ws($part, $part, (int) $current_plural);
                 }
             } else {
                 if (isset($order[10]) && !$order[10]) {
@@ -121,15 +123,17 @@ class waCurrency
         if ($locale === null) {
             $locale = $old_locale;
         }
-        $currency = waCurrency::getInfo($currency);
         if ($locale !== $old_locale) {
             wa()->setLocale($locale);
         }
+        $currency = waCurrency::getInfo($currency);
         waLocale::loadByDomain('webasyst', $locale);
         $locale = waLocale::getInfo($locale);
-        self::$data['n'] = $n; self::$data['locale'] = $locale; self::$data['currency'] = $currency;
-        $result = preg_replace_callback('/%([0-9]?\.?[0-9]?)([iw]*)({[n|f|c|s][0-9]?})?/i', array('self', 'replace_callback'),
-            $format);
+        self::$data['n'] = $n;
+        self::$data['locale'] = $locale;
+        self::$data['currency'] = $currency;
+        $pattern = '/%([0-9]?\.?[0-9]?)([iw]*)({[n|f|c|s][0-9]?})?/i';
+        $result = preg_replace_callback($pattern, array('self', 'replace_callback'), $format);
         if ($locale !== $old_locale) {
             wa()->setLocale($old_locale);
         }
@@ -138,8 +142,7 @@ class waCurrency
 
     private static function replace_callback($matches)
     {
-        return self::extract(self::$data['n'], self::$data['currency'], self::$data['locale'], 
-                $matches[1], $matches[2], isset($matches[3]) ? $matches[3] : '');
+        return self::extract(self::$data['n'], self::$data['currency'], self::$data['locale'], $matches[1], $matches[2], ifset($matches[3], ''));
     }
 
     protected static function extract($n, $currency, $locale, $precision, $format, $desc)
@@ -153,7 +156,7 @@ class waCurrency
         $frac_only_exists = true;
         if ($precision_arr[0] !== '') {
             $precision = (int) $precision_arr[0];
-        } else if (isset($precision_arr[1]) && $precision_arr[1] !== '') {
+        } elseif (isset($precision_arr[1]) && $precision_arr[1] !== '') {
             $n = ($n - floor($n)) * pow(10, $precision_arr[1]);
             $precision = 0;
             $pad_to_width = $precision_arr[1];
@@ -174,7 +177,7 @@ class waCurrency
         // When not present then round() is used.
         // 'w' option implies 'i'
         if (strstr($format_lower, 'i') !== false || strstr($format_lower, 'w') !== false) {
-            $n = floor($n * pow(10, $precision))/ ((float) pow(10, $precision));
+            $n = floor($n * pow(10, $precision)) / ((float) pow(10, $precision));
         } else {
             $n = round($n, $precision);
 
@@ -197,7 +200,7 @@ class waCurrency
             if ($pad_to_width !== false) {
                 $result = str_pad($n, $pad_to_width, '0', STR_PAD_LEFT);
             } else {
-                if ($frac_only_exists && ($n == (int)$n) && $precision_arr[0] === '') {
+                if ($frac_only_exists && ($n == (int) $n) && $precision_arr[0] === '') {
                     $precision = 0;
                 }
                 $result = number_format($n, $precision, $locale['decimal_point'], $locale['thousands_sep']);
@@ -233,8 +236,8 @@ class waCurrency
                 $key = 'name';
             }
             if ($key) {
-                $i = (int)substr($desc, 1);
-                $str = $currency[$key][$i];
+                $i = (int) substr($desc, 1);
+                $str = isset($currency[$key][$i])?$currency[$key][$i]:end($currency[$key]);
                 if (is_array($str)) {
                     $result .= ' '._ws($str[0], $str[1], $n);
                 } else {
@@ -249,16 +252,19 @@ class waCurrency
     public static function getAll($type = 'title')
     {
         // @todo: support wa-config/currency.php
-        $data = array();
-        $path = dirname(__FILE__)."/data/";
-        if ($dh = opendir($path)) {
-            while (($file = readdir($dh)) !== false) {
-                if (is_file($path.$file) && substr($file, -4) === '.php' && $file != 'formats.php') {
-                    $currency = substr($file, 0, -4);
+
+        $cache = new waVarExportCache(__CLASS__.wa()->getLocale());
+        $data = $cache->get();
+        if (!$data) {
+            $data = array();
+            $files = waFiles::listdir(dirname(__FILE__)."/data/");
+            foreach ($files as $file) {
+                if (preg_match('/^([A-Z]{3})\.php$/', $file, $matches)) {
+                    $currency = $matches[1];
                     $data[$currency] = self::getInfo($currency);
                 }
             }
-            closedir($dh);
+            $cache->set($data);
         }
         if ($type === true) {
             $type = 'all';
@@ -267,7 +273,7 @@ class waCurrency
             case 'code':
             case 'sign':
             case 'title':
-                foreach ($data as &$d) {
+                foreach ($data as & $d) {
                     $d = $d[$type];
                 }
                 return $data;

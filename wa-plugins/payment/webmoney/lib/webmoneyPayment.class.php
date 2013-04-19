@@ -20,12 +20,12 @@ class webmoneyPayment extends waPayment implements waIPayment
 
     public function allowedCurrency()
     {
-        return 'RUB';
+        return array('RUB','USD');
     }
 
     public function payment($payment_form_data, $order_data, $transaction_type)
     {
-        if ($order_data['currency_id'] != 'RUB') {
+        if (!in_array($order_data['currency_id'],$this->allowedCurrency())) {
             throw new waException('Оплата на сайте WebMoney производится только в рублях (RUB) и в данный момент невозможна, так как эта валюта не определена в настройках.');
         }
         if (empty($order_data['description'])) {

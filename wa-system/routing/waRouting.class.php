@@ -141,6 +141,12 @@ class waRouting
                 } else {
                     $domain = 'www.'.$this->domain;
                 }
+                if (wa()->getEnv() == 'frontend' && isset($this->routes[$domain])) {
+                    $https = isset($_SERVER['HTTPS']) ? $_SERVER['HTTPS'] : '';
+                    $url = 'http'.(strtolower($https) == 'on' ? 's' : '').'://';
+                    $url .= $this->getDomainUrl($domain).'/'.wa()->getConfig()->getRequestUrl();
+                    wa()->getResponse()->redirect($url);
+                }
                 return $domain;
             }
         }

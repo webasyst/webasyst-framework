@@ -109,6 +109,7 @@ return array(
             'PRIMARY' => 'id',
             'contact_sort' => array('contact_id', 'sort', 'unique' => 1),
             'email' => 'email',
+            'status' => 'status',
         ),
     ),
     'wa_contact_field_values' => array(

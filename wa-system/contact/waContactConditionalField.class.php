@@ -20,8 +20,9 @@ class waContactConditionalField extends waContactField
     public function getInfo()
     {
         $info = parent::getInfo();
-        $info['parent_options'] = reset($this->getOptions());
-        $info['parent_field'] = key($this->getOptions());
+        $tmp = $this->getOptions();
+        $info['parent_options'] = reset($tmp);
+        $info['parent_field'] = key($tmp);
         return $info;
     }
 

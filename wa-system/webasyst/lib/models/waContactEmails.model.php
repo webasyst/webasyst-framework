@@ -49,11 +49,20 @@ class waContactEmailsModel extends waModel
             $this->exec($sql);
         }
     }
-    
+
     public function getContactIdByEmail($email)
     {
         $sql = "SELECT contact_id FROM ".$this->table." WHERE email = s:email ORDER BY sort LIMIT 1";
         return $this->query($sql, array('email' => $email))->fetchField();
+    }
+
+    public function getContactIdsByEmails($emails)
+    {
+        if (!$emails || !is_array($emails)) {
+            return array();
+        }
+        $sql = "SELECT email, contact_id FROM ".$this->table." WHERE email IN (:emails)";
+        return $this->query($sql, array('emails' => $emails))->fetchAll('email', true);
     }
 
     public function getContactIdByNameEmail($name, $email)

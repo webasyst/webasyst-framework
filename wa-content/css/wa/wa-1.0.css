@@ -39,7 +39,7 @@ table { border-collapse: collapse; border-spacing: 0; }
 
 /* Common HTML elements, fonts, and colors
 -------------------------------------------- */
-html, body { height: 100%; width: 100%; font-family: 'Lucida Grande', Helvetica, Arial, sans-serif; font-size: 13px; }
+html, body { height: 100%; width: 100%; font-family: 'Lucida Grande', Arial, sans-serif; font-size: 13px; }
 a, a:visited { color: #03c; outline:0 none; } /* dynamic content everywhere, so no special :visited markup */
 a:hover { color: red !important; }
 a:focus { outline:none; outline-offset:-4px; }
@@ -65,7 +65,7 @@ tbody th, tbody td {/*  border-top:1px solid #bbb; border-bottom:1px solid #bbb;
 tfoot th, tfoot td { /* border-top:2px solid #666; background:#eee;  */}
 form { overflow:hidden; }
 input, textarea, select { margin:0;}
-input, textarea { font-size: 1em; color: #000; font-family: 'Lucida Grande', Helvetica, Arial, sans-serif; }
+input, textarea { font-size: 1em; color: #000; font-family: 'Lucida Grande', Arial, sans-serif; }
 input[type="button"]:focus { outline:none; outline-offset:-2px; }
 fieldset { border:1px solid #bbb; padding:10px; position:relative; background:#e9e9e9; margin-bottom:10px; }
 legend { font-size:1.1em; padding:.4em .8em; background:#fff; //background:none;
@@ -975,7 +975,7 @@ i.icon10 { background-repeat:no-repeat; background-image: url(../../../wa-conten
 .ui-slider-horizontal.ui-widget-content { background: #bbb; }
 .ui-slider-horizontal .ui-widget-header { background: #0a0; height: 4px; position: relative; top: -1px; }
 .ui-state-default { background-color: #dd8; border-color: #855; }
-.ui-datepicker { font-family:'Lucida Grande', Helvetica, Arial, sans-serif; }
+.ui-datepicker { font-family:'Lucida Grande', Arial, sans-serif; }
 .ui-datepicker.ui-widget-content { -moz-border-radius: 10px 10px 10px 10px; -webkit-border-radius: 10px 10px 10px 10px; border-radius: 10px 10px 10px 10px; -moz-box-shadow: 0 0 20px #BBBBBB; background: none repeat scroll 0 0 #FFFFFF; border: 7px solid #F3F3F3; }
 .ui-datepicker .ui-datepicker-header { background:none; border:none; height: 20px; }
 .ui-datepicker .ui-datepicker-title { font-weight:bold; font-size:1.15em; color:#555; line-height: 20px; }
@@ -1004,7 +1004,7 @@ i.icon10 { background-repeat:no-repeat; background-image: url(../../../wa-conten
 #wa .el-rte .toolbar { background: #fff; border-top: 0; border-left: 0; border-right: 0; border-bottom: 1px solid #ccc; }
 #wa .el-rte .workzone { border: 0; padding: 10px; }
 
-#wa .jqplot-target { font-family: 'Lucida Grande', Helvetica, Arial, sans-serif; }
+#wa .jqplot-target { font-family: 'Lucida Grande', Arial, sans-serif; }
 #wa table.jqplot-table-legend,
 #wa table.jqplot-cursor-legend { border: 0; }
 #wa td.jqplot-table-legend > div { border: 0; }

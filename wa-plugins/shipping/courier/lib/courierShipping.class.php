@@ -85,78 +85,55 @@ class courierShipping extends waShipping
 
     public function calculate()
     {
-        $address = $this->verifyAddress();
-        if ($address['country'] === false) {
-            return _wp('Доставка невозможна в выбранную страну');
-        } elseif ($address['region'] === false) {
-            return _wp('Доставка невозможна в выбранный регион');
+
+        $prices = array();
+        $price = null;
+        $limit = $this->getPackageProperty($this->rate_by);
+        $rates = $this->rate;
+        if (!$rates) {
+            $rates = array();
+        }
+        self::sortRates($rates);
+        if ($this->rate_by == 'price') {
+            $rates = array_reverse($rates);
+        }
+        foreach ($rates as $rate) {
+            $rate = array_map('floatval', $rate);
+            switch ($this->rate_by) {
+                case 'price':
+                    if (($rate['limit'] < $limit) && (($price === null) || ($price > $rate['cost']))) {
+                        $price = $rate['cost'];
+
+                    }
+                    break;
+                case 'weight':
+                    if (($rate['limit'] < $limit) && (($price === null) || ($price < $rate['cost']))) {
+                        $price = $rate['cost'];
+                    }
+                    break;
+            }
+            $prices[] = $rate['cost'];
+        }
+        if ($this->delivery_time) {
+            $delivery_date = array_map('strtotime', explode(',', $this->delivery_time, 2));
+            foreach ($delivery_date as & $date) {
+                $date = waDateTime::format('humandate', $date);
+            }
+            unset($date);
+            $delivery_date = implode(' —', $delivery_date);
         } else {
-            $prices = array();
-            $price = null;
-            $limit = $this->getPackageProperty($this->rate_by);
-            $rates = $this->rate;
-            if (!$rates) {
-                $rates = array();
-            }
-            self::sortRates($rates);
-            if ($this->rate_by == 'price') {
-                $rates = array_reverse($rates);
-            }
-            foreach ($rates as $rate) {
-                $rate = array_map('floatval', $rate);
-                switch ($this->rate_by) {
-                    case 'price':
-                        if (($rate['limit'] < $limit) && (($price === null) || ($price > $rate['cost']))) {
-                            $price = $rate['cost'];
-
-                        }
-                        break;
-                    case 'weight':
-                        if (($rate['limit'] < $limit) && (($price === null) || ($price < $rate['cost']))) {
-                            $price = $rate['cost'];
-                        }
-                        break;
-                }
-                $prices[] = $rate['cost'];
-            }
-            if ($this->delivery_time) {
-                $delivery_date = array_map('strtotime', explode(',', $this->delivery_time, 2));
-                foreach ($delivery_date as & $date) {
-                    $date = waDateTime::format('humandate', $date);
-                }
-                unset($date);
-                $delivery_date = implode(' —', $delivery_date);
-            } else {
-                $delivery_date = null;
-            }
-            return array(
-                'delivery' => array(
-                    'est_delivery' => $delivery_date,
-                    'currency'     => $this->currency,
-                    'rate'         => ($limit === null) ? ($prices ? array(min($prices), max($prices)) : null) : $price,
-                ),
-            );
+            $delivery_date = null;
         }
-    }
-    private function verifyAddress()
-    {
-        $address = $this->getAddress();
-        $variants = $this->allowedAddress();
-        if (empty($address['country'])) {
-            $address['country'] = ifempty($variants['country'], false);
-        } elseif (!empty($variants['country']) && ($address['country'] != $variants['country'])) {
-            $address['country'] = false;
-        }
-
-        if (empty($address['region'])) {
-            $address['region'] = ifset($variants['region'], false);
-        } elseif ($address['region'] != $variants['region']) {
-            $address['region'] = false;
-        }
-        return $address;
+        return array(
+            'delivery' => array(
+                'est_delivery' => $delivery_date,
+                'currency'     => $this->currency,
+                'rate'         => ($limit === null) ? ($prices ? array(min($prices), max($prices)) : null) : $price,
+            ),
+        );
     }
 
-    public function allowedAddress($field = null)
+    public function allowedAddress()
     {
         $rate_zone = $this->rate_zone;
         $address = array();
@@ -166,7 +143,7 @@ class courierShipping extends waShipping
             }
         }
 
-        return $address;
+        return array($address);
     }
 
     public function allowedCurrency()
@@ -179,9 +156,15 @@ class courierShipping extends waShipping
         return 'kg';
     }
 
+    public function requestedAddressFields()
+    {
+        return array(
+            'zip' => false,
+        );
+    }
+
     public function getPrintForms()
     {
-        return array();
         return array(
             'delivery_list' => array(
                 'name'        => _wp('Лист доставки'),
@@ -194,6 +177,40 @@ class courierShipping extends waShipping
     {
         if ($id = 'delivery_list') {
             $view = wa()->getView();
+            $main_contact_info = array();
+            foreach (array('email', 'phone', ) as $f) {
+                if (($v = $order->contact->get($f, 'top,html'))) {
+                    $main_contact_info[] = array(
+                        'id'    => $f,
+                        'name'  => waContactFields::get($f)->getName(),
+                        'value' => is_array($v) ? implode(', ', $v) : $v,
+                    );
+                }
+            }
+
+            $formatter = new waContactAddressSeveralLinesFormatter();
+            $shipping_address = array();
+            foreach (waContactFields::get('address')->getFields() as $k => $v) {
+                if (isset($order->params['shipping_address.'.$k])) {
+                    $shipping_address[$k] = $order->params['shipping_address.'.$k];
+                }
+            }
+
+            $shipping_address_text = array();
+            foreach (array('country_name', 'region_name', 'zip', 'city', 'street') as $k) {
+                if (isset($order->shipping_address[$k])) {
+                    $shipping_address_text[] = $order->shipping_address[$k];
+                }
+            }
+            $shipping_address_text = implode(', ', $shipping_address_text);
+            $view->assign('shipping_address_text', $shipping_address_text);
+            $shipping_address = $formatter->format(array('data' => $shipping_address));
+            $shipping_address = $shipping_address['value'];
+
+            $view->assign('shipping_address', $shipping_address);
+            $view->assign('main_contact_info', $main_contact_info);
+            $view->assign('order', $order);
+            $view->assign('params', $params);
             return $view->fetch($this->path.'/templates/form.html');
         } else {
             throw new waException('print form not found');

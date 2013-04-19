@@ -139,25 +139,6 @@ class russianpostShipping extends waShipping
         return $control;
     }
 
-    private function verifyAddress()
-    {
-        $address = $this->getAddress();
-        $variants = $this->allowedAddress();
-
-        if (empty($address['country'])) {
-            $address['country'] = $variants['country'];
-        } elseif ($address['country'] != $variants['country']) {
-            $address['country'] = false;
-        }
-
-        if (empty($address['region'])) {
-            $address['region'] = true;
-        } elseif (!in_array($address['region'], $variants['region'])) {
-            $address['region'] = false;
-        }
-        return $address;
-    }
-
     public function allowedAddress()
     {
         $address = array(
@@ -169,7 +150,18 @@ class russianpostShipping extends waShipping
                 $address['region'][] = $region;
             }
         }
-        return $address;
+        return array($address);
+    }
+
+    public function requestedAddressFields()
+    {
+        return array(
+            'zip'     => array(),
+            'country' => array(),
+            'region'  => array(),
+            'city'    => array(),
+            'street'  => array(),
+        );
     }
 
     private function getZoneRates($weight, $price, $zone)
@@ -196,70 +188,61 @@ class russianpostShipping extends waShipping
 
     public function calculate()
     {
-        $address = $this->verifyAddress();
-        if ($address['country'] === false) {
-            return 'Доставка возможна только по территории Российской Федерации';
-        } elseif ($address['region'] === false) {
-            return 'Доставка в указанную область невозможна';
+
+        $services = array();
+        $region_id = $this->getAddress('region');
+
+        $zone = null;
+        $delivery_date = waDateTime::format('humandate', strtotime('+1 week')).' — '.waDateTime::format('humandate', strtotime('+2 week'));
+        $weight = $this->getTotalWeight();
+        if ($weight > $this->max_weight) {
+            $services = sprintf("Вес отправления (%0.2f) превышает максимально допустимый (%0.2f)", $weight, $this->max_weight);
         } else {
-            $services = array();
-            $region_id = null;
-            if ($address['region'] !== true) {
-                $region_id = $address['region'];
-            }
+            if ($region_id) {
+                if (!empty($this->region[$region_id]) && !empty($this->region[$region_id]['zone'])) {
 
-            $zone = null;
-            $delivery_date = waDateTime::format('humandate', strtotime('+1 week')).' — '.waDateTime::format('humandate', strtotime('+2 week'));
-            $weight = $this->getTotalWeight();
-            if ($weight > $this->max_weight) {
-                $services = sprintf("Вес отправления (%0.2f) превышает максимально допустимый (%0.2f)", $weight, $this->max_weight);
-            } else {
-                if ($region_id) {
-                    if (!empty($this->region[$region_id]) && !empty($this->region[$region_id]['zone'])) {
-
-                        $rate = $this->getZoneRates($weight, $this->getTotalPrice(), $this->region[$region_id]['zone']);
-                        if (empty($this->region[$region_id]['avia_only'])) {
-                            $services['ground'] = array(
-                                'name'         => 'Наземный транспорт',
-                                'id'           => 'ground',
-                                'est_delivery' => $delivery_date,
-                                'rate'         => $rate['ground'],
-                                'currency'     => 'RUB',
-                            );
-                        }
-                        $services['avia'] = array(
-                            'name'         => 'Авиа',
-                            'id'           => 'avia',
+                    $rate = $this->getZoneRates($weight, $this->getTotalPrice(), $this->region[$region_id]['zone']);
+                    if (empty($this->region[$region_id]['avia_only'])) {
+                        $services['ground'] = array(
+                            'name'         => 'Наземный транспорт',
+                            'id'           => 'ground',
                             'est_delivery' => $delivery_date,
-                            'rate'         => $rate['air'],
+                            'rate'         => $rate['ground'],
                             'currency'     => 'RUB',
                         );
-                    } else {
-                        $services = false;
                     }
-
-                } else {
-                    $price = $this->getTotalPrice();
-                    $rate_min = $this->getZoneRates($weight, $price, 1);
-                    $rate_max = $this->getZoneRates($weight, $price, 5);
-                    $services['ground'] = array(
-                        'name'         => 'Наземный транспорт',
-                        'id'           => 'ground',
-                        'est_delivery' => $delivery_date,
-                        'rate'         => array($rate_min['ground'], $rate_max['ground']),
-                        'currency'     => 'RUB',
-                    );
                     $services['avia'] = array(
                         'name'         => 'Авиа',
                         'id'           => 'avia',
                         'est_delivery' => $delivery_date,
-                        'rate'         => array($rate_min['air'], $rate_max['air']),
+                        'rate'         => $rate['air'],
                         'currency'     => 'RUB',
                     );
+                } else {
+                    $services = false;
                 }
+
+            } else {
+                $price = $this->getTotalPrice();
+                $rate_min = $this->getZoneRates($weight, $price, 1);
+                $rate_max = $this->getZoneRates($weight, $price, 5);
+                $services['ground'] = array(
+                    'name'         => 'Наземный транспорт',
+                    'id'           => 'ground',
+                    'est_delivery' => $delivery_date,
+                    'rate'         => array($rate_min['ground'], $rate_max['ground']),
+                    'currency'     => 'RUB',
+                );
+                $services['avia'] = array(
+                    'name'         => 'Авиа',
+                    'id'           => 'avia',
+                    'est_delivery' => $delivery_date,
+                    'rate'         => array($rate_min['air'], $rate_max['air']),
+                    'currency'     => 'RUB',
+                );
             }
-            return $services;
         }
+        return $services;
     }
 
     public function getPrintForms()
@@ -451,7 +434,7 @@ class russianpostShipping extends waShipping
                 }
                 $this->view()->assign('editable', waRequest::post() ? false : true);
                 $this->view()->assign('order', $order);
-                $this->view()->assign('address',$this->splitAddress($order));
+                $this->view()->assign('address', $this->splitAddress($order));
                 break;
         }
         return $this->view()->fetch($this->path.'/templates/form116.html');

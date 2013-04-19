@@ -30,4 +30,10 @@ return array(
             '+14 days' => /*_wp*/('2 weeks'),
         ),
     ),
+    'promt_address' =>array(
+        'value'        => false,
+        'title'        => /*_wp*/('Prompt for address'),
+        'description'  => /*_wp*/('Request customer to fill in all address fields in case shipping address was not provided yet'),
+        'control_type' => waHtmlControl::CHECKBOX,
+    ),
 );

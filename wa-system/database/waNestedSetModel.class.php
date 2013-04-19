@@ -99,7 +99,7 @@ class waNestedSetModel extends waModel
      * @param $id int
      * @param $depth int related depth default is unlimited
      */
-    public function getTree($id, $depth = null)
+    public function getTree($id, $depth = null, $where = array())
     {
         if(($id = max(0, (int) $id))) {
             $result = $this->getById($id);
@@ -110,7 +110,6 @@ class waNestedSetModel extends waModel
             $left = $right = 0;
         }
         $sql = "SELECT * FROM `{$this->table}`";
-        $where = array();
         if($id) {
             $where[] = "`{$this->left}` >= i:left";
             $where[] = "`{$this->right}` <= i:right";

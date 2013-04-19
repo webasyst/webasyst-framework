@@ -101,9 +101,7 @@ class emsruShipping extends waShipping
         $pattern = '/(КРАЙ|РАЙОН|(АВТОНОМНАЯ )?ОБЛАСТЬ|РЕСПУБЛИКА|(АВТОНОМНЫЙ )?ОКРУГ)/u';
 
         $cache = new waSerializeCache(__CLASS__, 86400, 'webasyst');
-        $cached = true;
         if (!($map = $cache->get())) {
-            $cached = false;
             $map = array(
                 'city'   => array(),
                 'region' => array(),
@@ -127,12 +125,16 @@ class emsruShipping extends waShipping
         }
 
         $region = trim(mb_strtoupper(ifset($address['region'])));
-        $to = ifset($map['city'][$city], ifset($map['city'][$region]));
+        $region_name = trim(mb_strtoupper(ifset($address['region_name'])));
+        $to = ifset($map['city'][$city], ifset($map['city'][$region_name], ifset($map['city'][$region])));
         if (!$to) {
             $model = new waRegionModel();
-            if ($region && ($region = $model->get(ifset($address['country']), $region))) {
+            if ($region_name) {
+                $region_name = trim(preg_replace($pattern, '', mb_strtoupper($region_name)));
+                $to = ifset($map['region'][$region_name]);
+            } elseif ($region && ($region = $model->get(ifset($address['country']), $region))) {
                 $region = trim(preg_replace($pattern, '', mb_strtoupper($region['name'])));
-                $to = ifset($map['region'][$region]);
+                $to = ifset($map['city'][$region], ifset($map['region'][$region]));
             }
         }
         return $to;
@@ -146,6 +148,56 @@ class emsruShipping extends waShipping
     public function allowedWeightUnit()
     {
         return 'kg';
+    }
+
+    public function requestedAddressFields()
+    {
+        return array(
+            'zip'     => array(),
+            'country' => array(),
+            'region'  => array(),
+            'city'    => array(),
+            'street'  => array(),
+        );
+    }
+
+    public function allowedAddress()
+    {
+        $cache = new waSerializeCache(__CLASS__.__FUNCTION__, 86400, 'webasyst');
+        if (!($addresses = $cache->get())) {
+            $addresses = array();
+
+            /* countries */
+            $countries = $this->request('ems.get.locations', array('type' => 'countries'));
+            $country_model = new waCountryModel();
+            $map = $country_model->getAll('iso2letter');
+            $address = array(
+                'country' => array(),
+            );
+            foreach ($countries['locations'] as $country) {
+                if ((ifset($country['type']) == 'countries') && ($value = strtolower(ifset($country['value']))) && isset($map[$value])) {
+                    $address['country'][] = $map[$value]['iso3letter'];
+                }
+            }
+            $addresses[] = $address;
+
+            /* regions */
+            $region_model = new waRegionModel();
+            $address = array(
+                'country' => 'rus',
+                'region'  => array(),
+            );
+            $map = $region_model->getByCountry('rus');
+            foreach ($map as $region) {
+
+                if ($this->findTo(array('country' => 'rus', 'region_name' => $region['name']))) {
+                    $address['region'][] = $region['code'];
+                }
+            }
+            $addresses[] = $address;
+            $cache->set($addresses);
+        }
+        return $addresses;
     }
 
     private function request($method, $params = array())

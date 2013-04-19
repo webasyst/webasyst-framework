@@ -154,10 +154,10 @@ class waDateTime
     public static function format($format, $time = null, $timezone = null, $locale = null)
     {
         if (!$locale) {
-            $locale = waSystem::getInstance()->getUser()->getLocale();
+            $locale = wa()->getLocale();
         }
         if (!$timezone) {
-            $timezone = waSystem::getInstance()->getUser()->getTimezone();
+            $timezone = wa()->getUser()->getTimezone();
         }
         waLocale::loadByDomain("webasyst", $locale);
 
