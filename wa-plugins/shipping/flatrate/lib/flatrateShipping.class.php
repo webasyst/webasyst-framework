@@ -33,11 +33,11 @@ class flatrateShipping extends waShipping
 
         return array(
             'ground' => array(
-                'name' => /*_wp*/('Ground shipping'),
-                'description' => /*_wp*/(''),
+                'name'         => $this->_w('Ground shipping'),
+                'description'  => '',
                 'est_delivery' => waDateTime::format('humandate', strtotime($this->delivery)), //string
-                'currency' => $this->currency,
-                'rate' => $this->cost,
+                'currency'     => $this->currency,
+                'rate'         => $this->cost,
             ),
             /*
              //ADD AS MANY SHIPPING OPTIONS AS YOU LIKE
@@ -113,9 +113,10 @@ class flatrateShipping extends waShipping
             $view = wa()->getView();
             $view->assign('order', $order);
             $view->assign('params', $params);
+            $view->assign('plugin', $this);
             return $view->fetch($this->path.'/templates/form.html');
         } else {
-            throw new waException( /*_wp*/('Printable form not found'));
+            throw new waException($this->_w('Printable form not found'));
         }
     }
 

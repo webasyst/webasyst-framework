@@ -136,7 +136,7 @@ class waContactRegionField extends waContactField
 <script>if($){ $(function() {
     var region_countries = {$region_countries};
     var input_name = "{$name_input}";
-    var country_select = $('select[name="{$name_country}"]');
+    var country_select = $('[name="{$name_country}"]');
     var xhr_url = "{$xhr_url}";
     if (country_select.length <= 0) {
         return;
@@ -174,7 +174,7 @@ class waContactRegionField extends waContactField
     var change_handler;
     country_select.change(change_handler = function() {
         var old_val = getVal();
-        var country = $(this).val();
+        var country = country_select.val();
         input.prev('.loading').remove();
         if (region_countries && region_countries[country]) {
             showInput();

@@ -157,8 +157,8 @@ class russianpostShipping extends waShipping
     {
         return array(
             'zip'     => array(),
-            'country' => array(),
-            'region'  => array(),
+            'country' => array('hidden' => true, 'value' => 'rus', 'cost' => true),
+            'region'  => array('cost' => true),
             'city'    => array(),
             'street'  => array(),
         );

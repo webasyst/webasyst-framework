@@ -1,0 +1,139 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: wa-plugins/shipping/flatrate\n"
+"POT-Creation-Date: 2013-04-23 12:54+0000\n"
+"PO-Revision-Date: \n"
+"Last-Translator: wa-plugins/shipping/flatrate\n"
+"Language-Team: wa-plugins/shipping/flatrate\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-Basepath: .\n"
+"X-Generator: Poedit 1.5.5\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPath-1: .\n"
+
+#: //wa-plugins/shipping/flatrate/lib/config/plugin.php:6
+msgid "Flat rate"
+msgstr ""
+
+#: //wa-plugins/shipping/flatrate/lib/config/plugin.php:7
+msgid "Adds a fixed flat shipping rate to the order value"
+msgstr ""
+
+#: //wa-plugins/shipping/flatrate/lib/config/settings.php:8
+msgid "Shipping rate"
+msgstr ""
+
+#: //wa-plugins/shipping/flatrate/lib/config/settings.php:9
+msgid "This fixed shipping rate will be added to the order total"
+msgstr ""
+
+#: //wa-plugins/shipping/flatrate/lib/config/settings.php:15
+msgid "Currency"
+msgstr ""
+
+#: //wa-plugins/shipping/flatrate/lib/config/settings.php:16
+msgid "Currency in which shipping rate is provided"
+msgstr ""
+
+#: //wa-plugins/shipping/flatrate/lib/config/settings.php:22
+msgid "Estimated delivery time"
+msgstr ""
+
+#: //wa-plugins/shipping/flatrate/lib/config/settings.php:23
+msgid ""
+"Average order transit time. Estimated delivery date will be calculated "
+"automatically and shown to customer"
+msgstr ""
+
+#: //wa-plugins/shipping/flatrate/lib/config/settings.php:26
+msgid "1 day"
+msgstr ""
+
+#: //wa-plugins/shipping/flatrate/lib/config/settings.php:27
+msgid "2 days"
+msgstr ""
+
+#: //wa-plugins/shipping/flatrate/lib/config/settings.php:28
+msgid "3 days"
+msgstr ""
+
+#: //wa-plugins/shipping/flatrate/lib/config/settings.php:29
+msgid "1 week"
+msgstr ""
+
+#: //wa-plugins/shipping/flatrate/lib/config/settings.php:30
+msgid "2 weeks"
+msgstr ""
+
+#: //wa-plugins/shipping/flatrate/lib/config/settings.php:35
+msgid "Prompt for address"
+msgstr ""
+
+#: //wa-plugins/shipping/flatrate/lib/config/settings.php:36
+msgid ""
+"Request customer to fill in all address fields in case shipping address was "
+"not provided yet"
+msgstr ""
+
+#: //wa-plugins/shipping/flatrate/templates/form.html:8
+msgid "Sample consignment note"
+msgstr ""
+
+#: //wa-plugins/shipping/flatrate/lib/flatrateShipping.class.php:97
+msgid "Sample consignment description"
+msgstr ""
+
+#: //wa-plugins/shipping/flatrate/templates/form.html:5
+msgid "Sample shipping form"
+msgstr ""
+
+#: //wa-plugins/shipping/flatrate/templates/form.html:10
+msgid "Destination address"
+msgstr ""
+
+#: //wa-plugins/shipping/flatrate/templates/form.html:13
+msgid "Order content"
+msgstr ""
+
+#: //wa-plugins/shipping/flatrate/templates/form.html:17
+msgid "There are no items in the shipment"
+msgstr ""
+
+#: //wa-plugins/shipping/flatrate/templates/form.html:20
+msgid "Total amount"
+msgstr ""
+
+#: //wa-plugins/shipping/flatrate/lib/flatrateShipping.class.php:36
+msgid "Ground shipping"
+msgstr ""
+
+#: //wa-plugins/shipping/flatrate/lib/flatrateShipping.class.php:119
+msgid "Printable form not found"
+msgstr ""
+
+#: //wa-plugins/shipping/flatrate/lib/config/plugin.php:7
+msgid "Fixed shipping rate not depending on the shipment value and weight."
+msgstr ""
+
+#: //wa-plugins/shipping/flatrate/lib/config/settings.php:9
+msgid "Fixed shipping rate amount"
+msgstr ""
+
+#: //wa-plugins/shipping/flatrate/lib/config/settings.php:23
+msgid "Average order transit time. Estimated delivery date will be calculated automatically and shown to customer."
+msgstr ""
+
+#: //wa-plugins/shipping/flatrate/lib/config/settings.php:26
+msgid "Same day"
+msgstr ""
+
+#: //wa-plugins/shipping/flatrate/lib/config/settings.php:27
+msgid "Next day"
+msgstr ""
+
+#: //wa-plugins/shipping/flatrate/lib/config/settings.php:32
+msgid "Undefined"
+msgstr ""

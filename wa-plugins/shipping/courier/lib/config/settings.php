@@ -4,6 +4,7 @@ return array(
         'value' => array(
             'country' => 'rus',
             'region'  => '77',
+            'city'    => ''
         ),
     ),
     'rate_by'       => array(
@@ -18,14 +19,14 @@ return array(
     'delivery_time' => array(
         'value'        => '+1 day',
         'title'        => /*_wp*/('Estimated delivery time'),
-        'description'  => /*_wp*/('Average order transit time. Estimated delivery date will be calculated automatically and shown to customer'),
+        'description'  => /*_wp*/('Average order transit time. Estimated delivery date will be calculated automatically and shown to customer.'),
         'control_type' => waHtmlControl::RADIOGROUP,
         'options'      => array(
-            '+3 hour'        => /*_wp*/('Today'),
+            '+3 hour'        => /*_wp*/('Same day'),
             '+1 day'         => /*_wp*/('Next day'),
             '+2 day, +3 day' => /*_wp*/('2-3 days'),
             '+1 week'        => /*_wp*/('1 week'),
-            ''               =>/*_wp*/('Not set')
+            ''               =>/*_wp*/('Undefined')
         ),
     ),
 );

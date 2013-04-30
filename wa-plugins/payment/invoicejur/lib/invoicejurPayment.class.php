@@ -26,56 +26,19 @@ class invoicejurPayment extends waPayment implements waIPayment, waIPaymentCaptu
      */
     public function payment($payment_form_data, $order_data, $transaction_type)
     {
-        $pay = !empty($payment_form_data);
-        $company = $this->cust_company ? $this->cust_company : 'company';
-        $inn = $this->cust_inn ? $this->cust_inn : 'inn';
-
-        $params = $order_data->params;
-
-        $contact = $order_data->getContact();
-        $contact_changed = false;
-
-        if (empty($payment_form_data['company'])) {
-            $payment_form_data['company'] = ifempty(ifset($params['billing_'.$company]), $order_data->getContactField($company));
-        } elseif ($contact && ($contact->get($company) != $payment_form_data['company'])) {
-            $contact->set($company, $payment_form_data['company'], true);
-            $contact_changed = true;
-        }
-
-        if (empty($payment_form_data['inn'])) {
-            $payment_form_data['inn'] = ifempty(ifset($params['billing_'.$inn]), $order_data->getContactField($inn));
-        } elseif ($contact && ($contact->get($inn) != $payment_form_data['inn'])) {
-            $contact->set($inn, $payment_form_data['inn'], true);
-            $contact_changed = true;
-        }
-
-        if ($contact_changed) {
-            $contact->save();
-        }
-
-        $pay = ifempty($payment_form_data['company']) && $pay;
-        $pay = ifempty($payment_form_data['inn']) && $pay;
-
-        $view = wa()->getView();
-        $view->assign('printform', $pay);
-        $view->assign('data', $payment_form_data, true);
-        if ((true || $pay) && ifempty($payment_form_data['printform'])) {
+        if (!empty($payment_form_data)) {
             $wa_transaction_data = $this->formalizeData($order_data);
             $wa_transaction_data['printform'] = $this->id;
             $url = $this->getAdapter()->getBackUrl(waAppPayment::URL_PRINTFORM, $wa_transaction_data);
-            $this->getAdapter()->setOrderParams($order_data->id, array(
-                'billing_'.$company => $payment_form_data['company'],
-                'billing_'.$inn => $payment_form_data['inn'],
-            ));
             wa()->getResponse()->redirect($url);
         }
-        return $view->fetch($this->path.'/templates/payment.html');
+        return wa()->getView()->fetch($this->path.'/templates/payment.html');
     }
 
     public function capture($transaction_raw_data)
     {
-        //TODO
-        }
+        /*TODO*/
+    }
 
     public function getPrintForms()
     {
@@ -104,8 +67,8 @@ class invoicejurPayment extends waPayment implements waIPayment, waIPaymentCaptu
             $params = $order['params'];
 
             $company = array(
-                'company' => ifset($params['billing_'.$company], $order->contact_id ? $order->getContactField($company) : ''),
-                'inn'     => ifset($params['billing_'.$inn], $order->contact_id ? $order->getContactField($inn) : ''),
+                'company' => ifset($params['payment_params_'.$company], $order->contact_id ? $order->getContactField($company) : ''),
+                'inn'     => ifset($params['payment_params_'.$inn], $order->contact_id ? $order->getContactField($inn) : ''),
             );
 
             $view->assign('order', $order);
@@ -125,4 +88,29 @@ class invoicejurPayment extends waPayment implements waIPayment, waIPaymentCaptu
         $transaction_data['native_id'] = '';
         return $transaction_data;
     }
+
+    public function customFields(waOrder $order)
+    {
+        $company_field = ($this->cust_company ? $this->cust_company : 'company');
+        $inn_field = ($this->cust_inn ? $this->cust_inn : 'inn');
+
+        $result = array(
+            'inn'     => array(
+                'title'        => 'ИНН',
+                'control_type' => waHtmlControl::INPUT,
+            ),
+            'company' => array(
+                'title'        => _ws('Company'),
+                'control_type' => waHtmlControl::INPUT,
+            )
+        );
+        if ($company = $order->getContactField($company_field)) {
+            $result['company']['value'] = $company;
+        }
+        if ($inn = $order->getContactField($inn_field)) {
+            $result['inn']['value'] = $inn;
+        }
+        return $result;
+    }
+
 }

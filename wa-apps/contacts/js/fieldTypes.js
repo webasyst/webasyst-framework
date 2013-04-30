@@ -320,7 +320,11 @@ $.wa.contactEditor.factoryTypes.Conditional = $.extend({}, $.wa.contactEditor.fa
         if (this.currentMode == 'edit' && this.domElement !== null) {
             var input = this.domElement.find('.val:visible');
             if (input.length > 0) {
-                result = input.val();
+                if (input.hasClass('empty')) {
+                    result = '';
+                } else {
+                    result = input.val();
+                }
             }
         }
         return result;
@@ -339,7 +343,7 @@ $.wa.contactEditor.factoryTypes.Conditional = $.extend({}, $.wa.contactEditor.fa
             var cond_field = this;
 
             // find the the field we depend on
-            var parent_field_id_parts = cond_field.fieldData.parent_field.split(':');
+            var parent_field_id_parts = (cond_field.fieldData.parent_field || '').split(':');
             var parent_field = $.wa.contactEditor.fieldEditors[parent_field_id_parts.shift()];
             while (parent_field && parent_field_id_parts.length) {
                 subfields = parent_field.subfieldEditors;
@@ -359,15 +363,18 @@ $.wa.contactEditor.factoryTypes.Conditional = $.extend({}, $.wa.contactEditor.fa
             }
 
             if (parent_field && parent_field.domElement) {
-                var input = $('<input type="text" class="val">');
-                var select = $('<select class="val"></select>').hide();
+                var initial_value = (this.fieldData.options && this.fieldData.options[this.fieldValue]) || this.fieldValue;
+                var input = $('<input type="text" class="hidden val">').val(initial_value);
+                var select = $('<select class="hidden val"></select>').hide();
                 var change_handler;
 
                 var getVal = function() {
                     if (input.is(':visible')) {
                         return input.val();
-                    } else {
+                    } else if (select.is(':visible')) {
                         return select.val();
+                    } else {
+                        return initial_value;
                     }
                 };
 
@@ -386,7 +393,7 @@ $.wa.contactEditor.factoryTypes.Conditional = $.extend({}, $.wa.contactEditor.fa
                             }
                             select.val(old_val);
                         } else {
-                            input.val(old_val).show().removeClass('empty');
+                            input.val(old_val || '').show().blur();
                             select.hide();
                         }
                     });

@@ -1,0 +1,68 @@
+
+
+<form name="form1" action="{$form_url}" method="POST">
+
+{if $settings.version eq 'old'}
+<input type="hidden" name="Shop_IDP" value="{$settings.merchant}">
+<input type="hidden" name="Order_IDP" value="{$order_id}">
+<input type="hidden" name="Subtotal_P" value="{$order.amount}">
+<input type="hidden" name="Delay" value="{$settings.authorization|string_format:'%d'}">
+<input type="hidden" name="Language" value="0">
+{*
+<input type="hidden" name="URL_RETURN_OK" value="{$this->getTransactionResultURL('success')}">
+<input type="hidden" name="URL_RETURN_NO" value="{$this->getTransactionResultURL('failure')}">
+*}
+<input type="hidden" name="Currency" value="{$order.currency_id}">
+<input type="hidden" name="Comment" value="{$order.description|default:"Заказ #`$order_id`"|escape}">
+{*
+<input type="hidden" name="LastName" value="{$order["billing_lastname"]}">
+<input type="hidden" name="FirstName" value="{$order["billing_firstname"]}">
+<input type="hidden" name="Email" value="{$order["customer_email"]}">
+<input type="hidden" name="Address" value="{$order["billing_address"]}">
+<input type="hidden" name="Country" value="{$order["billing_country"]}">
+<input type="hidden" name="State" value="{$order["billing_state"]}">
+<input type="hidden" name="City" value="{$order["billing_city"]}">
+<input type="hidden" name="Zip" value="{$order["billing_zip"]}">
+*}
+<input type="hidden" name="IsFrame" value="1">
+<input type="hidden" name="f_Email" value="0">
+<input type="hidden" name="CardPayment" value="1">
+<input type="hidden" name="WebMoneyPayment" value="1">
+<input type="hidden" name="PayCashPayment" value="1">
+<input type="hidden" name="QiwiBeelinePayment" value="1">
+<input type="hidden" name="AssistIDCCPayment" value="1">
+{if $settings.sandbox}
+	Тестовый режим. Выберите ответ системы:<select name="DemoResult">
+{foreach assistPayment::responceCodes() as $code=>$name}
+<option value="{$code|escape}">{$name|escape}</option>
+    {/foreach}
+    </select>
+{/if}
+{else}
+<input type="hidden" name="Merchant_ID"		 value="{$settings.merchant}">
+<input type="hidden" name="OrderNumber"		 value="{$order_id}">
+<input type="hidden" name="Delay"			 value="{$settings.authorization|string_format:'%d'}">
+
+<input type="hidden" name="TestMode"		 value="{$settings.sandbox|string_format:'%d'}">
+
+<input type="hidden" name="Language"		 value="{$settings.locale}">
+<input type="hidden" name="OrderCurrency"	 value="{$order.currency_id}">
+<input type="hidden" name="OrderComment"	 value="{$order.description|default:"Заказ #`$order_id`"|escape}">
+<input type="hidden" name="OrderAmount"		 value="{$order.amount}">
+{*
+<input type="hidden" name="Lastname"		 value="{$order["billing_lastname"]}">
+<input type="hidden" name="Firstname"		 value="{$order["billing_firstname"]}">
+<input type="hidden" name="Email"			 value="{$order["customer_email"]}">
+
+<input type="hidden" name="URL_RETURN"		 value="{$this->getTransactionResultURL('success')}">
+<input type="hidden" name="URL_RETURN_OK"	 value="{$this->getTransactionResultURL('success')}">
+<input type="hidden" name="URL_RETURN_NO"	 value="{$this->getTransactionResultURL('failure')}">
+*}
+<input type="hidden" name="CardPayment"		 value="1">
+<input type="hidden" name="YMPayment"		 value="1">
+<input type="hidden" name="WMPayment"		 value="1">
+<input type="hidden" name="QIWIPayment"		 value="1">
+<!--	<input type="hidden" name="AssistIDPayment"	 value="1"> -->
+{/if}
+<input type="SUBMIT" name="Submit" value="Оплатить заказ по кредитной карте сейчас!" onclick="document.all.Submit.disabled=true; document.form1.submit();">
+</form>

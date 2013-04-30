@@ -739,13 +739,14 @@ class waHtmlControl
 
     private static function _wp($param, $params = array())
     {
+        $translate = (!empty($params['translate']) && is_callable($params['translate'])) ? $params['translate'] : '_wp';
         if (is_array($param)) {
             if (!isset($params['translate']) || !empty($params['translate'])) {
-                $param[key($param)] = _wp(current($param));
+                $param[key($param)] = call_user_func($translate, current($param));
             }
             $string = call_user_func_array('sprintf', $param);
         } elseif (!isset($params['translate']) || !empty($params['translate'])) {
-            $string = _wp($param);
+            $string = call_user_func($translate, $param);
         } else {
             $string = $param;
         }

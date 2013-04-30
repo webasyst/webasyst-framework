@@ -1,0 +1,7 @@
+
+<form method="POST" action="{$form_url}">
+{foreach $form_fields as $field=>$value}
+{if !empty($value)}<input type="hidden" value="{$value|escape}" name="{$field|escape}">{/if}
+{/foreach}
+<input type="submit" value="Оплатить заказ через PayOnline System">
+</form>

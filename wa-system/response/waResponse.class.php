@@ -19,6 +19,7 @@ class waResponse {
     protected $metas = array();
     protected $js = array();
     protected $css = array();
+    protected $google_analytics = array();
 
     protected $status;
 
@@ -163,6 +164,16 @@ class waResponse {
           } else {
               return $this->metas;
           }
+      }
+
+      public function addGoogleAnalytics($str)
+      {
+          $this->google_analytics[] = $str;
+      }
+
+      public function getGoogleAnalytics()
+      {
+          return implode("\n", $this->google_analytics);
       }
 
       public function addJs($url, $app_id = false)

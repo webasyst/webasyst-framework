@@ -676,6 +676,12 @@ abstract class waPayment extends waSystemPlugin
         return array();
     }
 
+
+    public function customFields(waOrder $order)
+    {
+        return array();
+    }
+
     /**
      *
      * Displays printable form content (HTML) by id

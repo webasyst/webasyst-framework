@@ -63,7 +63,11 @@ class courierShipping extends waShipping
         }
         $view->assign('namespace', $namespace);
         $view->assign('values', $values);
+        $view->assign('p', $this);
         $html = '';
+
+        $view->assign('xhr_url', wa()->getAppUrl('webasyst').'?module=backend&action=regions');
+
         $html .= $view->fetch($this->path.'/templates/settings.html');
         $html .= parent::getSettingsHTML($params);
         return $html;
@@ -142,7 +146,6 @@ class courierShipping extends waShipping
                 $address[$field] = $value;
             }
         }
-
         return array($address);
     }
 
@@ -167,8 +170,8 @@ class courierShipping extends waShipping
     {
         return array(
             'delivery_list' => array(
-                'name'        => _wp('Лист доставки'),
-                'description' => _wp('Лист доставки для курьера'),
+                'name'        => _wd('shipping_courier', 'Packing list'),
+                'description' => _wd('shipping_courier', 'Order summary for courier shipping'),
             ),
         );
     }
@@ -211,9 +214,10 @@ class courierShipping extends waShipping
             $view->assign('main_contact_info', $main_contact_info);
             $view->assign('order', $order);
             $view->assign('params', $params);
+            $view->assign('p', $this);
             return $view->fetch($this->path.'/templates/form.html');
         } else {
-            throw new waException('print form not found');
+            throw new waException('Print form not found');
         }
     }
 }

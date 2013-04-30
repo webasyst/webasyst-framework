@@ -127,15 +127,16 @@ class waContactCountryField extends waContactSelectField
 
         $html = '<i style="display:none" class="icon16" style=""></i>'.$html;
         $html .= '<script>if ($) { $(function() { "use strict";
+            var select = $("#'.$id.'");
             var f = function () {
-                if ($(this).val()) {
-                    $(this).prev().show().css("background", "url('.$url.'" + $(this).val() + ".gif) 0 center no-repeat");
+                if (select.val()) {
+                    select.prev().show().css("background", "url('.$url.'" + select.val() + ".gif) 0 center no-repeat");
                 } else {
-                    $(this).prev().hide();
+                    select.prev().hide();
                 }
             };
-            f();
-            $("#'.$id.'").change(f);
+            f.call(select[0]);
+            select.change(f);
         }); };</script>';
         return $html;
     }

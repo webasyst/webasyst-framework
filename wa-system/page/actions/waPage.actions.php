@@ -572,6 +572,7 @@ class waPageActions extends waActions
                 '{$foo.$bar}' => _w('Displays variable key value of an array. Similar to PHP $foo[$bar]'),
                 '{$foo->bar}' => _w('Displays the object property named <em>bar</em>'),
                 '{$foo->bar()}' => _w('Displays the return value of object method named <em>bar()</em>'),
+                '{$foo|print_r}' => _w('Displays structured information about variable. Arrays and objects are explored recursively with values indented to show structure. Similar to PHP var_dump($foo)'),
                 '{$foo|escape}' => _w('Escapes a variable for safe display in HTML'),
                 '{$foo|wa_datetime:$format}' => _w('Outputs <em>$var</em> datetime in a user-friendly form. Supported <em>$format</em> values: <em>monthdate, date, dtime, datetime, fulldatetime, time, fulltime, humandate, humandatetime</em>'),
                 '{$x+$y}' => _w('Outputs the sum of <em>$x</em> and <em>$y</em>'),

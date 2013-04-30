@@ -14,17 +14,25 @@ class emsruShipping extends waShipping
         } elseif (empty($params['weight'])) {
             return 'Вес отправления не задан.';
         }
+        $incomplete = false;
         switch ($country_iso3 = $this->getAddress('country')) {
             case 'rus':
                 $address = array_merge(array('country' => 'rus'), $this->getSettings());
                 $params['from'] = $this->findTo($address);
                 $params['to'] = $this->findTo($this->getAddress());
+                if (empty($params['to'])) {
+                    $incomplete = (empty($address['city']) && empty($address['region']));
+                }
                 break;
             default: /* International shipping*/
                 $country_model = new waCountryModel();
-                $country = $country_model->get($country_iso3);
-                $params['to'] = mb_strtoupper($country['iso2letter']);
+                if ($country = $country_model->get($country_iso3)) {
+                    $params['to'] = mb_strtoupper($country['iso2letter']);
+                } else {
+                    $params['to'] = false;
+                }
                 $params['type'] = 'att';
+                $incomplete = empty($params['to']);
 
                 break;
         }
@@ -51,17 +59,16 @@ class emsruShipping extends waShipping
                         'est_delivery' => $est_delivery,
                     );
 
+                } else {
+                    $services = 'Ошибка расчета стоимости доставки в указанные город и регион.';
                 }
             } else {
                 $services = 'Адрес отправителя не указан в настройках способа доставки «EMS Почта России».';
             }
+        } elseif ($incomplete) {
+            $services = array();
         } else {
-            $address = $this->getAddress();
-            if (is_array($address) && !count($address)) {
-                $services = 'Адрес получателя не указан.';
-            } else {
-                $services = 'Ошибка расчета стоимости доставки в указанные город и регион.';
-            }
+            $services = 'Ошибка расчета стоимости доставки в указанные город и регион.';
         }
         return $services;
 
@@ -154,9 +161,9 @@ class emsruShipping extends waShipping
     {
         return array(
             'zip'     => array(),
-            'country' => array(),
-            'region'  => array(),
-            'city'    => array(),
+            'country' => array('cost' => true),
+            'region'  => array('cost' => true),
+            'city'    => array('cost' => true),
             'street'  => array(),
         );
     }

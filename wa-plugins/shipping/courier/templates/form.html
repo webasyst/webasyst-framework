@@ -102,20 +102,20 @@
 
         <div class="sidebar right">
 
-            <input type="button" class="print-button" onclick="window.print();return false;" value="[`Print`]">
+            <input type="button" class="print-button" onclick="window.print();return false;" value="{$p->_w('Print')}">
 
             <h2>{$order.total|wa_format_amount:$order.currency:'%{s}'}</h2>
             {if $order.paid_datetime}
-                <div class="paid">[`Paid`]</div>
+                <div class="paid">{$p->_w('Paid')}</div>
             {/if}
 
             <p>
-                [`Payment`]: <strong class="inline_edit">{$order.payment_name}</strong><br />
-                {* [`Shipping cost`]: <strong class="inline_edit">{$order.shipping|wa_format_amount:$order.currency:'%{s}'}</strong> *}
+                {$p->_w('Payment')}: <strong class="inline_edit">{$order.payment_name}</strong><br />
+                {* {$p->_w('Shipping cost')}: <strong class="inline_edit">{$order.shipping|wa_format_amount:$order.currency:'%{s}'}</strong> *}
             </p>
 
             <!-- comment -->
-            <span class="noprint gray">[`Comment`]:</span><br>
+            <span class="noprint gray">{$p->_w('Comment')}:</span><br>
             <textarea class="large" onkeyup="textAreaAdjust(this)" id="comment">{$order.comment|escape}</textarea>
 
         </div>
@@ -147,7 +147,7 @@
             {/if}
 
             <!-- address -->
-            <h4 class="gray">[`Shipping address`]</h4>
+            <h4 class="gray">{$p->_w('Shipping address')}</h4>
             <p class="large bold address">
                 {$shipping_address}
            	</p>

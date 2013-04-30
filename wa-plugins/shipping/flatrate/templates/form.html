@@ -2,21 +2,21 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>[`Sample shipping form`]</title>
+<title>{$plguin->_w('Sample shipping form')}</title>
 </head>
 <body>
-    <h1>[`Sample consignment note`]</h1>
+    <h1>{$plguin->_w('Sample consignment note')}</h1>
 
-    <h3>[`Destination address`]</h3>
+    <h3>{$plguin->_w('Destination address')}</h3>
     <p>{$order.shipping_address.address|escape}</p>
 
-    <h3>[`Order content`]</h3>
+    <h3>{$plguin->_w('Order content')}</h3>
     {foreach $order.items as $item}
         <p>{$item.name|escape} &times;{$item.quantity} &nbsp; {$item.total|wa_format_amount_currency:$order.currency}</p>
     {foreachelse}
-        <p>[`There are no items in the shipment`]</p>
+        <p>{$plguin->_w('There are no items in the shipment')}</p>
     {/foreach}
-    
-    <h2>[`Total amount`] <strong>{$order.total|wa_format_amount_currency:$order.currency}</strong></h2>
+
+    <h2>{$plguin->_w('Total amount')} <strong>{$order.total|wa_format_amount_currency:$order.currency}</strong></h2>
 </body>
 </html>

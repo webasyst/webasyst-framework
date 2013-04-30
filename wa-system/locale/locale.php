@@ -62,19 +62,22 @@ class waGettextParser
             }
         }
 
+        $function_pattern = array("\\\$_");
         if ($this->config['project'] == 'webasyst') {
-            $function_pattern = '_ws';
+            $function_pattern[] = '_ws';
+        } elseif (strpos($this->config['project'],'wa-plugins')!==false) {
+            $function_pattern[] = '_wp?\*?\/?';
         } elseif (strpos($this->config['project'],'plugins')) {
-            $function_pattern = '_wp\*?\/?';
+            $function_pattern[] = '_wp\*?\/?';
         } else {
-            $function_pattern = '_w';
+            $function_pattern[] = '_w';
         }
-        if (preg_match_all("/({$function_pattern}|\\\$_)\(\s*\"((\\\\\"|[^\"])+)\"\s*\)/usi", $text, $matches, PREG_OFFSET_CAPTURE)) {
+        if (preg_match_all("/(".implode('|',$function_pattern).")\(\s*\"((\\\\\"|[^\"])+)\"\s*\)/usi", $text, $matches, PREG_OFFSET_CAPTURE)) {
             foreach ($matches[2] as $match) {
                 $this->cache(array($match[0], $file.":".$this->getLine($text, $match[1])));
             }
         }
-        if (preg_match_all("/({$function_pattern}|\\\$_)\(\s*'((\\\\'|[^'])+)'\s*\)/usi", $text, $matches, PREG_OFFSET_CAPTURE)) {
+        if (preg_match_all("/(".implode('|',$function_pattern).")\(\s*'((\\\\'|[^'])+)'\s*\)/usi", $text, $matches, PREG_OFFSET_CAPTURE)) {
             foreach ($matches[2] as $match) {
                 $match[0] = str_replace('"', '\"', $match[0]);
                 $this->cache(array($match[0], $file.":".$this->getLine($text, $match[1])));

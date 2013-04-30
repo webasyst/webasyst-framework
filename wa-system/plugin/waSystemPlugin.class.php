@@ -13,6 +13,12 @@ abstract class waSystemPlugin
      */
     protected $id;
     protected $key;
+    /**
+     *
+     * Plugin type (shipping, payment etc.)
+     * @var string
+     */
+    protected $type;
 
     /**
      *
@@ -218,6 +224,24 @@ abstract class waSystemPlugin
         return $this->getSettings($name);
     }
 
+    public function _w($string)
+    {
+        static $domains = array();
+        $domain = sprintf('%s_%s', $this->type, $this->id);
+        if (!isset($domains[$domain])) {
+            $locale_path = $this->path.'/locale';
+            if ($domains[$domain] = file_exists($locale_path)) {
+                waLocale::load(waLocale::getLocale(), $locale_path, $domain, false);
+            }
+        }
+        if ($domains[$domain]) {
+            $args = func_get_args();
+            array_unshift($args, $domain);
+            $string = call_user_func_array('_wd', $args);
+        }
+        return $string;
+    }
+
     /**
      *
      * Get shipping plugin
@@ -245,6 +269,7 @@ abstract class waSystemPlugin
             }
             $plugin->path = $base_path;
             $plugin->id = $id;
+            $plugin->type = $type;
         } else {
             throw new waException(sprintf("%s plugin class %s not found ", $type, $class));
         }
@@ -286,6 +311,7 @@ abstract class waSystemPlugin
             'instance'            => & $this,
             'title_wrapper'       => '%s',
             'description_wrapper' => '<br><span class="hint">%s</span>',
+            'translate'           => array(&$this, '_w'),
             'control_wrapper'     => '
 <div class="field">
     <div class="name">%s</div>
@@ -320,6 +346,15 @@ abstract class waSystemPlugin
             if (file_exists($path)) {
                 $this->config = include($path);
 
+                foreach ($this->config as & $config) {
+                    if (isset($config['title'])) {
+                        $config['title'] = $this->_w($config['title']);
+                    }
+                    if (isset($config['description'])) {
+                        $config['description'] = $this->_w($config['description']);
+                    }
+                }
+                unset($config);
             }
             if (!is_array($this->config )) {
                 $this->config = array();
@@ -336,10 +371,9 @@ abstract class waSystemPlugin
     public function saveSettings($settings = array())
     {
         $settings_config = $this->config();
-        $data = array();
         foreach ($settings_config as $name => $row) {
-            // default
             if (!isset($settings[$name])) {
+
                 $settings[$name] = isset($row['value']) ? $row['value'] : null;
             }
         }
@@ -347,6 +381,6 @@ abstract class waSystemPlugin
             $this->settings[$name] = $value;
             $this->getAdapter()->setSettings($this->id, $this->key, $name, $value);
         }
-        return $data;
+        return $settings;
     }
 }
