@@ -1,5 +1,4 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
-"http://www.w3.org/TR/html4/strict.dtd">
+<!DOCTYPE html>
 <html>
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
@@ -7,28 +6,28 @@
   <meta name="Keywords" content="{$wa->meta('keywords')|escape}" />
   <meta name="Description" content="{$wa->meta('description')|escape}" />
   <link href="{$wa_theme_url}default.css?{$wa->version()}" rel="stylesheet" type="text/css"/>
+  <link href="{$wa_theme_url}mobile.css?{$wa->version()}" media="screen and (max-width: 760px)" rel="stylesheet" type="text/css">
   {if $wa->isMobile()}
-  <link href="{$wa_theme_url}mobile.css?{$wa->version()}" rel="stylesheet" type="text/css"/>
-  <meta name="viewport" content="width=device-width; initial-scale=1; maximum-scale=1; user-scalable=0;" />
+      <meta name="viewport" content="width=device-width; initial-scale=1; maximum-scale=1; user-scalable=0;" />
   {/if}
   <script type="text/javascript" src="{$wa_url}wa-content/js/jquery/jquery-1.8.2.min.js"></script>
   {$wa->headJs()}
 </head>
 <body>
-  <div id="header" role="navigation sitemap">
+  <div id="header" role="navigation">
     <div class="container">
       <ul id="wa-apps">
         {foreach $wa->apps() as $a}
-        <li{if $a.url==$wa_app_url} class="selected"{/if}><a href="{$a.url}">{$a.name}</a></li>
+          <li{if $a.url==$wa_app_url} class="selected"{/if}><a href="{$a.url}">{$a.name}</a></li>
         {/foreach}
         {if $wa->isAuthEnabled()}
-        {if $wa->user()->isAuth()}
-        <li class="float-right small"><a href="?logout">[s`Log out`]</a></li>
-        <li class="float-right small"><strong>{$wa->user('name')}</strong></li>
-        {else}
-        <li class="float-right small"><a href="{$wa->signupUrl()}">[s`Sign up`]</a></li>
-        <li class="float-right small"><a href="{$wa->loginUrl()}">[s`Log in`]</a></li>
-        {/if}
+          {if $wa->user()->isAuth()}
+            <li class="float-right small"><a href="?logout">[s`Log out`]</a></li>
+            <li class="float-right small"><strong>{$wa->user('name')}</strong></li>
+          {else}
+            <li class="float-right small"><a href="{$wa->signupUrl()}">[s`Sign up`]</a></li>
+            <li class="float-right small"><a href="{$wa->loginUrl()}">[s`Log in`]</a></li>
+          {/if}
         {/if}
       </ul>
       <div class="clear-both"></div>
@@ -36,10 +35,10 @@
   </div>
   <div id="main">
     <div class="container app-header"></div>
-    <div class="container">  
-      {$content}
-      <div class="clear-both"></div>
-    </div>  
+      <div class="container">  
+        {$content}
+        <div class="clear-both"></div>
+      </div>  
   </div>
   <div id="footer">
     <div class="container">
@@ -51,13 +50,12 @@
         <a href="{$wa_url}">{$wa->accountName()}</a>
       </div>
       <!-- <div id="sub-links">
-         suggested place for your footer links
+        suggested place for your footer links
         <ul>
           <li><a href="#">About</a></li>
           <li><a href="#">Terms Of Service</a></li>
         </ul>
-      </div>
-      -->
+      </div> -->
     </div>
   </div>
 </body>

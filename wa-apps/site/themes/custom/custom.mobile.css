@@ -28,9 +28,12 @@ h1 { font-weight: bold; }
 .content img { max-width: 100%; height: auto !important; }
 
 #header { margin-top: -18px; margin-bottom: 20px; }
-#header #cart a { margin: 0 0 10px; }
 #header ul#wa-apps { margin-left: -7px; }
 #header ul#wa-apps li a { padding-left: 7px; padding-right: 7px; }
+
+#header div#cart a { float: none !important; width: auto !important; }
+#header div#cart.fixed { right: 0; left: 0; margin: 0; }
+#header div#cart.fixed a { margin: 0; width: auto; padding-top: 15px !important; }
 
 #footer { padding-bottom: 30px; }
 #footer .container { margin: 0 15px; }

@@ -13,7 +13,7 @@ class siteFilesRenameController extends waJsonController
         $name = preg_replace('!\.\.[/\\\]!','', $name);
         if ($file) {
             $name_ext = waFiles::extension($name);
-            if ($name_ext != waFiles::extension($file)) {
+            if ($name_ext != waFiles::extension($file) || !$name_ext) {
                 if (strpos(strtolower($name), '.php') !== false) {
                     if ($name_ext != 'php') {
                         $name_ext = 'php';

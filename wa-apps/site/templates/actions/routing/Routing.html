@@ -188,7 +188,7 @@ $("select.s-select-app").live('change', function () {
 $("a.s-route-edit").live('click', function () {
     var t = $(this).parents('tr');
     t.find('.s-route-edit').hide();
-    t.find('span.s-editable-url').replaceWith($('<input class="s-url" type="text">').val(t.find('span.s-editable-url').text()));
+    t.find('span.s-editable-url').replaceWith($('<input class="s-url" type="text">').val($.trim(t.find('span.s-editable-url').text())));
     if (t.find('td.s-app span.redirect').length > 0) {
         var input = $('<input type="text" />').val(t.find('span.redirect').text());
         t.find('span.redirect').empty().append(input);

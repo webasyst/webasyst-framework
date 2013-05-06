@@ -1,18 +1,18 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
-"http://www.w3.org/TR/html4/strict.dtd">
+<!DOCTYPE html>
 <html>
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 	<title>{$wa->title()|escape}</title>
 	<meta name="Keywords" content="{$wa->meta('keywords')|escape}" />
 	<meta name="Description" content="{$wa->meta('description')|escape}" />
+	<!-- css -->
 	<link href="{$wa_theme_url}custom.css?{$wa->version()}" rel="stylesheet" type="text/css"/>
+	<link href="{$wa_theme_url}custom.mobile.css?{$wa->version()}" media="screen and (max-width: 760px)" rel="stylesheet" type="text/css"/>
+	<!-- js -->
     <script type="text/javascript" src="{$wa_url}wa-content/js/jquery/jquery-1.8.2.min.js"></script>
+    <script type="text/javascript" src="{$wa_theme_url}custom.js"></script>    
 	{if $wa->isMobile()}
-		<link href="{$wa_theme_url}custom.mobile.css?{$wa->version()}" rel="stylesheet" type="text/css"/>
 		<meta name="viewport" content="width=device-width; initial-scale=1; maximum-scale=1; user-scalable=0;" />
-    {else}
-        <script type="text/javascript" src="{$wa_theme_url}custom.js"></script>    
 	{/if}
 	{include file="`$wa_active_theme_path`/head.html" inline}
 	{$wa->headJs()}
@@ -31,7 +31,7 @@
 		<div class="container paper">
 		
 			<!-- HEADER -->
-			<div id="header" role="navigation sitemap">
+			<div id="header" role="navigation">
 
         		{if $wa->shop}
         			<!-- shopping cart info -->
@@ -49,7 +49,7 @@
    		     		{if $wa->user()->isAuth()}
    	    	 			<div class="block float-right hint">
    	    	 			    {if $wa->shop}
-   	    	 			       <a href="{$wa->getUrl('shop/frontend/my')}" class="bold">{$wa->user('name')}</a></li>
+   	    	 			       <a href="{$wa->getUrl('shop/frontend/my')}" class="bold">{$wa->user('name')}</a>
    	    	 			    {else}
        	    	 				<strong>{$wa->user('name')}</strong>
        	    	 		    {/if}

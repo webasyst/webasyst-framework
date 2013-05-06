@@ -95,6 +95,9 @@ class siteRoutingSaveController extends waJsonController
          */
         $model = new $class();
         $model->updateRoute(siteHelper::getDomain(), $route['url'], $url);
+
+        $params = array('old' => siteHelper::getDomain().'/'.$route['url'], 'new' => siteHelper::getDomain().'/'.$url);
+        wa()->event('update.route', $params);
     }
     
     protected function getRouteCount($routes) 
