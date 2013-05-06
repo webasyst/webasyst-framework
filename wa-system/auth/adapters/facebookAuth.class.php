@@ -59,8 +59,8 @@ class facebookAuth extends waOAuth2Adapter
                 //'login' => $response['username'],
                 'locale' => $response['locale'],
             );
-            if (!empty($response['picture']) && isset($response['picture']['url'])) {
-                $data['photo_url'] = $response['picture']['url'];
+            if (!empty($response['picture']) && isset($response['picture']['data']['url'])) {
+                $data['photo_url'] = "https://graph.facebook.com/me/picture?access_token=".$token."&type=normal";
             }
             if (!empty($response['gender'])) {
                 $data['sex'] = $response['gender'] == 'male' ? 'm' : 'f';
