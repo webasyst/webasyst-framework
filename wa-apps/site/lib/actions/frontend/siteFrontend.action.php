@@ -25,6 +25,8 @@ class siteFrontendAction extends waViewAction
                 'keywords' => isset($page['keywords']) ? $page['keywords'] : '',
                 'description' => isset($page['description']) ? $page['description'] : ''
             ));
+
+            $this->view->assign('breadcrumbs', $this->getBreadcrumbs($page));
             $this->setThemeTemplate('page.html');
         } else {
             // show exception
@@ -46,6 +48,21 @@ class siteFrontendAction extends waViewAction
             $this->setThemeTemplate('error.html');
             $this->view->assign('page', array());
         }
+    }
+
+    public function getBreadcrumbs($page)
+    {
+        $page_model = new sitePageModel();
+        $breadcrumbs = array();
+        $root_url = wa()->getAppUrl(null, true);
+        while ($page['parent_id']) {
+            $page = $page_model->getById($page['parent_id']);
+            $breadcrumbs[] = array(
+                'url' => $root_url.$page['full_url'],
+                'name' => $page['title'] ? $page['title'] : $page['name']
+            );
+        }
+        return array_reverse($breadcrumbs);
     }
 
     public function display($clear_assign = true)
