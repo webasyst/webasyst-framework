@@ -154,12 +154,12 @@ class waContactRegionField extends waContactField
         input = select.next();
     }
 
-    var showInput = function() {
+    var showInput = function(val) {
         if (!input[0].hasAttribute('name')) {
             input.attr('name', select.attr('name'))
             select[0].removeAttribute('name');
         }
-        input.show().val('');
+        input.show().val(val || '');
         select.hide();
     };
 
@@ -177,7 +177,7 @@ class waContactRegionField extends waContactField
         var country = country_select.val();
         input.prev('.loading').remove();
         if (region_countries && region_countries[country]) {
-            showInput();
+            showInput('');
             input.before('<i class="icon16 loading"></i>');
             $.post(xhr_url, { country: country }, function(r) {
                 input.prev('.loading').remove();
@@ -199,14 +199,12 @@ class waContactRegionField extends waContactField
                         input[0].removeAttribute('name');
                     }
                 } else {
-                    showInput();
-                    input.val(old_val);
+                    showInput('');
                 }
             }, 'json');
         } else {
             if (!input.is(':visible')) {
-                showInput();
-                input.val(old_val);
+                showInput('');
             }
         }
     });

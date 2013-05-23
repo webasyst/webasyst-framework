@@ -25,10 +25,10 @@
     .wa-design { margin-bottom: 80px; }
 
     .wa-editor-core-wrapper { background: white;}
-    .wa-design-gray-toolbar { background: #eee; padding-left: 15px; padding-bottom: 13px; }    
+    .wa-design-gray-toolbar { background: #eee; padding-left: 15px; padding-bottom: 13px; }
     .wa-design-gray-toolbar h4 { font-size: 1.3em;}
     .wa-design-save-panel { position: fixed; bottom: 0; left: 0; right: 0; background: #eee; padding-left: 420px; }
-    
+
     .wa-app-block { margin: 0; padding: 15px 15px 5px 42px;}
     .wa-app-block span.hint { white-space: nowrap;}
     .wa-app-block h2.short-header { line-height: 0.9em; vertical-align: top; min-width: 166px; font-weight: normal; font-size: 1.3em; }
@@ -88,7 +88,7 @@
     ul.menu-h.wa-theme-filter-price li { font-size: 0.9em; margin-top: 3px; padding: 5px 0; }
     ul.menu-h.wa-theme-filter-price li.selected a { background: #ddd; }
     .wa-theme ul.menu-v a.disabled { color: #aaa; }
-    
+
     ul.with-icons.wa-theme { padding: 0 5px 0 3px; margin-top: 12px; }
     ul.with-icons.wa-theme li a { padding-left: 33px; }
     .wa-theme-routes { padding-left:22px; }
@@ -97,13 +97,13 @@
     .wa-theme-block ul.wa-theme li.top-padded { padding-top: 15px; }
     .wa-theme-block ul.wa-theme li a { padding-left: 30px; word-break: break-all; }
     .wa-theme-block h4 { margin: 10px 10px 0; word-break: break-all; }
-    
+
     .CodeMirror-scroll {
         height: auto;
         overflow-y: hidden;
         overflow-x: auto;
     }
-        
+
 </style>
 
 {if $options.container}
@@ -174,7 +174,18 @@
                                 location.reload();
                             }
                         } catch(e) {
-                            alert(e.message + $(this).contents().text());
+                            response = {
+                                'errors':[]
+                            };
+                            var message = $(this).contents().find('h1:first, h2:first');
+                            if(message.length) {
+                                response.errors.push([message.text()]);
+                            } else {
+                                response.errors.push(['JavaScript error: '+e.message]);
+                            }
+                            $("#wa-theme-upload-dialog div.loading").hide();
+                            $("#wa-input-file").replaceWith('<input id="wa-input-file" type="file" name="theme_files[]" multiple="" >');
+                            handleError(response);
                         }
                     });
 

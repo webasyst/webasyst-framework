@@ -23,10 +23,11 @@ class assistPayment extends waPayment implements waIPayment
 
     public function payment($payment_form_data, $order_data, $transaction_type)
     {
+        $order_data = waOrder::factory($order_data);
         $view = wa()->getView();
         $view->assign('order', $order_data);
         $view->assign('form_url', $this->getEndpointUrl());
-        $view->assign('order_id', $this->app_id.'_'.ifempty($order_data['order_id'], '0'));
+        $view->assign('order_id', $this->app_id.'_'.$order_data['order_id']);
         $view->assign('settings', $this->getSettings());
         return $view->fetch($this->path.'/templates/payment.html');
 

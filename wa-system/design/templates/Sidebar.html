@@ -59,6 +59,7 @@
                     <span class="wa-theme-dialog-error bold" style="color: red;"></span>
                     <p>[s`Theme must be uploaded as a valid Webasyst design theme archive (.tar.gz archive with theme files and theme.xml manifest file).`]</p>
                     <input id="wa-input-file" type="file" name="theme_files[]" >
+                    {$wa->csrf()}
                     <div class="loading" style="display:none; margin-top: 10px">
                         <i class="icon16 loading"></i> [s`Uploading...`]
                     </div>

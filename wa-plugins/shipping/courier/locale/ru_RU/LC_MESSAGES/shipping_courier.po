@@ -153,3 +153,27 @@ msgstr "Сумма заказа"
 #: //wa-plugins/shipping/courier/templates/settings.html:85
 msgid "Shipping rate"
 msgstr "Стоимость доставки"
+
+#: //wa-plugins/shipping/courier/templates/settings.html:85
+msgid "Shipment weight"
+msgstr "Вес отправления"
+
+#: //wa-plugins/shipping/courier/templates/settings.html:109
+msgid "Shipment amount"
+msgstr "Сумма отправления"
+
+#: //wa-plugins/shipping/courier/templates/settings.html:100
+msgid "Add rate"
+msgstr "Добавить тариф"
+
+#: //wa-plugins/shipping/courier/templates/settings.html:156
+msgid "kg"
+msgstr "кг"
+
+#: //wa-plugins/shipping/courier/templates/settings.html:160
+msgid "lbs"
+msgstr "фунт"
+
+#: //wa-plugins/shipping/courier/templates/settings.html:150
+msgid "Weight dimension unit"
+msgstr "Единица измерения веса"

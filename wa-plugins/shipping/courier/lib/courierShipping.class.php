@@ -4,6 +4,7 @@
  * @property-read array $rate_zone
  * @property-read string $rate_by
  * @property-read string $currency
+ * @property-read string $weight_dimension
  * @property-read array $rate
  * @property-read string $delivery_time
  *
@@ -81,10 +82,10 @@ class courierShipping extends waShipping
     private static function sortRates(&$rates)
     {
         uasort($rates, create_function('$a,$b', '
-		$a=isset($a["limit"])?$a["limit"]:0;
-		$b=isset($b["limit"])?$b["limit"]:0;
-		return ($a>$b)?1:($a<$b?-1:0);
-		'));
+            $a=isset($a["limit"])?$a["limit"]:0;
+            $b=isset($b["limit"])?$b["limit"]:0;
+            return ($a>$b)?1:($a<$b?-1:0);
+        '));
     }
 
     public function calculate()
@@ -156,7 +157,7 @@ class courierShipping extends waShipping
 
     public function allowedWeightUnit()
     {
-        return 'kg';
+        return $this->weight_dimension;
     }
 
     public function requestedAddressFields()

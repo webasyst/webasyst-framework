@@ -14,6 +14,7 @@
 
  * @property double $shipping
  * @property string $shipping_name
+ * @property string $payment_name
  *
  * @property string description
  * @property string description_en
@@ -60,8 +61,7 @@
  *
  * @property mixed $contact_%field%
  *
- * @property array[string]mixed $items
- *
+ * @property string $comment
  * @property array[string]string $params
  *
  */
@@ -187,6 +187,21 @@ class waOrder implements ArrayAccess
     private function init_address(&$address)
     {
         static $model;
+        $dummy_address = array_fill_keys(array('name',
+            'firstname',
+            'lastname',
+            'address',
+            'zip',
+            'street',
+            'city',
+            'region',
+            'country',
+            'address', ), '');
+        if (is_array($address)) {
+            $address = array_merge($dummy_address, $address);
+        } else {
+            $address = $dummy_address;
+        }
         if (empty($address['country_name'])) {
             $address['country_name'] = waCountryModel::getInstance()->name(ifempty($address['country']));
         }
@@ -239,7 +254,7 @@ class waOrder implements ArrayAccess
      */
     public function getContact()
     {
-        if ($this->contact_id) {
+        if (!empty($this->data['contact_id'])) {
             if (!$this->contact) {
                 $this->contact = new waContact($this->contact_id);
             }

@@ -188,18 +188,16 @@ class russianpostShipping extends waShipping
 
     public function calculate()
     {
-
-        $services = array();
-        $region_id = $this->getAddress('region');
-
-        $zone = null;
-        $delivery_date = waDateTime::format('humandate', strtotime('+1 week')).' — '.waDateTime::format('humandate', strtotime('+2 week'));
         $weight = $this->getTotalWeight();
         if ($weight > $this->max_weight) {
             $services = sprintf("Вес отправления (%0.2f) превышает максимально допустимый (%0.2f)", $weight, $this->max_weight);
         } else {
+            $region_id = $this->getAddress('region');
             if ($region_id) {
                 if (!empty($this->region[$region_id]) && !empty($this->region[$region_id]['zone'])) {
+                    $services = array();
+
+                    $delivery_date = waDateTime::format('humandate', strtotime('+1 week')).' — '.waDateTime::format('humandate', strtotime('+2 week'));
 
                     $rate = $this->getZoneRates($weight, $this->getTotalPrice(), $this->region[$region_id]['zone']);
                     if (empty($this->region[$region_id]['avia_only'])) {
@@ -221,25 +219,8 @@ class russianpostShipping extends waShipping
                 } else {
                     $services = false;
                 }
-
             } else {
-                $price = $this->getTotalPrice();
-                $rate_min = $this->getZoneRates($weight, $price, 1);
-                $rate_max = $this->getZoneRates($weight, $price, 5);
-                $services['ground'] = array(
-                    'name'         => 'Наземный транспорт',
-                    'id'           => 'ground',
-                    'est_delivery' => $delivery_date,
-                    'rate'         => array($rate_min['ground'], $rate_max['ground']),
-                    'currency'     => 'RUB',
-                );
-                $services['avia'] = array(
-                    'name'         => 'Авиа',
-                    'id'           => 'avia',
-                    'est_delivery' => $delivery_date,
-                    'rate'         => array($rate_min['air'], $rate_max['air']),
-                    'currency'     => 'RUB',
-                );
+                $services = 'Для расчета стоимости доставки укажите регион доставки';
             }
         }
         return $services;

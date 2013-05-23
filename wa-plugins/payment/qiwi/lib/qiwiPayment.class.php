@@ -181,6 +181,14 @@ class qiwiPayment extends waPayment implements waIPayment, waIPaymentCapture, wa
      */
     protected function callbackHandler($data)
     {
+        if ($this->prefix) {
+            $pattern = wa_make_pattern($this->prefix, '@');
+            $pattern = "@^{$pattern}(.+)$@";
+            $order_id = null;
+            if (preg_match($pattern, $this->order_id, $matches)) {
+                $this->order_id = $matches[1];
+            }
+        }
         $s = $this->getQiwiSoapServer('soap');
         $s->setHandler($this);
         $s->service($this->post);
@@ -228,21 +236,11 @@ class qiwiPayment extends waPayment implements waIPayment, waIPaymentCapture, wa
 
     protected function formalizeData($result)
     {
-        if ($this->prefix) {
-            $pattern = wa_make_pattern($this->prefix, '@');
-            $pattern = "@^{$pattern}(.+)$@";
-            $order_id = null;
-            if (preg_match($pattern, $this->order_id, $matches)) {
-                $order_id = $matches[1];
-            }
-        } else {
-            $order_id = $this->order_id;
-        }
         $transaction_data = parent::formalizeData(null);
         $transaction_data['native_id'] = $this->txn;
         $transaction_data['amount'] = is_object($result) && property_exists(get_class($result), 'amount') && !empty($result->amount) ? str_replace(',', '.', $result->amount) : 0;
         $transaction_data['currency_id'] = 'RUB';
-        $transaction_data['order_id'] = $order_id;
+        $transaction_data['order_id'] = $this->order_id;
         if (is_object($result) && property_exists(get_class($result), 'user') && !empty($result->user)) {
             $data['phone'] = $result->user;
             $transaction_data['view_data'] = 'Phone: '.$result->user;

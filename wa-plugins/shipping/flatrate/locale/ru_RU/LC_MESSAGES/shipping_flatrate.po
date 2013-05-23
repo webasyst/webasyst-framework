@@ -18,75 +18,79 @@ msgstr ""
 
 #: //wa-plugins/shipping/flatrate/lib/config/plugin.php:6
 msgid "Flat rate"
-msgstr ""
+msgstr "Фиксированная стоимость"
 
 #: //wa-plugins/shipping/flatrate/lib/config/plugin.php:7
 msgid "Fixed shipping rate not depending on the shipment value and weight."
-msgstr ""
+msgstr "Стоимость доставки, не зависящая от суммы и веса отправления."
 
 #: //wa-plugins/shipping/flatrate/lib/config/settings.php:8
 msgid "Shipping rate"
-msgstr ""
+msgstr "Стоимость доставки"
 
 #: //wa-plugins/shipping/flatrate/lib/config/settings.php:9
 msgid "Fixed shipping rate amount"
-msgstr ""
+msgstr "Фиксированная стоимость доставки"
 
 #: //wa-plugins/shipping/flatrate/lib/config/settings.php:15
 msgid "Currency"
-msgstr ""
+msgstr "Валюта"
 
 #: //wa-plugins/shipping/flatrate/lib/config/settings.php:16
 msgid "Currency in which shipping rate is provided"
-msgstr ""
+msgstr "Выберите валюту, в которой указана стоимость доставки"
 
 #: //wa-plugins/shipping/flatrate/lib/config/settings.php:22
 msgid "Estimated delivery time"
-msgstr ""
+msgstr "Приблизительное время доставки"
 
 #: //wa-plugins/shipping/flatrate/lib/config/settings.php:23
 msgid ""
 "Average order transit time. Estimated delivery date will be calculated "
 "automatically and shown to customer."
 msgstr ""
+"Средний срок доставки. Приблизительная дата доставки будет рассчитана "
+"автоматически и показана покупателю."
 
 #: //wa-plugins/shipping/flatrate/lib/config/settings.php:26
 msgid "Same day"
-msgstr ""
+msgstr "Этот же день"
 
 #: //wa-plugins/shipping/flatrate/lib/config/settings.php:27
 msgid "Next day"
-msgstr ""
+msgstr "Следующий день"
 
 #: //wa-plugins/shipping/flatrate/lib/config/settings.php:28
 msgid "2 days"
-msgstr ""
+msgstr "2 дня"
 
 #: //wa-plugins/shipping/flatrate/lib/config/settings.php:29
 msgid "3 days"
-msgstr ""
+msgstr "3 дня"
 
 #: //wa-plugins/shipping/flatrate/lib/config/settings.php:30
 msgid "1 week"
-msgstr ""
+msgstr "1 неделя"
 
 #: //wa-plugins/shipping/flatrate/lib/config/settings.php:31
 msgid "2 weeks"
-msgstr ""
+msgstr "2 недели"
 
 #: //wa-plugins/shipping/flatrate/lib/config/settings.php:32
 msgid "Undefined"
-msgstr ""
+msgstr "Неопределено"
 
 #: //wa-plugins/shipping/flatrate/lib/config/settings.php:37
 msgid "Prompt for address"
-msgstr ""
+msgstr "Запрашивать адрес"
 
 #: //wa-plugins/shipping/flatrate/lib/config/settings.php:38
 msgid ""
 "Request customer to fill in all address fields in case shipping address was "
 "not provided yet"
 msgstr ""
+"Просить покупателя ввести адрес доставки, если он еще не был введен до "
+"расчета стоимости доставки"
 
 #: //wa-plugins/shipping/flatrate/lib/flatrateShipping.class.php:36
 msgid "Ground shipping"

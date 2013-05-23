@@ -503,8 +503,8 @@ class waHtmlControl
         $id = 0;
         foreach ($options as $option) {
             //TODO check that $option is array
-            $checkbox_params['value'] = 1;
-            $checkbox_params['checked'] = in_array($option['value'], $params['value']);
+            $checkbox_params['value'] = empty($option['value']) ? $option['value'] : 1;
+            $checkbox_params['checked'] = in_array($option['value'], $params['value']) || isset($params['value'][$option['value']]);
             $checkbox_params['title'] = ifset($option['title']);
             $checkbox_params['description'] = ifempty($option['description']);
             $control .= self::getControl(self::CHECKBOX, $option['value'], $checkbox_params);

@@ -180,7 +180,7 @@ abstract class waShipping extends waSystemPlugin
                     break;
                 }
             }
-            $rates = $match ? $this->addItems($items)->calculate() : _ws('Shipping not available');
+            $rates = $match ? $this->addItems($items)->calculate() : false;
         } catch (waException $ex) {
             $rates = $ex->getMessage();
         }
@@ -248,6 +248,11 @@ abstract class waShipping extends waSystemPlugin
         return array();
     }
 
+    public function customFields(waOrder $order)
+    {
+        return array();
+    }
+
     /**
      *
      */
@@ -284,7 +289,7 @@ abstract class waShipping extends waSystemPlugin
             foreach ($currencies as $code => $currency) {
                 $options[$code] = array(
                     'value'       => $code,
-                    'title'       => $currency['title'],
+                    'title'       => $currency['title'] . ' (' . $code . ')',
                     'description' => $currency['code'],
                 );
             }
@@ -293,12 +298,18 @@ abstract class waShipping extends waSystemPlugin
             foreach ($currencies as $code => $currency_name) {
                 $options[$code] = array(
                     'value'       => $code,
-                    'title'       => $currency_name,
+                    'title'       => $currency_name . ' (' . $code . ')',
                     'description' => $code,
                 );
             }
         }
         return $options;
+    }
+
+    public static function settingCountrySelect()
+    {
+        $country_model = new waCountryModel();
+        return $country_model->select('iso3letter AS value, name AS title')->fetchAll('value');
     }
 
     public static function settingCountryControl($name, $params = array())

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WebAsyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2013-04-29 19:46+0400\n"
+"PO-Revision-Date: 2013-05-22 19:35+0400\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -1541,7 +1541,7 @@ msgstr "Группа"
 
 #: /wa-system/contact/waContactCompositeField.class.php:71
 msgid "%s subfield is required."
-msgstr "Подполе %s обязательное."
+msgstr "Поле %s обязательное."
 
 #: /wa-system/contact/waContactField.class.php:308
 msgid "This field is required"
@@ -2320,6 +2320,9 @@ msgstr "Корзина"
 
 msgid "Cart"
 msgstr "Корзина"
+
+msgid "My account"
+msgstr "Личный кабинет"
 
 msgid "Powered by Webasyst"
 msgstr "Мы используем Webasyst"

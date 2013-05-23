@@ -58,6 +58,11 @@ class waContactConditionalField extends waContactField
     {
         $opts = array();
         if ($options) {
+
+            if ($this->isRequired()) {
+                $opts[] = '<option value=""></option>';
+            }
+
             foreach ($options as $option_value) {
                 $at = ($value !== null && $value == $option_value) ? ' selected' : '';
                 $option_value = htmlspecialchars($option_value);
@@ -127,7 +132,9 @@ class waContactConditionalField extends waContactField
             $p['id'] = array_pop($p['id']);
             $name_parent = $this->getHTMLName($p);
             $values = json_encode($possible_options[$parent_field]);
-            $option_hide_unmatched = $this->getParameter('hide_unmatched') ? 'true' : 'false';
+            $option_hide_unmatched = $this->getParameter('hide_unmatched') && !$this->isRequired() ? 'true' : 'false';
+            $show_empty_option = $this->isRequired() ? 'true' : 'false';
+
             $js = <<<EOJS
 <script>if($){ $(function() {
     var parent_field_selector = '[name="{$name_parent}"]';
@@ -177,6 +184,9 @@ class waContactConditionalField extends waContactField
             var options = values[parent_value];
             input.hide();
             select.show().children().remove();
+            if ({$show_empty_option}) {
+                select.append($('<option value=""></option>'));
+            }
             for (i = 0; i < options.length; i++) {
                 select.append($('<option></option>').attr('value', options[i]).text(options[i]));
             }

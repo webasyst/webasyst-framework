@@ -6,7 +6,7 @@
  * @property-read string $currency
  * @property-read array $rate
  * @property-read string $delivery_time
- *
+ * @property-read string $prompt_address
  */
 class pickupShipping extends waShipping
 {
@@ -58,8 +58,9 @@ class pickupShipping extends waShipping
         $rates = $this->rate;
 
         $deliveries = array();
+        $i = 1;    // start from index 1
         foreach ($rates as $rate) {
-            $deliveries[] = array(
+            $deliveries[$i++] = array(
                 'name' => $rate['location'],
                 'currency' => $currency,
                 'rate' => $rate['cost'],
@@ -80,66 +81,8 @@ class pickupShipping extends waShipping
         return 'kg';
     }
 
-
     public function requestedAddressFields()
     {
-        return false;
+        return $this->prompt_address ? array() : false;
     }
-
-    /*
-    public function getPrintForms()
-    {
-        return array(
-            'delivery_list' => array(
-                'name'        => $this->_w('Delivery sheet'),    //    Лист доставки
-                'description' => $this->_w('Delivery sheet for courier')    //    Лист доставки для курьера,
-            ),
-        );
-    }
-
-    public function displayPrintForm($id, waOrder $order, $params = array())
-    {
-        if ($id = 'delivery_list') {
-            $view = wa()->getView();
-            $main_contact_info = array();
-            foreach (array('email', 'phone', ) as $f) {
-                if (($v = $order->contact->get($f, 'top,html'))) {
-                    $main_contact_info[] = array(
-                        'id'    => $f,
-                        'name'  => waContactFields::get($f)->getName(),
-                        'value' => is_array($v) ? implode(', ', $v) : $v,
-                    );
-                }
-            }
-
-            $formatter = new waContactAddressSeveralLinesFormatter();
-            $shipping_address = array();
-            foreach (waContactFields::get('address')->getFields() as $k => $v) {
-                if (isset($order->params['shipping_address.'.$k])) {
-                    $shipping_address[$k] = $order->params['shipping_address.'.$k];
-                }
-            }
-
-            $shipping_address_text = array();
-            foreach (array('country_name', 'region_name', 'zip', 'city', 'street') as $k) {
-                if (isset($order->shipping_address[$k])) {
-                    $shipping_address_text[] = $order->shipping_address[$k];
-                }
-            }
-            $shipping_address_text = implode(', ', $shipping_address_text);
-            $view->assign('shipping_address_text', $shipping_address_text);
-            $shipping_address = $formatter->format(array('data' => $shipping_address));
-            $shipping_address = $shipping_address['value'];
-
-            $view->assign('shipping_address', $shipping_address);
-            $view->assign('main_contact_info', $main_contact_info);
-            $view->assign('order', $order);
-            $view->assign('params', $params);
-            $view->assign('plugin', $this);
-            return $view->fetch($this->path.'/templates/form.html');
-        } else {
-            throw new waException('print form not found');
-        }
-    }
-    */
 }

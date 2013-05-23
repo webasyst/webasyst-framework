@@ -29,10 +29,10 @@ return array(
             '+3 days'  => /*_wp*/('3 days'),
             '+7 days'  => /*_wp*/('1 week'),
             '+14 days' => /*_wp*/('2 weeks'),
-            ''         => /*_wp*/('Undefined')            
+            ''         => /*_wp*/('Undefined')
         ),
     ),
-    'promt_address' =>array(
+    'prompt_address' =>array(
         'value'        => false,
         'title'        => /*_wp*/('Prompt for address'),
         'description'  => /*_wp*/('Request customer to fill in all address fields in case shipping address was not provided yet'),

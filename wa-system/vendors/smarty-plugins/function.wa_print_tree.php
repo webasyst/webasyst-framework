@@ -42,7 +42,14 @@ function smarty_function_wa_print_tree($params, &$smarty)
     preg_match_all('/:([a-z_]+)/', $params['elem'], $match);
 
     foreach ($data as $row) {
-        $html .= '<li'.(isset($params['selected']) && $row['id'] == $params['selected'] ? ' class="selected"' : '').'>';
+        $li_classes = array();
+        if (isset($params['selected']) && $row['id'] == $params['selected']) {
+            $li_classes[] = 'selected';
+        }
+        if (isset($params['collapsible_class']) && !empty($row['childs'])) {
+            $li_classes[] = $params['collapsible_class'];
+        }
+        $html .= '<li'.($li_classes ? ' class="'.implode(' ', $li_classes).'"' : '').'>';
         $elem = $params['elem'];
         foreach ($match[1] as $k) {
             if (isset($row[$k])) {

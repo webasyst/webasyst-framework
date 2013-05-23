@@ -41,7 +41,7 @@ class waContactFields
 
     /** Field parameters to store in *_fields_order.php
       * id => default value to store in *fields.php */
-    protected static $customParameters = array(
+    public static $customParameters = array(
         'required' => false,
         'unique' => false,
     );

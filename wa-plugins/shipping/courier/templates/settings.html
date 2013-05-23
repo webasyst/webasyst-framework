@@ -82,10 +82,10 @@
                     <tr>
                         <th colspan="2" class="rate-by">
                             <span class="weight" {if $values.rate_by != 'weight'}style="display:none;"{/if}>
-                                {$p->_w('Order weight')}
+                                {$p->_w('Shipment weight')}
                             </span>
                             <span class="price"  {if $values.rate_by != 'price'}style="display:none;"{/if}>
-                                {$p->_w('Order price')}
+                                {$p->_w('Shipment amount')}
                             </span>
                         </th>
                         <th>&nbsp;</th>
@@ -106,15 +106,19 @@
                     {foreach $values.rate as $rate}
                     <tr class="rate">
                         <td class="min-width">&gt;</td>
-                        <td title="{$p->_w('Order total')}">
+                        <td title="{$p->_w('Shipment amount')}">
                             <input type="text" 
                                 value="{$rate.limit|escape}" 
                                 class="refreshable input" 
                                 name="{$namespace|escape}[rate][{$rate@index}][limit]"
                             >
                             <span class="rate-by">
-                                <span class="weight" {if $values.rate_by != 'weight'}style="display:none;"{/if}>
-                                    {$p->_w('KG')}
+                                <span class="weight dimension" {if $values.rate_by != 'weight'}style="display:none;"{/if}>
+                                    {if $values.weight_dimension == 'kg'}
+                                        {$p->_w('kg')}
+                                    {else}
+                                        {$p->_w('lbs')}
+                                    {/if}
                                 </span>
                                 <span class="price currency" {if $values.rate_by != 'price'}style="display:none;"{/if}>
                                     {$values.currency}
@@ -140,6 +144,25 @@
             </table>
         </div>
     </div>
+    
+    <div class="field">
+        <div class="name">
+            {$p->_w('Weight dimension unit')}
+        </div>
+        <div class="value">
+            <select name="{$namespace|escape}[weight_dimension]">
+                <option value="kg" data-value="{$p->_w('kg')}"
+                    {if $values.weight_dimension == 'kg'} selected="selected"{/if}>
+                        {$p->_w('kg')}
+                </option>
+                <option value="lbs" data-value="{$p->_w('lbs')}"
+                    {if $values.weight_dimension == 'lbs'} selected="selected"{/if}>
+                        {$p->_w('lbs')}
+                </option>
+            </select>
+        </div>
+    </div>
+    
 </div>
 <script type="text/javascript">
     $(function() { 'use strict'
@@ -191,6 +214,12 @@
         
         container.find('select[name$="[currency]"]').change(function() {
             container.find('span.currency').text(this.value);
+        });
+        
+        container.find('select[name$="[weight_dimension]"]').change(function() {
+            container.find('.rate-by .weight.dimension').text(
+                $('option:selected', this).attr('data-value')
+            );
         });
         
         (function() {

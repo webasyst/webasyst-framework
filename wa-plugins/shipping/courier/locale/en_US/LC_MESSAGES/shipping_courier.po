@@ -14,48 +14,41 @@ msgstr ""
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
 
-#: //wa-plugins/shipping/courier/lib/courierShipping.class.php:170
-msgid "Лист доставки"
-msgstr ""
-
-#: //wa-plugins/shipping/courier/lib/courierShipping.class.php:171
-msgid "Лист доставки для курьера"
-msgstr ""
-
-#: //wa-plugins/shipping/courier/lib/config/settings.php:20
-msgid "Estimated delivery time"
-msgstr ""
-
-#: //wa-plugins/shipping/courier/lib/config/settings.php:21
-msgid "Average order transit time. Estimated delivery date will be calculated automatically and shown to customer"
-msgstr ""
-
-#: //wa-plugins/shipping/courier/lib/config/settings.php:24
-msgid "Today"
-msgstr ""
-
-#: //wa-plugins/shipping/courier/lib/config/settings.php:25
-msgid "Next day"
-msgstr ""
-
-#: //wa-plugins/shipping/courier/lib/config/settings.php:26
-msgid "2-3 days"
-msgstr ""
-
-#: //wa-plugins/shipping/courier/lib/config/settings.php:27
-msgid "1 week"
-msgstr ""
-
-#: //wa-plugins/shipping/courier/lib/config/settings.php:28
-msgid "Not set"
-msgstr ""
 
 #: //wa-plugins/shipping/courier/lib/config/plugin.php:3
 msgid "Courier"
 msgstr ""
 
 #: //wa-plugins/shipping/courier/lib/config/plugin.php:4
-msgid "Courier shipping module. Shipping rate is calculated based on the shipping region, and either order total amount or order total weight."
+msgid "Shipping is restricted to the specific country and region only. Shipping rate is calculated based on either total amount or weight of the shipment."
+msgstr ""
+
+#: //wa-plugins/shipping/courier/lib/config/settings.php:23
+msgid "Estimated delivery time"
+msgstr ""
+
+#: //wa-plugins/shipping/courier/lib/config/settings.php:24
+msgid "Average order transit time. Estimated delivery date will be calculated automatically and shown to customer."
+msgstr ""
+
+#: //wa-plugins/shipping/courier/lib/config/settings.php:27
+msgid "Same day"
+msgstr ""
+
+#: //wa-plugins/shipping/courier/lib/config/settings.php:28
+msgid "Next day"
+msgstr ""
+
+#: //wa-plugins/shipping/courier/lib/config/settings.php:29
+msgid "2-3 days"
+msgstr ""
+
+#: //wa-plugins/shipping/courier/lib/config/settings.php:30
+msgid "1 week"
+msgstr ""
+
+#: //wa-plugins/shipping/courier/lib/config/settings.php:31
+msgid "Undefined"
 msgstr ""
 
 #: //wa-plugins/shipping/courier/templates/form.html:105
@@ -82,102 +75,70 @@ msgstr ""
 msgid "Shipping address"
 msgstr ""
 
-#: //wa-plugins/shipping/courier/templates/settings.html:2
-msgid "Country"
-msgstr ""
-
-#: //wa-plugins/shipping/courier/templates/settings.html:11
-msgid "Please, choose country which requires shipping plugin configurating"
-msgstr ""
-
-#: //wa-plugins/shipping/courier/templates/settings.html:15
-msgid "Region"
-msgstr ""
-
-#: //wa-plugins/shipping/courier/templates/settings.html:32
-msgid "Calculation method"
-msgstr ""
-
-#: //wa-plugins/shipping/courier/templates/settings.html:34
-msgid "By weight"
-msgstr ""
-
-#: //wa-plugins/shipping/courier/templates/settings.html:36
-msgid "By price"
-msgstr ""
-
-#: //wa-plugins/shipping/courier/templates/settings.html:38
-msgid "Shipping rate is calculated based on eight order total amount or order total weight"
-msgstr ""
-
-#: //wa-plugins/shipping/courier/templates/settings.html:44
-msgid "Currency"
-msgstr ""
-
-#: //wa-plugins/shipping/courier/templates/settings.html:58
-msgid "Pricing"
-msgstr ""
-
-#: //wa-plugins/shipping/courier/templates/settings.html:64
-msgid "Order weight, KG"
-msgstr ""
-
-#: //wa-plugins/shipping/courier/templates/settings.html:66
-msgid "Shipping rate, USD"
-msgstr ""
-
-#: //wa-plugins/shipping/courier/templates/settings.html:79
-msgid "Order total"
-msgstr ""
-
-#: //wa-plugins/shipping/courier/templates/settings.html:81
-msgid "Shipping rate"
-msgstr ""
-
-#: //wa-plugins/shipping/courier/lib/config/plugin.php:4
-msgid "Shipping is restricted to the specific country and region only. Shipping rate is calculated based on either total amount or weight of the shipment."
-msgstr ""
-
-#: //wa-plugins/shipping/courier/lib/config/settings.php:21
-msgid "Average order transit time. Estimated delivery date will be calculated automatically and shown to customer."
-msgstr ""
-
-#: //wa-plugins/shipping/courier/lib/config/settings.php:24
-msgid "Same day"
-msgstr ""
-
-#: //wa-plugins/shipping/courier/lib/config/settings.php:28
-msgid "Undefined"
-msgstr ""
-
-#: //wa-plugins/shipping/courier/lib/courierShipping.class.php:171
-msgid "Packing list"
-msgstr ""
-
-#: //wa-plugins/shipping/courier/lib/courierShipping.class.php:172
-msgid "Order summary for courier shipping"
-msgstr ""
-
-#: //wa-plugins/shipping/courier/templates/settings.html:16
+#: //wa-plugins/shipping/courier/templates/settings.html:18
 msgid "Shipping will be restricted to the selected country. Rates defined below will be applied to the entire country."
 msgstr ""
 
-#: //wa-plugins/shipping/courier/templates/settings.html:2
+#: //wa-plugins/shipping/courier/templates/settings.html:3
 msgid "Shipping region"
 msgstr ""
 
-#: //wa-plugins/shipping/courier/templates/settings.html:25
+#: //wa-plugins/shipping/courier/templates/settings.html:29
 msgid "Shipping will be restricted to the selected region."
 msgstr ""
 
-#: //wa-plugins/shipping/courier/templates/settings.html:35
+#: //wa-plugins/shipping/courier/templates/settings.html:39
 msgid "City name"
 msgstr ""
 
-#: //wa-plugins/shipping/courier/templates/settings.html:36
+#: //wa-plugins/shipping/courier/templates/settings.html:40
 msgid "If courier shipping is provided within a specific city, enter the city name so customer will not be prompted to enter city name when this shipping option is selected — city name will be automatically fetched as you specified. In case city name left blank, customer will be prompted to enter city name."
 msgstr ""
 
-#: //wa-plugins/shipping/courier/templates/settings.html:42
+#: //wa-plugins/shipping/courier/templates/settings.html:46
 msgid "Shipping rate calculation"
+msgstr ""
+
+#: //wa-plugins/shipping/courier/templates/settings.html:52
+msgid "By weight"
+msgstr ""
+
+#: //wa-plugins/shipping/courier/templates/settings.html:59
+msgid "By price"
+msgstr ""
+
+#: //wa-plugins/shipping/courier/templates/settings.html:85
+msgid "Shipment weight"
+msgstr ""
+
+#: //wa-plugins/shipping/courier/templates/settings.html:109
+msgid "Shipment amount"
+msgstr ""
+
+#: //wa-plugins/shipping/courier/templates/settings.html:129
+msgid "Shipping rate"
+msgstr ""
+
+#: //wa-plugins/shipping/courier/templates/settings.html:100
+msgid "Add rate"
+msgstr ""
+
+#: //wa-plugins/shipping/courier/templates/settings.html:156
+msgid "kg"
+msgstr ""
+
+#: //wa-plugins/shipping/courier/templates/settings.html:160
+msgid "lbs"
+msgstr ""
+
+#: //wa-plugins/shipping/courier/templates/settings.html:150
+msgid "Weight dimension unit"
+msgstr ""
+
+#: //wa-plugins/shipping/courier/templates/settings.html:154
+msgid "KG"
+msgstr ""
+
+#: //wa-plugins/shipping/courier/templates/settings.html:158
+msgid "LBS"
 msgstr ""

@@ -107,9 +107,9 @@ final class waDbStatement
         if (empty($this->places_map)) {
             return $this->query;
         }
-        
+
         $this->checkParams();
-        
+
         /* With placeholders */
         $query = $this->query;
         $placeholders = array();
@@ -170,9 +170,9 @@ final class waDbStatement
         if(count($this->places_map) > count($this->binded_params)) {
             $error = "Bad params: \n" .
                      "Placeholder's params: \n" .
-                     var_export($this->places_map) . "\n" .
+                     var_export($this->places_map, true) . "\n" .
                      "Bind params: \n" .
-                     var_export($this->binded_params) . "\n";
+                     var_export($this->binded_params, true) . "\n";
             throw new Exception($error);
         }
         return true;

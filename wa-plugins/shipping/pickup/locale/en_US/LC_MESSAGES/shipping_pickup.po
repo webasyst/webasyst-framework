@@ -69,3 +69,11 @@ msgstr ""
 #: //wa-plugins/shipping/pickup/templates/settings.html:74
 msgid "0"
 msgstr ""
+
+#: //wa-plugins/shipping/pickup/lib/config/settings.php:12
+msgid "Prompt for address"
+msgstr ""
+
+#: //wa-plugins/shipping/pickup/lib/config/settings.php:13
+msgid "Request customer to fill in all address fields in case shipping address was not provided yet"
+msgstr ""

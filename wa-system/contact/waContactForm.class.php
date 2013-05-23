@@ -75,14 +75,13 @@ class waContactForm
                                 }
                                 $subfields[$sfid] = self::getClone($old_subfields[$sfid], $sfopts);
                                 if ($subfields[$sfid] instanceof waContactHiddenField) {
-                                    if ($subfields[$sfid] instanceof waContactHiddenField) {
-                                        if (empty($values[$full_field_id]['data'])) {
-                                            $values[$full_field_id] = array('data' => array());
-                                        }
-                                        $values[$full_field_id]['data'][$sfid] = $subfields[$sfid]->getParameter('value');
+                                    if (empty($values[$full_field_id]['data'])) {
+                                        $values[$full_field_id] = array('data' => array());
                                     }
+                                    $values[$full_field_id]['data'][$sfid] = $subfields[$sfid]->getParameter('value');
                                 }
                             }
+
                             $opts['fields'] = $subfields;
                         }
                     }

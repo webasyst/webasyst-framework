@@ -26,14 +26,23 @@ class waPageAction extends waViewAction
             $this->setThemeTemplate('error.html');
         } else {
 
+            $breadcrumbs = array();
             $parents = array();
             $p = $page;
+            $root_url = wa()->getAppUrl(null, true);
             while ($p['parent_id']) {
                 $p = $this->getPageModel()->select('id, parent_id, name, title, url, full_url')->where("id = ?", $p['parent_id'])->fetch();
                 $parents[] = $p;
+                $breadcrumbs[] = array(
+                    'name' => $p['title'] ? $p['title'] : $p['name'],
+                    'url' => $root_url.$p['full_url']
+                );
             }
 
             $this->view->assign('page_parents', array_reverse($parents));
+            if ($this->layout && $breadcrumbs) {
+                $this->layout->assign('breadcrumbs', array_reverse($breadcrumbs));
+            }
 
             $this->getResponse()->setTitle($page['title']);
             $this->getResponse()->setMeta(array(

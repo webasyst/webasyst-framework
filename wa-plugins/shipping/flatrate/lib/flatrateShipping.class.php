@@ -132,6 +132,6 @@ class flatrateShipping extends waShipping
 
     public function requestedAddressFields()
     {
-        return $this->promt_address ? array() : false;
+        return $this->prompt_address ? array() : false;
     }
 }

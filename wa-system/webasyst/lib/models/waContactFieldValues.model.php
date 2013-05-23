@@ -15,7 +15,7 @@ class waContactFieldValuesModel extends waModel
                 "SELECT * FROM `{$this->table}` WHERE field = '$field' ORDER BY parent_value, sort")
             as $item)
         {
-            if ($parent != $item['parent_value']) {
+            if ($parent !== $item['parent_value']) {
                 $p = &$data[];
                 $p = array(
                     'field' => $item['parent_field'],

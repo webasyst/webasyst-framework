@@ -21,7 +21,8 @@ class emsruShipping extends waShipping
                 $params['from'] = $this->findTo($address);
                 $params['to'] = $this->findTo($this->getAddress());
                 if (empty($params['to'])) {
-                    $incomplete = (empty($address['city']) && empty($address['region']));
+                    $address = $this->getAddress();
+                    $incomplete = empty($address['city']) && empty($address['region']);
                 }
                 break;
             default: /* International shipping*/
@@ -32,7 +33,7 @@ class emsruShipping extends waShipping
                     $params['to'] = false;
                 }
                 $params['type'] = 'att';
-                $incomplete = empty($params['to']);
+                $incomplete = true;
 
                 break;
         }
@@ -47,8 +48,10 @@ class emsruShipping extends waShipping
                         'max' => sprintf('+%d day', ifset($result['term']['max'], 14)),
                     );
                     $est_delivery .= waDateTime::format('humandate', strtotime($time['min']));
-                    $est_delivery .= ' — ';
-                    $est_delivery .= waDateTime::format('humandate', strtotime($time['max']));
+                    if ($time['min'] != $time['max']) {
+                        $est_delivery .= ' — ';
+                        $est_delivery .= waDateTime::format('humandate', strtotime($time['max']));
+                    }
                     $rate = doubleval(ifset($result['price'], 0));
                     if (doubleval($this->surcharge) > 0) {
                         $rate += $this->getTotalPrice() * doubleval($this->surcharge) / 100.0;
@@ -63,10 +66,10 @@ class emsruShipping extends waShipping
                     $services = 'Ошибка расчета стоимости доставки в указанные город и регион.';
                 }
             } else {
-                $services = 'Адрес отправителя не указан в настройках способа доставки «EMS Почта России».';
+                $services = 'Стоимость доставки не может быть рассчитана, так как в настройках способа доставки «EMS Почта России» не указан адрес отправителя.';
             }
         } elseif ($incomplete) {
-            $services = array();
+            $services = 'Для расчета стоимости доставки укажите страну, регион и город доставки.';
         } else {
             $services = 'Ошибка расчета стоимости доставки в указанные город и регион.';
         }
@@ -133,15 +136,23 @@ class emsruShipping extends waShipping
 
         $region = trim(mb_strtoupper(ifset($address['region'])));
         $region_name = trim(mb_strtoupper(ifset($address['region_name'])));
-        $to = ifset($map['city'][$city], ifset($map['city'][$region_name], ifset($map['city'][$region])));
-        if (!$to) {
-            $model = new waRegionModel();
-            if ($region_name) {
-                $region_name = trim(preg_replace($pattern, '', mb_strtoupper($region_name)));
-                $to = ifset($map['region'][$region_name]);
-            } elseif ($region && ($region = $model->get(ifset($address['country']), $region))) {
-                $region = trim(preg_replace($pattern, '', mb_strtoupper($region['name'])));
-                $to = ifset($map['city'][$region], ifset($map['region'][$region]));
+        $to = null;
+        if ($city && !empty($map['city'][$city])) {
+            $to = $map['city'][$city];
+        } else {
+            if ($region_name && !empty($map['city'][$region_name])) {
+                $to = $map['city'][$region_name];
+            } elseif ($region && !empty($map['city'][$region])) {
+                $to = $map['city'][$region];
+            } else {
+                $model = new waRegionModel();
+                if ($region_name) {
+                    $region_name = trim(preg_replace($pattern, '', mb_strtoupper($region_name)));
+                    $to = ifset($map['region'][$region_name]);
+                } elseif ($region && ($region = $model->get(ifset($address['country']), $region))) {
+                    $region = trim(preg_replace($pattern, '', mb_strtoupper($region['name'])));
+                    $to = ifset($map['city'][$region], ifset($map['region'][$region]));
+                }
             }
         }
         return $to;
