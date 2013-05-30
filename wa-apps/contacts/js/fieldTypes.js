@@ -362,7 +362,7 @@ $.wa.contactEditor.factoryTypes.Conditional = $.extend({}, $.wa.contactEditor.fa
                 }
             }
 
-            if (parent_field && parent_field.domElement) {
+            if (parent_field) {
                 var initial_value = (this.fieldData.options && this.fieldData.options[this.fieldValue]) || this.fieldValue;
                 var input = $('<input type="text" class="hidden val">').val(initial_value);
                 var select = $('<select class="hidden val"></select>').hide();
@@ -381,9 +381,14 @@ $.wa.contactEditor.factoryTypes.Conditional = $.extend({}, $.wa.contactEditor.fa
                 // Listen to change events from field we depend on.
                 // setTimeout() to ensure that field created its new domElement.
                 setTimeout(function() {
-                    var parent_val_element = parent_field.domElement.find('.val').change(change_handler = function() {
+                    if (!parent_field.domElement) {
+                        input.show();
+                        return;
+                    }
+                    parent_field.domElement.on('change', '.val', change_handler = function() {
+                        var parent_val_element = $(this);
                         var old_val = getVal();
-                        var parent_value = parent_val_element.val().toLowerCase();
+                        var parent_value = (parent_val_element.val() || '').toLowerCase();
                         var values = cond_field.fieldData.parent_options[parent_value];
                         if (values) {
                             input.hide();
@@ -397,11 +402,11 @@ $.wa.contactEditor.factoryTypes.Conditional = $.extend({}, $.wa.contactEditor.fa
                             select.hide();
                         }
                     });
-                    change_handler.call(parent_val_element);
+                    change_handler.call(parent_field.domElement.find('.val:visible')[0]);
                 }, 0);
 
                 cond_field.unbindEventHandlers = function() {
-                    if (change_handler) {
+                    if (change_handler && parent_field.domElement) {
                         parent_field.domElement.find('.val').unbind('change', change_handler);
                     }
                     cond_field.unbindEventHandlers = function() {};
@@ -409,7 +414,7 @@ $.wa.contactEditor.factoryTypes.Conditional = $.extend({}, $.wa.contactEditor.fa
 
                 return $('<div></div>').append(input).append(select);
             } else {
-                return $('<input type="text" class="val">').val(cond_field.fieldValue);
+                return $('<div></div>').append($('<input type="text" class="val">').val(cond_field.fieldValue));
             }
         }
     }

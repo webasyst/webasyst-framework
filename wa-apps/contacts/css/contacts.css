@@ -265,6 +265,9 @@ input.external-error {
     border: 2px solid red;
     color: red;
 }
+.fields .field .multifield-subfields .value .address-field { margin-bottom: 15px; }
+.fields .edit-mode .field .multifield-subfields { margin-bottom: -15px; }
+.fields .edit-mode .field .multifield-subfields .value { margin-bottom: 25px; }
 .multifield-subfields>:only-child .delete-subfield,
 .in-place-editor .delete-subfield {
     display: none;
