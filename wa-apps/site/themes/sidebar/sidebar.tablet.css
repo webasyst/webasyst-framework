@@ -1,0 +1,21 @@
+/*
+ * Webasyst Sidebar theme family
+ *
+ * Additional CSS for tablet computers (e.g. iPad)
+ * (requires linking sidebar.css)
+ *
+ * @link http://www.webasyst.com/
+ * @author Webasyst LLC
+ * @copyright 2013 Webasyst LLC
+ * @package Webasyst
+ */
+
+body { font-size: 120%; -webkit-text-size-adjust: 100%; }
+
+#sidebar { font-size: 100%; width: 200px; }
+#sidebar .block { padding: 10px 20px; }
+#sidebar .title { font-size: 120%; }
+#sidebar .search input { width: 170px; margin: 0 15px; }
+#sidebar .auth { width: 180px; font-size: 70%; }
+
+#main { margin-left: 200px; }

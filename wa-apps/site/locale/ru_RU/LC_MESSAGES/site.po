@@ -1210,3 +1210,15 @@ msgid ""
 msgstr ""
 "Отображает подробную информацию о структуре переменной, массива или объекта. "
 "Работает аналогично функции PHP var_dump($foo)"
+
+#: /wa-apps/site/themes/default/index.html:46
+msgid "We are using <a href=\"http://www.webasyst.com/\">Webasyst</a>"
+msgstr "Мы используем <a href=\"http://www.webasyst.com/ru/\">Webasyst</a>"
+
+#: /wa-apps/site/themes/custom/index.html:73
+msgid "Facebook"
+msgstr "Фейсбук"
+
+#: /wa-apps/site/themes/custom/index.html:74
+msgid "Twitter"
+msgstr "Твиттер"

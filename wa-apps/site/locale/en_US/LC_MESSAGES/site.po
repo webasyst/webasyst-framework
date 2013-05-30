@@ -913,3 +913,15 @@ msgstr ""
 #: /wa-apps/site/lib/actions/helper/siteHelper.action.php:77
 msgid "Displays structured information about variable. Arrays and objects are explored recursively with values indented to show structure. Similar to PHP var_dump($foo)"
 msgstr ""
+
+#: /wa-apps/site/themes/default/index.html:46
+msgid "We are using <a href=\"http://www.webasyst.com/\">Webasyst</a>"
+msgstr ""
+
+#: /wa-apps/site/themes/custom/index.html:73
+msgid "Facebook"
+msgstr ""
+
+#: /wa-apps/site/themes/custom/index.html:74
+msgid "Twitter"
+msgstr ""

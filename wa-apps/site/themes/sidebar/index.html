@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>{$wa->title()|escape}</title>
+    <meta name="Keywords" content="{$wa->meta('keywords')|escape}" />
+    <meta name="Description" content="{$wa->meta('description')|escape}" />
+    <!-- css -->
+    <link href="{$wa_theme_url}sidebar.css?{$wa->version()}" rel="stylesheet" type="text/css"/>
+    <link href="{$wa_theme_url}sidebar.mobile.css?{$wa->version()}" media="screen and (max-width: 760px)" rel="stylesheet" type="text/css"/>
+    <link href="{$wa_theme_url}sidebar.tablet.css?{$wa->version()}" media="screen and (min-width: 760px) and (max-width: 1024px)" rel="stylesheet" type="text/css"/>
+    <link href="{$wa_theme_url}sidebar.wide.css?{$wa->version()}" media="screen and (min-width: 1440px)" rel="stylesheet" type="text/css"/>
+    <!-- js -->
+    <script type="text/javascript" src="{$wa_url}wa-content/js/jquery/jquery-1.8.2.min.js"></script>
+    <script type="text/javascript" src="{$wa_theme_url}sidebar.js"></script>    
+    {if $wa->isMobile()}
+        <meta name="viewport" content="width=device-width; initial-scale=1; maximum-scale=1; user-scalable=0;" />
+    {/if}
+    {include file="`$wa_active_theme_path`/head.html" inline}
+    {$wa->headJs()}
+</head>
+<body id="{$wa_app}">
+    <div id="sidebar" role="navigation">
+
+        <!-- TITLE -->
+        <h2 class="title">
+            <a href="{$wa_url}">{$wa->accountName()}</a>
+        </h2>
+        
+        <!-- in case Shop-Script is installed  -->
+        {if $wa->shop}            
+            <!-- product search form  -->
+            <div class="search">
+                <form method="get" action="{$wa->getUrl('shop/frontend/search')}">
+                    <input type="search" name="query" {if !empty($query)}value="{$query}"{/if} id="search" placeholder="[s`Find products`]">
+                </form>
+            </div>         
+            <!-- shopping cart info -->
+            {$cart_total = $wa->shop->cart->total()}
+             <div id="cart" class="{if !$cart_total} empty{/if}">
+                 <a href="{$wa->getUrl('shop/frontend/cart')}" class="cart-total">
+                     {wa_currency($cart_total, $wa->shop->currency())}
+                 </a>
+             </div>
+        {/if}
+        
+        <!-- main website sections -->
+        <div class="block">
+            <ul class="menu-v apps">
+                {foreach $wa->apps() as $a}
+                    <li{if $a.url==$wa_app_url} class="selected"{/if}><a href="{$a.url}">{$a.name}<i class="marker"></i></a></li>
+                {/foreach}
+            </ul>
+        </div>
+        
+        <div class="block">
+            {include file="`$wa_active_theme_path`/pagelist.html" inline}
+        </div>
+
+        {if $wa->isAuthEnabled()}
+            <!-- auth & sign up links -->
+            <div class="auth">
+                <ul class="menu-h">
+                     {if $wa->user()->isAuth()}
+                        {if $wa->shop}
+                            <li><a href="{$wa->getUrl('shop/frontend/my')}"><i class="icon16 userpic20 float-left" style="background-image: url('{$wa->user()->getPhoto(20)}');"></i>[s`My account`]</a></li>
+                        {else}
+                                <li><strong>{$wa->user('name')}</strong></li>
+                            {/if}
+                         <li><a href="?logout">[s`Log out`]</a></li>
+                    {else}
+                        <li><a href="{$wa->loginUrl()}">[s`Log in`]</a></li>
+                        <li><a href="{$wa->signupUrl()}">[s`Sign up`]</a></li>
+                    {/if}
+                </ul>
+            </div>
+        {/if}
+
+    </div>
+    
+    <div id="main">
+        <div class="container">
+            <!-- INTERNAL APP NAVIGATION & CONTENT -->
+            {include file="`$wa_active_theme_path`/content.html" inline}
+        </div>
+        
+        <!-- FOOTER -->
+        <div id="footer">
+            <div class="container">
+                <div class="hr"></div>
+                {include file="`$wa_active_theme_path`/footer.html" inline}
+                <!--
+                   <div id="sub-links" class="float-left">
+                    <ul>
+                          <li><a href="#">About</a></li>
+                          <li><a href="#">Terms of service</a></li>
+                          <li><a href="#">Privacy policy</a></li>
+                    </ul>
+                  </div>
+                -->
+            </div>
+        </div>        
+        
+        <div class="clear-both"></div>
+    </div>
+    
+</body>
+</html>

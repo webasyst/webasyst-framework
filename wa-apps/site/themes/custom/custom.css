@@ -148,7 +148,7 @@ body#site #header ul#wa-apps li.selected a { background: #0099FF; }
 body#blog #header ul#wa-apps li.selected a { background: #EEBB00; }
 body#photos #header ul#wa-apps li.selected a { background: #8866CC; }
 body#shop #header ul#wa-apps li.selected a { background: #66CC33; }
-body#forum #header ul#wa-apps li.selected a { background: #FF6600; }
+body#qa #header ul#wa-apps li.selected a { background: #FF6600; }
 
 /* Menus
 -------- */
