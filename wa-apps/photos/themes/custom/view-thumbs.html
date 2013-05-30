@@ -1,4 +1,5 @@
 <div class="content">
+    {if !empty($title)}{$title}{/if}
     {* @event frontend_collection.%plugin_id%.thumbs_list *}
     {if !empty($frontend_collection)}{foreach $frontend_collection as $item}{if !empty($item.thumbs_list)}{$item.thumbs_list}{/if}{/foreach}{/if}
     <ul class="view-thumbs{if $wa->param('action') eq 'album'} album-float-left-view{/if}" id="photo-list">

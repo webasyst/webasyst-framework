@@ -7,7 +7,22 @@ class photosPhoto
 
     public static function getPhotoUrl($photo, $size = null, $absolute = false)
     {
-        return str_replace('%size%', $size, self::getPhotoUrlTemplate($photo, $absolute));
+        $path = self::getPhotoFolder($photo['id']).'/'.$photo['id'];
+        if ($photo['status'] <= 0) {
+            $path .= '.'.$photo['hash'];
+        }
+        $path .= '/'.$photo['id'].'.'.($size ?  $size.'.' : '').$photo['ext'];
+
+        if (waSystemConfig::systemOption('mod_rewrite')) {
+            return wa()->getDataUrl($path, true, 'photos', $absolute);
+        } else {
+            $wa = wa();
+            if (file_exists($wa->getDataPath($path, true, 'photos'))) {
+                return $wa->getDataUrl($path, true, 'photos', $absolute);
+            } else {
+                return $wa->getDataUrl('thumb.php/'.$path, true, 'photos', $absolute);
+            }
+        }
     }
 
     public static function getPhotoUrlTemplate($photo, $absolute = false)
@@ -21,12 +36,7 @@ class photosPhoto
         if (waSystemConfig::systemOption('mod_rewrite')) {
             return wa()->getDataUrl($path, true, 'photos', $absolute);
         } else {
-            $wa = wa();
-            if (file_exists($wa->getDataPath($path, true, 'photos'))) {
-                return $wa->getDataUrl($path, true, 'photos', $absolute);
-            } else {
-                return $wa->getDataUrl('thumb.php/'.$path, true, 'photos', $absolute);
-            }
+            return wa()->getDataUrl('thumb.php/'.$path, true, 'photos', $absolute);
         }
     }
 

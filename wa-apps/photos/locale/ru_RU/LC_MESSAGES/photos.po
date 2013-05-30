@@ -12,7 +12,7 @@ msgstr ""
 ">=2)&&((n%10)<=4))&&(((n%100)<10)||((n%100)>=20)))?(1):2));\n"
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
-"X-Generator: Poedit 1.5.3\n"
+"X-Generator: Poedit 1.5.5\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
 
@@ -1272,29 +1272,62 @@ msgstr ""
 "фотографией после загрузки. Восстановить?"
 
 #: /wa-apps/photos/templates/actions/album/AlbumSettings.html:26
-msgid "This album will not be visible in the public gallery because there are no routing rules for the Photos app in your website settings. Use Site app (Routing section) to settle Photos app on your website and to start publishing photos."
-msgstr "Альбом не будут опубликован на вашем сайте, потому что приложение «Фото» не подключено правилами маршрутизации. Чтобы публиковать фотографии и альбомы, поселите приложение «Фото» в разделе «Маршрутизация» внутри приложения «Сайт»."
+msgid ""
+"This album will not be visible in the public gallery because there are no "
+"routing rules for the Photos app in your website settings. Use Site app "
+"(Routing section) to settle Photos app on your website and to start "
+"publishing photos."
+msgstr ""
+"Альбом не будут опубликован на вашем сайте, потому что приложение «Фото» не "
+"подключено правилами маршрутизации. Чтобы публиковать фотографии и альбомы, "
+"поселите приложение «Фото» в разделе «Маршрутизация» внутри приложения "
+"«Сайт»."
 
 #: /wa-apps/photos/templates/layouts/Mobile.html:22
 msgid "Apps"
-msgstr ""
+msgstr "Приложения"
 
 #: /wa-apps/photos/templates/actions-mobile/photo/PhotoList.html:5
 msgid "Upload photo"
-msgstr ""
+msgstr "Загрузить фото"
 
 #: /wa-apps/photos/js/photos.js:253
 msgid "Themes"
-msgstr ""
+msgstr "Темы дизайна"
 
 #: /wa-apps/photos/js/photos.js:238
 msgid "Design"
-msgstr ""
+msgstr "Дизайн"
 
 #: /wa-apps/photos/lib/config/site.php:38
-msgid "Returns photo list array by search criteria, e.g. <em>\"tag/vacations\"</em>, <em>\"album/12\"</em>, <em>\"id/1,5,7\"</em>. <em>size</em> parameter indicates thumbnail size. <em>limit</em> parameter is MySQL-like: can be either a number (max number of photos to be returned) or a pair of offset, limit (start from and the max number of records to be returned)"
+msgid ""
+"Returns photo list array by search criteria, e.g. <em>\"tag/vacations\"</"
+"em>, <em>\"album/12\"</em>, <em>\"id/1,5,7\"</em>. <em>size</em> parameter "
+"indicates thumbnail size. <em>limit</em> parameter is MySQL-like: can be "
+"either a number (max number of photos to be returned) or a pair of offset, "
+"limit (start from and the max number of records to be returned)"
 msgstr ""
 
 #: /wa-apps/photos/lib/config/site.php:124
 msgid "Latest uploaded photos"
+msgstr "Последние загруженные фотографии"
+
+#: /wa-apps/photos/lib/actions/album/photosAlbumSave.controller.php:41
+msgid "Parent album is private"
+msgstr "Родительский альбом является приватным"
+
+#: /wa-apps/photos/lib/actions/album/photosAlbumSave.controller.php:46
+msgid "Parent album is smart"
+msgstr "Родительский альбом является динамическим"
+
+#: /wa-apps/photos/themes/default/index.html:71
+msgid ""
+"We are using <a href=\"http://www.webasyst.com/apps/photos/\">Webasyst "
+"Photos</a>"
 msgstr ""
+"Мы используем <a href=\"http://www.webasyst.com/ru/apps/photos/\">Webasyst "
+"Фото</a>"
+
+#: /wa-apps/photos/themes/custom/content.html:64
+msgid "More"
+msgstr "Еще"

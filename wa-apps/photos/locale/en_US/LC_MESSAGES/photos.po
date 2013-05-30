@@ -1167,3 +1167,19 @@ msgstr "Returns a photo list array by search criteria; e.g., <em>\"tag/vacations
 msgid "Latest uploaded photos"
 msgstr "Last uploaded photos"
 
+
+#: /wa-apps/photos/lib/actions/album/photosAlbumSave.controller.php:41
+msgid "Parent album is private"
+msgstr ""
+
+#: /wa-apps/photos/lib/actions/album/photosAlbumSave.controller.php:46
+msgid "Parent album is smart"
+msgstr ""
+
+#: /wa-apps/photos/themes/default/index.html:71
+msgid "We are using <a href=\"http://www.webasyst.com/apps/photos/\">Webasyst Photos</a>"
+msgstr ""
+
+#: /wa-apps/photos/themes/custom/content.html:64
+msgid "More"
+msgstr ""

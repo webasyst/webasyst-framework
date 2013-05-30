@@ -156,7 +156,7 @@ class photosConfig extends waAppConfig
          * @param array $routes
          * @return array routes collected for every plugin
          */
-        $result = wa()->event('routing', $routes);
+        $result = wa()->event(array('photos', 'routing'), $routes);
         $all_plugins_routes = array();
         foreach ($result as $plugin_id => $routing_rules) {
             if ($routing_rules) {

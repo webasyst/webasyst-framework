@@ -1,0 +1,21 @@
+<!-- plugin hook -->
+{* @event frontend_layout.%plugin_id%.header *}
+{foreach $frontend_layout as $item}{if !empty($item.header)}{$item.header}{/if}{/foreach}
+
+{include file="`$wa_active_theme_path`/navigation.html"}
+
+<!-- photos app content -->
+<div class="content" {if $action == 'photo'} itemscope itemtype="http://schema.org/Photograph"{/if}>
+
+    <!-- integrnal navigation breadcrumbs -->
+    {if isset($breadcrumbs)}
+        <div class="breadcrumbs">
+            {foreach $breadcrumbs as $breadcrumb}
+                <a href="{$breadcrumb.url}">{$breadcrumb.name|escape}</a> <span class="rarr">&rarr;</span>
+            {/foreach}
+        </div>
+    {/if}
+
+    {$content}
+    
+</div>
