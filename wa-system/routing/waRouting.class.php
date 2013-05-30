@@ -260,7 +260,7 @@ class waRouting
 
     protected function getAppRoutes($app, $route = array(), $dispatch = false)
     {
-        $routes = wa($app)->getConfig()->getRouting($route, $dispatch);
+        $routes = waSystem::getInstance($app, null, $dispatch)->getConfig()->getRouting($route, $dispatch);
         $routes = $this->formatRoutes($routes, true);
         if ($dispatch && wa($app)->getConfig()->getInfo('pages') && $app != 'site') {
             $page_routes = $this->getPageRoutes($app, $route);

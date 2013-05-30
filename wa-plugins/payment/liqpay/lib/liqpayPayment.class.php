@@ -44,7 +44,7 @@ class liqpayPayment extends waPayment implements waIPayment
             $method = 'card, liqpay, delayed';
         }
 
-        $customer_url = $this->getAdapter()->getBackUrl(waAppPayment::URL_SUCCESS);
+        $customer_url = $this->getAdapter()->getBackUrl(waAppPayment::URL_SUCCESS, array('order_id' => $order->id));
         $result_url = $this->getRelayUrl();
 
         $suffix = '';

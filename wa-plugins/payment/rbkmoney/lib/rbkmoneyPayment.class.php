@@ -40,8 +40,12 @@ class rbkmoneyPayment extends waPayment implements waIPayment
         $hidden_fields['user_email'] = $order->getContact()->get('email', 'default');
         $hidden_fields['language'] = substr($order->getContact()->getLocale(), 0, 2);
 
-        $hidden_fields['successUrl'] = $this->getAdapter()->getBackUrl(waAppPayment::URL_SUCCESS);
-        $hidden_fields['failUrl'] = $this->getAdapter()->getBackUrl(waAppPayment::URL_FAIL);
+        $transaction_data = array(
+            'order_id' => $order->id,
+        );
+
+        $hidden_fields['successUrl'] = $this->getAdapter()->getBackUrl(waAppPayment::URL_SUCCESS, $transaction_data);
+        $hidden_fields['failUrl'] = $this->getAdapter()->getBackUrl(waAppPayment::URL_FAIL, $transaction_data);
 
         $hidden_fields['hash'] = $this->getSign($hidden_fields);
 

@@ -35,6 +35,7 @@ class waAppConfig extends SystemConfig
         if ($locale) {
             $this->setLocale($locale);
         }
+
         $this->checkUpdates();
     }
 
@@ -459,6 +460,14 @@ class waAppConfig extends SystemConfig
     public function getPluginPath($plugin_id)
     {
         return $this->getAppPath()."/plugins/".$plugin_id;
+    }
+
+    public function getPluginInfo($plugin_id)
+    {
+        if ($this->plugins === null) {
+            $this->getPlugins();
+        }
+        return isset($this->plugins[$plugin_id]) ? $this->plugins[$plugin_id] : array();
     }
 
     public function getPlugins()

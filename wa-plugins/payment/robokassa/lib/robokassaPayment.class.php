@@ -134,29 +134,24 @@ class robokassaPayment extends waPayment implements waIPayment
 
     public function payment($payment_form_data, $order_data, $transaction_type)
     {
-        $order_data['description'] = preg_replace('/[^\.\?,\[]\(\):;"@\\%\s\w\d]+/', ' ', $order_data['description']);
-        $order_data['description'] = preg_replace('/[\s]{2,}/', ' ', $order_data['description']);
+        $order = waOrder::factory($order_data);
+        $description = preg_replace('/[^\.\?,\[]\(\):;"@\\%\s\w\d]+/', ' ', $order->description);
+        $description = preg_replace('/[\s]{2,}/', ' ', $description);
         $form_fields = array();
         $form_fields['MrchLogin'] = $this->merchant_login;
-        $form_fields['OutSum'] = number_format($order_data['amount'], 2, '.', '');
-        $form_fields['InvId'] = $order_data['order_id'];
+        $form_fields['OutSum'] = number_format($order->total, 2, '.', '');
+        $form_fields['InvId'] = $order->id;
         $hash_string = implode(':', $form_fields).':'.$this->merchant_pass1;
         $hash_string .= ':shp_wa_app_id='.$this->app_id;
         $hash_string .= ':shp_wa_merchant_id='.$this->merchant_id;
 
         $form_fields['SignatureValue'] = md5($hash_string);
-        $form_fields['Desc'] = mb_substr($order_data['description'], 0, 100, "UTF-8");
+        $form_fields['Desc'] = mb_substr($description, 0, 100, "UTF-8");
         $form_fields['IncCurrLabel'] = $this->gateway_currency;
         $form_fields['Culture'] = $this->locale;
-        $form_fields['ResultURL'] = $this->getRelayUrl().'?transaction_result=result';
-        $form_fields['SuccessURL'] = $this->getRelayUrl().'?transaction_result=success&app_id='.$this->app_id;
-        $form_fields['FailURL'] = $this->getRelayUrl().'?transaction_result=failure&app_id='.$this->app_id;
 
         $form_fields['shp_wa_app_id'] = $this->app_id;
         $form_fields['shp_wa_merchant_id'] = $this->merchant_id;
-
-        //TODO
-        $form_fields['ResultURL'] = false;
 
         $view = wa()->getView();
 
@@ -218,11 +213,17 @@ class robokassaPayment extends waPayment implements waIPayment
                 'template' => false,
             );
         } else {
-            return array(
-                'template' => $this->path.'/templates/callback.html',
-                'back_url' => $url,
-                'message'  => $message,
-            );
+            if ($url) {
+                return array(
+                    'redirect' => $url,
+                );
+            } else {
+                return array(
+                    'template' => $this->path.'/templates/callback.html',
+                    'back_url' => $url,
+                    'message'  => $message,
+                );
+            }
         }
     }
 

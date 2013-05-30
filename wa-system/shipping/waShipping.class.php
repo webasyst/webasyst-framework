@@ -152,6 +152,7 @@ abstract class waShipping extends waSystemPlugin
      * @return array[string]['est_delivery']string
      * @return array[string]['currency']string
      * @return array[string]['rate']mixed float or array for min-max
+     * @return array[string]['comment']string optional comment
      */
     public function getRates($items = array(), $address = array(), $params = array())
     {

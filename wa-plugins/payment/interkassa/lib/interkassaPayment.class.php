@@ -106,27 +106,40 @@ class interkassaPayment extends waPayment implements waIPayment
             throw new waException('Invalid shop id');
         }
 
-        if (empty($request['ik_sign_hash']) || ($request['ik_sign_hash'] != $this->getRequestSign($request))) {
-            throw new waException('Invalid request sign');
-        }
-
+        $result = array();
         $transaction_data = $this->formalizeData($request);
 
-        $callback_method = null;
-        switch (ifset($transaction_data['state'])) {
-            case self::STATE_CAPTURED:
-                $callback_method = self::CALLBACK_PAYMENT;
+        switch (ifset($request['result'])) {
+            case 'success':
+                $result['redirect'] = $this->getAdapter()->getBackUrl(waAppPayment::URL_SUCCESS, $transaction_data);
                 break;
-            case self::STATE_DECLINED:
-                $callback_method = self::CALLBACK_DECLINE;
+            case 'fail':
+                $result['redirect'] = $this->getAdapter()->getBackUrl(waAppPayment::URL_FAIL, $transaction_data);
                 break;
-        }
+            default:
 
-        if ($callback_method) {
-            $transaction_data = $this->saveTransaction($transaction_data, $request);
-            $callback = $this->execAppCallback($callback_method, $transaction_data);
-            self::addTransactionData($transaction_data['id'], $callback);
+                if (empty($request['ik_sign_hash']) || ($request['ik_sign_hash'] != $this->getRequestSign($request))) {
+                    throw new waException('Invalid request sign');
+                }
+
+                $callback_method = null;
+                switch (ifset($transaction_data['state'])) {
+                    case self::STATE_CAPTURED:
+                        $callback_method = self::CALLBACK_PAYMENT;
+                        break;
+                    case self::STATE_DECLINED:
+                        $callback_method = self::CALLBACK_DECLINE;
+                        break;
+                }
+
+                if ($callback_method) {
+                    $transaction_data = $this->saveTransaction($transaction_data, $request);
+                    $callback = $this->execAppCallback($callback_method, $transaction_data);
+                    self::addTransactionData($transaction_data['id'], $callback);
+                }
+                break;
         }
+        return $result;
     }
 
     protected function formalizeData($transaction_raw_data)

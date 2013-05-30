@@ -1,3 +1,7 @@
+<FilesMatch "\.md5$">
+    Deny from all
+</FilesMatch>
+
 DirectoryIndex index.php
 Options -Indexes
 # Comment the following line, if option Multiviews not allowed here

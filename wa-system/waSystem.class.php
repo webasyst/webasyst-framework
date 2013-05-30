@@ -536,7 +536,11 @@ class waSystem
     public function getAppPath($path = null, $app_id = null)
     {
         if ($app_id === null) {
-            $app_id = $this->getConfig()->getApplication();
+            if ($this->getConfig() instanceof waAppConfig) {
+                $app_id = $this->getConfig()->getApplication();
+            } else {
+                $app_id = 'webasyst';
+            }
         }
         return waConfig::get($app_id == 'webasyst' ? 'wa_path_system' : 'wa_path_apps').'/'.$app_id.($path ? '/'.$path : '');
     }
@@ -544,7 +548,11 @@ class waSystem
     public function getAppCachePath($path = null, $app_id = null)
     {
         if ($app_id === null) {
-            $app_id = $this->getConfig()->getApplication();
+            if ($this->getConfig() instanceof waAppConfig) {
+                $app_id = $this->getConfig()->getApplication();
+            } else {
+                $app_id = 'webasyst';
+            }
         }
         if ($path) {
             $path = preg_replace('!\.\.[/\\\]!','', $path);

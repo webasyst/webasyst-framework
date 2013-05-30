@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WebAsyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2013-05-22 19:35+0400\n"
+"PO-Revision-Date: 2013-05-30 13:37+0400\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -2318,6 +2318,18 @@ msgstr "Подписаться"
 msgid "Shopping cart"
 msgstr "Корзина"
 
+msgid "Design theme"
+msgstr "Тема оформления"
+
+msgid "Find"
+msgstr "Найти"
+
+msgid "Search"
+msgstr "Поиск"
+
+msgid "Find products"
+msgstr "Найти товары"
+
 msgid "Cart"
 msgstr "Корзина"
 
@@ -3427,3 +3439,6 @@ msgstr "Казахстанский тенге"
 
 msgid "Moldovan leu"
 msgstr "Молдавский лей"
+
+msgid "Message"
+msgstr "Сообщение"

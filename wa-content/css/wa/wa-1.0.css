@@ -47,7 +47,7 @@ input[type="button"]::-moz-focus-inner { border: 0; }
 input[type="submit"]::-moz-focus-inner { border: 0; }
 a img { border: 0; }
 p, dl, hr, h1, h2, h3, h4, h5, h6, ol, ul, pre, table, address, fieldset, blockquote { margin-bottom: 1.5em; }
-h1, h2, h3 { font-family: Helvetica, Arial, sans-serif; font-size: 1.8em; }
+h1, h2, h3 { font-family: Arial, sans-serif; font-size: 1.8em; }
 h1 a { text-decoration:none; }
 h2 { font-size: 1.35em; }
 h3 { font-size: 1.05em; }

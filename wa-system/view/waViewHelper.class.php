@@ -142,6 +142,13 @@ HTML;
         return $escape ? htmlspecialchars($name) : $name;
     }
 
+    public function pluginName($plugin_id, $escape = true)
+    {
+        $plugin = $this->wa->getConfig()->getPluginInfo($plugin_id);
+        $name = $plugin['name'];
+        return $escape ? htmlspecialchars($name) : $name;
+    }
+
     public function accountName($escape = true)
     {
         $app_settings_model = new waAppSettingsModel();

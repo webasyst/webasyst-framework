@@ -163,6 +163,8 @@ abstract class waPayment extends waSystemPlugin
 
     protected $app_id;
 
+    private $guide = null;
+
     /**
      *
      * Get payment plugin instance
@@ -642,12 +644,14 @@ abstract class waPayment extends waSystemPlugin
     /**
      * @return string callback relay url
      */
-    public final function getRelayUrl($force_https = false)
+    public final function getRelayUrl($force_https = null)
     {
         $url = wa()->getRootUrl(true).'payments.php/'.$this->id.'/';
         //TODO detect - is allowed https
         if ($force_https) {
             $url = preg_replace('@^http://@', 'https://', $url);
+        } elseif ($force_https === false) {
+            $url = preg_replace('@^https://@', 'http://', $url);
         }
         return $url;
     }
@@ -676,6 +680,83 @@ abstract class waPayment extends waSystemPlugin
         return array();
     }
 
+    private function guide()
+    {
+        if ($this->guide === null) {
+            $path = $this->path.'/lib/config/guide.php';
+            if (file_exists($path)) {
+                $this->guide = include($path);
+
+                foreach ($this->guide as & $guide) {
+                    if (isset($guide['title'])) {
+                        $guide['title'] = $this->_w($guide['title']);
+                    }
+                    if (isset($guide['description'])) {
+                        $guide['description'] = $this->_w($guide['description']);
+                    }
+                }
+                unset($guide);
+            }
+            if (!is_array($this->guide )) {
+                $this->guide = array();
+            }
+        }
+        return $this->guide;
+    }
+
+    public function getGuide($params = array())
+    {
+
+        $controls = array();
+        $default = array(
+            'instance'            => & $this,
+            'title_wrapper'       => '%s',
+            'description_wrapper' => '<br><span class="hint">%s</span>',
+            'translate'           => array(&$this, '_w'),
+            'readonly'            => true,
+            'control_wrapper'     => '
+<div class="field">
+    <div class="name">%s</div>
+    <div class="value">%s%s</div>
+</div>
+',
+        );
+        $options = ifempty($params['options'], array());
+        $values = ifempty($params['value'], array());
+
+        unset($params['options']);
+        unset($params['value']);
+
+        if (isset($params['namespace'])) {
+            unset($params['namespace']);
+        }
+        $params = array_merge($default, $params);
+
+        $replace = array(
+            '%RELAY_URL%'       => $this->getRelayUrl(),
+            '%HTTP_RELAY_URL%'  => $this->getRelayUrl(false),
+            '%HTTPS_RELAY_URL%' => $this->getRelayUrl(true),
+            '%APP_ID%'          => $this->app_id,
+        );
+
+        foreach ($this->guide() as $name => $row) {
+            if (is_array($row)) {
+                $row = array_merge($row, $params);
+                if (isset($options[$name])) {
+                    $row['options'] = $options[$name];
+                }
+                if (isset($values[$name])) {
+                    $row['value'] = $values[$name];
+                }
+
+                $row['value'] = str_replace(array_keys($replace), array_values($replace), $row['value']);
+                $controls[$name] = waHtmlControl::getControl(ifempty($row['control_type'], waHtmlControl::INPUT), false, $row);
+            } else {
+                $controls[$name] = spritnf($params['control_wrapper'], '', '', $row);
+            }
+        }
+        return implode("\n", $controls);
+    }
 
     public function customFields(waOrder $order)
     {

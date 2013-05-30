@@ -80,6 +80,12 @@ class waHtmlControl
      * @param array[string]array $params['options'] variants for selectable control
      * @param array[string][][string]string $params['options']['title'] variant item title for selectable control
      * @param array[string][][string]mixed $params['options']['value'] variant item value for selectable control
+     *
+     * @param array[string]string $params['title_wrapper'] title output format format
+     * @param array[string]string $params['description_wrapper'] description output format
+     * @param array[string]string $params['control_wrapper'] control ouput format
+     * @param array[string]string $params['control_separator'] control items separator
+     *
      * @return string
      */
     public static function getControl($type, $name, $params = array())
@@ -270,6 +276,7 @@ class waHtmlControl
      */
     public static final function makeId(&$params, $name = '', $id = null)
     {
+        static $counter = 0;
         //settings_{$name}_{$id}
         $params['id'] = $id ? $id : ((isset($params['id']) && $params['id']) ? $params['id'] : strtolower(__CLASS__));
         if (isset($params['namespace'])) {
@@ -277,6 +284,8 @@ class waHtmlControl
         }
         if ($name) {
             $params['id'] .= "_{$name}";
+        } elseif ($name === false) {
+            $params['id'] .= ++$counter.'_';
         }
         $params['id'] = preg_replace(array('/[_]{2,}/', '/[_]{1,}$/'), array('_', ''), str_replace(array('[', ']'), '_', $params['id']));
     }

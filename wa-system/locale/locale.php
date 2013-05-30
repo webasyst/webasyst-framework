@@ -270,7 +270,7 @@ if ($app_id == 'webasyst') {
     $path.$app_id."/templates",
     $path.$app_id."/js",
     $path.$app_id."/lib",
-    $path.$app_id."/themes/default",
+    $path.$app_id."/themes",
     );
 }
 
