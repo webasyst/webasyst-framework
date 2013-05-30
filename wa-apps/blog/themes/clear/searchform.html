@@ -1,0 +1,14 @@
+<!-- subscription links -->
+{$rss = $wa->blog->rssUrl()}
+{if $rss}
+	<div class="subscribe">
+		<a href="{$rss}" title="[s`Subscribe`]" class="bold"><i class="icon16 rss"></i>RSS</a>
+		{*
+		&nbsp;
+		<a href="#" title="Facebook"><i class="icon16 facebook"></i></a>
+		<a href="#" title="Twitter"><i class="icon16 twitter"></i></a>
+		*}
+	</div>
+{/if}
+
+<!-- add post search form html code here -->

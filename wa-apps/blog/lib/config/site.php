@@ -89,12 +89,6 @@ array(
 ),
     'vars' => array(
 
-        '$wa' => array(
-            '$wa->blog->blog(<em>blog_id</em>)' => _w('Returns blog info by <em>blog_id</em> as an array with the following structure: (<em>"id"</em>, <em>"url"</em>, <em>"name"</em>, <em>"status"</em>, <em>"icon"</em>, <em>"qty"</em>, <em>"color"</em>, <em>"sort"</em>, <em>"icon_url"</em>, <em>"icon_html"</em>, <em>"link"</em>)'),
-            '$wa->blog->post(<em>post_id</em>[,<em>fields</em>])' => _w('Returns post info by <em>post_id</em> as an array with the following structure: (<em>"id"</em>, <em>"contact_id"</em>, <em>"contact_name"</em>, <em>"datetime"</em>, <em>"title"</em>, <em>"text"</em>, <em>"status"</em>, <em>"url"</em>, <em>"blog_id"</em>, <em>"comments_allowed"</em>, <em>"user"</em>, <em>"comment_count"</em>, <em>"comment_new_count"</em>, <em>"plugins"</em>, <em>"icon"</em>, <em>"color"</em>, <em>"blog_status"</em>, <em>"blog_url"</em>, <em>"blog_name"</em>, <em>"link"</em>)'),
-            '$wa->blog->blogs()' => _w('Returns the array of all public blogs. Each blog is an array presenting the blog data'),
-            '$wa->blog->posts([<em>blog_id</em>[,<em>number_of_posts</em>]])' => _w('Returns the array of all posts by <em>blog_id</em>. If <em>blog_id</em> is <em>null</em>, the array of all public posts is returned. Optional parameter <em>number_of_posts</em> limits the number of elements returned'),
-),
         'index.html' => array(
             '$content' => 'Core content loaded according to the requested resource: a blog post, post stream, a page, etc.',
 ),
@@ -111,9 +105,10 @@ array(
                '$url' => '',
                '$comment_count' => '',
                '$user' => '',
-),
-),
+            ),
+        ),
         'post.html' => array(
+/*
             '$current_auth.source' => '',
             '$current_auth.source_id' => '',
             '$current_auth.url' => '',
@@ -125,6 +120,7 @@ array(
             '$current_auth_source' => '',
             '$auth_adapters' => '',
             '$theme' => '',
+*/
             '$post.id' => '',
             '$post.contact_id' => '',
             '$post.datetime' => '',
@@ -147,11 +143,17 @@ array(
                 '$ip' => '',
                 '$user' => '',
                 '$new' => '',
-),
+            ),
             '$post.comment_count' => '',
             '$post.comment_new_count' => '',
-),
-),
+        ),
+        '$wa' => array(
+            '$wa->blog->blog(<em>blog_id</em>)' => _w('Returns blog info by <em>blog_id</em> as an array with the following structure: (<em>"id"</em>, <em>"url"</em>, <em>"name"</em>, <em>"status"</em>, <em>"icon"</em>, <em>"qty"</em>, <em>"color"</em>, <em>"sort"</em>, <em>"icon_url"</em>, <em>"icon_html"</em>, <em>"link"</em>)'),
+            '$wa->blog->post(<em>post_id</em>[,<em>fields</em>])' => _w('Returns post info by <em>post_id</em> as an array with the following structure: (<em>"id"</em>, <em>"contact_id"</em>, <em>"contact_name"</em>, <em>"datetime"</em>, <em>"title"</em>, <em>"text"</em>, <em>"status"</em>, <em>"url"</em>, <em>"blog_id"</em>, <em>"comments_allowed"</em>, <em>"user"</em>, <em>"comment_count"</em>, <em>"comment_new_count"</em>, <em>"plugins"</em>, <em>"icon"</em>, <em>"color"</em>, <em>"blog_status"</em>, <em>"blog_url"</em>, <em>"blog_name"</em>, <em>"link"</em>)'),
+            '$wa->blog->blogs()' => _w('Returns the array of all public blogs. Each blog is an array presenting the blog data'),
+            '$wa->blog->posts([<em>blog_id</em>[,<em>number_of_posts</em>]])' => _w('Returns the array of all posts by <em>blog_id</em>. If <em>blog_id</em> is <em>null</em>, the array of all public posts is returned. Optional parameter <em>number_of_posts</em> limits the number of elements returned'),
+        ),
+    ),
     'blocks' => array(
         'latest_posts' => array(
             'description' => _w('Latest blog posts'),

@@ -69,7 +69,7 @@ class blogCategoryPlugin extends blogPlugin
         $category_id = isset($params['category'])?$params['category']:false;
 
         if($categories = blogCategory::getAll()){
-            $output['sidebar'] = '<div class="categories">'._wp('Categories').'<ul class="menu-v">';
+            $output['sidebar'] = '<ul class="menu-v categories">';
             $wa = wa();
             foreach ($categories as $category) {
                 blogHelper::extendIcon($category);
@@ -82,7 +82,7 @@ class blogCategoryPlugin extends blogPlugin
 </li>
 HTML;
             }
-            $output['sidebar'] .= '</ul></div>';
+            $output['sidebar'] .= '</ul>';
         }
         return $output;
     }

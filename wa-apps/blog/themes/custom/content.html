@@ -1,0 +1,95 @@
+		{$blog_pages=$wa->blog->pages()}
+		{if !$settlement_one_blog || $blog_pages}
+			<!-- navigation bar -->
+			<div class="hero superhero" id="blog-nav">
+    	        <ul class="menu-h">
+        	        {if !$settlement_one_blog || $action == 'post'}
+        	        
+        	        	<!-- blog list -->
+
+                        {$blogs = $wa->blog->blogs()}
+                        {if count($blogs)>1}
+                            <li class="{if is_array($wa->globals('blog_id')) && empty($is_search)}selected{/if}"><a href="{$wa->blog->url()}">[`All posts`]</a></li>
+                            {foreach $blogs as $blog}
+                                <li class="{if $wa->globals('blog_id') eq $blog.id && empty($is_search)}selected{/if}">
+                                    <a href="{$blog.link}">{$blog.name}</a>
+                                </li>
+                            {/foreach}
+                        {else}
+                            {$blog=current($blogs)}
+                            <li{if empty($is_search)} class="selected"{/if}>
+                                <a href="{$wa->blog->url()}">{$blog.name}</a>
+                            </li>
+                        {/if}
+                        
+                        {$timeline = $wa->blog->timeline()}
+                        {if !empty($timeline)}
+                        	<!-- timeline navigation -->
+	                    	<li id="timeline" class="dropdown">
+		                    	<a href="#" class="inline-link">
+    		                		<b><i>[`Calendar`]</i></b><i class="icon10 darr"></i>
+    	    	            	</a>
+	    	    	            {if !empty($timeline)}
+	    	    	            	<div class="popup">
+        							<ul class="menu-v">
+            						{$year=null}
+            						{foreach $timeline as $year_month => $item}
+                						{if $year neq $item.year}
+                    						{if !$item@first}
+					    	                        </ul>
+						                        </li>
+						                    {/if}
+					    	                <li {if $item.year_selected}class="selected"{/if}>
+					        	            {$year=$item.year}
+					            	        <a href="{$item.year_link}">{$item.year|default:'NULL'}</a>
+                    						<ul class="menu-v">
+						                {/if}
+						                <li {if $item.selected}class="selected"{/if}>
+						                    <a href="{$item.link}" title="{_w("%d post","%d posts",$item.count)}">{_ws(date("F",gmmktime(0,0,0,$item.month)))}</a>
+						                </li>
+									    {if $item@last}
+									            </ul>
+								    	    </li>
+							            {/if}
+						            {/foreach}
+							        </ul>
+							        </div>
+							    {/if}
+	                    	</li>
+    	            	{/if}
+    	            {/if}
+                
+                	<!-- static page list -->
+         	        {foreach $blog_pages as $p}
+            	        <li class="float-right{if isset($page_id) and $page_id eq $p.id} selected{/if}"><a href="{$p.url}" title="{$p.title}">{$p.name}</a></li>
+                	{/foreach}
+                	
+                	<!-- plugins -->
+					{* @event (frontend_action_default|frontend_action_post|frontend_action_page|frontend_action_error).%plugin_id%.sidebar *}
+					{if $frontend_action}
+						<li class="dropdown">
+							<a href="#" class="inline-link">
+   		                		<b><i>[`More`]</i></b><i class="icon10 darr"></i>
+   	    	            	</a>
+   	    	            	<div class="popup">
+								{foreach $frontend_action as $plugin => $output}
+								    {if !empty($output.sidebar)}{$output.sidebar}{/if}
+								{/foreach}
+							</div>
+						</li>
+					{/if}
+
+	            </ul>
+	            
+	            <div class="clear-both"></div>
+	            
+			</div>
+		{/if}
+
+		<!-- blog content -->
+		{* @event (frontend_action_default|frontend_action_post|frontend_action_page|frontend_action_error).%plugin_id%.nav_before *}
+    	{foreach $frontend_action as $plugin => $output}
+        	{if !empty($output.nav_before)}{$output.nav_before}{/if}
+        {/foreach}
+            	
+        {$content} 

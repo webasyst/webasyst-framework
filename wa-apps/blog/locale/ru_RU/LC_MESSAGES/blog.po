@@ -12,7 +12,7 @@ msgstr ""
 ">=2)&&((n%10)<=4))&&(((n%100)<10)||((n%100)>=20)))?(1):2));\n"
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
-"X-Generator: Poedit 1.5.4\n"
+"X-Generator: Poedit 1.5.5\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
 
@@ -1060,3 +1060,18 @@ msgstr "Последние записи блога"
 #: /wa-apps/blog/lib/config/site.php:192
 msgid "Latest comments of all blog posts"
 msgstr "Последние комментарии ко всем записям"
+
+#: /wa-apps/blog/themes/clear/footer.html:4
+msgid ""
+"We are using <a href=\"http://www.webasyst.com/apps/blog/\">Webasyst Blog</a>"
+msgstr ""
+"Мы используем <a href=\"http://www.webasyst.com/ru/apps/blog/\">Webasyst "
+"Блог</a>"
+
+#: /wa-apps/blog/themes/clear/navigation.html:69
+msgid "Tags"
+msgstr "Теги"
+
+#: /wa-apps/blog/themes/custom/content.html:72
+msgid "More"
+msgstr "Еще"

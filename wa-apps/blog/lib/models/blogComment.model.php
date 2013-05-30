@@ -26,6 +26,9 @@ class blogCommentModel extends waNestedSetModel
 
     public function getList($offset = 0, $limit = 20,$blog_id, $fields = array(), $options = array())
     {
+        if (!$blog_id) {
+            return array();
+        }
         $sql = <<<SQL
         SELECT node.id as id,
 			 node.text as text,

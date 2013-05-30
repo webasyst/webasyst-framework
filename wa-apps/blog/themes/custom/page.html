@@ -1,0 +1,17 @@
+{* static info page *}
+
+<div class="sidebar right top-padded" role="navigation">
+    {if $page.parent_id}
+        {$p_id = $page_parents[0].id}
+    {else}
+        {$p_id = $page.id}
+    {/if}
+    {wa_print_tree tree=$wa->blog->pages($p_id, false) class="menu-v" elem ='<a href=":url">:name</a>' selected=$page.id}
+</div>
+
+<div class="content right">
+    <h1>{$page.title}</h1>
+    <div id="page" role="main">
+        {$page.content}
+    </div>
+</div>

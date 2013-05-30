@@ -1,0 +1,57 @@
+{* post list: view mode depends on the context: either "stream_search.html" or "stream_posts.html" *}
+
+{if !$is_lazyloading}
+<div id="post-stream" role="main" class="lazyloading" {if $wa->param('blog_url')}itemscope itemtype="http://schema.org/Blog"{/if}>
+{/if}
+
+    {if !$is_lazyloading and !empty($stream_title)}<h1>{$stream_title}</h1>{/if}
+    <a name="page_{$page}"></a>
+
+        {if $is_search}
+            {include file="stream_search.html" inline}
+        {else}
+            {include file="stream_posts.html" inline}
+        {/if}
+
+    {if $is_lazyloading or ($page eq 1)}
+        <div class="pageless-wrapper"{if !$is_lazyloading} style="display:none;"{/if}>
+
+        {if $page lt $pages}
+            {$loaded_post_count=(count($posts)+$posts_per_page * ($page-1) )}
+            {_w('%d post','%d posts',$loaded_post_count)}&nbsp;{_w('of %d post','of %d posts',$post_count)}
+            <br>
+            <a href="?page={$page+1}" class="pageless-link">[`Show older posts`]</a>
+            <div class="pageless-progress" style="display:none;"><i class="icon16 loading"></i>[`Loading...`]</div>
+        {elseif isset($page) && $pages}
+            {_w('%d post','%d posts',$post_count)}
+        {/if}
+
+        </div>
+    {/if}
+
+{if !$is_lazyloading}
+</div>
+<ul class="menu-h" id="stream-paging">
+    {for $p=1 to $pages}
+        <li{if $p eq $page} class="selected"{/if}><a href="{if $p eq $page}#page_{$page}{else}?page={$p}{/if}">{$p}</a></li>
+    {/for}
+</ul>
+{/if}
+
+{if $page eq 1 && !$wa->globals('disable_pageless')}
+<script type="text/javascript">
+$.pageless({
+        auto: true, // auto load next pages
+        url: '?layout=lazyloading',
+        target: '.lazyloading:first',
+        scroll: function(response){
+            var progress = '';
+            if (response) {
+                progress = '<i class="icon16 loading"><'+'/i> <em>[`Loading`]...<'+'/em>';
+            }
+        },
+        count: {$pages},
+        paging_selector:'#stream-paging'
+});
+</script>
+{/if}

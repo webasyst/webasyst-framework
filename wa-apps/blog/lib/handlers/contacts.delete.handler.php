@@ -6,7 +6,7 @@ class blogContactsDeleteHandler extends waEventHandler
      * @see waEventHandler::execute()
      * @return void
      */
-    public function execute($params)
+    public function execute(&$params)
     {
         $contact_model = new waContactModel();
         $contacts = $contact_model->getByField('id',$params,true);

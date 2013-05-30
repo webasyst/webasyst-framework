@@ -80,11 +80,6 @@
 i.b-post-save-indicator { margin-top: 8px; }
 #post-custom-parameters { width: 100%; height: 70px; }
 
-#wa .CodeMirror, #wa .CodeMirror-wrapping { padding: 10px; }
-#wa .el-rte .toolbar { background: #fff; border-top: 0; border-left: 0; border-right: 0; border-bottom: 1px solid #ccc; }
-#wa .el-rte .workzone { border: 0; padding: 10px; }
-#wa .el-rte .toolbar ul li.wa_split_vertical { background: url('../img/split-vertical.png') no-repeat center; }
-.b-elrte-wa-split-vertical { display: block; width: 30%; border-bottom: 1px dashed #aaa; color: #aaa; text-align: center; font-size: 80%; padding: 5px; margin-bottom: 10px; }
 
 /* comments
 ----------- */

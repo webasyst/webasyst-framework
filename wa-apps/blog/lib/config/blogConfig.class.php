@@ -24,7 +24,7 @@ class blogConfig extends waAppConfig
     }
 
 
-    public function getRouting($route = array())
+    public function getRouting($route = array(), $dispatch = false)
     {
         static $routes_cache = array();
         $key = md5(serialize($route));
@@ -56,7 +56,7 @@ class blogConfig extends waAppConfig
                  * @param array $route
                  * @return array route
                  */
-                $result = wa()->event('routing', $route);
+                $result = wa()->event(array('blog', 'routing'), $route);
                 $plugin_routes = array();
                 foreach ($result as $rs) {
                     $plugin_routes = array_merge($plugin_routes, $rs);

@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE theme PUBLIC "wa-app-theme" "http://www.webasyst.com/wa-content/xml/wa-app-theme.dtd">
+<theme id="custom" system="0" vendor="webasyst" author="Webasyst" app="blog" parent_theme_id="site:custom" version="1.0.0">
+    <name locale="en_US">CUSTOM</name>
+    <name locale="ru_RU">CUSTOM</name>
+    <files>
+        <file path="index.html" custom="0" parent="1">
+        </file>
+        <file path="custom.css" custom="0" parent="1">
+        </file>
+        <file path="custom.mobile.css" custom="0" parent="1">
+        </file>
+        <file path="custom.blog.css" custom="0">
+            <description locale="en_US">Core Blog app CSS</description>
+            <description locale="ru_RU">Основной CSS приложения «Блог»</description>
+        </file>
+        <file path="custom.blog.mobile.css" custom="0">
+            <description locale="en_US">Additional Blog app CSS for multi-touch mobile devices</description>
+            <description locale="ru_RU">Дополнительный CSS приложения «Блог» для мобильных устройств</description>
+        </file>        
+        <file path="content.html" custom="0">
+            <description locale="en_US">Main layout and navigation for the Blog app content</description>
+			<description locale="ru_RU">Основное макет вывода содержимого и навигации в приложении «Блог»</description>
+        </file>
+        <file path="head.html" custom="0">
+			<description locale="en_US">Blog app's &lt;head&gt; instructions</description>
+			<description locale="en_US">Блок &lt;head&gt; приложения «Блог»</description>
+        </file>
+        <file path="stream.html" custom="0">
+            <description locale="en_US">Post stream wrapper</description>
+            <description locale="ru_RU">Обертка для страницы вывода списка записей</description>
+        </file>
+        <file path="stream_search.html" custom="0">
+            <description locale="en_US">Post search (filtering) results, e.g. custom search, by tag, by author</description>
+            <description locale="ru_RU">Результат поиска (фильтрации) записей, например, по тегу или автору</description>
+        </file>
+        <file path="stream_posts.html" custom="0">
+            <description locale="en_US">Default post list view mode</description>
+            <description locale="ru_RU">Основной вид списка записей блога</description>
+        </file>
+        <file path="post.html" custom="0">
+            <description locale="en_US">Dedicated post page</description>
+            <description locale="ru_RU">Страница одной записи блога</description>
+        </file>
+        <file path="page.html" custom="0">
+            <description locale="en_US">Static info page</description>
+            <description locale="ru_RU">Информационная страница</description>
+        </file>
+        <file path="comments.html" custom="0">
+            <description locale="en_US">Post comment list</description>
+            <description locale="ru_RU">Комментарии к записи блога</description>
+        </file>
+        <file path="comment.html" custom="0">
+            <description locale="en_US">One comment template</description>
+            <description locale="ru_RU">Вывод одного комментария из списка</description>
+        </file>
+        <file path="login.html" custom="0">
+            <description locale="en_US">Login page</description>
+            <description locale="ru_RU">Страница входа для пользователей</description>
+        </file>
+        <file path="signup.html" custom="0">
+            <description locale="en_US">Sign up page</description>
+            <description locale="ru_RU">Страница регистрации пользователей</description>
+        </file>
+        <file path="forgotpassword.html" custom="0">
+            <description locale="en_US">Forgot password page</description>
+            <description locale="ru_RU">Страница сброса пароля</description>
+        </file>
+        <file path="error.html" custom="0">
+            <description locale="en_US">404 and other errors</description>
+            <description locale="ru_RU">404 и другие ошибки</description>
+        </file>
+    </files>
+  <about locale="en_US">
+<![CDATA[
+<p><b>CUSTOM</b> is a universal design theme family for all basic Webasyst apps: Site, Blog, Photos, Shop-Script, and others. The parent (main) theme of the family, which includes the basic set of CSS rules and the common layout template index.html, is the CUSTOM theme for the Site application. All CUSTOM design themes used in other applications (e.g., Blog or Photos) utilize common CSS rules and file index.html of the parent (main) theme.</p>
+<p>CUSTOM design themes are optimized for all modern web browsers, including iOS and Android based mobile devices.</p>
+
+<h3>.hero</h3>
+<p>The theme offers the .hero class, which is recommended for use for highlighting key content on a page. With this class, content is displayed stretched across the entire visible page width:</p>
+<pre>
+&lt;div <strong>class="hero"</strong>&gt;
+    … Important content; e.g., online store's special offers,
+      blog post, best photo, etc. …
+&lt;/div&gt;
+… Other content here …
+</pre>
+<p>Auxiliary classes .red, .green, .blue, .purple, .yellow, .black allow you to specify the color for a .hero banner, and an extra class .superhero will visually make the banner appear over the edges of the main content area:</p>
+<pre>
+&lt;div <strong>class="hero superhero yellow"</strong>&gt;
+    &lt;h1&gt;This Week's Special Offer!&lt;/h1&gt;
+    &lt;img src="…" /&gt;
+&lt;/div&gt;
+</pre>
+]]>
+  </about>
+  <about locale="ru_RU">
+<![CDATA[
+<p><b>CUSTOM</b> — это универсальное семейство тем дизайна для всех базовых приложений фреймворка Вебасист: Сайт, Блог, Фото, Shop-Script и других. Родительской (основной) темой семейства, включающей в себя базовый набор CSS-стилей и общий макет дизайна index.html, является тема CUSTOM для приложения «Сайт». Все темы дизайна CUSTOM для других приложений (Блог, Фото и других) используют базовый CSS и index.html из родительской (основной) темы.</p>
+<p>Темы дизайна семейства CUSTOM оптимизированы для всех современных браузеров и мобильных устройств на основе iOS и Android.</p>
+
+<h3>.hero</h3>
+<p>Тема дизайна предоставляет класс .hero, который рекомендуется использовать для выделения ключевого содержимого страницы. Класс визуально оформляет содержимое в виде «растяжки» на всю ширину основной видимой области страницы:</p>
+<pre>
+&lt;div <strong>class="hero"</strong>&gt;
+    … Важное содержимое страницы, например, спецпредложения магазина,
+      ключевой блог-пост, лучшая фотография …
+&lt;/div&gt;
+… Менее важная информация …
+</pre>
+<p>Дополнительные классы .red, .green, .blue, .purple, .yellow, .black позволяют указать цвет баннера .hero, а отдельный дополнительный класс .superhero позволяет выделить баннер более явно так, что его края визуально будут нависать над областью основного содержимого:</p>
+<pre>
+&lt;div <strong>class="hero superhero yellow"</strong>&gt;
+    &lt;h1&gt;Спецпредложение недели!&lt;/h1&gt;
+    &lt;img src="…" /&gt;
+&lt;/div&gt;
+</pre>
+
+]]>
+  </about>    
+</theme>

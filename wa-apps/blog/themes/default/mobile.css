@@ -7,7 +7,9 @@
  * @copyright 2012 Webasyst LLC
  * @package Webasyst
  */
- 
+
+* { -webkit-text-size-adjust: 100%; }
+
 .container { padding: 1px 15px 0; min-width: 0; }
 
 .sidebar.left { width: 100%; float: none; }

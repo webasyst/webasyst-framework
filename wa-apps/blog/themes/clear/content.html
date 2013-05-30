@@ -1,0 +1,21 @@
+{* @event (frontend_action_default|frontend_action_post|frontend_action_page|frontend_action_error).%plugin_id%.nav_before *}
+{foreach $frontend_action as $plugin => $output}
+	{if !empty($output.nav_before)}{$output.nav_before}{/if}
+{/foreach}
+
+{include file="`$wa_active_theme_path`/navigation.html"}
+
+<div class="content">
+
+    <!-- integrnal navigation breadcrumbs -->
+    {if isset($breadcrumbs)}
+        <div class="breadcrumbs">
+            {foreach $breadcrumbs as $breadcrumb}
+                <a href="{$breadcrumb.url}">{$breadcrumb.name|escape}</a> <span class="rarr">&rarr;</span>
+            {/foreach}
+        </div>
+    {/if}
+    
+    {$content}
+    
+</div>

@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE theme PUBLIC "wa-app-theme" "http://www.webasyst.com/wa-content/xml/wa-app-theme.dtd">
+<theme id="sidebar" system="0" vendor="webasyst" author="Webasyst" app="blog" parent_theme_id="site:sidebar" version="1.0.0">
+    <name locale="en_US">Sidebar</name>
+    <name locale="ru_RU">Sidebar</name>
+    <files>
+        <file path="index.html" custom="0" parent="1">
+        </file>
+        <file path="sidebar.css" custom="0" parent="1">
+        </file>
+        <file path="sidebar.mobile.css" custom="0" parent="1">
+        </file>
+        <file path="sidebar.tablet.css" custom="0" parent="1">
+        </file>
+        <file path="sidebar.wide.css" custom="0" parent="1">
+        </file>
+        <file path="sidebar.blog.css" custom="0">
+            <description locale="en_US">Core Blog app CSS</description>
+            <description locale="ru_RU">Основной CSS приложения «Блог»</description>
+        </file>
+        <file path="sidebar.blog.mobile.css" custom="0">
+            <description locale="en_US">Additional Blog app CSS for multi-touch mobile devices</description>
+            <description locale="ru_RU">Дополнительный CSS приложения «Блог» для мобильных устройств</description>
+        </file>        
+        <file path="content.html" custom="0">
+            <description locale="en_US">Main layout and navigation for the Blog app content</description>
+			<description locale="ru_RU">Основное макет вывода содержимого и навигации в приложении «Блог»</description>
+        </file>
+        <file path="head.html" custom="0">
+			<description locale="en_US">Blog app's &lt;head&gt; instructions</description>
+			<description locale="en_US">Блок &lt;head&gt; приложения «Блог»</description>
+        </file>
+        <file path="stream.html" custom="0">
+            <description locale="en_US">Post stream wrapper</description>
+            <description locale="ru_RU">Обертка для страницы вывода списка записей</description>
+        </file>
+        <file path="stream_search.html" custom="0">
+            <description locale="en_US">Post search (filtering) results, e.g. custom search, by tag, by author</description>
+            <description locale="ru_RU">Результат поиска (фильтрации) записей, например, по тегу или автору</description>
+        </file>
+        <file path="stream_posts.html" custom="0">
+            <description locale="en_US">Default post list view mode</description>
+            <description locale="ru_RU">Основной вид списка записей блога</description>
+        </file>
+        <file path="post.html" custom="0">
+            <description locale="en_US">Dedicated post page</description>
+            <description locale="ru_RU">Страница одной записи блога</description>
+        </file>
+        <file path="page.html" custom="0">
+            <description locale="en_US">Static info page</description>
+            <description locale="ru_RU">Информационная страница</description>
+        </file>
+        <file path="comments.html" custom="0">
+            <description locale="en_US">Post comment list</description>
+            <description locale="ru_RU">Комментарии к записи блога</description>
+        </file>
+        <file path="comment.html" custom="0">
+            <description locale="en_US">One comment template</description>
+            <description locale="ru_RU">Вывод одного комментария из списка</description>
+        </file>
+        <file path="login.html" custom="0">
+            <description locale="en_US">Login page</description>
+            <description locale="ru_RU">Страница входа для пользователей</description>
+        </file>
+        <file path="signup.html" custom="0">
+            <description locale="en_US">Sign up page</description>
+            <description locale="ru_RU">Страница регистрации пользователей</description>
+        </file>
+        <file path="forgotpassword.html" custom="0">
+            <description locale="en_US">Forgot password page</description>
+            <description locale="ru_RU">Страница сброса пароля</description>
+        </file>
+        <file path="error.html" custom="0">
+            <description locale="en_US">404 and other errors</description>
+            <description locale="ru_RU">404 и другие ошибки</description>
+        </file>
+        <file path="pagelist.html" custom="0">
+            <description locale="en_US">Internal app page tree</description>
+            <description locale="ru_RU">Внутренняя навигация по информационным страницам приложения</description>
+        </file>
+    	<file path="footer.html" custom="0">
+    		<description locale="en_US">App specific footer content</description>
+    		<description locale="ru_RU">Содержимое футера приложения</description>
+        </file>
+    </files>
+    <about locale="en_US">
+<![CDATA[
+<p><b>Sidebar</b> is a universal adaptive design theme family for all basic Webasyst apps: Site, Blog, Photos, Shop-Script, and others. The parent (main) theme of the family, which includes the basic set of CSS rules and the common layout template index.html, is the Sidebar theme for the Site application. All Sidebar design themes used in other applications (e.g., Blog or Photos) link common CSS and index.html layout file from the main theme.</p>
+<p>Sidebar design themes automatically link CSS depending on a visitor's device. Supported devices and platforms: iOS or Android based mobile devices, tablet computers such as iPad, common desktop computers and laptops.</p>
+]]>
+    </about>
+    <about locale="ru_RU">
+<![CDATA[
+<p><b>Sidebar</b> — это универсальное семейство адаптивных тем дизайна для всех базовых приложений фреймворка Вебасист: Сайт, Блог, Фото, Shop-Script и других. Родительской (основной) темой семейства, включающей в себя базовый набор CSS-стилей и общий макет дизайна index.html, является тема Sidebar для приложения «Сайт» (данная тема). Все темы дизайна Sidebar для других приложений (Блог, Фото и других) используют базовый CSS и index.html из родительской (основной) темы.</p>
+<p>Темы дизайна семейства Sidebar оптимизированы для всех современных браузеров, планшетных компьютеров и мобильных устройств на основе iOS и Android. CSS-стили подключаются в зависимости от разрешения и типа устройства, которым пользуется посетитель сайта.</p>
+]]>
+    </about>    
+</theme>

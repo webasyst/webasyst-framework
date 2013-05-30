@@ -1,0 +1,87 @@
+/*
+ * Webasyst Sidebar theme family
+ *
+ * Blog app CSS
+ * (requires linking base sidebar.css file from the Site app)
+ *
+ * @link http://www.webasyst.com/
+ * @author Webasyst LLC
+ * @copyright 2013 Webasyst LLC
+ * @package Webasyst
+ */
+
+.subscribe { padding: 12px; }
+
+#timeline .popup ul.menu-v { padding-left: 6px; }
+#timeline .popup ul.menu-v li { list-style: none; line-height: 1.3em; }
+#timeline .popup ul.menu-v li a { padding: 0; font-weight: bold; }
+#timeline .popup ul.menu-v li ul { padding-left: 5px; padding-top: 6px; font-size: 0.8em; margin-bottom: 5px; }
+#timeline .popup ul.menu-v li ul li { float: none; }
+#timeline .popup ul.menu-v li ul li a { font-weight: normal; }
+
+.post { margin-bottom: 80px; margin-right: 50px; }
+.post h3 { font-size: 2em; margin-right: 5px; margin-bottom: 3px; }
+.post h3 a { text-decoration: none; }
+.post img { max-width: 100%; height: auto !important; }
+.post .text { margin-top: 5px;}
+.post textarea { width: 100%; min-height: 300px; margin-top: 10px; height: 250px; }
+.post.search-match { margin-top: 20px; margin-bottom: 50px; }
+.post.search-match h3 { font-size: 1.5em; }
+
+.credentials { overflow: hidden; line-height: 1.3em; }
+.credentials a,
+.credentials span { display: inline-block; vertical-align: middle; padding-left: 0 !important; //display: inline;}
+.credentials .userpic { min-width: 20px; display: block; float: left; margin-right: 2px; }
+.credentials .username { margin: 0; }
+.credentials .username, .credentials .username a { color: #777; padding: 0; display: inline; }
+.credentials a.username:hover { color: red; }
+.credentials .date { margin: 0 3px; }
+.post .credentials { margin-bottom: 20px;}
+
+.comment-form { padding: 0; margin-top: 30px; }
+.comment-form h4 { margin: 0 0 20px; font-weight: normal; }
+.comment-form-fields p { margin: 0 0 10px; }
+.comment-form-fields p a { display: inline !important; }
+.comment-form-fields label { width: 160px; display: block; clear: left; float: left; margin: 0 10px 0 0; color: #aaa;}
+.comment-form-fields input { width: 20em;}
+.comment-form textarea { min-width: 70%; min-height: 160px; }
+.comment-form .comment-submit { padding:0 0 20px 170px;}
+.comment-form .userpic { width: 20px; height: 20px; float: left; margin-right: 5px; }
+.comment-form ul.menu-h.auth-type li a img { float: left; margin-right: 3px; position: relative; top: 2px; }
+.comment-form ul.menu-h.auth-type { padding-bottom: 20px; }
+
+.comments { margin-top: 30px; margin-bottom: 10px; }
+.comments h3 { margin: 0 0 20px; }
+.comments h4 { margin: 0 0 10px; }
+.comments .credentials .date { margin: 0 5px; }
+.comments .credentials .userpic { margin-top: 5px; margin-right: 5px; }
+.comments .credentials .userpic.icon16 { min-width: 0; width: 16px; height: 16px; margin: 7px 4px 0; }
+.comments textarea { height: 100px; min-height: 100px; width: 75%; margin-top: 0; } 
+.comments ul,
+.comments ul.menu-v li { padding: 0; margin: 0; list-style: none;}
+.comments ul li { margin:0 0 20px 0;}
+.comments ul li ul { margin:20px 0 0 0; }
+.comments ul li span.hint a { color: #aaa; text-decoration: underline; }
+.comments .text { margin: 5px 0 5px 27px; }
+.comments .actions { margin: 0 0 5px 22px; font-size: 0.9em; }
+.comments ul li a.comment-delete { margin: 0 0 0 5px; padding: 0; color: #d99; text-decoration: underline; }
+.comments ul li a.comment-delete:hover { background: red; color: white; }
+.comments ul li ul { padding-left: 25px; }
+.comments ul li .comment-form { padding: 10px 30px; margin-top: 0; }
+.comments ul li .comment-form textarea { min-height: 100px; }
+.comments ul.menu-h.auth-type { padding: 0 0 40px; margin-left: -5px; }
+.comments ul.menu-h.auth-type li { padding-right: 10px; }
+.comments ul.menu-h.auth-type li a { padding: 5px 6px; }
+.comments ul.menu-h.auth-type li a img { top: 0; }
+
+.pageless-wrapper { font-style: italic; }
+
+/* Plugins
+---------- */
+
+.categories {  }
+.categories ul.menu-v { padding-left: 10px; }
+.categories ul.menu-v li { float: none; line-height: 1.2em; font-size: 0.9em; margin: 2px 0; }
+.categories ul.menu-v li.selected a { color: #000; text-decoration: none; font-weight: bold; }
+
+.tags.cloud { padding: 10px 0; border: 1px solid #ccc; text-align: center; }

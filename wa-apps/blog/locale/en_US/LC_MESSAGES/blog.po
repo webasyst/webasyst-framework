@@ -922,3 +922,19 @@ msgstr ""
 msgid "Latest comments of all blog posts"
 msgstr ""
 
+
+#: /wa-apps/blog/themes/default/index.html:106
+msgid "We are using <a href=\"http://www.webasyst.com/apps/photos/\">Webasyst Blog</a>"
+msgstr ""
+
+#: /wa-apps/blog/themes/clear/footer.html:4
+msgid "We are using <a href=\"http://www.webasyst.com/apps/blog/\">Webasyst Blog</a>"
+msgstr ""
+
+#: /wa-apps/blog/themes/clear/navigation.html:69
+msgid "Tags"
+msgstr ""
+
+#: /wa-apps/blog/themes/custom/content.html:72
+msgid "More"
+msgstr ""

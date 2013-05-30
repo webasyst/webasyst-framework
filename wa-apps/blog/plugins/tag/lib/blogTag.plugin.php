@@ -70,7 +70,7 @@ class blogTagPlugin extends blogPlugin
                 $tag['name'] = htmlentities($tag['name'],ENT_QUOTES,'utf-8');
                 $output['sidebar'] .= <<<HTML
 
-<a href="{$tag['link']}" style="font-size: {$tag['size']}%; opacity: {$tag['opacity']};" title="{$tag['count']}">{$tag['name']}</a>
+<a href="{$tag['link']}" style="font-size: {$tag['size']}%; opacity: {$tag['opacity']};">{$tag['name']}</a>
 HTML;
             }
             $output['sidebar'] .= '</div>';

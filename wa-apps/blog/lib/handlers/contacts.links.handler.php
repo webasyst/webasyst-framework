@@ -5,7 +5,7 @@ class blogContactsLinksHandler extends waEventHandler
      * @param array $params deleted contact_id
      * @return array|void
      */
-    public function execute($params)
+    public function execute(&$params)
     {
         waLocale::loadByDomain('blog');
         $post_model = new blogPostModel();

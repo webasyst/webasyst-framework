@@ -130,7 +130,7 @@ ul.menu-h li.selected ul * { background: #fff !important; }
 #footer #sub-links ul li { float: left; padding: 0 15px 0 0; }
 #footer #copyright { float: left; padding: 0 5px; }
 #footer #poweredby { text-align: center; float: right; padding-top: 0; padding-right:10px; }
-#footer #poweredby a.dots { font-size: 0.8em; text-decoration: none; display: block; width: 54px; height: 9px; background: url("http://www.webasyst.com/wa-content/img/dots/all-dots-default-order.png") no-repeat 0 3px; padding-top: 7px; }
+#footer #poweredby .dots { font-size: 0.8em; text-decoration: none; display: inline-block; width: 54px; height: 9px; background: url("http://www.webasyst.com/wa-content/img/dots/all-dots-default-order.png") no-repeat 0 3px; padding-top: 3px; margin-left: 10px; display: block\9; float: right\9; }
 
 /* Sign up & Login forms
 ------------------------ */
@@ -251,8 +251,8 @@ div.wa-captcha .errormsg { display: inline; margin-left: 10px; }
 ---------- */
 
 .tags a { color: green; }
-.tags.cloud { text-align: center; font-size: 0.9em; padding-top: 20px; margin-top: 30px; border-top: 1px solid #ccc; }
-.categories { padding-top: 20px; margin-top: 30px; border-top: 1px solid #ccc; }
-.categories ul.menu-v { padding-left: 10px; }
-.categories ul.menu-v li { line-height: 1.2em; font-size: 0.9em; margin: 2px 0; }
-.categories ul.menu-v li.selected a { color: #000; text-decoration: none; font-weight: bold; }
+.tags.cloud { text-align: center; font-size: 0.9em; padding-top: 20px; margin-top: 20px; border-top: 1px solid #ccc; }
+
+ul.menu-v.categories { padding-left: 10px; margin-top: 30px; border-top: 1px solid #ccc; }
+ul.menu-v.categories li { line-height: 1.2em; font-size: 0.9em; margin: 12px 0 0; }
+ul.menu-v.categories li.selected a { color: #000; text-decoration: none; font-weight: bold; }
