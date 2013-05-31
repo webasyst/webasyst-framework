@@ -280,7 +280,7 @@ i.icon10 { background-repeat:no-repeat; height:10px; width:10px; display:inline-
 #niftybox .apps a { font-weight: bold; text-transform: uppercase; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.5); font-size: 1.3em; padding: 18px 15px; }
 #niftybox .apps a:hover { background: rgba(0,0,0,0.08); color: white !important; text-shadow: 0 1px 2px rgba(0,0,0,0.8); }
 #niftybox .apps li { padding: 0; margin: 0; }
-#niftybox .apps li.selected a { background: -moz-linear-gradient(center top , rgba(0, 0, 0, 0.03) 0%, rgba(0, 0, 0, 0.1) 10%, rgba(0, 0, 0, 0.15) 90%, rgba(0, 0, 0, 0.2) 100%); background: -webkit-gradient(linear, left top, left bottom, color-stop(0, rgba(0, 0, 0, 0.03)), color-stop(0.1, rgba(0, 0, 0, 0.1)), color-stop(0.9, rgba(0, 0, 0, 0.15)), color-stop(1, rgba(0, 0, 0, 0.2))); padding-left: 10px; padding-right: 10px; }
+#niftybox .apps li.selected a { color: #ffa; background: -moz-linear-gradient(center top , rgba(0, 0, 0, 0.03) 0%, rgba(0, 0, 0, 0.1) 10%, rgba(0, 0, 0, 0.15) 90%, rgba(0, 0, 0, 0.2) 100%); background: -webkit-gradient(linear, left top, left bottom, color-stop(0, rgba(0, 0, 0, 0.03)), color-stop(0.1, rgba(0, 0, 0, 0.1)), color-stop(0.9, rgba(0, 0, 0, 0.15)), color-stop(1, rgba(0, 0, 0, 0.2))); padding-left: 20px; padding-right: 20px; }
 
 #niftybox #cart { margin-left: 5px; margin-top: 16px; }
 #niftybox #cart a { padding: 14px 20px 16px; }

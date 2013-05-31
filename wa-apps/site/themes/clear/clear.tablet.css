@@ -12,6 +12,8 @@
 
 body { font-size: 15px; font-family: "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif; -webkit-text-size-adjust: 100%; }
 
+h2.title { font-size: 220%; }
+
 .container { min-width: 0; padding: 15px; }
 .sidebar { padding-top: 0; }
 .sidebar.left { width: 100%; float: none; }

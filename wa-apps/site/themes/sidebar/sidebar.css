@@ -281,7 +281,7 @@ i.icon10 { background-repeat:no-repeat; height:10px; width:10px; display:inline-
 #sidebar #cart.empty a { opacity: 0.8; background-image: url('img/cart-empty.png'); }
 
 #sidebar .search { margin: -20px 0 20px; text-align: center; }
-#sidebar .search input { -webkit-appearance: none; background: #555 url("img/search10.png") no-repeat scroll 10px 7px; color: #eee; font-weight: bold; border: none; -moz-border-radius: 15px; -webkit-border-radius: 15px; border-radius: 15px; font-size: 1.1em; padding: 4px 0px 3px 28px; outline: 0; display: block; margin: 0 25px; width: 160px; }
+#sidebar .search input { -webkit-appearance: none; background: #555 url("img/search10.png") no-repeat scroll 10px 7px; color: #eee; font-weight: bold; border: none; -moz-border-radius: 15px; -webkit-border-radius: 15px; border-radius: 15px; font-size: 1.1em; padding: 4px 0px 3px 28px; outline: 0; display: block; margin: 0 25px; width: 165px; }
 #sidebar .search input::-webkit-input-placeholder { color: #bbb; font-weight: normal; }
 #sidebar .search input:-moz-placeholder,
 #sidebar .search input::-moz-placeholder { color: #bbb; font-weight: normal; }
@@ -289,11 +289,10 @@ i.icon10 { background-repeat:no-repeat; height:10px; width:10px; display:inline-
 
 #main { background: #fff; margin-left: 230px; line-height: 1.5em; border-top: 5px solid #ddd; padding-bottom: 20px; min-height: 100%; }
 
-.title { text-align: center; font-size: 200%; text-transform: uppercase; letter-spacing: 0.13em; }
+.title { text-align: center; font-size: 180%; text-transform: uppercase; letter-spacing: 0.13em; }
 .title a { text-decoration: none; color: #000; font-weight: bold; }
 .title a:hover { color: #000 !important; }
-.title span { color: #ccc; font-size: 80%; position: relative; top: -0.1em; display: none\9; }
-h2.title { font-size: 200%; letter-spacing: 0.2em; }
+h2.title { font-size: 180%; letter-spacing: 0.2em; }
 
 .app-navigation { border-bottom: 1px solid #ccc; font-size: 110%; height: 48px\9; }
 .app-navigation .static-text { padding: 12px 23px; color: #555; font-weight: bold; }

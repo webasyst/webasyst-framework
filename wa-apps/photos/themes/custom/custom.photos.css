@@ -10,7 +10,7 @@
  * @package Webasyst
  */
 
-#gallery-nav { text-align: center; margin-top: -20px;  margin-bottom: 30px; }
+#gallery-nav { text-align: center; margin-top: -20px;  margin-bottom: 30px; font-size: 110%; }
 #gallery-nav ul.menu-h li { float: none; display: inline-block; /* IE8- hack */ display: block\9; float: left\9; }
 #gallery-nav .popup { max-width: 400px; max-height: 70%; overflow-y: scroll; }
 #gallery-nav .popup ul.menu-v { padding-left: 6px; }

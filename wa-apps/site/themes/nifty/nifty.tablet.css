@@ -10,16 +10,11 @@
  * @package Webasyst
  */
 
-body { font-size: 14px; -webkit-text-size-adjust: 100%; }
+body { font-size: 15px; -webkit-text-size-adjust: 100%; }
 
-.container { padding: 0 15px 10px; }
+.content,
+.container { padding-left: 15px; padding-right: 15px; }
 
-#header { margin: 0 0 15px; }
-#header #cart { float: none !important; width: 100%; text-align: center; padding: 20px 0; margin: 0 0 10px; }
-#header .search { padding: 10px 0 0; margin: 0 270px 0 0; width: auto; float: none; clear: none; }
-#header .search input { width: 100%; margin-bottom: 10px; }
-#header .auth { margin-top: 10px; }
-
-#niftybox .apps { padding-bottom: 10px; }
-#niftybox .apps a { padding: 10px 15px; }
-#niftybox .apps li.selected a { background: rgba(0,0,0,0.2); }
+#header .search,
+#header .subscribe { padding-left: 0; padding-right: 0; }
+#header .phone { padding-right: 10px; font-size: 130%; }

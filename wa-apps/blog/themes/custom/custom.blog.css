@@ -10,7 +10,7 @@
  * @package Webasyst
  */
 
-.hero#blog-nav { margin-top: -20px; margin-bottom: 40px; padding: 20px 30px 17px; }
+.hero#blog-nav { margin-top: -15px; margin-bottom: 40px; padding: 20px 30px 5px; }
 .hero#blog-nav i.icon10 { margin-top: 0.35em; margin-left: 0.2em; }
 
 #timeline .popup ul.menu-v { padding-left: 6px; }

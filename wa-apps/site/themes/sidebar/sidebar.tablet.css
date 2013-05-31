@@ -12,10 +12,10 @@
 
 body { font-size: 120%; -webkit-text-size-adjust: 100%; }
 
-#sidebar { font-size: 100%; width: 200px; }
-#sidebar .block { padding: 10px 20px; }
-#sidebar .title { font-size: 120%; }
-#sidebar .search input { width: 170px; margin: 0 15px; }
-#sidebar .auth { width: 180px; font-size: 70%; }
+#sidebar { font-size: 100%; width: 180px; }
+#sidebar .block { padding: 10px; }
+#sidebar .title { font-size: 140%; margin-left: 0; margin-right: 0; }
+#sidebar .search input { width: 155px; margin: 0 10px; }
+#sidebar .auth { width: 160px; font-size: 70%; }
 
-#main { margin-left: 200px; }
+#main { margin-left: 180px; }
