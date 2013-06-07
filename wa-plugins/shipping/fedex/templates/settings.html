@@ -1,0 +1,137 @@
+<div id="fedex-shipping-settings">
+    <div class="field">
+        <div class="name">{$p->_w('Origin region')}</div>
+        <div class="value">
+            <select name="{$namespace|escape}[country]">
+                <option value=""></option>
+                {foreach $countires as $country}
+                    <option value="{$country.iso3letter|escape}"
+                        {if !empty($values.country) && ($values.country == $country.iso3letter)} selected="selected"{/if}
+                    >{$country.name|escape}</option>
+                {/foreach}
+            </select>
+            <br>
+            <span class="hint">
+                {$p->_w('Represents the country from which the shipment will be originating.')}
+            </span>
+        </div>
+    </div>
+    <div class="field">
+        <div class="value region">
+            <i class="icon16 loading" style="display:none; margin-left: -23px;"></i>
+            
+            <div class="empty" {if !empty($regions)}style="display:none;"{/if}>
+                <p class="small">
+                    [`Shipping will be restricted to the selected country. Rates defined below will be applied to the entire country.`]
+                </p>
+                <input name="{$namespace|escape}[region]" value="" type="hidden"
+                    {if !empty($regions)}disabled="disabled"{/if}
+                >
+            </div>
+            
+            <div class="not-empty" {if empty($regions)}style="display:none;"{/if}>
+                <select name="{$namespace|escape}[region]"
+                    {if empty($regions)}disabled="disabled"{/if}
+                >
+                    <option value=""></option>
+                    {foreach $regions as $region}
+                        <option value="{$region.code|escape}"
+                            {if $values.region == $region.code} selected="selected"{/if}
+                        >{$region.name|escape}</option>
+                    {/foreach}
+                </select>
+                <br>
+                <span class="hint">
+                    {$p->_w('Required only if origination country is USA or Canada<br />Represents the state/province from which the shipment will be originating.')}
+                </span>
+            </div>
+            
+        </div>
+    </div>
+    <div class="field">
+        <div class="value">
+            <input name="{$namespace|escape}[city]" value="{ifset($values.city)}" type="text">
+            <br>
+            <span class="hint">
+                {$p->_w('Enter city name<br />Required for meter number generation.')}
+            </span>
+        </div>
+    </div>
+    <div class="field">
+        <div class="name">{$p->_w('Address')}</div>
+        <div class="value">
+            <input name="{$namespace|escape}[address]" value="{ifset($values.address)}" type="text">
+            <span class="hint">
+                {$p->_w('Enter you street address<br />Required for meter number generation')}
+            </span>
+        </div>
+    </div>
+    <div class="field">
+        <div class="name">{$p->_w('Zip (postal) code')}</div>
+        <div class="value">
+            <input name="{$namespace|escape}[zip]" value="{ifset($values.zip)}" type="text">
+            <span class="hint">
+                {$p->_w('Required only if origination country is USA or Canada<br />May be required for other postal-aware countries. Represents the postal code from which the shipment will be originating.<br /> Valid characters: A-Z; 0-9; a-z')}
+            </span>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $(function() { 'use strict'
+        var container = $('#fedex-shipping-settings'); 
+
+        var name    = '{$namespace|escape}[region]';
+        var target  = container.find('div.region');
+        var loader  = container.find('.loading');
+        var old_val = target.find('select, input').val();
+        
+        container.find('select[name$="[country]"]').change(function() {
+            loader.show();
+            $.post('{$xhr_url}', { country: this.value }, function(r) {
+                if (r.data && r.data.options 
+                        && r.data.oOrder && r.data.oOrder.length) 
+                {
+                    var select = $(
+                        "<select name='" + name + "'>" + 
+                            "<option value=''></option>" + 
+                        "</select>"
+                    );
+                    var o, selected = false;
+                    for (var i = 0; i < r.data.oOrder.length; i++) {
+                        o = $('<option></option>').attr(
+                            'value', r.data.oOrder[i]
+                        ).text(
+                            r.data.options[r.data.oOrder[i]]
+                        ).attr(
+                            'disabled', r.data.oOrder[i] === ''
+                        );
+                        if (!selected && old_val === r.data.oOrder[i]) {
+                            o.attr('selected', true);
+                            selected = true;
+                        }
+                        select.append(o);
+                    }
+                    target.find('.not-empty select').replaceWith(select);
+                    target.find('.not-empty').show();
+                    
+                    target.find('.empty input').attr('disabled', true);
+                    target.find('.empty').hide();
+                    
+                } else {
+                    target.find('.empty input').attr('disabled', false);
+                    target.find('.empty').show();
+                    
+                    target.find('.not-empty select').attr('disabled', true)
+                    target.find('.not-empty').hide();
+                    
+                }
+                loader.hide();
+            }, 'json');
+        });
+        
+        container.on('change', 'select[name="' + name + '"]', function() {
+            old_val = this.value;
+        });
+    
+    });
+</script>
