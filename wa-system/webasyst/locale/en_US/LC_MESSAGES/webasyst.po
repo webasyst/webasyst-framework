@@ -1072,3 +1072,39 @@ msgstr ""
 
 msgid "Powered by Webasyst"
 msgstr ""
+
+#: /wa-system/contact/waContactCheckboxField.class.php:36
+msgid "Yes"
+msgstr ""
+
+#: /wa-system/contact/waContactCheckboxField.class.php:36
+msgid "No"
+msgstr ""
+
+#: /wa-system/contact/waContactRegionField.class.php:134
+msgid "select region"
+msgstr ""
+
+#: /wa-system/contact/waContactsCollection.class.php:378
+msgid "Category"
+msgstr ""
+
+#: /wa-system/design/templates/Design.html:129
+msgid "Design theme “<strong id=\"wa-current-theme\"></strong>” is temporary enabled for you to see how it looks with your frontend. You can navigate through your website as you do it usually. Other users don't see that you are previewing this design theme."
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/api/ApiAuthMobile.html:30
+msgid "<strong>%s</strong> requests access to your apps data:"
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/api/ApiAuthMobile.html:42
+msgid "Allow"
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/api/ApiAuth.html:25
+msgid "deny"
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/api/ApiAuthMobile.html:45
+msgid "Deny"
+msgstr ""

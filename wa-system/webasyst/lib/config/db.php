@@ -143,12 +143,23 @@ return array(
             'PRIMARY' => array('contact_id', 'app_id', 'name'),
         ),
     ),
-    'wa_contact_tokens' => array(
+    'wa_api_auth_codes' => array(
+        'code' => array('varchar', 32, 'null' => 0),
+        'contact_id' => array('int', 11, 'null' => 0),
+        'client_id' => array('varchar', 32, 'null' => 0),
+        'scope' => array('text', 'null' => 0),
+        'expires' => array('datetime', 'null' => 0),
+        ':keys' => array(
+            'PRIMARY' => 'code',
+        ),
+    ),
+    'wa_api_tokens' => array(
         'contact_id' => array('int', 11, 'null' => 0),
         'client_id' => array('varchar', 32, 'null' => 0),
         'token' => array('varchar', 32, 'null' => 0),
-        'create_timestamp' => array('timestamp', 'null' => 0, 'default' => 'CURRENT_TIMESTAMP'),
-        'expires' => array('int', 11, 'null' => 0),
+        'scope' => array('text', 'null' => 0),
+        'create_datetime' => array('datetime', 'null' => 0),
+        'expires' => array('datetime'),
         ':keys' => array(
             'PRIMARY' => 'token',
             'contact_client' => array('contact_id', 'client_id', 'unique' => 1),

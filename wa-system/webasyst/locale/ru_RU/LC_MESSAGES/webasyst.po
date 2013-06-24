@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WebAsyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2013-05-30 13:37+0400\n"
+"PO-Revision-Date: 2013-06-24 17:42+0400\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -3442,3 +3442,23 @@ msgstr "Молдавский лей"
 
 msgid "Message"
 msgstr "Сообщение"
+
+#: /wa-system/contact/waContactsCollection.class.php:378
+msgid "Category"
+msgstr "Категория"
+
+#: /wa-system/webasyst/templates/actions/api/ApiAuthMobile.html:30
+msgid "<strong>%s</strong> requests access to your apps data:"
+msgstr "<strong>%s</strong> запрашивает доступ к данным приложений:"
+
+#: /wa-system/webasyst/templates/actions/api/ApiAuthMobile.html:42
+msgid "Allow"
+msgstr "Разрешить"
+
+#: /wa-system/webasyst/templates/actions/api/ApiAuth.html:25
+msgid "deny"
+msgstr "запретить"
+
+#: /wa-system/webasyst/templates/actions/api/ApiAuthMobile.html:45
+msgid "Deny"
+msgstr "Запретить"
