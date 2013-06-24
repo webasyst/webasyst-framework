@@ -100,5 +100,3 @@ class stickiesStickyModel extends stickiesModel
 		return $res;
 	}
 }
-
-?>
