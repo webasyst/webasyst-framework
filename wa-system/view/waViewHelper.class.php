@@ -447,13 +447,14 @@ HTML;
         return '<input type="hidden" name="_csrf" value="'.waRequest::cookie('_csrf', '').'" />';
     }
 
-    public function captcha($options = array(), $error = null)
+    public function captcha($options = array(), $error = null, $absolute = false)
     {
         if (!is_array($options)) {
+            $absolute = $error;
             $error = $options;
             $options = array();
         }
-        return $this->wa->getCaptcha($options)->getHtml($error);
+        return $this->wa->getCaptcha($options)->getHtml($error, $absolute);
     }
 
     public function captchaUrl($add_random = true)

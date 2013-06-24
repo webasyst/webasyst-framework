@@ -196,6 +196,8 @@ class waSystemConfig
     protected function configure()
     {
         @mb_internal_encoding('UTF-8');
+        @ini_set('default_charset', 'utf-8');
+
         @ini_set('register_globals', 'off');
         // magic quotes
         @ini_set("magic_quotes_runtime",0);

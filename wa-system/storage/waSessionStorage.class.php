@@ -112,6 +112,10 @@ class waSessionStorage extends waStorage
         $this->write($key, $data);
     }
 
+    /**
+     * @param array|string $key
+     * @param $data
+     */
     public function write($key, $data)
     {
         if (!self::$started) {

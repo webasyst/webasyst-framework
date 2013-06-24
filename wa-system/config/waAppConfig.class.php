@@ -336,6 +336,12 @@ class waAppConfig extends SystemConfig
             if (file_exists($this->getAppPath().'/plugins')) {
                 $paths[] = $this->getAppPath().'/plugins/';
             }
+            if (file_exists($this->getAppPath().'/api')) {
+                $v = waRequest::request('v', 1, 'int');
+                if (file_exists($this->getAppPath().'/api/v'.$v)) {
+                    $paths[] = $this->getAppPath().'/api/v'.$v.'/';
+                }
+            }
             $result = array();
             $length = strlen($this->getRootPath());
             foreach ($paths as $path) {

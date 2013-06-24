@@ -126,6 +126,17 @@ abstract class waAppPayment
     }
 
     /**
+     *
+     * Get private data storage path
+     * @param int $order_id
+     * @param string $path
+     */
+    public function getDataPath($order_id, $path = null)
+    {
+        return false;
+    }
+
+    /**
      * Execute specified transaction by payment module on $request data
      *
      * @example waPayment::execTransaction(waPayment::TRANSACTION_CAPTURE,'AuthorizeNet',$adapter,$params)

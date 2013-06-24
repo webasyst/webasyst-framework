@@ -157,6 +157,7 @@ class Swift_Transport_MailTransport implements Swift_Transport
             //Non-windows (not using SMTP)
             $headers = str_replace("\r\n", PHP_EOL, $headers);
             $body = str_replace("\r\n", PHP_EOL, $body);
+            $to = str_replace("\r\n", PHP_EOL, $to);
         } else {
             //Windows, using SMTP
             $headers = str_replace("\r\n.", "\r\n..", $headers);

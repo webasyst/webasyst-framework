@@ -43,12 +43,14 @@ class waArrayObject implements ArrayAccess, IteratorAggregate
     /**
      * Append all key => value pairs from given Traversabel to $this
      * @param array $data
+     * @return $this
      */
     public function setAll($data)
     {
         foreach ($data as $key => $value) {
             $this[$key] = $value;
         }
+        return $this;
     }
 
     /** @return int number of key => value pairs in this array */
@@ -59,6 +61,7 @@ class waArrayObject implements ArrayAccess, IteratorAggregate
 
     /**
      * Convert this object to a native array.
+     * Will currently cause infinite recursion for self-containing structures.
      * @return array
      */
     public function toArray()
@@ -92,10 +95,19 @@ class waArrayObject implements ArrayAccess, IteratorAggregate
     }
 
     /** @return $this[$name] or null if not set */
-    public function ifset($name)
+    public function ifset($name, $default=null)
     {
         if (!isset($this[$name])) {
-            return null;
+            return $default;
+        }
+        return $this[$name];
+    }
+
+    /** @return $this[$name] or null if empty */
+    public function ifempty($name, $default=null)
+    {
+        if (empty($this[$name])) {
+            return $default;
         }
         return $this[$name];
     }

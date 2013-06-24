@@ -147,7 +147,9 @@ a#wa-my-username { font-weight: bold; text-decoration: none; }
 #wa-login .field .value { margin-left: 105px; margin-bottom: 10px; }
 #wa-login .field .value input.wa-login-text-input { font-size: 2em; width: 300px; font-weight: bold; }
 #wa-login .field .value .wa-remember-me { padding: 5px 0 0; }
-#wa-login .field .value input.button { font-size: 18px !important; height: 48px; margin-left: -10px; padding-top: 2px; }
+#wa-login .dialog i.icon16 { margin-top: 0.15em; margin-right: 0.4em; }
+#wa-login .dialog ul.thumbs li { margin: 0 15px 32px; text-align: center; }
+#wa-login .dialog input.wa-login-submit { font-size: 18px !important; height: 48px; margin-left: -10px; padding-top: 2px; }
 #wa-login .dialog a.wa-forgotpassword { color: #aaa; margin: 15px 10px 0 0; float: right; }
 #wa-login .dialog.password a.wa-forgotpassword { float: left; }
 #wa-login .wa-poweredby { margin-top: 10px; text-align: center; }

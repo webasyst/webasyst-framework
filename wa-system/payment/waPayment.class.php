@@ -752,7 +752,7 @@ abstract class waPayment extends waSystemPlugin
                 $row['value'] = str_replace(array_keys($replace), array_values($replace), $row['value']);
                 $controls[$name] = waHtmlControl::getControl(ifempty($row['control_type'], waHtmlControl::INPUT), false, $row);
             } else {
-                $controls[$name] = spritnf($params['control_wrapper'], '', '', $row);
+                $controls[$name] = sprintf($params['control_wrapper'], '', '', $row);
             }
         }
         return implode("\n", $controls);

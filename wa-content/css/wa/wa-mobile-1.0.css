@@ -35,6 +35,12 @@ border: 0;
 #wa.wa-mobile-login .ui-grid-a > * { width: 100%; }
 #wa.wa-mobile-login .ui-grid-a .ui-btn { margin-left: 2px; margin-right: 2px; }
 #wa.wa-mobile-login div.ui-body-r { background: transparent; }
+#wa.wa-mobile-login .wa-api-allow .ui-btn { color: green; }
+#wa.wa-mobile-login .wa-api-deny .ui-btn { color: #a00; }
+#wa.wa-mobile-login h2,
+#wa.wa-mobile-login p { text-align: center; }
+#wa.wa-mobile-login ul { text-align: center; padding: 0; margin: 0; }
+#wa.wa-mobile-login ul li { list-style: none; text-align: center; margin: 0 15px 25px; }
 
 #wa ul.wa-mobile-list-icon i { display: inline-block; vertical-align: top; width: 12px; height: 12px; margin: 0 0.75em 0 0 }
 #wa .ui-content ul.wa-mobile-list-thumb.ui-listview { margin: 0 }

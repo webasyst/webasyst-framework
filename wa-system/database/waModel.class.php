@@ -283,7 +283,7 @@ class waModel
      * Executes query and returns iterator of the result
      *
      * @param string $sql
-     * @param array $params
+     * @param mixed $params
      * @return waDbResultDelete|waDbResultInsert|waDbResultReplace|waDbResultSelect|waDbResultUpdate
      */
     public function query($sql, $params = null)

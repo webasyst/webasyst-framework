@@ -320,6 +320,188 @@ abstract class waShipping extends waSystemPlugin
 
     /**
      *
+     * Country/region depenedant select boxes [+ city input]
+     *
+     * @param string $name
+     * @param array $params
+     * Sample of params defined in proper settings.php
+     *
+     *    'region_zone' => array(
+     *           'title' => 'Sender region',
+     *           'control_type' => waHtmlControl::CUSTOM . ' waShipping::settingRegionZoneControl',
+     *           'items' => array(
+     *               'country' => array(
+     *                       'value' => 'usa',
+     *                       'description' => 'Represents the country from which the shipment will be originating'
+     *               ),
+     *               'region' => array(
+     *                       'value' => 'NY',
+     *                       'description' => 'Represents the state/province from which the shipment will be originating.<br>Required for printing labels'
+     *               ),
+     *               'city' => array(
+     *                       'value' => 'New York',
+     *                       'description' => Enter city name<br>Required for printing labels'
+     *               ),
+     *       )
+     *    ),
+     *
+     *    If 'city' is not missing, city input box is presented
+     *
+     */
+    public static function settingRegionZoneControl($name, $params = array())
+    {
+        $html = "";
+        $plugin = $params['instance'];
+        $params['items']['country']['value'] =
+            !empty($params['value']['country']) ? $params['value']['country'] : '';
+        $params['items']['region']['value'] =
+            !empty($params['value']['region'])  ? $params['value']['region'] : '';
+
+        if (isset($params['items']['city'])) {
+            $params['items']['city']['value'] =
+                !empty($params['value']['city']) ? $params['value']['city'] : '';
+        }
+
+        // country section
+        $cm = new waCountryModel();
+        $html.= "<div class='country'>";
+        $html.= "<select name='{$name}[country]'><option value=''></option>";
+        foreach ($cm->all() as $country) {
+            $html.= "<option value='{$country['iso3letter']}'".
+                    ($params['items']['country']['value'] == $country['iso3letter']
+                        ? " selected='selected'" : ""
+                    ).
+            ">{$country['name']}</value>";
+        }
+        $html.= "</select><br>";
+        $html.= "<span class='hint'>{$params['items']['country']['description']}</span></div><br>";
+
+        $regions = array();
+        if ($params['items']['country']['value']) {
+            $rm = new waRegionModel();
+            $regions = $rm->getByCountry($params['items']['country']['value']);
+        }
+
+        // region section
+        $html.= '<div class="region">';
+        $html.= '<i class="icon16 loading" style="display:none; margin-left: -23px;"></i>';
+        $html.= '<div class="empty"'.
+            (!empty($regions) ? 'style="display:none;"' : '').
+        '><p class="small">'.
+            $plugin->_w("Shipping will be restricted to the selected country").
+        "</p>";
+        $html.= "<input name='{$name}[region]' value='' type='hidden'".
+            (!empty($regions) ? 'disabled="disabled"' : '').
+        '></div>';
+        $html.= '<div class="not-empty" '.
+            (empty($regions) ? 'style="display:none;"' : '') . ">";
+        $html.= "<select name='{$name}[region]'".
+            (empty($regions) ? 'disabled="disabled"' : '').
+        '><option value=""></option>';
+
+        foreach ($regions as $region) {
+            $html.= "<option value='{$region['code']}'".
+                ($params['items']['region']['value'] == $region['code']
+                        ? ' selected="selected"' : ""
+                ).
+            ">{$region['name']}</option>";
+        }
+        $html.= "</select><br>";
+        $html.= "<span class='hint'>{$params['items']['region']['description']}</span></div><br>";
+
+        // city section
+        if (isset($params['items']['city'])) {
+            $html.= "<div class='city'>";
+            $html.= "<input name='{$name}[city]' value='".
+                (!empty($params['items']['city']['value']) ? $params['items']['city']['value'] : "")."' type='text'>
+                <br>";
+            $html.= "<span class='hint'>{$params['items']['city']['description']}</span></div>";
+        }
+
+        $html.= "</div>";
+
+        $url = wa()->getAppUrl('webasyst').'?module=backend&action=regions';
+
+        // container id for interaction with js purpose
+        $id = preg_replace("![\[\]]{1,2}!", "-", $name);
+        if ($id[strlen($id) - 1] == "-") {
+            $id = substr($id, 0, -1);
+        }
+
+        // wrap to container
+        $html = "<div id='{$id}'>{$html}</div>";
+
+        // javascript here
+        $html.= "
+        <script type='text/javascript'>
+        \$(function() { 'use strict'
+            var name = '{$name}[region]';
+            var url  = '$url';
+            var container = \$('#{$id}');
+        ";
+
+        $html.= '
+            var target  = container.find("div.region");
+            var loader  = container.find(".loading");
+            var old_val = target.find("select, input").val();
+
+            container.find("select[name$=\"[country]\"]").change(function() {
+                loader.show();
+                $.post(url, {
+                    country: this.value }, function(r) {
+                        if (r.data && r.data.options
+                                && r.data.oOrder && r.data.oOrder.length)
+                        {
+                            var select = $(
+                                    "<select name=\'" + name + "\'>" +
+                                    "<option value=\'\'></option>" +
+                                    "</select>"
+                            );
+                            var o, selected = false;
+                            for (var i = 0; i < r.data.oOrder.length; i++) {
+                                o = $("<option></option>").attr(
+                                        "value", r.data.oOrder[i]
+                                ).text(
+                                        r.data.options[r.data.oOrder[i]]
+                                ).attr(
+                                        "disabled", r.data.oOrder[i] === ""
+                                );
+                                if (!selected && old_val === r.data.oOrder[i]) {
+                                    o.attr("selected", true);
+                                    selected = true;
+                                }
+                                select.append(o);
+                            }
+                            target.find(".not-empty select").replaceWith(select);
+                            target.find(".not-empty").show();
+
+                            target.find(".empty input").attr("disabled", true);
+                            target.find(".empty").hide();
+
+                        } else {
+                            target.find(".empty input").attr("disabled", false);
+                            target.find(".empty").show();
+
+                            target.find(".not-empty select").attr("disabled", true)
+                            target.find(".not-empty").hide();
+
+                        }
+                        loader.hide();
+                    }, "json");
+            });
+
+            container.on("change", "select[name=\'" + name + "\']", function() {
+                old_val = this.value;
+            });
+
+        });
+        </script>';
+
+        return $html;
+    }
+
+    /**
+     *
      * Get shipping plugin
      * @param string $id
      * @param waiPluginSettings $adapter

@@ -210,6 +210,15 @@ class waSystem
     }
 
     /**
+     * @param string $name
+     * @param object $value
+     */
+    public function setCommonFactory($name, $value)
+    {
+        self::$factories_common[$name] = $value;
+    }
+
+    /**
      * @return waAuthUser|waUser|waContact
      */
     public function getUser()

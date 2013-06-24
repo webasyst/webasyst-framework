@@ -19,19 +19,21 @@ class waException extends Exception
     private function getFileContext()
     {
         $file = $this->getFile();
-        $line_number = $this->getLine();
         $context = array();
-        $i = 0;
-        foreach(file($file) as $line) {
-            $i++;
-            if($i >= $line_number - self::CONTEXT_RADIUS && $i <= $line_number + self::CONTEXT_RADIUS) {
-                if ($i == $line_number) {
-                    $context[] = ' >>'. $i ."\t". $line;
-                } else {
-                    $context[] = '   '. $i ."\t". $line;
+        if ($file && is_readable($file)) {
+            $line_number = $this->getLine();
+            $i = 0;
+            foreach(file($file) as $line) {
+                $i++;
+                if($i >= $line_number - self::CONTEXT_RADIUS && $i <= $line_number + self::CONTEXT_RADIUS) {
+                    if ($i == $line_number) {
+                        $context[] = ' >>'. $i ."\t". $line;
+                    } else {
+                        $context[] = '   '. $i ."\t". $line;
+                    }
                 }
+                if($i > $line_number + self::CONTEXT_RADIUS) break;
             }
-            if($i > $line_number + self::CONTEXT_RADIUS) break;
         }
         return "\n". implode("", $context);
     }

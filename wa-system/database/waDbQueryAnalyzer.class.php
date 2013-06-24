@@ -69,9 +69,6 @@ class waDbQueryAnalyzer
             case 'delete':
                 $result = new waDbResultDelete($query_result, $adapter);
                 break;
-            case 'replace':
-                $result = new waDbResultReplace($query_result, $adapter);
-                break;
             default:
                 return $query_result;
         }

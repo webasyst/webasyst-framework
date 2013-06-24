@@ -5,6 +5,11 @@ class waContactDataModel extends waModel
     protected $table = "wa_contact_data";
 
 
+    /**
+     * @param array|int $ids
+     * @param array $fields
+     * @return array
+     */
     public function getData($ids, $fields = null)
     {
         $sql = "SELECT * FROM ".$this->table."

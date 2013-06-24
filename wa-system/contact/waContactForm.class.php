@@ -116,9 +116,7 @@ class waContactForm
 
         $f = clone $f;
         foreach ($opts as $k => $v) {
-            foreach($opts as $k => $v) {
-                $f->setParameter($k, $v);
-            }
+            $f->setParameter($k, $v);
         }
         return $f;
     }

@@ -125,7 +125,7 @@ abstract class waContactField
         if (isset($this->name[$locale])) {
             return $this->name[$locale];
         } else if (isset($this->name['en_US'])) {
-            if ($locale = waSystem::getInstance()->getLocale()) {
+            if ($locale == waSystem::getInstance()->getLocale() && wa()->getEnv() == 'backend') {
                 return _ws($this->name['en_US']);
             } else {
                 return waLocale::translate('webasyst', $locale, $this->name['en_US']);
@@ -157,8 +157,8 @@ abstract class waContactField
     }
 
     /**
-     * @param string $name
-     * @return waContactStorage
+     * @param bool $name
+     * @return waContactStorage|string
      */
     public function getStorage($name = null)
     {

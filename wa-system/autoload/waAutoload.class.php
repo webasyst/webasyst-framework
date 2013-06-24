@@ -265,6 +265,8 @@ class waAutoload
 
         'waSystem'                 => 'waSystem.class.php',
 
+        'waApiTokensModel'         => 'webasyst/lib/models/waApiTokens.model.php',
+        'waApiAuthCodesModel'      => 'webasyst/lib/models/waApiAuthCodes.model.php',
         'waAppSettingsModel'       => 'webasyst/lib/models/waAppSettings.model.php',
         'waAnnouncementModel'      => 'webasyst/lib/models/waAnnouncement.model.php',
         'waContactModel'           => 'webasyst/lib/models/waContact.model.php',
@@ -275,8 +277,7 @@ class waAutoload
         'waContactEmailsModel'     => 'webasyst/lib/models/waContactEmails.model.php',
         'waContactRightsModel'     => 'webasyst/lib/models/waContactRights.model.php',
         'waContactSettingsModel'   => 'webasyst/lib/models/waContactSettings.model.php',
-        'waContactTokensModel'     => 'webasyst/lib/models/waContactTokens.model.php',
-      'waContactFieldValuesModel' => 'webasyst/lib/models/waContactFieldValues.model.php',
+        'waContactFieldValuesModel' => 'webasyst/lib/models/waContactFieldValues.model.php',
         'waCountryModel'           => 'webasyst/lib/models/waCountry.model.php',
         'waGroupModel'             => 'webasyst/lib/models/waGroup.model.php',
         'waLoginLogModel'          => 'webasyst/lib/models/waLoginLog.model.php',

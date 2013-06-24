@@ -98,7 +98,7 @@ class waDesignActions extends waActions
             if ($theme->parent_theme_id && $file['parent']) {
                 if (!waTheme::exists($theme->parent_theme_id, $app_id)) {
                     $theme_id = $theme->parent_theme_id;
-                    if (strpost($theme_id, ':') !== false) {
+                    if (strpos($theme_id, ':') !== false) {
                         list($app_id, $theme_id) = explode(':', $theme_id, 2);
                         $app = wa()->getAppInfo($app_id);
                     }

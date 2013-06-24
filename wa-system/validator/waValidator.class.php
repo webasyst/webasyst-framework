@@ -53,11 +53,16 @@ class waValidator
 
     }
 
+    /**
+     * @param string|array $name
+     * @param string $value
+     */
     public function setOption($name, $value = null)
     {
         if (is_array($name) && $value === null) {
-            foreach ($name as $k => $v)
-            $this->options[$k] = $v;
+            foreach ($name as $k => $v) {
+                $this->options[$k] = $v;
+            }
         } else {
             $this->options[$name] = $value;
         }

@@ -47,9 +47,9 @@ class waRequest
                         $val = null;
                     }
                 }
-            default:
-                return $val;
+                break;
         }
+        return $val;
     }
 
     public static function post($name = null, $default = null, $type = null)

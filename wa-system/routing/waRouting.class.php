@@ -339,6 +339,9 @@ class waRouting
         if (!$app) {
             $app = $this->system->getApp();
         }
+        if (!wa()->appExists($app)) {
+            return null;
+        }
         if (isset($parts[1])) {
             $params['module'] = $parts[1];
         }

@@ -56,4 +56,15 @@ abstract class waAppShipping
         }
         return call_user_func_array(array($this, $method_name), $args);
     }
+
+    /**
+     *
+     * Get private data storage path
+     * @param int $order_id
+     * @param string $path
+     */
+    public function getDataPath($order_id, $path = null)
+    {
+        return false;
+    }
 }
