@@ -93,6 +93,22 @@ abstract class waShipping extends waSystemPlugin
         return $this;
     }
 
+    /**
+     * @return array $items
+     */
+    protected function getItems()
+    {
+        return $this->items;
+    }
+
+    /**
+     * @param array $items
+     */
+    protected function setItems($items)
+    {
+        $this->items = $items;
+    }
+
     protected function getPackageProperty($property)
     {
         $property_value = null;
@@ -145,8 +161,7 @@ abstract class waShipping extends waSystemPlugin
      * @param array[string]float $params['total_price'] package total price
      * @param array[string]float $params['total_weight'] package total weight
      *
-     * @return string
-     * @return array[string]array
+     * @return string|array[string]array
      * @return array[string]['name']string
      * @return array[string]['desription']string
      * @return array[string]['est_delivery']string
@@ -189,11 +204,12 @@ abstract class waShipping extends waSystemPlugin
     }
 
     /**
+     * @param waOrder $order
      * @return array[string]array
      * @return array[string]['name']string название печатной формы
-     * @return array[string]['desription']string описание печатной формы
+     * @return array[string]['description']string описание печатной формы
      */
-    public function getPrintForms()
+    public function getPrintForms(waOrder $order = null)
     {
         return array();
     }

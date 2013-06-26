@@ -94,7 +94,7 @@ class waAPIController
         $class_name = $app.implode('', array_map('ucfirst', explode('.', $method_name)))."Method";
 
         if (!class_exists($class_name)) {
-            throw new waAPIException('invalid_method', 404);
+            throw new waAPIException('invalid_method', 'Unknown method: '.$app.'.'.htmlspecialchars($method_name), 404);
         }
 
         /**

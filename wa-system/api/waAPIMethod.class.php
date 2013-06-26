@@ -43,7 +43,7 @@ class waAPIMethod
 
     public function post($name, $required = false)
     {
-        $v = waRequest::get($name);
+        $v = waRequest::post($name);
         if ($required && !$v) {
             throw new waAPIException('invalid_param', 'Required parameter is missing: '.$name, 400);
         }

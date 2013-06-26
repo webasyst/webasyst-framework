@@ -63,6 +63,9 @@ class waContactModel extends waModel
     {
         if ($send_event) {
             // Fire @event contacts.delete allowing other applications to clean up their data
+            if (!is_array($id)) {
+                $id = array($id);
+            }
             wa()->event(array('contacts', 'delete'), $id);
         }
 

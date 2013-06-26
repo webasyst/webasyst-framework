@@ -247,6 +247,7 @@ abstract class waPayment extends waSystemPlugin
     final public static function callback($module_id, $request = array())
     {
         self::log($module_id, $request);
+        $module = null;
         try {
             $module = self::factory($module_id);
             return $module->callbackInit($request)->init()->callbackHandler($request);
@@ -272,6 +273,7 @@ abstract class waPayment extends waSystemPlugin
      *
      * Determine target application and merchant key
      * @param array $request
+     * @return waPayment
      */
     protected function callbackInit($request)
     {
@@ -296,12 +298,12 @@ abstract class waPayment extends waSystemPlugin
     /**
      *
      * Enter description here ...
-     * @param unknown_type $method
-     * @param unknown_type $transaction_data
+     * @param string $method
+     * @param array $transaction_data
      * @return array[string]mixed
      * @return array['order_id']int
      * @return array['customer_id']int
-     * @return array['result']booleant
+     * @return array['result']boolean
      * @return array['error']string
      */
     protected function execAppCallback($method, $transaction_data)
@@ -524,10 +526,10 @@ abstract class waPayment extends waSystemPlugin
     }
 
     /**
-     * void method (optionaly used in child methods)
+     * void method (optionally used in child methods)
      * @param array $transaction_data
      * @param array $transaction_raw_data
-     * @return false
+     * @return bool
      */
     protected function allowedTransactionCustomized($transaction_data, $transaction_raw_data)
     {
@@ -635,7 +637,7 @@ abstract class waPayment extends waSystemPlugin
         $transactions = $transaction_model->getByFields($conditions);
         $transactions_data = $transaction_data_model->getByField('transaction_id', array_keys($transactions), true);
 
-        foreach ($transactions_data as $key => $row) {
+        foreach ($transactions_data as $row) {
             $transactions[$row['transaction_id']]['raw_data'][$row['field_id']] = $row['value'];
         }
         return $transactions;
@@ -662,7 +664,7 @@ abstract class waPayment extends waSystemPlugin
      * @example waPayment::execTransactionCallback(waPayment::TRANSACTION_CAPTURE,'AuthorizeNet',$request)
      * @param $module_id string Module identity
      * @param $request array
-     * @return unknown_type
+     * @return mixed
      * @deprecated
      */
     public static function execTransactionCallback($request, $module_id)
@@ -671,11 +673,12 @@ abstract class waPayment extends waSystemPlugin
     }
 
     /**
+     * @param waOrder $order
      * @return array[string]array
      * @return array[string]['name']string название печатной формы
-     * @return array[string]['desription']string описание печатной формы
+     * @return array[string]['description']string описание печатной формы
      */
-    public function getPrintForms()
+    public function getPrintForms(waOrder $order = null)
     {
         return array();
     }
@@ -731,6 +734,8 @@ abstract class waPayment extends waSystemPlugin
             unset($params['namespace']);
         }
         $params = array_merge($default, $params);
+        ifempty($params['class'],'');
+        $params['class'] .= ' long';
 
         $replace = array(
             '%RELAY_URL%'       => $this->getRelayUrl(),
@@ -769,6 +774,7 @@ abstract class waPayment extends waSystemPlugin
      * @param string $id
      * @param waOrder $order
      * @param array $params
+     * @return string
      */
     public function displayPrintForm($id, waOrder $order, $params = array())
     {
