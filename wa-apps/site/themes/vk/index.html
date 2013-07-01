@@ -1,0 +1,144 @@
+{$vk_api_id = "YOUR API_ID"}
+{$vk_api_secret = "YOUR API_SECRET"}
+{$viewer_id = $wa->get('viewer_id')}
+{if $viewer_id && (!$wa->user()->isAuth() || $wa->user('vkontakte_id') != $wa->get('viewer_id'))}
+    {$auth_key = md5("`$vk_api_id`_`$viewer_id`_`$vk_api_secret`")}
+    {if $auth_key === $wa->get('auth_key')}
+        {$auth_user = $wa->oauth('vkontakte', [], ['user_id'=> $viewer_id, 'access_token' => $wa->get('access_token')])}
+    {/if}
+{/if}
+
+{$vk_tabs = [
+    [
+        'url' => '/vk/',
+        'name' => 'My new VK app'
+    ]
+    ,
+    [
+        'url' => '/vk/shop/',
+        'name' => 'Shop online!'
+    ]
+    ,
+    [
+        'url' => '/vk/blog/',
+        'name' => 'My blog'
+    ]
+    ,
+    [
+        'url' => '/vk/photos/',
+        'name' => 'My photo gallery'
+    ]
+]}
+{*
+
+    Define your internal VK app navigation tabs as suggested above according to your routing setup:
+    
+        [
+            'url' => '/YOUR_VK_ENABLED_APP_SETTLEMENT_URL/',
+            'name' => 'TAB_NAME'
+        ]
+        (separate elements with comma ,)
+        
+    The 'url' must represent the URL you have entered in your Site routing settings for the appropriate VK-enabled app, i.e. Shop-Script, Blog, Photos, Site, etc.
+
+*}
+            
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>{$wa->title()|escape}</title>
+    <meta name="Keywords" content="{$wa->meta('keywords')|escape}" />
+    <meta name="Description" content="{$wa->meta('description')|escape}" />
+    <!-- css -->
+    <link href="{$wa_theme_url}vk.css?{$wa->version()}" rel="stylesheet" type="text/css"/>
+    
+    <!-- js -->
+    <script type="text/javascript" src="{$wa_url}wa-content/js/jquery/jquery-1.8.2.min.js"></script>
+    <!-- vk iframe apps js -->
+    <script src="http://vk.com/js/api/xd_connection.js?2"  type="text/javascript"></script>
+    <!-- internal shop-script js for vk iframe app integration -->
+    <script type="text/javascript" src="{$wa_theme_url}vk.js"></script>
+    {if $wa->isMobile()}
+        <meta name="viewport" content="width=device-width; initial-scale=1; maximum-scale=1; user-scalable=0;" />
+    {/if}
+    {include file="`$wa_active_theme_path`/head.html" inline}
+    {$wa->headJs()}
+</head>
+<body id="{$wa_app}">
+    <div id="header">
+        <div class="container" role="navigation">
+
+            {if $wa->shop}
+                <!-- display shopping cart info in case Shop-Script is installed -->
+                {$cart_total = $wa->shop->cart->total()}
+                <div id="cart" class="block float-right{if !$cart_total} empty{/if}">
+                     <a href="{$wa->getUrl('shop/frontend/cart')}">
+                         <i class="icon16 cart"></i>[s`Cart`]: <strong class="cart-total">{wa_currency($cart_total, $wa->shop->currency())}</strong>
+                     </a>
+                </div>
+
+                <!-- search form (app dependent) -->
+                <div class="search float-right">
+                    {include file="`$wa_active_theme_path`/searchform.html" inline}
+                </div> 
+            {/if}   
+            
+            <h2 class="block vk-app-title float-left">
+                <!-- replace with your company logo if you want -->
+                {$wa->accountName()}
+            </h2>
+                
+            <div id="vk_like" class="float-left" style="clear: none !important;"></div>
+            <script type="text/javascript">
+             VK.Widgets.Like('vk_like', { width: 201, pageUrl: '{$wa->domainUrl()}' } );
+            </script>
+
+            <div class="clear-both"></div>               
+
+            <!-- phone number -->
+            {if $wa->shop->settings('phone')}
+                <div class="block float-right">
+                    [s`Order by phone`]: <strong>{$wa->shop->settings('phone')}</strong>
+                </div>
+            {/if}  
+
+            <!-- main VK app sections -->
+            {* $vk_tabs is defined in the beginning of this file *}
+            <ul class="vk-tabs">
+                {foreach $vk_tabs as $t}<li{if $t.url==$wa_app_url} class="selected"{/if}><a href="{$t.url}">{$t.name}</a></li>{/foreach}
+            </ul>
+            
+            <div class="clear-both"></div>
+            
+        </div>
+    </div>
+
+    <div id="main">
+        <div class="container">
+            <!-- INTERNAL APP NAVIGATION & CONTENT -->
+            {include file="`$wa_active_theme_path`/content.html" inline}
+            <div class="clear-both"></div>
+        </div>
+    </div>
+    
+    <!-- FOOTER -->
+    <div id="footer">
+        <div class="block">
+            <div class="hr"></div>
+            <div class="container">
+                {include file="`$wa_active_theme_path`/footer.html" inline}
+                <!--
+                   <div id="sub-links" class="float-left">
+                    <ul>
+                          <li><a href="#">About</a></li>
+                          <li><a href="#">Terms of service</a></li>
+                          <li><a href="#">Privacy policy</a></li>
+                    </ul>
+                  </div>
+                -->
+            </div>
+        </div>
+    </div>
+</body>
+</html>

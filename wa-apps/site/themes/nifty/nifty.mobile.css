@@ -40,8 +40,8 @@ h3.title { font-size: 1.3em; }
 
 #niftybox { border-radius: 0; background: #b482f1; box-shadow: none; }
 #niftybox .apps { border: 0; }
-#niftybox .apps a { padding: 10px 5px; }
-#niftybox .apps li.selected a { background: rgba(0,0,0,0.2); }
+#niftybox .apps a { padding: 10px; }
+#niftybox .apps li.selected a { background: rgba(0,0,0,0.2); padding: 10px 15px; }
 #niftybox .app-navigation { border: none; padding-top: 10px; }
 
 #footer { padding-bottom: 10px; font-size: 0.8em; }

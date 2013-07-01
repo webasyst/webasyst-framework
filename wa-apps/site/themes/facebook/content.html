@@ -1,0 +1,22 @@
+<div class="app-navigation" role="navigation">
+    {$pages = $wa->site->pages()}
+    {if count($pages)}
+        <!-- root pages -->
+        <ul class="menu-h">
+        	{foreach $pages as $p}
+        	   <li{if !empty($root_page_id) && $root_page_id == $p.id} class="selected"{/if}><a href="{$p.url}">{$p.name}</a></li>
+        	{/foreach}
+    	</ul>
+	{/if}
+</div>
+
+{if !empty($root_page_id) && !empty($pages[$root_page_id].childs)}
+    <!-- sub pages tree -->
+    <div class="sidebar right facebook-tree">
+        {wa_print_tree tree=$pages[$root_page_id].childs class="menu-v" attrs = 'id="page-list"' elem ='<a href=":url">:name</a>' collapsible_class='collapsible' selected=$page.id|default:0}
+    </div>
+{/if}
+
+<div class="content block{if !empty($pages[$page.id].childs)} right{/if}">
+    {$content}
+</div>

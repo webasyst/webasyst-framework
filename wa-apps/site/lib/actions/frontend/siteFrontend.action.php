@@ -55,13 +55,16 @@ class siteFrontendAction extends waViewAction
         $page_model = new sitePageModel();
         $breadcrumbs = array();
         $root_url = wa()->getAppUrl(null, true);
+        $root_page_id = $page['id'];
         while ($page['parent_id']) {
             $page = $page_model->getById($page['parent_id']);
             $breadcrumbs[] = array(
                 'url' => $root_url.$page['full_url'],
                 'name' => $page['title'] ? $page['title'] : $page['name']
             );
+            $root_page_id = $page['id'];
         }
+        $this->view->assign('root_page_id', $root_page_id);
         return array_reverse($breadcrumbs);
     }
 
