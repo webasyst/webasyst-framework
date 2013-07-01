@@ -25,10 +25,12 @@ class waCaptcha extends waAbstractCaptcha
         'background' => array()
     );
 
-    public function getHtml($error = null, $absolute = false)
+    public function getHtml($error = null, $absolute = false, $refresh = null)
     {
         $captcha_url = wa()->getRootUrl($absolute, true).$this->getAppId().'/captcha.php?rid='.uniqid(time());
-        $refresh = _ws("Refresh CAPTCHA");
+        if ($refresh === null) {
+            $refresh = _ws("Refresh CAPTCHA");
+        }
 
         $class = $error ? ' wa-error': '';
 

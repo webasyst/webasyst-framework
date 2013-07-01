@@ -30,6 +30,7 @@ class waPageAction extends waViewAction
             $parents = array();
             $p = $page;
             $root_url = wa()->getAppUrl(null, true);
+            $root_page_id = $p['id'];
             while ($p['parent_id']) {
                 $p = $this->getPageModel()->select('id, parent_id, name, title, url, full_url')->where("id = ?", $p['parent_id'])->fetch();
                 $parents[] = $p;
@@ -37,6 +38,12 @@ class waPageAction extends waViewAction
                     'name' => $p['title'] ? $p['title'] : $p['name'],
                     'url' => $root_url.$p['full_url']
                 );
+                $root_page_id = $p['id'];
+            }
+
+            $this->view->assign('root_page_id', $root_page_id);
+            if ($this->layout) {
+                $this->layout->assign('root_page_id', $root_page_id);
             }
 
             $this->view->assign('page_parents', array_reverse($parents));

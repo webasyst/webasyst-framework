@@ -3,7 +3,7 @@
 class waAPIMethod
 {
 
-    protected $method = array('GET', 'POST');
+    protected $method = 'GET';
     protected $response;
 
     public function __construct()

@@ -1,7 +1,6 @@
-<form action="{$form_url}" method="POST">
-
-{foreach $form as $field=>$value}
-<input type="hidden" name="{$name|escape}" value="{$value|escape}">
-{/foreach}
-<input type="submit" value="[`Proceed to Authorize.Net payment gateway`]">
+<form action="{$form_url}" method="POST" target="_top">
+    {foreach $form as $field=>$value}
+        <input type="hidden" name="{$name|escape}" value="{$value|escape}">
+    {/foreach}
+    <input type="submit" value="[`Proceed to Authorize.Net payment gateway`]">
 </form>

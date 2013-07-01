@@ -98,7 +98,7 @@ class flatrateShipping extends waShipping
      *    ),
      * );</pre>
      */
-    public function getPrintForms()
+    public function getPrintForms(waOrder $order = null)
     {
         return array();
     }

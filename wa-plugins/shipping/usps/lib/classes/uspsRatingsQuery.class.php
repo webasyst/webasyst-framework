@@ -5,13 +5,6 @@ class uspsRatingsQuery extends uspsQuery
     private $api;
 
     public function __construct(uspsShipping $plugin, array $params) {
-        $weight = max(0.1, $params['weight']);
-        $pounds = floor($weight);
-        $ounces = round(16.0 * ($weight - $pounds), 2);
-        $params['weight'] = array(
-            'pounds' => $pounds,
-            'ounces' => $ounces
-        );
         parent::__construct($plugin, $params);
     }
 
@@ -38,9 +31,14 @@ class uspsRatingsQuery extends uspsQuery
         return $services;
     }
 
+    protected function getAPIName()
+    {
+        return $this->api;
+    }
+
     protected function getUrl()
     {
-        return $this->api ? 'http://production.shippingapis.com/ShippingAPI.dll?API='.$this->api : '';
+        return 'http://production.shippingapis.com/ShippingAPI.dll';
     }
 
     /**
@@ -65,8 +63,8 @@ class uspsRatingsQuery extends uspsQuery
                 $xml->addChild('Revision');
                 break;
             case uspsServices::TYPE_INTERNATIONAL:
-                $this->api = 'IntlRate';
-                $xml = new SimpleXMLElement('<IntlRateRequest/>');
+                $this->api = 'IntlRateV2';
+                $xml = new SimpleXMLElement('<IntlRateV2Request/>');
                 break;
             default:
                 throw new waException($this->plugin->_w("Unknown type of service"));
@@ -87,6 +85,9 @@ class uspsRatingsQuery extends uspsQuery
                     break;
             }
         }
+
+/*        self::dumpXml($xml->saveXML());
+        exit;*/
 
         return $xml->saveXML();
     }
@@ -113,8 +114,8 @@ class uspsRatingsQuery extends uspsQuery
         }
 
         $package->addChild('ZipDestination', $zip);
-        $package->addChild('Pounds', str_replace(',', '.', $this->getWeight('pounds')));
-        $package->addChild('Ounces', str_replace(',', '.', $this->getWeight('ounces')));
+        $package->addChild('Pounds', $this->getWeight('pounds'));
+        $package->addChild('Ounces', $this->getWeight('ounces'));
         $package->addChild('Container');
         $package->addChild('Size', $this->plugin->package_size);
         $package->addChild('Machinable', 'True');
@@ -122,19 +123,38 @@ class uspsRatingsQuery extends uspsQuery
         return $package;
     }
 
+    /**
+     * @param SimpleXMLElement $package
+     * @param array $service
+     * @return mixed
+     */
     private function prepareInternationalPackage($package, $service)
     {
         $package->addChild('Pounds',   $this->getWeight('pounds'));
         $package->addChild('Ounces',   $this->getWeight('ounces'));
+        $package->addChild('Machinable', 'True');
         $package->addChild('MailType', $service['name']);
+
+        $gxg = $package->addChild('GXG');
+        $gxg->addChild('POBoxFlag', 'N');
+        $gxg->addChild('GiftFlag',  'N');
+
+        $package->addChild('ValueOfContents', $this->getPrice());
         $package->addChild('Country',  $this->getCountryName($this->getAddress('country')));
-        //$package->addChild('ValueOfContents',round($this->getTotalPrice(), 2));
+        $package->addChild('Container', 'RECTANGULAR');
+        $package->addChild('Size', $this->plugin->package_size);
+
+        $package->addChild('Width');
+        $package->addChild('Length');
+        $package->addChild('Height');
+        $package->addChild('Girth');
+
         return $package;
     }
 
     protected function parseResponse($response)
     {
-        // fix unclose br tags
+        // fix unclosed br tags
         $response = preg_replace("/<br\s*?>/i", '', $response);
 
         $errors = array();
@@ -149,7 +169,7 @@ class uspsRatingsQuery extends uspsQuery
             case 'RateV4Response':
                 $rates = $this->parseRateV4Response($xml, $errors);
                 break;
-            case 'IntlRateResponse':
+            case 'IntlRateV2Response':
                 $rates = $this->parseIntlRateResponse($xml, $errors);
                 break;
             case 'Error':
@@ -200,58 +220,55 @@ class uspsRatingsQuery extends uspsQuery
         return $rates;
     }
 
+    /**
+     * @param SimpleXMLElement $xml
+     * @param array $errors
+     * @return array
+     */
     private function parseIntlRateResponse($xml, &$errors)
     {
         $rates = array();
-        foreach ($xml->xpath('/IntlRateResponse/Package') as $package) {
+        $black_lists = array(
+            '/\bgxg/i',
+            '/global express guaranteed/i'
+        );
+        foreach ($xml->xpath('Package') as $package) {
 
-            $id = (string) $package['ID'];
+            $package_id = (string) $package['ID'];
             foreach ($package->xpath('Error') as $error) {
-                $errors[$id] = array(
-                        'id'      => $id,
+                $errors[$package_id] = array(
+                        'id'      => $package_id,
                         'rate'    => null,
                         'name'    => (string) $error->Description
                 );
             }
-            if (empty($errors[$id])) {
+            if (empty($errors[$package_id])) {
                 foreach ($package->xpath('Service') as $service) {
-                    $id .= sprintf("_%02d", $service['ID']);
-                    $name = array_filter(array(
-                            (string) $service->MailType,
-                            (string) $service->SvcDescription,
-                    ), 'strlen');
-                    $rates[$id] = array(
-                            'name'         => strip_tags(html_entity_decode(implode(' - ', $name), ENT_QUOTES, 'UTF-8')),
-                            'est_delivery' => (string) $service->SvcCommitments,
-                            'rate'         => (float) $service->Postage,
-                    );
+                    $id = $package_id . sprintf("_%02d", $service['ID']);
+                    $description = (string) $service->SvcDescription;
+
+                    $is_black = false;
+                    foreach ($black_lists as $pattern) {
+                        if (preg_match($pattern, $description)) {
+                            $is_black = true;
+                            break;
+                        }
+                    }
+
+                    if (!$is_black) {
+                        $name = array_filter(array(
+                                (string) $service->MailType,
+                                $description,
+                        ), 'strlen');
+                        $rates[$id] = array(
+                                'name'         => strip_tags(html_entity_decode(implode(' - ', $name), ENT_QUOTES, 'UTF-8')),
+                                'est_delivery' => (string) $service->SvcCommitments,
+                                'rate'         => (float) $service->Postage,
+                        );
+                    }
                 }
             }
         }
         return $rates;
-    }
-
-    /**
-     * @param string $code iso3 code
-     * @throws waException
-     * @return string
-     */
-    private function getCountryName($code) {
-        $country_model = new waCountryModel();
-        $country = $country_model->get($code);
-        if (!$country) {
-            throw new waException($this->plugin->_w("Unknow country: "). $code);
-        }
-        $iso2letter = strtoupper($country['iso2letter']);
-        $country_list = $this->getCountryList();
-        if (!isset($country_list[$iso2letter])) {
-            throw new waException($this->plugin->_w("Unknow country: "). $code);
-        }
-        return $country_list[$iso2letter];
-    }
-
-    private function getCountryList()
-    {
-        return include($this->plugin->getPluginPath().'/lib/config/countries.php');
     }
 }

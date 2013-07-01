@@ -40,7 +40,7 @@ class invoicejurPayment extends waPayment implements waIPayment, waIPaymentCaptu
         /*TODO*/
     }
 
-    public function getPrintForms()
+    public function getPrintForms(waOrder $order = null)
     {
         $forms = array();
         $forms[$this->id] = array(

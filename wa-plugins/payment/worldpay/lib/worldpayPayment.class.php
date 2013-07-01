@@ -1,0 +1,241 @@
+<?php
+
+/**
+ *
+ * @author WebAsyst Team
+ * @name WorldPay
+ * @description WorldPay payment module
+ * @property-read string $instid
+ * @property-read string $test_mode
+ * @property-read string $md5_secret
+ */
+
+class worldpayPayment extends waPayment implements waIPayment
+{
+    /**
+     * transaction status
+     */
+    const STATUS_SUCCESS = 'Y';
+
+    /**
+     * transaction status
+     */
+    const STATUS_CANCELLED = 'N';
+
+    /**
+     * @var numeric
+     */
+    protected $order_id;
+    /**
+     * @var array
+     */
+    protected $request;
+
+    /**
+     * @var string|array
+     */
+    protected $protected_parameters =
+        'instId:cartId:currency:amount:M_app_id:M_merchant_id:M_order_id:M_contact_id';
+
+
+    public function allowedCurrency()
+    {
+        return true;
+    }
+
+    /**
+     * @param array $payment_form_data POST form data
+     * @param waOrder $order_data formalized order data
+     * @param $transaction_type
+     * @return string HTML payment form
+     */
+    public function payment($payment_form_data, $order_data, $transaction_type)
+    {
+        $order = waOrder::factory($order_data);
+
+        return $this->fetch(array(
+            'url' => $this->getUrl(),
+            'fields' => $this->getFields($order),
+        ), '/templates/payment.html');
+    }
+
+    protected function getFields(waOrder $order)
+    {
+        $fields = array();
+
+        // mandatory fields
+        $fields['instId']   = $this->instid;
+        $fields['cartId']   = $order->id;
+        $fields['currency'] = $order->currency;
+        $fields['amount']   = number_format($order->total, 2, ',', '');;
+
+        // optional fields
+        $fields['desc']     = $order->description;
+        $fields['country']  = $this->getCountryISO2Code($order->billing_address['country']);
+        $fields['postcode'] = $order->billing_address['zip'];
+        $fields['address']  = $order->billing_address['address'];
+
+        $name = $order->billing_address['name'];
+        if (!$name) {
+            $name = $order->contact_name;
+        }
+        if ($name) {
+            $fields['name'] = $name;
+        }
+
+        if ($tel = $order->contact_phone) {
+            $fields['tel'] = $tel;
+        }
+
+        if ($email = $order->contact_email) {
+            $fields['email'] = $email;
+        }
+
+        $fields['testMode'] = $this->test_mode ? 100 : 0;
+
+        // custom fields
+        $fields['M_app_id'] = $this->app_id;
+        $fields['M_merchant_id'] = $this->merchant_id;
+        $fields['M_order_id'] = $order->id;
+        $fields['M_contact_id'] = $order->contact_id;
+
+        //signature
+        if ($this->md5_secret) {
+            $signature = array($this->md5_secret);
+            foreach ($this->getProtectedParameters() as $name) {
+                $signature[] = $fields[$name];
+            }
+            $fields['signature'] = md5(implode(':', $signature));
+        }
+
+        return $fields;
+    }
+
+    protected function callbackInit($request)
+    {
+        $this->request = $request;
+        $this->app_id = $request['M_app_id'];
+        $this->merchant_id = $request['M_merchant_id'];
+        $this->order_id = $request['M_order_id'];
+        return parent::callbackInit($request);
+    }
+
+    /**
+     * @param array $request
+     * @throws waPaymentException
+     * @return array|string|void
+     */
+    protected function callbackHandler($request)
+    {
+        $transaction_data = $this->formalizeData($request);
+
+        if (!$this->order_id || !$this->app_id || !$this->merchant_id) {
+            throw new waPaymentException('invalid invoice number');
+        }
+
+        if ($transaction_data['type'] == waPayment::OPERATION_AUTH_CAPTURE) {
+            $app_payment_method = self::CALLBACK_CONFIRMATION;
+        }
+
+        $tm = new waTransactionModel();
+        $fields = array(
+            'native_id' => $transaction_data['native_id'],
+            'plugin'    => $this->id,
+            'type'      => $app_payment_method,
+        );
+        $result = '';
+        if (!$tm->getByFields($fields)) {
+            $transaction_data = $this->saveTransaction($transaction_data, $request);
+            $result = $this->execAppCallback($app_payment_method, $transaction_data);
+            self::addTransactionData($transaction_data['id'], $result);
+        }
+
+        return $result;
+    }
+
+    protected function getProtectedParameters()
+    {
+        if (!is_array($this->protected_parameters)) {
+            $this->protected_parameters = explode(
+                ':',
+                $this->protected_parameters
+            );
+        }
+        return $this->protected_parameters;
+    }
+
+    protected function getUrl()
+    {
+        if ($this->test_mode) {
+            return 'https://secure-test.worldpay.com/wcc/purchase';
+        } else {
+            return 'https://secure.worldpay.com/wcc/purchase';
+        }
+    }
+
+    /**
+     * @param array $assign
+     * @param string $template
+     * @return string
+     */
+    protected function fetch($assign, $template)
+    {
+        $view = wa()->getView();
+        $assign['p'] = $this;
+        $view->assign($assign);
+        return $view->fetch($this->path . $template);
+    }
+
+    /**
+     * @param $iso3code
+     * @return mixed
+     * @throws waException
+     */
+    protected function getCountryISO2Code($iso3code) {
+        $country_model = new waCountryModel();
+        $country = $country_model->get($iso3code);
+        if (!$country) {
+            throw new waException($this->_w("Unknown country: ") . $iso3code);
+        }
+        return strtoupper($country['iso2letter']);
+    }
+
+    protected function formalizeData($transaction_raw_data)
+    {
+        $view_data = array();
+        if ($transaction_raw_data['name']) {
+            $view_data[] = 'Name: ' . $transaction_raw_data['name'];
+        }
+        if ($transaction_raw_data['tel']) {
+            $view_data[] = 'Phone: ' . $transaction_raw_data['phone'];
+        }
+        if ($transaction_raw_data['email']) {
+            $view_data[] = 'Email: ' . $transaction_raw_data['email'];
+        }
+
+        $view_data = implode(' ', $view_data);
+
+        if ($transaction_raw_data['transStatus']) {
+            $type  = waPayment::OPERATION_AUTH_CAPTURE;
+            $state = waPayment::STATE_AUTH;
+        } else {
+            $type  = waPayment::OPERATION_CANCEL;
+            $state = waPayment::STATE_CANCELED;
+        }
+
+        $transaction_data = parent::formalizeData($transaction_raw_data);
+        $transaction_data =  array_merge($transaction_data, array(
+            'type'        => $type,
+            'native_id'   => ifset($transaction_raw_data['transId']),
+            'amount'      => ifset($transaction_raw_data['authAmount']),
+            'currency_id' => ifset($transaction_raw_data['authCurrency']),
+            'customer_id' => ifset($transaction_raw_data['M_contact_id']),
+            'result'      => 1,
+            'order_id'    => ifset($transaction_raw_data['cartId']),
+            'view_data'   => $view_data,
+            'state'       => $state
+        ));
+
+        return $transaction_data;
+    }
+}

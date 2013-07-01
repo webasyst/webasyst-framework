@@ -44,7 +44,7 @@ class vkontakteAuth extends waOAuth2Adapter
     public function getUserData($token)
     {
         // http://vk.com/developers.php?oid=-1&p=users.get
-        $url = self::API_URL."users.get?uid={$token['user_id']}&fields=sex,bdate,timezone,photo_medium&access_token={$token['access_token']}";
+        $url = self::API_URL."users.get?uid={$token['user_id']}&fields=contacts,sex,bdate,timezone,photo_medium&access_token={$token['access_token']}";
         $response = $this->get($url, $status);
         if ($response && $response = json_decode($response, true)) {
             if (isset($response['error'])) {
@@ -62,6 +62,9 @@ class vkontakteAuth extends waOAuth2Adapter
                     'lastname' => $response['last_name'],
                     'photo_url' => $response['photo_medium']
                 );
+                if ($response['home_phone']) {
+                    $data['phone.home'] = $response['home_phone'];
+                }
                 if ($response['sex']) {
                     $data['sex'] = $response['sex'] == 2 ? 'm' : 'f';
                 }

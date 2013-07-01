@@ -149,7 +149,7 @@ class waPageActions extends waActions
         }
 
         foreach ($pages as $page_id => $page) {
-            if ($page['parent_id']) {
+            if (!empty($page['parent_id'])) {
                 unset($pages[$page_id]);
             }
         }

@@ -1,0 +1,10 @@
+<form action="{$url}" method="POST" target="_top">
+    <ul>
+    {foreach $fields as $name => $value}
+        <li>{$name}:
+            <input type="text" name="{$name}" value="{$value|escape}">
+        </li>
+    {/foreach}
+    </ul>
+    <input type="submit" value="{$p->_w('Pay order in WorldPay site')}">
+</form>

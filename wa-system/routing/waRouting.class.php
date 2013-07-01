@@ -145,7 +145,7 @@ class waRouting
                     $https = isset($_SERVER['HTTPS']) ? $_SERVER['HTTPS'] : '';
                     $url = 'http'.(strtolower($https) == 'on' ? 's' : '').'://';
                     $url .= $this->getDomainUrl($domain).'/'.wa()->getConfig()->getRequestUrl();
-                    wa()->getResponse()->redirect($url);
+                    wa()->getResponse()->redirect($url, 301);
                 }
                 return $domain;
             }
@@ -167,7 +167,7 @@ class waRouting
         if (!$r  || ($r['url'] == '*' && $url && strpos(substr($url, -5), '.') === false) && substr($url, -1) !== '/') {
             $r2 = $this->dispatchRoutes($this->getRoutes(), $url.'/');
             if ($r2 && (!$r || $r2['url'] != '*')) {
-                $this->system->getResponse()->redirect($this->system->getRootUrl().$url.'/');
+                $this->system->getResponse()->redirect($this->system->getRootUrl().$url.'/', 301);
             }
         }
         // if route found and app exists
@@ -304,8 +304,7 @@ class waRouting
                             $r['redirect'] = str_replace('*', $m[1], $r['redirect']);
                         }
                     }
-                    header("Location: ".$r['redirect']);
-                    exit;
+                    wa()->getResponse()->redirect($r['redirect'], 301);
                 }
                 if ($vars) {
                     array_shift($match);

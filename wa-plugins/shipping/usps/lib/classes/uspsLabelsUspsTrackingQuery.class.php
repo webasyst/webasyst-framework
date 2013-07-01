@@ -7,49 +7,35 @@
  * Priority Mail®, First-Class Mail® parcels, and package services parcels,
  * including Standard Post™, Media Mail®, and Library Mail.
  */
-class uspsLabelsUspsTrackingQuery extends uspsQuery
+class uspsLabelsUspsTrackingQuery extends uspsLabelsQuery
 {
+    protected static $services = array(
+        'Priority',
+        'First Class',
+        'Standard Post',
+        'Media',
+        'Library'
+    );
     /**
-     * @var array
+     * @see uspsLabelsQuery::getSupportedServices()
      */
-    private $service;
-
-    public function __construct(uspsShipping $plugin, array $params)
+    public function getSupportedServices()
     {
-        // shipping rate ID is abligatory
-        if (!isset($params['shipping_rate_id'])) {
-            throw new waException($plugin->_w("Empty shipping rate id"));
-        }
-
-        $code = str_replace('_', ' ', $params['shipping_rate_id']);
-        $this->service = uspsServices::getServiceByCode($code);
-        if (!$this->service
-                || !in_array($code, $this->getAvailableServices()))
-        {
-            throw new waException($plugin->_w("Unsupported service: ") . $code .
-                $plugin->_w(". Supported services by this API are: ").
-                    implode(", ", $this->getAvailableServices())
-            );
-        }
-
-        $params['weight'] = 16.0 * max(0.1, $params['weight']);
-        parent::__construct($plugin, $params);
+        return self::$services;
     }
 
-    public function getAvailableServices()
+    /**
+     * @param $service
+     * @return bool
+     */
+    public static function isSupportedService($service)
     {
-        return array(
-            'Priority',
-            'First Class',
-            'Standard Post',
-            'Media',
-            'Library'
-        );
+        return in_array($service, self::$services);
     }
 
-    protected function getUrl()
+    protected function getAPIName()
     {
-        return 'https://secure.shippingapis.com/ShippingAPI.dll?API=DeliveryConfirmationV4';
+        return !$this->plugin->test_mode ? 'DeliveryConfirmationV4' : 'DelivConfirmCertifyV4';
     }
 
     /**
@@ -57,68 +43,41 @@ class uspsLabelsUspsTrackingQuery extends uspsQuery
      */
     protected function prepareRequest()
     {
-        $xml = new SimpleXMLElement('<DeliveryConfirmationV4.0Request/>');
+        $xml = new SimpleXMLElement("<{$this->getAPIName()}.0Request/>");
         $xml->addAttribute('USERID', $this->plugin->user_id);
+        $xml->addChild('Option');
+        $xml->addChild('Revision', 2);
+
         $this->addSenderInfo($xml);
         $this->addRecipientInfo($xml);
-        $xml->addChild('WeightInOunces', $this->params['weight']);
-        $xml->addChild('ServiceType', $this->service['name']);
-        $xml->addChild('InsuredAmount', $this->params['price']);
+
+        $xml->addChild('WeightInOunces', $this->getWeight('ounces'));
+        $xml->addChild('ServiceType',    $this->service['name']);
+        //$xml->addChild('InsuredAmount',  $this->getPrice());
         $xml->addChild('SeparateReceiptPage');
+        $xml->addChild('POZipCode', $this->plugin->po_zip);
         $xml->addChild('ImageType', 'PDF');
+        $xml->addChild('CustomerRefNo', $this->params['order_id']);
+        $xml->addChild('Size', 'REGULAR');
 
-        //parent::dumpXml($xml->saveXML());
-        return $xml->saveXML();
-    }
-
-    private function addSenderInfo(&$xml)
-    {
-        $xml->addChild('FromFirm', 'TestFirm');
-        $xml->addChild('FromAddress1');
-        $xml->addChild('FromAddress2', 'From Addres 10');
-        $xml->addChild('FromCity', 'New Your');
-        $xml->addChild('FromState', 'ST');
-
-        $zip = $this->parseZip('01234');
-        $xml->addChild('FromZip5', $zip['zip5']);
-        $xml->addChild('FromZip4', $zip['zip4']);
-    }
-
-    private function addRecipientInfo(&$xml)
-    {
-        $xml->addChild('ToName', $this->getAddress('name'));
-        $xml->addChild('ToFirm');
-        $xml->addChild('ToAddress1');
-        $xml->addChild('ToAddress2', $this->getAddress('address'));
-        $xml->addChild('ToCity', ucfirst($this->getAddress('city')));
-        $xml->addChild('ToState', strtoupper($this->getAddress('region')));
-        $zip = $this->parseZip($this->getAddress('zip'));
-        $xml->addChild('ToZip5', $zip['zip5']);
-        $xml->addChild('ToZip4', $zip['zip4']);
+        // cut out xml header
+        $xml = preg_replace("!^<\?xml .*?\?>!", "", $xml->saveXML());
+        return $xml;
     }
 
     /**
-     * Taking into account zip+4 format
+     * @see uspsLabelsQuery::getConfirmationNumberTagName()
      */
-    private function parseZip($zip)
+    protected function getConfirmationNumberTagName()
     {
-        // tacking into account zip+4 format
-        $zip = array('zip5' => $zip);
-        $zip['zip5'] = trim($zip['zip5']);
-        if (preg_match('/(\d{5})([-\s]*(\d{4}))*/', $zip['zip5'], $m)) {
-            $zip['zip5'] = $m[1];
-            $zip['zip4'] = isset($m[3]) ? $m[3] : null;
-        } else {
-            $zip['zip4'] = null;
-        }
-        return $zip;
+        return 'DeliveryConfirmationNumber';
     }
 
     /**
-     * @see uspsQuery::parseResponse()
+     * @see uspsLabelsQuery::getLabelTagName()
      */
-    protected function parseResponse($response)
+    protected function getLabelTagName()
     {
-        //return $response;
+        return 'DeliveryConfirmationLabel';
     }
 }

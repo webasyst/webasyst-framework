@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WebAsyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2013-06-24 17:42+0400\n"
+"PO-Revision-Date: 2013-06-28 16:16+0400\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -2317,6 +2317,9 @@ msgstr "Подписаться"
 
 msgid "Shopping cart"
 msgstr "Корзина"
+
+msgid "Order by phone"
+msgstr "Заказ по телефону"
 
 msgid "Design theme"
 msgstr "Тема оформления"

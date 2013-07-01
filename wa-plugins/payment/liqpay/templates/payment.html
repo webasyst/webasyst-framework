@@ -1,6 +1,6 @@
-<form action="{$form_url}" method="POST">
-{foreach $hidden_fields as $name => $value}
-    <input type="hidden" name="{$name}" value="{$value|escape}">
-{/foreach}
+<form action="{$form_url}" method="POST" target="_top">
+    {foreach $hidden_fields as $name => $value}
+        <input type="hidden" name="{$name}" value="{$value|escape}">
+    {/foreach}
     <input type="submit" value="Оплатить заказ на сайте Liqpay">
 </form>

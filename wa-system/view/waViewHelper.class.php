@@ -447,14 +447,15 @@ HTML;
         return '<input type="hidden" name="_csrf" value="'.waRequest::cookie('_csrf', '').'" />';
     }
 
-    public function captcha($options = array(), $error = null, $absolute = false)
+    public function captcha($options = array(), $error = null, $absolute = false, $refresh = null)
     {
         if (!is_array($options)) {
+            $refresh = $absolute;
             $absolute = $error;
             $error = $options;
             $options = array();
         }
-        return $this->wa->getCaptcha($options)->getHtml($error, $absolute);
+        return $this->wa->getCaptcha($options)->getHtml($error, $absolute, $refresh);
     }
 
     public function captchaUrl($add_random = true)
@@ -729,6 +730,104 @@ HTML;
 
         return $html;
     }
+
+    public function oauth($provider, $config, $token)
+    {
+        /**
+         * @var waOAuth2Adapter $auth
+         */
+        $auth = wa()->getAuth($provider, $config);
+        $data = $auth->getUserData($token);
+
+
+        if (wa()->getUser()->getId()) {
+            wa()->getUser()->save(array(
+                $data['source'].'_id' => $data['source_id']
+            ));
+            return wa()->getUser();
+        }
+
+        $app_id = wa()->getApp();
+        $contact_id = 0;
+        // find contact by auth adapter id, i.e. facebook_id
+        $contact_data_model = new waContactDataModel();
+        $row = $contact_data_model->getByField(array(
+            'field' => $data['source'].'_id',
+            'value' => $data['source_id'],
+            'sort' => 0
+        ));
+        if ($row) {
+            $contact_id = $row['contact_id'];
+        }
+        // try find user by email
+        if (!$contact_id && isset($data['email'])) {
+            $sql = "SELECT c.id FROM wa_contact_emails e
+            JOIN wa_contact c ON e.contact_id = c.id
+            WHERE e.email = s:email AND e.sort = 0 AND c.password != ''";
+            $contact_model = new waContactModel();
+            $contact_id = $contact_model->query($sql, array('email' => $data['email']))->fetchField('id');
+            // save source_id
+            if ($contact_id) {
+                $contact_data_model->insert(array(
+                    'contact_id' => $contact_id,
+                    'field' => $data['source'].'_id',
+                    'value' => $data['source_id'],
+                    'sort' => 0
+                ));
+            }
+        }
+        // create new contact
+        if (!$contact_id) {
+            $contact = new waContact();
+            $data[$data['source'].'_id'] = $data['source_id'];
+            $data['create_method'] = $data['source'];
+            $data['create_app_id'] = $app_id;
+            // set random password (length = default hash length - 1, to disable ability auth using login and password)
+            $contact->setPassword(substr(waContact::getPasswordHash(uniqid(time(), true)), 0, -1), true);
+            unset($data['source']);
+            unset($data['source_id']);
+            if (isset($data['photo_url'])) {
+                $photo_url = $data['photo_url'];
+                unset($data['photo_url']);
+            } else {
+                $photo_url = false;
+            }
+            $contact->save($data);
+            $contact_id = $contact->getId();
+
+            if ($contact_id && $photo_url) {
+                $photo_url_parts = explode('/', $photo_url);
+                // copy photo to tmp dir
+                $path = wa()->getTempPath('auth_photo/'.$contact_id.'.'.md5(end($photo_url_parts)), $app_id);
+                if (function_exists('curl_init')) {
+                    $ch = curl_init($photo_url);
+                    curl_setopt($ch, CURLOPT_HEADER, 0);
+                    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+                    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 25);
+                    $photo = curl_exec($ch);
+                    curl_close($ch);
+                } else {
+                    $photo = file_get_contents($photo_url);
+                }
+                if ($photo) {
+                    file_put_contents($path, $photo);
+                    $contact->setPhoto($path);
+                }
+            }
+        } else {
+            $contact = new waContact($contact_id);
+        }
+
+        // auth user
+        if ($contact_id) {
+            wa()->getAuth()->auth(array('id' => $contact_id));
+            return $contact;
+        }
+        return false;
+
+    }
+
 
     public function __get($app)
     {

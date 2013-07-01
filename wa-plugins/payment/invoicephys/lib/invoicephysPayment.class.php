@@ -35,7 +35,7 @@ class invoicephysPayment extends waPayment implements waIPayment, waIPaymentCapt
         ;
     }
 
-    public function getPrintForms()
+    public function getPrintForms(waOrder $order = null)
     {
         $forms = array();
         $forms[$this->id] = array(

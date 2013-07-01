@@ -11,8 +11,8 @@ abstract class waOAuth2Adapter extends waAuthAdapter
     {
         parent::__construct($options);
         // @todo: check required options
-        $this->app_id = $this->options['app_id'];
-        $this->app_secret = $this->options['app_secret'];
+        $this->app_id = ifempty($this->options['app_id']);
+        $this->app_secret = ifempty($this->options['app_secret']);
     }
 
     public function auth()

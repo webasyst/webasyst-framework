@@ -167,7 +167,7 @@ class courierShipping extends waShipping
         );
     }
 
-    public function getPrintForms()
+    public function getPrintForms(waOrder $order = null)
     {
         return array(
             'delivery_list' => array(

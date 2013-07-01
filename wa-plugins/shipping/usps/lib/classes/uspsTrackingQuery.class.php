@@ -10,11 +10,16 @@ class uspsTrackingQuery extends uspsQuery
         parent::__construct($plugin, $params);
     }
 
+    protected function getAPIName()
+    {
+        return 'TrackV2';
+    }
+
     protected function getUrl()
     {
         return 'http://production.shippingapis.com/ShippingAPI' . (
                 $this->plugin->test_mode ? 'Test.dll' : '.dll'
-            ) . '?API=TrackV2';
+            );
     }
 
     /**
