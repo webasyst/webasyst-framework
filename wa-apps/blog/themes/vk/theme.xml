@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE theme PUBLIC "wa-app-theme" "http://www.webasyst.com/wa-content/xml/wa-app-theme.dtd">
+<theme id="vk" system="0" vendor="webasyst" author="Webasyst" app="blog" parent_theme_id="site:vk" version="1.0.0">
+    <name locale="en_US">VK</name>
+    <name locale="ru_RU">VK</name>
+    <files>
+        <file path="index.html" custom="0" parent="1">
+        </file>
+        <file path="vk.css" custom="0" parent="1">
+        </file>
+        <file path="vk.js" custom="0" parent="1">
+        </file>        
+        <file path="vk.blog.css" custom="0">
+            <description locale="en_US">Core Blog app CSS</description>
+            <description locale="ru_RU">Основной CSS приложения «Блог»</description>
+        </file>      
+        <file path="content.html" custom="0">
+            <description locale="en_US">Main layout and navigation for the Blog app content</description>
+			<description locale="ru_RU">Основное макет вывода содержимого и навигации в приложении «Блог»</description>
+        </file>
+        <file path="head.html" custom="0">
+			<description locale="en_US">Blog app's &lt;head&gt; instructions</description>
+			<description locale="en_US">Блок &lt;head&gt; приложения «Блог»</description>
+        </file>
+        <file path="stream.html" custom="0">
+            <description locale="en_US">Post stream wrapper</description>
+            <description locale="ru_RU">Обертка для страницы вывода списка записей</description>
+        </file>
+        <file path="stream_search.html" custom="0">
+            <description locale="en_US">Post search (filtering) results, e.g. custom search, by tag, by author</description>
+            <description locale="ru_RU">Результат поиска (фильтрации) записей, например, по тегу или автору</description>
+        </file>
+        <file path="stream_posts.html" custom="0">
+            <description locale="en_US">Default post list view mode</description>
+            <description locale="ru_RU">Основной вид списка записей блога</description>
+        </file>
+        <file path="post.html" custom="0">
+            <description locale="en_US">Dedicated post page</description>
+            <description locale="ru_RU">Страница одной записи блога</description>
+        </file>
+        <file path="page.html" custom="0">
+            <description locale="en_US">Static info page</description>
+            <description locale="ru_RU">Информационная страница</description>
+        </file>
+        <file path="comments.html" custom="0">
+            <description locale="en_US">Post comment list</description>
+            <description locale="ru_RU">Комментарии к записи блога</description>
+        </file>
+        <file path="comment.html" custom="0">
+            <description locale="en_US">One comment template</description>
+            <description locale="ru_RU">Вывод одного комментария из списка</description>
+        </file>
+        <file path="login.html" custom="0">
+            <description locale="en_US">Login page</description>
+            <description locale="ru_RU">Страница входа для пользователей</description>
+        </file>
+        <file path="signup.html" custom="0">
+            <description locale="en_US">Sign up page</description>
+            <description locale="ru_RU">Страница регистрации пользователей</description>
+        </file>
+        <file path="forgotpassword.html" custom="0">
+            <description locale="en_US">Forgot password page</description>
+            <description locale="ru_RU">Страница сброса пароля</description>
+        </file>
+        <file path="error.html" custom="0">
+            <description locale="en_US">404 and other errors</description>
+            <description locale="ru_RU">404 и другие ошибки</description>
+        </file>
+        <file path="navigation.html" custom="0">
+            <description locale="en_US">Internal app navigation</description>
+            <description locale="ru_RU">Внутренняя навигация приложения</description>
+        </file>
+    	<file path="footer.html" custom="0">
+    		<description locale="en_US">App specific footer content</description>
+    		<description locale="ru_RU">Содержимое футера приложения</description>
+        </file>
+        <file path="searchform.html" custom="0">
+    		<description locale="en_US">Internal app search form</description>
+    		<description locale="ru_RU">Форма поиска в приложении</description>
+        </file> 
+    </files>
+    <about locale="en_US">
+<![CDATA[
+<p><b>VK</b> design themes are designed for embedding Webasyst-powered websites into <a href="http://vk.com">VK.com</a> social network as iframe apps. VK theme family is universal — there is a theme for every basic Webasyst app: Site, Blog, Photos, Shop-Script, etc. The parent (main) theme of the family, which includes the basic set of CSS rules and the common layout template index.html, is the VK theme for the Site application. All VK design themes for other apps (e.g., Blog or Photos) link common CSS and index.html layout file from the main theme.</p>
+]]>
+    </about>
+    <about locale="ru_RU">
+<![CDATA[
+<p>Темы <b>VK</b> разработаны для внедрения сайтов, созданных на основе фреймворка Вебасист, в соцсеть «<a href="http://vk.com">Вконтакте</a>» в виде iframe-приложений. Семейство тем VK универсальное — подходит для всех базовых приложений фреймворка Вебасист: Сайт, Блог, Фото, Shop-Script и других. Родительской (основной) темой семейства, включающей в себя базовый набор CSS-стилей и общий макет дизайна index.html, является тема для приложения «Сайт». Все темы VK для других приложений (Блог, Фото и других) используют базовый CSS и index.html из родительской (основной) темы.</p>
+]]>
+    </about>    
+</theme>
