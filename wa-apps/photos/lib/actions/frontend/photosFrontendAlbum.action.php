@@ -32,6 +32,17 @@ class photosFrontendAlbumAction extends photosFrontendCollectionViewAction
 
         $breadcrumbs = $this->album_model->getBreadcrumbs($this->album['id'], true);
 
+        if ($breadcrumbs) {
+            $root_album = reset($breadcrumbs);
+            $root_album_id = $root_album['album_id'];
+        } else {
+            $root_album_id = $this->album['id'];
+        }
+        $this->view->assign('root_album_id', $root_album_id);
+        if ($this->layout) {
+            $this->layout->assign('root_album_id', $root_album_id);
+        }
+
         // "childcrumbs" - list of childs (sub-albums). Use in 'plain' template
         $childcrumbs = $this->album_model->getChildcrumbs($this->album['id'], true);
         waRequest::setParam('breadcrumbs', $breadcrumbs);

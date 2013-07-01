@@ -88,7 +88,7 @@ class photosAlbumSaveController extends waJsonController
                 if (count($param) < 2) {
                     continue;
                 }
-                $params[$param[0]] = $param[1];
+                $params[$param[0]] = trim($param[1]);
             }
             $params = $params ? $params : null;
 

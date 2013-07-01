@@ -1,0 +1,30 @@
+<!-- plugin hook -->
+{* @event frontend_layout.%plugin_id%.header *}
+{foreach $frontend_layout as $item}{if !empty($item.header)}{$item.header}{/if}{/foreach}
+
+{$photos_pages=$wa->photos->pages()}
+
+{include file="`$wa_active_theme_path`/navigation.html"}
+
+{if !empty($root_page_id) && !empty($photos_pages[$root_page_id].childs)}
+    <!-- sub pages tree -->
+    <div class="sidebar right facebook-tree">
+        {wa_print_tree tree=$photos_pages[$root_page_id].childs class="menu-v" attrs = 'id="page-list"' elem ='<a href=":url">:name</a>' collapsible_class='collapsible' selected=$wa->param('page_id')|default:0}
+    </div>
+{/if}
+
+<!-- photos app content -->
+<div class="content block{if !empty($photos_pages[ $wa->param('page_id') ].childs)} right{/if}" {if $action == 'photo'} itemscope itemtype="http://schema.org/Photograph"{/if}>
+
+    <!-- integrnal navigation breadcrumbs -->
+    {if isset($breadcrumbs) && $action != 'page'}
+        <div class="breadcrumbs">
+            {foreach $breadcrumbs as $breadcrumb}
+                <a href="{$breadcrumb.url}">{$breadcrumb.name|escape}</a> <span class="rarr">&rarr;</span>
+            {/foreach}
+        </div>
+    {/if}
+
+    {$content}
+    
+</div>

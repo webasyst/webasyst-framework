@@ -452,6 +452,7 @@ class photosAlbumModel extends waModel
             ))->fetch();
             if ($album) {
                 $breadcrumbs[] = array(
+                    'album_id' => $album['id'],
                     'name' => $escape ? photosPhoto::escape($album['name']) : $album['name'],
                     'full_url' => photosFrontendAlbum::getLink($album),
                     'status' => $album['status']
