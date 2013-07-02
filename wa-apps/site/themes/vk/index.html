@@ -1,10 +1,10 @@
-{$vk_api_id = "YOUR API_ID"}
-{$vk_api_secret = "YOUR API_SECRET"}
+{$vk_app_id = "YOUR_APP_ID"}
+{$vk_app_secret = "YOUR_APP_SECRET"}
 {$viewer_id = $wa->get('viewer_id')}
-{if $viewer_id && (!$wa->user()->isAuth() || $wa->user('vkontakte_id') != $wa->get('viewer_id'))}
-    {$auth_key = md5("`$vk_api_id`_`$viewer_id`_`$vk_api_secret`")}
+{if $viewer_id}
+    {$auth_key = md5("`$vk_app_id`_`$viewer_id`_`$vk_app_secret`")}
     {if $auth_key === $wa->get('auth_key')}
-        {$auth_user = $wa->oauth('vkontakte', [], ['user_id'=> $viewer_id, 'access_token' => $wa->get('access_token')])}
+        {$wa->storage('vk_user_id', $viewer_id)}
     {/if}
 {/if}
 
@@ -42,7 +42,6 @@
     The 'url' must represent the URL you have entered in your Site routing settings for the appropriate VK-enabled app, i.e. Shop-Script, Blog, Photos, Site, etc.
 
 *}
-            
 <!DOCTYPE html>
 <html>
 <head>

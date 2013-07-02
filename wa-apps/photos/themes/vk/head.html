@@ -14,3 +14,12 @@
 
     {* @event frontend_assets.%plugin_id% *}
     {foreach $frontend_assets as $item}{if !empty($item)}{$item}{/if}{/foreach}
+<script>
+    $(window).on('photosLoaded', function () {
+        VK.callMethod('scrollTop');
+    });
+    VK.addCallback('onScrollTop', function(scroll){
+        VK.callMethod("resizeWindow", $("body").outerWidth(), $("body").outerHeight());
+    });
+
+</script>

@@ -246,7 +246,7 @@ HTML;
         $url = $this->wa->getConfig()->getCurrentUrl();
         if ($without_params) {
             if (($i = strpos($url, '?')) !== false) {
-                return substr($url, 0, $i);
+                $url = substr($url, 0, $i);
             }
         }
         if ($absolute) {
@@ -356,6 +356,15 @@ HTML;
             }
         } elseif (func_num_args() == 2) {
             self::$params[$key] = $value;
+        }
+    }
+
+    public function storage($key, $value = null)
+    {
+        if ($value === null) {
+            return wa()->getStorage()->get($key);
+        } else {
+            wa()->getStorage()->set($key, $value);
         }
     }
 
@@ -731,14 +740,16 @@ HTML;
         return $html;
     }
 
-    public function oauth($provider, $config, $token)
+    public function oauth($provider, $config, $token, $code = null)
     {
         /**
          * @var waOAuth2Adapter $auth
          */
         $auth = wa()->getAuth($provider, $config);
+        if (!$token && $code) {
+            $token = $auth->getAccessToken($code);
+        }
         $data = $auth->getUserData($token);
-
 
         if (wa()->getUser()->getId()) {
             wa()->getUser()->save(array(
@@ -827,7 +838,6 @@ HTML;
         return false;
 
     }
-
 
     public function __get($app)
     {

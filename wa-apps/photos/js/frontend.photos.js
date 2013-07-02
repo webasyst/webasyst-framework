@@ -91,6 +91,7 @@ $(function() {
                     }
                 }
             }
+            $(window).trigger('photosLoaded');
         },
 
         shiftPhotoInStack: function f(toward, stack_nav) {

@@ -975,10 +975,10 @@ elRTE.prototype.ui.prototype.buttons.wa_image = function(rte, name) {
 
             switch (name) {
                 case 'width':
-                    self.img.css('width', val);
+                    self.img.css('width', val).attr('width', val);
                     break;
                 case 'height':
-                    self.img.css('height', val);
+                    self.img.css('height', val).attr('height', val);
                     break;
                 case 'align':
                     self.img.css(val == 'left' || val == 'right' ? 'float' : 'vertical-align', val);
