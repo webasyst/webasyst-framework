@@ -13,7 +13,6 @@ class uspsRatingsQuery extends uspsQuery
         $country = $this->getAddress('country');
         $type = uspsServices::getTypeByCountry($country);
 
-        $filter = array();
         if ($type == uspsServices::TYPE_DOMESTIC) {
             $filter = array_keys($this->plugin->services_domestic);
         } else {
@@ -78,20 +77,22 @@ class uspsRatingsQuery extends uspsQuery
             $package->addAttribute('ID', str_replace(' ', '_', $service['code']));
             switch ($type) {
                 case 'Domestic':
-                    $package = $this->prepareDomesticPackage($package, $service);
+                    $this->prepareDomesticPackage($package, $service);
                     break;
                 case 'International':
-                    $package = $this->prepareInternationalPackage($package, $service);
+                    $this->prepareInternationalPackage($package, $service);
                     break;
             }
         }
-
-/*        self::dumpXml($xml->saveXML());
-        exit;*/
-
         return $xml->saveXML();
     }
 
+    /**
+     * @param SimpleXMLElement $package
+     * @param mixed[string] $service
+     * @return mixed
+     * @throws waException
+     */
     private function prepareDomesticPackage($package, $service)
     {
         $code = strtoupper($service['code']);
@@ -193,6 +194,11 @@ class uspsRatingsQuery extends uspsQuery
         return $rates;
     }
 
+    /**
+     * @param SimpleXMLElement $xml
+     * @param $errors
+     * @return array
+     */
     private function parseRateV4Response($xml, &$errors)
     {
         $rates = array();

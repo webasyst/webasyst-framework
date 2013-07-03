@@ -9,7 +9,7 @@ class uspsServices
     {
         $services = array();
         $filter_map = array_flip($filter);
-        foreach (self::getServices($type) as $k => $s) {
+        foreach (self::getServices($type) as $s) {
             if (isset($filter_map[$s['id']])) {
                 $services[] = $s;
             }

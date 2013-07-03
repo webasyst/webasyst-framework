@@ -78,6 +78,9 @@ class uspsLabelsExpressMailQuery extends uspsLabelsQuery
         return $xml;
     }
 
+    /**
+     * @param SimpleXMLElement $xml
+     */
     protected function addSenderInfo(&$xml)
     {
         $p = $this->plugin;
@@ -95,6 +98,9 @@ class uspsLabelsExpressMailQuery extends uspsLabelsQuery
         $xml->addChild('FromPhone', $p->phone);
     }
 
+    /**
+     * @param SimpleXMLElement $xml
+     */
     protected function addRecipientInfo(&$xml)
     {
         $name = $this->getAddress('name');

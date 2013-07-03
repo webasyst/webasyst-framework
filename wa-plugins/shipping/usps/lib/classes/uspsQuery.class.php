@@ -98,7 +98,7 @@ abstract class uspsQuery
     }
 
     /**
-     * @param numeric $weight
+     * @param double $weight
      * @return array
      */
     protected function parseWeight($weight)

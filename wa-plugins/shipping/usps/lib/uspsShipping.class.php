@@ -52,20 +52,26 @@ class uspsShipping extends waShipping
     protected function init()
     {
         $autoload = waAutoload::getInstance();
-        $classes_dir = "/lib/classes";
         foreach (
-                new DirectoryIterator($this->path . $classes_dir)
-                as $file_info)
+            array(
+                 'uspsLabelsExpressMailQuery',
+                 'uspsLabelsInternationalShippingQuery',
+                 'uspsLabelsUspsTrackingQuery',
+                 'uspsLabelsQuery',
+                 'uspsLabelsSignatureConfirmationQuery',
+                 'uspsQuery',
+                 'uspsRatingsQuery',
+                 'uspsServices',
+                 'uspsTrackingQuery'
+             ) as
+         $class_name)
         {
-            if ($file_info->isDot() || $file_info->isDir()) {
-                continue;
-            }
-            $name = $file_info->getFilename();
-            if (preg_match("!(^.*?)\.class\.php$!", $name, $m)) {
-                $autoload->add($m[1], "wa-plugins/shipping/usps" . $classes_dir . "/" . $name);
-            }
+            $autoload->add(
+                $class_name,
+                "wa-plugins/shipping/usps/lib/classes/$class_name.class.php"
+            );
         }
-        return parent::init();
+        parent::init();
     }
 
     /**
@@ -92,7 +98,7 @@ class uspsShipping extends waShipping
     public function calculate()
     {
         $this->correctItems();
-        $rates = (array)$this->executeQuery(
+        $rates = $this->executeQuery(
             'ratings', array(
                 'weight' => $this->getTotalWeight(),
                 'address' => $this->getAddress()
@@ -137,11 +143,11 @@ class uspsShipping extends waShipping
      */
     private function getQuery($name, $params)
     {
-        $class_name = 'usps'.ucfirst($name).'Query';
+        $class_name = 'usps' . ucfirst($name) . 'Query';
         if ($params === true) {
             return $class_name;
         }
-        $params = (array) $params;
+        $params = (array)$params;
         if (!class_exists($class_name)) {
             throw new waException($this->_w("Unsupported API"));
         }
@@ -156,7 +162,7 @@ class uspsShipping extends waShipping
     public function requestedAddressFields()
     {
         return array(
-            'zip' =>     array('cost' => true),
+            'zip' => array('cost' => true),
             'country' => array('cost' => true)
         );
     }
@@ -214,7 +220,7 @@ class uspsShipping extends waShipping
         $forms = array();
         foreach ($all_forms as $name => $form) {
             $query_name = implode('', array_map("ucfirst", explode('_', $name)));
-            $query = $this->getQuery('labels'.$query_name, true);
+            $query = $this->getQuery('labels' . $query_name, true);
             $service = $this->getServiceCodeByOrder($order);
             $type = uspsServices::getServiceType($service['id']);
 
@@ -223,7 +229,8 @@ class uspsShipping extends waShipping
                     $forms[$name] = $form;
                 }
             } else {
-                if ($type == uspsServices::TYPE_DOMESTIC && $query::isSupportedService($service['code'])) {
+
+                if ($type == uspsServices::TYPE_DOMESTIC && call_user_func_array(array($query,'isSupportedService'),array($service['code']))) {
                     $forms[$name] = $form;
                 }
             }
@@ -256,14 +263,14 @@ class uspsShipping extends waShipping
         $address['name'] = htmlspecialchars(!empty($address['name']) ? $address['name'] : $order->contact_name);
 
         try {
-            $response = $this->executeQuery('labels'.$suffix,
+            $response = $this->executeQuery('labels' . $suffix,
                 array(
-                    'service'  => $service_name,
+                    'service' => $service_name,
                     'order_id' => $order['id'],
-                    'weight'   => $this->getTotalWeight(),
-                    'price'    => $this->getTotalPrice(),
-                    'items'    => $this->getItems(),
-                    'address'  => $address,
+                    'weight' => $this->getTotalWeight(),
+                    'price' => $this->getTotalPrice(),
+                    'items' => $this->getItems(),
+                    'address' => $address,
                 ), false
             );
             header('Content-type: application/pdf');

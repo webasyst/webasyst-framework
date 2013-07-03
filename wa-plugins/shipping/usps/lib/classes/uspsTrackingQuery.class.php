@@ -3,7 +3,7 @@
 class uspsTrackingQuery extends uspsQuery
 {
     public function __construct(uspsShipping $plugin, array $params) {
-        // tracking ID is abligatory
+        // tracking ID is obligatory
         if (!isset($params['tracking_id'])) {
             throw new waException($plugin->_w("Empty tracking ID"));
         }
@@ -48,7 +48,7 @@ class uspsTrackingQuery extends uspsQuery
         try {
             $xml = new SimpleXMLElement($response);
         } catch (Exception $e) {
-            throw new waException($this->_w("Xml isn't well-formed"));
+            throw new waException($this->plugin->_w("Xml isn't well-formed"));
         }
 
         $response = '';

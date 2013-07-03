@@ -51,6 +51,9 @@ abstract class uspsLabelsQuery extends uspsQuery
         return 'https://secure.shippingapis.com/ShippingAPI.dll';
     }
 
+    /**
+     * @param SimpleXMLElement $xml
+     */
     protected function addSenderInfo(&$xml)
     {
         $p = $this->plugin;
@@ -66,6 +69,9 @@ abstract class uspsLabelsQuery extends uspsQuery
         $xml->addChild('FromZip4', $zip['zip4']);
     }
 
+    /**
+     * @param SimpleXMLElement $xml
+     */
     protected function addRecipientInfo(&$xml)
     {
         $name = $this->getAddress('name');
