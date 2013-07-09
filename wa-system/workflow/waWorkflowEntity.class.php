@@ -66,12 +66,12 @@ class waWorkflowEntity
      * @param $opt
      * @return mixed
      */
-    public function getOption($opt)
+    public function getOption($opt, $default=null)
     {
         if (isset($this->options[$opt])) {
             return $this->options[$opt];
         }
-        return null;
+        return $default;
     }
 
     /**

@@ -999,7 +999,6 @@ function usleepWindows($usec)
 	while ($timePassed < $usec);
 }
 
-?><?php
 
 
 

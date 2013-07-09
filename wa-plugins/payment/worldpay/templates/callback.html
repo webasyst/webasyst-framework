@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+    {if empty($result.rp_not_equal)}
+        <meta http-equiv="refresh" content="0;url={$result.back_url}">
+    {/if}
+    <title>[`Transaction completed`]</title>
+<body>
+{if !empty($result.rp_not_equal)}
+    {$result.p->_w('Worldpay payment plugin not well configured. Contact with shop administrator')}
+    <a href="{$result.back_url}">{$result.p->_w('Back to shop')}</a>
+{/if}
+</body>
+</html>

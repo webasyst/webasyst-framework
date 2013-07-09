@@ -2,7 +2,7 @@
 /**
  * Project:     Smarty: the PHP compiling template engine
  * File:        Smarty.class.php
- * SVN:         $Id: Smarty.class.php 4658 2012-09-11 16:23:30Z uwe.tews@googlemail.com $
+ * SVN:         $Id: Smarty.class.php 4742 2013-06-17 13:30:49Z Uwe.Tews@googlemail.com $
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -28,7 +28,7 @@
  * @author Uwe Tews
  * @author Rodney Rehm
  * @package Smarty
- * @version 3.1.12
+ * @version 3.1-DEV
  */
 
 /**
@@ -113,7 +113,7 @@ class Smarty extends Smarty_Internal_TemplateBase {
     /**
      * smarty version
      */
-    const SMARTY_VERSION = 'Smarty-3.1.12';
+    const SMARTY_VERSION = 'Smarty-3.1.14';
 
     /**
      * define variable scopes
@@ -128,6 +128,11 @@ class Smarty extends Smarty_Internal_TemplateBase {
     const CACHING_OFF = 0;
     const CACHING_LIFETIME_CURRENT = 1;
     const CACHING_LIFETIME_SAVED = 2;
+    /**
+     * define constant for clearing cache files be saved expiration datees
+     */
+    const CLEAR_EXPIRED = -1; 
+
     /**
      * define compile check modes
      */
@@ -1323,9 +1328,9 @@ class Smarty extends Smarty_Internal_TemplateBase {
      * @param int $max_errors
      * @return integer number of template files recompiled
      */
-    public function compileAllTemplates($extention = '.tpl', $force_compile = false, $time_limit = 0, $max_errors = null)
+    public function compileAllTemplates($extension = '.tpl', $force_compile = false, $time_limit = 0, $max_errors = null)
     {
-        return Smarty_Internal_Utility::compileAllTemplates($extention, $force_compile, $time_limit, $max_errors, $this);
+        return Smarty_Internal_Utility::compileAllTemplates($extension, $force_compile, $time_limit, $max_errors, $this);
     }
 
     /**
@@ -1337,9 +1342,9 @@ class Smarty extends Smarty_Internal_TemplateBase {
      * @param int $max_errors
      * @return integer number of template files recompiled
      */
-    public function compileAllConfig($extention = '.conf', $force_compile = false, $time_limit = 0, $max_errors = null)
+    public function compileAllConfig($extension = '.conf', $force_compile = false, $time_limit = 0, $max_errors = null)
     {
-        return Smarty_Internal_Utility::compileAllConfig($extention, $force_compile, $time_limit, $max_errors, $this);
+        return Smarty_Internal_Utility::compileAllConfig($extension, $force_compile, $time_limit, $max_errors, $this);
     }
 
     /**
@@ -1392,10 +1397,12 @@ class Smarty extends Smarty_Internal_TemplateBase {
         // add the SMARTY_DIR to the list of muted directories
         if (!isset(Smarty::$_muted_directories[SMARTY_DIR])) {
             $smarty_dir = realpath(SMARTY_DIR);
-            Smarty::$_muted_directories[SMARTY_DIR] = array(
-                'file' => $smarty_dir,
-                'length' => strlen($smarty_dir),
-            );
+            if ($smarty_dir !== false) {
+                Smarty::$_muted_directories[SMARTY_DIR] = array(
+                    'file' => $smarty_dir,
+                    'length' => strlen($smarty_dir),
+                );
+            }
         }
 
         // walk the muted directories and test against $errfile
@@ -1403,6 +1410,11 @@ class Smarty extends Smarty_Internal_TemplateBase {
             if (!$dir) {
                 // resolve directory and length for speedy comparisons
                 $file = realpath($key);
+                if ($file === false) {
+                    // this directory does not exist, remove and skip it
+                    unset(Smarty::$_muted_directories[$key]);
+                    continue;
+                }
                 $dir = array(
                     'file' => $file,
                     'length' => strlen($file),
@@ -1481,8 +1493,9 @@ if (Smarty::$_CHARSET !== 'UTF-8') {
  * @package Smarty
  */
 class SmartyException extends Exception {
+    public static $escape = true;
     public function __construct($message) {
-        $this->message = htmlentities($message);
+        $this->message = self::$escape ? htmlentities($message) : $message;
     }
 }
 

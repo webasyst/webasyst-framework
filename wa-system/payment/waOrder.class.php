@@ -48,7 +48,6 @@
  * @property array[string]string $billing_address['country_name']
  * @property array[string]string $billing_address['address']
  *
- *
  * @property array $items
  * @property array[][string]string  $items[]['id']
  * @property array[][string]string  $items[]['name']
@@ -77,6 +76,10 @@ class waOrder implements ArrayAccess
     private $contact;
     private $alias;
 
+    /**
+     * @param array|waOrder $data
+     * @return waOrder
+     */
     public static function factory($data = array())
     {
         if ($data instanceof self) {
@@ -118,7 +121,9 @@ class waOrder implements ArrayAccess
     }
 
     /**
-     * @param offset
+     * @param mixed $offset
+     * @return bool
+     * @internal param $offset
      */
     public function offsetExists($offset)
     {
@@ -130,7 +135,8 @@ class waOrder implements ArrayAccess
     }
 
     /**
-     * @param offset
+     * @param $offset
+     * @return mixed|null
      */
     public function offsetGet($offset)
     {
@@ -154,8 +160,9 @@ class waOrder implements ArrayAccess
     }
 
     /**
-     * @param offset
-     * @param value
+     * @param $offset
+     * @param $value
+     * @return mixed|void
      */
     public function offsetSet($offset, $value)
     {
@@ -169,7 +176,7 @@ class waOrder implements ArrayAccess
     }
 
     /**
-     * @param offset
+     * @param mixed $offset
      */
     public function offsetUnset($offset)
     {

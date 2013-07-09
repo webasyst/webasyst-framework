@@ -3,7 +3,7 @@
  *
  * @author WebAsyst Team
  * @name WebMoney
- * @description WebMoney pament module
+ * @description WebMoney payment module
  * @property-read string $LMI_MERCHANT_ID
  * @property-read string $LMI_PAYEE_PURSE
  * @property-read string $secret_key
@@ -80,7 +80,8 @@ class webmoneyPayment extends waPayment implements waIPayment
 
     /**
      *
-     * @param $data - get from gateway
+     * @param array $data - get from gateway
+     * @throws waException
      * @return void
      */
     protected function callbackHandler($data)
@@ -239,7 +240,7 @@ class webmoneyPayment extends waPayment implements waIPayment
 
     /**
      * Convert transaction raw data to formatted data
-     * @param array $data - transaction raw data
+     * @param array $transaction_raw_data - transaction raw data
      * @return array $transaction_data
      */
     protected function formalizeData($transaction_raw_data)

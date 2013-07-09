@@ -19,7 +19,7 @@ class webasystSitemapConfig extends waSitemapConfig
         foreach ($domain_apps as $app_id => $app) {
             if (file_exists($system->getAppPath('lib/config/'.$app_id.'SitemapConfig.class.php', $app_id))) {
                 echo '<sitemap>
-<loc>'.$system->getRootUrl(true).'sitemap-'.$app_id.'.xml</loc>
+<loc>'.$system->getRootUrl(true, true).'sitemap-'.$app_id.'.xml</loc>
       <lastmod>'.date('c').'</lastmod>
 </sitemap>';
             }

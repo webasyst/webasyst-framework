@@ -29,7 +29,7 @@ function smarty_function_wa_pagination($params, &$smarty)
             $p = $p < $page ? $page - $n : $total - $nb + 1;
             $html .= '<li>...</li>';
         } else {
-            $url_params = preg_replace('/&?page=[0-9]+?/i', '', waRequest::server('QUERY_STRING', ''));
+            $url_params = preg_replace('/&?page=[0-9]*/i', '', waRequest::server('QUERY_STRING', ''));
             if (substr($url_params, -1) == '&') {
                 $url_params = substr($url_params, 0, -1);
             }

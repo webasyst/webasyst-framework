@@ -63,6 +63,12 @@ abstract class waPayment extends waSystemPlugin
      * @var string
      */
     const CALLBACK_CHARGEBACK = 'chargeback';
+    /**
+     * Обработка информационного сообщения
+     * @var string
+     */
+    const CALLBACK_NOTIFY = 'notify';
+
 
     /**
      * Operation types
@@ -168,14 +174,17 @@ abstract class waPayment extends waSystemPlugin
     /**
      *
      * Get payment plugin instance
-     * @param string $id
-     * @param waiPluginSettings $adapter optional
-     * @param int $merchant_id Merchant key
+     * @param string $id plugin identity (e.g. cash, paypal, etc.)
+     * @param int $merchant_id Merchant settings key
+     * @param string|waAppPayment $app_adapter app_id or application adapter
      * @return waPayment
      */
     public static function factory($id, $merchant_id = null, $app_adapter = null)
     {
         $instance = parent::factory($id, $merchant_id, self::PLUGIN_TYPE);
+        /**
+         * @var waPayment $instance
+         */
         if ($app_adapter && ($app_adapter instanceof waAppPayment)) {
             $instance->app_adapter = $app_adapter;
         } elseif ($app_adapter && is_string($app_adapter)) {
@@ -188,6 +197,7 @@ abstract class waPayment extends waSystemPlugin
     /**
      * Enumerate available payment plugins
      * @param $options array
+     * @param null $type will be ignored
      * @return array
      */
     final public static function enumerate($options = array(), $type = null)
@@ -199,14 +209,16 @@ abstract class waPayment extends waSystemPlugin
      *
      * Get plugin description
      * @param string $id
-     * @return array[string]string
-     * @return array['name']string
-     * @return array['description']string
-     * @return array['version']string
-     * @return array['build']string
-     * @return array['logo']string
-     * @return array['icon'][int]string
-     * @return array['img']string
+     * @param array $options
+     * @param null $type will be ignored
+     * @return string[string]
+     * @return string['name']
+     * @return string['description']
+     * @return string['version']
+     * @return string['build']
+     * @return string['logo']
+     * @return string[unt]['icon'][int]
+     * @return string['img']
      */
     final public static function info($id, $options = array(), $type = null)
     {
@@ -278,8 +290,8 @@ abstract class waPayment extends waSystemPlugin
     protected function callbackInit($request)
     {
         self::log($this->id, array(
-            'method'      => __METHOD__,
-            'app_id'      => $this->app_id,
+            'method' => __METHOD__,
+            'app_id' => $this->app_id,
             'merchant_id' => $this->merchant_id,
         ));
         return $this;
@@ -309,10 +321,10 @@ abstract class waPayment extends waSystemPlugin
     protected function execAppCallback($method, $transaction_data)
     {
         $default = array(
-            'order_id'    => null,
+            'order_id' => null,
             'customer_id' => null,
-            'result'      => true,
-            'error'       => null,
+            'result' => true,
+            'error' => null,
         );
         try {
             $result = $this->getAdapter()->execCallbackHandler($method, $transaction_data);
@@ -323,18 +335,18 @@ abstract class waPayment extends waSystemPlugin
             $result = array_merge($default, $result);
         } else {
             self::log($this->id, array(
-                'method'          => __METHOD__,
+                'method' => __METHOD__,
                 'callback_method' => $method,
-                'app_id'          => $this->app_id,
-                'warning'         => 'empty callback response',
+                'app_id' => $this->app_id,
+                'warning' => 'empty callback response',
             ));
             $result = $default;
         }
         self::log($this->id, array(
-            'method'           => __METHOD__,
-            'callback_method'  => $method,
+            'method' => __METHOD__,
+            'callback_method' => $method,
             'transaction_data' => var_export($transaction_data, true),
-            'result'           => var_export($result, true),
+            'result' => var_export($result, true),
         ));
         return $result;
     }
@@ -447,7 +459,7 @@ abstract class waPayment extends waSystemPlugin
     protected static function log($module_id, $data)
     {
         $module_id = strtolower($module_id);
-        $filename = 'payment/'.$module_id.'Payment.log';
+        $filename = 'payment/' . $module_id . 'Payment.log';
         $rec = "data:\n";
         if (is_array($data)) {
             foreach ($data as $key => $val) {
@@ -462,10 +474,9 @@ abstract class waPayment extends waSystemPlugin
     /**
      * Saves formatted data and raw data to DB
      *
-     * @param $transaction_data array
-     * @param $transaction_raw_data array
-     *
-     * @return int - transaction_id
+     * @param $wa_transaction_data
+     * @param array $transaction_raw_data
+     * @return array
      *
      * @tutorial $transaction_data array format:
      * type – one of: 'AUTH+CAPTURE', 'AUTH ONLY', 'CAPTURE', 'REFUND', 'CANCEL', 'CHARGEBACK'
@@ -493,7 +504,7 @@ abstract class waPayment extends waSystemPlugin
 
         if (!empty($wa_transaction_data['parent_id']) && !empty($wa_transaction_data['parent_state'])) {
             $transaction_model->updateById($wa_transaction_data['parent_id'], array(
-                'state'           => $wa_transaction_data['parent_state'],
+                'state' => $wa_transaction_data['parent_state'],
                 'update_datetime' => date('Y-m-d H:i:s')
             ));
         }
@@ -547,7 +558,7 @@ abstract class waPayment extends waSystemPlugin
         $transaction_raw_data = $transaction['raw_data'];
         unset($transaction['raw_data']);
 
-        $instance = self::factory($id, null, $transaction['merchant_id']);
+        $instance = self::factory($transaction['plugin'], $transaction['merchant_id'], $transaction['app_id']);
 
         $result = $instance->allowedTransactionCustomized($transaction, $transaction_raw_data);
         if ($result) {
@@ -576,6 +587,7 @@ abstract class waPayment extends waSystemPlugin
         }
         return $operations;
     }
+
     /**
      * Convert transaction raw data to formatted data
      * @param array $transaction_raw_data
@@ -584,10 +596,10 @@ abstract class waPayment extends waSystemPlugin
     protected function formalizeData($transaction_raw_data)
     {
         $transaction_data = array(
-            'plugin'      => $this->id,
+            'plugin' => $this->id,
             'merchant_id' => $this->merchant_id,
-            'date_time'   => date('Y-m-d H:i:s'),
-            'result'      => true
+            'date_time' => date('Y-m-d H:i:s'),
+            'result' => true
         );
         return $transaction_data;
     }
@@ -644,11 +656,12 @@ abstract class waPayment extends waSystemPlugin
     }
 
     /**
+     * @param bool $force_https
      * @return string callback relay url
      */
     public final function getRelayUrl($force_https = null)
     {
-        $url = wa()->getRootUrl(true).'payments.php/'.$this->id.'/';
+        $url = wa()->getRootUrl(true) . 'payments.php/' . $this->id . '/';
         //TODO detect - is allowed https
         if ($force_https) {
             $url = preg_replace('@^http://@', 'https://', $url);
@@ -686,7 +699,7 @@ abstract class waPayment extends waSystemPlugin
     private function guide()
     {
         if ($this->guide === null) {
-            $path = $this->path.'/lib/config/guide.php';
+            $path = $this->path . '/lib/config/guide.php';
             if (file_exists($path)) {
                 $this->guide = include($path);
 
@@ -700,7 +713,7 @@ abstract class waPayment extends waSystemPlugin
                 }
                 unset($guide);
             }
-            if (!is_array($this->guide )) {
+            if (!is_array($this->guide)) {
                 $this->guide = array();
             }
         }
@@ -712,12 +725,12 @@ abstract class waPayment extends waSystemPlugin
 
         $controls = array();
         $default = array(
-            'instance'            => & $this,
-            'title_wrapper'       => '%s',
+            'instance' => & $this,
+            'title_wrapper' => '%s',
             'description_wrapper' => '<br><span class="hint">%s</span>',
-            'translate'           => array(&$this, '_w'),
-            'readonly'            => true,
-            'control_wrapper'     => '
+            'translate' => array(&$this, '_w'),
+            'readonly' => true,
+            'control_wrapper' => '
 <div class="field">
     <div class="name">%s</div>
     <div class="value">%s%s</div>
@@ -734,14 +747,14 @@ abstract class waPayment extends waSystemPlugin
             unset($params['namespace']);
         }
         $params = array_merge($default, $params);
-        ifempty($params['class'],'');
+        ifempty($params['class'], '');
         $params['class'] .= ' long';
 
         $replace = array(
-            '%RELAY_URL%'       => $this->getRelayUrl(),
-            '%HTTP_RELAY_URL%'  => $this->getRelayUrl(false),
+            '%RELAY_URL%' => $this->getRelayUrl(),
+            '%HTTP_RELAY_URL%' => $this->getRelayUrl(false),
             '%HTTPS_RELAY_URL%' => $this->getRelayUrl(true),
-            '%APP_ID%'          => $this->app_id,
+            '%APP_ID%' => $this->app_id,
         );
 
         foreach ($this->guide() as $name => $row) {
@@ -783,6 +796,7 @@ abstract class waPayment extends waSystemPlugin
 
     /**
      *
+     * @throws waException
      * @return waAppPayment
      */
     final protected function getAdapter()
@@ -797,7 +811,7 @@ abstract class waPayment extends waSystemPlugin
             waSystem::setActive($this->app_id);
 
             #check adapter class
-            $app_class = $this->app_id.'Payment';
+            $app_class = $this->app_id . 'Payment';
             if (!class_exists($app_class)) {
                 throw new waException(sprintf('Application adapter %s not found for %s', $app_class, $this->app_id));
             }
@@ -812,11 +826,13 @@ abstract class waPayment extends waSystemPlugin
     }
 
 }
+
 interface waIPayment
 {
     /**
      * @param array $payment_form_data POST form data
      * @param waOrder $order_data formalized order data
+     * @param string $transaction_type
      * @return string HTML payment form
      */
     public function payment($payment_form_data, $order_data, $transaction_type);

@@ -25,7 +25,7 @@ img {
     background-repeat: no-repeat;
     height:16px;
     padding-left: 20px;
-    padding-top: 0px;
+    padding-top: 0;
 }
 @media print
 {
@@ -43,7 +43,7 @@ function show(node,hide_id,show_id){
 	if(hide_node = document.getElementById(hide_id)){
 		hide_node.style.display = 'none';
 	}
-	var load_node
+	var load_node;
 	if(load_node = document.getElementById('load_div')){
 		load_node.style.display = '';
 	}
@@ -59,7 +59,7 @@ function show(node,hide_id,show_id){
 }
 
 function load(show_id){
-	var show_node
+	var show_node;
 	if(show_node = document.getElementById(show_id)){
 		show_node.style.display = '';
 	}
@@ -68,7 +68,7 @@ function load(show_id){
 		image_node.style.display = '';
 	image_node.parentNode.style.display = 'block';
 	}
-	var load_node
+	var load_node;
 	if(load_node = document.getElementById('load_div')){
 		load_node.style.display = 'none';
 	}

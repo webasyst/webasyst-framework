@@ -38,7 +38,6 @@ abstract class waAppPayment
         if (!$this->app_id) {
             $this->app_id = wa()->getApp();
         }
-        $this->merchant_id =& $this->key;
     }
 
     /**
@@ -62,7 +61,9 @@ abstract class waAppPayment
      *
      * @param $plugin_id string
      * @param $key string
-     * @param $settings array key-value
+     * @param $name
+     * @param $value
+     * @internal param array $settings key-value
      * @return array
      */
     abstract public function setSettings($plugin_id, $key, $name, $value);
@@ -71,6 +72,8 @@ abstract class waAppPayment
      *
      * Callback method handler for plugin
      * @param string $method one of Confirmation, Payment
+     * @throws waException
+     * @return mixed
      */
     public final function execCallbackHandler($method)
     {
@@ -111,7 +114,7 @@ abstract class waAppPayment
      */
     final public function getMerchantId()
     {
-        return $this->getPluginKey();
+        return $this->merchant_id;
     }
 
     /**
@@ -119,6 +122,7 @@ abstract class waAppPayment
      * Get application page for transaction result
      * @param string $type
      * @param array $transaction_data formalized transaction data
+     * @return string URL of false
      */
     public function getBackUrl($type = self::URL_SUCCESS, $transaction_data = array())
     {
@@ -130,6 +134,7 @@ abstract class waAppPayment
      * Get private data storage path
      * @param int $order_id
      * @param string $path
+     * @return string path or false
      */
     public function getDataPath($order_id, $path = null)
     {

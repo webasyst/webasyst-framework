@@ -1,0 +1,45 @@
+<div id="payment-worldpay-settings">
+    <div class="field">
+        <div class="name">{$p->_w('Test mode')}</div>
+        <div class="value">
+            <input class="test-mode" type="checkbox" name="{$namespace|escape}[test_mode]" {if $values.test_mode} checked="checked"{/if}>
+        </div>
+    </div>
+    <div class="field test-mode-on">
+        <div class="name">{$p->_w('Type of response (for testing)')}</div>
+        <div class="value">
+            <select name="{$namespace|escape}[tm_response_type]">
+                {foreach ['AUTHORISED', 'REFUSED', 'ERROR', 'CAPTURED'] as $type}
+                    <option value="{$type}"
+                        {if $p->tm_response_type == $type} selected="selected"{/if}
+                    >
+                        {$type}
+                    </option>
+                {/foreach}
+            </select>
+            <span class="hidden">
+                {$p->_w('You can specify the type of response you want from our system for a test submission')}
+            </span>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+
+    $(function() { 'use strict';
+
+        var container = $('#payment-worldpay-settings');
+        var testModeHandler = function (input) {
+            if (input.attr('checked')) {
+                $('.test-mode-on').show();
+            } else {
+                $('.test-mode-on').hide();
+            }
+        };
+
+        var test_mode_checkbox = container.find('input.test-mode').click(function() {
+            testModeHandler($(this));
+        });
+        testModeHandler(test_mode_checkbox);
+    });
+
+</script>

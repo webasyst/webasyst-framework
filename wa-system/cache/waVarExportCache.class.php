@@ -31,6 +31,10 @@ class waVarExportCache extends waFileCache
                 $this->delete();
                 return null;
             } else {
+                if (!filesize($file)) {
+                    $this->delete();
+                    return null;
+                }
                 $r = include($file);
                 // check cache
                 if (!$r) {

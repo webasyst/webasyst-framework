@@ -25,7 +25,7 @@ img {
     background-repeat: no-repeat;
     height:16px;
     padding-left: 20px;
-    padding-top: 0px;
+    padding-top: 0;
 }
 @media print 
 {
@@ -61,7 +61,7 @@ img {
     }
     
     function load(show_id){
-    var show_node
+    var show_node;
     if(show_node = document.getElementById(show_id)){
     	show_node.style.display = '';
     
@@ -71,7 +71,7 @@ img {
     	image_node.style.display = '';
     	image_node.parentNode.style.display = 'block';
     }
-    var load_node
+    var load_node;
     if(load_node = document.getElementById('load_div')){
     	load_node.style.display = 'none';
     }
@@ -89,7 +89,7 @@ img {
                 </tr>
             	<tr>
             		<td>Сумма наложенного платежа</td>
-            		<td><input type="text" name="rub" value="{$order.rub|escape:'html'}" />руб. <input size="2" type="text" name="cop" value="{$order.cop|escape:'html'}" />коп.</td>
+            		<td><label><input type="text" name="rub" value="{$order.rub|escape:'html'}" />руб.</label> <label><input size="2" type="text" name="cop" value="{$order.cop|escape:'html'}" />коп.</label></td>
             	</tr>
             	<tr>
             		<td>Сумма наложенного платежа прописью</td>

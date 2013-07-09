@@ -73,7 +73,7 @@ msgstr "2 недели"
 
 #: //wa-plugins/shipping/flatrate/lib/config/settings.php:32
 msgid "Undefined"
-msgstr "Неопределено"
+msgstr "Не определено"
 
 #: //wa-plugins/shipping/flatrate/lib/config/settings.php:37
 msgid "Prompt for address"

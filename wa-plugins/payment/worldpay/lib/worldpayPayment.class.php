@@ -5,9 +5,11 @@
  * @author WebAsyst Team
  * @name WorldPay
  * @description WorldPay payment module
- * @property-read string $instid
  * @property-read string $test_mode
+ * @property-read string $tm_response_type
+ * @property-read string $instid
  * @property-read string $md5_secret
+ * @property-read string $response_password
  */
 
 class worldpayPayment extends waPayment implements waIPayment
@@ -20,7 +22,7 @@ class worldpayPayment extends waPayment implements waIPayment
     /**
      * transaction status
      */
-    const STATUS_CANCELLED = 'N';
+    const STATUS_CANCELLED = 'C';
 
     /**
      * @var numeric
@@ -37,6 +39,35 @@ class worldpayPayment extends waPayment implements waIPayment
     protected $protected_parameters =
         'instId:cartId:currency:amount:M_app_id:M_merchant_id:M_order_id:M_contact_id';
 
+    public function getSettingsHTML($params = array())
+    {
+        $html = parent::getSettingsHTML($params);
+        $values = $this->getSettings();
+        if (!empty($params['value'])) {
+            $values = array_merge($values, $params['value']);
+        }
+
+        return $this->fetch(array(
+            'namespace' => $this->getNamespace($params),
+            'values' => $values
+        ), '/templates/settings.html') . $html;
+    }
+
+    protected function getNamespace($params)
+    {
+        $namespace = '';
+        if (!empty($params['namespace'])) {
+            if (is_array($params['namespace'])) {
+                $namespace = array_shift($params['namespace']);
+                while (($namespace_chunk = array_shift($params['namespace'])) !== null) {
+                    $namespace .= "[{$namespace_chunk}]";
+                }
+            } else {
+                $namespace = $params['namespace'];
+            }
+        }
+        return $namespace;
+    }
 
     public function allowedCurrency()
     {
@@ -67,13 +98,14 @@ class worldpayPayment extends waPayment implements waIPayment
         $fields['instId']   = $this->instid;
         $fields['cartId']   = $order->id;
         $fields['currency'] = $order->currency;
-        $fields['amount']   = number_format($order->total, 2, ',', '');;
+        $fields['amount']   = number_format($order->total, 2, '.', '');;
 
         // optional fields
         $fields['desc']     = $order->description;
         $fields['country']  = $this->getCountryISO2Code($order->billing_address['country']);
         $fields['postcode'] = $order->billing_address['zip'];
-        $fields['address']  = $order->billing_address['address'];
+        $fields['address1']  = $order->billing_address['street'];
+        $fields['town'] = $order->billing_address['city'];
 
         $name = $order->billing_address['name'];
         if (!$name) {
@@ -91,7 +123,13 @@ class worldpayPayment extends waPayment implements waIPayment
             $fields['email'] = $email;
         }
 
-        $fields['testMode'] = $this->test_mode ? 100 : 0;
+        $fields['testMode'] = 0;
+        if ($this->test_mode) {
+            $fields['testMode'] = 100;
+            if ($this->tm_response_type != 'AUTHORISED' || !$fields['name']) {
+                $fields['name'] = $this->tm_response_type;
+            }
+        }
 
         // custom fields
         $fields['M_app_id'] = $this->app_id;
@@ -133,8 +171,32 @@ class worldpayPayment extends waPayment implements waIPayment
             throw new waPaymentException('invalid invoice number');
         }
 
+        $response_password = !empty($request['callbackPW']) ? $request['callbackPW'] : '';
+
+        $result = array(
+            'p' => $this
+        );
+
+        if ($response_password != $this->response_password) {
+
+            $result['rp_not_equal'] = true;
+            $result['template'] = wa()->getConfig()->getRootPath().'/wa-plugins/payment/'.$this->id.'/templates/callback.html';
+            $result['back_url'] = $this->getAdapter()->getBackUrl(waAppPayment::URL_FAIL, $transaction_data);
+
+            waLog::log("Payment Response password in plugin settings doesn't equal the same setting in the Merchant Interface\n".
+                "Client IP:" . waRequest::getIp(),
+                'worldpayPament.log'
+            );
+
+            return $result;
+        }
+
         if ($transaction_data['type'] == waPayment::OPERATION_AUTH_CAPTURE) {
             $app_payment_method = self::CALLBACK_CONFIRMATION;
+            $back_url = $this->getAdapter()->getBackUrl(waAppPayment::URL_SUCCESS, $transaction_data);
+        } else {
+            $app_payment_method = self::CALLBACK_CANCEL;
+            $back_url = $this->getAdapter()->getBackUrl(waAppPayment::URL_FAIL, $transaction_data);
         }
 
         $tm = new waTransactionModel();
@@ -143,12 +205,15 @@ class worldpayPayment extends waPayment implements waIPayment
             'plugin'    => $this->id,
             'type'      => $app_payment_method,
         );
-        $result = '';
+
         if (!$tm->getByFields($fields)) {
             $transaction_data = $this->saveTransaction($transaction_data, $request);
-            $result = $this->execAppCallback($app_payment_method, $transaction_data);
+            $result += $this->execAppCallback($app_payment_method, $transaction_data);
             self::addTransactionData($transaction_data['id'], $result);
         }
+
+        $result['back_url'] = $back_url;
+        $result['template'] = wa()->getConfig()->getRootPath().'/wa-plugins/payment/'.$this->id.'/templates/callback.html';
 
         return $result;
     }
@@ -207,7 +272,7 @@ class worldpayPayment extends waPayment implements waIPayment
             $view_data[] = 'Name: ' . $transaction_raw_data['name'];
         }
         if ($transaction_raw_data['tel']) {
-            $view_data[] = 'Phone: ' . $transaction_raw_data['phone'];
+            $view_data[] = 'Phone: ' . $transaction_raw_data['tel'];
         }
         if ($transaction_raw_data['email']) {
             $view_data[] = 'Email: ' . $transaction_raw_data['email'];
@@ -215,7 +280,7 @@ class worldpayPayment extends waPayment implements waIPayment
 
         $view_data = implode(' ', $view_data);
 
-        if ($transaction_raw_data['transStatus']) {
+        if ($transaction_raw_data['transStatus'] == self::STATUS_SUCCESS) {
             $type  = waPayment::OPERATION_AUTH_CAPTURE;
             $state = waPayment::STATE_AUTH;
         } else {
@@ -237,5 +302,14 @@ class worldpayPayment extends waPayment implements waIPayment
         ));
 
         return $transaction_data;
+    }
+
+    public function __get($name)
+    {
+        $value = $this->getSettings($name);
+        if ($name == 'tm_response_type') {
+            return $value ? $value : 'AUTHORISED';
+        }
+        return $value;
     }
 }

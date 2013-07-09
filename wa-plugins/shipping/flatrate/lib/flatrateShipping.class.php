@@ -5,7 +5,7 @@
  * @property-read float $cost
  * @property-read string $currency
  * @property-read string $delivery
- * @property-read string $promt_address
+ * @property-read string $prompt_address
  *
  */
 class flatrateShipping extends waShipping
@@ -35,7 +35,7 @@ class flatrateShipping extends waShipping
             'ground' => array(
                 'name'         => $this->_w('Ground shipping'),
                 'description'  => '',
-                'est_delivery' => waDateTime::format('humandate', strtotime($this->delivery)), //string
+                'est_delivery' => ($this->delivery ==='')?null:waDateTime::format('humandate', strtotime($this->delivery)), //string
                 'currency'     => $this->currency,
                 'rate'         => $this->cost,
             ),

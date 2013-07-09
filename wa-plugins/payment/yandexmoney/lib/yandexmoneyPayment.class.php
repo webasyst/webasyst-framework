@@ -93,7 +93,8 @@ class yandexmoneyPayment extends waPayment implements waIPayment
 
     /**
      *
-     * @param $request - get from gateway
+     * @param array $request - get from gateway
+     * @throws waPaymentException
      * @return void
      */
     protected function callbackHandler($request)
@@ -259,7 +260,7 @@ class yandexmoneyPayment extends waPayment implements waIPayment
 
     /**
      * Convert transaction raw data to formatted data
-     * @param array $request - transaction raw data
+     * @param array $transaction_raw_data
      * @return array $transaction_data
      */
     protected function formalizeData($transaction_raw_data)
@@ -309,12 +310,13 @@ class yandexmoneyPayment extends waPayment implements waIPayment
     }
 
     /**
+     * @param $request
+     * @param $code
+     * @param string $message
      * @return string XML response
      */
     private function getXMLResponse($request, $code, $message = '')
     {
-
-        $performedDatetime = date('c');
         $response = array();
         $response['action'] = ifempty($request['action'], 'dummy');
         $response['code'] = $code;

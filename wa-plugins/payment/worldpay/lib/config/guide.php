@@ -6,4 +6,9 @@ return array(
         'title' => /*_wp*/('Protected parameters'),
         'description' => /*_wp*/('Copy and paste this setting into the SignatureFields field in the Integration Setup for your installation via the Merchant Interface')
     ),
+    array(
+        'value'       => '%RELAY_URL%',
+        'title' => /*_wp*/('Payment Response URL'),
+        'description' => /*_wp*/('Copy and paste this setting into the "Payment Response URL" field in the Integration Setup for your installation via the Merchant Interface')
+    ),
 );

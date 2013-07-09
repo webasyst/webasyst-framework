@@ -63,6 +63,7 @@ class rbkmoneyPayment extends waPayment implements waIPayment
             'userName'  => 'Имя Пользователя в Системе RBK Money',
             'userEmail' => 'Email Пользователя в Системе RBK Money'
         );
+        $view_data = array();
         foreach ($fields as $field => $description) {
             if (ifset($transaction_raw_data[$field])) {
                 $view_data[] = $description.': '.$transaction_raw_data[$field];

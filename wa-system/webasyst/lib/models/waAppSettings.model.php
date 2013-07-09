@@ -38,9 +38,8 @@ class waAppSettingsModel extends waModel
         $key = $this->getCacheKey($app_id);
         if (!isset(self::$settings[$app_id])) {
             $cache = $this->getCache($app_id);
-            if ($cache->isCached()) {
-                $data = $cache->get();
-            } else {
+            $data = $cache->get();
+            if ($data === null || !is_array($data)) {
                 $sql = "SELECT app_id, name, value
                         FROM ".$this->table."
                         WHERE app_id = '".$this->escape($app_id)."' OR app_id LIKE '".$this->escape($app_id).".%'";

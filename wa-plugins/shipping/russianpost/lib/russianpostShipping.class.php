@@ -2,10 +2,10 @@
 
 /**
  *
- * @property region
- * @property halfkilocost
- * @property currency
- * @property overhalfkilocost
+ * @property $region
+ * @property $halfkilocost
+ * @property $currency
+ * @property $overhalfkilocost
  * @property $caution
  * @property $max_weight
  * @property $complex_calculation_weight
@@ -77,10 +77,6 @@ class russianpostShipping extends waShipping
         $control = '';
 
         waHtmlControl::addNamespace($params, $name);
-
-        $cm = new waCountryModel();
-
-        $countries = $cm->all();
 
         $rm = new waRegionModel();
         if ($regions = $rm->getByCountry('rus')) {
