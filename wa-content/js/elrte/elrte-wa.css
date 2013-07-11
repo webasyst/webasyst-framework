@@ -5,4 +5,5 @@
 .el-rte .toolbar ul li.wa_tbcellprops{background-position:-806px -27px}
 .el-rte .toolbar ul li.wa_image{background-position:-384px -2px}
 .field .value .el-borderselect input[type=text] {min-width: 50px}
+.el-rte .toolbar ul li.youtube{background: url('./images/youtube.ico') 50% 50% no-repeat}
 .el-rte .toolbar ul li {z-index: auto}
