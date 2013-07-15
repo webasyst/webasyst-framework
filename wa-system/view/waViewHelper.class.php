@@ -705,12 +705,11 @@ HTML;
             return '';
         }
         $html = '<div class="wa-auth-adapters"><ul>';
-        $url = $this->wa->getRootUrl(false, true).'oauth.php?app='.$this->app().'&provider=';
         foreach ($adapters as $adapter) {
             /**
              * @var waAuthAdapter $adapter
              */
-            $html .= '<li><a href="'.$url.$adapter->getId().'"><img alt="'.$adapter->getName().'" src="'.$adapter->getIcon().'">'.$adapter->getName().'</a></li>';
+            $html .= '<li><a rel="nofollow" href="'.$adapter->getFrontendUrl().'"><img alt="'.$adapter->getName().'" src="'.$adapter->getIcon().'">'.$adapter->getName().'</a></li>';
         }
         $html .= '</ul><p>';
         $html .= _ws("Authorize either by entering your contact information, or through one of the websites listed above.");

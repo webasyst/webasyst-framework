@@ -44,6 +44,10 @@ abstract class waOAuth2Adapter extends waAuthAdapter
         return array();
     }
 
+    public function getFrontendUrl() {
+        return wa()->getRootUrl(false, true).'oauth.php?app='.wa()->getApp().'&provider='.$this->getId();
+    }
+    
     abstract public function getRedirectUri();
 
     public function getCode()
