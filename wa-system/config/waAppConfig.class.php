@@ -388,6 +388,7 @@ class waAppConfig extends SystemConfig
         $class = null;
         switch ($file_parts[1]) {
             case 'class':
+            case 'interface':
                 return $file_parts[0];
             default:
                 $result = $file_parts[0];
