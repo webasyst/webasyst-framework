@@ -105,6 +105,12 @@ class courierShipping extends waShipping
         foreach ($rates as $rate) {
             $rate = array_map('floatval', $rate);
             switch ($this->rate_by) {
+                case 'quantity':
+                    if (($rate['limit'] < $limit) && (($price === null) || ($price > $rate['cost']))) {
+                        $price = $rate['cost'];
+                    }
+                    break;
+
                 case 'price':
                     if (($rate['limit'] < $limit) && (($price === null) || ($price > $rate['cost']))) {
                         $price = $rate['cost'];

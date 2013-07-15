@@ -65,7 +65,7 @@ abstract class waShipping extends waSystemPlugin
      * @param array[string]string $item['name'] name of package item
      * @param array[string]mixed $item['weight'] weight of package item
      * @param array[string]mixed $item['price'] price of package item
-     * @param array[string]mixed $item['quantity'] quantity of packate item
+     * @param array[string]mixed $item['quantity'] quantity of package item
      * @return waShipping
      */
     public function addItem($item)
@@ -82,7 +82,7 @@ abstract class waShipping extends waSystemPlugin
      * @param array[][string]string $items['name'] name of package item
      * @param array[][string]mixed $items['weight'] weight of package item
      * @param array[][string]mixed $items['price'] price of package item
-     * @param array[][string]mixed $items['quantity'] quantity of packate item
+     * @param array[][string]mixed $items['quantity'] quantity of package item
      * @return waShipping
      */
     public function addItems($items)
@@ -97,6 +97,15 @@ abstract class waShipping extends waSystemPlugin
     {
         $property_value = null;
         switch ($property) {
+            case 'quantity':
+                if (isset($this->params['total_'.$property])) {
+                    $property_value = $this->params['total_'.$property];
+                } else {
+                    foreach ($this->items as $item) {
+                        $property_value += $item['quantity'];
+                    }
+                }
+                break;
             case 'price':
                 /*TODO use currency code and etc*/
             case 'weight':
@@ -110,6 +119,11 @@ abstract class waShipping extends waSystemPlugin
                 break;
         }
         return $property_value;
+    }
+
+    protected function getTotalQuantity()
+    {
+        return $this->getPackageProperty('quantity');
     }
 
     protected function getTotalWeight()
@@ -136,7 +150,7 @@ abstract class waShipping extends waSystemPlugin
      * @param array[][string]string $items['name'] name of package item
      * @param array[][string]mixed $items['weight'] weight of package item
      * @param array[][string]mixed $items['price'] price of package item
-     * @param array[][string]mixed $items['quantity'] quantity of packate item
+     * @param array[][string]mixed $items['quantity'] quantity of package item
      *
      * @param array[string]string $address shipping adress
      *
@@ -144,6 +158,7 @@ abstract class waShipping extends waSystemPlugin
      * @param array[mixed]mixed $params
      * @param array[string]float $params['total_price'] package total price
      * @param array[string]float $params['total_weight'] package total weight
+     * @param array[string]float $params['total_quantity'] package total quantity of items
      *
      * @return string
      * @return array[string]array
