@@ -13,8 +13,5 @@ class siteOAuthController extends waOAuthController
                 $contact->addToCategory($this->getAppId());
             }
         }
-
-        wa('webasyst');
-        $this->executeAction(new webasystOAuthAction());
     }
 }
