@@ -44,7 +44,7 @@ class vkontakteAuth extends waOAuth2Adapter
     public function getUserData($token)
     {
         // http://vk.com/developers.php?oid=-1&p=users.get
-        $url = self::API_URL."users.get?uid={$token['user_id']}&fields=sex,bdate,timezone,photo_medium&access_token={$token['access_token']}";
+        $url = self::API_URL."users.get?uid={$token['user_id']}&fields=sex,bdate,timezone,screen_name,photo_medium&access_token={$token['access_token']}";
         $response = $this->get($url, $status);
         if ($response && $response = json_decode($response, true)) {
             if (isset($response['error'])) {
@@ -60,8 +60,12 @@ class vkontakteAuth extends waOAuth2Adapter
                     'name' => $response['first_name']." ".$response['last_name'],
                     'firstname' => $response['first_name'],
                     'lastname' => $response['last_name'],
+                    'locale' => 'ru_RU', // VKontakte users are generally russian-speaking
                     'photo_url' => $response['photo_medium']
                 );
+                if ($response['screen_name']) {
+                    $data['url'] = "http://vk.com/".$response['screen_name'];
+                }
                 if ($response['sex']) {
                     $data['sex'] = $response['sex'] == 2 ? 'm' : 'f';
                 }
