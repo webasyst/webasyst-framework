@@ -1,7 +1,11 @@
+<noscript>
+    <meta http-equiv="refresh" content="0;url={$wa->afterAuthUrl()}">
+</noscript>
 <script type="text/javascript">
-    //document.domain = document.domain;
     if (window.opener) {
         window.opener.location.reload();
         self.close();
+    } else {
+        window.location.href = "{$wa->afterAuthUrl()}";
     };
 </script>

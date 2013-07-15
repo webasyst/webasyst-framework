@@ -479,6 +479,16 @@ HTML;
         return $this->wa->getRouteUrl((isset($auth['app']) ? $auth['app'] : '').'/forgotpassword');
     }
 
+    public function afterAuthUrl()
+    {
+        $url = $this->wa->getStorage()->get('auth_referer'); // compatibility with waLoginAction
+        if (!$url) {
+            $auth = $this->wa->getAuthConfig();
+            $url = $this->wa->getRouteUrl((isset($auth['app']) ? $auth['app'] : '').'/');
+        }
+        return $url;
+    }
+            
     public function loginForm($error = '', $form = true)
     {
         $auth = $this->wa->getAuth();
