@@ -142,3 +142,13 @@ msgstr ""
 #: //wa-plugins/shipping/courier/templates/settings.html:158
 msgid "LBS"
 msgstr ""
+
+msgid "pcs."
+msgstr ""
+
+msgid "Shipment total quantity"
+msgstr ""
+
+msgid "By quantity"
+msgstr ""
+

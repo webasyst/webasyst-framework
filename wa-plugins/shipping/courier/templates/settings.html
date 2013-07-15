@@ -55,6 +55,13 @@
         <div class="value">
             <label>
                 <input name="{$namespace|escape}[rate_by]" 
+                    value="quantity"{if $values.rate_by == 'quantity'} checked="checked"{/if} 
+                    type="radio"> {$p->_w('By quantity')}
+            </label>
+        </div>
+        <div class="value">
+            <label>
+                <input name="{$namespace|escape}[rate_by]" 
                     value="price"{if $values.rate_by == 'price'} checked="checked" {/if}
                     type="radio"> {$p->_w('By price')}
             </label>
@@ -83,6 +90,9 @@
                         <th colspan="2" class="rate-by">
                             <span class="weight" {if $values.rate_by != 'weight'}style="display:none;"{/if}>
                                 {$p->_w('Shipment weight')}
+                            </span>
+                            <span class="quantity" {if $values.rate_by != 'quantity'}style="display:none;"{/if}>
+                                {$p->_w('Shipment total quantity')}
                             </span>
                             <span class="price"  {if $values.rate_by != 'price'}style="display:none;"{/if}>
                                 {$p->_w('Shipment amount')}
@@ -119,6 +129,9 @@
                                     {else}
                                         {$p->_w('lbs')}
                                     {/if}
+                                </span>
+                                <span class="quantity dimension" {if $values.rate_by != 'quantity'}style="display:none;"{/if}>
+                                    {$p->_w('pcs.')}
                                 </span>
                                 <span class="price currency" {if $values.rate_by != 'price'}style="display:none;"{/if}>
                                     {$values.currency}
