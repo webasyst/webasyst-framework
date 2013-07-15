@@ -400,13 +400,18 @@ class waFiles
      * @param string|boolean $attach - filename to save file with; null to perform default browser action; defaults to null
      * @param boolean $exit - whether to call exit after file has been sent; defaults to true
      * @param boolean $md5 - whether to send Content-MD5 header; defaults to false
+     * @param string $charset - optional content charset, as of 'text/html; charset=utf-8'
      * @throws waException - if file does not exist
      */
-    public static function readFile($file, $attach = null, $exit = true, $md5 = false)
+    public static function readFile($file, $attach = null, $exit = true, $md5 = false, $charset = null)
     {
         if (file_exists($file)) {
             $response = wa()->getResponse();
             $file_type = self::getMimeType($attach ? $attach : $file);
+            if (!empty($charset))
+                $charset = '; charset='.$charset;
+            else
+                $charset = '';
             if ($md5) {
                 $md5 = base64_encode(pack('H*', md5_file($file)));
             }
@@ -471,7 +476,7 @@ class waFiles
                     }
 
                     $response->addHeader("Cache-Control", "no-cache, must-revalidate");
-                    $response->addHeader("Content-type", "{$file_type}");
+                    $response->addHeader("Content-type", "{$file_type}{$charset}");
                     $response->addHeader("Content-Disposition", "attachment; filename=\"{$send_as}\";");
                     $response->addHeader("Last-Modified", filemtime($file));
 
@@ -503,7 +508,7 @@ class waFiles
                     $path = substr($file, strlen($nginx_path));
                     $path = preg_replace('@([/\\\\]+)@', '/', '/'.$nginx_base.'/'.$path);
 
-                    $response->addHeader("Content-type", $file_type);
+                    $response->addHeader("Content-type", $file_type.$charset);
                     $response->addHeader("Content-Disposition", "attachment; filename=\"{$send_as}\";");
                     $response->addHeader("Accept-Ranges", "bytes");
                     $response->addHeader("Content-Length", $file_size);
@@ -520,7 +525,7 @@ class waFiles
                     //$response->addHeader("X-Accel-Limit-Rate", $rate_limit);
                     }
             } else {
-                $response->addHeader("Content-type", $file_type);
+                $response->addHeader("Content-type", $file_type.$charset);
                 $response->addHeader("Last-Modified", filemtime($file));
                 if ($md5) {
                     $response->addHeader("Content-MD5", $md5);
