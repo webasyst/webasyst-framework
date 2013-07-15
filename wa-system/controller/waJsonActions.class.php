@@ -40,6 +40,10 @@ abstract class waJsonActions extends waController
 
     }
 
+    public function setError($message, $data = array())
+    {
+        $this->errors[] = array($message, $data);
+    }
 
     public function run($params = null)
     {
