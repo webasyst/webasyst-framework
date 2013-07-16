@@ -4,8 +4,8 @@ class waOAuthController extends waViewController
 {
     public function execute()
     {
-        $provider = waRequest::get('provider');
-        $app = waRequest::get('app');
+        $provider = waRequest::request('provider');
+        $app = waRequest::request('app');
         if ($app) {
             $this->getStorage()->set('auth_app', $app);
             $params = waRequest::get();

@@ -131,7 +131,7 @@ class siteSettingsSaveController extends waJsonController
             $config[$domain]['adapters'] = array();
             $adapters = waRequest::post('adapters', array());
             foreach (waRequest::post('adapter_ids') as $adapter_id) {
-                $config[$domain]['adapters'][$adapter_id] = $adapters[$adapter_id];
+                $config[$domain]['adapters'][$adapter_id] = isset($adapters[$adapter_id]) ? $adapters[$adapter_id] : TRUE;
             }
         } else {
             if (isset($config[$domain]['adapters'])) {

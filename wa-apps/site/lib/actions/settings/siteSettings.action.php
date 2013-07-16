@@ -78,7 +78,12 @@ class siteSettingsAction extends waViewAction
 
     protected function getAuthAdapters()
     {
-        $path = $this->getConfig()->getPath('system').'/auth/adapters/';
+        $result = $this->_getAuthAdaptersFromPath($this->getConfig()->getPath('system').'/auth/adapters/');
+        return array_merge($result, $this->_getAuthAdaptersFromPath($this->getConfig()->getPath('plugins').'/auth/adapters/'));
+    }
+    
+    protected function _getAuthAdaptersFromPath($path)
+    {
         $dh = opendir($path);
         $result = array();
         while (($f = readdir($dh)) !== false) {
