@@ -13,23 +13,26 @@
     {$rss=$wa->blog->rssUrl()}
     {if $rss}<link rel="alternate" type="application/rss+xml" title="[`RSS`] &mdash; {$wa->accountName()}" href="{$rss}">{/if}
 
+    <!-- css -->
     <link href="{$wa_theme_url}default.css?{$wa->version()}" rel="stylesheet" type="text/css">
     <link href="{$wa_theme_url}mobile.css?{$wa->version()}" media="screen and (max-width: 760px)" rel="stylesheet" type="text/css">
     {if $wa->isMobile()}
         <meta name="viewport" content="width=device-width; initial-scale=1; maximum-scale=1; user-scalable=0;">
     {/if}
+    {$wa->css()} {* links active plugins CSS *}
 
+    <!-- js -->
     <script type="text/javascript" src="{$wa_url}wa-content/js/jquery/jquery-1.7.1.min.js"></script>
-    {$wa->js()}
     <script type="text/javascript" src="{$wa_theme_url}blog.js?v{$wa->version()}"></script>
     <script type="text/javascript" src="{$wa_url}wa-content/js/jquery-wa/wa.core.js"></script>
+    {$wa->js()} {* links active plugins JS *}
 
     {* @event (frontend_action_default|frontend_action_post|frontend_action_page|frontend_action_error).%plugin_id%.head *}
     {foreach $frontend_action as $plugin => $output}
         {if !empty($output.head)}{$output.head}{/if}
     {/foreach}
 
-    {$wa->headJs()}
+    {$wa->headJs()} {* links Google Analytics tracking code and current site's custom JS (Site app) *}
 </head>
 <body>
     <div id="header" role="navigation">

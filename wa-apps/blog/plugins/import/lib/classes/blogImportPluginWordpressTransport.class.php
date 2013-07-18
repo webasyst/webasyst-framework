@@ -54,9 +54,13 @@ class blogImportPluginWordpressTransport extends blogImportPluginTransport
         $this->log(__METHOD__,self::LOG_DEBUG);
         $ids = array();
         if (version_compare($this->version, '3.4', '>=')) {
-            $posts = $this->xmlrpc("wp.getPosts", 1, $this->option('login'), $this->option('password'), array(),array('ID'));
+            $posts = $this->xmlrpc("wp.getPosts", 1, $this->option('login'), $this->option('password'), array(),array('post_id','ID'));
             foreach ($posts as $post) {
-                $ids[] = $post['ID'];
+                if (isset($post['post_id'])) {
+                    $ids[] = $post['post_id'];
+                } elseif(isset($post['ID'])) {
+                    $ids[] = $post['ID'];
+                }
             }
         } elseif(version_compare($this->version, '1.5.0', '>=')){
             $posts = $this->xmlrpc('mt.getRecentPostTitles', 1, $this->option('login'),$this->option('password'),9999);
