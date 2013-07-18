@@ -17,6 +17,7 @@ class waSystem
     protected static $current = 'wa-system';
 
     protected static $apps;
+    protected static $handlers = array();
     protected static $factories_common = array();
     protected static $factories_config = array();
 
@@ -936,31 +937,64 @@ class waSystem
         $result = array();
         if (is_array($name)) {
             $event_app_id = $name[0];
-            $system = self::getInstance($event_app_id);
+            $event_system = self::getInstance($event_app_id);
             $name = $name[1];
         } else {
             $event_app_id = $this->getConfig()->getApplication();
-            $system = $this;
+            $event_system = $this;
+        }
+        $event_prefix = wa($event_app_id)->getConfig()->getPrefix();
+
+        if (!isset(self::$handlers['apps'])) {
+            self::$handlers['apps'] = array();
+            $cache_file = $this->config->getPath('cache', 'config/handlers');
+            if (!waSystemConfig::isDebug() && file_exists($cache_file)) {
+                self::$handlers['apps'] = include($cache_file);
+            }
+            if (!self::$handlers['apps'] || !is_array(self::$handlers['apps'])) {
+                $apps = $this->getApps();
+                $path = $this->getConfig()->getPath('apps');
+                foreach ($apps as $app_id => $app_info) {
+                    $files = waFiles::listdir($path.'/'.$app_id.'/lib/handlers/');
+                    foreach ($files as $file) {
+                        if (substr($file, -12) == '.handler.php') {
+                            $file = explode('.', substr($file, 0, -12), 2);
+                            self::$handlers['apps'][$file[0]][$file[1]][] = $app_id;
+                        }
+                    }
+                }
+                if (!waSystemConfig::isDebug()) {
+                    waUtils::varExportToFile(self::$handlers['apps'], $cache_file);
+                }
+            }
         }
 
+        if (!isset(self::$handlers['plugins'][$event_app_id])) {
+            self::$handlers['plugins'][$event_app_id] = array();
+            $plugins = $event_system->getConfig()->getPlugins();
+            foreach ($plugins as $plugin_id => $plugin) {
+                if (!empty($plugin['handlers'])) {
+                    foreach ($plugin['handlers'] as $handler_event => $handler_method) {
+                        self::$handlers['plugins'][$event_app_id][$handler_event][$plugin_id] = $handler_method;
+                    }
+                }
+            }
+        }
 
-        $prefix = wa($event_app_id)->getConfig()->getPrefix();
-
-        //
-        // Call handlers defined by applications
-        //
-        $apps = $this->getApps();
-        $path = $this->getConfig()->getPath('apps');
-        foreach ($apps as $app_id => $info) {
-            $file_path = $path."/".$app_id."/lib/handlers/".$prefix.".".$name.".handler.php";
-            if (file_exists($file_path)) {
-                waSystem::getInstance($app_id);
-                include_once($file_path);
+        if (isset(self::$handlers['apps'][$event_app_id][$name])) {
+            $path = $this->getConfig()->getPath('apps');
+            foreach (self::$handlers['apps'][$event_app_id][$name] as $app_id) {
+                $file_path = $path.'/'.$app_id.'/lib/handlers/'.$event_prefix.".".$name.".handler.php";
+                if (!file_exists($file_path)) {
+                    continue;
+                }
+                wa($app_id);
+                include($file_path);
                 $class_name = $name;
                 if (strpos($name, '.') !== false) {
                     $class_name = strtok($class_name, '.').ucfirst(strtok(''));
                 }
-                $class_name = $app_id.ucfirst($prefix).ucfirst($class_name)."Handler";
+                $class_name = $app_id.ucfirst($event_prefix).ucfirst($class_name)."Handler";
                 /**
                  * @var $handler waEventHandler
                  */
@@ -974,34 +1008,29 @@ class waSystem
                     waLog::log('Event handling error in '.$file_path.': '.$e->getMessage());
                 }
             }
-        }
-        //self::setActive($event_app_id);
-
-        //
-        // Call handlers defined by current application's plugins
-        //
-        $plugins = $system->getConfig()->getPlugins();
-        foreach ($plugins as $plugin_id => $plugin) {
-            foreach ($plugin['handlers'] as $handler_event => $handler_method) {
-                if ($name == $handler_event) {
-                    // Remember active plugin locale name for _wp() to work
-                    self::pushActivePlugin($plugin_id, wa($event_app_id)->getConfig()->getPrefix());
-                    $class_name = $event_app_id.ucfirst($plugin_id).'Plugin';
-                    try {
-                        $class = new $class_name($plugin);
-                        // Load plugin locale if it exists
-                        $locale_path = $this->getAppPath('plugins/'.$plugin_id.'/locale', $event_app_id);
-                        if (is_dir($locale_path)) {
-                            waLocale::load($this->getLocale(), $locale_path, self::getActiveLocaleDomain(), false);
-                        }
-                        if (method_exists($class, $handler_method) && null !== ( $r = $class->$handler_method($params))) {
-                            $result[$plugin_id.'-plugin'] = $r;
-                        }
-                    } catch (Exception $e) {
-                        waLog::log('Event handling error in '.$class_name.'->'.$handler_method.'(): '.$e->getMessage());
-                    }
-                    self::popActivePlugin();
+        } elseif (isset(self::$handlers['plugins'][$event_app_id][$name])) {
+            $plugins = $event_system->getConfig()->getPlugins();
+            foreach (self::$handlers['plugins'][$event_app_id][$name] as $plugin_id => $method) {
+                if (!isset($plugins[$plugin_id])) {
+                    continue;
                 }
+                $plugin = $plugins[$plugin_id];
+                self::pushActivePlugin($plugin_id, $event_prefix);
+                $class_name = $event_app_id.ucfirst($plugin_id).'Plugin';
+                try {
+                    $class = new $class_name($plugin);
+                    // Load plugin locale if it exists
+                    $locale_path = $this->getAppPath('plugins/'.$plugin_id.'/locale', $event_app_id);
+                    if (is_dir($locale_path)) {
+                        waLocale::load($this->getLocale(), $locale_path, self::getActiveLocaleDomain(), false);
+                    }
+                    if (method_exists($class, $method) && null !== ( $r = $class->$method($params))) {
+                        $result[$plugin_id.'-plugin'] = $r;
+                    }
+                } catch (Exception $e) {
+                    waLog::log('Event handling error in '.$class_name.'->'.$name.'(): '.$e->getMessage());
+                }
+                self::popActivePlugin();
             }
         }
         return $result;

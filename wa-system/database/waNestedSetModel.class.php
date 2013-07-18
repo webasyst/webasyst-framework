@@ -101,6 +101,7 @@ class waNestedSetModel extends waModel
      */
     public function getTree($id, $depth = null, $where = array())
     {
+        $where = (array)$where;
         if(($id = max(0, (int) $id))) {
             $result = $this->getById($id);
 

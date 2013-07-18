@@ -162,7 +162,7 @@ var lang_strings = {
 						<td class="nowrap" align=right><font class=sc>{$item.total|wa_format_amount:$order.currency:'%2'}</font></td>
 					</tr>
 					{/foreach}
-					{if $order.shipping}
+					{if $order.shipping > 0}
 					<tr bgcolor=white>
 						<td><font class=sc>{$item@iteration+1}</font></td>
 						<td><font class=sc><b><nobr>Доставка {$order.shipping_name}</nobr></b></font></td>

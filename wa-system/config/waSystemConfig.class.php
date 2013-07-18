@@ -377,7 +377,7 @@ class waSystemConfig
     {
         $class_name = $application.'Config';
         if ($root_path === null) {
-            $root_path = realpath(dirname(__FILE__).'/../..');
+            $root_path = waConfig::get('wa_path_root');
         }
 
         if ($environment === null) {

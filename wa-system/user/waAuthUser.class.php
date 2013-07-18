@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 /*
  * This file is part of Webasyst framework.
@@ -19,16 +19,16 @@ class waAuthUser extends waUser
      */
     protected $storage;
     protected $auth = false;
-        
+
     public function __construct($id = null, $options = array())
     {
         foreach ($options as $name => $value) {
             self::$options[$name] = $value;
-        }        
+        }
         $this->init();
     }
-    
-    
+
+
     public function init()
     {
         parent::init();
@@ -57,8 +57,8 @@ class waAuthUser extends waUser
             }
         }
     }
-    
-    public function updateLastPage() 
+
+    public function updateLastPage()
     {
         if (waRequest::isXMLHttpRequest() || !$this->id || wa()->getEnv() !== 'backend' || waRequest::method() == 'post') {
             return;
@@ -68,15 +68,15 @@ class waAuthUser extends waUser
         if ($page === $backend || substr($page, 0, strlen($backend)+1) === $backend.'?') {
             return;
         }
-        wa()->getResponse()->setCookie('last_page', $this->getId().'^^^'.$page, null, null, '', false, true);
+        wa()->getResponse()->setCookie('last_page', $this->getId().'^^^'.$page, time() + 3600*24*31, null, '', false, true);
     }
-    
-    public function getLastPage() 
+
+    public function getLastPage()
     {
         if (! ( $page = wa()->getRequest()->cookie('last_page'))) {
             return '';
         }
-        
+
         $page = explode('^^^', $page, 2);
         if(!is_array($page) || !isset($page[1]) || $page[0] != $this->getId()) {
             wa()->getResponse()->setCookie('last_page', '');
@@ -84,11 +84,11 @@ class waAuthUser extends waUser
         }
         return $page[1];
     }
-    
+
     public function updateLastTime($force = false)
     {
-        $time = $this->storage->read('user_last_datetime'); 
-        if (!$time || $force || $time == '0000-00-00 00:00:00' || 
+        $time = $this->storage->read('user_last_datetime');
+        if (!$time || $force || $time == '0000-00-00 00:00:00' ||
              (time() - strtotime($time) > 120)
         ) {
             try {
@@ -121,7 +121,7 @@ class waAuthUser extends waUser
                     'contact_id' => $this->id,
                     'datetime_in' => date("Y-m-d H:i:s"),
                     'datetime_out' => null
-                ));                
+                ));
             } elseif ($last_datetime = strtotime($time)) {
                 if (time() - $last_datetime > self::$options['activity_timeout']) {
                     $login_log_model->updateById($last_activity['id'], array('datetime_out' => $time));
@@ -129,30 +129,30 @@ class waAuthUser extends waUser
                         'contact_id' => $this->id,
                         'datetime_in' => date("Y-m-d H:i:s"),
                         'datetime_out' => null
-                    ));                
+                    ));
                 }
-            } 
+            }
             $t = date("Y-m-d H:i:s");
             $contact_model->updateById($this->id, array('last_datetime' => $t));
             $this->storage->write('user_last_datetime', $t);
-        } 
+        }
     }
-    
+
     public function setLocale($locale)
     {
-        
+
     }
-                       
+
     public function isAuth()
     {
         return (bool)$this->auth;
     }
-    
+
     public function logout()
     {
         // Update last datetime of the current user
         $this->updateLastTime(true);
-        // clear auth        
+        // clear auth
         waSystem::getInstance()->getAuth()->clearAuth();
         $this->id = $this->data = null;
         $this->auth = false;

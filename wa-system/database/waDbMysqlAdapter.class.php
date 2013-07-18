@@ -206,7 +206,14 @@ class waDbMySQLAdapter extends waDbAdapter
             if ($key_id == 'PRIMARY') {
                 $k = "PRIMARY KEY";
             } else {
-                $k = (!empty($key['unique']) ? "UNIQUE " : "")."KEY ".$this->escapeField($key_id);
+                $index_type = '';
+                foreach (array('unique', 'fulltext', 'spatial') as $tk) {
+                    if (!empty($key[$tk])) {
+                        $index_type = strtoupper($tk).' ';
+                        break;
+                    }
+                }
+                $k = $index_type."KEY ".$this->escapeField($key_id);
             }
             $key_fields = array();
             foreach ($key['fields'] as $f) {

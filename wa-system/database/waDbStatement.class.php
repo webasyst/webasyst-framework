@@ -86,7 +86,7 @@ final class waDbStatement
             foreach ($matches[0] as $id => $match) {
                 $match[2] = $matches[1][$id][0];
                 $match[3] = $matches[2][$id][0];
-                if (!$match[2] && $match[3][0] === ':' && (is_numeric(substr($this->query, $match[1] - 1, 1)))) {
+                if (preg_match('/[a-z0-9]/i', substr($this->query, $match[1] - 1, 1))) {
                     continue;
                 }
                 $p_name = ($match[3][0] === ':') ? ltrim($match[3], ':') : $unnamed_count++;

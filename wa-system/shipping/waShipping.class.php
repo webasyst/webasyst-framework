@@ -323,6 +323,20 @@ abstract class waShipping extends waSystemPlugin
         return $options;
     }
 
+    /**
+     * @param $iso3code
+     * @return mixed
+     * @throws waException
+     */
+    protected function getCountryISO2Code($iso3code) {
+        $country_model = new waCountryModel();
+        $country = $country_model->get($iso3code);
+        if (!$country) {
+            throw new waException($this->_w("Unknown country: ") . $iso3code);
+        }
+        return strtoupper($country['iso2letter']);
+    }
+
     public static function settingCountrySelect()
     {
         $country_model = new waCountryModel();

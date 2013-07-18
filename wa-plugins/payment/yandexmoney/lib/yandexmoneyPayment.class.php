@@ -125,24 +125,22 @@ class yandexmoneyPayment extends waPayment implements waIPayment
                 break;
 
             case self::OPERATION_AUTH_CAPTURE:
+                // exclude transactions duplicates
+                $tm = new waTransactionModel();
+                $fields = array(
+                    'native_id' => $transaction_data['native_id'],
+                    'plugin'    => $this->id,
+                    'type'      => waPayment::OPERATION_AUTH_CAPTURE,
+                );
+                if ($tm->getByFields($fields)) {
+                    throw new waPaymentException('already accepted', self::XML_SUCCESS);
+                }
+
                 $app_payment_method = self::CALLBACK_PAYMENT;
                 $transaction_data['state'] = self::STATE_CAPTURED;
                 break;
             default:
                 throw new waPaymentException('unsupported payment operation', self::XML_TEMPORAL_PROBLEMS);
-        }
-
-        if ($transaction_data['type'] == waPayment::OPERATION_AUTH_CAPTURE) { // exclude transactions duplicates
-            $tm = new waTransactionModel();
-            $fields = array(
-                'native_id' => $transaction_data['native_id'],
-                'plugin'    => $this->id,
-                'type'      => waPayment::OPERATION_AUTH_CAPTURE,
-            );
-            if ($tm->getByFields($fields)) {
-                throw new waPaymentException('already accepted', self::XML_SUCCESS);
-            }
-
         }
 
         $transaction_data = $this->saveTransaction($transaction_data, $request);

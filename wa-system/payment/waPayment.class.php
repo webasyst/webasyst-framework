@@ -320,34 +320,31 @@ abstract class waPayment extends waSystemPlugin
      */
     protected function execAppCallback($method, $transaction_data)
     {
-        $default = array(
-            'order_id' => null,
-            'customer_id' => null,
-            'result' => true,
-            'error' => null,
-        );
         try {
             $result = $this->getAdapter()->execCallbackHandler($method, $transaction_data);
-        } catch (Exception $ex) {
-            $result = array('error' => $ex->getMessage());
-        }
-        if (!empty($result)) {
-            $result = array_merge($default, $result);
-        } else {
-            self::log($this->id, array(
-                'method' => __METHOD__,
-                'callback_method' => $method,
-                'app_id' => $this->app_id,
-                'warning' => 'empty callback response',
-            ));
-            $result = $default;
+        } catch (Exception $e) {
+            $result = array('error' => $e->getMessage());
         }
         self::log($this->id, array(
             'method' => __METHOD__,
+            'app_id' => $this->app_id,
             'callback_method' => $method,
             'transaction_data' => var_export($transaction_data, true),
             'result' => var_export($result, true),
         ));
+
+        if ($result) {
+            $transaction_model = new waTransactionModel();
+            $data = array();
+            foreach (array('order_id', 'customer_id', 'result', 'error') as $k) {
+                if (isset($result[$k])) {
+                    $data[$k] = $result[$k];
+                }
+            }
+            if ($data) {
+                $transaction_model->updateById($transaction_data['id'], $data);
+            }
+        }
         return $result;
     }
 
@@ -608,32 +605,12 @@ abstract class waPayment extends waSystemPlugin
      * Adds order [and customer] info to wa_transaction DB table (for cases like Google Checkout)
      * @param $wa_transaction_id int
      * @param $result array
-     * @param $state string
      * @return bool result
+     * @deprecated
      */
-    final public static function addTransactionData($wa_transaction_id, $result = null, $state = null)
+    final public static function addTransactionData($wa_transaction_id, $result = null)
     {
-        $transaction_model = new waTransactionModel();
-        $data = array();
-        if (isset($result['order_id'])) {
-            $data['order_id'] = $result['order_id'];
-        }
-        if (isset($result['customer_id'])) {
-            $data['customer_id'] = $result['customer_id'];
-        }
-        if (isset($result['result'])) {
-            $data['result'] = $result['result'];
-        }
-        if (isset($result['error'])) {
-            $data['error'] = $result['error'];
-        }
-        if ($state) {
-            $data['state'] = $state;
-        }
-        if ($data) {
-            return $transaction_model->updateById($wa_transaction_id, $data);
-        }
-        return false;
+        return true;
     }
 
     /**
@@ -823,6 +800,20 @@ abstract class waPayment extends waSystemPlugin
         }
 
         return $this->app_adapter;
+    }
+
+    /**
+     * @param $iso3code
+     * @return mixed
+     * @throws waException
+     */
+    protected function getCountryISO2Code($iso3code) {
+        $country_model = new waCountryModel();
+        $country = $country_model->get($iso3code);
+        if (!$country) {
+            throw new waException($this->_w("Unknown country: ") . $iso3code);
+        }
+        return strtoupper($country['iso2letter']);
     }
 
 }

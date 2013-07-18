@@ -209,7 +209,6 @@ class worldpayPayment extends waPayment implements waIPayment
         if (!$tm->getByFields($fields)) {
             $transaction_data = $this->saveTransaction($transaction_data, $request);
             $result += $this->execAppCallback($app_payment_method, $transaction_data);
-            self::addTransactionData($transaction_data['id'], $result);
         }
 
         $result['back_url'] = $back_url;
@@ -249,20 +248,6 @@ class worldpayPayment extends waPayment implements waIPayment
         $assign['p'] = $this;
         $view->assign($assign);
         return $view->fetch($this->path . $template);
-    }
-
-    /**
-     * @param $iso3code
-     * @return mixed
-     * @throws waException
-     */
-    protected function getCountryISO2Code($iso3code) {
-        $country_model = new waCountryModel();
-        $country = $country_model->get($iso3code);
-        if (!$country) {
-            throw new waException($this->_w("Unknown country: ") . $iso3code);
-        }
-        return strtoupper($country['iso2letter']);
     }
 
     protected function formalizeData($transaction_raw_data)

@@ -14,14 +14,18 @@
  */
 class upsShipping extends waShipping
 {
+    private $currency = 'USD';
 
     public function allowedCurrency()
     {
-        return 'USD';
+        return $this->currency;
     }
 
     public function allowedWeightUnit()
     {
+        if ($this->weight_dimension == 'kgs') {
+            return 'kg';
+        }
         return $this->weight_dimension;
     }
 
@@ -33,7 +37,6 @@ class upsShipping extends waShipping
 //             $this->dumpXml($query[1]);
             $query = implode('', $query);
             $answer = $this->sendQuery($query);
-//             $this->dumpXml($answer);
             $parsed_answer = $this->parseAnswer($answer);
         } catch (Exception $e) {
             $error = $e->getMessage();
@@ -45,10 +48,12 @@ class upsShipping extends waShipping
         foreach ($parsed_answer as $code => $items) {
             foreach ($items as $k => $item) {
                 $item['id'] = sprintf("%s%02d", $code, $k);
+                if (!isset($item['currency'])) {
+                    $item['currency'] = $this->currency;
+                }
                 $rates[$item['id']] = $item;
             }
         }
-
         if (empty($rates)) {
             return $this->_w("UPS web service return an empty response");
         }
@@ -152,7 +157,8 @@ class upsShipping extends waShipping
         $xml->addChild('PickupType')->
                 addChild('Code', $this->pickup_type);
         if ($customer_type) {
-            $xml->addChild('CustomerClassification');
+            $xml->addChild('CustomerClassification')->
+                addChild('Code', $customer_type);
         }
 
         // RatingServiceSelectionRequest/Shipment

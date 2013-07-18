@@ -22,7 +22,7 @@ class waCurrency
         if (!$currency) {
             return array();
         }
-        $file = dirname(__FILE__)."/data/".$currency.".php";
+        $file = wa()->getConfig()->getPath('system')."/currency/data/".$currency.".php";
         if (file_exists($file)) {
             $info = include($file);
             $info['title'] = _ws($info['title']);

@@ -76,7 +76,7 @@ return array(
         'description' => /*_wp*/('Choose proper to origin country weight dimension unit'),
         'control_type' => waHtmlControl::SELECT,
         'options' => array(
-            array('title' => 'kgs', 'value' => 'kgs'),
+            array('title' => 'kg', 'value' => 'kgs'),
             array('title' => 'lbs', 'value' => 'lbs')
         )
     )

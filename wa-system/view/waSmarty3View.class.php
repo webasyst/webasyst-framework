@@ -13,7 +13,7 @@
  * @subpackage view
  */
 
-require_once dirname(__FILE__).'/../vendors/smarty3/Smarty.class.php';
+require_once realpath(dirname(__FILE__).'/../').'/vendors/smarty3/Smarty.class.php';
 
 class waSmarty3View extends waView
 {

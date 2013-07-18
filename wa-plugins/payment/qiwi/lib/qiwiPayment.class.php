@@ -199,6 +199,7 @@ class qiwiPayment extends waPayment implements waIPayment, waIPaymentCapture, wa
         }
         $result = array();
         if (!empty($data['result']) && $this->order_id) {
+            //handle customer redirection
             $transaction_data = array(
                 'order_id' => $this->order_id,
             );
@@ -222,9 +223,15 @@ class qiwiPayment extends waPayment implements waIPayment, waIPaymentCapture, wa
                         $callback_method = self::CALLBACK_PAYMENT;
                         break;
                     case 150:
+                    case 161:
+                        $transaction_data['type'] = self::OPERATION_CHECK;
+                        $transaction_data['state'] = self::STATE_DECLINED;
+                        $transaction_data['result'] = 1;
+                        $transaction_data = $this->saveTransaction($transaction_data, $data);
+                        $callback_method = self::CALLBACK_DECLINE;
+                        break;
                     case 151:
                     case 160:
-                    case 161:
                         $transaction_data['type'] = self::OPERATION_CANCEL;
                         $transaction_data['state'] = self::STATE_CANCELED;
                         $transaction_data['result'] = 1;
@@ -236,8 +243,7 @@ class qiwiPayment extends waPayment implements waIPayment, waIPaymentCapture, wa
                         break;
                 }
                 if ($callback_method) {
-                    $callback = $this->execAppCallback($callback_method, $transaction_data);
-                    self::addTransactionData($transaction_data['id'], $callback);
+                    $this->execAppCallback($callback_method, $transaction_data);
                 }
             }
             $result['template'] = false;

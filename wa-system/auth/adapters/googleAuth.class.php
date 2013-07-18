@@ -18,7 +18,7 @@ class googleAuth extends waOAuth2Adapter
 
     public function getRedirectUri()
     {
-        $scope = "https://www.googleapis.com/auth/userinfo.profile";
+        $scope = "https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile";
         // login dialog url
         return "https://accounts.google.com/o/oauth2/auth?response_type=code&client_id=".$this->app_id.
             "&scope=".urlencode($scope)."&approval_prompt=force".

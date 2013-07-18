@@ -104,8 +104,8 @@ abstract class uspsQuery
     protected function parseWeight($weight)
     {
         $weight = str_replace(',', '.', $weight);
-        $ounces = $weight;
-        $pounds = floor($ounces * 0.0625);
+        $pounds = floor($weight * 0.0625);
+        $ounces = $weight - $pounds * 16;
         return array(
             'pounds' => $pounds,
             'ounces' => $ounces

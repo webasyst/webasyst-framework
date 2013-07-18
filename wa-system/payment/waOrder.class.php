@@ -23,6 +23,7 @@
  * @property string $update_datetime
  * @property string $paid_datetime
  *
+ * @property array $shipping_address
  * @property array[string]string $shipping_address['name']
  * @property array[string]string $shipping_address['firstname']
  * @property array[string]string $shipping_address['lastname']
@@ -35,6 +36,7 @@
  * @property array[string]string $shipping_address['country_name']
  * @property array[string]string $shipping_address['address']
  *
+ * @property array $billing_address
  * @property array[string]string $billing_address['name']
  * @property array[string]string $billing_address['firstname']
  * @property array[string]string $billing_address['lastname']

@@ -43,7 +43,7 @@ class waAutoload
 
         ini_set('unserialize_callback_func', 'spl_autoload_call');
         if (false === spl_autoload_register(array(self::getInstance(), 'autoload'))) {
-            throw new waException(sprintf('Unable to register %s::autoload as an autoloading method.', get_class(self::getInstance())));
+            throw new Exception(sprintf('Unable to register %s::autoload as an autoloading method.', get_class(self::getInstance())));
         }
 
         self::$registered = true;
@@ -64,15 +64,13 @@ class waAutoload
     {
         if ($path = $this->get($class)) {
             if (!file_exists($path)) {
-                throw new waException(sprintf('Not found file [%1$s] for class [%2$s]', $path, $class));
+                throw new Exception(sprintf('Not found file [%1$s] for class [%2$s]', $path, $class));
             }
             require $path;
             if (!class_exists($class, false) && !interface_exists($class, false)) {
-               throw new waException(sprintf('Not found class [%2$s] at file [%1$s]', $path, $class));
+               throw new Exception(sprintf('Not found class [%2$s] at file [%1$s]', $path, $class));
             }
-            return true;
         }
-        return false;
     }
 
     public function get($class)
