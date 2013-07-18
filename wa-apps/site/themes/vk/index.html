@@ -51,6 +51,7 @@
     <meta name="Description" content="{$wa->meta('description')|escape}" />
     <!-- css -->
     <link href="{$wa_theme_url}vk.css?{$wa->version()}" rel="stylesheet" type="text/css"/>
+    {$wa->css()} {* links active plugins CSS *}
     
     <!-- js -->
     <script type="text/javascript" src="{$wa_url}wa-content/js/jquery/jquery-1.8.2.min.js"></script>
@@ -61,8 +62,11 @@
     {if $wa->isMobile()}
         <meta name="viewport" content="width=device-width; initial-scale=1; maximum-scale=1; user-scalable=0;" />
     {/if}
+    {$wa->js()} {* links active plugins JS *}
+    
     {include file="`$wa_active_theme_path`/head.html" inline}
-    {$wa->headJs()}
+    
+    {$wa->headJs()} {* links Google Analytics tracking code and current site's custom JS (Site app) *}
 </head>
 <body id="{$wa_app}">
     <div id="header">

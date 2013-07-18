@@ -551,7 +551,10 @@ msgid ""
 "for the \"%s\" folder."
 msgstr ""
 "Не удалось сохранить настройки из-за недостаточных прав на перезапись "
-"содержимого папки «%s» ."
+"содержимого папки «%s»."
+
+msgid "Settings could not be saved due to the insufficient file write permissions for the file \"%s\"."
+msgstr "Не удалось сохранить настройки из-за недостаточных прав на запись файла «%s»."
 
 #: /wa-apps/site/lib/actions/settings/siteSettingsSave.controller.php:84
 msgid "Files with extension *.ico are allowed only."

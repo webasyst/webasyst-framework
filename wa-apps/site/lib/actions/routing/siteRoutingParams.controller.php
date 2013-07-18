@@ -5,8 +5,13 @@ class siteRoutingParamsController extends waJsonController
     public function execute()
     {
         $path = $this->getConfig()->getPath('config', 'routing');
+
         if (file_exists($path)) { 
             $routes = include($path);
+            if (!is_writable($path)) {
+                $this->errors = sprintf(_w('Settings could not be saved due to the insufficient file write permissions for the file "%s".'), 'wa-config/routing.php');
+                return;
+            }
         } else {
             $routes = array();
         }

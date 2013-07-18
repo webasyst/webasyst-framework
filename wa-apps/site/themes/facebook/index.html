@@ -2,10 +2,12 @@
 {$fb_url = "https://apps.facebook.com/`$fb_app_id`/"}
 
 {if !$wa->user()->isAuth() || !$wa->user('facebook_id')}
+    {if $wa->post("signed_request")}
     {$fb_signed_request = explode('.', $wa->post("signed_request"), 2)}
     {$fb_data = json_decode(base64_decode(strtr($fb_signed_request[1], '-_', '+/')), true)}
     {if !empty($fb_data.user_id)}
         {$auth_user = $wa->oauth('facebook', [], $fb_data['oauth_token'])}
+    {/if}
     {/if}
 {/if}
 
@@ -51,8 +53,11 @@
     <title>{$wa->title()|escape}</title>
     <meta name="Keywords" content="{$wa->meta('keywords')|escape}" />
     <meta name="Description" content="{$wa->meta('description')|escape}" />
+    
     <!-- css -->
     <link href="{$wa_theme_url}facebook.css?{$wa->version()}" rel="stylesheet" type="text/css"/>
+    {$wa->css()} {* links active plugins CSS *}
+    
     <!-- js -->
     <script type="text/javascript" src="{$wa_url}wa-content/js/jquery/jquery-1.8.2.min.js"></script>
     <!-- internal shop-script js for facebook iframe app integration -->
@@ -76,8 +81,11 @@
     {if $wa->isMobile()}
         <meta name="viewport" content="width=device-width; initial-scale=1; maximum-scale=1; user-scalable=0;" />
     {/if}
+    {$wa->js()} {* links active plugins JS *}
+    
     {include file="`$wa_active_theme_path`/head.html" inline}
-    {$wa->headJs()}
+    
+    {$wa->headJs()} {* links Google Analytics tracking code and current site's custom JS (Site app) *}
 </head>
 <body id="{$wa_app}">
     <div id="fb-root"></div>

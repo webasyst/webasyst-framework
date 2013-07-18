@@ -107,11 +107,16 @@
 	$("#s-settings-form").submit(function () {
 		var f = $(this);
 		$("#s-settings-form-status").html('<i style="vertical-align:middle" class="icon16 loading"></i> [`Saving...`]').fadeIn("slow");
-		$.post(f.attr('action'), f.serialize(), function () {
-			$("#s-settings-form-status").html('<i style="vertical-align:middle" class="icon16 yes"></i>[`Saved`]').fadeOut('slow', function () {
-                site_routing_full();
-            });
-		});
+		$.post(f.attr('action'), f.serialize(), function (response) {
+            if (response.status == 'ok') {
+                $("#s-settings-form-status").html('<i style="vertical-align:middle" class="icon16 yes"></i>[`Saved`]').fadeOut('slow', function () {
+                    site_routing_full();
+                });
+            } else if (response.status == 'fail') {
+                $("#s-settings-form-status").html('<span class="small" style="color: #f00;">' + response.errors + '</span>');
+                f.find('input.button:submit').removeClass('green').addClass('red');
+            }
+		}, "json");
 		return false;
 	});
     $("#s-settings-form .cancel").click(function () {
