@@ -3,21 +3,28 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>{$wa->title()}</title>
+    
+    <!-- css -->
     <link href="{$wa_theme_url}default.css?{$wa->version()}" rel="stylesheet" type="text/css">
     <link href="{$wa_theme_url}mobile.css?{$wa->version()}" media="screen and (max-width: 760px)" rel="stylesheet" type="text/css">
     {if $wa->isMobile()}
         <meta name="viewport" content="width=device-width; initial-scale=1; maximum-scale=1; user-scalable=0;">
     {/if}
+    {$wa->css()} {* links active plugins CSS *}
+    
+    <!-- js -->
     <script type="text/javascript" src="{$wa_url}wa-content/js/jquery/jquery-1.7.1.min.js"></script>
     <script type="text/javascript" src="{$wa_url}wa-content/js/jquery-wa/wa.core.js"></script>
     {if $nofollow}
         <meta name="robots" content="nofollow" />
     {/if}
-    {$wa->js()}
     <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
+    {$wa->js()} {* links active plugins JS *}
+    
     {* @event frontend_assets.%plugin_id% *}
     {foreach $frontend_assets as $item}{if !empty($item)}{$item}{/if}{/foreach}
-    {$wa->headJs()}
+    
+    {$wa->headJs()} {* links Google Analytics tracking code and current site's custom JS (Site app) *}
 </head>
 <body>
     <div id="header" role="navigation">
