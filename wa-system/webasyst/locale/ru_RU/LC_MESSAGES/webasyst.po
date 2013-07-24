@@ -3348,3 +3348,19 @@ msgstr "запретить"
 msgid "Deny"
 msgstr "Запретить"
 
+
+#: /wa-system/view/waViewHelper.class.php:425
+msgid "Recipient (administrator) email is not valid"
+msgstr "Указан неправильный email получателя (администратора)"
+
+#: /wa-system/view/waViewHelper.class.php:436
+msgid "Please define your request"
+msgstr "Укажите текст сообщения"
+
+#: /wa-system/view/waViewHelper.class.php:439
+msgid "Email is required"
+msgstr "Укажите email"
+
+#: /wa-system/view/waViewHelper.class.php:448
+msgid "An error occurred while attempting to send your request. Please try again in a minute."
+msgstr "Во время отправки произошла ошибка. Попробуйте позже."

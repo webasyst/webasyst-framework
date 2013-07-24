@@ -274,8 +274,8 @@ class waFiles
                 throw new waException("error while register file filter");
             }
             $file = preg_replace('/(\.[^\.]+)$/', '.'.$to.'$1', $file);
-            if ($this->fp && ($dst = fopen($file, 'wb'))) {
-                stream_copy_to_stream($this->fp, $dst);
+            if ($src && ($dst = fopen($file, 'wb'))) {
+                stream_copy_to_stream($src, $dst);
                 fclose($src);
                 fclose($dst);
             } else {

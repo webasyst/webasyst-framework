@@ -22,9 +22,23 @@ class waAppViewHelper
             $page_model = $this->getPageModel();
             $sql = "SELECT id, parent_id, name, title, full_url, url, create_datetime, update_datetime FROM ".$page_model->getTableName().'
                     WHERE status = 1 AND domain = s:domain AND route = s:route ORDER BY sort';
-            $pages = $page_model->query($sql, array(
-                'domain' => wa()->getRouting()->getDomain(null, true),
-                'route' => wa()->getRouting()->getRoute('url')))->fetchAll('id');
+
+            $domain = wa()->getRouting()->getDomain(null, true);
+            if ($this->wa->getConfig()->getApplication() == wa()->getApp()) {
+                $route = wa()->getRouting()->getRoute('url');
+                $url = $this->wa->getAppUrl(null, true);
+            } else {
+                $routes = wa()->getRouting()->getByApp($this->wa->getConfig()->getApplication(), $domain);
+                if ($routes) {
+                    $route = reset($routes);
+                    $route = $route['url'];
+                    $url = wa()->getRootUrl(false, true).waRouting::clearUrl($route);
+                } else {
+                    return array();
+                }
+            }
+
+            $pages = $page_model->query($sql, array('domain' => $domain, 'route' => $route))->fetchAll('id');
 
             if ($with_params) {
                 $page_params_model = $page_model->getParamsModel();
@@ -35,8 +49,6 @@ class waAppViewHelper
                     }
                 }
             }
-            // get current rool url
-            $url = $this->wa->getAppUrl(null, true);
 
             foreach ($pages as &$page) {
                 $page['url'] = $url.$page['full_url'];
@@ -88,7 +100,7 @@ class waAppViewHelper
      */
     protected function getPageModel()
     {
-        $class = $this->wa->getApp().'PageModel';
+        $class = $this->wa->getConfig()->getApplication().'PageModel';
         return new $class();
     }
 

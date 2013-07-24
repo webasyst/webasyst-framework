@@ -254,6 +254,17 @@ abstract class waPayment extends waSystemPlugin
         return null;
     }
 
+    /**
+     * @param array $payment_form_data POST form data
+     * @param waOrder $order_data formalized order data
+     * @param bool $auto_submit
+     * @return string HTML payment form
+     */
+    public function payment($payment_form_data, $order_data, $auto_submit = false)
+    {
+        return '';
+    }
+
     //Callback
 
     final public static function callback($module_id, $request = array())
@@ -820,13 +831,7 @@ abstract class waPayment extends waSystemPlugin
 
 interface waIPayment
 {
-    /**
-     * @param array $payment_form_data POST form data
-     * @param waOrder $order_data formalized order data
-     * @param string $transaction_type
-     * @return string HTML payment form
-     */
-    public function payment($payment_form_data, $order_data, $transaction_type);
+
 }
 
 interface waIPaymentCancel

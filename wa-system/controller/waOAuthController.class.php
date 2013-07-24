@@ -53,11 +53,11 @@ class waOAuthController extends waViewController
         }
         // try find user by email
         if (!$contact_id && isset($data['email'])) {
+            $contact_model = new waContactModel();
             $sql = "SELECT c.id FROM wa_contact_emails e
             JOIN wa_contact c ON e.contact_id = c.id
-            WHERE e.email = s:email AND e.sort = 0 AND c.password != ''";
-            $contact_model = new waContactModel();
-            $contact_id = $contact_model->query($sql, array('email' => $data['email']))->fetchField('id');
+            WHERE e.email LIKE '".$contact_model->escape($data['email'], 'like')."' AND e.sort = 0 AND c.password != ''";
+            $contact_id = $contact_model->query($sql)->fetchField('id');
             // save source_id
             if ($contact_id) {
                 $contact_data_model->insert(array(

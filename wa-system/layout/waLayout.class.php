@@ -58,6 +58,13 @@ class waLayout extends waController
         if ($this->template === null) {
             $prefix = waSystem::getInstance()->getConfig()->getPrefix();
             $template = substr(get_class($this), strlen($prefix), -6);
+            if (strpos($template, 'Plugin') !== false) {
+                $plugin_root = $this->getPluginRoot();
+                if ($plugin_root) {
+                    $template = preg_replace("~^.*Plugin~", '', $template);
+                    return $plugin_root.'templates/layouts/' . $template . $this->view->getPostfix();
+                }
+            }
             return 'templates/layouts/' . $template . $this->view->getPostfix();
         } else {
             if (strpbrk($this->template, '/:') !== false) {

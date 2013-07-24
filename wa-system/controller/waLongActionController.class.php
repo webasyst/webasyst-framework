@@ -276,25 +276,24 @@ abstract class waLongActionController extends waController
             $this->_save();
         }
 
-        $this->_transaction = false;
-        $this->_runner = false;
-
-        if (!$continue) {
-            $this->info();
-            $this->_save(true);
-            self::$instance = false;
-            return;
+        if ($continue) {
+            // We're done!
+            $this->_data['ready'] = true;
         }
-
-        // We're done!
-
-        $this->_data['ready'] = true;
         $this->_save(true);
 
-        self::$instance = false;
-        if ($this->finish($this->_files['old']['file'])) {
-            $this->_cleanup();
+        $this->_runner = false;
+        $this->_transaction = false;
+
+        if ($continue) {
+            if ($this->finish($this->_files['old']['file'])) {
+                $this->_cleanup();
+            }
+        } else {
+            $this->info();
         }
+
+        self::$instance = false;
     }
 
     /** Close $this->_fd and remove all files we created */
@@ -578,7 +577,7 @@ abstract class waLongActionController extends waController
             // Reset file position in $this->fd to EOF. Since we don't save file position
             // between different Runner instances, it's more consistent just to reset it every time.
             fseek($this->_fd, -1, SEEK_END);
-            if ($this->_transaction && $this->_runner) {
+            if ($this->_runner && $this->_transaction) {
                 $this->save();
             }
         }
@@ -656,7 +655,8 @@ abstract class waLongActionController extends waController
         switch ($field) {
             case 'data':
                 if ($this->_runner && !$this->_transaction) {
-                    throw new waException('Data is only accessible inside a transaction.');
+                    $b = debug_backtrace_custom();
+                    throw new waException('Data is only accessible inside a transaction.<pre>'.var_export($b, true).'</pre>');
                 }
                 return $this->_data['data']; // by reference
             case 'fd':

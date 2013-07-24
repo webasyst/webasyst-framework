@@ -1012,3 +1012,19 @@ msgstr ""
 msgid "Deny"
 msgstr ""
 
+
+#: /wa-system/view/waViewHelper.class.php:425
+msgid "Recipient (administrator) email is not valid"
+msgstr ""
+
+#: /wa-system/view/waViewHelper.class.php:436
+msgid "Please define your request"
+msgstr ""
+
+#: /wa-system/view/waViewHelper.class.php:439
+msgid "Email is required"
+msgstr ""
+
+#: /wa-system/view/waViewHelper.class.php:448
+msgid "An error occurred while attempting to send your request. Please try again in a minute."
+msgstr ""

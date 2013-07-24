@@ -823,7 +823,8 @@ i.icon16.hidden { display: none; }
 .icon16.book-open { background-position:-16px -80px; }
 .icon16.lens { background-position:-320px -16px; }
 .icon16.desktop { background-position:-208px -64px; }
-.icon16.apps { background-position:-192px -48px; }
+.icon16.bundles { background-position:-192px -48px; }
+.icon16.apps { background-position:-208px -48px; }
 .icon16.new-window { background-position:-384px -96px; }
 .icon16.text { background-position:-64px -80px; }
 .icon16.video { background-position:-304px -16px; }

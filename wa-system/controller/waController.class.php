@@ -212,10 +212,13 @@ abstract class waController
         return $app_settings_model->get($this->getApp(), $name, $default);
     }
 
-    /** Relative path from app root to plugin root this controller belongs to
-      * (no leading slash, with trailing slash). For application controllers return ''.
-      * @return string relative path or '' */
-    function getPluginRoot() {
+    /**
+     * Relative path from app root to plugin root this controller belongs to
+     * (no leading slash, with trailing slash). For application controllers return ''.
+     * @return string relative path or ''
+     */
+    public function getPluginRoot()
+    {
         $path = waAutoload::getInstance()->get(get_class($this));
         if (!$path) {
             return '';

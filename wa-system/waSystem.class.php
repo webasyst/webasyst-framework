@@ -189,7 +189,7 @@ class waSystem
      * @param mixed $first_param
      * @return mixed
      */
-    public function getCommonFactory($name, $class, $options = array(), $first_param = false)
+    public static function getCommonFactory($name, $class, $options = array(), $first_param = false)
     {
         if (!isset(self::$factories_common[$name])) {
             if (isset(self::$factories_config[$name])) {

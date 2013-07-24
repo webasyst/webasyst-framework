@@ -422,7 +422,7 @@ HTML;
             $to = waMail::getDefaultFrom();
         }
         if (!$to) {
-            $errors['all'] = 'Recipient (administrator) email is not valid';
+            $errors['all'] = _ws('Recipient (administrator) email is not valid');
             return false;
         }
         if (!$this->wa->getCaptcha()->isValid()) {
@@ -433,9 +433,11 @@ HTML;
         $subject = trim($this->post('subject', 'Website request'));
         $body = trim($this->post('body'));
         if (!$body) {
-            $errors['body'] = 'Please define your request';
+            $errors['body'] = _ws('Please define your request');
         }
-        if (!$email_validator->isValid($email)) {
+        if (!$email) {
+            $errors['email'] = _ws('Email is required');
+        } elseif (!$email_validator->isValid($email)) {
             $errors['email'] = implode(', ', $email_validator->getErrors());
         }
         if (!$errors) {
@@ -443,7 +445,7 @@ HTML;
             $m->setTo($to);
             $m->setFrom(array($email => $this->post('name')));
             if (!$m->send()) {
-                $errors['all'] = 'An error occurred while attempting to send your request. Please try again in a minute.';
+                $errors['all'] = _ws('An error occurred while attempting to send your request. Please try again in a minute.');
             } else {
                 return true;
             }

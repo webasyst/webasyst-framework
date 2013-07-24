@@ -41,7 +41,7 @@ class twitterAuth extends waAuthAdapter
             ));
 
             // get user info
-            $response = $this->request("1/account/verify_credentials.json", array(
+            $response = $this->request("1.1/account/verify_credentials.json", array(
                 'oauth_token' => $access_token['oauth_token'],
                 'oauth_token_secret' => $access_token['oauth_token_secret'],
                 'skip_status' => 1
@@ -60,6 +60,10 @@ class twitterAuth extends waAuthAdapter
                 'about' => $response['description'],
                 'photo_url' => $response['profile_image_url']
             );
+
+            if (isset($response['lang']) && $response['lang'] == 'ru') {
+                $data['locale'] = 'ru_RU';
+            }
 
             $name = explode(' ', $response['name'], 2);
             if (count($name) == 1) {

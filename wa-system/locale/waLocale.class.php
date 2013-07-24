@@ -39,7 +39,7 @@ class waLocale
             if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN' || !function_exists('gettext')) {
                 self::$adapter = new waLocalePHPAdapter();
             } else {
-                self::$adapter = new waLocaleAdapter();
+                self::$adapter = waSystem::getCommonFactory('locale', 'waLocaleAdapter');
             }
         }
     }
