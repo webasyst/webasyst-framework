@@ -4,7 +4,7 @@ return array(
         'strict' => true,
         'value'  => 1,
     ),
-    'php.dom' => array(
+    'php.simplexml' => array(
         'strict' => true,
         'value' => 1
     )

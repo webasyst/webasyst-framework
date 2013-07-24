@@ -11,7 +11,7 @@
  * @property boolean $bugfix Добавлять случайное число к номеру счета
  * @property string $customer_phone Customer telephone number
  */
-class liqpayPayment extends waPayment implements waIPayment
+class liqpayPayment extends waPayment
 {
     /**
      *
@@ -25,7 +25,7 @@ class liqpayPayment extends waPayment implements waIPayment
     private $raw_xml;
     private $pattern = '/^(\w[\w\d]+)\.([\w\d]+)_(.+)$/';
 
-    public function payment($payment_form_data, $order_data, $transaction_type)
+    public function payment($payment_form_data, $order_data, $auto_submit = false)
     {
         $order = waOrder::factory($order_data);
 
@@ -81,6 +81,7 @@ class liqpayPayment extends waPayment implements waIPayment
         $view = wa()->getView();
         $view->assign('hidden_fields', $hidden_fields);
         $view->assign('form_url', $this->getEndpointUrl());
+        $view->assign('auto_submit', $auto_submit);
         return $view->fetch($this->path.'/templates/payment.html');
     }
 

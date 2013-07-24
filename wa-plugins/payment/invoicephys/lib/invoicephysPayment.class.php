@@ -18,7 +18,7 @@ class invoicephysPayment extends waPayment implements waIPayment, waIPaymentCapt
         return 'RUB';
     }
 
-    public function payment($payment_form_data, $order_data, $transaction_type)
+    public function payment($payment_form_data, $order_data, $auto_submit = false)
     {
         $view = wa()->getView();
         if (ifempty($payment_form_data['printform'])) {

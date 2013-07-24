@@ -6,7 +6,7 @@
  * @property string $paysystem_alias Payment method
  * @property string $currency transaction currency
  */
-class interkassaPayment extends waPayment implements waIPayment
+class interkassaPayment extends waPayment
 {
     private $pattern = '/^(\w[\w\d]+)_([\w\d]+)_(.+)$/';
     private $template = '%s_%s_%s';
@@ -16,7 +16,7 @@ class interkassaPayment extends waPayment implements waIPayment
         return $this->currency;
     }
 
-    public function payment($payment_form_data, $order_data, $transaction_type)
+    public function payment($payment_form_data, $order_data, $auto_submit = false)
     {
         $order = waOrder::factory($order_data);
 
@@ -37,6 +37,7 @@ class interkassaPayment extends waPayment implements waIPayment
         $view = wa()->getView();
         $view->assign('form_url', $this->getEndpointUrl());
         $view->assign('hidden_fields', $hidden_fields);
+        $view->assign('auto_submit', $auto_submit);
         return $view->fetch($this->path.'/templates/payment.html');
     }
 

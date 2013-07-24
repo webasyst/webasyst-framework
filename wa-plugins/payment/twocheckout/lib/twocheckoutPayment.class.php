@@ -13,7 +13,7 @@ class twocheckoutPayment extends waPayment implements waIPayment
         return 'USD';
     }
 
-    public function payment($payment_form_data, $order_data, $transaction_type)
+    public function payment($payment_form_data, $order_data, $auto_submit = false)
     {
         $order = waOrder::factory($order_data);
         $form = array(
@@ -48,6 +48,7 @@ class twocheckoutPayment extends waPayment implements waIPayment
         $view = wa()->getView();
         $view->assign('form', $form);
         $view->assign('form_url', $this->getEndpointUrl());
+        $view->assign('auto_submit', $auto_submit);
         return $view->fetch($this->path.'/templates/payment.html');
     }
 

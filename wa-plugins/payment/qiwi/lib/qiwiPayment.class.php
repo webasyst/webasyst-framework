@@ -31,7 +31,7 @@ class qiwiPayment extends waPayment implements waIPayment, waIPaymentCapture, wa
         return 'RUB';
     }
 
-    public function payment($payment_form_data, $order_data, $transaction_type)
+    public function payment($payment_form_data, $order_data, $auto_submit = false)
     {
         if (empty($order_data['currency_id']) || ($order_data['currency_id'] != 'RUB')) {
             throw new waPaymentException('Оплата в через платежную систему «QIWI» производится в только в рублях (RUB) и в данный момент невозможна, так как эта валюта не определена в настройках.');
@@ -51,26 +51,25 @@ class qiwiPayment extends waPayment implements waIPayment, waIPaymentCapture, wa
             $mobile_phone = preg_replace('/[^\d]/', '', $mobile_phone);
         }
         $hidden_fields = array(
-            'from' => $this->login,
-            'summ' => number_format($order_data['amount'], 2, '.', ''),
-            'com' => _w('#') . $order_data['order_id'],
-            'lifetime' => $this->lifetime,
+            'from'      => $this->login,
+            'summ'      => number_format($order_data['amount'], 2, '.', ''),
+            'com'       => _w('#').$order_data['order_id'],
+            'lifetime'  => $this->lifetime,
             'check_agt' => 'false',
-            'txn_id' => $this->getInvoiceId($order_data['order_id']),
+            'txn_id'    => $this->getInvoiceId($order_data['order_id']),
         );
         if (!empty($order_data['description'])) {
-            $hidden_fields['com'] .= "\n" . $order_data['description'];
+            $hidden_fields['com'] .= "\n".$order_data['description'];
         }
 
         $view = wa()->getView();
 
         $view->assign('mobile_phone', $mobile_phone);
         $view->assign('url', wa()->getRootUrl());
-        $view->assign('payment_type', preg_replace('/[^a-z]+/', '_', $transaction_type));
         $view->assign('hidden_fields', $hidden_fields);
         $view->assign('form_url', $this->getEndpointUrl('html'));
 
-        return $view->fetch($this->path . '/templates/payment.html');
+        return $view->fetch($this->path.'/templates/payment.html');
     }
 
     /**
@@ -104,7 +103,7 @@ class qiwiPayment extends waPayment implements waIPayment, waIPaymentCapture, wa
             self::log($this->id, $soap_client->getDebug());
             if ($response->createBillResult) {
                 $result = $this->getResponseCodeDescription($response->createBillResult);
-                self::log($this->id, array(__METHOD__ . " #{$order_id}\tphone:{$phone_number}\t{$result}"));
+                self::log($this->id, array(__METHOD__." #{$order_id}\tphone:{$phone_number}\t{$result}"));
             }
         } catch (SoapFault $sf) {
             $result = $sf->getMessage();
@@ -133,13 +132,13 @@ class qiwiPayment extends waPayment implements waIPayment, waIPaymentCapture, wa
             $response = $soap_client->cancelBill($parameters);
 
             $result = array(
-                'result' => $response->cancelBillResult ? 0 : 1,
+                'result'      => $response->cancelBillResult ? 0 : 1,
                 'description' => $this->getResponseCodeDescription($response->cancelBillResult),
             );
-            self::log($this->id, array(__METHOD__ . " #{$order_id}\tphone:{$phone_number}\t{$result}"));
+            self::log($this->id, array(__METHOD__." #{$order_id}\tphone:{$phone_number}\t{$result}"));
         } catch (SoapFault $sf) {
             $result = array(
-                'result' => -1,
+                'result'      => -1,
                 'description' => $sf->getMessage(),
             );
             self::log($this->id, $sf->getMessage());
@@ -205,7 +204,7 @@ class qiwiPayment extends waPayment implements waIPayment, waIPaymentCapture, wa
             );
             $type = ($data['result'] == 'success') ? waAppPayment::URL_SUCCESS : waAppPayment::URL_FAIL;
             $result['url'] = $this->getAdapter()->getBackUrl($type, $transaction_data);
-            $result['template'] = $this->path . '/templates/result.html';
+            $result['template'] = $this->path.'/templates/result.html';
         } else {
             $s = $this->getQiwiSoapServer('soap');
             $s->setHandler($this);
@@ -239,7 +238,7 @@ class qiwiPayment extends waPayment implements waIPayment, waIPaymentCapture, wa
                         $callback_method = self::CALLBACK_CANCEL;
                         break;
                     default:
-                        self::log($this->id, array('method' => __METHOD__, 'error' => 'callbackHandler checkBill status: ' . $result->status));
+                        self::log($this->id, array('method' => __METHOD__, 'error' => 'callbackHandler checkBill status: '.$result->status));
                         break;
                 }
                 if ($callback_method) {
@@ -254,9 +253,9 @@ class qiwiPayment extends waPayment implements waIPayment, waIPaymentCapture, wa
     private function getInvoiceId($id)
     {
         if ($this->prefix) {
-            $id = $this->prefix . $id;
+            $id = $this->prefix.$id;
         }
-        return $this->app_id . '_' . $this->merchant_id . '_' . $id;
+        return $this->app_id.'_'.$this->merchant_id.'_'.$id;
     }
 
     protected function formalizeData($result)
@@ -268,7 +267,7 @@ class qiwiPayment extends waPayment implements waIPayment, waIPaymentCapture, wa
         $transaction_data['order_id'] = $this->order_id;
         if (is_object($result) && property_exists(get_class($result), 'user') && !empty($result->user)) {
             $data['phone'] = $result->user;
-            $transaction_data['view_data'] = 'Phone: ' . $result->user;
+            $transaction_data['view_data'] = 'Phone: '.$result->user;
         }
         if (is_object($result) && property_exists(get_class($result), 'status') && !empty($result->status)) {
             $transaction_data['view_status'] = $this->getBillCodeDescription(intval($result->status));
@@ -320,7 +319,7 @@ class qiwiPayment extends waPayment implements waIPayment, waIPaymentCapture, wa
         $options = array();
         $options['location'] = $this->getEndpointUrl($type);
         $options['trace'] = 1;
-        $instance = new IShopServerWSService($this->path . '/vendors/qiwi/' . 'IShopServerWS.wsdl', $options);
+        $instance = new IShopServerWSService($this->path.'/vendors/qiwi/'.'IShopServerWS.wsdl', $options);
         //        $instance->setDebugLevel(9);
         $instance->soap_defencoding = 'UTF-8';
         return $instance;
@@ -338,7 +337,7 @@ class qiwiPayment extends waPayment implements waIPayment, waIPaymentCapture, wa
         $options = array();
         $options['location'] = $this->getEndpointUrl($type);
         $options['trace'] = 1;
-        $instance = new IShopClientWSService($this->path . '/vendors/qiwi/' . 'IShopClientWS.wsdl', $options);
+        $instance = new IShopClientWSService($this->path.'/vendors/qiwi/'.'IShopClientWS.wsdl', $options);
         $instance->soap_defencoding = 'UTF-8';
         return $instance;
     }
@@ -369,7 +368,7 @@ class qiwiPayment extends waPayment implements waIPayment, waIPaymentCapture, wa
             self::log($this->id, 'Empty merchant data');
             $result->updateBillResult = 298;
         } elseif ($this->login != $login) {
-            self::log($this->id, array('error' => 'updateBill: invalid login: ' . $login . ', expected: ' . $this->login, 'txn' => $txn));
+            self::log($this->id, array('error' => 'updateBill: invalid login: '.$login.', expected: '.$this->login, 'txn' => $txn));
             $result->updateBillResult = 150;
         } elseif ($password != ($pass = $this->getPassword($this->order_id))) {
             self::log($this->id, 'Invalid password');
@@ -406,16 +405,16 @@ class qiwiPayment extends waPayment implements waIPayment, waIPaymentCapture, wa
             $result = $soap_client->checkBill($params);
             $params->password = '***hidden***';
             self::log($this->id, array(
-                'method' => __METHOD__,
+                'method'  => __METHOD__,
                 'request' => var_export(get_object_vars($params), true),
-                'code' => $this->getBillCodeDescription($result->status),
-                'result' => var_export(get_object_vars($result), true),
+                'code'    => $this->getBillCodeDescription($result->status),
+                'result'  => var_export(get_object_vars($result), true),
 
             ));
         } catch (SoapFault $sf) {
             self::log($this->id, array(
                 'method' => __METHOD__,
-                'error' => $sf->getMessage(),
+                'error'  => $sf->getMessage(),
             ));
         }
         return $result;
@@ -495,10 +494,10 @@ class qiwiPayment extends waPayment implements waIPayment, waIPaymentCapture, wa
         # MD5("Заказ1"+MD5("Пароль магазина"))=MD5("Заказ1"+"936638421CA12C3E15E72FA7B75E03CE")= EC19350E3051D8A9834E5A2CF25FD0D9
         #
         if (setlocale(LC_CTYPE, 'ru_RU.CP-1251', 'ru_RU.CP1251', 'ru_RU.win', 'ru_RU.1251', 'Russian_Russia.1251', 'Russian_Russia.CP-1251', 'Russian_Russia.CP1251', 'Russian_Russia.win') === false) {
-            self::log($this->id, __METHOD__ . "\tsetLocale failed");
+            self::log($this->id, __METHOD__."\tsetLocale failed");
         }
-        $txn = $this->app_id . '_' . $this->merchant_id . '_' . $this->prefix . $order_id;
-        $string = $txn . strtoupper(md5(iconv('utf-8', 'cp1251', $this->password)));
+        $txn = $this->app_id.'_'.$this->merchant_id.'_'.$this->prefix.$order_id;
+        $string = $txn.strtoupper(md5(iconv('utf-8', 'cp1251', $this->password)));
         $hash = strtoupper(md5(iconv('utf-8', 'cp1251', $string)));
         return $hash;
     }

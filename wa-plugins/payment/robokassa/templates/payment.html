@@ -1,6 +1,15 @@
-<form method="POST" action="{$form_url}" target="_top">
+<form id="payment-form" method="POST" action="{$form_url}" target="_top">
     {foreach $form_fields as $field=>$value}
         {if !empty($value)}<input type="hidden" value="{$value|escape}" name="{$field|escape}">{/if}
     {/foreach}
+    {if $auto_submit}
+    <i class="icon16 loading"></i> <em>Перенаправление на сайт «Робокассы» для оплаты...</em>
+    <br /><br />
+    <script type="text/javascript">
+    setTimeout(function () {
+        document.getElementById('payment-form').submit();
+    }, 3000);
+    </script>
+    {/if}
     <input type="submit" value="Оплатить заказ на сайте «Робокассы»">
 </form>

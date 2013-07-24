@@ -1,11 +1,7 @@
 <?php
-class cashPayment extends waPayment implements waIPayment
-{
-    public function payment($payment_form_data, $order_data, $transaction_type)
-    {
-        return '';
-    }
 
+class cashPayment extends waPayment
+{
     public function allowedCurrency()
     {
         return true;

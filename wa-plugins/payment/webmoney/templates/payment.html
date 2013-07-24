@@ -1,11 +1,15 @@
-<form id="paymentForm" action="{$form_url}" method="post" target="_top">
-
+<form id="payment-form" action="{$form_url}" method="post" target="_top">
 {foreach from=$hidden_fields key=name item=value}
-
-	<input type="hidden" name="{$name}" value="{$value|escape}" />
-
+    <input type="hidden" name="{$name}" value="{$value|escape}" />
 {/foreach}
-
-<input type="submit" value="Оплатить заказ на сайте WebMoney" />
-
+    {if $auto_submit}
+    <i class="icon16 loading"></i> <em>Перенаправление на сайт WebMoney для оплаты...</em>
+    <br /><br />
+    <script type="text/javascript">
+    setTimeout(function () {
+        document.getElementById('payment-form').submit();
+    }, 3000);
+    </script>
+    {/if}
+    <input type="submit" value="Оплатить заказ на сайте WebMoney" />
 </form>

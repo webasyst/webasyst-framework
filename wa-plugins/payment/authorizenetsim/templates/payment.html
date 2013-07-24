@@ -1,6 +1,16 @@
-<form action="{$form_url}" method="POST" target="_top">
+<form id="payment-form" action="{$form_url}" method="POST" target="_top">
     {foreach $form as $field=>$value}
         <input type="hidden" name="{$name|escape}" value="{$value|escape}">
     {/foreach}
+
+    {if $auto_submit}
+    <i class="icon16 loading"></i> <em>[`Redirecting to Authorize.Net secure website for payment...`]</em>
+    <br /><br />
+    <script type="text/javascript">
+    setTimeout(function () {
+        document.getElementById('payment-form').submit();
+    }, 3000);
+    </script>
+    {/if}
     <input type="submit" value="[`Proceed to Authorize.Net payment gateway`]">
 </form>

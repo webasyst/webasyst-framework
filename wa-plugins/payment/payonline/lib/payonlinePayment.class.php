@@ -26,7 +26,7 @@ class payonlinePayment extends waPayment implements waIPayment, waIPaymentRefund
         return $this->currency ? array_intersect($default, array_keys($this->currency)) : $default;
     }
 
-    public function payment($payment_form_data, $order_data, $transaction_type)
+    public function payment($payment_form_data, $order_data, $auto_submit = false)
     {
         $allowed = (array) $this->allowedCurrency();
         if (!in_array($order_data['currency_id'], $allowed)) {
@@ -61,6 +61,7 @@ class payonlinePayment extends waPayment implements waIPayment, waIPaymentRefund
 
         $view->assign('form_fields', $form_fields);
         $view->assign('form_url', $this->getEndpointUrl());
+        $view->assign('auto_submit', $auto_submit);
 
         return $view->fetch($this->path.'/templates/payment.html');
 

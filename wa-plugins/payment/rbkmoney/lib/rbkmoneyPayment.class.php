@@ -20,7 +20,7 @@ class rbkmoneyPayment extends waPayment implements waIPayment
     /**
      * @see waIPayment::payment()
      */
-    public function payment($payment_form_data, $order_data, $transaction_type)
+    public function payment($payment_form_data, $order_data, $auto_submit = false)
     {
         $order = waOrder::factory($order_data);
 
@@ -52,6 +52,7 @@ class rbkmoneyPayment extends waPayment implements waIPayment
         $view = wa()->getView();
         $view->assign('form_url', $this->getEndpointUrl());
         $view->assign('hidden_fields', $hidden_fields);
+        $view->assign('auto_submit', $auto_submit);
         return $view->fetch($this->path.'/templates/payment.html');
     }
 
@@ -192,8 +193,7 @@ class rbkmoneyPayment extends waPayment implements waIPayment
 
         if ($callback_method) {
             $transaction_data = $this->saveTransaction($transaction_data, $request);
-            $callback = $this->execAppCallback($callback_method, $transaction_data);
-            self::addTransactionData($transaction_data['id'], $callback);
+            $this->execAppCallback($callback_method, $transaction_data);
         }
     }
 }

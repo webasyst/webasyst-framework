@@ -1,6 +1,15 @@
-<form action="{$url}" method="POST" target="_top">
+<form id="payment-form" action="{$url}" method="POST" target="_top">
     {foreach $fields as $name => $value}
         <input type="hidden" name="{$name}" value="{$value|escape}">
     {/foreach}
+    {if $auto_submit}
+    <i class="icon16 loading"></i> <em>[`Redirecting to WorldPay secure website for making a payment...`]</em>
+    <br /><br />
+    <script type="text/javascript">
+    setTimeout(function () {
+        document.getElementById('payment-form').submit();
+    }, 3000);
+    </script>
+    {/if}
     <input type="submit" value="{$p->_w('Pay order in WorldPay site')}">
 </form>

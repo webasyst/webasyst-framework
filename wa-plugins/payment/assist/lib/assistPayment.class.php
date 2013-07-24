@@ -9,7 +9,7 @@
  * @property-read string $gate
  *
  */
-class assistPayment extends waPayment implements waIPayment
+class assistPayment extends waPayment
 {
     private $url = array(
         'old'  => 'https://secure.assist.ru/shops/cardpayment.cfm',
@@ -21,7 +21,7 @@ class assistPayment extends waPayment implements waIPayment
         return true;
     }
 
-    public function payment($payment_form_data, $order_data, $transaction_type)
+    public function payment($payment_form_data, $order_data, $auto_submit = false)
     {
         $order_data = waOrder::factory($order_data);
         $view = wa()->getView();
@@ -29,6 +29,7 @@ class assistPayment extends waPayment implements waIPayment
         $view->assign('form_url', $this->getEndpointUrl());
         $view->assign('order_id', $this->app_id.'_'.$order_data['order_id']);
         $view->assign('settings', $this->getSettings());
+        $view->assign('auto_submit', $auto_submit);
         return $view->fetch($this->path.'/templates/payment.html');
 
     }

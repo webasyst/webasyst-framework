@@ -55,7 +55,7 @@ class yandexmoneyPayment extends waPayment implements waIPayment
         return 'RUB';
     }
 
-    public function payment($payment_form_data, $order_data, $transaction_type)
+    public function payment($payment_form_data, $order_data, $auto_submit = false)
     {
         if ($order_data['currency_id'] != 'RUB') {
             return array(
@@ -75,6 +75,8 @@ class yandexmoneyPayment extends waPayment implements waIPayment
 
         $view->assign('hidden_fields', $hidden_fields);
         $view->assign('form_url', $this->getEndpointUrl());
+
+        $view->assign('auto_submit', $auto_submit);
 
         return $view->fetch($this->path.'/templates/payment.html');
     }

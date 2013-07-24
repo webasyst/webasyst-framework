@@ -7,7 +7,7 @@
  */
 class private24Payment extends waPayment implements waIPayment
 {
-    public function payment($payment_form_data, $order_data, $transaction_type)
+    public function payment($payment_form_data, $order_data, $auto_submit = false)
     {
         $order = waOrder::factory($order_data);
         $view = wa()->getView();
@@ -27,6 +27,7 @@ class private24Payment extends waPayment implements waIPayment
 
         $view->assign('form', $form);
         $view->assign('form_url', $this->getEndpointUrl());
+        $view->assign('auto_submit', $auto_submit);
         return $view->fetch($this->path.'/templates/payment.html');
     }
 

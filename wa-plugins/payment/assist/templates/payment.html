@@ -1,5 +1,3 @@
-
-
 <form name="form1" action="{$form_url}" method="POST" target="_top">
 
 {if $settings.version eq 'old'}
@@ -64,5 +62,14 @@
 <input type="hidden" name="QIWIPayment"		 value="1">
 <!--	<input type="hidden" name="AssistIDPayment"	 value="1"> -->
 {/if}
-<input type="SUBMIT" name="Submit" value="Оплатить заказ по кредитной карте сейчас!" onclick="document.all.Submit.disabled=true; document.form1.submit();">
+    {if $auto_submit}
+    <i class="icon16 loading"></i> <em>Перенаправление на сайт ASSIST для оплаты…</em>
+    <br /><br />
+    <script type="text/javascript">
+        setTimeout(function () {
+            document.form1.submit();
+        }, 3000);
+    </script>
+    {/if}
+    <input type="submit" value="Оплатить заказ по кредитной карте сейчас!">
 </form>

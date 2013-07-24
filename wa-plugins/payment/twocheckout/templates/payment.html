@@ -1,6 +1,15 @@
-<form action="{$form_url}" method="POST" target="_top">
+<form id="payment-form" action="{$form_url}" method="POST" target="_top">
 {foreach $form as $field=>$value}
 <input type="hidden" name="{$name|escape}" value="{$value|escape}">
 {/foreach}
-<input type="submit" value="[`Proceed to 2checkout payment gateway`]">
+    {if $auto_submit}
+    <i class="icon16 loading"></i> <em>[`Redirecting to 2checkout secure website for making a payment...`]</em>
+    <br /><br />
+    <script type="text/javascript">
+    setTimeout(function () {
+        document.getElementById('payment-form').submit();
+    }, 3000);
+    </script>
+    {/if}
+    <input type="submit" value="[`Proceed to 2checkout payment gateway`]">
 </form>

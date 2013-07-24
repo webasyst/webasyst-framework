@@ -80,13 +80,14 @@ class worldpayPayment extends waPayment implements waIPayment
      * @param $transaction_type
      * @return string HTML payment form
      */
-    public function payment($payment_form_data, $order_data, $transaction_type)
+    public function payment($payment_form_data, $order_data, $auto_submit = false)
     {
         $order = waOrder::factory($order_data);
 
         return $this->fetch(array(
             'url' => $this->getUrl(),
             'fields' => $this->getFields($order),
+            'auto_submit' => $auto_submit
         ), '/templates/payment.html');
     }
 

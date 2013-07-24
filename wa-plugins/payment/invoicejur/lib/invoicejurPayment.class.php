@@ -24,7 +24,7 @@ class invoicejurPayment extends waPayment implements waIPayment, waIPaymentCaptu
      * @see waIPayment::payment()
      * @param $order_data waOrder
      */
-    public function payment($payment_form_data, $order_data, $transaction_type)
+    public function payment($payment_form_data, $order_data, $auto_submit = false)
     {
         if (!empty($payment_form_data)) {
             $wa_transaction_data = $this->formalizeData($order_data);
