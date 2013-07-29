@@ -2,7 +2,7 @@
 
 return array(
     'code' => 'KGS',
-    'sign' => 'som',
+    'sign' => 'сом',
     'sign_position' => null,
     'sign_delim' => null,
     'title' => 'Kyrgyzstani som',

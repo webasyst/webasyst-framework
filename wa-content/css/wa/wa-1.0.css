@@ -222,22 +222,26 @@ a#wa-my-username { font-weight: bold; text-decoration: none; }
 .sidebar.left150px { float:left; width: 150px; }
 .sidebar.left250px { float:left; width: 250px; }
 .sidebar.left300px { float:left; width: 300px; }
+.sidebar.left350px { float:left; width: 350px; }
 .sidebar.left400px { float:left; width: 400px; }
 .sidebar.right200px { float:right; width: 200px; }
 .sidebar.right100px { float:right; width: 100px; }
 .sidebar.right150px { float:right; width: 150px; }
 .sidebar.right250px { float:right; width: 250px; }
 .sidebar.right300px { float:right; width: 300px; }
+.sidebar.right350px { float:right; width: 350px; }
 .sidebar.right400px { float:right; width: 400px; }
 .sidebar-fixed, .sidebar-fixed.left200px { position:fixed; height:100%; left:0; width:200px; } /* scroll-independent sidebars */
 .sidebar-fixed.left100px { left:0; width:100px; }
 .sidebar-fixed.left150px { left:0; width:150px; }
 .sidebar-fixed.left250px { left:0; width:250px; }
 .sidebar-fixed.left300px { left:0; width:300px; }
+.sidebar-fixed.left350px { left:0; width:350px; }
 .sidebar-fixed.left400px { left:0; width:400px; }
 .sidebar-fixed.right200px { right:0; width:200px; left:auto; }
 .sidebar-fixed.right100px { right:0; width:100px; left:auto; }
 .sidebar-fixed.right300px { right:0; width:300px; left:auto; }
+.sidebar-fixed.right350px { right:0; width:350px; left:auto; }
 .sidebar-fixed.right400px { right:0; width:400px; left:auto; }
 .content { margin-left:0; }
 .content.left200px { margin-left:200px; }
@@ -245,12 +249,14 @@ a#wa-my-username { font-weight: bold; text-decoration: none; }
 .content.left150px { margin-left:150px; }
 .content.left250px { margin-left:250px; }
 .content.left300px { margin-left:300px; }
+.content.left350px { margin-left:350px; }
 .content.left400px { margin-left:400px; }
 .content.right100px { margin-right:100px; }
 .content.right200px { margin-right:200px; }
 .content.right150px { margin-right:150px; }
 .content.right250px { margin-right:250px; }
 .content.right300px { margin-right:300px; }
+.content.right350px { margin-right:350px; }
 .content.right400px { margin-right:400px; }
 
 /* <frame>-like layout: scrollable main viewport content +

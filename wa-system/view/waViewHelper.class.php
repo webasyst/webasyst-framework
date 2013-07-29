@@ -441,7 +441,7 @@ HTML;
             $errors['email'] = implode(', ', $email_validator->getErrors());
         }
         if (!$errors) {
-            $m = new waMailMessage($subject, $body);
+            $m = new waMailMessage($subject, nl2br($body));
             $m->setTo($to);
             $m->setFrom(array($email => $this->post('name')));
             if (!$m->send()) {

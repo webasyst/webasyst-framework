@@ -110,6 +110,7 @@ class waPageActions extends waActions
                 $domain = $parent['domain'];
                 $route = $parent['route'];
                 $this->options['data']['info[parent_id]'] = $parent_id;
+                $url = $parent['full_url'] ? rtrim($parent['full_url'], '/').'/' : '';
             } else {
                 $domain = waRequest::get('domain');
                 $this->options['data']['info[domain]'] = $domain;

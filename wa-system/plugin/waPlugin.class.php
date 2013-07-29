@@ -209,7 +209,7 @@ class waPlugin
         waSystem::getInstance()->getResponse()->addCss($this->getUrl($url, $is_plugin),$this->app_id);
     }
 
-    public function routing()
+    public function routing($route = array())
     {
         $file = $this->path.'/lib/config/routing.php';
         if (file_exists($file)) {

@@ -1008,7 +1008,8 @@ class waSystem
                     waLog::log('Event handling error in '.$file_path.': '.$e->getMessage());
                 }
             }
-        } elseif (isset(self::$handlers['plugins'][$event_app_id][$name])) {
+        }
+        if (isset(self::$handlers['plugins'][$event_app_id][$name])) {
             $plugins = $event_system->getConfig()->getPlugins();
             foreach (self::$handlers['plugins'][$event_app_id][$name] as $plugin_id => $method) {
                 if (!isset($plugins[$plugin_id])) {
