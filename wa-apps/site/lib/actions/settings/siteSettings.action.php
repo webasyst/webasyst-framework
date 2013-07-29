@@ -17,7 +17,7 @@ class siteSettingsAction extends waViewAction
         
         $temp = array();
         foreach ($apps as $app_id => $app) {
-            if (isset($app['frontend'])) {
+            if (isset($app['frontend']) || isset($auth_apps[$app_id])) {
                 $temp[$app_id] = array(
                     'id' => $app_id,
                     'icon' => $app['icon'],

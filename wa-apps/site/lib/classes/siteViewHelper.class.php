@@ -60,13 +60,13 @@ class siteViewHelper extends waAppViewHelper
                     $pages[$page['parent_id']]['childs'][] = &$pages[$page_id];
                 }
             }
-            foreach ($pages as $page_id => $page) {
-                if ($page['parent_id']) {
-                    unset($pages[$page_id]);
-                }
-            }
             if ($parent_id) {
                 return isset($pages[$parent_id]['childs']) ? $pages[$parent_id]['childs'] : array();
+            }
+            foreach ($pages as $page_id => $page) {
+                if ($page['parent_id'] && $page_id != $parent_id) {
+                    unset($pages[$page_id]);
+                }
             }
             return $pages;
         } catch (Exception $e) {

@@ -60,7 +60,7 @@ class siteFrontendAction extends waViewAction
             $page = $page_model->getById($page['parent_id']);
             $breadcrumbs[] = array(
                 'url' => $root_url.$page['full_url'],
-                'name' => $page['title'] ? $page['title'] : $page['name']
+                'name' => $page['name'] ? $page['name'] : $page['title']
             );
             $root_page_id = $page['id'];
         }
