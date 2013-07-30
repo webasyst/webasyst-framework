@@ -1,4 +1,4 @@
-<form id="payment-form" action="{$form_url}" method="post" target="_top">
+<form id="payment-form" action="{$form_url}" method="post" target="_top"{foreach $form_options as $k=>$v} {$k|escape}="{$v|escape}"{/foreach}>
 {foreach from=$hidden_fields key=name item=value}
     <input type="hidden" name="{$name}" value="{$value|escape}" />
 {/foreach}
