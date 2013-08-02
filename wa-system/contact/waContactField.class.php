@@ -655,10 +655,20 @@ abstract class waContactField
                 $suffix .= ']';
             }
         }
+
         if (isset($params['multi_index'])) {
-            $suffix = ']['.$params['multi_index'].$suffix;
+            if (isset($params['parent'])) {
+                // For composite multi-fields multi_index goes before field id:
+                // namespace[parent_name][i][field_id]
+                $prefix .= $params['multi_index'].'][';
+            } else {
+                // For non-composite multi-fields multi_index goes after field id:
+                // namespace[field_id][i]
+                $suffix = ']['.$params['multi_index'].$suffix;
+            }
         }
         $name = isset($params['id']) ? $params['id'] : $this->getId();
+
         return $prefix.$name.$suffix;
     }
 

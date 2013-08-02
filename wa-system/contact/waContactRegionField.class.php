@@ -81,7 +81,7 @@ class waContactRegionField extends waContactField
 
         // When country is selected and has regions, build a <select> with appropriate options.
         $region_select = null;
-        if ($country) {
+        if ($country && !is_array($country)) {
             // List of regions for this country
             $rm = new waRegionModel();
             $options = array(

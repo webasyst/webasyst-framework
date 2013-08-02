@@ -137,6 +137,8 @@ class waPageActions extends waActions
             'upload_url' => wa()->getDataUrl('img', true)
         ) + $this->getPageParams($id);
 
+        $data['page_edit'] = wa()->event('page_edit', $data);
+
         $template = $this->getConfig()->getRootPath().'/wa-system/page/templates/PageEdit.html';
         $this->display($data, $template);
     }

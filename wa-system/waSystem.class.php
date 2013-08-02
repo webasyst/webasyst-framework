@@ -989,7 +989,7 @@ class waSystem
                     continue;
                 }
                 wa($app_id);
-                include($file_path);
+                include_once($file_path);
                 $class_name = $name;
                 if (strpos($name, '.') !== false) {
                     $class_name = strtok($class_name, '.').ucfirst(strtok(''));

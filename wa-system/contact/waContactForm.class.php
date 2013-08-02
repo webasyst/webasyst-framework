@@ -23,6 +23,9 @@ class waContactForm
     /** Contact to validate this form against. */
     public $contact = null;
 
+    /** Can be used to feed faked POST data into this form. */
+    public $post = null;
+
     /**
      * Factory method to load form fields from config.
      *
@@ -197,14 +200,16 @@ class waContactForm
      */
     public function post($field_id = null)
     {
-        $post = waRequest::post($this->opt('namespace'));
-        if (!$post) {
+        if ($this->post === null) {
+            $this->post = waRequest::post($this->opt('namespace'));
+        }
+        if (!$this->post || !is_array($this->post)) {
             return null;
         }
         if ($field_id) {
-            return ifset($post[$field_id]);
+            return ifset($this->post[$field_id]);
         }
-        return $post;
+        return $this->post;
     }
 
     /**

@@ -101,7 +101,7 @@
                             <div class="name">[s`<strong class="title">Title</strong>`] <span class="hint">&lt;title&gt;</span></div>
                             <div class="value"><input type="text" name="info[title]" value="{if $page}{$page.title|escape}{/if}" class="bold" /></div>
                         </div>
-                        {foreach from=$params key=n item=p}
+                        {foreach $params as $n => $p}
                         <div class="field">
                             <div class="name">{$vars[$n]}</div>
                             {if $n == 'description'}
@@ -111,6 +111,8 @@
                             {/if}
                         </div>
                         {/foreach}
+
+                        {if !empty($page_edit)}{foreach $page_edit as $_}{$_}{/foreach}{/if}
                     </div>
 
                     <div class="field">
