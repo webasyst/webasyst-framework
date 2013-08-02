@@ -137,6 +137,7 @@ class webmoneyPayment extends waPayment implements waIPayment
         switch ($transaction_data['type']) {
             case self::OPERATION_CHECK:
                 $app_payment_method = self::CALLBACK_CONFIRMATION;
+                $transaction_data['state'] = self::STATE_AUTH;
                 break;
 
             case self::OPERATION_AUTH_CAPTURE:
@@ -144,9 +145,10 @@ class webmoneyPayment extends waPayment implements waIPayment
                 $this->verifySign($data);
                 //TODO log payer WM ID
                 $app_payment_method = self::CALLBACK_PAYMENT;
+                $transaction_data['state'] = self::STATE_CAPTURED;
                 break;
         }
-        $transaction_data['state'] = self::STATE_CAPTURED;
+
         $transaction_data = $this->saveTransaction($transaction_data, $data);
 
         $transaction_data['success_back_url'] = isset($data['wa_success_url']) ? $data['wa_success_url'] : null;
@@ -328,6 +330,12 @@ class webmoneyPayment extends waPayment implements waIPayment
         $transaction_data['order_id'] = $transaction_raw_data['LMI_PAYMENT_NO'];
         $transaction_data['amount'] = $transaction_raw_data['LMI_PAYMENT_AMOUNT'];
         $transaction_data['currency_id'] = $transaction_raw_data['LMI_CURRENCY'];
+        if (empty($transaction_data['currency_id'])) {
+            $currency = $this->allowedCurrency();
+            if ($currency && !is_array($currency)) {
+                $transaction_data['currency_id'] = $currency;
+            }
+        }
 
         return $transaction_data;
     }
