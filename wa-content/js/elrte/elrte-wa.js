@@ -141,7 +141,7 @@ $.fn.elBorderSelect.defaults = {
 // wa panels
 elRTE.prototype.options.panels.wa_style = ["bold", "italic", "underline", "strikethrough"];
 elRTE.prototype.options.panels.wa_image = ["wa_image"];
-elRTE.prototype.options.panels.wa_links = ["wa_link", "unlink"];
+elRTE.prototype.options.panels.wa_links = ["wa_link", "unlink", "youtube"];
 elRTE.prototype.options.panels.wa_elements = ["wa_horizontalrule", "blockquote", "div", "stopfloat"];
 elRTE.prototype.options.panels.wa_tables = ["wa_table", "wa_tableprops", "tablerm", "tbrowbefore", "tbrowafter", "tbrowrm", "tbcolbefore", "tbcolafter", "tbcolrm", "wa_tbcellprops", "tbcellsmerge", "tbcellsplit"];
 
@@ -1016,5 +1016,75 @@ elRTE.prototype.ui.prototype.buttons.wa_image = function(rte, name) {
         }
     };
 };
+elRTE.prototype.options.buttons.youtube = 'Insert Youtube video';
+elRTE.prototype.ui.prototype.buttons.youtube = function(rte, name) {
+    this.constructor.prototype.constructor.call(this, rte, name);
 
+    this.youtube_url = $('<input type="text" />').attr('name', 'youtube_url').attr('size', '40');
+    this.youtube_w = $('<input type="text" />').attr('name', 'youtube_w').attr('size', '12').val("560");
+    this.youtube_h = $('<input type="text" />').attr('name', 'youtube_h').attr('size', '12').val("315");
+    //antoinek: needs to be commented out to prevent the button to be active in fullscreen mode
+    //this.active  = true;
+    var self = this;
+
+    this.command = function() {
+
+        var d = $('<div id="elrte-hm_youtube" class="fields form"></div>')
+            .append($('<div class="field"><div class="name">'+this.rte.i18n('Youtube URL')+'</div></div>').append(
+                $('<div class="value"></div>').append(this.youtube_url)
+            ))
+            .append($('<div class="field"><div class="name">'+this.rte.i18n('Width')+'</div></div>').append(
+                $('<div class="value"></div>').append(this.youtube_w).append(' px')
+            ))
+            .append($('<div class="field"><div class="name">'+this.rte.i18n('Height')+'</div></div>').append(
+                $('<div class="value"></div>').append(this.youtube_h).append(' px')
+            ));
+
+
+        d.waDialog({
+            esc: true,
+            width: '400px',
+            height: '170px',
+            className: 'wa-elrte-dialog',
+            title : this.rte.i18n('Insert YouTube video'),
+            buttons: '<input type="submit" class="button green" value="' + this.rte.i18n('OK') + '"> ' + this.rte.i18n('or') + ' <a href="#" class="inline-link cancel"><b><i>' + this.rte.i18n('cancel') + '</i></b></a>',
+            onSubmit: function (d) {
+                self.set($("input[name=youtube_url]").val(), $("input[name=youtube_w]").val(),$("input[name=youtube_h]").val());
+                d.trigger('close');
+                return false;
+            }
+        });
+    }
+
+    this.update = function() {
+        this.domElem.removeClass('disabled active');
+    }
+
+    this.set = function(url, w, h) {
+        var getTubeID = function(url, gkey) {
+            var returned = null;
+            if (url.indexOf("?") != -1) {
+                var list = url.split("?")[1].split("&"),
+                    gets = [];
+
+                for (var ind in list) {
+                    var kv = list[ind].split("=");
+                    if (kv.length>0)
+                        gets[kv[0]] = kv[1];
+                }
+                returned = gets;
+
+                if (typeof gkey != "undefined")
+                    if (typeof gets[gkey] != "undefined")
+                        returned = gets[gkey];
+            }
+
+            return returned;
+        }
+
+        var toinsert = '<iframe width="'+w+'" height="'+h+'" src="http://www.youtube.com/embed/'+getTubeID(url, "v")+'?wmode=transparent" frameborder="0" allowfullscreen></iframe>';
+        this.rte.history.add();
+        this.rte.selection.insertHtml(toinsert);
+    }
+}
 })(jQuery);
