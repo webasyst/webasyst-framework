@@ -2904,7 +2904,7 @@ static public $yy_action = array(
 #line 2900 "smarty_internal_templateparser.php"
 #line 1007 "smarty_internal_templateparser.y"
     function yy_r154(){
-    if ($this->security && substr($this->yystack[$this->yyidx + -3]->minor,0,1) == '_') {
+    if (0 && $this->security && substr($this->yystack[$this->yyidx + -3]->minor,0,1) == '_') {
         $this->compiler->trigger_template_error (self::Err1);
     }
     $this->_retvalue = $this->yystack[$this->yyidx + -3]->minor . "(". implode(',',$this->yystack[$this->yyidx + -1]->minor) .")";
