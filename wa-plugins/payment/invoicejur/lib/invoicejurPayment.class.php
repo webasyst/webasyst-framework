@@ -26,7 +26,7 @@ class invoicejurPayment extends waPayment implements waIPayment, waIPaymentCaptu
      */
     public function payment($payment_form_data, $order_data, $auto_submit = false)
     {
-        if (!empty($payment_form_data)) {
+        if (!empty($payment_form_data['printform'])) {
             $wa_transaction_data = $this->formalizeData($order_data);
             $wa_transaction_data['printform'] = $this->id;
             $url = $this->getAdapter()->getBackUrl(waAppPayment::URL_PRINTFORM, $wa_transaction_data);

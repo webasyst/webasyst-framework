@@ -21,7 +21,7 @@ return array(
     'alarm'          => array(
         'value'        => 0,
         'title'        => 'Уведомления',
-        'description'  => 'Параметры отправки уведомлений',
+        'description'  => 'Способ уведомления покупателя о состоянии счета в системе QIWI',
         'control_type' => 'select qiwiPayment::_getAlarmVariants',
     ),
     'prefix'         => array(

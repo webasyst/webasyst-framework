@@ -2,7 +2,7 @@
 /**
  *
  * @property-read int $payonline_id
- * @property-read sttring $secret_key
+ * @property-read string $secret_key
  * @property-read array $currency
  * @property-read string $gateway
  * @property-read int $valid_until

@@ -23,7 +23,7 @@ class liqpayPayment extends waPayment
      * @var string
      */
     private $raw_xml;
-    private $pattern = '/^(\w[\w\d]+)\.([\w\d]+)_(.+)$/';
+    private $pattern = '/^(\w[\w\d]+)\.([^_]+)_(.+)$/';
 
     public function payment($payment_form_data, $order_data, $auto_submit = false)
     {
@@ -38,7 +38,7 @@ class liqpayPayment extends waPayment
             $customer_phone = $order->getContactField($this->customer_phone);
         }
 
-        $description = htmlentities($order->description, ENT_QUOTES, 'utf-8');
+        $description = htmlentities($order->description_en, ENT_QUOTES, 'utf-8');
         $method = $this->gateway;
         if (!$method) {
             $method = 'card, liqpay, delayed';
@@ -49,7 +49,7 @@ class liqpayPayment extends waPayment
 
         $suffix = '';
         if ($this->bugfix) {
-            $suffix = '_'.rand(1000, 9999);
+            $suffix = sprintf('_%04d', rand(1000, 9999));
         }
 
         $order_id = $this->order_prefix.$order->id.$suffix;
@@ -110,7 +110,7 @@ class liqpayPayment extends waPayment
     {
         $this->raw_xml = base64_decode(ifempty($request['operation_xml'], 'PHJlc3BvbnNlLz4='));
         if ($this->raw_xml && ($this->xml = @simplexml_load_string($this->raw_xml))) {
-            if (preg_match($this->pattern, (string) $this->xml->order_id, $matches)) {
+            if (preg_match($this->pattern, (string)$this->xml->order_id, $matches)) {
                 $this->app_id = $matches[1];
                 $this->merchant_id = $matches[2];
             }
@@ -138,24 +138,23 @@ class liqpayPayment extends waPayment
 
         if ($callback_method) {
             $transaction_data = $this->saveTransaction($transaction_data, $request);
-            $callback = $this->execAppCallback($callback_method, $transaction_data);
-            self::addTransactionData($transaction_data['id'], $callback);
+            $this->execAppCallback($callback_method, $transaction_data);
         }
     }
 
     protected function formalizeData($transaction_raw_data)
     {
         $transaction_data = parent::formalizeData($transaction_raw_data);
-        $transaction_data['native_id'] = (string) $this->xml->transaction_id;
-        $transaction_data['amount'] = (string) $this->xml->amount;
-        $transaction_data['currency_id'] = (string) $this->xml->currency;
+        $transaction_data['native_id'] = (string)$this->xml->transaction_id;
+        $transaction_data['amount'] = (string)$this->xml->amount;
+        $transaction_data['currency_id'] = (string)$this->xml->currency;
         $order_id = null;
-        if (preg_match($this->pattern, (string) $this->xml->order_id, $matches)) {
+        if (preg_match($this->pattern, (string)$this->xml->order_id, $matches)) {
             $order_id = $matches[3];
         }
 
         if ($this->bugfix) {
-            $order_id = preg_replace('/_\d{4}$/', '', $order_id);
+            $order_id = preg_replace('/_\d{1,4}$/', '', $order_id);
         }
 
         if ($this->order_prefix) {
@@ -169,14 +168,14 @@ class liqpayPayment extends waPayment
 
         $transaction_data['order_id'] = $order_id;
         $view_data = array();
-        if ((string) $this->xml->transaction_id) {
-            $view_data[] = _wp('Transaction number').': '.(string) $this->xml->transaction_id;
+        if ((string)$this->xml->transaction_id) {
+            $view_data[] = $this->_w('Transaction number').': '.(string)$this->xml->transaction_id;
         }
-        if ((string) $this->xml->pay_way) {
-            $view_data[] = _wp('Pay way').': '.(string) $this->xml->pay_way;
+        if ((string)$this->xml->pay_way) {
+            $view_data[] = $this->_w('Pay way').': '.(string)$this->xml->pay_way;
         }
 
-        switch ($status = (string) $this->xml->status) {
+        switch ($status = (string)$this->xml->status) {
             case 'success': /*покупка совершена*/
                 $transaction_data['state'] = self::STATE_CAPTURED;
                 $transaction_data['type'] = self::OPERATION_AUTH_CAPTURE;
@@ -186,18 +185,18 @@ class liqpayPayment extends waPayment
                 $transaction_data['state'] = self::STATE_DECLINED;
                 $transaction_data['type'] = self::OPERATION_CANCEL;
                 $transaction_data['result'] = 1;
-                $view_data[] = _wp('Transaction declined').": ".(string) $this->xml->code;
+                $view_data[] = $this->_w('Transaction declined').": ".(string)$this->xml->code;
                 break;
             case 'wait_secure': /*платеж находится на проверке*/
-                $view_data[] = _wp('Transaction requires confirmation');
+                $view_data[] = $this->_w('Transaction requires confirmation');
                 break;
             default:
-                $details .= "\nUnknown status {$status}";
+                $view_data[] = sprintf($this->_w("Unknown status %s"), htmlentities($status, ENT_QUOTES, 'utf-8'));
                 break;
         }
 
-        if ((string) $this->xml->sender_phone) {
-            $view_data[] = _wp('Phone number').': '.(string) $this->xml->sender_phone;
+        if ((string)$this->xml->sender_phone) {
+            $view_data[] = $this->_w('Phone number').': '.(string)$this->xml->sender_phone;
         }
         if ($view_data) {
             $transaction_data['view_data'] = implode("\n", $view_data);
