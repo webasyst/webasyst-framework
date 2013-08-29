@@ -65,12 +65,12 @@ class waResponse {
         '503' => 'Service Unavailable',
         '504' => 'Gateway Timeout',
         '505' => 'HTTP Version Not Supported',
-      );
+    );
 
     public function setCookie($name, $value, $expire = null, $path = null, $domain = '', $secure = false, $http_only = false)
-      {
+    {
         if ($expire !== null) {
-              $expire = (int) $expire;
+            $expire = (int) $expire;
         }
 
         if ($path === null) {
@@ -78,27 +78,31 @@ class waResponse {
         }
 
         $this->cookies[$name] = array(
-          'name'     => $name,
-          'value'    => $value,
-          'expire'   => $expire,
-          'path'     => $path,
-          'domain'   => $domain,
-          'secure'   => $secure ? true : false,
-          'http_only' => $http_only,
+            'name'     => $name,
+            'value'    => $value,
+            'expire'   => $expire,
+            'path'     => $path,
+            'domain'   => $domain,
+            'secure'   => $secure ? true : false,
+            'http_only' => $http_only,
         );
         setcookie($name, $value, $expire, $path, $domain, $secure, $http_only);
-          $_COOKIE[$name] = $value;
-      }
+        $_COOKIE[$name] = $value;
+    }
 
+    public function getStatus()
+    {
+        return $this->status;
+    }
 
-      public function setStatus($code)
-      {
-          if (isset(self::$statuses[$code])) {
-              return $this->status = $code;
-          } else {
-              return false;
-          }
-      }
+    public function setStatus($code)
+    {
+        if (isset(self::$statuses[$code])) {
+            return $this->status = $code;
+        } else {
+            return false;
+        }
+    }
 
       public function addHeader($name, $value, $replace = true)
       {

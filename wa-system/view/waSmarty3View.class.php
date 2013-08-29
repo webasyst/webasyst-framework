@@ -62,7 +62,9 @@ class waSmarty3View extends waView
 
         $this->smarty->addPluginsDir($this->system->getConfig()->getPath('system').'/vendors/smarty-plugins');
         $this->smarty->loadFilter('pre', 'translate');
-    } 
+
+
+    }
     
     public function setOptions($options)
     {

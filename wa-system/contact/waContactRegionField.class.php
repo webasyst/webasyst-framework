@@ -59,6 +59,9 @@ class waContactRegionField extends waContactField
             $value = $value['value'];
         }
 
+
+        $input_id = uniqid('i');
+        $select_id = uniqid('s');
         $name_input = $name = $this->getHTMLName($params);
         if ($this->isMulti()) {
             $name_input .= '[value]';
@@ -104,7 +107,7 @@ class waContactRegionField extends waContactField
 
             if (count($options) > 1) {
                 // Selected country has regions. Show as <select>.
-                $region_select = '<select name="'.htmlspecialchars($name_input).'" '.$attrs.">\n\t".implode("\n\t", $options)."\n</select>";
+                $region_select = '<select id="'.$select_id.'" name="'.htmlspecialchars($name_input).'" data-country="'.htmlspecialchars($country).'" '.$attrs.">\n\t".implode("\n\t", $options)."\n</select>";
             }
         }
 
@@ -113,12 +116,12 @@ class waContactRegionField extends waContactField
             // Selected country has regions. Select field with regions is visible.
             // There's a hidden <input> to switch to when user changes country.
             $html .= $region_select;
-            $html .= '<input type="text" '.$attrs.' style="display:none;">';
+            $html .= '<input type="text" id="'.$input_id.'" '.$attrs.' style="display:none;">';
         } else {
             // No country selected or country has no regions.
             // <input> is visible and <select> is hidden.
-            $html .= '<select '.$attrs.' style="display:none;"></select>';
-            $html .= '<input type="text" name="'.htmlspecialchars($name_input).'" value="'.htmlspecialchars($value).'" '.$attrs.'>';
+            $html .= '<select id="'.$select_id.'" '.$attrs.' style="display:none;"></select>';
+            $html .= '<input type="text" id="'.$input_id.'" name="'.htmlspecialchars($name_input).'" value="'.htmlspecialchars($value).'" '.$attrs.'>';
         }
 
         // JS to load regions when user changes country.
@@ -134,26 +137,26 @@ class waContactRegionField extends waContactField
         $empty_option = '<'._ws('select region').'>';
         $js = <<<EOJS
 <script>if($){ $(function() {
+    // List of countries we have regions for
     var region_countries = {$region_countries};
-    var input_name = "{$name_input}";
+
+    // Country selector regions depend on
     var country_select = $('[name="{$name_country}"]');
-    var xhr_url = "{$xhr_url}";
     if (country_select.length <= 0) {
         return;
     }
 
-    var select;
-    var input = $('[name="'+input_name+'"]');
-    if (input.length <= 0) {
+    // <select> and <input> fields that are parts of this region controller
+    var select = $('#{$select_id}');
+    var input = $('#{$input_id}');
+    if (input.length <= 0 || select.length <= 0) {
         return;
     }
-    if (input.is('input')) {
-        select = input.prev();
-    } else {
-        select = input;
-        input = select.next();
-    }
 
+    // URL to fetch list of regions from
+    var xhr_url = "{$xhr_url}";
+
+    // Helper to hide <select> and show <input>
     var showInput = function(val) {
         if (!input[0].hasAttribute('name')) {
             input.attr('name', select.attr('name'))
@@ -163,6 +166,17 @@ class waContactRegionField extends waContactField
         select.hide();
     };
 
+    // Helper to hide <input> and show <select>
+    var showSelect = function() {
+        if (input[0].hasAttribute('name')) {
+            select.attr('name', input.attr('name'));
+            input[0].removeAttribute('name');
+        }
+        select.show();
+        input.hide();
+    };
+
+    // Returns currently selected value of <select> or value of <input>
     var getVal = function() {
         if (input.is(':visible')) {
             return input.val();
@@ -171,19 +185,28 @@ class waContactRegionField extends waContactField
         }
     };
 
+    // When user changes country, update region selector.
     var change_handler;
     country_select.change(change_handler = function() {
-        var old_val = getVal();
+        var old_val = getVal(); // previous user-selected option in <select> or value of <input>
         var country = country_select.val();
         input.prev('.loading').remove();
+
+        // When <select> already has regions for this country loaded, just show it without XHR.
+        var previously_selected = select.data('country');
+        if (previously_selected && country == previously_selected) {
+            showSelect();
+            return;
+        }
+
         if (region_countries && region_countries[country]) {
+            // Selected country has regions. Load them into <select> via XHR.
             showInput('');
             input.before('<i class="icon16 loading"></i>');
             $.post(xhr_url, { country: country }, function(r) {
                 input.prev('.loading').remove();
                 if (r.data && r.data.options && r.data.oOrder) {
-                    input.hide();
-                    select.show().children().remove();
+                    select.children().remove();
                     select.append($('<option value=""></option>').text("{$empty_option}"));
                     var o, selected = false;
                     for (i = 0; i < r.data.oOrder.length; i++) {
@@ -194,21 +217,20 @@ class waContactRegionField extends waContactField
                         }
                         select.append(o);
                     }
-                    if (input[0].hasAttribute('name')) {
-                        select.attr('name', input.attr('name'));
-                        input[0].removeAttribute('name');
-                    }
+                    select.data('country', country);
+                    showSelect();
                 } else {
                     showInput('');
                 }
             }, 'json');
         } else {
+            // Selected country has no regions. Show <input>.
             if (!input.is(':visible')) {
                 showInput('');
             }
         }
     });
-    change_handler.call(country_select);
+    change_handler.call(country_select[0]);
 });};</script>
 EOJS;
 

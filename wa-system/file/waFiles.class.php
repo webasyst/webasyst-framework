@@ -20,6 +20,11 @@ class waFiles
 {
     private static $fp;
     private static $size;
+
+    private function __construct()
+    {
+        throw new waException('waFiles::__construct disabled');
+    }
     /**
      * Create parent directories for given file path, unless already exist.
      *
@@ -187,13 +192,17 @@ class waFiles
 
         // recursively delete a directory
         try {
-            $dir = opendir($path);
-            while (false !== ($current_path = readdir($dir))) {
-                if (($current_path != '.') && ($current_path != '..')) {
-                    self::delete($path.'/'.$current_path, $ignore_dir_errors);
+            if ( ( $dir = opendir($path))) {
+                while (false !== ($current_path = readdir($dir))) {
+                    if ($current_path === null) {
+                        break; // being paranoid
+                    }
+                    if (($current_path != '.') && ($current_path != '..')) {
+                        self::delete($path.'/'.$current_path, $ignore_dir_errors);
+                    }
                 }
+                closedir($dir);
             }
-            closedir($dir);
             if (!@rmdir($path) && !$ignore_dir_errors) {
                 throw new waException('Unable to delete directory: '.$path);
             }

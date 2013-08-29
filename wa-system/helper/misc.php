@@ -4,7 +4,7 @@
 function wa_print_r() {
     echo '<pre rel="waException">';
     foreach(func_get_args() as $v) {
-        echo "\n".wa_print_r_helper($v, TRUE);
+        echo "\n".wa_print_r_helper($v);
     }
     echo "</pre>\n";
     exit;
@@ -61,34 +61,34 @@ function int_ok($val)
 }
 
 /** Helper function. More human-readable print_r(). */
-function wa_print_r_helper($value, $level = 0)
+function wa_print_r_helper($value, $level_arr = array())
 {
+    $level = count($level_arr);
     if ($level > 9) {
         // Being paranoid
-        return 'Too big level of nesting';
+        return '** Too big level of nesting **';
     }
 
     if (!is_array($value) && !is_object($value)) {
-        if ($value === true) {
-            return 'TRUE';
-        } else if ($value === false) {
-            return 'FALSE';
-        } else if ($value === null) {
-            return 'NULL';
-        }
-        return htmlspecialchars($value);
+        return htmlspecialchars(var_export($value, true));
     }
 
-    $br = "\n"; // line break with tabs
-    for($i = 0; $i < $level; $i++) {
+    // Check for recursion, and build line break with tabs
+    $br = "\n";
+    foreach($level_arr as $k => &$v) {
         $br .= "\t";
+        if ($v === $value) {
+            return '** RECURSION **';
+        }
     }
+    unset($v);
+    $level_arr[] = &$value;
 
     if (is_object($value)) {
         // Skip huge core objects
         $class = get_class($value);
         do {
-            if(in_array($class, array('Smarty'))) {
+            if(in_array($class, array('Smarty', 'waSystem', 'Smarty_Internal_Template'))) {
                 return get_class($value)." Object (skipped as a descendant of $class)";
             }
         } while ( ( $class = get_parent_class($class)));
@@ -97,8 +97,8 @@ function wa_print_r_helper($value, $level = 0)
         $str = 'Array'.$br.'(';
     }
 
-    foreach($value as $key => $val) {
-        $str .= $br."\t".$key.' => '.wa_print_r_helper($val, $level + 1);
+    foreach(((array)$value) as $key => $val) {
+        $str .= $br."\t".$key.' => '.wa_print_r_helper($val, $level_arr);
     }
     $str .= is_array($value) ? $br.')' : $br.'}';
     return $str;

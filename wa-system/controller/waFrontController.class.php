@@ -148,7 +148,7 @@ class waFrontController
             /**
              * @var $controller waDefaultViewController
              */
-            $controller = $this->system->getFactory('default_controller', 'waDefaultViewController');
+            $controller = $this->system->getDefaultController();
             $controller->setAction($class_name);
             $r = $controller->run();
             if ($plugin) {

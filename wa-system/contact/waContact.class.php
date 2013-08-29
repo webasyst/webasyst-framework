@@ -470,6 +470,7 @@ class waContact implements ArrayAccess
                 waContactFields::getStorage($storage)->set($this, $storage_data);
             }
             $this->data = array();
+            wa()->event(array('contacts', 'save'), $this);
         } catch (Exception $e) {
             // remove created contact
             if ($is_add && $this->id) {

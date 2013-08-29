@@ -118,7 +118,11 @@ class waSystem
                 self::$factories_config = include($file_path);
             }
         }
-        waLocale::init();
+        if (isset(self::$factories_config['locale'])) {
+            waLocale::init(self::getCommonFactory('locale', 'waLocaleAdapter'));
+        } else {
+            waLocale::init();
+        }
     }
 
     /**
@@ -127,6 +131,11 @@ class waSystem
     public function getFrontController()
     {
         return $this->getFactory('front_controller', 'waFrontController', array());
+    }
+
+    public function getDefaultController()
+    {
+        return $this->getFactory('default_controller', 'waDefaultViewController');
     }
 
     /**
@@ -162,7 +171,7 @@ class waSystem
      * @param mixed $first_param
      * @return mixed
      */
-    public function getFactory($name, $class, $options = array(), $first_param = false)
+    protected function getFactory($name, $class, $options = array(), $first_param = false)
     {
         if ($config = $this->getConfig()->getFactory($name)) {
             if (is_array($config)) {
@@ -189,7 +198,7 @@ class waSystem
      * @param mixed $first_param
      * @return mixed
      */
-    public static function getCommonFactory($name, $class, $options = array(), $first_param = false)
+    protected static function getCommonFactory($name, $class, $options = array(), $first_param = false)
     {
         if (!isset(self::$factories_common[$name])) {
             if (isset(self::$factories_config[$name])) {
@@ -211,12 +220,11 @@ class waSystem
     }
 
     /**
-     * @param string $name
-     * @param object $value
+     * @param waUser $user
      */
-    public function setCommonFactory($name, $value)
+    public function setUser(waUser $user)
     {
-        self::$factories_common[$name] = $value;
+        self::$factories_common['auth_user'] = $user;
     }
 
     /**

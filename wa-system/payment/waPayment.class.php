@@ -301,8 +301,8 @@ abstract class waPayment extends waSystemPlugin
     protected function callbackInit($request)
     {
         self::log($this->id, array(
-            'method' => __METHOD__,
-            'app_id' => $this->app_id,
+            'method'      => __METHOD__,
+            'app_id'      => $this->app_id,
             'merchant_id' => $this->merchant_id,
         ));
         return $this;
@@ -337,11 +337,11 @@ abstract class waPayment extends waSystemPlugin
             $result = array('error' => $e->getMessage());
         }
         self::log($this->id, array(
-            'method' => __METHOD__,
-            'app_id' => $this->app_id,
-            'callback_method' => $method,
+            'method'           => __METHOD__,
+            'app_id'           => $this->app_id,
+            'callback_method'  => $method,
             'transaction_data' => var_export($transaction_data, true),
-            'result' => var_export($result, true),
+            'result'           => var_export($result, true),
         ));
 
         if ($result) {
@@ -467,7 +467,7 @@ abstract class waPayment extends waSystemPlugin
     protected static function log($module_id, $data)
     {
         $module_id = strtolower($module_id);
-        $filename = 'payment/' . $module_id . 'Payment.log';
+        $filename = 'payment/'.$module_id.'Payment.log';
         $rec = "data:\n";
         if (is_array($data)) {
             foreach ($data as $key => $val) {
@@ -512,7 +512,7 @@ abstract class waPayment extends waSystemPlugin
 
         if (!empty($wa_transaction_data['parent_id']) && !empty($wa_transaction_data['parent_state'])) {
             $transaction_model->updateById($wa_transaction_data['parent_id'], array(
-                'state' => $wa_transaction_data['parent_state'],
+                'state'           => $wa_transaction_data['parent_state'],
                 'update_datetime' => date('Y-m-d H:i:s')
             ));
         }
@@ -604,10 +604,10 @@ abstract class waPayment extends waSystemPlugin
     protected function formalizeData($transaction_raw_data)
     {
         $transaction_data = array(
-            'plugin' => $this->id,
+            'plugin'      => $this->id,
             'merchant_id' => $this->merchant_id,
-            'date_time' => date('Y-m-d H:i:s'),
-            'result' => true
+            'date_time'   => date('Y-m-d H:i:s'),
+            'result'      => true
         );
         return $transaction_data;
     }
@@ -649,7 +649,7 @@ abstract class waPayment extends waSystemPlugin
      */
     public final function getRelayUrl($force_https = null)
     {
-        $url = wa()->getRootUrl(true) . 'payments.php/' . $this->id . '/';
+        $url = wa()->getRootUrl(true).'payments.php/'.$this->id.'/';
         //TODO detect - is allowed https
         if ($force_https) {
             $url = preg_replace('@^http://@', 'https://', $url);
@@ -687,7 +687,7 @@ abstract class waPayment extends waSystemPlugin
     private function guide()
     {
         if ($this->guide === null) {
-            $path = $this->path . '/lib/config/guide.php';
+            $path = $this->path.'/lib/config/guide.php';
             if (file_exists($path)) {
                 $this->guide = include($path);
 
@@ -713,12 +713,12 @@ abstract class waPayment extends waSystemPlugin
 
         $controls = array();
         $default = array(
-            'instance' => & $this,
-            'title_wrapper' => '%s',
+            'instance'            => & $this,
+            'title_wrapper'       => '%s',
             'description_wrapper' => '<br><span class="hint">%s</span>',
-            'translate' => array(&$this, '_w'),
-            'readonly' => true,
-            'control_wrapper' => '
+            'translate'           => array(&$this, '_w'),
+            'readonly'            => true,
+            'control_wrapper'     => '
 <div class="field">
     <div class="name">%s</div>
     <div class="value">%s%s</div>
@@ -735,18 +735,27 @@ abstract class waPayment extends waSystemPlugin
             unset($params['namespace']);
         }
         $params = array_merge($default, $params);
-        ifempty($params['class'], '');
-        $params['class'] .= ' long';
+        ifempty($params['class'], array());
+        if (!is_array($params['class'])) {
+            $params['class'] = array($params['class']);
+        }
+        $params['class'][] = 'long';
 
         $replace = array(
-            '%RELAY_URL%' => $this->getRelayUrl(),
-            '%HTTP_RELAY_URL%' => $this->getRelayUrl(false),
+            '%RELAY_URL%'       => $this->getRelayUrl(),
+            '%HTTP_RELAY_URL%'  => $this->getRelayUrl(false),
             '%HTTPS_RELAY_URL%' => $this->getRelayUrl(true),
-            '%APP_ID%' => $this->app_id,
+            '%APP_ID%'          => $this->app_id,
         );
 
         foreach ($this->guide() as $name => $row) {
             if (is_array($row)) {
+                if (isset($row['class']) && !is_array($row['class'])) {
+                    $row['class'] = empty($row['class']) ? array() : array($row['class']);
+                }
+                if (isset($row['class'])) {
+                    $params['class'] = array_merge(array_values($row['class']), array_values($params['class']));
+                }
                 $row = array_merge($row, $params);
                 if (isset($options[$name])) {
                     $row['options'] = $options[$name];
@@ -799,7 +808,7 @@ abstract class waPayment extends waSystemPlugin
             waSystem::setActive($this->app_id);
 
             #check adapter class
-            $app_class = $this->app_id . 'Payment';
+            $app_class = $this->app_id.'Payment';
             if (!class_exists($app_class)) {
                 throw new waException(sprintf('Application adapter %s not found for %s', $app_class, $this->app_id));
             }
@@ -818,11 +827,12 @@ abstract class waPayment extends waSystemPlugin
      * @return mixed
      * @throws waException
      */
-    protected function getCountryISO2Code($iso3code) {
+    protected function getCountryISO2Code($iso3code)
+    {
         $country_model = new waCountryModel();
         $country = $country_model->get($iso3code);
         if (!$country) {
-            throw new waException($this->_w("Unknown country: ") . $iso3code);
+            throw new waException($this->_w("Unknown country: ").$iso3code);
         }
         return strtoupper($country['iso2letter']);
     }

@@ -356,7 +356,7 @@ abstract class Smarty_Internal_TemplateCompilerBase {
                         throw new SmartyException("Plugin \"{$tag}\" not callable");
                     } else {
                         if ($function = $this->getPlugin($tag, $plugin_type)) {
-                            if (!isset($this->smarty->security_policy) || $this->smarty->security_policy->isTrustedTag($tag, $this)) {
+                            if (!$this->smarty->security_policy || $this->smarty->security_policy->isTrustedTag($tag, $this)) {
                                 return $this->callTagCompiler('private_' . $plugin_type . '_plugin', $args, $parameter, $tag, $function);
                             }
                         }
@@ -478,7 +478,7 @@ abstract class Smarty_Internal_TemplateCompilerBase {
         $class_name = 'Smarty_Internal_Compile_' . $tag;
         if ($this->smarty->loadPlugin($class_name)) {
             // check if tag allowed by security
-            if (!isset($this->smarty->security_policy) || $this->smarty->security_policy->isTrustedTag($tag, $this)) {
+            if (!$this->smarty->security_policy || $this->smarty->security_policy->isTrustedTag($tag, $this)) {
                 // use plugin if found
                 self::$_tag_objects[$tag] = new $class_name;
                 // compile this tag

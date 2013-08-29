@@ -458,7 +458,7 @@ HTML;
         return '<input type="hidden" name="_csrf" value="'.waRequest::cookie('_csrf', '').'" />';
     }
 
-    public function captcha($options = array(), $error = null, $absolute = false, $refresh = null)
+    public function captcha($options = array(), $error = null, $absolute = null, $refresh = null)
     {
         if (!is_array($options)) {
             $refresh = $absolute;

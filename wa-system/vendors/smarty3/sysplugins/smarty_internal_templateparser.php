@@ -107,7 +107,7 @@ class Smarty_Internal_Templateparser#line 79 "smarty_internal_templateparser.php
         $this->compiler->prefix_code = array();
         $this->prefix_number = 0;
         $this->block_nesting_level = 0;
-        if ($this->security = isset($this->smarty->security_policy)) {
+        if ($this->security = $this->smarty->security_policy) {
             $this->php_handling = $this->smarty->security_policy->php_handling;
         } else {
             $this->php_handling = $this->smarty->php_handling;
@@ -2680,7 +2680,7 @@ static public $yy_action = array(
 #line 2676 "smarty_internal_templateparser.php"
 #line 754 "smarty_internal_templateparser.y"
     function yy_r118(){
-    if (!$this->security || isset($this->smarty->registered_classes[$this->yystack[$this->yyidx + -2]->minor]) || $this->smarty->security_policy->isTrustedStaticClass($this->yystack[$this->yyidx + -2]->minor, $this->compiler)) {
+    if (!$this->security || isset($this->smarty->registered_classes[$this->yystack[$this->yyidx + -2]->minor]) || $this->smarty->security_policy->isTrustedStaticClass($this->yystack[$this->yyidx + -2]->minor, $this->compiler, $this->yystack[$this->yyidx + 0]->minor)) {
         if (isset($this->smarty->registered_classes[$this->yystack[$this->yyidx + -2]->minor])) {
             $this->_retvalue = $this->smarty->registered_classes[$this->yystack[$this->yyidx + -2]->minor].'::'.$this->yystack[$this->yyidx + 0]->minor;
         } else {

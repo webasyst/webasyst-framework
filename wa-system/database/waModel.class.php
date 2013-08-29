@@ -215,8 +215,6 @@ class waModel
         $this->cache_cleaners = array();
     }
 
-    protected $sql;
-
     /**
      * Execute SQL query
      *

@@ -125,18 +125,6 @@ class waDbCacheIterator implements Iterator
         next($this->array);
         return $row;
     }
-    
-    public function fetchObject($class)
-    {
-        $row = $this->current();
-        next($this->array);
-        $object = new $class();
-        foreach ($row as $name => $value) {
-            $object->$name = $value;
-        }
-        return $object;
-    }
-
 
     /**
      * Export data

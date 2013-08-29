@@ -59,10 +59,10 @@ class Smarty_Internal_Compile_Include_Php extends Smarty_Internal_CompileBase {
         $_smarty_tpl = $compiler->template;
         $_filepath = false;
         eval('$_file = ' . $_attr['file'] . ';');
-        if (!isset($compiler->smarty->security_policy) && file_exists($_file)) {
+        if (!$compiler->smarty->security_policy && file_exists($_file)) {
             $_filepath = $_file;
         } else {
-            if (isset($compiler->smarty->security_policy)) {
+            if ($compiler->smarty->security_policy) {
                 $_dir = $compiler->smarty->security_policy->trusted_dir;
             } else {
                 $_dir = $compiler->smarty->trusted_dir;
@@ -81,7 +81,7 @@ class Smarty_Internal_Compile_Include_Php extends Smarty_Internal_CompileBase {
             $compiler->trigger_template_error("{include_php} file '{$_file}' is not readable", $compiler->lex->taglineno);
         }
 
-        if (isset($compiler->smarty->security_policy)) {
+        if ($compiler->smarty->security_policy) {
             $compiler->smarty->security_policy->isTrustedPHPDir($_filepath);
         }
 

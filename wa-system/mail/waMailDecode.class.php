@@ -329,7 +329,16 @@ class waMailDecode
                             }
                             return false;
                         }
-                        $this->skipLineBreak();
+                        if (!$this->skipLineBreak()) {
+                            $in = strpos($this->buffer, "\n", $this->buffer_offset);
+                            if ($this->buffer[$in - 1] == "\r") {
+                                $in--;
+                            }
+                            if (($in - $this->buffer_offset) < 5) {
+                                $this->buffer_offset = $in;
+                            }
+                            $this->skipLineBreak();
+                        }
                         $this->parts[] = array('parent' => $this->part_index);
                         $this->part_index = count($this->parts) - 1;
                         $this->part = &$this->parts[$this->part_index];
@@ -405,6 +414,11 @@ class waMailDecode
         } elseif (substr($this->buffer, $this->buffer_offset, 2) == "\r\n") {
             $this->buffer_offset += 2;
         }
+    }
+
+    protected static function quotedPrintableReplace($matches)
+    {
+        return  chr(hexdec($matches[1]));
     }
 
     protected function decodePart($part)
@@ -530,7 +544,7 @@ class waMailDecode
                                     break;
                                 case 'quoted-printable':
                                     $this->part['data'] = preg_replace("/=\r?\n/", '', $this->part['data']);
-                                    $this->part['data'] = preg_replace('/=([a-f0-9]{2})/ie', "chr(hexdec('\\1'))", $this->part['data']);
+                                    $this->part['data'] = preg_replace_callback('/=([a-f0-9]{2})/i', array(__CLASS__, 'quotedPrintableReplace'), $this->part['data']);
                                     break;
                             }
                         }

@@ -294,8 +294,13 @@ class waContactForm
             }
             if ($this->post()) {
                 $opts['value'] = $this->fields[$field_id]->set($this->contact, $this->post($field_id), array());
-            } else if (isset($this->values[$field_id])) {
+            } else if (!empty($this->values[$field_id]) || $this->values[$field_id] === 0 || $this->values[$field_id] === '0') {
                 $opts['value'] = $this->fields[$field_id]->set($this->contact, $this->values[$field_id], array());
+            } else {
+                $default_value = $this->fields[$field_id]->getParameter('value');
+                if ($default_value) {
+                    $opts['value'] = $this->fields[$field_id]->set($this->contact, $default_value, array());
+                }
             }
 
             // HTML with no errors?

@@ -39,7 +39,7 @@ class Smarty_Internal_Compile_Private_Special_Variable extends Smarty_Internal_C
             case 'now':
                 return 'time()';
             case 'cookies':
-                if (isset($compiler->smarty->security_policy) && !$compiler->smarty->security_policy->allow_super_globals) {
+                if ($compiler->smarty->security_policy && !$compiler->smarty->security_policy->allow_super_globals) {
                     $compiler->trigger_template_error("(secure mode) super globals not permitted");
                     break;
                 }
@@ -52,7 +52,7 @@ class Smarty_Internal_Compile_Private_Special_Variable extends Smarty_Internal_C
             case 'server':
             case 'session':
             case 'request':
-                if (isset($compiler->smarty->security_policy) && !$compiler->smarty->security_policy->allow_super_globals) {
+                if ($compiler->smarty->security_policy && !$compiler->smarty->security_policy->allow_super_globals) {
                     $compiler->trigger_template_error("(secure mode) super globals not permitted");
                     break;
                 }
@@ -62,8 +62,10 @@ class Smarty_Internal_Compile_Private_Special_Variable extends Smarty_Internal_C
             case 'template':
                 return 'basename($_smarty_tpl->source->filepath)';
 
+            /*
             case 'template_object':
                 return '$_smarty_tpl';
+            */
 
             case 'current_dir':
                 return 'dirname($_smarty_tpl->source->filepath)';
@@ -73,18 +75,21 @@ class Smarty_Internal_Compile_Private_Special_Variable extends Smarty_Internal_C
                 return "'$_version'";
 
             case 'const':
-                if (isset($compiler->smarty->security_policy) && !$compiler->smarty->security_policy->allow_constants) {
+                if ($compiler->smarty->security_policy && !$compiler->smarty->security_policy->allow_constants) {
                     $compiler->trigger_template_error("(secure mode) constants not permitted");
                     break;
                 }
                 return "@constant({$_index[1]})";
 
             case 'config':
+
+
                 if (isset($_index[2])) {
                     return "(is_array(\$tmp = \$_smarty_tpl->getConfigVariable($_index[1])) ? \$tmp[$_index[2]] : null)";
                 } else {
                     return "\$_smarty_tpl->getConfigVariable($_index[1])";
                 }
+            /*
             case 'ldelim':
                 $_ldelim = $compiler->smarty->left_delimiter;
                 return "'$_ldelim'";
@@ -92,7 +97,7 @@ class Smarty_Internal_Compile_Private_Special_Variable extends Smarty_Internal_C
             case 'rdelim':
                 $_rdelim = $compiler->smarty->right_delimiter;
                 return "'$_rdelim'";
-
+            */
             default:
                 $compiler->trigger_template_error('$smarty.' . trim($_index[0], "'") . ' is invalid');
                 break;

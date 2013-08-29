@@ -259,6 +259,8 @@ a#wa-my-username { font-weight: bold; text-decoration: none; }
 .content.right350px { margin-right:350px; }
 .content.right400px { margin-right:400px; }
 
+.sidebar.top-padded { padding-top: 18px; }
+
 /* <frame>-like layout: scrollable main viewport content +
  * fixed always-on-the-top bottom toolbar.
  * E.g. template/page editor with always visible ‘Save’ button
@@ -800,6 +802,7 @@ i.icon16.hidden { display: none; }
 .icon16.reports { background-position:-320px -48px; }
 .icon16.sync { background-position:-64px 0; }
 .icon16.search { background-position:-192px -64px; }
+.icon16.search-bw { background-position:-224px -96px; }
 .icon16.lock { background-position:-240px -80px; }
 .icon16.lock-bw { background-position:-208px -96px; }
 .icon16.lock-unlocked { background-position:-224px -80px; }

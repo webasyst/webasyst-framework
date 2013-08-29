@@ -73,10 +73,10 @@ class Smarty_Internal_Compile_Insert extends Smarty_Internal_CompileBase {
             $_smarty_tpl = $compiler->template;
             $_filepath = false;
             eval('$_script = ' . $_attr['script'] . ';');
-            if (!isset($compiler->smarty->security_policy) && file_exists($_script)) {
+            if (!$compiler->smarty->security_policy && file_exists($_script)) {
                 $_filepath = $_script;
             } else {
-                if (isset($compiler->smarty->security_policy)) {
+                if ($compiler->smarty->security_policy) {
                     $_dir = $compiler->smarty->security_policy->trusted_dir;
                 } else {
                     $_dir = $compiler->smarty->trusted_dir;

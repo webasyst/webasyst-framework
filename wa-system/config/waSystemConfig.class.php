@@ -252,7 +252,7 @@ class waSystemConfig
         }
     }
 
-    public function setPath($root_path)
+    protected function setPath($root_path)
     {
         $this->root_path = $root_path;
         waConfig::add(array(

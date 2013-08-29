@@ -52,6 +52,11 @@ function smarty_function_math($params, $template)
         }
     }
 
+    if (strpos($equation, '<<<') !== false) {
+        trigger_error("math: <<< not allowed",E_USER_WARNING);
+        return;
+    }
+
     foreach($params as $key => $val) {
         if ($key != "equation" && $key != "format" && $key != "assign") {
             // make sure value is not empty

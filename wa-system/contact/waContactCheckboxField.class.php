@@ -41,7 +41,7 @@ class waContactCheckboxField extends waContactField
     public function getHTML($params = array(), $attrs = '')
     {
         $value = isset($params['value']) ? $params['value'] : '';
-        return '<input type="checkbox"'.($value ? ' checked="checked"' : '').' name="'.$this->getHTMLName($params).'" value="'.$value.'">';
+        return '<input type="hidden" name="'.$this->getHTMLName($params).'" value=""><input type="checkbox"'.($value ? ' checked="checked"' : '').' name="'.$this->getHTMLName($params).'" value="'.ifempty($value, '1').'">';
     }
 
 }

@@ -116,7 +116,7 @@ class waAPIController
                     throw new waAPIException('invalid_token', 'Access token has expired', 401);
                 }
                 // auth user
-                wa()->setCommonFactory('auth_user', new waUser($data['contact_id']));
+                wa()->setUser(new waUser($data['contact_id']));
                 return $data;
             }
             throw new waAPIException('invalid_token', 'Invalid access token', 401);

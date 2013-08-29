@@ -30,7 +30,7 @@ class waLocale
     protected function __construct() {}
     protected function __clone() {}
 
-    public static function init()
+    public static function init($adapter = null)
     {
         if (!self::$init) {
             self::$init = true;
@@ -39,7 +39,7 @@ class waLocale
             if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN' || !function_exists('gettext')) {
                 self::$adapter = new waLocalePHPAdapter();
             } else {
-                self::$adapter = waSystem::getCommonFactory('locale', 'waLocaleAdapter');
+                self::$adapter = $adapter ? $adapter :  new waLocaleAdapter();
             }
         }
     }

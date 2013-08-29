@@ -10,6 +10,7 @@ class waRouting
     protected $domain;
     protected $route;
     protected $root_url;
+    protected $aliases = array();
 
     public function __construct(waSystem $system, $routes = array())
     {
@@ -27,14 +28,19 @@ class waRouting
     public function setRoutes($routes)
     {
         foreach ($routes as $domain => $domain_routes) {
-            $this->routes[$domain] = $this->formatRoutes($domain_routes, false);
+            if (is_array($domain_routes)) {
+                $this->routes[$domain] = $this->formatRoutes($domain_routes, false);
+            } else {
+                $this->aliases[$domain] = $domain_routes;
+                $this->routes[$domain] = isset($routes[$domain_routes]) ? $routes[$domain_routes] : array();
+            }
         }
     }
 
 
     public function getDomains()
     {
-        return array_keys($this->routes);
+        return array_diff(array_keys($this->routes), array_keys($this->aliases));
     }
 
     public function setRoute($route, $domain = null)
@@ -95,6 +101,9 @@ class waRouting
     {
         $result = array();
         foreach ($this->routes as $d => $routes) {
+            if (isset($this->aliases[$d])) {
+                continue;
+            }
             foreach ($routes as $r_id => $r) {
                 if (isset($r['app']) && $r['app'] == $app_id) {
                     $result[$d][$r_id] = $r;
@@ -150,6 +159,10 @@ class waRouting
                 return $domain;
             }
         }
+        if (isset($this->aliases[$this->domain])) {
+            $this->domain = $this->aliases[$this->domain];
+        }
+
         return $this->domain;
     }
 
@@ -160,8 +173,7 @@ class waRouting
 
     public function dispatch()
     {
-        $url = $this->system->getConfig()->getRequestUrl();
-        $url = preg_replace("!\?.*$!", '', $url);
+        $url = $this->system->getConfig()->getRequestUrl(true, true);
         $url = urldecode($url);
         $r = $this->dispatchRoutes($this->getRoutes(), $url);
         if (!$r  || ($r['url'] == '*' && $url && strpos(substr($url, -5), '.') === false) && substr($url, -1) !== '/') {

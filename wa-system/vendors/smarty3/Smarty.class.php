@@ -344,13 +344,13 @@ class Smarty extends Smarty_Internal_TemplateBase {
      * @var string
      * @see Smarty_Security
      */
-    public $security_class = 'Smarty_Security';
+    protected $security_class = 'Smarty_Security';
     /**
      * implementation of security class
      *
      * @var Smarty_Security
      */
-    public $security_policy = null;
+    protected $_security_policy = null;
     /**
      * controls handling of PHP-blocks
      *
@@ -631,6 +631,9 @@ class Smarty extends Smarty_Internal_TemplateBase {
         if (isset($_SERVER['SCRIPT_NAME'])) {
             $this->assignGlobal('SCRIPT_NAME', $_SERVER['SCRIPT_NAME']);
         }
+        // enable security
+        $security_class = $this->security_class;
+        $this->_security_policy = new $security_class($this);
     }
 
 
@@ -662,6 +665,9 @@ class Smarty extends Smarty_Internal_TemplateBase {
      */
     public function __get($name)
     {
+        if ($name == 'security_policy') {
+            return $this->_security_policy;
+        }
         $allowed = array(
         'template_dir' => 'getTemplateDir',
         'config_dir' => 'getConfigDir',
@@ -786,6 +792,7 @@ class Smarty extends Smarty_Internal_TemplateBase {
      */
     public function enableSecurity($security_class = null)
     {
+        /*
         if ($security_class instanceof Smarty_Security) {
             $this->security_policy = $security_class;
             return $this;
@@ -802,6 +809,7 @@ class Smarty extends Smarty_Internal_TemplateBase {
         } else {
             $this->security_policy = new $security_class($this);
         }
+        */
 
         return $this;
     }
@@ -812,7 +820,7 @@ class Smarty extends Smarty_Internal_TemplateBase {
      */
     public function disableSecurity()
     {
-        $this->security_policy = null;
+        //$this->security_policy = null;
 
         return $this;
     }
