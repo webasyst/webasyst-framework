@@ -145,7 +145,7 @@
             {if !empty($route.pages)}
             {foreach $route.pages as $p}
                 <li class="dr" id="page-{$p.id}">
-                    <i class="icon16 uarr expander"></i>
+                    <i class="icon16 {if !empty($p.childs)}rarr expander{else}notebook{/if}"></i>
                     <a class="wa-page-link" href="{$page_url}{$p.id}">
                     	<span class="count"><i class="icon10 add wa-page-add"></i></span>
                         {$p.name|escape}
@@ -187,7 +187,7 @@
         var t = $('#page-'+page_id);
         var c = t.children('ul');
         if(c) {
-            t.children('i.expander').removeClass('uarr').addClass('darr');
+            t.children('i.expander').removeClass('rarr').addClass('darr');
             c.show();
         }
         var parent_id = t.parent().data('parent-id');
@@ -198,10 +198,10 @@
         var t = $('#page-'+page_id);
         var c = t.children('ul');
         if(c) {
-            t.children('i.expander').removeClass('darr').addClass('uarr');
+            t.children('i.expander').removeClass('darr').addClass('rarr');
             c.hide();
         } else {
-            t.children('i.expander').removeClass('uarr').removeClass('darr').addClass('notebook');
+            t.children('i.expander').removeClass('rarr').removeClass('darr').addClass('notebook');
         }
     }
 
@@ -248,7 +248,7 @@
 
         $('.expander').click(function(){
             var page_id = $(this).parent().attr('id').replace(/page-/g, '');
-            if($(this).hasClass('uarr')) {
+            if($(this).hasClass('rarr')) {
                 waExpand(page_id);
             } else {
                 waClose(page_id);
@@ -323,7 +323,7 @@
                 c.children('span').html(ul.find('a.wa-page-link').length).show();
                 ul.hide();
             } else {
-                h.children('i').removeClass('rarr').addClass('darr');z
+                h.children('i').removeClass('rarr').addClass('darr');
                 c.children('span').hide();
                 c.children('i').show();
                 ul.show();
