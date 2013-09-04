@@ -149,7 +149,7 @@ class waPageActions extends waActions
         }
 
         foreach ($pages as $page_id => $page) {
-            if ($page['parent_id']) {
+            if (!empty($page['parent_id'])) {
                 unset($pages[$page_id]);
             }
         }
@@ -159,11 +159,12 @@ class waPageActions extends waActions
 
     public static function printPagesTree($p, $pages, $prefix_url)
     {
-        $html = '<ul class="menu-v with-icons" data-parent-id="'.$p['id'].'">';
+        $html = '<ul class="menu-v with-icons" data-parent-id="'.$p['id'].'" style="display:none">';
         foreach ($pages as $page) {
             $html .= '<li class="drag-newposition"></li>';
             $html .= '<li class="dr" id="page-'.$page['id'].'">'.
-            '<a class="wa-page-link" href="'.$prefix_url.$page['id'].'"><span class="count"><i class="icon10 add wa-page-add"></i></span><i class="icon16 notebook"></i>'.
+            '<i class="icon16 '.(!empty($page['childs']) ? 'uarr expander' : 'notebook').'"></i>'.
+            '<a class="wa-page-link" href="'.$prefix_url.$page['id'].'"><span class="count"><i class="icon10 add wa-page-add"></i></span>'.
             htmlspecialchars($page['name']).
             ' <span class="hint">/'.htmlspecialchars($page['full_url']).'</span>';
             if (!$page['status']) {
@@ -572,6 +573,7 @@ class waPageActions extends waActions
                 '{$foo.$bar}' => _w('Displays variable key value of an array. Similar to PHP $foo[$bar]'),
                 '{$foo->bar}' => _w('Displays the object property named <em>bar</em>'),
                 '{$foo->bar()}' => _w('Displays the return value of object method named <em>bar()</em>'),
+                '{$foo|print_r}' => _w('Displays structured information about variable. Arrays and objects are explored recursively with values indented to show structure. Similar to PHP var_dump($foo)'),
                 '{$foo|escape}' => _w('Escapes a variable for safe display in HTML'),
                 '{$foo|wa_datetime:$format}' => _w('Outputs <em>$var</em> datetime in a user-friendly form. Supported <em>$format</em> values: <em>monthdate, date, dtime, datetime, fulldatetime, time, fulltime, humandate, humandatetime</em>'),
                 '{$x+$y}' => _w('Outputs the sum of <em>$x</em> and <em>$y</em>'),
