@@ -79,7 +79,8 @@
         overflow-y: hidden;
         overflow-x: auto;
     }
-
+    .expander { cursor:pointer; float:left;}
+    .notebook { float:left;}
 </style>
 
 {if $sidebar}
@@ -138,14 +139,16 @@
             </script>
             {/if}
         </h4>
+
         <ul class="menu-v collapsible with-icons" data-domain="{if !$r && isset($domain)}{$domain}{else}{$route.domain}{/if}" data-route="{$route.route}">
             <li class="drag-newposition"></li>
             {if !empty($route.pages)}
             {foreach $route.pages as $p}
                 <li class="dr" id="page-{$p.id}">
+                    <i class="icon16 uarr expander"></i>
                     <a class="wa-page-link" href="{$page_url}{$p.id}">
                     	<span class="count"><i class="icon10 add wa-page-add"></i></span>
-                        <i class="icon16 notebook"></i>{$p.name|escape}
+                        {$p.name|escape}
                         <span class="hint">/{$p.full_url|escape}</span>
                         {if !$p.status} <span class="wa-page-draft">[s`draft`]</span>{/if}
                     </a>
@@ -175,8 +178,31 @@
         $(".block-pages ul li.selected").removeClass('selected');
         if (params % 1 === 0) {
             $("#page-" + params).addClass('selected');
+            waExpand(params);
         }
         $("#wa-page-container").load("?module=pages&action=edit&id=" + params);
+    }
+
+    function waExpand(page_id) {
+        var t = $('#page-'+page_id);
+        var c = t.children('ul');
+        if(c) {
+            t.children('i.expander').removeClass('uarr').addClass('darr');
+            c.show();
+        }
+        var parent_id = t.parent().data('parent-id');
+        if(parent_id) waExpand(parent_id);
+    }
+
+    function waClose(page_id) {
+        var t = $('#page-'+page_id);
+        var c = t.children('ul');
+        if(c) {
+            t.children('i.expander').removeClass('darr').addClass('uarr');
+            c.hide();
+        } else {
+            t.children('i.expander').removeClass('uarr').removeClass('darr').addClass('notebook');
+        }
     }
 
     if (!jQuery.fn.liveDraggable) {
@@ -219,6 +245,16 @@
 
 
     $(function () {
+
+        $('.expander').click(function(){
+            var page_id = $(this).parent().attr('id').replace(/page-/g, '');
+            if($(this).hasClass('uarr')) {
+                waExpand(page_id);
+            } else {
+                waClose(page_id);
+            }
+        });
+
         $(".block-pages").on('click', 'i.wa-page-add', function () {
             var li = $('<li><a class="wa-page-link" href="#"><i class="icon16 notebook"></i>[s`New page`]</a></li>');
             if ($(this).hasClass('no-parent')) {
@@ -287,7 +323,7 @@
                 c.children('span').html(ul.find('a.wa-page-link').length).show();
                 ul.hide();
             } else {
-                h.children('i').removeClass('rarr').addClass('darr');
+                h.children('i').removeClass('rarr').addClass('darr');z
                 c.children('span').hide();
                 c.children('i').show();
                 ul.show();
