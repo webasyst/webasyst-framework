@@ -294,7 +294,7 @@ class waContactForm
             }
             if ($this->post()) {
                 $opts['value'] = $this->fields[$field_id]->set($this->contact, $this->post($field_id), array());
-            } else if (isset($this->values[$field_id]) && strlen($this->values[$field_id]) > 0) {
+            } else if (!empty($this->values[$field_id]) || $this->values[$field_id] === 0 || $this->values[$field_id] === '0') {
                 $opts['value'] = $this->fields[$field_id]->set($this->contact, $this->values[$field_id], array());
             } else {
                 $default_value = $this->fields[$field_id]->getParameter('value');
