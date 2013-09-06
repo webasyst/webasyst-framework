@@ -1,0 +1,529 @@
+<script type="text/javascript" src="http://www.webasyst.com/wa-data/public/site/themes/webasystcom/ui.js"></script>
+
+
+          <div class="sidebar left200px wa-ui-class">
+            <div class="block">
+
+            <ul class="menu-v" id ="wa-ui-classes">
+              <li><a href="#menu-v" class="inline-link bold"><b><i>.menu-v</i></b></a></li>
+              <li><a href="#menu-h" class="inline-link"><b><i>.menu-h</i></b></a></li>
+              <li><a href="#tabs" class="inline-link"><b><i>.tabs</i></b></a></li>
+              <li><a href="#zebra" class="inline-link"><b><i>.zebra</i></b></a></li>
+              <li><a href="#thumbs" class="inline-link"><b><i>.thumbs</i></b></a></li>
+              <li><a href="#sidebar" class="inline-link"><b><i>.sidebar</i></b></a></li>
+              <li><a href="#fields" class="inline-link"><b><i>.fields</i></b></a></li>
+              <li><a href="#icon16" class="inline-link"><b><i>.icon16</i></b></a></li>
+              <li><a href="#dialog" class="inline-link"><b><i>.dialog</i></b></a></li>
+<!--               <li><a href="#tooltip" class="inline-link"><b><i>.tooltip</i></b></a></li> -->
+              <li><a href="#profile" class="inline-link"><b><i>.profile</i></b></a></li>
+              <li><a href="#progressbar" class="inline-link"><b><i>.progressbar</i></b></a></li>
+              <li><a href="#various" class="inline-link">&nbsp;<b><i>(разное)</i></b></a></li>
+            </ul>
+
+            </div>
+
+          </div>
+          <div class="content left200px wa-ui-playground">
+            <div class="wa-ui-description" id="wa-class-description">
+
+
+        <!-- MENU-V -->
+              <div id="wa-class-desc-menu-v" style="display:none">
+                <div class="block double-padded">
+                  <p>Класс <code><strong>.menu-v</strong></code> позволяет создавать вертикальные меню из ссылок и применяется к элементу <code>ul</code>, например:</p>
+                  <pre class="prettyprint">&lt;ul class="menu-v with-icons"&gt;</pre>
+
+                  <p>В этом примере для списка дополнительно указано имя класса <code>.with-icons</code>, определяющего тип меню (тип указывать необязательно). Вебасист поддерживает следующие типы меню:</p>
+                <ul>
+                  <li><code>ul.menu-v<strong>.with-icons</strong></code>: меню с маленькими <a href="#icon16" class="wa-ui-link inline-link"><b><i>иконками</i></b></a>
+                    слева от текста ссылки (этот класс разместит все иконки, добавленные с помощью элементов <code class="nowrap">&lt;i class="icon16 ..."&gt;&lt;/u&gt;</code>
+                    внутри ссылки, слева от названий пунктов меню);</li>
+                  <li><code>ul.menu-v<strong>.compact</strong></code>: компактное меню (уменьшенные вертикальные отступы у элементов меню);</li>
+                  <li><code>ul.menu-v<strong>.dropdown</strong></code>: выпадающее меню (каждый следующий уровень меню выпадает при наведении курсора (<code>:hover</code>) на родительский элемент в текущем уровне).</li>
+                </ul>
+                  <p>Разные типы меню можно совмещать друг с другом. Например:</p>
+                  <pre class="prettyprint">&lt;ul class="menu-v with-icons compact"&gt;</pre>
+
+                  <p>Класс <code>.menu-v</code> позволяет создавать иерархические меню неограниченной вложенности, размещая следующий уровень
+                    <code class="nowrap">ul.menu-v</code> внутри текущего элемента <code>li</code>. Иерархические меню рекомендуется оборачивать в блок
+                    <code class="nowrap">&lt;div class="hierarchical"&gt;&lt;/div&gt;</code>.</p>
+                  <p>Выбранные элементы меню выделяются с помощью класса <code>.selected</code>:</p>
+                  <pre class="prettyprint">&lt;li class="selected"&gt;</pre>
+                </div>
+
+
+                <ul class="tabs wa-class-settings" id="wa-menu-v-type">
+                  <li class="selected" id="wa-menu-v-type-f"><a href="#">Плоское</a></li>
+                  <li id="wa-menu-v-type-h"><a href="#">Иерархическое</a></li>
+                  <li id="wa-menu-v-type-d"><a href="#">Выпадающее</a></li>
+                </ul>
+                <div class="tab-content"></div>
+
+              </div>
+
+
+
+            <!-- MENU-H -->
+              <div id="wa-class-desc-menu-h" style="display:none">
+                <div class="block double-padded">
+                  <p>Класс <code><strong>.menu-h</strong></code> позволяет создавать горизонтальные меню из ссылок. Применяется к элементам <code>ul</code>:</p>
+                  <pre class="prettyprint">&lt;ul class="menu-h"&gt;</pre>
+                  <p>Дополнительный класс <code>ul.menu-h<strong>.dropdown</strong></code> позволяет использовать дочерние выпадающие меню: каждый последующий уровень меню появляется при наведении курсора (<code>:hover</code>) на родительский элемент текущего уровня.</p>
+                  <p>Выбранные элементы меню выделяются с помощью класса <code>.selected</code>:</p>
+                  <pre class="prettyprint">&lt;li class="selected"&gt;</pre>
+                </div>
+
+                <ul class="tabs wa-class-settings" id="wa-menu-h-type">
+                  <li class="selected" id="wa-menu-h-type-f"><a href="#">Плоское</a></li>
+                  <li id="wa-menu-h-type-d"><a href="#">Выпадающее</a></li>
+                </ul>
+                <div class="tab-content"></div>
+
+              </div>
+
+
+
+
+
+
+              <!-- TABS -->
+              <div id="wa-class-desc-tabs" style="display:none">
+                <div class="block double-padded">
+                  <p>Класс <code><strong>.tabs</strong></code> используется для отображения горизонтального меню в виде вкладок. Класс применяется к элементам <code>ul</code>:</p>
+                    <pre class="prettyprint">&lt;<strong>ul</strong> class="tabs"&gt;</pre>
+                    <p>Чтобы иметь вид вкладки, содержимое элемента <code>li</code> должно быть оформлено в виде ссылки</p>
+                    <pre class="prettyprint">&lt;a&gt;&lt;/a&gt;</pre>
+                <p>Класс необходимо использовать в паре с блочным элементом <code>&lt;div class="<strong>tab-content</strong>"&gt;</code>, следующим сразу после
+                  <code>&lt;ul class="tabs"&gt;</code>, так как именно этот элемент добавляет визуальную границу под вкладками.</p>
+                    <p>Выбранная вкладка выделяется с помощью класса <code>.selected</code>:</p>
+                    <pre class="prettyprint">&lt;li class="selected"&gt;</pre>
+                </div>
+
+              </div>
+
+
+
+
+              <!-- ZEBRA -->
+              <div id="wa-class-desc-zebra" style="display:none">
+                <div class="block double-padded">
+                  <p>Класс <code><strong>.zebra</strong></code> используется для представления данных в виде таблицы с чередующимся цветом фона каждого следующего ряда.
+                  Класс можно применять к элементам <code>&lt;<strong>table</strong> class="zebra"&gt;</code> и <code>&lt;<strong>ul</strong> class="zebra"&gt;</code>.</p>
+                </div>
+
+                <ul class="tabs wa-class-settings" id="wa-zebra-type">
+                  <li class="selected" id="wa-zebra-type-ul"><a href="#">Список</a></li>
+                  <li id="wa-zebra-type-table"><a href="#">Таблица</a></li>
+                </ul>
+                <div class="tab-content"></div>
+
+              </div>
+
+
+
+
+            <!-- THUMBS -->
+              <div id="wa-class-desc-thumbs" style="display:none">
+                <div class="block double-padded">
+                <p>Класс <code>ul<strong>.thumbs</strong></code> используется для представления изображений в виде списка-таблицы &mdash; например,
+                  фотографий внутри альбома, списка контактов, фотографий товаров и т.&nbsp;п.</p>
+                  <p>По умолчанию ширина каждого элемента списка <code>li</code> определяется автоматически в зависимости от размера картинки. Дополнительно
+                  для списка можно указать класс, устанавливающий фиксированную ширину в пикселях, например:</p>
+                  <pre class="prettyprint">&lt;ul class="thumbs <strong>li100px</strong>"&gt;</pre>
+                  <p>Возможные значения: <code>.li50px</code>, <code>.li100px</code>, <code>.li150px</code>, <code>.li200px</code>, <code>.li250px</code>,
+                    <code>.li300px</code>, <code>.li350px</code>.</p>
+                  <p>С помощью класса <code>.highlighted</code> (<code>&lt;li class="<strong>highlighted</strong>"&gt;</code>) рекомендуется выделять элементы,
+                    на которые пользователю следует обратить внимание (например, записи, добавленные коллегами пользователя с момента его предыдущего входа в Вебасист).</p>
+                  <p>Выбранные элементы меню выделяются с помощью класса <code>.selected</code>, например:</p>
+                  <pre class="prettyprint">&lt;li class="selected"&gt;</pre>
+                </div>
+
+              </div>
+
+
+
+
+              <!-- SIDEBAR -->
+              <div id="wa-class-desc-sidebar" style="display:none">
+                <div class="block double-padded">
+                <p>Наиболее удобный и рекомендуемый способ определения разметки приложения — с помощью пары классов <code><strong>.sidebar</strong></code>
+                  и <code><strong>.content</strong></code>. Эти классы позволяют реализовать многоколоночную разметку страницы с единой прокруткой для всей
+                  страницы (основной и наиболее привычный для пользователей вид веб-страницы).</p>
+                <pre class="prettyprint">
+&lt;div class="<strong>sidebar</strong> left200px"&gt;
+  &lt;div class="block"&gt;
+    левая колонка шириной 200 пикселей
+  &lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="<strong>sidebar</strong> right100px"&gt;
+  &lt;div class="block"&gt;
+    правая колонка шириной 100 пикселей
+  &lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="<strong>content</strong> left200px right100px"&gt;
+  &lt;div class="block"&gt;
+    основное содержимое
+  &lt;/div&gt;
+&lt;/div&gt;</pre>
+
+        <p>Ширина и положение колонок регулируются с помощью дополнительных классов <code>.left<strong>N</strong>px</code> и <code>.right<strong>N</strong>px</code>,
+          где значения <em>left</em> и <em>right</em> определяют расположение колонки, а <em>N</em> &mdash; ширину в пикселях (возможные значения:
+          100, 200, 250, 300, 400). Количество левых и правых колонок на странице не ограничено. Для правильного отображения следует рассчитать
+          ширину и отступы слева и справа от блока <code>.content</code> и установить ее с помощью этих же классов (<code>.leftNpx</code> и <code>.rightNpx</code>).
+          Например, если на странице используются две левых колонки с классом <code>.sidebar.left200px</code>, то для области основного содержания необходимо
+          применить класс <code>.content<strong>.left400px</strong></code>.</p>
+
+                <p>Если размер колонок и отступы для основного содержания не заданы, будет применена ширина по умолчанию: 200 пикселей. Для левой колонки
+                  рекомендуется использовать именно такую ширину, так как она наиболее гармонично вписывается в общий вид интерфейса Вебасиста.</p>
+
+                <p>Вместо класса <code>.sidebar</code> можно использовать класс <code><strong>.sidebar-fixed</strong></code>. С его помощью формируется такая
+                  же колонка, но с фиксированным положением на странице, не зависящим от положения полосы прокрутки.</p>
+         </div>
+              </div>
+
+
+
+
+
+            <!-- FIELDS -->
+              <div id="wa-class-desc-fields" style="display:none">
+                <div class="block double-padded">
+                  <p>Классы группы <code><strong>.fields</strong></code> позволяют отображать списки данных (например, контактную информацию
+                    пользователя или форму регистрации) в виде пар <span class="nowrap">«ключ&mdash;значение»</span> с помощью блочных элементов <code>div</code>.</p>
+                <p>Структура использования классов группы <code>.fields</code>:
+                <pre>
+.fields (.form)
+  (.field-group)
+    <strong>.field</strong>
+      .name
+      .value
+      (.value)
+      (.value)
+    <strong>.field</strong>
+      .name
+      .value
+      (.value)
+      (.value)</pre>
+      </p>
+                </div>
+
+                <ul class="tabs wa-class-settings" id="wa-fields-type">
+                  <li class="selected" id="wa-fields-type-view"><a href="#">Просмотр</a></li>
+                  <li id="wa-fields-type-form"><a href="#">Форма регистрации</a></li>
+                </ul>
+                <div class="tab-content"></div>
+
+              </div>
+
+
+
+
+
+              <!-- ICON16 -->
+              <div id="wa-class-desc-icon16" style="display:none">
+                <div class="block double-padded">
+                <div id="icons-wrapper"></div>
+                <p>Классы <code><strong>.icon16</strong></code> и <code><strong>.icon10</strong></code> применяются к элементам <code>i</code> и позволяют
+                  встраивать маленькие иконки размером 16x16 и 10x10 пикселей в тексты, ссылки и заголовки, например, так: <i class="icon10 yes"></i>,
+                  или так: <i class="icon16 yes"></i>.</p>
+                <pre class="prettyprint">
+&lt;i class="icon16 <strong>iconname</strong>"&gt;</pre>
+                <p>Иконки Вебасиста объединены в единый файл <code>wa-content/img/icon16.png</code> (и <code>icon10.png</code> соответственно).
+                  Полный список встроенных в Вебасист иконок указан в основном файле стилей <code>wa-content/css/wa/wa-1.0.css</code>. Если встроенных
+                  иконок не хватает для вашего приложения, их набор может быть расширен произвольными иконками путём добавления правил следующего вида
+                   в CSS-файл приложения:</p>
+                  <pre class="prettyprint">.icon16.iconname { }</pre>
+                <p>Иконки, использующиеся в Вебасисте, основаны на наборах <strong>Fugue</strong> и <strong>Diagona</strong> авторства
+                  Yusuke&nbsp;Kamiyamane: <a href="http://p.yusukekamiyamane.com/">http://p.yusukekamiyamane.com/</a>. В этих наборах более 3000&nbsp;иконок,
+                  которые можно использовать бесплатно по условиям лицензии Creative Commons Attribution&nbsp;3.0 license. При разработке приложений Вебасист
+                  мы рекомендуем использовать иконки из этих наборов.</p>
+         </div>
+
+              </div>
+
+
+
+
+              <!-- TOOLTIP
+              <div id="wa-class-desc-tooltip" style="display:none">
+                <div class="block double-padded">
+                <p>С помощью класса <code><strong>.tooltip</strong></code> удобно делать контекстные всплывающие подсказки. Подсказка (HTML-блок) всплывает при наведении курсора на «вызывающий» ее элемент. Контекстные подсказки встраиваются с помощью следующей HTML-конструкции:</p>
+                <pre class="prettyprint">
+                ...
+                </pre>
+         </div>
+              </div>
+
+-->
+
+              <!-- PROFILE -->
+              <div id="wa-class-desc-profile" style="display:none">
+                <div class="block double-padded">
+                <p>Класс <code><strong>.profile</strong></code> был изначально разработан для отображения контактной информации пользователя с его фотографией,
+                  однако впоследствии нашёл более широкое применение. Например, он хорошо подходит для отображения комментариев с изображениями (аватарами) авторов,
+                  записей о товарах с их изображениями, эскизов фотографий с EXIF-данными и т.&nbsp;п. Класс <code>.profile</code> подходит для отображения любой
+                  информации в виде «изображение слева, текстовая информация справа». В HTML-шаблонах класс подключается с помощью следующей конструкции:</p>
+                <pre class="prettyprint">
+&lt;div class="<strong>profile</strong> image96px"&gt;
+  &lt;div class="<strong>image</strong>"&gt;
+      изображение
+    &lt;/div&gt;
+    &lt;div class="<strong>details</strong>"&gt;
+      содержание
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</pre>
+        <p>С помощью дополнительного к <code>.profile</code> класса <code><strong>.image96px</strong></code> можно указать точный размер изображения внутри блока
+          <code>.image</code>. Другие возможные значения: <code>.image20px</code>, <code>.image32px</code>, <code>.image50px</code>.</p>
+         </div>
+              </div>
+
+
+
+              <!-- PROGRESSBAR -->
+              <div id="wa-class-desc-progressbar" style="display:none">
+                <div class="block double-padded">
+                <p>Класс <code><strong>.progressbar</strong></code> используется для отображения индикатора выполнения процесса, полностью реализованного
+                  только средствами HTML и CSS:</p>
+                <pre class="prettyprint">
+&lt;div class="progressbar"&gt;
+  &lt;div class="progressbar-outer"&gt;
+    &lt;div class="progressbar-inner" id="my-custom-progressbar-id" <strong>style="width: 37%;"</strong>&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</pre>
+                  <p>Выделенный жирным атрибут <code>style</code> задает текущее состояние индикатора. Изменять его в контексте текущей страницы можно
+                    с помощью JavaScript. Пример с использованием jQuery:</p>
+        <pre class="prettyprint">
+$('#my-custom-progressbar-id').css('width','41%'); //установка значения индикатора на 41%
+        </pre>
+        <p>Внешний вид индикатора можно изменять &mdash; поддерживаются классы для указания цвета заливки <code>.progressbar<strong>.green</strong></code>,
+          <code>.progressbar<strong>.yellow</strong></code>, <code>.progressbar<strong>.red</strong></code>, <code>.progressbar<strong>.blue</strong></code>
+          и класс для отображения уменьшенной версии: <code>.progressbar<strong>.small</strong></code>.</p>
+         </div>
+              </div>
+
+
+
+
+
+             <!-- DIALOG -->
+              <div id="wa-class-desc-dialog" style="display:none">
+                <div class="block double-padded">
+
+
+
+<p>Диалог является важным и часто используемым элементом пользовательского интерфейса.</p>
+<p>Фреймворк Вебасист предоставляет механизм построения диалогов средствами JavaScript.</p>
+
+<p>Для работы с функцией построения диалогов необходимо подключить в коде страницы JS-файл:</p>
+
+<pre class="prettyprint">
+&lt;script type="text/javascript" src="{$wa_url}wa-content/js/jquery-wa/wa.dialog.js"&gt;&lt;/script&gt;
+</pre>
+
+<p>Для преобразования элемента страницы <code>$(el)</code> в диалог,
+  нужно применить следующую конструкцию JavaScript:</p>
+<pre class="prettyprint">
+$(el).waDialog(options);
+</pre>
+
+<p>Простой пример (диалог с одним полем ввода и одной кнопкой отправки формы):</p>
+
+<pre class="prettyprint">
+$('&lt;div&gt;Укажите имя: &lt;input type="text" name="name"/&gt;&lt;/div&gt;').waDialog({
+  'buttons': '&lt;input type="submit" value="OK" /&gt;',
+  onSubmit: function (d) {
+       $.post('?module=m', $(this).serialize(), function () {
+           d.trigger('close'); // закрыть диалог
+       }, 'json');
+       return false;
+  }
+});
+</pre>
+
+<p>Аргумент метода waDialog &mdash; <code>options</code> &mdash; это массив параметров,
+  позволяющий управлять поведением диалога. Допустимые параметры и их значения по умолчанию:</p>
+<ul>
+  <li><code>esc: true</code> &mdash; реакция на нажатие кнопки esc: закрывать диалог по нажатию или нет, по умолчанию да</li>
+<li><code>buttons: null</code> &mdash; определяет кнопки диалога, если есть необходимость задать их явно</li>
+<li><code>url: null</code> &mdash; содержимое диалога будет загружено с помощью jQuery.get по указанному URL </li>
+<li><code>disableButtonsOnSubmit: false</code> &mdash; при отправке формы диалога добавляется атрибут disabled всем кнопкам отправки диалога (input[type=submit])</li>
+<li><code>onLoad: null</code> &mdash; callback-функция, которая сработает как только диалог будет загружен</li>
+<li><code>onCancel: null</code> &mdash; callback-функция, которая будет вызвана при нажатии на cancel</li>
+<li><code>onSubmit: null</code> &mdash; callback-функция, которая будет вызвана при сабмите формы диалога</li>
+<li><code>onClose: null</code> &mdash; callback-функция, которая будет вызвана при закрытии диалога</li>
+<li><code>className: ''</code> &mdash; CSS-класс, который будет добавлен к HTML-блоку диалога</li>
+<li><code>width: ''</code> &mdash; ширина, например '400px'</li>
+<li><code>height: ''</code> &mdash; высота, аналогично ширине</li>
+  <li><code>title: ''</code> &mdash; если задан, то в контент диалога добавится элемент <code>&lt;h1&gt;title&lt;/h1&gt;</code></li>
+</ul>
+
+
+<p>Во всех callback-функциях, кроме <code>onSubmit</code>, переменная <code>this</code> представляет
+  сам элемент диалога.</p>
+
+<p>В <code>onSumbit</code> this &mdash; это элемент &lt;form&gt;, а элемент диалога передаётся
+  в функцию первым параметром:</p>
+
+<pre class="prettyprint">
+onSubmit: function (d) {
+       $.post('?module=m', $(this).serialize(), function () {
+           d.trigger('close'); // закрыть диалог
+       }, 'json');
+       return false;
+}
+</pre>
+
+
+<p>Структурно диалог разделён на две части: содержимое с полями формы и кнопки.</p>
+<p>В передаваемом в конструкцию создания диалога элементе можно указать оба блока.
+  Содержимое с полями необходимо поместить в <code>div</code> с CSS-классом "dialog-content", а кнопки в <code>div</code> с классом "dialog-buttons":</p>
+
+<pre class="prettyprint">
+$('&lt;div&gt;&lt;form&gt;&lt;div class="dialog-content"&gt;Контент&lt;/div&gt;&lt;div class="dialog-buttons"&gt;&lt;input type="submit" value="Ok" /&gt;&lt;/div&gt;&lt;/form&gt;&lt;/div&gt;').waDialog({
+'onSubmit': function (d) {
+    d.trigger('close');
+    return false;
+}
+});
+</pre>
+
+<p>Если блок с CSS-классом "dialog-content" не задан, то считается, что передано только содержимое диалога без блока кнопок.
+  В этом случае кнопки можно задать с помощью параметра buttons:</p>
+
+
+<pre class="prettyprint">
+$('&lt;div&gt;Текст простого сообщения&lt;/div&gt;').waDialog({
+'buttons': '&lt;input type="submit" value="Close" /&gt;',
+'onSubmit': function (d) {
+    d.trigger('close');
+    return false;
+}
+});
+</pre>
+
+
+<p>На все элементы диалога с CSS-классом "cancel" автоматически навешивается
+  событие, закрывающее диалог по клику на элемент.</p>
+
+<blockquote>Для предотвращения возможных конфликтов нельзя использовать CSS-класс
+  "dialog" для элементов, к которым будет применён waDialog.</blockquote>
+
+
+
+
+                </div>
+              </div>
+
+
+
+
+
+
+
+
+
+             <!-- VARIOUS -->
+              <div id="wa-class-desc-various" style="display:none">
+                <div class="block double-padded">
+                <p>При разработке шаблонов дизайна для интерфейсов приложений Вебасист часто применяются перечисленные ниже классы и конструкции.</p>
+
+                <h3>.inline-link</h3>
+                <p>Ссылки с пунктирным подчеркиванием: <a href="#" class="inline-link"><b><i>пример ссылки</i></b></a>. Рекомендуется применять для всех ссылок,
+                  выполняющих локальное действие на странице, например, получить подсказку, развернуть пункт меню и т.&nbsp;п. Применяется в шаблоне
+                  в виде конструкции из элементов <code>a</code>, <code>b</code> и <code>i</code>:</p>
+                <pre class="prettyprint">
+&lt;a href="#" class="inline-link"&gt;&lt;b&gt;&lt;i&gt;текст ссылки&lt;/i&gt;&lt;/b&gt;&lt;/a&gt;</pre>
+
+        <h3>.button</h3>
+                <p>Большая красивая кнопка:</p>
+                <p>
+                  <input type="button" class="button" value="Серая" />
+                  <input type="button" class="button green" value="Зеленая" />
+                  <input type="button" class="button blue" value="Синяя" />
+                  <input type="button" class="button yellow" value="Желтая" />
+                  <input type="button" class="button red" value="Красная" /></p>
+                <p>Класс <code>.button</code> применяется к элементам <code>input</code> и <code>a</code> следующим образом:</p>
+                <pre class="prettyprint">
+&lt;input type="button" class="button" value="Кнопка" /&gt;
+&lt;a href="#" class="button"&gt;Кнопка&lt;/a&gt;</pre>
+
+        <h3>.paging</h3>
+                <p>Индикатор текущей страницы:<br />
+                <div class="paging">
+            <a class="selected" href="#">1</a>
+            <a href="#">2</a>
+            <a href="#">3</a>
+            ...
+            <a href="#">10</a>
+            <a class="prevnext" href="#"><i class="icon10 larr"></i> пред</a>
+            <a class="prevnext" href="#">след <i class="icon10 rarr"></i></a>
+          </div>
+                </p>
+                <p><br />Конструкция для встраивания в шаблон:</p>
+                <pre class="prettyprint">
+&lt;div class="<strong>paging</strong>"&gt;
+  &lt;a class="selected" href="#"&gt;1&lt;/a&gt;
+  &lt;a href="#"&gt;2&lt;/a&gt;
+  &lt;a href="#"&gt;3&lt;/a&gt;
+  ...
+  &lt;a href="#"&gt;10&lt;/a&gt;
+  &lt;a class="prevnext" href="#"&gt;&lt;i class="icon10 larr"&gt;&lt;/i&gt; пред&lt;/a&gt;
+  &lt;a class="prevnext" href="#"&gt;след &lt;i class="icon10 rarr"&gt;&lt;/i&gt;&lt;/a&gt;
+&lt;/div&gt;</pre>
+
+        <h3>.small, .large, .hint</h3>
+                  <p>Эти классы изменяют отображение текста внутри текстовых и блочных элементов (<code>span</code>, <code>em</code>, <code>div</code> и т.&nbsp;п.):</p>
+                <pre class="prettyprint">
+&lt;span class="large"&gt;текст&lt;/span&gt;
+&lt;span class="small"&gt;текст&lt;/span&gt;
+&lt;span class="hint"&gt;текст&lt;/span&gt;</pre>
+<p><span class="large">текст</span><br />
+<span class="small">текст</span><br />
+<span class="hint">текст</span><br />
+                </p>
+
+         </div>
+              </div>
+
+
+
+            </div>
+
+            <div class="wa-ui-sandbox">
+
+              <div class="block double-padded">
+                <h6 class="heading" style="text-transform: none !important;">HTML (можно редактировать и смотреть результат ниже)</h6>
+                <textarea id="wa-class-html"></textarea>
+              </div>
+
+              <div class="block double-padded">
+                <h6 class="heading">Просмотр <input type="button" value="Обновить" onclick="$.waui.preview();return false"></h6>
+                <iframe id="wa-class-preview" scrolling="no"></iframe>
+              </div>
+
+            </div>
+          </div>
+        <div class="clear"></div>
+
+<link href="http://www.webasyst.com/wa-content/js/prettify/prettify.css" type="text/css" rel="stylesheet">
+<script type="text/javascript" src="http://www.webasyst.com/wa-content/js/prettify/prettify.js"></script>
+<script>$(function($) {
+    prettyPrint();
+
+    // List of icons for icons tab
+    var icons = {{if !empty($icons)}}{{json_encode($icons)}}{{else}}[]{{/if}};
+    var html = '';
+    for(var i=0; i<icons.length; i++) {
+        if (0 == i % 4) {
+            if (i != 0) {
+                html += '</tr>';
+            }
+            html += '<tr>';
+        }
+        html += '<td><i class="'+icons[i].substr(1).replace('.', ' ')+'"></i> '+icons[i]+'</td>';
+    }
+    html += '</tr>';
+    $('#icons-wrapper').html('<table id="dpg-icons-table" style="width:100%;">'+html+'</table>');
+});</script>

@@ -1,0 +1,86 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: developer\n"
+"POT-Creation-Date: 2012-06-19 11:57+0000\n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: developer\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=((((n%10)==1)&&((n%100)!=11))?(0):(((((n%10)>=2)&&((n%10)<=4))&&(((n%100)<10)||((n%100)>=20)))?(1):2));\n"
+"X-Poedit-Language: ru_RU\n"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-Basepath: .\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPath-1: .\n"
+
+msgid "Developer"
+msgstr "Разработка"
+
+msgid "Smarty"
+msgstr "Smarty"
+
+msgid "PHP"
+msgstr "PHP"
+
+msgid "Save as template"
+msgstr "Сохранить шаблон"
+
+msgid "Delete template"
+msgstr "Удалить шаблон"
+
+msgid "Run"
+msgstr "Выполнить"
+
+msgid "Alt+Enter"
+msgstr "Alt+Enter"
+
+msgid "Result"
+msgstr "Результат"
+
+msgid "Click Run button to execute the code and to see the result."
+msgstr "Нажмите «Выполнить», чтобы увидеть результат работы кода."
+
+msgid "Assign variables to Smarty:"
+msgstr "Назначайте переменные Smarty:"
+
+msgid "...or echo promptly:"
+msgstr "... или выводите значения переменных напрямую:"
+
+msgid "...or use debug output helpers such as print_r() and var_dump()."
+msgstr "... или используйте для вывода print_r() и var_dump()."
+
+msgid "E.g. wa_print_r() would output all its arguments and exit:"
+msgstr "Например, wa_print_r() выводит все переданные аргументы:"
+
+msgid "Helper to show all variables assigned to current template."
+msgstr "Хелпер, позволяющий вывести все переменные, переданные в текущий шаблон."
+
+msgid "Enter template name (both PHP and Smarty editors will be saved):"
+msgstr "Введите название шаблона (будут сохранены и PHP, и Smarty):"
+
+msgid "saved templates"
+msgstr "сохраненные шаблоны"
+
+msgid "Coding sandbox"
+msgstr "Песочница"
+
+msgid "UI"
+msgstr "UI"
+
+msgid "Coding sandbox is available for Webasyst admin users only."
+msgstr "Песочница доступна только для пользователей Вебасиста, обладающих полными административными правами."
+
+msgid "Coding sandbox works only if Debug mode is enabled in the Installer app."
+msgstr "Песочница работает только при включенном режиме отладки (debug_mode) в приложении «Инсталлер»."
+
+msgid "This application is available for Webasyst admin users only."
+msgstr "Приложение доступно только для пользователей Вебасиста, обладающих полными административными правами."
+
+msgid "This application works only when Debug mode is enabled in the Installer app."
+msgstr "Приложение работает только при включенном режиме отладки (debug_mode) в приложении «Инсталлер»."
+
+msgid "Permanently delete template “%s”?"
+msgstr "Удалить сохраненный шаблон «%s»?"
+

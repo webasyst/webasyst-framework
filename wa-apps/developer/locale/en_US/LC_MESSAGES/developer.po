@@ -1,0 +1,103 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: developer\n"
+"POT-Creation-Date: 2012-06-19 11:57+0000\n"
+"PO-Revision-Date: \n"
+"Last-Translator:  developer\n"
+"Language-Team:  developer\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Language: en_US\n"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-Basepath: .\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPath-1: .\n"
+
+#: /wa-apps/developer/lib/actions/developerBackendExec.action.php:35
+msgid "Smarty"
+msgstr ""
+
+#: /wa-apps/developer/js/coding-sandbox.js:107
+msgid "PHP"
+msgstr ""
+
+#: /wa-apps/developer/templates/actions/backend/Backend.html:22
+msgid "Save as template"
+msgstr ""
+
+#: /wa-apps/developer/templates/actions/backend/Backend.html:23
+msgid "Delete template"
+msgstr ""
+
+#: /wa-apps/developer/templates/actions/backend/Backend.html:25
+msgid "Run"
+msgstr ""
+
+#: /wa-apps/developer/templates/actions/backend/Backend.html:26
+msgid "Alt+Enter"
+msgstr ""
+
+#: /wa-apps/developer/templates/actions/backend/Backend.html:34
+msgid "Result"
+msgstr ""
+
+#: /wa-apps/developer/templates/actions/backend/Backend.html:39
+msgid "Click Run button to execute the code and to see the result."
+msgstr ""
+
+#: /wa-apps/developer/templates/actions/backend/Backend.html:47
+msgid "Assign variables to Smarty:"
+msgstr ""
+
+#: /wa-apps/developer/templates/actions/backend/Backend.html:50
+msgid "...or echo promptly:"
+msgstr ""
+
+#: /wa-apps/developer/templates/actions/backend/Backend.html:53
+msgid "...or use debug output helpers such as print_r() and var_dump()."
+msgstr ""
+
+#: /wa-apps/developer/templates/actions/backend/Backend.html:59
+msgid "Helper to show all variables assigned to current template."
+msgstr ""
+
+#: /wa-apps/developer/js/coding-sandbox.js:176
+msgid "Enter template name (both PHP and Smarty editors will be saved):"
+msgstr ""
+
+#: /wa-apps/developer/js/coding-sandbox.js:142
+msgid "saved templates"
+msgstr ""
+
+#: /wa-apps/developer/templates/layouts/Backend.html:31
+msgid "Coding sandbox"
+msgstr ""
+
+#: /wa-apps/developer/templates/layouts/Backend.html:34
+msgid "UI"
+msgstr ""
+
+#: /wa-apps/developer/lib/actions/developerBackend.action.php:9
+msgid "Coding sandbox is available for Webasyst admin users only."
+msgstr ""
+
+#: /wa-apps/developer/lib/actions/developerBackend.action.php:12
+msgid "Coding sandbox works only if Debug mode is enabled in the Installer app."
+msgstr ""
+
+#: /wa-apps/developer/lib/actions/developerBackendExec.action.php:14
+msgid "This application is available for Webasyst admin users only."
+msgstr ""
+
+#: /wa-apps/developer/lib/actions/developerBackendExec.action.php:17
+msgid "This application works only when Debug mode is enabled in the Installer app."
+msgstr ""
+
+#: /wa-apps/developer/js/coding-sandbox.js:226
+msgid "Permanently delete template “%s”?"
+msgstr ""
+
+#: /wa-apps/developer/templates/actions/backend/Backend.html:54
+msgid "E.g. wa_print_r() would output all its arguments and exit:"
+msgstr ""

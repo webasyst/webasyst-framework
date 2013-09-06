@@ -1,0 +1,87 @@
+<div class="sidebar d-sandbox-column bordered-right">
+    <div class="block" id="d-php">
+      <div class="d-header">
+        <div class="float-right block half-padded">
+            <label><input type="checkbox" id="d-smarty-mode-enabled" /> [`Smarty`]</label>
+        </div>
+        <h2>
+            [`PHP`]
+            <select id="snippets-list"></select>
+        </h2>
+      </div>
+      <div class="d-editor" id="php-editor-wrapper"></div>
+    </div>
+    <div class="block" id="d-smarty">
+      <div class="d-header">
+        <h2>[`Smarty`]</h2>
+      </div>
+      <div class="d-editor" id="smarty-editor-wrapper"></div>
+    </div>
+    <div class="block" id="d-compile-toolbar">
+      <div class="block half-padded float-right">
+        <input id="save-snippet" type="button" value="[`Save as template`]">
+        <input type="button" value="[`Delete template`]" id="d-delete-template" style="display: none;">
+      </div>
+      <input id="send" type="button" class="button green" value="[`Run`]">
+    <span class="hint">[`Alt+Enter`]</span>
+</div>
+
+</div>
+<div class="sidebar d-sandbox-column">
+    <div class="block">
+      <div class="d-header">
+        <h2>
+            [`Result`]
+        </h2>
+      </div>
+    </div>
+    <div class="block" id="result-wrapper">
+        <span class="hint">[`Click Run button to execute the code and to see the result.`]</span>
+    </div>
+</div>
+<div class="clear"></div>
+
+<div id="default-php-code" class="hidden">
+$name = htmlspecialchars(wa()-&gt;getUser()-&gt;getName());
+
+// [`Assign variables to Smarty:`]
+$this->view->assign('name', $name);
+
+// [`...or echo promptly:`]
+echo $name;
+
+// [`...or use debug output helpers such as print_r() and var_dump().`]
+// [`E.g. wa_print_r() would output all its arguments and exit:`]
+//wa_print_r($name);
+</div>
+
+<div id="default-smarty-code" class="hidden">{literal}
+{* [`Helper to show all variables assigned to current template.`] *}
+{wa_tpl_vars}
+{/literal}</div>
+
+{wa_js file="js/compiled/developer-sandbox.js"}
+    {$wa_url}wa-content/js/jquery-plugins/jquery.store.js
+    {$wa_url}wa-content/js/jquery-wa/wa.core.js
+    {$wa_url}wa-content/js/codemirror/lib/codemirror.js
+    {$wa_url}wa-content/js/codemirror/mode/xml/xml.js
+    {$wa_url}wa-content/js/codemirror/mode/javascript/javascript.js
+    {$wa_url}wa-content/js/codemirror/mode/css/css.js
+    {$wa_url}wa-content/js/codemirror/mode/clike/clike.js
+    {$wa_url}wa-content/js/codemirror/mode/php/php.js
+    {$wa_url}wa-content/js/codemirror/mode/smarty/smarty.js
+    {$wa_app_static_url}js/coding-sandbox.js
+{/wa_js}
+
+<script>
+/*
+ * See js/coding-sandbox.js for this page's controller
+ */
+
+$.wa.locale = $.extend($.wa.locale || {}, {
+    "Enter template name (both PHP and Smarty editors will be saved):": "[`Enter template name (both PHP and Smarty editors will be saved):`]",
+    "Permanently delete template “%s”?": "[`Permanently delete template “%s”?`]",
+    "saved templates": "[`saved templates`]",
+    "PHP": "[`PHP`]"
+});
+</script>

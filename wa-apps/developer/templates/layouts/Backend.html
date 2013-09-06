@@ -1,0 +1,45 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+    "http://www.w3.org/TR/html4/strict.dtd"><html>
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>[`Developer`]</title>
+  <link href="{$wa_url}wa-content/css/wa/wa-1.0.css" rel="stylesheet" type="text/css" />
+
+  <!--[if IE 7]>
+  <link type="text/css" href="{$wa_url}wa-content/css/wa-1.0/wa-1.0.ie7.css" rel="stylesheet">
+  <![endif]-->
+  <link href="{$wa_app_static_url}css/developer.css" rel="stylesheet" type="text/css" />
+  <link rel="stylesheet" href="{$wa_url}wa-content/js/codemirror/lib/codemirror.css" />
+
+  <script src="{$wa_url}wa-content/js/jquery/jquery-1.7.1.min.js" type="text/javascript"></script>
+</head>
+
+<body>
+
+<div id="wa">
+
+    {$wa->header()}
+
+    <div id="wa-app">
+
+      <ul class="tabs d-greeny-style">
+        <li{if !$page} class="selected"{/if}>
+            <a href="{$wa_app_url}" class="bold">[`Coding sandbox`]</a>
+        </li>
+        <li{if $page=='ui'} class="selected"{/if}>
+            <a href="?action=ui">[`UI`]</a>
+        </li>
+      </ul>
+
+      <div class="tab-content d-greeny-style" id="d-sandbox">
+        {$content}
+      </div>
+
+      &nbsp;
+    </div><!-- #wa-app -->
+</div><!-- #wa -->
+
+</body>
+
+</html>
