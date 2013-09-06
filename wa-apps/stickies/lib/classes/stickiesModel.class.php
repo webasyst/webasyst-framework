@@ -1,14 +1,15 @@
 <?php
 class stickiesModel extends waModel
 {
-	/**
-	 *
-	 * @param $condition
-	 * @param $fields
-	 * @param $order
-	 * @param $all
-	 * @return unknown_type
-	 */
+    /**
+     *
+     * @param $condition
+     * @param $fields
+     * @param array|string $order_fields
+     * @param bool $all
+     * @internal param $order
+     * @return array
+     */
 	public function getFieldsByField($condition, $fields = null,$order_fields = null, $all = true)
 	{
 		$select_fields = $this->buildSelectChunk($fields);
@@ -44,11 +45,12 @@ class stickiesModel extends waModel
 		return implode(", ", $order);
 	}
 
-	/**
-	 *
-	 * @param $fields array
-	 * @return string
-	 */
+    /**
+     *
+     * @param $fields array
+     * @throws waDbException
+     * @return string
+     */
 	private function buildWhereChunk($fields)
 	{
 		$where = array();
@@ -90,4 +92,3 @@ class stickiesModel extends waModel
 		return $select_fields;
 	}
 }
-?>

@@ -18,4 +18,3 @@ class stickiesJsonActionsController extends waJsonActions
 		}
 	}
 }
-?>

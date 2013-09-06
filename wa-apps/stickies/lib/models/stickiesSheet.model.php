@@ -8,7 +8,7 @@
 class stickiesSheetModel extends stickiesModel
 {
 	protected $table = 'stickies_sheet';
-	
+
 	public function refresh($id,$qty)
 	{
 		$sql = "UPDATE `{$this->table}` SET `qty`= i:qty WHERE `id`=i:id";
@@ -18,8 +18,7 @@ class stickiesSheetModel extends stickiesModel
 	public static function available($id)
 	{
 		$id = max(0,intval($id));
-		//TODO add check sheet existing at table
-		return $id&&wa()->getUser()->getRights(wa()->getApp(),"sheet.{$id}");
+		return $id && wa()->getUser()->getRights(wa()->getApp(),"sheet.{$id}");
 	}
 
 	public function get($ignore_rights = false,$fields = null)
@@ -46,10 +45,8 @@ class stickiesSheetModel extends stickiesModel
 	public function create($name,$background_id = null, $checkRights = true)
 	{
 		$app_id = wa()->getApp();
-		$id = false;
 		if($checkRights && !wa()->getUser()->getRights($app_id,'add_sheet')){
 			throw new waRightsException(_w('Not enough rights to add new board'));
-			return false;
 		}
 		$sheet = $this->select('MAX(sort) as max_sort')->fetch();
 		$data = array(
@@ -72,12 +69,12 @@ class stickiesSheetModel extends stickiesModel
 		return $this->updateById($id,$data);
 	}
 
-	public function move($id, $after_id) 
+	public function move($id, $after_id)
 	{
 		try{
 			$sheet = $this->getById($id);
 			if (!$sheet) return array('error' => _w("Board not found"));
-			
+
 			if ($after_id != 0) {
 				$after_sheet = $this->getById($after_id);
 				if (!$after_sheet) return array('error' => _w("Board not found"));
@@ -88,11 +85,11 @@ class stickiesSheetModel extends stickiesModel
 				$sort = 1;
 			}
 			if ( $sort > $sheet['sort'] ) {
-				$this->exec("UPDATE {$this->table} SET sort = sort - 1 WHERE sort > i:sort_old AND sort <= i:sort", 
+				$this->exec("UPDATE {$this->table} SET sort = sort - 1 WHERE sort > i:sort_old AND sort <= i:sort",
 					array('sort'=>$sort, 'sort_old'=>$sheet['sort']));
 			}
 			else if ($sort < $sheet['sort']) {
-				$this->exec("UPDATE {$this->table} SET sort = sort + 1 WHERE sort >= i:sort AND sort < i:sort_old", 
+				$this->exec("UPDATE {$this->table} SET sort = sort + 1 WHERE sort >= i:sort AND sort < i:sort_old",
 					array('sort' => $sort, 'sort_old' => $sheet['sort']));
 			}
 			$this->updateById($id, array('sort' => (int)$sort));
@@ -114,5 +111,3 @@ class stickiesSheetModel extends stickiesModel
 		return $res;
 	}
 }
-
-?>

@@ -23,7 +23,7 @@ class stickiesStickyModel extends stickiesModel
 	/**
 	 * return sheet_id if at available or false
 	 * @param $id int
-	 * @return int|false
+	 * @return int
 	 */
 	public function available($id)
 	{

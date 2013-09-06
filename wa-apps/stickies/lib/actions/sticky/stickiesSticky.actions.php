@@ -133,4 +133,3 @@ class StickiesStickyActions extends stickiesJsonActionsController
 		}
 	}
 }
-?>
