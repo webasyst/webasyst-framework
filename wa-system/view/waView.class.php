@@ -124,7 +124,7 @@ abstract class waView
         $this->assign('wa_active_theme_url', $theme->url);
         $file = $theme->getFile($template);
         if ($parent_theme = $theme->parent_theme) {
-            if ($file['parent']) {
+            if (!empty($file['parent'])) {
                 $theme = $parent_theme;
             }
             $this->assign('wa_parent_theme_url', $parent_theme->url);

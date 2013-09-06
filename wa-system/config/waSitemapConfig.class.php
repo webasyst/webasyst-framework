@@ -23,6 +23,7 @@ class waSitemapConfig
     const CHANGE_NEVER   = 'never';
 
     protected $domain;
+    private $real_domain;
     /**
      * @var waRouting
      */
@@ -32,6 +33,7 @@ class waSitemapConfig
     {
         $this->routing = wa()->getRouting();
         $this->domain = $this->routing->getDomain(null, true);
+        $this->real_domain = $this->routing->getDomain(null, true, false);
     }
 
     public function execute()
@@ -94,7 +96,7 @@ class waSitemapConfig
 
     public function getUrlByRoute($route)
     {
-        return $this->routing->getUrlByRoute($route, $this->domain);
+        return $this->routing->getUrlByRoute($route, $this->real_domain);
     }
 
 }

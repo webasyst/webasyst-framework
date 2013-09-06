@@ -129,18 +129,6 @@ class waFrontController
         }
         $class_names[] = $class_name;
 
-        // Controller Multi Actions, Zend/Symfony style
-        $class_name = $prefix.($plugin ? ucfirst($plugin).'Plugin' : '').ucfirst($module).'Actions';
-        if (class_exists($class_name, true)) {
-            $controller = new $class_name();
-            $r = $controller->run($action);
-            if ($plugin) {
-                waSystem::popActivePlugin();
-            }
-            return $r;
-        }
-        $class_names[] = $class_name;
-
         // Single Action
         $class_name = $prefix.($plugin ? ucfirst($plugin).'Plugin' : '').ucfirst($module).($action ? ucfirst($action) : '').'Action';
         if (class_exists($class_name)) {
@@ -156,6 +144,18 @@ class waFrontController
             }
             return $r;
         }
+
+        // Controller Multi Actions, Zend/Symfony style
+        $class_name = $prefix.($plugin ? ucfirst($plugin).'Plugin' : '').ucfirst($module).'Actions';
+        if (class_exists($class_name, true)) {
+            $controller = new $class_name();
+            $r = $controller->run($action);
+            if ($plugin) {
+                waSystem::popActivePlugin();
+            }
+            return $r;
+        }
+        $class_names[] = $class_name;
 
         // Plugin is no longer active
         if ($plugin) {

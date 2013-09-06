@@ -5,6 +5,12 @@ abstract class waLoginAction extends waViewAction
     public function execute()
     {
 
+        // check remember enabled
+        if (waRequest::method() == 'get') {
+            $this->view->assign('remember', waRequest::cookie('remember', 1));
+            $this->saveReferer();
+        }
+
         if (wa()->getAuth()->isAuth()) {
             $this->afterAuth();
         }
@@ -18,14 +24,6 @@ abstract class waLoginAction extends waViewAction
         }
 
         $auth = wa()->getAuth();
-
-
-        // check remember enabled
-        if (waRequest::method() == 'get') {
-            $this->view->assign('remember', waRequest::cookie('remember', 1));
-        }
-
-        $this->saveReferer();
 
         $error = '';
         // try auth
@@ -101,6 +99,7 @@ abstract class waLoginAction extends waViewAction
     protected function afterAuth()
     {
         $url = $this->getStorage()->get('auth_referer');
+        $this->getStorage()->del('auth_referer');
         if (!$url) {
             $url = wa()->getAppUrl();
         }

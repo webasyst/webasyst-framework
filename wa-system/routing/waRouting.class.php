@@ -128,12 +128,12 @@ class waRouting
         return array();
     }
 
-    public function getDomain($domain = null, $check = false)
+    public function getDomain($domain = null, $check = false, $return_alias = true)
     {
         if ($domain) {
             return $domain;
         }
-        if ($this->domain === null) {
+        if ($this->domain === null || !$return_alias) {
             $this->domain = waRequest::server('HTTP_HOST');
             if ($this->domain === null) {
                 return null;
@@ -159,7 +159,7 @@ class waRouting
                 return $domain;
             }
         }
-        if (isset($this->aliases[$this->domain])) {
+        if ($return_alias && isset($this->aliases[$this->domain])) {
             $this->domain = $this->aliases[$this->domain];
         }
 
@@ -192,7 +192,7 @@ class waRouting
                 $offset = 0;
                 foreach ($match as $m) {
                     $v = $m[1][0];
-                    $s = isset($params[$v]) ? $params[$v] : '';
+                    $s = (isset($params[$v]) && $v != 'url') ? $params[$v] : '';
                     $u = substr($u, 0, $m[0][1] + $offset).$s.substr($u, $m[0][1] + $offset + strlen($m[0][0]));
                     $offset += strlen($s) - strlen($m[0][0]);
                 }
@@ -401,6 +401,8 @@ class waRouting
                 } else {
                     $root_url = $this->system->getRootUrl(false, true).self::clearUrl($r['url']);
                 }
+                $root_url = preg_replace('/<url.*?>/i', '', $root_url);
+
                 if ($i > $max) {
                     $max = $i;
                     $result = $root_url;
@@ -468,8 +470,13 @@ class waRouting
     {
         $url = self::clearUrl($route['url']);
         if ($domain) {
-            $https = isset($_SERVER['HTTPS']) ? $_SERVER['HTTPS'] : '';
-            return 'http'.(strtolower($https) == 'on' ? 's' : '').'://'.self::getDomainUrl($domain).'/'.$url;
+            if ($domain == waRequest::server('HOST')) {
+                $https = isset($_SERVER['HTTPS']) ? $_SERVER['HTTPS'] : '';
+                $https = strtolower($https) == 'on';
+            } else {
+                $https = false;
+            }
+            return 'http'.($https ? 's' : '').'://'.self::getDomainUrl($domain).'/'.$url;
         }
         return $url;
     }

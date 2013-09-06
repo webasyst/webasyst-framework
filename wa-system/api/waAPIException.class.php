@@ -33,10 +33,20 @@ class waAPIException extends Exception
             $format = 'JSON';
         }
 
+        $result = '';
+
         if ($format == 'XML'){
             wa()->getResponse()->addHeader('Content-type', 'text/xml; charset=utf-8');
         } elseif ($format == 'JSON') {
-            wa()->getResponse()->addHeader('Content-type', 'application/json; charset=utf-8');
+            $callback = (string)waRequest::get('callback', false);
+            // for JSONP
+            if ($callback) {
+                wa()->getResponse()->setStatus(200);
+                wa()->getResponse()->addHeader('Content-type', 'text/javascript; charset=utf-8');
+                $result .= $callback .'(';
+            } else {
+                wa()->getResponse()->addHeader('Content-type', 'application/json; charset=utf-8');
+            }
         }
 
         $response = array('error' => $this->error);
@@ -44,7 +54,11 @@ class waAPIException extends Exception
             $response['error_description'] = $this->error_description;
         }
         wa()->getResponse()->sendHeaders();
-        return waAPIDecorator::factory($format)->decorate($response);
+        $result .= waAPIDecorator::factory($format)->decorate($response);
+        if (!empty($callback)) {
+            $result .= ');';
+        }
+        return $result;
     }
     
 }

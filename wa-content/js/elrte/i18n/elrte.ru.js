@@ -210,7 +210,7 @@ elRTE.prototype.i18Messages.ru = {
 	'or': 'или',
 	'cancel': 'отмена',
 	'Upload': 'Загрузить',
-	'Image will be uploaded into' : 'Изображение будет загружено в'
-	
+	'Image will be uploaded into' : 'Изображение будет загружено в',
+    'Insert YouTube video': 'Добавить видео с YouTube'
 }
 })(jQuery);

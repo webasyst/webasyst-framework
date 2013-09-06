@@ -52,7 +52,7 @@ class waNestedSetModel extends waModel
      *
      * @param int|null $parent_id
      * @param boolean $include_parent
-     * @return array
+     * @return waDbQuery
      */
     public function descendants($parent_id, $include_parent = false)
     {
@@ -71,6 +71,9 @@ class waNestedSetModel extends waModel
                 `{$this->left}`  {$op[0]} {$parent[$this->left]} AND
                 `{$this->right}` {$op[1]} {$parent[$this->right]}
             ";
+            if ($this->root) {
+                $where .= " AND `{$this->root}` = {$parent[$this->root]}";
+            }
             $query->where($where);
         }
         return $query;

@@ -30,7 +30,7 @@ class waRequest
             case self::TYPE_INT:
                 return (int)$val;
             case self::TYPE_STRING_TRIM:
-                return trim($val);
+                return trim(self::cast($val, self::TYPE_STRING));
             case self::TYPE_ARRAY_INT:
                 if (!is_array($val)) {
                     $val = explode(",", $val);

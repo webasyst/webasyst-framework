@@ -22,14 +22,18 @@ class waAPIController
             $callback = (string)waRequest::get('callback', false);
             // for JSONP
             if ($callback) {
+                wa()->getResponse()->setStatus(200);
                 wa()->getResponse()->addHeader('Content-type', 'text/javascript; charset=utf-8');
-                $response = $callback .'('.$response.');';
+                echo $callback .'(';
             } else {
                 wa()->getResponse()->addHeader('Content-type', 'application/json; charset=utf-8');
             }
         }
         wa()->getResponse()->sendHeaders();
         echo waAPIDecorator::factory($this->format)->decorate($response);
+        if (!empty($callback)) {
+            echo ');';
+        }
     }
 
     public function dispatch()

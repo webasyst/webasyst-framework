@@ -451,6 +451,10 @@ class waSystem
                     throw new waRightsException('Access to this app denied', 403);
                 }
                 if ((waRequest::param('secure') || waRequest::param('auth')) && !$this->getUser()->isAuth()) {
+                    $auth = $this->getAuthConfig();
+                    if (!empty($auth['app'])) {
+                        $app_system = self::getInstance($auth['app'], null, true);
+                    }
                     $app_system->login();
                 } else {
                     $app_system->getFrontController()->dispatch();

@@ -1016,7 +1016,7 @@ elRTE.prototype.ui.prototype.buttons.wa_image = function(rte, name) {
         }
     };
 };
-elRTE.prototype.options.buttons.youtube = 'Insert Youtube video';
+elRTE.prototype.options.buttons.youtube = 'Insert YouTube video';
 elRTE.prototype.ui.prototype.buttons.youtube = function(rte, name) {
     this.constructor.prototype.constructor.call(this, rte, name);
 
@@ -1039,7 +1039,6 @@ elRTE.prototype.ui.prototype.buttons.youtube = function(rte, name) {
             .append($('<div class="field"><div class="name">'+this.rte.i18n('Height')+'</div></div>').append(
                 $('<div class="value"></div>').append(this.youtube_h).append(' px')
             ));
-
 
         d.waDialog({
             esc: true,

@@ -529,8 +529,7 @@ class waPageActions extends waActions
         $app_id = waRequest::get('app');
         $file = waRequest::get('file');
         $vars = array();
-        if ($app_id) {
-            $app = wa()->getAppInfo($app_id);
+        if ($app_id && $app = wa()->getAppInfo($app_id)) {
             $path = $this->getConfig()->getAppsPath($app_id, 'lib/config/site.php');
             if (file_exists($path)) {
                 $site = include($path);
