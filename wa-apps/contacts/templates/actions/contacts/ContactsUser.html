@@ -20,7 +20,12 @@
             </div>
             <div class="field">
                 <div class="name">[`Password`]</div>
-                <div class="value"><input type="password" name="password" /></div>
+                <div class="value">
+                    <input type="password" name="password" />
+                    {{if $contact.password}}
+                        <span class="hint">[`Leave blank to keep existing password.`]</span>
+                    {{/if}}
+                </div>
             </div>
             <div class="field">
                 <div class="name">[`Confirm password`]</div>

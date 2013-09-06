@@ -2,7 +2,10 @@
 
 return array(
 	'name' => 'Contacts',
-	'img' => 'img/contacts.png',
+	'icon' => array(
+        48 => 'img/contacts.png',
+        96 => 'img/contacts96.png',
+    ),
 	'rights' => true,
 	'analytics' => true,
 	'version'=>'1.0.3',

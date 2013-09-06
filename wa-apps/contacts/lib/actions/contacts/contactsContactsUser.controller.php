@@ -66,12 +66,15 @@ class contactsContactsUserController extends waJsonController
                 $nameLink = '<a href="'.wa_url().'webasyst/contacts/#/contact/'.$u->getId().'">'.$u->get('name').'</a>';
                 $this->errors[] = str_replace('%NAME_LINK%', $nameLink, _w('This login is already set for user %NAME_LINK%'));
             }
-
             $user['login'] = $login;
-            if (waRequest::post('password') === waRequest::post('confirm_password')) {
-                $user['password'] = waRequest::post('password');
-            } else {
-                $this->errors[] = _w('Passwords do not match.');
+
+            // Do not set password if old one exists AND form left empty
+            if (!$user['password'] || waRequest::post('password')) {
+                if (waRequest::post('password') === waRequest::post('confirm_password')) {
+                    $user['password'] = waRequest::post('password');
+                } else {
+                    $this->errors[] = _w('Passwords do not match.');
+                }
             }
         }
 
