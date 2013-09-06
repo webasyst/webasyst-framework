@@ -16,7 +16,6 @@ class blogFrontendLayout extends waLayout
          * @event frontend_action_page
          * @event frontend_action_error
          * @param array[string]mixed $params request params
-         * @return array[string][string]string $return['%plugin_id%']
          * @return array[string][string]string $return['%plugin_id%'][nav_before]
          * @return array[string][string]string $return['%plugin_id%'][footer]
          * @return array[string][string]string $return['%plugin_id%'][head]

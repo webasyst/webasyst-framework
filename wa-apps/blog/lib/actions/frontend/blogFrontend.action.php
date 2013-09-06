@@ -15,16 +15,16 @@ class blogFrontendAction extends blogViewAction
     public function __construct($params = null)
     {
         parent::__construct($params);
-        $this->page = max(1,$this->getRequest()->get('page',1,waRequest::TYPE_INT));
+        $this->page = max(1, $this->getRequest()->get('page', 1, waRequest::TYPE_INT));
 
         $this->search_params = $this->getRequest()->param();
 
-        $layout = $this->getRequest()->get('layout','default',waRequest::TYPE_STRING_TRIM);
-        if( ($layout == 'lazyloading') && ($this->page > 1)) {
+        $layout = $this->getRequest()->get('layout', 'default', waRequest::TYPE_STRING_TRIM);
+        if (($layout == 'lazyloading') && ($this->page > 1)) {
             $this->is_lazyloading = true;
         }
 
-        if (false && $this->cache_time = $this->getConfig()->getOption('cache_time') ) {
+        if (false && $this->cache_time = $this->getConfig()->getOption('cache_time')) {
             $params = $this->search_params;
             $params['page'] = $this->page;
             $this->cache_id = blogHelper::buildCacheKey($params);
@@ -39,12 +39,12 @@ class blogFrontendAction extends blogViewAction
                     //get comments count per post
                     $posts = array_fill_keys($post_ids, array());
                     blogHelper::extendPostComments($posts);
-                    $this->view->assign('posts',$posts);
+                    $this->view->assign('posts', $posts);
                 }
             }
         }
 
-        if(!$this->is_lazyloading) {
+        if (!$this->is_lazyloading) {
             $this->setLayout(new blogFrontendLayout());
         }
         $this->setThemeTemplate('stream.html');
@@ -58,7 +58,7 @@ class blogFrontendAction extends blogViewAction
             throw new waException(_w('Blog not found'), 404);
         }
         $this->view->getHelper()->globals($this->getRequest()->param());
-        $posts_per_page = max(1,intval($this->getConfig()->getOption('posts_per_page')));
+        $posts_per_page = max(1, intval($this->getConfig()->getOption('posts_per_page')));
 
         $post_model = new blogPostModel();
         $options = array();
@@ -76,7 +76,7 @@ class blogFrontendAction extends blogViewAction
             if (!isset($this->search_params["plugin"])) {
                 $this->search_params["plugin"] = array();
             }
-            if( isset($this->search_params[$plugin])) {
+            if (isset($this->search_params[$plugin])) {
                 $this->search_params["plugin"][$plugin] = $this->search_params[$plugin];
                 $is_search = true;
             }
@@ -85,8 +85,8 @@ class blogFrontendAction extends blogViewAction
 
 
         $posts = $post_model
-        ->search($this->search_params, $options,array('blog'=>$blogs))
-        ->fetchSearchPage($this->page,$posts_per_page);
+                 ->search($this->search_params, $options, array('blog' => $blogs))
+                 ->fetchSearchPage($this->page, $posts_per_page);
 
         $stream_title = false;
 
@@ -98,13 +98,13 @@ class blogFrontendAction extends blogViewAction
                 $is_search = true;
             } else {
                 if ($contact = blogHelper::getContactInfo($this->search_params['contact_id'])) {
-                    $name = htmlentities($contact['name'],ENT_QUOTES,'utf-8');
+                    $name = htmlentities($contact['name'], ENT_QUOTES, 'utf-8');
                     $is_search = true;
                 } else {
                     throw new waException(_w('Blog not found'), 404);
                 }
             }
-            $stream_title =sprintf(_w('Posts by %s'),$name);
+            $stream_title = sprintf(_w('Posts by %s'), $name);
             $this->getResponse()->setTitle($stream_title);
         } elseif ($is_search) {
             $stream_title = $this->getResponse()->getTitle();
@@ -114,7 +114,7 @@ class blogFrontendAction extends blogViewAction
                 $stream_title .= intval($this->search_params['day']).' ';
             }
             if (isset($this->search_params['month'])) {
-                $stream_title .= _ws(date("F",gmmktime(0,0,0,intval($this->search_params['month'])))).' ';
+                $stream_title .= _ws(date("F", gmmktime(0, 0, 0, intval($this->search_params['month'])))).' ';
             }
 
             $stream_title .= $this->search_params['year'].' — '.$this->getResponse()->getTitle();
@@ -126,57 +126,56 @@ class blogFrontendAction extends blogViewAction
         $pages = $post_model->pageCount();
 
         $url = wa()->getRouteUrl('blog/frontend', $this->search_params, true);
-        if ($pages && ($pages<$this->page)) {
-            $page = min($pages,$this->page);
-            $redirect = $url.(($page>1)?"?page={$page}":'');
-            $this->getResponse()->redirect($redirect,302);
+        if ($pages && ($pages < $this->page)) {
+            $page = min($pages, $this->page);
+            $redirect = $url.(($page > 1) ? "?page={$page}" : '');
+            $this->getResponse()->redirect($redirect, 302);
         }
         if ($layout = $this->getLayout()) {
             $links = array();
-            $links['canonical'] = $url.(($this->page>1)?"?page={$this->page}":'');
             if ($pages > $this->page) {
-                $page = $this->page+1;
+                $page = $this->page + 1;
                 $links['next'] = "{$url}?page={$page}";
             }
-            if ($this->page>1) {
-                $page = $this->page-1;
-                $links['prev'] = $url.(($page>1)?"?page={$page}":'');
+            if ($this->page > 1) {
+                $page = $this->page - 1;
+                $links['prev'] = $url.(($page > 1) ? "?page={$page}" : '');
             }
 
-            $layout->assign('links',$links);
+            $layout->assign('links', $links);
             if (!$is_search) {
                 /*
-                 * TODO: fix assigning sidebar_timeline for next version of blog
+                 * @deprecated fix assigning sidebar_timeline for next version of blog
                  * */
-                $layout->assign('sidebar_timeline', $post_model->getTimeline($this->search_params['blog_id'],$blogs,$this->search_params));
+                $layout->assign('sidebar_timeline', $post_model->getTimeline($this->search_params['blog_id'], $blogs, $this->search_params));
             }
 
             if (isset($this->search_params['contact_id'])) {
-                $layout->assign('action_info', array('search'=>array('contact_id'=>$this->search_params['contact_id'])));
+                $layout->assign('action_info', array('search' => array('contact_id' => $this->search_params['contact_id'])));
             }
-            $layout->assign('is_search',$is_search);
+            $layout->assign('is_search', $is_search);
         }
 
-        $this->view->assign('is_search',$is_search);
-        $this->view->assign('page',$this->page);
-        $this->view->assign('is_lazyloading',$this->is_lazyloading);
+        $this->view->assign('is_search', $is_search);
+        $this->view->assign('page', $this->page);
+        $this->view->assign('is_lazyloading', $this->is_lazyloading);
         $this->view->assign('pages', $pages);
         $this->view->assign('post_count', $post_model->searchCount());
-        $this->view->assign('show_comments',!isset($options['comments']) || $options['comments']);
-        $this->view->assign('posts_per_page',$posts_per_page);
+        $this->view->assign('show_comments', !isset($options['comments']) || $options['comments']);
+        $this->view->assign('posts_per_page', $posts_per_page);
 
         /**
          * Backward compatibility with older themes
          * @deprecated
          */
-        $this->view->assign('is_concrete_blog',waRequest::param('blog_url')? true : false);
-        $this->view->assign('layout_type',$this->is_lazyloading?'lazyloading':(($this->page > 1)?'page':'default'));
+        $this->view->assign('is_concrete_blog', waRequest::param('blog_url') ? true : false);
+        $this->view->assign('layout_type', $this->is_lazyloading ? 'lazyloading' : (($this->page > 1) ? 'page' : 'default'));
 
 
         if ($this->getConfig()->getOption('can_use_smarty')) {
             foreach ($posts as &$post) {
                 try {
-                    $post['text'] = $this->view->fetch("string:{$post['text']}",$this->cache_id);
+                    $post['text'] = $this->view->fetch("string:{$post['text']}", $this->cache_id);
                 } catch (SmartyException $ex) {
                     $post['text'] = blogPost::handleTemplateException($ex, $post);
                 }

@@ -114,15 +114,12 @@ $.wa_blog = $.extend(true, $.wa_blog, {
 						self.form.find('.progressbar-description').text('0.00%');
 						self.form.find('.js-progressbar-container').show();
 
-						self.ajax_pull[response.processId] = new Array();
+						self.ajax_pull[response.processId] = [];
 						self.ajax_pull[response.processId]
 								.push(setTimeout(
 										function() {
 											$.wa.errorHandler = function(xhr) {
-												if ((xhr.status >= 500) || (xhr.status == 0)) {
-													return false;
-												}
-												return true;
+                                                return !((xhr.status >= 500) || (xhr.status == 0));
 											};
 											self.progressHandler(url, response.processId,
 													response);
@@ -181,7 +178,7 @@ $.wa_blog = $.extend(true, $.wa_blog, {
 						} else {
 							location.href = '?';
 						}
-					},
+					}
 				});
 
 			} else {

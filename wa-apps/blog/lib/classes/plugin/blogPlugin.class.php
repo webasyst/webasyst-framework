@@ -18,7 +18,7 @@ class blogPlugin extends waPlugin
         if ($this->settings === null) {
             if (isset($this->info['settings']) && $this->info['settings'] && is_array($this->info['settings'])) {
                 $this->settings_fields = $this->info['settings'];
-                $this->settings = waPluginSettings::getInstance($this->app_id,$this->id);
+                $this->settings = waPluginSettings::getInstance($this->app_id, $this->id);
                 $this->settings->initSettingsParams($this->settings_fields);
             } else {
                 $this->settings = array();
@@ -35,7 +35,7 @@ class blogPlugin extends waPlugin
         if ($this->settings === null) {
             $this->loadSettings();
         }
-        foreach ($this->settings as $param=>$setting) {
+        foreach ($this->settings as $setting) {
             if (!isset($setting['name'])) {
                 //TODO check it
                 //$this->settings[$param]['name'] = $param;
@@ -47,13 +47,14 @@ class blogPlugin extends waPlugin
     /**
      * Get plugin setting value
      *
-     * @param $key
+     * @param string $key
+     * @param mixed $default
      * @return mixed
      */
     public function getSettingValue($key, $default = null)
     {
         $this->loadSettings();
-        return isset($this->settings[$key])?$this->settings[$key]:$default;
+        return isset($this->settings[$key]) ? $this->settings[$key] : $default;
     }
 
     /**
@@ -63,7 +64,7 @@ class blogPlugin extends waPlugin
      * @param mixed $value
      * @return mixed
      */
-    public function setSettingValue($key,$value = null)
+    public function setSettingValue($key, $value = null)
     {
         $this->loadSettings();
         return $this->settings[$key] = $value;
@@ -78,7 +79,7 @@ class blogPlugin extends waPlugin
     public function setup($params)
     {
         $this->loadSettings();
-        foreach ($this->settings_fields as $field=>&$settings) {
+        foreach ($this->settings_fields as $field => &$settings) {
             if (isset($params[$field])) {
                 $this->settings[$field] = $params[$field];
                 $settings['settings_value'] = $params[$field];
@@ -109,12 +110,12 @@ class blogPlugin extends waPlugin
      * @param $params
      * @return string
      */
-    public function getControl($field,$params = array())
+    public function getControl($field, $params = array())
     {
         $this->loadSettings();
         if (isset($this->settings_fields[$field])) {
             $params['id'] = $this->app_id.'_'.$this->id;
-            return $this->settings->getControl($this->settings_fields[$field]['settings_html_function'],$field,$params);
+            return $this->settings->getControl($this->settings_fields[$field]['settings_html_function'], $field, $params);
         } else {
             waLog::log(sprintf('The settings of "%s" has no "%s" setting.', get_class($this), $field));
         }
@@ -131,8 +132,8 @@ class blogPlugin extends waPlugin
         $this->loadSettings();
         $controls = array();
         $params['id'] = $this->app_id.'_'.$this->id;
-        foreach ($this->settings_fields  as $field=>$properties) {
-            $properties['control'] = $this->settings->getControl($properties['settings_html_function'],$field,$params);
+        foreach ($this->settings_fields as $field => $properties) {
+            $properties['control'] = $this->settings->getControl($properties['settings_html_function'], $field, $params);
             $controls[$field] = $properties;
         }
         return $controls;

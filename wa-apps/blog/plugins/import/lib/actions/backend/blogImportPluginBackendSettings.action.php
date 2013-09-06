@@ -103,7 +103,6 @@ var row = $(element).parents('tr');
 HTML;
         foreach($params['value']['search'] as $id => $value){
             $control .="\n\t\t<tr>";
-            $search_params = $params;
             foreach($columns as $field => $type) {
                 $column_params = $params;
                 $column_params['value'] = isset($params['value'][$field][$id]) ? $params['value'][$field][$id] : null;

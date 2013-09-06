@@ -122,7 +122,6 @@ class blogPostEditAction extends waViewAction
          * @param array[string]mixed $post
          * @param array[string]int $post['id']
          * @param  array[string]int $post['blog_id']
-         * @return array[string][string]string $return[%plugin_id%] Array plugin's html output
          * @return array[string][string]string $return[%plugin_id%]['sidebar'] Plugin sidebar html output
          * @return array[string][string]string $return[%plugin_id%]['toolbar'] Plugin toolbar html output
          */
@@ -133,6 +132,7 @@ class blogPostEditAction extends waViewAction
 
         $this->view->assign('show_comments', $show_comments);
         $this->view->assign('post', $post);
+        $this->view->assign('cron_schedule_time', waSystem::getSetting('cron_schedule',0,'blog'));
 
         $locale = $this->getUser()->getLocale();
 

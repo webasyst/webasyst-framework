@@ -351,7 +351,7 @@
 				var postUrlHandler;
 				var cachedSlug = null;
 				var cache = {};
-				var changeBlog = function() {}
+				var changeBlog = function() {};
 
 				init();
 
@@ -1092,7 +1092,7 @@
 
 				$('.current-blog').replaceWith(current_blog);
 				$('#blog-selector-'+prev_id).removeClass('selected');
-				var blog_selector = $('#blog-selector-'+id).addClass('selected')
+				var blog_selector = $('#blog-selector-'+id).addClass('selected');
 
 				var prev_blog = $.wa_blog.editor.options.blogs[prev_id];
 				$.wa_blog.editor.options.current_blog_id = parseInt(id);

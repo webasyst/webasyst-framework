@@ -1,8 +1,8 @@
 <?php
 class blogCommentModel extends waNestedSetModel
 {
-    const STATUS_DELETED	 = 'deleted';
-    const STATUS_PUBLISHED	 = 'approved';
+    const STATUS_DELETED = 'deleted';
+    const STATUS_PUBLISHED = 'approved';
 
     const AUTH_USER = 'user';
     const AUTH_GUEST = 'guest';
@@ -20,41 +20,41 @@ class blogCommentModel extends waNestedSetModel
     public function get($id, $fields = array(), $options = array())
     {
         $sql = "SELECT * FROM `{$this->table}` WHERE post_id = i:post_id ORDER BY `left`";
-        $items = $this->query($sql, array('post_id'=>$id))->fetchAll();
+        $items = $this->query($sql, array('post_id' => $id))->fetchAll();
         return $this->prepareView($items, $fields, $options);
     }
 
-    public function getList($offset = 0, $limit = 20,$blog_id, $fields = array(), $options = array())
+    public function getList($offset = 0, $limit = 20, $blog_id, $fields = array(), $options = array())
     {
         if (!$blog_id) {
             return array();
         }
         $sql = <<<SQL
-        SELECT node.id as id,
-			 node.text as text,
-			 node.post_id as post_id,
-			 node.blog_id as blog_id,
-			 node.status as status,
-			 node.contact_id as contact_id,
-			 node.name as name,
-			 node.email as email,
-			 node.datetime as datetime,
-			 node.ip as ip,
-			 node.site as site,
-			 node.auth_provider as auth_provider,
+        SELECT node.id id,
+			 node.text text,
+			 node.post_id post_id,
+			 node.blog_id blog_id,
+			 node.status status,
+			 node.contact_id contact_id,
+			 node.name name,
+			 node.email email,
+			 node.datetime datetime,
+			 node.ip ip,
+			 node.site site,
+			 node.auth_provider auth_provider,
 			 node.parent,
-			 parent.id as parent_id,
-			 parent.text as parent_text,
-			 parent.status as parent_status,
-			 parent.name as parent_name,
-			 parent.email as parent_email
-			FROM {$this->table} as node
-		LEFT JOIN {$this->table} as parent ON parent.id = node.parent
+			 parent.id parent_id,
+			 parent.text parent_text,
+			 parent.status parent_status,
+			 parent.name parent_name,
+			 parent.email parent_email
+			FROM {$this->table} node
+		LEFT JOIN {$this->table} AS parent ON parent.id = node.parent
 		WHERE node.blog_id IN (:blog_id)
 		ORDER BY node.datetime DESC
-		LIMIT i:offset, i:limit
+		LIMIT i:o, i:l
 SQL;
-        $items = $this->query($sql, array('limit'=>$limit, 'offset'=>$offset,'blog_id'=>$blog_id))->fetchAll('id');
+        $items = $this->query($sql, array('l' => $limit, 'o' => $offset, 'blog_id' => $blog_id))->fetchAll('id');
         return $this->prepareView($items, $fields, $options);
 
     }
@@ -65,27 +65,26 @@ SQL;
         $contact_id = wa()->getUser()->getId();
 
         if (isset($extend_options['datetime'])) {
-            $blog_activity = blogActivity::getInstance();
             $viewed_comments = array();
-            $expire = isset($extend_options['expire'])?$extend_options['expire']:false;
+            $expire = isset($extend_options['expire']) ? $extend_options['expire'] : false;
         }
 
         #data holders for plugin hooks
         foreach ($items as &$item) {
             $item['plugins'] = array(
-            	'before'=>array(),
-            	'after'=>array(),
-            	'authorname_suffix'=>array(),
+                'before'            => array(),
+                'after'             => array(),
+                'authorname_suffix' => array(),
             );
             $item['ip'] = long2ip($item['ip']);
-            if(empty($item['name']) && !empty($item['user']['name'])) {
+            if (empty($item['name']) && !empty($item['user']['name'])) {
                 $item['name'] = $item['user']['name'];
             }
             if (isset($extend_options['datetime'])) {
 
-                if ( ($item['datetime'] > $extend_options['datetime']) && (!$contact_id || ($contact_id != $item['contact_id'])) ){
-                    $item['new'] = $blog_activity->isNew("c.{$item['post_id']}", $item['id'], $expire);
-                    if($item['new'] == blogActivity::STATE_NEW) {
+                if (($item['datetime'] > $extend_options['datetime']) && (!$contact_id || ($contact_id != $item['contact_id']))) {
+                    $item['new'] = blogActivity::getInstance()->isNew("c.{$item['post_id']}", $item['id'], $expire);
+                    if ($item['new'] == blogActivity::STATE_NEW) {
                         $viewed_comments[$item['post_id']][] = $item['id'];
                     } elseif (!$item['new']) {
                         unset($item['new']);
@@ -100,15 +99,15 @@ SQL;
                 }
             }
             if (!empty($extend_options['escape'])) {
-                $item['text'] = htmlspecialchars($item['text'],ENT_QUOTES,'utf-8');
-                $item['name'] = htmlspecialchars($item['name'] ,ENT_QUOTES,'utf-8');
+                $item['text'] = htmlspecialchars($item['text'], ENT_QUOTES, 'utf-8');
+                $item['name'] = htmlspecialchars($item['name'], ENT_QUOTES, 'utf-8');
             }
             unset($item);
         }
 
         if (!empty($viewed_comments)) {
             foreach ($viewed_comments as $post_id => $ids) {
-                $blog_activity->set("c.{$post_id}", $ids);
+                blogActivity::getInstance()->set("c.{$post_id}", $ids);
             }
         }
 
@@ -139,11 +138,11 @@ SQL;
                 $where[] = "{$this->table}.contact_id != ".intval($contact_id);
             }
         }
-        if ($post_contact_id = max(0,intval($post_contact_id))) {
+        if ($post_contact_id = max(0, intval($post_contact_id))) {
             $post_model = new blogPostModel();
             $post_table = $post_model->getTableName();
             $post_table_id = $post_model->getTableId();
-            $join[] =" INNER JOIN {$post_table} ON {$post_table}.{$post_table_id} = {$this->table}.post_id";
+            $join[] = " INNER JOIN {$post_table} ON {$post_table}.{$post_table_id} = {$this->table}.post_id";
             $where[] = "{$post_table}.contact_id = {$post_contact_id}";
         }
         if ($status) {
@@ -153,35 +152,34 @@ SQL;
             $where[] = $this->getWhereByField('post_id', $post_id, true);
         }
         if ($blog_id !== null) {
-            $where[] = $this->getWhereByField('blog_id',$blog_id, true);
+            $where[] = $this->getWhereByField('blog_id', $blog_id, true);
         }
 
-        if($datetime) {
+        if ($datetime) {
             $count_by_post = $post_id && is_array($post_id);
-            if($count_by_post) {
+            if ($count_by_post) {
                 $count = array_fill_keys($post_id, 0);
             } else {
                 $count = 0;
             }
-            $sql = "SELECT {$this->table}.{$this->id} AS {$this->id}, post_id FROM {$this->table} ".implode('',$join)." WHERE (".implode(') AND (',$where).")";
-            if($comments = $this->query($sql)->fetchAll($this->id, true)) {
+            $sql = "SELECT {$this->table}.{$this->id} AS {$this->id}, post_id FROM {$this->table} ".implode('', $join)." WHERE (".implode(') AND (', $where).")";
+            if ($comments = $this->query($sql)->fetchAll($this->id, true)) {
                 $blog_activity = blogActivity::getInstance();
                 foreach ($comments as $id => $comment_post_id) {
-                    if($blog_activity->isNew("c.{$comment_post_id}", $id, $expire)) {
-                        if($count_by_post){
+                    if ($blog_activity->isNew("c.{$comment_post_id}", $id, $expire)) {
+                        if ($count_by_post) {
                             ++$count[$comment_post_id];
                         } else {
                             ++$count;
                         }
                     }
                 }
-                $viewed_comments = array();
             }
         } elseif ($post_id && is_array($post_id)) {
-            $sql = "SELECT post_id, COUNT(*) FROM {$this->table} ".implode('',$join)." WHERE (".implode(') AND (',$where).") GROUP BY post_id";
-            $count = $this->query($sql)->fetchAll('post_id',true);
+            $sql = "SELECT post_id, COUNT(*) FROM {$this->table} ".implode('', $join)." WHERE (".implode(') AND (', $where).") GROUP BY post_id";
+            $count = $this->query($sql)->fetchAll('post_id', true);
         } else {
-            $sql = "SELECT COUNT(*) FROM {$this->table} ".implode('',$join)." WHERE (".implode(') AND (',$where).")";
+            $sql = "SELECT COUNT(*) FROM {$this->table} ".implode('', $join)." WHERE (".implode(') AND (', $where).")";
             $count = $this->query($sql)->fetchField();
         }
         return $count;
@@ -190,14 +188,14 @@ SQL;
     public function getDatetime($post_id = array())
     {
         $sql = "SELECT post_id, MAX(datetime) FROM {$this->table}";
-        if($post_id) {
-            $sql .= ' WHERE '.$this->getWhereByField('post_id',$post_id);
+        if ($post_id) {
+            $sql .= ' WHERE '.$this->getWhereByField('post_id', $post_id);
         }
         $sql .= ' GROUP BY post_id';
-        return $this->query($sql)->fetchAll('post_id',true);
+        return $this->query($sql)->fetchAll('post_id', true);
     }
 
-    public function add($comment, $parent = null)
+    public function add($comment, $parent = null, $before_id = null)
     {
         if (!isset($comment['ip']) && ($ip = waRequest::getIp())) {
             $ip = ip2long($ip);
@@ -212,7 +210,7 @@ SQL;
         }
 
         if (isset($comment['site']) && $comment['site']) {
-            if (!preg_match('@^https?://@',$comment['site'])) {
+            if (!preg_match('@^https?://@', $comment['site'])) {
                 $comment['site'] = 'http://'.$comment['site'];
             }
         }
@@ -230,7 +228,8 @@ SQL;
          * @return void
          */
         wa()->event('comment_presave_'.wa()->getEnv(), $comment);
-        $comment['id'] = parent::add($comment, $parent);
+        $before_id = null;
+        $comment['id'] = parent::add($comment, $parent, $before_id);
         /**
          * @event comment_save_frontend
          * @event comment_save_backend
@@ -244,19 +243,19 @@ SQL;
     }
 
 
-
     /**
      * Delete records from table and fire evenets
      *
+     * @param $field
      * @param $value
      * @return bool
      */
     public function deleteByField($field, $value = null)
     {
         if (is_array($field)) {
-            $items = $this->getByField($field,$this->id);
+            $items = $this->getByField($field, $this->id);
         } else {
-            $items = $this->getByField($field,$value,$this->id);
+            $items = $this->getByField($field, $value, $this->id);
         }
         $res = false;
         if ($comment_ids = array_keys($items)) {
@@ -285,19 +284,19 @@ SQL;
         if (empty($comment['auth_provider'])) {
             $comment['auth_provider'] = self::AUTH_GUEST;
         }
-        switch($comment['auth_provider']) {
-            case self::AUTH_GUEST:{
-                if (!empty($comment['site']) && strpos($comment['site'], '://')===false) {
-                    $comment['site'] = "http://" . $comment['site'];
+        switch ($comment['auth_provider']) {
+            case self::AUTH_GUEST:
+                if (!empty($comment['site']) && strpos($comment['site'], '://') === false) {
+                    $comment['site'] = "http://".$comment['site'];
                 }
 
-                if (empty($comment['name']) || (mb_strlen( $comment['name'] ) == 0) ) {
+                if (empty($comment['name']) || (mb_strlen($comment['name']) == 0)) {
                     $errors[]['name'] = _w('Name can not be left blank');
                 }
-                if (mb_strlen( $comment['name'] ) > 255) {
+                if (mb_strlen($comment['name']) > 255) {
                     $errors[]['name'] = _w('Name length should not exceed 255 symbols');
                 }
-                if (empty($comment['name']) || (mb_strlen( $comment['email'] ) == 0) ) {
+                if (empty($comment['name']) || (mb_strlen($comment['email']) == 0)) {
                     $errors[]['email'] = _w('Email can not be left blank');
                 }
                 $validator = new waEmailValidator();
@@ -309,23 +308,20 @@ SQL;
                     $errors[]['site'] = _w('Site URL is not valid');
                 }
                 break;
-            }
-            case self::AUTH_USER:{
+            case self::AUTH_USER:
                 $user = wa()->getUser();
                 if ($user->getId() && !$user->get('is_user')) {
                     $user->addToCategory(wa()->getApp());
                 }
                 break;
-            }
-            default: {
+            default:
                 break;
-            }
         }
 
-        if (mb_strlen( $comment['text'] ) == 0) {
+        if (mb_strlen($comment['text']) == 0) {
             $errors[]['text'] = _w('Comment text can not be left blank');
         }
-        if (mb_strlen( $comment['text'] ) > 4096) {
+        if (mb_strlen($comment['text']) > 4096) {
             $errors[]['text'] = _w('Comment length should not exceed 4096 symbols');
         }
 
@@ -335,11 +331,11 @@ SQL;
          * @param array['plugin']['%plugin_id%']mixed plugin data
          * @return array['%plugin_id%']['field']string error
          */
-        $plugin_erros = wa()->event('comment_validate',$comment);
-        if(is_array($plugin_erros)) {
-            foreach ($plugin_erros as $plugin) {
+        $plugin_errors = wa()->event('comment_validate', $comment);
+        if (is_array($plugin_errors)) {
+            foreach ($plugin_errors as $plugin) {
                 if ($plugin !== true) {
-                    if($plugin) {
+                    if ($plugin) {
                         $errors[] = $plugin;
                     } else {
                         $errors[]['text'] = _w('Invalid data');

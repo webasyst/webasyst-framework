@@ -4,13 +4,12 @@
             CRON
         </div>
         <div class="value">
-            {assign var=cron_schedule_time value=waSystem::getSetting('cron_schedule',0,'blog')}
             <p class="hint">
                 {if $cron_schedule_time}
                 <i class="icon10 yes"></i>
                 {$cron_schedule_time|wa_datetime:'humandatetime'|string_format:'[`Cron is working properly. Latest execution time: %s`]'}
                 {else}
-                {assign var=cron_commands value=$wa->blog->config()->getCronJob('scheduled_posts')}
+                {$cron_commands=$wa->blog->config()->getCronJob('scheduled_posts')}
                 <i class="icon10 no"></i>
                 <span class="red">{$cron_commands|string_format:'[`Email alerts require CRON to be properly setup for Webasyst Blog app, which is currently not the case. Setup cron for the Blog app with the following command (<a href="http://www.webasyst.com/ru/framework/docs/server/cron/" target="_blank">cron setup instructions</a>):<br /><br /> <strong>%s</strong>`]'}</span>
                 {/if}

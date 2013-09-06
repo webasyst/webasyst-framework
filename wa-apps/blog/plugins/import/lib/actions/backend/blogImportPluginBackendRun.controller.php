@@ -5,12 +5,12 @@ class blogImportPluginBackendRunController extends waLongActionController
 
     /**
      *
-     * @var blogPlugin
+     * @var blogImportPlugin
      */
     private $plugin;
     /**
      *
-     * @var blogImportPluginProtocol
+     * @var blogImportPluginTransport
      */
     private $transport;
 
@@ -24,58 +24,63 @@ class blogImportPluginBackendRunController extends waLongActionController
         try {
             parent::execute();
         } catch (waException $ex) {
-            echo json_encode(array('error'=>$ex->getMessage()));
+            echo json_encode(array('error' => $ex->getMessage()));
         }
+    }
+
+    private function initPlugin()
+    {
+        $this->plugin = wa()->getPlugin('import');
     }
 
     protected function init()
     {
-        $transport = ucfirst($this->getRequest()->post('blog_import_transport','',waRequest::TYPE_STRING_TRIM));
+        $transport = ucfirst($this->getRequest()->post('blog_import_transport', '', waRequest::TYPE_STRING_TRIM));
         $class = "blogImportPlugin{$transport}Transport";
-        if ( $transport && class_exists($class)) {
+        if ($transport && class_exists($class)) {
 
             $plugin_namespace = $this->getApp().'_import';
             $namespace = $plugin_namespace.'_'.strtolower($transport);
-            $this->plugin = wa()->getPlugin('import');
+            $this->initPlugin();
             if ($post = $this->getRequest()->post($plugin_namespace)) {
                 $this->plugin->setup($post)->saveSettings();
             }
 
             $settings = $this->plugin->getSettings();
             $blog_model = new blogBlogModel();
-            if ($settings['blog'] && ($blog = $blog_model->getById($settings['blog'])) ) {
+            if ($settings['blog'] && ($blog = $blog_model->getById($settings['blog']))) {
                 $settings['blog_status'] = $blog['status'];
             } else {
                 throw new waException(_wp("Target blog not found"));
             }
             $author_has_rights = false;
             try {
-                if($settings['contact']) {
-                    $author_has_rights = blogHelper::checkRights($settings['blog'],$settings['contact']);
+                if ($settings['contact']) {
+                    $author_has_rights = blogHelper::checkRights($settings['blog'], $settings['contact']);
                 }
             } catch (waRightsException $ex) {
-                ;//do nothing
+                ; //do nothing
             }
 
-            if(!$author_has_rights) {
+            if (!$author_has_rights) {
                 throw new waException(_wp("Author not found or has insufficient rights"));
             }
             $this->data['transport'] = new $class($settings);
             $this->data['blog'] = $this->plugin->getSettingValue('blog');
 
-            $this->transport = &$this->data['transport'];
-            $this->transport->setup($this->getRequest()->post($namespace),array());
+            $this->getTransport();
+            $this->transport->setup($this->getRequest()->post($namespace), array());
             $this->data['posts'] = $this->transport->getPosts();
             $this->data['current'] = 0;
             $this->data['count'] = count($this->data['posts']);
         } else {
-            throw new waException(sprintf(_wp("Transport type %s not found"),$transport));
+            throw new waException(sprintf(_wp("Transport type %s not found"), $transport));
         }
     }
 
     protected function step()
     {
-        if($post_id = current($this->data['posts'])) {
+        if ($post_id = current($this->data['posts'])) {
             $this->transport->importPost($post_id);
             ++$this->data['current'];
             array_shift($this->data['posts']);
@@ -87,7 +92,7 @@ class blogImportPluginBackendRunController extends waLongActionController
     protected function finish($filename)
     {
         $this->info();
-        return $this->getRequest()->post('cleanup')? true: false;
+        return $this->getRequest()->post('cleanup') ? true : false;
     }
 
     protected function isDone()
@@ -99,16 +104,21 @@ class blogImportPluginBackendRunController extends waLongActionController
     {
         echo json_encode(array(
             'processId' => $this->processId,
-            'progress' => (isset($this->data['count']) && $this->data['count']) ? sprintf('%0.2f%%',100.0*$this->data['current']/$this->data['count']) : false,
-            'ready' => $this->isDone(),
-            'count' => empty($this->data['count'])?false:$this->data['count'],
-            'blog' => $this->data['blog'],
+            'progress'  => (isset($this->data['count']) && $this->data['count']) ? sprintf('%0.2f%%', 100.0 * $this->data['current'] / $this->data['count']) : false,
+            'ready'     => $this->isDone(),
+            'count'     => empty($this->data['count']) ? false : $this->data['count'],
+            'blog'      => $this->data['blog'],
         ));
     }
 
     protected function restore()
     {
-        $this->transport = &$this->data['transport'];
+        $this->getTransport();
         $this->transport->restore();
+    }
+
+    private function getTransport()
+    {
+        $this->transport = & $this->data['transport'];
     }
 }

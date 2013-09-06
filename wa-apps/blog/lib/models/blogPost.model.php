@@ -309,7 +309,6 @@ SQL;
              *     return $result;
              * }
              * @param array[string]mixed $options
-             * @return array[string][string]mixed $return['%plugin_id%']
              * @return array[string][string][]string $return['%plugin_id%']['join'] Join conditions
              * @return array[string][string][]string $return['%plugin_id%']['where'] Where conditions
              * @return array[string][string][]string $return['%plugin_id%']['order'] order conditions

@@ -155,7 +155,6 @@ class blogFrontendPostAction extends blogViewAction
          * @param array[string]mixed $post
          * @param array[string]int $post['id']
          * @param array[string]int $post['blog_id']
-         * @return array[string][string]string $return[%plugin_id%]
          * @return array[string][string]string $return[%plugin_id%]['footer']
          */
         $this->view->assign('frontend_post', wa()->event('frontend_post',$post));

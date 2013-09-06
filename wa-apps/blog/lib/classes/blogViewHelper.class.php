@@ -20,21 +20,21 @@ class blogViewHelper extends waAppViewHelper
 
     public function rssUrl()
     {
-        return $this->wa->getRouteUrl('blog/frontend/rss',array(), true);
+        return $this->wa->getRouteUrl('blog/frontend/rss', array(), true);
     }
 
     public function blogs()
     {
         if (!isset($this->avaialable_blogs)) {
             $default_blog_id = intval(wa()->getRouting()->getRouteParam('blog_url_type'));
-            if ($default_blog_id<1) {
+            if ($default_blog_id < 1) {
                 $default_blog_id = null;
             }
-            $this->avaialable_blogs = blogHelper::getAvailable(true,$default_blog_id);
+            $this->avaialable_blogs = blogHelper::getAvailable(true, $default_blog_id);
             foreach ($this->avaialable_blogs as &$item) {
-                $item['name'] = htmlspecialchars($item['name'],ENT_QUOTES,'utf-8');
-                $item['link'] = htmlspecialchars($item['link'] ,ENT_QUOTES,'utf-8');
-                $item['title'] = htmlspecialchars($item['title'] ,ENT_QUOTES,'utf-8');
+                $item['name'] = htmlspecialchars($item['name'], ENT_QUOTES, 'utf-8');
+                $item['link'] = htmlspecialchars($item['link'], ENT_QUOTES, 'utf-8');
+                $item['title'] = htmlspecialchars($item['title'], ENT_QUOTES, 'utf-8');
             }
         }
 
@@ -44,7 +44,7 @@ class blogViewHelper extends waAppViewHelper
     public function blog($blog_id)
     {
         $avaialable_blogs = $this->blogs();
-        return isset($avaialable_blogs[$blog_id])?$avaialable_blogs[$blog_id]:null;
+        return isset($avaialable_blogs[$blog_id]) ? $avaialable_blogs[$blog_id] : null;
     }
 
     /**
@@ -58,22 +58,23 @@ class blogViewHelper extends waAppViewHelper
         $post = null;
         if ($available_blogs = $this->blogs()) {
             $post_model = new blogPostModel();
-            $search_options = array('id'=>$post_id,'blog_id'=>array_keys($available_blogs));
-            $extend_data = array('blog'=>$available_blogs);
-            $post = $post_model->search($search_options,null,$extend_data)->fetchSearchItem($fields);
+            $search_options = array('id' => $post_id, 'blog_id' => array_keys($available_blogs));
+            $extend_data = array('blog' => $available_blogs);
+            $post = $post_model->search($search_options, null, $extend_data)->fetchSearchItem($fields);
         }
-        self::escape($post,array('text'=>true));
+        self::escape($post, array('text' => true));
         return $post;
     }
 
     /**
      *
      * Get posts
-     * @param int $blog_id
+     * @param int $blog_id null if all available
      * @param int $number_of_posts
      * @param array $fields
+     * @return array
      */
-    public function posts($blog_id = null, $number_of_posts=20, $fields = array())
+    public function posts($blog_id = null, $number_of_posts = 20, $fields = array())
     {
         $posts = null;
         if ($available_blogs = $this->blogs()) {
@@ -84,14 +85,19 @@ class blogViewHelper extends waAppViewHelper
                 $search_options['blog_id'] = array_keys($available_blogs);
             } elseif (isset($available_blogs[$blog_id])) {
                 $search_options['blog_id'] = $blog_id;
+            } else {
+                $available_blogs = blogHelper::getAvailable(false);
+                if(in_array($blog_id,$available_blogs)){
+                    $search_options['blog_id'] = $blog_id;
+                }
             }
             if ($search_options) {
-                $extend_data = array('blog'=>$available_blogs);
-                $number_of_posts = max(1,$number_of_posts);
-                $posts = $post_model->search($search_options,null,$extend_data)->fetchSearchPage(1,$number_of_posts,$fields);
+                $extend_data = array('blog' => $available_blogs);
+                $number_of_posts = max(1, $number_of_posts);
+                $posts = $post_model->search($search_options, null, $extend_data)->fetchSearchPage(1, $number_of_posts, $fields);
             }
         }
-        self::escape($posts,array('*'=>array('text'=>true,'plugins'=>true)));
+        self::escape($posts, array('*' => array('text' => true, 'plugins' => true)));
         return $posts;
     }
 
@@ -105,7 +111,6 @@ class blogViewHelper extends waAppViewHelper
 
         $comment_model = new blogCommentModel();
 
-        $prepare_options = array('datetime' => blogActivity::getUserActivity());
         $fields = array("photo_url_{$contact_photo_size}");
         $blog_ids = array_keys($blogs);
 
@@ -118,21 +123,21 @@ class blogViewHelper extends waAppViewHelper
 
         //get related posts info
         $post_model = new blogPostModel();
-        $search_options = array('id'=> array_keys($post_ids));
-        $extend_options = array('user'=>false, 'link'=>true, 'rights'=>true, 'plugin'=>false, 'comments'=>false);
-        $extend_data = array('blog'=>$blogs);
+        $search_options = array('id' => array_keys($post_ids));
+        $extend_options = array('user' => false, 'link' => true, 'rights' => true, 'plugin' => false, 'comments' => false);
+        $extend_data = array('blog' => $blogs);
         $posts = $post_model->search($search_options, $extend_options, $extend_data)->fetchSearchAll(false);
         $comments = blogCommentModel::extendRights($comments, $posts);
-        self::escape($comments,array('*'=>array('posts'=>array('text'=>true),'plugins'=>true)));
+        self::escape($comments, array('*' => array('posts' => array('text' => true), 'plugins' => true)));
         return $comments;
     }
 
     public function postForm($id = null)
     {
         $html = false;
-        if(blogHelper::checkRights() >= blogRightConfig::RIGHT_READ_WRITE) {
+        if (blogHelper::checkRights() >= blogRightConfig::RIGHT_READ_WRITE) {
             $url = wa()->getAppUrl('blog').'?module=post&action=edit';
-            $submit = _wd('blog','New post');
+            $submit = _wd('blog', 'New post');
 
             $html = <<<HTML
 
@@ -153,13 +158,13 @@ HTML;
     {
         if ($blog_id === true) {
             $name = blogRightConfig::RIGHT_ADD_BLOG;
-        } elseif($blog_id) {
+        } elseif ($blog_id) {
             $name = "blog.{$blog_id}";
         } else {
             $name = "blog.%";
         }
         $user = wa()->getUser();
-        $rights = (array)($user->isAdmin('blog')?blogRightConfig::RIGHT_FULL : $user->getRights('blog',$name));
+        $rights = (array)($user->isAdmin('blog') ? blogRightConfig::RIGHT_FULL : $user->getRights('blog', $name));
         $rights[] = blogRightConfig::RIGHT_NONE;
         return max($rights);
 
@@ -198,7 +203,7 @@ HTML;
     private static function escape(&$data, $pass = array())
     {
         if (is_array($data)) {
-            foreach($data as $key => &$item) {
+            foreach ($data as $key => &$item) {
                 if (isset($pass[$key])) {
                     $pass_item = $pass[$key];
 
@@ -213,7 +218,7 @@ HTML;
             }
             unset($item);
         } else {
-            $data = htmlspecialchars($data, ENT_QUOTES,'utf-8');
+            $data = htmlspecialchars($data, ENT_QUOTES, 'utf-8');
         }
     }
 }

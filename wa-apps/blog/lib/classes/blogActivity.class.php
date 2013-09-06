@@ -55,7 +55,7 @@ class blogActivity
         $this->timestamp = time();
         $this->timestamp_activity = strtotime(self::getUserActivity());
 
-        foreach ($this->data as $path => &$timestamps) {
+        foreach ($this->data as &$timestamps) {
             $filterd_timestamps = array_filter($timestamps,array($this,'filter'));
             if(!count($filterd_timestamps)) {
 

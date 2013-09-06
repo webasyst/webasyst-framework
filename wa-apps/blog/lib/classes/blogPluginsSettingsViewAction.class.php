@@ -10,16 +10,19 @@ class blogPluginsSettingsViewAction extends waViewAction
      * @var blogPlugin
      */
     protected $plugin_instance;
+    /**
+     * @var string
+     */
     protected $plugin_id;
+
     public function execute()
     {
         if (!$this->getUser()->isAdmin($this->getApp())) {
             throw new waRightsException(_w('Access denied'));
         }
-        $plugin_settings = array();
         $plugins = wa()->getConfig()->getPlugins();
-        if ( ($this->plugin_id || ($this->plugin_id = waRequest::request('slug', false)) ) ) {
-            if(!isset($plugins[$this->plugin_id]) || !($this->plugin_instance = waSystem::getInstance()->getPlugin($this->plugin_id))) {
+        if (($this->plugin_id || ($this->plugin_id = waRequest::request('slug', false)))) {
+            if (!isset($plugins[$this->plugin_id]) || !($this->plugin_instance = waSystem::getInstance()->getPlugin($this->plugin_id))) {
                 throw new waException(_w('Plugin not found', 404));
             }
             $namespace = $this->getApp().'_'.$this->plugin_id;
@@ -50,10 +53,10 @@ HTML;
             $this->view->assign('plugin_info', $plugins[$this->plugin_id]);
             $this->view->assign('plugin_slug', $this->plugin_id);
 
-            $title = sprintf(_w('Plugin %s settings'),$plugins[$this->plugin_id]['name']);
+            $title = sprintf(_w('Plugin %s settings'), $plugins[$this->plugin_id]['name']);
             $title .= " &mdash; ".wa()->accountName();
 
-            $this->view->assign('title',html_entity_decode($title,ENT_NOQUOTES,'utf-8'));
+            $this->view->assign('title', html_entity_decode($title, ENT_NOQUOTES, 'utf-8'));
             waSystem::popActivePlugin();
         } else {
             $this->view->assign('plugin_slug', false);
