@@ -408,6 +408,9 @@ class photosPhoto
                 $attributes['style'] .= 'width: '.(int)$real_sizes['width'].'px; height: '.(int)$real_sizes['height'].'px; ';
             }
         }
+        if (!isset($attributes['alt'])) {
+            $attributes['alt'] = '';
+        }
         $photo['src'] = photosPhoto::getPhotoUrl($photo, $size, true);
         if ($photo['edit_datetime']) {
             $photo['src'] .= '?'.strtotime($photo['edit_datetime']);
@@ -423,7 +426,7 @@ class photosPhoto
         return "<img src=\"{$photo['src']}\" {$attr}>";   // use everywhere only one type of quotes
     }
 
-    public static function getEmbedPhotoListContext($hash, $size, $limit = null)
+    public static function getEmbedPhotoListContext($hash, $size, $limit = null, $context = null)
     {
         $link = photosCollection::getFrontendLink($hash);
         $collection = new photosCollection($hash);

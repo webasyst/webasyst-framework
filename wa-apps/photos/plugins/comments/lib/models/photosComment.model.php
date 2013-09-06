@@ -155,7 +155,7 @@ class photosCommentModel extends waNestedSetModel
         return $photos[$photo_id];
     }
 
-    public function add($comment, $parent = null)
+    public function add($comment, $parent = null, $before_id = null)
     {
         if (!isset($comment['datetime'])) {
             $comment['datetime'] = date('Y-m-d H:i:s');
@@ -165,7 +165,8 @@ class photosCommentModel extends waNestedSetModel
                 $comment['site'] = 'http://'.$comment['site'];
             }
         }
-        return parent::add($comment, $parent);
+        $before_id = null;
+        return parent::add($comment, $parent, $before_id);
     }
 
 

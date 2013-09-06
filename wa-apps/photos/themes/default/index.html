@@ -55,7 +55,7 @@
                 <a href="{$wa_app_url}">{$wa->param('_name', '[`Photos`]')}</a>
                 {if $breadcrumbs}
                     {foreach $breadcrumbs as $breadcrumb}
-                        » <a href="{$breadcrumb.full_url}">{$breadcrumb.name}</a>
+                        » <a href="{$breadcrumb.full_url}">{$breadcrumb.name|escape}</a>
                     {/foreach}
                 {else} » {/if}
             </div>

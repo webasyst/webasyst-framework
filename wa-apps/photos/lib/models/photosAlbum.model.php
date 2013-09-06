@@ -329,11 +329,11 @@ class photosAlbumModel extends waModel
 
         if ($data['parent_id']) {
             $parent = $this->getById($data['parent_id']);
-            $full_url = trim($parent['full_url'], '/').'/'.$data['url'];
+            $full_url = trim($parent['full_url'], '/').'/'.$url;
         } else {
             $full_url = $url;
         }
-
+        
         $this->updateById($id, array(
             'url' => $url,
             'full_url' => $full_url
@@ -424,7 +424,7 @@ class photosAlbumModel extends waModel
         } else {
             unset($data['full_url']);
         }
-
+        
         $this->updateById($id, $data);
         if ($data['status'] <= 0) {
             $this->privateDescendants($id);
@@ -486,6 +486,7 @@ class photosAlbumModel extends waModel
         $childcrumbs = array();
         foreach ($result as $album) {
             $childcrumbs[] = array(
+                'id' => $album['id'],
                 'name' => $escape ? photosPhoto::escape($album['name']) : $album['name'],
                 'full_url' => photosFrontendAlbum::getLink($album),
                 'note' => $escape ? photosPhoto::escape($album['note']) : $album['note']

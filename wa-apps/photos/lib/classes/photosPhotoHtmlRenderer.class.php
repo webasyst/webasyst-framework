@@ -52,7 +52,7 @@ class photosPhotoHtmlRenderer
                 $li .= '<a href="javascript:void(0);"><img src="'.$theme_url.'/img/photostream-end.png"></a>';
             } else {
                 $salt = !is_null($photo['edit_datetime']) ? '?'.strtotime($photo['edit_datetime']) : '';
-                $li .= '<a href="'.(isset($photo['full_url']) ? $photo['full_url'] : $photo['url']).'"><img src="'.$photo['thumb_crop']['url'].$salt.'"><img class="thumb" src="'.$photo['thumb']['url'].$salt.'" style="display:none;"></a>';
+                $li .= '<a href="'.(isset($photo['full_url']) ? $photo['full_url'] : $photo['url']).'"><img src="'.$photo['thumb_crop']['url'].$salt.'" alt=""><img class="thumb" src="'.$photo['thumb']['url'].$salt.'" style="display:none;" alt=""></a>';
             }
             $li .= '</li>';
         }
@@ -109,15 +109,15 @@ class photosPhotoHtmlRenderer
         $offset = $current + 1;
 
         $html  = "<div class='stack-nav' data-photo-id='{$current_photo['id']}'>";
-        $html .= '  <a href="'.($prev_in_stack ? (isset($prev_in_stack['full_url']) ? $prev_in_stack['full_url'] : $prev_in_stack['url']) : 'javascript:void(0);').'" class="rewind"><img src="'.$theme_url.'img/stack-rewind.png"></a>';
+        $html .= '  <a href="'.($prev_in_stack ? (isset($prev_in_stack['full_url']) ? $prev_in_stack['full_url'] : $prev_in_stack['url']) : 'javascript:void(0);').'" class="rewind"><img src="'.$theme_url.'img/stack-rewind.png" alt=""></a>';
         $html .= "  <strong class='offset'>$offset</strong> / $count";
-        $html .= '  <a href="'.($next_in_stack ? (isset($next_in_stack['full_url']) ? $next_in_stack['full_url'] : $next_in_stack['url']) : 'javascript:void(0);').'" class="ff"><img src="'.$theme_url.'img/stack-ff.png"></a>';
+        $html .= '  <a href="'.($next_in_stack ? (isset($next_in_stack['full_url']) ? $next_in_stack['full_url'] : $next_in_stack['url']) : 'javascript:void(0);').'" class="ff"><img src="'.$theme_url.'img/stack-ff.png" "alt=""></a>';
 
         // hidden stack-stream with class thumb need for rich gradual loading photo effect when go next/prev photo in stack
         $html .= '  <ul class="photostream" style="display:none;">';
         for ($i = 0; $i < $count; ++$i) {
             $html .= "  <li data-photo-id='{$stack[$i]['id']}' ".($i == $current ? 'class="selected"' : '').">";
-            $html .= "    <a href='{$stack[$i]['url']}'><img class='thumb' src='{$stack[$i]['thumb']['url']}". (!is_null($stack[$i]['edit_datetime']) ? '?'.strtotime($stack[$i]['edit_datetime']) : '')."'></a>";
+            $html .= "    <a href='{$stack[$i]['url']}'><img class='thumb' src='{$stack[$i]['thumb']['url']}". (!is_null($stack[$i]['edit_datetime']) ? '?'.strtotime($stack[$i]['edit_datetime']) : '')."' alt=''></a>";
             $html .= "  </li>";
         }
         $html .= '  </ul>';
