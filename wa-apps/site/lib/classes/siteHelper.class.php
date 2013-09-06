@@ -31,6 +31,11 @@ class siteHelper
                 foreach (self::$domains as $d) {
                     $ds[] = $d['name'];
                 }
+                foreach ($routes as $r_id => $r) {
+                    if (!is_array($r)) {
+                        unset($routes[$r_id]);
+                    }
+                }
                 $new_domains = array_diff(array_keys($routes), $ds);
                 if ($new_domains) {
                     foreach ($new_domains as $d) {
