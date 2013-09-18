@@ -373,7 +373,7 @@ HTML;
         return $this->wa->getEnv();
     }
 
-    public function block($id)
+    public function block($id, $params = array())
     {
         if ($id &&  $this->wa->appExists('site')) {
             wa('site');
@@ -396,6 +396,7 @@ HTML;
             }
             if ($block) {
                 try {
+                    $this->view->assign($params);
                     return $this->view->fetch('string:'.$block['content']);
                 } catch (Exception $e) {
                     if (waSystemConfig::isDebug()) {
