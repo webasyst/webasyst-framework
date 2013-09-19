@@ -162,11 +162,12 @@ class waPageActions extends waActions
 
     public static function printPagesTree($p, $pages, $prefix_url)
     {
-        $html = '<ul class="menu-v with-icons" data-parent-id="'.$p['id'].'">';
+        $html = '<ul class="menu-v with-icons" data-parent-id="'.$p['id'].'" style="display:none">';
         foreach ($pages as $page) {
             $html .= '<li class="drag-newposition"></li>';
             $html .= '<li class="dr" id="page-'.$page['id'].'">'.
-            '<a class="wa-page-link" href="'.$prefix_url.$page['id'].'"><span class="count"><i class="icon10 add wa-page-add"></i></span><i class="icon16 notebook"></i>'.
+            '<i class="icon16 '.(!empty($page['childs']) ? 'uarr expander' : 'notebook').'"></i>'.
+            '<a class="wa-page-link" href="'.$prefix_url.$page['id'].'"><span class="count"><i class="icon10 add wa-page-add"></i></span>'.
             htmlspecialchars($page['name']).
             ' <span class="hint">/'.htmlspecialchars($page['full_url']).'</span>';
             if (!$page['status']) {
