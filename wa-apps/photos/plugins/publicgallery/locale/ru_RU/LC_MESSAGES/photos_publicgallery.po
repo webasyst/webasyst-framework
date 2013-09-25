@@ -222,3 +222,10 @@ msgid "Enables the ability to upload and vote for photos in the app frontend"
 msgstr ""
 "Включает возможность загрузки фотографий в фронтенде и коллективного "
 "голосования за фотографии"
+
+#: /wa-apps/photos/plugins/publicgallery/lib/photosPublicgallery.plugin.php:40
+msgid "%d vote"
+msgid_plural "%d votes"
+msgstr[0] "%d голос"
+msgstr[1] "%d голоса"
+msgstr[2] "%d голосов"

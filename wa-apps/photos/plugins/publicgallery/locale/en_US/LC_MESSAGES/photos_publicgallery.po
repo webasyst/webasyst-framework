@@ -185,3 +185,9 @@ msgstr ""
 #: /wa-apps/photos/plugins/publicgallery/lib/config/plugin.php:5
 msgid "Enables the ability to upload and vote for photos in the app frontend"
 msgstr ""
+
+#: /wa-apps/photos/plugins/publicgallery/lib/photosPublicgallery.plugin.php:40
+msgid "%d vote"
+msgid_plural "%d votes"
+msgstr[0] ""
+msgstr[1] ""

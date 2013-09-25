@@ -1227,3 +1227,15 @@ msgstr ""
 #: /wa-apps/photos/templates/actions/settings/Settings.html:122
 msgid "JPEG compression quality for photo thumbnails. From 0 (min) to 100 (max). 90 is recommended."
 msgstr ""
+
+#: /wa-apps/photos/templates/actions/plugins/Plugins.html:26
+msgid "Browse for new plugins"
+msgstr ""
+
+#: /wa-apps/photos/templates/actions/plugins/Plugins.html:29
+msgid "Use Installer to install new plugins from the Webasyst Store"
+msgstr ""
+
+#: /wa-apps/photos/templates/actions/settings/Settings.html:119
+msgid "JPEG compression quality for photo thumbnails. From 0 (min quality, min file size) to 100 (max quality, max file size). 90 is recommended."
+msgstr ""

@@ -1402,3 +1402,12 @@ msgstr ""
 "Коэффициент качества сжатия JPEG при создании эскизов изображений. От 0 "
 "(минимальное качество, минимальный размер файлов) до 100 (максимальное "
 "качество, максимальный размер файлов). Рекомендуемое значение — 90."
+
+#: /wa-apps/photos/templates/actions/plugins/Plugins.html:26
+msgid "Browse for new plugins"
+msgstr "Поиск плагинов"
+
+#: /wa-apps/photos/templates/actions/plugins/Plugins.html:29
+msgid "Use Installer to install new plugins from the Webasyst Store"
+msgstr ""
+"Устанавливайте плагины из магазина Webasyst с помощью приложения «Инсталлер»"
