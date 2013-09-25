@@ -1,13 +1,13 @@
 <div class="block double-padded">
-        <ul class="menu-v with-icons">
-            {foreach from=$domains item=d key=d_id}
-            <li{if $d_id == $domain_id} class="selected"{/if}>
-                <a href="?domain_id={$d_id}">
-                    <i class="icon16 favicon" style="background-image:url(http://{$d.name|escape}/favicon.ico)"></i>{$d.title|escape}
-                </a>
-            </li>
-            {/foreach}
-        </ul>
+    <ul class="menu-v with-icons">
+        {foreach from=$domains item=d key=d_id}
+        <li{if $d_id == $domain_id} class="selected"{/if}>
+            <a href="?domain_id={$d_id}">
+                <i class="icon16 favicon" style="background-image:url(http://{$d.name|escape}/favicon.ico)"></i>{$d.title|escape}
+            </a>
+        </li>
+        {/foreach}
+    </ul>
 </div>
 
 <div style="display:none" id="addsite-dialog">
@@ -15,11 +15,11 @@
 		<div class="dialog-content">
 			<h1>[`New site`]</h1>
 			<p>
-				<strong class="large">http://</strong><input type="text" id="domain-name" name="name" class="bold large" value="" />
+				<strong class="large">http://</strong><input type="text" id="domain-name" name="name" class="bold large long" value="" placeholder="www.mydomain.ru" />
 				<br /><span class="hint">[`E.g. mydomain.com, www.mydomain.com, subdomain.mydomain.com`]</span>
 			</p>
 
-			[`Enter the URL of your new website. You should own the domain and map it into your Webasyst installation (the URL should be the effective URL to access this Webasyst installation). Contact your hosting provider on how to map your domain name.`] <a href="[`http://www.webasyst.com/framework/docs/site/structure/`]" target="_blank">[`Help`]</a> <i class="icon10 new-window"></i>
+			<p>[`Enter the URL of your new website. You should own the domain and map it into your Webasyst installation (the URL should be the effective URL to access this Webasyst installation). Contact your hosting provider on how to map your domain name.`] <a href="[`http://www.webasyst.com/developers/docs/routing/site-app-routing/`]" target="_blank">[`Help`]</a> <i class="icon10 new-window"></i></p>
 		</div>
 		<div class="dialog-buttons">
 			<input type="submit" class="button green" value="[`Create site`]">

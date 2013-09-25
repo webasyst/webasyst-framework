@@ -9,7 +9,7 @@ class siteDesignActions extends waDesignActions
         'container' => false,
         'save_panel' => false,
         'js' => array(
-            'codemirror' => false,
+            'ace' => false,
             'editor' => false,
             'storage' => false
         ),

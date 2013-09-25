@@ -166,6 +166,7 @@ ul.menu-h { margin: 0 0 15px; padding: 0; }
 ul.menu-h li { list-style: none; display: inline-block; padding: 0 10px 0 0; display:block\9; float:left\9; /* ie8 hack */ }
 ul.menu-h li a { display: inline-block; padding: 0px 5px; display:block\9; float:left\9; /* ie8 hack */ }
 ul.menu-h li a img.icon16 { position: relative; top: 3px; left: -3px; }
+ul.menu-h li a i.icon16 { margin-top: 0em; }
 ul.menu-h li.selected a { color: #000; text-decoration: none; background: #eee; }
 ul.menu-h li.selected ul * { background: #fff !important; }
 

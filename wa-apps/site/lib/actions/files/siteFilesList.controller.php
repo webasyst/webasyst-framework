@@ -11,30 +11,35 @@ class siteFilesListController extends waJsonController
             throw new waException("File not found", 404);
         }
 
-        $files = array();
         $dh = opendir($path);
         $names = array();
         while (($f = readdir($dh)) !== false) {
             if ($f !== '.' && $f !== '..' && is_file($path.'/'.$f)) {
-                $t = filemtime($path.'/'.$f);
-                $name = htmlspecialchars($f);
-                $files[$name] = array(
-                    'file' => $name,
-                    'type' => $this->getType($f),
-                    'size' => filesize($path.'/'.$f),
-                    'timestamp' => $t,
-                    'datetime' => waDateTime::format('humandatetime', $t)
-                );
-                $names[] = $name;
+                $names[] = $f;
             }
         }
         natcasesort($names);
-        $sorted_files = array();
+        $n = count($names);
+        $limit = 100;
+        $page = waRequest::get('page', 1);
+        $names = array_slice($names, ($page - 1) * $limit, 100);
+
+        $files = array();
+
         foreach ($names as $name) {
-            $sorted_files[] = &$files[$name];
+            $f = $name;
+            $t = filemtime($path.'/'.$f);
+            $files[] = array(
+                'file' => htmlspecialchars($name),
+                'type' => $this->getType($f),
+                'size' => filesize($path.'/'.$f),
+                'timestamp' => $t,
+                'datetime' => waDateTime::format('humandatetime', $t)
+            );
         }
         closedir($dh);
-        $this->response = $sorted_files;
+        $this->response['pages'] = ceil((float)$n / $limit);
+        $this->response['files'] = $files;
     }
 
     protected function getType($file)

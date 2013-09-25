@@ -7,11 +7,14 @@ class sitePagesActions extends waPageActions
     protected $add_url = '#/pages/add';
 
     protected $options = array(
-        'codemirror' => false,
         'container' => false,
         'show_url' => true,
         'save_panel' => false,
-        'js' => false,
+        'js' => array(
+            'ace' => false,
+            'editor' => false,
+            'storage' => false
+        ),
         'is_ajax' => true,
         'data' => array()
     );

@@ -5,7 +5,6 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>{$wa->appName()} — {$wa->accountName()}</title>
 {$wa->css()}
-<link rel="stylesheet" href="{$wa_url}wa-content/js/codemirror/lib/codemirror.css">
 <link href="{$wa_app_static_url}css/site.css?v{$wa->version()}" rel="stylesheet" type="text/css" />
 
 <script src="{$wa_url}wa-content/js/jquery/jquery-1.7.1.min.js" type="text/javascript"></script>
@@ -24,13 +23,10 @@
 	{$wa_url}wa-content/js/jquery-ui/jquery.ui.tabs.min.js
     {$wa_app_static_url}js/site.js
 {/wa_js}
-<script src="{$wa_url}wa-content/js/codemirror/lib/codemirror.js"></script>
-<script src="{$wa_url}wa-content/js/codemirror/mode/xml/xml.js"></script>
-<script src="{$wa_url}wa-content/js/codemirror/mode/javascript/javascript.js"></script>
-<script src="{$wa_url}wa-content/js/codemirror/mode/css/css.js"></script>
-<script src="{$wa_url}wa-content/js/codemirror/mode/htmlmixed/htmlmixed.js"></script>
 
-<script src="{$wa_url}wa-content/js/jquery-wa/wa.editor.js?v{$wa->version()}"></script>
+<script src="{$wa_url}wa-content/js/ace/ace.js"></script>
+
+<script src="{$wa_url}wa-content/js/jquery-wa/wa.elrte.ace.js?v{$wa->version()}"></script>
 
 <script type="text/javascript" src="?action=loc&amp;v{$wa->version()}"></script>
 </head>
@@ -77,6 +73,7 @@
         domain: {$domain_id}, static_url: "{$wa_app_static_url}",
         wa_url: "{$wa_url}", root_url: "{$domain_root_url}"
     });
+    var wa_url = "{$wa_url}";
 	</script>
 </div>
 </body>

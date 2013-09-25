@@ -118,16 +118,32 @@ table.s-routing tr:hover td.s-actions a, table.s-settings-apps tr:hover td.s-act
 */
 
 table.s-routing td a.s-route-action { width: 1%; white-space: nowrap; display: none; }
+table.s-routing tr:hover { cursor: pointer; }
 table.s-routing tr:hover td a.s-route-action { display: inline; }
 
 table.s-routing.s-routing-minimized tr td.s-app { display: none; }
+table.s-routing.s-routing-minimized tr td i.sort {display: none; }
 table.s-routing.s-routing-minimized tr td.s-actions { width: 10%; }
 table.s-routing.s-routing-minimized tr td.s-actions input { display: none; }
 table.s-routing.s-routing-minimized tr.selected td.s-url { font-weight: normal; }
-table.s-routing.s-routing-minimized tr:hover td.s-url a.s-route-action { display: none; }
+table.s-routing.s-routing-minimized tr:hover { cursor: default; }
+table.s-routing.s-routing-minimized tr:hover td a.s-route-action { display: none; }
 
 table.s-settings-apps td.s-app { vertical-align: middle; width: 230px; }
 #s-apps-add { margin-left: 5px; }
+
+.s-route { width: 100%; }
+.s-route .name { width: 210px; }
+.s-route .value { margin-left: 230px; }
+
+.s-route-core { background: #f3f3f3; }
+.s-route-core .fields { margin-bottom: 0; }
+.s-route-core .name { padding-bottom: 5px; }
+.s-route-core .value { width: 100%; }
+.s-route-core .value h3 { position: relative; top: 5px; font-size: 1.3em; }
+.s-route-core .value select { float: left; font-size: 120%; position: relative; top: 2px; left: 4px; }
+.s-route-core .value img { float: left; width: 24px; height: 24px; margin-right: 6px; position: relative; top: 2px; }
+.s-route-core .value .redirect input { position: relative; top: 2px; }
 
 /* settings */
 
@@ -147,9 +163,9 @@ a.s-apps-edit, a.s-apps-delete { display: inline !important; }
 ul.s-folderlist a { font-size: 0.9em; padding-left: 23px; }
 ul.s-filelist-actions-menu { margin-top: 10px; margin-left: -5px; }
 
-table.s-filelist { margin-bottom: 130px; }
 table.s-filelist tr a i.s-file-actions { background-position: 10px 10px; }
 table.s-filelist tr a:hover i.s-file-actions { background-position:-10px 0; }
+div.s-pagination {margin-top: 20px; padding-bottom: 20px}
 
 table.s-filelist ul.menu-h.dropdown li { -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box;}
 ul.menu-h.dropdown.s-filelist-actions-menu li ul.menu-v { min-width: 190px; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box; }
@@ -205,17 +221,6 @@ table.zebra.s-filelist .icon10.new-window { margin-left: .25em;}
 .s-themes table ul.menu-h.dropdown ul.menu-v { right: 0; width: 200px; left: auto; }
 .s-themes table ul.menu-h.dropdown li span.hint { font-size: 1em; }
 #s-upload-link { display: block; }
-
-.CodeMirror, .CodeMirror-wrapping {
-   min-height: 300px;
-   background: #fff;
-}
-
-.CodeMirror-scroll {
-    height: auto;
-    overflow-y: hidden;
-    overflow-x: auto;
-}
 
 li.inherit a {color: #999}
 li.error a {color: red}

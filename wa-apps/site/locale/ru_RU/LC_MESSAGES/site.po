@@ -141,7 +141,7 @@ msgstr "Удалить правило"
 
 #: /wa-apps/site/templates/layouts/Sidebar.html:39
 msgid "http://www.webasyst.com/framework/docs/site/structure/"
-msgstr "http://www.webasyst.com/ru/framework/docs/site/structure/"
+msgstr "http://www.webasyst.ru/developers/docs/creating-a-website-tutorial/"
 
 #: /wa-apps/site/lib/actions/helper/siteHelper.action.php:18
 msgid "Help"
@@ -274,7 +274,7 @@ msgstr "Дополнительные параметры страницы"
 
 #: /wa-apps/site/templates/actions/pages/Pages.html:118
 msgid "http://www.webasyst.com/framework/docs/site/pages/"
-msgstr "http://www.webasyst.com/ru/framework/docs/site/pages/"
+msgstr "http://www.webasyst.ru/developers/docs/features/page-parameters/"
 
 #: /wa-apps/site/templates/actions/pages/Pages.html:127
 msgid "WYSIWYG"
@@ -367,7 +367,7 @@ msgstr "Дополнительные параметры"
 
 #: /wa-apps/site/templates/actions/routing/Routing.html:53
 msgid "http://www.webasyst.com/framework/docs/site/design/"
-msgstr "http://www.webasyst.com/ru/framework/docs/site/design/"
+msgstr "http://www.webasyst.ru/developers/docs/design/"
 
 #: /wa-apps/site/templates/layouts/Default.html:88
 msgid "Saving..."
@@ -553,8 +553,11 @@ msgstr ""
 "Не удалось сохранить настройки из-за недостаточных прав на перезапись "
 "содержимого папки «%s»."
 
-msgid "Settings could not be saved due to the insufficient file write permissions for the file \"%s\"."
-msgstr "Не удалось сохранить настройки из-за недостаточных прав на запись файла «%s»."
+msgid ""
+"Settings could not be saved due to the insufficient file write permissions "
+"for the file \"%s\"."
+msgstr ""
+"Не удалось сохранить настройки из-за недостаточных прав на запись файла «%s»."
 
 #: /wa-apps/site/lib/actions/settings/siteSettingsSave.controller.php:84
 msgid "Files with extension *.ico are allowed only."
@@ -765,7 +768,7 @@ msgstr "Посмотрите статью документации Webasyst с �
 
 #: /wa-apps/site/lib/config/data/welcome.html:4
 msgid "http://www.webasyst.com/framework/docs/site/tutorial/"
-msgstr "http://www.webasyst.com/ru/framework/docs/site/tutorial/"
+msgstr "http://www.webasyst.ru/developers/docs/creating-a-website-tutorial/"
 
 #: /wa-apps/site/lib/config/site.php:8
 msgid "Page title (&lt;title&gt;)"
@@ -1010,9 +1013,9 @@ msgid ""
 msgstr ""
 "Позволяет посетителям вашего сайта быстро зарегистрироваться или "
 "авторизоваться через аккаунты в популярных сторонних сервисах, например, "
-"через «Фейсбук» или «Твиттер». <a href=\"http://www.webasyst.com/ru/"
-"framework/docs/dev/auth-adapters/\" target=\"_blank\">Документация по "
-"настройке</a> <i class=\"icon10 new-window\"></i>"
+"через «Фейсбук» или «Твиттер». <a href=\"http://www.webasyst.ru/developers/"
+"docs/auth/auth-adapters/\" target=\"_blank\">Документация по настройке</a> "
+"<i class=\"icon10 new-window\"></i>"
 
 #: /wa-apps/site/templates/actions/settings/Settings.html:224
 msgid ""
@@ -1225,3 +1228,23 @@ msgstr "Фейсбук"
 #: /wa-apps/site/themes/custom/index.html:74
 msgid "Twitter"
 msgstr "Твиттер"
+
+#: /wa-apps/site/templates/actions/routing/RoutingEdit.html:11
+msgid "Close"
+msgstr "Закрыть"
+
+#: /wa-apps/site/templates/layouts/Sidebar.html:22
+msgid "http://www.webasyst.com/developers/docs/creating-a-website-tutorial/"
+msgstr "http://www.webasyst.ru/developers/docs/creating-a-website-tutorial/"
+
+#: /wa-apps/site/themes/vk/footer.html:4
+msgid ""
+"We are using <a href=\"http://www.webasyst.com/\" target=\"_blank"
+"\">Webasyst</a>"
+msgstr ""
+"Мы используем <a href=\"http://www.webasyst.ru/\" target=\"_blank"
+"\">Webasyst</a>"
+
+#: /wa-apps/site/templates/layouts/Sidebar.html:22
+msgid "http://www.webasyst.com/developers/docs/routing/site-app-routing/"
+msgstr "http://www.webasyst.ru/developers/docs/routing/site-app-routing/"

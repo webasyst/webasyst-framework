@@ -227,7 +227,7 @@ msgstr ""
 
 #: /wa-apps/site/templates/actions/settings/Settings.html:194
 msgid "Enables your site visitors to quickly sign up or sign in via accounts on external popular platforms, e.g. Facebook and Twitter. <a href=\"http://www.webasyst.com/framework/docs/dev/auth-adapters/\" target=\"_blank\">Setup instructions</a> <i class=\"icon10 new-window\"></i>"
-msgstr "Allows your website visitors to quickly sign up or sign in via accounts on popular external platforms; e.g., Facebook or Twitter. <a href=\"http://www.webasyst.com/framework/docs/dev/auth-adapters/\" target=\"_blank\">Setup instructions</a> <i class=\"icon10 new-window\"></i>"
+msgstr "Allows your website visitors to quickly sign up or sign in via accounts on popular external platforms; e.g., Facebook or Twitter. <a href=\"http://www.webasyst.com/developers/docs/auth/auth-adapters/\" target=\"_blank\">Setup instructions</a> <i class=\"icon10 new-window\"></i>"
 
 #: /wa-apps/site/templates/actions/settings/Settings.html:224
 msgid "To enable authorization on this website, install and settle at least one app that supports authorization forms."
@@ -299,7 +299,7 @@ msgstr "Optional set of custom <em>key=value</em> parameters, which can be used 
 
 #: /wa-apps/site/templates/actions/pages/Pages.html:112
 msgid "http://www.webasyst.com/framework/docs/site/pages/"
-msgstr ""
+msgstr "http://www.webasyst.com/developers/docs/features/page-parameters/"
 
 #: /wa-apps/site/templates/layouts/Sidebar.html:22
 msgid "Help"
@@ -423,7 +423,7 @@ msgstr "Rules are processed one by one in the given order. Applied is the first 
 
 #: /wa-apps/site/templates/layouts/Sidebar.html:22
 msgid "http://www.webasyst.com/framework/docs/site/structure/"
-msgstr ""
+msgstr "http://www.webasyst.com/developers/docs/creating-a-website-tutorial/"
 
 #: /wa-apps/site/templates/actions/routing/RoutingEdit.html:87
 msgid "Select route to manage its settings"
@@ -479,7 +479,7 @@ msgstr "Optional set of custom <em>key=value</em> parameters, which can be used 
 
 #: /wa-apps/site/templates/actions/routing/RoutingEdit.html:64
 msgid "http://www.webasyst.com/framework/docs/site/design/"
-msgstr ""
+msgstr "http://www.webasyst.com/developers/docs/design/"
 
 #: /wa-apps/site/templates/actions/routing/RoutingEdit.html:82
 msgid "This will delete the rule from website structure. Are you sure?"
@@ -803,7 +803,7 @@ msgstr ""
 
 #: /wa-apps/site/lib/config/data/welcome.html:4
 msgid "http://www.webasyst.com/framework/docs/site/tutorial/"
-msgstr ""
+msgstr "http://www.webasyst.com/developers/docs/creating-a-website-tutorial/"
 
 #: /wa-apps/site/lib/config/site.php:8
 msgid "Page title (&lt;title&gt;)"
@@ -893,7 +893,6 @@ msgstr "Edit this layout in your <a href=\"{$wa_backend_url}\">Webasyst backend<
 msgid "The requested resource is not available."
 msgstr ""
 
-
 #: /wa-apps/site/templates/actions/routing/RoutingEdit.html:48
 msgid "Privacy"
 msgstr ""
@@ -924,4 +923,29 @@ msgstr ""
 
 #: /wa-apps/site/themes/custom/index.html:74
 msgid "Twitter"
+msgstr ""
+
+
+#: /wa-apps/site/templates/actions/routing/RoutingEdit.html:11
+msgid "Close"
+msgstr ""
+
+#: /wa-apps/site/templates/actions/routing/RoutingEdit.html:11
+msgid "Cancel"
+msgstr ""
+
+#: /wa-apps/site/templates/layouts/Sidebar.html:22
+msgid "http://www.webasyst.com/developers/docs/creating-a-website-tutorial/"
+msgstr ""
+
+#: /wa-apps/site/lib/actions/routing/siteRoutingSave.controller.php:12
+msgid "Settings could not be saved due to the insufficient file write permissions for the file \"%s\"."
+msgstr ""
+
+#: /wa-apps/site/themes/vk/footer.html:4
+msgid "We are using <a href=\"http://www.webasyst.com/\" target=\"_blank\">Webasyst</a>"
+msgstr ""
+
+#: /wa-apps/site/templates/layouts/Sidebar.html:22
+msgid "http://www.webasyst.com/developers/docs/routing/site-app-routing/"
 msgstr ""

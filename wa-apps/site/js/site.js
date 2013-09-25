@@ -174,8 +174,33 @@ $.wa.site = {
         this.designAction(params + '&file=');
     },
 
+
+    filesPage: function (hash) {
+        if (!hash) {
+            hash = location.hash;
+        }
+        hash = hash.split('/');
+        hash = hash[hash.length - 1];
+        if (hash && hash.substr(0, 1) == '?') {
+            hash = hash.substr(1).split('=');
+            if (hash[0] == 'page') {
+                return hash[1];
+            }
+        }
+        return 1;
+    },
+
 	filesAction: function (load, path) {
 		this.savePanel(false);
+        var page = 1;
+        if (path && path.substr(0, 1) == '?') {
+            path = path.substr(1).split('=');
+            if (path[0] == 'page') {
+                page = path[1];
+            }
+            path = '';
+
+        }
 		if (load === true) {
 			var params = path || this.filesPath();
 		} else {
@@ -204,7 +229,7 @@ $.wa.site = {
 				}				
 			}
 			
-			$.wa.site.filesList(params);
+			$.wa.site.filesList(params, page);
 			$("#s-upload-path").val(params || '');
 			$("#s-current-path").html('/' + (params || ''));
 			$("#s-files-count").html('0');
@@ -232,23 +257,36 @@ $.wa.site = {
 		}
 	},
 	
-	filesList: function (path) {
+	filesList: function (path, page) {
 		if (!path) {
 			path = this.filesPath();
 		}
-		$.post("?module=files&action=list", {path: path}, function (response) {
+        if (!page) {
+            page = this.filesPage();
+        }
+		$.post("?module=files&action=list&page=" + page, {path: path}, function (response) {
 			$("#s-files-grid tr.s-file").remove();
-			for (var i = 0; i < response.data.length; i++) {
-				var html = '<tr class="s-file"><td class="min-width"><input type="checkbox" value="' + response.data[i].file + '" /></td>' + 
+            $("div.s-pagination").empty();
+			for (var i = 0; i < response.data.files.length; i++) {
+                var r = response.data.files[i];
+				var html = '<tr class="s-file"><td class="min-width"><input type="checkbox" value="' + r.file + '" /></td>' +
 				'<td><ul class="menu-h dropdown clickable"><li>' + 
-				'<a href="#"><i class="icon16 ' + response.data[i].type + '"></i> ' + 
-					response.data[i].file + ' <i class="icon10 darr no-overhanging s-file-actions"></i></a>' +
+				'<a href="#"><i class="icon16 ' + r.type + '"></i> ' +
+					r.file + ' <i class="icon10 darr no-overhanging s-file-actions"></i></a>' +
 				'</li></ul></td>' + 
-				'<td>' + response.data[i].datetime + '</td>' + 
-				'<td><span class="float-right">' + $.wa.site.getFileSize(response.data[i].size) + '</span></td></tr>';
+				'<td>' + r.datetime + '</td>' +
+				'<td><span class="float-right">' + $.wa.site.getFileSize(r.size) + '</span></td></tr>';
 				$("#s-files-grid").append(html);
 			}
-		}, "json");		
+            if (response.data.pages > 1) {
+                var html = '<ul class="menu-h">';
+                for (var i = 1; i <= response.data.pages; i++) {
+                    html += '<li' + (i == page ? ' class="selected"' : '') + '><a href="#/files/' + path + '?page=' + i + '">' + i + '</a></li>';
+                }
+                html += '</ul>';
+                $("div.s-pagination").html(html).show();
+            }
+		}, "json");
 	},
 	
 	getFileSize: function (size) {
@@ -363,7 +401,7 @@ $.wa.site = {
         $('#s-save-panel input').replaceWith('<input id="s-editor-save-button" type="button" class="button green" value="' + $_('Save') + '">');
 		$("#s-content").load('?module=blocks', params, function () {
             $(".s-scrollable-part").scrollTop(0);
-            waEditorCodeMirrorInit({
+            waEditorAceInit({
                 id: 'content',
                 save_button: 's-editor-save-button'
             });
@@ -409,36 +447,6 @@ $.wa.site = {
 		return result;
 	},
 	
-	initEditor: function (id, helper) {
-		if (!$("#" + id).length) {
-			return false;
-		}
-		var t = $("#" + id).attr('data-type');
-  		this.savePanel(true);
-  		var h = $("div.s-editor.s-white").height() - $("div.s-editor.s-white .s-grey-toolbar").height() - 50;
-  		if (h < 300) {
-  			h = 300;
-  		}
-
-        wa_editor = CodeMirror.fromTextArea(document.getElementById(id), {
-            mode: t ? 'text/' + t : "text/html",
-            tabMode: "indent",
-            height: "dynamic",
-            lineWrapping: true,
-            onKeyEvent: function (editor, e) {
-                var event = jQuery.Event(e);
-                if (event.type == 'keydown') {
-                    waEditorKeyCallback(false, {'save_button': 's-editor-save-button'})(e);
-                } else if (event.type = 'keypress') {
-                    waEditorKeyCallback(true, {'save_button': 's-editor-save-button'})(e);
-                }
-            }
-        });
-        $(".CodeMirror-scroll").css('min-height', h + 'px');
-
-  		this.setHelper(helper || false);
-	},
-
 	savePanel: function (show, add_class) {
 		if (show) {
 			$("#s-save-panel").show();
@@ -546,7 +554,7 @@ $(function () {
 				$("#content").elrte()[0].elrte.selection.insertHtml(el.text());
 			} catch (e) {}
 		} else {
-			wa_editor.replaceSelection(el.text());
+			wa_editor.insert(el.text());
 		}
 		return false;
 	});

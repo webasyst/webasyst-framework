@@ -25,7 +25,7 @@ class siteBlocksAction extends waViewAction
                             $blocks[$block_id] = $block;
                         } else {
                             if ($block_id == $id) {
-                                $blocks[$block_id]['original'] = $block['content'];
+                                $blocks[$block_id]['original'] = trim($block['content']);
                             }
                         }
                     }

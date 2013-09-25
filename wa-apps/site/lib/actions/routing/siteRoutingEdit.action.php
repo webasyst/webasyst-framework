@@ -5,60 +5,76 @@ class siteRoutingEditAction extends waViewAction
 
     public function execute()
     {
-        $route_id = waRequest::get('route');
+        $route_id = waRequest::get('route', '');
         $routes = wa()->getRouting()->getRoutes(siteHelper::getDomain());
-        if (!isset($routes[$route_id])) {
+        if ($route_id && !isset($routes[$route_id])) {
             throw new waException('Route not found', 404);
         }
-        $route = $routes[$route_id];
 
-        $app_id = $routes[$route_id]['app'];
-        $path = $this->getConfig()->getAppsPath($app_id, 'lib/config/site.php');
-        $app = wa()->getAppInfo($app_id);
-        if (file_exists($path)) {
-            // load locale of the app
-            if ($app_id != 'site') {
-                waSystem::getInstance($app_id)->setActive($app_id);
-            }
-            $app['site'] = include($path);
-            // return old locale of the site
-            if ($app_id != 'site') {
-                waSystem::setActive('site');
-            }
-        }
-        if (isset($app['site']['params'])) {
-            $params = $this->getParams($route_id, $app['site']['params'], $route);
+        if ($route_id || strlen($route_id)) {
+            $route = $routes[$route_id];
+            $app_id = ifset($route['app']);
         } else {
-            $params = array();
-        }
-        $themes = siteHelper::getThemes($app_id);
-        if (!isset($route['theme']) && $themes) {
-            $route['theme'] = 'default';
-        }
-        if (!isset($route['theme_mobile']) && $themes) {
-            $route['theme_mobile'] = $route['theme'];
-        }
-
-        if (!isset($route['locale'])) {
-            $route['locale'] = '';
+            $route = array();
+            $apps = wa()->getApps();
+            foreach ($apps as $app_id => $app) {
+                if (empty($app['frontend'])) {
+                    unset($apps[$app_id]);
+                }
+            }
+            reset($apps);
+            $this->view->assign('apps', $apps);
+            $app_id = waRequest::get('app', key($apps));
         }
 
-        if (!isset($route['_name'])) {
-            if ($app_id == 'site') {
-                if ($title = siteHelper::getDomain('title')) {
-                    $route['_name'] = $title;
+        if ($app_id) {
+            $path = $this->getConfig()->getAppsPath($app_id, 'lib/config/site.php');
+            $app = wa()->getAppInfo($app_id);
+            if (file_exists($path)) {
+                // load locale of the app
+                if ($app_id != 'site') {
+                    waSystem::getInstance($app_id)->setActive($app_id);
+                }
+                $app['site'] = include($path);
+                // return old locale of the site
+                if ($app_id != 'site') {
+                    waSystem::setActive('site');
+                }
+            }
+
+            if (!$route && isset($app['routing_params']) && is_array($app['routing_params'])) {
+                $route = $app['routing_params'];
+            }
+
+            if (isset($app['site']['params'])) {
+                $params = $this->getParams($route_id, $app['site']['params'], $route);
+            } else {
+                $params = array();
+            }
+
+            if (!isset($route['_name'])) {
+                if ($app_id == 'site') {
+                    if ($title = siteHelper::getDomain('title')) {
+                        $route_name = $title;
+                    } else {
+                        $app_settings_model = new waAppSettingsModel();
+                        $route_name = $app_settings_model->get('webasyst', 'name', 'Webasyst');
+                    }
                 } else {
-                    $app_settings_model = new waAppSettingsModel();
-                    $route['_name'] = $app_settings_model->get('webasyst', 'name', 'Webasyst');
+                    $route_name = $app['name'];
                 }
             } else {
-                $route['_name'] = $app['name'];
+                $route_name = $route['_name'];
             }
-        }
 
+            $this->view->assign('route_name', $route_name);
+            $this->view->assign('params', $params);
+
+        } else {
+            $app = array();
+        }
         $this->view->assign('route_id', $route_id);
         $this->view->assign('route', $route);
-        $this->view->assign('params', $params);
         $this->view->assign('app_id', $app_id);
         $this->view->assign('app', $app);
         $this->view->assign('domain_id', siteHelper::getDomainId());
