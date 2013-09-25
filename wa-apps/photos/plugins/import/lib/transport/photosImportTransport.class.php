@@ -37,7 +37,7 @@ class photosImportTransport
 
     }
 
-    public function step()
+    public function step(&$current)
     {
 
     }

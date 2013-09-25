@@ -181,4 +181,39 @@ class photosConfig extends waAppConfig
 
         return $routes;
     }
+    
+    public function getSidebarWidth()
+    {
+        $settings_model = new waContactSettingsModel();
+        $width = (int)$settings_model->getOne(
+            wa()->getUser()->getId(),
+            'shop',
+            'sidebar_width'
+        );
+        if (!$width) {
+            return 250;
+        }
+        return max(min($width, 400), 200);
+    }
+    
+    public function setSidebarWidth($width)
+    {
+        $width = max(min((int)$width, 400), 200);
+        $settings_model = new waContactSettingsModel();
+        $settings_model->set(
+            wa()->getUser()->getId(),
+            'shop',
+            'sidebar_width',
+            $width
+        );
+    }
+    
+    public function getSaveQuality() {
+        $quality = $this->getOption('save_quality');
+        if(!$quality) {
+            $quality = 90;
+        }
+        return $quality;
+    }
+    
 }

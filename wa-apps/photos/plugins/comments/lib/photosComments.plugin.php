@@ -177,7 +177,7 @@ HTML;
         $count = $this->comment()->getCounters(null, $photo_ids);
 
         foreach ($photos as &$photo) {
-            if (isset($count[$photo['id']])) {
+            if (isset($count[$photo['id']]) && isset($photo['frontend_link'])) {
                 $all_count = _wp("%d comment","%d comments",$count[$photo['id']]);
                 $photo['hooks']['thumb'][$this->id] = <<<HTML
 <p>
@@ -195,6 +195,59 @@ HTML;
         $this->comment()->deleteByField('photo_id', $photo_id);
     }
 
+    public function contactsLinks($params)
+    {
+        waLocale::loadByDomain('photos');
+        // TODO: take a look to other models related with contacts
+
+        $links = array();
+        $comments_model = new photosCommentModel();
+        foreach ($params as $contact_id) {
+            $links[$contact_id] = array();
+            if ($count = $comments_model->countByField('contact_id', $contact_id)) {
+                $links[$contact_id][] = array(
+                    'role' => _wd('photos', 'Comments author'),
+                    'links_number' => $count,
+                );
+            }
+        }
+        
+        return $links;
+    }
+    
+    public function contactsDelete($contact_ids)
+    {
+        $c = new waContactsCollection('id/' . implode(',', $contact_ids));
+        $contacts = $c->getContacts('name,phone,email');
+        foreach ($contacts as &$contact) {
+            if (is_array($contact['phone'])) {
+                $phone = reset($contact['phone']);
+                if (is_array($phone)) {
+                    if (isset($phone['value'])) {
+                        $phone = $phone['value'];
+                    } else {
+                        $phone = '';
+                    }
+                }
+                $contact['phone'] = $phone;
+            }
+            if (is_array($contact['email'])) {
+                $email = reset($contact['email']);
+                $contact['email'] = $email;
+            }
+        }
+        
+        $comment_model = new photosCommentModel();
+        foreach ($contacts as $contact) {
+            // Insert contact name into their reviews
+            $comment_model->updateByField('contact_id', $contact['id'], array(
+                'contact_id' => 0,
+                'name' => $contact['name'],
+                'email' => $contact['email'],
+                'auth_provider' => null
+            ));
+        }
+    }
 
     /**
      *

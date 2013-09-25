@@ -62,8 +62,12 @@ class photosPlugin extends waPlugin
         foreach ($settings_config as $name => $row) {
             // remove
             if (!isset($settings[$name])) {
-                $this->settings[$name] = isset($row['value']) ? $row['value'] : null;
-                $this->getSettingsModel()->del(array($this->app_id, $this->id), $name);
+                if (($row['control_type'] == waHtmlControl::CHECKBOX) && !empty($row['value'])) {
+                    $settings[$name] = false;
+                } else {
+                    $this->settings[$name] = isset($row['value']) ? $row['value'] : null;
+                    $this->getSettingsModel()->del(array($this->app_id, $this->id), $name);
+                }
             }
         }
         foreach ($settings as $name => $value) {

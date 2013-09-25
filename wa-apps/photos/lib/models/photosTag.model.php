@@ -33,35 +33,45 @@ class photosTagModel extends waModel
         }
     }
 
-    public function getIds($names, $update = false)
+//    public function getIds($names)
+//    {
+//        $tags = (array) $names;
+//        $existed_tags = $this->getByField('name', $tags, 'name');
+//        $tag_ids = array();
+//        foreach ($tags as $tag) {
+//            if (!isset($existed_tags[$tag]) && $tag) {
+//                $tag_id = $this->insert(array(
+//                    'name' => $tag
+//                ));
+//            } else {
+//                $tag_id = $existed_tags[$tag]['id'];
+//            }
+//            $tag_ids[$tag_id] = $tag_id;
+//        }
+//
+//        return $tag_ids;
+//    }
+    
+    public function getIds($tags)
     {
-        $tags = (array) $names;
-        $existed_tags = $this->getByField('name', $tags, 'name');
-        $tag_ids = array();
-        foreach ($tags as $tag) {
-            if (!isset($existed_tags[$tag]) && $tag) {
-                $tag_id = $this->insert(array(
-                    'name' => $tag
-                ));
+        $tags = (array) $tags;
+        $result = array();
+        foreach ($tags as $t) {
+            $t = trim($t);
+            if ($id = $this->getByName($t, true)) {
+                $result[] = $id;
             } else {
-                $tag_id = $existed_tags[$tag]['id'];
+                $result[] = $this->insert(array('name' => $t));
             }
-            $tag_ids[$tag_id] = $tag_id;
         }
-
-        return $tag_ids;
-
-        if ($where = $this->getWhereByField('name', $names)) {
-            $sql = "SELECT id FROM ".$this->table." WHERE $where";
-            return $this->query($sql)->fetchAll(null, true);
-        }
-        return array();
+        return $result;
     }
 
-    public function getByName($name)
+    public function getByName($name, $return_id = false)
     {
         $sql = "SELECT * FROM ".$this->table." WHERE name LIKE '".$this->escape($name, 'like')."'";
-        return $this->query($sql)->fetch();
+        $row = $this->query($sql)->fetch();
+        return $return_id ? (isset($row['id']) ? $row['id'] : null) : $row;
     }
 
     public function getByPhoto($photo_id)
@@ -106,5 +116,10 @@ class photosTagModel extends waModel
             unset($tag);
         }
         return $tags;
+    }
+    
+    public function popularTags($limit = 10)
+    {
+        return $this->select('*')->order('count DESC')->limit($limit)->fetchAll();
     }
 }

@@ -1,0 +1,84 @@
+<div class="upload-progress-content" style="display:none;">
+    <div class="upload-progress-status" style="display:none">
+        <div class="progressbar float-left">
+            <div class="progressbar-outer">
+                <div class="progressbar-inner fileupload-progressbar" id="my-custom-progressbar-id"></div>
+            </div>
+        </div>
+        <div class="float-left" style="margin-top: 13px;" id="upload-filescount">100%</div>
+<!--         <a href="#" class="hint cancel">[`Stop upload`]</a> -->
+    </div>
+    <div id="upload-imagelist" class="clear-both">
+        <ul class="zebra files"></ul>
+    </div>
+    <div id="upload-error" style="display:none" class="errormsg clear-both">
+        [`Files uploaded with errors`]
+    </div>
+    <div id="upload-finished" style="display:none" class="block double-padded">
+    </div>
+</div>
+
+<script id="template-upload" type="text/html">
+{literal}
+    {% for (var i=0, files=o.files, l=files.length, file=files[0]; i<l; file=files[++i]) { %}
+    <li class="template-upload">
+        <div class="upload-oneimage-progress">
+            <div class="image-filename">
+                {%=file.name%}
+                <span class="hint">{%=o.formatFileSize(file.size)%}</span>
+            </div>
+            <span class="start"></span><span class="cancel"></span>
+        </div>
+        &nbsp;
+    </li>
+    {% } %}
+{/literal}
+</script>
+
+<script id="template-download" type="text/html">
+{literal}
+    {% for (var i=0, files=o.files, l=files.length, file=files[0]; i<l; file=files[++i]) { %}
+    <li class="template-upload {% if (file.error) { %}error{% } %}">
+        {% if (file.error) { %}
+            <div class="upload-oneimage-progress" style="width:100%">
+                <div class="image-filename">
+                    <b>{%=file.name%}</b>
+                    {% if (typeof file.error === 'object' && file.error instanceof SyntaxError) { %}
+                        {% if (file.responseText) { %}
+                            {%#file.responseText%}
+                        {% } else { %}
+                            {%=$_('Failed to upload. Most probably, there were not enough memory to create thumbnails.')%}.
+                        {% } %}
+                    {% } else { %}
+                        {%=file.error%}
+                    {% } %}
+                </div>
+            </div>
+        {% } else { %}
+            <div class="upload-oneimage-progress" style="width:100%">
+                <div class="image-filename">
+                    {%=file.name%} <span class="hint">{%=o.formatFileSize(file.size)%}</span>
+                </div>
+            </div>
+        {% } %}
+        &nbsp;
+    </li>
+    {% } %}
+{/literal}
+</script>
+
+<script type="text/javascript" src="{$wa_url}wa-content/js/jquery-ui/jquery.ui.widget.min.js"></script>
+<script type="text/javascript" src="{$wa_app_static_url}js/load-image.min.js"></script>
+<script type="text/javascript" src="{$wa_url}wa-content/js/jquery-plugins/fileupload/jquery.iframe-transport.js"></script>
+{*<script type="text/javascript" src="{$wa_url}wa-content/js/jquery-plugins/fileupload/jquery.fileupload.js"></script>*}
+<script type="text/javascript" src="{$wa_app_static_url}js/jquery.fileupload.js"></script>
+<script type="text/javascript" src="{$wa_app_static_url}plugins/publicgallery/js/tmpl.min.js"></script>
+<script type="text/javascript" src="{$wa_app_static_url}plugins/publicgallery/js/jquery.fileupload-ui.js"></script>
+<script type="text/javascript">
+$(function() {
+    var fileupload = $('#fileupload');
+    fileupload.fileupload({
+        acceptFileTypes: /(\.|\/)(gif|jpe?g|png)$/i,
+    });
+});
+</script>

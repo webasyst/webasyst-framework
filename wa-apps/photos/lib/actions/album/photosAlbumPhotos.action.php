@@ -26,7 +26,9 @@ class photosAlbumPhotosAction extends waViewAction
         $frontend_link = photosCollection::getFrontendLink($hash);
         $collection = new photosCollection($hash);
 
-        $count = $this->getConfig()->getOption('photos_per_page');
+        $config = $this->getConfig();
+        
+        $count = $config->getOption('photos_per_page');
         $photos = $collection->getPhotos("*,thumb,thumb_crop,thumb_middle,thumb_big,tags,edit_rights", 0, $count);
         $photos = photosCollection::extendPhotos($photos);
 
@@ -38,13 +40,25 @@ class photosAlbumPhotosAction extends waViewAction
         }
         $album['count_new'] = 0;
 
+        $sort_method = 'sort';
+        if ($album['type'] == photosAlbumModel::TYPE_DYNAMIC) {
+            $params_model = new photosAlbumParamsModel();
+            $params = $params_model->get($album['id']);
+            if ($params && isset($params['order']) && $params['order'] == 'rate') {
+                $sort_method = 'rate';
+            } else {
+                $sort_method = 'upload_datetime';
+            }
+        }
 
         $this->template = 'templates/actions/photo/PhotoList.html';
+        $this->view->assign('sidebar_width', $config->getSidebarWidth());
         $this->view->assign('album', $album);
         $this->view->assign('frontend_link', $frontend_link);
         $this->view->assign('photos', $photos);
         $this->view->assign('title', $collection->getTitle());
         $this->view->assign('hash', $hash);
-        $this->view->assign('big_size', $this->getConfig()->getSize('big'));
+        $this->view->assign('big_size', $config->getSize('big'));
+        $this->view->assign('sort_method', $sort_method);
     }
 }

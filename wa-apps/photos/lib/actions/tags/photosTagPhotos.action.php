@@ -13,10 +13,12 @@ class photosTagPhotosAction extends waViewAction
         $title = _w('Tag not found');
         $photos = array();
 
+        $config = $this->getConfig();
+        
         if ($tag) {
             $hash = '/tag/'.$tag_name;
             $collection = new photosCollection($hash);
-            $count = $this->getConfig()->getOption('photos_per_page');
+            $count = $config->getOption('photos_per_page');
             $photos = $collection->getPhotos("*,thumb,thumb_crop,thumb_middle,thumb_big,tags,edit_rights", 0, $count);
             $photos = photosCollection::extendPhotos($photos);
             $title = $collection->getTitle();
@@ -25,9 +27,12 @@ class photosTagPhotosAction extends waViewAction
             $this->view->assign('total_count', $collection->count());
         }
 
+        $this->view->assign('sidebar_width', $config->getSidebarWidth());
         $this->view->assign('title', $title);
         $this->view->assign('photos', $photos);
+        $this->view->assign('big_size', $config->getSize('big'));
+        $this->view->assign('sort_method', 'upload_datetime');
+        
         $this->template = 'templates/actions/photo/PhotoList.html';
-        $this->view->assign('big_size', $this->getConfig()->getSize('big'));
     }
 }

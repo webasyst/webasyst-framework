@@ -14,6 +14,7 @@ class photosCommentsPluginBackendListAction extends waViewAction
             'reply_to' => true
         ), $offset, $count);
 
+        $this->view->assign('sidebar_width', wa('photos')->getConfig()->getSidebarWidth());
         $this->view->assign('comments_author', photosCommentModel::getAuthorInfo(wa()->getUser()->getId()));
         $this->view->assign('comments', $comments);
         $this->view->assign('contact_rights', wa()->getUser()->getRights('contacts', 'backend'));

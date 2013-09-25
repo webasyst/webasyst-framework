@@ -165,12 +165,50 @@ class photosCollection
                 $method = strtolower($type).'Prepare';
                 if (method_exists($this, $method)) {
                     $this->$method(isset($this->hash[1]) ? $this->hash[1] : '', $auto_title);
+                } else {
+                    $params = array(
+                        'collection' => $this,
+                        'auto_title' => $auto_title,
+                        'add' => $add,
+                        'hash' => $this->hash,
+                        'options' => $this->options
+                    );
+                    /**
+                     * @event collection
+                     * @param array[string]mixed $params
+                     * @param array[string]photosCollection $params['collection']
+                     * @param array[string]boolean $params['auto_title']
+                     * @param array[string]boolean $params['add']
+                     * @param array[string]array $params['options']
+                     * @return bool null if ignored, true when something changed in the collection
+                     */
+                    $processed = wa()->event('collection', $params);
+                    if (!$processed) {
+                        throw new waException('Unknown collection hash type: '.htmlspecialchars($type));
+                    }
                 }
             } elseif ($auto_title) {
                 $this->order_by = 'p.upload_datetime DESC,p.id';
                 $this->addTitle(_w('All photos'));
             }
 
+            $params = array(
+                'collection' => $this,
+                'auto_title' => $auto_title,
+                'add' => $add,
+                'hash' => $this->hash,
+                'options' => $this->options,
+            );
+            /**
+             * @event extra_prepare_collection
+             * @param array[string]mixed $params
+             * @param array[string]photosCollection $params['collection']
+             * @param array[string]boolean $params['auto_title']
+             * @param array[string]boolean $params['add']
+             * @param array[string]array $params['options']
+             */
+            wa()->event('extra_prepare_collection', $params);
+            
             if ($this->prepared) {
                 return;
             }
@@ -344,14 +382,50 @@ class photosCollection
         }
         if (!$tag) {
             $tag = $tag_model->getByName($id);
-            $id = $tag['id'];
+            if ($tag) {
+                $id = (int) $tag['id'];
+            }
         }
         $this->joins['tags'] = array(
             'table' => 'photos_photo_tags',
             'alias' => 'pt',
         );
-        $this->where[] = "pt.tag_id = ".(int)$id;
-        $this->addTitle( sprintf( _w('Tagged “%s”'), $tag['name'] ) );
+        if (!$tag && strstr($id, ',') !== false) {
+            $this->tagPrepareIntersection($id);
+        } else {
+            $this->where[] = "pt.tag_id = ".(int)$id;
+            $this->addTitle( sprintf( _w('Tagged “%s”'), $tag['name'] ) );
+        }
+    }
+    
+    protected function tagPrepareIntersection($tag_names)
+    {
+        $tag_model = new photosTagModel();
+        
+        $in = array();
+        $title = array();
+        foreach (explode(',', $tag_names) as $tag_name) {
+            $tag = $tag_model->getByName($tag_name);
+            if ($tag) {
+                $in[] = (int) $tag['id'];
+                $title[] = $tag['name'];
+            }
+        }
+        if (!$in) {
+            $this->where[] = "0";
+        } else {
+            $sql = "SELECT photo_id, COUNT(tag_id) cnt FROM `photos_photo_tags` 
+                WHERE tag_id IN (".  implode(',', $in).")
+                GROUP BY photo_id
+                HAVING cnt = ".count($in);
+            $photo_id = array_keys($tag_model->query($sql)->fetchAll('photo_id'));
+            if ($photo_id) {
+                $this->where[] = "p.id IN (".implode(',', $photo_id).")";
+                $this->addTitle( sprintf( _w('Tagged “%s”'), implode(',', $title) ) );
+            } else {
+                $this->where[] = "0";
+            }
+        }
     }
 
     protected function authorPrepare($contact_id)
@@ -699,7 +773,7 @@ class photosCollection
          * @example public function preparePhotos(&$photos)
          * {
          *     foreach ($photos as &$photo) {
-         *         $item['thumb'][$this->id] = 'Extra info html code here';
+         *         $item['hooks']['thumb'][$this->id] = 'Extra info html code here';
          *     }
          * }
          * @param array[int][string]mixed $photos Post items
@@ -733,7 +807,13 @@ class photosCollection
         $this->prepare();
         $order = explode(',', $this->order_by);
 
-        if (count($order) == 2) {
+        if (count($order) == 3) {
+            $this->where['_offset'] = '('.$this->getPhotoOffsetCondition($photo, $order[0]).' OR ('.
+            $this->getPhotoOffsetCondition($photo, $order[0], true). ' AND '.$this->getPhotoOffsetCondition($photo, $order[1]).' ) OR ('.
+                $this->getPhotoOffsetCondition($photo, $order[0], true). ' AND '.
+                $this->getPhotoOffsetCondition($photo, $order[1], true). ' AND '.
+                $this->getPhotoOffsetCondition($photo, $order[2]). '))';
+        } else if (count($order) == 2) {
             $this->where['_offset'] = '('.$this->getPhotoOffsetCondition($photo, $order[0]).' OR ('.
             $this->getPhotoOffsetCondition($photo, $order[0], true). ' AND '.$this->getPhotoOffsetCondition($photo, $order[1]).' ))';
         } else {
@@ -847,6 +927,13 @@ class photosCollection
         return $this->title;
     }
 
+    /** Add WHERE condition. Primarily for plugins that extend this collection. */
+    public function addWhere($condition)
+    {
+        $this->where[] = $condition;
+        return $this;
+    }
+    
     public function addTitle($title, $delim = ', ')
     {
         if (!$title) {
@@ -856,5 +943,15 @@ class photosCollection
             $this->title .= $delim;
         }
         $this->title .= $title;
+    }
+    
+    public function setTitle($title)
+    {
+        $this->title = $title;
+    }
+    
+    public function setCheckRights($check_rights) 
+    {
+        $this->check_rights = $check_rights;
     }
 }

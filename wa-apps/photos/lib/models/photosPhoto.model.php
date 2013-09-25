@@ -2,6 +2,9 @@
 
 class photosPhotoModel extends waModel
 {
+    const SOURCE_BACKEND = 'backend';
+    const SOURCE_API = 'api';
+    
     protected $table = 'photos_photo';
 
     /**
@@ -530,4 +533,252 @@ class photosPhotoModel extends waModel
         }
         return null;
     }
+    
+    public function add(waRequestFile $file, $data)
+    {
+        // check image
+        if (!($image = $file->waImage())) {
+            throw new waException(_w('Incorrect image'));
+        }
+
+        $exif_data = photosExif::getInfo($file->tmp_name);
+        $image_changed = false;
+        if (!empty($exif_data['Orientation'])) {
+            $image_changed = $this->correctOrientation($exif_data['Orientation'], $image);
+        }
+
+        /**
+         * Extend upload proccess
+         * Make extra workup
+         * @event photo_upload
+         */
+        $event = wa()->event('photo_upload', $image);
+        if ($event && !$image_changed) {
+            foreach ($event as $plugin_id => $result) {
+                if ($result) {
+                    $image_changed = true;
+                    break;
+                }
+            }
+        }
+
+        $exclude = array('ext', 'size', 'type', 'width', 'height', 'upload_datetime');
+        foreach ($exclude as $name) {
+            if (isset($data[$name])) {
+                unset($data[$name]);
+            }
+        }
+        
+        $data = array_merge(array(
+            'name' => preg_replace('/\.[^\.]+$/', '' ,basename($file->name)),
+            'ext' => $file->extension,
+            'size' => $file->size,
+            'type' => $image->type,
+            'width' => $image->width,
+            'height' => $image->height,
+            'contact_id' => wa()->getUser()->getId(),
+            'upload_datetime'=> date('Y-m-d H:i:s'),
+        ), $data);
+
+        if (!isset($data['status'])) {
+            $data['status'] = 1;
+        }
+        if (!isset($data['groups'])) {
+            if ($data['status'] >= 1) {
+                $data['groups']= array(0);
+            } else  {
+                $data['groups'] = array(-wa()->getUser()->getId());
+            }
+        }
+        
+        if ($data['status'] <= 0) {
+            $data['hash'] = md5(uniqid(time(), true));
+        }
+        $photo_id = $data['id'] = $this->insert($data);
+        if (!$photo_id) {
+            throw new waException(_w('Database error'));
+        }
+
+        // update url
+        $url = $this->generateUrl($data['name'], $photo_id);
+        $this->updateById($photo_id, array(
+            'url' => $url
+        ));
+
+        // check rigths to upload folder
+        $photo_path = photosPhoto::getPhotoPath($data);
+        if ((file_exists($photo_path) && !is_writable($photo_path)) ||
+            (!file_exists($photo_path) && !waFiles::create($photo_path))) {
+            $this->deleteById($photo_id);
+            throw new waException(sprintf(_w("The insufficient file write permissions for the %s folder."), substr($photo_path, strlen($this->getConfig()->getRootPath()))));
+        }
+
+        if ($image_changed) {
+            $image->save($photo_path);
+            // save original
+            if (wa('photos')->getConfig()->getOption('save_original')) {
+                $original_file = photosPhoto::getOriginalPhotoPath($photo_path);
+                $file->moveTo($original_file);
+            }
+        } else {
+            $file->moveTo($photo_path);
+        }
+        unset($image);        // free variable
+
+        // add to album
+        if ($photo_id && !empty($data['album_id'])) {
+            $album_photos_model = new photosAlbumPhotosModel();
+
+            // update note if album is empty and note is yet null
+            $r = $album_photos_model->getByField('album_id', $data['album_id']);
+            if (!$r) {
+                $album_model = new photosAlbumModel();
+                $sql = "UPDATE " . $album_model->getTableName() . " SET note = IFNULL(note, s:note) WHERE id = i:album_id";
+                $time = !empty($exif_data['DateTimeOriginal']) ? strtotime($exif_data['DateTimeOriginal']) : time();
+                $album_model->query($sql, array(
+                    'note' => mb_strtolower(_ws(date('F', $time))).' '._ws(date('Y', $time)),
+                    'album_id' => $data['album_id']
+                ));
+            }
+
+            // add to album iteself
+            $sort = (int)$album_photos_model->query("SELECT sort + 1 AS sort FROM " . $album_photos_model->getTableName() .
+                " WHERE album_id = i:album_id ORDER BY sort DESC LIMIT 1", array('album_id' => $data['album_id'])
+            )->fetchField('sort');
+            $album_photos_model->insert(array(
+                'photo_id' => $photo_id,
+                'album_id' => $data['album_id'],
+                'sort' => $sort
+            ));
+        }
+
+        // save rights for groups
+        if ($data['groups']) {
+            $rights_model = new photosPhotoRightsModel();
+            $rights_model->multiInsert(array('photo_id' => $photo_id, 'group_id' => $data['groups']));
+        }
+
+        // save exif data
+        if (!empty($exif_data)) {
+            $exif_model = new photosPhotoExifModel();
+            $exif_model->save($photo_id, $exif_data);
+        }
+
+        $sizes = wa('photos')->getConfig()->getSizes();
+
+        photosPhoto::generateThumbs($data, $sizes);
+
+        return $photo_id;
+    }
+    
+    private function correctOrientation($orientation, waImage $image)
+    {
+        $angles = array(
+            3 => '180', 4 => '180',
+            5 => '90',  6 => '90',
+            7 => '-90', 8 => '-90'
+        );
+        if (isset($angles[$orientation])) {
+            $image->rotate($angles[$orientation]);
+            return true;
+        }
+        return false;
+    }
+    
+    private function urlExists($url, $photo_id)
+    {
+        $where = "url = s:url AND id != i:id";
+        return !!$this->select('id')->where($where, array(
+            'url' => $url,
+            'id' => $photo_id
+        ))->fetch();
+    }
+
+    private function generateUrl($name, $photo_id)
+    {
+        $counter = 1;
+        $original_url = photosPhoto::suggestUrl($name);
+        $url = $original_url;
+        while ($this->urlExists($url, $photo_id)) {
+            $url = "{$original_url}_{$counter}";
+            $counter++;
+        }
+        return $url;
+    }
+    
+    public function rotate($id, $clockwise = true)
+    {
+        $photo_rights_model = new photosPhotoRightsModel();
+        $photo = $this->getById($id);
+
+        if (!$photo || !$photo_rights_model->checkRights($photo, true)) {
+            throw new waException(_w("You don't have sufficient access rights"));
+        }
+
+        $photo_path = photosPhoto::getPhotoPath($photo);
+
+        $paths = array();
+        try {
+            $image = new photosImage($photo_path);
+            $result_photo_path = preg_replace('/(\.[^\.]+)$/','.result$1',$photo_path);
+            $backup_photo_path = preg_replace('/(\.[^\.]+)$/','.backup$1',$photo_path);
+            $paths[] = $result_photo_path;
+            $angle = $clockwise ? '90' : '-90';
+            $result = $image->rotate($angle)->save($result_photo_path);
+            if ($result) {
+                $count = 0;
+                while(!file_exists($result_photo_path) && ++$count<5) {
+                    sleep(1);
+                }
+                if(!file_exists($result_photo_path)) {
+                    throw new waException("Error while rotate. I/O error");
+                }
+                $paths[] = $backup_photo_path;
+                if(waFiles::move($photo_path,$backup_photo_path)) {
+                    if(!waFiles::move($result_photo_path,$photo_path)) {
+                        if(!waFiles::move($backup_photo_path,$photo_path)) {
+                            throw new waException("Error while rotate. Original file corupted but backuped" );
+                        }
+                        throw new waException("Error while rotate. Operation canceled");
+                    } else {
+                        $edit_datetime = date('Y-m-d H:i:s');
+                        $data = array(
+                            'edit_datetime' => $edit_datetime,
+                            'width' => $photo['height'],
+                            'height' => $photo['width']
+                        );
+                        $this->updateById($id, $data);
+                        $photo = array_merge($photo, $data);
+
+                        $thumb_dir = photosPhoto::getPhotoThumbDir($photo);
+                        $back_thumb_dir = preg_replace('@(/$|$)@','.back$1', $thumb_dir, 1);
+                        $paths[] = $back_thumb_dir;
+                        waFiles::delete($back_thumb_dir);
+                        if (!(waFiles::move($thumb_dir, $back_thumb_dir) || waFiles::delete($back_thumb_dir)) && !waFiles::delete($thumb_dir)){
+                            throw new waException("Error while rebuild thumbnails");
+                        }
+                    }
+
+                    $obligatory_sizes = wa('photos')->getConfig()->getSizes();
+                    try {
+                        photosPhoto::generateThumbs($photo, $obligatory_sizes);
+                    } catch(Exception $e) {
+                        waLog::log($e->getMessage());
+                    }
+                    
+                } else {
+                    throw new waException("Error while rotate. Operation canceled");
+                }
+            }
+            foreach($paths as $path) {
+                waFiles::delete($path);
+            }
+        } catch(Exception $e) {
+            foreach($paths as $path) {
+                waFiles::delete($path);
+            }
+            throw $e;
+        }
+    }
+    
 }

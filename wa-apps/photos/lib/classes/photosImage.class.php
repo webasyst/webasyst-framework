@@ -41,10 +41,7 @@ class photosImage
     {
         $config = wa('photos')->getConfig();
         if($quality === null) {
-            $quality = $config->getOption('save_quality');
-            if(!$quality) {
-                $quality = 100;
-            }
+            $quality = $config->getSaveQuality();
         }
         // check save_original option
         if ($config->getOption('save_original')) {

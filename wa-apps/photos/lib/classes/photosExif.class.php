@@ -60,7 +60,7 @@ class photosExif
     }
 
 
-    private function exif_get_gps($coords, $sign)
+    private static function exif_get_gps($coords, $sign)
     {
         $degrees = count($coords) > 0 ? self::exif_get_float($coords[0]) : 0;
         $minutes = count($coords) > 1 ? self::exif_get_float($coords[1]) : 0;

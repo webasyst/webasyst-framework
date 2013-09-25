@@ -44,7 +44,7 @@
     <ul class="menu-h dropdown">
 
         <!-- core filters -->
-        <li {if $wa->param('action') neq 'photo' && $wa->param('action') neq 'page' && $wa->param('action') neq 'album' && !$wa->param('hash')} class="selected"{/if}>
+        <li {if $wa->currentUrl() == $wa_app_url} class="selected"{/if}>
             <a href="{$wa_app_url}">[`Photostream`]</a>
         </li>
         <li {if $wa->param('action') neq 'page' && $wa->param('action') neq 'album' && $wa->param('hash') == 'favorites'} class="selected"{/if}>

@@ -233,4 +233,22 @@ class photosAlbumPhotosModel extends waModel
         }
         return array();
     }
+    
+    /**
+     * Delete photos from album
+     *
+     * @param int $album_id
+     * @param array $photo_ids
+     * @return boolean
+     */
+    public function deletePhotos($album_id, $photo_ids = array())
+    {
+        if (!$album_id) {
+            return false;
+        }
+        if (!$this->deleteByField(array('album_id' => $album_id, 'photo_id' => $photo_ids))) {
+            return false;
+        }
+        return true;
+    }
 }

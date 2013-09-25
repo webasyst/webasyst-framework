@@ -87,7 +87,7 @@ return array(
         'ext' => array('varchar', 10),
         'size' => array('int', 11),
         'type' => array('varchar', 50),
-        'rate' => array('tinyint', 1, 'null' => 0, 'default' => '0'),
+        'rate' => array('decimal', "3,2", 'null' => 0, 'default' => '0.00'),
         'width' => array('int', 5, 'null' => 0, 'default' => '0'),
         'height' => array('int', 5, 'null' => 0, 'default' => '0'),
         'contact_id' => array('int', 11, 'null' => 0),
@@ -99,6 +99,7 @@ return array(
         'parent_id' => array('int', 11, 'null' => 0, 'default' => '0'),
         'stack_count' => array('int', 11, 'null' => 0, 'default' => '0'),
         'sort' => array('int', 11, 'null' => 0, 'default' => '0'),
+        'source' => array('varchar', 32, 'null' => 0, 'default' => 'backend'),
         ':keys' => array(
             'PRIMARY' => 'id',
             'url' => array('url', 'unique' => 1),

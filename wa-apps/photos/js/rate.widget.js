@@ -8,7 +8,8 @@
             }
             if (options == 'setOption') {
                 if (ext == 'rate') {
-                    update.call(this, parseInt(value));
+                    var val = parseFloat(value) || 0;
+                    update.call(this, Math.round(val * 2) / 2);
                     ext = {
                         rate: value
                     };
@@ -28,7 +29,8 @@
             onUpdate: function() {},
             rate: null,
             hold: false,
-            withClearAction: true
+            withClearAction: true,
+            alwaysUpdate: false
         }, options || {}));
 
         var settings = this.data('rateWidgetSettings'),
@@ -53,8 +55,8 @@
                 if (target.tagName == 'I') {
                     target = $(target);
                     target.prevAll()
-                        .removeClass('star star-empty').addClass('star-hover').end()
-                        .removeClass('star star-empty').addClass('star-hover');
+                        .removeClass('star star-half star-empty').addClass('star-hover').end()
+                        .removeClass('star star-half star-empty').addClass('star-hover');
                     target.nextAll().removeClass('star star-hover').addClass('star-empty');
                 }
             }).mouseleave(function() {
@@ -83,7 +85,7 @@
                         rate++;
                         $(this).removeClass('star-empty').addClass('star');
                         if (this == item) {
-                            if (prev_rate != rate) {
+                            if (settings.alwaysUpdate || prev_rate != rate) {
                                 self.attr('data-rate', rate);
                                 settings.onUpdate(rate);
                             }
@@ -133,13 +135,19 @@
         function update(new_rate) {
             var rate = 0;
             this.find('i')
-                .removeClass('star star-hover')
+                .removeClass('star star-empty star-half star-hover')
                 .addClass('star-empty').each(function() {
                     if (rate == new_rate) {
                         return false;
                     }
                     rate++;
-                    $(this).removeClass('star-empty').addClass('star');
+                    if (rate > new_rate) {
+                        if (rate - new_rate == 0.5) {
+                            $(this).removeClass('star-empty').addClass('star-half');
+                        }
+                    } else {
+                        $(this).removeClass('star-empty').addClass('star');
+                    }
                 });
             this.attr('data-rate', new_rate);
         }

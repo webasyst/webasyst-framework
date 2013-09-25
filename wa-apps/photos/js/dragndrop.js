@@ -1,4 +1,5 @@
 (function($) {
+    
     $.photos_dragndrop = {
         helper_shift: 20,
 
@@ -35,6 +36,7 @@
                     document.ondragstart = null;
                     $(document).unbind('scroll', $.photos_dragndrop._scrolHelper);
                     $('#album-list-container').removeClass('p-drag-active');
+                    hideSortHint();
                 },
                 drag: function(event, ui) {
                     var e = event.originalEvent;
@@ -121,29 +123,21 @@
                 tolerance: 'pointer',
                 over: function(event, ui) {
                     // sorting in not static album is illegal
-                    var album = $.photos.getAlbum();
-                    if (!album || album.type != Album.TYPE_STATIC || album.edit_rights === false) {
-                        return false;
-                    }
+
                     if (ui.draggable.hasClass('dr')) {
                         return false;
                     }
-                    // active
-                    var self = $(this);
-                    if (self.hasClass('last')) {
-                        ui.draggable.extDragActivate = (function(self) {
-                            return function (e) {
-                                $.photos_dragndrop._extDragActivate(e, self);
-                            };
-                        })(self);
-                        $(document).bind('mousemove', ui.draggable.extDragActivate);
+                    
+                    var sort_enable = isSortEnable();
+                    if (!sort_enable) {
+                        showSortHint();
                     } else {
-                        self.addClass('drag-active');
+                        hideSortHint();
                     }
+                    $.photos_dragndrop._activatePhotoListItem.call(this, ui);
                 },
                 out: function(event, ui) {
-                    // unactive
-                    $.photos_dragndrop._unactivatePhotoListItem.call(this);
+                    $.photos_dragndrop._unactivatePhotoListItem.call(this, ui);
                     if (ui.draggable.extDragActivate) {
                         $(document).unbind('mousemove', ui.draggable.extDragActivate);
                     }
@@ -152,12 +146,12 @@
                     if (ui.draggable.extDragActivate) {
                         $(document).unbind('mousemove', ui.draggable.extDragActivate);
                     }
+                    
+                    var sort_enable = isSortEnable();
+                    
                     // sorting in not static album is illegal
                     var album = $.photos.getAlbum();
-                    if (!album || album.type != Album.TYPE_STATIC || album.edit_rights === false) {
-                        $.photos_dragndrop._unactivatePhotoListItem.call(this);
-                        return false;
-                    }
+                    
                     // drop into itself is illegal
                     var draggable = ui.draggable.parents('li:first'),
                         self = $(this);
@@ -166,20 +160,31 @@
                         return false;
                     }
 
+                    if (!sort_enable) {
+                        return false;
+                    }
+
                     // define selected item
                     var selected = $('#photo-list li.selected');
                     if (!selected.length) {
                         selected = draggable;
                     }
+                    
+                    $.photos_dragndrop._unactivatePhotoListItem.call(this);
 
                     // visually sorting and some clear actions
                     var before_id = parseInt(self.attr('data-photo-id'));
-                    if (self.hasClass('last') && self.hasClass('drag-active-last')) {
+                    if (self.hasClass('last')) {
                         before_id = null;
-                        self.after(selected).removeClass('drag-active drag-active-last last');
-                        $(selected).filter(':last').addClass('last');
+                        self.after(selected);
+                        self.removeClass('last');
+                        $('#photo-list li:last').addClass('last');
                     } else {
-                        self.before(selected).removeClass('drag-active');
+                        self.before(selected);
+                        if (draggable.hasClass('last')) {
+                            draggable.removeClass('last')
+                            $('#photo-list li:last').addClass('last');
+                        }
                     }
                     // clear visuall hightlights
                     selected.trigger('select', false);
@@ -255,17 +260,20 @@
                     if (ui.draggable.get(0).tagName == 'IMG') {
                         return false;
                     }
-                    $(this).addClass('active').parent().parent().addClass('drag-active');
+                    var className = isSortEnable() ? 'drag-active' : 'drag-active-disabled';
+                    $(this).addClass('active').parent().parent().addClass(className);
                 },
                 out: function(event, ui) {
-                    $(this).removeClass('active').parent().parent().removeClass('drag-active');
+                    var className = isSortEnable() ? 'drag-active' : 'drag-active-disabled';
+                    $(this).removeClass('active').parent().parent().removeClass(className);
                 },
                 deactivate: function(event, ui) {
                     var self = $(this);
                     if (self.is(':animated') || self.hasClass('dragging')) {
                         self.stop().animate({height: '0px'}, 300, null, function(){self.removeClass('dragging');});
                     }
-                    $(this).removeClass('active').parent().parent().removeClass('drag-active');
+                    var className = isSortEnable() ? 'drag-active' : 'drag-active-disabled';
+                    $(this).removeClass('active').parent().parent().removeClass(className);
                 },
                 drop: function (event, ui) {
                     // legal only for album (li)
@@ -564,16 +572,114 @@
             helper.data('scrollTop', scroll_top);
         },
 
+        _dropAnimation: function(items, done) {
+            var duration = 300;
+            var deferreds = [];
+            items.each(function() {
+                var item = $(this);
+                var item_offset = item.offset();
+                var item_clone = item.clone().css({
+                    'z-index': 10,
+                    position: 'absolute',
+                    top: item_offset.top,
+                    left: item_offset.left
+                }).insertAfter(item);
+                item.css({
+                    opacity: 0
+                });
+                deferreds.push(
+                    item.hide(duration).promise()
+                );
+                deferreds.push(item_clone.animate({
+                    top: item_offset.top,
+                    left: item_offset.left
+                }, duration).promise().done(function() {
+                    $(this).remove();
+                }));
+            });
+            $.when.apply($, deferreds).done(function() {
+                if (typeof done === 'function') {
+                    done();
+                }
+            });
+        },
+
+        _shiftToLeft: function(item) {
+            if (item.data('shifted') !== 'left') {
+                var children = item.children();
+                var wrapper = $("<div class='p-wrapper' style='position:relative;'></div>").appendTo(item);
+                wrapper.append(children);
+                wrapper.animate({
+                    left: -15
+                }, 200);
+                item.data('shifted', 'left');
+            }
+        },
+        _shiftToRight: function(item) {
+                if (item.data('shifted') !== 'right') {
+                    var children = item.children();
+                    var wrapper = $("<div class='p-wrapper' style='position:relative;'></div>").appendTo(item);
+                    wrapper.append(children);
+                    wrapper.animate({
+                        left: 15
+                    }, 200);
+                    item.data('shifted', 'right');
+                }
+        },
+        _shiftAtPlace: function(item) {
+            if (item.data('shifted')) {
+                var wrapper = item.find('.p-wrapper');
+                if (wrapper.length) {
+                    var children = wrapper.children();
+                    wrapper.stop().css({
+                        left: 0
+                    });
+                    item.append(children);
+                    wrapper.remove();
+                }
+                item.data('shifted', '');
+            }
+        },
+
+        _activatePhotoListItem: function(ui) {
+                var self = $(this);
+                var sort_enable = isSortEnable();
+                var className = sort_enable ? 'drag-active' : 'drag-active-disabled';
+                if (sort_enable) {
+                    $.photos_dragndrop._shiftToRight(self);
+                }
+                if (self.hasClass('last')) {
+                    ui.draggable.extDragActivate = (function(self, className) {
+                        return function (e) {
+                            $.photos_dragndrop._extDragActivate(
+                                e,  self, className
+                            );
+                        };
+                    })(self, className);
+                    $(document).bind('mousemove', ui.draggable.extDragActivate);
+                } else {
+                    self.addClass(className);
+                }  
+        },
+
         // clear (unactive) action
-        _unactivatePhotoListItem: function() {
+        //#
+        _unactivatePhotoListItem: function(ui) {
             var self = $(this);
-            self.removeClass('drag-active').remove('drag-active-last');
+            var sort_enable = isSortEnable();
+            var className =  sort_enable ? 'drag-active' : 'drag-active-disabled';
+            var classNameOfLast = className + '-last';
+            self.removeClass(className + ' ' + classNameOfLast);
+            if (sort_enable) {
+                $.photos_dragndrop._shiftAtPlace(self);
+            }
         },
 
         // active/inactive drop-li both left and right
-        _extDragActivate: function(e, self) {
+        _extDragActivate: function(e, self, className) {
+            var classNameOfLast = className + '-last';
             if (!self.hasClass('last')) {
-                self.addClass('drag-active');
+                self.addClass(className);
                 return;
             }
             var pageX = e.pageX,
@@ -584,21 +690,25 @@
 
             if ($.photos.list_template == 'template-photo-thumbs') {
                 if (pageX > self_position.left + self_width*0.5) {
-                    self.removeClass('drag-active').addClass('drag-active-last');
+                    self.removeClass(className).addClass(classNameOfLast);
+                    $.photos_dragndrop._shiftToLeft(self);
                 } else if (pageX > self_position.left) {
-                    self.removeClass('drag-active-last').addClass('drag-active');
+                    self.removeClass(classNameOfLast).addClass(className);
+                    $.photos_dragndrop._shiftToRight(self);
+                } else {
+                    $.photos_dragndrop._shiftAtPlace(self);
                 }
             } else if ($.photos.list_template == 'template-photo-descriptions') {
                 if (pageY > self_position.top + self_height*0.5) {
-                    self.removeClass('drag-active').addClass('drag-active-last');
+                    self.removeClass(className).addClass(classNameOfLast);
                 } else if (pageY > self_position.top) {
-                    self.removeClass('drag-active-last').addClass('drag-active');
+                    self.removeClass(classNameOfLast).addClass(className);
                 }
             }
             if (pageY < self_position.top || pageY > self_position.top + self_height ||
                     pageX < self_position.left || pageX > self_position.left + self_width)
             {
-                self.removeClass('drag-active').removeClass('drag-active-last');
+                self.removeClass(className).removeClass(classNameOfLast);
             }
         },
 
@@ -673,4 +783,27 @@
         }
 
     };
+    
+    function isSortEnable() {
+        var album = $.photos.getAlbum();
+        if (!album || album.type !== Album.TYPE_STATIC || album.edit_rights === false) {
+            return false;
+        }
+        return true;
+    }
+    
+    function showSortHint() {
+        var sort_method = $.photos.getOption('sort_method');
+        if (sort_method) {
+            var block = $('#hint-menu-block').show();
+            block.children().hide();
+            block.find('.' + sort_method).show();
+        }
+    }
+    
+    function hideSortHint() {
+            var block = $('#hint-menu-block').hide();
+            block.children().hide();
+    }
+    
 })(jQuery);

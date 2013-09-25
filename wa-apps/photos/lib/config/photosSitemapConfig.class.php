@@ -9,6 +9,7 @@ class photosSitemapConfig extends waSitemapConfig
 
         $album_model = new photosAlbumModel();
         $album_photos_model = new photosAlbumPhotosModel();
+        $page_model = new photosPageModel();
 
         foreach ($routes as $route) {
             $this->routing->setRoute($route);
@@ -53,10 +54,22 @@ class photosSitemapConfig extends waSitemapConfig
             }
 
             // favorite page
-            $this->addUrl(photosCollection::getFrontendLink('favorites', false), $favorites_lastmod_time);
+            $this->addUrl(photosCollection::getFrontendLink('favorites', false), $favorites_lastmod_time ? $favorites_lastmod_time : time());
+
+            // pages
+
+            $main_url = wa()->getRouteUrl($app_id."/frontend", array(), true);
+            $domain = $this->routing->getDomain(null, true);
+            $sql = "SELECT full_url, url, create_datetime, update_datetime FROM ".$page_model->getTableName().'
+                    WHERE status = 1 AND domain = s:domain AND route = s:route';
+            $pages = $page_model->query($sql, array('domain' => $domain, 'route' => $route['url']))->fetchAll();
+            foreach ($pages as $p) {
+                $this->addUrl($main_url.$p['full_url'], $p['update_datetime'] ? $p['update_datetime'] : $p['create_datetime'], self::CHANGE_MONTHLY, 0.6);
+            }
+
 
             // main page
-            wa()->getRouteUrl($app_id."/frontend", array(), true);
+            $this->addUrl($main_url, time(), self::CHANGE_DAILY, 1.0);
         }
     }
 }

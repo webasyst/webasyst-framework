@@ -19,8 +19,10 @@
             {/if}
         </p>
     {/if}
-    {* @event frontend_photo.%plugin_id%.sidebar *}
-    {foreach $frontend_photo as $plugin_id => $item}{if !empty($item.sidebar)}{$item.sidebar}{/if}{/foreach}
+    <div id="photo-hook-sidebar">
+        {* @event frontend_photo.%plugin_id%.sidebar *}
+        {foreach $frontend_photo as $plugin_id => $item}{if !empty($item.sidebar)}{$item.sidebar}{/if}{/foreach}
+    </div>
     {if $exif}
         <p class="exif small" id="photo-exif">
             {$exif}
@@ -35,7 +37,7 @@
     {/if}
 
     {* @event frontend_photo.%plugin_id%.content *}
-    {foreach $frontend_photo as $plugin_id => $item}{if !empty($item.sidebar)}{$item.content}{/if}{/foreach}
+    {foreach $frontend_photo as $plugin_id => $item}{if !empty($item.content)}{$item.content}{/if}{/foreach}
 </div>
 <div class="content right300px">
     <div class="align-center">

@@ -58,13 +58,7 @@
             // See the basic file upload widget for more information:
             add: function (e, data) {
                 if ($("#p-uploader").is(":hidden")) {
-                    $("#p-uploader").waDialog({
-                        'onLoad': $.photos.onUploadDialog,
-                        'onSubmit': function () {
-                            $('#p-start-upload-button').click();
-                            return false;
-                        }
-                    });
+                    $.photos.uploadDialog();
                 }
                 var that = $(this).data('fileupload'),
                     files = data.files;
@@ -215,11 +209,6 @@
                         'width',
                         parseInt(data.loaded / data.total * 90, 10) + '%'
                     );
-                    /*
-                    data.context.find('.p-upload-onephoto-progress').animate({
-                        'width': parseInt(data.loaded / data.total * 100, 10) + '%'
-                    })
-                    */
                 }
             },
             // Callback for global upload progress events:
@@ -229,11 +218,6 @@
                     'width',
                     parseInt(data.loaded / data.total * 95, 10) + '%'
                 );
-                /*
-                $this.find('.fileupload-progressbar').animate({
-                    'width': parseInt(data.loaded / data.total * 100, 10) + '%'
-                });
-                */
                 $("#p-upload-filescount").html(parseInt(data.loaded / data.total * 95, 10) + '%');
                 $this.find('.progress-extended').each(function () {
                         $(this).html(
@@ -274,19 +258,24 @@
                 $.get('?module=backend&action=log&action_to_log=photos_upload');
 
                 if (!self.data('is_error') && !self.data('is_aborted')) {
-                    var album_id = parseInt($("#upload-album-id").val(), 10);
-                    if (album_id) {
-                        var hash = '#/album/' + album_id + '/';
-                        if (location.hash == hash) {
-                            $.photos.albumAction(album_id);
-                        } else {
-                            $.wa.setHash(hash);
-                        }
+                    var parent_id = parseInt($('#p-uploader-parent').val(), 10);
+                    if (parent_id) {
+                        $.photos.dispatch();
                     } else {
-                        if (location.hash.replace(/^[^#]*#\/*/, '') == '') {
-                            $.photos.photosAction();
+                        var album_id = parseInt($("#upload-album-id").val(), 10);
+                        if (album_id) {
+                            var hash = '#/album/' + album_id + '/';
+                            if (location.hash == hash) {
+                                $.photos.albumAction(album_id);
+                            } else {
+                                $.wa.setHash(hash);
+                            }
                         } else {
-                            $.wa.setHash('#/');
+                            if (location.hash.replace(/^[^#]*#\/*/, '') == '') {
+                                $.photos.photosAction();
+                            } else {
+                                $.wa.setHash('#/');
+                            }
                         }
                     }
                     $('#p-uploader').trigger('close');
@@ -294,6 +283,7 @@
                 self.data('is_error', false);
                 self.data('is_aborted', false);
                 $('#p-upload-step3-buttons .cancel').text($_('Close'));
+                $('#p-uploader-parent').val(0);
             },
             // Callback for file deletion:
             destroy: function (e, data) {
@@ -574,14 +564,6 @@
                         $(this).is(':checked')
                     );
                 });
-            $('#p-uploader').bind('close', function() {
-                $('#p-upload-step2').hide();
-                $('#p-upload-step2-buttons').hide();
-                $('#p-upload-step3').hide();
-                $('#p-upload-step3-buttons').hide();
-                $('#p-upload-step1').show();
-                $('#p-upload-step1-buttons').show();
-            });
         },
 
         _destroyButtonBarEventHandlers: function () {
@@ -661,6 +643,9 @@
             if (that._trigger('drop', e, data) === false ||
                 that._onAdd(e, data) === false) {
                 return false;
+            }
+            if ($.photos && $.photos.isCurrentPhotoStack()) {
+                $('#p-uploader-parent').val($.photos.getPhotoId());
             }
             e.preventDefault();
         },

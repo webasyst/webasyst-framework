@@ -30,6 +30,31 @@
     <div class="sidebar right300px">
         <!-- stream navigation -->
         {$photo_stream}
+    </div>
+    <div class="content right300px">
+        <!-- photo info -->
+        <h4 id="photo-name" itemprop="name">{$photo.name}</h4>
+        {if $photo.description}
+            <p id="photo-description" itemprop="description">{$photo.description}</p>
+        {/if}
+        
+        <div id="photo-hook-sidebar">
+            {* @event frontend_photo.%plugin_id%.sidebar *}
+            {foreach $frontend_photo as $plugin_id => $item}{if !empty($item.sidebar)}{$item.sidebar}{/if}{/foreach}
+        </div>
+        
+        {if $exif}
+            <p class="exif hint" id="photo-exif">
+                {$exif}
+            </p>
+        {/if}
+        {if $author}
+            <p class="hint">
+                <span id="photo-author">
+                    [`Uploaded by`] <span class="photo-info">{$author}</span>
+                </span>
+            </p>
+        {/if}
         {if $albums || $tags}
             <p class="small">
                 {if $albums}
@@ -44,30 +69,10 @@
                 {/if}
             </p>
         {/if}
-    </div>
-    <div class="content right300px">
-        <!-- photo info -->
-        <h4 id="photo-name" itemprop="name">{$photo.name}</h4>
-        {if $photo.description}
-            <p id="photo-description" itemprop="description">{$photo.description}</p>
-        {/if}
-        {* @event frontend_photo.%plugin_id%.sidebar *}
-        {foreach $frontend_photo as $plugin_id => $item}{if !empty($item.sidebar)}{$item.sidebar}{/if}{/foreach}
-            {if $exif}
-            <p class="exif hint" id="photo-exif">
-                {$exif}
-            </p>
-        {/if}
-        {if $author}
-            <p class="hint">
-                <span id="photo-author">
-                    [`Uploaded by`] <span class="photo-info">{$author}</span>
-                </span>
-            </p>
-        {/if}
-
-        {* @event frontend_photo.%plugin_id%.content *}
-        {foreach $frontend_photo as $plugin_id => $item}{if !empty($item.sidebar)}{$item.content}{/if}{/foreach}
+        <div id="photo-hook-content">
+            {* @event frontend_photo.%plugin_id%.content *}
+            {foreach $frontend_photo as $plugin_id => $item}{if !empty($item.content)}{$item.content}{/if}{/foreach}
+        </div>
     </div>
     <div class="clear-both"></div>
 

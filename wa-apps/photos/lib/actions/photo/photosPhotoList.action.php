@@ -11,15 +11,19 @@ class photosPhotoListAction extends waViewAction
     {
         $this->collection = new photosCollection('');
 
-        $count = $this->getConfig()->getOption('photos_per_page');
+        $config = $this->getConfig();
+        
+        $count = $config->getOption('photos_per_page');
         $photos = $this->getPhotos(0, $count);
         $photos = photosCollection::extendPhotos($photos);
         $this->view->assign('photos', $photos);
 
+        $this->view->assign('sidebar_width', $config->getSidebarWidth());
         $this->view->assign('frontend_link', photosCollection::getFrontendLink(''));
         $this->view->assign('title', $this->collection->getTitle());
         $this->view->assign('total_count', $this->collection->count());
-        $this->view->assign('big_size', $this->getConfig()->getSize('big'));
+        $this->view->assign('big_size', $config->getSize('big'));
+        $this->view->assign('sort_method', 'upload_datetime');
     }
 
     public function getTemplate()

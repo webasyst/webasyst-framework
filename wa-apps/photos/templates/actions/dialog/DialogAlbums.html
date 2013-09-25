@@ -3,6 +3,7 @@
     <form method="post" action="">
     <div class="dialog-window">
         <div class="dialog-content">
+            <div class="dialog-content-indent">
                 <h1>{if $photo}{$photo.name|escape}{else}[`Add to album`] <span class="gray">(0)</span>{/if}</h1>
                 {if !empty($albums)}
                     {function choose_albums_menu parent=0}
@@ -23,6 +24,7 @@
                 {else}
                     [`No one album exists`]
                 {/if}
+            </div>
         </div>
         <div class="dialog-buttons">
             <input class="button green" type="submit" value="[`Save`]"> [`or`] <a class="cancel" href="#">[`cancel`]</a>

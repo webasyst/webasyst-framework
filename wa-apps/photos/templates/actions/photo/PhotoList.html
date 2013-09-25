@@ -30,8 +30,11 @@
             <li data-action='set-rate'><a href="#;"><i class="icon16 star"></i>[`Rate`]</a></li>
             <li data-action='add-to-album'><a href="#"><i class="icon16 pictures"></i>[`Add to album`]</a></li>
             <li data-action='assign-tags'><a href="#"><i class="icon16 tags"></i>[`Assign tags`]</a></li>
+            {if !empty($album) && $album.type == photosAlbumModel::TYPE_STATIC}
+                <li data-action='delete-from-album'><a href="#"><i class="icon10 no-bw"></i>[`Remove from album`]</a></li>
+            {/if}
             <!-- plugin hook: backend_toolbar_list_organize_selected_link -->
-            <li data-action='manage-access'><a href="#"><i class="icon16 lock"></i>[`Manage access`]</a></li>
+            <li data-action='manage-access' class="top-padded"><a href="#"><i class="icon16 lock"></i>[`Manage access`]</a></li>
             <li data-action='delete-photos'><a href="#"><i class="icon16 delete"></i>[`Delete photos`]</a></li>
         </ul>
     </div>
@@ -53,9 +56,14 @@
             <li data-action='select-photos'><a href="#" class="inline-link small"><i class="icon16 checkboxes"></i><b><i>[`Select all photos`]</i></b></a></li>
         </ul>
     </div>
+    <div class="block" id="hint-menu-block" style="display:none;">
+        <p class="p-sort-order-error-disclaimer upload_datetime" style="display:none;">[`Photos in this list are sorted <strong>by upload time</strong>. Sort order cannot be set manually here.`]</p>
+        <p class="p-sort-order-error-disclaimer rate" style="display:none;">[`Photos in this list are sorted <strong>by rating</strong>. Sort order cannot be set manually here.`]</p>
+        <p class="p-sort-order-error-disclaimer sort" style="display:none;">[`You do not have sufficient access rights to alter photos sort order in this list.`]</p>
+    </div>
 </div>
-
-<div class="content left200px right200px" id="p-content">
+            
+<div class="content left{$sidebar_width}px right200px" id="p-content">
     <div class="block double-padded" id="p-block">
         <h1>
             <span {if isset($album) && !empty($album.edit_rights)}class="editable"{/if} id="photo-list-name">{$title|escape}</span>
@@ -105,7 +113,7 @@
                         <i class="icon10 delete-bw"></i>
                         <a href="#" id="p-album-delete" class="gray">[`Delete album`]</a>
                     {/if}
-                {else if (isset($frontend_link))}
+                {else if (!empty($frontend_link))}
                     [`Public link`]: <a target="_blank" href="{$frontend_link}" id="photo-list-frontend-link">{$frontend_link}</a>
                     <i class="icon10 new-window"></i>
                 {/if}
@@ -154,9 +162,7 @@
             <input type="checkbox" id="photos-checkbox-{%#p.id%}" name="photo_id[]" value="{%#p.id%}" >
             <label for="photos-checkbox-{%#p.id%}"><strong>{%#p.name%}</strong></label>
             <span class="p-rate" {% if (p.rate == 0) { %}style="display: none;"{% } %}>
-            {% for (var j = 0; j < 5; j++) { %}
-                <i class="icon10 star{%#(j < p.rate ? '' : '-empty')%}"></i>
-            {% } %}
+                {%#$.photos.getRatingHtml(p.rate, 10, true)%}
             </span>
         </div>
         <div class="p-description">
@@ -282,4 +288,5 @@
     $.photos.photo_stream_cache.set({json_encode(array_values($photos))});
     $.photos.total_count = {if !empty($total_count)}{$total_count}{else}null{/if};
     $.photos.photos_per_page = {$photos_per_page};
+    $.photos.setOption('sort_method', '{$sort_method}');
 </script>

@@ -17,6 +17,8 @@ return array(
         'frontend_photo'  => 'frontendPhoto',
         'make_stack'      => 'backendMakeStack',
         'unmake_stack'    => 'backendUnmakeStack',
-        'photo_delete'    => 'backendPhotoDelete'
+        'photo_delete'    => 'backendPhotoDelete',
+        'contacts_links' => 'contactsLinks',
+        'contacts_delete' => 'contactsDelete'
     ),
 );

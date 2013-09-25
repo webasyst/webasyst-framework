@@ -16,11 +16,14 @@ class photosPhotoDeleteController extends waJsonController
             // before deleting define if is it children photo in stack (one photo page)
             if (count($allowed_photo_id) == 1 && count($photo_id) == 1) {
                 $photo = $photo_model->getById($allowed_photo_id);
-                if ($photo['parent_id'] > 0) {
-                    $this->response['parent_id'] = $photo['parent_id'];
+                if ($photo) {
+                    $photo = reset($photo);
+                    if ($photo['parent_id'] > 0) {
+                        $this->response['parent_id'] = $photo['parent_id'];
+                    }
                 }
             }
-
+            
             foreach ($allowed_photo_id as $id) {
                 $photo_model->delete($id);
                 /**

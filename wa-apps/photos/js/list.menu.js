@@ -4,11 +4,9 @@
 (function($) {
     $.photos.menu.register('list','#organize-menu', {
         addToAlbumAction: function() {
-            var d = $("#choose-albums-photo-list");
-            if (!d.length) {
-                $('<div id="choose-albums-photo-list"></div>').waDialog({
-                    url: '?module=dialog&action=albums',
-                    className: 'width600px height400px',
+            var d = $("#choose-albums");
+            var showDialog = function() {
+                $('#choose-albums').waDialog({
                     onLoad: function() {
                         $(this).find('h1:first span:first').text('(' + $('#photo-list li.selected').length + ')');
                     },
@@ -36,11 +34,15 @@
                         return false;
                     }
                 });
-            } else {
-                d.find('h1:first span:first').text('(' + $('#photo-list li.selected').length + ')');
-                d.find(':checkbox:checked').removeAttr('checked');
-                d.waDialog().show();
+            };
+            
+            // no cache dialog
+            if (d.length) {
+                d.parent().remove();
             }
+            
+            var p = $('<div></div>').appendTo('body');
+            p.load('?module=dialog&action=albums', showDialog);
         },
         assignTagsAction: function() {
             var default_text = $_('add a tag');
@@ -92,6 +94,13 @@
                         $("#photo-tags-remove").hide();
                     }
                     $("#photo-list-tags-dialog .dialog-window").height($("#photo-list-tags-dialog .dialog-content-indent").outerHeight());
+                    
+                    $('#photos-popular-tags').off('click.photos', 'a').
+                            on('click.photos', 'a', function() {
+                                var name = $(this).text();
+                                tags_control.removeTag(name);
+                                tags_control.addTag(name);
+                            });
                 },
                 onSubmit: function (d) {
                     var input = $('#photos-list-tags_tag');
@@ -140,6 +149,15 @@
                     return false;
                 }
             });
+        },
+        deleteFromAlbumAction: function() {
+            var photo_id = $('input[name^=photo_id]').serializeArray();
+            if (photo_id.length) {
+                var album_id = $.photos.getAlbum().id;
+                $.post('?module=photo&action=deleteFromAlbum&id=' + album_id, photo_id, function() {
+                    $.photos.dispatch();
+                }, 'json');
+            }
         },
         deletePhotosAction: function() {
             var photo_id = $('input[name^=photo_id]').serializeArray();

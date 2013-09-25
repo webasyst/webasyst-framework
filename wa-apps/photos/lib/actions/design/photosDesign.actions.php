@@ -9,7 +9,7 @@ class photosDesignActions extends waDesignActions
     public function __construct()
     {
         if (!$this->getRights('design')) {
-            throw new waRightsException("Access denued");
+            throw new waRightsException("Access denied");
         }
         $this->options['is_ajax'] = true;
         $this->options['js']['storage'] = false;

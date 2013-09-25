@@ -3,30 +3,33 @@
     {if !empty($frontend_collection)}{foreach $frontend_collection as $item}{if !empty($item.plain_list)}{$item.plain_list}{/if}{/foreach}{/if}
     {foreach $photos as $photo}
         <div itemscope itemtype ="http://schema.org/Photograph">
-        {* if $photo.name}
-            <h5 itemprop="name">{$photo.name}</h5>
-        {/if *}
-        {if $photo.description}
-            <p itemprop="description">{$photo.description}</p>
-        {/if}
-        <div class="image">
-            {if $photo.stack_nav}
-                {$photo.stack_nav}
+            {if $photo.name}
+                <h5 itemprop="name">{$photo.name}</h5>
             {/if}
-            <div class="corner top left">
-                {* @event prepare_photos_frontend.top_left.%plugin_id% *}
-                {foreach $photo.hooks.top_left as $plugin => $output}{$output}{/foreach}
+            {if $photo.rate > 0}
+                <div class="rating nowrap">{$wa->photos->ratingHtml($photo.rate, 10)}</div>
+            {/if}
+            {if $photo.description}
+                <p itemprop="description">{$photo.description}</p>
+            {/if}
+            <div class="image">
+                {if !empty($photo.stack_nav)}
+                    {$photo.stack_nav}
+                {/if}
+                <div class="corner top left">
+                    {* @event prepare_photos_frontend.top_left.%plugin_id% *}
+                    {foreach $photo.hooks.top_left as $plugin => $output}{$output}{/foreach}
+                </div>
+                <div class="corner top right">
+                    {* @event prepare_photos_frontend.top_right.%plugin_id% *}
+                    {foreach $photo.hooks.top_right as $plugin => $output}{$output}{/foreach}
+                </div>
+                <a href="{$photo.frontend_link}">
+                    {$wa->photos->getImgHtml($photo, '970', ['class'=>'shadowed','itemprop' => 'image'])}
+                </a>
+                {* @event prepare_photos_frontend.plain.%plugin_id% *}
+                {foreach $photo.hooks.plain as $plugin => $output}{$output}{/foreach}
             </div>
-            <div class="corner top right">
-                {* @event prepare_photos_frontend.top_right.%plugin_id% *}
-                {foreach $photo.hooks.top_right as $plugin => $output}{$output}{/foreach}
-            </div>
-            <a href="{$photo.frontend_link}">
-                {$wa->photos->getImgHtml($photo, '970', ['class'=>'shadowed','itemprop' => 'image'])}
-            </a>
-            {* @event prepare_photos_frontend.plain.%plugin_id% *}
-            {foreach $photo.hooks.plain as $plugin => $output}{$output}{/foreach}
-        </div>
         </div>
         <br>
     {/foreach}

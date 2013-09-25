@@ -1,0 +1,72 @@
+<ul class="view-thumbs" id="photo-list">
+{foreach $photos as $photo}
+    <li class="{if $photo.stack_count > 0}stacked{/if} 
+        {if $photo.moderation == -1}p-declined{else if $photo.moderation == 0}p-awaiting-moderation{/if}"
+             itemscope itemtype ="http://schema.org/Photograph">
+        <div class="image">
+            <a href="{$photo.frontend_link}">
+                <div class="corner top left">
+                    {* @event prepare_photos_frontend.top_left.%plugin_id% *}
+                    {foreach $photo.hooks.top_left as $plugin => $output}{$output}{/foreach}
+                </div>
+                <div class="corner top right">
+                    {* @event prepare_photos_frontend.top_right.%plugin_id% *}
+                    {foreach $photo.hooks.top_right as $plugin => $output}{$output}{/foreach}
+                    {if $photo.stack_count > 0}<span class="indicator">{$photo.stack_count}</span>{/if}
+                </div>
+                {$wa->photos->getImgHtml($photo, '200x0', ['class'=>'shadowed','itemprop' => 'image'])}
+            </a>
+        </div>
+        <h5 itemprop="name">{$photo.name}</h5>
+        {* @event prepare_photos_frontend.name.%plugin_id% *}
+        {foreach $photo.hooks.name as $plugin => $output}{$output}{/foreach}
+        {if $photo.description}
+            <p itemprop="description">{$photo.description}</p>
+        {/if}
+        {if $photo.moderation == -1}
+            <p>[`Photo has been declined by the administrator`]</p>
+        {else if $photo.moderation == 0}
+            <p>[`Pending moderation`]</p>
+        {/if}
+        {* @event prepare_photos_frontend.thumb.%plugin_id% *}
+        {foreach $photo.hooks.thumb as $plugin => $output}{$output}{/foreach}
+    </li>
+{/foreach}
+</ul>
+
+<div class="lazyloading-wrapper">
+    {if $page < $pages_count}
+        {_w('%d photo', '%d photos', (count($photos) + $offset))}&nbsp;{_w('of %d', 'of %d', $total_photos_count)}
+        <br>
+        <a href="?page={$page + 1}" class="lazyloading-link">[`Show more photos`]</a>
+    {elseif $page && $pages_count}
+        {_w('%d photo', '%d photos', $total_photos_count)}
+    {/if}
+    <span class="lazyloading-progress" style="display:none">
+       <i class="icon16 loading"></i>
+       [`Loading`] {_w('%d photo','%d photos',min($photos_per_page, 9999))}...
+    </span>
+</div>
+    
+{* switch on/off lazy loading *}
+{if !$lazy_load && !$wa->globals('disable_pageless')}
+    <script type="text/javascript">
+    $(function() {
+        $.photos.setLazyLoad({
+            auto: true,  // auto load next pages(true|false) (if omitted than considered as true)
+            total_count: {$total_photos_count}
+        });
+    });
+    </script>
+{/if}
+
+{* and paging in case JS is disabled… *}
+{if $pages_count > 1}
+<div class="block lazyloading-paging">
+    <ul class="menu-h">
+    {for $p=1 to $pages_count}
+        <li{if $p == $page} class="selected"{/if}><a href="?page={$p}">{$p}</a></li>
+    {/for}
+    </ul>
+</div>
+{/if}

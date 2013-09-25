@@ -1,4 +1,4 @@
-<div class="content left200px">
+<div class="content left{$sidebar_width}px">
     <div class="shadowed">
         {if isset($saved) && $saved}
             <div class="block double-padded p-message-success bordered-bottom">
@@ -110,7 +110,18 @@
                             </div>
 
                         </div>
+                        <div class="field">
+                            <div class="name">
+                                [`Thumbnail quality`]
+                            </div>
+                            <div class="value">
+                                <input type="input" name="save_quality" value="{if !empty($settings.save_quality)}{str_replace(',', '.', $settings.save_quality)}{/if}"><br>
+                                <span class="hint">[`JPEG compression quality for photo thumbnails. From 0 (min quality, min file size) to 100 (max quality, max file size). 90 is recommended.`]</span>
+                            </div>
+
+                        </div>
                     </div>
+                            
                     <h6 class="heading">[`Originals`]</h6>
                     <div class="field-group">
                         <div class="field">

@@ -14,7 +14,7 @@ class photosWatermarkPlugin extends photosPlugin
                 'watermark' => $settings['text'],
                 'opacity' => $opacity,
                 'font_file' => $font_path,
-                'font_size' => $settings['text_size'] * max($photo->width, $photo->height) / photosPhoto::getBigPhotoSize(),
+                'font_size' => round($settings['text_size'] * max($photo->width, $photo->height) / photosPhoto::getBigPhotoSize()),
                 'font_color' => $settings['text_color'],
                 'text_orientation' => $this->_orientation($settings['text_orientation']),
                 'align' => $this->_align($settings['text_align']),

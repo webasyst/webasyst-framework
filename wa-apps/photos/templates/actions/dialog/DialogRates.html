@@ -3,9 +3,7 @@
         <h1>[`Rate photos`] <span class="p-rate-photo-counter gray"></span></h1>
         <div class="p-rate">
             <a href="javascript:void(0);" title="Rate" id="photos-rate" class="p-rate-photo" data-rate="0">
-                {section name=r loop={$max_rate} start=0 step=1}
-                    <i class="icon16 star-empty"></i>
-                {/section}
+                {photosPhoto::getRatingHtml(0, 16, true)}
             </a>
         </div>
     </div>

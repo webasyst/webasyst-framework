@@ -1,8 +1,55 @@
 (function($){
     $.photos_sidebar = {
-        init: function() {
+        width: 200,
+        options: {},
+        init: function(options) {
+            this.options = options || {};
+            if (options.width) {
+                this.width = options.width;
+            }
             this.initCollapsible();
             this.initHandlers();
+            this.initView();
+        },
+
+        initView: function() {
+            var sidebar = $('#p-sidebar');
+            var arrows_panel = $('#p-sidebar-width-control');
+            arrows_panel.find('a.arrow').unbind('click').
+                    bind('click', function() {
+                        var max_width = 400;
+                        var min_width = 200;
+                        var cls = sidebar.attr('class');
+                        var width = 0;
+                        
+                        var m = cls.match(/left([\d]{2,3})px/);
+                        if (m && m[1] && (width = parseInt(m[1]))) {
+                            var new_width = width + ($(this).is('.right') ? 50 : -50);
+                            new_width = Math.max(Math.min(new_width, max_width), min_width);
+                            
+                            if (new_width != width) {
+                            
+                                arrows_panel.css({'width': new_width.toString() + 'px'});                            
+                                
+                                var replace = ['left' + width + 'px', 'left' + new_width + 'px'];
+                                sidebar.attr('class', cls.replace(replace[0], replace[1]));
+                                sidebar.css('width', '');
+
+                                var content = $('#p-content');
+                                if (content.length) {
+                                    cls = content.attr('class');
+                                    content.attr('class', cls.replace(replace[0], replace[1]));
+                                    content.css('margin-left', '');
+                                }
+                                $.photos_sidebar.width = new_width;
+                                $.post('?action=sidebarSaveWidth', {
+                                    width: new_width
+                                }, 'json');
+                            }
+                        }
+                        
+                        return false;
+                    });
         },
 
         initCollapsible: function() {
@@ -35,13 +82,7 @@
 
         initHandlers: function() {
             $("#p-upload-link").click(function () {
-                $("#p-uploader").waDialog({
-                    'onLoad':$.photos.onUploadDialog,
-                    'onSubmit': function () {
-                        $('#p-start-upload-button').click();
-                        return false;
-                    }
-                });
+                $.photos.uploadDialog();
                 return false;
             });
 

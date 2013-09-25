@@ -55,6 +55,12 @@ class photosDefaultLayout extends waLayout
             'edit' => $this->getRights('edit')
         ));
 
-        $this->view->assign('big_size', $this->getConfig()->getSize('big'));
+        $config = $this->getConfig();
+        
+        $this->view->assign('big_size', $config->getSize('big'));
+        $this->view->assign('sidebar_width', $config->getSidebarWidth());
+        
+        $tag_model = new photosTagModel();
+        $this->view->assign('popular_tags', $tag_model->popularTags());
     }
 }

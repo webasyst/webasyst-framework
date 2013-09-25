@@ -1,0 +1,48 @@
+<div style="display:none">
+    <div class="dialog-content">
+        <h1>
+            {$photo_name}
+            <span class="p-rate">
+                <a href="javascript:void(0);" class="p-rate-photo">
+                    {photosPhoto::getRatingHtml($rate, 16, true)}
+                </a>
+                <span class="p-vote-counter">{_wp('%d vote', '%d votes', $votes_count)}</span>
+            </span>
+        </h1>
+
+        <table class="p-rate-distribution">
+            {foreach $distribution as $item}
+                <tr>
+                    <td class="min-width hint">{$item.votes_count}</td>
+                    <td>
+                        <div style="background: #eee; width: 200px; height: 13px;">
+                            <div style="background: #f7c854; width: {$item.votes_count_percents}%; height: 13px;"></div>
+                        </div>
+                    </td>
+                    <td>
+                        {for $i=1 to $item.rate}<i class="icon10 star"></i>{/for}
+                    </td>
+                </tr>
+            {/foreach}
+        </table>
+        
+        {if !empty($users)}
+            <h2>[`User votes`]</h2>
+            <table class="zebra">
+                {foreach $users as $user}
+                    <tr>
+                        <td class="min-width">
+                            <img src="{$user.photo}"  />
+                        </td>
+                        <td><a href="{$user.url}">{$user.name|escape}</a></td>
+                        <td>{photosPhoto::getRatingHtml($user.rate, 10, true)}</td>
+                        <td class="hint">{$user.datetime|wa_datetime:"humandatetime"}</td>
+                    </tr>
+                {/foreach}
+            </table>
+        {/if}
+    </div>
+    <div class="dialog-buttons">
+        <a class="button cancel" href="javascript:void(0);">[`Close`]</a>
+    </div>
+</div>

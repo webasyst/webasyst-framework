@@ -63,5 +63,6 @@ class photosStackMakeController extends waJsonController
             $this->log('photos_stack', 1);
         }
         $this->response['parent_id'] = $parent_id;
+        $this->response['photo'] = $photo_model->getById($parent_id);
     }
 }

@@ -6,7 +6,7 @@ class photosPagesActions extends waPageActions
     public function __construct()
     {
         if (!$this->getRights('pages')) {
-            throw new waRightsException("Access denued");
+            throw new waRightsException("Access denied");
         }
         $this->options['is_ajax'] = true;
     }

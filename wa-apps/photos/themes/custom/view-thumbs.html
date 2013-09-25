@@ -16,18 +16,23 @@
                         {foreach $photo.hooks.top_right as $plugin => $output}{$output}{/foreach}
                         {if $photo.stack_count > 0}<span class="indicator">{$photo.stack_count}</span>{/if}
                     </div>
-                    <!-- (uncomment if you want to display photo names and descriptions)
                     <div class="stripe bottom">
                         <h5 itemprop="name">{$photo.name}</h5>
+
                         {* @event prepare_photos_frontend.name.%plugin_id% *}
                         {foreach $photo.hooks.name as $plugin => $output}{$output}{/foreach}
+
+                        {if $photo.rate > 0}
+                            <div class="rating nowrap">{$wa->photos->ratingHtml($photo.rate, 10)}</div>
+                        {/if}                        
+
                         {if $photo.description}
                             <p itemprop="description">{$photo.description}</p>
                         {/if}
+
                         {* @event prepare_photos_frontend.thumb.%plugin_id% *}
                         {foreach $photo.hooks.thumb as $plugin => $output}{$output}{/foreach}
                     </div>
-                    -->
                     {$wa->photos->getImgHtml($photo, '250x300', ['itemprop' => 'image'])}
                 </a>
             </div>

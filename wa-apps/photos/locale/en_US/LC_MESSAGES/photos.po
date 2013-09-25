@@ -1183,3 +1183,47 @@ msgstr ""
 #: /wa-apps/photos/themes/custom/content.html:64
 msgid "More"
 msgstr ""
+
+#: /wa-apps/photos/templates/actions/photo/PhotoList.html:34
+msgid "Remove from album"
+msgstr ""
+
+#: /wa-apps/photos/templates/actions/photo/PhotoList.html:60
+msgid "Photos in this list are sorted <strong>by upload time</strong>. Sort order cannot be set manually here."
+msgstr ""
+
+#: /wa-apps/photos/templates/actions/photo/PhotoList.html:61
+msgid "Photos in this list are sorted <strong>by rating</strong>. Sort order cannot be set manually here."
+msgstr ""
+
+#: /wa-apps/photos/templates/actions/photo/PhotoList.html:62
+msgid "You do not have sufficient access rights to alter photos sort order in this list."
+msgstr ""
+
+#: /wa-apps/photos/templates/layouts/Default.html:402
+msgid "Popular tags"
+msgstr ""
+
+#: /wa-apps/photos/lib/actions/upload/photosUploadPhoto.controller.php:96
+msgid "Save error"
+msgstr ""
+
+#: /wa-apps/photos/themes/vk/footer.html:4
+msgid "We are using <a href=\"http://www.webasyst.com/apps/photos/\" target=\"_blank\">Webasyst Photos</a>"
+msgstr ""
+
+#: /wa-apps/photos/themes/sidebar/footer.html:4
+msgid "We are using <a href=\"http://www.webasyst.com/store/app/photos/\">Webasyst Photos</a>"
+msgstr ""
+
+#: /wa-apps/photos/themes/vk/footer.html:4
+msgid "We are using <a href=\"http://www.webasyst.com/store/app/photos/\" target=\"_blank\">Webasyst Photos</a>"
+msgstr ""
+
+#: /wa-apps/photos/templates/actions/settings/Settings.html:118
+msgid "Thumbnail quality"
+msgstr ""
+
+#: /wa-apps/photos/templates/actions/settings/Settings.html:122
+msgid "JPEG compression quality for photo thumbnails. From 0 (min) to 100 (max). 90 is recommended."
+msgstr ""

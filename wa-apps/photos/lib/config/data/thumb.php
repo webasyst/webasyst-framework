@@ -71,7 +71,8 @@ if ($file && file_exists($protected_path.$file) && !file_exists($public_path.$re
         $max_size ? $max_size : false
     );
     if ($image) {
-        $image->save($public_path.$request_file);
+        $quality = $app_config->getSaveQuality();
+        $image->save($public_path.$request_file, $quality);
         clearstatcache();
     }
 }

@@ -29,15 +29,17 @@
     {$photo_stream}
 </div>
 
-<div class="content">
+<section>
     <!-- photo info -->
     <h4 id="photo-name" itemprop="name">{$photo.name}</h4>
     {if $photo.description}
         <p id="photo-description" itemprop="description">{$photo.description}</p>
     {/if}
-    {* @event frontend_photo.%plugin_id%.sidebar *}
-    {foreach $frontend_photo as $plugin_id => $item}{if !empty($item.sidebar)}{$item.sidebar}{/if}{/foreach}
-        {if $exif}
+    <div id="photo-hook-sidebar">
+        {* @event frontend_photo.%plugin_id%.sidebar *}
+        {foreach $frontend_photo as $plugin_id => $item}{if !empty($item.sidebar)}{$item.sidebar}{/if}{/foreach}
+    </div>
+    {if $exif}
         <p class="exif hint" id="photo-exif">
             {$exif}
         </p>
@@ -63,8 +65,9 @@
     {/if}
 
     {* @event frontend_photo.%plugin_id%.content *}
-    {foreach $frontend_photo as $plugin_id => $item}{if !empty($item.sidebar)}{$item.content}{/if}{/foreach}
-</div>
+    {foreach $frontend_photo as $plugin_id => $item}{if !empty($item.content)}{$item.content}{/if}{/foreach}
+</section>
+
 <div class="clear-both"></div>
 
 <div id="photo-hook-bottom">

@@ -69,17 +69,21 @@ ul.photostream li.stream-nav.ff i { background: url('img/photostream-ff.png') no
 
 #photo-name { margin-top: 30px; }
 
-.mini-stream { width: 275px; margin: 0 auto; height: 30px; }
+.mini-stream { width: 275px; margin: 0 auto; height: 60px; }
+
+.tags a { padding-right: 0 !important; padding-left: 0 !important; }
 
 /* photo lists */
 
 .view-plain { margin-top: 20px; }
+.view-plain h5 { margin-bottom: 3px; }
 .view-plain p { margin-bottom: 0; }
 .view-plain .image { margin: 5px 0 0; text-align: left\9; /* IE8- hack */ }
 .view-plain .stack { margin-top: 20px; }
 
 ul.view-thumbs { padding: 0; margin: 0; list-style: none; }
-ul.view-thumbs li a { text-decoration: none; }
+ul.view-thumbs li a { text-decoration: none; color: #000; }
+ul.view-thumbs li h5 { margin-bottom: 5px; }
 ul.view-thumbs li { display: inline-block; position: relative; vertical-align: top; width: 300px; margin-right: 20px; margin-bottom: 20px; }
 ul.view-thumbs li img.shadowed { -moz-box-shadow: 0 1px 3px #aaa; -webkit-box-shadow: 0 1px 3px #aaa; box-shadow: 0 1px 3px #aaa; margin-bottom: 5px; }
 ul.view-thumbs.album-float-left-view { margin-top: 10px; }
@@ -144,3 +148,30 @@ ul.view-mixed.album-float-left-view li.brick { display: block; margin-right: 10p
 .comments ul.menu-h.auth-type li a { padding: 5px 6px; }
 .comments ul.menu-h.auth-type li a img { top: 0; }
 .comment.deleted s { color: #777; background: #eee; padding: 0 3px; }
+
+/* Star icons for user rating */
+
+#photo-rate-votes-count,
+#clear-photo-rate,
+#photo-rate-error { position: relative; top: 3px; margin-left: 5px; margin-right: 5px; }
+#photo-rate-error { color: red; }
+
+.p-declined { color: red; }
+.p-declined img { border: 2px solid red; margin-top: -2px; }
+.p-awaiting-moderation { color: gray; font-style: italic; opacity: 0.5; }
+
+.image .p-declined { color: white; background: red; padding: 15px; font-size: 1.2em; }
+.image .p-awaiting-moderation { color: white; background: gray; padding: 15px; font-size: 1.2em; }
+
+.icon10,
+.icon16 { background-image: url("img/stars.png"); }
+.icon16.star,
+.icon16.star-full { background-position:-16px 0; }
+.icon16.star-half { background-position:-32px 0; }
+.icon16.star-empty { background-position:-48px 0; }
+.icon16.star-hover { background-position:-64px 0; }
+.icon10.star,
+.icon10.star-full { background-position:0 -16px; }
+.icon10.star-half { background-position:-10px -16px; }
+.icon10.star-empty { background-position:-20px -16px; }
+.icon16.loading { background-image: url("/wa-content/img/loading16.gif"); background-position:0 0; }

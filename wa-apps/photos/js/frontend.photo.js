@@ -94,6 +94,7 @@ $(function() {
             $.photos.renderMap();
             this.onInit();
         },
+        onInit: function() {},
         onLoadTail: function() {},
         onLoadHead: function() {},
         hotkey_manager: (function() {
@@ -107,11 +108,11 @@ $(function() {
                 { 
                     return; 
                 }
-                if (code == 39) {
+                if (code == 39 && !e.altKey) {
                     $.photos.goToNextPhoto();
                     arrowsHandlerDown.hold = true;
                 }
-                if (code == 37) {
+                if (code == 37 && !e.altKey) {
                     $.photos.goToPrevPhoto();
                     arrowsHandlerDown.hold = true;
                 }
@@ -584,6 +585,38 @@ $(function() {
                 } else {
                     $('#photo-hook-bottom').html(html).show();
                 }
+                
+                // hooks' render top left results
+                html = '';
+                if (data.frontend_photo) {
+                    frontend_photo = data.frontend_photo;
+                    for (var plugin_id in frontend_photo) {
+                       if (frontend_photo[plugin_id].top_left) {
+                           html += frontend_photo[plugin_id].top_left;
+                       }
+                    }
+                }
+                if (!html) {
+                    $('.corner.top.left').hide();
+                } else {
+                    $('.corner.top.left').html(html).show();
+                }
+                
+                // hooks' render sidebar
+                html = '';
+                if (data.frontend_photo) {
+                    frontend_photo = data.frontend_photo;
+                    for (var plugin_id in frontend_photo) {
+                       if (frontend_photo[plugin_id].sidebar) {
+                           html += frontend_photo[plugin_id].sidebar;
+                       }
+                    }
+                }
+                if (!html) {
+                    $('#photo-hook-sidebar').hide();
+                } else {
+                    $('#photo-hook-sidebar').html(html).show();
+                }
             },
             setNextPhotoLink: function() {
                 // set a-link to next
@@ -605,22 +638,50 @@ $(function() {
                 $.photos.photo_stream_cache.prepend(__photo_stream_data);
             },
             
-            goToNextPhoto: function() {
-                var item = this.options.photo_stream;
-                slide_back_needed = false;
-                item.trigger('home', [function() {
-                    item.trigger('forward', [{
-                        steps: 1,
-                        selected_stick: true,
-                        animate: false,
-                        fn: function() {
-                            var next_photo = $.photos.photo_stream_cache.getNext();
-                            if (next_photo) {
-                                $.photos.loadPhotoCompletly(next_photo);
+            goToNextPhoto: function(try_stack_first) {
+                
+                var nextInPhotoStream = function() {
+                    slide_back_needed = false;
+                    var item = this.options.photo_stream;
+                    item.trigger('home', [function() {
+                        item.trigger('forward', [{
+                            steps: 1,
+                            selected_stick: true,
+                            animate: false,
+                            fn: function() {
+                                var next_photo = null;
+                                if (try_stack_first) {
+                                    next_photo = $.photos.photo_stack_cache.getNext();
+                                    if (next_photo) {
+                                        $.photos.loadPhotoInStack(next_photo);
+                                    } else {
+                                        next_photo = $.photos.photo_stream_cache.getNext();
+                                        if (next_photo) {
+                                            $.photos.loadPhotoCompletly(next_photo);
+                                        }
+                                    }
+                                } else {
+                                    next_photo = $.photos.photo_stream_cache.getNext();
+                                    if (next_photo) {
+                                        $.photos.loadPhotoCompletly(next_photo);
+                                    }                                
+                                }
                             }
-                        }
-                    }]);
-                }, false]);
+                        }]);
+                    }, false]);
+                };
+                
+                if (try_stack_first) {
+                    var next_photo = $.photos.photo_stack_cache.getNext();
+                    if (next_photo) {
+                        $.photos.loadPhotoInStack(next_photo);
+                    } else {
+                        nextInPhotoStream.call(this);
+                    }
+                } else {
+                    nextInPhotoStream.call(this);
+                }
+                
             },
             goToPrevPhoto: function() {
                 var item = this.options.photo_stream;
@@ -670,7 +731,8 @@ $(function() {
         });
         // click to photo for next
         $('#photo').parents('a:first').click(function() {
-            $.photos.goToNextPhoto();
+            
+            $.photos.goToNextPhoto(true);
             return false;
         });
 

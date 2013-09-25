@@ -1,0 +1,68 @@
+<h1>[`My uploads`]</h1>
+
+<script type="text/javascript">
+$(function() {
+    var provider_list = $('#user-auth-provider');
+    provider_list.find('a').click(function () {
+        var self = $(this);
+        var left = (screen.width-600)/2;
+        var top = (screen.height-400)/2;
+        window.open(self.attr('href'),'oauth', "width=600,height=400,left="+left+",top="+top+",status=no,toolbar=no,menubar=no");
+    });
+    
+    $('.sidebar li.selected').removeClass('selected');
+    $('#photos-my-photos').closest('li').addClass('selected');
+    
+});
+</script>
+
+<style>
+    .block.double-padded { padding: 20px; }
+    .image-upload-dropbox { border: 2px dashed #ccc; margin-bottom: 40px; }
+    .fileinput-button input { position: absolute; top: 0; right: 0; margin: 0; border: solid transparent; opacity: 0; filter: alpha(opacity=0); -moz-transform: translate(-300px, 0) scale(4); direction: ltr; cursor: pointer; }
+    .fileinput-button { position: relative; overflow: hidden; margin-right: 4px; }
+    .upload-progress-content { display: block; overflow: auto; overflow-x: hidden; }
+    .upload-progress-status { margin-top: 10px; }
+    .progressbar { width: 90%; padding:7px 7px 6px; margin: 0 2px 20px; margin-right: 10px; border: solid 1px #eee; background:#f7f7f7; box-shadow: 0 1px 2px #ссс; }
+    .progressbar .progressbar-outer { height: 30px; border: 1px solid #ddd; border-bottom-color: #fff; border-top-color: #ccc; background: #fff; } 
+    .progressbar .progressbar-inner { height: 30px; background: #53a9f2;
+background: -moz-linear-gradient(top,  rgba(83,169,242,1) 0%, rgba(35,91,147,1) 100%); background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(83,169,242,1)), color-stop(100%,rgba(35,91,147,1))); background: -webkit-linear-gradient(top,  rgba(83,169,242,1) 0%,rgba(35,91,147,1) 100%); background: -o-linear-gradient(top,  rgba(83,169,242,1) 0%,rgba(35,91,147,1) 100%); background: -ms-linear-gradient(top,  rgba(83,169,242,1) 0%,rgba(35,91,147,1) 100%); background: linear-gradient(top,  rgba(83,169,242,1) 0%,rgba(35,91,147,1) 100%); filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#53a9f2', endColorstr='#235b93',GradientType=0 ); }
+    ul.zebra { padding: 0; margin: 0; }
+    ul.zebra li { list-style: none; background: #fff; padding: 8px; }
+    #upload-imagelist { margin: 0 10px 40px; }
+    #upload-imagelist ul.zebra li { position: relative; width: 90%; background: #f7f7f7; }
+    #upload-imagelist ul.zebra li .upload-oneimage-progress { background: #def; border-right: 2px solid #7ac;  position: absolute; top: 0; left: 0; bottom: 0; padding: 0; }
+    #upload-imagelist ul.zebra li .upload-oneimage-progress .image-filename { padding: 8px; white-space: nowrap; }
+    #upload-imagelist ul.zebra li.error { padding: 0; }
+    #upload-imagelist ul.zebra li.error .upload-oneimage-progress { position: static; background: #e88; border-right: 2px solid #f00;}
+    #upload-imagelist ul.zebra li.error .upload-oneimage-progress .image-filename { white-space: normal; }
+    #upload-error { margin-left: 0px; }
+    #upload-finished { border: 2px dashed #ccc; margin-bottom: 40px; }
+</style>
+
+{if !$wa->userId()}
+    {if $adapters}
+        <p>{sprintf('[`To upload a photo, either <a href="%s">sign up</a> or authorize using one of the services listed below.`]', $wa->signupUrl())}</p>
+        <ul class="menu-h auth-type" id="user-auth-provider">
+        {foreach $adapters as $adapter}
+            {$adapter_id = $adapter->getId()}
+            <li data-provider="{$adapter_id}" {if $current_auth_source == $adapter_id}class="selected"{/if}><a href="{$adapter->getCallbackUrl(0)}&app=photos"><i class="icon16" style="background-image: url('{$adapter->getIcon()}');"></i>{$adapter->getName()}</a></li>
+        {/foreach}
+        </ul>
+        <br>
+    {else}
+        <p>{sprintf('[`To upload a photo, either <a href="%s">create an account</a> or <a href="%s">sign in</a> as a registered user.`]',$wa->signupUrl(),$wa->loginUrl())}</p>
+    {/if}
+{else}
+    <form id="fileupload" action="{$image_upload_url}" method="POST" enctype="multipart/form-data">
+        <div class="block double-padded image-upload-dropbox" id="upload-invitation">
+            <a href="javascript:void(0);" id="upload-images-link" class="fileinput-button">
+            <strong>[`Upload images`]</strong><input type="file" name="files[]" multiple=""></a>
+            <span class="gray">[`or drag them here to start upload`]</span>
+        </div>
+        {include './FrontendImageUpload.html' inline}
+    </form>
+    
+    {include './FrontendPhotos.html' inline}
+    
+{/if}

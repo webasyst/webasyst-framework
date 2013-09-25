@@ -13,7 +13,7 @@ class photosPluginsSaveController extends waJsonController
          * @var photosPlugin $plugin
          */
         $plugin = waSystem::getInstance()->getPlugin($plugin_id);
-        $settings = $this->getRequest()->post($namespace);
+        $settings = (array)$this->getRequest()->post($namespace);
         $files = waRequest::file($namespace);
         $settings_defenitions = $plugin->getSettings();
         foreach ($files as $name => $file) {

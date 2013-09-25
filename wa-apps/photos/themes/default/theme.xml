@@ -2,7 +2,7 @@
 <!DOCTYPE theme PUBLIC "wa-app-theme" "http://www.webasyst.com/wa-content/xml/wa-app-theme.dtd">
 <theme id="default" system="1" vendor="webasyst" author="Webasyst" app="photos">
     <name locale="en_US">Default</name>
-    <name locale="ru_RU">Дефолт</name>
+    <name locale="ru_RU">default</name>
 	<files>
         <file path="index.html" custom="0">
             <description locale="en_US">Common layout</description>
@@ -65,4 +65,4 @@
 			<description locale="ru_RU">404 и другие ошибки</description>
 	    </file>
 	</files>
-</theme>
+<description locale="ru_RU"/></theme>

@@ -13,7 +13,9 @@ class photosSettingsAction extends waViewAction
             'system' => $this->formatSizes($this->getConfig()->getSizes('system')),
             'custom' => $this->formatSizes($settings['sizes'])
         );
-        $this->view->assign('settings', $settings);
+        $this->view->assign('settings', $settings);        
+        $this->view->assign('sidebar_width', $this->getConfig()->getSidebarWidth());
+        
     }
 
     protected function formatSizes($sizes)
@@ -108,6 +110,19 @@ class photosSettingsAction extends waViewAction
         }
         $settings['sizes'] = array_values($settings['sizes']);
         $config_file = $this->getConfig()->getConfigPath('config.php');
+        $settings['save_quality'] = waRequest::post('save_quality', '', waRequest::TYPE_STRING_TRIM);
+        if ($settings['save_quality'] == '') {
+            $settings['save_quality'] = 90;
+        } else {
+            $settings['save_quality'] = (float) $settings['save_quality'];
+            if ($settings['save_quality'] < 0) {
+                $settings['save_quality'] = 0;
+            }
+            if ($settings['save_quality'] > 100) {
+                $settings['save_quality'] = 100;
+            }
+            $settings['save_quality'] = str_replace(',', '.', $settings['save_quality']);
+        }
         waUtils::varExportToFile($settings, $config_file);
     }
 

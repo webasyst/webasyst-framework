@@ -1,5 +1,5 @@
 (function($) {
-    $.fn.activeMenu = function(options, ext) {
+    $.fn.activeMenu = function(options, ext, value) {
 
         if (typeof options == 'string') {
             if (options == 'disable' || options == 'enable') {
@@ -16,6 +16,11 @@
             }
             if (options == 'setOption') {
                 var settings = this.data('activeMenuSettings');
+                if (typeof ext === 'string') {
+                    var o = {};
+                    o[ext] = value;
+                    ext = o;
+                }
                 $.extend(settings, ext);
                 return this;
             }

@@ -69,10 +69,15 @@
             <input type="text" id="photo-name-input" class="p-photo-h1-edit" style="display:none;">
             <span class="p-rate">
                 <a href="javascript: void(0);" title="[`Rate photo`]" id="photo-rate" class="p-rate-photo" data-rate="{%#p.rate%}">
-                    {% for (var i = 0; i < 5; i++) { %}
-                        <i class="icon16 star{%#(i < p.rate ? '' : '-empty')%}"></i>
-                    {% } %}
+                    {%#$.photos.getRatingHtml(p.rate, 16, true)%}
                 </a>
+                <!-- plugin hook: "backend_photo.after_rate" -->
+                {% if (hooks.backend_photo) { %}
+                    {% for (var plugin in hooks.backend_photo) { %}
+                        {%# hooks.backend_photo[plugin].after_rate %}
+                    {% } %}
+                {% } %}
+                <!-- end plugin hook: "backend_photo.after_rate" -->
             </span>
         </h1>
         <div class="block half-padded float-right hint" id="photo-albums">
@@ -152,7 +157,7 @@
 
 {capture name="template-p-block"}
 <div class="sidebar right200px" id="p-toolbar"></div>
-<div class="content left200px right200px" id="p-content">
+<div class="content left{$sidebar_width}px right200px" id="p-content">
     <div class="block double-padded" id="p-block"></div>
     <div id="changable-area"></div>
     <div id="cover" class="dialog-background" style="display:none;">
@@ -181,9 +186,17 @@
             </li>
             {/if}
 
-            {foreach $backend_photo_toolbar as $plugin_id => $item}{if !empty($item.share_menu)}
-                {$item.share_menu}
-            {/if}{/foreach}
+            {foreach $backend_photo_toolbar as $plugin_id => $item}
+                {if !empty($item.share_menu)}
+                    {if is_array($item.share_menu)}
+                        {foreach $item.share_menu as $menu_item}
+                            {$menu_item}
+                        {/foreach}
+                    {else}
+                        {$item.share_menu}
+                    {/if}
+                {/if}
+            {/foreach}
             <!-- plugin hook: backend_photo_toolbar_share -->
         </ul>
     </div>
@@ -195,9 +208,17 @@
             <li data-action='rotate-right'><a href="javascript:void(0);"><i class="icon16 rotate-right"></i>[`Right`]</a></li>
             <!-- plugin hook: backend_photo_toolbar_edit -->
             <!-- plugin hook: "backend_photo_toolbar.edit_menu" -->
-            {foreach $backend_photo_toolbar as $plugin_id => $item}{if !empty($item.edit_menu)}
-                {$item.edit_menu}
-            {/if}{/foreach}
+            {foreach $backend_photo_toolbar as $plugin_id => $item}
+                {if !empty($item.edit_menu)}
+                    {if is_array($item.edit_menu)}
+                        {foreach $item.edit_menu as $menu_item}
+                            {$menu_item}
+                        {/foreach}
+                    {else}
+                        {$item.edit_menu}
+                    {/if}
+                {/if}
+            {/foreach}
             <!-- end plugin hook: "backend_photo_toolbar.edit_menu" -->
         </ul>
     </div>
@@ -215,6 +236,17 @@
         <h6 class="heading">[`Tags`]</h6>
         <input id="photo-tags" value="">
         <span class="hint">[`Separate tags with comma (,)`]</span><br>
+        <div id="photos-photo-popular-tags" class="tags">
+            {/literal}
+            {if $popular_tags}
+                [`Popular tags`]:
+                {foreach $popular_tags as $tag}
+                    <span><a data-tag-id="{$tag.id}" href="javascript:void(0);" class="inline-link"><b><i>{$tag.name|escape}</i></b></a></span>
+                {/foreach}
+                <br>
+            {/if}
+            {literal}
+        </div>
         <input type="button" id="photo-save-tags" value="[`Save`]">
         <span id="photo-save-tags-status" style="display:none;">
         </span>
@@ -289,13 +321,17 @@
 {% } %}
 {/literal}{/capture}
 
-{capture name="template-photo-author"}{literal}
-    <div class="image">
-        <a href="{%#o.author.backend_url%}" title="{%#$_('Photo downloaded by') + ' ' + o.author.name + ' ' + o.photo.upload_datetime_formatted %}"><img src="{%#o.author.photo_url%}"></a>
-    </div>
-    <div class="details">
-        <a href="{/literal}{$wa_backend_url}contacts/#/contact/{literal}{%#o.author.id%}">{%#o.author.name%}</a><br>[`uploaded on`] {%#o.photo.upload_datetime_formatted %}
-    </div>
+{capture name="template-photo-author"}{literal}       
+    {% if (o.author.id) { %}
+        <div class="image">
+            <a href="{%#o.author.backend_url%}" title="{%#$_('Photo downloaded by') + ' ' + o.author.name + ' ' + o.photo.upload_datetime_formatted %}"><img src="{%#o.author.photo_url%}"></a>
+        </div>
+        <div class="details">
+            <a href="{/literal}{$wa_backend_url}contacts/#/contact/{literal}{%#o.author.id%}">{%#o.author.name%}</a><br>[`uploaded on`] {%#o.photo.upload_datetime_formatted %}
+        </div>
+    {% } else { %}
+        <p>[`uploaded on`] {%#o.photo.upload_datetime_formatted %}</p>
+    {% } %}
 {/literal}
 {/capture}
 {capture name="template-photo-original"}
@@ -376,7 +412,14 @@
                <div class="dialog-content-indent">
                     <h1>[`Assign tags`] <span class="gray js-selected-counter">(N)</span></h1>
                     <textarea id="photos-list-tags" cols="30" rows="5"></textarea>
-                    <span class="hint">[`Separate tags with comma (,)`]</span>
+                    <span id="photos-popular-tags" class="tags small">
+                        {if $popular_tags}
+                            [`Popular tags`]:
+                            {foreach $popular_tags as $tag}
+                                <span><a data-tag-id="{$tag.id}" href="javascript:void(0);" class="inline-link"><b><i>{$tag.name|escape}</i></b></a></span>
+                            {/foreach}
+                        {/if}
+                    </span>
                     <div id="photo-tags-remove" style="display: none">
                         <br>
                         <h3>[`Remove tags`]</h3>

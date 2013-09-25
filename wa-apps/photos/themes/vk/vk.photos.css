@@ -59,8 +59,8 @@ ul.photostream li.stream-nav.ff i { background: url('img/photostream-ff.png') no
 .image .corner.right { right:10px; }
 .image .corner.bottom { bottom:5px; }
 .image .corner .indicator { color: #fff; background: rgba(0,0,0,0.5); border-radius: 10px; padding: 3px 6px; }
-.image .stripe { position:absolute; z-index:9; bottom: 5px; left: 0; right: 0; background: rgba(0,0,0,0.3); color: #fff; padding: 10px; }
-.image .stripe h5 { margin-bottom: 0; text-shadow: 0 2px 2px #000; }
+.image .stripe { position:absolute; z-index:9; bottom: 3px; left: 4px; right: 4px; background: rgba(0,0,0,0.3); color: #fff; padding: 10px; }
+.image .stripe h5 { margin-bottom: 0; text-shadow: 0 2px 2px #000; color: #fff; }
 .image .stripe p { margin: 0.3em 0 0; }
 .image .stack { position: absolute; top: 5px; left: 0; right: 0; color: #fff; padding: 10px; }
 .image .stack .stack-nav { font-size: 120%; padding: 4px 8px 2px; display: inline-block; position: relative; background: #000; /* IE8- hack */ display: block\9; background: transparent\9; }
@@ -74,6 +74,7 @@ ul.photostream li.stream-nav.ff i { background: url('img/photostream-ff.png') no
 /* photo lists */
 
 .view-plain { margin-top: 20px; }
+.view-plain h5 { margin-bottom: 3px; }
 .view-plain p { margin-bottom: 0; }
 .view-plain .image { margin: 5px 0 0; text-align: left\9; /* IE8- hack */ }
 .view-plain img.shadowed { -moz-box-shadow: 0 1px 3px #aaa; -webkit-box-shadow: 0 1px 3px #aaa; box-shadow: 0 1px 3px #aaa; }
@@ -144,3 +145,30 @@ ul.view-thumbs.bigger-thumbs li { width: 268px; }
 .comment-form textarea { width: 90%; }
 .comment-form .comment-submit { padding-left: 0; }
 .comment-form .wa-captcha img { margin-bottom: 10px; }
+
+/* Star icons for user rating */
+
+#photo-rate-votes-count,
+#clear-photo-rate,
+#photo-rate-error { position: relative; top: 3px; margin-left: 5px; margin-right: 5px; }
+#photo-rate-error { color: red; }
+
+.p-declined { color: red; }
+.p-declined img { border: 2px solid red; margin-top: -2px; }
+.p-awaiting-moderation { color: gray; font-style: italic; opacity: 0.5; }
+
+.image .p-declined { color: white; background: red; padding: 15px; font-size: 1.2em; }
+.image .p-awaiting-moderation { color: white; background: gray; padding: 15px; font-size: 1.2em; }
+
+.icon10,
+.icon16 { background-image: url("img/stars.png"); }
+.icon16.star,
+.icon16.star-full { background-position:-16px 0; }
+.icon16.star-half { background-position:-32px 0; }
+.icon16.star-empty { background-position:-48px 0; }
+.icon16.star-hover { background-position:-64px 0; }
+.icon10.star,
+.icon10.star-full { background-position:0 -16px; }
+.icon10.star-half { background-position:-10px -16px; }
+.icon10.star-empty { background-position:-20px -16px; }
+.icon16.loading { background-image: url("/wa-content/img/loading16.gif"); background-position:0 0; }

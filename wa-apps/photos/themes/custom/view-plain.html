@@ -3,14 +3,17 @@
     {if !empty($frontend_collection)}{foreach $frontend_collection as $item}{if !empty($item.plain_list)}{$item.plain_list}{/if}{/foreach}{/if}
     {foreach $photos as $photo}
         <div itemscope itemtype ="http://schema.org/Photograph">
-        {* if $photo.name}
+        {if $photo.name}
             <h5 itemprop="name">{$photo.name}</h5>
-        {/if *}
+        {/if}
+        {if $photo.rate > 0}
+            <div class="rating nowrap">{$wa->photos->ratingHtml($photo.rate, 10)}</div>
+        {/if}
         {if $photo.description}
             <p itemprop="description">{$photo.description}</p>
         {/if}
         <div class="image">
-            {if $photo.stack_nav}
+            {if !empty($photo.stack_nav)}
                 {$photo.stack_nav}
             {/if}
             <div class="corner top left">

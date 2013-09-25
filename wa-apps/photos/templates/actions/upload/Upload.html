@@ -15,7 +15,7 @@
                         <br><br>
                         <img class="p-drag-photos-here" src="{$wa_app_static_url}img/drag-photos-here.png" alt="[`or drag photos here`]">
                         <br><br><br>
-                        <span class="hint">[`or`] <a href="#" class="cancel">[`cancel`]</a></span>
+                        <span class="hint">[`or`] <a href="#" class="cancel" id="p-upload-step1-cancel">[`cancel`]</a></span>
                     </div>
 
                     <!-- #2 -->
@@ -149,6 +149,7 @@
             </div>
         </div>
     </div>
+    <input type="hidden" value="0" id="p-uploader-parent" name="parent_id">
     </form>
 </div>
 
@@ -232,6 +233,10 @@
             } else {
                 $('#upload-album-name-field').show();
             }
+        });
+        $('#p-upload-step1-cancel').click(function() {
+            d.trigger('close');
+            return false;
         });
         // Initialize the jQuery File Upload widget:
         $('#fileupload').fileupload({

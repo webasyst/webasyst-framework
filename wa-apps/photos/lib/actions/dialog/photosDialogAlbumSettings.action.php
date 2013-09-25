@@ -20,6 +20,10 @@ class photosDialogAlbumSettingsAction extends waViewAction
         if ($album['type'] == photosAlbumModel::TYPE_DYNAMIC && $album['conditions']) {
             $album['conditions'] = photosCollection::parseConditions($album['conditions']);
         }
+        
+        if (!$album['conditions']) {
+            $album['conditions'] = array();
+        }
 
         $absolute_full_url = photosFrontendAlbum::getLink($album);
         if ($absolute_full_url) {
