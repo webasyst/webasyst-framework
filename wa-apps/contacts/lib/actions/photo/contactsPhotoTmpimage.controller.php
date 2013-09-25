@@ -24,7 +24,7 @@ class contactsPhotoTmpimageController extends waController
 
         // save it to a temporary directory (well... less temporary than /tmp)
         // in .jpg format
-        $temp_dir  = wa()->getTempPath('photo');
+        $temp_dir  = wa('contacts')->getTempPath('photo');
         $fname = uniqid($id.'_').'.jpg';
         $img->save($temp_dir.'/'.$fname, 90);
 

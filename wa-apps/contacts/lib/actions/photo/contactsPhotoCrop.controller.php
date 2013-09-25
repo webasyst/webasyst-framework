@@ -20,9 +20,9 @@ class contactsPhotoCropController extends waJsonController
 
         // Path to file we need to crop
         $rand = mt_rand();
-        $filename = wa()->getDataPath("photo/$id/$rand.original.jpg", TRUE);
+        $filename = wa()->getDataPath("photo/$id/$rand.original.jpg", TRUE, 'contacts');
 
-        $oldDir = wa()->getDataPath("photo/$id", TRUE);
+        $oldDir = wa()->getDataPath("photo/$id", TRUE, 'contacts');
 
         $no_old_photo = false;
         if (!$orig) {
@@ -58,8 +58,8 @@ class contactsPhotoCropController extends waJsonController
             unlink($newFile);
         } else {
             // cropping an old file. Move it temporarily to temp dir to delete all cached thumbnails
-            $oldFile = wa()->getDataPath("photo/$id/{$contact['photo']}.original.jpg", TRUE);
-            $tempOldFile = wa()->getTempPath("$id/$rand.original.jpg");
+            $oldFile = wa()->getDataPath("photo/$id/{$contact['photo']}.original.jpg", TRUE, 'contacts');
+            $tempOldFile = wa()->getTempPath("$id/$rand.original.jpg", 'contacts');
             waFiles::move($oldFile, $tempOldFile);
 
             // Delete thumbnails
@@ -78,7 +78,7 @@ class contactsPhotoCropController extends waJsonController
         }
 
         // Crop and save selected area
-        $croppedFilename = wa()->getDataPath("photo/$id/$rand.jpg", TRUE);
+        $croppedFilename = wa()->getDataPath("photo/$id/$rand.jpg", TRUE, 'contacts');
         try {
             $img = waImage::factory($filename);
             $scale = $img->width / $ww;
@@ -94,7 +94,15 @@ class contactsPhotoCropController extends waJsonController
         $contact['photo'] = $rand;
         $contact->save();
         if ($no_old_photo) {
+            $old_app = null;
+            if (wa()->getApp() !== 'contacts') {
+                $old_app = wa()->getApp();
+                waSystem::setActive('contacts');
+            }
             $this->log('photo_add', 1);
+            if ($old_app) {
+                waSystem::setActive($old_app);
+            }
         }
 
         // Update recent history to reload thumbnail correctly (if not called from personal account)

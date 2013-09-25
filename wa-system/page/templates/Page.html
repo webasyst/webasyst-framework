@@ -9,20 +9,25 @@
 <script src="{$wa_url}wa-content/js/elrte/elrte-wa.js"></script>
 {if $lang!='en'}<script src="{$wa_url}wa-content/js/elrte/i18n/elrte.{$lang}.js"></script>{/if}
 
-{if $options.codemirror}
-<link rel="stylesheet" href="{$wa_url}wa-content/js/codemirror/lib/codemirror.css">
-<script src="{$wa_url}wa-content/js/codemirror/lib/codemirror.js"></script>
-<script src="{$wa_url}wa-content/js/codemirror/mode/xml/xml.js"></script>
-<script src="{$wa_url}wa-content/js/codemirror/mode/javascript/javascript.js"></script>
-<script src="{$wa_url}wa-content/js/codemirror/mode/css/css.js"></script>
-<script src="{$wa_url}wa-content/js/codemirror/mode/htmlmixed/htmlmixed.js"></script>
+{if $options.js.ace}
+<script src="{$wa_url}wa-content/js/ace/ace.js"></script>
+{/if}
+
+{if $options.js.storage}
+    <script src="{$wa_url}wa-content/js/jquery-plugins/jquery.json.js?v{$wa->version()}"></script>
+    <script src="{$wa_url}wa-content/js/jquery-plugins/jquery.store.js?v{$wa->version()}"></script>
+    <script>
+    if (!$.storage) {
+        $.storage = new $.store();
+    }
+    </script>
 {/if}
 
 <script src="{$wa_url}wa-content/js/jquery-ui/jquery.ui.draggable.min.js"></script>
 <script src="{$wa_url}wa-content/js/jquery-ui/jquery.ui.droppable.min.js"></script>
 
-{if $options.js}
-<script src="{$wa_url}wa-content/js/jquery-wa/wa.editor.js?v{$wa->version()}"></script>
+{if $options.js.editor}
+<script src="{$wa_url}wa-content/js/jquery-wa/wa.elrte.ace.js?v{$wa->version()}"></script>
 {/if}
 
 <style>
@@ -45,7 +50,7 @@
     a.wa-page-link:hover .count i.icon10 { display: block; }
     .wa-page-gray-toolbar { background: #EEE; padding-left: 15px; padding-bottom: 13px; }
     .wa-page-gray-toolbar h2 { font-family: 'Lucida Grande'; }
-    .wa-page-save-panel { position: fixed; bottom: 0; left: 0; right: 0; background: #eee; padding-left: 470px; }
+    .wa-page-save-panel { position: fixed; bottom: 0; left: 0; right: 0; background: #eee; padding-left: 470px; z-index: 1}
 
     .block-pages ul li.drag-newposition.active { border-top: 2px solid #BB8; background: none; }
     .wa-editor-core-wrapper { background: white;}
@@ -74,11 +79,6 @@
 
     #wa-page-advanced-params-link { margin-left: 180px; }
 
-    .CodeMirror-scroll {
-        height: auto;
-        overflow-y: hidden;
-        overflow-x: auto;
-    }
     .expander { cursor:pointer; float:left;}
     .notebook { float:left;}
 </style>
@@ -145,7 +145,8 @@
             {if !empty($route.pages)}
             {foreach $route.pages as $p}
                 <li class="dr" id="page-{$p.id}">
-                    <i class="icon16 {if !empty($p.childs)}rarr expander{else}notebook{/if}"></i>
+                    {if !empty($p.childs)}<i class="icon16 darr expander overhanging"></i>{/if}
+                    <i class="icon16 notebook"></i>
                     <a class="wa-page-link" href="{$page_url}{$p.id}">
                     	<span class="count"><i class="icon10 add wa-page-add"></i></span>
                         {$p.name|escape}
@@ -174,15 +175,6 @@
     var wa_url = "{$wa_url}";
     var wa_app = "{$wa->app()}";
 
-    function waLoadPage(params) {
-        $(".block-pages ul li.selected").removeClass('selected');
-        if (params % 1 === 0) {
-            $("#page-" + params).addClass('selected');
-            waExpand(params);
-        }
-        $("#wa-page-container").load("?module=pages&action=edit&id=" + params);
-    }
-
     function waExpand(page_id) {
         var t = $('#page-'+page_id);
         var c = t.children('ul');
@@ -192,17 +184,19 @@
         }
         var parent_id = t.parent().data('parent-id');
         if(parent_id) waExpand(parent_id);
+        var i = t.closest('.block-pages').find("h4.heading i.icon16");
+        if (i.hasClass('rarr')) {
+            i.trigger('click', true);
+        }
     }
 
-    function waClose(page_id) {
-        var t = $('#page-'+page_id);
-        var c = t.children('ul');
-        if(c) {
-            t.children('i.expander').removeClass('darr').addClass('rarr');
-            c.hide();
-        } else {
-            t.children('i.expander').removeClass('rarr').removeClass('darr').addClass('notebook');
+    function waLoadPage(params) {
+        $(".block-pages ul li.selected").removeClass('selected');
+        if (params % 1 === 0) {
+            $("#page-" + params).addClass('selected');
+            waExpand(params);
         }
+        $("#wa-page-container").load("?module=pages&action=edit&id=" + params);
     }
 
     if (!jQuery.fn.liveDraggable) {
@@ -245,12 +239,33 @@
 
 
     $(function () {
+        function waClose(page_id) {
+            var t = $('#page-'+page_id);
+            var c = t.children('ul');
+            if(c) {
+                t.children('i.expander').removeClass('darr').addClass('rarr');
+                c.hide();
+            } else {
+                t.children('i.expander').removeClass('rarr').removeClass('darr').addClass('notebook');
+            }
+        }
 
-        $('.expander').click(function(){
+        $('.expander').click(function() {
             var page_id = $(this).parent().attr('id').replace(/page-/g, '');
+            var k = '{$wa->app()}/pages/page-' + page_id;
             if($(this).hasClass('rarr')) {
                 waExpand(page_id);
-            } else {
+                $.storage.del(k);
+             } else {
+                waClose(page_id);
+                $.storage.set(k, 1);
+            }
+        });
+
+        $('.expander').each(function() {
+            var page_id = $(this).parent().attr('id').replace(/page-/g, '');
+            var k = '{$wa->app()}/pages/page-' + page_id;
+            if ($.storage.get(k)) {
                 waClose(page_id);
             }
         });

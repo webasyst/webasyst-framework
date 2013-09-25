@@ -38,14 +38,26 @@
     </div>
     *}
 
-    <h4>{$app.name|string_format:'[s`Design themes for %s`]'|escape} <i class="icon16 loading"></i></h4>
-    <span class="hint">[s`Theme list is downloaded from webasyst.com website.`]</span>
+    <div id="themes-close" style="display: none" class="block half-padded float-right">
+        <ul class="menu-h">
+            <li><a href="#" class="cancel gray inline-link" title="[s`Close`]"><i class="icon10 no-bw"></i> <b><i>[s`Cancel`]</i></b></a></li>
+        </ul>
+    </div>
+
+    <h4>{$app.name|string_format:'[s`Design themes for %s app`]'|escape} <i class="icon16 loading"></i></h4>
+    <span class="hint">[s`Click on a design theme to download and install it from the Webasyst Store`]</span>
 
 </div>
 <div class="wa-themes">
     <script type="text/javascript">
-    $('div.wa-themes:first').load('{$wa_backend_url}installer/?module=themes&action=view&slug={$app_id}',function(){
+    $('div.wa-themes:first').load('{$wa_backend_url}installer/?module=themes&action=view&slug={$app_id}&return_hash={"`$design_url`theme=%theme_id%"|escape:'url'}',function(){
         $('.wa-design-gray-toolbar h4 i').hide();
+    });
+    $('#themes-close a').click(function () {
+        $('#wa-design-container').addClass('left200px').css('margin-left', '');
+        $('#wa-design-sidebar').show();
+        $("div.wa-theme-block ul li a:first").click();
+        return false;
     });
     </script>
     <div class="clear"></div>

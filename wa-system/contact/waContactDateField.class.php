@@ -12,7 +12,7 @@
  * @package wa-system
  * @subpackage contact
  */
-class waContactDateField extends waContactFIeld 
+class waContactDateField extends waContactField
 {
     public function getInfo()
     {
@@ -20,7 +20,7 @@ class waContactDateField extends waContactFIeld
         $info['format'] = waDateTime::getFormatJS('date');
         return $info;
     }
-    
+
     protected function init()
     {
         if (!isset($this->options['formats'])) {
@@ -28,9 +28,9 @@ class waContactDateField extends waContactFIeld
         }
         if (!isset($this->options['formats']['js'])) {
             if (isset($this->options['formats']['locale'])) {
-                $this->options['formats']['js'] = $this->options['formats']['locale'];
+                $this->options['formats']['html'] = $this->options['formats']['value'] = $this->options['formats']['js'] = $this->options['formats']['locale'];
             } else {
-                $this->options['formats']['js'] = new waContactDateLocalFormatter();
+                $this->options['formats']['html'] = $this->options['formats']['value'] = $this->options['formats']['js'] = new waContactDateLocalFormatter();
             }
         }
         if (!isset($this->options['formats']['locale'])) {

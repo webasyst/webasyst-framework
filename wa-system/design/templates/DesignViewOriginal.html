@@ -1,15 +1,36 @@
 {if !empty($file)}
 <h1><span class="grey">{$file.theme_path}</span>{$file.id}</h1>
-<textarea id="wa-design-original" style="width: 100%; height: 200px;">
-{$file.content}
-</textarea>
+<div id="wa-design-original" style="width: 100%; height: 200px;">{$file.content}</div>
 <script>
-    CodeMirror.fromTextArea(document.getElementById('wa-design-original'), {
-        mode: "text/{if substr($file.id, -3) == 'css'}css{elseif substr($file.id, -2) == 'js'}javascript{else}html{/if}",
-        tabMode: "indent",
-        //height: "dynamic",
-        lineWrapping: true,
-        readOnly: true
+    $(function () {
+        var editor = ace.edit('wa-design-original');
+        ace.config.set("basePath", wa_url + 'wa-content/js/ace/');
+        editor.setTheme("ace/theme/eclipse");
+        var session = editor.getSession();
+        {if substr($file.id, -3) == 'css'}
+        session.setMode("ace/mode/css");
+        {elseif substr($file.id, -2) == 'js'}
+        session.setMode("ace/mode/javascript");
+        {else}
+        session.setMode("ace/mode/css");
+        session.setMode("ace/mode/javascript");
+        session.setMode("ace/mode/smarty");
+        {/if}
+        session.setUseWrapMode(true);
+        editor.renderer.setShowGutter(false);
+        editor.setShowPrintMargin(false);
+        editor.setFontSize(13);
+        editor.setHighlightActiveLine(false);
+        editor.setReadOnly(true);
+
+        setTimeout(function () {
+            var newHeight = editor.getSession().getScreenLength() * editor.renderer.lineHeight + editor.renderer.scrollBar.getWidth();
+            if (newHeight < 220) {
+                newHeight = 220;
+            }
+            $('#wa-design-original').height(newHeight.toString() + "px");
+            editor.resize();
+        }, 50);
     });
 </script>
 {/if}

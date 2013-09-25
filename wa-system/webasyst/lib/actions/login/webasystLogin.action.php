@@ -49,9 +49,6 @@ class webasystLoginAction extends waLoginAction
         $this->getStorage()->remove('auth_login');
         $redirect = $this->getConfig()->getCurrentUrl();
         $backend_url = $this->getConfig()->getBackendUrl(true);
-        if (waRequest::isMobile()) {
-            $this->redirect(array('url' => $backend_url));
-        }
         if (!$redirect || $redirect === $backend_url) {
             $redirect = $this->getUser()->getLastPage();
         }

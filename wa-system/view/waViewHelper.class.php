@@ -151,9 +151,13 @@ HTML;
 
     public function accountName($escape = true)
     {
-        $app_settings_model = new waAppSettingsModel();
-        $name = $app_settings_model->get('webasyst', 'name', 'Webasyst');
+        $name = wa()->getSetting('name', 'Webasyst', 'webasyst');
         return $escape ? htmlspecialchars($name) : $name;
+    }
+
+    public function setting($name, $default = '', $app_id = null)
+    {
+        return wa()->getSetting($name, $default, $app_id);
     }
 
     public function module($default = null)
@@ -525,7 +529,11 @@ HTML;
                 <div class="wa-field">
                     <div class="wa-value wa-submit">
                         <input type="hidden" name="wa_auth_login" value="1">
-                        <input type="submit" value="'._ws('Sign In').'"> <a href="'.$this->getUrl('/forgotpassword').'">'._ws('Forgot password?').'</a>
+                        <input type="submit" value="'._ws('Sign In').'">
+                        &nbsp;
+                        <a href="'.$this->getUrl('/forgotpassword').'">'._ws('Forgot password?').'</a>
+                        &nbsp;
+                        <a href="'.$this->getUrl('/signup').'">'._ws('Sign up').'</a>
                     </div>
                 </div>'.
             ($form ? '</form>' : '').'
@@ -668,7 +676,7 @@ HTML;
             $html .= '</div></div>';
         }
         $html .= '<div class="wa-field"><div class="wa-value wa-submit">
-            <input type="submit" value="'._ws('Sign up').'"> '.sprintf(_ws('or <a href="%s">login</a> if you already have an account'), $this->getUrl('/login')).'
+            <input type="submit" value="'._ws('Sign Up').'"> '.sprintf(_ws('or <a href="%s">login</a> if you already have an account'), $this->getUrl('/login')).'
         </div></div>';
         $html .= '</form></div>';
         return $html;

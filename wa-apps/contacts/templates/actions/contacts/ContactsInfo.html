@@ -15,11 +15,11 @@
                     {{if empty($readonly)}}
                         <div class="wa-contact-photo-buttons">
                             <div class="photo-change-link">
-                                <a href="#/contact/photo/{{$contact->getId()}}">[`Change photo`]</a>
+                                <a href="{{ifset($photo_editor_url, "#/contact/photo/{{$contact->getId()}}")}}">[`Change photo`]</a>
                             </div>
                             <div class="photo-upload-form" style="display:none">
                                 <div id="photo-iframe-wrapper" style="display:none"><iframe id="photo-iframe" name="sendfile" width="1" height="1"></iframe></div>
-                                <form id="imageform" target="sendfile" action="?module=photo&action=tmpimage" method="post" enctype="multipart/form-data">
+                                <form id="imageform" target="sendfile" action="{{ifset($photo_upload_url, '?module=photo&action=tmpimage')}}" method="post" enctype="multipart/form-data">
                                     <div class="c-image-form-file">
                                         [`Upload image (JPG, GIF or PNG):`]
                                         <input id="fileselect" type="file" name="photo" />
@@ -169,6 +169,12 @@
     $.wa.contactEditor.contactType = '{{if $contact.is_company}}company{{else}}person{{/if}}';
     $.wa.contactEditor.limitedCategories = {{$limitedCategories}};
     $.wa.contactEditor.justCreated = false;
+    {{if !empty($save_url)}}
+        $.wa.contactEditor.saveUrl = "{{$save_url}}";
+    {{/if}}
+    {{if !empty($password_save_url)}}
+        $.wa.contactEditor.passwdSaveUrl = "{{$password_save_url}}";
+    {{/if}}
 
     {{if $tab}}
         // Switch to active tab
@@ -242,7 +248,11 @@
                 return;
             }
 
-            $.wa.setHash('#/contact/photo/{{$contact.id}}/uploaded/');
+            {{if !empty($photo_editor_uploaded_url)}}
+                window.location = "{{$photo_editor_uploaded_url}}";
+            {{else}}
+                $.wa.setHash('#/contact/photo/{{$contact.id}}/uploaded/');
+            {{/if}}
         });
     {{/if}}
 </script>

@@ -67,6 +67,17 @@ $(function () {
 
     }
 
+    var pixelRatio = !!window.devicePixelRatio ? window.devicePixelRatio : 1;
+    $(window).on("load", function() {
+        if (pixelRatio > 1) {
+            $('#wa-applist img').each(function() {
+                if ($(this).data('src2')) {
+                    $(this).attr('src', $(this).data('src2'));
+                }
+            });
+        }
+    });
+
     $('#wa-moreapps').click(function() {
         var i = $(this).children('i');
         if (i.hasClass('darr')) {

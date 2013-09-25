@@ -28,7 +28,7 @@ class waCountryModel extends waModel
         }
         $fav = array();
         foreach($all as $c) {
-            if ($c['fav_sort']) {
+            if (!empty($c['fav_sort'])) {
                 $fav[] = array('fav_sort' => $c['fav_sort']) + $c;
             }
         }

@@ -88,7 +88,7 @@ class waAppViewHelper
         $page = $page_model->getById($id);
         $page['content'] = $this->wa->getView()->fetch('string:'.$page['content']);
 
-        $page_params_model = new sitePageParamsModel();
+        $page_params_model = $page_model->getParamsModel();
         $page += $page_params_model->getById($id);
 
         return $page;

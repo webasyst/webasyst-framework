@@ -10,9 +10,8 @@ class waDesignActions extends waActions
         'container' => true,
         'save_panel' => true,
         'js' => array(
-            'codemirror' => true,
+            'ace' => true,
             'editor' => true,
-            'storage' => true
         ),
         'is_ajax' => false
     );
@@ -35,18 +34,13 @@ class waDesignActions extends waActions
         $template = $this->getConfig()->getRootPath().'/wa-system/design/templates/Design.html';
 
         $routing_url = false;
-        if (wa()->appExists('site') && $routes) {
-            reset($routes);
-            $r = current($routes);
+        if (wa()->appExists('site')) {
             wa('site');
             $domain_model = new siteDomainModel();
-            $d = $domain_model->getByName($r['_domain']);
-            if ($this->getUser()->getRights('site', 'domain.'.$d['id'])) {
-                $routing_url = wa()->getAppUrl('site').'?domain_id='.$d['id'].'#/routing/'.$r['_id'].'/';
-            }
+            $routing_url = wa()->getAppUrl('site').'#/routing/';
         }
-
         $this->display(array(
+            'themes_welcome' => $this->getUser()->getRights('installer') && count($routes) == 1 && empty($routes[0]['theme']),
             'template_path' => $this->getConfig()->getRootPath().'/wa-system/design/templates/',
             'design_url' => $this->design_url,
             'themes_url' => $this->themes_url,
@@ -148,6 +142,15 @@ class waDesignActions extends waActions
         $hash = $this->getThemeHash();
         $themes_routes = array();
         $preview_url = '';
+        if (wa()->appExists('site')) {
+            wa('site');
+            $model = new siteDomainModel();
+            $domains = $model->select('id,name')->fetchAll('name', true);
+            $routing_url = wa()->getAppUrl('site');
+        } else {
+            $domains = array();
+        }
+        $domain = wa()->getRouting()->getDomain();
         foreach ($routes as $r) {
             $t_id = isset($r['theme']) ? $r['theme']: 'default';
             if (isset($themes[$t_id])) {
@@ -155,13 +158,16 @@ class waDesignActions extends waActions
                     $url = $r['_url'];
                     $url .= strpos($url, '?') === false ? '?' : '&';
                     $url .= 'theme_hash='.$hash.'&set_force_theme=';
-                    if (!$preview_url) {
+                    if (!$preview_url && $r['_domain'] == $domain) {
                         $preview_url = $url;
                     }
                     $themes[$t_id]['is_used'] = true;
                     $themes[$t_id]['preview_url'] = $url.$t_id;
                 }
-                $themes_routes[$t_id][$r['_url']] = $r['_url_title'];
+                if (isset($domains[$r['_domain']]) && $this->getUser()->getRights('site', 'domain.'.$domains[$r['_domain']])) {
+                    $r['_routing_url'] = $routing_url.'?domain_id='.$domains[$r['_domain']].'#/routing/'.$r['_id'];
+                }
+                $themes_routes[$t_id][$r['_url']] = $r;
             }
         }
         foreach ($themes as $t_id => $theme) {

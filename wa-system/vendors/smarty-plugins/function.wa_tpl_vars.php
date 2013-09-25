@@ -19,7 +19,7 @@
 function smarty_function_wa_tpl_vars($params, &$smarty)
 {
     $str = '<div style="overflow: auto; min-width: 500px; height: 400px;"><pre>'."\n\n";
-    $str .= htmlspecialchars(wa_print_r_helper($smarty->getTemplateVars())); // $smarty->tpl_vars
+    $str .= htmlspecialchars(wa_dump_helper($smarty->getTemplateVars())); // $smarty->tpl_vars
     $str .= "\n\n</pre></div>";
     return $str;
 }

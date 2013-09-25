@@ -98,8 +98,8 @@ abstract class waContactField
             'name' => $this->getName(),
             'multi' => $this->isMulti(),
             'type' => $this->getType(),
-            'unique' => $this->getParameter('unique'),
-            'required' => $this->getParameter('required'),
+            'unique' => $this->isUnique(),
+            'required' => $this->isRequired(),
         );
         if ($this->isMulti() && isset($this->options['ext'])) {
             $info['ext'] = $this->options['ext'];

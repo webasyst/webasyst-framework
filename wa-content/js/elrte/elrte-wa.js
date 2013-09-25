@@ -231,7 +231,7 @@ elRTE.prototype.ui.prototype.buttons.wa_link = function(rte, name) {
             this.domElem.removeClass('disabled').addClass('active');
         } else if (this.rte.dom.selectionHas(function(n) { return n.nodeName == 'A' && n.href; })) {
             this.domElem.removeClass('disabled').addClass('active');
-        } else if (!this.rte.selection.collapsed() || n.nodeName == 'IMG') {
+        } else if (!this.rte.selection.collapsed() || (n && n.nodeName == 'IMG')) {
             this.domElem.removeClass('disabled active');
         } else {
             this.domElem.addClass('disabled').removeClass('active');
@@ -332,7 +332,7 @@ elRTE.prototype.ui.prototype.buttons.wa_horizontalrule = function(rte, name) {
 
     this.update = function() {
         this.domElem.removeClass('disabled');
-        if (this.rte.selection.getEnd().nodeName == 'HR') {
+        if (this.rte.selection.getEnd() && this.rte.selection.getEnd().nodeName == 'HR') {
             this.domElem.addClass('active');
         } else {
             this.domElem.removeClass('active');
@@ -1009,7 +1009,7 @@ elRTE.prototype.ui.prototype.buttons.wa_image = function(rte, name) {
         this.domElem.removeClass('disabled');
         var n = this.rte.selection.getEnd(),
             $n = $(n);
-        if (n.nodeName == 'IMG' && !$n.hasClass('elrte-protected')) {
+        if (n && n.nodeName == 'IMG' && !$n.hasClass('elrte-protected')) {
             this.domElem.addClass('active');
         } else {
             this.domElem.removeClass('active');

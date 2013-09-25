@@ -2,13 +2,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WebAsyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2013-07-03 10:13+0300\n"
+"PO-Revision-Date: 2013-09-25 16:36+0400\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=((((n%10)==1)&&((n%100)!=11))?(0):(((((n%10)>=2)&&((n%10)<=4))&&(((n%100)<10)||((n%100)>=20)))?(1):2));\n"
+"Plural-Forms: nplurals=3; plural=((((n%10)==1)&&((n%100)!=11))?(0):(((((n%10)"
+">=2)&&((n%10)<=4))&&(((n%100)<10)||((n%100)>=20)))?(1):2));\n"
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
 "Language: ru_RU\n"
@@ -386,6 +387,9 @@ msgstr "Выйти"
 
 msgid "Sign In"
 msgstr "Войти"
+
+msgid "Sign Up"
+msgstr "Зарегистрироваться"
 
 msgid "Save and log in"
 msgstr "Сохранить и войти"
@@ -1386,8 +1390,12 @@ msgstr "Это ваша Панель управления."
 msgid "So far it is empty, but soon it will have useful content."
 msgstr "Сейчас она пустая, но скоро на ней появится полезный контент."
 
-msgid "Until then use icons on the top of this page to work with available applications."
-msgstr "А пока используйте значки наверху этой страницы для работы с доступными приложениями."
+msgid ""
+"Until then use icons on the top of this page to work with available "
+"applications."
+msgstr ""
+"А пока используйте значки наверху этой страницы для работы с доступными "
+"приложениями."
 
 msgid "Thank you for using Webasyst!"
 msgstr "Спасибо за использование Вебасист!"
@@ -1427,6 +1435,9 @@ msgstr "или"
 msgid "cancel"
 msgstr "отмена"
 
+msgid "Cancel"
+msgstr "Отмена"
+
 #: /wa-system/contact/waContactAddressField.class.php:77
 msgid "show on map"
 msgstr "показать на карте"
@@ -1440,8 +1451,14 @@ msgid "To recover your password please follow this link:"
 msgstr "Для восстановления пароля перейдите по ссылке:"
 
 #: /wa-system/webasyst/templates/mail/RecoveringPassword.html:4
-msgid "IMPORTANT NOTE: If you did not request your password recovery, someone else might be trying to log in using your email address. For security purposes we recommend you to log in to your account and to change your password."
-msgstr "ВАЖНО: Если вы не просили восстановить пароль, то значит кто-то другой пытался подключиться используя ваш логин или email. В целях безопасности мы рекомендуем вам зайти сейчас в ваш аккаунт и изменить пароль."
+msgid ""
+"IMPORTANT NOTE: If you did not request your password recovery, someone else "
+"might be trying to log in using your email address. For security purposes we "
+"recommend you to log in to your account and to change your password."
+msgstr ""
+"ВАЖНО: Если вы не просили восстановить пароль, то значит кто-то другой "
+"пытался подключиться используя ваш логин или email. В целях безопасности мы "
+"рекомендуем вам зайти сейчас в ваш аккаунт и изменить пароль."
 
 #: /wa-system/webasyst/templates/actions/login/LoginPassword.html:57
 msgid "Enter a new password"
@@ -1487,7 +1504,8 @@ msgid "At least one of these fields must be filled"
 msgstr "Хотя бы одно из этих полей должно быть заполнено"
 
 msgid "Password recovery instructions have been sent to your email address."
-msgstr "Инструкции по восстановлению пароля были отправлены на ваш электронный адрес."
+msgstr ""
+"Инструкции по восстановлению пароля были отправлены на ваш электронный адрес."
 
 msgid "No user with this login name or email has been found."
 msgstr "Пользователь с таким логином или email адресом не найден."
@@ -1513,7 +1531,8 @@ msgstr "все"
 msgid "Error"
 msgstr "Ошибка"
 
-msgid "Enter any login and password so<br> we can create a user account for you"
+msgid ""
+"Enter any login and password so<br> we can create a user account for you"
 msgstr "Введите любые логин и пароль,<br> чтобы мы создали вам аккаунт"
 
 msgid "All contacts"
@@ -1594,7 +1613,7 @@ msgid "Session has expired. Please reload current page and log in again."
 msgstr "Сессия истекла. Обновите пожалуйста страницу и войдите снова."
 
 msgid "Theme %s already exists"
-msgstr "Тема оформления «%s» уже существует"
+msgstr "Тема дизайна «%s» уже существует"
 
 msgid "Invalid theme id %s"
 msgstr "Неверный идентификатор темы «%s»"
@@ -1615,7 +1634,8 @@ msgid "Pages"
 msgstr "Страницы"
 
 msgid "When done editing, click “Save” to apply changes."
-msgstr "После завершения редактирования не забудьте нажать на кнопку «Сохранить»"
+msgstr ""
+"После завершения редактирования не забудьте нажать на кнопку «Сохранить»"
 
 msgid "Enable this URL"
 msgstr "Включить показ страницы по этому адресу"
@@ -1647,8 +1667,15 @@ msgstr "URL страницы"
 msgid "Page name"
 msgstr "Название страницы"
 
-msgid "Optional set of custom <em>key=value</em> parameters which can be used within page.html template or this page content as <em>&#123;$page.key&#125;</em>. Each key=value pair should be on a separate line."
-msgstr "Необязательный набор параметров вида <em>key=value</em>, к значениям которых можно обращаться в шаблоне page.html или в содержимом текущей страницы как <em>&#123;$page.key&#125;</em>. Каждая пара key=value должна быть указана на отдельной строке."
+msgid ""
+"Optional set of custom <em>key=value</em> parameters which can be used "
+"within page.html template or this page content as <em>&#123;$page.key&#125;</"
+"em>. Each key=value pair should be on a separate line."
+msgstr ""
+"Необязательный набор параметров вида <em>key=value</em>, к значениям которых "
+"можно обращаться в шаблоне page.html или в содержимом текущей страницы как "
+"<em>&#123;$page.key&#125;</em>. Каждая пара key=value должна быть указана на "
+"отдельной строке."
 
 msgid "http://www.webasyst.com/framework/docs/site/pages/"
 msgstr "http://www.webasyst.com/ru/framework/docs/site/pages/"
@@ -1713,11 +1740,19 @@ msgstr "Продолжить"
 msgid "MySQL database"
 msgstr "База данных MySQL"
 
-msgid "Enter connection credentials for the MySQL database which will be used by Webasyst to store system and application data."
-msgstr "Введите настройки подключения к базе данных MySQL, в которой Вебасист создаст таблицы для хранения своих данных и данных приложений."
+msgid ""
+"Enter connection credentials for the MySQL database which will be used by "
+"Webasyst to store system and application data."
+msgstr ""
+"Введите настройки подключения к базе данных MySQL, в которой Вебасист "
+"создаст таблицы для хранения своих данных и данных приложений."
 
-msgid "If you do not know what should be entered here, please contact your hosting provider technical support."
-msgstr "Если вы не знаете, что здесь ввести, обратитесь в службу поддержки вашего хостинг-провайдера."
+msgid ""
+"If you do not know what should be entered here, please contact your hosting "
+"provider technical support."
+msgstr ""
+"Если вы не знаете, что здесь ввести, обратитесь в службу поддержки вашего "
+"хостинг-провайдера."
 
 msgid "Failed to connect to the “%s” database."
 msgstr "Ошибка подключения к базе данных “%s”."
@@ -1774,8 +1809,12 @@ msgid "Files with extensions %s are allowed only."
 msgstr "Допускаются только файлы с расширениями %s"
 
 #: /wa-system/page/templates/PageEdit.html:188
-msgid "This page will not be visible in the public frontend, because this app is not connected in the website structure."
-msgstr "Страница будет недоступна на сайте, потому что приложение не подключено в правилах маршрутизации этого сайта."
+msgid ""
+"This page will not be visible in the public frontend, because this app is "
+"not connected in the website structure."
+msgstr ""
+"Страница будет недоступна на сайте, потому что приложение не подключено в "
+"правилах маршрутизации этого сайта."
 
 #: /wa-system/page/templates/PageEdit.html:317
 msgid "An error occurred while saving"
@@ -1803,11 +1842,17 @@ msgstr "Неизвестный формат ответа"
 
 #: /wa-system/request/waRequestFile.class.php:189
 msgid "The uploaded file exceeds the upload_max_filesize directive in php.ini."
-msgstr "Размер файла превышает максимально допустимый для загрузки (настройка upload_max_filesize в файле php.ini)."
+msgstr ""
+"Размер файла превышает максимально допустимый для загрузки (настройка "
+"upload_max_filesize в файле php.ini)."
 
 #: /wa-system/request/waRequestFile.class.php:191
-msgid "The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the HTML form."
-msgstr "Размер файла превышает максимально допустимый для данной HTML-формы (настройка формы MAX_FILE_SIZE)."
+msgid ""
+"The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in "
+"the HTML form."
+msgstr ""
+"Размер файла превышает максимально допустимый для данной HTML-формы "
+"(настройка формы MAX_FILE_SIZE)."
 
 #: /wa-system/request/waRequestFile.class.php:193
 msgid "The uploaded file was only partially uploaded."
@@ -1852,10 +1897,6 @@ msgstr "Я вспомнил пароль!"
 msgid "Sign up"
 msgstr "Регистрация"
 
-#: /wa-system/view/waViewHelper.class.php:476
-msgid "\"Sign up\""
-msgstr "\"Зарегистрироваться\""
-
 msgid "Password can not be empty."
 msgstr "Пароль не может быть пустым"
 
@@ -1888,24 +1929,53 @@ msgid "Can edit design"
 msgstr "Редактирование дизайна"
 
 #: /wa-system/webasyst/templates/actions/login/LoginFirst.html:25
-msgid "The information provided in this form will be stored in your local Webasyst installation only, and will not be sent anywhere outside your server."
-msgstr "Информация, введенная в этой форме, будет сохранена только внутри этой установки Webasyst и не будет отправлена за пределы вашего сервера."
+msgid ""
+"The information provided in this form will be stored in your local Webasyst "
+"installation only, and will not be sent anywhere outside your server."
+msgstr ""
+"Информация, введенная в этой форме, будет сохранена только внутри этой "
+"установки Webasyst и не будет отправлена за пределы вашего сервера."
 
 #: /wa-system/view/waViewHelper.class.php:675
-msgid "Authorize either by entering your contact information, or through one of the websites listed above."
-msgstr "Авторизуйтесь, указав свои контактные данные, или воспользовавшись перечисленными выше сервисами."
+msgid ""
+"Authorize either by entering your contact information, or through one of the "
+"websites listed above."
+msgstr ""
+"Авторизуйтесь, указав свои контактные данные, или воспользовавшись "
+"перечисленными выше сервисами."
 
 #: /wa-system/contact/waContactField.class.php:349
-msgid "This field must be unique. The value entered is already set for %NAME_LINK%."
-msgstr "Значение этого поля должно быть уникальным. Введенное значение уже используется для %NAME_LINK%."
+msgid ""
+"This field must be unique. The value entered is already set for %NAME_LINK%."
+msgstr ""
+"Значение этого поля должно быть уникальным. Введенное значение уже "
+"используется для %NAME_LINK%."
 
 #: /wa-system/contact/waContactField.class.php:350
-msgid "This field must be unique. The value entered is already set for another contact."
-msgstr "Значение этого поля должно быть уникальным. Введенное значение уже используется для другого контакта."
+msgid ""
+"This field must be unique. The value entered is already set for another "
+"contact."
+msgstr ""
+"Значение этого поля должно быть уникальным. Введенное значение уже "
+"используется для другого контакта."
 
 #: /wa-system/design/templates/Theme.html:23
 msgid "Rename"
 msgstr "Переименовать"
+
+msgid ""
+"You are using the original version of this design theme. No customizations "
+"have been applied to theme files yet."
+msgstr ""
+"Вы используете исходную версию темы дизайна. Изменения в шаблоны темы "
+"дизайна еще не вносились."
+
+msgid ""
+"This will erase all customizations you’ve made to this theme’s template "
+"files using the design editor, and reset this theme to original"
+msgstr ""
+"Очистить все изменения, которые вы вносили в тему дизайна с помощью "
+"редактора дизайна, и вернуть тему дизайна к исходному состоянию"
 
 #: /wa-system/design/templates/Theme.html:28
 msgid "Theme name"
@@ -1916,8 +1986,18 @@ msgid "Theme ID"
 msgstr "ID темы"
 
 #: /wa-system/design/templates/Theme.html:40
-msgid "IMPORTANT: Change Theme ID only if you are sure what you are doing. If this theme is in use by any of your websites, you will have to manually update these websites’ app settings to use this or another theme after altering the Theme ID parameter. Otherwise websites may stop working with the “Unable to load template file” error."
-msgstr "ВАЖНО: изменяйте ID темы, только если вы полностью уверены в своих действиях. Если эта тема используется в ваших сайтах, вам придется вручную обновить настройки этих сайтов для использования этой или другой темы после изменения ID темы. В противном случае ваши сайты могут оказаться нерабочими из-за ошибки «Невозможно загрузить файл шаблона»."
+msgid ""
+"IMPORTANT: Change Theme ID only if you are sure what you are doing. If this "
+"theme is in use by any of your websites, you will have to manually update "
+"these websites’ app settings to use this or another theme after altering the "
+"Theme ID parameter. Otherwise websites may stop working with the “Unable to "
+"load template file” error."
+msgstr ""
+"ВАЖНО: изменяйте ID темы, только если вы полностью уверены в своих "
+"действиях. Если эта тема используется в ваших сайтах, вам придется вручную "
+"обновить настройки этих сайтов для использования этой или другой темы после "
+"изменения ID темы. В противном случае ваши сайты могут оказаться нерабочими "
+"из-за ошибки «Невозможно загрузить файл шаблона»."
 
 #: /wa-system/design/templates/Sidebar.html:20
 msgid "not in use"
@@ -1929,15 +2009,19 @@ msgstr "Настройки темы"
 
 #: /wa-system/design/templates/Sidebar.html:40
 msgid "Design themes"
-msgstr "Темы оформления"
+msgstr "Темы дизайна"
 
 #: /wa-system/design/templates/Sidebar.html:51
 msgid "Upload theme"
 msgstr "Загрузить тему"
 
 #: /wa-system/design/templates/Sidebar.html:53
-msgid "Theme must be uploaded as a valid Webasyst design theme archive (.tar.gz archive with theme files and theme.xml manifest file)."
-msgstr "Загружаемая тема должна представлять собой правильный архив темы Webasyst (архив в формате .tar.gz с файлами темы и файлом-манифестом theme.xml)."
+msgid ""
+"Theme must be uploaded as a valid Webasyst design theme archive (.tar.gz "
+"archive with theme files and theme.xml manifest file)."
+msgstr ""
+"Загружаемая тема должна представлять собой правильный архив темы Webasyst "
+"(архив в формате .tar.gz с файлами темы и файлом-манифестом theme.xml)."
 
 #: /wa-system/design/templates/Sidebar.html:56
 msgid "Uploading..."
@@ -1956,7 +2040,9 @@ msgid "Theme updated"
 msgstr "Тема обновлена"
 
 #: /wa-system/design/templates/ThemesRow.html:49
-msgid "All themes files will be deleted permanently without the ability to recover. Are you sure?"
+msgid ""
+"All themes files will be deleted permanently without the ability to recover. "
+"Are you sure?"
 msgstr "Все файлы темы будут удалены без возможности восстановления. Удалить?"
 
 #: /wa-system/design/templates/ThemesRow.html:52
@@ -1964,7 +2050,9 @@ msgid "rollback to the original theme"
 msgstr "восстановить оригинальную тему"
 
 #: /wa-system/design/templates/ThemesRow.html:57
-msgid "This will permanently delete theme without the ability to recover. Are you sure?"
+msgid ""
+"This will permanently delete theme without the ability to recover. Are you "
+"sure?"
 msgstr "Тема будет удалена без возможности восстановления. Удалить?"
 
 #: /wa-system/design/templates/ThemesRow.html:58
@@ -1979,9 +2067,22 @@ msgstr "Шпаргалка"
 msgid "Theme preview"
 msgstr "Предварительный просмотр"
 
+msgid "Preview theme"
+msgstr "Предпросмотр темы"
+
+msgid "parent theme file"
+msgstr "файл родительской темы"
+
 #: /wa-system/design/templates/DesignEdit.html:151
-msgid "Design theme “<strong id=\"wa-current-theme\"></strong>” is temporary enabled for you to see how it looks with your frontend. You can navigate through your website as you do it usually. Other users don't see that you are previewing this design theme."
-msgstr "Тема оформления «<strong id=\"wa-current-theme\"></strong>» временно активирована для вашего пользователя. Вы можете полноценно просматривать сайт в выбранной теме оформления, и другие посетители сайта этого не увидят."
+msgid ""
+"Design theme “<strong id=\"wa-current-theme\"></strong>” is temporary "
+"enabled for you to see how it looks with your frontend. You can navigate "
+"through your website as you do it usually. Other users don't see that you "
+"are previewing this design theme."
+msgstr ""
+"Тема дизайна «<strong id=\"wa-current-theme\"></strong>» временно "
+"активирована для вашего пользователя. Вы можете полноценно просматривать "
+"сайт в выбранной теме дизайна, и другие посетители сайта этого не увидят."
 
 #: /wa-system/design/templates/DesignEdit.html:156
 msgid "Finish preview session"
@@ -2013,11 +2114,17 @@ msgstr "Все цвета"
 
 #: /wa-system/design/templates/Themes.html:41
 msgid "Design themes for %s"
-msgstr "Темы оформления для %s"
+msgstr "Темы дизайна для %s"
+
+#: /wa-system/design/templates/Themes.html:41
+msgid "Design themes for %s app"
+msgstr "Темы дизайна для приложения «%s»"
 
 #: /wa-system/design/templates/Themes.html:42
-msgid "Theme list is downloaded from webasyst.com website."
-msgstr "Список тем загружается с сайта webasyst.com."
+msgid ""
+"Click on a design theme to download and install it from the Webasyst Store"
+msgstr ""
+"Щелкните по теме дизайна, чтобы скачать и установить ее из магазина Webasyst"
 
 #: /wa-system/design/actions/waDesign.actions.php:240
 msgid "Insufficient file access permissions to save theme settings"
@@ -2028,8 +2135,12 @@ msgid "Insufficient access permissions to save the file"
 msgstr "Недостаточные права доступа для сохранения файла."
 
 #: /wa-system/design/actions/waDesign.actions.php:291
-msgid "Only latin characters (a—z, A—Z), numbers (0—9) and underline character (_) are allowed."
-msgstr "Допускается использовать только латинские буквы (a—z, A—Z), цифры (0—9) и символ подчеркивания (_)."
+msgid ""
+"Only latin characters (a—z, A—Z), numbers (0—9) and underline character (_) "
+"are allowed."
+msgstr ""
+"Допускается использовать только латинские буквы (a—z, A—Z), цифры (0—9) и "
+"символ подчеркивания (_)."
 
 #: /wa-system/design/actions/waDesign.actions.php:298
 msgid "File should have one of the allowed extensions:"
@@ -2048,8 +2159,12 @@ msgid "no-title"
 msgstr "без названия"
 
 #: /wa-system/controller/waForgotPasswordAction.class.php:111
-msgid "Sorry, we can not recover password for this login name or email. Please refer to your system administrator."
-msgstr "Извините, восстановить пароль для указанного имени пользователя или email-адреса не удалось. Обратитесь к системному администратору."
+msgid ""
+"Sorry, we can not recover password for this login name or email. Please "
+"refer to your system administrator."
+msgstr ""
+"Извините, восстановить пароль для указанного имени пользователя или email-"
+"адреса не удалось. Обратитесь к системному администратору."
 
 #: /wa-system/design/actions/waDesign.actions.php:312
 msgid "Please enter a filename"
@@ -2064,16 +2179,31 @@ msgid "Preview"
 msgstr "Предпросмотр"
 
 #: /wa-system/page/templates/PageEdit.html:88
-msgid "This page is unsettled (unpublished), i.e. not connected to any of your site’s routing rules. Drag this page out of the Unpublished section in the left sidebar to connect it to any of your existing site’s routes."
-msgstr "Страница не опубликована, потому что не прикреплена ни к одному поселению приложения (правилу маршрутизации). Перетащите страницу из секции «Неопубликованные», чтобы подключить ее к существующему правилу маршрутизации."
+msgid ""
+"This page is unsettled (unpublished), i.e. not connected to any of your "
+"site’s routing rules. Drag this page out of the Unpublished section in the "
+"left sidebar to connect it to any of your existing site’s routes."
+msgstr ""
+"Страница не опубликована, потому что не прикреплена ни к одному поселению "
+"приложения (правилу маршрутизации). Перетащите страницу из секции "
+"«Неопубликованные», чтобы подключить ее к существующему правилу "
+"маршрутизации."
 
 #: /wa-system/page/templates/Page.html:87
 msgid "Unpublished"
 msgstr "Неопубликованные"
 
 #: /wa-system/page/templates/Page.html:94
-msgid "There are <strong><span>%d</span> unsettled page(s)</strong>, i.e. pages which are not connected to any of the site’s routing rules. These pages are not displayed on your site. To publish these pages now, select the new route for them:"
-msgstr "<strong><span>%d</span> страниц</strong> не прикреплены ни к одному поселению (правилу маршрутизации), и поэтому не показываются на сайте. Чтобы опубликовать все эти страницы сейчас, укажите правило маршрутизации, к которому их нужно прикрепить:"
+msgid ""
+"There are <strong><span>%d</span> unsettled page(s)</strong>, i.e. pages "
+"which are not connected to any of the site’s routing rules. These pages are "
+"not displayed on your site. To publish these pages now, select the new route "
+"for them:"
+msgstr ""
+"<strong><span>%d</span> страниц</strong> не прикреплены ни к одному "
+"поселению (правилу маршрутизации), и поэтому не показываются на сайте. Чтобы "
+"опубликовать все эти страницы сейчас, укажите правило маршрутизации, к "
+"которому их нужно прикрепить:"
 
 #: /wa-system/page/templates/Page.html:112
 msgid "Unpublished pages"
@@ -2137,7 +2267,7 @@ msgstr "Новый файл"
 
 #: /wa-system/design/templates/Sidebar.html:34
 msgid "About"
-msgstr "О теме оформления"
+msgstr "О теме дизайна"
 
 #: /wa-system/design/templates/Theme.html:5
 msgid "Last modified"
@@ -2149,11 +2279,26 @@ msgstr "не изменялась"
 
 #: /wa-system/design/templates/Theme.html:8
 msgid "This design theme is in use on"
-msgstr "Эта тема оформления используется по адресу"
+msgstr "Эта тема дизайна используется по адресу"
+
+msgid "This theme is in use on"
+msgstr "Эта тема используется по адресу"
+
+msgid ""
+"This theme is currently not in use. Connect this theme in your site <a href="
+"\"%s\">Routing settings</a>."
+msgstr ""
+"Эта тема в данный момент не используется. Подключите тему в <a href=\"%s"
+"\">настройках маршрутизации</a>."
 
 #: /wa-system/design/templates/Theme.html:15
-msgid "This design theme is not in use. Apply this theme in your website <span class=\"js-theme-routing-url\">Routing settings</span>."
-msgstr "Эта тема оформления не используется. Чтобы подключить данную тему на сайте, выберите ее в <span class=\"js-theme-routing-url\">настройках маршрутизации</span> вашего сайта."
+msgid ""
+"This design theme is not in use. Apply this theme in your website <span "
+"class=\"js-theme-routing-url\">Routing settings</span>."
+msgstr ""
+"Эта тема дизайна не используется. Чтобы подключить данную тему на сайте, "
+"выберите ее в <span class=\"js-theme-routing-url\">настройках маршрутизации</"
+"span> вашего сайта."
 
 #: /wa-system/design/templates/Theme.html:21
 msgid "Download"
@@ -2161,19 +2306,23 @@ msgstr "Скачать"
 
 #: /wa-system/design/templates/Theme.html:22
 msgid "Duplicate"
-msgstr "Создать копию"
+msgstr "Создать дубликат"
 
 #: /wa-system/design/templates/Theme.html:23
-msgid "This will reset all customizations you applied to this design theme. Are you sure?"
-msgstr "Все изменения, которые вы вносили в тему оформления, будут потеряны. Сбросить все изменения?"
+msgid ""
+"This will reset all customizations you applied to this design theme. Are you "
+"sure?"
+msgstr ""
+"Все изменения, которые вы вносили в тему дизайна, будут потеряны. Сбросить "
+"все изменения?"
 
 #: /wa-system/design/templates/Theme.html:23
 msgid "Revert theme to original"
-msgstr "Восстановить из оригинала"
+msgstr "Сбросить все изменения"
 
 #: /wa-system/design/templates/Theme.html:84
 msgid "Parent theme"
-msgstr "Родительская тема оформления"
+msgstr "Родительская тема дизайна"
 
 #: /wa-system/design/templates/Theme.html:25
 msgid "not set"
@@ -2188,8 +2337,18 @@ msgid "Not set"
 msgstr "Не задана"
 
 #: /wa-system/design/templates/Theme.html:100
-msgid "IMPORTANT: Theme parenting allows linking HTML templates, CSS files and images from other design themes. If you are about to change parent for a design theme which already has a parent, be aware that existing file links and connections may become corrupted. A design theme can have not more than one parent theme."
-msgstr "ВАЖНО: Подключение родительской темы позволит использовать в данной теме оформления HTML-шаблоны, CSS-стили и изображения из родительской темы. Если родительская тема уже задана, то имейте ввиду, что ее смена может привести к ошибкам доступа к уже используемым файлам родительской темы. Для любой темы оформления можно задать не более одной родительской темы."
+msgid ""
+"IMPORTANT: Theme parenting allows linking HTML templates, CSS files and "
+"images from other design themes. If you are about to change parent for a "
+"design theme which already has a parent, be aware that existing file links "
+"and connections may become corrupted. A design theme can have not more than "
+"one parent theme."
+msgstr ""
+"ВАЖНО: Подключение родительской темы позволит использовать в данной теме "
+"дизайна HTML-шаблоны, CSS-стили и изображения из родительской темы. Если "
+"родительская тема уже задана, то имейте ввиду, что ее смена может привести к "
+"ошибкам доступа к уже используемым файлам родительской темы. Для любой темы "
+"дизайна можно задать не более одной родительской темы."
 
 msgid "Subscribe"
 msgstr "Подписаться"
@@ -2201,7 +2360,7 @@ msgid "Order by phone"
 msgstr "Заказ по телефону"
 
 msgid "Design theme"
-msgstr "Тема оформления"
+msgstr "Тема дизайна"
 
 msgid "Find"
 msgstr "Найти"
@@ -3348,7 +3507,6 @@ msgstr "запретить"
 msgid "Deny"
 msgstr "Запретить"
 
-
 #: /wa-system/view/waViewHelper.class.php:425
 msgid "Recipient (administrator) email is not valid"
 msgstr "Указан неправильный email получателя (администратора)"
@@ -3362,5 +3520,7 @@ msgid "Email is required"
 msgstr "Укажите email"
 
 #: /wa-system/view/waViewHelper.class.php:448
-msgid "An error occurred while attempting to send your request. Please try again in a minute."
+msgid ""
+"An error occurred while attempting to send your request. Please try again in "
+"a minute."
 msgstr "Во время отправки произошла ошибка. Попробуйте позже."

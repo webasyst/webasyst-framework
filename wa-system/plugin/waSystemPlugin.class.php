@@ -356,7 +356,7 @@ abstract class waSystemPlugin
                 }
                 unset($config);
             }
-            if (!is_array($this->config )) {
+            if (!is_array($this->config)) {
                 $this->config = array();
             }
         }
@@ -373,8 +373,11 @@ abstract class waSystemPlugin
         $settings_config = $this->config();
         foreach ($settings_config as $name => $row) {
             if (!isset($settings[$name])) {
-
-                $settings[$name] = isset($row['value']) ? $row['value'] : null;
+                if (!empty($row['control_type']) && ($row['control_type'] = waHtmlControl::CHECKBOX) && !empty($row['value'])) {
+                    $settings[$name] = false;
+                } else {
+                    $settings[$name] = isset($row['value']) ? $row['value'] : null;
+                }
             }
         }
         foreach ($settings as $name => $value) {

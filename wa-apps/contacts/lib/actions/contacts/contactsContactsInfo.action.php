@@ -1,6 +1,11 @@
 <?php
 
-/** Contact profile view and editor form. */
+/**
+ * Contact profile view and editor form.
+ *
+ * This action is also used in own profile editor, even when user has no access to Contacts app.
+ * See 'profile' module in 'webasyst' system app.
+ */
 class contactsContactsInfoAction extends waViewAction
 {
     /**
@@ -13,20 +18,29 @@ class contactsContactsInfoAction extends waViewAction
     {
         $system = wa();
         $datetime = $system->getDateTime();
-        if (! ( $this->id = (int)waRequest::get('id'))) {
-            throw new waException('No id specified.');
-        }
-
         $user = $this->getUser()->getRights('contacts', 'backend');
         $admin = $user >= 2;
-        $ownProfile = $this->id == wa()->getUser()->getId();
 
-        $cr = new contactsRightsModel();
-        if (!$cr->getRight(null, $this->id)) {
-            if ($user && $ownProfile) {
-                $this->view->assign('readonly', true);
-            } else {
-                throw new waRightsException('Access denied.');
+        if (!empty($this->params['limited_own_profile'])) {
+            $this->id = wa()->getUser()->getId();
+            $this->view->assign('limited_own_profile', true);
+            $this->view->assign('save_url', '?module=profile&action=save');
+            $this->view->assign('password_save_url', '?module=profile&action=password');
+            $this->view->assign('photo_upload_url', '?module=profile&action=tmpimage');
+            $this->view->assign('photo_editor_url', '?module=profile&action=photo');
+            $this->view->assign('photo_editor_uploaded_url', '?module=profile&action=photo&uploaded=1');
+        } else {
+            $this->id = (int) waRequest::get('id');
+            if (empty($this->id)) {
+                throw new waException('No id specified.');
+            }
+            $cr = new contactsRightsModel();
+            if (!$cr->getRight(null, $this->id)) {
+                if ($user && $this->id == wa()->getUser()->getId()) {
+                    $this->view->assign('readonly', true);
+                } else {
+                    throw new waRightsException('Access denied.');
+                }
             }
         }
 
@@ -36,9 +50,8 @@ class contactsContactsInfoAction extends waViewAction
         // free or premium app?
         $this->view->assign('versionFull', $this->getConfig()->getInfo('edition') === 'full');
 
-
         // collect data from other applications to show in tabs (for premium app only)
-        if ($this->getConfig()->getInfo('edition') === 'full') {
+        if ($this->getConfig()->getInfo('edition') === 'full' && empty($this->params['limited_own_profile'])) {
             $links = array();
             foreach(wa()->event('profile.tab', $this->id) as $app_id => $one_or_more_links) {
                 if (!isset($one_or_more_links['html'])) {
@@ -65,15 +78,17 @@ class contactsContactsInfoAction extends waViewAction
         $this->view->assign('limitedCategories', $admin || $this->getRights('category.all') ? 0 : 1);
 
         // Update history
-        if( ( $name = $this->contact->get('name')) || $name === '0') {
-            $name = trim($this->contact->get('title').' '.$name);
-            $history = new contactsHistoryModel();
-            $history->save('/contact/'.$this->id, $name);
-        }
+        if (empty($this->params['limited_own_profile'])) {
+            if( ( $name = $this->contact->get('name')) || $name === '0') {
+                $name = trim($this->contact->get('title').' '.$name);
+                $history = new contactsHistoryModel();
+                $history->save('/contact/'.$this->id, $name);
+            }
 
-        // Update history in user's browser
-        $historyModel = new contactsHistoryModel();
-        $this->view->assign('history', $historyModel->get());
+            // Update history in user's browser
+            $historyModel = new contactsHistoryModel();
+            $this->view->assign('history', $historyModel->get());
+        }
 
         $this->view->assign('wa_view', $this->view);
     }
@@ -125,6 +140,20 @@ class contactsContactsInfoAction extends waViewAction
         // Main contact editor data
         $fieldValues = $this->contact->load('js', TRUE);
         $contactFields = waContactFields::getInfo($this->contact['is_company'] ? 'company' : 'person', TRUE);
+
+        // Only show fields that are allowed in own profile
+        if (!empty($this->params['limited_own_profile'])) {
+            $allowed = array();
+            foreach(waContactFields::getAll('person') as $f) {
+                if ($f->getParameter('allow_self_edit')) {
+                    $allowed[$f->getId()] = true;
+                }
+            }
+
+            $fieldValues = array_intersect_key($fieldValues, $allowed);
+            $contactFields = array_intersect_key($contactFields, $allowed);
+        }
+
         $this->view->assign('contactFields', $contactFields);
         $this->view->assign('fieldValues', $fieldValues);
 

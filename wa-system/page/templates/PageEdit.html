@@ -119,7 +119,7 @@
                         <div class="name">[s`Page custom parameters`]</div>
                         <div class="value">
                             <textarea name="other_params">{if $page}{foreach from=$other_params item=v key=k}{$k}={$v|escape}
-                                {/foreach}{/if}</textarea><br />
+{/foreach}{/if}</textarea><br />
                             <span class="hint">[s`Optional set of custom <em>key=value</em> parameters which can be used within page.html template or this page content as <em>&#123;$page.key&#125;</em>. Each key=value pair should be on a separate line.`] <a href="[`http://www.webasyst.com/framework/docs/site/pages/`]" target="_blank">[s`Help`]</a> <i class="icon10 new-window"></i></span>
                         </div>
                     </div>
@@ -144,6 +144,9 @@
         </ul>
         <div style="clear:both">
             <textarea style="display:none" id="wa-page-content" name="info[content]">{if $page}{$page.content|escape}{/if}</textarea>
+            <div class="ace">
+                <div id="wa-ace-editor-container"></div>
+            </div>
         </div>
     </div>
     {if $options.save_panel}
@@ -185,7 +188,7 @@
                                 $("#wa-page-content").elrte()[0].elrte.selection.insertHtml(el.text());
                             } catch (e) {}
                         } else {
-                            wa_editor.replaceSelection(el.text());
+                            wa_editor.insert(el.text());
                         }
                         return false;
                     });
@@ -200,6 +203,9 @@
     </div>
     {/if}
 </form>
+<div class="clear"></div>
+</div>
+
 <script type="text/javascript">
     var wa_url = "{$wa_url}";
     var wa_app = "{$wa->app()}";
@@ -235,12 +241,11 @@
                 setTimeout(iButtonInit, 100);
             });
         }
-        var status_check = function(item){
+        var status_check = function(item) {
             if ($(item).is(':checked')) {
                 $('#wa-page-v-open-label').addClass('wa-page-gray');
                 $('#wa-page-v-private-label').removeClass('wa-page-gray');
-            }
-            else {
+            } else {
                 $('#wa-page-v-open-label').removeClass('wa-page-gray');
                 $('#wa-page-v-private-label').addClass('wa-page-gray');
             }
@@ -287,55 +292,54 @@
             var li = $(".block-pages ul li.selected");
             $("#wa-editor-status").html("<i class='icon16 loading'></i> [s`Saving...`]").fadeIn("slow");
             $.post(form.attr('action'), form.serialize(), function (response) {
-                if (response.status == 'ok') {
-                    $(".error").removeClass('error');
-                    $("#wa-editor-status").html('<i class="icon16 yes"></i> [s`Saved`]').fadeOut('slow');
-                    $('#wa-page-button').removeClass('yellow').removeClass('red').addClass('green');
-                    var p = response.data;
-                    if (!p.status) {
-                        p.name += ' <span class="wa-page-draft">[s`draft`]</span>';
-                    }
-                    var html = $('<li id="page-' + p.id + '" class="dr selected">' +
-                            '<a class="wa-page-link" href="{$page_url}' + p.id + '">' +
-                            '<span class="count"><i class="icon10 add wa-page-add"></i></span>' +
-                            '<i class="icon16 notebook"></i>' + p.name + ' <span class="hint">/' + p.full_url +'</span>' + '</a></li>');
-                    if (p.add) {
-                        li.replaceWith(html);
-                    } else {
-                        $("#page-" + p.id).children('a.wa-page-link').replaceWith($(html).find('a.wa-page-link'));
-                        $("#page-" + p.id + ' > ul li span.hint').each(function () {
-                            $(this).text('/' + p.full_url + (p.full_url.length > 0 && p.full_url.substr(-1) != '/' ? '/' : '') + $(this).text().substr(p.old_full_url.length + 1));
-                        });
-                    }
-                    if (response.data.add) {
-                        waLoadPage(p.id);
-                    } else {
-                        $(".wa-page-editor h2").html(p.name);
-                    }
-                    {if !empty($url)}
-                    var page_url = '{$url|escape}' + p.url;
-                    {elseif isset($page_route)}
-                    var page_url = 'http://{$page.domain}/{$page_route}' + p.full_url;
-                    {/if}
-
-                    if ($(".wa-page-urls a").length) {
-                        $(".wa-page-urls a").attr('href', page_url + '?preview={$preview_hash}');
-                        $(".wa-page-urls a:first").html(page_url);
-                    }
-                } else if (response.status == 'fail') {
-                    if ($.isArray(response.errors)) {
-                        var e = response.errors[0];
-                        $(response.errors[1]).addClass('error');
-                    } else {
-                        var e = response.errors;
-                    }
-                    $("#wa-editor-status").html('<b style="color:red">' + (e ? e : $_('An error occurred while saving')) + '</b>');
-                    $('#wa-page-button').removeClass('yellow').removeClass('green').addClass('red');
+            if (response.status == 'ok') {
+                $(".error").removeClass('error');
+                $("#wa-editor-status").html('<i class="icon16 yes"></i> [s`Saved`]').fadeOut('slow');
+                $('#wa-page-button').removeClass('yellow').removeClass('red').addClass('green');
+                var p = response.data;
+                if (!p.status) {
+                    p.name += ' <span class="wa-page-draft">[s`draft`]</span>';
                 }
+                var html = $('<li id="page-' + p.id + '" class="dr selected">' +
+                '<a class="wa-page-link" href="{$page_url}' + p.id + '">' +
+                '<span class="count"><i class="icon10 add wa-page-add"></i></span>' +
+                '<i class="icon16 notebook"></i>' + p.name + ' <span class="hint">/' + p.full_url +'</span>' + '</a></li>');
+                if (p.add) {
+                    li.replaceWith(html);
+                } else {
+                    $("#page-" + p.id).children('a.wa-page-link').replaceWith($(html).find('a.wa-page-link'));
+                    $("#page-" + p.id + ' > ul li span.hint').each(function () {
+                        $(this).text('/' + p.full_url + (p.full_url.length > 0 && p.full_url.substr(-1) != '/' ? '/' : '') + $(this).text().substr(p.old_full_url.length + 1));
+                    });
+                }
+                if (response.data.add) {
+                    waLoadPage(p.id);
+                } else {
+                    $(".wa-page-editor h2").html(p.name);
+                }
+                {if !empty($url)}
+                var page_url = '{$url|escape}' + p.url;
+                {elseif isset($page_route)}
+                var page_url = 'http://{$page.domain}/{$page_route}' + p.full_url;
+                {/if}
+
+                if ($(".wa-page-urls a").length) {
+                    $(".wa-page-urls a").attr('href', page_url + '?preview={$preview_hash}');
+                    $(".wa-page-urls a:first").html(page_url);
+                }
+            } else if (response.status == 'fail') {
+                if ($.isArray(response.errors)) {
+                    var e = response.errors[0];
+                    $(response.errors[1]).addClass('error');
+                } else {
+                    var e = response.errors;
+                }
+                $("#wa-editor-status").html('<b style="color:red">' + (e ? e : $_('An error occurred while saving')) + '</b>');
+                $('#wa-page-button').removeClass('yellow').removeClass('green').addClass('red');
+            }
             }, "json");
             return false;
         });
     });
 </script>
-<div class="clear"></div>
-</div>
+

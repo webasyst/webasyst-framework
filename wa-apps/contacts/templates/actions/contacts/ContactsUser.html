@@ -337,7 +337,7 @@
         }
 
         form.find('.loading').show();
-        $.post(form.attr('action'), form.serialize(), function(response) {
+        $.post($.wa.contactEditor.passwdSaveUrl || form.attr('action'), form.serialize(), function(response) {
             if (response.status == 'ok') {
                 form.hide();
                 form.find('input[type="password"]').removeClass('error').val('');

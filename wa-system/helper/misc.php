@@ -1,21 +1,77 @@
 <?php
 
-/** print_r() all arguments inside <pre> and die(). */
-function wa_print_r() {
+/**
+ * Debug helper. Print all arguments and exit.
+ *
+ * - Human-readable like print_r() for nested structures.
+ * - Distinguishable like var_export() for plain values.
+ * - Handles self-references correctly like print_r().
+ * - Adds <pre> and escapes all output with htmlspecialchars(), unless in CLI mode.
+ * - Shows both protected and private fields of objects.
+ * - Skips huge objects like waSystem or Smarty in nested structures.
+ */
+function wa_dump()
+{
+    $args = func_get_args(); // Can't be used as a function argument directly before PHP 5.3
+    call_user_func_array('wa_dumpc', $args);
+    exit;
+}
+
+/** Same as wa_dump(), but does not call exit. */
+function wa_dumpc()
+{
     if (php_sapi_name() != 'cli') {
+        // 'waException' is a trigger for default JS error handlers
+        // to show output in a dialog.
         echo '<pre rel="waException">';
     }
+
+    // Show where we've been called from
+    if(function_exists('debug_backtrace')) {
+        echo "dumped from ";
+        foreach(debug_backtrace() as $row) {
+            if (ifset($row['file']) == __FILE__ || ifset($row['function']) == 'wa_dumpc') {
+                continue;
+            }
+            echo ifset($row['file'], '???'), ' line #', ifset($row['line'], '???'), ":\n";
+            break;
+        }
+    }
+
     foreach(func_get_args() as $v) {
-        echo "\n".wa_print_r_helper($v);
+        echo "\n".wa_dump_helper($v)."\n";
     }
     if (php_sapi_name() != 'cli') {
         echo "</pre>\n";
     }
+}
+
+/**
+ * Alias for wa_dump()
+ * @deprecated
+ */
+function wa_print_r()
+{
+    $args = func_get_args(); // Can't be used as a function argument directly before PHP 5.3
+    call_user_func_array('wa_dumpc', $args);
     exit;
 }
 
+/**
+ * Helper to chain constructor calls.
+ * When argument is an object, return it. Otherwise, throw waException.
+ */
+function wao($o)
+{
+    if (!$o || !is_object($o)) {
+        throw new waException('Argument is not an object.');
+    }
+    return $o;
+}
+
 /** Wrapper around create_function() that caches functions it creates to avoid memory leaks. */
-function wa_lambda($args, $body) {
+function wa_lambda($args, $body)
+{
     static $fn = array();
     $hash = $args.md5($args.$body).md5($body);
     if(!isset($fn[$hash])) {
@@ -54,7 +110,7 @@ function ifempty(&$var, $def=null)
  * Check if the given value represents integer.
  * @return boolean true if $val contains integer or a string that represents integer.
  */
-function int_ok($val)
+function wa_is_int($val)
 {
     // check against objects to avoid nasty object to int convertion errors
     if (!is_numeric($val)) {
@@ -65,15 +121,19 @@ function int_ok($val)
 }
 
 /**
- * Helper function for wa_print_r().
- * - Human-readable like print_r() for nested structures.
- * - Distinguishable like var_export() for plain values.
- * - Handles self-references correctly like print_r().
- * - Escapes all output with htmlspecialchars(), unless in CLI mode.
- * - Shows both protected and private fields of objects.
- * - Skips huge objects like waSystem or Smarty in nested structures.
+ * @param $val
+ * @return bool
+ * @deprecated
  */
-function wa_print_r_helper(&$value, &$level_arr = array())
+function int_ok($val)
+{
+    return wa_is_int($val);
+}
+
+/**
+ * Helper function for wa_print_r() / wa_dump()
+ */
+function wa_dump_helper(&$value, &$level_arr = array())
 {
     $level = count($level_arr);
     if ($level > 29) {
@@ -120,7 +180,7 @@ function wa_print_r_helper(&$value, &$level_arr = array())
     if (is_object($value)) {
         // Skip huge core objects in nested structures
         if ($level > 0) {
-            $huge_classes = array_flip(array('waSystem', 'waModel', 'waSmarty3View', 'waViewHelper', 'Smarty', 'Smarty_Internal_Template'));
+            $huge_classes = array_flip(array('waSystem', 'waModel', 'waSmarty3View', 'waViewHelper', 'waWorkflow', 'Smarty', 'Smarty_Internal_Template'));
             $class = get_class($value);
             do {
                 if(isset($huge_classes[$class])) {
@@ -154,7 +214,7 @@ function wa_print_r_helper(&$value, &$level_arr = array())
         if (php_sapi_name() != 'cli') {
             $key = htmlspecialchars($key);
         }
-        $str .= $br."  ".$key.' => '.wa_print_r_helper($val, $level_arr);
+        $str .= $br."  ".$key.' => '.wa_dump_helper($val, $level_arr);
     }
     array_pop($level_arr);
 

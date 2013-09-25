@@ -1,6 +1,11 @@
 <?php
 
-/** Contact photo upload and crop dialog. */
+/**
+ * Contact photo upload and crop dialog.
+ *
+ * This action is also used in own profile editor, even when user has no access to Contacts app.
+ * See 'profile' module in 'webasyst' system app.
+ */
 class contactsPhotoEditorAction extends waViewAction
 {
     /**
@@ -40,6 +45,9 @@ class contactsPhotoEditorAction extends waViewAction
 
     protected function getId()
     {
+        if (!empty($this->params['limited_own_profile'])) {
+            return wa()->getUser()->getId();
+        }
         return (int)waRequest::get('id');
     }
 
@@ -50,10 +58,17 @@ class contactsPhotoEditorAction extends waViewAction
 
     protected function assignUrls()
     {
-        $this->view->assign('tmpimage_url', '?module=photo&action=tmpimage');
-        $this->view->assign('delete_url', '?module=photo&action=delete&id='.$this->contact->getId());
-        $this->view->assign('crop_url', '?module=photo&action=crop');
-        $this->view->assign('back_url', '#/contact/'.$this->contact->getId().'/');
+        if (!empty($this->params['limited_own_profile'])) {
+            $this->view->assign('tmpimage_url', '?module=profile&action=tmpimage');
+            $this->view->assign('delete_url', '?module=profile&action=deletePhoto');
+            $this->view->assign('crop_url', '?module=profile&action=savePhoto');
+            $this->view->assign('back_url', '?module=profile');
+        } else {
+            $this->view->assign('tmpimage_url', '?module=photo&action=tmpimage');
+            $this->view->assign('delete_url', '?module=photo&action=delete&id='.$this->contact->getId());
+            $this->view->assign('crop_url', '?module=photo&action=crop');
+            $this->view->assign('back_url', '#/contact/'.$this->contact->getId().'/');
+        }
     }
 }
 

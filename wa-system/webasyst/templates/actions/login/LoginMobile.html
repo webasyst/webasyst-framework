@@ -1,50 +1,58 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	<meta name="apple-mobile-web-app-capable" content="yes" />
-	<meta name="viewport" content="width=device-width; initial-scale=1; maximum-scale=1; user-scalable=0;" />
-	<title>{$wa->accountName()}</title>
-	<script type="text/javascript" src="{$wa_url}wa-content/js/jquery/jquery-1.8.1.min.js"></script>
-	<script type="text/javascript" src="{$wa_url}wa-content/js/jquery-mobile/jquery.mobile-1.1.1.min.js"></script>
-	<link rel="stylesheet" href="{$wa_url}wa-content/css/wa/wa-mobile-1.0.css" />
-	<link rel="apple-touch-icon-precomposed" sizes="144x144" href="{$wa_url}wa-content/img/apple-touch-icon-144x144-precomposed.png">
-	<link rel="apple-touch-icon-precomposed" sizes="114x114" href="{$wa_url}wa-content/img/apple-touch-icon-114x114-precomposed.png">
-	<link rel="apple-touch-icon-precomposed" sizes="72x72" href="{$wa_url}wa-content/img/apple-touch-icon-72x72-precomposed.png">
-	<link rel="apple-touch-icon-precomposed" href="{$wa_url}wa-content/img/apple-touch-icon-57x57-precomposed.png">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="viewport" content="width=device-width; initial-scale=1; maximum-scale=1; user-scalable=0;" />
+    <title>{$wa->accountName()}</title>
+    <script type="text/javascript" src="{$wa_url}wa-content/js/jquery/jquery-1.8.1.min.js"></script>
+    <script>$(document).on("mobileinit", function() {
+        $.extend($.mobile, {
+            hashListeningEnabled: false,
+            pushStateEnabled: false,
+            ajaxEnabled: false,
+            linkBindingEnabled: false
+        });
+    });</script>
+    <script type="text/javascript" src="{$wa_url}wa-content/js/jquery-mobile/jquery.mobile-1.1.1.min.js"></script>
+    <link rel="stylesheet" href="{$wa_url}wa-content/css/wa/wa-mobile-1.0.css" />
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="{$wa_url}wa-content/img/apple-touch-icon-144x144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="{$wa_url}wa-content/img/apple-touch-icon-114x114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="{$wa_url}wa-content/img/apple-touch-icon-72x72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="{$wa_url}wa-content/img/apple-touch-icon-57x57-precomposed.png">
 </head>
 <body>
 <div id="wa" data-role="page" class="wa-mobile-fields wa-mobile-login">
-	<div data-role="header" data-position="inline">
-		<h1>{$wa->accountName()}</h1>
-	</div>
-	<div data-role="content" {if !empty($error)}data-theme="r"{/if}>
-	<form action="" method="post" novalidate>
-		<input type="hidden" name="wa_auth_login" value="1" />
-		{if !empty($error)}<div class="wa-mobile-error">{$error|escape}</div>{/if}
-		<div data-role="fieldcontain">
-    		<label for="name">[`Login`]</label>
-    		<input type="email" name="login" id="name" value="{$wa->post('login')|escape}">
-		</div>
-		<div data-role="fieldcontain">
-    		<label for="password" >[`Password`]</label>
-    		<input type="password" name="password" id="password" value="" >
-		</div>
-		{if $options.remember_enabled}
+    <div data-role="header" data-position="inline">
+        <h1>{$wa->accountName()}</h1>
+    </div>
+    <div data-role="content" {if !empty($error)}data-theme="r"{/if}>
+    <form action="" method="post" novalidate>
+        <input type="hidden" name="wa_auth_login" value="1" />
+        {if !empty($error)}<div class="wa-mobile-error">{$error|escape}</div>{/if}
+        <div data-role="fieldcontain">
+            <label for="name">[`Login`]</label>
+            <input type="email" name="login" id="name" value="{$wa->post('login')|escape}">
+        </div>
+        <div data-role="fieldcontain">
+            <label for="password" >[`Password`]</label>
+            <input type="password" name="password" id="password" value="" >
+        </div>
+        {if $options.remember_enabled}
            <div data-role="fieldcontain">
             <fieldset data-role="controlgroup" class="wa-remember-link">
-				<legend></legend>
-				<input type="checkbox" name="remember" id="remember-me" class="custom" {if !empty($remember) || $wa->post('remember')}checked="checked"{/if} value="1"/>
-				<label for="remember-me">[`Remember me`]</label>
-   			 </fieldset>
-		</div>
-		{/if}
-		<fieldset class="ui-grid-a">
-			<div class="ui-block-b"><button type="submit">[`Sign In`]</button></div>
-			<!-- <a href="{$wa_app_url}?action=forgot" class="wa-mobie-btn-link">[`Forgot password?`]</a> -->
-		</fieldset>
-	</form>
-	</div>
+                <legend></legend>
+                <input type="checkbox" name="remember" id="remember-me" class="custom" {if !empty($remember) || $wa->post('remember')}checked="checked"{/if} value="1"/>
+                <label for="remember-me">[`Remember me`]</label>
+             </fieldset>
+        </div>
+        {/if}
+        <fieldset class="ui-grid-a">
+            <div class="ui-block-b"><button type="submit">[`Sign In`]</button></div>
+            <!-- <a href="{$wa_app_url}?action=forgot" class="wa-mobie-btn-link">[`Forgot password?`]</a> -->
+        </fieldset>
+    </form>
+    </div>
 </div>
 </body>
 </html>

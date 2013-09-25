@@ -22,7 +22,7 @@ class waContactCategoriesField extends waContactChecklistField
 
     protected function init() {
         $this->options['storage'] = 'waContactCategoryStorage';
-        $this->options['required'] = !wa()->getUser()->getRights('contacts', 'category.all');
+        $this->options['required'] = null;
     }
 
     public function getInfo()
@@ -45,6 +45,14 @@ class waContactCategoriesField extends waContactChecklistField
         }
 
         return $info;
+    }
+
+    public function isRequired()
+    {
+        if ($this->options['required'] === null) {
+            $this->options['required'] = !wa()->getUser()->getRights('contacts', 'category.all');
+        }
+        return parent::isRequired();
     }
 
     function getOptions($id = null) {

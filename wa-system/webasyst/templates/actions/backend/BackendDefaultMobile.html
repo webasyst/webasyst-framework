@@ -13,14 +13,24 @@
 	<link rel="apple-touch-icon-precomposed" sizes="114x114" href="{$wa_url}wa-content/img/apple-touch-icon-114x114-precomposed.png">
 	<link rel="apple-touch-icon-precomposed" sizes="72x72" href="{$wa_url}wa-content/img/apple-touch-icon-72x72-precomposed.png">
 	<link rel="apple-touch-icon-precomposed" href="{$wa_url}wa-content/img/apple-touch-icon-57x57-precomposed.png">
-    {if $wa->isMobile() == 'iphone'}
     <script>
+    {if $wa->isMobile() == 'iphone'}
     $(document).on("click", "a", function(e) {
         e.preventDefault();
         location.href = $(this).attr("href");
     });
-    </script>
     {/if}
+    var pixelRatio = !!window.devicePixelRatio ? window.devicePixelRatio : 1;
+    $(window).on("load", function() {
+        if (pixelRatio > 1) {
+            $('#apps .wa-mobile-list-thumb img').each(function() {
+                if ($(this).data('src2')) {
+                    $(this).attr('src', $(this).data('src2'));
+                }
+            });
+        }
+    });
+    </script>
 </head>
 <body>
 <div id="wa" class="wa-app-list" data-role="page">
@@ -34,7 +44,7 @@
 			<ul data-role="listview" class="wa-mobile-list-thumb" data-theme="d">
 				{foreach from=$apps key=app_id item=app}
 					<li><a href="{$backend_url}{$app_id}" rel="external">
-						{if $app.img}<img src="{$wa_url}{$app.img}" />{/if}
+						{if $app.img}<img {if !empty($app.icon.96)}data-src2="{$wa_url}{$app.icon.96}"{/if} src="{$wa_url}{$app.img}" />{/if}
 						<h3{if empty($app.mobile)} class="wa-only-desktop"{/if}>{$app.name}</h3>
 					</a></li>
 				{/foreach}

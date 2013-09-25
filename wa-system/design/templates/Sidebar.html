@@ -1,25 +1,34 @@
-<div class="wa-app-block">
-    <h2 class="short-header">
-        <img src="{$wa_url}{$app.icon.24}" alt="">
-        {$app.name}
-        {if $routing_url}
-        <a style="float:right; margin-right: 15px; margin-top: -3px;" href="{$routing_url}" id="wa-theme-routing-url"><i class="icon16 settings"></i></a>
-        {/if}
-    </h2>
-</div>
+<ul class="menu-h dropdown wa-theme-selector">
+    <li>
+        <a href="#" class="inline-link"><i class="icon10 darr float-right"></i><img src="{$wa_url}{$app.icon.24}"><b><i><span id="wa-theme-active"></span></i></b></a>
+        <ul id="wa-theme-list" class="menu-v">
+            {foreach $themes as $t_id => $t}
+                <li id="wa-theme-list-{$t_id|escape}" class="no-icon" data-theme="{$t_id}">
+                    <a href="{$design_url}theme={$t_id}"{if $t.used} class="bold"{/if}>{$t.name}</a>
+                </li>
+            {/foreach}
+            
+            <li class="hr"></li>
+
+            {if $wa->user()->getRights('installer')}
+                <li><a id="wa-theme-link" href="{$themes_url}"><i class="icon16 palette"></i>[s`Design themes`]</a></li>
+            {/if}
+            <li class="bottom-padded"><a id="wa-theme-upload-link" href="#"><i class="icon16 upload"></i>[s`Upload theme`]</a></li>
+        </ul>
+    </li>
+ </ul>
+
 {foreach $themes as $t_id => $t}
-<div class="wa-theme-block" id="wa-theme-block-{$t_id|escape}">
-    {if $t.preview_url}
-    <span class="count"><a href="{$t.preview_url|escape}" target="_blank" class="wa-theme-preview{if $t.used} used{/if}" title="[s`Preview`]"><i class="icon16 new-window"></i></a></span>
-    {/if}
-    <h4 class="heading" data-hash="{$t_id}"><i class="icon16 darr"></i>{$t.name}</h4>
+<div class="wa-theme-block" id="wa-theme-block-{$t_id|escape}" style="display: none">
     <div class="wa-theme-routes">
     {if isset($themes_routes[$t_id])}
-    {foreach $themes_routes[$t_id] as $r_url => $r_title}
-        <span class="hint"><a target="_blank" href="{$r_url}">{$r_title}</a></span><br>
-    {/foreach}
+        <p class="align-center hint bold">[s`This theme is in use on`]
+            {foreach $themes_routes[$t_id] as $_r}
+                <a href="{ifempty($_r._routing_url, $_r._url)}" class="no-underline">{$_r._url_title|escape}<i class="icon10 {if !empty($_r._routing_url)}settings{else}new-window{/if}"></i></a><br>
+            {/foreach}
+        </p>
     {else}
-        <span class="hint">[s`not in use`]</span>
+        <p class="align-center hint">{sprintf(_ws('This theme is currently not in use. Connect this theme in your site <a href="%s">Routing settings</a>.'), $routing_url)}</p>
     {/if}
     </div>
     <ul class="menu-v with-icons wa-theme" id="theme-{$t_id}">
@@ -30,24 +39,27 @@
             </a>
         </li>
         {/foreach}
-        <li class="top-padded add-file"><a href="{$design_url}theme={$t_id}&file=" class="small"><i class="icon10 add"></i>[s`New file`] </a> </li>
+
+        {if $t.preview_url}
+            <li class="top-padded">
+                <a href="{$t.preview_url|escape}" target="_blank" class="bold small wa-theme-preview{if $t.used} used{/if}" title="[s`Preview`]"><i class="icon16 new-window"></i>[s`Preview theme`]</a>
+            </li>
+        {/if}
+        <li class="add-file"><a href="{$design_url}theme={$t_id}&file=" class="small"><i class="icon10 add"></i>[s`New file`] </a> </li>
         <li><a href="{$design_url}theme={$t_id}&action=theme" class="small"><i class="icon10 settings"></i>[s`Theme settings`]</a></li>
         {if $t.about}
         <li><a href="{$design_url}theme={$t_id}&action=themeAbout" class="small"><i class="icon10 info"></i>[s`About`]</a></li>
         {/if}
+
+    </ul>
+    <br>
+    <div class="hr top-padded"></div>
+    <ul class="menu-v with-icons wa-theme">
+        <li class="top-padded"><a class="wa-themes-link" href="{$themes_url}"><i class="icon16 palette"></i>[s`Design themes`]</a></li>
     </ul>
     <br>
 </div>
 {/foreach}
-
-<div class="bordered-top">
-    <ul class="menu-v with-icons wa-theme">
-        {if $wa->user()->getRights('installer')}
-        <li><a id="wa-theme-link"  href="{$themes_url}"><i class="icon16 palette"></i>[s`Design themes`]</a></li>
-        {/if}
-        <li class="bottom-padded"><a id="wa-theme-upload-link" href="#"><i class="icon16 upload"></i>[s`Upload theme`]</a></li>
-    </ul>
-</div>
 
 <div class="dialog" id="wa-theme-upload-dialog">
     <div class="dialog-background"> </div>

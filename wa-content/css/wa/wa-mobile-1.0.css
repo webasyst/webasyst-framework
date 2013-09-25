@@ -45,6 +45,7 @@ border: 0;
 #wa ul.wa-mobile-list-icon i { display: inline-block; vertical-align: top; width: 12px; height: 12px; margin: 0 0.75em 0 0 }
 #wa .ui-content ul.wa-mobile-list-thumb.ui-listview { margin: 0 }
 #wa .ui-content ul.wa-mobile-list-thumb li { display: inline-block; width:84px; -webkit-border-radius:8px; -moz-border-radius:8px; margin:0.35em; border-width:0; vertical-align: text-top; overflow: hidden; }
+#wa .ui-content ul.wa-mobile-list-thumb li img { width: 48px; height: 48px; }
 #wa ul.wa-mobile-list-thumb .ui-li-desc { margin: 0.5em 0 0.6em; }
 #wa ul.wa-mobile-list-thumb .ui-btn-inner { height: 84px; line-height: 14px; max-height: none; padding: 6px 4px 0; text-align: center; background: #fff; }
 #wa ul.wa-mobile-list-thumb .ui-li-heading { font-size: 12px; margin: 0; text-align: center; white-space: normal; overflow: visible; }

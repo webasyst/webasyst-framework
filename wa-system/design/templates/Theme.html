@@ -4,25 +4,20 @@
     <p class="small">
         [s`Last modified`]: <strong>{if $theme.type eq waTheme::ORIGINAL}[s`not modified`]{else}{$theme.mtime|wa_datetime:"humandatetime"}{/if}</strong>
     </p>
-    <p class="hint">
-        {if $theme.used}[s`This design theme is in use on`]
-            {foreach $theme.used as $url}
-                {if !$url.met}
-                    <a href="{$url.preview}" target="_blank">{$url.preview}</a> <i class="icon10 new-window"></i>
-                {/if}
-            {/foreach}
-        {else}
-            [s`This design theme is not in use. Apply this theme in your website <span class="js-theme-routing-url">Routing settings</span>.`]
-        {/if}
-    </p>
-
 
     <ul class="menu-v with-icons">
         <li><a href="?module=design&amp;action=themeDownload&amp;theme={$theme.id}" class="bold"><i class="icon16 download"></i>[s`Download`] <span class="hint">.tar.gz</span></a></li>
         <li><a class="theme-copy" href="#"><i class="icon16 split"></i>[s`Duplicate`]</a></li>
-        <li><a class="theme-reset{if $theme.type neq waTheme::OVERRIDDEN} disabled{/if}" href="#" title="[s`This will reset all customizations you applied to this design theme. Are you sure?`]"><i class="icon16 broom"></i>[s`Revert theme to original`]</a></li>
         <li><a class="theme-rename" href="#"><i class="icon16 edit"></i>[s`Rename`]</a></li>
         <li><i class="icon16 link"></i>[s`Parent theme`]: <strong>{if $theme.parent_theme_id}{$theme.parent_theme_id}{else}[s`not set`]{/if}</strong>  <a class="theme-parent inline" href="#">[s`Change`]</a></li>
+        <li class="top-padded">
+            <a class="theme-reset{if $theme.type neq waTheme::OVERRIDDEN} disabled{/if}" href="#" title="[s`This will reset all customizations you applied to this design theme. Are you sure?`]"><i class="icon16 broom"></i>[s`Revert theme to original`]</a>
+            {if $theme.type neq waTheme::OVERRIDDEN}
+                <span class="hint">[s`You are using the original version of this design theme. No customizations have been applied to theme files yet.`]</span>
+            {else}
+                <span class="hint">[s`This will erase all customizations you’ve made to this theme’s template files using the design editor, and reset this theme to original`]</span>
+            {/if}
+        </li>        
         <li><a class="theme-delete{if $theme.system} disabled{/if}" href="#" title="[s`This will permanently delete theme without the ability to recover. Are you sure?`]"><i class="icon16 delete"></i>[s`Delete theme`]</a></li>
     </ul>
     <div class="clear"></div>

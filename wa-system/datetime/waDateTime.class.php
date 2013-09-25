@@ -226,7 +226,6 @@ class waDateTime
         } elseif (stripos("ymdhisfjnucrzt", $format) !== false) {
             return $format;
         } else {
-            var_dump("waDateTime format '{$format}' undefined",stripos("ymdhisfjnucrzt", $format));exit;
             trigger_error("waDateTime format '{$format}' undefined",E_USER_NOTICE);
             return "Y-m-d H:i:s";
         }

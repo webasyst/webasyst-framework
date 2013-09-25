@@ -89,8 +89,4 @@ class mailruAuth extends waOAuth2Adapter
         return 'Mail.Ru';
     }
 
-    public function getIcon()
-    {
-        return 'http://limg.imgsmail.ru/r/favicon.ico';
-    }
 }

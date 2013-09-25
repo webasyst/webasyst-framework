@@ -1,33 +1,18 @@
-{if $options.js.codemirror}
-<link rel="stylesheet" href="{$wa_url}wa-content/js/codemirror/lib/codemirror.css">
-<script src="{$wa_url}wa-content/js/codemirror/lib/codemirror.js"></script>
-<script src="{$wa_url}wa-content/js/codemirror/mode/xml/xml.js"></script>
-<script src="{$wa_url}wa-content/js/codemirror/mode/javascript/javascript.js"></script>
-<script src="{$wa_url}wa-content/js/codemirror/mode/css/css.js"></script>
-<script src="{$wa_url}wa-content/js/codemirror/mode/htmlmixed/htmlmixed.js"></script>
-{/if}
-
-{if $options.js.storage}
-<script src="{$wa_url}wa-content/js/jquery-plugins/jquery.json.js?v{$wa->version()}"></script>
-<script src="{$wa_url}wa-content/js/jquery-plugins/jquery.store.js?v{$wa->version()}"></script>
-<script>
-    if (!$.storage) {
-        $.storage = new $.store();
-    }
-</script>
+{if $options.js.ace}
+<script src="{$wa_url}wa-content/js/ace/ace.js"></script>
 {/if}
 
 {if $options.js.editor}
-<script src="{$wa_url}wa-content/js/jquery-wa/wa.editor.js?v{$wa->version()}"></script>
+<script src="{$wa_url}wa-content/js/jquery-wa/wa.elrte.ace.js?v{$wa->version()}"></script>
 {/if}
 
 <style>
     .wa-design { margin-bottom: 80px; }
 
-    .wa-editor-core-wrapper { background: white;}
+    .wa-editor-core-wrapper { background: white; }
     .wa-design-gray-toolbar { background: #eee; padding-left: 15px; padding-bottom: 13px; }
     .wa-design-gray-toolbar h4 { font-size: 1.3em;}
-    .wa-design-save-panel { position: fixed; bottom: 0; left: 0; right: 0; background: #eee; padding-left: 420px; }
+    .wa-design-save-panel { position: fixed; bottom: 0; left: 0; right: 0; background: #eee; padding-left: 420px; z-index: 1}
 
     .wa-app-block { margin: 0; padding: 15px 15px 5px 42px;}
     .wa-app-block span.hint { white-space: nowrap;}
@@ -91,18 +76,27 @@
 
     ul.with-icons.wa-theme { padding: 0 5px 0 3px; margin-top: 12px; }
     ul.with-icons.wa-theme li a { padding-left: 33px; }
-    .wa-theme-routes { padding-left:22px; }
-    .wa-theme-block { margin-top: 20px;}
+    
+    .wa-theme-selector li { width: 200px; }
+    .wa-theme-selector li a { padding: 12px 13px; font-size: 1.3em; word-break: break-all; line-height: 1em; }
+    .wa-theme-selector li a img { width: 24px; height: 24px; float: left; margin-right: 5px; margin-top: -3px; margin-left: -3px; }
+    .wa-theme-selector li ul.menu-v { width: 250px; }
+    .wa-theme-selector li ul.menu-v li { width: 208px; padding-left: 34px; }
+    .wa-theme-selector li ul.menu-v li a { padding: 7px 4px; font-size: 1em; }
+    .wa-theme-selector li ul.menu-v li.no-icon { padding-left: 14px; padding-right: 28px; }
+    .wa-theme-selector li ul.menu-v li.selected a { background: inherit; }
+    .wa-theme-routes { padding-left: 10px; padding-right: 10px; }
+    .wa-theme-routes a i.icon10 { display: none; position: absolute; }
+    .wa-theme-routes a:hover i.icon10 { display: inline; }
+    .wa-theme-routes .hint a.no-underline { text-decoration: none !important; }    
+    .wa-theme-block { margin-top: 6px;}
     .wa-theme-block ul.wa-theme li { padding: 4px 2px 4px 24px;}
     .wa-theme-block ul.wa-theme li.top-padded { padding-top: 15px; }
     .wa-theme-block ul.wa-theme li a { padding-left: 30px; word-break: break-all; }
     .wa-theme-block h4 { margin: 10px 10px 0; word-break: break-all; }
-
-    .CodeMirror-scroll {
-        height: auto;
-        overflow-y: hidden;
-        overflow-x: auto;
-    }
+    
+    #wa-design-sidebar { width: 210px; }
+    #wa-design-container { margin-left: 210px; }
 
 </style>
 
@@ -138,7 +132,7 @@
         </div>
     </div>
     <script>
-
+        var wa_url = "{$wa_url}";
         function waDesignConfirm() {
             if ($("#wa-design-button").length && $('#wa-design-button').hasClass('yellow')) {
                 if (!confirm("[s`Unsaved changes will be lost if you leave this page now. Are you sure?`]")) {
@@ -147,6 +141,12 @@
             }
             return true;
         }
+
+        $(window).on('beforeunload', function () {
+            if ($("#wa-design-button").length && $('#wa-design-button').hasClass('yellow')) {
+                return "[s`Unsaved changes will be lost if you leave this page now. Are you sure?`]";
+            }
+        });
 
         $("#wa-theme-upload-link").click(function () {
             if (!waDesignConfirm()) return false;
@@ -197,6 +197,43 @@
             return false;
         });
 
+        $('.wa-theme-selector').on('mouseover', function () {
+            $('#wa-theme-list').css('display', '');
+        });
+
+        $("#wa-theme-list li a").click(function () {
+            $('#wa-theme-list').hide();
+            if ($(this).attr('id') != 'wa-theme-upload-link') {
+                var t = $(this).parent().data('theme');
+                if (t) {
+                    $("#wa-theme-active").text($(this).text());
+                    if ($(this).hasClass('bold')) {
+                        $("#wa-theme-active").addClass('bold');
+                    } else {
+                        $("#wa-theme-active").removeClass('bold');
+                    }
+                    var a, url;
+                    var params = location.hash.split('&');
+                    for (var i = 0; i < params.length; i++) {
+                        var tmp = params[i].split('=');
+                        if (tmp[0] == 'file') {
+                            var url = "{$design_url}theme=" + t + '&file=' + tmp[1];
+                            var a = $('#wa-theme-block-' + t + ' a[href="' + url + '"]');
+                            break;
+                        }
+                    }
+                    if (!a || !a.length) {
+                        url = "{$design_url}theme=" + t + '&file=index.html';
+                        a = $('#wa-theme-block-' + t + ' a[href="' + url + '"]');
+                    }
+                    a.click();
+                    location.href = url;
+
+                    return false;
+                }
+            }
+        });
+
         function handleError(data) {
             var error = '';
             if ( typeof data.errors == 'string') {
@@ -239,6 +276,7 @@
         });
 
         $("div.wa-theme-block ul li").on('click', 'a', function () {
+            if ($(this).hasClass('wa-theme-preview')) return;
             if (!waDesignConfirm()) return false;
             $("#wa-design-sidebar li.selected").removeClass('selected');
             $(this).parent().addClass('selected');
@@ -273,7 +311,13 @@
             }
             if (hash.length) {
                 if (hash == 'themes') {
+                {if $themes_welcome}
+                    $('#wa-design-sidebar').hide();
+                    $('#wa-design-container').removeClass('left200px').css('margin-left', 0);
+                {/if}
+                    $('#wa-design-sidebar .wa-theme-block:visible .wa-themes.link').parent().addClass('selected');
                     $("#wa-design-container").load("?module=design&action=themes", function () {
+                        {if $themes_welcome}$('#themes-close').show();{/if}
                         if ($(".s-scrollable-part").length) {
                             $(".s-scrollable-part").scrollTop(0);
                         } else {
@@ -283,6 +327,18 @@
                 } else {
                     if (hash.indexOf('action=') == -1) {
                         hash = 'action=edit&' + hash;
+                    }
+                    if (hash.indexOf('theme=') != -1) {
+                        var params = hash.split('&');
+                        for (var j = 0; j < params.length; j++) {
+                            var tmp = params[j].split('=');
+                            if (tmp[0] == 'theme') {
+                                $("#wa-theme-active").text($('#wa-theme-list-' + tmp[1] + ' a').text());
+                                $('#wa-design-sidebar .wa-theme-block').hide();
+                                $('#wa-theme-block-' + tmp[1]).show();
+                                $('#wa-design-sidebar a[href="' + location.hash + '"]').parent().addClass('selected');
+                            }
+                        }
                     }
                     $("#wa-design-container").load("?module=design&" + hash, function (responseText, textStatus, XMLHttpRequest) {
                         if ($(".s-scrollable-part").length) {
@@ -301,36 +357,22 @@
                     });
                 }
             } else {
+                {if $themes_welcome}
+                $('#wa-design-sidebar').hide();
+                $('#wa-design-container').removeClass('left200px').css('margin-left', 0);
+                $('#wa-theme-link').click();
+                {else}
                 $("div.wa-theme-block ul li a:first").click();
+                {/if}
             }
         }
         $(document).ready(function () {
-            $("div.wa-theme-block h4.heading").click(function (e, not_save) {
-                var h = $(this);
-                var k = '{$wa->app()}/design/theme-' + h.attr('data-hash');
-                var is_save = !(not_save || false)
-                if (is_save) {
-                    if (!$.storage.get(k)) {
-                        $.storage.set(k, 1);
-                    } else {
-                        $.storage.del(k);
-                    }
-                }
-                var ul = h.parent().children('ul.wa-theme');
-                if (h.find('i').hasClass('darr')) {
-                    h.find('i').removeClass('darr').addClass('rarr');
-                    ul.hide();
-                } else {
-                    h.find('i').removeClass('rarr').addClass('darr');
-                    ul.show();
-                }
-            });
-            $("div.wa-theme-block h4.heading").each(function () {
-                if ($.storage.get('{$wa->app()}/design/theme-' + $(this).attr('data-hash'))) {
-                    $(this).trigger('click', true);
-                }
-            });
-            $('#wa-design-sidebar a[href="' + location.hash + '"]').parent().addClass('selected');
+            var a = $('#wa-design-sidebar .wa-theme-block a[href="' + location.hash + '"]:first');
+            if (a.length) {
+                a.parent().addClass('selected');
+                var t = a.closest('.wa-theme-block').show().attr('id').replace(/wa-theme-block-/, '');
+                $("#wa-theme-active").text($('#wa-theme-list-' + t).find('a').text());
+            }
             {if !$options.is_ajax}
                 waDesignLoad();
             {/if}

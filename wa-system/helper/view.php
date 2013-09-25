@@ -22,7 +22,7 @@ function wa_header()
     }
     foreach ($apps as $app_id => $app) {
         if (isset($app['img'])) {
-            $img = '<img src="'.$root_url.$app['img'].'" alt="">';
+            $img = '<img '.(!empty($app['icon'][96]) ? 'data-src2="'.$root_url.$app['icon'][96].'"' : '').' src="'.$root_url.$app['img'].'" alt="">';
         } else {
             $img = '';
         }
@@ -100,9 +100,16 @@ function wa_header()
     $username = htmlspecialchars($user['name'], ENT_QUOTES, 'utf-8');
 
     // If the user has access to contacts app then show a link to his profile
-    if (wa()->getUser()->getRights('contacts', 'backend')) {
-        $userpic = '<a href="'.$backend_url.'contacts/#/contact/'.$user['id'].'">'.$userpic.'</a>';
-        $username = '<a href="'.$backend_url.'contacts/#/contact/'.$user['id'].'" id="wa-my-username">'.$username.'</a>';
+    if (wa()->appExists('contacts')) {
+        require_once(wa()->getConfig()->getAppsPath('contacts', 'lib/models/contactsRights.model.php'));
+        $cr = new contactsRightsModel();
+        if ($user->getRights('contacts', 'backend') && $cr->getRight(null, $user['id'])) {
+            $userpic = '<a href="'.$backend_url.'contacts/#/contact/'.$user['id'].'">'.$userpic.'</a>';
+            $username = '<a href="'.$backend_url.'contacts/#/contact/'.$user['id'].'" id="wa-my-username">'.$username.'</a>';
+        } else {
+            $userpic = '<a href="'.$backend_url.'?module=profile">'.$userpic.'</a>';
+            $username = '<a href="'.$backend_url.'?module=profile" id="wa-my-username">'.$username.'</a>';
+        }
     }
 
     $more = _ws('more');

@@ -19,10 +19,10 @@ class waContactEmailField extends waContactStringField
         if (!isset($this->options['validators'])) {
             $this->options['validators'] = new waEmailValidator($this->options, array('required' => _ws('This field is required')));
             $this->options['formats']['js'] = new waContactEmailListFormatter();
-            $this->options['formats']['top'] = new waContactEmailTopFormatter();
+            $this->options['formats']['html'] = $this->options['formats']['top'] = new waContactEmailTopFormatter();
         }
     }
-    
+
     public function set(waContact $contact, $value, $params = array(), $add = false)
     {
         $value = parent::set($contact, $value, $params, $add);
@@ -76,7 +76,7 @@ class waContactEmailTopFormatter extends waContactFieldFormatter
                 $exts = $f->getParameter('ext');
                 if (isset($exts[$ext])) {
                     $ext = _ws($exts[$ext]);
-                } 
+                }
                 $result .= ' <em class="hint">'.htmlspecialchars($ext).'</em>';
             }
             return $result;

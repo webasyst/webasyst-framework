@@ -2,7 +2,7 @@
 <!ELEMENT theme (name+,description*,files*,about*)>
 <!ATTLIST theme 
 	id CDATA #REQUIRED
-	system (1|0) "1"
+	system (1|0) "0"
 	vendor CDATA #IMPLIED
 	author CDATA #IMPLIED
 	app CDATA #REQUIRED
@@ -18,7 +18,7 @@
 	locale CDATA #REQUIRED
 >
 <!ELEMENT files (file+)>
-<!ELEMENT file (description+)>
+<!ELEMENT file (description*)>
 <!ATTLIST file 
 	path CDATA #REQUIRED
 	custom (1|0) "0"

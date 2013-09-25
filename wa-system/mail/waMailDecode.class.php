@@ -98,6 +98,7 @@ class waMailDecode
         }
         fclose($this->source);
 
+
         $headers = $this->parts[0]['headers'];
         foreach ($headers as $h => &$v) {
             if (is_array($v)) {
@@ -245,7 +246,13 @@ class waMailDecode
                 $i1 = strpos($this->buffer, "\r", $this->buffer_offset);
                 $i2 = strpos($this->buffer, "\n", $this->buffer_offset);
                 if ($i1 !== false || $i2 !== false) {
-                    $i = min($i1, $i2);
+                    if ($i1 === false) {
+                        $i = $i2;
+                    } elseif ($i2 === false) {
+                        $i = $i1;
+                    } else {
+                        $i = min($i1, $i2);
+                    }
                     $str = substr($this->buffer, $this->buffer_offset, $i - $this->buffer_offset);
                     if ($str === str_repeat("-", strlen($str))) {
                         $this->buffer_offset = $i;
@@ -331,6 +338,9 @@ class waMailDecode
                         }
                         if (!$this->skipLineBreak()) {
                             $in = strpos($this->buffer, "\n", $this->buffer_offset);
+                            if ($in === false) {
+                                return false;
+                            }
                             if ($this->buffer[$in - 1] == "\r") {
                                 $in--;
                             }
@@ -339,6 +349,12 @@ class waMailDecode
                             }
                             $this->skipLineBreak();
                         }
+
+                        if ($this->is_last && $this->buffer_offset == strlen($this->buffer)) {
+                            $this->state = self::STATE_END;
+                            return true;
+                        }
+
                         $this->parts[] = array('parent' => $this->part_index);
                         $this->part_index = count($this->parts) - 1;
                         $this->part = &$this->parts[$this->part_index];
@@ -411,9 +427,12 @@ class waMailDecode
     {
         if ($this->buffer[$this->buffer_offset] == "\n") {
             $this->buffer_offset++;
+            return true;
         } elseif (substr($this->buffer, $this->buffer_offset, 2) == "\r\n") {
             $this->buffer_offset += 2;
+            return true;
         }
+        return false;
     }
 
     protected static function quotedPrintableReplace($matches)
@@ -610,7 +629,7 @@ class waMailDecode
         if (preg_match("/=\?(.+)\?(B|Q)\?(.*)\?=?(.*)/i", $value, $m)) {
             $value = ltrim($value);
             if (isset($m[3]) && strpos($m[3], '_') !== false && strpos($m[3], ' ') === false) {
-                $value = iconv_mime_decode($value, 0, 'UTF-8');
+                $value = iconv_mime_decode(str_replace("\n", "", $value), 0, 'UTF-8');
             } else {
                 $temp = mb_decode_mimeheader($value);
                 if ($temp === $value) {

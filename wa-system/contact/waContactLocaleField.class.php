@@ -15,7 +15,17 @@
 class waContactLocaleField extends waContactSelectField
 {
     protected $locales = null;
-    
+
+    public function init()
+    {
+        if (!isset($this->options['formats']['value'])) {
+            $this->options['formats']['value'] = new waContactLocaleFormatter();
+        }
+        if (!isset($this->options['formats']['html'])) {
+            $this->options['formats']['html'] = $this->options['formats']['value'];
+        }
+    }
+
     function getOptions($id = null) {
         if (!$this->locales) {
             $this->locales = waLocale::getAll('name_region');
@@ -27,8 +37,17 @@ class waContactLocaleField extends waContactSelectField
             }
             return $this->locales[$id];
         }
-        
+
         return $this->locales;
+    }
+}
+
+class waContactLocaleFormatter extends waContactFieldFormatter
+{
+    public function format($data)
+    {
+        $info = waLocale::getInfo($data);
+        return ifset($info['name'], $data);
     }
 }
 

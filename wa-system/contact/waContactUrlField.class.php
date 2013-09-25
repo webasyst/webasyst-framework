@@ -17,14 +17,15 @@ class waContactUrlField extends waContactStringField
     public function init()
     {
         if (!isset($this->options['formats']['js'])) {
+            $this->options['formats']['html'] = new waContactUrlHtmlFormatter();
             $this->options['formats']['js'] = new waContactUrlJsFormatter();
         }
         if (!isset($this->options['validators'])) {
             $this->options['validators'] = new waUrlValidator($this->options);
         }
     }
-    
-    protected function setValue($value) 
+
+    protected function setValue($value)
     {
         if (is_array($value) && isset($value['value'])) {
             $value = $value['value'];
@@ -56,7 +57,7 @@ class waContactUrlJsFormatter extends waContactFieldFormatter
         if (strpos($href, '://') === false) {
             $href = 'http://'.$href;
         }
-        $name = substr($href, strpos($href, '://') + 3);        
+        $name = substr($href, strpos($href, '://') + 3);
         $data['value'] = '<a target="_blank" href="'.addslashes($href).'">'.htmlspecialchars($name).'</a><a target="_blank" href="'.addslashes($href).'"><i class="icon16 new-window"></i></a>';
         if ($url = @parse_url($href)) {
 
@@ -67,3 +68,13 @@ class waContactUrlJsFormatter extends waContactFieldFormatter
         return $data;
     }
 }
+
+class waContactUrlHtmlFormatter extends waContactUrlJsFormatter
+{
+    public function format($data)
+    {
+        $data = parent::format($data);
+        return $data['value'].' <em class="hint">'.htmlspecialchars(ifset($data['ext'])).'</em>';
+    }
+}
+

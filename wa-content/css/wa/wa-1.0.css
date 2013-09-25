@@ -351,7 +351,7 @@ input.long { min-width: 350px !important; width: 350px !important; }
 .block.bottom-padded { padding-bottom: 20px; }
 .collapsible { padding-left: 12px; }
 .hierarchical { margin-left: 14px; }
-.tags a { color: green; text-decoration: underline !important; }
+.tags a { color: green; text-decoration: underline; }
 .rating i.icon16 { margin-right: 2px; }
 .rating-small i.icon16 { margin-right: -8px; }
 .blank { background: #fff; }
@@ -481,6 +481,8 @@ ul.menu-v.dropdown li:hover ul li:hover ul ul { display: none; } /* level 3; add
 ul.menu-v.dropdown li:hover ul li:hover ul li:hover ul { display: block; }
 ul.menu-v li.top-padded { padding-top: 15px; } /* extra bottom padding for visual menu segmentation */
 ul.menu-v li.bottom-padded { padding-bottom: 15px; }
+ul.menu-v li.hr { margin-top: 10px !important; border-top: 1px solid #ccc; padding: 0; }
+ul.menu-v li.hr:hover { background: inherit !important; }
 ul.menu-v li a.inline { display:inline; margin:0px; padding:0px; min-width:0px; }
 ul.menu-v.with-icons.stack { margin: 0 0 20px; }
 ul.menu-v.with-icons.stack li { margin: 1px 3px 5px -1px; }
@@ -1015,6 +1017,7 @@ i.icon10 { background-repeat:no-repeat; background-image: url(../../../wa-conten
 #wa .CodeMirror, #wa .CodeMirror-wrapping { padding: 10px; }
 #wa .el-rte .toolbar { background: #fff; border-top: 0; border-left: 0; border-right: 0; border-bottom: 1px solid #ccc; }
 #wa .el-rte .workzone { border: 0; padding: 10px; }
+#wa .ace { padding: 15px 12px; }
 
 #wa .jqplot-target { font-family: 'Lucida Grande', Arial, sans-serif; }
 #wa table.jqplot-table-legend,

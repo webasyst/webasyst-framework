@@ -872,3 +872,6 @@ msgstr "Исключить контакты из категории \"%s\"?"
 msgid "Leave blank to keep existing password."
 msgstr "Оставьте поле пустым, чтобы сохранить существующий пароль."
 
+msgid "Fields visible on %sown profile%s page"
+msgstr "Поля, видимые на %sстрание своего профиля%s"
+
