@@ -54,6 +54,8 @@ class waAPIController
             $parts = explode('/', $request_url);
             if (count($parts) == 3) {
                 $this->execute($parts[1], $parts[2]);
+            } elseif (count($parts) == 4) {
+                $this->execute($parts[1], $parts[2].".".$parts[3]);
             } elseif (count($parts) == 2 && strpos($parts[1], '.') !== false) {
                 $parts = explode('.', $parts[1], 2);
                 $this->execute($parts[0], $parts[1]);
