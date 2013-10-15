@@ -144,11 +144,8 @@ class waRequestFile
         // full path to temporary file
         return $this->data['tmp_name'];
     }
-
-    //
-    // non-public methods
-    //
-    protected function setData($name, $type, $size, $tmp_name, $error)
+    
+    public function setData($name, $type, $size, $tmp_name, $error)
     {
         if (!is_int($error)) {
             throw new waException('File error code must be integer.');
@@ -205,6 +202,10 @@ class waRequestFile
         }
     }
 
+
+    //
+    // non-public methods
+    //
     /**
      * Returns full path to the file
      * Used by methods moveTo() and copyTo()
