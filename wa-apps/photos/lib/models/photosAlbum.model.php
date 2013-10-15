@@ -24,11 +24,11 @@ class photosAlbumModel extends waModel
         }
         $data['contact_id'] = waSystem::getInstance()->getUser()->getId();
         $data['create_datetime'] = date('Y-m-d H:i:s');
-        $data['parent_id'] = 0;
+        $data['parent_id'] = empty($data['parent_id']) ? 0 : (int) $data['parent_id'];
         $data['sort'] = 0;
 
         // shift down albums in list
-        $sql = "UPDATE {$this->table} SET sort = sort + 1 WHERE parent_id = 0";
+        $sql = "UPDATE {$this->table} SET sort = sort + 1 WHERE parent_id = {$data['parent_id']}";
         $this->query($sql);
 
         if (isset($data['url'])) {
