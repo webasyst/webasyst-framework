@@ -4,7 +4,7 @@ class photosSettingsAction extends waViewAction
 {
     public function execute()
     {
-        $settings = $this->getConfig()->getOption();
+        $settings = $this->getConfig()->getOption(null);
         if (waRequest::getMethod() == 'post') {
             $this->save($settings);
             $this->view->assign('saved', 1);

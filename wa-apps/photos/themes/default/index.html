@@ -6,7 +6,7 @@
     
     <!-- css -->
     <link href="{$wa_theme_url}default.css?{$wa->version()}" rel="stylesheet" type="text/css">
-    <link href="{$wa_theme_url}mobile.css?{$wa->version()}" media="screen and (max-width: 760px)" rel="stylesheet" type="text/css">
+    <link href="{$wa_theme_url}mobile.css?{$wa->version()}"{if !$wa->isMobile()} media="screen and (max-width: 760px)"{/if} rel="stylesheet" type="text/css">
     {if $wa->isMobile()}
         <meta name="viewport" content="width=device-width; initial-scale=1; maximum-scale=1; user-scalable=0;">
     {/if}
