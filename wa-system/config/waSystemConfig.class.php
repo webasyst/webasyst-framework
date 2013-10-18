@@ -116,7 +116,7 @@ class waSystemConfig
         return isset(self::$system_options[$name]) ? self::$system_options[$name] : null;
     }
 
-    protected function getOption($name)
+    protected function getOption($name = null)
     {
         return $this->getSystemOption($name);
     }

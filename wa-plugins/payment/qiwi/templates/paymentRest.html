@@ -1,0 +1,43 @@
+{if !empty($form_url)}
+<form class="qiwi-form" action="{$form_url}" method="POST" target="_top">
+    <div class="pay-button">
+        <input type="submit" value="[`Proceed to QIWI secure website to make payment`]" />
+    </div>
+
+</form>
+{else}
+<form id="paymentForm" class="qiwi-form" action="" method="POST" onsubmit="return checkqiwiform()" target="_top">
+    <div class="fields">
+        <div class="field">
+            <div class="name">[`Mobile phone`]:</div>
+            <div class="value">
+                <input type="text" style="width: 10px; min-width: 10px;" class="grey" disabled="disabled" value="+" id="qiwi-phone-prefix">
+                <input type="text" value="{$mobile_phone|escape}" id="qiwi-phone" name="customer_phone">
+                <div><span class="hint">[`International 11-digit format, e.g. 79161231234`]</span></div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="pay-button">
+        <input type="submit" value="Выставить счёт QIWI{*[`Proceed to QIWI secure website to make payment`]*}" />
+        <div class="qiwi-error" style="color: red; margin-left: 2em; display: inline-block; ">{foreach $messages as $message}{$message|escape}{if !$message@last}<br>{/if}{/foreach}</div>
+    </div>
+
+</form>
+
+<script type="text/javascript">
+    function checkqiwiform() {
+        var phone = $.trim($('#qiwi-phone').val()), {literal}re = new RegExp('^\\d{6,13}$');{/literal};
+        if (!phone) {
+            $('.qiwi-error').text('Укажите пожалуйста номер мобильного телефона{*[`Please specify your mobile phone number`]*}');
+            return false;
+        } else if (!re.test(phone)) {
+            $('.qiwi-error').text('Неверный номер телефона, используйте только цифры без пробелов и разделителей{*[`Invalid phone number, please use only digits without delimiters and spaces`]*}');
+            return false;
+        }
+        $('.qiwi-error').html('');
+        return true;
+    }
+</script>
+{/if}

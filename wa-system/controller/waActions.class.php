@@ -46,9 +46,14 @@ abstract class waActions extends waController
         $this->postExecute();
     }
 
+    protected function getView()
+    {
+        return wa()->getView();
+    }
+
     public function display(array $data, $template = null, $return = false)
     {
-        $view = waSystem::getInstance()->getView();
+        $view = $this->getView();
 
         if ($template === null) {
             $template = ucfirst($this->action);

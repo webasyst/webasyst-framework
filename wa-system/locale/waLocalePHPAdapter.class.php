@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 /*
  * This file is part of Webasyst framework.
@@ -67,12 +67,23 @@ class waLocalePHPAdapter
 
     public function dgettext($domain, $msgid)
     {
+        $msgid = self::asStr($msgid);
+        $domain = self::asStr($domain);
         if (isset(self::$cache[self::$locale][$domain]['messages'][$msgid])) {
             $m = self::$cache[self::$locale][$domain]['messages'][$msgid];
             return is_array($m) ? current($m) : $m;
         } else {
             return $msgid;
         }
+    }
+
+    /** Returns string representation of $v without throwing fatal errors. */
+    public static function asStr($v)
+    {
+        if (is_object($v) && !method_exists($v, '__toString')) {
+            return 'Object';
+        }
+        return (string) $v;
     }
 
     public function dngettext($domain, $msgid1, $msgid2, $n)

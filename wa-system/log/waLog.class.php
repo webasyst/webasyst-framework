@@ -4,7 +4,13 @@
 class waLog
 {
     public static function log($message, $file = 'error.log') {
-        $path = waSystem::getInstance()->getConfig()->getPath('log').'/'.$file;
+        try {
+            $wa = wa();
+            $path = $wa->getConfig()->getPath('log').'/'.$file;
+        } catch (Exception $e) {
+            $path = dirname(dirname(dirname(__FILE__))).'/wa-log/'.$file;
+        }
+
         if (!file_exists($path)) {
             waFiles::create($path);
             touch($path);

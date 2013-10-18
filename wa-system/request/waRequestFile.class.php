@@ -44,7 +44,7 @@ class waRequestFile
         'error' => 'no file uploaded',
     );
 
-    public function __construct($data)
+    public function __construct($data, $skip_uploaded_check = false)
     {
         if ($data === null) {
             $this->data = null;
@@ -55,6 +55,7 @@ class waRequestFile
                 throw new waException("Key {$k} must be set.");
             }
         }
+        $this->skip_uploaded_check = $skip_uploaded_check;
         $this->setData($data['name'], $data['type'], $data['size'], $data['tmp_name'], $data['error']);
     }
 

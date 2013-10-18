@@ -106,13 +106,23 @@ function waEditorAceInit(options)
         editor.resize();
     };
 
-    wa_editor.commands.addCommand({
+    wa_editor.commands.addCommands([{
         name: 'waSave',
         bindKey: {win: 'Ctrl-S',  mac: 'Ctrl-S'},
         exec: function(editor) {
             $('#' + options.save_button).click();
         }
-    });
+    }, {
+        name: "unfind",
+        bindKey: {
+            win: "Ctrl-F",
+            mac: "Command-F"
+        },
+        exec: function(editor, line) {
+            return false;
+        },
+        readOnly: true
+    }]);
 
     // Whenever a change happens inside the ACE editor, update
     // the size again

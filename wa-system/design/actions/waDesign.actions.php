@@ -393,7 +393,7 @@ class waDesignActions extends waActions
                 if ($themes_data) {
                     $parent_themes[$theme_app_id] = array(
                             'name'=>$app['name'],
-                        	'img'=>$app['img'],
+                            'img'=>$app['img'],
                             'themes'=>$themes_data,
                     );
                 }
@@ -576,4 +576,8 @@ class waDesignActions extends waActions
         ), $template);
     }
 
+    protected function getView()
+    {
+        return wa('webasyst')->getView();
+    }
 }

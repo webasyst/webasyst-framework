@@ -85,7 +85,7 @@ class waContact implements ArrayAccess
 
     public function getPhoto($width = null, $height = null)
     {
-        return self::getPhotoUrl($this->id, $this->get('photo'), $width, $height);
+        return self::getPhotoUrl($this->id, $this->id ? $this->get('photo') : null, $width, $height);
     }
 
     public static function getPhotoUrl($id, $ts, $width = null, $height = null)
@@ -623,7 +623,7 @@ class waContact implements ArrayAccess
         }
     }
 
-    public function getSettings($app_id, $name = null)
+    public function getSettings($app_id, $name = null, $default = null)
     {
         // For general settings
         if (!$app_id) {
@@ -636,7 +636,7 @@ class waContact implements ArrayAccess
         }
 
         if ($name) {
-            return isset($this->settings[$app_id][$name]) ? $this->settings[$app_id][$name] : null;
+            return isset($this->settings[$app_id][$name]) ? $this->settings[$app_id][$name] : $default;
         } else {
             return $this->settings[$app_id];
         }

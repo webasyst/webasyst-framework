@@ -138,7 +138,7 @@ class waForgotPasswordAction extends waViewAction
         $subject = _ws("Password recovery");
         $template_file = $this->getConfig()->getConfigPath('mail/RecoveringPassword.html', true, 'webasyst');
         if (file_exists($template_file)) {
-            $body = $this->view->fetch($template_file);
+            $body = $this->view->fetch('string:'.file_get_contents($template_file));
         } else {
             $body = $this->view->fetch(wa()->getAppPath('templates/mail/RecoveringPassword.html', 'webasyst'));
         }

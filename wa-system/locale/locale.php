@@ -13,10 +13,10 @@ class waGettextParser
     protected $config = array(
         'include' => '.*',
         'project' => 'WebAsyst',
-        'path' => '/',
+        'path'    => '/',
         'locales' => array(),
-        'debug' => false,
-        'verify'=>false,
+        'debug'   => false,
+        'verify'  => false,
     );
 
     protected $words = array();
@@ -57,34 +57,51 @@ class waGettextParser
         $matches = array();
         if (preg_match_all("/\[".($this->config['project'] == 'webasyst' ? "s?" : "")."\`([^\`]+)\`\]/usi", $text, $matches, PREG_OFFSET_CAPTURE)) {
             foreach ($matches[1] as $match) {
-                $match[0] = str_replace('"', '\"', $match[0]);
-                $this->cache(array($match[0], $file.":".$this->getLine($text, $match[1])));
+                $word = $match[0];
+                $this->cache(array($word), $file.":".$this->getLine($text, $match[1]));
             }
         }
 
         $function_pattern = array("\\\$_");
         if ($this->config['project'] == 'webasyst') {
             $function_pattern[] = '_ws';
-        } elseif (strpos($this->config['project'],'wa-plugins')!==false) {
-            $function_pattern[] = '_wp?\*?\/?';
-        } elseif (strpos($this->config['project'],'plugins')) {
-            $function_pattern[] = '_wp\*?\/?';
+        } elseif (strpos($this->config['project'], 'wa-plugins') !== false) {
+            $function_pattern[] = '_wp?\\*?\\/?';
+        } elseif (strpos($this->config['project'], 'plugins')) {
+            $function_pattern[] = '_wp\\*?\\/?';
         } else {
             $function_pattern[] = '_w';
         }
-        if (preg_match_all("/(".implode('|',$function_pattern).")\(\s*\"((\\\\\"|[^\"])+)\"\s*\)/usi", $text, $matches, PREG_OFFSET_CAPTURE)) {
-            foreach ($matches[2] as $match) {
-                $this->cache(array($match[0], $file.":".$this->getLine($text, $match[1])));
-            }
-        }
-        if (preg_match_all("/(".implode('|',$function_pattern).")\(\s*'((\\\\'|[^'])+)'\s*\)/usi", $text, $matches, PREG_OFFSET_CAPTURE)) {
-            foreach ($matches[2] as $match) {
-                $match[0] = str_replace('"', '\"', $match[0]);
-                $this->cache(array($match[0], $file.":".$this->getLine($text, $match[1])));
+
+        $word_pattern = '\\s*(\\\'|")((\\\\\\%1$d|[^\\%1$d\\n])+?)\\%1$d\\s*';
+
+        $plural_pattern = '@('.implode('|', $function_pattern).')\\s*\\('.sprintf($word_pattern, 2).','.sprintf($word_pattern, 5).',\\s*@usi';
+        #plural forms support
+        if (preg_match_all($plural_pattern, $text, $matches, PREG_OFFSET_CAPTURE)) {
+            foreach ($matches[3] as $i => $match) {
+                $word = $match[0];
+                $brace = $matches[2][$i][0];
+                $word = preg_replace("@\\\\{$brace}@", $brace, $word);
+                $line = $this->getLine($text, $match[1]);
+                $match = $matches[6][$i];
+                $words = $match[0];
+                $brace = $matches[5][$i][0];
+                $words = preg_replace("@\\\\{$brace}@", $brace, $words);
+                $this->cache(array($word, $words), $file.":".$line);
             }
         }
 
-        #plural forms support
+        $pattern = '@('.implode('|', $function_pattern).')\\s*\\('.sprintf($word_pattern, 2).'\\)@usi';
+        if (preg_match_all($pattern, $text, $matches, PREG_OFFSET_CAPTURE)) {
+            foreach ($matches[3] as $i => $match) {
+                $word = $match[0];
+                $brace = $matches[2][$i][0];
+                $word = preg_replace("@\\\\{$brace}@", $brace, $word);
+                $this->cache(array($word), $file.":".$this->getLine($text, $match[1]));
+            }
+        }
+
+
     }
 
     protected function getLine($text, $pos)
@@ -93,9 +110,18 @@ class waGettextParser
         return count($lines); //.":".mb_strlen(end($lines));
     }
 
-    public function cache($words_info)
+    public function cache($words_info, $line = null)
     {
-        $this->words[$words_info[0]] = $words_info[1];
+        $msg_id = $words_info[0];
+        if (!isset($this->words[$msg_id])) {
+            $this->words[$msg_id] = array('lines' => array());
+            if (isset($words_info[1])) {
+                $this->words[$msg_id]['plural'] = $words_info[1];
+            }
+        }
+        if (!empty($line)) {
+            $this->words[$msg_id]['lines'][] = $line;
+        }
     }
 
 
@@ -116,28 +142,49 @@ class waGettextParser
 
     public function save()
     {
+        $htaccess_path = $this->config['path']."/.htaccess";
+        if (!file_exists($htaccess_path)) {
+            if (!file_exists($this->config['path'])) {
+                mkdir($this->config['path'], 0777, true);
+            }
+            file_put_contents($htaccess_path, "Deny from all\n");
+        }
         foreach ($this->config['locales'] as $locale => $domain) {
             $locale_path = $this->config['path']."/".$locale."/"."LC_MESSAGES"."/".$domain.".po";
             if ($this->config['verify']) {
-                $locale_path_log = $locale_path .'.log';
+                $locale_path_log = $locale_path.'.log';
                 if (file_exists($locale_path)) {
                     if ($fh = fopen($locale_path_log, "w")) {
                         $counter = 0;
                         flock($fh, LOCK_EX);
                         $gettext = new waGettext($locale_path);
                         $strings = $gettext->read();
+                        $words = $this->words;
                         foreach ($strings['messages'] as $msg_id => $info) {
                             if (!isset($this->words[$msg_id])) {
-                                fputs($fh,$msg_id."\n");
+                                fputs($fh, "msgid \"".str_replace('"', '\\"', $msg_id)."\"\n");
                                 ++$counter;
+                            } else {
+                                unset($words[$msg_id]);
                             }
                         }
 
-                        flock($fh, LOCK_UN);
-                        fclose($fh);
                         if ($counter) {
                             echo "\r\n{$counter} string(s) is out of date for {$locale} at {$domain}\r\n";
                         }
+                        if ($words) {
+                            $counter = count($words);
+                            echo "\r\n{$counter} string(s) is missed for {$locale} at {$domain}\r\n";
+                            fputs($fh, "\n\n#Missed:\n\n\n");
+                            foreach ($words as $msg_id => $info) {
+                                fputs($fh, "msgid \"".str_replace('"', '\\"', $msg_id)."\"\n");
+                            }
+                        }
+
+
+                        flock($fh, LOCK_UN);
+                        fclose($fh);
+
                     } else {
                         echo "\r\nError while open {$locale_path} in a+ mode\r\n";
                     }
@@ -160,15 +207,26 @@ class waGettextParser
                         echo "\r\n".$locale_path." - ".count($this->words)." records\r\n";
                     }
                     flock($fh, LOCK_EX);
-                    foreach ($this->words as $words => $lines) {
+                    foreach ($this->words as $msg_id => $info) {
                         // Ищем вхождения текущей фразы
-                        if (isset($strings[stripslashes($words)])) {
+                        if (isset($strings[$msg_id])) {
                             continue;
                         }
                         // Если не нашли - записываем
-                        fputs($fh, "\n#: ".$lines."\n");
-                        fputs($fh, "msgid \"" . $words . "\"\n");
-                        fputs($fh, "msgstr \"\"\n");
+                        // Если не нашли - записываем
+                        foreach ((array)$info['lines'] as $line) {
+                            fputs($fh, "\n#: ".$line);
+                        }
+                        fputs($fh, "\nmsgid \"".str_replace('"', '\\"', $msg_id)."\"\n");
+                        if (!empty($info['plural'])) {
+                            fputs($fh, "msgid_plural \"".str_replace('"', '\\"', $info['plural'])."\"\n");
+                            $n = ($locale == 'ru_RU') ? 3 : 2;
+                            for ($i = 0; $i < $n; $i++) {
+                                fputs($fh, "msgstr[{$i}] \"\"\n");
+                            }
+                        } else {
+                            fputs($fh, "msgstr \"\"\n");
+                        }
                         ++$counter;
                     }
                     flock($fh, LOCK_UN);
@@ -233,44 +291,54 @@ if (count($argv) < 2) {
     die("Usage: php locale.php APP_ID[/plugins/PLUGIN_ID]\n");
 }
 
+@mb_internal_encoding('UTF-8');
+@ini_set('default_charset', 'utf-8');
+
+@ini_set('register_globals', 'off');
+// magic quotes
+@ini_set("magic_quotes_runtime", 0);
+if (version_compare('5.4', PHP_VERSION, '>') && function_exists('set_magic_quotes_runtime') && get_magic_quotes_runtime()) {
+    @set_magic_quotes_runtime(false);
+}
+
 $app_id = $argv[1];
 $locale_id = $app_id;
 if ($app_id == 'webasyst') {
     $path = realpath(dirname(__FILE__)."/../../")."/wa-system/";
     $include = array(
-    substr($path, 0, -1)
+        substr($path, 0, -1)
     );
-} elseif (strpos($app_id, 'wa-plugins/')===0) {
+} elseif (strpos($app_id, 'wa-plugins/') === 0) {
 
     $path = realpath(dirname(__FILE__)."/../../").'/';
-    $locale_id = str_replace(array('wa-plugins/','/'), array('','_'), $locale_id);
+    $locale_id = str_replace(array('wa-plugins/', '/'), array('', '_'), $locale_id);
     $include = array(
-    $path.'/'.$app_id,
+        $path.'/'.$app_id,
     );
 } elseif (strpos($app_id, '/themes/')) {
 
     $path = realpath(dirname(__FILE__)."/../../")."/wa-apps/";
     $locale_id = str_replace('/themes/', '_', $locale_id);
     $include = array(
-    $path.$app_id,
+        $path.$app_id,
     );
 } elseif (strpos($app_id, '/plugins/')) {
 
     $path = realpath(dirname(__FILE__)."/../../")."/wa-apps/";
     $locale_id = str_replace('/plugins/', '_', $locale_id);
     $include = array(
-    $path.$app_id."/templates",
-    $path.$app_id."/js",
-    $path.$app_id."/lib",
+        $path.$app_id."/templates",
+        $path.$app_id."/js",
+        $path.$app_id."/lib",
     );
 } else {
     $path = realpath(dirname(__FILE__)."/../../")."/wa-apps/";
     $locale_id = basename($locale_id);
     $include = array(
-    $path.$app_id."/templates",
-    $path.$app_id."/js",
-    $path.$app_id."/lib",
-    $path.$app_id."/themes",
+        $path.$app_id."/templates",
+        $path.$app_id."/js",
+        $path.$app_id."/lib",
+        $path.$app_id."/themes",
     );
 }
 
@@ -282,14 +350,14 @@ if (!file_exists($path)) {
 $config = array(
     'project' => $app_id,
     'include' => ".+\.(html|(?<!min\.)js|php)",
-    'path' => $path.$app_id."/locale",
+    'path'    => $path.$app_id."/locale",
     'locales' => array()
 );
 $locales_path = realpath(dirname(__FILE__)."/../../")."/wa-config/locale.php";
 if (file_exists($locales_path)) {
     $locales = include($locales_path);
 } else {
-    $locales = array('en_US', 'ru_RU', );
+    $locales = array('en_US', 'ru_RU',);
 }
 
 foreach ($locales as $l) {

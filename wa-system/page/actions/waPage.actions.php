@@ -603,5 +603,9 @@ class waPageActions extends waActions
         return new $this->model();
     }
 
+    protected function getView()
+    {
+        return wa('webasyst')->getView();
+    }
 
 }

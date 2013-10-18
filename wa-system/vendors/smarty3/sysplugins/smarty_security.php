@@ -72,7 +72,7 @@ class Smarty_Security {
         'waRequest::file'
     );
     /**
-     * This is an array of trusted PHP functions.
+     * This is an array of disabled PHP functions.
      *
      * If empty all functions are allowed.
      * To disable all PHP functions set $php_functions = null.
@@ -91,7 +91,8 @@ class Smarty_Security {
         'array_uintersect', 'array_walk', 'array_walk_recursive',
         'func_get_args', 'func_get_arg', 'class_alias', 'iterator_apply',
         'mysql_fetch_object', 'mysqli_fetch_object',
-        'dom_import_simplexml', 'simplexml_load_string', 'simplexml_load_file'
+        'dom_import_simplexml', 'simplexml_load_string', 'simplexml_load_file',
+        'spl_autoload_register', 'spl_autoload_call'
     );
     /**
      * This is an array of trusted PHP modifiers.

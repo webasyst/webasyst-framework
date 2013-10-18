@@ -31,7 +31,7 @@ class waContactSettingsModel extends waModel
     public function set($contact_id, $app_id, $name, $value = null)
     {
         if (is_array($name) && $value === null) {
-            $sql = "INSERT INTO ".$this->table."
+            $sql = "REPLACE INTO ".$this->table."
                     (contact_id, app_id, `name`, `value`) VALUES ";
             $contact_id = (int)$contact_id;
             $app_id = $this->escape($app_id);
@@ -57,9 +57,12 @@ class waContactSettingsModel extends waModel
 
     public function delete($contact_id, $app_id, $name)
     {
+        if (!$name) {
+            return;
+        }
         $sql = "DELETE FROM ".$this->table."
                 WHERE contact_id = i:contact_id AND
-                      app_id = s:app_id AND name = s:name";
+                      app_id = s:app_id AND name IN (:name)";
         return $this->exec($sql, array(
             'contact_id' => $contact_id, 'app_id' => $app_id, 'name' => $name
         ));

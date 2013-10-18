@@ -37,9 +37,10 @@ class waSystem
         try {
             $this->loadFactories();
         } catch (Exception $e) {
+            $app_name = method_exists($config, 'getApplication') ? $config->getApplication() : '';
+            waLog::log('Error initializing waSystem('.$app_name.'): '.$e->getMessage()."\n".wa_dump_helper($config));
             echo $e;
         }
-
     }
 
     public static function isLoaded()
@@ -73,7 +74,7 @@ class waSystem
         }
 
         if (!isset(self::$instances[$name])) {
-            if ($config === null && self::$current) {
+            if ($config === null && self::$current && !empty(self::$instances[self::$current])) {
                 /**
                  * @var $system waSystem
                  */
@@ -725,7 +726,7 @@ class waSystem
                 }
             } else {
                 self::$apps = include($file);
-                waLocale::loadByDomain('webasyst');
+                waLocale::loadByDomain('webasyst', $locale);
             }
         }
         if ($system) {
@@ -944,7 +945,7 @@ class waSystem
      * @param mixed $params passed to event handlers
      * @return array app_id or plugin_id => data returned from handler (unless null is returned)
      */
-    public function event($name, &$params = null)
+    public function event($name, &$params = null, $array_keys = null)
     {
         $result = array();
         if (is_array($name)) {
@@ -1038,6 +1039,13 @@ class waSystem
                         waLocale::load($this->getLocale(), $locale_path, self::getActiveLocaleDomain(), false);
                     }
                     if (method_exists($class, $method) && null !== ( $r = $class->$method($params))) {
+                        if ($array_keys && is_array($r)) {
+                            foreach ($array_keys as $k) {
+                                if (!isset($r[$k])) {
+                                    $r[$k] = '';
+                                }
+                            }
+                        }
                         $result[$plugin_id.'-plugin'] = $r;
                     }
                 } catch (Exception $e) {
@@ -1093,11 +1101,13 @@ class waSystem
 }
 
 /**
- * Alias for waSystem::getInstance()
+ * Convenient form of waSystem::getInstance()
  * @param string $name
+ * @param bool $set_current
  * @return waSystem
  */
-function wa($name = null)
+function wa($name = null, $set_current = false)
 {
-    return waSystem::getInstance($name);
+    return waSystem::getInstance($name, null, $set_current);
 }
+

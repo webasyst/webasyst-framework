@@ -67,7 +67,7 @@ class waFiles
                     self::create($dest_path);
                     while (false !== ($path = readdir($dir))) {
                         if (($path != '.') && ($path != '..')) {
-                            $destiny = $dest_path.'/'.$path;
+                            $destination = $dest_path.'/'.$path;
                             $source = $source_path.'/'.$path;
                             if ($skip_pattern) {
                                 foreach ((array) $skip_pattern as $pattern) {
@@ -77,10 +77,10 @@ class waFiles
                                 }
                             }
                             if (file_exists($source)) {
-                                if (!is_dir($source) && file_exists($destiny)) { //skip file move on resume
-                                    self::delete($destiny);
+                                if (!is_dir($source) && file_exists($destination)) { //skip file move on resume
+                                    self::delete($destination);
                                 }
-                                self::copy($source, $destiny, $skip_pattern);
+                                self::copy($source, $destination, $skip_pattern);
                             } else {
                                 throw new Exception("Not found {$source_path}/{$path}");
                             }
