@@ -46,16 +46,25 @@ class blogBlogSettingsAction extends waViewAction
                     $blog_model->updateById($blog_id, $settings);
                     $this->log('blog_modify');
                 } else {
-                    $settings['sort'] = (int)$blog_model->select('MAX(`sort`)')->fetchField() + 1;
-                    $blog_id = $blog_model->insert($settings);
+                    $settings['sort'] = (int) $blog_model->select('MAX(`sort`)')->fetchField() + 1;
+                    $settings['id'] = $blog_id = $blog_model->insert($settings);
                     $this->getUser()->setRight($this->getApp(), "blog.{$blog_id}", blogRightConfig::RIGHT_FULL);
                     $this->log('blog_add');
                 }
 
                 // refresh qty post in blogs
                 $blog_model->recalculate($blog_id);
+
+                /**
+                 * @event blog_save
+                 * @param array[string]mixed $data
+                 * @param array[string]int $data['id']
+                 * @param array[string][string]mixed $data['plugin']['%plugin_id']
+                 * @return void
+                 */
+                wa()->event('blog_save', $data);
                 $this->redirect(array(
-                	'blog' => $blog_id
+                    'blog' => $blog_id
                 ));
             } else {
                 $this->view->assign('messages', $validate_massages);
@@ -69,11 +78,10 @@ class blogBlogSettingsAction extends waViewAction
         if ($blog_id) {
 
             if (!$blog = $blog_model->search(array(
-					'blog' => $blog_id
+                'blog' => $blog_id
             ), array(
-					'link' => false
-            ))->fetchSearchItem()
-            ) {
+                'link' => false
+            ))->fetchSearchItem()) {
                 throw new waException(_w('Blog not found'), 404);
             }
 
@@ -83,18 +91,18 @@ class blogBlogSettingsAction extends waViewAction
         } else {
 
             $blog = array(
-            	'id' => false,
-				'name' => '',
-				'status' => blogBlogModel::STATUS_PUBLIC,
-				'icon' => current($icons),
-				'color' => current($colors),
-				'url'=> false,
+                'id'     => false,
+                'name'   => '',
+                'status' => blogBlogModel::STATUS_PUBLIC,
+                'icon'   => current($icons),
+                'color'  => current($colors),
+                'url'    => false,
 
             );
 
-            $blogs = array( $blog);
+            $blogs = array($blog);
             $blogs = $blog_model->prepareView($blogs, array(
-            	'link' => false
+                'link' => false
             ));
             $blog = array_shift($blogs);
             $blog['other_settlements'] = blogBlogModel::getPureSettlements($blog);
@@ -124,7 +132,7 @@ class blogBlogSettingsAction extends waViewAction
          * @param array['id']int $blog['id'] Blog ID
          * @return array[string][string]string $return['%plugin_id%']['settings'] Blog extra settings html fields
          */
-        $this->view->assign('backend_blog_edit', wa()->event('backend_blog_edit', $blog));
+        $this->view->assign('backend_blog_edit', wa()->event('backend_blog_edit', $blog, array('settings')));
         $this->view->assign('posts_total_count', $posts_total_count);
 
         $this->view->assign('blog_id', $blog_id);
@@ -132,7 +140,6 @@ class blogBlogSettingsAction extends waViewAction
         $this->view->assign('colors', $colors);
         $this->view->assign('icons', $icons);
     }
-
     public function validate(&$data)
     {
         $messages = array();
@@ -148,14 +155,12 @@ class blogBlogSettingsAction extends waViewAction
 
             $url_validator->setSubject(blogSlugValidator::SUBJECT_BLOG);
 
-            $name_validator = new waStringValidator(
-            array(
+            $name_validator = new waStringValidator(array(
                 'max_length' => 255,
-                'required' => true
+                'required'   => true
             ), array(
                 'required' => _w('Blog name must not be empty')
-            )
-            );
+            ));
 
             if (!$url_validator->isValid($data['url'])) {
                 $messages['blog_url'] = current($url_validator->getErrors());
@@ -171,6 +176,17 @@ class blogBlogSettingsAction extends waViewAction
                 $url = $blog_model->select('url')->where('id = i:id', array('id' => $data['id']))->fetchField('url');
                 $data['url'] = $url ? $url : $blog_model->genUniqueUrl($data['name']);
             }
+        }
+
+        /**
+         * @event blog_validate
+         * @param array[string]mixed $data
+         * @param array['plugin']['%plugin_id%']mixed plugin data
+         * @return array['%plugin_id%']['field']string error
+         */
+        $messages['plugin'] = wa()->event('blog_validate', $data);
+        if (empty($messages['plugin'])) {
+            unset($messages['plugin']);
         }
 
         return $messages;

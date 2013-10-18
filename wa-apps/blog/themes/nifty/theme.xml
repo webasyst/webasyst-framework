@@ -6,19 +6,19 @@
     <files>
         <file path="index.html" custom="0" parent="1">
         </file>
-        <file path="custom.css" custom="0" parent="1">
+        <file path="nifty.css" custom="0" parent="1">
         </file>
-        <file path="custom.mobile.css" custom="0" parent="1">
+        <file path="nifty.mobile.css" custom="0" parent="1">
         </file>
         <file path="nifty.tablet.css" custom="0" parent="1">
         </file>
         <file path="nifty.wide.css" custom="0" parent="1">
         </file>
-        <file path="custom.blog.css" custom="0">
+        <file path="nifty.blog.css" custom="0">
             <description locale="en_US">Core Blog app CSS</description>
             <description locale="ru_RU">Основной CSS приложения «Блог»</description>
         </file>
-        <file path="custom.blog.mobile.css" custom="0">
+        <file path="nifty.blog.mobile.css" custom="0">
             <description locale="en_US">Additional Blog app CSS for multi-touch mobile devices</description>
             <description locale="ru_RU">Дополнительный CSS приложения «Блог» для мобильных устройств</description>
         </file>        

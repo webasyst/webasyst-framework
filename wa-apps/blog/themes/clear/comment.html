@@ -1,6 +1,6 @@
 {* one comment output *}
 
-<div class="comment" id="comment-{$comment.id}" itemprop="comment" itemscope itemtype="http://schema.org/UserComments">
+<div class="comment" id="comment-{$comment.id}">
     <div class="credentials">
         <a name="comment{$comment.id}"{if $comment.site} href="{$comment.site}"{/if}>
             <img src="{$comment.user.photo_url_20|default:$comment.user.photo_url}" class="userpic{if $comment.auth_provider && ($comment.auth_provider neq blogCommentModel::AUTH_GUEST) && ($comment.auth_provider neq blogCommentModel::AUTH_USER)} icon16{/if}" alt="">
@@ -16,6 +16,7 @@
             {foreach $comment.plugins.authorname_suffix as $plugin => $output}{$output}{/foreach}
         {/if}
 
+        <meta itemprop="commentTime" content="{$comment.datetime|date_format:'Y-m-d\TH:i'}">
         <span class="hint date" title="{$comment.datetime|wa_datetime}" itemprop="commentTime" datetime="{$comment.datetime|date_format:'Y-m-d\TH:i'}">{$comment.datetime|wa_datetime:"humandatetime"}</span>
     </div>
 

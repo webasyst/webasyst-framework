@@ -33,7 +33,13 @@ class blogViewHelper extends waAppViewHelper
             $this->avaialable_blogs = blogHelper::getAvailable(true, $default_blog_id);
             foreach ($this->avaialable_blogs as &$item) {
                 $item['name'] = htmlspecialchars($item['name'], ENT_QUOTES, 'utf-8');
-                $item['link'] = htmlspecialchars($item['link'], ENT_QUOTES, 'utf-8');
+                if (!is_array($item['link'])) {
+                    $item['link'] = htmlspecialchars($item['link'], ENT_QUOTES, 'utf-8');
+                } else {
+                    foreach ($item['link'] as &$l) {
+                        $l = htmlspecialchars($l, ENT_QUOTES, 'utf-8');
+                    }
+                }
                 $item['title'] = htmlspecialchars($item['title'], ENT_QUOTES, 'utf-8');
             }
         }
@@ -62,7 +68,12 @@ class blogViewHelper extends waAppViewHelper
             $extend_data = array('blog' => $available_blogs);
             $post = $post_model->search($search_options, null, $extend_data)->fetchSearchItem($fields);
         }
-        self::escape($post, array('text' => true));
+        $non_escape_fields = array(
+            'text'            => true,
+            'plugins'         => true,
+            'text_before_cut' => true,
+        );
+        self::escape($post, $non_escape_fields);
         return $post;
     }
 
@@ -87,7 +98,7 @@ class blogViewHelper extends waAppViewHelper
                 $search_options['blog_id'] = $blog_id;
             } else {
                 $available_blogs = blogHelper::getAvailable(false);
-                if(in_array($blog_id,$available_blogs)){
+                if (in_array($blog_id, $available_blogs)) {
                     $search_options['blog_id'] = $blog_id;
                 }
             }
@@ -97,7 +108,12 @@ class blogViewHelper extends waAppViewHelper
                 $posts = $post_model->search($search_options, null, $extend_data)->fetchSearchPage(1, $number_of_posts, $fields);
             }
         }
-        self::escape($posts, array('*' => array('text' => true, 'plugins' => true)));
+        $non_escape_fields = array(
+            'text'            => true,
+            'text_before_cut' => true,
+            'plugins'         => true,
+        );
+        self::escape($posts, array('*' => $non_escape_fields));
         return $posts;
     }
 
@@ -114,7 +130,11 @@ class blogViewHelper extends waAppViewHelper
         $fields = array("photo_url_{$contact_photo_size}");
         $blog_ids = array_keys($blogs);
 
-        $comments = $comment_model->getList(0, $limit, $blog_ids, $fields);
+        $comments = $comment_model->getList(array(
+            'offset'  => 0,
+            'limit'   => $limit,
+            'blog_id' => $blog_ids
+        ), $fields);
 
         $post_ids = array();
         foreach ($comments as $comment) {

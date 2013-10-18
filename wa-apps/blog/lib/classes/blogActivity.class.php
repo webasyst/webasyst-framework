@@ -1,8 +1,19 @@
 <?php
 class blogActivity
 {
+    /**
+     * @var int entry is new & never seen before
+     */
     const STATE_NEW = 2;
+
+    /**
+     * @var int entry is not new but first seen not exceed expiry time
+     */
     const STATE_ACTUAL = 1;
+
+    /**
+     * @var int entry seen timestamp exceed expiry time
+     */
     const STATE_OBSOLETE = 0;
 
     /**
@@ -36,7 +47,7 @@ class blogActivity
 
     /**
      *
-     * Singletone instance
+     * Singleton instance
      * @var blogActivity
      */
     private static $instance;
@@ -56,15 +67,15 @@ class blogActivity
         $this->timestamp_activity = strtotime(self::getUserActivity());
 
         foreach ($this->data as &$timestamps) {
-            $filterd_timestamps = array_filter($timestamps,array($this,'filter'));
-            if(!count($filterd_timestamps)) {
+            $filtered_timestamps = array_filter($timestamps, array($this, 'filter'));
+            if (!count($filtered_timestamps)) {
 
                 $id = max(array_keys($timestamps));
-                if($this->timestamp_activity && (($this->timestamp_activity - $timestamps[$id]) < self::$expiry_time)) {
-                    $filterd_timestamps[$id] = $timestamps[$id];
+                if ($this->timestamp_activity && (($this->timestamp_activity - $timestamps[$id]) < self::$expiry_time)) {
+                    $filtered_timestamps[$id] = $timestamps[$id];
                 }
             }
-            $timestamps = $filterd_timestamps;
+            $timestamps = $filtered_timestamps;
             unset($timestamps);
         }
     }
@@ -108,10 +119,10 @@ class blogActivity
     public function set($path, $id = array())
     {
         if ($id) {
-            if(!isset($this->data[$path])) {
+            if (!isset($this->data[$path])) {
                 $this->data[$path] = array();
             }
-            if(is_array($id)) {
+            if (is_array($id)) {
                 $this->data[$path][min($id)] = $this->timestamp;
                 $this->data[$path][max($id)] = $this->timestamp;
             } else {
@@ -123,23 +134,32 @@ class blogActivity
 
     /**
      *
-     * Check is data expired
-     * @param string $path
-     * @param int $id
+     * Check is entry expired
+     * @param string $path entry path
+     * @param int $id entry ID
+     * @param int $expire check state with the expire time
      * @return int state
      */
-    public function isNew($path, $id = null,$expire = null)
+    public function isNew($path, $id = null, $expire = null)
     {
-        if( ($expire === null) || ($expire === false) ) {
+        if (($expire === null) || ($expire === false)) {
             $expire = self::$expiry_time;
         }
         $state = self::STATE_NEW;
         if ($interval = $this->get($path)) {
-            if($id < $interval['min']) {
+
+            if ($id < $interval['min']) {
+                #entry ID is less than the lower limit of the observed IDs range
                 $state = self::STATE_OBSOLETE;
+
+
             } elseif ($id == $interval['min']) {
+                #entry ID is exact the lower limit of the observed IDs range
                 $state = ($this->timestamp - $interval['timestamp_min']) > $expire ? self::STATE_OBSOLETE : self::STATE_ACTUAL;
+
+
             } elseif ($id < $interval['max']) {
+                #entry ID belongs to the observed IDs range
                 if ($expire) {
                     if ($expire < self::$expiry_time) {
                         if (!empty($this->data[$path][$id])) {
@@ -172,14 +192,14 @@ class blogActivity
      *
      * Get minimal actual id for path
      * @param string $path
-     * return array[string]int interval actual ids
+     * @return array[string]int interval actual ids
      */
     public function get($path)
     {
         $interval = false;
-        if(!empty($this->data[$path])) {
+        if (!empty($this->data[$path])) {
             $ids = array_keys($this->data[$path]);
-            $interval = array('min'=>min($ids),'max'=>max($ids),);
+            $interval = array('min' => min($ids), 'max' => max($ids),);
             $interval['timestamp_min'] = $this->data[$path][$interval['min']];
             $interval['timestamp_max'] = $this->data[$path][$interval['max']];
         }
@@ -190,22 +210,22 @@ class blogActivity
     {
         $storage = wa()->getStorage();
         $app_session_datetime = $storage->read(self::$app_id."_session_datetime");
-        if (!$app_session_datetime && ($id ||(is_null($id) && ($id = wa()->getUser()->getId())))) {
+        if (!$app_session_datetime && ($id || (is_null($id) && ($id = wa()->getUser()->getId())))) {
             $contact = new waContactSettingsModel();
             $result = $contact->get($id, self::$app_id);
 
             if (!$app_session_datetime) {
-                $app_last_datetime = isset($result[self::$app_id."_last_datetime"])?$result[self::$app_id."_last_datetime"]:false;
+                $app_last_datetime = isset($result[self::$app_id."_last_datetime"]) ? $result[self::$app_id."_last_datetime"] : false;
                 $app_session_datetime = $app_last_datetime ? $app_last_datetime : self::setUserActivity($id);
-                $storage->write(self::$app_id."_badge_datetime",$app_session_datetime);
+                $storage->write(self::$app_id."_badge_datetime", $app_session_datetime);
             }
 
-            $storage->set(self::$app_id."_session_datetime",$app_session_datetime);
+            $storage->set(self::$app_id."_session_datetime", $app_session_datetime);
         } else {
             if ($app_session_datetime) {
                 self::setUserActivity($id, 0);
             } else {
-                $storage->write(self::$app_id."_session_datetime",$app_session_datetime = self::setUserActivity($id));
+                $storage->write(self::$app_id."_session_datetime", $app_session_datetime = self::setUserActivity($id));
             }
         }
 
@@ -216,6 +236,12 @@ class blogActivity
         return $app_session_datetime;
     }
 
+    /**
+     * Update timestamp of user activity at application
+     * @param null $id
+     * @param bool $force
+     * @return bool|null|string
+     */
     public static function setUserActivity($id = null, $force = true)
     {
         if (is_null($id)) {
@@ -224,11 +250,11 @@ class blogActivity
         $t = null;
         $storage = wa()->getStorage();
         if ($id) {
-            if (!$force && (!($app_last_datetime = $storage->get(self::$app_id."_last_datetime")) || (( time() - strtotime($app_last_datetime))>120))) {
+            if (!$force && (!($app_last_datetime = $storage->get(self::$app_id."_last_datetime")) || ((time() - strtotime($app_last_datetime)) > 120))) {
                 $force = 1;
             }
             if ($force) {
-                $t = date("Y-m-d H:i:s",time()+1);
+                $t = date("Y-m-d H:i:s", time() + 1);
                 $contact = new waContactSettingsModel();
                 $contact->set($id, self::$app_id, self::$app_id."_last_datetime", $t);
                 $storage->write(self::$app_id."_last_datetime", $t);
@@ -236,10 +262,10 @@ class blogActivity
                     $storage->write(self::$app_id."_badge_datetime", $t);
                 }
             } elseif ($force === false) {
-                $storage->write(self::$app_id."_badge_datetime", $s = date("Y-m-d H:i:s",time()+1));
+                $storage->write(self::$app_id."_badge_datetime", $s = date("Y-m-d H:i:s", time() + 1));
             }
         } elseif ($force) {
-            $storage->set(self::$app_id."_session_datetime",$t = date("Y-m-d H:i:s",time()+1));
+            $storage->set(self::$app_id."_session_datetime", $t = date("Y-m-d H:i:s", time() + 1));
         }
         return $t;
     }

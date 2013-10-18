@@ -1,18 +1,19 @@
 <div class="block">
-	<h6>[`Categories`]</h6>
-	{if $categories_all}
-	<ul class="menu-v compact with-icons">
-	   {foreach $categories_all as $category}
-		<li>
-			<label for="plugin-category-checkbox-{$category.id}">
-				<i class="icon16 {$category.icon}"></i>
-				<input id="plugin-category-checkbox-{$category.id}" {if isset($categories[$category.id])}checked="checked"{/if}  type="checkbox" class="b-overhanging-checkbox" name="plugin[category][{$category.id}]">
-				{$category.name|escape}
-			</label>
-		</li>
-	   {/foreach}
-	</ul>
-	{else}
+  <h6>[`Categories`]</h6>
+  {if $categories_all}
+  <ul class="menu-v compact with-icons">
+     {foreach $categories_all as $category}
+    <li>
+      <label for="plugin-category-checkbox-{$category.id}">
+        <i class="icon16 {$category.icon}"></i>
+        <input id="plugin-category-checkbox-{$category.id}" {if isset($categories[$category.id])}checked="checked"{/if}  type="checkbox" class="b-overhanging-checkbox" 
+                   name="plugin[category][{$category.id}]">
+        {$category.name|escape}
+      </label>
+    </li>
+     {/foreach}
+  </ul>
+  {else}
     <span class="hint">{'?module=plugins#/settings/custom/category/'|string_format:'[`Add at least one category in the <a href="%s">plugin settings</a>`]'}</span>
-    {/if}
+  {/if}
 </div>

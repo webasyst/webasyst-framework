@@ -11,6 +11,7 @@ return array(
         'post_publish' => 'postPublishAction',
         'cron_action' => 'cronAction',
         'backend_stream' => 'blogAction',
-        'backend_blog_edit' => 'settingsAction'
+        'backend_blog_edit' => 'settingsAction',
+        'contacts_delete' => 'contactsDelete'
     ),
 );

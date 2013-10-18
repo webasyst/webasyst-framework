@@ -8,6 +8,7 @@ class blogSitemapConfig extends waSitemapConfig
 
         $blog_model = new blogBlogModel();
         $post_model = new blogPostModel();
+        $page_model = new blogPageModel();
 
         $blogs = $blog_model->getAvailable(false,array('id','name','url'));
 
@@ -39,7 +40,18 @@ class blogSitemapConfig extends waSitemapConfig
                 }
             }
 
-            $this->addUrl(wa()->getRouteUrl($app_id."/frontend", array(), true), $lastmod);
+            // pages
+            $main_url = wa()->getRouteUrl($app_id."/frontend", array(), true);
+            $domain = $this->routing->getDomain(null, true);
+            $sql = "SELECT full_url, url, create_datetime, update_datetime FROM ".$page_model->getTableName().'
+                    WHERE status = 1 AND domain = s:domain AND route = s:route';
+            $pages = $page_model->query($sql, array('domain' => $domain, 'route' => $route['url']))->fetchAll();
+            foreach ($pages as $p) {
+                $this->addUrl($main_url.$p['full_url'], $p['update_datetime'] ? $p['update_datetime'] : $p['create_datetime'], self::CHANGE_MONTHLY, 0.6);
+            }
+
+
+            $this->addUrl(wa()->getRouteUrl($app_id."/frontend", array(), true), $lastmod, self::CHANGE_DAILY, 1.0);
         }
     }
 }

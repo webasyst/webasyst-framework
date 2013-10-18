@@ -8,10 +8,11 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=((((n%10)==1)&&((n%100)!=11))?(0):(((((n%10)>=2)&&((n%10)<=4))&&(((n%100)<10)||((n%100)>=20)))?(1):2));\n"
-"X-Poedit-Language: ru_RU\n"
+"Plural-Forms: nplurals=3; plural=((((n%10)==1)&&((n%100)!=11))?(0):(((((n%10)"
+">=2)&&((n%10)<=4))&&(((n%100)<10)||((n%100)>=20)))?(1):2));\n"
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
+"X-Generator: Poedit 1.5.5\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
 
@@ -36,8 +37,12 @@ msgid "Import"
 msgstr "Импортировать"
 
 #: /wa-apps/blog/plugins/import/templates/actions/backend/BackendSettings.html:58
-msgid "Please do not close your browser window and do not leave this page until the entire import process is finished."
-msgstr "Пожалуйста, не закрывайте окно браузера и не уходите с этой страницы, чтобы не прервать процесс импорта."
+msgid ""
+"Please do not close your browser window and do not leave this page until the "
+"entire import process is finished."
+msgstr ""
+"Пожалуйста, не закрывайте окно браузера и не уходите с этой страницы, чтобы "
+"не прервать процесс импорта."
 
 #: /wa-apps/blog/plugins/import/lib/actions/backend/blogImportPluginBackendSetup.controller.php:16
 msgid "Transport type %s not found"
@@ -89,7 +94,9 @@ msgstr "Ошибка чтения данных: %s"
 
 #: /wa-apps/blog/plugins/import/lib/classes/blogImportPluginWordpressTransport.class.php:68
 msgid "WordPress version should be at least 1.5.0"
-msgstr "Версия WordPress должна быть не ниже 1.5.0. Пожалуйста, обновите ваш блог WordPress до более новой версии"
+msgstr ""
+"Версия WordPress должна быть не ниже 1.5.0. Пожалуйста, обновите ваш блог "
+"WordPress до более новой версии"
 
 #: /wa-apps/blog/plugins/import/lib/classes/blogImportPluginWordpressTransport.class.php:20
 msgid "Wordpress URL"
@@ -113,15 +120,20 @@ msgstr "Пароль пользователя WordPress"
 
 #: /wa-apps/blog/plugins/import/lib/config/plugin.php:39
 msgid "All imported posts will be authored by this user"
-msgstr "Автором всех импортированных записей будет назначен выбранный пользователь Вебасиста"
+msgstr ""
+"Автором всех импортированных записей будет назначен выбранный пользователь "
+"Вебасиста"
 
 #: /wa-apps/blog/plugins/import/lib/config/plugin.php:4
 msgid "Import posts"
 msgstr "Импорт записей"
 
 #: /wa-apps/blog/plugins/import/lib/config/plugin.php:5
-msgid "Transfer posts from popular blog platforms such as Wordpress and LiveJournal"
-msgstr "Импорт записей из блогов, работающих на основе популярных платформ, таких как ЖЖ и Вордпресс"
+msgid ""
+"Transfer posts from popular blog platforms such as Wordpress and LiveJournal"
+msgstr ""
+"Импорт записей из блогов, работающих на основе популярных платформ, таких "
+"как ЖЖ и Вордпресс"
 
 #: /wa-apps/blog/plugins/import/lib/config/plugin.php:14
 msgid "Filter duplicate posts"
@@ -132,7 +144,9 @@ msgid "By post title"
 msgstr "Фильтровать по заголовку записи"
 
 #: /wa-apps/blog/plugins/import/lib/config/plugin.php:21
-msgid "If a blog post with the same name exists in the target WebAsyst blog, the post will not be imported"
+msgid ""
+"If a blog post with the same name exists in the target WebAsyst blog, the "
+"post will not be imported"
 msgstr "Не импортировать запись, если запись с таким заголовком уже существует"
 
 #: /wa-apps/blog/plugins/import/lib/config/plugin.php:25
@@ -164,14 +178,169 @@ msgid "Remove the rule"
 msgstr "Удалить правило"
 
 #: /wa-apps/blog/plugins/import/js/settings.js:150
-msgid "If you leave this page now, the import process is likely to be interrupted. Leave the page?"
+msgid ""
+"If you leave this page now, the import process is likely to be interrupted. "
+"Leave the page?"
 msgstr ""
+"Если вы уйдете со страницы сейчас, процесс импорта будет прерван. Прервать "
+"импорт?"
 
 #: /wa-apps/blog/plugins/import/lib/actions/backend/blogImportPluginBackendRun.controller.php:61
 msgid "Author not found or has insufficient rights"
 msgstr "Автор не найден или не имеет достаточных прав"
 
 #: /wa-apps/blog/plugins/import/lib/classes/blogImportPluginLjTransport.class.php:154
-msgid "LiveJournal does not appear to be responding right now. Please try again later."
-msgstr "Живой Журнал в данный момент недоступен. Пожалуйста, повторите попытку позже."
+msgid ""
+"LiveJournal does not appear to be responding right now. Please try again "
+"later."
+msgstr ""
+"Живой Журнал в данный момент недоступен. Пожалуйста, повторите попытку позже."
 
+#: /wa-apps/blog/plugins/import/lib/actions/backend/blogImportPluginBackendRun.controller.php:76
+msgid "Invalid settings"
+msgstr "Неверно указаны настройки подключения"
+
+#: /wa-apps/blog/plugins/import/lib/actions/backend/blogImportPluginBackendSettings.action.php:16
+msgid "WordPress"
+msgstr "WordPress"
+
+#: /wa-apps/blog/plugins/import/lib/actions/backend/blogImportPluginBackendSettings.action.php:20
+msgid "LiveJournal"
+msgstr "ЖЖ (LiveJournal)"
+
+#: /wa-apps/blog/plugins/import/lib/classes/blogImportPluginXmlrpcTransport.class.php:21
+msgid "PHP extension curl required"
+msgstr "Для импорта записей требуется поддержка PHP-расширения curl"
+
+#: /wa-apps/blog/plugins/import/lib/classes/blogImportPluginWebasystRemoteTransport.class.php:15
+msgid "Data access URL"
+msgstr "URL доступа к данным"
+
+#: /wa-apps/blog/plugins/import/lib/classes/blogImportPluginWebasystRemoteTransport.class.php:16
+msgid ""
+"For WebAsyst <strong>PHP software</strong> installed on your server:<br /> "
+"1. Download data access script <a href=\"http://www.webasyst.com/wa-data/"
+"public/site/downloads/old-webasyst-export-php.zip\">export.php</a>, and "
+"upload it to your Webasyst published/ folder via FTP.<br /> 2. Enter the "
+"complete URL to this file, which should look like this: <strong>http://"
+"YOUR_WEBASYST_ROOT_URL/published/export.php</strong><br /><br /> For "
+"<strong>hosted accounts</strong>: get your Secure Data Access URL in your "
+"ACCOUNT.webasyst.net backend’s “Account (link in the top right corner) &gt; "
+"System Settings” page."
+msgstr ""
+"Для <strong>PHP-скриптов</strong> WebAsyst, установленных на вашем сервере:"
+"<br /> 1. Скачайте скрипт доступа к данным <a href=\"http://www.webasyst.com/"
+"wa-data/public/site/downloads/old-webasyst-export-php.zip\">export.php</a> и "
+"загрузите его по FTP на  сервер с установленными скриптами в директорию "
+"published/.<br /> 2. Введите полный URL к этому файлу, который должен иметь "
+"следующий вид: <strong>http://YOUR_WEBASYST_ROOT_URL/published/export.php</"
+"strong><br /><br /> Для аккаунтов <strong>веб-сервисов</strong>: защищенный "
+"URL доступа к данным вашего аккаунта вы можете получить в бекенде вашего "
+"аккаунта ACCOUNT.webasyst.net в разделе «Аккаунт (ссылка в верхнем правом "
+"углу) &gt; Системные настройки»."
+
+#: /wa-apps/blog/plugins/import/lib/classes/blogImportPluginWebasystRemoteTransport.class.php:23
+msgid "WebAsyst user login"
+msgstr "Логин пользователя WebAsyst"
+
+#: /wa-apps/blog/plugins/import/lib/classes/blogImportPluginWebasystRemoteTransport.class.php:29
+msgid "WebAsyst user password"
+msgstr "Пароль пользователя WebAsyst"
+
+#: /wa-apps/blog/plugins/import/lib/classes/blogImportPluginWebasystRemoteTransport.class.php:95
+msgid "Invalid URL, login or password"
+msgstr "Неверное сочетание URL, логина и пароля"
+
+#: /wa-apps/blog/plugins/import/lib/classes/blogImportPluginWebasystRemoteTransport.class.php:87
+msgid "Invalid server response"
+msgstr "Неверный ответ сервера"
+
+#: /wa-apps/blog/plugins/import/lib/classes/blogImportPluginWebasystRemoteTransport.class.php:131
+msgid "Invalid server response with code %d"
+msgstr "Неверный ответ сервера. Код ошибки: %d"
+
+#: /wa-apps/blog/plugins/import/lib/classes/blogImportPluginWebasystRemoteTransport.class.php:195
+msgid "PHP extension curl not loaded"
+msgstr "Ошибка инициализации PHP-расширения curl"
+
+#: /wa-apps/blog/plugins/import/lib/classes/blogImportPluginWebasystRemoteTransport.class.php:198
+msgid "Error while init Curl"
+msgstr "Ошибка инициализации Curl"
+
+#: /wa-apps/blog/plugins/import/lib/classes/blogImportPluginWebasystRemoteTransport.class.php:202
+msgid "Curl error %d#:%s"
+msgstr "Ошибка Curl %d#:%s"
+
+#: /wa-apps/blog/plugins/import/lib/classes/blogImportPluginWebasystSameTransport.class.php:18
+msgid "PHP extension SimpleXML required"
+msgstr "Для импорта записей требуется поддержка PHP-расширения SimpleXML"
+
+#: /wa-apps/blog/plugins/import/lib/classes/blogImportPluginWebasystSameTransport.class.php:21
+msgid "Path to folder"
+msgstr "Путь к установке"
+
+#: /wa-apps/blog/plugins/import/lib/classes/blogImportPluginWebasystSameTransport.class.php:23
+msgid "Path to folder of the WebAsyst (old version) installation"
+msgstr "Путь к папке с установленными скриптами WebAsyst (старой версии)"
+
+#: /wa-apps/blog/plugins/import/lib/classes/blogImportPluginWebasystSameTransport.class.php:88
+msgid "Invalid PATH %s; %s"
+msgstr "Неверный PATH %s; %s"
+
+#: /wa-apps/blog/plugins/import/lib/classes/blogImportPluginWebasystSameTransport.class.php:73
+msgid "directory not exists"
+msgstr "директория не существует"
+
+#: /wa-apps/blog/plugins/import/lib/classes/blogImportPluginWebasystSameTransport.class.php:76
+msgid "file kernel/wbs.xml not found"
+msgstr "файл kernel/wbs.xml не найден"
+
+#: /wa-apps/blog/plugins/import/lib/classes/blogImportPluginWebasystSameTransport.class.php:88
+msgid "invalid file %s"
+msgstr "ошибка чтения файла %s"
+
+#: /wa-apps/blog/plugins/import/lib/classes/blogImportPluginWebasystSameTransport.class.php:99
+msgid "Invalid SQL server name"
+msgstr "Неверное имя SQL-сервера"
+
+#: /wa-apps/blog/plugins/import/lib/actions/backend/blogImportPluginBackendSettings.action.php:24
+msgid "WebAsyst Shop-Script (same server)"
+msgstr "WebAsyst Shop-Script (на этом же сервере)"
+
+#: /wa-apps/blog/plugins/import/lib/actions/backend/blogImportPluginBackendSettings.action.php:25
+#: /wa-apps/blog/plugins/import/lib/actions/backend/blogImportPluginBackendSettings.action.php:29
+msgid ""
+"Import news from WebAsyst Shop-Script (older version of the Shop-Script app)"
+msgstr "Импорт новостей из WebAsyst Shop-Script (из старой версии Shop-Script)"
+
+#: /wa-apps/blog/plugins/import/lib/actions/backend/blogImportPluginBackendSettings.action.php:28
+msgid "WebAsyst Shop-Script (remote server)"
+msgstr "WebAsyst Shop-Script (на удаленном сервере)"
+
+#: /wa-apps/blog/plugins/import/lib/actions/backend/blogImportPluginBackendRun.controller.php:51
+msgid "Invalid replace settings"
+msgstr ""
+
+#: /wa-apps/blog/plugins/import/lib/blogImport.plugin.php:9
+msgid "Invalid regex"
+msgstr ""
+
+#: /wa-apps/blog/plugins/import/lib/blogImport.plugin.php:10
+msgid "There was an internal PCRE error"
+msgstr ""
+
+#: /wa-apps/blog/plugins/import/lib/blogImport.plugin.php:11
+msgid "Backtrack limit was exhausted"
+msgstr ""
+
+#: /wa-apps/blog/plugins/import/lib/blogImport.plugin.php:12
+msgid "Recursion limit was exhausted"
+msgstr ""
+
+#: /wa-apps/blog/plugins/import/lib/blogImport.plugin.php:13
+msgid "The offset didn't correspond to the begin of a valid UTF-8 code point"
+msgstr ""
+
+#: /wa-apps/blog/plugins/import/lib/blogImport.plugin.php:17
+msgid "Malformed UTF-8 data"
+msgstr ""

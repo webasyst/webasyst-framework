@@ -23,38 +23,109 @@ class blogCommentModel extends waNestedSetModel
         $items = $this->query($sql, array('post_id' => $id))->fetchAll();
         return $this->prepareView($items, $fields, $options);
     }
-
-    public function getList($offset = 0, $limit = 20, $blog_id, $fields = array(), $options = array())
+    
+    public function getSubtree($post_id, $parent_id = null)
     {
-        if (!$blog_id) {
+        $post_id = (int) $post_id;
+        $parent_id = (int) $parent_id;
+        
+        $q = new waDbQuery($this);
+        if ($post_id) {
+            $q->where("post_id = {$post_id}");
+        }
+        if ($parent_id) {
+            $parent = $this->getById($parent_id);
+            if (!$parent) {
+                $q->where('id = '.$parent_id);
+            } else {
+                $where = "`{$this->left}`  >= {$parent[$this->left]} AND 
+                    `{$this->right}` <= {$parent[$this->right]}";
+                $q->where($where);
+            }
+        }
+        
+        return $q->fetchAll('id');
+    }
+    
+    public function cutOffDeleted(&$items)
+    {
+        // need for cutting deleted reviews and its children in frontend
+        $max_depth = 1000;
+        if (!empty($items)) {
+            $depth = $max_depth;
+            foreach ($items as $id => $item) {
+                if ($item['status'] == self::STATUS_DELETED) {
+                    if ($item[$this->depth] < $depth) {
+                        $depth = $item[$this->depth];
+                    }
+                    unset($items[$id]);
+                    continue;
+                }
+                if ($item[$this->depth] > $depth) {
+                    unset($items[$id]);
+                } else {
+                    $depth = $max_depth;
+                }
+            }
+        }        
+    }
+
+    public function getList($search_options = array(), $fields = array(), $options = array())
+    {
+        $default_search_options = array(
+            'offset' => 0,
+            'limit' => 20,
+            'blog_id' => array(),
+            'post_id' => null
+        );
+        $search_options += $default_search_options;
+        if (!$search_options['blog_id']) {
             return array();
         }
-        $sql = <<<SQL
-        SELECT node.id id,
-			 node.text text,
-			 node.post_id post_id,
-			 node.blog_id blog_id,
-			 node.status status,
-			 node.contact_id contact_id,
-			 node.name name,
-			 node.email email,
-			 node.datetime datetime,
-			 node.ip ip,
-			 node.site site,
-			 node.auth_provider auth_provider,
-			 node.parent,
-			 parent.id parent_id,
-			 parent.text parent_text,
-			 parent.status parent_status,
-			 parent.name parent_name,
-			 parent.email parent_email
-			FROM {$this->table} node
+  
+        $search_options['blog_id'] = (array) $search_options['blog_id'];
+        $search_options['post_id'] = (array) $search_options['post_id'];
+        
+        $where = array(
+            'node.blog_id IN (:blog_id)'
+        );
+        
+        if ($search_options['post_id']) {
+            $where[] = 'node.post_id IN (:post_id)';
+        }
+        
+        $sql = "SELECT node.id id,
+                    node.text text,
+                    node.post_id post_id,
+                    node.blog_id blog_id,
+                    node.status status,
+                    node.contact_id contact_id,
+                    node.name name,
+                    node.email email,
+                    node.datetime datetime,
+                    node.ip ip,
+                    node.site site,
+                    node.auth_provider auth_provider,
+                    node.parent,
+                    parent.id parent_id,
+                    parent.text parent_text,
+                    parent.status parent_status,
+                    parent.name parent_name,
+                    parent.email parent_email
+                FROM {$this->table} node
 		LEFT JOIN {$this->table} AS parent ON parent.id = node.parent
-		WHERE node.blog_id IN (:blog_id)
+		WHERE ".implode(' AND ', $where)."
 		ORDER BY node.datetime DESC
 		LIMIT i:o, i:l
-SQL;
-        $items = $this->query($sql, array('l' => $limit, 'o' => $offset, 'blog_id' => $blog_id))->fetchAll('id');
+        ";
+                
+        $items = $this->query($sql, array(
+            'l' => $search_options['limit'],
+            'o' => $search_options['offset'],
+            'blog_id' => array_map('intval', $search_options['blog_id']),
+            'post_id' => array_map('intval', $search_options['post_id'])
+        ))->fetchAll('id');
+        
         return $this->prepareView($items, $fields, $options);
 
     }

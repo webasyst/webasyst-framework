@@ -26,8 +26,28 @@
         <!-- begin {$plugin} -->{$output.toolbar}<!-- end {$plugin} -->
       {/if}
     {/foreach}
-
     <!-- end plugin hook: "backend_comments.%plugin_id%.toolbar" -->
+    
+    
+    {if count($blogs) > 1 || $yet_authors_exist}
+      <ul class="menu-h" id="b-comments-filter">
+          <li {if $filter == 'all'}class="selected"{/if}><a href="?module=comments&filter=all" data-filter="all">[`All blogs`]</a></li>
+          {if $yet_authors_exist}
+            <li {if $filter == 'myposts'}class="selected"{/if}><a href="?module=comments&filter=myposts" data-filter="myposts">[`My posts only`]</a></li>
+          {/if}
+          {foreach $blogs as $blog}
+            <li {if $filter == $blog.id}class="selected"{/if}><a href="?module=comments&filter={$blog.id}" data-filter="{$blog.id}">{$blog.name|escape}{if $blog.status == blogBlogModel::STATUS_PRIVATE} <i class="icon10 lock-bw no-overhnaing"></i>{/if}</a></li>
+          {/foreach}
+      </ul>
+    {/if}
+    
+    {if !count($comments)}
+        <p>
+            <br>
+            <span class="gray">[`There are no comments in this view.`]</span>
+        </p>
+    {/if}
+    
     <div class="b-comments">
       <ul class="menu-v with-icons ">
 {/if}
@@ -35,17 +55,18 @@
           <li>
             {include file="../comments/include.comment.html" allow_reply=$comment.post.comments_allowed inline}
           </li>
-        {foreachelse}
-          <li>[`no comments`]</li>
         {/foreach}
+        
+        {if count($comments)}
           <li class="pageless-wrapper">
-            {sprintf(_w("%d comment of %d (including deleted)", "%d comments of %d (including deleted)", $comments_count,false),$comments_count,$comments_total_count)}
+            <em>{sprintf(_w("%d comment of %d (including deleted)", "%d comments of %d (including deleted)", $comments_count,false),$comments_count,$comments_total_count)}</em>
             {if $comments_count < $comments_total_count}
               <br><br>
               <a href="#next" class="pageless-link">[`Show older comments`]</a>
-              <span class="pageless-progress" style="display:none"><img src="{$wa_url}wa-content/img/loading16.gif" alt="">[`Loading`]&nbsp;{_w("%d comment", "%d comments", min($comments_total_count-$comments_count,$comments_per_page))}...</span>
+              <em class="pageless-progress small" style="display:none"><i class="icon16 loading no-overhanging"></i> {_w("Loading next %d comment...", "Loading next %d comments...", min($comments_total_count-$comments_count,$comments_per_page))}</em>
             {/if}
           </li>
+        {/if}
 
 {if !isset($page) || ($page < 2)}
       </ul>

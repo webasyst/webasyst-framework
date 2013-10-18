@@ -23,6 +23,7 @@ class blogFrontendRssAction extends blogViewAction
                 }
             }
             $options['params'] = true;
+            $options['user'] = 'id,photo_url_20,email';
 
             $post_model = new blogPostModel();
             $posts = $post_model
@@ -33,19 +34,21 @@ class blogFrontendRssAction extends blogViewAction
         }
 
         $link = wa()->getRouteUrl('blog/frontend', array(), true);
-
+        $rss_link = wa()->getRouteUrl('blog/frontend/rss', array(), true);
+        $title = waRequest::param('rss_title') ? waRequest::param('rss_title') : wa()->accountName();
+        
         $this->view->assign('info',array(
-				'title' => wa()->accountName(),
+				'title' => $title,
 				'link' => $link,
 				'description' =>'',
 				'language' => 'ru',
 				'pubDate' => date(DATE_RSS),
 				'lastBuildDate' => date(DATE_RSS),
-				'self' => $link,
+				'self' => $rss_link,
         ));
         $this->view->assign('blog_name',$this->getResponse()->getTitle());
         $this->view->assign('rss_author_tag',$rss_author_tag);
-
+        
         if ($this->getConfig()->getOption('can_use_smarty')) {
             foreach ($posts as &$post) {
                 try {
@@ -56,6 +59,12 @@ class blogFrontendRssAction extends blogViewAction
             }
             unset($post);
         }
+        foreach ($posts as &$post) {
+            if (is_array($post['user']['email'])) {
+                $post['user']['email'] = reset($post['user']['email']);
+            }
+        }
+        unset($post);
         $this->view->assign('posts', $posts);
         $this->getResponse()->addHeader('Content-Type', 'application/rss+xml; charset=utf-8');
     }

@@ -99,7 +99,7 @@ abstract class waSettings implements Countable, ArrayAccess, Iterator, Serializa
 
     /**
      * Store settings at storage
-     *
+     * @param bool $force
      * @return void
      */
     public function save($force = false)

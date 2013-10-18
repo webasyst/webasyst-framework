@@ -19,14 +19,17 @@
 
         <br><br>
 
-        <p class="hint">
-        {if $cron_schedule_time}
+        <p class="hint{if !$cron_schedule_time && !$last_schedule_cron_time} b-cron-error{/if}">
+        {if $cron_schedule_time || $last_schedule_cron_time}
           <i class="icon10 yes"></i>
-          {$cron_schedule_time|wa_datetime:'humandatetime'|string_format:'[`Cron is working properly. Latest execution time: %s`]'}
+          {if $cron_schedule_time}
+              {$cron_schedule_time|wa_datetime:'humandatetime'|string_format:'[`Cron is working properly. Latest execution time: %s`]'}
+          {else}
+              {$last_schedule_cron_time|wa_datetime:'humandatetime'|string_format:'[`Cron is working properly. Latest execution time: %s`]'}
+          {/if}
         {else}
-          {assign var=cron_commands value=$wa->blog->config()->getCronJob('scheduled_posts')}
           <i class="icon10 no"></i>
-          <span class="red">{$cron_commands|string_format:'[`Scheduled publication requires CRON to be properly setup for Webasyst Blog app, which is not the case for this installation. Setup cron for the Blog app with the following command (<a href="http://www.webasyst.com/ru/framework/docs/server/cron/" target="_blank">cron setup instructions</a>):<br /><br /> <strong>%s</strong>`]'}</span>
+          <span class="red">{$cron_command|string_format:'[`Scheduled publication requires CRON to be properly setup for Webasyst Blog app, which is not the case for this installation. Setup cron for the Blog app with the following command (<a href="http://www.webasyst.com/ru/framework/docs/server/cron/" target="_blank">cron setup instructions</a>):<br /><br /> <strong class="cron-command">%s</strong>`]'}</span>
         {/if}
         </p>
       </div>
@@ -39,3 +42,16 @@
     </div>
   </div>
 </div>
+<script>
+    $(function() {
+        $('.cron-command').click(function() {
+            var el = $('<input style="font-weight: bold; margin-top:2px; border: 1px solid #ccc; color: red; padding: 1px; width:' + ($(this).width() + 2) + 'px" type="text" readonly="readonly" />').val($(this).text()).focus(function () {
+                $(this).select();
+            }).mouseup(function(e){
+                e.preventDefault();
+            });
+            $(this).replaceWith(el);
+            el.select();
+        });
+    });
+</script>

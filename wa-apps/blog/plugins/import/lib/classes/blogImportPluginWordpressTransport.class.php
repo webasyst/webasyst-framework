@@ -7,38 +7,37 @@
  *
  *
  */
-class blogImportPluginWordpressTransport extends blogImportPluginTransport
+class blogImportPluginWordpressTransport extends blogImportPluginXmlrpcTransport
 {
     private $version = 0;
     protected $xmlrpc_path = '/xmlrpc.php';
 
     protected function initOptions()
     {
+        parent::initOptions();
         $this->options['url'] = array(
-            'title'                  => _wp('Wordpress URL'),
-            'description'            => _wp('Source blog URL'),
-            'value'                  => 'http://',
-            'settings_html_function' => waHtmlControl::INPUT,
+            'title'        => _wp('Wordpress URL'),
+            'description'  => _wp('Source blog URL'),
+            'value'        => 'http://',
+            'control_type' => waHtmlControl::INPUT,
         );
         $this->options['login'] = array(
-            'title'                  => _wp('Login'),
-            'value'                  => '',
-            'description'            => _wp('Wordpress blog user login'),
-            'settings_html_function' => waHtmlControl::INPUT,
+            'title'        => _wp('Login'),
+            'value'        => '',
+            'description'  => _wp('Wordpress blog user login'),
+            'control_type' => waHtmlControl::INPUT,
         );
         $this->options['password'] = array(
-            'title'                  => _wp('Password'),
-            'value'                  => '',
-            'description'            => _wp('Wordpress blog user password'),
-            'settings_html_function' => waHtmlControl::PASSWORD,
+            'title'        => _wp('Password'),
+            'value'        => '',
+            'description'  => _wp('Wordpress blog user password'),
+            'control_type' => waHtmlControl::PASSWORD,
         );
     }
 
     public function setup($runtime_settings = array())
     {
-
         parent::setup($runtime_settings);
-
         $options = $this->xmlrpc("wp.getOptions ", 1, $this->option('login'), $this->option('password'), 'software_version');
         if ($options && isset($options['software_version'])) {
             $this->version = $options['software_version']['value'];
@@ -75,10 +74,6 @@ class blogImportPluginWordpressTransport extends blogImportPluginTransport
         $this->log(var_export($ids, true), self::LOG_DEBUG);
 
         return $ids;
-    }
-
-    private function stepImport()
-    {
     }
 
     public function importPost($post_id)
@@ -148,7 +143,6 @@ class blogImportPluginWordpressTransport extends blogImportPluginTransport
         $filters['the_content'][] = 'wpautop';
         $filters['the_content'][] = 'shortcode_unautop';
         //        $filters['the_content'][] = 'prepend_attachment';//missed
-        $filters['the_content'][] = 'userReplace';
 
         if (isset($filters[$filter])) {
             foreach ($filters[$filter] as $method) {

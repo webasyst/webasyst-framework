@@ -1,4 +1,5 @@
 <?php
+
 class blogContactsDeleteHandler extends waEventHandler
 {
     /**
@@ -18,5 +19,12 @@ class blogContactsDeleteHandler extends waEventHandler
             $data = array('contact_id'=>0,'name'=>$contact['name'],'auth_provider'=>null);
             $comment_model->updateByField('contact_id',$contact['id'],$data);
         }
+        
+        /**
+         * @event contacts_delete
+         * @param array[] int $contact_ids array of contact's ID
+         * @return void
+         */
+        wa()->event(array('blog', 'contacts_delete'), $params);
     }
 }

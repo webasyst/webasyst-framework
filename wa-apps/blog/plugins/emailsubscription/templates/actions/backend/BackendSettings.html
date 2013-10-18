@@ -1,17 +1,20 @@
 <div class="fields">
-    <div class="field">
+    <div class="field{if !$cron_schedule_time && !$last_emailsubscription_cron_time} b-cron-error{/if}">
         <div class="name">
             CRON
         </div>
         <div class="value">
             <p class="hint">
-                {if $cron_schedule_time}
-                <i class="icon10 yes"></i>
-                {$cron_schedule_time|wa_datetime:'humandatetime'|string_format:'[`Cron is working properly. Latest execution time: %s`]'}
+                {if $cron_schedule_time || $last_emailsubscription_cron_time}
+                    <i class="icon10 yes"></i>
+                    {if $cron_schedule_time}
+                        {$cron_schedule_time|wa_datetime:'humandatetime'|string_format:'[`Cron is working properly. Latest execution time: %s`]'}
+                    {else}
+                        {$last_emailsubscription_cron_time|wa_datetime:'humandatetime'|string_format:'[`Cron is working properly. Latest execution time: %s`]'}
+                    {/if}
                 {else}
-                {$cron_commands=$wa->blog->config()->getCronJob('scheduled_posts')}
-                <i class="icon10 no"></i>
-                <span class="red">{$cron_commands|string_format:'[`Email alerts require CRON to be properly setup for Webasyst Blog app, which is currently not the case. Setup cron for the Blog app with the following command (<a href="http://www.webasyst.com/ru/framework/docs/server/cron/" target="_blank">cron setup instructions</a>):<br /><br /> <strong>%s</strong>`]'}</span>
+                    <i class="icon10 no"></i>
+                    <span class="red">{$cron_command|string_format:'[`Email alerts require CRON to be properly setup for Webasyst Blog app, which is currently not the case. Setup cron for the Blog app with the following command (<a href="http://www.webasyst.com/ru/framework/docs/server/cron/" target="_blank">cron setup instructions</a>):<br /><br /> <strong>%s</strong>`]'}</span>
                 {/if}
             </p>
         </div>

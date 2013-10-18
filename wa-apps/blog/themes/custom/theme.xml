@@ -2,7 +2,7 @@
 <!DOCTYPE theme PUBLIC "wa-app-theme" "http://www.webasyst.com/wa-content/xml/wa-app-theme.dtd">
 <theme id="custom" system="0" vendor="webasyst" author="Webasyst" app="blog" parent_theme_id="site:custom" version="1.0.0">
     <name locale="en_US">CUSTOM</name>
-    <name locale="ru_RU">CUSTOM</name>
+    <name locale="ru_RU">custom</name>
     <files>
         <file path="index.html" custom="0" parent="1">
         </file>
@@ -118,4 +118,4 @@
 
 ]]>
   </about>    
-</theme>
+<description locale="ru_RU"/></theme>

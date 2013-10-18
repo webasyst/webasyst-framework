@@ -5,7 +5,7 @@ class blogCategoryPostModel extends waModel
     protected $id = null;
 
 
-    public function changePost($post_id, $categories, $is_add = false)
+    public function changePost($post_id, $categories)
     {
         $categories = array_map('intval', $categories);
         $current_categories = array_keys($this->getByField('post_id',$post_id,'category_id'));

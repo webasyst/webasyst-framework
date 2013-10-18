@@ -13,6 +13,7 @@ class blogImportPluginBackendRunController extends waLongActionController
      * @var blogImportPluginTransport
      */
     private $transport;
+    private $errors = array();
 
     protected function preInit()
     {
@@ -24,7 +25,7 @@ class blogImportPluginBackendRunController extends waLongActionController
         try {
             parent::execute();
         } catch (waException $ex) {
-            echo json_encode(array('error' => $ex->getMessage()));
+            echo json_encode(array('error' => $ex->getMessage(), 'errors' => $this->errors));
         }
     }
 
@@ -43,7 +44,12 @@ class blogImportPluginBackendRunController extends waLongActionController
             $namespace = $plugin_namespace.'_'.strtolower($transport);
             $this->initPlugin();
             if ($post = $this->getRequest()->post($plugin_namespace)) {
-                $this->plugin->setup($post)->saveSettings();
+                $this->plugin->setup($post);
+                if ($this->plugin->validateSettings($this->errors)) {
+                    $this->plugin->saveSettings();
+                } else {
+                    throw new waException(_wp('Invalid replace settings'));
+                }
             }
 
             $settings = $this->plugin->getSettings();
@@ -69,7 +75,11 @@ class blogImportPluginBackendRunController extends waLongActionController
             $this->data['blog'] = $this->plugin->getSettingValue('blog');
 
             $this->getTransport();
-            $this->transport->setup($this->getRequest()->post($namespace), array());
+            $this->transport->setup($this->getRequest()->post($namespace, array()));
+            if (!$this->transport->validate(true, $this->errors)) {
+                throw new waException(_wp('Invalid settings'));
+            }
+            //$this->data['runtime_settings'] =$this->transport->get
             $this->data['posts'] = $this->transport->getPosts();
             $this->data['current'] = 0;
             $this->data['count'] = count($this->data['posts']);
@@ -113,12 +123,14 @@ class blogImportPluginBackendRunController extends waLongActionController
 
     protected function restore()
     {
-        $this->getTransport();
-        $this->transport->restore();
+        $this->getTransport()->restore();
     }
 
+    /**
+     * @return blogImportPluginTransport
+     */
     private function getTransport()
     {
-        $this->transport = & $this->data['transport'];
+        return $this->transport = & $this->data['transport'];
     }
 }

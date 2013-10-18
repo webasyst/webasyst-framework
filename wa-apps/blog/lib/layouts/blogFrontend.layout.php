@@ -5,11 +5,12 @@ class blogFrontendLayout extends waLayout
     public function execute()
     {
 
-        $this->getResponse()->addJs("js/jquery.pageless2.js?v=".wa()->getVersion(),true);
-        $this->view->assign('site_theme_url', wa()->getDataUrl('themes',true,'site').'/'.waRequest::param('theme', 'default').'/');
-        $this->view->assign('action',$action = waRequest::param('action','default'));
-        waRequest::setParam('action',$action);
+        $this->getResponse()->addJs("js/jquery.pageless2.js?v=".wa()->getVersion(), true);
+        $this->view->assign('site_theme_url', wa()->getDataUrl('themes', true, 'site').'/'.waRequest::param('theme', 'default').'/');
+        $this->view->assign('action', $action = waRequest::param('action', 'default'));
+        waRequest::setParam('action', $action);
         $params = waRequest::param();
+        $fields = array('nav_before', 'footer', 'head', 'sidebar');
         /**
          * @event frontend_action_default
          * @event frontend_action_post
@@ -22,9 +23,9 @@ class blogFrontendLayout extends waLayout
          * @return array[string][string]string $return['%plugin_id%'][sidebar]
          */
         $this->view->assign('settlement_one_blog', isset($params['blog_id']) && ($params['blog_url_type'] == $params['blog_id']));
-        $this->view->assign('frontend_action',$res = wa()->event('frontend_action_'.$action,$params));
+        $this->view->assign('frontend_action', $res = wa()->event('frontend_action_'.$action, $params, $fields));
         if (!$this->view->getVars('links')) {
-            $this->view->assign('links',array());
+            $this->view->assign('links', array());
         }
         $this->setThemeTemplate('index.html');
     }

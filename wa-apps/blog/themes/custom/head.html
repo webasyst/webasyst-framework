@@ -1,6 +1,6 @@
 <!-- blog css -->
 <link href="{$wa_active_theme_url}custom.blog.css?{$wa->version()}" rel="stylesheet" type="text/css">
-<link href="{$wa_active_theme_url}custom.blog.mobile.css?{$wa->version()}" rel="stylesheet" media="screen and (max-width: 760px)" type="text/css">
+<link href="{$wa_active_theme_url}custom.blog.mobile.css?{$wa->version()}" rel="stylesheet"{if !$wa->isMobile()} media="screen and (max-width: 760px)"{/if} type="text/css">
 
 <!-- blog js -->
 <script type="text/javascript" src="{$wa_active_theme_url}blog.js?v{$wa->version()}"></script>

@@ -10,7 +10,9 @@ class blogBackendAction extends waViewAction
         $blog_model = new blogBlogModel();
         $blogs = $blog_model->getAvailable($this->getUser());
 
-        $stream = array();
+        $stream = array(
+            'all_posts' => false
+        );
         $title_suffix = '';
 
         $search_options = array();
@@ -50,6 +52,7 @@ class blogBackendAction extends waViewAction
             if(empty($search_options["plugin"])) {
                 $stream['title'] = _w('All posts');
                 $stream['link'] = $this->getUrl();
+                $stream['all_posts'] = true;
             } else {
                 $stream['title'] = '';
                 $stream['link'] = '';
@@ -96,14 +99,14 @@ class blogBackendAction extends waViewAction
              * @param array[string]string $stream['link'] Stream link
              * @return array[string][string]string $return['%plugin_id%']['menu'] Stream context menu html
              */
-            $this->view->assign('backend_stream', wa()->event('backend_stream', $stream));
+            $this->view->assign('backend_stream', wa()->event('backend_stream', $stream, array('menu')));
         }
 
 
         $this->view->assign('blogs', $blogs);
         $this->view->assign('blog_id', $blog_id);
         $this->view->assign('text', $text);
-
+        
         $this->view->assign('stream', $stream);
 
         $this->view->assign('page', $page);

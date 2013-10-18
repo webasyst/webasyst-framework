@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * @deprecated
+ * @see blogScheduleCli
+ */
+
 class blogCronScheduleCli extends waCliController
 {
 

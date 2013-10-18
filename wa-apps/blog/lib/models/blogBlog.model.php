@@ -52,6 +52,12 @@ class blogBlogModel extends blogItemModel
         return $this;
     }
 
+    /**
+     * @param array $items
+     * @param array $options
+     * @param array $extend_data
+     * @return array
+     */
     public function prepareView($items, $options = array(), $extend_data = array())
     {
         $extend_options = array_merge($this->extend_options, $options);
@@ -281,7 +287,6 @@ SQL;
 
         $settlements = array();
         $urls = blogBlog::getUrl($blog, true);
-
         foreach ($urls as &$url) {
             if (strpos($url, '%blog_url%') === false) {
                 $settlements[] = array(

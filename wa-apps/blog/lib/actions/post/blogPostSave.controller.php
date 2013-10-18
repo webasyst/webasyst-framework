@@ -51,6 +51,9 @@ class blogPostSaveController extends waJsonController
             'comments_allowed'   => max(0,min(1,waRequest::post('comments_allowed', 0, waRequest::TYPE_INT))),
             'public'             => waRequest::post('public'),
             'schedule_datetime'  => waRequest::post('schedule_datetime'),
+            'meta_title' => waRequest::post('meta_title', null, waRequest::TYPE_STRING_TRIM),
+            'meta_keywords' => waRequest::post('meta_keywords', null, waRequest::TYPE_STRING_TRIM),
+            'meta_description' => waRequest::post('meta_description', null, waRequest::TYPE_STRING_TRIM)
         );
 
         $this->inline = waRequest::post('inline', false);

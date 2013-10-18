@@ -8,9 +8,9 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Poedit-Language: en_US\n"
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
+"X-Generator: Poedit 1.5.5\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
 
@@ -35,7 +35,9 @@ msgid "Import all posts"
 msgstr ""
 
 #: /wa-apps/blog/plugins/import/templates/actions/backend/BackendSettings.html:58
-msgid "Please do not close your browser window and do not leave this page until the entire import process is finished."
+msgid ""
+"Please do not close your browser window and do not leave this page until the "
+"entire import process is finished."
 msgstr ""
 
 #: /wa-apps/blog/plugins/import/lib/actions/backend/blogImportPluginBackendSetup.controller.php:16
@@ -119,7 +121,8 @@ msgid "Import posts"
 msgstr ""
 
 #: /wa-apps/blog/plugins/import/lib/config/plugin.php:5
-msgid "Transfer posts from popular blog platforms such as Wordpress and LiveJournal"
+msgid ""
+"Transfer posts from popular blog platforms such as Wordpress and LiveJournal"
 msgstr ""
 
 #: /wa-apps/blog/plugins/import/lib/config/plugin.php:14
@@ -131,7 +134,9 @@ msgid "By post title"
 msgstr ""
 
 #: /wa-apps/blog/plugins/import/lib/config/plugin.php:21
-msgid "If a blog post with the same name exists in the target WebAsyst blog, the post will not be imported"
+msgid ""
+"If a blog post with the same name exists in the target WebAsyst blog, the "
+"post will not be imported"
 msgstr ""
 
 #: /wa-apps/blog/plugins/import/lib/config/plugin.php:25
@@ -167,7 +172,9 @@ msgid "Import"
 msgstr ""
 
 #: /wa-apps/blog/plugins/import/js/settings.js:150
-msgid "If you leave this page now, the import process is likely to be interrupted. Leave the page?"
+msgid ""
+"If you leave this page now, the import process is likely to be interrupted. "
+"Leave the page?"
 msgstr ""
 
 #: /wa-apps/blog/plugins/import/lib/actions/backend/blogImportPluginBackendRun.controller.php:61
@@ -175,6 +182,170 @@ msgid "Author not found or has insufficient rights"
 msgstr ""
 
 #: /wa-apps/blog/plugins/import/lib/classes/blogImportPluginLjTransport.class.php:154
-msgid "LiveJournal does not appear to be responding right now. Please try again later."
+msgid ""
+"LiveJournal does not appear to be responding right now. Please try again "
+"later."
 msgstr ""
 
+#: /wa-apps/blog/plugins/import/lib/actions/backend/blogImportPluginBackendRun.controller.php:76
+msgid "Invalid settings"
+msgstr ""
+
+#: /wa-apps/blog/plugins/import/lib/actions/backend/blogImportPluginBackendSettings.action.php:16
+msgid "WordPress"
+msgstr ""
+
+#: /wa-apps/blog/plugins/import/lib/actions/backend/blogImportPluginBackendSettings.action.php:20
+msgid "LiveJournal"
+msgstr ""
+
+#: /wa-apps/blog/plugins/import/lib/actions/backend/blogImportPluginBackendSettings.action.php:24
+msgid "Webasyst ShopScript (same host)"
+msgstr ""
+
+#: /wa-apps/blog/plugins/import/lib/actions/backend/blogImportPluginBackendSettings.action.php:29
+msgid "Import posts from a ShopScript news (comments are not imported)"
+msgstr ""
+
+#: /wa-apps/blog/plugins/import/lib/actions/backend/blogImportPluginBackendSettings.action.php:28
+msgid "Webasyst ShopScript (remote host)"
+msgstr ""
+
+#: /wa-apps/blog/plugins/import/lib/classes/blogImportPluginXmlrpcTransport.class.php:21
+msgid "PHP extension curl required"
+msgstr ""
+
+#: /wa-apps/blog/plugins/import/lib/classes/blogImportPluginWebasystRemoteTransport.class.php:15
+msgid "Data access URL"
+msgstr ""
+
+#: /wa-apps/blog/plugins/import/lib/classes/blogImportPluginWebasystRemoteTransport.class.php:16
+msgid ""
+"For WebAsyst <strong>PHP software</strong> installed on your server:<br /> "
+"1. Download data access script <a href=\"http://www.webasyst.com/wa-data/"
+"public/site/downloads/old-webasyst-export-php.zip\">export.php</a>, and "
+"upload it to your Webasyst published/ folder via FTP.<br /> 2. Enter the "
+"complete URL to this file, which should look like this: <strong>http://"
+"YOUR_WEBASYST_ROOT_URL/published/export.php</strong><br /><br /> For "
+"<strong>hosted accounts</strong>: get your Secure Data Access URL in your "
+"ACCOUNT.webasyst.net backend’s “Account (link in the top right corner) &gt; "
+"System Settings” page."
+msgstr ""
+
+#: /wa-apps/blog/plugins/import/lib/classes/blogImportPluginWebasystRemoteTransport.class.php:23
+msgid "WebAsyst user login"
+msgstr ""
+
+#: /wa-apps/blog/plugins/import/lib/classes/blogImportPluginWebasystRemoteTransport.class.php:29
+msgid "WebAsyst user password"
+msgstr ""
+
+#: /wa-apps/blog/plugins/import/lib/classes/blogImportPluginWebasystRemoteTransport.class.php:95
+msgid "Invalid URL, login or password"
+msgstr ""
+
+#: /wa-apps/blog/plugins/import/lib/classes/blogImportPluginWebasystRemoteTransport.class.php:87
+msgid "Invalid server response"
+msgstr ""
+
+#: /wa-apps/blog/plugins/import/lib/classes/blogImportPluginWebasystRemoteTransport.class.php:131
+msgid "Invalid server response with code %d"
+msgstr ""
+
+#: /wa-apps/blog/plugins/import/lib/classes/blogImportPluginWebasystRemoteTransport.class.php:195
+msgid "PHP extension curl not loaded"
+msgstr ""
+
+#: /wa-apps/blog/plugins/import/lib/classes/blogImportPluginWebasystRemoteTransport.class.php:198
+msgid "Error while init Curl"
+msgstr ""
+
+#: /wa-apps/blog/plugins/import/lib/classes/blogImportPluginWebasystRemoteTransport.class.php:202
+msgid "Curl error %d#:%s"
+msgstr ""
+
+#: /wa-apps/blog/plugins/import/lib/classes/blogImportPluginWebasystSameTransport.class.php:18
+msgid "PHP extension SimpleXML required"
+msgstr ""
+
+#: /wa-apps/blog/plugins/import/lib/classes/blogImportPluginWebasystSameTransport.class.php:21
+msgid "Path to folder"
+msgstr ""
+
+#: /wa-apps/blog/plugins/import/lib/classes/blogImportPluginWebasystSameTransport.class.php:23
+msgid "Path to folder of the WebAsyst (old version) installation"
+msgstr ""
+
+#: /wa-apps/blog/plugins/import/lib/classes/blogImportPluginWebasystSameTransport.class.php:88
+msgid "Invalid PATH %s; %s"
+msgstr ""
+
+#: /wa-apps/blog/plugins/import/lib/classes/blogImportPluginWebasystSameTransport.class.php:73
+msgid "directory not exists"
+msgstr ""
+
+#: /wa-apps/blog/plugins/import/lib/classes/blogImportPluginWebasystSameTransport.class.php:76
+msgid "file kernel/wbs.xml not found"
+msgstr ""
+
+#: /wa-apps/blog/plugins/import/lib/classes/blogImportPluginWebasystSameTransport.class.php:88
+msgid "invalid file %s"
+msgstr ""
+
+#: /wa-apps/blog/plugins/import/lib/classes/blogImportPluginWebasystSameTransport.class.php:99
+msgid "Invalid SQL server name"
+msgstr ""
+
+#: /wa-apps/blog/plugins/import/lib/actions/backend/blogImportPluginBackendSettings.action.php:24
+msgid "WebAsyst Shop-Script (same server)"
+msgstr ""
+
+#: /wa-apps/blog/plugins/import/lib/actions/backend/blogImportPluginBackendSettings.action.php:25
+#: /wa-apps/blog/plugins/import/lib/actions/backend/blogImportPluginBackendSettings.action.php:29
+msgid "Import news from WebAsyst Shop-Script"
+msgstr ""
+
+#: /wa-apps/blog/plugins/import/lib/actions/backend/blogImportPluginBackendSettings.action.php:28
+msgid "WebAsyst Shop-Script (remote server)"
+msgstr ""
+
+#: /wa-apps/blog/plugins/import/lib/actions/backend/blogImportPluginBackendSettings.action.php:24
+msgid "WebAsyst Shop-Script (old version) on the same server"
+msgstr ""
+
+#: /wa-apps/blog/plugins/import/lib/actions/backend/blogImportPluginBackendSettings.action.php:28
+msgid "WebAsyst Shop-Script (old version) on a remote server"
+msgstr ""
+
+#: /wa-apps/blog/plugins/import/lib/actions/backend/blogImportPluginBackendSettings.action.php:25
+#: /wa-apps/blog/plugins/import/lib/actions/backend/blogImportPluginBackendSettings.action.php:29
+msgid "Import news from WebAsyst Shop-Script (older version of the Shop-Script app)"
+msgstr ""
+
+#: /wa-apps/blog/plugins/import/lib/actions/backend/blogImportPluginBackendRun.controller.php:51
+msgid "Invalid replace settings"
+msgstr ""
+
+#: /wa-apps/blog/plugins/import/lib/blogImport.plugin.php:9
+msgid "Invalid regex"
+msgstr ""
+
+#: /wa-apps/blog/plugins/import/lib/blogImport.plugin.php:10
+msgid "There was an internal PCRE error"
+msgstr ""
+
+#: /wa-apps/blog/plugins/import/lib/blogImport.plugin.php:11
+msgid "Backtrack limit was exhausted"
+msgstr ""
+
+#: /wa-apps/blog/plugins/import/lib/blogImport.plugin.php:12
+msgid "Recursion limit was exhausted"
+msgstr ""
+
+#: /wa-apps/blog/plugins/import/lib/blogImport.plugin.php:13
+msgid "The offset didn't correspond to the begin of a valid UTF-8 code point"
+msgstr ""
+
+#: /wa-apps/blog/plugins/import/lib/blogImport.plugin.php:17
+msgid "Malformed UTF-8 data"
+msgstr ""

@@ -246,24 +246,35 @@
   </div>
 
 {/foreach}
-  <div class="block b-post b-number-of-posts {if $stream.blog}{$stream.blog.color}{else}b-white{/if} pageless-wrapper">
-    {sprintf(_w("%d post of %d", "%d posts of %d", $posts_count,false),$posts_count,$posts_total_count)}
-    {if $posts_count < $posts_total_count}
-      <br>
-      <br>
-      <a href="#next" class="pageless-link">[`Show older posts`]</a>
-      <span class="pageless-progress" style="display:none"><i class="icon16 loading"></i>[`Loading`]&nbsp;{_w("%d post", "%d posts", min($posts_total_count-$posts_count,$posts_per_page))}...</span>
-    {/if}
 
-  </div>
+  {if $posts_count > 0}
+      <div class="block b-post b-number-of-posts {if $stream.blog}{$stream.blog.color}{else}b-white{/if} pageless-wrapper">
+        {sprintf(_w("%d post of %d", "%d posts of %d", $posts_count,false),$posts_count,$posts_total_count)}
+        {if $posts_count < $posts_total_count}
+          <br>
+          <br>
+          <a href="#next" class="pageless-link">[`Show older posts`]</a>
+          <span class="pageless-progress" style="display:none"><i class="icon16 loading"></i>[`Loading`]&nbsp;{_w("%d post", "%d posts", min($posts_total_count-$posts_count,$posts_per_page))}...</span>
+        {/if}
+      </div>
+  {else}
+      <div class="block b-post b-empty-list {if $stream.blog}{$stream.blog.color}{else}b-white {if $stream.all_posts}b-welcome{/if}{/if}">
+        {if $stream.all_posts}
+          [`Hello and welcome to your new blog!<br> Start by writing your first post.`]
+        {else}
+          [`There are no posts in this view.`]
+        {/if}
+      </div>
+  {/if}
+  
   {if $page ge $pages}
-  <div class="b-torn-paper {if $stream.blog}{$stream.blog.color}{else}b-white{/if}">
-    <div>
-      <div class="b-torn-left"></div>
-      <div class="b-torn"></div>
-      <div class="b-torn-right"></div>
-    </div>
-  </div>
+      <div class="b-torn-paper {if $stream.blog}{$stream.blog.color}{else}b-white{/if}">
+        <div>
+          <div class="b-torn-left"></div>
+          <div class="b-torn"></div>
+          <div class="b-torn-right"></div>
+        </div>
+      </div>
   {/if}
 {if $page eq 1}
   </div>

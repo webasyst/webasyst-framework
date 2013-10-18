@@ -38,8 +38,8 @@
 
             <div id="publication-deadline-changable-part">
 
-              {if $post.datetime && $post.status eq blogPostModel::STATUS_DEADLINE}
-                <i class="icon16 exclamation"></i>{$post.datetime|wa_date}
+              {if ($post.datetime || $wa->get('date')) && $post.status eq blogPostModel::STATUS_DEADLINE}
+                <i class="icon16 exclamation"></i>{if !$wa->get('date')}{$post.datetime|wa_date}{else}{date('d.m.Y', strtotime($wa->get('date')))}{/if}
                 <a id="deadline-edit" href="javascript:void(0);" class="small dialog-edit">[`edit`]</a>
               {else}
                 <i class="icon16 exclamation"></i><a id="deadline-edit" href="javascript:void(0);" class="dialog-edit">[`Not set`]</a>
@@ -87,12 +87,28 @@
 
         </div>
 
-        <!-- custom parameters -->
+        <!--  meta and custom parameters -->
         <div class="block">
-          <h6>[`Custom parameters`]</h6>
-          <textarea name="params" id="post-custom-parameters" rows="10" cols="20">{if $params}{foreach $params as $k => $v}{$k}={$v|escape}
-{/foreach}{/if}</textarea>
-          <span class="hint">[`Optional set of custom <em>key=value</em> parameters which can be used within a frontend's theme template as <em>&#123;$post.key&#125;</em>. Each key=value pair should be on a separate line.`]</span>
+          <h6>[`Meta`]</h6>
+          <p class="small">
+            <span id="b-post-edit-meta-title" {if !$post.meta_title}style="display:none;"{/if}>
+                <span class="gray" >[`Title`]:</span> <span class="val">{$post.meta_title|escape}</span><br>
+            </span>
+            <span id="b-post-edit-meta-keywords" {if !$post.meta_keywords}style="display:none;"{/if}>
+                <span class="gray">[`Meta Keywords`]:</span> <span class="val">{$post.meta_keywords|escape}</span><br>
+            </span>
+            <span  id="b-post-edit-meta-description" {if !$post.meta_description}style="display:none;"{/if}>
+                <span class="gray" >[`Meta Description`]:</span> <span class="val">{$post.meta_description|escape}</span><br>
+            </span>
+            <span id="b-post-edit-custom-params" {if !$params}style="display:none;"{/if}>
+                {foreach $params as $k => $v}{$k}={$v|escape}<br>{/foreach}
+            </span>
+          <span class="gray" id="b-post-edit-no-meta" {if $post.meta_title || $post.meta_keywords || $post.meta_description || $params}style="display:none;"{/if}>[`No meta parameters are defined for this blog post.`]</span>
+          <a href="#" id="b-post-edit-custom-params-link" class="nowrap">[`Edit meta`]</a>
+          </p>
+          {capture append="dialogs"}
+              {include file="./../../dialogs/postEditCustomParams.html" inline}
+          {/capture}
         </div>
 
         {* @event backend_post_edit.%plugin_id%.sidebar *}
@@ -161,7 +177,7 @@
 
         <div class="block double-padded b-post {$blog.color}"{if isset($post.id) && $post.id} id="b-post-{$post.id}"{/if}>
 
-          <input id="post-title" name="title" type="text" value="{$post.title|escape}" class="b-post-title" maxlength="255">
+          <input id="post-title" name="title" type="text" value="{$post.title|escape}" class="b-post-title" maxlength="255" placeholder="[`Post title`]">
           <br>
 
           {* POST URL *}
@@ -251,8 +267,22 @@
                 <a id="elrte" href="javascript:void(0);">[`WYSIWYG`]</a>
               </li>
               <li>
-                <a id="codemirror" href="javascript:void(0);">[`HTML`]</a>
+                <a id="ace" href="javascript:void(0);">[`HTML`]</a>
               </li>
+              {* @event backend_post_edit.%plugin_id%.editor_tab *}
+              <!-- plugin hook: "backend_post_edit.*.editor_tab" -->
+              {if isset($backend_post_edit)}
+                  {foreach $backend_post_edit as $plugin => $output}
+                      {if isset($output.editor_tab)}
+                        <li>
+                        <!-- begin backend_post_edit.{$plugin}.toolbar -->
+                          {$output.editor_tab}
+                        <!-- end {$plugin} -->
+                        </li>
+                      {/if}
+                  {/foreach}
+              {/if}
+              <!-- end plugin hook: "backend_post_edit.*.editor_tab"-->
             </ul>
             <textarea id="post_text" name="text" cols="60" rows="20" style="border:0">{$post.text|escape}</textarea>
             <div  class="b-post-editor-wrapper" id="post_text_wrapper"></div>
@@ -333,7 +363,7 @@
     </div>
     <input type="hidden" id="post-id" name="post_id" value="{$post.id}">
     </div>
-
+    
     {if isset($dialogs)}
       <!-- dialog begin -->
       {foreach $dialogs as $dialog}
@@ -341,39 +371,36 @@
       {/foreach}
       <!-- dialog end -->
     {/if}
+    
   </form>
 
 <link type="text/css" rel="stylesheet" href="{$wa_url}wa-content/js/elrte/elrte.min.css">
 <link type="text/css" rel="stylesheet" href="{$wa_url}wa-content/js/elrte/elrte-wa.css">
-<link type="text/css" rel="stylesheet" href="{$wa_url}wa-content/js/codemirror/lib/codemirror.css">
 <script type="text/javascript">
-  $.wa.locale['Split vertical'] = "[`Split vertical`]";
+  $.wa.locale['Post cut'] = "[`Post cut (Continue reading &rarr;)`]";
   $.wa.locale['Image will be uploaded into'] = "[`Image will be uploaded into`]";
 </script>
 {assign var=lang value=substr($wa->locale(), 0, 2)}
-{wa_js file="js/compiled/blog-post-edit-`$lang`.js"}
-{$wa_app_static_url}js/postEdit.js
-
-{$wa_url}wa-content/js/jquery-ui/jquery.ui.datepicker.min.js
+<script type="text/javascript" src="{$wa_url}wa-content/js/jquery-ui/jquery.ui.datepicker.min.js"></script>
 {if $lang!='en'}
-{$wa_url}wa-content/js/jquery-ui/i18n/jquery.ui.datepicker-{$wa->locale()}.js
+    <script type="text/javascript" src="{$wa_url}wa-content/js/jquery-ui/i18n/jquery.ui.datepicker-{$wa->locale()}.js"></script>
 {/if}
 
-{$wa_url}wa-content/js/codemirror/lib/codemirror.js
-{$wa_url}wa-content/js/codemirror/mode/xml/xml.js
-{$wa_url}wa-content/js/codemirror/mode/javascript/javascript.js
-{$wa_url}wa-content/js/codemirror/mode/css/css.js
-{$wa_url}wa-content/js/codemirror/mode/htmlmixed/htmlmixed.js
+{wa_js file="js/compiled/blog-post-edit.js"}
+{$wa_app_static_url}js/postEdit.js
 
+{$wa_url}wa-content/js/ace/ace.js
 
 {$wa_url}wa-content/js/elrte/elrte.min.js
 {$wa_url}wa-content/js/elrte/elrte-wa.js
-{if $lang!='en'}
-{$wa_url}wa-content/js/elrte/i18n/elrte.{$lang}.js
-{/if}
 {$wa_url}wa-apps/blog/js/elrte-blog.js
 
 {/wa_js}
+
+{if $lang!='en'}
+    <script type="text/javascript" src="{$wa_url}wa-content/js/elrte/i18n/elrte.{$lang}.js"></script>
+{/if}
+
 
 <script type="text/javascript">
   var wa_url = "{$wa_url}";

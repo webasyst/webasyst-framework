@@ -4,7 +4,7 @@
  *
  */
 
-class blogImportPluginLjTransport extends blogImportPluginTransport
+class blogImportPluginLjTransport extends blogImportPluginXmlrpcTransport
 {
     protected $xmlrpc_url = 'http://www.livejournal.com';
     protected $xmlrpc_path = '/interface/xmlrpc';
@@ -25,15 +25,16 @@ class blogImportPluginLjTransport extends blogImportPluginTransport
 
     protected function initOptions()
     {
+        parent::initOptions();
         $this->options['lj_user'] = array(
-            'title'                  => _wp('LiveJournal user'),
-            'value'                  => '',
-            'settings_html_function' => waHtmlControl::INPUT,
+            'title'        => _wp('LiveJournal user'),
+            'value'        => '',
+            'control_type' => waHtmlControl::INPUT,
         );
         $this->options['lj_password'] = array(
-            'title'                  => _wp('Password'),
-            'value'                  => '',
-            'settings_html_function' => waHtmlControl::PASSWORD,
+            'title'        => _wp('Password'),
+            'value'        => '',
+            'control_type' => waHtmlControl::PASSWORD,
         );
     }
 

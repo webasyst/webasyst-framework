@@ -19,7 +19,7 @@ class blogPostEditAction extends waViewAction
         }
         $blogs = $blog_model->prepareView($blogs);
 
-        if ($post_id) {	// edit post
+        if ($post_id) { // edit post
 
             $post_model = new blogPostModel();
             $post = $post_model->getById($post_id);
@@ -28,9 +28,10 @@ class blogPostEditAction extends waViewAction
             }
 
             //check rights
-            if (blogHelper::checkRights($post['blog_id']) < blogRightConfig::RIGHT_FULL &&
-            $post['contact_id'] != $this->getUser()->getId())
-            {
+            if (
+                (blogHelper::checkRights($post['blog_id']) < blogRightConfig::RIGHT_FULL)
+                && ($post['contact_id'] != $this->getUser()->getId())
+            ) {
                 throw new waRightsException(_w('Access denied'));
             }
 
@@ -52,19 +53,22 @@ class blogPostEditAction extends waViewAction
             $blog_id = $blog['id'];
 
             $post = array(
-				'title' => $this->getRequest()->post('title','',waRequest::TYPE_STRING_TRIM),
-				'text' => $this->getRequest()->post('text','',waRequest::TYPE_STRING_TRIM),
-				'continued_text' => null,
-				'categories' => array(),
-				'contact_id' => wa()->getUser()->getId(),
-				'url' => '',
-				'blog_id' => $blog_id,
-				'comments_allowed' => true,
+                'title'            => $this->getRequest()->post('title', '', waRequest::TYPE_STRING_TRIM),
+                'text'             => $this->getRequest()->post('text', '', waRequest::TYPE_STRING_TRIM),
+                'continued_text'   => null,
+                'categories'       => array(),
+                'contact_id'       => wa()->getUser()->getId(),
+                'url'              => '',
+                'blog_id'          => $blog_id,
+                'comments_allowed' => true,
             );
 
             $post['id'] = '';
             $post['status'] = $date ? blogPostModel::STATUS_DEADLINE : blogPostModel::STATUS_DRAFT;
-            $post['datetime'] = $date ? waDateTime::format('date', $date) : '';
+            $post['datetime'] = '';
+            $post['meta_title'] = null;
+            $post['meta_keywords'] = null;
+            $post['meta_description'] = null;
 
             $title = _w('Adding new post');
 
@@ -84,15 +88,15 @@ class blogPostEditAction extends waViewAction
             $users = blogHelper::getAuthors($post['blog_id']);
         } else {
             $user = $this->getUser();
-            $users = array($user->getId()=>$user->getName());
+            $users = array($user->getId() => $user->getName());
         }
         // preview hash for all type of drafts
         if ($post['status'] != blogPostModel::STATUS_PUBLISHED) {
             $options = array(
-				'contact_id' => $post['contact_id'],
-				'blog_id' => $blog_id,
-				'post_id' => $post['id'],
-				'user_id' => wa()->getUser()->getId()
+                'contact_id' => $post['contact_id'],
+                'blog_id'    => $blog_id,
+                'post_id'    => $post['id'],
+                'user_id'    => wa()->getUser()->getId()
             );
             $preview_hash = blogPostModel::getPreviewHash($options);
             $this->view->assign('preview_hash', base64_encode($preview_hash.$options['user_id']));
@@ -124,17 +128,24 @@ class blogPostEditAction extends waViewAction
          * @param  array[string]int $post['blog_id']
          * @return array[string][string]string $return[%plugin_id%]['sidebar'] Plugin sidebar html output
          * @return array[string][string]string $return[%plugin_id%]['toolbar'] Plugin toolbar html output
+         * @return array[string][string]string $return[%plugin_id%]['editor_tab'] Plugin editor tab html output
          */
-        $this->view->assign('backend_post_edit', wa()->event('backend_post_edit', $post));
+        $this->view->assign('backend_post_edit', wa()->event('backend_post_edit', $post, array('sidebar', 'toolbar', 'editor_tab')));
 
         $app_settings = new waAppSettingsModel();
-        $show_comments = $app_settings->get($this->getApp(), 'show_comments',true);
+        $show_comments = $app_settings->get($this->getApp(), 'show_comments', true);
 
         $this->view->assign('show_comments', $show_comments);
         $this->view->assign('post', $post);
-        $this->view->assign('cron_schedule_time', waSystem::getSetting('cron_schedule',0,'blog'));
-
-        $locale = $this->getUser()->getLocale();
+        
+        /**
+         * @deprecated 
+         * For backward compatibility reason
+         */
+        $this->view->assign('cron_schedule_time', waSystem::getSetting('cron_schedule', 0, 'blog'));
+        
+        $this->view->assign('last_schedule_cron_time', waSystem::getSetting('last_schedule_cron_time', 0, 'blog'));
+        $this->view->assign('cron_command', 'php '.wa()->getConfig()->getRootPath().'/cli.php blog schedule');
 
         $this->setLayout(new blogDefaultLayout());
         $this->getResponse()->setTitle($title);
@@ -143,6 +154,7 @@ class blogPostEditAction extends waViewAction
     /**
      * Calculate and format remaining interval of time
      * @param string $datetime
+     * @return string
      */
     private function calculateRemainingTime($datetime)
     {
@@ -152,41 +164,41 @@ class blogPostEditAction extends waViewAction
         $interval = strtotime($datetime) - time();
         $ago = false;
 
-        if($interval < 0) {
+        if ($interval < 0) {
             $interval = -$interval;
             $ago = true;
         }
 
-        $interval_divisor = 3600*24*365;
-        if ($interval_chunk = floor($interval/$interval_divisor)) {
+        $interval_divisor = 3600 * 24 * 365;
+        if ($interval_chunk = floor($interval / $interval_divisor)) {
             $remaining_time[] = $interval_chunk." "._ws("year", "years", $interval_chunk);
         }
         $interval %= $interval_divisor;
 
-        $interval_divisor = 3600*24*30;
-        if ($interval_chunk = floor($interval/$interval_divisor)) {
+        $interval_divisor = 3600 * 24 * 30;
+        if ($interval_chunk = floor($interval / $interval_divisor)) {
             $remaining_time[] = $interval_chunk." "._ws("month", "months", $interval_chunk);
         }
         $interval %= $interval_divisor;
 
-        $interval_divisor = 3600*24;
-        if ($interval_chunk = floor($interval/$interval_divisor)) {
-            $remaining_time[] =$interval_chunk." "._ws("day", "day", $interval_chunk);
+        $interval_divisor = 3600 * 24;
+        if ($interval_chunk = floor($interval / $interval_divisor)) {
+            $remaining_time[] = $interval_chunk." "._ws("day", "day", $interval_chunk);
         }
         $interval %= $interval_divisor;
 
         $interval_divisor = 3600;
-        if ($interval_chunk = floor($interval/$interval_divisor)) {
+        if ($interval_chunk = floor($interval / $interval_divisor)) {
             $remaining_time[] = $interval_chunk." "._ws("hour", "hours", $interval_chunk);
         }
         $interval %= $interval_divisor;
 
         $interval_divisor = 60;
-        if ($interval_chunk = floor($interval/$interval_divisor)) {
+        if ($interval_chunk = floor($interval / $interval_divisor)) {
             $remaining_time[] = $interval_chunk." "._ws("minute", "minutes", $interval_chunk);
         }
 
-        return sprintf($ago?'<span class="red">'._w('%s ago').'</span>':_w('in %s'),implode(" ", $remaining_time));
+        return sprintf($ago ? '<span class="red">'._w('%s ago').'</span>' : _w('in %s'), implode(" ", $remaining_time));
 
     }
 
@@ -195,6 +207,7 @@ class blogPostEditAction extends waViewAction
      *
      * @param array $blogs list of selection
      * @param int $blog_id prefered blog. If allowed return it
+     * @return array
      */
     private function getAllowedBlog($blogs, $blog_id = null)
     {
@@ -202,7 +215,7 @@ class blogPostEditAction extends waViewAction
             return $blogs[$blog_id];
         }
 
-        foreach ($blogs as $blog_id => $blog) {
+        foreach ($blogs as $blog) {
             if ($blog['rights'] >= blogRightConfig::RIGHT_READ_WRITE) {
                 return $blog;
             }
@@ -214,6 +227,7 @@ class blogPostEditAction extends waViewAction
     /**
      * Get custom params for post
      * @param int $post_id
+     * @return string[string]
      */
     private function getPostParams($post_id)
     {

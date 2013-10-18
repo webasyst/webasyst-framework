@@ -31,16 +31,6 @@
       {/foreach}
       <!-- end plugin hook: "prepare_comments_backend.*.authorname_suffix" -->
     {/if}
-    {if isset($comment.post) && $comment.post && (!isset($single_view) || !$single_view)}
-      <span class="hint">
-        [`on`]
-        {if isset($comment.post) && $comment.post && $comment.editable || (isset($comment.post) && $comment.post && $comment.post.status eq blogPostModel::STATUS_PUBLISHED)}
-          <a href="{if $comment.post.status eq blogPostModel::STATUS_PUBLISHED && $comment.post.blog_status eq blogBlogModel::STATUS_PUBLIC && $comment.post.link}{$comment.post.link[0]}{else}?module=post&amp;id={$comment.post_id}{if $comment.post.status eq blogPostModel::STATUS_PUBLISHED}#comments{else}&amp;action=edit{/if}{/if}" class="bold">{$comment.post.title|escape}</a>
-        {else}
-          [`unpublished post`]
-        {/if}
-      </span>
-    {/if}
   </span>
 
   {if isset($comment.plugins) && isset($comment.plugins.before) && $comment.plugins.before}
@@ -70,15 +60,29 @@
     {if isset($comment.post) && (!$comment.post || (!$comment.editable && ($comment.post && $comment.post.status neq blogPostModel::STATUS_PUBLISHED)))}
       <p class="b-comment-text">[`Comment for unpublished post`]</p>
     {else}
+      {* COMMENT TEXT *} 
       <p class="b-comment-text">
-        <span{if isset($comment['new'])} class="highlighted"{/if}>{$comment.text|escape|nl2br}</span>
+          <span{if isset($comment['new'])} class="highlighted"{/if}>{$comment.text|escape|nl2br}</span>
       </p>
+      {* post link *}      
+      {if isset($comment.post) && $comment.post && (!isset($single_view) || !$single_view)}
+          <p class="hint">
+            [`on`]
+            {if $comment.post.blog_status == blogBlogModel::STATUS_PRIVATE}
+                <i class="icon10 lock-bw no-overhanging"></i>
+            {/if}
+            {if isset($comment.post) && $comment.post && $comment.editable || (isset($comment.post) && $comment.post && $comment.post.status eq blogPostModel::STATUS_PUBLISHED)}
+              <a href="{if $comment.post.status eq blogPostModel::STATUS_PUBLISHED && $comment.post.blog_status eq blogBlogModel::STATUS_PUBLIC && $comment.post.link}{$comment.post.link[0]}{else}?module=post&amp;id={$comment.post_id}{if $comment.post.status eq blogPostModel::STATUS_PUBLISHED}#comments{else}&amp;action=edit{/if}{/if}"><span{if $comment.post.color && $comment.post.color != 'b-white'} class="b-{$comment.post.color|substr:2}"{/if}>{$comment.post.title|escape}</span></a>
+            {else}
+              [`unpublished post`]
+            {/if}
+          </p>
+      {/if}
+      {* in reply to *}
       {if $comment.parent && isset($comment.parent_text)}
-        <span class="hint">[`in reply to`] <strong>{if $comment.parent_status == blogCommentModel::STATUS_DELETED && !$comment.editable}<strike>[`Comment deleted`]</strike>{else}{$comment.parent_text|escape}{/if}</strong></span>
-        <br>
+        <p class="hint">[`in reply to`] <strong>{if $comment.parent_status == blogCommentModel::STATUS_DELETED && !$comment.editable}<strike>[`Comment deleted`]</strike>{else}{$comment.parent_text|escape}{/if}</strong></p>
       {/if}
       {if $allow_reply}
-        <br>
         <a href="#" class="b-comment-reply small inline-link"><b><i>[`reply`]</i></b></a>
       {/if}
     {/if}

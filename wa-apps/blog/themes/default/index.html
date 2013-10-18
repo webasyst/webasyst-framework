@@ -15,7 +15,7 @@
 
     <!-- css -->
     <link href="{$wa_theme_url}default.css?{$wa->version()}" rel="stylesheet" type="text/css">
-    <link href="{$wa_theme_url}mobile.css?{$wa->version()}" media="screen and (max-width: 760px)" rel="stylesheet" type="text/css">
+    <link href="{$wa_theme_url}mobile.css?{$wa->version()}"{if !$wa->isMobile()} media="screen and (max-width: 760px)"{/if} rel="stylesheet" type="text/css">
     {if $wa->isMobile()}
         <meta name="viewport" content="width=device-width; initial-scale=1; maximum-scale=1; user-scalable=0;">
     {/if}
@@ -106,7 +106,7 @@
     <div id="footer">
         <div class="container">
             <div id="poweredby" class="float-right hint">
-                [`We are using <a href="http://www.webasyst.com/apps/blog/">Webasyst Blog</a>`] <span class="dots" title="Webasyst"></span>
+                [`We are using <a href="http://www.webasyst.com/store/app/blog/">Webasyst Blog</a>`] <span class="dots" title="Webasyst"></span>
             </div>
             <div id="copyright">&copy; {time()|wa_datetime:"Y"} <a href="{$wa_url}">{$wa->accountName()}</a></div>
         </div>

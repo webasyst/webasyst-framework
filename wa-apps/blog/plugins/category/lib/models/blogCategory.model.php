@@ -43,7 +43,7 @@ SQL;
 
         $sql = <<<SQL
 		UPDATE {$this->table}
-		SET t.`qty` = (
+		SET qty = (
 			SELECT COUNT(blog_post_category.post_id)
 			FROM blog_post_category
 			JOIN blog_post ON (blog_post_category.post_id = blog_post.id)

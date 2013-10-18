@@ -11,8 +11,8 @@ return array(
         'sort' => array('int', 11, 'null' => 0, 'default' => '0'),
         ':keys' => array(
             'PRIMARY' => 'id',
-            'sort' => 'sort',
-            'status' => 'status',
+            'list' => array('status', 'sort'),
+            'routing' => array('url', 'status'),
         ),
     ),
     'blog_comment' => array(
@@ -35,9 +35,10 @@ return array(
         ':keys' => array(
             'PRIMARY' => 'id',
             'contact_id' => 'contact_id',
-            'post_id' => 'post_id',
             'parent' => 'parent',
             'status' => 'status',
+            'count' => array('blog_id', 'post_id', 'status'),
+            'comment' => array('post_id', 'left'),
         ),
     ),
     'blog_page' => array(
@@ -57,6 +58,7 @@ return array(
         'status' => array('tinyint', 1, 'null' => 0, 'default' => '0'),
         ':keys' => array(
             'PRIMARY' => 'id',
+            'routing' => array('route', 'status'),
         ),
     ),
     'blog_page_params' => array(
@@ -80,10 +82,15 @@ return array(
         'cut_link_label' => array('varchar', 255),
         'url' => array('varchar', 255, 'null' => 0, 'default' => ''),
         'comments_allowed' => array('tinyint', 1, 'null' => 0, 'default' => '1'),
+        'meta_title' => array('varchar', 255),
+        'meta_keywords' => array('text'),
+        'meta_description' => array('text'),
         ':keys' => array(
             'PRIMARY' => 'id',
-            'contact_id' => 'contact_id',
-            'blog' => array('status', 'blog_id', 'datetime'),
+            'routing' => array('status', 'url', 'blog_id'),
+            'feed' => array('status', 'blog_id', 'datetime'),
+            'contact' => array('contact_id', 'blog_id', 'status', 'datetime'),
+            'datetime' => 'datetime',
         ),
     ),
     'blog_post_params' => array(

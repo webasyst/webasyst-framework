@@ -22,6 +22,12 @@
   {$wa_app_static_url}js/blog.js
   {/wa_js}
   {$wa->js(false)}
+  
+  {* @event backend_assets.%plugin_id% *}
+  {foreach $backend_assets as $item}
+      {$item}
+  {/foreach}
+  
   <script type="text/javascript">
   $.wa_blog = $.extend(true,$.wa_blog,{
     'rights':{json_encode($rights)}

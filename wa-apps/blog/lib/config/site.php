@@ -82,7 +82,21 @@ return array(
                     'description' => _ws('Company name'),
                 ),
                 array(
-                    'name' => 'Задать явно',
+                    'name' => _w('As specified'),
+                ),
+            ),
+        ),
+        'rss_title' => array(
+            'name' => _wp('Rss feed title'),
+            'type' => 'radio_text',
+            'description' => '',
+            'items' => array(
+                array(
+                    'name' => wa()->accountName(),
+                    'description' => _ws('Company name'),
+                ),
+                array(
+                    'name' => _w('As specified')
                 ),
             ),
         ),

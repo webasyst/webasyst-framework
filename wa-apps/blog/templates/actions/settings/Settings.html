@@ -7,16 +7,14 @@
   </div>
   {/if}
 
-  <div class="block double-padded">
+  <form action="?blog=&amp;module=settings" method="post">
 
-    <form action="?blog=&amp;module=settings" method="post">
+    {$wa->csrf()}
 
-      {$wa->csrf()}
-
-
+    <div class="block double-padded">
       <div class="fields form">
-
-        <h6 class="heading">[`Personal settings`]</h6>
+        <h6 class="heading"><i class="icon16 userpic20" style="background-image: url('{$wa->user()->getPhoto(20)}');"></i> [`My personal settings`]</h6>
+        <br>
         <div class="field-group">
           <div class="field">
             <div class="name">
@@ -50,104 +48,144 @@
               </div>
             </div>
           </div>
-        </div>
-
-      {if isset($backend_settings) && backend_settings}
-        {if $routing_settings_url}
-        <h6 class="heading">[`Frontend settings`]</h6>
-        <div class="field-group">
-
           <div class="field">
-
             <div class="name">
-                <label>[`URLs & Titles`]</label>
+              [`Notifications`]
             </div>
-
             <div class="value no-shift">
-                {sprintf('[`Setup in the <a href="%s">Blog app settlement settings</a> within the Site app`]',$routing_settings_url|escape)}
+              <label class="s-label-with-check">
+                <input type="checkbox" name="reminder" id="s-reminder" value="{$user_settings.reminder}" {if $user_settings.reminder || $user_settings.reminder == '0'}checked="checked"{/if}>
+                [`Remind me about my scheduled posts`]
+              </label>
+              <select id="s-reminder-day">
+                <option value="0" {if $user_settings.reminder && $user_settings.reminder == '0'}selected="selected"{/if}>[`When publication is overdue`]</option>
+                <option value="1" {if $user_settings.reminder == '1'}selected="selected"{/if}>[`1 day before publication deadline`]</option>
+                <option value="2" {if $user_settings.reminder == '2'}selected="selected"{/if}>[`2 days before publication deadline`]</option>
+                <option value="3" {if $user_settings.reminder == '3'}selected="selected"{/if}>[`3 days before publication deadline`]</option>
+                <option value="7" {if $user_settings.reminder == '7'}selected="selected"{/if}>[`A week before publication deadline`]</option>
+              </select>
             </div>
-
-          </div>
-
-        </div>
-        {/if}
-
-        <div class="field-group">
-
-          <div class="field">
-
-            <div class="name">
-              <label>[`Comments`]</label>
-            </div>
-
-            <div class="value b-ibutton-checkbox">
-              <ul class="menu-h">
-                <li><span id="settings-comments-switcher-off-label" class="b-unselected">[`Off`]</span></li>
-                <li><input type="checkbox" name="show_comments" id="settings-comments-switcher" {if $backend_settings['show_comments'] == '1'}checked="checked"{/if} value="1"></li>
-                <li><span id="settings-comments-switcher-on-label">[`On`]</span></li>
-              </ul>
-            </div>
-
-          </div>
-
-          <div class="field js-comments-field"{if !$backend_settings['show_comments']} style="display:none;"{/if} id="settings-captcha-field">
-
-            <div class="value">
-              <input type="checkbox" name="request_captcha" id="settings-captcha-switcher" {if $backend_settings['request_captcha'] == '1'}checked="checked"{/if} value="1"></li>
-              <label for="settings-captcha-switcher">[`Protect comment submit form with CAPTCHA`]</label>
-            </div>
-
-          </div>
-
-          <div class="field js-comments-field"{if !$backend_settings['show_comments']} style="display:none;"{/if} id="settings-authorization-field">
-
-            <div class="value">
-              <input type="checkbox" name="require_authorization" id="settings-authorization-switcher" {if $backend_settings['require_authorization'] == '1'}checked="checked"{/if} value="1"></li>
-              <label for="settings-authorization-switcher">[`Only registered users can add comments`]</label><br />
-              <span class="hint">[`If enabled, all commentators will be authorized and synced with the Contacts app`]</span>
-            </div>
-
-          </div>
-
-        </div>
-
-
-        <div class="field-group">
-
-          <div class="field">
-
-            <div class="name">
-              <label>[`RSS`]</label>
-            </div>
-
             <div class="value no-shift">
-              [`Number of posts in RSS file`]:<br>
-              <input type="text" name="rss_posts_number" value="{$backend_settings['rss_posts_number']|escape}"><br><br>
+                <p class="hint{if !$last_reminder_cron_time} b-cron-error{/if}"  id="s-reminder-hint" {if !$user_settings.reminder && $user_settings.reminder != '0'}style="display:none;"{/if}>
+                {if $last_reminder_cron_time}
+                    <i class="icon10 yes"></i>
+                    {sprintf('[`Reminders will be sent to your <strong class="cron-command">%s</strong> email address once a day. Cron for reminders is working properly. Latest execution time: %s`]',
+                        $wa->user()->get('email', 'default')|escape, $last_reminder_cron_time|wa_datetime:'humandatetime'
+                    )}
+                {else}
+                    <i class="icon10 no"></i>
+                    <span class="red">{$cron_command|string_format:'[`Reminders require CRON to be properly setup for the Blog app, which is not the case for this installation. Setup cron for the Blog app with the following command (<a href="http://www.webasyst.com/ru/framework/docs/server/cron/" target="_blank">cron setup instructions</a>):<br /><br /> <strong class="cron-command">%s</strong>`]'}</span>
+                {/if}
+                </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
-              <span>[`&lt;author&gt; tag`]:</span>
+    {if isset($backend_settings) && backend_settings}
 
-              <div id="s-radio-select-2">
-                <label class="s-label-with-check">
-                  <input type="radio" {if $backend_settings['rss_author_tag'] == 'author'}checked="checked"{/if} name="rss_author_tag" value="author">
-                  [`Use blog post author's real name`]
-                  <span class="hint"><br>[`E.g.`] <strong>{$user_name|escape}</strong><br></span>
-                </label>
-                <label class="s-label-with-check">
-                  <input type="radio" {if $backend_settings['rss_author_tag'] == 'blog'}checked="checked"{/if} name="rss_author_tag" value="blog">
-                  [`Use blog name`]
-                  {if isset($e_g.name) && $e_g.name}
-                    <span class="hint"><br>[`E.g.`] <strong>{$e_g.name|escape}</strong><br></span>
-                  {/if}
-                </label>
+        <div class="block double-padded">
+          <div class="fields form">
+            <h6 class="heading">[`Frontend settings`]</h6>
+            <br>
+            <div class="field-group">
+    
+              <div class="field">
+                <div class="name">
+                  <label>[`Comments`]</label>
+                </div>
+                <div class="value b-ibutton-checkbox">
+                  <ul class="menu-h">
+                    <li><span id="settings-comments-switcher-off-label" class="b-unselected">[`Off`]</span></li>
+                    <li><input type="checkbox" name="show_comments" id="settings-comments-switcher" {if $backend_settings['show_comments'] == '1'}checked="checked"{/if} value="1"></li>
+                    <li><span id="settings-comments-switcher-on-label">[`On`]</span></li>
+                  </ul>
+                </div>
               </div>
-
+    
+              <div class="field js-comments-field"{if !$backend_settings['show_comments']} style="display:none;"{/if} id="settings-captcha-field">
+    
+                <div class="value">
+                  <input type="checkbox" name="request_captcha" id="settings-captcha-switcher" {if $backend_settings['request_captcha'] == '1'}checked="checked"{/if} value="1"></li>
+                  <label for="settings-captcha-switcher">[`Protect comment submit form with CAPTCHA`]</label>
+                </div>
+    
+              </div>
+    
+              <div class="field js-comments-field"{if !$backend_settings['show_comments']} style="display:none;"{/if} id="settings-authorization-field">
+    
+                <div class="value">
+                  <input type="checkbox" name="require_authorization" id="settings-authorization-switcher" {if $backend_settings['require_authorization'] == '1'}checked="checked"{/if} value="1"></li>
+                  <label for="settings-authorization-switcher">[`Only registered users can add comments`]</label><br />
+                  <span class="hint">[`If enabled, all commentators will be authorized and synced with the Contacts app`]</span>
+                </div>
+    
+              </div>
+    
             </div>
-
-          </div>
-
+    
+    
+            <div class="field-group">
+    
+              <div class="field">
+    
+                <div class="name">
+                  <label>[`RSS`]</label>
+                </div>
+    
+                <div class="value no-shift">
+                  [`Number of posts in RSS file`]:<br>
+                  <input type="text" name="rss_posts_number" value="{$backend_settings['rss_posts_number']|escape}">
+                  <p class="hint">[`Recommended range is from 10 to 25`]</p>
+                </div>
+                
+                <div class="value no-shift">
+                  [`&lt;author&gt; tag`]:
+                </div>
+                
+                <div class="value no-shift">
+                    <label class="s-label-with-check">
+                      <input type="radio" {if $backend_settings['rss_author_tag'] == 'author'}checked="checked"{/if} name="rss_author_tag" value="author">
+                      [`Author’s email address`]
+                      <span class="hint">{sprintf('[`%s for your blog posts`]',$user_email|escape)}</span>
+                    </label>
+                </div>
+                <div class="value">
+                    <label class="s-label-with-check">
+                      <input type="radio" {if $backend_settings['rss_author_tag'] != 'author'}checked="checked"{/if} name="rss_author_tag" value="">
+                      [`No author tag`]
+                    </label>
+                  </div>
+    
+                </div>
+    
+              </div>
+    
+            </div>
+            
+            {if $routing_settings_url}
+            <div class="field-group">
+    
+              <div class="field">
+    
+                <div class="name">
+                    <label>[`URLs & Titles`]</label>
+                </div>
+    
+                <div class="value no-shift">
+                    {sprintf('[`Setup in the <a href="%s">Blog app settlement settings</a> within the Site app`]',$routing_settings_url|escape)}
+                </div>
+    
+              </div>
+    
+            </div>
+            {/if}
+            
         </div>
       {/if}
 
+      <div class="block double-padded">
         <div class="field-group">
 
           <div class="field">
@@ -159,11 +197,13 @@
           </div>
 
         </div>
-
       </div>
-    </form>
 
-  </div>
+    </div>
+          
+  </form>
+
+
 
 
 </div>
@@ -185,8 +225,8 @@
       handler.call(switcher.get(0));
 
       switcher.iButton({
-        labelOn : '',
-        labelOff : ''
+        labelOn : '&nbsp;',
+        labelOff : '&nbsp;'
       }).change(handler);
 
       function handler()
@@ -217,6 +257,28 @@
     });
 
     $('.js-primary-checkbox').change();
+    
+    $('#s-reminder-day').change(function() {
+        $('input[name=reminder]').val($(this).val());
+    });
+    $('input[name=reminder]').val($('#s-reminder-day').val());
+    $('#s-reminder').click(function() {
+        if (this.checked) {
+            $('#s-reminder-hint').show();
+        } else {
+            $('#s-reminder-hint').hide();
+        }
+    });
+
+    $('.cron-command').click(function() {
+        var el = $('<input style="font-weight: bold; margin-top:2px; border: 1px solid #ccc; color: red; padding: 1px; width:' + ($(this).width() + 2) + 'px" type="text" readonly="readonly" />').val($(this).text()).focus(function () {
+            $(this).select();
+        }).mouseup(function(e){
+            e.preventDefault();
+        });
+        $(this).replaceWith(el);
+        el.select();
+    });
 
   });
 </script>

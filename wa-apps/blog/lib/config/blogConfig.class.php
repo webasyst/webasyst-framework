@@ -132,9 +132,11 @@ class blogConfig extends waAppConfig
                 $post_model = new blogPostModel();
             }
 
-            $where = "status = '".blogPostModel::STATUS_DEADLINE."' AND datetime <= '".waDateTime::date("Y-m-d")."'";
-            $where .= " AND contact_id = {$user_id}";
+            $where = "status = '".blogPostModel::STATUS_DEADLINE."'";
+
             $where .= " AND blog_id IN (".implode(', ',$blogs).")";
+            $where .= " AND contact_id = {$user_id}";
+            $where .= " AND datetime <= '".waDateTime::date("Y-m-d")."'";
             $count_overdue = $post_model->select("count(id)")->where($where)->fetchField();
             $counter['overdue'] = ($count_overdue) ? $count_overdue : 0;
         } else {

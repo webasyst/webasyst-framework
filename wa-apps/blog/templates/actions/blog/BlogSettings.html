@@ -45,15 +45,15 @@
               <li><input type="checkbox" id="b-settings-blog-type" name="settings[status]" {if $blog.status == blogBlogModel::STATUS_PUBLIC || (isset($messages.blog_url) && $messages.blog_url)}checked="checked"{/if}></li>
               <li><span id="b-settings-blog-type-private-label">[`Public`]</span></li>
             </ul>
-
-            <span class="small" id="b-settings-blog-type-open-hint"><i class="icon10 yes"></i> [`Blog posts are published and available in the frontend and RSS feed`]</span>
-            <span class="small" id="b-settings-blog-type-private-hint" style="display: none;"><i class="icon10 lock-bw"></i> [`Blog posts are published and available only within Webasyst backend for users who have rights to access this blog`]</span>
+            
+            <p class="small b-blog-type-disclaimer" id="b-settings-blog-type-open-hint"><i class="icon10 yes"></i> [`Blog posts are published and available in the frontend and RSS feed`]</p>
+            <p class="small b-blog-type-disclaimer" id="b-settings-blog-type-private-hint" style="display: none;"><i class="icon10 lock-bw"></i> [`Blog posts are published and available only within Webasyst backend for users who have rights to access this blog`]</p>
           </div>
         </div>
         <div class="field" id="b-settings-blog-url" {if $blog.status != blogBlogModel::STATUS_PUBLIC && (!isset($messages.blog_url) || !$messages.blog_url)}style="display:none;"{/if}>
 
           <div class="name">
-            [`Public URL`]
+            [`Public blog URL`]
           </div>
 
           <div class="value no-shift">
@@ -66,7 +66,7 @@
     
                   {if !isset($messages.blog_url) || !$messages.blog_url}
                     <a id="url-link" target="_blank" href="{$blog.settlement.url|escape}{if $blog.url}{$blog.url|escape}/{/if}">{$blog.settlement.url|escape}<span class="slug">{if $blog.url}{$blog.url}/{else}<!-- slug placeholder -->{/if}</span></a>
-                    <a id="inline-edit-url" href="#" class="inline-link"><i class="icon10 edit"></i><b><i>[`edit`]</i></b></a>
+                    <a id="inline-edit-url" href="#" class="inline-link small"><i class="icon10 edit"></i><b><i>[`edit`]</i></b></a>
     
                     <span style="display: none;">
                       {$blog.settlement.url|escape}<input type="text" id="blog-url" name="settings[url]" value="{$blog.url|escape}" >/
@@ -84,7 +84,7 @@
                 {/if}
     
                 {if isset($blog.other_settlements) && !empty($blog.other_settlements)}
-                  <div id="other-urls" class="hint">
+                  <div id="other-urls" class="hint" style="line-height: 1.2em;">
                     {foreach $blog.other_settlements as $settlement}
                       {$settlement.url|escape}<span class="slug" {if $settlement.single}data-single="1"{/if}>{if $blog.url && !$settlement.single}{$blog.url}/{else}<!-- slug placeholder -->{/if}</span><br>
                     {/foreach}
@@ -96,6 +96,8 @@
                 {else}
                   <em id="message-blog-url"></em>
                 {/if}
+                
+                <p class="hint"><br>[`A URL to view all posts of this blog on your public website.`]</p>
             {/if}
 
           </div>
@@ -133,7 +135,7 @@
             <input type="hidden" name="settings[icon]" value="{$blog.icon}">
             <br>
             <span class="small">[`Or enter icon URL (should be a 16x16 px image)`]:</span><br>
-            <input id="b-icon-url" type="text" value="{$blog.icon_url|escape}" name="settings[icon_url]">
+            <input id="b-icon-url" type="text" value="{$blog.icon_url|escape}" name="settings[icon_url]" class="long">
 
           </div>
         </div>

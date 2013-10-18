@@ -18,8 +18,7 @@ class blogFrontendPostAction extends blogViewAction
         if (false && ($cache_time = $this->getConfig()->getOption('cache_time'))) {
             if ($post_url = waRequest::param('url', false, 'string_trim')) {
                 $this->cache_id = 'url_'.$post_url;
-            }
-            elseif ($post_id = waRequest::param('id', 0, 'int')) {
+            } elseif ($post_id = waRequest::param('id', 0, 'int')) {
                 $this->cache_id = 'id_'.$post_id;
             }
             $this->cache_time = $cache_time;
@@ -35,21 +34,21 @@ class blogFrontendPostAction extends blogViewAction
         $show_comments = $this->appSettings('show_comments', true);
         $request_captcha = $show_comments && $this->appSettings('request_captcha', true);
         $require_authorization = $show_comments && $this->appSettings('require_authorization', false);
-        $available =  blogHelper::getAvailable();
+        $available = blogHelper::getAvailable();
 
         // it's preview
         $hash = waRequest::get('preview');
 
         $post = $post_model->search(
-        array(
-                'url' => $post_slug,
-                'status' => $hash ? false : blogPostModel::STATUS_PUBLISHED
-        ), array(
-                'comments' => $show_comments ? array(50,20) : false,
-                'params' => true,
-                'escape'=>true,
-        ), array('blog'=>$available,)
-        )->fetchSearchItem();
+                    array(
+                        'url'    => $post_slug,
+                        'status' => $hash ? false : blogPostModel::STATUS_PUBLISHED
+                    ), array(
+                        'comments' => $show_comments ? array(50, 20) : false,
+                        'params'   => true,
+                        'escape'   => true,
+                    ), array('blog' => $available,)
+                )->fetchSearchItem();
 
         if (!$post) {
             throw new waException(_w('Post not found'), 404);
@@ -61,10 +60,10 @@ class blogFrontendPostAction extends blogViewAction
             list($hash, $user_id) = array(substr($hash, 0, 32), substr($hash, 32));
 
             $options = array(
-				'contact_id' => $post['contact_id'],
-        	    'blog_id' => $post['blog_id'],
-        	    'post_id' => $post['id'],
-        	    'user_id' => $user_id
+                'contact_id' => $post['contact_id'],
+                'blog_id'    => $post['blog_id'],
+                'post_id'    => $post['id'],
+                'user_id'    => $user_id
             );
 
             $preview_cached_options = $storage->read('preview');
@@ -91,11 +90,11 @@ class blogFrontendPostAction extends blogViewAction
 
         $title = $this->getResponse()->getTitle();
 
-        if ($this->getRequest()->param('title_type','blog_post') == 'blog_post') {
+        if ($this->getRequest()->param('title_type', 'blog_post') == 'blog_post') {
             if ($title) {
-                $this->getResponse()->setTitle($title. " » " . $post['title']);
-            } elseif(isset($available[$post['blog_id']]) && ($title = $available[$post['blog_id']]['title'])) {
-                $this->getResponse()->setTitle($title . " » " . $post['title']);
+                $this->getResponse()->setTitle($title." » ".$post['title']);
+            } elseif (isset($available[$post['blog_id']]) && ($title = $available[$post['blog_id']]['title'])) {
+                $this->getResponse()->setTitle($title." » ".$post['title']);
             } else {
                 $this->getResponse()->setTitle($post['title']);
             }
@@ -103,8 +102,16 @@ class blogFrontendPostAction extends blogViewAction
             $this->getResponse()->setTitle($post['title']);
         }
 
+        // meta title override default title
+        if ($post['meta_title']) {
+            $this->getResponse()->setTitle($post['meta_title']);
+        }
+
+        $this->getResponse()->setMeta('keywords', $post['meta_keywords']);
+        $this->getResponse()->setMeta('description', $post['meta_description']);
+
         $blog_id = (array)$this->getRequest()->param('blog_id');
-        if (!in_array($post['blog_id'],$blog_id)) {
+        if (!in_array($post['blog_id'], $blog_id)) {
             if ($this->getRequest()->param('blog_url_type') == 0) {
                 if (isset($available[$post['blog_id']])) {
                     $this->redirect($post['link'], 301);
@@ -112,7 +119,7 @@ class blogFrontendPostAction extends blogViewAction
             }
             throw new waException(_w('Post not found'), 404);
         }
-        $this->getRequest()->setParam('blog_id',$post['blog_id']);
+        $this->getRequest()->setParam('blog_id', $post['blog_id']);
 
         if (isset($post['comments']) && !empty($post['comments'])) {
 
@@ -122,13 +129,12 @@ class blogFrontendPostAction extends blogViewAction
                     if ($comment['depth'] < $depth) {
                         $depth = $comment['depth'];
                     }
-                    unset( $post['comments'][$key] );
+                    unset($post['comments'][$key]);
                     continue;
                 }
                 if ($comment['depth'] > $depth) {
-                    unset( $post['comments'][$key] );
-                }
-                else {
+                    unset($post['comments'][$key]);
+                } else {
                     $depth = 1000;
                 }
             }
@@ -137,14 +143,14 @@ class blogFrontendPostAction extends blogViewAction
         $errors = array();
         $form = array();
 
-        if ( $storage->read('errors') !== null ) {
+        if ($storage->read('errors') !== null) {
             $errors = $storage->read('errors');
             $form = $storage->read('form');
             $storage->remove('errors');
             $storage->remove('form');
         }
 
-        $post['comment_link'] = blogPost::getUrl($post,'comment');
+        $post['comment_link'] = blogPost::getUrl($post, 'comment');
         $post['link'] = blogPost::getUrl($post);
 
 
@@ -157,25 +163,22 @@ class blogFrontendPostAction extends blogViewAction
          * @param array[string]int $post['blog_id']
          * @return array[string][string]string $return[%plugin_id%]['footer']
          */
-        $this->view->assign('frontend_post', wa()->event('frontend_post',$post));
+        $this->view->assign('frontend_post', wa()->event('frontend_post', $post, array('footer')));
 
         $this->view->assign('errors', $errors);
         $this->view->assign('form', $form);
-        $this->view->assign('show_comments',$show_comments);
-        $this->view->assign('request_captcha',$request_captcha);
-        $this->view->assign('require_authorization',$require_authorization);
+        $this->view->assign('show_comments', $show_comments);
+        $this->view->assign('request_captcha', $request_captcha);
+        $this->view->assign('require_authorization', $require_authorization);
 
         $this->view->assign('theme', waRequest::param('theme', 'default'));
-
-        $app_url = wa()->getAppStaticUrl();
-        $root_url = wa()->getRootUrl();
 
         $storage = wa()->getStorage();
         $current_auth = $storage->read('auth_user_data');
         $current_auth_source = $current_auth ? $current_auth['source'] : null;
 
         $this->view->assign('current_auth_source', $current_auth_source);
-        $this->view->assign('current_auth', $current_auth,true);
+        $this->view->assign('current_auth', $current_auth, true);
 
         $adapters = wa()->getAuthAdapters();
         $this->view->assign('auth_adapters', $adapters);
@@ -183,7 +186,7 @@ class blogFrontendPostAction extends blogViewAction
 
         if ($this->getConfig()->getOption('can_use_smarty')) {
             try {
-                $post['text'] = $this->view->fetch("string:{$post['text']}",$this->cache_id);
+                $post['text'] = $this->view->fetch("string:{$post['text']}", $this->cache_id);
             } catch (SmartyException $ex) {
                 $post['text'] = blogPost::handleTemplateException($ex, $post);
             }
@@ -199,22 +202,17 @@ class blogFrontendPostAction extends blogViewAction
      */
     public function backendExecute()
     {
-        $post_id = waRequest::param('post_id', false, waRequest::TYPE_INT);
-        if ($post_id) {
-            $post_model = new blogPostModel();
-            $show_comments = $this->appSettings('show_comments', true);
-
-            $photo_sizes = array(50,20);
-            $search_options =array('id'=>$post_id,'status'=>false);
+        if ($post_id = waRequest::param('post_id', false, waRequest::TYPE_INT)) {
+            $search_options = array('id' => $post_id, 'status' => false);
             if (!($this->getUser()->isAdmin($this->getApp()))) {
                 $search_options['contact_id'] = $this->getUser()->getId();
             }
 
-            $post = $post_model->search($search_options,array('comments'=>false))->fetchSearchItem();
-
+            $post_model = new blogPostModel();
+            $post = $post_model->search($search_options, array('comments' => false))->fetchSearchItem();
         }
 
-        if (!isset($post)) {
+        if (empty($post)) {
             throw new waException(_w('Post not found'), 404);
         }
 
@@ -235,7 +233,7 @@ class blogFrontendPostAction extends blogViewAction
     {
         $user = new waUser($author_id);
         if ($user->getId()) {
-            $rights = $user->getRights($this->getApp(),"blog.{$post['blog_id']}");
+            $rights = $user->getRights($this->getApp(), "blog.{$post['blog_id']}");
             return $rights >= blogRightConfig::RIGHT_READ_WRITE;
         }
         return false;

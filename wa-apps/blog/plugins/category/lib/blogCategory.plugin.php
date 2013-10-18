@@ -4,9 +4,10 @@ class blogCategoryPlugin extends blogPlugin
 {
     public function postUpdate($post)
     {
-        if (isset($post['plugin']) && isset($post['plugin'][$this->id])) {
+        if (isset($post['plugin'])) {
+            $categories = isset($post['plugin'][$this->id]) ? array_keys($post['plugin'][$this->id]) : array();
             $category_model = new blogCategoryPostModel();
-            $category_model->changePost($post['id'], array_keys($post['plugin'][$this->id]));
+            $category_model->changePost($post['id'], $categories);
         }
     }
 

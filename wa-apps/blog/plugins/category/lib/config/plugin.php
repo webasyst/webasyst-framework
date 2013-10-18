@@ -17,7 +17,7 @@ return array(
         'post_delete'            => 'postDelete',
         'backend_sidebar'        => 'backendSidebar',
         'backend_post_edit'      => 'backendPostEdit',
-        'frontend_action_default'=> 'frontendSidebar',
+        'frontend_action_default'=> 'frontendSidebar'
 //Event => method_name of primary plugin class
     ),
     'blog_settings' => true,

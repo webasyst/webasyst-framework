@@ -102,7 +102,7 @@ HTML;
     {
         $url = wa()->getConfig()->getBackendUrl(true);
         if ($posts) {
-            list($tags,$post_tags) = $this->getTagByPost(array_keys($posts));
+            list($tags, $post_tags) = $this->getTagByPost(array_keys($posts));
             if($tags) {
 
                 $tag_model = new blogTagPluginModel();
@@ -111,11 +111,14 @@ HTML;
                     $tag['link'] = $url.'blog/?search=tag&amp;tag='.urlencode($tag['name']);
                 }
                 unset($tag);
-
+                
                 foreach ($post_tags as $id=>$post_item_tags) {
                     $html = "";
                     $tag_html = array();
                     foreach ($post_item_tags as $tag_id) {
+                        if (!isset($tags_data[$tag_id])) {
+                            continue;
+                        }
                         $tag_html[] = '<span><a href="'.$tags_data[$tag_id]['link'].'">'.htmlspecialchars($tags_data[$tag_id]['name']).'</a></span>';
                     }
                     $html =  '<div class="tags">'._wp('Tags').': ';

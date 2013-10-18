@@ -349,9 +349,6 @@ class blogHelper
                     } else {
                         $blog['class'] .= ($blog['class'] ? ' ' : '').'icon16 '.$blog['icon'];
                     }
-
-                    unset($blog['color']);
-                    unset($blog['icon']);
                 }
                 $blog['value'] = $id;
                 $blog['title'] = $blog['name'];
@@ -414,7 +411,7 @@ class blogHelper
     {
         $env = wa()->getEnv();
         if (in_array($env, array('cli', 'backend'))) {
-            $routing = wa()->getRouting();
+            $routing = wa('blog')->getRouting();
             $domain_routes = $routing->getByApp('blog');
             $current_domain = $routing->getDomain();
 

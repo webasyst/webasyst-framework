@@ -12,7 +12,9 @@
 
     <item>
       <title>{if $row.title}{$row.title|strip_tags|escape}{else}{$row.text|strip_tags|truncate:60:'…'|escape}{/if}</title>
-      <author>{if $rss_author_tag eq 'author'}{$row.user.name|escape}{else}{$row.blog_name|escape}{/if}</author>
+      {if $rss_author_tag == 'author' && $row.user.email}
+          <author>{$row.user.email|escape} ({$row.user.name|escape})</author>
+      {/if}
       <link>{$row.link}</link>
       <description><![CDATA[{$row.text}]]></description>
       <pubDate>{$row.datetime|wa_datetime:DATE_RSS}</pubDate>

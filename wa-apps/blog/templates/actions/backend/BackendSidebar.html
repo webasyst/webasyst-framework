@@ -87,20 +87,32 @@
       {/foreach}
 
       <!-- end plugin hook: "backend_sidebar.section" -->
-
+      
       {if $writable_blogs}
       <!-- drafts -->
       <div class="block">
 
         <h5 class="heading collapse-handler">
-          <i class="icon16 darr"></i>[`Drafts`]
-          <span class="count" style="display: none;">{if !empty($drafts)}{count($drafts)}{/if}</span>
+            <i class="icon16 darr"></i>{strip}
+                <span class="title b-all-drafts" style="display:none;">[`Drafts`]</span>
+                {if !empty($drafts_count.my)}
+                    <span class="title b-my-drafts" style="display:none;">[`My drafts`]</span>
+                {/if}
+            {/strip}
+          <span id="b-all-drafts" class="count b-drafts-toggle" style="display:none;"><a href="javascript:void(0);" class="inline-link"><b><i>[`all drafts`]</i></b></a></span>
+          {if !empty($drafts_count.my)}
+              <span id="b-my-drafts" class="count b-drafts-toggle" style="display:none;"><a href="javascript:void(0);" data-contact-id="{$wa->user('id')}" class="inline-link"><b><i>[`my drafts`]</i></b></a></span>
+          {/if}
+          <span class="count b-all-drafts counter" style="display: none;">{if !empty($drafts_count.all)}{$drafts_count.all}{/if}</span>
+          {if !empty($drafts_count.my)}
+              <span class="count b-my-drafts counter" style="display: none;"></span>
+          {/if}
         </h5>
 
         <ul id="blog-drafts" class="menu-v with-icons b-drafts collapsible">
 
         {foreach $drafts as $post}
-          <li {if $post.id == $post_id}class="selected"{/if}>
+          <li {if $post.id == $post_id}class="selected"{/if} data-contact-id="{$post.contact_id}">
 
             <a class="{if $post.status eq blogPostModel::STATUS_SCHEDULED}italic{/if}" href="?module=post&amp;action=edit&amp;id={$post.id}">
               {if $post.status == blogPostModel::STATUS_SCHEDULED}

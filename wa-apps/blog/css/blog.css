@@ -9,7 +9,7 @@
 /* one post & post stream
 ------------------------- */
 
-.b-stream { position: relative /* shadow */; margin: 15px; border: 1px solid #ccc; -moz-box-shadow: 0px 2px 13px #aaa; -webkit-box-shadow: 0px 1px 15px #aaa; box-shadow: 0px 1px 15px #aaa;}
+.b-stream { position: relative /* shadow */; margin: 15px; border: 1px solid #ccc; -moz-box-shadow: 0px 2px 13px #aaa; -webkit-box-shadow: 0px 1px 15px #aaa; box-shadow: 0px 1px 15px #aaa; }
 .b-stream .b-stream-title { padding-bottom: 5px; padding-top: 13px; min-height: 30px; background: -moz-linear-gradient(center top , rgba(255, 255, 255, 0.1) 0%, rgba(0, 0, 0, 0.1) 100%); background:-webkit-gradient(linear, left top, left bottom, color-stop(0, rgba(255, 255, 255, 0.1)), color-stop(1, rgba(0, 0, 0, 0.1))); -moz-box-shadow:0 1px 2px rgba(255, 255, 255, .7) inset ; -webkit-box-shadow:0 1px 2px rgba(255, 255, 255, .7) inset ; box-shadow:0 1px 2px rgba(255, 255, 255, .7) inset ; border-bottom: solid 1px #aaa; border-top: solid 1px rgba(255, 255, 255, .85);  }
 .b-stream .b-stream-title h1, .b-stream .b-stream-title h3 {color: #333333; font-weight: normal;  font-size: 1.5em; }
 .b-stream .b-stream-title h1 i.icon16 { margin-top: 0.2em; }
@@ -23,19 +23,27 @@
 .b-stream ul.menu-h li:hover { background: transparent; }
 
 .b-white { background: #fff; }
-.b-gray { background: #f3f3f3; }
-.b-green { background: #efc; }
-.b-blue { background: #e3ffff; }
-.b-purple { background: #eee3ff; }
-.b-red { background: #fee; }
-.b-yellow { background: #ffd; }
+.b-gray { background: #f7f7f7; }
+.b-green { background: #f3ffe3; }
+.b-blue { background: #eeffff; }
+.b-purple { background: #fcf3ff; }
+.b-red { background: #fff1f1; }
+.b-yellow { background: #ffffe3; }
 .b-yellow .highlighted { background: #ff9; }
+
+span.b-gray { background: #f3f3f3; }
+span.b-green { background: #efc; }
+span.b-blue { background: #e3ffff; }
+span.b-purple { background: #eee3ff; }
+span.b-red { background: #fee; }
+span.b-yellow { background: #ffd; }
 
 .b-post { line-height: 1.5em; margin: 0; border-top: 1px solid #ccc; -moz-box-shadow:0 2px 3px rgba(0, 0, 0, 0.08) inset; -webkit-box-shadow:0 2px 3px rgba(0, 0, 0, 0.08) inset; box-shadow:0 2px 3px rgba(0, 0, 0, 0.08) inset; }
 .b-post h1 { margin-right: 5px; padding-top: 1px; margin-bottom: 0; }
 .b-post h1 i.icon16 { margin-top: 0.1em; }
 .b-post h3 { font-size: 1.6em; margin-right: 5px; padding-top: 1px; margin-bottom: 3px; }
 .b-post h3 i.icon16 { margin-top: 0.1em; margin-right: 0; }
+.b-post h3 i.icon16.lock-bw { margin-top: 0.2em; }
 .b-post h3 a { text-decoration: none; }
 .b-post.b-draft h1, .b-post.b-draft h3 a { color: #aaa; }
 .b-post i.icon10 { margin-top: 0.4em; }
@@ -43,14 +51,18 @@
 .b-post .b-post-credentials span { color: #aaa; }
 .b-post .b-post-credentials a.b-gray-link { color: #aaa; }
 .b-post .b-post-credentials a.b-gray-link:hover { color: red; }
-.b-post img { max-width: 100%; }
+.b-post img { max-width: 100%; height: auto; }
 .b-post span.b-draft-label { background: #555; color: #fff; font-weight: bold; padding: 1px 2px; }
 .b-post h1 span.b-draft-label, .b-post h3 span.b-draft-label { font-size: 0.6em; position: relative; top: -3px; }
 .b-post .b-post-body { margin-top: 10px; }
 .b-post .b-post-body hr { clear: none; }
+.b-post .b-comments { border-top: 1px solid #ccc; margin-top: 30px; padding-top: 10px; }
 
+.b-empty-list { font-size: 1.1em; text-align: center; padding: 60px 100px 70px; color: #888; }
+.b-empty-list.b-welcome { padding: 130px 100px 150px; }
+.b-welcome i.icon16 { margin-top: 0.15em; }
 .b-number-of-posts { color: gray; padding-left: 30px; padding-top: 15px; font-style: italic; }
-.b-torn-paper { /* overflow: hidden; */ padding: 0 !important; height: 21px; margin-bottom: -21px; box-shadow:none; -moz-box-shadow: none; -webkit-box-shadow: none; border: none;  }
+.b-torn-paper { /* overflow: hidden; */ padding: 0 !important; height: 21px; margin-bottom: -21px; box-shadow:none; -moz-box-shadow: none; -webkit-box-shadow: none; border: none; }
 .b-torn-paper >div { min-width: 760px; position: relative;}
 .b-torn-left, .b-torn, .b-torn-right { position: absolute; top:0; height: 21px;}
 .b-torn { background: url("../img/paper-torn.png") repeat-x; left:32px; right: 30px; z-index: 1;}
@@ -66,7 +78,7 @@
 /* editor
 --------- */
 
-.b-post input.b-post-title { font-size: 1.8em; font-weight: bold; font-family: Helvetica, Arial, sans-serif; width: 75%; margin-bottom: 5px; }
+.b-post input.b-post-title { font-size: 1.8em; font-weight: bold; font-family: Helvetica, Arial, sans-serif; width: 75%; margin-bottom: 10px; }
 .b-post textarea { width: 100%; min-height: 200px; margin-top: 0px; HEIGHT: 450px; outline: none;}
 .b-edit-options { margin: 60px 15px 0 -15px /* below the shadow */; background: #eee; }
 .b-edit-options input.b-toolbar-text-input { width: 100%; }
@@ -80,22 +92,23 @@
 i.b-post-save-indicator { margin-top: 8px; }
 #post-custom-parameters { width: 100%; height: 70px; }
 
+.el-rte .toolbar ul li.wa_post_cut { background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAWtJREFUeNqcUk1Kw0AUfpMMSbBIFnVTj6AIbgXX/oDdiBcQutALCC5CCgHPILjwAMWFdNELuC2uXHiCbmIxtbRNm2Sc79UUTFw0Pvh4k7zv++a9mRHtdrtJRA2qHgPf97sySZLtIAjuq6o9z7tClmmaklKKsW4IIQg6NlgsFiLLssoG0LGBHoENgHXDMAyCjtfaqdLuCPCh425ad6Gif8bDbV3I0eiTHr1GaQQpJUO3yiiOcBkM9KpORhiGTIjj+BfQ5vF1n3OxBj50bDYcfvDuuBbANE1yHId3Rw0Z3/ifc8BHjTsdjycrg7z1/fPeqt2ds2fOr08nNJ1OeQ0+dMxXSq6cESD1O0dk2zbtNnv01j3ltvE/5ywfn1wa2LbLc+aHCCLgui6hNpvNKIqi0jWixga12hafqmVZJVK/c8AGxRr40LHBfPT+cnFTPyzf8uQHf8WcoCPaIzzHDY1NDbPCG8JhfOkuJ98CDADjd/TkDTgrUQAAAABJRU5ErkJggg==) 50% 50% no-repeat; }
 
 /* comments
 ----------- */
 
 .b-comments { /* border-top: 1px dotted #aaa; */ }
 .b-comments textarea { height: 100px; min-height: 100px; width: 75%; margin-top: 0; }
-.b-comments ul.menu-v li { padding-top: 15px; }
+.b-comments ul.menu-v li { padding-top: 15px; margin-bottom: 15px; }
 .b-comments ul.menu-v li span.hint a { color: #aaa; text-decoration: underline; }
 .b-comments ul.menu-v li a { display: inline; }
-.b-comments ul.menu-v li a.b-comment-reply { color: #999; }
-.b-comments ul.menu-v li a.b-comment-reply:hover { color: red !important; }
+.b-comments ul.menu-v li p.hint a { color: #999; }
+/* .b-comments ul.menu-v li a.b-comment-reply { color: #999; } */
 .b-comments ul.menu-v li a.b-comment-delete { margin: 0 0 0 5px; padding: 0; color: #d99; text-decoration: underline; }
 .b-comments ul.menu-v li a.b-comment-delete:hover { background: red; color: white !important; }
 .b-comments ul.menu-v li p { margin: 0.5em 0; }
 .b-comments ul.menu-v li ul.menu-v { padding-left: 20px; }
-.b-comments h4 { margin: 20px 0 0; font-size: 1.1em; }
+.b-comments h4 { margin: 15px 0 0; font-size: 1.3em; }
 .b-comments .b-comment-text { line-height: 1.3em; }
 .b-comments .b-delete .b-comment-delete { display: none;}
 .b-comments .b-delete .comment-add-parent { display: none;}
@@ -142,6 +155,7 @@ table.b-calendar td.drag-active { background: #f0f0c5 }
 
 .b-draft-overdue, .b-draft-overdue * { color: red !important; }
 .b-draft, .b-draft * { color: gray !important; }
+.b-drafts-toggle a { font-size: 0.9em; text-transform: lowercase; }
 
 .b-plugin-list ul.menu-v.with-icons li { margin: 3px 3px 5px -1px; }
 .b-plugin-list ul.menu-v.with-icons li a { padding-left: 26px; padding-top: 7px; padding-bottom: 7px; }
@@ -150,8 +164,15 @@ table.b-calendar td.drag-active { background: #f0f0c5 }
 
 .hint.errormsg { font-weight: bold; font-style: italic; color: red;	}
 
+.b-blog-type-disclaimer { margin-top: 13px; }
+.b-blog-type-disclaimer i.icon10 { margin-top: 0.15em; }
 
-/* --- !! EXTERNAL PLUGINS: move to external files !! --- */
+/* common plugins
+----------------- */
+
+.b-comments ul.menu-v li a.b-comment-spam { margin: 0 5px 0 5px; padding: 0; color: #ba4; text-decoration: underline; }
+.b-comments ul.menu-v li a.b-comment-spam:hover { background: #ba4; color: #fff !important; }
+
 /*
 
 .b-plugin-tag-cloud { padding: 5px 5px 5px 13px; }
@@ -160,7 +181,5 @@ ul.b-plugin-tag-navigation a { color: green; text-decoration: underline; }
 ul.b-plugin-tag-navigation a span.b-tag { text-decoration: none; }
 .b-plugin-tags-textarea {width: 100%;}
 
-.b-comments ul.menu-v li a.b-comment-spam { margin: 0 0 0 5px; padding: 0; color: #ba4; text-decoration: underline; }
-.b-comments ul.menu-v li a.b-comment-spam:hover { background: #ba4; color: #fff; }
 
 */

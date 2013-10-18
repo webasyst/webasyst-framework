@@ -22,16 +22,16 @@
 <div class="b-stream">
   <div class="block triple-padded b-stream-title">
     <div class="block half-padded float-left">
+      <a href="?action=calendar&amp;month={$prev_month}"><i class="icon16 larr"></i></a>
       {if $prev_overdue}
         <i class="icon16 exclamation" title="[`Overdue posts`]"></i>
-      {/if}
-      <a href="?action=calendar&amp;month={$prev_month}"><i class="icon16 larr"></i></a>
+      {/if}      
     </div>
     <div class="block half-padded float-right">
-      <a href="?action=calendar&amp;month={$next_month}"><i class="icon16 rarr"></i></a>
       {if $next_overdue}
         <i class="icon16 exclamation" title="[`Overdue posts`]"></i>
-      {/if}
+      {/if}    
+      <a href="?action=calendar&amp;month={$next_month}"><i class="icon16 rarr"></i></a>
     </div>
     <h1 class="align-center">
       <select name="month" class="month">
