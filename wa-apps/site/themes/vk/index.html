@@ -56,7 +56,7 @@
     <!-- js -->
     <script type="text/javascript" src="{$wa_url}wa-content/js/jquery/jquery-1.8.2.min.js"></script>
     <!-- vk iframe apps js -->
-    <script src="http://vk.com/js/api/xd_connection.js?2"  type="text/javascript"></script>
+    <script src="//vk.com/js/api/xd_connection.js?2"  type="text/javascript"></script>
     <!-- internal shop-script js for vk iframe app integration -->
     <script type="text/javascript" src="{$wa_theme_url}vk.js"></script>
     {if $wa->isMobile()}
@@ -100,7 +100,7 @@
             <div class="clear-both"></div>               
 
             <!-- phone number -->
-            {if $wa->shop->settings('phone')}
+            {if $wa->shop && $wa->shop->settings('phone')}
                 <div class="block float-right">
                     [s`Order by phone`]: <strong>{$wa->shop->settings('phone')}</strong>
                 </div>

@@ -30,10 +30,12 @@ class siteRoutingSaveController extends waJsonController
                     $routes[$domain][$route_id] = $route;
                     $this->response['add'] = 'bottom';
                 } else {
-                    if (substr($route['url'], -1) == '/') {
-                        $route['url'] .= '*';
-                    } elseif (substr($route['url'], -1) != '*' && strpos(substr($route['url'], -5), '.') === false) {
-                        $route['url'] .= '/*';
+                    if (strpos($route['url'], '*') === false) {
+                        if (substr($route['url'], -1) == '/') {
+                            $route['url'] .= '*';
+                        } elseif (substr($route['url'], -1) != '*' && strpos(substr($route['url'], -5), '.') === false) {
+                            $route['url'] .= '/*';
+                        }
                     }
                     $routes[$domain] = array($route_id => $route) + $routes[$domain];
                     $this->response['add'] = 'top';

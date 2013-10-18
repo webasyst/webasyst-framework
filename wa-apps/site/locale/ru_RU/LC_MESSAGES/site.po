@@ -1248,3 +1248,8 @@ msgstr ""
 #: /wa-apps/site/templates/layouts/Sidebar.html:22
 msgid "http://www.webasyst.com/developers/docs/routing/site-app-routing/"
 msgstr "http://www.webasyst.ru/developers/docs/routing/site-app-routing/"
+
+#: /wa-apps/site/lib/actions/blocks/siteBlocksSave.controller.php:31
+#: /wa-apps/site/lib/actions/blocks/siteBlocksSave.controller.php:45
+msgid "Block with id \"%s\" already exists', null, null, $info['id']) // _w('Block with id \"%s\" already exists"
+msgstr ""

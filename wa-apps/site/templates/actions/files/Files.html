@@ -233,6 +233,7 @@
 		$("#s-add-folder-dialog").waDialog({ 
 			onLoad: function () {
 				$(this).find('span').html($.wa.site.filesPath(true));
+                $('#s-folder-name').focus();
 			},
 			disableButtonsOnSubmit: true,
 			onSubmit: function () {

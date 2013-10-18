@@ -9,7 +9,7 @@ class siteFilesRenameController extends waJsonController
             $path .= '/'.$file;
         }
         $path = wa()->getDataPath($path, true, null, false);
-        $name = waRequest::post('name');
+        $name = trim(waRequest::post('name'));
         $name = preg_replace('!\.\.[/\\\]!','', $name);
         if ($file) {
             $name_ext = waFiles::extension($name);
@@ -25,7 +25,7 @@ class siteFilesRenameController extends waJsonController
                 }
             }
         }
-        if (file_exists($path) && $name) {
+        if (file_exists($path) && strlen($name)) {
             if (!is_writable(dirname($path))) {
                 $this->errors = sprintf(_w("Folder or file could not bet renamed due to the insufficient file write permissions for the %s folder."), $p);
             } elseif (@rename($path, dirname($path).'/'.$name)) {
@@ -41,7 +41,7 @@ class siteFilesRenameController extends waJsonController
                 $this->errors = _w("File (folder) can not be renamed");
             }
         } else {
-            if (!$name) {
+            if (!strlen($name)) {
                 $this->errors = _w("Enter the new name");    
             } else {
                 $this->errors = _w("Selected folder (file) does not exist anymore");

@@ -8,7 +8,7 @@
     
     <!-- css -->
     <link href="{$wa_theme_url}sidebar.css?{$wa->version()}" rel="stylesheet" type="text/css"/>
-    <link href="{$wa_theme_url}sidebar.mobile.css?{$wa->version()}" media="screen and (max-width: 760px)" rel="stylesheet" type="text/css"/>
+    <link href="{$wa_theme_url}sidebar.mobile.css?{$wa->version()}"{if !$wa->isMobile()} media="screen and (max-width: 760px)"{/if} rel="stylesheet" type="text/css"/>
     <link href="{$wa_theme_url}sidebar.tablet.css?{$wa->version()}" media="screen and (min-width: 760px) and (max-width: 1024px)" rel="stylesheet" type="text/css"/>
     <link href="{$wa_theme_url}sidebar.wide.css?{$wa->version()}" media="screen and (min-width: 1440px)" rel="stylesheet" type="text/css"/>
     {$wa->css()} {* links active plugins CSS *}

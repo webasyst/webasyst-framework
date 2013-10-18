@@ -119,7 +119,7 @@
             <div class="clear-both"></div>
 
             <!-- phone number -->
-            {if $wa->shop->settings('phone')}
+            {if $wa->shop && $wa->shop->settings('phone')}
                 <div class="block float-right">
                     [s`Order by phone`]: <strong>{$wa->shop->settings('phone')}</strong>
                 </div>

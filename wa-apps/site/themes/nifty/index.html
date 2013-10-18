@@ -8,7 +8,7 @@
     
     <!-- css -->
     <link href="{$wa_theme_url}nifty.css?{$wa->version()}" rel="stylesheet" type="text/css"/>
-    <link href="{$wa_theme_url}nifty.mobile.css?{$wa->version()}" media="screen and (max-width: 760px)" rel="stylesheet" type="text/css"/>
+    <link href="{$wa_theme_url}nifty.mobile.css?{$wa->version()}"{if !$wa->isMobile()} media="screen and (max-width: 760px)"{/if} rel="stylesheet" type="text/css"/>
     <link href="{$wa_theme_url}nifty.tablet.css?{$wa->version()}" media="screen and (min-width: 760px) and (max-width: 1024px)" rel="stylesheet" type="text/css"/>
     <link href="{$wa_theme_url}nifty.wide.css?{$wa->version()}" media="screen and (min-width: 1440px)" rel="stylesheet" type="text/css"/>
     {$wa->css()} {* links active plugins CSS *}
