@@ -87,6 +87,9 @@ class waSystem
                 if (!self::$instances[$name] instanceof waSystem) {
                     throw new waException(sprintf('Class "%s" is not of the type waSystem.', $config));
                 }
+                if ($config instanceof waAppConfig) {
+                    $config->checkUpdates();
+                }
             } else {
                 throw new waException(sprintf('The "%s" system does not exist.', $name));
             }
@@ -218,6 +221,21 @@ class waSystem
             }
         }
         return self::$factories_common[$name];
+    }
+
+    /**
+     * @param string $key
+     * @param int $ttl
+     * @param string $app_id
+     * @return waiCache
+     */
+    public function getCache($key, $ttl = 0, $app_id = null)
+    {
+        if ($app_id === null) {
+            $app_id = $this->getApp();
+        }
+        $class = isset(self::$factories_config['cache']) ? self::$factories_config['cache'] : 'waSerializeCache';
+        return new $class($key, $ttl, $app_id);
     }
 
     /**
@@ -414,23 +432,9 @@ class waSystem
                         }
                         $this->getResponse()->redirect($logout_url);
                     }
+
                     if (!$this->getRouting()->dispatch()) {
-                        $routes = $this->getRouting()->getRoutes();
-                        $redirect = true;
-                        $route = end($routes);
-                        if (isset($route['app'])) {
-                                $redirect = false;
-                                // set routing
-                                foreach ($route as $k => $v) {
-                                    if ($k !== 'url') {
-                                        waRequest::setParam($k, $v);
-                                    }
-                                }
-                                waRequest::setParam('error', 404);
-                        }
-                        if ($redirect) {
-                            $this->getResponse()->redirect($this->getConfig()->getBackendUrl(true), 302);
-                        }
+                        $this->getResponse()->redirect($this->getConfig()->getBackendUrl(true), 302);
                     }
                     $app = waRequest::param('app');
                 } else {
@@ -458,6 +462,8 @@ class waSystem
                     }
                     $app_system->login();
                 } else {
+
+                
                     $app_system->getFrontController()->dispatch();
                 }
             }
@@ -770,8 +776,10 @@ class waSystem
                         if (!isset(self::$instances['site'])) {
                             self::getInstance('site');
                         }
-                        $domain_model = new siteDomainModel();
-                        $domain_info = $domain_model->getByName($domain);
+                        if (!isset($domain_info)) {
+                            $domain_model = new siteDomainModel();
+                            $domain_info = $domain_model->getByName($domain);
+                        }
                         $name = ($domain_info && $domain_info['title']) ? $domain_info['title'] : $this->accountName();
                     }
                 } else {

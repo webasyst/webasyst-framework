@@ -93,9 +93,10 @@ p { line-height: 1.3em; }
 #wa-launchpad li.selected a { color: #eee; }
 a#wa-launchpad-add { float: right; margin-right: 12px; color: #888; text-decoration: none; }
 #wa-announcement { background: #eed; font-size: 0.9em; padding: 0; }
-#wa-announcement p { padding: 7px; margin: 0; }
+#wa-announcement p { padding: 10px; margin: 0; border-bottom: 1px solid #ccb; }
 #wa-announcement.critical { background: #fcc; }
-#wa-announcement a.wa-announcement-close { float: right; margin-right: 12px; margin-top: 5px; color: #884; text-decoration: none; }
+#wa-announcement.critical p { border-color: #caa; }
+#wa-announcement a.wa-announcement-close { float: right; display: inline-block; margin-right: 12px; margin-top: 12px; margin-left: 10px; color: #884; text-decoration: none; }
 #wa-account { width: 200px; }
 #wa-account { float: left; text-align: center; }
 #wa-account h3 { font-weight: normal; font-size: 16px; text-decoration: none; color: #333; margin: 15px 0 5px; }
@@ -359,7 +360,7 @@ input.long { min-width: 350px !important; width: 350px !important; }
 .bordered-left { border-left: 1px solid #ccc; }
 .bordered-right { border-right: 1px solid #ccc; }
 .bordered-bottom { border-bottom: 1px solid #ccc; }
-.shadowed { background: none repeat scroll 0 0 #F7F7F7; border: 1px solid #CCCCCC; -moz-box-shadow: 0 3px 13px rgba(0, 0, 0, 0.3); -webkit-box-shadow: 0 3px 13px rgba(0, 0, 0, 0.3); box-shadow: 0 3px 13px rgba(0, 0, 0, 0.3); margin: 15px;}
+.shadowed { background: none repeat scroll 0 0 #F7F7F7; border: 1px solid #CCCCCC; -moz-box-shadow: 0 2px 9px rgba(0, 0, 0, 0.2); -webkit-box-shadow: 0 2px 9px rgba(0, 0, 0, 0.2); box-shadow: 0 2px 9px rgba(0, 0, 0, 0.2); margin: 15px;}
 
 /* FIELDS: name-value data display & forms
 -------------------------------------------- */
@@ -383,7 +384,6 @@ input.long { min-width: 350px !important; width: 350px !important; }
 .field .value i.icon10.overhanging { position: absolute; margin-left: -17px; margin-right: 7px; }
 .field .value.no-shift i.icon16.overhanging { top: 8px; }
 .field .value .address-subfield { padding:1px 0; }
-.field .value span { margin:0 3px 0 0; }
 .field .value input, .field .value select { vertical-align:middle; }
 .fields.width100px .name { width: 105px; }
 .fields.width100px .value { margin-left: 120px; }

@@ -15,24 +15,16 @@
 class waCurrency
 {
 
-    protected static $data = array();
+    protected static $data;
+    protected static $format_data = array();
 
     public static function getInfo($currency)
     {
         if (!$currency) {
             return array();
         }
-        $file = wa()->getConfig()->getPath('system')."/currency/data/".$currency.".php";
-        if (file_exists($file)) {
-            $info = include($file);
-            $info['title'] = _ws($info['title']);
-        } else {
-            $info = array(
-                'sign'  => $currency,
-                'title' => $currency
-            );
-        }
-        return $info;
+        $data = self::getData();
+        return isset($data[$currency]) ? $data[$currency] : array();
     }
 
     public static function getIntInWords($n, $params = array())
@@ -84,9 +76,13 @@ class waCurrency
             } else {
                 if (isset($order[10]) && !$order[10]) {
                     $sub_part = $part % 10;
-                    $part_result .= ($part_result ? (isset($delim[100]) ? $delim[100] : " ") : "")._ws($sub_part, $sub_part, isset($plural[$sub_part]) ? $plural[$sub_part] : 1);
-                    if ($part = _ws(substr($part, 0, 1)."0", substr($part, 0, 1)."0", $current_plural)) {
-                        $part_result .= (isset($delim[10]) ? $delim[10] : " ").$part;
+                    if ($sub_part) {
+                        $part_result .= ($part_result ? (isset($delim[100]) ? $delim[100] : " ") : "")._ws($sub_part, $sub_part, isset($plural[$sub_part]) ? $plural[$sub_part] : 1);
+                        if ($part = _ws(substr($part, 0, 1)."0", substr($part, 0, 1)."0", $current_plural)) {
+                            $part_result .= (isset($delim[10]) ? $delim[10] : " ").$part;
+                        }
+                    } else {
+                        $part_result .= _ws($part, $part, $current_plural);
                     }
                 } else {
                     $part_result .= ($part_result ? (isset($delim[100]) ? $delim[100] : " ") : "")._ws(substr($part, 0, 1)."0");
@@ -126,12 +122,12 @@ class waCurrency
         if ($locale !== $old_locale) {
             wa()->setLocale($locale);
         }
-        $currency = waCurrency::getInfo($currency);
+        $currency = self::getInfo($currency);
         waLocale::loadByDomain('webasyst', $locale);
         $locale = waLocale::getInfo($locale);
-        self::$data['n'] = $n;
-        self::$data['locale'] = $locale;
-        self::$data['currency'] = $currency;
+        self::$format_data['n'] = $n;
+        self::$format_data['locale'] = $locale;
+        self::$format_data['currency'] = $currency;
         $pattern = '/%([0-9]?\.?[0-9]?)([iw]*)({[n|f|c|s][0-9]?})?/i';
         $result = preg_replace_callback($pattern, array('self', 'replace_callback'), $format);
         if ($locale !== $old_locale) {
@@ -142,7 +138,7 @@ class waCurrency
 
     private static function replace_callback($matches)
     {
-        return self::extract(self::$data['n'], self::$data['currency'], self::$data['locale'], $matches[1], $matches[2], ifset($matches[3], ''));
+        return self::extract(self::$format_data['n'], self::$format_data['currency'], self::$format_data['locale'], $matches[1], $matches[2], ifset($matches[3], ''));
     }
 
     protected static function extract($n, $currency, $locale, $precision, $format, $desc)
@@ -249,23 +245,54 @@ class waCurrency
         return $result;
     }
 
+    protected static function getData()
+    {
+        if (self::$data === null) {
+            $config = wa()->getConfig()->getConfigFile('currency');
+            $config_path = wa()->getConfig()->getPath('config').'/currency.php';
+            $cache = new waSystemCache('currency'.wa()->getLocale());
+            if ($config && filemtime($config_path) > $cache->getFilemtime()) {
+                self::$data = array();
+            } else {
+                self::$data = $cache->get();
+            }
+            if (!self::$data) {
+                self::$data = array();
+                $files = waFiles::listdir(dirname(__FILE__)."/data/");
+                foreach ($files as $file) {
+                    if (preg_match('/^([A-Z]{3})\.php$/', $file, $matches)) {
+                        $currency = $matches[1];
+                        $file = wa()->getConfig()->getPath('system')."/currency/data/".$currency.".php";
+                        if (file_exists($file)) {
+                            $info = include($file);
+                            $info['title'] = _ws($info['title']);
+                        } else {
+                            $info = array(
+                                'sign'  => $currency,
+                                'title' => $currency
+                            );
+                        }
+                        self::$data[$currency] = $info;
+                    }
+                }
+                foreach ($config as $cur => $info) {
+                    if (!isset(self::$data[$cur])) {
+                        self::$data[$cur] = $info;
+                    } else {
+                        foreach ($info as $k => $v) {
+                            self::$data[$cur][$k] = $v;
+                        }
+                    }
+                }
+                $cache->set(self::$data);
+            }
+        }
+        return self::$data;
+    }
+
     public static function getAll($type = 'title')
     {
-        // @todo: support wa-config/currency.php
-
-        $cache = new waVarExportCache(__CLASS__.wa()->getLocale());
-        $data = $cache->get();
-        if (!$data) {
-            $data = array();
-            $files = waFiles::listdir(dirname(__FILE__)."/data/");
-            foreach ($files as $file) {
-                if (preg_match('/^([A-Z]{3})\.php$/', $file, $matches)) {
-                    $currency = $matches[1];
-                    $data[$currency] = self::getInfo($currency);
-                }
-            }
-            $cache->set($data);
-        }
+        $data = self::getData();
         if ($type === true) {
             $type = 'all';
         }

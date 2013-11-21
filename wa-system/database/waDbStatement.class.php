@@ -194,7 +194,7 @@ final class waDbStatement
         }
 
         if(isset($this->places_map[$param])) {
-            $this->binded_params[$param] = &$value;
+            $this->binded_params[$param] = $value;
             return true;
         }
 

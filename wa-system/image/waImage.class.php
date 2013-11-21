@@ -39,7 +39,7 @@ class waImage
     const Gd = 'Gd';
     const Imagick = 'Imagick';
 
-    public static $default_adapter = 'Gd';
+    public static $default_adapter;
 
     //Status adapter
     protected static $checked = false;

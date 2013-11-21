@@ -83,11 +83,11 @@ function wa_header()
         if (isset($announcements[$row['app_id']]) && count($announcements[$row['app_id']]) >= 1) {
             continue;
         }
-        $announcements[$row['app_id']][] = waDateTime::format('datetime', $row['datetime']).': '.$row['text'];
+        $announcements[$row['app_id']][] = $row['text'].' <span class="hint">'.waDateTime::format('humandatetime', $row['datetime']).'</span>';
     }
     $announcements_html = '';
     foreach ($announcements as $app_id => $texts) {
-        $announcements_html .= '<a href="#" rel="'.$app_id.'" class="wa-announcement-close" title="close">'._ws('[close]').'</a><p>';
+        $announcements_html .= '<a href="#" rel="'.$app_id.'" class="wa-announcement-close inline-link" title="close"><b><i>'._ws('Close').'</i></b></a><p>';
         $announcements_html .= implode('<br />', $texts);
         $announcements_html .= '</p>';
     }
@@ -102,7 +102,12 @@ function wa_header()
     // If the user has access to contacts app then show a link to his profile
     if (wa()->appExists('contacts')) {
         require_once(wa()->getConfig()->getAppsPath('contacts', 'lib/models/contactsRights.model.php'));
-        $cr = new contactsRightsModel();
+        try {
+            $cr = new contactsRightsModel();
+        } catch (waDbException $e) {
+            wa('contacts');
+            $cr = new contactsRightsModel();
+        }
         if ($user->getRights('contacts', 'backend') && $cr->getRight(null, $user['id'])) {
             $userpic = '<a href="'.$backend_url.'contacts/#/contact/'.$user['id'].'">'.$userpic.'</a>';
             $username = '<a href="'.$backend_url.'contacts/#/contact/'.$user['id'].'" id="wa-my-username">'.$username.'</a>';

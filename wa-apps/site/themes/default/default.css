@@ -61,6 +61,7 @@ hr { background-color: #ccc; height: 1px; border: 0; }
 .highlighted { background:  #FFFFCC; }
 .hint { color: #aaa; font-size: .9em;}
 .hint a { color: #aaa; }
+.gray { color: #aaa; }
 .float-left { float: left !important; }
 .float-right { float: right !important; }
 .align-center { text-align: center; }
@@ -87,8 +88,8 @@ ul.menu-v li ul.menu-v li a { padding: 2px 6px; font-size: 0.9em; }
 ul.menu-v li ul.menu-v li ul.menu-v li a { font-size: 0.8em; }
 
 ul.menu-h { margin-left: -5px; padding: 0; }
-ul.menu-h li { list-style: none; float: left; padding: 0 10px 0 0; }
-ul.menu-h li a { display: block; padding: 0px 5px; }
+ul.menu-h li { display: inline-block; list-style: none; float: left\9; display: block\9; padding: 0 10px 0 0; }
+ul.menu-h li a { display: inline-block; padding: 0px 5px; display: block\9; }
 ul.menu-h li a img.icon16 { position: relative; top: 3px; left: -3px; }
 ul.menu-h li.selected a { color: #000; text-decoration: none; background: #eee; }
 ul.menu-h li.selected ul * { background: #fff !important; }
@@ -130,6 +131,8 @@ ul.menu-h li.selected ul * { background: #fff !important; }
 #footer #copyright { float: left; padding: 0 5px; }
 #footer #poweredby {  text-align: center; float: right; padding-top: 0; padding-right:10px; }
 #footer #poweredby .dots { font-size: 0.8em; text-decoration: none; display: inline-block; width: 54px; height: 9px; background: url("http://www.webasyst.com/wa-content/img/dots/all-dots-default-order.png") no-repeat 0 3px; padding-top: 3px; margin-left: 10px; display: block\9; float: right\9; }
+
+.breadcrumbs { padding-top: 20px; }
 
 /* Sign up & Login forms
 ------------------------ */

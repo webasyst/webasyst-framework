@@ -4,12 +4,11 @@
   * Subclass of waArrayObject that allows to remember persistent state to be able
   * to revert back to it or show difference between current and persistent states.
   *
-  * Persistent data is stored in $this->persistent. New data is stored in $this->rec_data.
-  * Removed keys are stored in $this->removed. Changes to sub-arrays are stored in $this->rec_data
-  * as instances of self.
-  *
-  * $this->rec_data contains instances of waArrayObject to represent arrays and instances of self
-  * to represent changed arrays that have corresponding arrays in persistent data too.
+  * - Persistent data is stored in $this->persistent.
+  * - Removed keys are stored in $this->removed.
+  * - New and partially changed data is stored in $this->rec_data.
+  *   - Sub-arrays are waArrayObjectDiff, when corresponding persistent value is an array.
+  *     Otherwise they are waArrayObject.
   */
 class waArrayObjectDiff extends waArrayObject
 {
@@ -34,6 +33,7 @@ class waArrayObjectDiff extends waArrayObject
         } else {
             $this->persistent = new parent($persistent);
         }
+        $this->restorePersistentInvariant();
     }
 
     /**
@@ -45,7 +45,8 @@ class waArrayObjectDiff extends waArrayObject
         // save changed data
         foreach($this->rec_data as $k => $v) {
             if ($v instanceof self) {
-                $v->merge(); // this changes $this->persistent[$k]
+                $v->merge();
+                $this->persistent->__set($k, $v->persistent);
             } else {
                 $this->persistent->__set($k, $v);
             }
@@ -63,7 +64,7 @@ class waArrayObjectDiff extends waArrayObject
     /**
      * Changed data only.
      * @param boolean $new true (default) to return new values, false to return old values (including those that were unset)
-     * @return array as would have been returned by $this->toArray()
+     * @return array same form as $this->toArray() returns
      */
     public function diff($new = true)
     {
@@ -71,23 +72,26 @@ class waArrayObjectDiff extends waArrayObject
             // collecting new values
             $data = $this->rec_data;
             foreach ($data as $key => $value) {
-                // plain value?
+                // plain values stay intact
                 if (!$value instanceof parent) {
                     continue;
                 }
-                // stub?
+
+                // remove stubs
                 if ($value->stub()) {
                     unset($data[$key]);
                     unset($this->rec_data[$key]);
                     continue;
                 }
-                // parent?
-                if (!$value instanceof self) {
+
+                if ($value instanceof self) {
+                    $data[$key] = $value->diff($new);
+                    if (empty($data[$key])) {
+                        unset($data[$key]);
+                    }
+                } else { // $value instanceof parent
                     $data[$key] = $value->toArray();
-                    continue;
                 }
-                // instance of self
-                $data[$key] = $value->diff($new);
             }
             return $data;
         } else {
@@ -102,10 +106,13 @@ class waArrayObjectDiff extends waArrayObject
                 // changed internally?
                 if (isset($this->rec_data[$key]) && $this->rec_data[$key] instanceof self) {
                     $data[$key] = $this->rec_data[$key]->diff($new);
+                    if (empty($data[$key])) {
+                        unset($data[$key]);
+                    }
                     continue;
                 }
 
-                // plain old value (convert if needed)
+                // plain value (convert if needed)
                 if ($value instanceof parent) {
                     $data[$key] = $value->toArray();
                 } else {
@@ -124,6 +131,66 @@ class waArrayObjectDiff extends waArrayObject
     {
         parent::clear();
         $this->removed = array();
+        return $this;
+    }
+
+    /**
+     * Move all data from persistent to non-persistent and empty persistent
+     * @return $this
+     */
+    public function clearPersistent()
+    {
+        $data = $this->toArray();
+        parent::clear();
+        $this->persistent->clear();
+        $this->removed = array();
+        return $this->setAll($data);
+    }
+
+    /**
+     * Instance used as persistent data storage.
+     * Exposed primarily for unit-testing.
+     * @return waArrayObject
+     */
+    public function getPersistent()
+    {
+        return $this->persistent;
+    }
+
+    /**
+     * @return $this
+     */
+    public function setPersistent(waArrayObject $p)
+    {
+        $this->persistent = $p;
+        return $this;
+    }
+
+    /**
+     * Should be called after any change to $this->persistent (e.g. by a subclass).
+     *
+     * Ensures that all instances of waArrayObjectDiff in $this->rec_data
+     * use sub-arrays of $this->persistent as their persistent storages.
+     *
+     * This invarians allows to merge(), restore() and diff() sub-arrays safely.
+     * @return $this
+     */
+    public function restorePersistentInvariant()
+    {
+        $this->persistent->removeStubs();
+
+        foreach($this->rec_data as $k => $v) {
+            if ($v instanceof waArrayObject && $this->persistent->ifset($k) instanceof waArrayObject) {
+                if (!$v instanceof waArrayObjectDiff) {
+                    $this->rec_data[$k] = new self($this->persistent[$k]);
+                    $this->rec_data[$k]->setAll($v->rec_data);
+                    $v = $this->rec_data[$k];
+                }
+                if ($v->persistent !== $this->persistent[$k]) {
+                    $v->setPersistent($this->persistent[$k])->restorePersistentInvariant();
+                }
+            }
+        }
         return $this;
     }
 
@@ -162,7 +229,7 @@ class waArrayObjectDiff extends waArrayObject
 
     public function keyExists($name)
     {
-        return parent::keyExists($name) || $this->persistent->keyExists($name) && !isset($this->removed[$name]);
+        return parent::keyExists($name) || ($this->persistent->keyExists($name) && !isset($this->removed[$name]));
     }
 
     public function __clone()
@@ -215,8 +282,6 @@ class waArrayObjectDiff extends waArrayObject
 
     public function getIterator()
     {
-        // is it possible to change persistent data when iterating by reference
-        // not sure it it's bad enough to try to fix it
         return new ArrayIterator(array_diff_key($this->rec_data + $this->persistent->rec_data, $this->removed));
     }
 }

@@ -15,7 +15,7 @@
 
 interface waiCache
 {
-    public function __construct($key, $ttl = 0);
+    public function __construct($key, $ttl = 0, $app_id = null);
     public function get();
     public function set($value);
     public function delete();

@@ -35,8 +35,6 @@ class waAppConfig extends SystemConfig
         if ($locale) {
             $this->setLocale($locale);
         }
-
-        $this->checkUpdates();
     }
 
     public function getApplication()
@@ -122,7 +120,7 @@ class waAppConfig extends SystemConfig
         }
     }
 
-    protected function checkUpdates()
+    public function checkUpdates()
     {
         try {
             $app_settings_model = new waAppSettingsModel();

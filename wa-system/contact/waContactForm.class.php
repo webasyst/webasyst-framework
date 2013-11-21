@@ -95,7 +95,7 @@ class waContactForm
                     }
                 }
             } else {
-                waLog::log('Field '.$fid.' has incorrect format and is ignored in '.$file);
+                waLog::log('Field '.$full_field_id.' has incorrect format and is ignored in '.$file);
                 continue;
             }
 
@@ -325,7 +325,14 @@ class waContactForm
                 continue;
             }
 
-            $result .= '<div class="'.$class_field.($f->isRequired() ? ' '.(wa()->getEnv() == 'frontend' ? 'wa-required' : 'required') : '').'"><div class="'.$class_name.'">'.
+            $field_class = $class_field.'-'.$f->getId();
+            if (strpos($fid, '.') !== false) {
+                $field_class .= ' '.$class_field.'-'.str_replace('.', '-', $fid);
+            }
+            if ($f->isRequired()) {
+                $field_class .= ' '.(wa()->getEnv() == 'frontend' ? 'wa-required' : 'required');
+            }
+            $result .= '<div class="'.$class_field.' '.$field_class.'"><div class="'.$class_name.'">'.
                 $f->getName().'</div><div class="'.$class_value.'">';
             $result .= "\n".$this->html($fid, $with_errors);
             $result .= "\n</div></div>";

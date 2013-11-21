@@ -209,9 +209,6 @@ class waRouting
         if (waRequest::param('action') === null && ($action = waRequest::get('action'))) {
             waRequest::setParam('action', $action);
         }
-        if (waRequest::param('plugin') === null && ($plugin = waRequest::get('plugin'))) {
-            waRequest::setParam('plugin', $plugin);
-        }
         return $r;
     }
 
@@ -339,7 +336,7 @@ class waRouting
     }
 
 
-    public function getUrl($path, $params = array(), $absolute = false)
+    public function getUrl($path, $params = array(), $absolute = false, $domain_url = null, $route_url = null)
     {
         if (is_bool($params)) {
             $absolute = $params;
@@ -360,22 +357,25 @@ class waRouting
             $params['action'] = $parts[2];
         }
         $routes = array();
-        if (!$this->route || $this->route['app'] != $app ||
+        if (!$this->route || $this->route['app'] != $app || $domain_url ||
         (!isset($this->route['module']) && isset($params['module']) && $params['module'] != 'frontend') ||
         (isset($this->route['module']) && isset($params['module']) && $this->route['module'] != $params['module'])
         ){
             // find base route
-            if (isset($params['domain'])) {
-                $routes[$params['domain']] = $this->getRoutes($params['domain']);
+            if (isset($params['domain']) && !$domain_url) {
+                $domain_url = $params['domain'];
                 unset($params['domain']);
+            }
+            if ($domain_url) {
+                $routes[$domain_url] = $this->getRoutes($domain_url);
             } else {
                 $routes = $this->routes;
             }
             // filter by app and module
             foreach ($routes as $domain => $domain_routes) {
                 foreach ($domain_routes as $r_id => $r) {
-                    if (!isset($r['app']) ||
-                    $r['app'] != $app ||
+                    if (!isset($r['app']) || $r['app'] != $app ||
+                    ($domain_url && $route_url && $r['url'] != $route_url) ||
                     (isset($params['module']) && isset($r['module']) && $r['module'] != $params['module'])) {
                         unset($routes[$domain][$r_id]);
                     }
@@ -387,6 +387,7 @@ class waRouting
         } else {
             $routes[$this->getDomain()] = array($this->route);
         }
+
         $max = -1;
         $result = null;
 

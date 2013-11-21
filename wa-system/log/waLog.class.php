@@ -26,6 +26,7 @@ class waLog
         fwrite($fd, "\n");
         fwrite($fd, date('Y-m-d H:i:s: '));
         fwrite($fd, $message);
+        fflush($fd);
         flock($fd, LOCK_UN);
         fclose($fd);
         return true;

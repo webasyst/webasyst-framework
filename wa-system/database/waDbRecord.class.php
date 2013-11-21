@@ -29,7 +29,7 @@ class waDbRecord extends waArrayObjectDiff
       * @var waModel */
     protected $m;
 
-    /** @var string|int id as accepted by model */
+    /** @var string|int|null id of a row as accepted by model */
     protected $id = null;
 
     //
@@ -37,23 +37,35 @@ class waDbRecord extends waArrayObjectDiff
     //
 
     /**
-     * @param array|\Traversable|\waModel $m model to use for saving
+     * @param waModel $m model to use for saving
      * @param mixed $id id of existing record, as accepted by model; omit to create new record.
      */
     public function __construct(waModel $m, $id = null)
     {
         parent::__construct();
         $this->m = $m;
+
+        $table_id_field = $this->m->getTableId();
+        if (!$table_id_field || !is_string($table_id_field)) {
+            throw new waException('waDbRecord requires primary key and only supports simple (non-composite) primary keys');
+        }
+
         if ($id) {
             $this->id = $id;
-            $this->persistent[$this->m->getTableId()] = $id;
+            $this->persistent[$table_id_field] = $id;
         } else {
             $this->setAll($this->getDefaultValues());
         }
     }
 
     /**
-     * @return string|int id of the record
+     * Id of current record as was passed to constructor.
+     *
+     * Note that when ->exists() finds out that record does not exist in DB, it
+     * sets internal id to null and never tries to access DB again.
+     * $this['id'] and $this->id are still accessable though and allow to create record with any id.
+     *
+     * @return string|int|null id of the record
      */
     public function getId()
     {
@@ -71,12 +83,46 @@ class waDbRecord extends waArrayObjectDiff
     {
         $this->beforeSave();
         $values = array_intersect_key($this->removeStubs()->rec_data, $this->m->getMetadata());
-        if ($this->id === null) {
+
+        $do_insert = true;
+        $id = $this->getId();
+
+        // Force saving with given id, if specified during construction
+        $id || $id = $this->persistent->ifset($this->m->getTableId());
+
+        // Update if record exists
+        if ($id && $this->exists()) {
+            if (!$values) {
+                $do_insert = false;
+            } else {
+                $result = $this->m->updateById($this->id, $values, null, true);
+                if ($result->affectedRows()) {
+                    $do_insert = false;
+                    if (!empty($values[$this->m->getTableId()])) {
+                        $this->id = $values[$this->m->getTableId()];
+                    }
+                } else {
+                    // Make sure the record exists
+                    if ( ( $row = $this->m->getById($this->id))) {
+                        $do_insert = false;
+                        $this->persistent->setAll($row);
+                    } else {
+                        $this->clearPersistent();
+                    }
+                }
+            }
+        } else if ($id && empty($values[$this->m->getTableId()])) {
+            // id was given to constructor, but no such record exists
+            $values[$this->m->getTableId()] = $id;
+        }
+
+        // No row in database yet: insert
+        if ($do_insert) {
+            unset($this->persistent[$this->m->getTableId()]);
             $this->id = $this->m->insert($values);
             $this[$this->m->getTableId()] = $this->id;
-        } else {
-            $this->m->updateById($this->id, $values);
         }
+
         $this->afterSave();
         $this->merge();
         return $this->id;
@@ -103,12 +149,12 @@ class waDbRecord extends waArrayObjectDiff
     public function load($field_or_db_row = null)
     {
         if ($this->id === null) {
-            throw new waException('No id specified.');
+            throw new waException('Unable to load data from '.$this->m->getTableName(), 404);
         }
 
         // already loaded?
         if (is_string($field_or_db_row) && isset($this->persistent->rec_data[$field_or_db_row])) {
-            return;
+            return $this;
         }
 
         // let subclasses populate $this->persistent->rec_data
@@ -126,10 +172,29 @@ class waDbRecord extends waArrayObjectDiff
     public function delete()
     {
         $this->beforeDelete();
+        $this->clearPersistent();
         $this->m->deleteById($this->id);
         $this->afterDelete();
-        $this->rec_data += $this->persistent->rec_data;
-        $this->persistent->clear();
+        $this->id = null;
+    }
+
+    /**
+     * @return bool whether this record has corresponding row in database
+     */
+    public function exists()
+    {
+        if (!$this->getId()) {
+            return false;
+        }
+
+        try {
+            self::doLoad();
+        } catch (Exception $e) {
+            $this->id = null;
+            return false;
+        }
+
+        return true;
     }
 
     //
@@ -187,7 +252,7 @@ class waDbRecord extends waArrayObjectDiff
     }
 
     /**
-     * Called by $this->load() to populate data into $this->persistent->rec_data
+     * Called by $this->load() to populate data into $this->persistent
      *
      * Subclasses may override this method to tune load() behavior, e.g.
      * to load data lazily by field name passed in $field_or_db_row.
@@ -231,7 +296,9 @@ class waDbRecord extends waArrayObjectDiff
         // load from model
         $row = $this->m->getById($this->id);
         if (!$row) {
-            throw new waException('No record found in '.$this->m->getTableName().' for id='.$this->id, 404);
+            $id = $this->id;
+            $this->id = null;
+            throw new waException('No record found in '.$this->m->getTableName().' for id='.$id, 404);
         }
         $this->persistent->setAll($row);
     }

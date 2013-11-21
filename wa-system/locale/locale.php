@@ -2,7 +2,7 @@
 
 /**
  *
- * @link http://www.webasyst.com/framework/docs/dev/localisation/
+ * @link http://www.webasyst.com/developers/docs/features/localization/
  *
  */
 
@@ -173,15 +173,19 @@ class waGettextParser
                             echo "\r\n{$counter} string(s) is out of date for {$locale} at {$domain}\r\n";
                         }
                         if ($words) {
-                            $counter = count($words);
-                            echo "\r\n{$counter} string(s) is missed for {$locale} at {$domain}\r\n";
                             fputs($fh, "\n\n#Missed:\n\n\n");
                             foreach ($words as $msg_id => $info) {
+                                if (isset($strings['messages'][$msg_id])) {
+                                    unset($words[$msg_id]);
+                                    continue;
+                                }
                                 fputs($fh, "msgid \"".str_replace('"', '\\"', $msg_id)."\"\n");
                             }
+                            $counter = count($words);
+                            echo "\r\n{$counter} string(s) is missed or not translated for {$locale} at {$domain}\r\n";
                         }
 
-
+                        fflush($fh);
                         flock($fh, LOCK_UN);
                         fclose($fh);
 
@@ -229,6 +233,7 @@ class waGettextParser
                         }
                         ++$counter;
                     }
+                    fflush($fh);
                     flock($fh, LOCK_UN);
                     fclose($fh);
                 } else {

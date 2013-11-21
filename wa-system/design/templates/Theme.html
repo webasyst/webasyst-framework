@@ -5,6 +5,41 @@
         [s`Last modified`]: <strong>{if $theme.type eq waTheme::ORIGINAL}[s`not modified`]{else}{$theme.mtime|wa_datetime:"humandatetime"}{/if}</strong>
     </p>
 
+    {if $settings}
+
+    <script type="text/javascript" src="{$wa_url}wa-content/js/farbtastic/farbtastic.js"></script>
+    <link rel="stylesheet" href="{$wa_url}wa-content/js/farbtastic/farbtastic.css" type="text/css" />
+
+    <form id="theme-settings" method="post" action="?module=design&action=themeSettings&theme={$theme.id}">
+        <div class="fields form">
+            {foreach $settings as $s_var => $s}
+            <div class="field">
+                <div class="name">{$s.name}</div>
+                <div class="value">
+                    {if $s.control_type == 'select'}
+                        <select name="{if !empty($s.parent)}parent_{/if}settings[{$s_var}]">
+                            {html_options options=$s.options selected=ifset($s.value)}
+                        </select>
+                    {elseif $s.control_type == 'color'}
+                        <input class="color" type="text" name="{if !empty($s.parent)}parent_{/if}settings[{$s_var}]" value="{$s.value}">
+                    {else}
+                        <input class="flexible" id="flex-settings-{$s@index}" type="text" name="{if !empty($s.parent)}parent_{/if}settings[{$s_var}]" value="{$s.value}">
+                    {/if}
+                </div>
+            </div>
+            {/foreach}
+            <div class="field-group">
+                <div class="field">
+                    <div class="value no-shift">
+                        <input type="submit" class="button green" value="[s`Save`]">
+                        <span id="theme-settings-message" style="display: none"><i class="icon16 yes"></i> [s`Saved`]</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+    {/if}
+
     <ul class="menu-v with-icons">
         <li><a href="?module=design&amp;action=themeDownload&amp;theme={$theme.id}" class="bold"><i class="icon16 download"></i>[s`Download`] <span class="hint">.tar.gz</span></a></li>
         <li><a class="theme-copy" href="#"><i class="icon16 split"></i>[s`Duplicate`]</a></li>
@@ -135,6 +170,108 @@
         });
         return false;
     });
+
+    $('#theme-settings').submit(function () {
+        var f = $(this);
+        $.post(f.attr('action'), f.serialize(), function (response) {
+            $("#theme-settings-message").fadeIn('slow', function () { $(this).fadeOut('slow'); });
+        }, "json");
+        return false;
+    });
+
+    $(function () {
+
+        var input2textarea = function(input) {
+            var p = input.parent();
+            var rm = false;
+            if (!p.length) {
+                p = $('<div></div>');
+                p.append(input);
+                rm = true;
+            }
+            var val = input.val();
+
+            var html = p.html();
+            html = html.replace(/value(\s*?=\s*?['"][\s\S]*?['"])*/, '');
+            html = html.replace(/type\s*?=\s*?['"]text['"]/, '');
+            html = html.replace('input', 'textarea');
+            html = html.replace(/(\/\s*?>|>)/, '>' + val  + '</textarea>');
+
+            if (rm) {
+                p.remove();
+            }
+
+            return $(html);
+
+        };
+
+        var textarea2input = function(textarea) {
+            var p = textarea.parent();
+            var rm = false;
+            if (!p.length) {
+                p = $('<div></div>');
+                p.append(textarea);
+                rm = true;
+            }
+            var val = textarea.val();
+
+            var html = p.html();
+            html = html.replace('textarea', 'input type="text" value="' + val + '"');
+            html = html.replace('</textarea>', '');
+
+            if (rm) {
+                p.remove();
+            }
+
+            return $(html);
+        };
+
+    $('.flexible').each(function () {
+        var timeout = 250;
+        var threshold = 50;
+        var height = 45;
+        var timer_id = null;
+        var field = $(this);
+
+        var onFocus = function() {
+            this.selectionStart = this.selectionEnd = this.value.length;
+        };
+        var handler = function() {
+            if (timer_id) {
+                clearTimeout(timer_id);
+                timer_id = null;
+            }
+            timer_id = setTimeout(function() {
+                var val = field.val();
+                if (val.length > threshold && field.is('input')) {
+                    var textarea = input2textarea(field);
+                    textarea.css('height', height);
+                    field.replaceWith(textarea);
+                    field = textarea;
+                    field.focus();
+                } else if (val.length <= threshold && field.is('textarea')) {
+                    var input = textarea2input(field);
+                    input.css('height', '');
+                    field.replaceWith(input);
+                    field = input;
+                    field.focus();
+                }
+            }, timeout);
+        };
+
+        var p = field.parent();
+        p.off('keydown', '#' + field.attr('id')).
+          on('keydown',  '#' + field.attr('id'), handler);
+        p.off('focus',   '#' + field.attr('id')).
+          on('focus',    '#' + field.attr('id'), onFocus);
+
+        // initial shot
+        handler();
+
+    });
+    });
+
+
     $(".theme-parent").on('click', function () {
         $("#wa-theme-parent-dialog").waDialog({
             disableButtonsOnSubmit: true,
@@ -215,5 +352,35 @@
     if(url.length) {
         $('#wa-theme-{$theme.id} .js-theme-routing-url').removeClass('js-theme-routing-url').wrap('<a href="'+url.attr('href')+'"></a>');
     }
+    
+    // colorpickers
+    $('.color').each(function() {
+        var input = $(this);
+        var replacer = $('<span class="color-replacer">' + 
+            '<i class="icon16" style="background: #'+input.val().substr(1)+'"></i>' + 
+            '</span>').insertAfter(input);
+        var picker = $('<div style="display:none;" class="color-picker"></div>').
+            insertAfter(replacer);
+        var farbtastic = $.farbtastic(picker, function(color) {
+            replacer.find('i').css('background', color);
+            input.val(color);
+        });
+        farbtastic.setColor('#'+input.val());
+        replacer.click(function() {
+            picker.slideToggle(200);
+            return false;
+        });
+        
+        var timer_id;
+        input.unbind('keydown').bind('keydown', function() {
+            if (timer_id) {
+                clearTimeout(timer_id);
+            }
+            timer_id = setTimeout(function() {
+                farbtastic.setColor(input.val());
+            }, 250);
+        });
+        
+    });
 
 </script>

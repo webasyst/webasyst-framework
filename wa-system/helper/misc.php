@@ -69,9 +69,13 @@ function wao($o)
     return $o;
 }
 
-/** Wrapper around create_function() that caches functions it creates to avoid memory leaks. */
+/** Wrapper around create_function() that caches functions it creates to avoid memory leaks when used in a loop. */
 function wa_lambda($args, $body)
 {
+    if (!isset($body)) {
+        $body = $args = '';
+    }
+
     static $fn = array();
     $hash = $args.md5($args.$body).md5($body);
     if(!isset($fn[$hash])) {
@@ -133,8 +137,11 @@ function int_ok($val)
 /**
  * Helper function for wa_print_r() / wa_dump()
  */
-function wa_dump_helper(&$value, &$level_arr = array())
+function wa_dump_helper(&$value, &$level_arr = array(), $cli = null)
 {
+    $level_arr || $level_arr = array();
+    $cli === null && $cli = php_sapi_name() == 'cli';
+
     $level = count($level_arr);
     if ($level > 29) {
         // Being paranoid
@@ -144,7 +151,7 @@ function wa_dump_helper(&$value, &$level_arr = array())
     // Simple types
     if (!is_array($value) && !is_object($value)) {
         $result = var_export($value, true);
-        if (php_sapi_name() != 'cli') {
+        if (!$cli) {
             $result = htmlspecialchars($result);
         }
         return $result;
@@ -211,10 +218,10 @@ function wa_dump_helper(&$value, &$level_arr = array())
 
     $level_arr[] = &$value;
     foreach($value_to_iterate as $key => &$val) {
-        if (php_sapi_name() != 'cli') {
+        if (!$cli) {
             $key = htmlspecialchars($key);
         }
-        $str .= $br."  ".$key.' => '.wa_dump_helper($val, $level_arr);
+        $str .= $br."  ".$key.' => '.wa_dump_helper($val, $level_arr, $cli);
     }
     array_pop($level_arr);
 

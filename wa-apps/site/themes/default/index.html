@@ -5,7 +5,7 @@
   <title>{$wa->title()|escape}</title>
   <meta name="Keywords" content="{$wa->meta('keywords')|escape}" />
   <meta name="Description" content="{$wa->meta('description')|escape}" />
-  
+
   <!-- css -->
   <link href="{$wa_theme_url}default.css?{$wa->version()}" rel="stylesheet" type="text/css"/>
   <link href="{$wa_theme_url}mobile.css?{$wa->version()}"{if !$wa->isMobile()} media="screen and (max-width: 760px)"{/if} rel="stylesheet" type="text/css">
@@ -13,11 +13,11 @@
       <meta name="viewport" content="width=device-width; initial-scale=1; maximum-scale=1; user-scalable=0;" />
   {/if}
   {$wa->css()} {* links active plugins CSS *}
-  
+
   <!-- js -->
   <script type="text/javascript" src="{$wa_url}wa-content/js/jquery/jquery-1.8.2.min.js"></script>
   {$wa->js()} {* links active plugins JS *}
-    
+
   {$wa->headJs()} {* links Google Analytics tracking code and current site's custom JS (Site app) *}
 </head>
 <body>
@@ -30,7 +30,13 @@
         {if $wa->isAuthEnabled()}
           {if $wa->user()->isAuth()}
             <li class="float-right small"><a href="?logout">[s`Log out`]</a></li>
-            <li class="float-right small"><strong>{$wa->user('name')}</strong></li>
+            <li class="float-right small">
+              {if !empty($my_url)}
+                <a href="{$my_url}" class="bold">{$wa->user('name')}</a>
+              {else}
+                <strong>{$wa->user('name')}</strong>
+              {/if}
+            </li>
           {else}
             <li class="float-right small"><a href="{$wa->signupUrl()}">[s`Sign up`]</a></li>
             <li class="float-right small"><a href="{$wa->loginUrl()}">[s`Log in`]</a></li>
@@ -42,10 +48,10 @@
   </div>
   <div id="main">
     <div class="container app-header"></div>
-      <div class="container">  
+      <div class="container">
         {$content}
         <div class="clear-both"></div>
-      </div>  
+      </div>
   </div>
   <div id="footer">
     <div class="container">
@@ -56,7 +62,7 @@
         &copy; {time()|wa_datetime:"Y"}
         <a href="{$wa_url}">{$wa->accountName()}</a>
       </div>
-      <!-- <div id="sub-links">
+      <!-- <div id="sub-links" >
         suggested place for your footer links
         <ul>
           <li><a href="#">About</a></li>

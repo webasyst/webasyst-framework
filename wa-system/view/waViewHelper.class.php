@@ -65,6 +65,73 @@ class waViewHelper
         }
     }
 
+    /**
+     * @return array
+     * array(
+     *     'shop' => 'shop my nav html...',
+     *     'helpdesk' => 'helpdesk my nav html...',
+     *     ...
+     * )
+     */
+    public function myNav($ul_class = true)
+    {
+        $routes = $this->wa->getRouting()->getRoutes();
+        $apps = $this->wa->getApps();
+        $result = array();
+        foreach ($routes as $r) {
+            if (isset($r['app']) && !empty($apps[$r['app']]['my_account'])) {
+                $result[$r['app']] = $r;
+            }
+        }
+
+        $old_app = $this->wa->getApp();
+        $my_nav_selected = $this->view->getVars('my_nav_selected');
+        $old_params = waRequest::param();
+
+        $i = 0;
+        foreach ($result as $app_id => $r) {
+            unset($r['url']);
+            unset($r['app']);
+            if ($i || $old_app != $app_id) {
+                waSystem::getInstance($app_id, null, true);
+                waRequest::setParam($r);
+            }
+            $class_name = $app_id.'MyNavAction';
+            if (class_exists($class_name)) {
+                /**
+                 * @var waViewAction $action
+                 */
+                try {
+                    $action = new $class_name();
+                    wa()->getView()->assign('my_nav_selected', $app_id == $old_app ? $my_nav_selected : '');
+                    $result[$app_id] = $action->display();
+                } catch (Exception $e) {
+                    unset($result[$app_id]);
+                }
+            } else {
+                unset($result[$app_id]);
+            }
+            $i++;
+        }
+
+        if (isset($app_id) && $old_app != $app_id) {
+            waRequest::setParam($old_params);
+            wa()->setActive($old_app);
+        }
+
+        $result = array_reverse($result, true);
+        if ($ul_class) {
+            $html = '<ul'.(is_string($ul_class) ? ' class="'.$ul_class.'"' : '').'>';
+            foreach ($result as $app_result) {
+                $html .= $app_result;
+            }
+            $html .= '</ul>';
+            return $html;
+        } else {
+            return $result;
+        }
+    }
+
     public function headJs()
     {
         $domain = $this->wa->getRouting()->getDomain(null, true);
@@ -497,7 +564,14 @@ HTML;
         return $this->wa->getRouteUrl((isset($auth['app']) ? $auth['app'] : '').'/forgotpassword');
     }
 
-    public function loginForm($error = '', $form = true)
+    /**
+     * @param string $error
+     * @param int $form
+     * 1 - with <form action="">
+     * 2 - with <form action="LOGIN_URL">
+     * @return string
+     */
+    public function loginForm($error = '', $form = 1)
     {
         $auth = $this->wa->getAuth();
         $field_id = $auth->getOption('login');
@@ -512,14 +586,14 @@ HTML;
             }
         }
         return '<div class="wa-form">'.
-            ($form ? '<form action="'.$this->loginUrl().'" method="post">' : '').'
-                <div class="wa-field">
+            ($form ? '<form action="'.($form === 2 ? $this->loginUrl() : '').'" method="post">' : '').'
+                <div class="wa-field wa-field-'.$field_id.'">
                     <div class="wa-name">'.$field_name.'</div>
                     <div class="wa-value">
                         <input'.($error ? ' class="wa-error"' : '').' type="text" name="login" value="'.htmlspecialchars(waRequest::post('login')).'">
                     </div>
                 </div>
-                <div class="wa-field">
+                <div class="wa-field wa-field-password">
                     <div class="wa-name">'._ws('Password').'</div>
                     <div class="wa-value">
                         <input'.($error ? ' class="wa-error"' : '').' type="password" name="password">
@@ -545,7 +619,7 @@ HTML;
         return '<div class="wa-form">
     <form action="" method="post">
         <div class="wa-field">
-            <div class="wa-name">'._ws('Email').'</div>
+            <div class="wa-name wa-field-email">'._ws('Email').'</div>
             <div class="wa-value">
                 <input'.($error ? ' class="wa-error"' : '').' type="text" name="login" value="'.htmlspecialchars(waRequest::request('login', '', waRequest::TYPE_STRING)).'" autocomplete="off">
                 '.($error ? '<em class="wa-error-msg">'.$error.'</em>' : '').'
@@ -566,12 +640,12 @@ HTML;
         return '<div class="wa-form">
     <form action="" method="post">
         <div class="wa-field">
-            <div class="wa-name">'._ws('Enter a new password').'</div>
+            <div class="wa-name wa-field-password">'._ws('Enter a new password').'</div>
             <div class="wa-value">
                 <input'.($error ? ' class="wa-error"' : '').' name="password" type="password">
             </div>
         </div>
-        <div class="wa-field">
+        <div class="wa-field wa-field-password">
             <div class="wa-name">'._ws('Re-enter password').'</div>
             <div class="wa-value">
                 <input'.($error ? ' class="wa-error"' : '').' name="password_confirm" type="password">
@@ -707,7 +781,7 @@ HTML;
         if ($f->isMulti()) {
             $f->setParameter('multi', false);
         }
-        $html = '<div class="wa-field">
+        $html = '<div class="wa-field wa-field-'.$f->getId().'">
                 <div class="wa-name">'.$name.'</div>
                 <div class="wa-value">'.$f->getHTML($params, $error !== false ? 'class="wa-error"' : '');
         if ($error) {
@@ -854,7 +928,7 @@ HTML;
     {
         if (!isset(self::$helpers[$app])) {
             $wa = $this->wa;
-            if ($this->app() !== $app) {
+            if ($wa->getConfig()->getApplication() !== $app) {
                 if (wa()->appExists($app)) {
                     $wa = wa($app);
                 } else {

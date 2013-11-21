@@ -130,22 +130,22 @@ msgstr "nine hundred"
 msgid "1000"
 msgid_plural "1000"
 msgstr[0] "thousand"
-msgstr[1] "thousands"
+msgstr[1] "thousand"
 
 msgid "1000000"
 msgid_plural "1000000"
 msgstr[0] "million"
-msgstr[1] "millions"
+msgstr[1] "million"
 
 msgid "1000000000"
 msgid_plural "1000000000"
 msgstr[0] "billion"
-msgstr[1] "billions"
+msgstr[1] "billion"
 
 msgid "1000000000000"
 msgid_plural "1000000000000"
 msgstr[0] "trillion"
-msgstr[1] "trillions"
+msgstr[1] "trillion"
 
 #: /wa-system/webasyst/templates/actions/backend/BackendDefault.html:4
 msgid "Welcome"

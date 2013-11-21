@@ -456,10 +456,9 @@ class waContact implements ArrayAccess
             return $errors;
         }
 
+        $is_add = false;
         // Saving to all storages
         try {
-
-            $is_add = false;
             if (!$this->id) {
                 $is_add = true;
                 $storage = 'waContactInfoStorage';

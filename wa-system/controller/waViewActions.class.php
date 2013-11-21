@@ -101,6 +101,12 @@ abstract class waViewActions extends waController
         if ($this->template === null) {
             $template = ucfirst($this->action);
         } else {
+            // If path contains / or : then it's a full path to template
+            if (strpbrk($this->template, '/:') !== false) {
+                return $this->template;
+            }
+
+            // otherwise it's a template name and we need to figure out its directory
             $template = $this->template;
         }
 
@@ -111,7 +117,7 @@ abstract class waViewActions extends waController
         $template = $pluginRoot.$this->template_folder.strtolower($match[0])."/".$match[0].$template.$this->view->getPostfix();
         return $template;
     }
-    
+
 
     public function setTemplate($template)
     {

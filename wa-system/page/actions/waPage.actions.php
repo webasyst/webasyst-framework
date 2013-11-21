@@ -460,7 +460,7 @@ class waPageActions extends waActions
     protected function processFile(waRequestFile $f, $path, &$name, &$errors = array())
     {
         if ($f->uploaded()) {
-            if (!$this->isFileValid($f)) {
+            if (!$this->isFileValid($f, $errors)) {
                 return false;
             }
             if (!$this->saveFile($f, $path, $name)) {
@@ -474,11 +474,11 @@ class waPageActions extends waActions
         }
     }
 
-    protected function isFileValid($f)
+    protected function isFileValid($f, &$errors = array())
     {
         $allowed = array('jpg', 'jpeg', 'png', 'gif');
         if (!in_array(strtolower($f->extension), $allowed)) {
-            $this->errors[] = sprintf(_ws("Files with extensions %s are allowed only."), '*.'.implode(', *.', $allowed));
+            $errors[] = sprintf(_ws("Files with extensions %s are allowed only."), '*.'.implode(', *.', $allowed));
             return false;
         }
         return true;

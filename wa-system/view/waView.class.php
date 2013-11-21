@@ -122,6 +122,9 @@ abstract class waView
     {
         $this->assign('wa_active_theme_path', $theme->path);
         $this->assign('wa_active_theme_url', $theme->url);
+        $this->assign('wa_theme_version', $theme->version());
+        $theme_settings = $theme->getSettings(true);
+
         $file = $theme->getFile($template);
         if ($parent_theme = $theme->parent_theme) {
             if (!empty($file['parent'])) {
@@ -129,7 +132,11 @@ abstract class waView
             }
             $this->assign('wa_parent_theme_url', $parent_theme->url);
             $this->assign('wa_parent_theme_path', $parent_theme->path);
+            if ($parent_settings = $parent_theme->getSettings(true)) {
+                $theme_settings = $theme_settings + $parent_settings;
+            }
         }
+        $this->assign('theme_settings', $theme_settings);
         $this->assign('wa_theme_url', $theme->url);
         $this->setTemplateDir($theme->path);
         return file_exists($theme->path.'/'.$template);

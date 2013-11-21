@@ -126,6 +126,11 @@ class waDbCacheIterator implements Iterator
         return $row;
     }
 
+    public function fetchAssoc()
+    {
+        return $this->fetch();
+    }
+
     /**
      * Export data
      *

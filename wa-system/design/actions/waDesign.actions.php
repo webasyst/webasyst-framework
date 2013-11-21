@@ -379,6 +379,9 @@ class waDesignActions extends waActions
         $theme_id = waRequest::get('theme');
         $parent_themes = array();
         $apps = wa()->getApps();
+        /**
+         * @var waTheme $current_theme
+         */
         $current_theme = null;
 
         foreach ($apps as $theme_app_id => $app) {
@@ -406,13 +409,28 @@ class waDesignActions extends waActions
                 $this->displayJson(array('redirect'=>$this->themes_url));
             }
         } else {
+
+            $settings = $current_theme->getSettings();
+            if ($current_theme->parent_theme) {
+                $parent_settings = $current_theme->parent_theme->getSettings();
+                foreach ($parent_settings as &$s) {
+                    $s['parent'] = 1;
+                }
+                unset($s);
+                foreach ($settings as $k => $v) {
+                    $parent_settings[$k] = $v;
+                }
+                $settings = $parent_settings;
+            }
+
             $this->display(array(
-            'design_url' => $this->design_url,
-            'app' => wa()->getAppInfo($app_id),
-            'theme' => $current_theme,
-            'options' => $this->options,
-            'parent_themes' => $parent_themes,
-            'path'=>waTheme::getThemesPath($app_id),
+                'settings' => $settings,
+                'design_url' => $this->design_url,
+                'app' => wa()->getAppInfo($app_id),
+                'theme' => $current_theme,
+                'options' => $this->options,
+                'parent_themes' => $parent_themes,
+                'path'=>waTheme::getThemesPath($app_id),
             ), $this->getConfig()->getRootPath().'/wa-system/design/templates/Theme.html');
         }
     }
@@ -452,6 +470,23 @@ class waDesignActions extends waActions
             'app' => $app,
             'options' => $this->options,
         ), $template);
+    }
+
+    public function themeSettingsAction()
+    {
+        try {
+            $theme_id = waRequest::get('theme');
+            $theme = new waTheme($theme_id);
+            if ($theme->parent_theme && waRequest::post('parent_settings')) {
+                $theme->parent_theme['settings'] = waRequest::post('parent_settings');
+                $theme->parent_theme->save();
+            }
+            $theme['settings'] = waRequest::post('settings');
+            $theme->save();
+            $this->displayJson(array());
+        } catch (waException $e) {
+            $this->displayJson(array(), $e->getMessage());
+        }
     }
 
     public function themeDownloadAction()

@@ -67,11 +67,13 @@ class waForgotPasswordAction extends waViewAction
         if (strpos($login, '@')) {
             $sql = "SELECT c.* FROM wa_contact c
             JOIN wa_contact_emails e ON c.id = e.contact_id
-            WHERE ".($is_user ? "c.is_user = 1 AND " : "")."e.email LIKE s:email AND e.sort = 0
+            WHERE ".($is_user ? "c.is_user = 1 AND " : "")."e.email LIKE '".$contact_model->escape($login, 'like')."' AND e.sort = 0
             ORDER BY c.id LIMIT 1";
-            $contact_info = $contact_model->query($sql, array('email' => $login))->fetch();
-        } else {
+            $contact_info = $contact_model->query($sql)->fetch();
+        } elseif ($login) {
             $contact_info = $contact_model->getByField('login', $login);
+        } else {
+            return false;
         }
         if ($contact_info && (!$is_user || $contact_info['is_user'])) {
             $contact = new waContact($contact_info['id']);
@@ -96,7 +98,10 @@ class waForgotPasswordAction extends waViewAction
         $error = '';
         $auth = wa()->getAuth();
         if (waRequest::method() == 'post' && !waRequest::post('ignore')) {
-            if ($contact = $this->findContact(waRequest::post('login', '', waRequest::TYPE_STRING), $auth)) {
+            $login = waRequest::post('login', '', waRequest::TYPE_STRING);
+            if (!$login) {
+                $error = _ws('Required');
+            } elseif ($contact = $this->findContact($login, $auth)) {
                 if ($contact->get('is_banned')) {
                     $error = _ws('Password recovery for this email has been banned.');
                 } elseif ($email = $contact->get('email', 'default')) {

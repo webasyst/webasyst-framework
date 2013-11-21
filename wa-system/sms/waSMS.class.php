@@ -17,11 +17,16 @@ class waSMS
         $this->from = $from;
     }
 
-    public function send($to, $text)
+    public function send($to, $text, $from = null)
     {
-        $adapter = $this->getAdapter();
-        $result = $adapter->send($to, $text);
-        return $result;
+        try {
+            $adapter = $this->getAdapter();
+            $result = $adapter->send($to, $text, $from ? $from : $this->from);
+            return $result;
+        } catch (waException $e) {
+            waLog::log($e->getMessage(), 'sms.log');
+            return false;
+        }
     }
 
 
@@ -31,7 +36,7 @@ class waSMS
     protected function getAdapter()
     {
         $from = $this->from;
-
+        
         if (!$from || !isset(self::$config[$from])) {
             $from = '*';
         }
@@ -42,6 +47,9 @@ class waSMS
             $options = reset(self::$config);
         }
 
+        if (!isset($options['adapter'])) {
+            throw new waException('SMS sending not configured.');
+        }
 
         $class_name = $options['adapter'].'SMS';
         require_once(wa()->getConfig()->getPath('plugins').'/sms/'.$options['adapter'].'/lib/'.$class_name.'.class.php');

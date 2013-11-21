@@ -34,7 +34,7 @@ class waDbMysqliAdapter extends waDbAdapter
         }
         
         $charset = isset($settings['charset']) ? $settings['charset'] : 'utf8';
-        @$handler->query("SET NAMES '" . $charset . "' COLLATE '".$charset."_bin'");
+        @$handler->set_charset($charset);
         if (isset($settings['sql_mode'])) {
             $sql = "SET SESSION sql_mode = '".$handler->real_escape_string($settings['sql_mode'])."'";
             @$handler->query($sql);

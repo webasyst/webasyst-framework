@@ -29,24 +29,19 @@ class waImageGd extends waImage
 
     private function createGDImageResourse($file, $type)
     {
-        switch ($type)
-        {
-            case IMAGETYPE_JPEG: {
+        switch ($type) {
+            case IMAGETYPE_JPEG:
                 $create_function = 'imagecreatefromjpeg';
                 break;
-            }
-            case IMAGETYPE_GIF: {
+            case IMAGETYPE_GIF:
                 $create_function = 'imagecreatefromgif';
                 break;
-            }
-            case IMAGETYPE_PNG: {
+            case IMAGETYPE_PNG:
                 $create_function = 'imagecreatefrompng';
                 break;
-            }
         }
 
-        if ( !isset($create_function) || !function_exists($create_function))
-        {
+        if (!isset($create_function) || !function_exists($create_function)) {
             throw new waException(sprintf(_ws('GD does not support %s images'), $type));
         }
 
@@ -89,57 +84,48 @@ class waImageGd extends waImage
 
         $image = $this->_create($width, $height);
 
-        if ( function_exists('imagecopyresampled') ) {
-            if (imagecopyresampled($image, $this->image, 0, 0, 0, 0, $width, $height, $pre_width, $pre_height))
-            {
+        if (function_exists('imagecopyresampled')) {
+            if (imagecopyresampled($image, $this->image, 0, 0, 0, 0, $width, $height, $pre_width, $pre_height)) {
                 $this->updateInfo($image);
             }
-        }
-        else {
-            if (imagecopyresized($image, $this->image, 0, 0, 0, 0, $width, $height, $pre_width, $pre_height))
-            {
-                $this->updateInfo($image);
-            }
+        } elseif (imagecopyresized($image, $this->image, 0, 0, 0, 0, $width, $height, $pre_width, $pre_height)) {
+            $this->updateInfo($image);
         }
     }
 
     protected function _rotate($degrees)
     {
-        $transparent = imagecolorallocatealpha($this->image, 0, 0, 0, 127);
+
         if (function_exists("imagerotate")) {
+            $transparent = ($degrees % 90 != 0) ? imagecolorallocatealpha($this->image, 0, 0, 0, 127) : null;
             $image = imagerotate($this->image, 360 - $degrees, $transparent, 1);
-        }
-        else {
+        } else {
 
         }
         imagesavealpha($image, true);
         $this->updateInfo($image);
     }
 
-    protected function updateInfo($image)
+    protected function updateInfo($image = null)
     {
-        imagedestroy($this->image);
-        $this->image = $image;
-
-        $this->width  = imagesx($image);
-        $this->height = imagesy($image);
+        if($image) {
+            imagedestroy($this->image);
+            $this->image = $image;
+        }
+        $this->width = imagesx($this->image);
+        $this->height = imagesy($this->image);
     }
 
     protected function _crop($width, $height, $offset_x, $offset_y)
     {
         $image = $this->_create($width, $height);
 
-        if ( function_exists('imagecopyresampled') ) {
-            if (imagecopyresampled($image, $this->image, 0, 0, $offset_x, $offset_y, $width, $height, $width, $height))
-            {
+        if (function_exists('imagecopyresampled')) {
+            if (imagecopyresampled($image, $this->image, 0, 0, $offset_x, $offset_y, $width, $height, $width, $height)) {
                 $this->updateInfo($image);
             }
-        }
-        else {
-            if (imagecopyresized($image, $this->image, 0, 0, $offset_x, $offset_y, $width, $height, $width, $height))
-            {
-                $this->updateInfo($image);
-            }
+        } else if (imagecopyresized($image, $this->image, 0, 0, $offset_x, $offset_y, $width, $height, $width, $height)) {
+            $this->updateInfo($image);
         }
     }
 
@@ -151,53 +137,36 @@ class waImageGd extends waImage
 
         if (function_exists("imageconvolution")) {
             // Gaussian blur matrix
-            $matrix = array
-            (
-                array(-1,   -1,    -1),
+            $matrix = array(
+                array(-1, -1, -1),
                 array(-1, $amount, -1),
-                array(-1,   -1,    -1),
+                array(-1, -1, -1),
             );
-            if (imageconvolution($this->image, $matrix, $amount - 8, 0))
-            {
-                $this->width  = imagesx($this->image);
-                $this->height = imagesy($this->image);
+            if (imageconvolution($this->image, $matrix, $amount - 8, 0)) {
+                $this->updateInfo();
             }
-        }
-        else {
-            $img = $this->image;
-
+        } else {
             $radius = 1;
-            $threshold = 1;
+            $amount = min(500,$amount)*0.016;
+            $radius = abs(round(min(50,$radius) * 2)); // Only integers make sense.
 
-            if ($amount > 500)    $amount = 500;
-                $amount = $amount * 0.016;
-                if ($radius > 50)    $radius = 50;
-                $radius = $radius * 2;
-                if ($threshold > 255)    $threshold = 255;
-
-                $radius = abs(round($radius));     // Only integers make sense.
-
-
-            $w = imagesx($img);
-            $h = imagesy($img);
-            $imgCanvas = imagecreatetruecolor($w, $h);
-            $imgBlur = imagecreatetruecolor($w, $h);
+            $imgCanvas = imagecreatetruecolor($this->width, $this->height);
+            $imgBlur = imagecreatetruecolor($this->width, $this->height);
             // Move copies of the image around one pixel at the time and merge them with weight
             // according to the matrix. The same matrix is simply repeated for higher radii.
-            for ($i = 0; $i < $radius; $i++)    {
-                imagecopy ($imgBlur, $img, 0, 0, 1, 0, $w - 1, $h); // left
-                imagecopymerge ($imgBlur, $img, 1, 0, 0, 0, $w, $h, 50); // right
-                imagecopymerge ($imgBlur, $img, 0, 0, 0, 0, $w, $h, 50); // center
-                imagecopy ($imgCanvas, $imgBlur, 0, 0, 0, 0, $w, $h);
+            for ($i = 0; $i < $radius; $i++) {
+                imagecopy($imgBlur, $this->image, 0, 0, 1, 0, $this->width - 1, $this->height); // left
+                imagecopymerge($imgBlur, $this->image, 1, 0, 0, 0, $this->width, $this->height, 50); // right
+                imagecopymerge($imgBlur, $this->image, 0, 0, 0, 0, $this->width, $this->height, 50); // center
+                imagecopy($imgCanvas, $imgBlur, 0, 0, 0, 0, $this->width, $this->height);
 
-                imagecopymerge ($imgBlur, $imgCanvas, 0, 0, 0, 1, $w, $h - 1, 33.33333 ); // up
-                imagecopymerge ($imgBlur, $imgCanvas, 0, 1, 0, 0, $w, $h, 25); // down
+                imagecopymerge($imgBlur, $imgCanvas, 0, 0, 0, 1, $this->width, $this->height - 1, 33.33333); // up
+                imagecopymerge($imgBlur, $imgCanvas, 0, 1, 0, 0, $this->width, $this->height, 25); // down
             }
 
             imagedestroy($imgCanvas);
             imagedestroy($imgBlur);
-
-            $this->image = $img;
+            $this->updateInfo();
         }
     }
 
@@ -208,19 +177,17 @@ class waImageGd extends waImage
         list($save, $type) = $this->_save_function($extension, $quality);
 
         // Check if this image is PNG or GIF, then set if Transparent
-        if ($extension == "jpg" && ($this->type == IMAGETYPE_PNG || $this->type == IMAGETYPE_GIF))
-        {
+        if ($extension == "jpg" && ($this->type == IMAGETYPE_PNG || $this->type == IMAGETYPE_GIF)) {
             $output = imagecreatetruecolor($this->width, $this->height);
-            $white = imagecolorallocate($output,  255, 255, 255);
+            $white = imagecolorallocate($output, 255, 255, 255);
             imagefilledrectangle($output, 0, 0, $this->width, $this->height, $white);
             imagecopy($output, $this->image, 0, 0, 0, 0, $this->width, $this->height);
-            $this->image = $output;
+            $this->updateInfo($output);
         }
 
         $status = isset($quality) ? $save($this->image, $file, $quality) : $save($this->image, $file);
 
-        if ($status === true && $type !== $this->type)
-        {
+        if ($status === true && $type !== $this->type) {
             $this->type = $type;
             $this->mime = image_type_to_mime_type($type);
         }
@@ -230,27 +197,26 @@ class waImageGd extends waImage
 
     protected function _save_function($extension, & $quality)
     {
-        switch (strtolower($extension))
-        {
+        switch (strtolower($extension)) {
             case 'jpg':
             case 'jpeg':
                 $save = 'imagejpeg';
                 $type = IMAGETYPE_JPEG;
-            break;
+                break;
             case 'png':
                 $save = 'imagepng';
                 $type = IMAGETYPE_PNG;
                 //does not affect quality
                 $quality = 9;
-            break;
+                break;
             case 'gif':
                 $save = 'imagegif';
                 $type = IMAGETYPE_GIF;
                 $quality = NULL;
-            break;
+                break;
             default:
                 throw new waException(sprintf(_ws('GD does not support %s images'), $extension));
-            break;
+                break;
         }
 
         return array($save, $type);
@@ -268,7 +234,7 @@ class waImageGd extends waImage
                 break;
             case self::FILTER_CONTRAST:
                 $level = isset($params['level']) ? $params['level'] :
-                        (isset($params[0]) ? $params[0] : 3);
+                    (isset($params[0]) ? $params[0] : 3);
                 if ($level > 0) {
                     $level = min($level, 100);
                     $level = -$level;
@@ -277,7 +243,7 @@ class waImageGd extends waImage
                 break;
             case self::FILTER_BRIGHTNESS:
                 $level = isset($params['level']) ? $params['level'] :
-                        (isset($params[0]) ? $params[0] : 3);
+                    (isset($params[0]) ? $params[0] : 3);
                 if ($level > 0) {
                     $level = min($level, 100);
                     imagefilter($this->image, IMG_FILTER_BRIGHTNESS, $level);
@@ -298,14 +264,19 @@ class waImageGd extends waImage
      *     'font_size' => float Size of font. Note: use when watermark option is text
      *     'font_color' => string Hex-formatted of color (without #). Note: use when watermark option is text
      *     'text_orientation' => self::ORIENTATION_* const. Note: use when watermark option is text
+     * @throws waException
      * @return mixed
      */
     protected function _watermark($options)
     {
-        // export options to php-vars
-        foreach ($options as $name => $value) {
-            $$name = $value;
-        }
+        $watermark = false;
+        $opacity = 0.5;
+        $align = self::ALIGN_BOTTOM_RIGHT;
+        $font_file = null;
+        $font_size = 12;
+        $font_color = '888888';
+        $text_orientation = self::ORIENTATION_HORIZONTAL;
+        extract($options, EXTR_IF_EXISTS);
         $opacity = min(max($opacity, 0), 1);
         imagealphablending($this->image, true);
 
@@ -320,20 +291,42 @@ class waImageGd extends waImage
             imagedestroy($watermark);
 
         } else {
-            $text = (string) $watermark;
+            $text = (string)$watermark;
             if (!$text) {
                 return;
             }
 
             $font_color = array(
-                'r' => '0x'.substr($font_color, 0, 2),
-                'g' => '0x'.substr($font_color, 2, 2),
-                'b' => '0x'.substr($font_color, 4, 2),
+                'r' => '0x' . substr($font_color, 0, 2),
+                'g' => '0x' . substr($font_color, 2, 2),
+                'b' => '0x' . substr($font_color, 4, 2),
                 'a' => floor((1 - $opacity) * 127)
             );
 
-            if ($font_file && file_exists($font_file)) {
-                $metrics = imagettfbbox($font_size, 0, $font_file, $text);
+            if (!empty($font_file) && file_exists($font_file)) {
+                
+                $gd_info = gd_info();
+                $gd_version = preg_replace('/[^0-9\.]/', '', $gd_info['GD Version']);
+                
+                if (!empty($gd_info['FreeType Support']) && version_compare($gd_version, '2.0.1', '>=')) {
+                    // Free Type
+                    $free_type = true;
+                } else {
+                    // True Type
+                    $free_type = false;
+                    
+                    // GD1 use pixels, GD2 use points
+                    if (version_compare($gd_version, '2.0', '<')) {
+                        $font_size = 24*$font_size/18;    // 24px = 18pt
+                    }
+                    
+                }
+                
+                if ($free_type) {
+                    $metrics = imageftbbox($font_size, 0, $font_file, $text);
+                } else {
+                    $metrics = imagettfbbox($font_size, 0, $font_file, $text);
+                }
                 if ($metrics) {
                     $width = $metrics[2] - $metrics[0];
                     $height = $metrics[1] - $metrics[7];
@@ -343,12 +336,17 @@ class waImageGd extends waImage
                     $offset = $this->calcWatermarkOffset($width, $height, $align);
                     $offset = $this->watermarkOffsetFix($offset, $width, $height, $align, $text_orientation);
                     $color = imagecolorallocatealpha($this->image, $font_color['r'], $font_color['g'], $font_color['b'], $font_color['a']);
-                    imagettftext($this->image, $font_size, $text_orientation == self::ORIENTATION_VERTICAL ? 90 : 0, $offset[0], $offset[1], $color, $font_file, $text);
+                    
+                    if ($free_type) {
+                        imagefttext($this->image, $font_size, $text_orientation == self::ORIENTATION_VERTICAL ? 90 : 0, $offset[0], $offset[1], $color, $font_file, $text);
+                    } else {
+                        imagettftext($this->image, $font_size, $text_orientation == self::ORIENTATION_VERTICAL ? 90 : 0, $offset[0], $offset[1], $color, $font_file, $text);
+                    }
                 } else {
                     throw new waException(_ws("Can't read font file $font_file"));
                 }
             } else {
-                $font = floor((5*$font_size)/12);
+                $font = floor((5 * $font_size) / 12);
                 if ($font < 1) {
                     $font = 1;
                 } else if ($font > 5) {

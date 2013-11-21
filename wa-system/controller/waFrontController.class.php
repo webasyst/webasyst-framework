@@ -33,14 +33,15 @@ class waFrontController
 
     public function dispatch()
     {
-        if ($this->system->getEnv() == 'frontend') {
+        $env = $this->system->getEnv();
+        if ($env == 'frontend') {
             $module = 'frontend';
         } else {
             $module = waRequest::get($this->options['module'], $this->system->getEnv());
         }
         $module = waRequest::param('module', $module);
         $action = waRequest::param('action', waRequest::get($this->options['action']));
-        $plugin = waRequest::param('plugin', waRequest::get('plugin', ''));
+        $plugin = waRequest::param('plugin', $env == 'backend' ? waRequest::get('plugin', '') : '');
         // event init
         if (!waRequest::request('background_process')) {
             if (method_exists($this->system->getConfig(), 'onInit')) {

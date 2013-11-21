@@ -219,7 +219,6 @@ abstract class waLongActionController extends waController
                 break;
             }
         }
-
         if (!$this->_processId) {
             if (!$this->preInit()) {
                 return;
@@ -234,6 +233,7 @@ abstract class waLongActionController extends waController
                 if ($this->finish($this->_files['old']['file'])) {
                     $this->_cleanup();
                 }
+                // check info output
                 return;
             }
             switch ($status) {
@@ -289,6 +289,7 @@ abstract class waLongActionController extends waController
             if ($this->finish($this->_files['old']['file'])) {
                 $this->_cleanup();
             }
+            // check info output
         } else {
             $this->info();
         }
@@ -299,6 +300,7 @@ abstract class waLongActionController extends waController
     /** Close $this->_fd and remove all files we created */
     private function _cleanup()
     {
+        @fflush($this->_fd);
         @flock($this->_fd, LOCK_UN);
         @fclose($this->_fd);
         @unlink($this->_files['new']['data']);
@@ -392,11 +394,13 @@ abstract class waLongActionController extends waController
                 }
                 $data = $this->unserializeData($this->get($file));
                 if (!$data) {
+                    fflush($fd);
                     flock($fd, LOCK_UN);
                     fclose($fd);
                     continue;
                 }
                 $this->_data = $data;
+                fflush($fd);
                 flock($fd, LOCK_UN);
                 fclose($fd);
                 break 2;
@@ -616,6 +620,7 @@ abstract class waLongActionController extends waController
             if (!touch($this->_files['flock_ok'])) {
                 throw new waException('Unable to create file: '.$this->_files['flock_ok']);
             }
+            fflush($this->_fd);
             flock($this->_fd, LOCK_UN); // being paranoid
             fclose($this->_fd);
             $this->_fd = null;
@@ -634,6 +639,7 @@ abstract class waLongActionController extends waController
         $waitTime = $this->_data['complete'] ? 1 : min(ifset($this->_data['avg_time'], 0), $this->_chunk_time) * 3;
         if (time() < filemtime($filename2) + $waitTime) {
             // Recent modification found. Releasing...
+            fflush($this->_fd);
             flock($this->_fd, LOCK_UN); // being paranoid
             fclose($this->_fd);
             $this->_fd = null;
@@ -655,8 +661,7 @@ abstract class waLongActionController extends waController
         switch ($field) {
             case 'data':
                 if ($this->_runner && !$this->_transaction) {
-                    $b = debug_backtrace_custom();
-                    throw new waException('Data is only accessible inside a transaction.<pre>'.var_export($b, true).'</pre>');
+                    throw new waException('Data is only accessible inside a transaction.');
                 }
                 return $this->_data['data']; // by reference
             case 'fd':

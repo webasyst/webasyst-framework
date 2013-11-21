@@ -12,6 +12,13 @@ class waAppViewHelper
         $this->wa = $system;
     }
 
+    public function themePath($theme_id)
+    {
+        $app_id = $this->wa->getConfig()->getApplication();
+        $theme = new waTheme($theme_id, $app_id);
+        return $theme->path;
+    }
+
     public function pages($parent_id = 0, $with_params = true)
     {
         if (is_bool($parent_id)) {
@@ -24,13 +31,13 @@ class waAppViewHelper
                     WHERE status = 1 AND domain = s:domain AND route = s:route ORDER BY sort';
 
             $domain = wa()->getRouting()->getDomain(null, true);
-            if ($this->wa->getConfig()->getApplication() == wa()->getApp()) {
+            if ($this->wa->getConfig()->getApplication() == wa()->getRouting()->getRoute('app')) {
                 $route = wa()->getRouting()->getRoute('url');
                 $url = $this->wa->getAppUrl(null, true);
             } else {
                 $routes = wa()->getRouting()->getByApp($this->wa->getConfig()->getApplication(), $domain);
                 if ($routes) {
-                    $route = reset($routes);
+                    $route = end($routes);
                     $route = $route['url'];
                     $url = wa()->getRootUrl(false, true).waRouting::clearUrl($route);
                 } else {
@@ -40,7 +47,7 @@ class waAppViewHelper
 
             $pages = $page_model->query($sql, array('domain' => $domain, 'route' => $route))->fetchAll('id');
 
-            if ($with_params) {
+            if ($with_params && $pages) {
                 $page_params_model = $page_model->getParamsModel();
                 $data = $page_params_model->getByField('page_id', array_keys($pages), true);
                 foreach ($data as $row) {

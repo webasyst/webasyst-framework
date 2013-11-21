@@ -24,7 +24,11 @@ function smarty_function_wa_pagination($params, &$smarty)
         $html .= ' '.$k.'="'.$v.'"';
     }
     $html .= '>';
-    $url_params = trim(preg_replace('/&?page=[0-9]*/i', '', waRequest::server('QUERY_STRING', '')), '&');
+    $get_params = waRequest::get();
+    if (isset($get_params['page'])) {
+        unset($get_params['page']);
+    }
+    $url_params = http_build_query($get_params);
     if ($page > 1 && $prev) {
         $page_url = $url.($url && $page == 2 ? ($url_params ? '?'.$url_params : '') : '?page='.($page - 1).($url_params ? '&'.$url_params : ''));
         $html .= '<li><a class="inline-link" href="'.$page_url.'">'.$prev.'</a></li>';

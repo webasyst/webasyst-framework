@@ -64,6 +64,8 @@ class waNestedSetModel extends waModel
             if (!$parent) {
                 return $query->where('id = '.$parent_id);
             }
+        } else {
+            $parent = null;
         }
         $op = !$include_parent ? array('>', '<') : array('>=', '<=');
         if ($parent) {
@@ -113,7 +115,7 @@ class waNestedSetModel extends waModel
      * Insert new item on some level (parent_id)
      * @param array $data
      * @param int $parent_id If null than root level
-     * @return id|boolean
+     * @return int|boolean id
      */
     protected function _add($data, $parent_id = null)
     {

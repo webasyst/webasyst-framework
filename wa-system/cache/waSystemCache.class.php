@@ -8,4 +8,13 @@ class waSystemCache extends waVarExportCache
         waFiles::create($path);
         return $path;
     }
+
+    public function getFilemtime()
+    {
+        $path = $this->getFilePath();
+        if (file_exists($path)) {
+            return filemtime($path);
+        }
+        return 0;
+    }
 }

@@ -275,6 +275,7 @@ abstract class waPayment extends waSystemPlugin
             $module = self::factory($module_id);
             return $module->callbackInit($request)->init()->callbackHandler($request);
         } catch (Exception $ex) {
+            self::log($module ? $module_id : 'general', $ex->getMessage());
             if ($module) {
                 return $module->callbackExceptionHandler($ex);
             } else {

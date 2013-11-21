@@ -15,7 +15,6 @@ class waMemcachedCache implements waiCache
      * @var int
      */
     protected $ttl;
-    protected $app_id;
     protected $value = null;
     
     /**
@@ -27,9 +26,11 @@ class waMemcachedCache implements waiCache
     
     public function __construct($key, $ttl = 0, $app_id = null)
     {
-        $this->key = trim($key, '/');
+        if (!$app_id) {
+            $app_id = wa()->getApp();
+        }
+        $this->key = $app_id.'.'.trim($key, '/');
         $this->ttl = $ttl;
-        $this->app_id = $app_id;
         if (!self::$memcached) {
             self::$memcached = new Memcached('wa');
             $config = waSystem::getInstance()->getConfig()->getConfigFile('memcached');

@@ -8,6 +8,7 @@ class waUtils
             if ($h = @fopen($file, 'w+')) {
                 if (flock($h, LOCK_EX)) {
                     $result = fwrite($h, "<?php\nreturn ".($export ? var_export($var, true) : $var).";");
+                    fflush($h);
                     flock($h, LOCK_UN);
                 } else {
                     $result = false;

@@ -171,6 +171,8 @@ class waAutoload
         'waForgotPasswordAction'   => 'controller/waForgotPasswordAction.class.php',
         'waSignupAction'           => 'controller/waSignupAction.class.php',
         'waLongActionController'   => 'controller/waLongActionController.class.php',
+        'waMyNavAction'            => 'controller/waMyNavAction.class.php',
+        'waMyProfileAction'        => 'controller/waMyProfileAction.class.php',
         'waViewAction'             => 'controller/waViewAction.class.php',
         'waViewActions'            => 'controller/waViewActions.class.php',
         'waViewController'         => 'controller/waViewController.class.php',

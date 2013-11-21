@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!ELEMENT theme (name+,description*,files*,about*)>
-<!ATTLIST theme 
+<!ELEMENT theme (name+,description*,files*,about*, settings?)>
+<!ATTLIST theme
 	id CDATA #REQUIRED
 	system (1|0) "0"
 	vendor CDATA #IMPLIED
@@ -10,21 +10,36 @@
 	version CDATA #IMPLIED
 >
 <!ELEMENT name (#PCDATA)>
-<!ATTLIST name 
+<!ATTLIST name
 	locale CDATA #REQUIRED
 >
 <!ELEMENT description (#PCDATA)>
-<!ATTLIST description 
+<!ATTLIST description
 	locale CDATA #REQUIRED
 >
 <!ELEMENT files (file+)>
 <!ELEMENT file (description*)>
-<!ATTLIST file 
+<!ATTLIST file
 	path CDATA #REQUIRED
 	custom (1|0) "0"
 	parent (1|0) "0"
 >
 <!ELEMENT about (#PCDATA)>
-<!ATTLIST about 
+<!ATTLIST about
 	locale CDATA #REQUIRED
 >
+<!ELEMENT settings (setting+)>
+<!ELEMENT setting (name+,description*,options?)>
+
+<!ATTLIST setting
+        var CDATA #REQUIRED
+        value CDATA #IMPLIED
+        control_type ("text"|"select"|"checkbox") "text"
+
+>
+<!ELEMENT options (option+)>
+<!ELEMENT option (name*)>
+<!ATTLIST option
+        value CDATA #IMPLIED
+>
+

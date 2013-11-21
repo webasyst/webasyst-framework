@@ -381,7 +381,7 @@ class waFiles
         } elseif ($ch = self::curlInit($url)) {
             if (self::$fp = fopen($path, 'wb')) {
                 self::$size = 0;
-                waSessionStorage::close();
+                wa()->getStorage()->close();
                 curl_exec($ch);
                 fclose(self::$fp);
                 if ($errno = curl_errno($ch)) {

@@ -59,9 +59,14 @@ class waContactRegionField extends waContactField
             $value = $value['value'];
         }
 
+        if (preg_match('~(?:\s|")id="([^"]+)"~', ' '.$attrs, $matches)) {
+            $select_id = $matches[1];
+            $attrs = trim(preg_replace('~(\s|")id="([^"]+)"~', '$1 ', ' '.$attrs));
+        } else {
+            $select_id = uniqid('s');
+        }
 
-        $input_id = uniqid('i');
-        $select_id = uniqid('s');
+        $input_id = $select_id.'-input';
         $name_input = $name = $this->getHTMLName($params);
         if ($this->isMulti()) {
             $name_input .= '[value]';
@@ -107,7 +112,7 @@ class waContactRegionField extends waContactField
 
             if (count($options) > 1) {
                 // Selected country has regions. Show as <select>.
-                $region_select = '<select id="'.$select_id.'" name="'.htmlspecialchars($name_input).'" data-country="'.htmlspecialchars($country).'" '.$attrs.">\n\t".implode("\n\t", $options)."\n</select>";
+                $region_select = '<select name="'.htmlspecialchars($name_input).'" data-country="'.htmlspecialchars($country).'" id="'.$select_id.'" '.$attrs.">\n\t".implode("\n\t", $options)."\n</select>";
             }
         }
 
