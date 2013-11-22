@@ -357,8 +357,7 @@ class waRouting
             $params['action'] = $parts[2];
         }
         $routes = array();
-        if (!$this->route || $this->route['app'] != $app || $domain_url ||
-        (!isset($this->route['module']) && isset($params['module']) && $params['module'] != 'frontend') ||
+        if (!$this->route || $this->route['app'] != $app || ($domain_url && $domain_url != $this->getDomain()) ||
         (isset($this->route['module']) && isset($params['module']) && $this->route['module'] != $params['module'])
         ){
             // find base route

@@ -216,7 +216,7 @@ function waEditorInit(options) {
             $(this).attr('src', $(this).attr('data-src'));
         });
 
-        waEditorUpdateSource();
+        waEditorUpdateSource(options);
         $(".el-rte").hide();
         $("div.CodeMirror-wrap").show();
         wa_editor.focus();
