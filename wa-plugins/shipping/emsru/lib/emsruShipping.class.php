@@ -300,7 +300,7 @@ class emsruShipping extends waShipping
             if (!$curl_error) {
                 @curl_setopt($ch, CURLOPT_URL, $url);
                 @curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-
+                @curl_setopt($ch, CURLOPT_TIMEOUT, 10);
                 $response = @curl_exec($ch);
                 if (curl_errno($ch) != 0) {
                     $curl_error = 'curl error: '.curl_errno($ch);
@@ -314,7 +314,13 @@ class emsruShipping extends waShipping
             if (!ini_get('allow_url_fopen')) {
                 $hint .= " PHP ini option 'allow_url_fopen' are disabled;";
             } else {
-                $response = file_get_contents($url);
+                $sc = stream_context_create(array( 
+                       'http' => array( 
+                       'timeout' => 10 
+                      ) 
+                    ) 
+                ); 
+                $response = file_get_contents($url,$sc);
             }
         }
         if (!$response && $hint) {
