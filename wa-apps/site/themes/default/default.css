@@ -116,7 +116,7 @@ ul.menu-h li.selected ul * { background: #fff !important; }
 #header ul#wa-apps li a:visited { color: #ccc; }
 #header ul#wa-apps li a:hover { color: #fff !important; }
 #header ul#wa-apps li.selected a,
-#header ul#wa-apps li.selected strong { font-weight: bold; color: #fff; }
+#header ul#wa-apps li.selected strong { font-weight: bold; color: #fff !important; }
 #header ul#wa-apps li.float-right a,
 #header ul#wa-apps li.float-right strong { margin-right: 0; margin-left: 10px; }
 #header ul#wa-apps li.small { padding-top: 7px; padding-bottom: 6px; /* give some extra space because of a smaller font size */ }

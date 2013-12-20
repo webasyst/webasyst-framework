@@ -7,8 +7,8 @@
   <meta name="Description" content="{$wa->meta('description')|escape}" />
 
   <!-- css -->
-  <link href="{$wa_theme_url}default.css?{$wa->version()}" rel="stylesheet" type="text/css"/>
-  <link href="{$wa_theme_url}mobile.css?{$wa->version()}"{if !$wa->isMobile()} media="screen and (max-width: 760px)"{/if} rel="stylesheet" type="text/css">
+  <link href="{$wa_theme_url}default.css?v{$wa_theme_version}" rel="stylesheet" type="text/css"/>
+  <link href="{$wa_theme_url}mobile.css?v{$wa_theme_version}"{if !$wa->isMobile()} media="screen and (max-width: 760px)"{/if} rel="stylesheet" type="text/css">
   {if $wa->isMobile()}
       <meta name="viewport" content="width=device-width; initial-scale=1; maximum-scale=1; user-scalable=0;" />
   {/if}
@@ -19,6 +19,19 @@
   {$wa->js()} {* links active plugins JS *}
 
   {$wa->headJs()} {* links Google Analytics tracking code and current site's custom JS (Site app) *}
+  
+  <!-- custom default theme settings -->
+  <style>
+    {if !empty($theme_settings.nav_bg_color)}
+        #header { background: {$theme_settings.nav_bg_color}; }
+    {/if}
+    {if !empty($theme_settings.nav_text_color)}
+        #header,
+        #header ul#wa-apps li a,
+        #header ul#wa-apps li strong { color: {$theme_settings.nav_text_color} !important; }
+    {/if}
+  </style>
+    
 </head>
 <body>
   <div id="header" role="navigation">
