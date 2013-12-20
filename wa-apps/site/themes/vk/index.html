@@ -1,3 +1,5 @@
+<!DOCTYPE html>
+
 {$vk_app_id = "YOUR_APP_ID"}
 {$vk_app_secret = "YOUR_APP_SECRET"}
 {$viewer_id = $wa->get('viewer_id')}
@@ -42,7 +44,6 @@
     The 'url' must represent the URL you have entered in your Site routing settings for the appropriate VK-enabled app, i.e. Shop-Script, Blog, Photos, Site, etc.
 
 *}
-<!DOCTYPE html>
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
@@ -50,7 +51,8 @@
     <meta name="Keywords" content="{$wa->meta('keywords')|escape}" />
     <meta name="Description" content="{$wa->meta('description')|escape}" />
     <!-- css -->
-    <link href="{$wa_theme_url}vk.css?{$wa->version()}" rel="stylesheet" type="text/css"/>
+    <link href="{$wa_theme_url}vk.css?v{$wa_theme_version}" rel="stylesheet" type="text/css"/>
+    {if $wa->shop && $wa->shop->currency() == 'RUB'} <link href="{$wa_url}wa-content/font/ruble/arial/fontface.css" rel="stylesheet" type="text/css">{/if}
     {$wa->css()} {* links active plugins CSS *}
     
     <!-- js -->
@@ -58,7 +60,7 @@
     <!-- vk iframe apps js -->
     <script src="//vk.com/js/api/xd_connection.js?2"  type="text/javascript"></script>
     <!-- internal shop-script js for vk iframe app integration -->
-    <script type="text/javascript" src="{$wa_theme_url}vk.js"></script>
+    <script type="text/javascript" src="{$wa_theme_url}vk.js?v{$wa_theme_version}"></script>
     {if $wa->isMobile()}
         <meta name="viewport" content="width=device-width; initial-scale=1; maximum-scale=1; user-scalable=0;" />
     {/if}
@@ -77,7 +79,7 @@
                 {$cart_total = $wa->shop->cart->total()}
                 <div id="cart" class="block float-right{if !$cart_total} empty{/if}">
                      <a href="{$wa->getUrl('shop/frontend/cart')}">
-                         <i class="icon16 cart"></i>[s`Cart`]: <strong class="cart-total">{wa_currency($cart_total, $wa->shop->currency())}</strong>
+                         <i class="icon16 cart"></i>[s`Cart`]: <strong class="cart-total">{wa_currency_html($cart_total, $wa->shop->currency())}</strong>
                      </a>
                 </div>
 
