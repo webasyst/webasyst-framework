@@ -29,8 +29,8 @@ class siteHelperAction extends waViewAction
                     '$wa->user("<em>field</em>")' => _w('Returns authorized user data from associated record in “Contacts” app. "<em>field</em>" (string) is optional and indicates the field id to be returned. If not  Returns <em>false</em> if user is not authorized'),
                     '$wa->userAgent("<em>key</em>")' => _w('Returns User Agent info by specified “<em>key</em>” parameter:').'<br />'.
                     _w('— <em>"platform"</em>: current visitor device platform name, e.g. <em>windows, mac, linux, ios, android, blackberry</em>;').'<br />'.
-                    _w('— <em>"isMobile"</em>: returns <em>true</em> or <em>false</em> if user is using a multi-touch mobile device (iOS, Android and similar), based solely on User Agent string;').'<br />'.
-                    _w('— not specified: returns entire User Agent string;').'<br />',
+                    _w('— <em>"isMobile"</em>: returns <em>true</em> or <em>false</em> if user is using a multi-touch mobile device (iOS, Android and similar), based solely on User Agent string;'),
+                    '$wa-><em>APP_ID</em>->themePath("<em>theme_id</em>")' => _w('Returns path to theme folder by <em>theme_id</em> and <em>APP_ID</em>'),
         );        
         
         $app_id = waRequest::get('app');

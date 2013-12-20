@@ -921,13 +921,13 @@ msgstr "Выберите правило маршрутизации для ред
 #: /wa-apps/site/templates/actions/routing/Routing.html:36
 msgid ""
 "Rules are processed one by one in the given order. The first rule matching "
-"current HTTP request will be processed. Use * symbol in the URL fields for "
-"wildcard."
+"current HTTP request (web address) will be processed. Use * symbol in the "
+"URL fields for wildcard."
 msgstr ""
 "Правила обрабатываются по одному в указанном порядке. Обработка начинается с "
 "первого правила в списке и заканчивается на правиле, которое соответствует "
-"текущему HTTP-запросу. Для обозначения любых символов в качестве маски "
-"используйте звездочку (*)."
+"текущему HTTP-запросу (адресу). Для обозначения любых символов в качестве "
+"маски используйте звездочку (*)."
 
 #: /wa-apps/site/templates/actions/blocks/Blocks.html:37
 msgid "View original"
@@ -1249,7 +1249,49 @@ msgstr ""
 msgid "http://www.webasyst.com/developers/docs/routing/site-app-routing/"
 msgstr "http://www.webasyst.ru/developers/docs/routing/site-app-routing/"
 
-#: /wa-apps/site/lib/actions/blocks/siteBlocksSave.controller.php:31
-#: /wa-apps/site/lib/actions/blocks/siteBlocksSave.controller.php:45
-msgid "Block with id \"%s\" already exists', null, null, $info['id']) // _w('Block with id \"%s\" already exists"
+#: /wa-apps/site/templates/actions/routing/Routing.html:4
+msgid "Site structure"
+msgstr "Структура сайта"
+
+#: /wa-apps/site/templates/actions/routing/Routing.html:33
+msgid ""
+"Site structure is defined by routing rules. Each rule sets which app should "
+"run by which URL (web address). Similar to how folders are used to organize "
+"files on a computer, routing rules are used to create a website powered by "
+"multiple apps."
 msgstr ""
+"Структура сайта определяется правилами маршрутизации. Каждое правило "
+"указывает по какому адресу какое приложение работает. По аналогии с тем, как "
+"папки используются для организации файлов на компьютере, правила "
+"маршрутизации используются для распределения приложений по разделам сайта."
+
+#: /wa-apps/site/templates/actions/routing/RoutingEdit.html:10
+msgid "Back"
+msgstr "Назад"
+
+#: /wa-apps/site/templates/actions/settings/Settings.html:22
+msgid "Domain name"
+msgstr "Доменное имя"
+
+#: /wa-apps/site/templates/actions/settings/Settings.html:28
+msgid "IMPORTANT"
+msgstr "ВАЖНО"
+
+#: /wa-apps/site/templates/actions/settings/Settings.html:28
+msgid ""
+"The URL entered must point to the root of this Webasyst framework "
+"installation."
+msgstr "Введенный адрес вести на корневую папку установки Webasyst."
+
+#: /wa-apps/site/templates/actions/settings/Settings.html:35
+msgid "Matches domain name"
+msgstr "Совпадает с доменным именем"
+
+#: /wa-apps/site/templates/layouts/Sidebar.html:42
+msgid "Structure"
+msgstr "Структура"
+
+#: /wa-apps/site/lib/actions/helper/siteHelper.action.php:33
+msgid "Returns path to theme folder by <em>theme_id</em> and <em>APP_ID</em>"
+msgstr ""
+"Возвращает путь к папке темы дизайна по <em>theme_id</em> и <em>APP_ID</em>"

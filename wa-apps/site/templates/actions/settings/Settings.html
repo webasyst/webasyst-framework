@@ -19,18 +19,20 @@
 
 		<div class="field-group">
 		<div class="field">
-			<div class="name bold">[`Site URL`]</div>
+			<div class="name bold">[`Domain name`]</div>
 			<div class="value">
 				<strong>http://</strong><input type="text" class="bold" name="url" value="{$domain|escape}" /><br />
 				<span class="hint">
 					[`A valid URL pointing to this Webasyst installation.`]<br />
-					[`E.g. <em>domain.com</em> if Webasyst is installed into domain.com's root folder, <em>domain.com/wa</em> if Webasyst is installed into /wa/ subfolder on domain.com. Do not put slash at the end of the URL.`]</span>
+					[`E.g. <em>domain.com</em> if Webasyst is installed into domain.com's root folder, <em>domain.com/wa</em> if Webasyst is installed into /wa/ subfolder on domain.com. Do not put slash at the end of the URL.`]<br />
+					<strong>[`IMPORTANT`]:</strong> [`The URL entered must point to the root of this Webasyst framework installation.`]
+				</span>
 			</div>
 		</div>
 		<div class="field">
 			<div class="name bold">[`Site name`]</div>
 			<div class="value no-shift">
-				<input id="s-domain-title" type="checkbox" {if !$title}checked="checked"{/if} /> <label for="s-domain-title">[`Matches Site URL`]</label>
+				<input id="s-domain-title" type="checkbox" {if !$title}checked="checked"{/if} /> <label for="s-domain-title">[`Matches domain name`]</label>
 				<div {if !$title}style="display:none"{/if}>
 					<input type="text" class="bold" name="title" value="{$title|escape}" /><br />
 					<span class="hint">[`Site alias used within site selection menu (at the top left corner), and as the anchor name in frontend's <em>$wa->apps()</em> navigation menu array.`]</span>

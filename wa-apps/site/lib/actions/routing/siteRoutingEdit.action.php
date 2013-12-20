@@ -136,14 +136,23 @@ class siteRoutingEditAction extends waViewAction
                 }
                 return $html;
             case 'checkbox':
-                foreach ($info['items'] as $k => $v) {
-                    if(!is_array($v)) {
-                        $v = array('name'=>$v);
+                if (isset($info['items'])) {
+                    foreach ($info['items'] as $k => $v) {
+                        if(!is_array($v)) {
+                            $v = array('name'=>$v);
+                        }
+                        $html .= '<label class="s-label-with-check">'.
+                                    '<input type="checkbox" name="params['.$info['id'].'][]" value="'.$k.'" />'.htmlspecialchars($v['name']).
+                        (isset($v['description'])?(' <span class="hint">'.$v['description'].'</span>'):'').
+                                    '</label>';
                     }
-                    $html .= '<label class="s-label-with-check">'.
-                                '<input type="checkbox" name="params['.$info['id'].'][]" value="'.$k.'" />'.htmlspecialchars($v['name']).
-                    (isset($v['description'])?(' <span class="hint">'.$v['description'].'</span>'):'').
-                                '</label>';
+                } else {
+                    $html .= '<label class="s-label-with-check">';
+                    $html .= '<input type="checkbox" name="params['.$info['id'].']" '.($value ? 'checked' : '').' value="1" />';
+                    $html .= '</label>';
+                }
+                if (isset($info['description'])) {
+                    $html .= ' <span class="hint">'.$info['description'].'</span>';
                 }
                 return $html;
             case 'radio_select':
@@ -186,7 +195,7 @@ class siteRoutingEditAction extends waViewAction
                     $html .= '<label class="s-label-with-check">'.
                         '<input type="radio" '.
                         ($value == $k || (is_array($value) && isset($v['items'])) ? 'checked="checked"' : '').
-                        ' name="params['.$info['id'].']" value="'.$k.'" />'.
+                        ' name="params['.$info['id'].']" value="'.(isset($v['items']) ? '' : $k).'" />'.
                         htmlspecialchars($v['name']).(isset($v['description'])?(' <span class="hint">'.$v['description'].'</span>'):'').
                         '</label>';
                     if (isset($v['items'])) {

@@ -6,38 +6,37 @@
 	<form id="s-settings-form" method="post" action="?module=routing&action=save&domain_id={$domain_id}&route={$route_id}">
 	<div class="float-left s-route">
 		<div class="block s-route-core">
-            <div class="block half-padded float-right">
-    			<ul class="menu-h">
-    				<li><a href="#" class="cancel gray inline-link" title="[`Close`]"><i class="icon10 no-bw"></i> <b><i>[`Cancel`]</i></b></a></li>
-    			</ul>
-    		</div>			
-			<div class="fields">
-                <div class="field">
-    				<div class="name">
-    				   <input type="text" name="params[url]" value="{if strlen($route_id)}{$route.url|escape}{/if}" class="bold large" placeholder="*" />
-    				</div>
-    				<div class="value">
-                        {if strlen($route_id)}
-                            {if !empty($route.app)}
-                                <img src="{$wa_url}{$app.icon.24}" />
-                                <h3>{$app.name}</h3>
-                            {else}
-                                <img src="{$wa_app_static_url}img/arrow.png" class="s-app24x24icon-menu-v" alt="">
-                                <span class="redirect"> <input name="params[redirect]" type="text" value="{$route.redirect|escape}" class="long" /></span>
-                            {/if}
-                        {else}
-    				    <img src="{$wa_url}{$app.icon.24}" />
-    					<select class="s-select-app" name="params[app]">
-                            {foreach $apps as $app}
-                            <option value="{$app.id}" data-img="{$app.icon.24}">{$app.name}</option>
-                            {/foreach}
-                            <option value="" data-img="wa-apps/site/img/arrow.png">[`Redirect`]...</option>
-                        </select>
-                        {/if}
-    				</div>
-    			</div>
-			</div>
-			<div class="clear-both"></div>
+   				
+   	        <a href="#" class="cancel back s-route-block">&larr; [`Back`]</a>
+
+            {if empty($route.redirect)}
+   	        <div class="s-route-block" id="s-route-what">
+                {if strlen($route_id)}
+                        <img src="{$wa_url}{$app.icon.24}" />
+                        <h3>{$app.name}</h3>
+                {else}
+    			    <img src="{$wa_url}{$app.icon.24}" />
+    				<select class="s-select-app" name="params[app]">
+                        {foreach $apps as $app}
+                        <option value="{$app.id}" data-img="{$app.icon.24}">{$app.name}</option>
+                        {/foreach}
+                        <option value="" data-img="wa-apps/site/img/arrow.png">[`Redirect`]...</option>
+                    </select>
+                {/if}
+            </div>
+            {/if}
+
+            <div class="s-route-block" id="s-route-where">
+    		    <span class="gray">
+    		        <span class="overhanging">{if strlen($route_id)}@{else}&rarr;{/if}</span>
+    		        {$domain}/
+    		    </span><input type="text" name="params[url]" value="{if strlen($route_id)}{$route.url|escape}{/if}" class="bold large" placeholder="*" />
+            </div>
+            
+            <div class="s-route-block" style="{if empty($route.redirect)}display: none;{/if}" id="s-route-to">
+                &rarr;
+    		    <input type="text" name="params[redirect]" {if !isset($route.redirect)}disabled{/if} value="{if !empty($route.redirect)}{$route.redirect|escape}{/if}" class="bold large" placeholder="http://" />
+            </div>
 
 		</div>
 {/if}
@@ -136,6 +135,8 @@
             if ($(this).next('.redirect').length) {
                 $(this).next('.redirect').remove();
             }
+            $('#s-route-what').show();
+            $('#s-route-to').hide().find('input').attr('disabled', 'disabled');
         } else {
             $('.s-route-details').find('div.field,div.field-group').not('div.field:last').remove();
             if ($(this).next('.redirect').length) {
@@ -144,7 +145,9 @@
                 $('<span class="redirect"> <input name="params[redirect]" class="long" type="text" /></span>').insertAfter(this);
                 $(this).hide();
             }
-            $(this).next().find('input').focus();
+            $('#s-route-where input').focus();
+            $('#s-route-what').hide();
+            $('#s-route-to').show().find('input').removeAttr('disabled');
         }
         $(this).prev().attr('src', "{$wa_url}" + $(this).find(':selected').attr('data-img')).show();
     });
@@ -173,6 +176,9 @@
             if (response.status == 'ok') {
                 {if strlen($route_id)}
                     $('#route-{$route_id} .s-editable-url').text(response.data.url);
+                    if (response.data.redirect) {
+                        $('#route-{$route_id} .redirect').text(response.data.redirect);
+                    }
                 {/if}
                 if (response.data.add) {
                     if (response.data.add == 'top') {

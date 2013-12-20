@@ -137,13 +137,14 @@ table.s-settings-apps td.s-app { vertical-align: middle; width: 230px; }
 .s-route .value { margin-left: 230px; }
 
 .s-route-core { background: #f3f3f3; }
-.s-route-core .fields { margin-bottom: 0; }
-.s-route-core .name { padding-bottom: 5px; }
-.s-route-core .value { width: 100%; }
-.s-route-core .value h3 { position: relative; top: 5px; font-size: 1.3em; }
-.s-route-core .value select { float: left; font-size: 120%; position: relative; top: 2px; left: 4px; }
-.s-route-core .value img { float: left; width: 24px; height: 24px; margin-right: 6px; position: relative; top: 2px; }
-.s-route-core .value .redirect input { position: relative; top: 2px; }
+.s-route-core .s-route-block { margin-bottom: 0; display: inline-block; }
+.s-route-core .s-route-block#s-route-what { min-width: 155px; margin-right: 3px; }
+.s-route-core a.back { background: #e3e3e3; top: -2px; }
+.s-route-core img { width: 24px; height: 24px; margin-left: 6px; margin-right: 4px; position: relative; top: 4px; }
+.s-route-core h3 {font-size: 1.3em; display: inline-block; float: left\9; color: #000; }
+.s-route-core select { position: relative; top: -2px; }
+.s-route-core .s-route-block#s-route-where input { max-width: 150px; }
+.s-route-core .s-route-block#s-route-to input { min-width: 300px; }
 
 /* settings */
 
@@ -177,8 +178,10 @@ table.zebra.s-filelist .icon10.new-window { margin-left: .25em;}
 /* cheat-sheet */
 
 .s-dropdown { float: right; margin: 10px 20px 0 0; }
-.s-dropdown .s-dropdown-content { padding: 20px;  width: auto; width: 560px;  min-height: 180px; max-height: 310px; overflow: auto; overflow-x: hidden;}
+.s-dropdown .s-dropdown-content { padding: 20px;  width: auto; width: 760px; min-height: 180px; max-height: 310px; overflow: auto; overflow-x: hidden;}
+.s-dropdown .s-dropdown-content .field .name { width: 290px; }
 .s-dropdown .s-dropdown-content .field .name .inline-link b i { font-weight: bold; }
+.s-dropdown .s-dropdown-content .field .value { margin-left: 300px; }
 .s-dropdown .s-dropdown-content .field.subfield .name { margin-left: 20px; }
 .s-dropdown .s-dropdown-content .field.subfield .name .inline-link b i { font-weight: normal; font-size: 0.9em; }
 .s-dropdown .s-drop-link { position: relative; padding: 6px 0 0 ; display: block;}

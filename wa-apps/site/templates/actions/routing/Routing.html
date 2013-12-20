@@ -1,7 +1,7 @@
 <div class="content">
     <div class="s-editor s-white">
         <div class="block s-grey-toolbar">
-            <h4 style="margin-left: 4px; margin-top:2px;">[`Routing`]</h4>
+            <h4 style="margin-left: 4px; margin-top:2px;">[`Site structure`]</h4>
         </div>
         <div class="block s-routing-header">
             <a href="#" class="inline-link" id="s-routing-addrule"><i class="icon16 add"></i><b><i>[`New rule`]</i></b></a>
@@ -29,9 +29,10 @@
                     {/foreach}
                     <!-- /fields -->
                 </table>
-                <p class="block double-padded align-center hint">
-               		[`Rules are processed one by one in the given order. The first rule matching current HTTP request will be processed. Use * symbol in the URL fields for wildcard.`]
-                	<a href="[`http://www.webasyst.com/developers/docs/routing/site-app-routing/`]" target="_blank">[`Help`]</a> <i class="icon10 new-window"></i>
+                <p class="block double-padded align-center hint" id="s-routing-disclaimer">
+                    [`Site structure is defined by routing rules. Each rule sets which app should run by which URL (web address). Similar to how folders are used to organize files on a computer, routing rules are used to create a website powered by multiple apps.`]
+               		[`Rules are processed one by one in the given order. The first rule matching current HTTP request (web address) will be processed. Use * symbol in the URL fields for wildcard.`]
+                	<span class="nowrap"><a href="[`http://www.webasyst.com/developers/docs/routing/site-app-routing/`]" target="_blank">[`Help`]</a> <i class="icon10 new-window"></i></span>
                 </p>
             </div>
             <div id="s-route-params" class="content bordered-left" style="margin-left:75%;">
