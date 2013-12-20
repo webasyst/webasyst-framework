@@ -5,17 +5,20 @@
     <title>{$wa->title()|escape}</title>
     <meta name="Keywords" content="{$wa->meta('keywords')|escape}" />
     <meta name="Description" content="{$wa->meta('description')|escape}" />
+
+    {if !empty($canonical)}<link rel="canonical" href="{$canonical}"/>{/if}
     
     <!-- css -->
-    <link href="{$wa_theme_url}sidebar.css?{$wa->version()}" rel="stylesheet" type="text/css"/>
-    <link href="{$wa_theme_url}sidebar.mobile.css?{$wa->version()}"{if !$wa->isMobile()} media="screen and (max-width: 760px)"{/if} rel="stylesheet" type="text/css"/>
-    <link href="{$wa_theme_url}sidebar.tablet.css?{$wa->version()}" media="screen and (min-width: 760px) and (max-width: 1024px)" rel="stylesheet" type="text/css"/>
-    <link href="{$wa_theme_url}sidebar.wide.css?{$wa->version()}" media="screen and (min-width: 1440px)" rel="stylesheet" type="text/css"/>
+    <link href="{$wa_theme_url}sidebar.css?v{$wa_theme_version}" rel="stylesheet" type="text/css"/>
+    <link href="{$wa_theme_url}sidebar.mobile.css?v{$wa_theme_version}"{if !$wa->isMobile()} media="screen and (max-width: 760px)"{/if} rel="stylesheet" type="text/css"/>
+    <link href="{$wa_theme_url}sidebar.tablet.css?v{$wa_theme_version}" media="screen and (min-width: 760px) and (max-width: 1024px)" rel="stylesheet" type="text/css"/>
+    <link href="{$wa_theme_url}sidebar.wide.css?v{$wa_theme_version}" media="screen and (min-width: 1440px)" rel="stylesheet" type="text/css"/>
+    {if $wa->shop && $wa->shop->currency() == 'RUB'} <link href="{$wa_url}wa-content/font/ruble/arial/fontface.css" rel="stylesheet" type="text/css">{/if}
     {$wa->css()} {* links active plugins CSS *}
     
     <!-- js -->
     <script type="text/javascript" src="{$wa_url}wa-content/js/jquery/jquery-1.8.2.min.js"></script>
-    <script type="text/javascript" src="{$wa_theme_url}sidebar.js"></script>    
+    <script type="text/javascript" src="{$wa_theme_url}sidebar.js?v{$wa_theme_version}"></script>    
     {if $wa->isMobile()}
         <meta name="viewport" content="width=device-width; initial-scale=1; maximum-scale=1; user-scalable=0;" />
     {/if}
@@ -45,7 +48,7 @@
             {$cart_total = $wa->shop->cart->total()}
              <div id="cart" class="{if !$cart_total} empty{/if}">
                  <a href="{$wa->getUrl('shop/frontend/cart')}" class="cart-total">
-                     {wa_currency($cart_total, $wa->shop->currency())}
+                     {wa_currency_html($cart_total, $wa->shop->currency())}
                  </a>
              </div>
         {/if}
