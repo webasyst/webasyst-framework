@@ -2,8 +2,8 @@
 return array(
     'rate_zone'        => array(
         'value' => array(
-            'country' => 'rus',
-            'region'  => '77',
+            'country' => '',
+            'region'  => '',
             'city'    => ''
         ),
     ),

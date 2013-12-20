@@ -19,8 +19,20 @@ class courierShipping extends waShipping
     public function getSettingsHTML($params = array())
     {
         $values = $this->getSettings();
+        
         if (!empty($params['value'])) {
             $values = array_merge($values, $params['value']);
+        }
+        
+        if (!$values['rate_zone']['country']) {
+            $l = substr(wa()->getUser()->getLocale(), 0, 2);
+            if ($l == 'ru') {
+                $values['rate_zone']['country'] = 'rus';
+                $values['rate_zone']['region'] = '77';
+                $values['city'] = '';
+            } else {
+                $values['rate_zone']['country'] = 'usa';
+            }
         }
 
         $view = wa()->getView();
@@ -99,23 +111,11 @@ class courierShipping extends waShipping
             $rates = array();
         }
         self::sortRates($rates);
-        if ($this->rate_by == 'price') {
-            $rates = array_reverse($rates);
-        }
+        $rates = array_reverse($rates);
         foreach ($rates as $rate) {
             $rate = array_map('floatval', $rate);
-            switch ($this->rate_by) {
-                case 'price':
-                    if (($rate['limit'] < $limit) && (($price === null) || ($price > $rate['cost']))) {
-                        $price = $rate['cost'];
-
-                    }
-                    break;
-                case 'weight':
-                    if (($rate['limit'] < $limit) && (($price === null) || ($price < $rate['cost']))) {
-                        $price = $rate['cost'];
-                    }
-                    break;
+            if ($limit !== null && $rate['limit'] < $limit && $price === null) {
+                $price = $rate['cost'];
             }
             $prices[] = $rate['cost'];
         }

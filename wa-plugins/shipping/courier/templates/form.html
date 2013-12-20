@@ -130,7 +130,7 @@
             <!-- order content -->
             <ul class="order-content">
                 {foreach $order.items as $item}
-            	   <li>{$item.name|escape} <span class="gray">&times;</span> {$item.quantity}</li>
+            	   <li>{$item.name|escape} <span class="gray">{$item.sku|escape}</span> <span class="gray">&times;</span> {$item.quantity}</li>
                 {/foreach}
             </ul>
 
