@@ -102,6 +102,7 @@ ul.menu-v li.selected a { color: #fff; border-color: #395676 #3B6798 #4A73A0; ba
 ul.menu-v li.selected ul.menu-v li a { background: #fff !important; color: #45688E; }
 
 ul.menu-h { margin: 0; padding: 0; }
+ul.menu-h.bottom-padded { margin-bottom: 20px; }
 ul.menu-h li { list-style: none; display: inline-block; padding: 1px 10px 0 0; line-height: 1.1em; display:block\9; float:left\9; /* ie8 hack */ }
 ul.menu-h li a { padding: 5px 8px; font-weight: bold; }
 ul.menu-h li a img.icon16 { position: relative; top: 3px; left: -3px; }
@@ -228,7 +229,9 @@ i.icon16 { background-repeat:no-repeat; height:16px; width:16px; display:inline-
 .icon16.twitter { background-image: url("img/twitter.png"); }
 .icon16.cart { background-image: url('img/cart-full.png'); }
 .icon16.cart.empty { background-image: url('img/cart-empty.png'); opacity: 0.6; }
+
 .icon16.userpic20 { background-position: -2px -2px; }
+.icon16.color { border-radius: 50%; border: 1px solid rgba(0,0,0,0.2); width: 14px; height: 14px; }
 
 /* 10x10 Icons
 -------------- */

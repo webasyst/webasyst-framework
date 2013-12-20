@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE theme PUBLIC "wa-app-theme" "http://www.webasyst.com/wa-content/xml/wa-app-theme.dtd">
-<theme id="facebook" system="0" vendor="webasyst" author="Webasyst" app="site" version="1.0.0">
+<theme id="facebook" system="0" vendor="webasyst" author="Webasyst" app="site" version="1.1.0">
   <name locale="en_US">Facebook</name>
   <name locale="ru_RU">Фейсбук</name>
   <description locale="ru_RU">Ваш сайт внутри Фейсбука в виде iframe-приложения.</description>
