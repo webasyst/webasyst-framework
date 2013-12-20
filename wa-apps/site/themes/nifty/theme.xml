@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE theme PUBLIC "wa-app-theme" "http://www.webasyst.com/wa-content/xml/wa-app-theme.dtd">
-<theme id="nifty" system="0" vendor="webasyst" author="Webasyst" app="site" version="1.0.0">
+<theme id="nifty" system="0" vendor="webasyst" author="Webasyst" app="site" version="1.1.0">
   <name locale="en_US">Nifty</name>
   <name locale="ru_RU">Nifty</name>
   <description locale="ru_RU">Семейство адаптивных тем дизайна.</description>
@@ -66,6 +66,58 @@
         <description locale="ru_RU">Внутренняя навигация по витрине магазина</description>
     </file> 
   </files>
+  <settings>
+        <setting var="color_scheme" control_type="select">
+            <value>purple</value>
+            <name locale="ru_RU">Цветовая гамма</name>
+            <name locale="en_US">Color scheme</name>
+            <options>
+                <option value="purple">
+                    <name locale="ru_RU">Фиолетовая</name>
+                    <name locale="en_US">Purple</name>
+                </option>
+                <option value="green">
+                    <name locale="ru_RU">Зеленая</name>
+                    <name locale="en_US">Green</name>
+                </option>
+                <option value="blue">
+                    <name locale="ru_RU">Синяя</name>
+                    <name locale="en_US">Blue</name>
+                </option>
+                <option value="red">
+                    <name locale="ru_RU">Красная</name>
+                    <name locale="en_US">Red</name>
+                </option>
+                <option value="yellow">
+                    <name locale="ru_RU">Желтая</name>
+                    <name locale="en_US">Yellow</name>
+                </option>
+                <option value="white">
+                    <name locale="ru_RU">Белая</name>
+                    <name locale="en_US">White</name>
+                </option>
+                <option value="black">
+                    <name locale="ru_RU">Черная</name>
+                    <name locale="en_US">Black</name>
+                </option>
+            </options>
+        </setting>
+        <setting var="facebook_url" control_type="text">
+            <value>http://www.facebook.com/</value>
+            <name locale="en_US">Facebook Page URL</name>
+            <name locale="ru_RU">Адрес страницы в Фейсбуке</name>
+        </setting>
+        <setting var="twitter_url" control_type="text">
+            <value>http://twitter.com/</value>
+            <name locale="en_US">Twitter URL</name>
+            <name locale="ru_RU">Адрес страницы на Твиттере</name>
+        </setting>
+        <setting var="ajax_filters" control_type="checkbox">
+            <value>1</value>
+            <name locale="en_US">AJAX-enabled product by-feature filtering</name>
+            <name locale="ru_RU">AJAX-фильтры товаров по характеристикам</name>
+        </setting>
+  </settings>
   <about locale="en_US">
 <![CDATA[
 <p><b>Nifty</b> is a universal adaptive design theme family for all basic Webasyst apps: Site, Blog, Photos, Shop-Script, and others. The parent (main) theme of the family, which includes the basic set of CSS rules and the common layout template index.html, is the Nifty (i.e. this) theme for the Site application. All Nifty design themes used in other applications (e.g., Blog or Photos) link common CSS and index.html layout file from the main (i.e. this) theme.</p>
