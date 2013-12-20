@@ -57,7 +57,7 @@ return array(
             '12' => array('zone' => 2, 'avia_only' => false), /*Республика Марий Эл*/
             '13' => array('zone' => 2, 'avia_only' => false), /*Республика Мордовия*/
             '14' => array('zone' => 4, 'avia_only' => false), /*Республика Саха (Якутия)*/
-            '15' => array('zone' => 2, 'avia_only' => false), /*Республика Северная Осетия — Алания*/
+            '15' => array('zone' => 2, 'avia_only' => false), /*Республика Северная Осетия-Алания*/
             '16' => array('zone' => 2, 'avia_only' => false), /*Республика Татарстан*/
             '17' => array('zone' => 3, 'avia_only' => false), /*Республика Тыва*/
             '19' => array('zone' => 3, 'avia_only' => false), /*Республика Хакасия*/
@@ -90,14 +90,14 @@ return array(
         'control_type' => 'RegionRatesControl',
     ),
     'halfkilocost' => array(
-        'value'        => array(1 => 130.90, 2 => 132.70, 3 => 138.10, 4 => 168.20, 5 => 189.50, ),
+        'value'        => array(1 => 138.80, 2 => 140.70, 3 => 146.40, 4 => 178.30, 5 => 199.00, ),
         'title'        => 'Стоимость отправки посылки весом до 0.5 килограмм (включительно)',
         'description'  => '',
         'control_type' => 'WeightCosts',
     ),
 
     'overhalfkilocost' => array(
-        'value'        => array(1 => 10.00, 2 => 11.60, 3 => 16.90, 4 => 24.30, 5 => 28.10, ),
+        'value'        => array(1 => 12.00, 2 => 13.90, 3 => 20.30, 4 => 29.20, 5 => 33.70, ),
         'title'        => 'Стоимость отправки каждых дополнительных 0.5 килограмм',
         'description'  => '',
         'control_type' => 'WeightCosts',
