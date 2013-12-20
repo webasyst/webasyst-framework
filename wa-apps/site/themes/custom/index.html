@@ -5,15 +5,18 @@
 	<title>{$wa->title()|escape}</title>
 	<meta name="Keywords" content="{$wa->meta('keywords')|escape}" />
 	<meta name="Description" content="{$wa->meta('description')|escape}" />
-	
+
+    {if !empty($canonical)}<link rel="canonical" href="{$canonical}"/>{/if}
+
 	<!-- css -->
-	<link href="{$wa_theme_url}custom.css?{$wa->version()}" rel="stylesheet" type="text/css"/>
-	<link href="{$wa_theme_url}custom.mobile.css?{$wa->version()}"{if !$wa->isMobile()} media="screen and (max-width: 760px)"{/if} rel="stylesheet" type="text/css"/>
+	<link href="{$wa_theme_url}custom.css?v{$wa_theme_version}" rel="stylesheet" type="text/css"/>
+	<link href="{$wa_theme_url}custom.mobile.css?v{$wa_theme_version}"{if !$wa->isMobile()} media="screen and (max-width: 760px)"{/if} rel="stylesheet" type="text/css"/>
+    {if $wa->shop && $wa->shop->currency() == 'RUB'} <link href="{$wa_url}wa-content/font/ruble/arial/fontface.css" rel="stylesheet" type="text/css">{/if}
 	{$wa->css()} {* links active plugins CSS *}
 	
 	<!-- js -->
     <script type="text/javascript" src="{$wa_url}wa-content/js/jquery/jquery-1.8.2.min.js"></script>
-    <script type="text/javascript" src="{$wa_theme_url}custom.js"></script>    
+    <script type="text/javascript" src="{$wa_theme_url}custom.js?v{$wa_theme_version}"></script>    
 	{if $wa->isMobile()}
 		<meta name="viewport" content="width=device-width; initial-scale=1; maximum-scale=1; user-scalable=0;" />
 	{/if}
@@ -22,6 +25,14 @@
     {include file="`$wa_active_theme_path`/head.html" inline}
     
     {$wa->headJs()} {* links Google Analytics tracking code and current site's custom JS (Site app) *}
+    
+    <!-- custom theme settings styles -->
+    <style>
+        {if !empty($theme_settings.bg_image)}
+            html, body { background: url('{$wa_theme_url}{$theme_settings.bg_image}'); }
+        {/if}
+    </style>
+    
 </head>
 <body id="{$wa_app}">
 
@@ -46,7 +57,7 @@
    		     			<a href="{$wa->getUrl('shop/frontend/cart')}">
    		     				<i class="icon16 cart{if !$cart_total} empty{/if}"></i>
    		     				[s`Shopping cart`]:
-   		     				<strong class="cart-total">{wa_currency($cart_total, $wa->shop->currency())}</strong>
+   		     				<strong class="cart-total">{wa_currency_html($cart_total, $wa->shop->currency())}</strong>
    		     			</a>
    		     		</div>
         		{/if}

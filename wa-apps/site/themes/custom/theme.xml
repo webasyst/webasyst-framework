@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE theme PUBLIC "wa-app-theme" "http://www.webasyst.com/wa-content/xml/wa-app-theme.dtd">
-<theme id="custom" system="0" vendor="webasyst" author="Webasyst" app="site" version="1.0.0">
+<theme id="custom" system="0" vendor="webasyst" author="Webasyst" app="site" version="1.1.0">
   <name locale="en_US">CUSTOM</name>
   <name locale="ru_RU">CUSTOM</name>
   <description locale="ru_RU">Семейство адаптивных тем дизайна.</description>
@@ -45,10 +45,10 @@
 		<description locale="en_US">404 and other errors</description>
 		<description locale="ru_RU">404 и другие ошибки</description>
     </file>
-  <file path="custom.js" custom="0">
-      <description locale="en_US">JS</description>
-      <description locale="ru_RU">JS</description>
-  </file>
+    <file path="custom.js" custom="0">
+        <description locale="en_US">JS</description>
+        <description locale="ru_RU">JS</description>
+    </file>
   </files>
   <about locale="en_US">
 <![CDATA[
@@ -97,4 +97,20 @@
 
 ]]>
   </about>
+  <settings>
+        <setting var="bg_image" control_type="image_select">
+            <value>img/cloth.jpg</value>
+            <name locale="en_US">Background</name>
+            <name locale="ru_RU">Фон</name>
+            <options>
+                <option value="img/cloth.jpg"></option>
+                <option value="img/grey.jpg"></option>
+                <option value="img/red.jpg"></option>
+                <option value="img/blue.jpg"></option>
+                <option value="img/green.jpg"></option>
+                <option value="img/purple.jpg"></option>
+                <option value="img/yellow.jpg"></option>
+            </options>
+        </setting>
+  </settings>
 </theme>
