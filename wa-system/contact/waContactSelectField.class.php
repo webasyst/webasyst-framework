@@ -81,5 +81,20 @@ class waContactSelectField extends waContactField
         $html .= '</select>';
         return $html;
     }
+
+    public function validate($data, $contact_id=null)
+    {
+        if (!isset($this->options['validators'])) {
+            $this->options['validators'] = array();
+        }
+
+        if ($this->getParameter('required') && !$this->options['validators']) {
+            $this->options['validators'][] = new waStringValidator($this->options, array(
+                'required' => _ws('Select value'),
+            ));
+        }
+
+        return parent::validate($data, $contact_id);
+    }
 }
 

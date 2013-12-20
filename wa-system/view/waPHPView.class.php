@@ -6,16 +6,13 @@ class waPHPView extends waView
 
     protected $vars = array();
     protected $template_dir = array();
-    /**
-     * @var waSystem
-     */
-    protected $system;
+
     protected $current_template;
 
     public function __construct(waSystem $system, $options = array())
     {
         parent::__construct($system, $options);
-        $this->template_dir = isset($options['template_dir']) ? $options['template_dir'] : $this->system->getAppPath();
+        $this->template_dir = isset($options['template_dir']) ? $options['template_dir'] : $system->getAppPath();
     }
 
     public function assign($name, $value = null, $escape = false)

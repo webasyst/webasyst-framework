@@ -128,7 +128,7 @@ class waCurrency
         self::$format_data['n'] = $n;
         self::$format_data['locale'] = $locale;
         self::$format_data['currency'] = $currency;
-        $pattern = '/%([0-9]?\.?[0-9]?)([iw]*)({[n|f|c|s][0-9]?})?/i';
+        $pattern = '/%([0-9]?\.?[0-9]?)([iw]*)({[n|f|c|s|h][0-9]?})?/i';
         $result = preg_replace_callback($pattern, array('self', 'replace_callback'), $format);
         if ($locale !== $old_locale) {
             wa()->setLocale($old_locale);
@@ -211,20 +211,26 @@ class waCurrency
             $currency['sign_delim'] = ' ';
         }
 
+
         // $desc: add currency name, or sign, or code, etc.
         if ($desc) {
             $desc = substr($desc, 1, -1);
             $key = null;
             if (substr($desc, 0, 1) === 'c') {
                 $result .= ' '.$currency['code'];
-            } elseif (substr($desc, 0, 1) === 's') {
+            } elseif (substr($desc, 0, 1) === 's' || substr($desc, 0, 1) === 'h') {
+                if (substr($desc, 0, 1) === 'h' && !empty($currency['sign_html'])) {
+                    $s = $currency['sign_html'];
+                }  else {
+                    $s = $currency['sign'];
+                }
                 switch ($currency['sign_position']) {
                     case 0:
-                        $result = $currency['sign'].$currency['sign_delim'].$result;
+                        $result = $s.$currency['sign_delim'].$result;
                         break;
                     case 1:
                     default:
-                        $result .= $currency['sign_delim'].$currency['sign'];
+                        $result .= $currency['sign_delim'].$s;
                 }
             } elseif (substr($desc, 0, 1) === 'f') {
                 $key = 'frac_name';

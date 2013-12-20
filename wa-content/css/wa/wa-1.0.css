@@ -331,9 +331,11 @@ position:relative; top:0.05em; margin:0 0 -0.5em; }
 .successmsg { display: block; font-size: 0.9em; font-weight: bold; font-style: italic; color: green; }
 input::-webkit-input-placeholder { color: #aaa; }
 input:-moz-placeholder { color: #aaa; }
+input::-moz-placeholder { color: #aaa; }
 input:-ms-input-placeholder { color: #aaa; }
 textarea::-webkit-input-placeholder { color: #aaa; }
 textarea:-moz-placeholder { color: #aaa; }
+textarea::-moz-placeholder { color: #aaa; }
 textarea:-ms-input-placeholder { color: #aaa; }
 input.numerical { text-align: right; margin-right: 3px !important; }
 input.short { min-width: 60px !important; width: 60px !important; }
@@ -905,7 +907,9 @@ i.icon16.hidden { display: none; }
 .icon16.blog { background-position: -96px -80px; }
 .icon16.notebooks  { background-position: -80px -80px; }
 .icon16.calendar  { background-position: -48px -48px; }
-.icon16.exclamation  { background-position: -64px -48px; }
+.icon16.exclamation { background-position: -64px -48px; }
+.icon16.attachment { background-position: -80px -48px; }
+.icon16.attachment-small { background-position: -96px -48px; }
 .icon16.tags { background-position: -480px -48px; }
 .icon16.stack { background-position: -128px -80px; }
 .icon16.checkboxes { background-position: -144px -80px; }
@@ -961,6 +965,7 @@ i.icon10 { background-repeat:no-repeat; background-image: url(../../../wa-conten
 .icon10.delete { background-position:-80px -20px; }
 .icon10.delete-bw { background-position:-100px -20px; }
 .icon10.info { background-position:-20px -30px; }
+.icon10.attachment { background-position:-30px -30px; }
 .icon10.exclamation { background-position:-90px -20px; }
 .icon10.clock { background-position:-10px -30px; }
 .icon10.view-thumbs { background-position:-110px -10px; }
@@ -984,7 +989,7 @@ i.icon10 { background-repeat:no-repeat; background-image: url(../../../wa-conten
 .ui-slider { width: 200px; }
 .ui-slider-horizontal { height: 2px; border: none; }
 .ui-slider-horizontal .ui-slider-handle,
-.ui-slider-horizontal .ui-slider-handle.ui-state-focus { top: -0.55em; margin-left: -0.4em; height: 1em; width: 0.5em; border-color: #aaa; box-shadow: 0 1px 4px rgba(0,0,0,0.25); border-radius: 0; }
+.ui-slider-horizontal .ui-slider-handle.ui-state-focus { top: -0.55em; margin-left: -0.4em; height: 1.1em; width: 1.1em; border-color: #aaa; box-shadow: 0 1px 4px rgba(0,0,0,0.25); border-radius: 50%; }
 .ui-slider-horizontal .ui-slider-handle.ui-state-hover { border-color: #999; box-shadow: 0 1px 4px rgba(0,0,0,0.35); }
 .ui-slider-horizontal.ui-widget-content { background: #bbb; }
 .ui-slider-horizontal .ui-widget-header { background: #0a0; height: 4px; position: relative; top: -1px; }

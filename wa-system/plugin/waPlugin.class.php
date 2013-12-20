@@ -25,7 +25,16 @@ class waPlugin
     {
         return $this->info['name'];
     }
-    
+
+    public function getVersion()
+    {
+        $version = isset($this->info['version']) ? $this->info['version'] : '0.0.1';
+        if (!empty($this->info['build'])) {
+            $version .= '.'.$this->info['build'];
+        }
+        return $version;
+    }
+
     protected function checkUpdates()
     {
         $app_settings_model = new waAppSettingsModel();
@@ -95,6 +104,7 @@ class waPlugin
         } else {
             $t = 1;
         }
+
         if ($ignore_all) {
             if (!isset($t) || !$t) {
                 $t = 1;
@@ -102,7 +112,7 @@ class waPlugin
             $app_settings_model->set(array($this->app_id, $this->id), 'update_time', $t);
         }
     }
-    
+
     protected function install()
     {
 
@@ -123,9 +133,19 @@ class waPlugin
         if (file_exists($file)) {
             $app_id = $this->app_id;
             include($file);
+            // clear db scheme cache, see waModel::getMetadata
+            try {
+                // remove files
+                $path = waConfig::get('wa_path_cache').'/db/';
+                waFiles::delete($path, true);
+            } catch (waException $e) {
+                waLog::log($e->__toString());
+            }
+            // clear runtime cache
+            waRuntimeCache::clearAll();
         }
     }
-    
+
     public function uninstall()
     {
         // check uninstall.php
@@ -169,14 +189,14 @@ class waPlugin
         // Remove cache of the appliaction
         waFiles::delete(wa()->getAppCachePath('', $this->app_id));
     }
-    
 
-    public function getPluginStaticUrl() 
+
+    public function getPluginStaticUrl($absolute = false)
     {
-        return wa()->getAppStaticUrl($this->app_id).'plugins/'.$this->id.'/';
+        return wa()->getAppStaticUrl($this->app_id, $absolute).'plugins/'.$this->id.'/';
     }
 
-    public function getRights($name = '', $assoc = true) 
+    public function getRights($name = '', $assoc = true)
     {
         $right = 'plugin.'.$this->id;
         if ($name) {
@@ -184,12 +204,12 @@ class waPlugin
         }
         return wa()->getUser()->getRights(wa()->getConfig()->getApplication(), $right, $assoc);
     }
-    
+
     public function rightsConfig(waRightConfig $rights_config)
     {
         $rights_config->addItem('plugin.'.$this->id, $this->info['name'], 'checkbox');
     }
-    
+
     protected function getUrl($url, $is_plugin)
     {
         if ($is_plugin) {
@@ -198,15 +218,15 @@ class waPlugin
             return $url;
         }
     }
-    
+
     protected function addJs($url, $is_plugin = true)
     {
-        waSystem::getInstance()->getResponse()->addJs($this->getUrl($url, $is_plugin),$this->app_id);
+        waSystem::getInstance()->getResponse()->addJs($this->getUrl($url, $is_plugin), $this->app_id);
     }
-    
+
     protected function addCss($url, $is_plugin = true)
     {
-        waSystem::getInstance()->getResponse()->addCss($this->getUrl($url, $is_plugin),$this->app_id);
+        waSystem::getInstance()->getResponse()->addCss($this->getUrl($url, $is_plugin), $this->app_id);
     }
 
     public function routing($route = array())

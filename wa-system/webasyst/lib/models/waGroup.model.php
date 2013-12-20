@@ -45,7 +45,7 @@ class waGroupModel extends waModel
         $sql = "SELECT id, name FROM ".$this->table." WHERE id IN (i:ids)";
         $result = $this->query($sql, array('ids' => $id))->fetchAll('id', true);
         if ($string) {
-            return $result[$id[0]];
+            return ifset($result[$id[0]], $id[0]);
         }
         return $result;
     }

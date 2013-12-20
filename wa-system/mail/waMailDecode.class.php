@@ -179,10 +179,15 @@ class waMailDecode
         return $message_id ? $message_id : null;
     }
 
-    protected function cleanHTML($html)
+    protected function cleanHTML($html_orig)
     {
         // body only
-        $html = preg_replace("!^.*?<body[^>]*>(.*?)</body>.*?$!is", "$1", $html);
+        $html = preg_replace("!^.*?<body[^>]*>(.*?)</body>.*?$!uis", "$1", $html_orig);
+
+        // Being paranoid... In case UTF is not quite UTF.
+        if (!$html) {
+            $html = preg_replace("!^.*?<body[^>]*>(.*?)</body>.*?$!is", "$1", $html_orig);
+        }
 
         // Remove <style> blocks
         $html = preg_replace("~<style[^>]*>.*?</style>~is", '', $html);

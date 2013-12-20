@@ -3,6 +3,7 @@
 return array(
     'code' => 'RUB',
     'sign' => 'руб.',
+    'sign_html' => '<span class="ruble">Р</span>',
     'title' => 'Russian Rouble',
     'name' => array(
         array('rouble', 'roubles'),

@@ -1,6 +1,6 @@
 <?php
 
-if (!isset($argc)) {
+if (php_sapi_name() !== "cli") {
     die("Run from CLI only!");
 }
 

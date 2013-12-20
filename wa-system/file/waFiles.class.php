@@ -25,19 +25,20 @@ class waFiles
     {
         throw new waException('waFiles::__construct disabled');
     }
+
     /**
      * Create parent directories for given file path, unless already exist.
      *
-     * @param string $path  full path
+     * @param string $path full path
      * @return string|bool copy of $path if success or false otherwise
      */
-    public static function create($path)
+    public static function create($path, $is_dir = false)
     {
         if (file_exists($path)) {
             return $path;
         }
         $result = $path;
-        if (substr($path, -1) !== '/' && strpos(basename($path), ".") !== false) {
+        if (!$is_dir && substr($path, -1) !== '/' && strpos(basename($path), ".") !== false) {
             $path = dirname($path);
         }
         if ($path && !file_exists($path)) {
@@ -55,22 +56,22 @@ class waFiles
     /**
      * Copy a file, creating parent directories if needed.
      * @param string $source_path full path to source file
-     * @param string $dest_path full patn to destination file
+     * @param string $target_path full path to destination file
      * @param string|array $skip_pattern pattern to skip files
      * @throws Exception
      */
-    public static function copy($source_path, $dest_path, $skip_pattern = null)
+    public static function copy($source_path, $target_path, $skip_pattern = null)
     {
         if (is_dir($source_path)) {
             try {
                 if ($dir = opendir($source_path)) {
-                    self::create($dest_path);
+                    self::create($target_path);
                     while (false !== ($path = readdir($dir))) {
                         if (($path != '.') && ($path != '..')) {
-                            $destination = $dest_path.'/'.$path;
+                            $destination = $target_path.'/'.$path;
                             $source = $source_path.'/'.$path;
                             if ($skip_pattern) {
-                                foreach ((array) $skip_pattern as $pattern) {
+                                foreach ((array)$skip_pattern as $pattern) {
                                     if (preg_match($pattern, $source)) {
                                         continue 2;
                                     }
@@ -89,20 +90,20 @@ class waFiles
                     closedir($dir);
                 }
             } catch (Exception $e) {
-                if ($dir && is_resource($dir)) {
+                if (!empty($dir) && is_resource($dir)) {
                     closedir($dir);
                 }
                 throw $e;
             }
         } else {
-            self::create(dirname($dest_path));
-            if (@copy($source_path, $dest_path)) {
+            self::create(dirname($target_path));
+            if (@copy($source_path, $target_path)) {
                 /*@todo copy file permissions*/
             } else {
-                if (file_exists($source_path) && file_exists($dest_path) && (filesize($source_path) === 0)) {
+                if (file_exists($source_path) && file_exists($target_path) && (filesize($source_path) === 0)) {
                     /*It's ok - it's windows*/
                 } else {
-                    throw new Exception("error on copy from {$source_path} to {$dest_path}");
+                    throw new Exception("error on copy from {$source_path} to {$target_path}");
                 }
             }
         }
@@ -111,13 +112,13 @@ class waFiles
     /**
      * Move (rename) a file, creating parent directories if needed.
      * @param string $source_path full path to source file
-     * @param string $dest_path full patn to destination file
+     * @param string $target_path full path to destination file
      * @return bool
      */
-    public static function move($source_path, $dest_path)
+    public static function move($source_path, $target_path)
     {
-        self::create(dirname($dest_path));
-        return rename($source_path, $dest_path);
+        self::create(dirname($target_path));
+        return rename($source_path, $target_path);
     }
 
     /**
@@ -174,6 +175,7 @@ class waFiles
      * @param string $path full path to file
      * @param boolean $ignore_dir_errors true to silently skip errors when deleting directories supposed to be empty (defaults to false)
      * @throws waException
+     * @throws Exception
      * @return bool
      */
     public static function delete($path, $ignore_dir_errors = false)
@@ -192,7 +194,7 @@ class waFiles
 
         // recursively delete a directory
         try {
-            if ( ( $dir = opendir($path))) {
+            if (($dir = opendir($path))) {
                 while (false !== ($current_path = readdir($dir))) {
                     if ($current_path === null) {
                         break; // being paranoid
@@ -310,15 +312,15 @@ class waFiles
             }
 
             $curl_default_options = array(
-                CURLOPT_HEADER => 0,
-                CURLOPT_RETURNTRANSFER => 1,
-                CURLOPT_TIMEOUT => 10,
-                CURLOPT_CONNECTTIMEOUT => 10,
+                CURLOPT_HEADER            => 0,
+                CURLOPT_RETURNTRANSFER    => 1,
+                CURLOPT_TIMEOUT           => 10,
+                CURLOPT_CONNECTTIMEOUT    => 10,
                 CURLE_OPERATION_TIMEOUTED => 10,
                 CURLOPT_DNS_CACHE_TIMEOUT => 3600,
 
-                CURLOPT_BINARYTRANSFER => true,
-                CURLOPT_WRITEFUNCTION => array(__CLASS__, 'curlWriteHandler'),
+                CURLOPT_BINARYTRANSFER    => true,
+                CURLOPT_WRITEFUNCTION     => array(__CLASS__, 'curlWriteHandler'),
             );
 
             if ((version_compare(PHP_VERSION, '5.4', '>=') || !ini_get('safe_mode')) && !ini_get('open_basedir')) {
@@ -349,9 +351,17 @@ class waFiles
         return $ch;
     }
 
+    /**
+     * @usedby self::curlInit()
+     *
+     * @param $ch
+     * @param $chunk
+     *
+     * @return int
+     * @throws Exception
+     */
     private static function curlWriteHandler($ch, $chunk)
     {
-        $size = 0;
         if (self::$fp && is_resource(self::$fp)) {
             $size = fwrite(self::$fp, $chunk);
             self::$size += $size;
@@ -366,8 +376,8 @@ class waFiles
         $s = parse_url($url, PHP_URL_SCHEME);
         $w = stream_get_wrappers();
         if (in_array($s, $w) && ini_get('allow_url_fopen')) {
-            if ($fp = fopen($url, 'rb')) {
-                if (self::$fp = fopen($path, 'wb')) {
+            if ($fp = @fopen($url, 'rb')) {
+                if (self::$fp = @fopen($path, 'wb')) {
                     self::$size = stream_copy_to_stream($fp, self::$fp);
                     fclose(self::$fp);
                 } else {
@@ -379,7 +389,7 @@ class waFiles
                 throw new waException('Error while open source file');
             }
         } elseif ($ch = self::curlInit($url)) {
-            if (self::$fp = fopen($path, 'wb')) {
+            if (self::$fp = @fopen($path, 'wb')) {
                 self::$size = 0;
                 wa()->getStorage()->close();
                 curl_exec($ch);
@@ -420,19 +430,21 @@ class waFiles
                 $md5 = base64_encode(pack('H*', md5_file($file)));
             }
             @ini_set('async_send', 1);
-            $sid = wa()->getStorage()->close();
+            wa()->getStorage()->close();
 
             if ($attach !== null) {
                 $send_as = str_replace('"', '\"', is_string($attach) ? $attach : basename($file));
+                $send_as = preg_replace('~[\n\r]+~', ' ', $send_as);
 
-                //TODO detect nginx internal redirect available
-                $allow_accel_redirect = false;
+                $x_accel_redirect = waSystemConfig::systemOption('x_accel_redirect');
 
                 $file_size = filesize($file);
-                if (!$allow_accel_redirect) {
+                $response->setStatus(200);
+                if (empty($x_accel_redirect)) {
                     $from = $to = false;
 
                     if ($http_range = waRequest::server('HTTP_RANGE')) {
+                        // multi range support incomplete
                         list($dimension, $range) = explode("=", $http_range, 2);
                         $ranges = explode(',', $range);
                         $intervals = array();
@@ -508,10 +520,7 @@ class waFiles
                     }
 
                     @fclose($fp);
-                } else { //internal nginx redirect
-                    $path = substr($file, strlen($nginx_path));
-                    $path = preg_replace('@([/\\\\]+)@', '/', '/'.$nginx_base.'/'.$path);
-
+                } else {
                     $response->addHeader("Content-type", $file_type);
                     $response->addHeader("Content-Disposition", "attachment; filename=\"{$send_as}\";");
                     $response->addHeader("Accept-Ranges", "bytes");
@@ -524,10 +533,10 @@ class waFiles
                         $response->addHeader("Content-MD5", $md5);
                     }
 
-                    $response->addHeader("X-Accel-Redirect", $path);
+                    $response->addHeader("X-Accel-Redirect", $file);
                     //@future
                     //$response->addHeader("X-Accel-Limit-Rate", $rate_limit);
-                    }
+                }
             } else {
                 $response->addHeader("Content-type", $file_type);
                 $response->addHeader("Last-Modified", filemtime($file));
@@ -543,8 +552,6 @@ class waFiles
                     $response->sendHeaders();
                 }
                 exit();
-            } elseif ($sid) {
-                wa()->getStorage()->open();
             }
         } else {
             throw new waException("File not found", 404);
@@ -567,6 +574,7 @@ class waFiles
      * @param int $file_size
      * @param string $format
      * @param string|mixed $dimensions
+     * @return string
      */
     public static function formatSize($file_size, $format = '%0.2f', $dimensions = 'Bytes,KBytes,MBytes,GBytes')
     {

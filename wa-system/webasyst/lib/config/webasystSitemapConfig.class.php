@@ -17,11 +17,21 @@ class webasystSitemapConfig extends waSitemapConfig
         }
 
         foreach ($domain_apps as $app_id => $app) {
-            if (file_exists($system->getAppPath('lib/config/'.$app_id.'SitemapConfig.class.php', $app_id))) {
-                echo '<sitemap>
-<loc>'.$system->getRootUrl(true, true).'sitemap-'.$app_id.'.xml</loc>
+            $path = $system->getAppPath('lib/config/'.$app_id.'SitemapConfig.class.php', $app_id);
+            if (file_exists($path)) {
+                include_once($path);
+                $class_name = $app_id.'SitemapConfig';
+                /**
+                 * @var waSitemapConfig $sitemap
+                 */
+                $sitemap = new $class_name;
+                $n = $sitemap->count();
+                for ($i = 0; $i < $n; $i++) {
+                    echo '<sitemap>
+<loc>'.$system->getRootUrl(true, true).'sitemap-'.$app_id.($n > 1 ? '-'.($i + 1) : '').'.xml</loc>
       <lastmod>'.date('c').'</lastmod>
 </sitemap>';
+                }
             }
         }
     }

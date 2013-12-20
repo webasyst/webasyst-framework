@@ -374,7 +374,7 @@ class waSystem
     public function dispatch()
     {
         try {
-            if (preg_match('/^sitemap-?([a-z0-9_]+)?.xml$/i', $this->config->getRequestUrl(true), $m)) {
+            if (preg_match('/^sitemap-?([a-z0-9_]+)?(-([0-9]+))?.xml$/i', $this->config->getRequestUrl(true), $m)) {
                 $app_id = isset($m[1]) ? $m[1] : 'webasyst';
                 if ($this->appExists($app_id)) {
                     self::getInstance($app_id);
@@ -384,7 +384,11 @@ class waSystem
                          * @var $sitemap waSitemapConfig
                          */
                         $sitemap = new $class();
-                        $sitemap->display();
+                        $n = ifempty($m[3]);
+                        if (!$n) {
+                            $n = 1;
+                        }
+                        $sitemap->display($n);
                     }
                 } else {
                     throw new waException("Page not found", 404);
@@ -935,6 +939,16 @@ class waSystem
             if (!isset($plugin_info['app_id'])) {
                 $plugin_info['app_id'] = $app_id;
             }
+            $build_file = $this->getConfig()->getPluginPath($plugin_id).'lib/config/build.php';
+            if (file_exists($build_file)) {
+                $plugin_info['build'] = include($build_file);
+            } else {
+                if (SystemConfig::isDebug()) {
+                    $plugin_info['build'] = time();
+                } else {
+                    $plugin_info['build'] = 0;
+                }
+            }
             // load locale
             self::pushActivePlugin($plugin_id, $app_id);
             $locale_path = $this->getAppPath('plugins/'.$plugin_id.'/locale', $app_id);
@@ -951,6 +965,7 @@ class waSystem
      * Trigger event with given $name from current active application.
      * @param string $name
      * @param mixed $params passed to event handlers
+     * @param string[] $array_keys array of expected template items for UI events
      * @return array app_id or plugin_id => data returned from handler (unless null is returned)
      */
     public function event($name, &$params = null, $array_keys = null)
@@ -1068,8 +1083,8 @@ class waSystem
     /**
      * Return list of application themes
      * @param string $app_id default is current application
-     * @param string $app_id optional to get
-     * @return array
+     * @param string $domain optional to get
+     * @return waTheme[]
      */
     public function getThemes($app_id = null, $domain = null)
     {

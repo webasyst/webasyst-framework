@@ -879,11 +879,11 @@ elRTE.prototype.ui.prototype.buttons.wa_image = function(rte, name) {
 
         this.d = $('<div id="elrte-wa_image" class="fields form"></div>')
         .append(dialog_row(this.rte.i18n('Image'),[
-                $("<label></label>")
-                    .append('<input type="radio" name="source" value="url" checked /> ' + this.rte.i18n('URL') + ' ')
+                $("<div class='label'></div>")
+                    .append('<label><input type="radio" name="source" value="url" checked />' + this.rte.i18n('URL') + '</label> ')
                     .append(this.src.src),
-                $("<label></label>")
-                    .append('<input type="radio" name="source" value="file" /> ' + this.rte.i18n('Upload') + ' ')
+                $("<div class='label'></div>")
+                    .append('<label><input type="radio" name="source" value="file" /> ' + this.rte.i18n('Upload') + ' </label>')
                     .append(this.src.file)
                     .append('<br /><span class="hint">' + ($_ ? $_('Image will be uploaded into') : this.rte.i18n('Image will be uploaded into')) + ' '+(rte.options.wa_image_upload_path?rte.options.wa_image_upload_path:'/wa-data/public/site/img/')+'</span>')]
                 ))
@@ -902,6 +902,10 @@ elRTE.prototype.ui.prototype.buttons.wa_image = function(rte, name) {
             'class': 'wa-elrte-dialog',
             title : this.rte.i18n('Image'),
             buttons: '<input type="submit" class="button green" value="' + this.rte.i18n('OK') + '"> ' + this.rte.i18n('or') + ' <a href="#" class="inline-link cancel"><b><i>' + this.rte.i18n('cancel') + '</i></b></a>',
+            onLoad: function() {
+                var d = $(this);
+                
+            },
             onClose: function () {
                 self.bookmarks && self.rte.selection.moveToBookmark(self.bookmarks);
             },
@@ -915,21 +919,41 @@ elRTE.prototype.ui.prototype.buttons.wa_image = function(rte, name) {
                     f.attr('target', iframe.attr('name'));
                     f.attr('action', rte.options.wa_image_upload);
                     iframe.one('load', function () {
-                        var response = $.parseJSON($(this).contents().find('body').html());
-                        if (response.status == 'ok') {
-                            self.src.src.val(response.data);
-                            self.src.height.val('');
-                            self.src.width.val('');
-                            self.set();
-                            d.trigger('close');
-                        } else if (response.status == 'fail') {
-                            d.find("input[type=submit]").removeAttr('disabled');
-                            alert(response.errors);
+                        var onLoad = function(response) {
+                            if (response.status == 'ok') {
+                                self.src.src.val(response.data);
+                                self.src.height.val('');
+                                self.src.width.val('');
+                                self.set();
+                                d.trigger('close');
+                            } else if (response.status == 'fail') {
+                                d.find("input[type=submit]").removeAttr('disabled');
+                                alert(response.errors);
+                            } else {
+                                d.find("input[type=submit]").removeAttr('disabled');
+                                alert('Unknown error');
+                            }
+                            $(this).remove();
+                        };
+                        
+                        var that = $(this);
+                        var html = that.contents().find('body').html();
+                        if (html) {
+                            onLoad($.parseJSON(html));
                         } else {
-                            d.find("input[type=submit]").removeAttr('disabled');
-                            alert('Unknown error');
+                            var tries = 25;
+                            var makeTry = function() {
+                                var html = that.contents().find('body').html();
+                                if (!html && tries) {
+                                    tries -= 1;
+                                    setTimeout(makeTry, 250);
+                                } else if (html) {
+                                    onLoad($.parseJSON(html));
+                                }
+                            };
+                            setTimeout(makeTry, 250);
                         }
-                        $(this).remove();
+                        
                     });
                 } else {
                     self.set();
@@ -937,6 +961,18 @@ elRTE.prototype.ui.prototype.buttons.wa_image = function(rte, name) {
                     return false;
                 }
             }
+        });
+        
+        // When focus on input, check near radio-button. For FF standart html pill works incorrect
+        // See http://jsfiddle.net/dLP6A/
+        $('.label input[type=text]', this.d).focus(function() {
+            $(this).closest('.label').find('input[type=radio]').attr('checked', true);
+        });
+        
+        // When click to file inut in Chrome check near radio-button. For Chrome standart html pill works incorrect
+        // See http://jsfiddle.net/f9RJn/
+        $('.label input[type=file]', this.d).click(function() {
+            $(this).closest('.label').find('input[type=radio]').attr('checked', true);
         });
 
         if (this.img.attr('src')) {

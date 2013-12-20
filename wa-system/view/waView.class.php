@@ -17,18 +17,13 @@ abstract class waView
 
     protected $postfix = '.html';
 
-    /**
-     * @var waSystem
-     */
-    protected $system;
-
     protected $options = array();
     protected $helper;
 
     public function __construct(waSystem $system, $options = array())
     {
-        $this->system = $system;
         $this->helper = new waViewHelper($this);
+        $this->setOptions($options);
     }
 
     /**
@@ -61,11 +56,11 @@ abstract class waView
 
     protected function prepare()
     {
-          $this->assign('wa_url', $this->system->getRootUrl());
+          $this->assign('wa_url', wa()->getRootUrl());
           $this->assign('wa_backend_url', waSystem::getInstance()->getConfig()->getBackendUrl(true));
-          $this->assign('wa_app', $this->system->getApp());
-          $this->assign('wa_app_url', $this->system->getAppUrl(null, true));
-          $this->assign('wa_app_static_url', $this->system->getAppStaticUrl());
+          $this->assign('wa_app', wa()->getApp());
+          $this->assign('wa_app_url', wa()->getAppUrl(null, true));
+          $this->assign('wa_app_static_url', wa()->getAppStaticUrl());
           if (!$this->helper) {
               $this->helper = new waViewHelper($this);
           }

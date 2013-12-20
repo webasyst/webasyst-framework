@@ -4,7 +4,12 @@
         <ul id="wa-theme-list" class="menu-v">
             {foreach $themes as $t_id => $t}
                 <li id="wa-theme-list-{$t_id|escape}" class="no-icon" data-theme="{$t_id}">
-                    <a href="{$design_url}theme={$t_id}"{if $t.used} class="bold"{/if}>{$t.name}</a>
+                    <a href="{$design_url}theme={$t_id}"{if $t.used} class="bold"{/if}>
+                        <span class="wa-theme-name">{$t.name}</span>
+                        {if $t.used}
+                            <span class="hint">{$t.used[0].domain}/{$t.used[0].url}</span>
+                        {/if}
+                    </a>
                 </li>
             {/foreach}
             
@@ -32,21 +37,24 @@
     {/if}
     </div>
     <ul class="menu-v with-icons wa-theme" id="theme-{$t_id}">
-        {foreach $t.files as $f_id => $f}
-        <li class="{if $f.parent}{if !empty($f.parent_exists)}inherit{else}error{/if}{/if}">
+
+        {if $t.preview_url}
+            <li>
+                <a href="{$t.preview_url|escape}" target="_blank" class="bold wa-theme-preview{if $t.used} used{/if}" title="[s`Preview`]"><i class="icon16 new-window"></i>{$t.preview_name}</a>
+            </li>
+        {/if}    
+        <li class="bottom-padded"><a href="{$design_url}theme={$t_id}&action=theme"><i class="icon16 settings"></i>[s`Theme settings`]</a></li>
+    
+        {foreach $t.files as $f_id => $f name=foo}
+        <li class="{if $smarty.foreach.foo.first}top-padded {/if}{if $f.parent}{if !empty($f.parent_exists)}inherit{else}error{/if}{/if}">
             <a href="{$design_url}theme={$t_id}&file={$f_id|escape}">
                 <i class="icon16 {if !empty($f.parent_exists)}link{else}script{if substr($f_id, -4)=='.css'}-css{elseif substr($f_id, -3)=='.js'}-js{/if}{/if}"></i>{$f_id|escape}
             </a>
         </li>
         {/foreach}
 
-        {if $t.preview_url}
-            <li class="top-padded">
-                <a href="{$t.preview_url|escape}" target="_blank" class="bold small wa-theme-preview{if $t.used} used{/if}" title="[s`Preview`]"><i class="icon16 new-window"></i>[s`Preview theme`]</a>
-            </li>
-        {/if}
-        <li class="add-file"><a href="{$design_url}theme={$t_id}&file=" class="small"><i class="icon10 add"></i>[s`New file`] </a> </li>
-        <li><a href="{$design_url}theme={$t_id}&action=theme" class="small"><i class="icon10 settings"></i>[s`Theme settings`]</a></li>
+
+        <li class="add-file top-padded"><a href="{$design_url}theme={$t_id}&file=" class="small"><i class="icon10 add"></i>[s`New file`] </a> </li>
         {if $t.about}
         <li><a href="{$design_url}theme={$t_id}&action=themeAbout" class="small"><i class="icon10 info"></i>[s`About`]</a></li>
         {/if}

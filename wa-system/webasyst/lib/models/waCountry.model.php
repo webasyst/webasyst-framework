@@ -33,7 +33,7 @@ class waCountryModel extends waModel
             }
         }
         if ($fav) {
-            rsort($fav); // sort by fav_sort, desc
+            sort($fav); // sort by fav_sort, name
             $fav[] = $this->getEmptyRow(); // delimeter
         }
         return array_merge($fav, $all);

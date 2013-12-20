@@ -109,6 +109,9 @@ class waSignupAction extends waViewAction
         // try save contact
         $contact = new waContact();
         if (!$errors = $contact->save($data, true)) {
+            if (!empty($data['email'])) {
+                $this->send($contact);
+            }
             // after sign up callback
             $this->afterSignup($contact);
             // auth new contact
@@ -121,6 +124,39 @@ class waSignupAction extends waViewAction
             $errors['lastname'] = $errors['name'];
         }
         return false;
+    }
+
+    protected function getFrom()
+    {
+        return null;
+    }
+
+    public function send(waContact $contact)
+    {
+        $email = $contact->get('email', 'default');
+        if (!$email) {
+            return;
+        }
+        $subject = _ws("Thank you for signing up!");
+        $this->view->assign('email', $email);
+        $this->view->assign('name', $contact->getName());
+        $template_file = $this->getConfig()->getConfigPath('mail/Signup.html', true, 'webasyst');
+        if (file_exists($template_file)) {
+            $body = $this->view->fetch('string:'.file_get_contents($template_file));
+        } else {
+            $body = $this->view->fetch(wa()->getAppPath('templates/mail/Signup.html', 'webasyst'));
+        }
+        try {
+            $m = new waMailMessage($subject, $body);
+            $m->setTo($email, $contact->getName());
+            $from = $this->getFrom();
+            if ($from) {
+                $m->setFrom($from);
+            }
+            return (bool)$m->send();
+        } catch (Exception $e) {
+            return false;
+        }
     }
 
     /**

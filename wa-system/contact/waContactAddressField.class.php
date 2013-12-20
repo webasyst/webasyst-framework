@@ -42,7 +42,13 @@ class waContactAddressField extends waContactCompositeField
                  * @var $field waContactField
                  */
                 if (isset($data['data'][$field->getId()])) {
-                    $value[] = trim($field->format($data['data'][$field->getId()], 'value', $data['data']));
+                    $tmp = trim($field->format($data['data'][$field->getId()], 'value', $data['data']));
+                    if ($tmp) {
+                        if (!in_array($field->getId(), array('country', 'region', 'zip', 'street', 'city'))) {
+                            $tmp = $field->getName().' '.$tmp;
+                        }
+                        $value[] = $tmp;
+                    }
                 }
             }
             $data['value'] = implode(", ", array_filter($value, 'strlen'));
@@ -121,6 +127,9 @@ class waContactAddressOneLineFormatter extends waContactFieldFormatter
                     $result['parts'][$id] = $field->format($data['data'][$id], $format, $data['data']);
                 }
                 $result['parts'][$id] = htmlspecialchars($result['parts'][$id]);
+                if (!in_array($id, array('country', 'region', 'zip', 'street', 'city'))) {
+                    $result['parts'][$id] = $field->getName().' '.$result['parts'][$id];
+                }
             }
         }
 
@@ -137,7 +146,9 @@ class waContactAddressSeveralLinesFormatter extends waContactAddressOneLineForma
         $parts = $this->getParts($data);
         $i = 0;
         $data['value'] = array();
-        foreach($parts['parts'] as $part) {
+
+        $fields = waContactFields::get('address')->getFields();
+        foreach($parts['parts'] as $part_id => $part) {
             $v = '';
 
             // add country flag before the first line

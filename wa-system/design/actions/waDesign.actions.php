@@ -101,7 +101,7 @@ class waDesignActions extends waActions
                 $path = $theme->parent_theme->getPath();
                 $parent_file = $theme->parent_theme->getFile($f);
                 if (empty($file['description'])) {
-                    $file['description'] = $parent_file['description'];
+                    $file['description'] = ifset($parent_file['description'], '');
                 }
             } else {
                 $path = $theme->getPath();
@@ -156,13 +156,11 @@ class waDesignActions extends waActions
             if (isset($themes[$t_id])) {
                 if (!isset($themes[$t_id]['preview_url'])) {
                     $url = $r['_url'];
-                    $url .= strpos($url, '?') === false ? '?' : '&';
-                    $url .= 'theme_hash='.$hash.'&set_force_theme=';
                     if (!$preview_url && $r['_domain'] == $domain) {
                         $preview_url = $url;
                     }
                     $themes[$t_id]['is_used'] = true;
-                    $themes[$t_id]['preview_url'] = $url.$t_id;
+                    $themes[$t_id]['preview_url'] = $url;
                 }
                 if (isset($domains[$r['_domain']]) && $this->getUser()->getRights('site', 'domain.'.$domains[$r['_domain']])) {
                     $r['_routing_url'] = $routing_url.'?domain_id='.$domains[$r['_domain']].'#/routing/'.$r['_id'];
@@ -170,10 +168,13 @@ class waDesignActions extends waActions
                 $themes_routes[$t_id][$r['_url']] = $r;
             }
         }
+        $preview_params = strpos($preview_url, '?') === false ? '?' : '&';
+        $preview_params .= 'theme_hash='.$hash.'&set_force_theme=';
         foreach ($themes as $t_id => $theme) {
             if (!isset($theme['preview_url'])) {
-                $themes[$t_id]['preview_url'] = $preview_url ? $preview_url.$t_id : '';
+                $themes[$t_id]['preview_url'] = $preview_url ? $preview_url.$preview_params.$t_id : '';
             }
+            $themes[$t_id]['preview_name'] = preg_replace('/^.*?\/\/(.*?)\?.*$/', '$1', $themes[$t_id]['preview_url']);
         }
         return $themes_routes;
     }
@@ -545,7 +546,12 @@ class waDesignActions extends waActions
     {
         try {
             $theme = new waTheme(waRequest::post('theme'));
+            $parent = $theme->parent_theme;
             $theme->brush();
+            // reset parent theme
+            if ($parent && waRequest::post('parent')) {
+                $parent->brush();
+            }
             $this->log('theme_reset');
             $this->displayJson(array());
         } catch (waException $e) {
@@ -560,7 +566,7 @@ class waDesignActions extends waActions
             $theme = new waTheme($theme_id);
             $theme->purge();
             $this->log('theme_delete');
-            $this->displayJson(array('redirect'=>$this->themes_url,'theme_id'=>$theme_id));
+            $this->displayJson(array('redirect'=>$this->design_url,'theme_id'=>$theme_id));
         } catch (waException $e) {
             $this->displayJson(array(), $e->getMessage());
         }

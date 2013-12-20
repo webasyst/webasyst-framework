@@ -36,4 +36,9 @@ class waRuntimeCache implements waiCache
     {
         return isset(self::$cache[$this->key]);
     }
+
+    public static function clearAll()
+    {
+        self::$cache = array();
+    }
 }

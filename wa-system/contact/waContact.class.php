@@ -641,31 +641,6 @@ class waContact implements ArrayAccess
         }
     }
 
-    public function getExtraSettings($app_id, $name = null)
-    {
-        $settings = $this->getSettings($app_id, $name);
-        if ($name !== null) {
-            $settings = explode("|", $settings);
-            $result = array();
-            foreach ($settings as $value) {
-                $value = explode(":", $value, 2);
-                $result[$value[0]] = $value[1];
-            }
-            return $result;
-        } else {
-            foreach ($settings as $key => $setting) {
-                $setting = explode("|", $setting);
-                $result = array();
-                foreach ($setting as $value) {
-                    $value = explode(":", $value, 2);
-                    $result[$value[0]] = $value[1];
-                }
-                $settings[$key] = $result;
-            }
-            return $settings;
-        }
-    }
-
     public function setSettings($app_id, $name, $value = null)
     {
         $setting_model = new waContactSettingsModel();
@@ -754,12 +729,7 @@ class waContact implements ArrayAccess
     {
         if (!$this->isAdmin($app_id)) {
             $right_model = new waContactRightsModel();
-            return $right_model->insert(array(
-                'app_id' => $app_id,
-                'group_id' => -$this->id,
-                'name' => $name,
-                'value' => $value
-            ));
+            return $right_model->save($this->id, $app_id, $name, $value);
         }
         return true;
     }

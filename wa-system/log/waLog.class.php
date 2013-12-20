@@ -4,15 +4,15 @@
 class waLog
 {
     public static function log($message, $file = 'error.log') {
-        try {
-            $wa = wa();
-            $path = $wa->getConfig()->getPath('log').'/'.$file;
-        } catch (Exception $e) {
-            $path = dirname(dirname(dirname(__FILE__))).'/wa-log/'.$file;
+
+        $path = waConfig::get('wa_path_log');
+        if (!$path) {
+            $path = dirname(dirname(dirname(__FILE__)));
         }
+        $path .= '/'.$file;
 
         if (!file_exists($path)) {
-            waFiles::create($path);
+            waFiles::create(dirname($path));
             touch($path);
             chmod($path, 0666);
         } elseif (!is_writable($path)) {

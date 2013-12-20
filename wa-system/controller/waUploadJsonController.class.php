@@ -38,7 +38,7 @@ class waUploadJsonController extends waJsonController
                 $ext = 'php';
             }
         }
-        if (in_array(strtolower($ext), array('php', 'phtml'))) {
+        if (in_array(strtolower($ext), array('php', 'phtml', 'htaccess'))) {
             $this->errors[] = sprintf(_w("Files with extension .%s are not allowed for upload due to the security considerations."), $ext);
             return false;
         }

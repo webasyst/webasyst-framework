@@ -1,6 +1,6 @@
 {if !empty($file)}
 <h1><span class="grey">{$file.theme_path}</span>{$file.id}</h1>
-<div id="wa-design-original" style="width: 100%; height: 200px;">{$file.content}</div>
+<div id="wa-design-original" style="width: 100%; height: 200px;">{$file.content|escape}</div>
 <script>
     $(function () {
         var editor = ace.edit('wa-design-original');
@@ -25,6 +25,7 @@
 
         setTimeout(function () {
             var newHeight = editor.getSession().getScreenLength() * editor.renderer.lineHeight + editor.renderer.scrollBar.getWidth();
+            newHeight *= 1.02;
             if (newHeight < 220) {
                 newHeight = 220;
             }

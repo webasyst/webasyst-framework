@@ -52,7 +52,7 @@ class waSitemapConfig
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ';
         if ($this->domain) {
-            $this->execute();
+            $this->execute(func_num_args() ? func_get_arg(0) : 1);
         }
         echo '</urlset>';
     }
@@ -70,7 +70,7 @@ class waSitemapConfig
         }
 
         $xml  = "<url>\n";
-        $xml .= "\t<loc>".$loc."</loc>\n";
+        $xml .= "\t<loc>".htmlspecialchars($loc, ENT_NOQUOTES)."</loc>\n";
         $xml .= "\t<lastmod>".date('c', $lastmod)."</lastmod>\n";
         if ($changefreq) {
             $xml .= "\t<changefreq>".$changefreq."</changefreq>\n";
@@ -82,9 +82,16 @@ class waSitemapConfig
         echo $xml;
     }
 
-    public function getRoutes()
+    public function count()
     {
-        $app_id = wa()->getApp();
+        return 1;
+    }
+
+    public function getRoutes($app_id = null)
+    {
+        if (!$app_id) {
+            $app_id = wa()->getApp();
+        }
         $routes = $this->routing->getRoutes($this->domain);
         foreach ($routes as $r_id => $r) {
             if (!isset($r['app']) || $r['app'] != $app_id || !empty($r['private'])) {

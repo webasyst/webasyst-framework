@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WebAsyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2013-09-25 16:36+0400\n"
+"PO-Revision-Date: 2013-12-20 11:22+0400\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -1361,6 +1361,9 @@ msgstr "Выберите часовой пояс"
 
 msgid "Select language"
 msgstr "Выберите язык"
+
+msgid "Select value"
+msgstr "Выберите значение"
 
 msgid "Name"
 msgstr "Имя"
@@ -3524,3 +3527,270 @@ msgid ""
 "An error occurred while attempting to send your request. Please try again in "
 "a minute."
 msgstr "Во время отправки произошла ошибка. Попробуйте позже."
+
+msgid "URL of this Webasyst installation (relative)"
+msgstr "URL установки Webasyst (относительный)"
+
+msgid "URL of the current app settlement (relative)"
+msgstr "URL текущего поселения приложения (относительный)"
+
+msgid "URL to access Webasyst backend (relative)"
+msgstr "URL доступа к бекенду Webasyst (относительный)"
+
+msgid "URL of the current app design theme folder (relative)"
+msgstr "URL папки с файлами текущей темы оформления (относительный)"
+
+msgid "Returns current page URL (either absolute or relative)"
+msgstr "Возвращает URL текущей страницы (абсолютный либо относительный)"
+
+msgid "Returns this domain’s root URL (absolute)"
+msgstr "Возвращает корневой URL этого домена (абсолютный)"
+
+msgid ""
+"Returns value of the global var by <em>key</em>. Global var array is "
+"initially empty, and can be used arbitrarily."
+msgstr ""
+"Возвращает значение глобальной переменной по ключу <em>key</em>. Массив "
+"глобальных переменных изначально пуст и может использоваться произвольным "
+"образом"
+
+msgid "Assigns global var a new value"
+msgstr "Присваивает новое значение глобальной пемеренной"
+
+msgid "Assigns a new title"
+msgstr "Устанавливает новый заголовок"
+
+msgid "Returns GET parameter value (same as PHP $_GET[\"<em>key</em>\"])"
+msgstr ""
+"Возаращает значение GET-параметра (аналогично $_GET[\"<em>key</em>\"] в PHP)"
+
+msgid ""
+"Based on current session data returns <em>true</em> or <em>false</em> if "
+"user is using a multi-touch mobile device; if no session var reflecting "
+"current website version (mobile or desktop) is available, User Agent "
+"information is used"
+msgstr ""
+"Возвращает <em>true</em> или <em>false</em> в зависимости от того, "
+"использует ли пользователь в данный момент мобильное multi-touch устройство "
+"(iPhone, Android и пр.) или нет; если переменная сессии, содержащая тип "
+"версии сайта (мобильный или стандартный), отсутствует, то используется "
+"информация из заголовков User Agent"
+
+msgid "Returns POST parameter value (same as PHP $_POST[\"<em>key</em>\"])"
+msgstr ""
+"Возвращает значение POST-параметра (аналогично $_POST[\"<em>key</em>\"] в "
+"PHP)"
+
+msgid "Returns SERVER parameter value (same as PHP $_SERVER[\"KEY\"])"
+msgstr ""
+"Возвращает значение параметра массива SERVER (аналогично $_SERVER[\"<em>key</"
+"em>\"] в PHP)"
+
+msgid "Returns SESSION var value (same as PHP $_SESSION[\"<em>key</em>\"])"
+msgstr ""
+"Возвращает значение переменной сессии SESSION (аналогично $_SESSION"
+"[\"<em>key</em>\"] в PHP)"
+
+msgid "Embeds HTML block by ID"
+msgstr "Отображает содержимое блока по его идентификатору"
+
+msgid ""
+"Returns authorized user data from associated record in “Contacts” app. "
+"\"<em>field</em>\" (string) is optional and indicates the field id to be "
+"returned. If not  Returns <em>false</em> if user is not authorized"
+msgstr ""
+"Возвращает массив с данными авторизованного пользователя из соответствующей "
+"записи приложения «Контакты». Если указан необязательный параметр "
+"\"<em>field</em>\" (string), то возвращается содержимое конкретного поля "
+"записи о контакте. Если пользователь не авторизован, функция возвращает "
+"<em>false</em>"
+
+msgid "Returns User Agent info by specified “<em>key</em>” parameter:"
+msgstr "Возвращает информацию User Agent по указанному параметру <em>key</em>:"
+
+msgid ""
+"— <em>\"isMobile\"</em>: returns <em>true</em> or <em>false</em> if user is "
+"using a multi-touch mobile device (iOS, Android and similar), based solely "
+"on User Agent string;"
+msgstr ""
+"— <em>\"isMobile\"</em>: основываясь на содержимом заголовков User Agent, "
+"возвращает <em>true</em> или <em>false</em> в зависимости от того, "
+"использует ли пользователь в данный момент мобильное multi-touch устройство "
+"(iPhone, Android и пр.) или нет;"
+
+msgid "— not specified: returns entire User Agent string;"
+msgstr "— не указано: возвращает всю строку User Agent"
+
+msgid "Displays a simple variable (non array/object)"
+msgstr "Отображает переменную (не подходит для массивов и объектов)"
+
+msgid "Displays the 5th element of a zero-indexed array"
+msgstr "Отображает 5-й элемент массива, считая с нулевого индекса"
+
+msgid "Displays variable key value of an array. Similar to PHP $foo[$bar]"
+msgstr ""
+"Отображает значение элемента массива с переменным ключом. Аналогично "
+"использованию $foo[$bar] в PHP"
+
+msgid "Displays the object property named <em>bar</em>"
+msgstr "Отображает свойство объекта с именем <em>bar</em>"
+
+msgid "Displays the return value of object method named <em>bar()</em>"
+msgstr ""
+"Отображает значение, возвращаемое методом объекта с именем <em>bar()</em>"
+
+msgid "Escapes a variable for safe display in HTML"
+msgstr "Экранирует переменную для безопасного отображения в HTML-коде"
+
+msgid "Outputs the sum of <em>$x</em> and <em>$y</em>"
+msgstr "Отображает сумму <em>$x</em> и <em>$y</em>"
+
+msgid "Assigns variable a value"
+msgstr "Присваивает значение переменной"
+
+msgid "Content between {literal} tags will not be parsed by Smarty"
+msgstr "Текст между тегами {literal} не обрабатывается Smarty"
+
+msgid "Similar to PHP if statements"
+msgstr "Аналогично конструкции if в PHP"
+
+msgid "{foreach} is for looping over arrays of data"
+msgstr "Используется для перебора элементов в массивах данных"
+
+msgid ""
+"Returns name of this Webasyst installation (name is specified in “Installer” "
+"app settings)"
+msgstr ""
+"Возвращает название данной установки Webasyst, указанное в настройках "
+"приложения «Инсталлер»"
+
+msgid ""
+"Returns this site’s core navigation menu which is either set automatically "
+"or manually in the “Site settings” screen"
+msgstr ""
+"Возвращает основное меню навигации этого сайта, сформированное автоматически "
+"или настроенное вручную в настройках сайта"
+
+msgid ""
+"Returns user locale, e.g. \"en_US\", \"ru_RU\". In case user is authorized, "
+"locale is retrieved from “Contacts” app user record, or detected "
+"automatically otherwise"
+msgstr ""
+"Возвращает языковую локаль пользователя, например, en_US, ru_RU. Если "
+"пользователь авторизован, информация о локали извлекается из приложения "
+"«Контакты»; в противном случае определяется автоматически."
+
+msgid ""
+"— <em>\"platform\"</em>: current visitor device platform name, e.g. "
+"<em>windows, mac, linux, ios, android, blackberry</em>;"
+msgstr ""
+"— <em>platform</em>: название системной платформы устройства пользователя, "
+"например, <em>windows, mac, linux, ios, android, blackberry</em>;"
+
+msgid ""
+"Displays the \"<em>bar</em>\" key value of an array. Similar to PHP $foo"
+"[\"bar\"]"
+msgstr ""
+"Отображает значение ключа массива «<em>bar</em>» аналогично $foo[\"bar\"] в "
+"PHP."
+
+msgid ""
+"Outputs <em>$var</em> datetime in a user-friendly form. Supported <em>"
+"$format</em> values: <em>monthdate, date, dtime, datetime, fulldatetime, "
+"time, fulltime, humandate, humandatetime</em>"
+msgstr ""
+"Отображает время <em>$var</em> в удобном для чтения виде. Доступные значения "
+"<em>$format</em>: <em>monthdate, date, dtime, datetime, fulldatetime, time, "
+"fulltime, humandate, humandatetime</em>."
+
+msgid ""
+"Direct PHP function access. E.g. <em>{time()}</em> displays the current "
+"timestamp"
+msgstr ""
+"Прямой доступ к функциям PHP. Например, <em>{time()}</em> отображает текущую "
+"метку времени UNIX."
+
+msgid ""
+"Embeds a Smarty template into the current content. <em>file</em> attribute "
+"specifies a template filename within the current design theme folder"
+msgstr ""
+"Внедряет шаблон Smarty в текущее содержимое. Атрибут <em>file</em> указывает "
+"на имя файла шаблона в папке используемой темы оформления."
+
+msgid ""
+"Displays structured information about variable. Arrays and objects are "
+"explored recursively with values indented to show structure. Similar to PHP "
+"var_dump($foo)"
+msgstr ""
+"Отображает подробную информацию о структуре переменной, массива или объекта. "
+"Работает аналогично функции PHP var_dump($foo)"
+
+#: /wa-system/controller/waSignupAction.class.php:140
+msgid "Thank you for signing up!"
+msgstr "Вы успешно зарегистрировались!"
+
+#: /wa-system/design/templates/Theme.html:15
+msgid "Display settings"
+msgstr "Настройки отображения"
+
+#: /wa-system/design/templates/Theme.html:72
+msgid "Manage theme"
+msgstr "Управление темой дизайна"
+
+#: /wa-system/design/templates/Theme.html:74
+msgid "Download theme"
+msgstr "Скачать тему дизайна"
+
+#: /wa-system/design/templates/Theme.html:88
+msgid "Default theme cannot be deleted"
+msgstr "Эта тема дизайна не может быть удалена"
+
+#: /wa-system/design/templates/Theme.html:94
+msgid "Thumbnails"
+msgstr "Эскизы"
+
+#: /wa-system/design/templates/Theme.html:95
+msgid ""
+"This design theme links image thumbnails of sizes listed below. If custom-"
+"sized on-fly thumbnail generation is not allowed by the app settings, please "
+"make sure that at least listed thumbnail sizes are allowed. If on-fly "
+"thumbnail generation is allowed, thumbnails will be generated automatically."
+msgstr ""
+"Эта тема дизайна использует эскизы изображений перечисленных ниже размеров. "
+"Если в настройках вашего приложения возможность автоматического создания "
+"эскизов «на лету» отключена, убедитесь, что все указанные размеры добавлены "
+"в список разрешенных. Если создание эскизов «на лету» разрешено, изображения "
+"указанных ниже размеров будут создаваться автоматически."
+
+#: /wa-system/page/actions/waPage.actions.php:525
+msgid "Embeds HTML snippet by ID"
+msgstr "Добавляет HTML-блок по ID"
+
+#: /wa-system/page/actions/waPage.actions.php:531
+msgid "Returns path to theme folder by <em>theme_id</em> and <em>APP_ID</em>"
+msgstr ""
+"Возвращает путь к папке темы дизайна по <em>theme_id</em> и <em>APP_ID</em>"
+
+#: /wa-system/webasyst/templates/mail/Signup.html:1
+msgid "Thank you for registering on %s!"
+msgstr "Вы успешно зарегистрировались на сайте «%s»!"
+
+#: /wa-system/webasyst/templates/mail/Signup.html:3
+msgid "Login to your account"
+msgstr "Вход в личный кабинет"
+
+#: /wa-system/design/templates/Theme.html:115
+msgid "Revert to original"
+msgstr "Восстановить из исходной версии"
+
+#: /wa-system/design/templates/Theme.html:118
+msgid ""
+"Drop all customizations and revert parent theme <strong>%s</strong> to the "
+"original version too"
+msgstr ""
+"Также сбросить все изменения, которые вносились в родительскую тему дизайна "
+"<strong>%s</strong>"
+
+#: /wa-system/design/templates/Theme.html:126
+msgid "Revert"
+msgstr "Восстановить"

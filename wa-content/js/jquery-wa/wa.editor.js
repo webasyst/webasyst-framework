@@ -219,6 +219,7 @@ function waEditorInit(options) {
         waEditorUpdateSource(options);
         $(".el-rte").hide();
         $("div.CodeMirror-wrap").show();
+        wa_editor.refresh();
         wa_editor.focus();
         return false;
     });

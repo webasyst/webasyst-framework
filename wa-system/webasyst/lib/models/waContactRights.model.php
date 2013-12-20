@@ -186,12 +186,18 @@ class waContactRightsModel extends waModel {
                         `value` = i:value
                     ON DUPLICATE KEY UPDATE `value` = VALUES(`value`)";
         }
-        return $this->exec($sql, array(
+        $result = $this->exec($sql, array(
             'group_id' => $id,
             'app_id' => $app_id,
             'name' => $name,
             'value' => $value
         ));
+
+        if ($result && isset(self::$cache[-$id][$app_id])) {
+            self::$cache[-$id][$app_id][$name] = $value;
+        }
+
+        return $result;
     }
 
     /**

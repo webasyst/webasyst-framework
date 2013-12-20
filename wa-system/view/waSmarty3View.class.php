@@ -23,23 +23,18 @@ class waSmarty3View extends waView
      * @var Smarty
      */
     public $smarty;
-    
-    /**
-     * @var waSystem
-     */
-    protected $system;
 
     /**
      * @param waSystem $system
      * @param array $options
      * @return waSmarty3View
      */
-    public function __construct(waSystem $system, $options = array()) 
+    public function __construct(waSystem $system, $options = array())
     {
+        $this->smarty = new Smarty();
+
         parent::__construct($system, $options);
 
-        $this->smarty = new Smarty();
-        $this->setOptions($options);
         if (isset($options['auto_literal'])) {
             $this->smarty->auto_literal =  $options['auto_literal'];
         }
@@ -49,9 +44,9 @@ class waSmarty3View extends waView
         if (isset($options['right_delimiter'])) {
             $this->smarty->right_delimiter = $options['right_delimiter'];
         }
-        $this->smarty->setTemplateDir(isset($options['template_dir']) ? $options['template_dir'] : $this->system->getAppPath());
-        $this->smarty->setCompileDir(isset($options['compile_dir']) ? $options['compile_dir'] : $this->system->getAppCachePath('templates/compiled/'));
-        $this->smarty->setCacheDir($this->system->getAppCachePath('templates/cache/'));
+        $this->smarty->setTemplateDir(isset($options['template_dir']) ? $options['template_dir'] : $system->getAppPath());
+        $this->smarty->setCompileDir(isset($options['compile_dir']) ? $options['compile_dir'] : $system->getAppCachePath('templates/compiled/'));
+        $this->smarty->setCacheDir($system->getAppCachePath('templates/cache/'));
         if (ini_get('safe_mode')) {
             $this->smarty->use_sub_dirs = false;
         } else {
@@ -60,7 +55,7 @@ class waSmarty3View extends waView
         // not use
         //$this->smarty->setCompileCheck(wa()->getConfig()->isDebug()?true:false);
 
-        $this->smarty->addPluginsDir($this->system->getConfig()->getPath('system').'/vendors/smarty-plugins');
+        $this->smarty->addPluginsDir($system->getConfig()->getPath('system').'/vendors/smarty-plugins');
         $this->smarty->loadFilter('pre', 'translate');
 
 
@@ -72,8 +67,10 @@ class waSmarty3View extends waView
             $this->options[$k] = $v;
             switch ($k) {
                 case "left_delimiter":
+                    $this->smarty->left_delimiter = $v;
+                    break;
                 case "right_delimiter":
-                    $this->smarty->$k = $v;
+                    $this->smarty->right_delimiter = $v;
                     break;
             }
         }
@@ -82,8 +79,8 @@ class waSmarty3View extends waView
     protected function prepare()
     {
            $this->smarty->compile_id = isset($this->options['compile_id']) ?
-               $this->system->getApp()."_".$this->options['compile_id'] :
-               $this->system->getApp()."_".$this->system->getLocale();
+               wa()->getApp()."_".$this->options['compile_id'] :
+               wa()->getApp()."_".wa()->getLocale();
            parent::prepare();
     }
         

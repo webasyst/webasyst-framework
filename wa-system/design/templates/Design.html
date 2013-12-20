@@ -44,7 +44,7 @@
     .wa-themes { background: url({$wa_url}wa-content/img/cloth-background-light.jpg); box-shadow: 0 6px 10px -5px #777 inset; }
     .wa-themes ul.thumbs { padding: 40px 20px; margin-top: 0; }
     .wa-themes ul.thumbs li { text-align: center; margin-right: 5px; }
-    .wa-themes ul.thumbs li a h5 { text-shadow: 0 1px 0px #eee; color: #000; font-size: 1.1em; margin-bottom: 10px; }
+    .wa-themes ul.thumbs li a h5 { color: #000; margin-bottom: 10px; }
     .wa-themes ul.thumbs li a .wa-theme-cover { width: 200px; height: 220px; overflow: hidden; box-shadow: 0 2px 9px #777; margin: 0 auto 10px; background: #fff; }
     .wa-themes ul.thumbs li a .wa-theme-cover span.hint { margin-top: 100px; display: block; }
     .wa-themes ul.thumbs li a:hover .wa-theme-cover { box-shadow: 0 4px 13px #666; }
@@ -53,6 +53,15 @@
     .wa-themes ul.thumbs li strong { padding: 2px 4px 1px; color: #000; background: #ffb; }
     .wa-themes ul.thumbs li strong.wa-theme-in-use { color: #fff; font-style: italic; background: #5a4; }
     .wa-themes ul.thumbs li strong.wa-theme-installed { background: #aaa; color: #fff; }
+    .wa-themes .wa-price { color: #777; }
+    
+    .wa-theme-image-select { padding-left: 0; margin-top: 0; }
+    .wa-theme-image-select li { list-style: none; display: inline-block; float: left\9; margin: 0 5px 5px 0; padding: 0; }
+    .wa-theme-image-select a { display: block; max-height: 100px; max-width: 100px; overflow: hidden; border: 4px solid #fff; }
+    .wa-theme-image-select li.selected a { border-color: #FDDA3B; border-radius: 4px; }
+    
+/*     .wa-theme-image-upload { display: inline-block; } */
+    .wa-theme-image-upload img { margin-bottom: 10px; display: block; }
 
     .wa-theme-preview i.icon16 { margin-right: 5px; }
 
@@ -73,6 +82,7 @@
     ul.menu-h.wa-theme-filter-price li { font-size: 0.9em; margin-top: 3px; padding: 5px 0; }
     ul.menu-h.wa-theme-filter-price li.selected a { background: #ddd; }
     .wa-theme ul.menu-v a.disabled { color: #aaa; }
+    .wa-theme h4.heading { margin-bottom: 10px; margin-top: 20px; }
 
     ul.with-icons.wa-theme { padding: 0 5px 0 3px; margin-top: 12px; }
     ul.with-icons.wa-theme li a { padding-left: 33px; }
@@ -97,6 +107,7 @@
     
     #wa-design-sidebar { width: 210px; }
     #wa-design-container { margin-left: 210px; }
+    #wa-design-container .value .icon16.color { margin-left: 4px; margin-top: 3px; cursor: pointer; }
 
 </style>
 
@@ -206,7 +217,7 @@
             if ($(this).attr('id') != 'wa-theme-upload-link') {
                 var t = $(this).parent().data('theme');
                 if (t) {
-                    $("#wa-theme-active").text($(this).text());
+                    $("#wa-theme-active").text($(this).find('span.wa-theme-name').text());
                     if ($(this).hasClass('bold')) {
                         $("#wa-theme-active").addClass('bold');
                     } else {
@@ -306,7 +317,7 @@
                 return;
             }
             if (hash  === undefined) {
-                var hash = location.hash.replace(/\/$/, '');
+                var hash = location.hash.replace(/\/$/, '').replace(/^#/, '');
                 hash = hash.replace(/.*\/([^\/])/, '$1');
             }
             if (hash.length) {
@@ -332,8 +343,11 @@
                         var params = hash.split('&');
                         for (var j = 0; j < params.length; j++) {
                             var tmp = params[j].split('=');
+                            //console.log(tmp);
                             if (tmp[0] == 'theme') {
-                                $("#wa-theme-active").text($('#wa-theme-list-' + tmp[1] + ' a').text());
+                                console.log('test');
+                                console.log($('#wa-theme-list-' + tmp[1] + ' a span.wa-theme-name'));
+                                $("#wa-theme-active").text($('#wa-theme-list-' + tmp[1] + ' a span.wa-theme-name').text());
                                 $('#wa-design-sidebar .wa-theme-block').hide();
                                 $('#wa-theme-block-' + tmp[1]).show();
                                 $('#wa-design-sidebar a[href="' + location.hash + '"]').parent().addClass('selected');
@@ -362,7 +376,7 @@
                 $('#wa-design-container').removeClass('left200px').css('margin-left', 0);
                 $('#wa-theme-link').click();
                 {else}
-                $("div.wa-theme-block ul li a:first").click();
+                $("#wa-theme-list li a:first").click();
                 {/if}
             }
         }
@@ -371,13 +385,12 @@
             if (a.length) {
                 a.parent().addClass('selected');
                 var t = a.closest('.wa-theme-block').show().attr('id').replace(/wa-theme-block-/, '');
-                $("#wa-theme-active").text($('#wa-theme-list-' + t).find('a').text());
+                $("#wa-theme-active").text($('#wa-theme-list-' + t).find('a span.wa-theme-name').text());
             }
             {if !$options.is_ajax}
                 waDesignLoad();
             {/if}
         });
-
     </script>
 {if $options.container}
 </div>

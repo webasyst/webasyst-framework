@@ -1,15 +1,18 @@
 <div class="block double-padded blank wa-theme" id="wa-theme-{$theme.id}">
 
     <h1 class="wa-theme-name">{$theme.name|escape} <span class="hint">{if $theme.type eq waTheme::ORIGINAL}{$theme.original|escape}{else}{$theme.custom|escape}{/if}</span></h1>
-    <p class="small">
-        [s`Last modified`]: <strong>{if $theme.type eq waTheme::ORIGINAL}[s`not modified`]{else}{$theme.mtime|wa_datetime:"humandatetime"}{/if}</strong>
-    </p>
+    {if $theme.type ne waTheme::ORIGINAL}
+        <p class="small">
+            [s`Last modified`]: <strong>{$theme.mtime|wa_datetime:"humandatetime"}</strong>
+        </p>
+    {/if}
 
     {if $settings}
 
     <script type="text/javascript" src="{$wa_url}wa-content/js/farbtastic/farbtastic.js"></script>
     <link rel="stylesheet" href="{$wa_url}wa-content/js/farbtastic/farbtastic.css" type="text/css" />
 
+    <h4 class="heading">[s`Display settings`]</h4>
     <form id="theme-settings" method="post" action="?module=design&action=themeSettings&theme={$theme.id}">
         <div class="fields form">
             {foreach $settings as $s_var => $s}
@@ -22,17 +25,45 @@
                         </select>
                     {elseif $s.control_type == 'color'}
                         <input class="color" type="text" name="{if !empty($s.parent)}parent_{/if}settings[{$s_var}]" value="{$s.value}">
+                    {elseif $s.control_type == 'checkbox'}
+                        <input type="hidden" name="{if !empty($s.parent)}parent_{/if}settings[{$s_var}]" value="">
+                        <input type="checkbox" name="{if !empty($s.parent)}parent_{/if}settings[{$s_var}]" {if $s.value}checked{/if} value="1">
+                    {elseif $s.control_type == 'image_select'}
+                        <ul class="wa-theme-image-select">
+                            {if !empty($s.parent)}
+                                {$_url = $theme.parent_theme->getUrl()}
+                            {else}
+                                {$_url = $theme->getUrl()}
+                            {/if}
+                            {foreach $s.options as $k => $v}
+                                <li{if $s.value == $k} class="selected"{/if} data-value="{$k}"><a href="#"><img src="{$_url}{$k}"></a></li>
+                            {/foreach}
+                        </ul>
+                        <input type="hidden" name="{if !empty($s.parent)}parent_{/if}settings[{$s_var}]" value="{$s.value}">
+                    {elseif $s.control_type == 'image'}
+                        <div class="wa-theme-image-upload">
+                            {if !empty($s.value)}
+                                {if !empty($s.parent)}
+                                    {$_url = $theme.parent_theme->getUrl()}
+                                {else}
+                                    {$_url = $theme->getUrl()}
+                                {/if}
+                                <img src="{$_url}{$s.value}">
+                            {/if}
+                            <input type="file" name="{if !empty($s.parent)}parent_{/if}image[{$s_var}]">
+                        </div>
                     {else}
                         <input class="flexible" id="flex-settings-{$s@index}" type="text" name="{if !empty($s.parent)}parent_{/if}settings[{$s_var}]" value="{$s.value}">
                     {/if}
-                </div>
+                </div>                
             </div>
             {/foreach}
+            
             <div class="field-group">
                 <div class="field">
                     <div class="value no-shift">
                         <input type="submit" class="button green" value="[s`Save`]">
-                        <span id="theme-settings-message" style="display: none"><i class="icon16 yes"></i> [s`Saved`]</span>
+                        <span id="theme-settings-message" style="display: none"><i class="icon16 yes" style="margin-top: 0.5em;"></i> [s`Saved`]</span>
                     </div>
                 </div>
             </div>
@@ -40,8 +71,9 @@
     </form>
     {/if}
 
+    <h4 class="heading">[s`Manage theme`]</h4>
     <ul class="menu-v with-icons">
-        <li><a href="?module=design&amp;action=themeDownload&amp;theme={$theme.id}" class="bold"><i class="icon16 download"></i>[s`Download`] <span class="hint">.tar.gz</span></a></li>
+        <li><a href="?module=design&amp;action=themeDownload&amp;theme={$theme.id}" class="bold"><i class="icon16 download"></i>[s`Download theme`] <span class="hint">.tar.gz</span></a></li>
         <li><a class="theme-copy" href="#"><i class="icon16 split"></i>[s`Duplicate`]</a></li>
         <li><a class="theme-rename" href="#"><i class="icon16 edit"></i>[s`Rename`]</a></li>
         <li><i class="icon16 link"></i>[s`Parent theme`]: <strong>{if $theme.parent_theme_id}{$theme.parent_theme_id}{else}[s`not set`]{/if}</strong>  <a class="theme-parent inline" href="#">[s`Change`]</a></li>
@@ -52,20 +84,62 @@
             {else}
                 <span class="hint">[s`This will erase all customizations you’ve made to this theme’s template files using the design editor, and reset this theme to original`]</span>
             {/if}
-        </li>        
-        <li><a class="theme-delete{if $theme.system} disabled{/if}" href="#" title="[s`This will permanently delete theme without the ability to recover. Are you sure?`]"><i class="icon16 delete"></i>[s`Delete theme`]</a></li>
+        </li>
+        <li>
+            <a class="theme-delete{if $theme.system} disabled{/if}" href="#" title="[s`This will permanently delete theme without the ability to recover. Are you sure?`]"><i class="icon16 delete"></i>[s`Delete theme`]</a>
+            {if $theme.system}<span class="hint">[s`Default theme cannot be deleted`]</span>{/if}
+        </li>
     </ul>
+    
+
+    {if !empty($theme.thumbs)}
+        <h4 class="heading">[s`Thumbnails`]</h4>
+        [s`This design theme links image thumbnails of sizes listed below. If custom-sized on-fly thumbnail generation is not allowed by the app settings, please make sure that at least listed thumbnail sizes are allowed. If on-fly thumbnail generation is allowed, thumbnails will be generated automatically.`]
+        <ul>
+            {foreach $theme.thumbs as $t}
+            <li>{$t}</li>
+            {/foreach}
+        </ul>
+    {/if}    
+    
     <div class="clear"></div>
 </div>
 
 
-<div class="dialog height200px" id="wa-theme-name-dialog">
+<div class="dialog height150px" id="wa-theme-reset-dialog">
     <div class="dialog-background"> </div>
-    <div class="dialog-window"">
+    <div class="dialog-window">
         <form>
             <div class="dialog-content">
                 <div class="dialog-content-indent">
-                    <h1 id="wa-dialog-title">[s`Rename`]</h1>
+                    <h1>[s`Revert to original`]</h1>
+                    <p>[s`This will reset all customizations you applied to this design theme. Are you sure?`]</p>
+                    {if $theme.parent_theme && $theme.parent_theme.type == waTheme::OVERRIDDEN}
+                    <label>
+                        <input type="checkbox" name="parent" value="1"> {sprintf("[s`Drop all customizations and revert parent theme <strong>%s</strong> to the original version too`]", $theme.parent_theme_id)}
+                    </label>
+                    {/if}
+                </div>
+                <div class="clear"></div>
+            </div>
+            <div class="dialog-buttons">
+                <div class="dialog-buttons-gradient">
+                    <input type="hidden" name="theme" value="{$theme.id}">
+                    <input type="submit" class="button green" value="[s`Revert`]">
+                    [s`or`] <a href="#/design/themes/" class="cancel">[s`cancel`]</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="dialog height200px" id="wa-theme-name-dialog">
+    <div class="dialog-background"> </div>
+    <div class="dialog-window">
+        <form>
+            <div class="dialog-content">
+                <div class="dialog-content-indent">
+                    <h1>[s`Rename`]</h1>
                     <span class="wa-theme-dialog-error" style="color: red;font-weight: bold;"></span>
                     <div class="fields form">
                         <div class="field">
@@ -106,7 +180,7 @@
         <form>
             <div class="dialog-content">
                 <div class="dialog-content-indent">
-                    <h1 id="wa-dialog-title">[s`Parent theme`]</h1>
+                    <h1>[s`Parent theme`]</h1>
                     <span class="wa-theme-dialog-error" style="color: red;font-weight: bold;"></span>
                     <div class="fields form">
                         <div class="field">
@@ -180,6 +254,16 @@
     });
 
     $(function () {
+
+
+        $('.wa-theme-image-select a').click(function () {
+            var li = $(this).parent();
+            var ul = li.parent();
+            ul.find('li.selected').removeClass('selected');
+            li.addClass('selected');
+            ul.next('input').val(li.data('value'));
+            return false;
+        });
 
         var input2textarea = function(input) {
             var p = input.parent();
@@ -276,9 +360,7 @@
         $("#wa-theme-parent-dialog").waDialog({
             disableButtonsOnSubmit: true,
             onSubmit: function () {
-                console.log(this);
                 var data = $(this).serialize();
-                console.log(data);
                 $.post("?module=design&action=themeParent", data, function (response) {
                     $("#wa-theme-parent-dialog").hide();
                     if (response.status == 'ok') {
@@ -310,19 +392,25 @@
     });
 
     $(".theme-reset").on('click', function () {
-        if (!$(this).hasClass('disabled') && confirm($(this).attr('title'))) {
-            $.post("?module=design&action=themeReset", { theme: theme_id}, function (response) {
-                if (response.status == 'ok') {
-                    if(response.data.redirect) {
-                        location.href = location.href.replace(/(\?|#).*$/,'') + response.data.redirect;
-                        location.reload();
-                    } else {
-                        location.reload();
-                    }
-                } else {
-                    alert(response.errors);
+        if (!$(this).hasClass('disabled'))  {
+            $('#wa-theme-reset-dialog').waDialog({
+                disableButtonsOnSubmit: true,
+                onSubmit: function () {
+                    $.post("?module=design&action=themeReset", $(this).serialize(), function (response) {
+                        if (response.status == 'ok') {
+                            if(response.data.redirect) {
+                                location.href = location.href.replace(/(\?|#).*$/,'') + response.data.redirect;
+                                location.reload();
+                            } else {
+                                location.reload();
+                            }
+                        } else {
+                            alert(response.errors);
+                        }
+                    }, "json");
+                    return false;
                 }
-            }, "json");
+            });
         }
         return false;
     });
@@ -332,11 +420,11 @@
             $.post("?module=design&action=themeDelete", { theme: theme_id}, function (response) {
                 if (response.status == 'ok') {
                     if(response.data.theme_id) {
-                        $('#wa-theme-block-'+response.data.theme_id).remove();
+                        $('#wa-theme-block-' + response.data.theme_id).remove();
+                        $('#wa-theme-list-' + response.data.theme_id).remove();
                     }
                     if(response.data.redirect) {
-                        location.href = location.href.replace(/(\?|#).*$/,'') + response.data.redirect;
-                        location.reload();
+                        $('#wa-theme-list li:first a').click();
                     } else {
                         location.reload();
                     }
@@ -347,6 +435,7 @@
 
         }
         return false;
+
     });
     var url = $('#wa-theme-routing-url');
     if(url.length) {
@@ -357,7 +446,7 @@
     $('.color').each(function() {
         var input = $(this);
         var replacer = $('<span class="color-replacer">' + 
-            '<i class="icon16" style="background: #'+input.val().substr(1)+'"></i>' + 
+            '<i class="icon16 color" style="background: #'+input.val().substr(1)+'"></i>' + 
             '</span>').insertAfter(input);
         var picker = $('<div style="display:none;" class="color-picker"></div>').
             insertAfter(replacer);

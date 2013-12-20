@@ -17,16 +17,24 @@ class waViewHelper
     /**
      * @var waSystem
      */
-    protected $wa;
     protected $view;
     protected $version;
+    protected $app_id;
     protected static $helpers = array();
     protected static $params = array();
 
     public function __construct(waView $view)
     {
         $this->view = $view;
-        $this->wa = wa();
+        $this->app_id = wa()->getApp();
+    }
+
+    /**
+     * @return waAppConfig
+     */
+    protected function getConfig()
+    {
+        return wa($this->app_id)->getConfig();
     }
 
     public function header()
@@ -36,14 +44,14 @@ class waViewHelper
 
     public function app()
     {
-        return $this->wa->getApp();
+        return wa()->getApp();
     }
 
     public function apps()
     {
-        if ($this->wa->getEnv() == 'frontend') {
-            $domain = $this->wa->getRouting()->getDomain(null, true);
-            $domain_config_path = $this->wa->getConfig()->getConfigPath('domains/'.$domain.'.php', true, 'site');
+        if (wa()->getEnv() == 'frontend') {
+            $domain = wa()->getRouting()->getDomain(null, true);
+            $domain_config_path = $this->getConfig()->getConfigPath('domains/'.$domain.'.php', true, 'site');
             if (file_exists($domain_config_path)) {
                 /**
                  * @var $domain_config array
@@ -56,12 +64,12 @@ class waViewHelper
                     unset($row);
                     return $domain_config['apps'];
                 }
-                return $this->wa->getFrontendApps($domain, isset($domain_config['name']) ? $domain_config['name'] : null, true);
+                return wa()->getFrontendApps($domain, isset($domain_config['name']) ? $domain_config['name'] : null, true);
             } else {
-                return $this->wa->getFrontendApps($domain, null, true);
+                return wa()->getFrontendApps($domain, null, true);
             }
         } else {
-            return $this->wa->getUser()->getApps();
+            return wa()->getUser()->getApps();
         }
     }
 
@@ -75,8 +83,8 @@ class waViewHelper
      */
     public function myNav($ul_class = true)
     {
-        $routes = $this->wa->getRouting()->getRoutes();
-        $apps = $this->wa->getApps();
+        $routes = wa()->getRouting()->getRoutes();
+        $apps = wa()->getApps();
         $result = array();
         foreach ($routes as $r) {
             if (isset($r['app']) && !empty($apps[$r['app']]['my_account'])) {
@@ -84,7 +92,7 @@ class waViewHelper
             }
         }
 
-        $old_app = $this->wa->getApp();
+        $old_app = wa()->getApp();
         $my_nav_selected = $this->view->getVars('my_nav_selected');
         $old_params = waRequest::param();
 
@@ -134,8 +142,8 @@ class waViewHelper
 
     public function headJs()
     {
-        $domain = $this->wa->getRouting()->getDomain(null, true);
-        $domain_config_path = $this->wa->getConfig()->getConfigPath('domains/'.$domain.'.php', true, 'site');
+        $domain = wa()->getRouting()->getDomain(null, true);
+        $domain_config_path = $this->getConfig()->getConfigPath('domains/'.$domain.'.php', true, 'site');
         if (file_exists($domain_config_path)) {
             /**
              * @var $domain_config array
@@ -145,13 +153,14 @@ class waViewHelper
             if (!empty($domain_config['head_js'])) {
                 $html .= $domain_config['head_js'];
             }
+            $response = wa()->getResponse();
             if (!empty($domain_config['google_analytics'])) {
                 $html .= <<<HTML
 <script type="text/javascript">
   var _gaq = _gaq || [];
   _gaq.push(['_setAccount', '{$domain_config['google_analytics']}']);
   _gaq.push(['_trackPageview']);
- {$this->wa->getResponse()->getGoogleAnalytics()}
+ {$response->getGoogleAnalytics()}
   (function() {
       var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
       ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
@@ -168,13 +177,13 @@ HTML;
 
     public function isAuthEnabled()
     {
-        $config = $this->wa->getAuthConfig();
+        $config = wa()->getAuthConfig();
         return isset($config['auth']) && $config['auth'];
     }
 
     public function user($field=null, $format='html')
     {
-        $user = $this->wa->getUser();
+        $user = wa()->getUser();
         if ($field !== null) {
             return $user->get($field, $format);
         } else {
@@ -184,17 +193,17 @@ HTML;
 
     public function userRights($name)
     {
-        return $this->wa->getUser()->getRights($this->wa->getApp(), $name);
+        return wa()->getUser()->getRights(wa()->getApp(), $name);
     }
 
     public function userId()
     {
-        return $this->wa->getUser()->getId();
+        return wa()->getUser()->getId();
     }
 
     public function locale()
     {
-        return $this->wa->getLocale();
+        return wa()->getLocale();
     }
 
     public function userLocale()
@@ -204,14 +213,14 @@ HTML;
 
     public function appName($escape = true)
     {
-        $app_info = $this->wa->getAppInfo();
+        $app_info = wa()->getAppInfo();
         $name = $app_info['name'];
         return $escape ? htmlspecialchars($name) : $name;
     }
 
     public function pluginName($plugin_id, $escape = true)
     {
-        $plugin = $this->wa->getConfig()->getPluginInfo($plugin_id);
+        $plugin = $this->getConfig()->getPluginInfo($plugin_id);
         $name = $plugin['name'];
         return $escape ? htmlspecialchars($name) : $name;
     }
@@ -234,20 +243,21 @@ HTML;
 
     public function css()
     {
-        if ($this->wa->getEnv() == 'backend') {
-            $css = '<link href="'.$this->wa->getRootUrl().'wa-content/css/wa/wa-1.0.css?v'.$this->version(true).'" rel="stylesheet" type="text/css" >
-<!--[if IE 9]><link type="text/css" href="'.$this->wa->getRootUrl().'wa-content/css/wa/wa-1.0.ie9.css" rel="stylesheet"><![endif]-->
-<!--[if IE 8]><link type="text/css" href="'.$this->wa->getRootUrl().'wa-content/css/wa/wa-1.0.ie8.css" rel="stylesheet"><![endif]-->
-<!--[if IE 7]><link type="text/css" href="'.$this->wa->getRootUrl().'wa-content/css/wa/wa-1.0.ie7.css" rel="stylesheet"><![endif]-->'."\n";
+        if (wa()->getEnv() == 'backend') {
+            $css = '<link href="'.wa()->getRootUrl().'wa-content/css/wa/wa-1.0.css?v'.$this->version(true).'" rel="stylesheet" type="text/css" >
+<!--[if IE 9]><link type="text/css" href="'.wa()->getRootUrl().'wa-content/css/wa/wa-1.0.ie9.css" rel="stylesheet"><![endif]-->
+<!--[if IE 8]><link type="text/css" href="'.wa()->getRootUrl().'wa-content/css/wa/wa-1.0.ie8.css" rel="stylesheet"><![endif]-->
+<!--[if IE 7]><link type="text/css" href="'.wa()->getRootUrl().'wa-content/css/wa/wa-1.0.ie7.css" rel="stylesheet"><![endif]-->
+<link type="text/css" rel="stylesheet" href="'.wa()->getRootUrl().'wa-content/font/ruble/arial/fontface.css">'."\n";
         } else {
             $css = '';
         }
-        return $css.$this->wa->getResponse()->getCss(true);
+        return $css.wa()->getResponse()->getCss(true);
     }
 
     public function js()
     {
-        return $this->wa->getResponse()->getJs(true);
+        return wa()->getResponse()->getJs(true);
     }
 
     /**
@@ -257,16 +267,16 @@ HTML;
     public function version($app_id = null)
     {
         if ($app_id === true) {
-            $app_info = $this->wa->getAppInfo('webasyst');
+            $app_info = wa()->getAppInfo('webasyst');
             return isset($app_info['version']) ? $app_info['version'] : '0.0.1';
         } else {
             if ($this->version === null) {
-                $app_info = $this->wa->getAppInfo($app_id);
+                $app_info = wa()->getAppInfo($app_id);
                 $this->version = isset($app_info['version']) ? $app_info['version'] : '0.0.1';
                 if (SystemConfig::isDebug()) {
                     $this->version .= ".".time();
                 } elseif (!$app_id) {
-                    $file = $this->wa->getAppPath('lib/config/build.php', $app_id);
+                    $file = wa()->getAppPath('lib/config/build.php', $app_id);
                     if (file_exists($file)) {
                         $build = include($file);
                         $this->version .= '.'.$build;
@@ -304,17 +314,17 @@ HTML;
 
     public function url($absolute = false)
     {
-        return $this->wa->getRootUrl($absolute);
+        return wa()->getRootUrl($absolute);
     }
 
     public function domainUrl()
     {
-        return $this->wa->getConfig()->getHostUrl();
+        return $this->getConfig()->getHostUrl();
     }
 
     public function currentUrl($absolute = false, $without_params = false)
     {
-        $url = $this->wa->getConfig()->getCurrentUrl();
+        $url = $this->getConfig()->getCurrentUrl();
         if ($without_params) {
             if (($i = strpos($url, '?')) !== false) {
                 $url = substr($url, 0, $i);
@@ -329,7 +339,7 @@ HTML;
 
     public function getUrl($route, $params = array(), $absolute = false)
     {
-        return $this->wa->getRouteUrl($route, $params, $absolute);
+        return wa()->getRouteUrl($route, $params, $absolute);
     }
 
     public function contacts($hash = null, $fields = 'id,name')
@@ -356,18 +366,18 @@ HTML;
     public function title($title = null)
     {
         if (!$title) {
-            return $this->wa->getResponse()->getTitle();
+            return wa()->getResponse()->getTitle();
         } else {
-            return $this->wa->getResponse()->setTitle($title);
+            return wa()->getResponse()->setTitle($title);
         }
     }
 
     public function meta($name, $value = null)
     {
         if ($value) {
-            $this->wa->getResponse()->setMeta($name, $value);
+            wa()->getResponse()->setMeta($name, $value);
         } else {
-            return $this->wa->getResponse()->getMeta($name);
+            return wa()->getResponse()->getMeta($name);
         }
     }
 
@@ -441,19 +451,19 @@ HTML;
 
     public function getEnv()
     {
-        return $this->wa->getEnv();
+        return wa()->getEnv();
     }
 
     public function block($id, $params = array())
     {
-        if ($id &&  $this->wa->appExists('site')) {
+        if ($id &&  wa()->appExists('site')) {
             wa('site');
             $model = new siteBlockModel();
             $block = $model->getById($id);
 
             if (!$block && strpos($id, '.') !== false) {
                 list($app_id, $id) = explode('.', $id);
-                $path = $this->wa->getConfig()->getAppsPath($app_id, 'lib/config/site.php');
+                $path = $this->getConfig()->getAppsPath($app_id, 'lib/config/site.php');
                 if (file_exists($path)) {
                     $site_config = include($path);
                     if (isset($site_config['blocks'][$id])) {
@@ -497,7 +507,7 @@ HTML;
             $errors['all'] = _ws('Recipient (administrator) email is not valid');
             return false;
         }
-        if (!$this->wa->getCaptcha()->isValid()) {
+        if (!wa($this->app_id)->getCaptcha()->isValid()) {
             $errors['captcha'] = _ws('Invalid captcha');
         }
         $email = $this->post('email');
@@ -538,7 +548,7 @@ HTML;
             $error = $options;
             $options = array();
         }
-        return $this->wa->getCaptcha($options)->getHtml($error, $absolute, $refresh);
+        return wa($this->app_id)->getCaptcha($options)->getHtml($error, $absolute, $refresh);
     }
 
     public function captchaUrl($add_random = true)
@@ -548,20 +558,20 @@ HTML;
 
     public function signupUrl()
     {
-        $auth = $this->wa->getAuthConfig();
-        return $this->wa->getRouteUrl((isset($auth['app']) ? $auth['app'] : '').'/signup');
+        $auth = wa()->getAuthConfig();
+        return wa()->getRouteUrl((isset($auth['app']) ? $auth['app'] : '').'/signup');
     }
 
-    public function loginUrl()
+    public function loginUrl($absolute = false)
     {
-        $auth = $this->wa->getAuthConfig();
-        return $this->wa->getRouteUrl((isset($auth['app']) ? $auth['app'] : '').'/login');
+        $auth = wa()->getAuthConfig();
+        return wa()->getRouteUrl((isset($auth['app']) ? $auth['app'] : '').'/login', array(), $absolute);
     }
 
     public function forgotPasswordUrl()
     {
-        $auth = $this->wa->getAuthConfig();
-        return $this->wa->getRouteUrl((isset($auth['app']) ? $auth['app'] : '').'/forgotpassword');
+        $auth = wa()->getAuthConfig();
+        return wa()->getRouteUrl((isset($auth['app']) ? $auth['app'] : '').'/forgotpassword');
     }
 
     /**
@@ -573,7 +583,7 @@ HTML;
      */
     public function loginForm($error = '', $form = 1)
     {
-        $auth = $this->wa->getAuth();
+        $auth = wa($this->app_id)->getAuth();
         $field_id = $auth->getOption('login');
         if ($field_id == 'login') {
             $field_name = _ws('Login');
@@ -663,7 +673,7 @@ HTML;
 
     public function signupFields($errors = array())
     {
-        $config = $this->wa->getAuthConfig();
+        $config = wa()->getAuthConfig();
         $config_fields = isset($config['fields']) ? $config['fields']: array(
             'firstname',
             'lastname',
@@ -740,10 +750,10 @@ HTML;
                 $html .= '<div class="wa-field wa-separator"></div>';
             }
         }
-        $config = $this->wa->getAuthConfig();
+        $config = wa()->getAuthConfig();
         if (isset($config['signup_captcha']) && $config['signup_captcha']) {
             $html .= '<div class="wa-field"><div class="wa-value">';
-            $html .= $this->wa->getCaptcha()->getHtml(isset($errors['captcha']) ? $errors['captcha'] : '');
+            $html .= wa($this->app_id)->getCaptcha()->getHtml(isset($errors['captcha']) ? $errors['captcha'] : '');
             if (isset($errors['captcha'])) {
                 $html .= '<em class="wa-error-msg">'.$errors['captcha'].'</em>';
             }
@@ -793,7 +803,7 @@ HTML;
 
     public function authAdapters($return_array = false)
     {
-        $adapters = $this->wa->getAuthAdapters();
+        $adapters = wa()->getAuthAdapters();
         if ($return_array) {
             return $adapters;
         }
@@ -801,7 +811,7 @@ HTML;
             return '';
         }
         $html = '<div class="wa-auth-adapters"><ul>';
-        $url = $this->wa->getRootUrl(false, true).'oauth.php?app='.$this->app().'&provider=';
+        $url = wa()->getRootUrl(false, true).'oauth.php?app='.$this->app().'&provider=';
         foreach ($adapters as $adapter) {
             /**
              * @var waAuthAdapter $adapter
@@ -927,7 +937,7 @@ HTML;
     public function __get($app)
     {
         if (!isset(self::$helpers[$app])) {
-            $wa = $this->wa;
+            $wa = wa($this->app_id);
             if ($wa->getConfig()->getApplication() !== $app) {
                 if (wa()->appExists($app)) {
                     $wa = wa($app);
