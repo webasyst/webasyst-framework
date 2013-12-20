@@ -220,9 +220,10 @@ class emsruShipping extends waShipping
 
     private function request($method, $params = array())
     {
+        $timeout = 15;
         $methods = array(
             /* Возвращает список городов, регионов или стран из которых и в которые возможна доставка.*/
-            'ems.get.locations' => array(
+            'ems.get.locations'  => array(
                 'params' => array(
                     /* тип запрашиваемых местоположений*/
                     'type' => array(
@@ -249,7 +250,7 @@ class emsruShipping extends waShipping
                     'max_weight' => ':double',
                 ),
             ),
-            'ems.calculate'     => array(
+            'ems.calculate'      => array(
                 'params' => array(
                     'from'   => ':string', /* (обязательный, кроме международной доставки) — пункт отправления*/
                     'to'     => ':string', /*(обязательный) —пункт назначения отправления*/
@@ -272,14 +273,14 @@ class emsruShipping extends waShipping
         );
         $hint = '';
         if (!isset($methods[$method])) {
-            throw new waException(sprintf("Invalid REST API method %s", $method));
+            throw new waException(sprintf("Ошибка расчета стоимости доставки (Invalid REST API method %s)", $method));
         }
         $url = 'http://emspost.ru/api/rest/?method='.$method;
         foreach ($params as $key => $value) {
             if ($param = ifset($methods[$method]['params'][$key])) {
                 if (is_array($param)) {
                     if (!in_array($value, $param)) {
-                        throw new waException(sprintf("Invalid REST API param %s", $key));
+                        throw new waException(sprintf("Ошибка расчета стоимости доставки (Invalid REST API param %s)", $key));
                     }
                 } else {
 
@@ -299,6 +300,7 @@ class emsruShipping extends waShipping
             }
             if (!$curl_error) {
                 @curl_setopt($ch, CURLOPT_URL, $url);
+                @curl_setopt($ch, CURLOPT_TIMEOUT, $timeout);
                 @curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 
                 $response = @curl_exec($ch);
@@ -314,11 +316,13 @@ class emsruShipping extends waShipping
             if (!ini_get('allow_url_fopen')) {
                 $hint .= " PHP ini option 'allow_url_fopen' are disabled;";
             } else {
-                $response = file_get_contents($url);
+                $old_timeout = @ini_set('default_socket_timeout', $timeout);
+                $response = @file_get_contents($url);
+                @ini_set('default_socket_timeout', $old_timeout);
             }
         }
         if (!$response && $hint) {
-            throw new waException(sprintf('Empty response. Hint: %s', $hint));
+            throw new waException(sprintf('Ошибка расчета стоимости доставки (Empty response. Hint: %s)', $hint));
         }
 
         $json = json_decode($response, true);
@@ -333,11 +337,11 @@ class emsruShipping extends waShipping
                     throw new waException(sprintf("REST API error #%d: %s", ifset($rsp['err']['code'], 0), ifset($rsp['err']['msg'], 'unkown error')));
                     break;
                 default:
-                    throw new waException('Invalid response');
+                    throw new waException('Ошибка расчета стоимости доставки (Invalid response)');
                     break;
             }
         } else {
-            throw new waException('Invalid response');
+            throw new waException('Ошибка расчета стоимости доставки (Invalid response)');
         }
         return $result;
     }

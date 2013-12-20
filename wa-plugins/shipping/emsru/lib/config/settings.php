@@ -7,7 +7,7 @@ return array(
     ),
     'city'      => array(
         'title'        => 'Город',
-        'description'  => 'Введите название города пункта назначения. ВАЖНО: Убедитесь, что указанное вами название города присутствует в списке городов, доставка между которыми может быть автоматически рассчитана с помощью API службы «EMS Почта России»: <a href="http://emspost.ru/api/rest/?method=ems.get.locations&type=cities&plain=true" target="_blank">http://emspost.ru/api/rest/?method=ems.get.locations&type=cities&plain=true</a> (регистр при вводе названия города не имеет значения).',
+        'description'  => 'Введите название города пункта отправления. ВАЖНО: Убедитесь, что указанное вами название города присутствует в списке городов, доставка между которыми может быть автоматически рассчитана с помощью API службы «EMS Почта России»: <a href="http://emspost.ru/api/rest/?method=ems.get.locations&type=cities&plain=true" target="_blank">http://emspost.ru/api/rest/?method=ems.get.locations&type=cities&plain=true</a> (регистр при вводе названия города не имеет значения).',
         'control_type' => waHtmlControl::INPUT,
     ),
     'surcharge' => array(
