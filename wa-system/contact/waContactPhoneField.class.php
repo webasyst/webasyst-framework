@@ -72,7 +72,7 @@ class waContactPhoneFormatter extends waContactFieldFormatter
             '+7 (###) ###-##-##',
             '8 800 ###-####',
             // 12 digits
-            '+38 (0##) ###-##-##',
+            '+380 (##) ###-##-##',
             '+375 (##) ###-##-##',
             '+44 ## ####-####',
         );
@@ -116,7 +116,7 @@ class waContactPhoneFormatter extends waContactFieldFormatter
                     $o = 1;
                 }
                 $result .= '('.substr($v[0], $o, 3).') ';
-                $result .= $this->split(substr($v[0], $o + 3), array(3, 2, 2));
+                $result .=  $this->split(substr($v[0], $o + 3), array(3, 2, 2));
                 $v[0] = ($v[0][0] == '0' || $v[0][0] == '8' ? '' : '+').$result;
                 break;
             case 7:
@@ -135,7 +135,7 @@ class waContactPhoneFormatter extends waContactFieldFormatter
         $offset = 0;
         foreach ($ns as $n) {
             $result[] = substr($str, $offset, $n);
-            $offset = $n;
+            $offset += $n;
         }
         return implode('-', $result);
     }
