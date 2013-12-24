@@ -256,7 +256,7 @@ class waCurrency
         if (self::$data === null) {
             $config = wa()->getConfig()->getConfigFile('currency');
             $config_path = wa()->getConfig()->getPath('config').'/currency.php';
-            $cache = new waSystemCache('currency'.wa()->getLocale());
+            $cache = new waSystemCache('config/currency'.wa()->getLocale());
             if ($config && filemtime($config_path) > $cache->getFilemtime()) {
                 self::$data = array();
             } else {

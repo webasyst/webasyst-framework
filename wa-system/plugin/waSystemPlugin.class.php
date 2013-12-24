@@ -142,6 +142,12 @@ abstract class waSystemPlugin
                 $config['logo'] = wa()->getRootUrl().'wa-plugins/'.$type.'/'.$id.'/'.$config['logo'];
             }
             $plugin = array_merge($default, $config);
+
+            foreach (array('name', 'description') as $field) {
+                if (!empty($plugin[$field])) {
+                    $plugin[$field] = self::__w($plugin[$field], $type, $id, $base_path);
+                }
+            }
         }
         return $plugin;
     }
@@ -173,7 +179,15 @@ abstract class waSystemPlugin
             $this->settings = $settings;
             foreach ($config as $key => $default) {
                 if (!isset($this->settings[$key])) {
-                    $this->settings[$key] = isset($default['value']) ? $default['value'] : null;
+                    $value = null;
+                    if (isset($default['value'])) {
+                        if (!empty($default['value']) && ($default['value'] !== true) && is_string($default['value'])) {
+                            $value = $this->_w($default['value']);
+                        } else {
+                            $value = $default['value'];
+                        }
+                    }
+                    $this->settings[$key] = $value;
                 }
             }
         }
@@ -226,18 +240,29 @@ abstract class waSystemPlugin
 
     public function _w($string)
     {
+        $args = func_get_args();
+        return self::__w($args, $this->type, $this->id, $this->path);
+
+    }
+
+    private static function __w($string, $type, $id, $path)
+    {
         static $domains = array();
-        $domain = sprintf('%s_%s', $this->type, $this->id);
+        $domain = sprintf('%s_%s', $type, $id);
         if (!isset($domains[$domain])) {
-            $locale_path = $this->path.'/locale';
+            $locale_path = $path.'/locale';
             if ($domains[$domain] = file_exists($locale_path)) {
                 waLocale::load(waLocale::getLocale(), $locale_path, $domain, false);
             }
         }
+
+        $args = (array)$string;
         if ($domains[$domain]) {
-            $args = func_get_args();
+
             array_unshift($args, $domain);
             $string = call_user_func_array('_wd', $args);
+        } else {
+            $string = reset($args);
         }
         return $string;
     }
@@ -298,9 +323,9 @@ abstract class waSystemPlugin
     /**
      *
      * Получение массива элементов настроек
-     * @param array[string]mixed $params
-     * @param array[string]string $params['namespace']
-     * @param array[string]string $params['value']'
+     * @param array [string]mixed $params
+     * @param array [string]string $params['namespace']
+     * @param array [string]string $params['value']'
      * @return string
      */
     public function getSettingsHTML($params = array())
@@ -373,7 +398,10 @@ abstract class waSystemPlugin
         $settings_config = $this->config();
         foreach ($settings_config as $name => $row) {
             if (!isset($settings[$name])) {
-                if (!empty($row['control_type']) && ($row['control_type'] = waHtmlControl::CHECKBOX) && !empty($row['value'])) {
+                if ($row['control_type'] = waHtmlControl::FILE) {
+                    //TODO
+                    $file = waRequest::file($name);
+                } elseif (!empty($row['control_type']) && ($row['control_type'] = waHtmlControl::CHECKBOX) && !empty($row['value'])) {
                     $settings[$name] = false;
                 } else {
                     $settings[$name] = isset($row['value']) ? $row['value'] : null;
