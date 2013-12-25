@@ -127,9 +127,9 @@ class waContactModel extends waModel
         WHERE e.email = s:0";
         if ($with_password !== null) {
             if ($with_password) {
-                $sql .= ' AND c.password IS NOT NULL';
+                $sql .= " AND c.password != ''";
             } else {
-                $sql .= ' AND c.password IS NULL';
+                $sql .= " AND c.password = ''";
             }
         }
         $sql .= ' LIMIT 1';

@@ -16,7 +16,7 @@ class waAppViewHelper
     {
         $app_id = $this->wa->getConfig()->getApplication();
         $theme = new waTheme($theme_id, $app_id);
-        return $theme->path;
+        return $theme->path ? $theme->path.'/' : null;
     }
 
     public function pages($parent_id = 0, $with_params = true)

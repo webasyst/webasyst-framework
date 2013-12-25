@@ -45,8 +45,15 @@ class waContactEmailField extends waContactStringField
     {
         $errors = parent::validate($data, $contact_id);
         $email_model = new waContactEmailsModel();
+        $contact_model = new waContactModel();
         if ($this->isMulti()) {
             if (!empty($data[0])) {
+                if ($contact_id) {
+                    $c = $contact_model->getById($contact_id);
+                    if (!$c['password']) {
+                        return $errors;
+                    }
+                }
                 $value = $this->format($data[0], 'value');
                 $id = $email_model->getContactWithPassword($value);
                 if ($id && $id != $contact_id) {
@@ -56,6 +63,12 @@ class waContactEmailField extends waContactStringField
         } else {
             $value = $this->format($data, 'value');
             if ($value) {
+                if ($contact_id) {
+                    $c = $contact_model->getById($contact_id);
+                    if (!$c['password']) {
+                        return $errors;
+                    }
+                }
                 $id = $email_model->getContactWithPassword($value);
                 if ($id && $id != $contact_id) {
                     $errors = sprintf(_ws('User with the same %s is already registered'), 'email');
