@@ -267,6 +267,8 @@ i.icon10 { background-repeat:no-repeat; height:10px; width:10px; display:inline-
 .content { padding: 15px 0; margin-top: 2.5em; overflow: hidden; }
 .content.top-padded { padding-top: 50px; }
 
+.welcome { text-align: center; font-size: 120%; padding: 50px 0 100px; }
+
 #header { background: #000; box-shadow: 0 1px 4px rgba(0,0,0,0.3); }
 #header a { color: #777; text-decoration: none; text-transform: uppercase; }
 #header a i.icon16 { margin-top: -0.2em; }

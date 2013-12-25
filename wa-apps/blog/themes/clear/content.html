@@ -7,15 +7,26 @@
 
 <div class="content">
 
-    <!-- integrnal navigation breadcrumbs -->
-    {if isset($breadcrumbs)}
-        <div class="breadcrumbs">
-            {foreach $breadcrumbs as $breadcrumb}
-                <a href="{$breadcrumb.url}">{$breadcrumb.name|escape}</a> <span class="rarr">&rarr;</span>
-            {/foreach}
+    {if empty($posts) && $wa->currentUrl() == $wa_app_url}
+
+        <div class="welcome">
+            <h1>[`Welcome to your new blog!`]</h1>
+            <p>{sprintf('[`Start by writing a post in your <a href="%s">blog backend</a>.`]', $wa_backend_url|cat:'blog/')}</p>
         </div>
-    {/if}
     
-    {$content}
+    {else}
+
+        <!-- internal navigation breadcrumbs -->
+        {if isset($breadcrumbs)}
+            <div class="breadcrumbs">
+                {foreach $breadcrumbs as $breadcrumb}
+                    <a href="{$breadcrumb.url}">{$breadcrumb.name|escape}</a> <span class="rarr">&rarr;</span>
+                {/foreach}
+            </div>
+        {/if}
+        
+        {$content}
+        
+    {/if}
     
 </div>
