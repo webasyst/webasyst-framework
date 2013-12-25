@@ -14,7 +14,7 @@
                         <td class="s-url">
                             <span><a style="display:inline" href="#"><i class="icon16 sort"></i></a></span> <span class="s-domain-url">{$url}/</span><span class="s-editable-url" style="color:#000">{$route.url|escape}</span>
                         </td>
-                        <td class="s-app">
+                        <td class="s-app{if !empty($route.private)} gray{/if}">
                             {if !empty($route.app)}
                             <img src="{$wa_url}{$route.app.icon.24}" class="s-app24x24icon-menu-v" alt="">{$route.app.name}
                             {else}

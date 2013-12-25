@@ -8,7 +8,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 1.5.5\n"
+"X-Generator: Poedit 1.6.3\n"
+"Language: en_US\n"
 
 #: /wa-apps/site/templates/layouts/Sidebar.html:51
 msgid "Files"
@@ -896,11 +897,11 @@ msgstr ""
 
 #: /wa-apps/site/lib/actions/helper/siteHelper.action.php:73
 msgid ""
-"Displays the \"<em>bar</em>\" key value of an array. Similar to PHP $foo"
-"[\"bar\"]"
+"Displays the \"<em>bar</em>\" key value of an array. Similar to PHP "
+"$foo[\"bar\"]"
 msgstr ""
-"Displays the \"<em>bar</em>\" key value of an array. Similar to PHP $foo"
-"[\"bar\"]."
+"Displays the \"<em>bar</em>\" key value of an array. Similar to PHP "
+"$foo[\"bar\"]."
 
 #: /wa-apps/site/lib/actions/helper/siteHelper.action.php:74
 msgid "Displays variable key value of an array. Similar to PHP $foo[$bar]"
@@ -1210,4 +1211,24 @@ msgstr ""
 
 #: /wa-apps/site/lib/actions/helper/siteHelper.action.php:33
 msgid "Returns path to theme folder by <em>theme_id</em> and <em>APP_ID</em>"
+msgstr ""
+
+#: /wa-apps/site/themes/clear/content.html:9
+#: /wa-apps/site/themes/custom/content.html:4
+#: /wa-apps/site/themes/default/index.html:67
+#: /wa-apps/site/themes/facebook/content.html:25
+#: /wa-apps/site/themes/nifty/content.html:6
+#: /wa-apps/site/themes/sidebar/content.html:6
+#: /wa-apps/site/themes/vk/content.html:25
+msgid "Welcome to your new site!"
+msgstr ""
+
+#: /wa-apps/site/themes/clear/content.html:10
+#: /wa-apps/site/themes/custom/content.html:5
+#: /wa-apps/site/themes/default/index.html:68
+#: /wa-apps/site/themes/facebook/content.html:26
+#: /wa-apps/site/themes/nifty/content.html:7
+#: /wa-apps/site/themes/sidebar/content.html:7
+#: /wa-apps/site/themes/vk/content.html:26
+msgid "Start by creating a page in your <a href=\"%s\">site backend</a>."
 msgstr ""

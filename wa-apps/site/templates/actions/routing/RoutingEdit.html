@@ -178,6 +178,12 @@
                     $('#route-{$route_id} .s-editable-url').text(response.data.url);
                     if (response.data.redirect) {
                         $('#route-{$route_id} .redirect').text(response.data.redirect);
+                    } else {
+                        if (response.data.private) {
+                            $('#route-{$route_id} .s-app').addClass('gray');
+                        } else {
+                            $('#route-{$route_id} .s-app').removeClass('gray');
+                        }
                     }
                 {/if}
                 if (response.data.add) {

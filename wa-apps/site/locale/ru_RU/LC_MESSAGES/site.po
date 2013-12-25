@@ -1219,7 +1219,7 @@ msgstr ""
 
 #: /wa-apps/site/themes/default/index.html:46
 msgid "We are using <a href=\"http://www.webasyst.com/\">Webasyst</a>"
-msgstr "Мы используем <a href=\"http://www.webasyst.com/ru/\">Webasyst</a>"
+msgstr "Мы используем <a href=\"http://www.webasyst.ru\">Webasyst</a>"
 
 #: /wa-apps/site/themes/custom/index.html:73
 msgid "Facebook"
@@ -1295,3 +1295,23 @@ msgstr "Структура"
 msgid "Returns path to theme folder by <em>theme_id</em> and <em>APP_ID</em>"
 msgstr ""
 "Возвращает путь к папке темы дизайна по <em>theme_id</em> и <em>APP_ID</em>"
+
+#: /wa-apps/site/themes/clear/content.html:9
+#: /wa-apps/site/themes/custom/content.html:4
+#: /wa-apps/site/themes/default/index.html:67
+#: /wa-apps/site/themes/facebook/content.html:25
+#: /wa-apps/site/themes/nifty/content.html:6
+#: /wa-apps/site/themes/sidebar/content.html:6
+#: /wa-apps/site/themes/vk/content.html:25
+msgid "Welcome to your new site!"
+msgstr "Добро пожаловать на ваш новый сайт!"
+
+#: /wa-apps/site/themes/clear/content.html:10
+#: /wa-apps/site/themes/custom/content.html:5
+#: /wa-apps/site/themes/default/index.html:68
+#: /wa-apps/site/themes/facebook/content.html:26
+#: /wa-apps/site/themes/nifty/content.html:7
+#: /wa-apps/site/themes/sidebar/content.html:7
+#: /wa-apps/site/themes/vk/content.html:26
+msgid "Start by creating a page in your <a href=\"%s\">site backend</a>."
+msgstr "Начните с создания страницы в <a href=\"%s\">бекенде сайта</a>."
