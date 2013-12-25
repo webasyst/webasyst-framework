@@ -84,17 +84,18 @@
                     </div>                     
                 {/if}
     
-                {if $wa->blog}
-                    <!-- subscription links -->
-                    {$rss = $wa->blog->rssUrl()}
-                    {if $rss}
-                    	<div class="float-right subscribe">
+                
+                <!-- subscription links -->
+            	<div class="float-right subscribe">
+                    {if $wa->blog}	   
+                        {$rss = $wa->blog->rssUrl()}
+                        {if $rss}
                     		<a href="{$rss}" title="[s`Subscribe`]" class="bold"><i class="icon16 rss"></i></a>
-                    		<a href="{$theme_settings.facebook_url}" title="Facebook"><i class="icon16 facebook"></i></a>
-                    		<a href="{$theme_settings.twitter_url}" title="Twitter"><i class="icon16 twitter"></i></a>
-                    	</div>
+                        {/if}
                     {/if}
-                {/if}
+            		<a href="{$theme_settings.facebook_url}" title="Facebook"><i class="icon16 facebook"></i></a>
+            		<a href="{$theme_settings.twitter_url}" title="Twitter"><i class="icon16 twitter"></i></a>
+            	</div>
     
                 {if $wa->shop}                  
                     <!-- phone number -->

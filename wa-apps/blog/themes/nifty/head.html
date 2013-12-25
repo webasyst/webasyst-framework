@@ -1,10 +1,10 @@
 <!-- blog css -->
-<link href="{$wa_active_theme_url}nifty.blog.css?{$wa->version()}" rel="stylesheet" type="text/css">
-<link href="{$wa_active_theme_url}nifty.blog.mobile.css?{$wa->version()}" rel="stylesheet"{if !$wa->isMobile()} media="screen and (max-width: 760px)"{/if} type="text/css">
+<link href="{$wa_active_theme_url}nifty.blog.css?v{$wa_theme_version}" rel="stylesheet" type="text/css">
+<link href="{$wa_active_theme_url}nifty.blog.mobile.css?v{$wa_theme_version}" rel="stylesheet"{if !$wa->isMobile()} media="screen and (max-width: 760px)"{/if} type="text/css">
 
 <!-- blog js -->
-<script type="text/javascript" src="{$wa_active_theme_url}blog.js?v{$wa->version()}"></script>
-<script type="text/javascript" src="{$wa_url}wa-content/js/jquery-wa/wa.core.js"></script>
+<script type="text/javascript" src="{$wa_active_theme_url}blog.js?v{$wa_theme_version}"></script>
+<script type="text/javascript" src="{$wa_url}wa-content/js/jquery-wa/wa.core.js?v{$wa->version(true)}"></script>
 
 <!-- next & prev links -->
 {foreach $links as $role => $link}

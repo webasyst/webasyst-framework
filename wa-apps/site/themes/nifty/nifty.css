@@ -268,6 +268,8 @@ i.icon10 { background-repeat:no-repeat; height:10px; width:10px; display:inline-
 .content { padding: 10px 20px; overflow: hidden; }
 .top-padded { padding-top: 30px; }
 
+.welcome { text-align: center; font-size: 110%; padding: 80px 0 150px; }
+
 #header .block { padding: 0 20px; }
 #header a { text-decoration: none; }
 #header .phone { padding: 5px 30px 5px 5px; font-size: 1.5em; font-weight: bold; }
