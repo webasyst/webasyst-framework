@@ -12,31 +12,35 @@
 
 {$vk_tabs = [
     [
-        'url' => '/vk/',
+        'url' => '/',
         'name' => 'My new VK app'
     ]
     ,
     [
-        'url' => '/vk/shop/',
+        'url' => '/shop/',
         'name' => 'Shop online!'
     ]
     ,
     [
-        'url' => '/vk/blog/',
+        'url' => '/blog/',
         'name' => 'My blog'
     ]
     ,
     [
-        'url' => '/vk/photos/',
+        'url' => '/photos/',
         'name' => 'My photo gallery'
     ]
 ]}
 {*
 
-    Define your internal VK app navigation tabs as suggested above according to your routing setup:
+    В массиве, который определен выше, укажите правильные адреса разделов приложения для «Вконтакте» в зависимости от настройки роутинга вашего сайта.
+    Например, значение параметра 'url' замените с '/blog/' на '/vk/blog/', '/vkontakte/blog/' (в зависимости от роутинга).
+
+    Define your internal VK app navigation tabs as suggested above according to your routing setup.
+    Depending on your routing setup, URLs such as '/blog/' may need to be changed to '/vk/blog/', '/vkontakte/blog/' or similar.
     
         [
-            'url' => '/YOUR_VK_ENABLED_APP_SETTLEMENT_URL/',
+            'url' => '/YOUR_VK_ENABLED_APP_SETTLEMENT_URL/APP_ID/',
             'name' => 'TAB_NAME'
         ]
         (separate elements with comma ,)

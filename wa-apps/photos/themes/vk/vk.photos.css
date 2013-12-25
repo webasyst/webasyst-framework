@@ -29,8 +29,8 @@ h1.search-criteria { margin-bottom: 1em; text-align: center; }
 
 /* photostream */
 
-ul.photostream { padding: 0; margin: 0; list-style: none; position: relative;}
-ul.photostream li { float: left; padding-right: 7px;  }
+ul.photostream { padding: 0; margin: 0; list-style: none; position: relative; }
+ul.photostream li { float: left; padding-right: 7px; }
 ul.photostream li img { width: 48px; height: 48px; }
 ul.photostream li.selected img { border: 4px solid #FDDA3B; margin: -4px -4px -2px; }
 ul.photostream li.stream-nav { position: absolute; top: 18px; }
