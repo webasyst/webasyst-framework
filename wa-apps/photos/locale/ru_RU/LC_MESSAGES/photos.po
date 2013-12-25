@@ -8,11 +8,12 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=((((n%10)==1)&&((n%100)!=11))?(0):(((((n%10)"
-">=2)&&((n%10)<=4))&&(((n%100)<10)||((n%100)>=20)))?(1):2));\n"
+"Plural-Forms: nplurals=3; plural=((((n%10)==1)&&((n%100)!=11))?(0):(((((n"
+"%10)>=2)&&((n%10)<=4))&&(((n%100)<10)||((n%100)>=20)))?(1):2));\n"
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
-"X-Generator: Poedit 1.5.5\n"
+"X-Generator: Poedit 1.6.3\n"
+"Language: ru_RU\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
 
@@ -1411,3 +1412,47 @@ msgstr "Поиск плагинов"
 msgid "Use Installer to install new plugins from the Webasyst Store"
 msgstr ""
 "Устанавливайте плагины из магазина Webasyst с помощью приложения «Инсталлер»"
+
+#: /wa-apps/photos/templates/actions/photo/PhotoList.html:60
+msgid "Unselect all photos"
+msgstr "Отменить для всех фото"
+
+#: /wa-apps/photos/themes/clear/footer.html:4
+#: /wa-apps/photos/themes/default/index.html:78
+#: /wa-apps/photos/themes/nifty/footer.html:4
+#: /wa-apps/photos/themes/sidebar/footer.html:4
+msgid ""
+"<a href=\"http://www.webasyst.com/store/app/photos/\">Photo gallery "
+"software</a> by Webasyst"
+msgstr ""
+"<a href=\"http://www.webasyst.ru/store/app/photos/\">Движок фотогалереи</a> "
+"— Webasyst"
+
+#: /wa-apps/photos/themes/clear/home.html:10
+#: /wa-apps/photos/themes/custom/home.html:10
+#: /wa-apps/photos/themes/default/index.html:82
+#: /wa-apps/photos/themes/facebook/home.html:10
+#: /wa-apps/photos/themes/nifty/home.html:10
+#: /wa-apps/photos/themes/sidebar/home.html:10
+#: /wa-apps/photos/themes/vk/home.html:10
+msgid "Welcome to your new photo gallery!"
+msgstr "Добро пожаловать в вашу новую фотогалерею!"
+
+#: /wa-apps/photos/themes/clear/home.html:11
+#: /wa-apps/photos/themes/custom/home.html:11
+#: /wa-apps/photos/themes/default/index.html:83
+#: /wa-apps/photos/themes/facebook/home.html:11
+#: /wa-apps/photos/themes/nifty/home.html:11
+#: /wa-apps/photos/themes/sidebar/home.html:11
+#: /wa-apps/photos/themes/vk/home.html:11
+msgid "Start by uploading photos in your <a href=\"%s\">gallery backend</a>."
+msgstr ""
+"Начните с загрузки фотографий в <a href=\"%s\">бекенде фотогалереи</a>."
+
+#: /wa-apps/photos/templates/actions/photo/PhotoList.html:80
+msgid ""
+"Start uploading photos by clicking the link above or by dragging selected "
+"photos anywhere on this page."
+msgstr ""
+"Загрузите фотографии, щелкнув по ссылке выше или перетащив фотографии из "
+"папки на вашем компьютере прямо на эту страницу."

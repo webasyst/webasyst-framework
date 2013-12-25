@@ -6,8 +6,8 @@ class photosPhotoGetInfoMethod extends waAPIMethod
     {
         $id = $this->get('id', true);
         
-        $collectoin = new photosCollection('id/'.$id);
-        $data = $collectoin->getPhotos('*,thumb_big');
+        $collection = new photosCollection('id/'.$id);
+        $data = $collection->getPhotos('*,thumb_big');
 
         if (!isset($data[$id])) {
             throw new waAPIException('invalid_param', 'Photo not found', 404);

@@ -130,7 +130,7 @@ class photosFrontendPhotoAction extends photosFrontendViewAction
     {
         if ($this->album) {
             $album_model = new photosAlbumModel();
-            return $album_model->getBreadcrumbs($this->album['id'], true, true);
+            return $album_model->getBreadcrumbs($this->album['id'], false, true);
         }
         return array();
     }

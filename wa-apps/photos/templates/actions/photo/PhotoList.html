@@ -1,5 +1,6 @@
 <script type="text/javascript" src="{$wa_app_static_url}js/lazy.load.js?v={$wa->version()}"></script>
 
+{if !empty($photos) || !empty($album) || !empty($hash)}
 <div class="sidebar right200px" id="p-toolbar">
     <div class="block" id="share-menu-block">
         <h6 class="heading">
@@ -53,7 +54,13 @@
     </div>
     <div class="block" id="selector-menu-block" style="display: none;">
         <ul class="menu-v thumbs-view-menu" id="selector-menu">
-            <li data-action='select-photos'><a href="#" class="inline-link small"><i class="icon16 checkboxes"></i><b><i>[`Select all photos`]</i></b></a></li>
+            <li data-action='select-photos'>
+                <a href="#" class="inline-link small">
+                    <i class="icon16 checkboxes"></i><b><i><span class="unchecked">[`Select all photos`]</span>
+                        <span class="checked" style="display:none;">[`Unselect all photos`]</span>
+                    </i></b>
+                </a>
+            </li>
         </ul>
     </div>
     <div class="block" id="hint-menu-block" style="display:none;">
@@ -62,66 +69,76 @@
         <p class="p-sort-order-error-disclaimer sort" style="display:none;">[`You do not have sufficient access rights to alter photos sort order in this list.`]</p>
     </div>
 </div>
+{/if}
             
 <div class="content left{$sidebar_width}px right200px" id="p-content">
-    <div class="block double-padded" id="p-block">
-        <h1>
-            <span {if isset($album) && !empty($album.edit_rights)}class="editable"{/if} id="photo-list-name">{$title|escape}</span>
-            <input type="text" id="photo-list-name-input" style="display: none;" class="p-photo-h1-edit">
-            {if isset($album)}
-                <span class="{if !empty($album.edit_rights)}editable{/if} hint" id="photo-album-note">{if $album.note}{$album.note}{/if}</span>
-                <input type="text" id="photo-album-note-input" style="display: none;" class="p-photo-h1-edit hint">
-            {/if}
-            {if isset($album) && $album.type == photosAlbumModel::TYPE_DYNAMIC}
-                <span class="p-smart-album-criteria">
-                    {if isset($album.conditions.status) && $album.conditions.status[0] == '<=' && $album.conditions.status[1] == '0'}<i class="icon10 lock-bw"></i>{/if}
-                    {if isset($album.conditions.rate)}
-                        {'★'|str_repeat:$album.conditions.rate[1]}{if $album.conditions.rate[0] == '>='}+{else}-{/if}
-                    {/if}
-                    {if isset($album.conditions.tag)}
-                        <span class="tags small">{$album.conditions.tag[1]|implode:', '}</span>
-                    {/if}
-                </span>
-            {/if}
-        </h1>
-        <ul class="menu-h p-content-control">
-            <li class="selected">
-                <a href="#" class="album-view" data-action="thumbs-view"><!-- index.php?app=photos --><i class="icon16 view-thumbs"></i></a>
-            </li>
-            <li>
-                <a href="#" class="album-view" data-action="descriptions-view"><!-- index.php?app=photos&descriptions --><i class="icon16 view-thumb-list"></i></a>
-            </li>
-            <!-- plugin hook: backend-list-view-toggle -->
-
-            <li class="p-inline-mixed-string">
+    
+    {if empty($photos) && empty($album) && empty($hash)}
+        <div class="block double-padded p-welcome" id="welcome-block">
+            <h1>[`Welcome to your new photo gallery!`]</h1>
+            <p>[`Start uploading photos by clicking the link above or by dragging selected photos anywhere on this page.`]</p>
+            <div class="p-arrow-upload-link"></div>
+        </div>
+    {else}
+        <div class="block double-padded" id="p-block">
+            <h1>
+                <span {if isset($album) && !empty($album.edit_rights)}class="editable"{/if} id="photo-list-name">{$title|escape}</span>
+                <input type="text" id="photo-list-name-input" style="display: none;" class="p-photo-h1-edit">
                 {if isset($album)}
-                    {if $frontend_link}
-                        {if $album.status <= 0}
-                            <i class="icon10 lock-bw"></i>
-                            [`Private album`]{if $album.edit_rights}: <a target="_blank" href="{$frontend_link}" id="photo-list-frontend-link" class="gray">{$frontend_link}</a>
-                            <i class="icon10 new-window"></i>{/if}
-                        {else}
-                            [`Public album`]: <a target="_blank" href="{$frontend_link}" id="photo-list-frontend-link">{$frontend_link}</a>
-                            <i class="icon10 new-window"></i>
-                        {/if}
-                        &nbsp;&nbsp;
-                    {/if}
-                    {if $album.edit_rights}
-                        <i class="icon10 settings p-published-album-layout-icon"></i>
-                        <a href="#" id="p-album-settings" class="gray">[`Album settings`]</a>
-                        &nbsp;
-                        <i class="icon10 delete-bw"></i>
-                        <a href="#" id="p-album-delete" class="gray">[`Delete album`]</a>
-                    {/if}
-                {else if (!empty($frontend_link))}
-                    [`Public link`]: <a target="_blank" href="{$frontend_link}" id="photo-list-frontend-link">{$frontend_link}</a>
-                    <i class="icon10 new-window"></i>
+                    <span class="{if !empty($album.edit_rights)}editable{/if} hint" id="photo-album-note">{if $album.note}{$album.note}{/if}</span>
+                    <input type="text" id="photo-album-note-input" style="display: none;" class="p-photo-h1-edit hint">
                 {/if}
-            </li>
-        </ul>
-        <ul class="thumbs li250px" id="photo-list"></ul>
-        <div class="lazyloading-wrapper"></div>
-    </div>
+                {if isset($album) && $album.type == photosAlbumModel::TYPE_DYNAMIC}
+                    <span class="p-smart-album-criteria">
+                        {if isset($album.conditions.status) && $album.conditions.status[0] == '<=' && $album.conditions.status[1] == '0'}<i class="icon10 lock-bw"></i>{/if}
+                        {if isset($album.conditions.rate)}
+                            {'★'|str_repeat:$album.conditions.rate[1]}{if $album.conditions.rate[0] == '>='}+{else}-{/if}
+                        {/if}
+                        {if isset($album.conditions.tag)}
+                            <span class="tags small">{$album.conditions.tag[1]|implode:', '}</span>
+                        {/if}
+                    </span>
+                {/if}
+            </h1>
+            <ul class="menu-h p-content-control">
+                <li class="selected">
+                    <a href="#" class="album-view" data-action="thumbs-view"><!-- index.php?app=photos --><i class="icon16 view-thumbs"></i></a>
+                </li>
+                <li>
+                    <a href="#" class="album-view" data-action="descriptions-view"><!-- index.php?app=photos&descriptions --><i class="icon16 view-thumb-list"></i></a>
+                </li>
+                <!-- plugin hook: backend-list-view-toggle -->
+
+                <li class="p-inline-mixed-string">
+                    {if isset($album)}
+                        {if $frontend_link}
+                            {if $album.status <= 0}
+                                <i class="icon10 lock-bw"></i>
+                                [`Private album`]{if $album.edit_rights}: <a target="_blank" href="{$frontend_link}" id="photo-list-frontend-link" class="gray">{$frontend_link}</a>
+                                <i class="icon10 new-window"></i>{/if}
+                            {else}
+                                [`Public album`]: <a target="_blank" href="{$frontend_link}" id="photo-list-frontend-link">{$frontend_link}</a>
+                                <i class="icon10 new-window"></i>
+                            {/if}
+                            &nbsp;&nbsp;
+                        {/if}
+                        {if $album.edit_rights}
+                            <i class="icon10 settings p-published-album-layout-icon"></i>
+                            <a href="#" id="p-album-settings" class="gray">[`Album settings`]</a>
+                            &nbsp;
+                            <i class="icon10 delete-bw"></i>
+                            <a href="#" id="p-album-delete" class="gray">[`Delete album`]</a>
+                        {/if}
+                    {else if (!empty($frontend_link))}
+                        [`Public link`]: <a target="_blank" href="{$frontend_link}" id="photo-list-frontend-link">{$frontend_link}</a>
+                        <i class="icon10 new-window"></i>
+                    {/if}
+                </li>
+            </ul>
+            <ul class="thumbs li250px" id="photo-list"></ul>
+            <div class="lazyloading-wrapper"></div>
+        </div>
+    {/if}
     <div id="cover" class="dialog-background" style="display:none;">
         <i class="icon16 loading"></i>
     </div>
@@ -132,7 +149,9 @@
     {% for (var i=0, p=o.photos[0], n=o.photos.length; i<n; p=o.photos[++i]) { %}
     <li class="{% if (p.stack_count > 0) { %} stacked{% } %}
                 {% if (i == n - 1) { %} last{% } %}
-                {% if (last_login_time < p.upload_timestamp) { %}highlighted{% } %}" data-photo-id="{%#p.id%}"
+                {% if (last_login_time < p.upload_timestamp) { %}highlighted{% } %}
+                {% if (o.selected) { %}selected{% } %}" 
+                data-photo-id="{%#p.id%}"
     >
         <div class="p-image">{% if (p.stack_count > 0) { %}
             <div class="p-stack layer1"></div>
@@ -159,7 +178,9 @@
             </a>
         </div>
         <div class="p-details">
-            <input type="checkbox" id="photos-checkbox-{%#p.id%}" name="photo_id[]" value="{%#p.id%}" >
+            <input type="checkbox" id="photos-checkbox-{%#p.id%}" name="photo_id[]" value="{%#p.id%}" 
+                        {% if (o.selected) { %}checked="checked"{% } %}
+            >
             <label for="photos-checkbox-{%#p.id%}"><strong>{%#p.name%}</strong></label>
             <span class="p-rate" {% if (p.rate == 0) { %}style="display: none;"{% } %}>
                 {%#$.photos.getRatingHtml(p.rate, 10, true)%}

@@ -44,4 +44,9 @@ class photosFrontendAction extends photosFrontendCollectionViewAction
 
         $this->finite();
     }
+
+    public function display($clear_assign = false)
+    {
+        return parent::display($clear_assign);
+    }
 }

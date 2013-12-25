@@ -88,7 +88,7 @@
                     if (!jQuery.isEmptyObject(tags)) {
                         $("#photo-tags-remove").show();
                         for (var tag_id in tags) {
-                            $("#photos-tags-remove-list").append($('<label><input name="delete_tags[]" value="' + tag_id + '" type="checkbox"> </label>').append(tags[tag_id])).append('<br>');
+                            $("#photos-tags-remove-list").append($('<label></label>').text(tags[tag_id]).prepend('<input name="delete_tags[]" value="' + tag_id + '" type="checkbox"> ')).append('<br>');
                         }
                     } else {
                         $("#photo-tags-remove").hide();
@@ -275,9 +275,6 @@
             );
             return false;
         },
-        selectPhotosAction: function() {
-            $('#photo-list li:not(.selected)').trigger('select', true);
-        },
         beforeAnyAction: function(name) {
             if (name != 'make-stack') {
                 if (!$.photos.isSelectedAnyPhoto()) {
@@ -293,8 +290,20 @@
     });
     $.photos.menu.register('list','#selector-menu', {
 
-        selectPhotosAction: function() {
-            $('#photo-list li:not(.selected)').trigger('select', true);
+        selectPhotosAction: function(item) {
+            var counter = $('#share-menu-block, #organize-menu-block').find('.count');
+            if (!item.data('checked')) {
+                item.data('checked', true);
+                item.find('.checked').show().end().
+                        find('.unchecked').hide();
+                counter.text($.photos.total_count).show();
+            } else {
+                item.data('checked', false);
+                item.find('.unchecked').show().end().
+                        find('.checked').hide();
+                counter.text('').hide();
+            }
+            $('#photo-list li').trigger('select', [!!item.data('checked'), false]);
         }
     });
 

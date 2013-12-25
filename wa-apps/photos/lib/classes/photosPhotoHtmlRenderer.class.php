@@ -147,7 +147,8 @@ class photosPhotoHtmlRenderer
         $i = 0;
         $wa_app_url = wa()->getAppUrl(null, true);
         foreach ($tags as $name) {
-            $html .= ($i++ > 0 ? ', ' : '') . '<a href="'.$wa_app_url.'tag/'.urlencode($name).'">'.photosPhoto::escape($name).'</a>';
+            //$html .= ($i++ > 0 ? ', ' : '') . '<a href="'.$wa_app_url.'tag/'.urlencode($name).'">'.photosPhoto::escape($name).'</a>';
+            $html .= ($i++ > 0 ? ', ' : '') . '<a href="'.$wa_app_url.'tag/'.urlencode($name).'">'.$name.'</a>';
         }
         return $html;
     }

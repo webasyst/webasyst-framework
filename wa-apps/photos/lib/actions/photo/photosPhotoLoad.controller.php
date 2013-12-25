@@ -31,6 +31,7 @@ class photosPhotoLoadController extends waJsonController
             throw new waRightsException(_w("You don't have sufficient access rights"));
         }
 
+        $this->photo['name_not_escaped'] = $this->photo['name'];
         $this->photo = photosPhoto::escapeFields($this->photo);
         $this->photo['upload_datetime_formatted'] = waDateTime::format('humandate', $this->photo['upload_datetime']);
         $this->photo['upload_timestamp'] = strtotime($this->photo['upload_datetime']);

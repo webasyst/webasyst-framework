@@ -49,6 +49,11 @@
 a.p-back-to-list { font-size: 11px; background: #eee; color: #777; padding: 5px 5px 3px; position: relative; top: -3px; border-radius: 4px; }
 input.p-photo-h1-edit { font-family: Helvetica,Arial,sans-serif; font-weight: bold; }
 
+.p-welcome { position: relative; padding-right: 150px !important; text-align: center; }
+.p-welcome h1 { font-weight: normal; font-size: 1.8em; color: #aaa; margin-top: 100px; margin-bottom: 20px; margin-right: -250px; margin-left: 50px; }
+.p-welcome p { color: #aaa; font-size: 1.2em; margin-right: -250px; margin-left: 50px; }
+.p-welcome .p-arrow-upload-link { position: absolute; top: 40px; left: 0px; width: 100px; height: 80px; background: url('../img/start-here-tl.png') no-repeat; }
+
 .p-rate { white-space: nowrap; }
 .p-rate a { text-decoration: none !important; }
 .p-rate a i.icon16 { margin: 0.35em 0.25em 0 0; }
@@ -140,7 +145,7 @@ ul.thumbs.p-mini-stream li.stream-nav.ff i { background: url('../img/photostream
 /* dialogs */
 
 #confirm-dialog input[type=submit]:focus { outline: 0; }
-#p-upload-step1 { margin-top: 90px; }
+#p-upload-step1 { margin-top: 70px; }
 #p-upload-step1 img.p-drag-photos-here { padding: 10px 30px 25px; border: 3px dotted #eee; margin-top: 10px; }
 #p-upload-photolist ul.zebra li { position: relative; }
 #p-upload-photolist ul.zebra li .p-upload-onephoto-progress { position: absolute; top: 0; left: 0; bottom: 0; padding: 0; }

@@ -245,8 +245,8 @@
                     $.photos.scrollTop();
                     waDesignLoad();
                 } else {
-                    $.photos.load('?module=design' + (params ? '&' + params : ''), function () {
-                        waDesignLoad();
+                    $.photos.load('?module=design', function () {
+                        waDesignLoad(params);
                         $.photos.setTitle($_('Themes'));
                         $.photos.scrollTop();
                     }, '<div class="content left'+$.photos_sidebar.width+'px"></div>');
@@ -384,7 +384,8 @@
                 photos: $.photos.photo_stream_cache.slice(offset, offset += chunk),
                 hash: $.photos.hash,
                 last_login_time: $.photos.options.last_login_time,
-                options:options
+                options:options,
+                selected: !!$('#selector-menu').find('[data-action=select-photos]').data('checked')
             }));
 
             if(offset < length) {
@@ -422,7 +423,7 @@
             //menu
             $.photos.menu.enable('list','.'+view+'-view-menu');
             $.photos.menu.disable('list',':not(.'+view+'-view-menu)');
-            $.photos.menu.disable('list',false,'select-photos');
+            //$.photos.menu.disable('list',false,'select-photos');
             //list class
             var container = $('#photo-list');
             container.removeClass();
@@ -632,10 +633,10 @@
                 var cnt = $('#photo-list li.selected').length;
                 if (cnt > 0) {
                     $('.count:first', $(this)).text(cnt).show();
-                    $.photos.menu.enable('list',false,'select-photos');
+                    //$.photos.menu.enable('list',false,'select-photos');
                 } else {
                     $('.count:first', $(this)).hide();
-                    $.photos.menu.disable('list',false,'select-photos');
+                    //$.photos.menu.disable('list',false,'select-photos');
                 }
             });
 
@@ -747,13 +748,13 @@
             if (!photo) {
                 photo = $.photos.photo_stack_cache.getById(id);
                 if (photo) {
-                    $.photos.setTitle(photo.name);
+                    $.photos.setTitle(photo.name_not_escaped);
                     $.photos.loadPhotoInStack(photo);
                 } else {
                     $.photos.loadNewPhoto(id);
                 }
             } else {
-                $.photos.setTitle(photo.name);
+                $.photos.setTitle(photo.name_not_escaped);
                 $.photos.loadPhotoCompletly(photo);
             }
         },
@@ -860,7 +861,7 @@
                 frontend_link_template = data.frontend_link_template,
                 photo_stream = data.photo_stream;
 
-            $.photos.setTitle(photo.name);
+            $.photos.setTitle(photo.name_not_escaped);
             $('#content').html(tmpl('template-p-block'));
 
             $.photos.initPhotoToolbar({
@@ -3159,14 +3160,23 @@ $(function () {
         }
     });
     // handler of triggerable 'select' event
-    $("#photo-list li").live('select', function(e, selected) {
+    $("#photo-list li").live('select', function(e, selected, need_count) {
         selected = selected !== undefined ? selected : true;
+        need_count = need_count !== undefined ? need_count : true;
         if (selected) {
             $(this).addClass('selected').find('input:first').attr('checked', true);
         } else {
+            var select_all_photos = $('#selector-menu').find('[data-action="select-photos"]');
+            if (select_all_photos.data('checked')) {
+                select_all_photos.data('checked', false).
+                        find('.unchecked').show().end().
+                        find('.checked').hide();
+            }
             $(this).removeClass('selected').find('input:first').attr('checked', false);
         }
-        $('#share-menu-block, #organize-menu-block').trigger('recount');
+        if (need_count) {
+            $('#share-menu-block, #organize-menu-block').trigger('recount');
+        }
     });
 
     // when select photo by hand. Realizes group selecting of items by shift + click

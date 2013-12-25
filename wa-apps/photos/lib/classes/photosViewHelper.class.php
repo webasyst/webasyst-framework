@@ -62,6 +62,10 @@ class photosViewHelper extends waAppViewHelper
     {
         $album_model = new photosAlbumModel();
         $albums = $album_model->getAlbums(true);
+        foreach ($albums as &$a) {
+            $a['name'] = htmlspecialchars($a['name']);
+        }
+        unset($a);
         if ($return_html) {
             $tree = new photosViewTree($albums);
             return $tree->display('frontend');

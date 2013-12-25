@@ -8,9 +8,11 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Poedit-Language: en_US\n"
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
+"X-Generator: Poedit 1.6.3\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Language: en_US\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
 
@@ -216,8 +218,12 @@ msgid "No plugins installed"
 msgstr ""
 
 #: /wa-apps/photos/templates/actions/plugins/Plugins.html:23
-msgid "Plugin order defines the order they are executed. Sort plugin list to change the order."
-msgstr "Plugins' positions in the list define their execution order. Re-sort the list to change this order."
+msgid ""
+"Plugin order defines the order they are executed. Sort plugin list to change "
+"the order."
+msgstr ""
+"Plugins' positions in the list define their execution order. Re-sort the "
+"list to change this order."
 
 #: /wa-apps/photos/templates/actions/plugins/Plugins.html:31
 msgid "Loading..."
@@ -244,8 +250,10 @@ msgid "Smart album"
 msgstr ""
 
 #: /wa-apps/photos/templates/actions/album/AlbumCreate.html:46
-msgid "Dynamic album based on search criteria, e.g. rating, album hierarchy, tags"
-msgstr "Dynamic album based on search criteria; e.g., rating, album hierarchy, tags"
+msgid ""
+"Dynamic album based on search criteria, e.g. rating, album hierarchy, tags"
+msgstr ""
+"Dynamic album based on search criteria; e.g., rating, album hierarchy, tags"
 
 #: /wa-apps/photos/templates/actions/photo/PhotoManageAccess.html:18
 msgid "Visibility"
@@ -264,8 +272,12 @@ msgid "Private"
 msgstr ""
 
 #: /wa-apps/photos/templates/actions/album/AlbumSettings.html:47
-msgid "Album is visible only to authorized users of the Photos app, or by a private link"
-msgstr "Album is visible only to authorized users of the Photos app or via a private link."
+msgid ""
+"Album is visible only to authorized users of the Photos app, or by a private "
+"link"
+msgstr ""
+"Album is visible only to authorized users of the Photos app or via a private "
+"link."
 
 #: /wa-apps/photos/templates/actions/upload/Upload.html:51
 msgid "Privacy settings"
@@ -280,8 +292,12 @@ msgid "Uncheck all groups to make this album visible to you only"
 msgstr ""
 
 #: /wa-apps/photos/templates/actions/album/AlbumSettings.html:62
-msgid "There are no user groups in your Webasyst installation. Add groups in the Contacts app to be able to manage access to photos"
-msgstr "There are no user groups in your Webasyst installation. Add groups in the Contacts app to be able to manage access to photos."
+msgid ""
+"There are no user groups in your Webasyst installation. Add groups in the "
+"Contacts app to be able to manage access to photos"
+msgstr ""
+"There are no user groups in your Webasyst installation. Add groups in the "
+"Contacts app to be able to manage access to photos."
 
 #: /wa-apps/photos/templates/actions/photo/PhotoList.html:85
 msgid "Album settings"
@@ -304,8 +320,14 @@ msgid "Custom parameters"
 msgstr ""
 
 #: /wa-apps/photos/templates/actions/album/AlbumSettings.html:97
-msgid "Optional set of custom <em>key=value</em> parameters which can be used within a frontend's theme template as <em>&#123;$album.key&#125;</em>. Each key=value pair should be on a separate line"
-msgstr "Optional set of custom <em>key=value</em> parameters which can be used in frontend theme templates as <em>&#123;$album.key&#125;</em>. Each key=value pair must be specified on a separate line."
+msgid ""
+"Optional set of custom <em>key=value</em> parameters which can be used "
+"within a frontend's theme template as <em>&#123;$album.key&#125;</em>. Each "
+"key=value pair should be on a separate line"
+msgstr ""
+"Optional set of custom <em>key=value</em> parameters which can be used in "
+"frontend theme templates as <em>&#123;$album.key&#125;</em>. Each key=value "
+"pair must be specified on a separate line."
 
 #: /wa-apps/photos/templates/actions/album/AlbumSettings.html:114
 msgid "Rating"
@@ -336,8 +358,12 @@ msgid "Image URL"
 msgstr ""
 
 #: /wa-apps/photos/templates/actions/dialog/DialogEmbedPhotoList.html:65
-msgid "Image URLs of private photos are temporary. Permanent linking (embedding) is not recommended."
-msgstr "Image URLs of private photos are temporary values and are not recommended for permanent linking (embedding)."
+msgid ""
+"Image URLs of private photos are temporary. Permanent linking (embedding) is "
+"not recommended."
+msgstr ""
+"Image URLs of private photos are temporary values and are not recommended "
+"for permanent linking (embedding)."
 
 #: /wa-apps/photos/templates/actions/dialog/DialogEmbedPhotoList.html:74
 msgid "Image size"
@@ -376,8 +402,11 @@ msgid "Don't delete photos"
 msgstr ""
 
 #: /wa-apps/photos/templates/actions/dialog/DeleteAlbum.html:5
-msgid "All photos will remain in the photo stream, and only the album will be deleted"
-msgstr "Only the album will be deleted. All photos will remain in the photo stream!"
+msgid ""
+"All photos will remain in the photo stream, and only the album will be "
+"deleted"
+msgstr ""
+"Only the album will be deleted. All photos will remain in the photo stream!"
 
 #: /wa-apps/photos/templates/actions/dialog/DeleteAlbum.html:11
 msgid "Delete all photos stored in this album (%d)"
@@ -477,7 +506,8 @@ msgstr "Select user groups which you want to have access to this album"
 
 #: /wa-apps/photos/templates/actions/upload/Upload.html:66
 msgid "There are no user groups thus you cant't manage access to photos"
-msgstr "There are no user groups; therefore, you cannot manage access to photos."
+msgstr ""
+"There are no user groups; therefore, you cannot manage access to photos."
 
 #: /wa-apps/photos/templates/actions/upload/Upload.html:10
 msgid "Select photos"
@@ -492,8 +522,14 @@ msgid "Photos automatically appear in the public gallery"
 msgstr "Photos will automatically appear in the public gallery."
 
 #: /wa-apps/photos/templates/actions/upload/Upload.html:50
-msgid "Only authorized users of the Webasyst Photos app can see these photos. Photos can be shared via sending a secure private link, or via embedded into external websites and apps."
-msgstr "Only authorized users of the Photos app can see these photos. Photos can be shared by sending a secure private link or can be embedded in external websites and apps."
+msgid ""
+"Only authorized users of the Webasyst Photos app can see these photos. "
+"Photos can be shared via sending a secure private link, or via embedded into "
+"external websites and apps."
+msgstr ""
+"Only authorized users of the Photos app can see these photos. Photos can be "
+"shared by sending a secure private link or can be embedded in external "
+"websites and apps."
 
 #: /wa-apps/photos/templates/actions/upload/Upload.html:57
 msgid "Select user groups you want to have access to these photos:"
@@ -524,8 +560,12 @@ msgid "Files uploaded with errors"
 msgstr ""
 
 #: /wa-apps/photos/lib/actions/backend/photosBackendLoc.action.php:33
-msgid "Failed to upload. Most probably, there were not enough memory to create thumbnails."
-msgstr "Failed to upload. Most probably there was not enough memory to create thumbnails."
+msgid ""
+"Failed to upload. Most probably, there were not enough memory to create "
+"thumbnails."
+msgstr ""
+"Failed to upload. Most probably there was not enough memory to create "
+"thumbnails."
 
 #: /wa-apps/photos/templates/actions/settings/Settings.html:5
 msgid "Settings updated"
@@ -584,16 +624,26 @@ msgid "Allow on demand generation of custom-sized thumbnails"
 msgstr "Allow on-demand generation of custom-sized thumbnails"
 
 #: /wa-apps/photos/templates/actions/settings/Settings.html:93
-msgid "If enabled, frontend design theme can request Photos app to create custom-sized photo thumbnails on fly (any size in addition to the listed above, including cropped versions)"
-msgstr "If enabled, frontend design theme can request Photos app to create custom-sized photo thumbnails on the fly (any size in addition to those listed above including cropped versions)."
+msgid ""
+"If enabled, frontend design theme can request Photos app to create custom-"
+"sized photo thumbnails on fly (any size in addition to the listed above, "
+"including cropped versions)"
+msgstr ""
+"If enabled, frontend design theme can request Photos app to create custom-"
+"sized photo thumbnails on the fly (any size in addition to those listed "
+"above including cropped versions)."
 
 #: /wa-apps/photos/templates/actions/settings/Settings.html:97
 msgid "Max thumbnail size"
 msgstr ""
 
 #: /wa-apps/photos/templates/actions/settings/Settings.html:99
-msgid "Limits the maximum thumbnail size that can be created on demand. Must not be less than 970 px."
-msgstr "Limits the maximum thumbnail size, which can be created on demand. Should not be less than 970 px."
+msgid ""
+"Limits the maximum thumbnail size that can be created on demand. Must not be "
+"less than 970 px."
+msgstr ""
+"Limits the maximum thumbnail size, which can be created on demand. Should "
+"not be less than 970 px."
 
 #: /wa-apps/photos/templates/actions/settings/Settings.html:107
 msgid "Sharpen"
@@ -680,12 +730,24 @@ msgid "Uploaded by "
 msgstr ""
 
 #: /wa-apps/photos/lib/config/site.php:11
-msgid "<br>Photo URLs: with prefix 'photo' <strong>/photo/photo_url/</strong>, e.g. /photo/DSC_2051/<br>Album URLs: without prefix 'album' <strong>/&lt;full_path_to_album&gt;/</strong>, e.g. /travel/france/2010/"
-msgstr "<br>Photo URLs: with the 'photo' prefix <strong>/photo/photo_url/</strong>; e.g., /photo/DSC_2051/<br>Album URLs: without the 'album' prefix <strong>/&lt;full_path_to_album&gt;/</strong>; e.g., /travel/france/2010/"
+msgid ""
+"<br>Photo URLs: with prefix 'photo' <strong>/photo/photo_url/</strong>, e."
+"g. /photo/DSC_2051/<br>Album URLs: without prefix 'album' <strong>/&lt;"
+"full_path_to_album&gt;/</strong>, e.g. /travel/france/2010/"
+msgstr ""
+"<br>Photo URLs: with the 'photo' prefix <strong>/photo/photo_url/</strong>; "
+"e.g., /photo/DSC_2051/<br>Album URLs: without the 'album' prefix <strong>/"
+"&lt;full_path_to_album&gt;/</strong>; e.g., /travel/france/2010/"
 
 #: /wa-apps/photos/lib/config/site.php:15
-msgid "<br>Photo URLs: without prefix 'photo' <strong>/photo_url/</strong>, e.g. /DSC_2051/<br>Album URLs: with prefix 'album' <strong>/album/&lt;full_path_to_album&gt;/</strong>, e.g. /album/travel/france/2010/"
-msgstr "<br>Photo URLs: without the 'photo' prefix <strong>/photo_url/</strong>; e.g., /DSC_2051/<br>Album URLs: with the 'album' prefix <strong>/album/&lt;full_path_to_album&gt;/</strong>; e.g., /album/travel/france/2010/"
+msgid ""
+"<br>Photo URLs: without prefix 'photo' <strong>/photo_url/</strong>, e.g. /"
+"DSC_2051/<br>Album URLs: with prefix 'album' <strong>/album/&lt;"
+"full_path_to_album&gt;/</strong>, e.g. /album/travel/france/2010/"
+msgstr ""
+"<br>Photo URLs: without the 'photo' prefix <strong>/photo_url/</strong>; e."
+"g., /DSC_2051/<br>Album URLs: with the 'album' prefix <strong>/album/&lt;"
+"full_path_to_album&gt;/</strong>; e.g., /album/travel/france/2010/"
 
 #: /wa-apps/photos/lib/config/site.php:86
 msgid "Rendered html block of links' to album in where is curret photo"
@@ -712,24 +774,42 @@ msgid "Variant 2"
 msgstr ""
 
 #: /wa-apps/photos/lib/config/site.php:22
-msgid "Get single photo by numerical id (photo_id) with specified size (numerical or size name e.g. big, middle, crop)"
-msgstr "Get a single photo by its numerical id (photo_id) with the specified size (numerical value or size name; e.g., big, middle, crop)"
+msgid ""
+"Get single photo by numerical id (photo_id) with specified size (numerical "
+"or size name e.g. big, middle, crop)"
+msgstr ""
+"Get a single photo by its numerical id (photo_id) with the specified size "
+"(numerical value or size name; e.g., big, middle, crop)"
 
 #: /wa-apps/photos/lib/config/site.php:23
-msgid "Get photos list by search conditions e.g. tag/my_tag, album/12, id/1,5,7"
-msgstr "Get a photo list by search conditions; e.g., tag/my_tag, album/12, id/1,5,7"
+msgid ""
+"Get photos list by search conditions e.g. tag/my_tag, album/12, id/1,5,7"
+msgstr ""
+"Get a photo list by search conditions; e.g., tag/my_tag, album/12, id/1,5,7"
 
 #: /wa-apps/photos/lib/config/site.php:83
-msgid "One or more optional custom params, setted by album settings in backend in key-value format, i.e. available like {$album.key}"
-msgstr "One or more optional custom parameters specified in album settings in the key=value format, which are available as {$album.key}"
+msgid ""
+"One or more optional custom params, setted by album settings in backend in "
+"key-value format, i.e. available like {$album.key}"
+msgstr ""
+"One or more optional custom parameters specified in album settings in the "
+"key=value format, which are available as {$album.key}"
 
 #: /wa-apps/photos/lib/config/site.php:47
-msgid "Core content loaded according to the requested resource: a blog post, post stream, a page, etc."
-msgstr "Core content loaded in accordance with the requested resource: a blog post, a post stream, a page, etc."
+msgid ""
+"Core content loaded according to the requested resource: a blog post, post "
+"stream, a page, etc."
+msgstr ""
+"Core content loaded in accordance with the requested resource: a blog post, "
+"a post stream, a page, etc."
 
 #: /wa-apps/photos/lib/config/site.php:68
-msgid "Optional var. Available only if current context of photo is album. Below are describe keys of this param"
-msgstr "Optional variable. Available only if the current context is a photo album. Below are described the keys of this parameter."
+msgid ""
+"Optional var. Available only if current context of photo is album. Below are "
+"describe keys of this param"
+msgstr ""
+"Optional variable. Available only if the current context is a photo album. "
+"Below are described the keys of this parameter."
 
 #: /wa-apps/photos/lib/config/site.php:84
 msgid "Url to next photo"
@@ -884,8 +964,14 @@ msgid "Private photos selected"
 msgstr ""
 
 #: /wa-apps/photos/templates/layouts/Default.html:375
-msgid "%d of %d selected photos are <strong>private photos</strong>, and they are not recommended for permanent linking (embedding). Private photo URLs may be changed by the Photos app at any time."
-msgstr "%d of %d selected photos are <strong>private</strong>, they are not recommended for permanent linking (embedding). Private photo URLs may be changed by the Photos app at any time."
+msgid ""
+"%d of %d selected photos are <strong>private photos</strong>, and they are "
+"not recommended for permanent linking (embedding). Private photo URLs may be "
+"changed by the Photos app at any time."
+msgstr ""
+"%d of %d selected photos are <strong>private</strong>, they are not "
+"recommended for permanent linking (embedding). Private photo URLs may be "
+"changed by the Photos app at any time."
 
 #: /wa-apps/photos/templates/layouts/Default.html:377
 msgid "Embed anyway"
@@ -992,8 +1078,14 @@ msgid "Remove tags"
 msgstr ""
 
 #: /wa-apps/photos/templates/actions/dialog/DialogAlbumSettings.html:97
-msgid "Optional set of custom <em>key=value</em> parameters which can be used within a frontend's theme template as <em>&#123;$album.key&#125;</em>. Each key=value pair should be on a separate line."
-msgstr "Optional set of custom <em>key=value</em> parameters, which can be used in frontend theme templates as <em>&#123;$album.key&#125;</em>. Each key=value pair must be specified on a separate line."
+msgid ""
+"Optional set of custom <em>key=value</em> parameters which can be used "
+"within a frontend's theme template as <em>&#123;$album.key&#125;</em>. Each "
+"key=value pair should be on a separate line."
+msgstr ""
+"Optional set of custom <em>key=value</em> parameters, which can be used in "
+"frontend theme templates as <em>&#123;$album.key&#125;</em>. Each key=value "
+"pair must be specified on a separate line."
 
 #: /wa-apps/photos/themes/default/view-thumbs.html:36
 msgid "Show more photos"
@@ -1016,12 +1108,25 @@ msgid "Backup photo originals"
 msgstr "Back up original photos"
 
 #: /wa-apps/photos/templates/actions/settings/Settings.html:123
-msgid "When enabled, every uploaded image file is automatically backed up and stored independently from photo full size version, which is modified when you edit it, e.g. rotate, apply watermarks or image visual effects. Originals are never updated. Pros: you have backups of all uploaded images. Cons: almost twice more disk space is required for storing original images than for storing only full size versions and thumbnails."
-msgstr "When enabled, every uploaded image file is automatically backed up and stored independently of the photo's full-size version, which is modified when you edit it; e.g., rotate, apply watermarks or image visual effects. Original images are never updated. Pros: you have backups of all uploaded images. Cons: almost twice as much disk space is required to store original images in addition to full-size versions and thumbnails."
+msgid ""
+"When enabled, every uploaded image file is automatically backed up and "
+"stored independently from photo full size version, which is modified when "
+"you edit it, e.g. rotate, apply watermarks or image visual effects. "
+"Originals are never updated. Pros: you have backups of all uploaded images. "
+"Cons: almost twice more disk space is required for storing original images "
+"than for storing only full size versions and thumbnails."
+msgstr ""
+"When enabled, every uploaded image file is automatically backed up and "
+"stored independently of the photo's full-size version, which is modified "
+"when you edit it; e.g., rotate, apply watermarks or image visual effects. "
+"Original images are never updated. Pros: you have backups of all uploaded "
+"images. Cons: almost twice as much disk space is required to store original "
+"images in addition to full-size versions and thumbnails."
 
 #: /wa-apps/photos/js/list.menu.js:507
 msgid "Unsaved changes will be lost if you leave this page now. Are you sure?"
-msgstr "Non-saved changes will be lost, if you leave this page now. Are you sure?"
+msgstr ""
+"Non-saved changes will be lost, if you leave this page now. Are you sure?"
 
 #: /wa-apps/photos/lib/config/site.php:101
 msgid "Rendered HTML block of links to albums which current photo belongs to"
@@ -1032,35 +1137,79 @@ msgid "Rendered HTML block of current photo author info"
 msgstr "Rendered HTML block of the current photo's author info"
 
 #: /wa-apps/photos/lib/config/site.php:36
-msgid "Returns entire tag list as an array with the following structure: (<em>\"id\"</em>, <em>\"name\"</em>, <em>\"count\"</em>, <em>\"size\"</em>, <em>\"opacity\"</em>)"
-msgstr "Returns entire tag list as an array with the following structure: (<em>\"id\"</em>, <em>\"name\"</em>, <em>\"count\"</em>, <em>\"size\"</em>, <em>\"opacity\"</em>)"
+msgid ""
+"Returns entire tag list as an array with the following structure: (<em>\"id"
+"\"</em>, <em>\"name\"</em>, <em>\"count\"</em>, <em>\"size\"</em>, <em>"
+"\"opacity\"</em>)"
+msgstr ""
+"Returns entire tag list as an array with the following structure: (<em>\"id"
+"\"</em>, <em>\"name\"</em>, <em>\"count\"</em>, <em>\"size\"</em>, <em>"
+"\"opacity\"</em>)"
 
 #: /wa-apps/photos/lib/config/site.php:37
-msgid "Returns photo by id (<em>photo_id</em>) as an array with the following structure: (<em>\"id\"</em>, <em>\"name\"</em>, <em>\"description\"</em>, <em>\"ext\"</em>, <em>\"size\"</em>, <em>\"type\"</em>, <em>\"rate\"</em>, <em>\"width\"</em>, <em>\"height\"</em>, <em>\"contact_id\"</em>, <em>\"upload_datetime\"</em>, <em>\"edit_datetime\"</em>, <em>\"status\"</em>, <em>\"hash\"</em>, <em>\"url\"</em>, <em>\"parent_id\"</em>, <em>\"stack_count\"</em>, <em>\"sort\"</em>, <em>\"thumb_%size%\"</em>). Optional <em>size</em> parameter can be used to fetch particular thumbnail size: should be provided in pixels, or as one of the predefined values: <em>\"big\"</em> for 970, <em>\"middle\"</em> for 750, <em>\"thumbs\"</em> for 200x0, <em>\"crop\"</em> for 96x96"
-msgstr "Returns a photo by its id (<em>photo_id</em>) as an array with the following structure: (<em>\"id\"</em>, <em>\"name\"</em>, <em>\"description\"</em>, <em>\"ext\"</em>, <em>\"size\"</em>, <em>\"type\"</em>, <em>\"rate\"</em>, <em>\"width\"</em>, <em>\"height\"</em>, <em>\"contact_id\"</em>, <em>\"upload_datetime\"</em>, <em>\"edit_datetime\"</em>, <em>\"status\"</em>, <em>\"hash\"</em>, <em>\"url\"</em>, <em>\"parent_id\"</em>, <em>\"stack_count\"</em>, <em>\"sort\"</em>, <em>\"thumb_%size%\"</em>). Optional <em>size</em> parameter can be used to fetch a particular thumbnail size, if specified in pixels or as one of the predefined values: <em>\"big\"</em> for 970, <em>\"middle\"</em> for 750, <em>\"thumbs\"</em> for 200x0, <em>\"crop\"</em> for 96x96."
+msgid ""
+"Returns photo by id (<em>photo_id</em>) as an array with the following "
+"structure: (<em>\"id\"</em>, <em>\"name\"</em>, <em>\"description\"</em>, "
+"<em>\"ext\"</em>, <em>\"size\"</em>, <em>\"type\"</em>, <em>\"rate\"</em>, "
+"<em>\"width\"</em>, <em>\"height\"</em>, <em>\"contact_id\"</em>, <em>"
+"\"upload_datetime\"</em>, <em>\"edit_datetime\"</em>, <em>\"status\"</em>, "
+"<em>\"hash\"</em>, <em>\"url\"</em>, <em>\"parent_id\"</em>, <em>"
+"\"stack_count\"</em>, <em>\"sort\"</em>, <em>\"thumb_%size%\"</em>). "
+"Optional <em>size</em> parameter can be used to fetch particular thumbnail "
+"size: should be provided in pixels, or as one of the predefined values: <em>"
+"\"big\"</em> for 970, <em>\"middle\"</em> for 750, <em>\"thumbs\"</em> for "
+"200x0, <em>\"crop\"</em> for 96x96"
+msgstr ""
+"Returns a photo by its id (<em>photo_id</em>) as an array with the following "
+"structure: (<em>\"id\"</em>, <em>\"name\"</em>, <em>\"description\"</em>, "
+"<em>\"ext\"</em>, <em>\"size\"</em>, <em>\"type\"</em>, <em>\"rate\"</em>, "
+"<em>\"width\"</em>, <em>\"height\"</em>, <em>\"contact_id\"</em>, <em>"
+"\"upload_datetime\"</em>, <em>\"edit_datetime\"</em>, <em>\"status\"</em>, "
+"<em>\"hash\"</em>, <em>\"url\"</em>, <em>\"parent_id\"</em>, <em>"
+"\"stack_count\"</em>, <em>\"sort\"</em>, <em>\"thumb_%size%\"</em>). "
+"Optional <em>size</em> parameter can be used to fetch a particular thumbnail "
+"size, if specified in pixels or as one of the predefined values: <em>\"big"
+"\"</em> for 970, <em>\"middle\"</em> for 750, <em>\"thumbs\"</em> for 200x0, "
+"<em>\"crop\"</em> for 96x96."
 
 #: /wa-apps/photos/lib/config/site.php:38
-msgid "Returns photo list array by search criteria, e.g. <em>\"tag/vacations\"</em>, <em>\"album/12\"</em>, <em>\"id/1,5,7\"</em>"
-msgstr "Returns a photo list array by search criteria; e.g., <em>\"tag/vacations\"</em>, <em>\"album/12\"</em>, <em>\"id/1,5,7\"</em>"
+msgid ""
+"Returns photo list array by search criteria, e.g. <em>\"tag/vacations\"</"
+"em>, <em>\"album/12\"</em>, <em>\"id/1,5,7\"</em>"
+msgstr ""
+"Returns a photo list array by search criteria; e.g., <em>\"tag/vacations\"</"
+"em>, <em>\"album/12\"</em>, <em>\"id/1,5,7\"</em>"
 
 #: /wa-apps/photos/lib/config/site.php:41
-msgid "Photo album id. Other elements of <em>$album</em> available in this template are listed below"
+msgid ""
+"Photo album id. Other elements of <em>$album</em> available in this template "
+"are listed below"
 msgstr ""
 
 #: /wa-apps/photos/lib/config/site.php:98
-msgid "The way to use album custom parameters which can be set for every individual album in its settings (<em>key=value</em> format)"
-msgstr "The way to use custom album parameters which can be set for every individual album in its settings (in the <em>key=value</em> format)."
+msgid ""
+"The way to use album custom parameters which can be set for every individual "
+"album in its settings (<em>key=value</em> format)"
+msgstr ""
+"The way to use custom album parameters which can be set for every individual "
+"album in its settings (in the <em>key=value</em> format)."
 
 #: /wa-apps/photos/lib/config/site.php:62
-msgid "Core content loaded according to the requested resource: an album, a photo, a page, etc."
+msgid ""
+"Core content loaded according to the requested resource: an album, a photo, "
+"a page, etc."
 msgstr ""
 
 #: /wa-apps/photos/lib/config/site.php:65
-msgid "Photo id. Other elements of <em>$photo</em> available in this template are listed below"
+msgid ""
+"Photo id. Other elements of <em>$photo</em> available in this template are "
+"listed below"
 msgstr ""
 
 #: /wa-apps/photos/lib/config/site.php:83
-msgid "Conditional! Available only if current context of photo is album. Below are describe keys of this param"
+msgid ""
+"Conditional! Available only if current context of photo is album. Below are "
+"describe keys of this param"
 msgstr ""
 
 #: /wa-apps/photos/lib/config/site.php:99
@@ -1108,8 +1257,14 @@ msgid "Not available for smart albums."
 msgstr ""
 
 #: /wa-apps/photos/templates/actions/upload/Upload.html:50
-msgid "Only authorized users of the Webasyst Photos app can see these photos. Photos can be shared via sending a secure private link, or via embedded into external websites and apps"
-msgstr "Only authorized users of the Photos app can see these photos. Photos can be shared by sending a secure private link or can be embedded in external websites and apps."
+msgid ""
+"Only authorized users of the Webasyst Photos app can see these photos. "
+"Photos can be shared via sending a secure private link, or via embedded into "
+"external websites and apps"
+msgstr ""
+"Only authorized users of the Photos app can see these photos. Photos can be "
+"shared by sending a secure private link or can be embedded in external "
+"websites and apps."
 
 #: /wa-apps/photos/templates/actions/upload/Upload.html:63
 msgid "Uncheck all groups to make photos visible to you only."
@@ -1132,16 +1287,28 @@ msgid "Empty result"
 msgstr ""
 
 #: /wa-apps/photos/lib/actions/backend/photosBackendLoc.action.php:45
-msgid "This will reset all changes you applied to the image after upload, and will restore the image to its original. Are you sure?"
-msgstr "This will reset all changes you applied to the image after upload and will restore the original image. Are you sure?"
+msgid ""
+"This will reset all changes you applied to the image after upload, and will "
+"restore the image to its original. Are you sure?"
+msgstr ""
+"This will reset all changes you applied to the image after upload and will "
+"restore the original image. Are you sure?"
 
 #: /wa-apps/photos/templates/layouts/Default.html:311
 msgid "Revert to original"
 msgstr ""
 
 #: /wa-apps/photos/templates/actions/album/AlbumSettings.html:26
-msgid "This album will not be visible in the public gallery because there are no routing rules for the Photos app in your website settings. Use Site app (Routing section) to settle Photos app on your website and to start publishing photos."
-msgstr "This album will not be visible in the public gallery, because there are no routing rules for the Photos app in your website settings. Use Site app (Routing section) to settle the Photos app on your website and to start publishing photos."
+msgid ""
+"This album will not be visible in the public gallery because there are no "
+"routing rules for the Photos app in your website settings. Use Site app "
+"(Routing section) to settle Photos app on your website and to start "
+"publishing photos."
+msgstr ""
+"This album will not be visible in the public gallery, because there are no "
+"routing rules for the Photos app in your website settings. Use Site app "
+"(Routing section) to settle the Photos app on your website and to start "
+"publishing photos."
 
 #: /wa-apps/photos/templates/layouts/Mobile.html:22
 msgid "Apps"
@@ -1160,13 +1327,23 @@ msgid "Design"
 msgstr ""
 
 #: /wa-apps/photos/lib/config/site.php:38
-msgid "Returns photo list array by search criteria, e.g. <em>\"tag/vacations\"</em>, <em>\"album/12\"</em>, <em>\"id/1,5,7\"</em>. <em>size</em> parameter indicates thumbnail size. <em>limit</em> parameter is MySQL-like: can be either a number (max number of photos to be returned) or a pair of offset, limit (start from and the max number of records to be returned)"
-msgstr "Returns a photo list array by search criteria; e.g., <em>\"tag/vacations\"</em>, <em>\"album/12\"</em>, <em>\"id/1,5,7\"</em>. <em>size</em> parameter indicates thumbnail size. The <em>limit</em> parameter is similar to that used in SQL: it can be either a number (max number of photos to be returned) or a pair of offset and limit (start from and the max number of records to be returned)."
+msgid ""
+"Returns photo list array by search criteria, e.g. <em>\"tag/vacations\"</"
+"em>, <em>\"album/12\"</em>, <em>\"id/1,5,7\"</em>. <em>size</em> parameter "
+"indicates thumbnail size. <em>limit</em> parameter is MySQL-like: can be "
+"either a number (max number of photos to be returned) or a pair of offset, "
+"limit (start from and the max number of records to be returned)"
+msgstr ""
+"Returns a photo list array by search criteria; e.g., <em>\"tag/vacations\"</"
+"em>, <em>\"album/12\"</em>, <em>\"id/1,5,7\"</em>. <em>size</em> parameter "
+"indicates thumbnail size. The <em>limit</em> parameter is similar to that "
+"used in SQL: it can be either a number (max number of photos to be returned) "
+"or a pair of offset and limit (start from and the max number of records to "
+"be returned)."
 
 #: /wa-apps/photos/lib/config/site.php:124
 msgid "Latest uploaded photos"
 msgstr "Last uploaded photos"
-
 
 #: /wa-apps/photos/lib/actions/album/photosAlbumSave.controller.php:41
 msgid "Parent album is private"
@@ -1177,7 +1354,9 @@ msgid "Parent album is smart"
 msgstr ""
 
 #: /wa-apps/photos/themes/default/index.html:71
-msgid "We are using <a href=\"http://www.webasyst.com/apps/photos/\">Webasyst Photos</a>"
+msgid ""
+"We are using <a href=\"http://www.webasyst.com/apps/photos/\">Webasyst "
+"Photos</a>"
 msgstr ""
 
 #: /wa-apps/photos/themes/custom/content.html:64
@@ -1189,15 +1368,21 @@ msgid "Remove from album"
 msgstr ""
 
 #: /wa-apps/photos/templates/actions/photo/PhotoList.html:60
-msgid "Photos in this list are sorted <strong>by upload time</strong>. Sort order cannot be set manually here."
+msgid ""
+"Photos in this list are sorted <strong>by upload time</strong>. Sort order "
+"cannot be set manually here."
 msgstr ""
 
 #: /wa-apps/photos/templates/actions/photo/PhotoList.html:61
-msgid "Photos in this list are sorted <strong>by rating</strong>. Sort order cannot be set manually here."
+msgid ""
+"Photos in this list are sorted <strong>by rating</strong>. Sort order cannot "
+"be set manually here."
 msgstr ""
 
 #: /wa-apps/photos/templates/actions/photo/PhotoList.html:62
-msgid "You do not have sufficient access rights to alter photos sort order in this list."
+msgid ""
+"You do not have sufficient access rights to alter photos sort order in this "
+"list."
 msgstr ""
 
 #: /wa-apps/photos/templates/layouts/Default.html:402
@@ -1209,15 +1394,21 @@ msgid "Save error"
 msgstr ""
 
 #: /wa-apps/photos/themes/vk/footer.html:4
-msgid "We are using <a href=\"http://www.webasyst.com/apps/photos/\" target=\"_blank\">Webasyst Photos</a>"
+msgid ""
+"We are using <a href=\"http://www.webasyst.com/apps/photos/\" target=\"_blank"
+"\">Webasyst Photos</a>"
 msgstr ""
 
 #: /wa-apps/photos/themes/sidebar/footer.html:4
-msgid "We are using <a href=\"http://www.webasyst.com/store/app/photos/\">Webasyst Photos</a>"
+msgid ""
+"We are using <a href=\"http://www.webasyst.com/store/app/photos/\">Webasyst "
+"Photos</a>"
 msgstr ""
 
 #: /wa-apps/photos/themes/vk/footer.html:4
-msgid "We are using <a href=\"http://www.webasyst.com/store/app/photos/\" target=\"_blank\">Webasyst Photos</a>"
+msgid ""
+"We are using <a href=\"http://www.webasyst.com/store/app/photos/\" target="
+"\"_blank\">Webasyst Photos</a>"
 msgstr ""
 
 #: /wa-apps/photos/templates/actions/settings/Settings.html:118
@@ -1225,7 +1416,9 @@ msgid "Thumbnail quality"
 msgstr ""
 
 #: /wa-apps/photos/templates/actions/settings/Settings.html:122
-msgid "JPEG compression quality for photo thumbnails. From 0 (min) to 100 (max). 90 is recommended."
+msgid ""
+"JPEG compression quality for photo thumbnails. From 0 (min) to 100 (max). 90 "
+"is recommended."
 msgstr ""
 
 #: /wa-apps/photos/templates/actions/plugins/Plugins.html:26
@@ -1237,5 +1430,46 @@ msgid "Use Installer to install new plugins from the Webasyst Store"
 msgstr ""
 
 #: /wa-apps/photos/templates/actions/settings/Settings.html:119
-msgid "JPEG compression quality for photo thumbnails. From 0 (min quality, min file size) to 100 (max quality, max file size). 90 is recommended."
+msgid ""
+"JPEG compression quality for photo thumbnails. From 0 (min quality, min file "
+"size) to 100 (max quality, max file size). 90 is recommended."
+msgstr ""
+
+#: /wa-apps/photos/templates/actions/photo/PhotoList.html:60
+msgid "Unselect all photos"
+msgstr ""
+
+#: /wa-apps/photos/themes/clear/footer.html:4
+#: /wa-apps/photos/themes/default/index.html:104
+#: /wa-apps/photos/themes/nifty/footer.html:4
+#: /wa-apps/photos/themes/sidebar/footer.html:4
+msgid ""
+"<a href=\"http://www.webasyst.com/store/app/photos/\">Photo gallery "
+"software</a> by Webasyst"
+msgstr ""
+
+#: /wa-apps/photos/themes/clear/home.html:10
+#: /wa-apps/photos/themes/custom/home.html:10
+#: /wa-apps/photos/themes/default/index.html:82
+#: /wa-apps/photos/themes/facebook/home.html:10
+#: /wa-apps/photos/themes/nifty/home.html:10
+#: /wa-apps/photos/themes/sidebar/home.html:10
+#: /wa-apps/photos/themes/vk/home.html:10
+msgid "Welcome to your new photo gallery!"
+msgstr ""
+
+#: /wa-apps/photos/themes/clear/home.html:11
+#: /wa-apps/photos/themes/custom/home.html:11
+#: /wa-apps/photos/themes/default/index.html:83
+#: /wa-apps/photos/themes/facebook/home.html:11
+#: /wa-apps/photos/themes/nifty/home.html:11
+#: /wa-apps/photos/themes/sidebar/home.html:11
+#: /wa-apps/photos/themes/vk/home.html:11
+msgid "Start by uploading photos in your <a href=\"%s\">gallery backend</a>."
+msgstr ""
+
+#: /wa-apps/photos/templates/actions/photo/PhotoList.html:80
+msgid ""
+"Start uploading photos by clicking the link above or by dragging selected "
+"photos anywhere on this page."
 msgstr ""

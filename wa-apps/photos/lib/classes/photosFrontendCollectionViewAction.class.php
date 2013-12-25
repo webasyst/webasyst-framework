@@ -55,9 +55,9 @@ class photosFrontendCollectionViewAction extends photosFrontendViewAction
         $photos = $collection->getPhotos("*,thumb,frontend_link,tags", $this->offset, $this->photos_per_page);
         $photos = photosCollection::extendPhotos($photos);
         if ($this->hash) {
-            $title = photosPhoto::escape($collection->getTitle());
+            $title = $collection->getTitle();
             waRequest::setParam('title', $title);
-            $this->view->assign('title', $title);
+            $this->view->assign('title', photosPhoto::escape($title));
         } else {
             $this->view->assign('title', '');
         }

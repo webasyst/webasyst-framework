@@ -42,5 +42,6 @@ class photosSearchPhotosAction extends waViewAction
         $this->view->assign('title', $query == 'rate>0' ? _w('Rated') : $collection->getTitle());
         $this->view->assign('total_count', $collection->count());
         $this->view->assign('sort_method', $query == 'rate>0' ? 'rate' : 'upload_datetime');
+        $this->view->assign('hash', $hash);
     }
 }

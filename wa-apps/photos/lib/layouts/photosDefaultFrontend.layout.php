@@ -11,7 +11,7 @@ class photosDefaultFrontendLayout extends waLayout
         $this->view->assign('breadcrumbs', waRequest::param('breadcrumbs', array()));
 
         if (!$this->getResponse()->getTitle()) {
-            $title = waRequest::param('title') ? photosPhoto::escape(waRequest::param('title')) : wa()->accountName();
+            $title = waRequest::param('title') ? waRequest::param('title') : wa()->accountName();
             $this->getResponse()->setTitle($title);
         }
 
