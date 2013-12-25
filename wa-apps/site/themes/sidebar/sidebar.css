@@ -265,6 +265,8 @@ i.icon10 { background-repeat:no-repeat; height:10px; width:10px; display:inline-
 .content { padding: 25px 0; overflow: hidden; }
 .content.top-padded { padding-top: 50px; }
 
+.welcome { text-align: center; padding: 80px 0 150px; }
+
 #sidebar { width: 230px; min-height: 100%; float: left; font-size: 120%; font-family: Calibri, "Helvetica Neue", Helvetica, Arial, sans-serif;  }
 #sidebar .block { padding-left: 25px; padding-right: 25px; }
 #sidebar .title { margin: 40px 30px 40px; }

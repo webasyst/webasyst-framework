@@ -1,9 +1,9 @@
     <!-- photos app css -->
-    <link href="{$wa_active_theme_url}sidebar.photos.css?{$wa->version()}" rel="stylesheet" type="text/css">
-    <link href="{$wa_active_theme_url}sidebar.photos.mobile.css?{$wa->version()}"{if !$wa->isMobile()} media="screen and (max-width: 760px)"{/if} rel="stylesheet" type="text/css">
+    <link href="{$wa_active_theme_url}sidebar.photos.css?v{$wa_theme_version}" rel="stylesheet" type="text/css">
+    <link href="{$wa_active_theme_url}sidebar.photos.mobile.css?v{$wa_theme_version}"{if !$wa->isMobile()} media="screen and (max-width: 760px)"{/if} rel="stylesheet" type="text/css">
 
     <!-- js -->
-    <script type="text/javascript" src="{$wa_url}wa-content/js/jquery-wa/wa.core.js"></script>
+    <script type="text/javascript" src="{$wa_url}wa-content/js/jquery-wa/wa.core.js?v{$wa->version(true)}"></script>
     <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
 
     {if $nofollow}
