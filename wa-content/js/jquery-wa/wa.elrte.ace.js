@@ -84,7 +84,7 @@ function waEditorAceInit(options)
     session.setUseWrapMode(true);
     wa_editor.renderer.setShowGutter(false);
     wa_editor.setShowPrintMargin(false);
-    wa_editor.setFontSize(13);
+    wa_editor.setFontSize(navigator.appVersion.indexOf("Mac")!= -1 ? 13 : 14);
     $('.ace_editor').css('fontFamily', '');
     session.setValue($('#' + options.id).hide().val());
     wa_editor.focus();

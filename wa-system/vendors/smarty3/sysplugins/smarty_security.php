@@ -92,7 +92,7 @@ class Smarty_Security {
         'func_get_args', 'func_get_arg', 'class_alias', 'iterator_apply',
         'mysql_fetch_object', 'mysqli_fetch_object',
         'dom_import_simplexml', 'simplexml_load_string', 'simplexml_load_file',
-        'spl_autoload_register', 'spl_autoload_call', 'sscanf'
+        'spl_autoload_register', 'spl_autoload_call', 'sscanf', 'curl_init'
     );
     /**
      * This is an array of trusted PHP modifiers.

@@ -73,7 +73,7 @@ class waGettextParser
             $function_pattern[] = '_w';
         }
 
-        $word_pattern = '\\s*(\\\'|")((\\\\\\%1$d|[^\\%1$d\\n])+?)\\%1$d\\s*';
+        $word_pattern = '\\s*(\'|")((\\\%1$d|[^$%1$d\\n])+?)$%1$d\\s*';
 
         $plural_pattern = '@('.implode('|', $function_pattern).')\\s*\\('.sprintf($word_pattern, 2).','.sprintf($word_pattern, 5).',\\s*@usi';
         #plural forms support

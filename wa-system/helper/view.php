@@ -53,9 +53,6 @@ function wa_header()
             if (empty($url_info['scheme'])) {
                 $url = 'http://'.$url;
             }
-            if (!empty($url_info['scheme']) && $url_info['scheme'] != 'http') {
-                $url_name = $url_info['scheme'].'://';
-            }
             if (isset($url_info['host'])) {
                 $url_name .= $url_info['host'];
             }

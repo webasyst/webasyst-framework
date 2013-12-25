@@ -77,13 +77,9 @@
                     <div class="field wa-page-url">
                         <div class="name bold">[s`Page URL`]</div>
                         <div class="value wa-page-app-url">
-                            <input type="text" name="info[url]" class="bold" value="{if $page}{$page.url|escape}{/if}" />
+                            {if !empty($url)}{$url|escape}{/if}<input type="text" name="info[url]" class="bold" value="{if $page}{$page.url|escape}{/if}" />
                         </div>
-                        {if !empty($url)}
-                        <div class="value small wa-page-app-url">
-                            <span>{$url|escape}<span class="wa-page-url-part">{if $page}{$page.url|escape}{/if}</span></span>
-                        </div>
-                        {else}
+                        {if empty($url)}
                         <div class="value small wa-page-app-url">
                             <span style="color: red;">[s`This page is unsettled (unpublished), i.e. not connected to any of your site’s routing rules. Drag this page out of the Unpublished section in the left sidebar to connect it to any of your existing site’s routes.`]</span>
                         </div>
@@ -221,10 +217,6 @@
         waEditorInit({
             upload_url: "{$upload_url}",
             lang: "{$lang}"
-        });
-
-        $("div.wa-page-app-url input[type=text]").keyup(function () {
-            $("div.wa-page-app-url span.wa-page-url-part").html($(this).val());
         });
 
         var iButtonInit = function () {

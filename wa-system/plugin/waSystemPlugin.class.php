@@ -181,10 +181,9 @@ abstract class waSystemPlugin
                 if (!isset($this->settings[$key])) {
                     $value = null;
                     if (isset($default['value'])) {
-                        if (!empty($default['value']) && ($default['value'] !== true) && is_string($default['value'])) {
-                            $value = $this->_w($default['value']);
-                        } else {
-                            $value = $default['value'];
+                        $value = $default['value'];
+                        if(!empty($default['control_type']) && ($default['control_type'] == waHtmlControl::INPUT)){
+                            $value = $this->_w($value);
                         }
                     }
                     $this->settings[$key] = $value;
