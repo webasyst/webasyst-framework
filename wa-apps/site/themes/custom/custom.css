@@ -93,6 +93,8 @@ hr { background-color: #ccc; height: 1px; border: 0; }
 .content.right #page { margin-right: 50px; /* extra margin in case page tree is on the right */ }
 .top-padded { padding-top: 50px; /* "due to heading" padding */ }
 
+.welcome { text-align: center; font-size: 110%; padding: 80px 20px 150px; }
+
 #header { margin-bottom: 30px; margin-top: -25px; }
 #header h2 { float: left; text-transform: uppercase; margin-top: 25px; }
 #header h2 a { color: #000; text-decoration: none; }

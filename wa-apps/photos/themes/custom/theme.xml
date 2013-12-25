@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE theme PUBLIC "wa-app-theme" "http://www.webasyst.com/wa-content/xml/wa-app-theme.dtd">
-<theme id="custom" system="0" vendor="webasyst" author="Webasyst" app="photos" parent_theme_id="site:custom" version="1.0.0">
+<theme id="custom" system="0" vendor="webasyst" author="Webasyst" app="photos" parent_theme_id="site:custom" version="1.1.0">
     <name locale="en_US">CUSTOM</name>
     <name locale="ru_RU">CUSTOM</name>
     <files>
@@ -150,4 +150,17 @@
 
 ]]>
   </about>
+  <description locale="ru_RU">Семейство адаптивных тем дизайна.</description>
+  <thumbs>
+    <thumb>100x100</thumb>
+    <thumb>155x155</thumb>
+    <thumb>155x320</thumb>
+    <thumb>210x100</thumb>
+    <thumb>210x210</thumb>
+    <thumb>320x100</thumb>
+    <thumb>320x155</thumb>
+    <thumb>320x320</thumb>
+    <thumb>250x300</thumb>
+    <thumb>970</thumb>
+  </thumbs>
 </theme>
