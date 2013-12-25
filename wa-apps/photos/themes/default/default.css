@@ -118,7 +118,7 @@ ul.menu-h li.selected ul * { background: #fff !important; }
 #header ul#wa-apps li a:visited { color: #ccc; }
 #header ul#wa-apps li a:hover { color: #fff !important; }
 #header ul#wa-apps li.selected a,
-#header ul#wa-apps li.selected strong { font-weight: bold; color: #fff; }
+#header ul#wa-apps li.selected strong { font-weight: bold; color: #fff !important; }
 #header ul#wa-apps li.float-right a,
 #header ul#wa-apps li.float-right strong { margin-right: 0; margin-left: 10px; }
 #header ul#wa-apps li.small { padding-top: 7px; padding-bottom: 6px; /* give some extra space because of a smaller font size */ }
@@ -152,6 +152,8 @@ h1.search-criteria { margin-bottom: 1em; }
 
 ul.menu-v.album-tree li { margin: 3px 0; }
 ul.menu-v.album-tree ul li { margin-left: 7px; font-size: 0.9em; }
+
+.welcome { text-align: center; font-size: 110%; padding: 80px 0 150px; }
 
 /* Photostream */
 

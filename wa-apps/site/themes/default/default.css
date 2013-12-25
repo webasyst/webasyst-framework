@@ -134,6 +134,8 @@ ul.menu-h li.selected ul * { background: #fff !important; }
 
 .breadcrumbs { padding-top: 20px; }
 
+.welcome { text-align: center; font-size: 110%; padding: 80px 0 150px; }
+
 /* Sign up & Login forms
 ------------------------ */
 

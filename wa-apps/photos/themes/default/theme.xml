@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE theme PUBLIC "wa-app-theme" "http://www.webasyst.com/wa-content/xml/wa-app-theme.dtd">
-<theme id="default" system="1" vendor="webasyst" author="Webasyst" app="photos">
+<theme id="default" system="1" vendor="webasyst" author="Webasyst" app="photos" version="1.1.0">
     <name locale="en_US">Default</name>
-    <name locale="ru_RU">default</name>
+    <name locale="ru_RU">Дефолт</name>
 	<files>
         <file path="index.html" custom="0">
             <description locale="en_US">Common layout</description>
@@ -65,4 +65,21 @@
 			<description locale="ru_RU">404 и другие ошибки</description>
 	    </file>
 	</files>
-<description locale="ru_RU"></description></theme>
+    <description locale="ru_RU"></description>
+    <thumbs>
+        <thumb>200x0</thumb>
+        <thumb>970</thumb>
+    </thumbs>
+    <settings>
+        <setting var="nav_bg_color" control_type="color">
+            <value>#000000</value>
+            <name locale="en_US">Top navigation menu background color</name>
+            <name locale="ru_RU">Цвет фона верхнего навигационного меню</name>
+        </setting>
+        <setting var="nav_text_color" control_type="color">
+            <value>#CCCCCC</value>
+            <name locale="en_US">Top navigation menu text color</name>
+            <name locale="ru_RU">Цвет ссылок в верхнем навигационном меню</name>
+        </setting>
+    </settings>
+</theme>

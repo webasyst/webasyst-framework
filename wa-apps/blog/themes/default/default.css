@@ -116,7 +116,7 @@ ul.menu-h li.selected ul * { background: #fff !important; }
 #header ul#wa-apps li a:visited { color: #ccc; }
 #header ul#wa-apps li a:hover { color: #fff !important; }
 #header ul#wa-apps li.selected a,
-#header ul#wa-apps li.selected strong { font-weight: bold; color: #fff; }
+#header ul#wa-apps li.selected strong { font-weight: bold; color: #fff !important; }
 #header ul#wa-apps li.float-right a,
 #header ul#wa-apps li.float-right strong { margin-right: 0; margin-left: 10px; }
 #header ul#wa-apps li.small { padding-top: 7px; padding-bottom: 6px; /* give some extra space because of a smaller font size */ }
@@ -178,6 +178,8 @@ ul.menu-h li.selected ul * { background: #fff !important; }
 #timeline ul.menu-v li { list-style: none; line-height: 1.3em; }
 #timeline ul.menu-v li a { padding: 0; }
 #timeline ul.menu-v li ul { padding-left: 9px; padding-top: 6px; font-size: 0.85em; margin-bottom: 15px; }
+
+.welcome { text-align: center; font-size: 110%; padding: 80px 0 150px; }
 
 .post { margin-bottom: 80px; margin-right: 50px; }
 .post h3 { font-size: 2em; margin-right: 5px; margin-bottom: 3px; }
