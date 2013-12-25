@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE theme PUBLIC "wa-app-theme" "http://www.webasyst.com/wa-content/xml/wa-app-theme.dtd">
-<theme id="facebook" system="0" vendor="webasyst" author="Webasyst" app="photos" parent_theme_id="site:facebook" version="1.0.0">
+<theme id="facebook" system="0" vendor="webasyst" author="Webasyst" app="photos" parent_theme_id="site:facebook" version="1.1.0">
     <name locale="en_US">Facebook</name>
-    <name locale="ru_RU">Facebook</name>
+    <name locale="ru_RU">Фейсбук</name>
     <files>
     	<file path="index.html" custom="0" parent="1">
         </file>
@@ -101,4 +101,10 @@
 <p>Если вы используете тему Facebook для вашей фотогалереи (приложения «Фото»), то в настройках приложения «Фото» должна быть включена опция создания эскизов произвольного размера по требования («на лету»). В целях оптимизации работы фотогалереи рекомендуется добавить указанные размеры в список предопределенных размеров эскизов, чтобы эскизы создавались для фотографий сразу во время загрузки на сервер.</p>
 ]]>
     </about>
+    <description locale="ru_RU">Ваш сайт внутри Фейсбука в виде iframe-приложения.</description>
+    <thumbs>
+        <thumb>130x87</thumb>
+        <thumb>259x185</thumb>
+        <thumb>604x0</thumb>
+    </thumbs>
 </theme>

@@ -18,5 +18,18 @@
 {/if}
 
 <div class="content block{if !empty($pages[$page.id].childs)} right{/if}">
-    {$content}
+
+    {if $wa->currentUrl() == $wa_app_url && !empty($error_code) && $error_code == 404}
+    
+        <div class="welcome">
+            <h1>[`Welcome to your new site!`]</h1>
+            <p>{sprintf('[`Start by creating a page in your <a href="%s">site backend</a>.`]', $wa_backend_url|cat:'site/#/pages/')}</p>
+        </div>
+        
+    {else}
+    
+        {$content}
+        
+    {/if}
+
 </div>

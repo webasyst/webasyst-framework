@@ -15,31 +15,32 @@
 
 {$fb_tabs = [
     [
-        'url' => '/facebook/',
+        'url' => '/',
         'name' => 'My new Facebook app'
     ]
     ,
     [
-        'url' => '/facebook/shop/',
+        'url' => '/shop/',
         'name' => 'Shop online!'
     ]
     ,
     [
-        'url' => '/facebook/blog/',
+        'url' => '/blog/',
         'name' => 'My blog'
     ]
     ,
     [
-        'url' => '/facebook/photos/',
+        'url' => '/photos/',
         'name' => 'My photo gallery'
     ]
 ]}
 {*
 
-    Define your internal Facebook app navigation tabs as suggested above according to your routing setup:
+    Define your internal Facebook app navigation tabs as suggested above according to your routing setup.
+    Depending on your routing setup, URLs such as '/blog/' may need to be changed to '/facebook/blog/', '/facebook/blog/' or similar.
     
         [
-            'url' => '/YOUR_FACEBOOK_ENABLED_APP_SETTLEMENT_URL/',
+            'url' => '/YOUR_FACEBOOK_ENABLED_APP_SETTLEMENT_URL/APP_ID/',
             'name' => 'TAB_NAME'
         ]
         (separate elements with comma ,)

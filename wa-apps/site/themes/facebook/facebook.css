@@ -241,7 +241,7 @@ i.icon10 { background-repeat:no-repeat; height:10px; width:10px; display:inline-
 .icon10.darr { background-image: url('img/darr.png'); }
 
 /* Facebook theme layout
---------------------- */
+------------------------ */
 
 .mobile-only { display: none; }
 
@@ -269,6 +269,8 @@ i.icon10 { background-repeat:no-repeat; height:10px; width:10px; display:inline-
 .content.block { padding: 5px 15px; }
 
 .sidebar.facebook-tree { padding-top: 20px; padding-right: 10px; }
+
+.welcome { text-align: center; font-size: 130%; padding: 80px 0 150px; }
 
 #header { margin-top: 0px; background: #f6f7f8; border: 1px solid #d3d6db; border-bottom: 0; border-top: 0; }
 #header a i.icon16 { margin-top: -0.2em; }
@@ -299,7 +301,6 @@ i.icon10 { background-repeat:no-repeat; height:10px; width:10px; display:inline-
 .breadcrumbs { padding: 0 0 5px; }
 .breadcrumbs a { color: #45688E; }
 .breadcrumbs span.rarr { color: #ccc; margin: 0 3px; }
-
 .tags { line-height: 2em; min-height: 50px; }
 .tags a { color: green !important; display: inline !important; padding: 5px 7px !important; }
 
