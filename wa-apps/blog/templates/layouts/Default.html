@@ -11,15 +11,23 @@
   <link rel="stylesheet" href="{$wa_app_static_url}css/blog.ie7.css">
   <![endif]-->
   <link rel="stylesheet" href="{$wa_url}wa-content/js/jquery-plugins/ibutton/jquery.ibutton.min.css?v={$wa->version()}">
+
   <script src="{$wa_url}wa-content/js/jquery/jquery-1.7.1.min.js"></script>
-  {wa_js file="js/compiled/blog-jquery.js"}
-  {$wa_url}wa-content/js/jquery-plugins/jquery.json.js
-  {$wa_url}wa-content/js/jquery-plugins/jquery.store.js
-  {$wa_url}wa-content/js/jquery-plugins/jquery.tmpl.min.js
-  {$wa_url}wa-content/js/jquery-plugins/ibutton/jquery.ibutton.min.js
-  {$wa_url}wa-content/js/jquery-wa/wa.core.js
-  {$wa_url}wa-content/js/jquery-wa/wa.dialog.js
+
+  <script src="{$wa_url}wa-content/js/jquery-plugins/jquery.json.js"></script>
+  <script src="{$wa_url}wa-content/js/jquery-plugins/jquery.store.js"></script>
+  <script src="{$wa_url}wa-content/js/jquery-plugins/jquery.history.js"></script>
+  <script src="{$wa_url}wa-content/js/jquery-plugins/jquery.tmpl.min.js"></script>
+  <script src="{$wa_url}wa-content/js/jquery-plugins/ibutton/jquery.ibutton.min.js"></script>
+
+  <script src="{$wa_url}wa-content/js/jquery-wa/wa.core.js"></script>
+  <script src="{$wa_url}wa-content/js/jquery-wa/wa.dialog.js"></script>
+  {wa_js file="js/blog.min.js"}
+  {$wa_app_static_url}js/jquery.pageless2.js
   {$wa_app_static_url}js/blog.js
+  {$wa_app_static_url}js/blogComments.js
+  {$wa_app_static_url}js/blogPlugins.js
+  {$wa_app_static_url}js/jquery.form.js
   {/wa_js}
   {$wa->js(false)}
   

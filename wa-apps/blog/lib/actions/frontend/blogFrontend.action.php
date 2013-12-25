@@ -121,7 +121,7 @@ class blogFrontendAction extends blogViewAction
             $this->getResponse()->setTitle($stream_title);
 
         }
-        $this->view->assign('stream_title', $stream_title, true);
+        $this->view->assign('stream_title', $stream_title);
 
         $pages = $post_model->pageCount();
 

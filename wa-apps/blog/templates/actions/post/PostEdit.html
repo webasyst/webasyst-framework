@@ -386,21 +386,17 @@
     <script type="text/javascript" src="{$wa_url}wa-content/js/jquery-ui/i18n/jquery.ui.datepicker-{$wa->locale()}.js"></script>
 {/if}
 
-{wa_js file="js/compiled/blog-post-edit.js"}
-{$wa_app_static_url}js/postEdit.js
 
-{$wa_url}wa-content/js/ace/ace.js
-
-{$wa_url}wa-content/js/elrte/elrte.min.js
-{$wa_url}wa-content/js/elrte/elrte-wa.js
-{$wa_url}wa-apps/blog/js/elrte-blog.js
-
-{/wa_js}
-
+<script type="text/javascript" src="{$wa_url}wa-content/js/ace/ace.js"></script>
+<script type="text/javascript" src="{$wa_url}wa-content/js/elrte/elrte.min.js"></script>
 {if $lang!='en'}
     <script type="text/javascript" src="{$wa_url}wa-content/js/elrte/i18n/elrte.{$lang}.js"></script>
 {/if}
-
+<script type="text/javascript" src="{$wa_url}wa-content/js/elrte/elrte-wa.js"></script>
+{wa_js file="js/blog-post-edit.min.js"}
+{$wa_app_static_url}js/postEdit.js
+{$wa_app_static_url}js/elrte-blog.js
+{/wa_js}
 
 <script type="text/javascript">
   var wa_url = "{$wa_url}";

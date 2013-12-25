@@ -141,20 +141,20 @@ SQL;
 
     /**
      * Generic search post entries method
-     * @param array $options <pre>array(
-     *     ['year'=>2011|array(2009,2011)|array(2007,2008,...),]
-     *     ['month'=>11|array(06,09),]
-     *     ['day'=>30|array(12,23),]
-     *     ['datetime'=>30|array(12,23),]
-     *     ['status'=>false|int|array(),]
-     *     ['contact_id'=>int,]
-     *     ['blog_id'=>int|array,]
-     *     ['text'=>string]
-     * )</pre>
-     * <p>Date option if single exact match, interval if array of two items, one of items in array more then two items<p>
-     * <p>Status has default self::STATUS_PUBLISHED if not specified, all statuses if false or specified in array</p>
-     * <p>If specified "contact_id" records will be checked authorship in non self::STATUS_PUBLISHED status</p>
-     * @param array $extend_options
+     *
+     * $options
+     * - sort:
+     * - year: int|int[] 2011|array(2009,2011)|array(2007,2008,...) ate option if single exact match, interval if array of two items, one of items in array more then two items
+     * - month:int|int[]
+     * - day: int|int[]
+     * - datetime:
+     * - status: Status has default self::STATUS_PUBLISHED if not specified, all statuses if false or specified in array<
+     * - contact_id: If specified records will be checked authorship in non self::STATUS_PUBLISHED status
+     * - blog_id:
+     * - text:
+     *
+     * @param array @options
+     * @param array $extend_options see prepareView method
      * @param array $extend_data
      * @see blogItemModel::search()
      * @return blogPostModel
@@ -170,7 +170,6 @@ SQL;
         $option_names['blog_id'] = false;
         $option_names['id'] = false;
         $option_names['url'] = false;
-
 
 
         $date_options = array(
@@ -325,7 +324,7 @@ SQL;
              *     }
              *     return $result;
              * }
-             * @param array[string]mixed $options
+             * @param array [string]mixed $options
              * @return array[string][string][]string $return['%plugin_id%']['join'] Join conditions
              * @return array[string][string][]string $return['%plugin_id%']['where'] Where conditions
              * @return array[string][string][]string $return['%plugin_id%']['order'] order conditions
@@ -349,6 +348,19 @@ SQL;
         return $this;
     }
 
+    /**
+     * Supplement the items data
+     *
+     * $extend_options
+     *  - link: if it false - not add author posts
+     *  - plugin: if false suppress plugin provided data
+     *  - datetime:
+     *  - test:
+     * @param $items
+     * @param array @extend_options
+     * @param array $extend_data
+     * @return mixed
+     */
     public function prepareView($items, $extend_options = array(), $extend_data = array())
     {
         $extend_options = array_merge($this->extend_options, (array)$extend_options);
@@ -505,13 +517,13 @@ SQL;
              *         $item['post_title'][$this->id] = 'Extra post title html code here';
              *     }
              * }
-             * @param array[int][string]mixed $items Post items
-             * @param array[int][string]mixed $items[id] Post item
-             * @param array[int][string]int $items[id]['id'] Post item ID
-             * @param array[int][string][string]string $items[id]['before'][%plugin_id%] Placeholder for plugin %plugin_id% output
-             * @param array[int][string][string]string $items[id]['after'][%plugin_id%] Placeholder for plugin %plugin_id% output
-             * @param array[int][string][string]string $items[id]['post_title'][%plugin_id%] Placeholder for plugin %plugin_id% output
-             * @param array[int][string][string]string $items[id]['post_title_right'][%plugin_id%] Placeholder for plugin %plugin_id% output
+             * @param array [int][string]mixed $items Post items
+             * @param array [int][string]mixed $items[id] Post item
+             * @param array [int][string]int $items[id]['id'] Post item ID
+             * @param array [int][string][string]string $items[id]['before'][%plugin_id%] Placeholder for plugin %plugin_id% output
+             * @param array [int][string][string]string $items[id]['after'][%plugin_id%] Placeholder for plugin %plugin_id% output
+             * @param array [int][string][string]string $items[id]['post_title'][%plugin_id%] Placeholder for plugin %plugin_id% output
+             * @param array [int][string][string]string $items[id]['post_title_right'][%plugin_id%] Placeholder for plugin %plugin_id% output
              * @return void
              */
             wa()->event('prepare_posts_'.wa()->getEnv(), $items);
@@ -706,9 +718,9 @@ SQL;
          * @event post_prepublish
          * @event post_preshedule
          * @event post_presave
-         * @param array[string]mixed $data
-         * @param array[string]int $data['id']
-         * @param array[string][string]mixed $data['plugin']['%plugin_id']
+         * @param array [string]mixed $data
+         * @param array [string]int $data['id']
+         * @param array [string][string]mixed $data['plugin']['%plugin_id']
          * @return array[%plugin_id%][%field%]string Error message for field %field%
          */
         $errors = wa()->event(array_shift($events), $data);
@@ -759,9 +771,9 @@ SQL;
          * @event post_publish
          * @event post_shedule
          * @event post_save
-         * @param array[string]mixed $data
-         * @param array[string]int $data['id']
-         * @param array[string][string]mixed $data['plugin']['%plugin_id']
+         * @param array [string]mixed $data
+         * @param array [string]int $data['id']
+         * @param array [string][string]mixed $data['plugin']['%plugin_id']
          * @return void
          */
         wa()->event(array_shift($events), $data);
@@ -998,8 +1010,8 @@ SQL;
         }
         /**
          * @event post_validate
-         * @param array[string]mixed $data
-         * @param array['plugin']['%plugin_id%']mixed plugin data
+         * @param array [string]mixed $data
+         * @param array ['plugin']['%plugin_id%']mixed plugin data
          * @return array['%plugin_id%']['field']string error
          */
         $messages['plugin'] = wa()->event('post_validate', $data);

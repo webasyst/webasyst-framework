@@ -646,7 +646,7 @@ Markdown.dialects.Gruber = {
             block = next.shift();
 
             // Check for an HR following a list: features/lists/hr_abutting
-            var hr = this.dialect.block.horizRule( block, next );
+            var hr = this.dialect.block.horizRule.call( this, block, next );
 
             if ( hr ) {
               ret.push.apply(ret, hr);

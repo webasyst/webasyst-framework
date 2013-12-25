@@ -86,7 +86,7 @@ class blogBackendSidebarAction extends waViewAction
             $drafts = false;
             $count_overdue = false;
         }
-
+        
         $params = null;
 
         /**
@@ -130,7 +130,7 @@ class blogBackendSidebarAction extends waViewAction
         $this->view->assign('new_post', waRequest::get('action') == 'edit' && waRequest::get('id') == '');
         $this->view->assign('drafts', $drafts);
         $this->view->assign('drafts_count', array(
-            'all' => count($drafts),
+            'all' => $drafts ? count($drafts) : 0,
             'my'  => $this->countMyDrafts($drafts)
         ));
 
@@ -144,6 +144,9 @@ class blogBackendSidebarAction extends waViewAction
 
     public function countMyDrafts($all_drafts)
     {
+        if (!$all_drafts) {
+            return 0;
+        }
         $id = $this->getUser()->getId();
         $cnt = 0;
         foreach ($all_drafts as $d) {

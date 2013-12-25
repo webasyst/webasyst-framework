@@ -198,7 +198,7 @@ $.wa_blog = $.extend(true, $.wa_blog, {
                             block.find('.counter').hide().filter('.b-my-drafts').show();
                             block.find('.title').hide().filter('.b-my-drafts').show();
                         } else {
-                            block.find('.counter').hide().filter('.b-all-drafts').show()
+                            block.find('.counter').hide().filter('.b-all-drafts').show();
                             block.find('.title').hide().filter('.b-all-drafts').show();
                         }
                     }

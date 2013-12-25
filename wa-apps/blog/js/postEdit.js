@@ -827,7 +827,7 @@
                         var height = $.wa_blog.editor.calcEditorHeight();
 
                         this.editor = ace.edit('blog-ace-editor');
-                        //ace.config.set("basePath", wa_url + 'wa-content/js/ace/');
+                        ace.config.set("basePath", wa_url + 'wa-content/js/ace/');
 
                         this.editor.setTheme("ace/theme/eclipse");
                         var session = this.editor.getSession();

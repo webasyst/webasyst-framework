@@ -8,11 +8,12 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=((((n%10)==1)&&((n%100)!=11))?(0):(((((n%10)"
-">=2)&&((n%10)<=4))&&(((n%100)<10)||((n%100)>=20)))?(1):2));\n"
+"Plural-Forms: nplurals=3; plural=((((n%10)==1)&&((n%100)!=11))?(0):(((((n"
+"%10)>=2)&&((n%10)<=4))&&(((n%100)<10)||((n%100)>=20)))?(1):2));\n"
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
-"X-Generator: Poedit 1.5.5\n"
+"X-Generator: Poedit 1.6.3\n"
+"Language: ru_RU\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
 
@@ -1307,8 +1308,7 @@ msgstr "У вас есть записи, запланированные к пу�
 #: /wa-apps/blog/templates/actions/backend/Backend.html:263
 msgid ""
 "Hello and welcome to your new blog!<br> Start by writing your first post."
-msgstr ""
-"Добро пожаловать в ваш новый блог!<br> Начните с создания новой записи."
+msgstr "Добро пожаловать в ваш новый блог!<br> Начните с создания записи."
 
 #: /wa-apps/blog/templates/actions/blog/BlogSettings.html:56
 msgid "Public blog URL"
@@ -1318,3 +1318,35 @@ msgstr "Адрес блога"
 msgid "A URL to view all posts of this blog on your public website."
 msgstr ""
 "Адрес, по которому на сайте можно посмотреть список всех записей этого блога."
+
+#: /wa-apps/blog/themes/clear/footer.html:4
+#: /wa-apps/blog/themes/default/index.html:109
+#: /wa-apps/blog/themes/nifty/footer.html:4
+#: /wa-apps/blog/themes/sidebar/footer.html:4
+#: /wa-apps/blog/themes/vk/footer.html:4
+msgid ""
+"<a href=\"http://www.webasyst.com/store/app/blog/\">Blogging platform</a> by "
+"Webasyst"
+msgstr ""
+"<a href=\"http://www.webasyst.ru/store/app/blog/\">Движок блога</a> — "
+"Webasyst"
+
+#: /wa-apps/blog/themes/clear/content.html:13
+#: /wa-apps/blog/themes/custom/content.html:98
+#: /wa-apps/blog/themes/default/index.html:114
+#: /wa-apps/blog/themes/facebook/content.html:22
+#: /wa-apps/blog/themes/nifty/content.html:11
+#: /wa-apps/blog/themes/sidebar/content.html:99
+#: /wa-apps/blog/themes/vk/content.html:22
+msgid "Welcome to your new blog!"
+msgstr "Добро пожаловать в ваш новый блог!"
+
+#: /wa-apps/blog/themes/clear/content.html:14
+#: /wa-apps/blog/themes/custom/content.html:99
+#: /wa-apps/blog/themes/default/index.html:115
+#: /wa-apps/blog/themes/facebook/content.html:23
+#: /wa-apps/blog/themes/nifty/content.html:12
+#: /wa-apps/blog/themes/sidebar/content.html:100
+#: /wa-apps/blog/themes/vk/content.html:23
+msgid "Start by writing a post in your <a href=\"%s\">blog backend</a>."
+msgstr "Начните с создания записи в <a href=\"%s\">бекенде блога</a>."

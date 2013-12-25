@@ -17,6 +17,7 @@ class blogMarkdownPlugin extends blogPlugin
     }
     
     public function backendAssets() {
+        $this->addCss('css/backend.css?'.wa()->getVersion());
         $this->addJs('js/backend.js?'.wa()->getVersion());
         $this->addJs('js/markdown.js?'.wa()->getVersion());
         $this->addJs('js/to-markdown.js?'.wa()->getVersion());

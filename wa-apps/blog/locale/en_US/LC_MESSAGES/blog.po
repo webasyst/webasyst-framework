@@ -11,7 +11,8 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 "X-Poedit-Basepath: .\n"
-"X-Generator: Poedit 1.5.5\n"
+"X-Generator: Poedit 1.6.3\n"
+"Language: en_US\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
 
@@ -1253,4 +1254,55 @@ msgstr ""
 #: /wa-apps/blog/templates/actions/backend/Backend.html:263
 msgid ""
 "Hello and welcome to your new blog!<br> Start by writing your first post."
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/blog/BlogSettings.html:56
+msgid "Public blog URL"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/blog/BlogSettings.html:100
+msgid "A URL to view all posts of this blog on your public website."
+msgstr ""
+
+#: /wa-apps/blog/themes/_webasystcom/stream.html:79
+#: /wa-apps/blog/themes/clear/stream.html:21
+#: /wa-apps/blog/themes/custom/stream.html:21
+#: /wa-apps/blog/themes/default/stream.html:21
+#: /wa-apps/blog/themes/facebook/stream.html:21
+#: /wa-apps/blog/themes/nifty/stream.html:21
+#: /wa-apps/blog/themes/sidebar/stream.html:21
+#: /wa-apps/blog/themes/vk/stream.html:21
+msgid "of %d post"
+msgid_plural "of %d posts"
+msgstr[0] ""
+msgstr[1] ""
+
+#: /wa-apps/blog/themes/clear/footer.html:4
+#: /wa-apps/blog/themes/default/index.html:109
+#: /wa-apps/blog/themes/nifty/footer.html:4
+#: /wa-apps/blog/themes/sidebar/footer.html:4
+#: /wa-apps/blog/themes/vk/footer.html:4
+msgid ""
+"<a href=\"http://www.webasyst.com/store/app/blog/\">Blogging platform</a> by "
+"Webasyst"
+msgstr ""
+
+#: /wa-apps/blog/themes/clear/content.html:13
+#: /wa-apps/blog/themes/custom/content.html:98
+#: /wa-apps/blog/themes/default/index.html:114
+#: /wa-apps/blog/themes/facebook/content.html:22
+#: /wa-apps/blog/themes/nifty/content.html:11
+#: /wa-apps/blog/themes/sidebar/content.html:99
+#: /wa-apps/blog/themes/vk/content.html:22
+msgid "Welcome to your new blog!"
+msgstr ""
+
+#: /wa-apps/blog/themes/clear/content.html:14
+#: /wa-apps/blog/themes/custom/content.html:99
+#: /wa-apps/blog/themes/default/index.html:115
+#: /wa-apps/blog/themes/facebook/content.html:23
+#: /wa-apps/blog/themes/nifty/content.html:12
+#: /wa-apps/blog/themes/sidebar/content.html:100
+#: /wa-apps/blog/themes/vk/content.html:23
+msgid "Start by writing a post in your <a href=\"%s\">blog backend</a>."
 msgstr ""

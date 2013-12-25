@@ -64,6 +64,9 @@ $(function() {
 
                                 that.container.parent().prepend(text);
                                 that.editor = ace.edit('blog-markdown-editor');
+                                if (wa_url) {
+                                    ace.config.set("basePath", wa_url + 'wa-content/js/ace/');
+                                }
                                 that.editor.setTheme("ace/theme/eclipse");
                                 var session = that.editor.getSession();
                                 session.setMode("ace/mode/markdown");
@@ -160,6 +163,7 @@ $(function() {
                         }
                         this.shown = false;
                         this.onHide();
+                        $('.b-single-post').removeClass('markdown');
                     },
                     show: function() {
                 
@@ -210,7 +214,7 @@ $(function() {
                                 this.shown = true;
                             }
                         }
-
+                        $('.b-single-post').addClass('markdown');
                         this.onShow();
                     },
                     isShown: function() {
@@ -252,7 +256,7 @@ $(function() {
         if (onSubmit instanceof Function) {
             $.wa_blog.editor.onSubmit = function() {
                 var markdown_editor = $.wa_blog.editor.editors.markdown;
-                if (markdown_editor.isShown() && markdown_editor.getValue() !== null) {
+                if (markdown_editor.isShown() && markdown_editor.getValue() !== null && markdown_editor.container && !markdown_editor.container.is(':hidden')) {
                     var textarea = $('#' + $.wa_blog.editor.options['content_id']);
                     textarea.val(markdown.toHTML(markdown_editor.getValue()));
                     post_text_markdown.val(markdown_editor.getValue());

@@ -9,7 +9,7 @@
 /* one post & post stream
 ------------------------- */
 
-.b-stream { position: relative /* shadow */; margin: 15px; border: 1px solid #ccc; -moz-box-shadow: 0px 2px 13px #aaa; -webkit-box-shadow: 0px 1px 15px #aaa; box-shadow: 0px 1px 15px #aaa; }
+.b-stream { position: relative /* shadow */; margin: 15px; border: 1px solid #ccc; -moz-box-shadow: 0px 2px 13px #aaa; -webkit-box-shadow: 0px 1px 15px #aaa; box-shadow: 0 2px 11px #ccc; }
 .b-stream .b-stream-title { padding-bottom: 5px; padding-top: 13px; min-height: 30px; background: -moz-linear-gradient(center top , rgba(255, 255, 255, 0.1) 0%, rgba(0, 0, 0, 0.1) 100%); background:-webkit-gradient(linear, left top, left bottom, color-stop(0, rgba(255, 255, 255, 0.1)), color-stop(1, rgba(0, 0, 0, 0.1))); -moz-box-shadow:0 1px 2px rgba(255, 255, 255, .7) inset ; -webkit-box-shadow:0 1px 2px rgba(255, 255, 255, .7) inset ; box-shadow:0 1px 2px rgba(255, 255, 255, .7) inset ; border-bottom: solid 1px #aaa; border-top: solid 1px rgba(255, 255, 255, .85);  }
 .b-stream .b-stream-title h1, .b-stream .b-stream-title h3 {color: #333333; font-weight: normal;  font-size: 1.5em; }
 .b-stream .b-stream-title h1 i.icon16 { margin-top: 0.2em; }

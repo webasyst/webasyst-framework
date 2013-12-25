@@ -1,10 +1,5 @@
 
 {if !isset($page) || ($page < 2)}
-{wa_js file="js/compiled/blog-comments_stream.js"}
-{$wa_app_static_url}js/jquery.form.js
-{$wa_app_static_url}js/jquery.pageless2.js
-{$wa_app_static_url}js/blogComments.js
-{/wa_js}
   <script type="text/javascript">
     $.wa_blog.comments = $.extend(true,$.wa_blog.comments,{
       'options':{

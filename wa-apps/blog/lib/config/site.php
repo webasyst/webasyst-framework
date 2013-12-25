@@ -166,6 +166,7 @@ return array(
             '$wa->blog->post(<em>post_id</em>[,<em>fields</em>])'             => _w('Returns post info by <em>post_id</em> as an array with the following structure: (<em>"id"</em>, <em>"contact_id"</em>, <em>"contact_name"</em>, <em>"datetime"</em>, <em>"title"</em>, <em>"text"</em>, <em>"status"</em>, <em>"url"</em>, <em>"blog_id"</em>, <em>"comments_allowed"</em>, <em>"user"</em>, <em>"comment_count"</em>, <em>"comment_new_count"</em>, <em>"plugins"</em>, <em>"icon"</em>, <em>"color"</em>, <em>"blog_status"</em>, <em>"blog_url"</em>, <em>"blog_name"</em>, <em>"link"</em>)'),
             '$wa->blog->blogs()'                                              => _w('Returns the array of all public blogs. Each blog is an array presenting the blog data'),
             '$wa->blog->posts([<em>blog_id</em>[,<em>number_of_posts</em>]])' => _w('Returns the array of all posts by <em>blog_id</em>. If <em>blog_id</em> is <em>null</em>, the array of all public posts is returned. Optional parameter <em>number_of_posts</em> limits the number of elements returned'),
+            '$wa->blog->themePath("<em>theme_id</em>")' => _ws('Returns path to theme folder by <em>theme_id</em>'),
         ),
     ),
     'blocks' => array(

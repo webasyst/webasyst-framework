@@ -55,18 +55,22 @@ class blogViewHelper extends waAppViewHelper
 
     /**
      * Get single post entry
+     * $extend_options
+     * - params: add post params
+     *
      * @param int $post_id
-     * @param array $fields
+     * @param     array @extend_options
+     *
      * @return mixed
      */
-    public function post($post_id, $fields = array())
+    public function post($post_id, $extend_options = array())
     {
         $post = null;
         if ($available_blogs = $this->blogs()) {
             $post_model = new blogPostModel();
             $search_options = array('id' => $post_id, 'blog_id' => array_keys($available_blogs));
             $extend_data = array('blog' => $available_blogs);
-            $post = $post_model->search($search_options, null, $extend_data)->fetchSearchItem($fields);
+            $post = $post_model->search($search_options, $extend_options, $extend_data)->fetchSearchItem($fields);
         }
         $non_escape_fields = array(
             'text'            => true,
@@ -80,9 +84,11 @@ class blogViewHelper extends waAppViewHelper
     /**
      *
      * Get posts
-     * @param int $blog_id null if all available
-     * @param int $number_of_posts
+     *
+     * @param int   $blog_id null if all available
+     * @param int   $number_of_posts
      * @param array $fields
+     *
      * @return array
      */
     public function posts($blog_id = null, $number_of_posts = 20, $fields = array())
