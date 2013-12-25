@@ -1,28 +1,31 @@
 <?php
 return array(
-    'shop_id'         => array(
+    'shop_id'    => array(
         'value'        => '',
         'title'        => 'ID магазина',
-        'description'  => 'Идентификатор магазина, зарегистрированного в системе «INTERKASSA», на который был совершен платеж.<br>Пример: <em>64C18529-4B94-0B5D-7405-F2752F2B716C</em>.',
+        'description'  => 'Идентификатор магазина, зарегистрированного в системе «INTERKASSA», через который был совершен платеж.<br>Пример: <em>68bf8b53973f2bba9ac9c153</em>.',
         'control_type' => waHtmlControl::INPUT,
     ),
-    'secret_key'      => array(
+    'secret_key' => array(
         'value'        => '',
         'title'        => 'Секретный ключ',
-        'description'  => 'Секретный ключ — это строка символов, добавляемая к реквизитам платежа, которые отправляются продавцу вместе с оповещением о новом платеже. Используется для повышения надежности идентификации оповещения и не должна быть известна третьим лицам.',
+        'description'  => 'Строка символов, добавляемая к реквизитам платежа, которые отправляются продавцу вместе с оповещением о новом платеже. Используется для повышения надежности идентификации оповещения и не должна быть известна третьим лицам!',
         'control_type' => waHtmlControl::PASSWORD,
     ),
-    'paysystem_alias' => array(
-        'value'        => '',
-        'title'        => 'Способ оплаты',
-        'description'  => 'Это поле позволяет заранее определить способ оплаты для покупателя.',
-        'control_type' => waHtmlControl::SELECT,
-        'options'      => array(),
-    ),
-    'currency'        => array(
-        'value'        => '',
+    'currency'   => array(
+        'value'        => array('RUB' => 1,),
         'title'        => 'Валюта оплаты',
-        'description'  => '',
-        'control_type' => waHtmlControl::SELECT,
+        'description'  => 'Доступные валюты оплаты (должны быть подключены в настройках на сайте платежной системы)',
+        'control_type' => waHtmlControl::GROUPBOX.' interkassaPayment::availableCurrency',
+    ),
+    'test'       => array(
+        'value'        => false,
+        'title'        => 'Режим отладки',
+        'control_type' => waHtmlControl::CHECKBOX,
+    ),
+    'test_key'   => array(
+        'value'        => '',
+        'title'        => 'Тестовый ключ',
+        'control_type' => waHtmlControl::PASSWORD,
     ),
 );

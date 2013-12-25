@@ -1,7 +1,7 @@
 <?php
 return array(
     'name'        => 'Интеркасса',
-    'description' => 'Платежная система «<a href="http://www.interkassa.com">Интеркасса</a>»',
+    'description' => 'Платежная система «<a href="http://www.new.interkassa.com">Интеркасса</a>»',
     'icon'        => 'img/interkassa16.png',
     'logo'        => 'img/interkassa.png',
     'vendor'      => 'webasyst',
