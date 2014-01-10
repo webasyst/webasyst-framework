@@ -15,6 +15,8 @@ class contactsBackendAutocompleteController extends waJsonController
 
         if(strpos($term, '@') !== FALSE) {
             $contacts = new contactsCollection('/search/email*='.$term);
+        } elseif(preg_match("/^[\d\+]+$/",$term) !== FALSE) {
+            $contacts = new contactsCollection('/search/phone*='.$term);
         } else {
             $contacts = new contactsCollection('/search/name*='.$term);
         }
