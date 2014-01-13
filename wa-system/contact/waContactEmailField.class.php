@@ -77,6 +77,12 @@ class waContactEmailField extends waContactStringField
         }
         return $errors;
     }
+    
+    public function getHtmlOne($params = array(), $attrs = '')
+    {
+        $params['type'] = 'email';
+        return parent::getHtmlOne($params, $attrs);
+    }
 }
 
 class waContactEmailListFormatter extends waContactFieldFormatter
