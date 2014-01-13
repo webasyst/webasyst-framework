@@ -688,8 +688,14 @@ abstract class waContactField
         if ($this->isMulti() && $ext) {
             $name_input .= '[value]';
         }
+        
+        if(isset($params['type']) && !empty($params['type'])) {
+            $type = "type=\"{$params['type']}\"";
+        } else {
+            $type = 'type="text"';
+        }
 
-        $result = '<input '.$attrs.' type="text" name="'.htmlspecialchars($name_input).'" value="'.htmlspecialchars($value).'">';
+        $result = '<input ' . "$attrs $type" . ' name="'.htmlspecialchars($name_input).'" value="'.htmlspecialchars($value).'">';
         if ($ext) {
             // !!! add a proper <select>?
             $result .= '<input type="hidden" name="'.htmlspecialchars($name.'[ext]').'" value="'.htmlspecialchars($ext).'">';
