@@ -41,6 +41,14 @@
         <li id="s-link-design"><a href="#/design/"><i class="icon16 palette"></i>[s`Design`]</a></li>
         <li id="s-link-routing"><a href="#/routing/"><i class="icon16 split"></i>[`Routing`]</a></li>
         <li id="s-link-settings"><a href="#/settings/"><i class="icon16 settings"></i>[`Settings`]</a></li>
+
+        {* @event backend_sidebar.%plugin_id%.menu *}
+        <!-- plugin hook: "backend_sidebar.menu" -->
+        {foreach $backend_sidebar as $plugin => $output}
+        {if is_array($output) && isset($output.menu)}
+        {$output.menu}
+        {/if}
+        {/foreach}
     </ul>
 </div>
 
@@ -52,5 +60,13 @@
 		{if $rights.admin}
     	    	<li class="s-add-new-site top-padded"><a href="#" class="small"><i class="icon10 add"></i>[`New site`]</a> </li>
         	{/if}
+
+        {* @event backend_sidebar.%plugin_id%.system *}
+        <!-- plugin hook: "backend_sidebar.system" -->
+        {foreach $backend_sidebar as $plugin => $output}
+        {if is_array($output) && isset($output.system)}
+        {$output.system}
+        {/if}
+        {/foreach}
 	</ul>
 </div>
