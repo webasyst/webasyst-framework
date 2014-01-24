@@ -18,6 +18,36 @@ class siteDefaultLayout extends waLayout
             'themes' => $this->getRights('themes'),
             'blocks' => $this->getRights('blocks'),
         ));
+
+        /**
+         * Extend backend sidebar
+         * Add extra sidebar items (menu items, system output)
+         * @event backend_sidebar
+         * @example #event handler example
+         * public function sidebarAction()
+         * {
+         *     $output = array();
+         *
+         *     #add external link into sidebar menu
+         *     $output['menu']='<li>
+         *         <a href="http://www.webasyst.com">
+         *             http://www.webasyst.com
+         *         </a>
+         *     </li>';
+         *
+         *     #add system link into sidebar menu
+         *     $output['system']='<li>
+         *         <a href="http://www.webasyst.com">
+         *             http://www.webasyst.com
+         *         </a>
+         *     </li>';
+         *
+         *     return $output;
+         * }
+         * @return array[string][string]string $return[%plugin_id%]['menu'] Single menu items
+         * @return array[string][string]string $return[%plugin_id%]['system'] Extra menu items
+         */
+        $this->view->assign('backend_sidebar', wa()->event('backend_sidebar'));
     }
 
     protected function getPages()
