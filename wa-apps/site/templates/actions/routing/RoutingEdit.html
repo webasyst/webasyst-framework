@@ -70,7 +70,8 @@
                     <div class="field">
                         <div class="name">[`Locale`]</div>
                         <div class="value">
-                            {html_options name="params[locale]" options=$locales selected=ifset($route.locale, $wa->locale())}
+                            {if !strlen($route_id)}{$_l=$wa->locale()}{else}{$_l=ifset($route.locale, '')}{/if}
+                            {html_options name="params[locale]" options=$locales selected=$_l}
                         </div>
                     </div>
                     {/if}
