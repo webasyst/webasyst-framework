@@ -29,14 +29,14 @@ class siteDefaultLayout extends waLayout
          *     $output = array();
          *
          *     #add external link into sidebar menu
-         *     $output['menu']='<li>
+         *     $output['menu_li']='<li>
          *         <a href="http://www.webasyst.com">
          *             http://www.webasyst.com
          *         </a>
          *     </li>';
          *
          *     #add system link into sidebar menu
-         *     $output['system']='<li>
+         *     $output['system_li']='<li>
          *         <a href="http://www.webasyst.com">
          *             http://www.webasyst.com
          *         </a>
@@ -44,8 +44,8 @@ class siteDefaultLayout extends waLayout
          *
          *     return $output;
          * }
-         * @return array[string][string]string $return[%plugin_id%]['menu'] Single menu items
-         * @return array[string][string]string $return[%plugin_id%]['system'] Extra menu items
+         * @return array[string][string]string $return[%plugin_id%]['menu_li'] Single menu items
+         * @return array[string][string]string $return[%plugin_id%]['system_li'] Extra menu items
          */
         $this->view->assign('backend_sidebar', wa()->event('backend_sidebar'));
     }
