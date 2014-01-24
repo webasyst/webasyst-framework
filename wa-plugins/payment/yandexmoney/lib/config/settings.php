@@ -19,6 +19,27 @@ return array(
         'description'  => '',
         'control_type' => waHtmlControl::PASSWORD,
     ),
+    'payment_mode' => array(
+        'value'        => '',
+        'options'      => array(
+            ''         => 'по умолчанию',
+            'customer' => 'на выбор покупателя',
+            'PC'       => 'платеж со счета в Яндекс.Деньгах.',
+            'AC'       => 'платеж с банковской карты.',
+            'GP'       => 'платеж по коду через терминал.',
+            'MC'       => 'оплата со счета мобильного телефона.',
+        ),
+        'title'        => 'Способы оплаты',
+        'description'  => 'Настройки выбора способа оплаты.<br/><strong>Доступны для подключения по протоколу версии 3.0</strong>',
+        'control_type' => waHtmlControl::RADIOGROUP,
+    ),
+    'paymentType'  => array(
+        'value'        => array('PC' => true,),
+        'options'      => yandexmoneyPayment::settingsPaymentOptions(),
+        'title'        => 'Варианты для способа оплаты «на выбор покупателя»',
+        'description'  => 'Настройки доступных способов оплаты для выбора покупателям.<br/><strong>Доступны для подключения по протоколу версии 3.0</strong>',
+        'control_type' => waHtmlControl::GROUPBOX,
+    ),
 
     'TESTMODE'     => array(
         'value'        => '',

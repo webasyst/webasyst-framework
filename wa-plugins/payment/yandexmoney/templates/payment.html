@@ -1,19 +1,21 @@
 <form id="paymentForm" action="{$form_url}" method="post" target="_top">
+    {foreach $hidden_fields as $name => $value}
+        <input type="hidden" name="{$name}" value="{$value|escape}"/>
+    {/foreach}
 
-{foreach from=$hidden_fields key=name item=value}
-
-	<input type="hidden" name="{$name}" value="{$value|escape}" />
-
-{/foreach}
-
-{if $auto_submit}
-    <i class="icon16 loading"></i> <em>Перенаправление на сайт «Яндекс.Денег» для оплаты...</em>
-    <br /><br />
-    <script type="text/javascript">
-    setTimeout(function () {
-        document.getElementById('paymentForm').submit();
-    }, 3000);
-    </script>
-{/if}
-    <input type="submit" value="Оплатить заказ на сайте Яндекс.Денег" />
+    {if $auto_submit}
+        <i class="icon16 loading"></i>
+        <em>Перенаправление на сайт «Яндекс.Денег» для оплаты...</em>
+        <br/>
+        <br/>
+        <script type="text/javascript">
+            setTimeout(function () {
+                document.getElementById('paymentForm').submit();
+            }, 3000);
+        </script>
+    {/if}
+    {foreach $fields as $field}
+        {$field}<br>
+    {/foreach}
+    <input type="submit" value="Оплатить заказ на сайте Яндекс.Денег"/>
 </form>

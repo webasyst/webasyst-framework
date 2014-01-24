@@ -4,7 +4,7 @@
     code="{$result.data.code}"
     invoiceId="{$result.data.invoiceId}"
     shopId="{$result.data.shopId}"
-{if(!empty($result.data.techMessage) && $result.data.code}
+{if (!empty($result.data.techMessage) && $result.data.code)}
     techMessage="{$result.data.techMessage}"
 {/if}
 />
