@@ -5,4 +5,5 @@ return array(
     'icon'        => 'img/privat24.png',
     'logo'        => 'img/privat.png',
     'version'     => '1.0.0',
+    'vendor'     => 'webasyst',
 );
