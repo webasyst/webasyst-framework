@@ -31,8 +31,7 @@ function smarty_function_wa_print_tree($params, &$smarty)
         unset($params['unfolded']);
     }
 
-
-    $html = '<ul class="'.(isset($params['class']) ? $params['class'] : '').'"'.(isset($params['attrs']) ? ' '.$params['attrs'] : '').'>';
+    $html = '<ul'. (isset($params['class']) ? ' class="'.$params['class'].'"' : '').(isset($params['attrs']) ? ' '.$params['attrs'] : '').'>';
     if (isset($params['attrs'])) {
         unset($params['attrs']);
     }

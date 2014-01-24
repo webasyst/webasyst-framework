@@ -76,11 +76,11 @@
 
                     <div class="field wa-page-url">
                         <div class="name bold">[s`Page URL`]</div>
-                        <div class="value wa-page-app-url">
+                        <div class="value wa-page-app-url no-shift">
                             {if !empty($url)}{$url|escape}{/if}<input type="text" name="info[url]" class="bold" value="{if $page}{$page.url|escape}{/if}" />
                         </div>
                         {if empty($url)}
-                        <div class="value small wa-page-app-url">
+                        <div class="value small wa-page-app-url no-shift">
                             <span style="color: red;">[s`This page is unsettled (unpublished), i.e. not connected to any of your site’s routing rules. Drag this page out of the Unpublished section in the left sidebar to connect it to any of your existing site’s routes.`]</span>
                         </div>
                         {/if}

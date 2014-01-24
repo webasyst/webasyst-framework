@@ -173,16 +173,16 @@ class waDateTime
                 $base_date_time->setTimezone($date_timezone);
             }
 
-            $day = $date_time->format('z');
-            if ($base_date_time->format('z') == $day) {
+            $day = $date_time->format('Y z');
+            if ($base_date_time->format('Y z') === $day) {
                 $result = _ws('Yesterday');
             } else {
                 $base_date_time->modify('+1 day');
-                if ($base_date_time->format('z') == $day) {
+                if ($base_date_time->format('Y z') === $day) {
                     $result = _ws('Today');
                 } else {
                     $base_date_time->modify('+1 day');
-                    if ($base_date_time->format('z') == $day) {
+                    if ($base_date_time->format('Y z') === $day) {
                         $result = _ws('Tomorrow');
                     } else {
                         $result = self::date(self::getFormat('humandate', $locale), $time, $timezone, $locale);

@@ -182,7 +182,7 @@ abstract class waSystemPlugin
                     $value = null;
                     if (isset($default['value'])) {
                         $value = $default['value'];
-                        if(!empty($default['control_type']) && ($default['control_type'] == waHtmlControl::INPUT)){
+                        if (!empty($default['control_type']) && ($default['control_type'] == waHtmlControl::INPUT)) {
                             $value = $this->_w($value);
                         }
                     }
@@ -397,16 +397,26 @@ abstract class waSystemPlugin
         $settings_config = $this->config();
         foreach ($settings_config as $name => $row) {
             if (!isset($settings[$name])) {
-                if ($row['control_type'] = waHtmlControl::FILE) {
-                    //TODO
-                    $file = waRequest::file($name);
-                } elseif (!empty($row['control_type']) && ($row['control_type'] = waHtmlControl::CHECKBOX) && !empty($row['value'])) {
-                    $settings[$name] = false;
-                } else {
-                    $settings[$name] = isset($row['value']) ? $row['value'] : null;
+                switch (ifset($row['control_type'])) {
+                    case waHtmlControl::CHECKBOX:
+                        $settings[$name] = false;
+                        break;
+                    case waHtmlControl::GROUPBOX:
+                        $settings[$name] = array();
+                        break;
+                    default:
+                        $settings[$name] = isset($row['value']) ? $row['value'] : null;
+                        break;
+                }
+            } else {
+                switch (ifset($row['control_type'])) {
+                    case waHtmlControl::FILE:
+                        $file = waRequest::file($name);
+                        break;
                 }
             }
         }
+
         foreach ($settings as $name => $value) {
             $this->settings[$name] = $value;
             $this->getAdapter()->setSettings($this->id, $this->key, $name, $value);

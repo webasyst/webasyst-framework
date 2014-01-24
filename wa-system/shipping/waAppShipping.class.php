@@ -25,9 +25,10 @@ abstract class waAppShipping
 
     /**
      *
-     * @param $plugin_id string
-     * @param $key string
-     * @param $settings array key-value
+     * @param string $plugin_id
+     * @param string $key
+     * @param string $name
+     * @param $value
      * @return array
      */
     abstract public function setSettings($plugin_id, $key, $name, $value);
@@ -45,6 +46,8 @@ abstract class waAppShipping
      *
      * Callback method handler for plugin
      * @param string $method
+     * @throws waException
+     * @return mixed
      */
     public final function execCallbackHandler($method)
     {
@@ -62,6 +65,7 @@ abstract class waAppShipping
      * Get private data storage path
      * @param int $order_id
      * @param string $path
+     * @return string
      */
     public function getDataPath($order_id, $path = null)
     {

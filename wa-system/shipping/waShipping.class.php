@@ -60,12 +60,12 @@ abstract class waShipping extends waSystemPlugin
     /**
      *
      * @param array $item
-     * @param array[string]mixed $item package item
-     * @param array[string]string $item['id'] ID of package item
-     * @param array[string]string $item['name'] name of package item
-     * @param array[string]mixed $item['weight'] weight of package item
-     * @param array[string]mixed $item['price'] price of package item
-     * @param array[string]mixed $item['quantity'] quantity of packate item
+     * @param array [string]mixed $item package item
+     * @param array [string]string $item['id'] ID of package item
+     * @param array [string]string $item['name'] name of package item
+     * @param array [string]mixed $item['weight'] weight of package item
+     * @param array [string]mixed $item['price'] price of package item
+     * @param array [string]mixed $item['quantity'] quantity of packate item
      * @return waShipping
      */
     public function addItem($item)
@@ -77,12 +77,12 @@ abstract class waShipping extends waSystemPlugin
     /**
      *
      * @param array $items
-     * @param array[][string]mixed $items package item
-     * @param array[][string]string $items['id'] ID of package item
-     * @param array[][string]string $items['name'] name of package item
-     * @param array[][string]mixed $items['weight'] weight of package item
-     * @param array[][string]mixed $items['price'] price of package item
-     * @param array[][string]mixed $items['quantity'] quantity of packate item
+     * @param array [][string]mixed $items package item
+     * @param array [][string]string $items['id'] ID of package item
+     * @param array [][string]string $items['name'] name of package item
+     * @param array [][string]mixed $items['weight'] weight of package item
+     * @param array [][string]mixed $items['price'] price of package item
+     * @param array [][string]mixed $items['quantity'] quantity of packate item
      * @return waShipping
      */
     public function addItems($items)
@@ -147,19 +147,19 @@ abstract class waShipping extends waSystemPlugin
      *
      * Returns available shipping options info, rates, and estimated delivery times
      * @param array $items
-     * @param array[][string]mixed $items package item
-     * @param array[][string]string $items['id'] ID of package item
-     * @param array[][string]string $items['name'] name of package item
-     * @param array[][string]mixed $items['weight'] weight of package item
-     * @param array[][string]mixed $items['price'] price of package item
-     * @param array[][string]mixed $items['quantity'] quantity of packate item
+     * @param array [][string]mixed $items package item
+     * @param array [][string]string $items['id'] ID of package item
+     * @param array [][string]string $items['name'] name of package item
+     * @param array [][string]mixed $items['weight'] weight of package item
+     * @param array [][string]mixed $items['price'] price of package item
+     * @param array [][string]mixed $items['quantity'] quantity of packate item
      *
-     * @param array[string]string $address shipping adress
+     * @param array [string]string $address shipping adress
      *
      *
-     * @param array[mixed]mixed $params
-     * @param array[string]float $params['total_price'] package total price
-     * @param array[string]float $params['total_weight'] package total weight
+     * @param array [mixed]mixed $params
+     * @param array [string]float $params['total_price'] package total price
+     * @param array [string]float $params['total_weight'] package total weight
      *
      * @return string|array[string]array
      * @return array[string]['name']string
@@ -181,12 +181,13 @@ abstract class waShipping extends waSystemPlugin
                 $match = true;
                 foreach ($address as $field => $value) {
                     if (!empty($value) && !empty($this->address[$field])) {
+                        $expected = mb_strtolower($this->address[$field]);
                         if (is_array($value)) {
-                            if (!in_array($this->address[$field], $value)) {
+                            if (!in_array($expected, array_map('mb_strtolower', $value))) {
                                 $match = false;
                                 break;
                             }
-                        } elseif ($value != $this->address[$field]) {
+                        } elseif ($expected != mb_strtolower($value)) {
                             $match = false;
                             break;
                         }
@@ -278,6 +279,7 @@ abstract class waShipping extends waSystemPlugin
     /**
      *
      * Returns shipment current tracking info
+     * @param $tracking_id
      * @return string Tracking information (HTML)
      */
     public function tracking($tracking_id = null)
@@ -306,7 +308,7 @@ abstract class waShipping extends waSystemPlugin
             foreach ($currencies as $code => $currency) {
                 $options[$code] = array(
                     'value'       => $code,
-                    'title'       => $currency['title'] . ' (' . $code . ')',
+                    'title'       => $currency['title'].' ('.$code.')',
                     'description' => $currency['code'],
                 );
             }
@@ -315,7 +317,7 @@ abstract class waShipping extends waSystemPlugin
             foreach ($currencies as $code => $currency_name) {
                 $options[$code] = array(
                     'value'       => $code,
-                    'title'       => $currency_name . ' (' . $code . ')',
+                    'title'       => $currency_name.' ('.$code.')',
                     'description' => $code,
                 );
             }
@@ -328,11 +330,12 @@ abstract class waShipping extends waSystemPlugin
      * @return mixed
      * @throws waException
      */
-    protected function getCountryISO2Code($iso3code) {
+    protected function getCountryISO2Code($iso3code)
+    {
         $country_model = new waCountryModel();
         $country = $country_model->get($iso3code);
         if (!$country) {
-            throw new waException($this->_w("Unknown country: ") . $iso3code);
+            throw new waException($this->_w("Unknown country: ").$iso3code);
         }
         return strtoupper($country['iso2letter']);
     }
@@ -350,10 +353,12 @@ abstract class waShipping extends waSystemPlugin
 
     /**
      *
-     * Country/region depenedant select boxes [+ city input]
+     * Country/region dependent select boxes [+ city input]
      *
      * @param string $name
      * @param array $params
+     * @return string
+     * @example
      * Sample of params defined in proper settings.php
      *
      *    'region_zone' => array(
@@ -382,10 +387,13 @@ abstract class waShipping extends waSystemPlugin
     {
         $html = "";
         $plugin = $params['instance'];
+        /**
+         * @var waShipping $plugin
+         */
         $params['items']['country']['value'] =
             !empty($params['value']['country']) ? $params['value']['country'] : '';
         $params['items']['region']['value'] =
-            !empty($params['value']['region'])  ? $params['value']['region'] : '';
+            !empty($params['value']['region']) ? $params['value']['region'] : '';
 
         if (isset($params['items']['city'])) {
             $params['items']['city']['value'] =
@@ -394,17 +402,17 @@ abstract class waShipping extends waSystemPlugin
 
         // country section
         $cm = new waCountryModel();
-        $html.= "<div class='country'>";
-        $html.= "<select name='{$name}[country]'><option value=''></option>";
+        $html .= "<div class='country'>";
+        $html .= "<select name='{$name}[country]'><option value=''></option>";
         foreach ($cm->all() as $country) {
-            $html.= "<option value='{$country['iso3letter']}'".
-                    ($params['items']['country']['value'] == $country['iso3letter']
-                        ? " selected='selected'" : ""
-                    ).
-            ">{$country['name']}</value>";
+            $html .= "<option value='{$country['iso3letter']}'".
+                ($params['items']['country']['value'] == $country['iso3letter']
+                    ? " selected='selected'" : ""
+                ).
+                ">{$country['name']}</value>";
         }
-        $html.= "</select><br>";
-        $html.= "<span class='hint'>{$params['items']['country']['description']}</span></div><br>";
+        $html .= "</select><br>";
+        $html .= "<span class='hint'>{$params['items']['country']['description']}</span></div><br>";
 
         $regions = array();
         if ($params['items']['country']['value']) {
@@ -413,42 +421,42 @@ abstract class waShipping extends waSystemPlugin
         }
 
         // region section
-        $html.= '<div class="region">';
-        $html.= '<i class="icon16 loading" style="display:none; margin-left: -23px;"></i>';
-        $html.= '<div class="empty"'.
+        $html .= '<div class="region">';
+        $html .= '<i class="icon16 loading" style="display:none; margin-left: -23px;"></i>';
+        $html .= '<div class="empty"'.
             (!empty($regions) ? 'style="display:none;"' : '').
-        '><p class="small">'.
+            '><p class="small">'.
             $plugin->_w("Shipping will be restricted to the selected country").
-        "</p>";
-        $html.= "<input name='{$name}[region]' value='' type='hidden'".
+            "</p>";
+        $html .= "<input name='{$name}[region]' value='' type='hidden'".
             (!empty($regions) ? 'disabled="disabled"' : '').
-        '></div>';
-        $html.= '<div class="not-empty" '.
-            (empty($regions) ? 'style="display:none;"' : '') . ">";
-        $html.= "<select name='{$name}[region]'".
+            '></div>';
+        $html .= '<div class="not-empty" '.
+            (empty($regions) ? 'style="display:none;"' : '').">";
+        $html .= "<select name='{$name}[region]'".
             (empty($regions) ? 'disabled="disabled"' : '').
-        '><option value=""></option>';
+            '><option value=""></option>';
 
         foreach ($regions as $region) {
-            $html.= "<option value='{$region['code']}'".
+            $html .= "<option value='{$region['code']}'".
                 ($params['items']['region']['value'] == $region['code']
-                        ? ' selected="selected"' : ""
+                    ? ' selected="selected"' : ""
                 ).
-            ">{$region['name']}</option>";
+                ">{$region['name']}</option>";
         }
-        $html.= "</select><br>";
-        $html.= "<span class='hint'>{$params['items']['region']['description']}</span></div><br>";
+        $html .= "</select><br>";
+        $html .= "<span class='hint'>{$params['items']['region']['description']}</span></div><br>";
 
         // city section
         if (isset($params['items']['city'])) {
-            $html.= "<div class='city'>";
-            $html.= "<input name='{$name}[city]' value='".
+            $html .= "<div class='city'>";
+            $html .= "<input name='{$name}[city]' value='".
                 (!empty($params['items']['city']['value']) ? $params['items']['city']['value'] : "")."' type='text'>
                 <br>";
-            $html.= "<span class='hint'>{$params['items']['city']['description']}</span></div>";
+            $html .= "<span class='hint'>{$params['items']['city']['description']}</span></div>";
         }
 
-        $html.= "</div>";
+        $html .= "</div>";
 
         $url = wa()->getAppUrl('webasyst').'?module=backend&action=regions';
 
@@ -462,20 +470,19 @@ abstract class waShipping extends waSystemPlugin
         $html = "<div id='{$id}'>{$html}</div>";
 
         // javascript here
-        $html.= "
+        $html .= <<<HTML
         <script type='text/javascript'>
-        \$(function() { 'use strict'
+        $(function() {
+            'use strict';
             var name = '{$name}[region]';
-            var url  = '$url';
-            var container = \$('#{$id}');
-        ";
+            var url  = '{$url}';
+            var container = $('#{$id}');
 
-        $html.= '
             var target  = container.find("div.region");
             var loader  = container.find(".loading");
             var old_val = target.find("select, input").val();
 
-            container.find("select[name$=\"[country]\"]").change(function() {
+            container.find('select[name$="[country]"]').change(function() {
                 loader.show();
                 $.post(url, {
                     country: this.value }, function(r) {
@@ -483,8 +490,8 @@ abstract class waShipping extends waSystemPlugin
                                 && r.data.oOrder && r.data.oOrder.length)
                         {
                             var select = $(
-                                    "<select name=\'" + name + "\'>" +
-                                    "<option value=\'\'></option>" +
+                                    "<select name='" + name + "'>" +
+                                    "<option value=''></option>" +
                                     "</select>"
                             );
                             var o, selected = false;
@@ -512,7 +519,7 @@ abstract class waShipping extends waSystemPlugin
                             target.find(".empty input").attr("disabled", false);
                             target.find(".empty").show();
 
-                            target.find(".not-empty select").attr("disabled", true)
+                            target.find(".not-empty select").attr("disabled", true);
                             target.find(".not-empty").hide();
 
                         }
@@ -520,12 +527,13 @@ abstract class waShipping extends waSystemPlugin
                     }, "json");
             });
 
-            container.on("change", "select[name=\'" + name + "\']", function() {
+            container.on("change", 'select[name="' + name + '"]', function() {
                 old_val = this.value;
             });
 
         });
-        </script>';
+        </script>
+HTML;
 
         return $html;
     }
@@ -534,12 +542,16 @@ abstract class waShipping extends waSystemPlugin
      *
      * Get shipping plugin
      * @param string $id
-     * @param waiPluginSettings $adapter
+     * @param null $key
+     * @param waAppShipping|string $app_adapter
      * @return waShipping
      */
     public static function factory($id, $key = null, $app_adapter = null)
     {
         $instance = parent::factory($id, $key, self::PLUGIN_TYPE);
+        /**
+         * @var waShipping $instance
+         */
         if ($app_adapter && ($app_adapter instanceof waAppShipping)) {
             $instance->app_adapter = $app_adapter;
         } elseif ($app_adapter && is_string($app_adapter)) {
@@ -552,6 +564,7 @@ abstract class waShipping extends waSystemPlugin
     /**
      * The list of available shipping options
      * @param $options array
+     * @param null $type will be ignored
      * @return array
      */
     final public static function enumerate($options = array(), $type = null)
@@ -564,6 +577,8 @@ abstract class waShipping extends waSystemPlugin
      *
      * Get plugin description
      * @param string $id
+     * @param array $options
+     * @param null $type will be ignored
      * @return array[string]string
      * @return array['name']string
      * @return array['description']string
@@ -580,6 +595,7 @@ abstract class waShipping extends waSystemPlugin
 
     /**
      *
+     * @throws waException
      * @return waAppPayment
      */
     final protected function getAdapter()

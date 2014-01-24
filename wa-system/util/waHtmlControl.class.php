@@ -117,6 +117,7 @@ class waHtmlControl
             }
         }
 
+
         #input exception handler support
         //TODO check and complete code
         if (isset($params['wrong_value'])) {
@@ -165,7 +166,7 @@ class waHtmlControl
 
         $params['class'][] = $type;
         $wrappers = array(
-            'title_wrapper'       => '%s&nbsp;:',
+            'title_wrapper'       => '%s:&nbsp;',
             'description_wrapper' => '<br>%s<br>',
             'control_wrapper'     => "%s\n%s\n%s\n",
             'control_separator'   => "<br>",
@@ -327,6 +328,19 @@ class waHtmlControl
         }
     }
 
+    public static function getName(&$params, $name = null)
+    {
+        if (isset($params['name'])) {
+            $name = $name ? $name : $params['name'];
+            unset($params['name']);
+        }
+        if ($namespace = self::makeNamespace($params)) {
+            $name = "{$namespace}[{$name}]";
+            unset($params['namespace']);
+        }
+        return $name;
+    }
+
     private static function getControlTitle($params)
     {
         $title = '';
@@ -389,6 +403,34 @@ class waHtmlControl
         $control .= "<textarea name=\"{$control_name}\"";
         $control .= self::addCustomParams(array('class', 'style', 'cols', 'rows', 'wrap', 'id', 'placeholder', 'readonly', 'autofocus',), $params);
         $control .= ">{$value}</textarea>";
+
+        if (!empty($params['wisywig'])) {
+            if (!is_array($params['wisywig'])) {
+                $params['wisywig'] = array();
+            }
+            $params['wisywig'] += array(
+                'mode'         => 'text/html',
+                'tabMode'      => 'indent',
+                'height'       => 'dynamic',
+                'lineWrapping' => 'true',
+            );
+            $options = json_encode($params['wisywig']);
+            $control .= <<<HTML
+<style type="text/css">
+    .CodeMirror {
+        border: 1px solid #ABADB3;
+    }
+</style>
+<script type="text/javascript">
+    if(typeof(CodeMirror) == 'function') {
+        setTimeout(function(){
+            CodeMirror.fromTextArea(document.getElementById('{$params['id']}'), {$options});
+        },500);
+    }
+</script>
+HTML;
+        }
+
         return $control;
     }
 
@@ -514,8 +556,8 @@ class waHtmlControl
         foreach ($options as $option) {
             //TODO check that $option is array
             $checkbox_params['value'] = empty($option['value']) ? $option['value'] : 1;
-            $checkbox_params['checked'] = in_array($option['value'], $params['value']) || isset($params['value'][$option['value']]);
-            $checkbox_params['title'] = ifset($option['title']);
+            $checkbox_params['checked'] = in_array($option['value'], $params['value'], true) || !empty($params['value'][$option['value']]);
+            $checkbox_params['title'] = empty($option['title']) ? null : $option['title'];
             $checkbox_params['description'] = ifempty($option['description']);
             $control .= self::getControl(self::CHECKBOX, $option['value'], $checkbox_params);
             if (++$id < count($options)) {

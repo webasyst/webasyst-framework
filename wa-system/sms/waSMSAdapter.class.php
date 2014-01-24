@@ -19,7 +19,7 @@ abstract class waSMSAdapter
         waLog::log('SMS to '.$to.' ('.mb_strlen($text).' chars).'."\nResponse: ".$response, 'sms.log');
     }
 
-    abstract function send($to, $text);
+    abstract function send($to, $text, $from = null);
 
     public function getControls()
     {

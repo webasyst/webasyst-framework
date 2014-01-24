@@ -185,6 +185,11 @@ class waDbMySQLAdapter extends waDbAdapter
         foreach ($data as $field_id => $field) {
             if (substr($field_id, 0, 1) != ':') {
                 $type = $field['type'].(!empty($field['params']) ? '('.$field['params'].')' : '');
+                foreach (array('unsigned', 'zerofill') as $k) {
+                    if (!empty($field[$k])) {
+                        $type .= ' '.strtoupper($k);
+                    }
+                }
                 if (isset($field['null']) && !$field['null']) {
                     $type .= ' NOT NULL';
                 }

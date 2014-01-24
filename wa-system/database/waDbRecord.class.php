@@ -298,7 +298,7 @@ class waDbRecord extends waArrayObjectDiff
         if (!$row) {
             $id = $this->id;
             $this->id = null;
-            throw new waException('No record found in '.$this->m->getTableName().' for id='.$id, 404);
+            throw new waException('No record found in '.$this->m->getTableName().' for id='.htmlspecialchars($id), 404);
         }
         $this->persistent->setAll($row);
     }

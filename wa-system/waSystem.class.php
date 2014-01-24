@@ -950,10 +950,9 @@ class waSystem
                 }
             }
             // load locale
-            self::pushActivePlugin($plugin_id, $app_id);
             $locale_path = $this->getAppPath('plugins/'.$plugin_id.'/locale', $app_id);
             if (is_dir($locale_path)) {
-                waLocale::load($this->getLocale(), $locale_path, self::getActiveLocaleDomain(), false);
+                waLocale::load($this->getLocale(), $locale_path, $app_id.'_'.$plugin_id, false);
             }
             return new $class($plugin_info);
         } else {

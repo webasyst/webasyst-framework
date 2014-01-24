@@ -20,7 +20,7 @@ class waSMS
     public function send($to, $text, $from = null)
     {
         try {
-            $adapter = $this->getAdapter();
+            $adapter = $this->getAdapter($from);
             $result = $adapter->send($to, $text, $from ? $from : $this->from);
             return $result;
         } catch (waException $e) {
@@ -33,9 +33,11 @@ class waSMS
     /**
      * @return waSMSAdapter
      */
-    protected function getAdapter()
+    protected function getAdapter($from = null)
     {
-        $from = $this->from;
+        if (!$from) {
+            $from = $this->from;
+        }
         
         if (!$from || !isset(self::$config[$from])) {
             $from = '*';
@@ -45,6 +47,11 @@ class waSMS
             $options = self::$config[$from];
         } else {
             $options = reset(self::$config);
+            $from = key(self::$config);
+        }
+
+        if ($from != '*' && !isset($options['from'])) {
+            $options['from'] = $from;
         }
 
         if (!isset($options['adapter'])) {

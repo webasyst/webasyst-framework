@@ -281,6 +281,7 @@ abstract class waPayment extends waSystemPlugin
             } else {
                 return array(
                     'error' => $ex->getMessage(),
+                    'code'  => $ex->getCode(),
                 );
             }
         }
@@ -353,7 +354,7 @@ abstract class waPayment extends waSystemPlugin
                     $data[$k] = $result[$k];
                 }
             }
-            if ($data) {
+            if ($data && !empty($transaction_data['id'])) {
                 $transaction_model->updateById($transaction_data['id'], $data);
             }
         }
@@ -747,6 +748,7 @@ abstract class waPayment extends waSystemPlugin
             '%HTTP_RELAY_URL%'  => $this->getRelayUrl(false),
             '%HTTPS_RELAY_URL%' => $this->getRelayUrl(true),
             '%APP_ID%'          => $this->app_id,
+            '%MERCHANT_ID%'     => $this->merchant_id,
         );
 
         foreach ($this->guide() as $name => $row) {
@@ -849,11 +851,11 @@ interface waIPaymentCancel
 {
     /**
      *
-     * @param array[string]mixed $transaction_raw_data['order_data']
-     * @param array[string]mixed $transaction_raw_data['transaction_type']
-     * @param array[string]mixed $transaction_raw_data['customer_data']
-     * @param array[string]mixed $transaction_raw_data['transaction']
-     * @param array[string]mixed $transaction_raw_data['refund_amount']
+     * @param array [string]mixed $transaction_raw_data['order_data']
+     * @param array [string]mixed $transaction_raw_data['transaction_type']
+     * @param array [string]mixed $transaction_raw_data['customer_data']
+     * @param array [string]mixed $transaction_raw_data['transaction']
+     * @param array [string]mixed $transaction_raw_data['refund_amount']
      */
     public function cancel($transaction_raw_data);
 }
@@ -862,11 +864,11 @@ interface waIPaymentCapture
 {
     /**
      *
-     * @param array[string]mixed $transaction_raw_data['order_data']
-     * @param array[string]mixed $transaction_raw_data['transaction_type']
-     * @param array[string]mixed $transaction_raw_data['customer_data']
-     * @param array[string]mixed $transaction_raw_data['transaction']
-     * @param array[string]mixed $transaction_raw_data['refund_amount']
+     * @param array [string]mixed $transaction_raw_data['order_data']
+     * @param array [string]mixed $transaction_raw_data['transaction_type']
+     * @param array [string]mixed $transaction_raw_data['customer_data']
+     * @param array [string]mixed $transaction_raw_data['transaction']
+     * @param array [string]mixed $transaction_raw_data['refund_amount']
      */
     public function capture($transaction_raw_data);
 }
@@ -875,11 +877,11 @@ interface waIPaymentRefund
 {
     /**
      *
-     * @param array[string]mixed $transaction_raw_data['order_data']
-     * @param array[string]mixed $transaction_raw_data['transaction_type']
-     * @param array[string]mixed $transaction_raw_data['customer_data']
-     * @param array[string]mixed $transaction_raw_data['transaction']
-     * @param array[string]mixed $transaction_raw_data['refund_amount']
+     * @param array [string]mixed $transaction_raw_data['order_data']
+     * @param array [string]mixed $transaction_raw_data['transaction_type']
+     * @param array [string]mixed $transaction_raw_data['customer_data']
+     * @param array [string]mixed $transaction_raw_data['transaction']
+     * @param array [string]mixed $transaction_raw_data['refund_amount']
      */
     public function refund($transaction_raw_data);
 }
