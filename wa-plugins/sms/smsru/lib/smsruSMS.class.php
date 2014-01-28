@@ -38,6 +38,10 @@ class smsruSMS extends waSMSAdapter
         } elseif ($from) {
             $post['from'] = $from;
         }
+        // check from
+        if (!preg_match("/^[a-z0-9_-]+$/i", $post['from']) || preg_match('/^[0-9]+$/', $post['from'])) {
+            unset($post['from']);
+        }
         curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
 
         $result = curl_exec($ch);
