@@ -120,12 +120,15 @@ $.wa.site = {
     newsiteAction: function (params) {
         var params = this.parseParams(params)
         $("#domain-name").val(params.domain || '');
+        $('#addsite-dialog span.error').empty().hide();
         $("#addsite-dialog").waDialog({
             onSubmit: function () {
                 var f = $(this);
                 $.post(f.attr('action'), f.serialize(), function (response) {
                     if (response.status == 'ok') {
                         location.href = '?domain_id=' + response.data.id + '#/settings/';
+                    } else if (response.status == 'fail') {
+                        $("#addsite-dialog span.error").html(response.errors).show();
                     }
                 }, "json");
                 return false;

@@ -99,6 +99,12 @@ class siteHelper
         }    
         return self::$domain_id;   
     }
+
+    public static function setDomain($id, $domain)
+    {
+        self::getDomains();
+        self::$domains[$id]['name'] = $domain;
+    }
     
     public static function getDomain($key = 'name')
     {

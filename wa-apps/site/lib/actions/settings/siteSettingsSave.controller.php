@@ -11,12 +11,30 @@ class siteSettingsSaveController extends waJsonController
             $routes = array();
         }
         $domain = siteHelper::getDomain();        
-        $url = waRequest::post('url');
+        $url = mb_strtolower(rtrim(waRequest::post('url'), '/'));
         if ($url != $domain) {
             $domain_model = new siteDomainModel();
+            // domain already exists
+            if ($domain_model->getByName($url)) {
+                $this->errors = sprintf(_w("Website with a domain name %s is already registered in this Webasyst installation. Delete %s website (Site app > %s > Settings) to be able to use it's domain name for another website."), $url, $url, $url);
+                return;
+            }
             $domain_model->updateById(siteHelper::getDomainId(), array('name' => $url));
             $routes[$url] = $routes[$domain];
             unset($routes[$domain]);
+
+            // move configs
+            $old = $this->getConfig()->getConfigPath('domains/'.$domain.'.php');
+            if (file_exists($old)) {
+                waFiles::move($old, $this->getConfig()->getConfigPath('domains/'.$url.'.php'));
+            }
+            $old = wa()->getDataPath('data/'.$domain.'/', true, 'site', false);
+            if (file_exists($old)) {
+                waFiles::move($old, wa()->getDataPath('data/'.$url.'/', true));
+                waFiles::delete($old);
+            }
+            $domain = $url;
+            siteHelper::setDomain(siteHelper::getDomainId(), $domain);
         }
         
         

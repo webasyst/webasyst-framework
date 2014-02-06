@@ -25,7 +25,7 @@ class siteRoutingSaveController extends waJsonController
                 if (!$route['url']) {
                     $route['url'] = '*';
                 }
-                $route_id = $this->getRouteId($routes[$domain]);
+                $route_id = $this->getRouteId(isset($routes[$domain]) ? $routes[$domain] : array());
                 if ($route['url'] == '*') {
                     $routes[$domain][$route_id] = $route;
                     $this->response['add'] = 'bottom';
@@ -48,7 +48,7 @@ class siteRoutingSaveController extends waJsonController
                 // log
                 $this->log('route_add');
             } elseif (isset($route['redirect'])) {
-                if (substr($route['url'], -1) != '*' && substr($route['url'], -1) != '/' && strpos(substr($route['url'], -5), '.') === false) {
+                if ($route['url'] && substr($route['url'], -1) != '*' && substr($route['url'], -1) != '/' && strpos(substr($route['url'], -5), '.') === false) {
                     $route['url'] .= '/';
                 }
                 if (!$route['redirect']) {

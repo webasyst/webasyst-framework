@@ -1232,3 +1232,7 @@ msgstr ""
 #: /wa-apps/site/themes/vk/content.html:26
 msgid "Start by creating a page in your <a href=\"%s\">site backend</a>."
 msgstr ""
+
+#: /wa-apps/site/lib/actions/settings/siteSettingsSave.controller.php:19
+msgid "Website with a domain name %s is already registered in this Webasyst installation. Delete %s website (Site app > Settings > %s) to be able to use it's domain name for another website."
+msgstr ""
