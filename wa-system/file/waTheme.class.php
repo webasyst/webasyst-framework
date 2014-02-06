@@ -382,10 +382,15 @@ class waTheme implements ArrayAccess
 
     /**
      * @param bool $as_dom
+     * @throws waException
      * @return DOMDocument|SimpleXMLElement
      */
     private function getXML($as_dom = false)
     {
+
+        if ($as_dom && !class_exists('DOMDocument')) {
+            throw new waException('PHP extension DOM required');
+        }
         $path = $this->path.'/'.self::PATH;
         if (file_exists($path)) {
             if ($as_dom) {
@@ -1322,6 +1327,7 @@ HTACCESS;
             'js', 'css', 'html', 'txt',
             'png', 'jpg', 'jpeg', 'jpe', 'tiff', 'bmp', 'gif', 'svg',
             'htc',
+            'cur',
             'ttf', 'eot', 'otf', 'woff', '',
         );
 

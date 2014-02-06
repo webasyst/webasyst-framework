@@ -52,68 +52,82 @@ class waGettextParser
 
     public function getWords($file)
     {
+        static $debug = false;
+        $counter = 0;
         $text = file_get_contents($file);
         $file = substr($file, strlen(realpath(dirname(__FILE__)."/../../")));
         $matches = array();
-        if (preg_match_all("/\[".($this->config['project'] == 'webasyst' ? "s?" : "")."\`([^\`]+)\`\]/usi", $text, $matches, PREG_OFFSET_CAPTURE)) {
+        $pattern = "/\\[".($this->config['project'] == 'webasyst' ? "s?" : "")."`((?:\\\\`|[^`])+?)`\\]/usi";
+        if (preg_match_all($pattern, $text, $matches, PREG_OFFSET_CAPTURE)) {
             foreach ($matches[1] as $match) {
                 $word = $match[0];
-                $this->cache(array($word), $file.":".$this->getLine($text, $match[1]));
+                $counter += $this->cache(array($word), $file.":".$this->getLine($text, $match[1]));
             }
+        }
+        if ($this->config['debug'] && !$debug) {
+            print "Template pattern:\n".$pattern."\n";
         }
 
         $function_pattern = array("\\\$_");
         if ($this->config['project'] == 'webasyst') {
             $function_pattern[] = '_ws';
         } elseif (strpos($this->config['project'], 'wa-plugins') !== false) {
-            $function_pattern[] = '_wp?\\*?\\/?';
-        } elseif (strpos($this->config['project'], 'plugins')) {
-            $function_pattern[] = '_wp\\*?\\/?';
+            $function_pattern[] = '_wp';
+            $function_pattern[] = '->_w';
+        } elseif (strpos($this->config['project'], '/plugins/')) {
+            $function_pattern[] = '_wp';
         } else {
             $function_pattern[] = '_w';
         }
+        $commas = array('"', "'");
+        $word_pattern = '\\s*%1$s\\s*((?:\\\\%s|[^%1$s\\r\\n])+?)\\s*%1$s\\s*';
+        foreach ($commas as $comma) {
 
-        $word_pattern = '\\s*(\'|")((\\\%1$d|[^$%1$d\\n])+?)$%1$d\\s*';
+            $plural_pattern = '@(?:'.implode('|', $function_pattern).')(?:\\s*\\*/)?\\s*\\('.sprintf($word_pattern, $comma).','.sprintf($word_pattern, $comma).',\\s*@mus';
+            if ($this->config['debug'] && !$debug) {
+                print "Plural forms pattern:\n".$plural_pattern."\n";
+            }
+            #plural forms support
+            if (preg_match_all($plural_pattern, $text, $matches, PREG_OFFSET_CAPTURE)) {
+                foreach ($matches[1] as $i => $match) {
+                    $word = preg_replace("@\\\\{$comma}@", $comma, $match[0]);
+                    $words = preg_replace("@\\\\{$comma}@", $comma, $matches[2][$i][0]);
+                    $line = $this->getLine($text, $match[1]);
+                    $counter += $this->cache(array($word, $words), $file.":".$line);
+                }
+            }
+        }
+        foreach ($commas as $comma) {
+            $pattern = '@(?:'.implode('|', $function_pattern).')(?:\\s*\\*/)?\\s*\\('.sprintf($word_pattern, $comma).'\\)@mus';
+            if (preg_match_all($pattern, $text, $matches, PREG_OFFSET_CAPTURE)) {
+                foreach ($matches[1] as $match) {
+                    $word = preg_replace("@\\\\{$comma}@", $comma, $match[0]);
+                    $counter += $this->cache(array($word), $file.":".$this->getLine($text, $match[1]));
+                }
+            }
 
-        $plural_pattern = '@('.implode('|', $function_pattern).')\\s*\\('.sprintf($word_pattern, 2).','.sprintf($word_pattern, 5).',\\s*@usi';
-        #plural forms support
-        if (preg_match_all($plural_pattern, $text, $matches, PREG_OFFSET_CAPTURE)) {
-            foreach ($matches[3] as $i => $match) {
-                $word = $match[0];
-                $brace = $matches[2][$i][0];
-                $word = preg_replace("@\\\\{$brace}@", $brace, $word);
-                $line = $this->getLine($text, $match[1]);
-                $match = $matches[6][$i];
-                $words = $match[0];
-                $brace = $matches[5][$i][0];
-                $words = preg_replace("@\\\\{$brace}@", $brace, $words);
-                $this->cache(array($word, $words), $file.":".$line);
+            if ($this->config['debug'] && !$debug) {
+                print "Single forms pattern:\n".$pattern."\n";
+                $debug = true;
             }
         }
 
-        $pattern = '@('.implode('|', $function_pattern).')\\s*\\('.sprintf($word_pattern, 2).'\\)@usi';
-        if (preg_match_all($pattern, $text, $matches, PREG_OFFSET_CAPTURE)) {
-            foreach ($matches[3] as $i => $match) {
-                $word = $match[0];
-                $brace = $matches[2][$i][0];
-                $word = preg_replace("@\\\\{$brace}@", $brace, $word);
-                $this->cache(array($word), $file.":".$this->getLine($text, $match[1]));
-            }
-        }
-
+        return $counter;
 
     }
 
     protected function getLine($text, $pos)
     {
         $lines = explode("\n", mb_substr($text, 0, $pos));
-        return count($lines); //.":".mb_strlen(end($lines));
+        return count($lines);
     }
 
     public function cache($words_info, $line = null)
     {
-        $msg_id = $words_info[0];
+        $new = 0;
+        $msg_id = reset($words_info);
         if (!isset($this->words[$msg_id])) {
+            $new = 1;
             $this->words[$msg_id] = array('lines' => array());
             if (isset($words_info[1])) {
                 $this->words[$msg_id]['plural'] = $words_info[1];
@@ -122,6 +136,7 @@ class waGettextParser
         if (!empty($line)) {
             $this->words[$msg_id]['lines'][] = $line;
         }
+        return $new;
     }
 
 
@@ -130,10 +145,10 @@ class waGettextParser
         foreach ($sources as $source) {
             $files = $this->getFiles($source);
             foreach ($files as $file) {
+                $count = $this->getWords($source.$file[0].$file[1]);
                 if ($this->config['debug']) {
-                    echo $file[0].$file[1]."\r\n";
+                    echo $file[0].$file[1].': '.$count."\r\n";
                 }
-                $this->getWords($source.$file[0].$file[1]);
             }
         }
 
@@ -157,10 +172,11 @@ class waGettextParser
                     if ($fh = fopen($locale_path_log, "w")) {
                         $counter = 0;
                         flock($fh, LOCK_EX);
-                        $gettext = new waGettext($locale_path);
+                        $gettext = new waGettext($locale_path, true);
                         $strings = $gettext->read();
+                        $strings = $strings['messages'];
                         $words = $this->words;
-                        foreach ($strings['messages'] as $msg_id => $info) {
+                        foreach ($strings as $msg_id => $info) {
                             if (!isset($this->words[$msg_id])) {
                                 fputs($fh, "msgid \"".str_replace('"', '\\"', $msg_id)."\"\n");
                                 ++$counter;
@@ -175,7 +191,7 @@ class waGettextParser
                         if ($words) {
                             fputs($fh, "\n\n#Missed:\n\n\n");
                             foreach ($words as $msg_id => $info) {
-                                if (isset($strings['messages'][$msg_id])) {
+                                if (isset($strings[$msg_id])) {
                                     unset($words[$msg_id]);
                                     continue;
                                 }
@@ -240,7 +256,7 @@ class waGettextParser
                     echo "\r\nError while open {$locale_path} in a+ mode\r\n";
                 }
                 if ($counter) {
-                    echo "\r\n{$counter} string(s) for locale {$locale} at {$domain}\r\n";
+                    echo "\r\nAdded {$counter} string(s) for locale {$locale} at {$domain}\r\n";
                 }
             }
         }

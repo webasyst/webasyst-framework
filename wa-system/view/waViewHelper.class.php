@@ -512,7 +512,7 @@ HTML;
         }
         $email = $this->post('email');
         $email_validator = new waEmailValidator();
-        $subject = trim($this->post('subject', 'Website request'));
+        $subject = trim($this->post('subject', _ws('Website request')));
         $body = trim($this->post('body'));
         if (!$body) {
             $errors['body'] = _ws('Please define your request');

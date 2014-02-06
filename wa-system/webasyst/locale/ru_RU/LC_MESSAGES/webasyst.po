@@ -3567,3 +3567,11 @@ msgstr "Также сбросить все изменения, которые в
 msgid "Revert"
 msgstr "Восстановить"
 
+msgid "Website request"
+msgstr ""
+
+msgid "Thank you!"
+msgstr "Спасибо!"
+
+msgid "Your message has been sent."
+msgstr "Ваше сообщение было отправлено."

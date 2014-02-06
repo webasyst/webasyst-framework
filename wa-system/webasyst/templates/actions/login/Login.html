@@ -22,7 +22,7 @@
             [s`Password`]:
         </div>
         <div class="value">
-            <input type="password" class="wa-login-text-input" name="password" value="" />
+            <input type="password" class="wa-login-text-input" name="password" value="{if !empty($password)}{$password}{/if}" />
             {if $options.remember_enabled}
             <div class="wa-remember-me">
                 <input id="remember-me" name="remember" type="checkbox" {if !empty($remember) || $wa->post('remember')}checked="checked" {/if} value="1" /> <label for="remember-me">[s`Remember me`]</label>

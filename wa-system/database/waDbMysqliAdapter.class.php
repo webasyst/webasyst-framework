@@ -60,6 +60,10 @@ class waDbMysqliAdapter extends waDbAdapter
         // check error MySQL server has gone away
         if (!$r && $this->handler->errno == 2006 && $this->handler->ping()) {
             return $this->handler->query($query);
+        } elseif (!$r && $this->handler->errno == 1104) {
+            // try set sql_big_selects
+            $this->handler->query('SET SQL_BIG_SELECTS=1');
+            return $this->handler->query($query);
         }
         return $r;
     }

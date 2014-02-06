@@ -115,7 +115,7 @@ class waAuth implements waiAuth
             $result[$row['field']] = $row['value'];
         }
         if (!empty($result['is_banned'])) {
-            throw new waException(isset($result['banned_reason']) ? $result['banned_reason'] : _ws('You are banned!'));
+            throw new waException(isset($result['banned_reason']) ? $result['banned_reason'] : _ws('Access denied.'));
         }
     }
 
