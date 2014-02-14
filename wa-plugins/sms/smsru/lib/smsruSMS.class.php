@@ -2,11 +2,13 @@
 
 class smsruSMS extends waSMSAdapter
 {
+    /**
+     * @return array
+     */
     public function getControls()
     {
         return array(
             'api_id' => array(
-                'value'       => '',
                 'title'       => 'api_id',
                 'description' => 'Введите значение параметра api_id для вашего аккаунта в сервисе sms.ru',
             ),
@@ -16,10 +18,12 @@ class smsruSMS extends waSMSAdapter
     /**
      * @param string $to
      * @param string $text
+     * @param string $from
      * @return mixed
      */
     public function send($to, $text, $from = null)
     {
+        // check CURL
         if (!extension_loaded('curl') || !function_exists('curl_init')) {
             $this->log($to, $text, "PHP extension curl required");
             return false;
@@ -33,14 +37,9 @@ class smsruSMS extends waSMSAdapter
             "to"     => $to,
             "text"   => $text
         );
-        if ($this->getOption('from')) {
-            $post['from'] = $this->getOption('from');
-        } elseif ($from) {
-            $post['from'] = $from;
-        }
         // check from
-        if (!preg_match("/^[a-z0-9_-]+$/i", $post['from']) || preg_match('/^[0-9]+$/', $post['from'])) {
-            unset($post['from']);
+        if ($from && preg_match("/^[a-z0-9_-]+$/i", $from) && !preg_match('/^[0-9]+$/', $from)) {
+            $post['from'] = $from;
         }
         curl_setopt($ch, CURLOPT_POSTFIELDS, $post);
 

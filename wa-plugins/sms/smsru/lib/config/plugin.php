@@ -5,6 +5,6 @@ return array(
     'description' => /*_wp*/('SMS sending via sms.ru gateway'),
     'icon' => 'img/smsru.png',
     'vendor' => 'webasyst',
-    'version' => '1.1',
+    'version' => '1.2',
 
 );
