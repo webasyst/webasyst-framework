@@ -22,6 +22,11 @@ class waContactRegionField extends waContactField
         return $data;
     }
 
+    public function prepareVarExport()
+    {
+        $this->rm = null;
+    }
+
     public function getRegionCountries()
     {
         if (!$this->rm) {

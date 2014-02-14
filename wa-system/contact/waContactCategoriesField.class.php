@@ -25,6 +25,11 @@ class waContactCategoriesField extends waContactChecklistField
         $this->options['required'] = null;
     }
 
+    public function prepareVarExport()
+    {
+        $this->model = null;
+    }
+
     public function getInfo()
     {
         $info = parent::getInfo();

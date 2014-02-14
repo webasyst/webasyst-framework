@@ -762,6 +762,10 @@ abstract class waContactField
         return $this->getHtmlOneWithErrors(ifempty($params['validation_errors']), $params, $attrs);
     }
 
+    public function prepareVarExport()
+    {
+    }
+
     public static function __set_state($state)
     {
          return new $state['_type']($state['id'], $state['name'], $state['options']);

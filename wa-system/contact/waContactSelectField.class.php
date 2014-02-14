@@ -96,5 +96,21 @@ class waContactSelectField extends waContactField
 
         return parent::validate($data, $contact_id);
     }
+
+    public function getFormatter($format)
+    {
+        if ($format == 'html') {
+            return new waContactSelectFormatter($this->getOptions());
+        }
+        return parent::getFormatter($format);
+    }
 }
 
+
+class waContactSelectFormatter  extends waContactFieldFormatter
+{
+    public function format($data)
+    {
+        return isset($this->options[$data]) ? $this->options[$data]: $data;
+    }
+}

@@ -251,6 +251,13 @@ class waContactCompositeField extends waContactField
         return $fields;
     }
 
+    public function prepareVarExport()
+    {
+        foreach ($this->options['fields'] as $f) {
+            $f->prepareVarExport();
+        }
+    }
+
     public function setParameter($p, $value)
     {
         if ($p === 'required') {

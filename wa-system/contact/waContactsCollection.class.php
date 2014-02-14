@@ -5,7 +5,7 @@ class waContactsCollection
     protected $hash;
 
     protected $fields = array();
-    protected $order_by;
+    protected $order_by = 'c.id';
     protected $group_by;
     protected $where;
     protected $where_fields = array();
@@ -614,6 +614,55 @@ class waContactsCollection
         }
 
         return $sql;
+    }
+    
+    public function getContactOffset($contact)
+    {
+        $this->prepare();
+        $order = explode(',', $this->order_by);
+        
+        if (count($order) == 3) {
+            $this->where['_offset'] = '('.$this->getContactOffsetCondition($contact, $order[0]).' OR ('.
+            $this->getContactOffsetCondition($contact, $order[0], true). ' AND '.$this->getContactOffsetCondition($contact, $order[1]).' ) OR ('.
+                $this->getContactOffsetCondition($contact, $order[0], true). ' AND '.
+                $this->getContactOffsetCondition($contact, $order[1], true). ' AND '.
+                $this->getContactOffsetCondition($contact, $order[2]). '))';
+        } else if (count($order) == 2) {
+            $this->where['_offset'] = '('.$this->getContactOffsetCondition($contact, $order[0]).' OR ('.
+            $this->getContactOffsetCondition($contact, $order[0], true). ' AND '.$this->getContactOffsetCondition($contact, $order[1]).' ))';
+        } else {
+            $this->where['_offset'] = $this->getContactOffsetCondition($contact, $order[0]);
+        }
+        
+        $sql = "SELECT COUNT(".($this->joins ? 'DISTINCT ' : '')."c.id) ".$this->getSQL();
+        // remove condition
+        unset($this->where['_offset']);
+        // return count
+        
+        return (int)$this->getModel()->query($sql)->fetchField();
+    }
+    
+    protected function getContactOffsetCondition($contact, $order, $eq = false)
+    {
+        $order = trim($order);
+        $order = explode(' ', $order);
+
+        if (!isset($order[1])) {
+            $order[1] = 'asc';
+        }
+        $order[1] = strtolower($order[1]);
+        if (strstr($order[0], '.') !== false) {
+            list($t, $f) = explode('.', $order[0]);
+        } else {
+            $f = $order[0];
+        }
+        $v = $contact[$f];
+        
+        $model = $this->getModel();
+        $v = $model->escape($v);
+        
+        // return condition
+        return $order[0].($eq ? ' = ' : ($order[1] == 'asc' ? ' < ': ' > '))."'$v'";
     }
 
     /**

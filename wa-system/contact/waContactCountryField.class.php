@@ -26,6 +26,11 @@ class waContactCountryField extends waContactSelectField
         }
     }
 
+    public function prepareVarExport()
+    {
+        $this->model = null;
+    }
+
     public function getOptions($id = null)
     {
         if (isset($this->options['options']) && is_array($this->options['options'])) {

@@ -116,20 +116,26 @@ class waAuthUser extends waUser
             } else {
                 $this->setCache($contact_info);
             }
+
+            if (!$time) {
+                $time = $contact_info['last_datetime'];
+            }
             if (!$last_activity) {
                 $login_log_model->insert(array(
                     'contact_id' => $this->id,
                     'datetime_in' => date("Y-m-d H:i:s"),
                     'datetime_out' => null
                 ));
-            } elseif ($last_datetime = strtotime($time)) {
-                if (time() - $last_datetime > self::$options['activity_timeout']) {
-                    $login_log_model->updateById($last_activity['id'], array('datetime_out' => $time));
-                    $login_log_model->insert(array(
-                        'contact_id' => $this->id,
-                        'datetime_in' => date("Y-m-d H:i:s"),
-                        'datetime_out' => null
-                    ));
+            } else {
+                if ($last_datetime = strtotime($time)) {
+                    if (time() - $last_datetime > self::$options['activity_timeout']) {
+                        $login_log_model->updateById($last_activity['id'], array('datetime_out' => $time));
+                        $login_log_model->insert(array(
+                            'contact_id' => $this->id,
+                            'datetime_in' => date("Y-m-d H:i:s"),
+                            'datetime_out' => null
+                        ));
+                    }
                 }
             }
             $t = date("Y-m-d H:i:s");

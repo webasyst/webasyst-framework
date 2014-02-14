@@ -101,8 +101,7 @@ class waImageImagick extends waImage
         //IM not support $amount under 5 (0.15)
         $amount = ($amount < 5) ? 5 : $amount;
 
-        // Amount should be in the range of 0.0 to 3.0
-        $amount = ($amount * 3.0) / 100;
+        $amount = ($amount * 13.0) / 100;
 
         if ($this->im->sharpenImage(0, $amount))
         {

@@ -140,6 +140,22 @@ class waViewHelper
         }
     }
 
+    public function myUrl()
+    {
+        $auth = wa()->getAuthConfig();
+        if (!empty($auth['app'])) {
+            $app = wa()->getAppInfo($auth['app']);
+            if (!empty($app['my_account'])) {
+                return wa()->getRouteUrl($auth['app'].'/frontend/my');
+            }
+        }
+        $app = wa()->getAppInfo();
+        if (!empty($app['my_account'])) {
+            return wa()->getRouteUrl('/frontend/my');
+        }
+        return null;
+    }
+
     public function headJs()
     {
         $domain = wa()->getRouting()->getDomain(null, true);

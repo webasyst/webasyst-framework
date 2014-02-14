@@ -311,6 +311,9 @@ class waRouting
                         preg_match('!^'.$p.'$!ui', $url, $m);
                         if (isset($m[1])) {
                             $r['redirect'] = str_replace('*', $m[1], $r['redirect']);
+                            if (waRequest::server('QUERY_STRING')) {
+                                $r['redirect'] .= '?'.waRequest::server('QUERY_STRING');
+                            }
                         }
                     }
                     wa()->getResponse()->redirect($r['redirect'], 301);

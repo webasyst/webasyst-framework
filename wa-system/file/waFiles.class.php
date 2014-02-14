@@ -493,7 +493,7 @@ class waFiles
 
                     $response->addHeader("Cache-Control", "no-cache, must-revalidate");
                     $response->addHeader("Content-type", "{$file_type}");
-                    $response->addHeader("Content-Disposition", "attachment; filename=\"{$send_as}\";");
+                    $response->addHeader("Content-Disposition", "attachment; filename=\"{$send_as}\"");
                     $response->addHeader("Last-Modified", filemtime($file));
 
                     $response->addHeader("Accept-Ranges", "bytes");
@@ -522,7 +522,8 @@ class waFiles
                     @fclose($fp);
                 } else {
                     $response->addHeader("Content-type", $file_type);
-                    $response->addHeader("Content-Disposition", "attachment; filename=\"{$send_as}\";");
+                    //RFC 6266
+                    $response->addHeader("Content-Disposition", "attachment; filename=\"{$send_as}\"");
                     $response->addHeader("Accept-Ranges", "bytes");
                     $response->addHeader("Content-Length", $file_size);
                     $response->addHeader("Expires", "0");
@@ -534,6 +535,8 @@ class waFiles
                     }
 
                     $response->addHeader("X-Accel-Redirect", $file);
+                    $response->sendHeaders();
+                    $response = null;
                     //@future
                     //$response->addHeader("X-Accel-Limit-Rate", $rate_limit);
                 }
