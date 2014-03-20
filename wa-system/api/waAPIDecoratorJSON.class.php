@@ -1,14 +1,28 @@
 <?php
-
-class waAPIDecoratorJSON extends waAPIDecorator
+/**
+ * API decorator, transforms the response data in JSON string.
+ * 
+ * @package    Webasyst
+ * @category   System/API
+ * @author     Webasyst
+ * @copyright  (c) 2011-2014 Webasyst
+ * @license    LGPL
+ */
+class waAPIDecoratorJSON implements waAPIDecoratorAdapter
 {
-
+    /**
+     * Returns the JSON representation of a response data.
+     * 
+     * @param   mixed  $response
+     * @return  string
+     * @link    http://php.net/json.constants
+     */
     public function decorate($response)
     {
         if (is_array($response)) {
             $response = $this->parseArray($response);
         }
-        if (waSystemConfig::isDebug() && (version_compare(PHP_VERSION, '5.4.0') >= 0)) {
+        if (waSystemConfig::isDebug() && defined('JSON_PRETTY_PRINT')) {
             return json_encode($response, JSON_PRETTY_PRINT);
         } else {
             return json_encode($response);
@@ -17,20 +31,25 @@ class waAPIDecoratorJSON extends waAPIDecorator
 
     /**
      * Проходим все массивы в ответе и если находим массив
-     * вида array('uid' => array(111,222)) заменяем его на
-     * array(111,222), т.к. array('uid' => ...) это
-     * обертка для структурирования хмл.
+     * вида array('_element' => array(111,222)) заменяем его на
+     * array(111,222), т.к. array('_element' => ...) это
+     * обертка для структурирования XML.
+     * 
+     * @param  array|object  $array
+     * @return array
+     * 
+     * @todo  Check description and algorithm
      */
-    protected function parseArray($arr)
+    protected function parseArray($array)
     {
-        foreach ($arr as $key => $val) {
+        foreach ($array as $key => $value) {
             if ($key === '_element'){
-                unset($arr[$key]);
+                unset($array[$key]);
             }
-            if (is_array($val)){
-                $arr[$key] = $this->parseArray($val);
+            if (is_array($value)) {
+               $array[$key] = $this->parseArray($value);
             }
         }
-        return $arr;
+        return $array;
     }
 }

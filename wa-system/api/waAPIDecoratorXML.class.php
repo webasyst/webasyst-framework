@@ -1,36 +1,56 @@
 <?php
-
-
-class waAPIDecoratorXML extends waAPIDecorator
+/**
+ * API decorator, transforms the response data in JSON string.
+ * 
+ * @package    Webasyst
+ * @category   System/API
+ * @author     Webasyst
+ * @copyright  (c) 2011-2014 Webasyst
+ * @license    LGPL
+ */
+class waAPIDecoratorXML implements waAPIDecoratorAdapter
 {
-
     /**
      * @var DOMDocument
      */
     protected $xml;
 
+    /**
+     * Returns the XML representation of a response data.
+     * 
+     * @param   mixed  $response 
+     * @return  string
+     * @link    http://php.net/class.domdocument
+     */
     public function decorate($response)
     {
-        // создаем xml-документ
+        // Create XML document
         $this->xml = new DOMDocument('1.0', 'UTF-8');
         $this->xml->formatOutput = true;
 
-        // создаем root-элемент
+        // Create root element
         $root = $this->xml->createElement('response');
-
         $this->xml->appendChild($root);
 
-        if(!is_array($response)){
-            $root->appendChild($this->xml->createTextNode($response));
-        } else {
+        if (is_array($response)) {
             $this->parseArray($root, $response);
+        } else {
+            $root->appendChild($this->xml->createTextNode($response));
         }
         return $this->xml->saveXML();
     }
 
-    protected function parseArray(& $context, $array, $list_item_name = null)
+    /**
+     * Converts array in DOM XML document.
+     * 
+     * @param   DOMElement  $context
+     * @param   array       $array
+     * @param   string      $list_item_name
+     * @return  void
+     */
+    protected function parseArray(&$context, array $array, $list_item_name = '')
     {
-        if (!$list_item_name && isset($array['_element'])) {
+        if (empty($list_item_name) && isset($array['_element'])) {
             $list_item_name = $array['_element'];
             unset($array['_element']);
         }
@@ -70,7 +90,7 @@ class waAPIDecoratorXML extends waAPIDecorator
                 } else {
                     $this->parseArray($context, $value);
                 }
-            }elseif(is_int($key) && !is_array($value)){
+            } elseif (is_int($key) && !is_array($value)) {
                 if ($list_item_name) {
                     $this->createNode($context, $list_item_name, $value);
                 }
@@ -78,11 +98,19 @@ class waAPIDecoratorXML extends waAPIDecorator
         }
     }
 
-    protected function createNode(& $context, $name, $value)
+    /**
+     * Create new context node.
+     * 
+     * @param   DOMElement  $context
+     * @param   string      $name
+     * @param   string      $value
+     * @return  void
+     */
+    protected function createNode(&$context, $name, $value)
     {
-        $element = $this->xml->createElement((string)$name);
-        if((string)$value !== ''){
-            $element->appendChild($this->xml->createTextNode((string)$value));
+        $element = $this->xml->createElement($name);
+        if(!empty($value)){
+            $element->appendChild($this->xml->createTextNode($value));
         }
         $context->appendChild($element);
     }

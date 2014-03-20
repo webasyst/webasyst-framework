@@ -1,75 +1,146 @@
 <?php
-
+/**
+ * API controller.
+ * 
+ * @package    Webasyst
+ * @category   System/API
+ * @author     Webasyst
+ * @copyright  (c) 2011-2014 Webasyst
+ * @license    LGPL
+ */
 class waAPIController 
 {
-
     /**
-     * Format of the response - xml or json, by default JSON
+     * @var  string  Format of the response
      */
     protected $format = 'JSON';
-    
-    protected $known_formats = array('XML', 'JSON');
 
-
-    protected function response($response, $code = null)
+    /**
+     * Displays response to request.
+     * 
+     * @param   mixed    $response
+     * @param   integer  $code
+     * @return  void
+     */
+    protected function response($response, $code = 0)
     {
         if ($code) {
             wa()->getResponse()->setStatus($code);
         }
+
         if($this->format == 'XML'){
             wa()->getResponse()->addHeader('Content-type', 'text/xml; charset=utf-8');
         } elseif ($this->format == 'JSON') {
-            $callback = (string)waRequest::get('callback', false);
+            $callback = waRequest::get('callback', false);
             // for JSONP
             if ($callback) {
                 wa()->getResponse()->setStatus(200);
-                wa()->getResponse()->addHeader('Content-type', 'text/javascript; charset=utf-8');
+                wa()->getResponse()->addHeader('Content-type', 'application/json; charset=utf-8');
                 echo $callback .'(';
             } else {
-                wa()->getResponse()->addHeader('Content-type', 'application/json; charset=utf-8');
+                wa()->getResponse()->addHeader('Content-type', 'text/javascript; charset=utf-8');
             }
         }
+
         wa()->getResponse()->sendHeaders();
-        echo waAPIDecorator::factory($this->format)->decorate($response);
+
+        echo waAPIDecorator::getInstance($this->format)->decorate($response);
+
         if (!empty($callback)) {
             echo ');';
         }
     }
 
+    /**
+     * Dispatches response of controller to request.
+     * 
+     * @return  void
+     * @throws  waAPIException
+     */
     public function dispatch()
     {
-        $request_url = rtrim(wa()->getConfig()->getRequestUrl(true, true), '/');
-        if ($request_url === 'api.php/auth') {
-            $user = wa()->getUser();
-            if (!$user->isAuth()) {
+        $url = rtrim(wa()->getConfig()->getRequestUrl(true, true), '/');
+        if ($url == 'api.php/auth') {
+            if (!wa()->getUser()->isAuth()) {
                 wa()->getFrontController()->execute(null, 'login');
             } else {
                 wa()->getFrontController()->execute(null, 'api', 'auth');
             }
-        } elseif ($request_url == 'api.php/token') {
+        } elseif ($url == 'api.php/token') {
             wa()->getFrontController()->execute(null, 'api', 'token');
-        } elseif ($request_url === 'api.php') {
+        } elseif ($url == 'api.php') {
             $this->execute(waRequest::get('app'), waRequest::get('method'));
+        }
+
+        $parts = explode('/', $url);
+        $cnt_parts = count($cnt_parts);
+        if ($cnt_parts == 3) {
+            $this->execute($parts[1], $parts[2]);
+        } elseif ($cnt_parts == 2 && strpos($parts[1], '.') !== false) {
+            $parts = explode('.', $parts[1], 2);
+            $this->execute($parts[0], $parts[1]);
         } else {
-            $parts = explode('/', $request_url);
-            if (count($parts) == 3) {
-                $this->execute($parts[1], $parts[2]);
-            } elseif (count($parts) == 2 && strpos($parts[1], '.') !== false) {
-                $parts = explode('.', $parts[1], 2);
-                $this->execute($parts[0], $parts[1]);
-            } else {
-                throw new waAPIException('invalid_request');
-            }
+            throw new waAPIException('invalid_request');
         }
     }
 
-
-
-    protected function execute($app, $method_name)
+    /**
+     * Check secure token.
+     * 
+     * @return  array
+     * @throws  waAPIException
+     */
+    protected function checkToken()
     {
-        if ($format = waRequest::get('format')) {
+        $token = waRequest::request('access_token');
+        if (!$token) {
+            throw new waAPIException('invalid_request', 'Required parameter is missing: access_token', 400);
+        }
+        
+        $tokens_model = new waApiTokensModel;
+
+        $data = $tokens_model->getById($token);
+        if (!$data) {
+            throw new waAPIException('invalid_token', 'Invalid access token', 401);
+        }
+        if ($data['expires'] && (strtotime($data['expires']) < time())) {
+            throw new waAPIException('invalid_token', 'Access token has expired', 401);
+        }
+
+        // Auth user
+        wa()->setUser(new waUser($data['contact_id']));
+
+        return $data;
+    }
+
+    /**
+     * Execute method of the API.
+     * 
+     * @param   string  $app     Application name
+     * @param   string  $method  Name of called method
+     * @return  void
+     */
+    protected function execute($app, $method)
+    {
+        // Check access token and scope
+        $token = $this->checkToken();
+
+        // Check app access
+        if (!waSystem::getInstance()->appExists($app)) {
+            throw new waAPIException('invalid_request', 'Application '.$app.' not exists');
+        }
+
+        // Check scope
+        $scope = explode(',', $token['scope']);
+        if (!in_array($app, $scope)) {
+            throw new waAPIException('access_denied', 403);
+        }
+
+        // Check type of response 
+        $format = waRequest::get('format');
+        if ($format) {
             $format = strtoupper($format);
-            if (!in_array($format, array('JSON', 'XML'))) {
+            if (!in_array($format, waAPIDecorator::getFormats())) {
                 $this->response(array(
                     'error' => 'invalid_request',
                     'error_description' => 'Invalid response format: '.$format
@@ -78,53 +149,20 @@ class waAPIController
             }
             $this->format = $format;
         }
-        // check access token and scope
-        $token = $this->checkToken();
-
-        // check app access
-        if (!waSystem::getInstance()->appExists($app)) {
-            throw new waAPIException('invalid_request', 'Application '.$app.' not exists');
-        }
-
-        // check scope
-        $scope = explode(',', $token['scope']);
-        if (!in_array($app, $scope)) {
-            throw new waAPIException('access_denied', 403);
-        }
-
-        // init app
+        
+        // Initialize application
         waSystem::getInstance($app, null, true);
 
-        $class_name = $app.implode('', array_map('ucfirst', explode('.', $method_name)))."Method";
+        $class = $app.implode(array_map('ucfirst', explode('.', $method))).'Method';
 
-        if (!class_exists($class_name)) {
-            throw new waAPIException('invalid_method', 'Unknown method: '.$app.'.'.htmlspecialchars($method_name), 404);
+        if (!class_exists($class)) {
+            throw new waAPIException('invalid_method', 'Unknown method: '.$app.'.'.$method, 404);
         }
 
-        /**
-         * Execute method of the API
-         * @var waAPIMethod $method
-         */
-        $method = new $class_name();
+        // Create method, instance of class waAPIMethod
+        $method = new $class;
+        
+        // Displays response of method
         $this->response($method->getResponse());
-    }
-
-    protected function checkToken()
-    {
-        $token = waRequest::request('access_token');
-        if ($token) {
-            $tokens_model = new waApiTokensModel();
-            $data = $tokens_model->getById($token);
-            if ($data) {
-                if ($data['expires'] && (strtotime($data['expires']) < time())) {
-                    throw new waAPIException('invalid_token', 'Access token has expired', 401);
-                }
-                // auth user
-                wa()->setUser(new waUser($data['contact_id']));
-                return $data;
-            }
-            throw new waAPIException('invalid_token', 'Invalid access token', 401);
-        }
-        throw new waAPIException('invalid_request', 'Required parameter is missing: access_token', 400);
     }
 }
