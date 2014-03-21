@@ -35,10 +35,12 @@ class waAPIController
             // for JSONP
             if ($callback) {
                 wa()->getResponse()->setStatus(200);
-                wa()->getResponse()->addHeader('Content-type', 'application/json; charset=utf-8');
+                // @link http://en.wikipedia.org/wiki/JSONP correct MIME type is "application/javascript" for JSONP.
+                wa()->getResponse()->addHeader('Content-type', 'application/javascript; charset=utf-8');
                 echo $callback .'(';
             } else {
-                wa()->getResponse()->addHeader('Content-type', 'text/javascript; charset=utf-8');
+                // @link http://en.wikipedia.org/wiki/JSON The official Internet media type for JSON is application/json.
+                wa()->getResponse()->addHeader('Content-type', 'application/json; charset=utf-8');
             }
         }
 
@@ -159,8 +161,6 @@ class waAPIController
         
         // Initialize application
         waSystem::getInstance($app, null, true);
-
-
 
         // Create method, instance of class waAPIMethod
         $method = new $class;

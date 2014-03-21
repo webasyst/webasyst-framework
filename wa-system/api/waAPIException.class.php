@@ -72,10 +72,10 @@ class waAPIException extends Exception
             // For JSONP
             if ($callback) {
                 wa()->getResponse()->setStatus(200);
-                wa()->getResponse()->addHeader('Content-type', 'application/json; charset=utf-8');
+                wa()->getResponse()->addHeader('Content-type', 'application/javascript; charset=utf-8');
                 $result .= $callback.'(';
             } else {
-                wa()->getResponse()->addHeader('Content-type', 'text/javascript; charset=utf-8');
+                wa()->getResponse()->addHeader('Content-type', 'application/json; charset=utf-8');
             }
         }
 
