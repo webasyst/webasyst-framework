@@ -122,6 +122,27 @@ class waAPIController
      */
     protected function execute($app, $method)
     {
+        // Check response format
+        $format = waRequest::get('format');
+        if ($format) {
+            $format = strtoupper($format);
+            if (!in_array($format, waAPIDecorator::getFormats())) {
+                $this->response(array(
+                    'error' => 'invalid_request',
+                    'error_description' => 'Invalid response format: '.$format
+                ));
+                return;
+            }
+            $this->format = $format;
+        }
+
+        // Generate class name for API method
+        $class = $app.implode(array_map('ucfirst', explode('.', $method))).'Method';
+        // Check class
+        if (!class_exists($class)) {
+            throw new waAPIException('invalid_method', 'Unknown method: '.$app.'.'.$method, 404);
+        }
+
         // Check access token and scope
         $token = $this->checkToken();
 
@@ -135,29 +156,11 @@ class waAPIController
         if (!in_array($app, $scope)) {
             throw new waAPIException('access_denied', 403);
         }
-
-        // Check type of response 
-        $format = waRequest::get('format');
-        if ($format) {
-            $format = strtoupper($format);
-            if (!in_array($format, waAPIDecorator::getFormats())) {
-                $this->response(array(
-                    'error' => 'invalid_request',
-                    'error_description' => 'Invalid response format: '.$format
-                ));
-                return;
-            }
-            $this->format = $format;
-        }
         
         // Initialize application
         waSystem::getInstance($app, null, true);
 
-        $class = $app.implode(array_map('ucfirst', explode('.', $method))).'Method';
 
-        if (!class_exists($class)) {
-            throw new waAPIException('invalid_method', 'Unknown method: '.$app.'.'.$method, 404);
-        }
 
         // Create method, instance of class waAPIMethod
         $method = new $class;
