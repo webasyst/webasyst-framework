@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__.'/../../wa-config/SystemConfig.class.php';
+require_once dirname(__FILE__).'/../../wa-config/SystemConfig.class.php';
 
 waSystem::getInstance(null, new SystemConfig('backend'));
 
@@ -14,5 +14,6 @@ try{
 } catch (waAPIException $e) {
     echo $e;
 } catch (Exception $e) {
-    echo (new waAPIException('server_error', $e->getMessage(), 500));
+    $e = new waAPIException('server_error', $e->getMessage(), 500);
+    echo $e;
 }

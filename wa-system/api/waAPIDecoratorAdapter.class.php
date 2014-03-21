@@ -3,7 +3,7 @@
  * Interface of API decorator.
  * 
  * @package    Webasyst
- * @category   System/API
+ * @category   wa-system/API
  * @author     Webasyst
  * @copyright  (c) 2011-2014 Webasyst
  * @license    LGPL

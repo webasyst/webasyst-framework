@@ -3,7 +3,7 @@
  * Helper.
  * 
  * @package    Webasyst
- * @category   System/Utilites
+ * @category   wa-system/Utils
  * @author     Webasyst
  * @copyright  (c) 2011-2014 Webasyst
  * @license    LGPL
