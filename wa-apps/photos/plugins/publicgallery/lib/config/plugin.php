@@ -20,7 +20,7 @@ return array(
         'prepare_photos_frontend' => 'preparePhotosFrontend',
         'backend_photo_toolbar' => 'backendPhotoToolbar',
         'collection' => 'prepareCollection',
-        'front_controller' => 'fronteController',
+        'front_controller' => 'frontendController',
         'before_save_field' => 'beforeSaveField',
         'search_frontend_link' => 'searchFrontendLink'
     ),
