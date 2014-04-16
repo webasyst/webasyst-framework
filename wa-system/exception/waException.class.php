@@ -1,109 +1,161 @@
 <?php
-
 /*
- * This file is part of Webasyst framework.
+ * Basic system exception.
+ * Базовое системное исключение.
  *
- * Licensed under the terms of the GNU Lesser General Public License (LGPL).
- * http://www.webasyst.com/framework/license/
- *
- * @link http://www.webasyst.com/
- * @author Webasyst LLC
- * @copyright 2011 Webasyst LLC
- * @package wa-system
- * @subpackage exception
+ * @package   wa-system
+ * @category  exception
+ * @author    Webasyst LLC
+ * @copyright 2014 Webasyst LLC
+ * @license   http://webasyst.com/framework/license/ LGPL
  */
 class waException extends Exception
 {
-    const CONTEXT_RADIUS  = 5;
+    // Number of padding lines, uses as defalut radius in self::getFileContext()
+    const CONTEXT_RADIUS = 5;
 
-    private function getFileContext()
+    /**
+     * Returns string, highlighting specific line of file, 
+     * with some number of lines padded above and below.
+     * Возвращает строку, выделяя определенную строку файла, 
+     * с некоторым количеством строк до и после.
+     *
+     * @param  string $file   File to open
+     * @param  int    $line   Line number
+     * @param  int    $radius Number of padding lines
+     * @return string|bool FALSE if file unavailable
+     */
+    public function getFileContext($file, $line = 0, $radius = self::CONTEXT_RADIUS)
     {
-        $file = $this->getFile();
-        $context = array();
-        if ($file && is_readable($file)) {
-            $line_number = $this->getLine();
-            $i = 0;
-            foreach(file($file) as $line) {
-                $i++;
-                if($i >= $line_number - self::CONTEXT_RADIUS && $i <= $line_number + self::CONTEXT_RADIUS) {
-                    if ($i == $line_number) {
-                        $context[] = ' >>'. $i ."\t". $line;
-                    } else {
-                        $context[] = '   '. $i ."\t". $line;
-                    }
-                }
-                if($i > $line_number + self::CONTEXT_RADIUS) break;
+        if (!$file || !is_readable($file)) {
+            // File unavailable
+            return false;
+        }
+
+        $line = max(0, $line);
+
+        // Min radius - 1 string
+        $radius = min(1, $radius);
+
+        // Open the file and set the line position
+        $file = fopen($file, 'r');
+        $i = 0;
+
+        // Set the reading range
+        $range = array(
+            'start' => $line - $radius, 
+            'end'   => $line + $radius
+        );
+
+        // Set the zero-padding amount for line numbers
+        $format = '% '.strlen($range['end']).'d';
+
+        $context = '';
+
+        while ($row = fgets($file)) {
+            // Increment the line number
+            if (++$i > $range['end']) {
+                break;
+            }
+
+            if ($i >= $range['start']) {
+                $context .= ($i == $line ? ' >>' : '   ').sprintf($format, $i);
+                $context .= "\t".htmlspecialchars($row, ENT_NOQUOTES).PHP_EOL;
             }
         }
-        return "\n". implode("", $context);
+
+        fclose($file);
+
+        return $context;
     }
 
+    /**
+     * Throw exception "HTTP 500 server error", 
+     * uses dump of arguments as message.
+     * Вызывает исключение "HTTP 500 ошибка сервера", 
+     * использует инфо аргументов в качестве сообщения.
+     *
+     * @param  mixed ...,
+     * @return void
+     * @throws waException
+     */
     public static function dump()
     {
         $message = '';
-        foreach(func_get_args() as $v) {
-            $message .= ($message ? "\n" : '').wa_dump_helper($v);
+        foreach (func_get_args() as $arg) {
+            $message .= wa_dump_helper($arg).PHP_EOL;
         }
         throw new self($message, 500);
     }
 
+    /**
+     * Return error message.
+     * Возвращает сообщение об ошибке.
+     * 
+     * @return string
+     */
     public function __toString()
     {
         try {
             $wa = wa();
-            $additional_info = '';
+            $extra_message = '';
         } catch (Exception $e) {
             $wa = null;
-            $additional_info = $e->getMessage();
+            $extra_message = $e->getMessage();
         }
 
-        $message = nl2br($this->getMessage());
-        if ($wa && waSystem::getApp()) {
-            $app = $wa->getAppInfo();
-            $backend_url = $wa->getConfig()->getBackendUrl(true);
-        } else {
-            $app = array();
-        }
+        /** 
+         * Basic error
+         */
         if (!waSystemConfig::isDebug() && $wa) {
-            $env = $wa->getEnv();
-            $file = $code = $this->getCode();
-            if (!$code || !file_exists(dirname(__FILE__).'/data/'.$code.'.php')) {
-                $file = 'error';
+            $path = realpath(dirname(__FILE__).'/data/').'/';
+            $file = $this->getCode().'.php';
+            if (!file_exists($path.$file)) {
+                $file = 'error.php';
             }
-            include(dirname(__FILE__).'/data/'.$file.'.php');
-            exit;
+            return include $path.$file;
         }
 
-        if (($wa && $wa->getEnv() == 'cli') || (!$wa && php_sapi_name() == 'cli')) {
-            return date("Y-m-d H:i:s")." php ".implode(" ", waRequest::server('argv'))."\n".
-            "Error: {$this->getMessage()}\nwith code {$this->getCode()} in '{$this->getFile()}' around line {$this->getLine()}:{$this->getFileContext()}\n".
-            $this->getTraceAsString()."\n".
-            ($additional_info ? "Error while initializing waSystem during error generation: ".$additional_info."\n" : '');
-        } elseif ($this->code == 404) {
-            $response = new waResponse();
-            $response->setStatus(404);
+        /** 
+         * CLI error
+         */
+        if (PHP_SAPI == 'cli' || ($wa && $wa->getEnv() == 'cli')) {
+            if ($extra_message) {
+                $extra_message = 'Error while initializing waSystem during error generation: '.$extra_message.PHP_EOL;
+            }
+            return date('Y-m-d H:i:s')." php ".implode(' ', waRequest::server('argv')).PHP_EOL
+                .'Error: '.$this->getMessage().PHP_EOL
+                .'with code '.$this->getCode().' in '.$this->getFile().' around line '.$this->getLine().':'.PHP_EOL
+                .$this->getFileContext($this->getFile(), $this->getLine()).PHP_EOL
+                .$this->getTraceAsString().PHP_EOL
+                .$extra_message;
+        }
+
+        /** 
+         * HTTP 404 error
+         */
+        if ($this->getCode() == 404) {
+            $response = new waResponse;
+            $response->setStatus(404)
             $response->sendHeaders();
         }
 
-        $result = <<<HTML
-<div style="width:99%; position:relative">
-<h2 id='Title'>{$message}</h2>
-<div id="Context" style="display: block;"><h3>Error with code {$this->getCode()} in '{$this->getFile()}' around line {$this->getLine()}:</h3><pre>{$this->getFileContext()}</pre></div>
-<div id="Trace"><h2>Call stack</h2><pre>{$this->getTraceAsString()}</pre></div>
-<div id="Request"><h2>Request</h2><pre>
-HTML;
-        $result .= var_export($_REQUEST, true);
-        $result .= "</pre></div></div>
-<div><h2>Params</h2><pre>";
-        $result .= var_export(waRequest::param(), true);
-        if ($additional_info) {
-            $result .= "</pre></div></div>
-            <div><h2>Error while initializing waSystem during error generation</h2><pre>";
-            $result .= $additional_info;
+        if ($extra_message) {
+            $extra_message = '<div>'
+                .'<h2>Error while initializing waSystem during error generation</h2>'
+                .'<pre>'.$extra_message.'</pre>'
+                .'</div>';
         }
-        $result .= "</pre></div></div>";
 
-        return $result;
+        return '<div style="width:99%;position:relative">'
+            .'<h2 id="Title">'.nl2br($this->getMessage()).'</h2>'
+            .'<div id="Context" style="display:block">'
+            .'<h3>Error with code '.$this->getCode().' in '.$this->getFile().' around line '.$this->getLine().':</h3>'
+            .'<pre>'.$this->getFileContext($this->getFile(), $this->getLine()).'</pre>'
+            .'</div>'
+            .'<div id="Trace"><h2>Call stack</h2><pre>'.$this->getTraceAsString().'</pre></div>'
+            .'<div id="Request"><h2>Request</h2><pre>'.var_export($_REQUEST, true).'</pre></div>'
+            .'<div id="Params">><h2>Params</h2><pre>'.var_export(waRequest::param(), true).'</pre></div>'
+            .$extra_message;
     }
 }
-
