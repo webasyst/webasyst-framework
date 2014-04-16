@@ -14,7 +14,7 @@ $wa_url = wa_url();
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 		<title><?php echo $ws_error ?> #<?php echo $code ?></title>
 		<link href="<?php echo $wa_url ?>wa-content/css/wa/wa-1.0.css" rel="stylesheet" type="text/css" />
-		<script src="<?php echo $wa_url ?>wa-content/js/jquery/jquery-1.9.1.min.js" type="text/javascript"></script>
+		<script src="<?php echo $wa_url ?>wa-content/js/jquery/jquery-1.8.2.min.js" type="text/javascript"></script>
 		<script src="<?php echo $wa_url ?>wa-content/js/jquery-wa/wa.dialog.js" type="text/javascript"></script>
 		<script type="text/javascript">
 		$(function () {
