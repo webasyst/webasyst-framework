@@ -1,46 +1,77 @@
 <?php
-
-/*
- * This file is part of Webasyst framework.
+/**
+ * Abstract View.
+ * Абстрактный Вид.
  *
- * Licensed under the terms of the GNU Lesser General Public License (LGPL).
- * http://www.webasyst.com/framework/license/
- *
- * @link http://www.webasyst.com/
- * @author Webasyst LLC
- * @copyright 2011 Webasyst LLC
- * @package wa-system
- * @subpackage view
+ * @package   wa-system
+ * @category  view
+ * @author    Webasyst LLC
+ * @copyright 2014 Webasyst LLC
+ * @license   http://webasyst.com/framework/license/ LGPL
  */
 abstract class waView
 {
-
+    /**
+     * @var string Template extension
+     */
     protected $postfix = '.html';
 
+    /**
+     * @var array Configuration options
+     */
     protected $options = array();
+
+    /**
+     * @var waViewHelper Helper object
+     */
     protected $helper;
 
+    /**
+	 * Initialize view properties.
+	 * 
+     * @param  waSystem $system  Instance of system object
+     * @param  array    $options Configuration options
+     * @return void
+     */
     public function __construct(waSystem $system, $options = array())
     {
-        $this->helper = new waViewHelper($this);
         $this->setOptions($options);
     }
 
     /**
+	 * Get helper object.
+	 * 
      * @return waViewHelper
      */
     public function getHelper()
     {
+		if (!isset($this->helper)) {
+			// Lazy load
+			$this->helper = new waViewHelper($this);
+		}
         return $this->helper;
     }
 
+    /**
+	 * Set view options.
+	 * 
+     * @param  array $options New configuration options
+     * @return waView
+     */
     public function setOptions($options)
     {
         foreach ($options as $k => $v) {
             $this->options[$k] = $v;
         }
+		// "Chainable" method
+		return $this;
     }
 
+    /**
+	 * Get template extension.
+	 * 
+     * @return string
+     */
     public function getPostfix()
     {
         return $this->postfix;
@@ -54,17 +85,27 @@ abstract class waView
 
     abstract public function getVars($name = null);
 
+    /**
+	 * Execute prepare render temaplate.
+	 * 
+     * @return waView
+     */
     protected function prepare()
     {
-          $this->assign('wa_url', wa()->getRootUrl());
-          $this->assign('wa_backend_url', waSystem::getInstance()->getConfig()->getBackendUrl(true));
-          $this->assign('wa_app', wa()->getApp());
-          $this->assign('wa_app_url', wa()->getAppUrl(null, true));
-          $this->assign('wa_app_static_url', wa()->getAppStaticUrl());
-          if (!$this->helper) {
-              $this->helper = new waViewHelper($this);
-          }
-          $this->assign('wa', $this->helper);
+		$wa = wa();
+
+		// Add global variables
+		$this->assign(array(
+			'wa_url'            => $wa->getRootUrl(),
+			'wa_backend_url'    => waSystem::getInstance()->getConfig()->getBackendUrl(true),
+			'wa_app'            => $wa->getApp(),
+			'wa_app_url'        => $wa->getAppUrl(null, true),
+			'wa_app_static_url' => $wa->getAppStaticUrl(),
+			'wa'                => $this->getHelper()
+		));
+
+		// "Chainable" method
+		return $this;
     }
 
     abstract public function fetch($template, $cache_id = null);
@@ -80,17 +121,20 @@ abstract class waView
 
     public function clearCache($template, $cache_id = null)
     {
-
+		// "Chainable" method
+		return $this;
     }
 
     public function clearAllCache($exp_time = null, $type = null)
     {
-
+		// "Chainable" method
+		return $this;
     }
 
     public function cache($lifetime)
     {
-
+		// "Chainable" method
+		return $this;
     }
 
     public function getCacheId()
@@ -100,17 +144,21 @@ abstract class waView
 
     public function autoescape($value = null)
     {
-
+		// "Chainable" method
+		return $this;
     }
 
     public function setTemplateDir($path)
     {
-
+		// "Chainable" method
+		return $this;
     }
 
     /**
-     * @param waTheme $theme
-     * @param string $template
+	 * Set template directory and global valiables.
+	 *
+     * @param  waTheme $theme    Instance of theme object
+     * @param  string  $template Path to template or resource string specifying template
      * @return bool
      */
     public function setThemeTemplate($theme, $template)
