@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Implements smart multidimensional key => value storage that can be accessed both by array access
  * and by field acces interfaces, including modification of deep layers.
@@ -18,7 +17,7 @@
  * $a->e = array('r' => array('t' => 3));
  * echo $a->e->r->t; // == 3
  */
-class waArrayObject implements ArrayAccess, IteratorAggregate
+class waArrayObject implements ArrayAccess, IteratorAggregate, Countable 
 {
     /**
      * Convert native arrays and stdObjects to waArrayObject.
@@ -242,7 +241,7 @@ class waArrayObject implements ArrayAccess, IteratorAggregate
      * Ensure that given key in rec_data is not a stub; when called with no parameters, removes all stubs.
      * @return $this
      */
-    protected function removeStubs($key=null)
+    protected function removeStubs($key = null)
     {
         if ($key !== null) {
             if (isset($this->rec_data[$key]) && $this->rec_data[$key] instanceof self && $this->rec_data[$key]->stub()) {
