@@ -103,16 +103,31 @@ class waException extends Exception
             $wa = null;
             $extra_message = $e->getMessage();
         }
+        
+        $message = nl2br($this->getMessage());
 
         /** 
          * Basic error
          */
         if (!waSystemConfig::isDebug() && $wa) {
+    
+            if ($wa && waSystem::getApp()) {
+                $app = $wa->getAppInfo();
+                $backend_url = $wa->getConfig()->getBackendUrl(true);
+            } else {
+                $app = array();
+                $backend_url = '';
+            }
+
+            $env = $wa->getEnv();
+            $code = $this->getCode();
+
             $path = realpath(dirname(__FILE__).'/data/').'/';
-            $file = $this->getCode().'.php';
+            $file = $code.'.php';
             if (!file_exists($path.$file)) {
                 $file = 'error.php';
             }
+
             return include $path.$file;
         }
 
@@ -148,7 +163,7 @@ class waException extends Exception
         }
 
         return '<div style="width:99%;position:relative">'
-            .'<h2 id="Title">'.nl2br($this->getMessage()).'</h2>'
+            .'<h2 id="Title">'.$message.'</h2>'
             .'<div id="Context" style="display:block">'
             .'<h3>Error with code '.$this->getCode().' in '.$this->getFile().' around line '.$this->getLine().':</h3>'
             .'<pre>'.$this->getFileContext($this->getFile(), $this->getLine()).'</pre>'
