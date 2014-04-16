@@ -1,21 +1,20 @@
 <?php
 
-if (php_sapi_name() !== "cli") {
-    die("Run from CLI only!");
+if (PHP_SAPI !== 'cli') {
+    die('Run from CLI only!');
 }
 
-require_once(dirname(__FILE__).'/../wa-config/SystemConfig.class.php');
-
-if (count($argv) < 3) {
-    die("Use\r\n".realpath(dirname(__FILE__).'/../')."/cli.php  APP CLASS PARAMS\r\n");
+if ($_SERVER['argc'] < 3) {
+    die('Use '.PHP_EOL.realpath(dirname(__FILE__).'/../').'/cli.php APP CLASS PARAMS');
 }
 
 try {
+    require_once realpath(dirname(__FILE__).'/../wa-config/').'/SystemConfig.class.php';
     $config = new SystemConfig('cli');
-    waSystem::getInstance(null, $config)->dispatchCli($argv);
+    waSystem::getInstance(null, $config)->dispatchCli($_SERVER['argv']);
 } catch (Exception $e) {
-    waLog::log($e, "cli.log");
+    waLog::log($e, 'cli.log');
     if (waSystemConfig::isDebug()) {
-        echo $e;
+        fwrite(STDERR, PHP_EOL.$e.PHP_EOL);
     }
 }
