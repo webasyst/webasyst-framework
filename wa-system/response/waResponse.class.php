@@ -1,5 +1,4 @@
 <?php
-
 /*
  * This file is part of Webasyst framework.
  *
@@ -14,11 +13,14 @@
  */
 class waResponse {
 
-    protected $cookies = array();
     protected $headers = array();
+
     protected $metas = array();
+
     protected $js = array();
+
     protected $css = array();
+
     protected $google_analytics = array();
 
     protected $status;
@@ -67,7 +69,16 @@ class waResponse {
         '505' => 'HTTP Version Not Supported',
     );
 
-    public function setCookie($name, $value, $expire = null, $path = null, $domain = '', $secure = false, $http_only = false)
+
+    public function setCookie(
+		$name,
+		$value,
+		$expire = null,
+		$path = null,
+		$domain = '',
+		$secure = false,
+		$http_only = false
+	)
     {
         if ($expire !== null) {
             $expire = (int) $expire;
@@ -77,165 +88,207 @@ class waResponse {
             $path = waSystem::getInstance()->getRootUrl();
         }
 
-        $this->cookies[$name] = array(
-            'name'     => $name,
-            'value'    => $value,
-            'expire'   => $expire,
-            'path'     => $path,
-            'domain'   => $domain,
-            'secure'   => $secure ? true : false,
-            'http_only' => $http_only,
-        );
+		settype($secure, 'bool');
+		settype($http_only, 'bool');
+
         setcookie($name, $value, $expire, $path, $domain, $secure, $http_only);
+
         $_COOKIE[$name] = $value;
     }
 
+	
     public function getStatus()
     {
         return $this->status;
     }
 
+	
     public function setStatus($code)
     {
-        if (isset(self::$statuses[$code])) {
-            return $this->status = $code;
-        } else {
-            return false;
-        }
+		if (isset(self::$statuses[$code])) {
+			$this->status = $code;
+		}
+
+		return $this;
     }
 
-      public function addHeader($name, $value, $replace = true)
-      {
-          switch ($name) {
-              case 'Expires':
-              case 'Last-Modified':
-                  $value = gmdate("D, d M Y H:i:s", is_int($value)?$value:strtotime($value))." GMT";
-                  break;
-          }
-          if ($replace || !isset($this->headers[$name])) {
-            $this->headers[$name] = $value;
-          }
-      }
+	
+	public function addHeader($name, $value, $replace = true)
+	{
+		if (in_array($name, array('Expires', 'Last-Modified'))) {
+			$value = gmdate('D, d M Y H:i:s', is_int($value) ? $value : strtotime($value)).' GMT';
+		}
 
-      public function getHeader($name = null)
-      {
-          return $name !== null ? $this->headers[$name] : $this->headers;
-      }
+		if ($replace || !isset($this->headers[$name])) {
+			$this->headers[$name] = $value;
+		}
 
-      public function redirect($url, $code = null)
-      {
-          if ($code !== null) {
-              $this->setStatus($code);
-          }
-          $this->addHeader('Location', $url);
-          $this->sendHeaders();
-          exit;
-      }
+		return $this;
+	}
 
-      public function sendHeaders()
-      {
-          if ($this->status !== null) {
-              header('HTTP/1.0 '.$this->status.' '.self::$statuses[$this->status]);
-          }
-          foreach ($this->headers as $name => $value) {
-              header($name. ": ". $value);
-          }
-      }
+	
+	public function getHeader($name = null)
+	{
+		if ($name !== null) {
+			return isset($this->headers[$name]) ? $this->headers[$name] : null;
+		}
 
-      public function getTitle()
-      {
-          return $this->getMeta('title');
-      }
+		return $this->headers;
+	}
 
-      public function setTitle($title)
-      {
-          $this->setMeta('title', $title);
-      }
+	
+	public function redirect($url, $code = 302)
+	{
+		$this->setStatus($code)
+			->addHeader('Location', $url)
+			->sendHeaders();
 
-      public function setMeta($name, $value = null)
-      {
-          if (is_array($name)) {
-              $this->metas = $name + $this->metas;
-          } else {
-              $this->metas[$name] = $value;
-          }
-      }
+		exit;
+	}
 
-      public function getMeta($name = null)
-      {
-          if ($name !== null) {
-              return isset($this->metas[$name]) ? $this->metas[$name] : null;
-          } else {
-              return $this->metas;
-          }
-      }
+	/**
+	 * Send HTTP headers.
+	 *
+	 * @see http://faqs.org/rfcs/rfc2616 HTTP/1.1 specification
+	 */
+	public function sendHeaders()
+	{
+		if ($this->status !== null) {
+			header('HTTP/1.1 '.$this->status.' '.self::$statuses[$this->status]);
+		}
 
-      public function addGoogleAnalytics($str)
-      {
-          $this->google_analytics[] = $str;
-      }
+		foreach ($this->headers as $name => $value) {
+			header($name.': '.$value);
+		}
 
-      public function getGoogleAnalytics()
-      {
-          return implode("\n", $this->google_analytics);
-      }
+		return $this;
+	}
 
-      public function addJs($url, $app_id = false)
-      {
-          if ($app_id) {
-              $url = wa()->getAppStaticUrl($app_id).$url;
-              $app_info = wa()->getAppInfo($app_id === true ? null : $app_id);
-              $url .= '?'.(isset($app_info['version']) ? $app_info['version'] : '0.0.1');
-              if (waSystemConfig::isDebug()) {
-                  $url .= '.'.time();
-              }
-          } else {
-              $url = wa()->getRootUrl().$url;
-          }
-          $this->js[] = $url;
-          return $this;
-      }
+	
+	public function getTitle()
+	{
+		return $this->getMeta('title');
+	}
 
-      public function getJs($html = true)
-      {
-          if (!$html) {
-              return $this->js;
-          } else {
-              $result = '';
-              foreach ($this->js as $url) {
-                  $result .= '<script type="text/javascript" src="'.$url.'"></script>'."\n";
-              }
-              return $result;
-          }
-      }
+	
+	public function setTitle($title)
+	{
+		return $this->setMeta('title', (string)$title);
+	}
 
-      public function addCss($url, $app_id = false)
-      {
-          if ($app_id) {
-              $url = wa()->getAppStaticUrl($app_id).$url;
-              $app_info = wa()->getAppInfo($app_id === true ? null : $app_id);
-              $url .= '?'.(isset($app_info['version']) ? $app_info['version'] : '0.0.1');
-              if (waSystemConfig::isDebug()) {
-                  $url .= '.'.time();
-              }
-          } else {
-              $url = wa()->getRootUrl().$url;
-          }
-          $this->css[] = $url;
-          return $this;
-      }
+	
+	public function setMeta($name, $value = null)
+	{
+		if (is_array($name)) {
+			$this->metas = $name + $this->metas;
+		} else {
+			$this->metas[$name] = $value;
+		}
 
-      public function getCss($html = true)
-      {
-          if (!$html) {
-              return $this->css;
-          } else {
-              $result = '';
-              foreach ($this->css as $url) {
-                  $result .= '<link href="'.$url.'" rel="stylesheet" type="text/css" >'."\n";
-              }
-              return $result;
-          }
-      }
+		return $this;
+	}
 
+	
+	public function getMeta($name = null)
+	{
+		if ($name !== null) {
+			return isset($this->metas[$name]) ? $this->metas[$name] : null;
+		}
+
+		return $this->metas;
+	}
+
+	
+	public function addGoogleAnalytics($str)
+	{
+		$this->google_analytics[] = $str;
+
+		return $this;
+	}
+
+	
+	public function getGoogleAnalytics()
+	{
+		return implode(PHP_EOL, $this->google_analytics);
+	}
+
+	
+	public function addJs($url, $app_id = false)
+	{
+		if ($app_id) {
+			$url = wa()->getAppStaticUrl($app_id).$url;
+			$app_info = wa()->getAppInfo($app_id === true ? null : $app_id);
+			$url .= '?'.(isset($app_info['version']) ? $app_info['version'] : '0.0.1');
+			if (waSystemConfig::isDebug()) {
+				$url .= '.'.time();
+			}
+		// Support external links
+		} elseif (strpos($url, '://') === false) {
+			$url = wa()->getRootUrl().$url;
+		}
+
+		$this->js[] = $url;
+
+		return $this;
+	}
+
+	/**
+	 * Gets JavaScipt's
+	 *
+	 * @param   bool  $html    Return scripts as HTML string or an array of URL's?
+	 * @param   bool  $strict  Use strict HTML format (XHTML)?
+	 * @return  array|string
+	 */
+	public function getJs($html = true, $strict = false)
+	{
+		if (!$html) {
+			return $this->js;
+		}
+
+		$result = '';
+		foreach ($this->js as $url) {
+			$result .= '<script'.($strict ? ' type="text/javascript"' : '').' src="'.$url.'"></script>'.PHP_EOL;
+		}
+		return $result;
+	}
+
+	
+	public function addCss($url, $app_id = false)
+	{
+		if ($app_id) {
+			$url = wa()->getAppStaticUrl($app_id).$url;
+			$app_info = wa()->getAppInfo($app_id === true ? null : $app_id);
+			$url .= '?'.(isset($app_info['version']) ? $app_info['version'] : '0.0.1');
+			if (waSystemConfig::isDebug()) {
+				$url .= '.'.time();
+			}
+		// Support external links
+		} elseif (strpos($url, '://') === false) {
+			$url = wa()->getRootUrl().$url;
+		}
+
+		$this->css[] = $url;
+
+		return $this;
+	}
+
+	/**
+	 * Gets CSS styles
+	 *
+	 * @param   bool  $html    Return styles as HTML string or an array of URL's?
+	 * @param   bool  $strict  Use strict HTML format (XHTML)?
+	 * @return  array|string
+	 */
+	public function getCss($html = true, $strict = false)
+	{
+		if (!$html) {
+			return $this->css;
+		}
+
+		$result = '';
+		foreach ($this->css as $url) {
+			$result .= '<link href="'.$url.'" rel="stylesheet"'.($strict ? ' type="text/css" /' : '').'>'.PHP_EOL;
+		}
+		return $result;
+	}
 }
