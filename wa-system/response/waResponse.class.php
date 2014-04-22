@@ -1,132 +1,239 @@
 <?php
-/*
- * This file is part of Webasyst framework.
+/**
+ * HTTP response.
  *
- * Licensed under the terms of the GNU Lesser General Public License (LGPL).
- * http://www.webasyst.com/framework/license/
- *
- * @link http://www.webasyst.com/
- * @author Webasyst LLC
- * @copyright 2011 Webasyst LLC
- * @package wa-system
- * @subpackage response
+ * @package     wa-system
+ * @subpackage  response
+ * @author      Webasyst LLC
+ * @copyright   2014 Webasyst LLC
+ * @license     http://webasyst.com/framework/license/ LGPL
  */
-class waResponse {
-
-    protected $headers = array();
-
-    protected $metas = array();
-
-    protected $js = array();
-
-    protected $css = array();
-
-    protected $google_analytics = array();
-
-    protected $status;
-
+class waResponse
+{
+    /**
+     * @var  array  Available HTTP statuses
+     */
     protected static $statuses = array(
-        '100' => 'Continue',
-        '101' => 'Switching Protocols',
-        '200' => 'OK',
-        '201' => 'Created',
-        '202' => 'Accepted',
-        '203' => 'Non-Authoritative Information',
-        '204' => 'No Content',
-        '205' => 'Reset Content',
-        '206' => 'Partial Content',
-        '300' => 'Multiple Choices',
-        '301' => 'Moved Permanently',
-        '302' => 'Found',
-        '303' => 'See Other',
-        '304' => 'Not Modified',
-        '305' => 'Use Proxy',
-        '306' => '(Unused)',
-        '307' => 'Temporary Redirect',
-        '400' => 'Bad Request',
-        '401' => 'Unauthorized',
-        '402' => 'Payment Required',
-        '403' => 'Forbidden',
-        '404' => 'Not Found',
-        '405' => 'Method Not Allowed',
-        '406' => 'Not Acceptable',
-        '407' => 'Proxy Authentication Required',
-        '408' => 'Request Timeout',
-        '409' => 'Conflict',
-        '410' => 'Gone',
-        '411' => 'Length Required',
-        '412' => 'Precondition Failed',
-        '413' => 'Request Entity Too Large',
-        '414' => 'Request-URI Too Long',
-        '415' => 'Unsupported Media Type',
-        '416' => 'Requested Range Not Satisfiable',
-        '417' => 'Expectation Failed',
-        '500' => 'Internal Server Error',
-        '501' => 'Not Implemented',
-        '502' => 'Bad Gateway',
-        '503' => 'Service Unavailable',
-        '504' => 'Gateway Timeout',
-        '505' => 'HTTP Version Not Supported',
+        100 => 'Continue',
+        101 => 'Switching Protocols',
+        200 => 'OK',
+        201 => 'Created',
+        202 => 'Accepted',
+        203 => 'Non-Authoritative Information',
+        204 => 'No Content',
+        205 => 'Reset Content',
+        206 => 'Partial Content',
+        300 => 'Multiple Choices',
+        301 => 'Moved Permanently',
+        302 => 'Found',
+        303 => 'See Other',
+        304 => 'Not Modified',
+        305 => 'Use Proxy',
+        306 => '(Unused)',
+        307 => 'Temporary Redirect',
+        400 => 'Bad Request',
+        401 => 'Unauthorized',
+        402 => 'Payment Required',
+        403 => 'Forbidden',
+        404 => 'Not Found',
+        405 => 'Method Not Allowed',
+        406 => 'Not Acceptable',
+        407 => 'Proxy Authentication Required',
+        408 => 'Request Timeout',
+        409 => 'Conflict',
+        410 => 'Gone',
+        411 => 'Length Required',
+        412 => 'Precondition Failed',
+        413 => 'Request Entity Too Large',
+        414 => 'Request-URI Too Long',
+        415 => 'Unsupported Media Type',
+        416 => 'Requested Range Not Satisfiable',
+        417 => 'Expectation Failed',
+        500 => 'Internal Server Error',
+        501 => 'Not Implemented',
+        502 => 'Bad Gateway',
+        503 => 'Service Unavailable',
+        504 => 'Gateway Timeout',
+        505 => 'HTTP Version Not Supported',
     );
 
+    /**
+     * @var  array  Unserialized request cookies
+     */
+    protected static $unserialized_cookies = array();
 
+    /**
+     * @var  array  Response HTTP headers
+     */
+    protected $headers = array();
+
+    /**
+     * @var  int  Response HTTP status
+     */
+    protected $status;
+
+    /**
+     * @var  array  Meta tags
+     */
+    protected $metas = array();
+
+    /**
+     * @var  array  JavaScript files
+     */
+    protected $js = array();
+
+    /**
+     * @var  array  CSS files
+     */
+    protected $css = array();
+
+    /**
+     * @var  array  Google Analytics
+     * @link  http://google.com/intl/en_us/analytics/
+     */
+    protected $google_analytics = array();
+
+    /**
+     * Send a cookie.
+     *
+     * @param   string  $name       The name of the cookie
+     * @param   mixed   $value      The value of the cookie
+     * @param   int     $expire     The time the cookie expires
+     * @param   string  $path       The path on the server in which the cookie will be available on
+     * @param   string  $domain     The domain that the cookie is available to
+     * @param   bool    $secure     Transmitted over a secure HTTPS connection from the client?
+     * @param   bool    $http_only  Cookie will be made accessible only through the HTTP protocol?
+     * @return  waResponse
+     */
     public function setCookie(
         $name,
         $value,
-        $expire = null,
-        $path = null,
+        $expire = 0,
+        $path = '',
         $domain = '',
         $secure = false,
         $http_only = false
     )
     {
-        if ($expire !== null) {
-            $expire = (int) $expire;
+        if (is_array($value)) {
+            $value = serialize($value);
         }
 
-        if ($path === null) {
+        if (!$path) {
             $path = waSystem::getInstance()->getRootUrl();
         }
 
-        settype($secure, 'bool');
-        settype($http_only, 'bool');
+        setcookie(
+            (string)$name,
+            (string)$value,
+            (int)$expire,
+            (string)$path,
+            (string)$domain,
+            (bool)$secure,
+            (bool)$http_only
+        );
 
-        setcookie($name, $value, $expire, $path, $domain, $secure, $http_only);
-
-        $_COOKIE[$name] = $value;
+        // New value available only after the page reloads
+        // $_COOKIE[$name] = $value;
+        
+        return $this;
     }
 
-    
+    /**
+     * Get current cookie or all cookies (name = null).
+     *
+     * @param   string|null  $name
+     * @return  mixed
+     */
+    public function getCookie($name = null)
+    {
+        if ($name !== null) {
+            if (!isset($_COOKIE[$name])) {
+                return null;
+            } elseif (!isset(self::$unserialized_cookies[$name])) {
+                // Try unserialize value
+                try {
+                    $_COOKIE[$name] = unserialize($_COOKIE[$name]);
+                    self::$unserialized_cookies[$name] = true;
+                } catch (Exception $e) {
+                    self::$unserialized_cookies[$name] = false;
+                }
+            }
+            
+            return $_COOKIE[$name];
+        }
+
+        // Unserialize all values
+        foreach (array_diff_key($_COOKIE, self::$unserialized_cookies) as $name => $value) {
+            $this->getCookie($name);
+        }
+
+        return $_COOKIE;
+    }
+
+    /**
+     * Get HTTP status.
+     *
+     * @return  int
+     */
     public function getStatus()
     {
         return $this->status;
     }
 
-    
-    public function setStatus($code)
+    /**
+     * Set HTTP status.
+     *
+     * @param   int   $code  Code of HTTP status
+     * @return  waResponse
+     */
+    public function setStatus($code = 200)
     {
         if (isset(self::$statuses[$code])) {
-            $this->status = $code;
+            $this->status = (int)$code;
         }
 
         return $this;
     }
 
-    
+    /**
+     * Set HTTP header.
+     *
+     * @param   string  $name
+     * @param   mixed   $value
+     * @param   bool    $replace
+     * @return  waResponse
+     */
     public function addHeader($name, $value, $replace = true)
     {
-        if (in_array($name, array('Expires', 'Last-Modified'))) {
+        $name = strtolower($name);
+
+        if (in_array($name, array('expires', 'last-modified'))) {
             $value = gmdate('D, d M Y H:i:s', is_int($value) ? $value : strtotime($value)).' GMT';
         }
 
-        if ($replace || !isset($this->headers[$name])) {
+        if (!isset($this->headers[$name])) {
             $this->headers[$name] = $value;
+        } else {
+            if ($replace) {
+                $this->headers[$name] = $value;
+            } else {
+                if (!is_array($this->headers[$name])) {
+                    settype($this->headers[$name], 'array');
+                }
+                $this->headers[$name][] = $value;
+            }
         }
 
         return $this;
     }
 
-    
+    /**
+     * Get current header or all headers (name = null).
+     *
+     * @param   string|null  $name
+     * @return  mixed
+     */
     public function getHeader($name = null)
     {
         if ($name !== null) {
@@ -136,7 +243,38 @@ class waResponse {
         return $this->headers;
     }
 
-    
+    /**
+     * Send HTTP headers.
+     *
+     * @return  waResponse
+     */
+    public function sendHeaders()
+    {
+        foreach ($this->headers as $name => $value) {
+            if (is_array($value)) {
+                foreach ($value as $var) {
+                    header($name.': '.$var, false);
+                }
+            }  else {
+                header($name.': '.$value);
+            }
+        }
+
+        // Added after all that was not erased
+        if ($this->status !== null) {
+            header($_SERVER['SERVER_PROTOCOL'].' '.$this->status.' '.self::$statuses[$this->status]);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Redirect to URL.
+     *
+     * @param   string  $url
+     * @param   int     $code  Code of HTTP status
+     * @return  void
+     */
     public function redirect($url, $code = 302)
     {
         $this->setStatus($code)
@@ -145,38 +283,35 @@ class waResponse {
 
         exit;
     }
-
-    /**
-     * Send HTTP headers.
-     *
-     * @see http://faqs.org/rfcs/rfc2616 HTTP/1.1 specification
-     */
-    public function sendHeaders()
-    {
-        if ($this->status !== null) {
-            header('HTTP/1.1 '.$this->status.' '.self::$statuses[$this->status]);
-        }
-
-        foreach ($this->headers as $name => $value) {
-            header($name.': '.$value);
-        }
-
-        return $this;
-    }
-
     
+    /**
+     * Get meta tag "title".
+     *
+     * @return  string
+     */
     public function getTitle()
     {
         return $this->getMeta('title');
     }
 
-    
+    /**
+     * Set meta tag "title".
+     *
+     * @param   string  $title
+     * @return  waResponse
+     */
     public function setTitle($title)
     {
         return $this->setMeta('title', (string)$title);
     }
 
-    
+    /**
+     * Set meta tag.
+     *
+     * @param   string|array  $name
+     * @param   mixed         $value
+     * @return  waResponse
+     */
     public function setMeta($name, $value = null)
     {
         if (is_array($name)) {
@@ -188,7 +323,12 @@ class waResponse {
         return $this;
     }
 
-    
+    /**
+     * Get current meta tag or all tags (name = null).
+     *
+     * @param   string|null  $name
+     * @return  mixed
+     */
     public function getMeta($name = null)
     {
         if ($name !== null) {
@@ -198,7 +338,12 @@ class waResponse {
         return $this->metas;
     }
 
-    
+    /**
+     * Add string to Google Analytics.
+     *
+     * @param   string  $str
+     * @return  waResponse
+     */
     public function addGoogleAnalytics($str)
     {
         $this->google_analytics[] = $str;
@@ -206,13 +351,23 @@ class waResponse {
         return $this;
     }
 
-    
+    /**
+     * Return compiled code of Google Analytics.
+     *
+     * @return  string
+     */
     public function getGoogleAnalytics()
     {
         return implode(PHP_EOL, $this->google_analytics);
     }
 
-    
+    /**
+     * Add JavaScript file.
+     *
+     * @param   string       $url
+     * @param   string|bool  $app_id
+     * @return  waResponse
+     */
     public function addJs($url, $app_id = false)
     {
         if ($app_id) {
@@ -233,11 +388,11 @@ class waResponse {
     }
 
     /**
-     * Gets JavaScipt's
+     * Gets JavaScript files as compiled HTML string or an array of URL's.
      *
      * @param   bool  $html    Return scripts as HTML string or an array of URL's?
      * @param   bool  $strict  Use strict HTML format (XHTML)?
-     * @return  array|string
+     * @return  string|array   
      */
     public function getJs($html = true, $strict = false)
     {
@@ -253,6 +408,13 @@ class waResponse {
     }
 
     
+    /**
+     * Add CSS file.
+     *
+     * @param   string       $url
+     * @param   string|bool  $app_id
+     * @return  waResponse
+     */
     public function addCss($url, $app_id = false)
     {
         if ($app_id) {
@@ -273,11 +435,11 @@ class waResponse {
     }
 
     /**
-     * Gets CSS styles
+     * Gets CSS styles as compiled HTML string or an array of URL's.
      *
      * @param   bool  $html    Return styles as HTML string or an array of URL's?
      * @param   bool  $strict  Use strict HTML format (XHTML)?
-     * @return  array|string
+     * @return  string|array   Compiled HTML string or an array of URL's
      */
     public function getCss($html = true, $strict = false)
     {
