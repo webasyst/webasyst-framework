@@ -58,11 +58,6 @@ class waResponse
     );
 
     /**
-     * @var  array  Unserialized request cookies
-     */
-    protected static $unserialized_cookies = array();
-
-    /**
      * @var  array  Response HTTP headers
      */
     protected $headers = array();
@@ -115,10 +110,6 @@ class waResponse
         $http_only = false
     )
     {
-        if (is_array($value)) {
-            $value = serialize($value);
-        }
-
         if (!$path) {
             $path = waSystem::getInstance()->getRootUrl();
         }
@@ -137,38 +128,6 @@ class waResponse
         // $_COOKIE[$name] = $value;
         
         return $this;
-    }
-
-    /**
-     * Get current cookie or all cookies (name = null).
-     *
-     * @param   string|null  $name
-     * @return  mixed
-     */
-    public function getCookie($name = null)
-    {
-        if ($name !== null) {
-            if (!isset($_COOKIE[$name])) {
-                return null;
-            } elseif (!isset(self::$unserialized_cookies[$name])) {
-                // Try unserialize value
-                try {
-                    $_COOKIE[$name] = unserialize($_COOKIE[$name]);
-                    self::$unserialized_cookies[$name] = true;
-                } catch (Exception $e) {
-                    self::$unserialized_cookies[$name] = false;
-                }
-            }
-            
-            return $_COOKIE[$name];
-        }
-
-        // Unserialize all values
-        foreach (array_diff_key($_COOKIE, self::$unserialized_cookies) as $name => $value) {
-            $this->getCookie($name);
-        }
-
-        return $_COOKIE;
     }
 
     /**
