@@ -10,30 +10,30 @@
 
 /**
  * Defines the grammar to use for validation, implements the RFC 2822 (and friends) ABNF grammar definitions.
- * @package Swift
+ *
+ * @package    Swift
  * @subpackage Mime
- * @author Fabien Potencier
- * @author Chris Corbyn
+ * @author     Fabien Potencier
+ * @author     Chris Corbyn
  */
 class Swift_Mime_Grammar
 {
     /**
      * Special characters used in the syntax which need to be escaped.
+     *
      * @var string[]
-     * @access private
      */
     private static $_specials = array();
 
     /**
      * Tokens defined in RFC 2822 (and some related RFCs).
+     *
      * @var string[]
-     * @access private
      */
     private static $_grammar = array();
 
     /**
      * Initialize some RFC 2822 (and friends) ABNF grammar definitions.
-     * @access protected
      */
     public function __construct()
     {
@@ -58,7 +58,7 @@ class Swift_Mime_Grammar
 
         /*** Refer to RFC 2822 for ABNF grammar ***/
 
-        //All basic building blocks
+        // All basic building blocks
         self::$_grammar['NO-WS-CTL'] = '[\x01-\x08\x0B\x0C\x0E-\x19\x7F]';
         self::$_grammar['WSP'] = '[ \t]';
         self::$_grammar['CRLF'] = '(?:\r\n)';
@@ -68,7 +68,7 @@ class Swift_Mime_Grammar
         self::$_grammar['quoted-pair'] = '(?:\\\\' . self::$_grammar['text'] . ')';
         self::$_grammar['ctext'] = '(?:' . self::$_grammar['NO-WS-CTL'] .
                 '|[\x21-\x27\x2A-\x5B\x5D-\x7E])';
-        //Uses recursive PCRE (?1) -- could be a weak point??
+        // Uses recursive PCRE (?1) -- could be a weak point??
         self::$_grammar['ccontent'] = '(?:' . self::$_grammar['ctext'] . '|' .
                 self::$_grammar['quoted-pair'] . '|(?1))';
         self::$_grammar['comment'] = '(\((?:' . self::$_grammar['FWS'] . '|' .
@@ -100,13 +100,13 @@ class Swift_Mime_Grammar
         self::$_grammar['no-fold-literal'] = '(?:\[(?:' . self::$_grammar['dtext'] .
                 '|' . self::$_grammar['quoted-pair'] . ')*\])';
 
-        //Message IDs
+        // Message IDs
         self::$_grammar['id-left'] = '(?:' . self::$_grammar['dot-atom-text'] . '|' .
                 self::$_grammar['no-fold-quote'] . ')';
         self::$_grammar['id-right'] = '(?:' . self::$_grammar['dot-atom-text'] . '|' .
                 self::$_grammar['no-fold-literal'] . ')';
 
-        //Addresses, mailboxes and paths
+        // Addresses, mailboxes and paths
         self::$_grammar['local-part'] = '(?:' . self::$_grammar['dot-atom'] . '|' .
                 self::$_grammar['quoted-string'] . ')';
         self::$_grammar['dcontent'] = '(?:' . self::$_grammar['dtext'] . '|' .
@@ -122,7 +122,9 @@ class Swift_Mime_Grammar
 
     /**
      * Get the grammar defined for $name token.
-     * @param  string $name execatly as written in the RFC
+     *
+     * @param string $name exactly as written in the RFC
+     *
      * @return string
      */
     public function getDefinition($name)
@@ -138,6 +140,7 @@ class Swift_Mime_Grammar
 
     /**
      * Returns the tokens defined in RFC 2822 (and some related RFCs).
+     *
      * @return array
      */
     public function getGrammarDefinitions()
@@ -147,6 +150,7 @@ class Swift_Mime_Grammar
 
     /**
      * Returns the current special characters used in the syntax which need to be escaped.
+     *
      * @return array
      */
     public function getSpecials()
@@ -156,16 +160,16 @@ class Swift_Mime_Grammar
 
     /**
      * Escape special characters in a string (convert to quoted-pairs).
-     * @param  string   $token
-     * @param  string[] $include additonal chars to escape
-     * @param  string[] $exclude chars from escaping
+     *
+     * @param string   $token
+     * @param string[] $include additional chars to escape
+     * @param string[] $exclude chars from escaping
+     *
      * @return string
      */
     public function escapeSpecials($token, $include = array(), $exclude = array())
     {
-        foreach (
-            array_merge(array('\\'), array_diff(self::$_specials, $exclude), $include) as $char)
-        {
+        foreach (array_merge(array('\\'), array_diff(self::$_specials, $exclude), $include) as $char) {
             $token = str_replace($char, '\\' . $char, $token);
         }
 
