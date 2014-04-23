@@ -38,7 +38,7 @@ $(function() {
                             
                             function init() {
                                 if (!$('#blog-markdown-editor').length) {
-                                    that.container = $('<div id="blog-markdown-editor"></div>').insertAfter(textarea);
+                                    that.container = $('<div id="blog-markdown-editor"></div>').appendTo("#post_text_wrapper");
                                     that.container.wrap('<div class="ace"></dvi>');
                                 } else {
                                     that.container = $('#blog-markdown-editor').show();
@@ -174,7 +174,7 @@ $(function() {
 
                             if (!$('#post-no-markdown-markup-yet').length) {
                                 var div = $('<div class="block triple-padded" id="post-no-markdown-markup-yet"><p class="align-center">' + $('#markdown_plugin_text_no_markup_yet').html() + 
-                                        '<br><br><input type="button" value="'+$('#markdown_plugin_text_generate').text()+'" /></p></div>').insertAfter(that.textarea);
+                                        '<br><br><input type="button" value="'+$('#markdown_plugin_text_generate').text()+'" /></p></div>').appendTo("#post_text_wrapper");
                                 div.find('input[type=button]').click(function() {
                                     div.hide();
                                     var updated_markdown_text = toMarkdown(post_content.val().trim());

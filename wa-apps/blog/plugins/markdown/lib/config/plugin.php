@@ -4,7 +4,7 @@ return array(
     'name' => /*_wp*/('Markdown'),
     'description' => /*_wp*/('Enables support for editing blog posts using the Markdown syntax'),
     'vendor' => 'webasyst',
-    'version' => '1.0.0',
+    'version' => '1.0.1',
     'img' => 'img/markdown.png',
     'handlers' => array(
         'backend_post_edit' => 'backendPostEdit',
