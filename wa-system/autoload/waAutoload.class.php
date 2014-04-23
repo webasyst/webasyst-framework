@@ -281,6 +281,7 @@ class waAutoload
         'waContactFieldValuesModel' => 'webasyst/lib/models/waContactFieldValues.model.php',
         'waCountryModel'           => 'webasyst/lib/models/waCountry.model.php',
         'waGroupModel'             => 'webasyst/lib/models/waGroup.model.php',
+        'waLogModel'          => 'webasyst/lib/models/waLog.model.php',
         'waLoginLogModel'          => 'webasyst/lib/models/waLoginLog.model.php',
         'waUserGroupsModel'        => 'webasyst/lib/models/waUserGroups.model.php',
         'waRegionModel'            => 'webasyst/lib/models/waRegion.model.php',

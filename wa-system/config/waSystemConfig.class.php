@@ -173,8 +173,7 @@ class waSystemConfig
 
     public function getHostUrl()
     {
-            $https = isset($_SERVER['HTTPS']) ? $_SERVER['HTTPS'] : '';
-            if (strtolower($https) == 'on') {
+            if (waRequest::isHttps()) {
                 $url = 'https://';
             } else {
                 $url = 'http://';

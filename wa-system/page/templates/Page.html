@@ -3,11 +3,9 @@
 <script src="{$wa_url}wa-content/js/jquery-plugins/ibutton/jquery.ibutton.min.js"></script>
 {/if}
 
-<link type="text/css" rel="stylesheet" href="{$wa_url}wa-content/js/elrte/elrte.min.css"/>
-<link type="text/css" rel="stylesheet" href="{$wa_url}wa-content/js/elrte/elrte-wa.css"/>
-<script src="{$wa_url}wa-content/js/elrte/elrte.min.js"></script>
-<script src="{$wa_url}wa-content/js/elrte/elrte-wa.js"></script>
-{if $lang!='en'}<script src="{$wa_url}wa-content/js/elrte/i18n/elrte.{$lang}.js"></script>{/if}
+<link type="text/css" rel="stylesheet" href="{$wa_url}wa-content/js/redactor/redactor.css">
+<script src="{$wa_url}wa-content/js/redactor/redactor.min.js"></script>
+{if $lang!='en'}<script src="{$wa_url}wa-content/js/redactor/{$lang}.js"></script>{/if}
 
 {if $options.js.ace}
 <script src="{$wa_url}wa-content/js/ace/ace.js"></script>
@@ -27,7 +25,7 @@
 <script src="{$wa_url}wa-content/js/jquery-ui/jquery.ui.droppable.min.js"></script>
 
 {if $options.js.editor}
-<script src="{$wa_url}wa-content/js/jquery-wa/wa.elrte.ace.js?v{$wa->version()}"></script>
+<script src="{$wa_url}wa-content/js/jquery-wa/editor.js?v{$wa->version()}"></script>
 {/if}
 
 <style>
@@ -50,7 +48,7 @@
     a.wa-page-link:hover .count i.icon10 { display: block; }
     .wa-page-gray-toolbar { background: #EEE; padding-left: 15px; padding-bottom: 13px; }
     .wa-page-gray-toolbar h2 { font-family: 'Lucida Grande'; }
-    .wa-page-save-panel { position: fixed; bottom: 0; left: 0; right: 0; background: #eee; padding-left: 470px; z-index: 1}
+    .wa-page-save-panel { position: fixed; bottom: 0; left: 0; right: 0; background: #eee; padding-left: 470px; z-index: 9; }
 
     .block-pages ul li.drag-newposition.active { border-top: 2px solid #BB8; background: none; }
     .wa-editor-core-wrapper { background: white;}
@@ -371,6 +369,7 @@
         });
 
         $("li.drag-newposition", $('.block-pages ul')).liveDroppable({
+            accept: 'li.dr',
             tolerance: 'pointer',
             greedy: true,
             hoverClass: 'active',
@@ -425,6 +424,7 @@
         });
 
         $("li.dr a", $('.block-pages ul')).liveDroppable({
+            accept: 'li.dr',
             tolerance: 'pointer',
             greedy: true,
             out: function() {

@@ -42,33 +42,99 @@ class waAppConfig extends SystemConfig
         return $this->application;
     }
 
-    public function getLogActions()
+    public function getLogActions($full = false)
     {
         if ($this->log_actions === null) {
             $path = $this->getAppPath().'/lib/config/logs.php';
             if (file_exists($path)) {
                 $this->log_actions = include($path);
+                if ($full) {
+                    foreach ($this->log_actions as &$info) {
+                        if (!empty($info['name'])) {
+                            $info['name'] = _wd($this->getApplication(), $info['name']);
+                        }
+                    }
+                    unset($info);
+                }
             } else {
                 $this->log_actions = array();
             }
             // add system actions for design and pages
             if (!empty($this->info['themes'])) {
-                $actions = array('template_add', 'template_edit', 'template_delete',
-                    'theme_upload', 'theme_download', 'theme_delete', 'theme_reset', 'theme_duplicate', 'theme_rename', );
-                foreach ($actions as $action) {
+                $actions = array(
+                    'template_add' => array(
+                        'name' => _ws('added a new template')
+                    ), 
+                    'template_edit' => array(
+                        'name' => _ws('edited template')
+                    ), 
+                    'template_delete' => array(
+                        'name' => _ws('deleted template')
+                    ),
+                    'theme_upload' => array(
+                        'name' => _ws('uploaded a new theme')
+                    ), 
+                    'theme_download' => array(
+                        'name' => _ws('downloaded theme')
+                    ), 
+                    'theme_delete' => array(
+                        'name' => _ws('deleted theme')
+                    ), 
+                    'theme_reset' => array(
+                        'name' => _ws('reset theme settings')
+                    ), 
+                    'theme_duplicate' => array(
+                        'name' => _ws('create theme duplicate')
+                    ), 
+                    'theme_rename' => array(
+                        'name' => _ws('renamed theme')
+                    ), 
+                );
+                foreach ($actions as $action => $info) {
                     if (!isset($this->log_actions[$action])) {
-                        $this->log_actions[$action] = array();
+                        $this->log_actions[$action] = $info;
                     }
                 }
             }
             if (!empty($this->info['pages'])) {
-                $actions = array('page_add', 'page_edit', 'page_delete', 'page_move');
-                foreach ($actions as $action) {
+                $actions = array(
+                    'page_add' => array(
+                        'name' => _ws('added a new page')
+                    ),
+                    'page_edit' => array(
+                        'name' => _ws('edited a website page')
+                    ),
+                    'page_delete' => array(
+                        'name' => _ws('deleted page')
+                    ),
+                    'page_move' => array(
+                        'name' => _ws('moved page')
+                    )
+                );
+                foreach ($actions as $action => $info) {
                     if (!isset($this->log_actions[$action])) {
-                        $this->log_actions[$action] = array();
+                        $this->log_actions[$action] = $info;
                     }
                 }
             }
+            $this->log_actions['login'] = array(
+                'name' => _ws('logged in')
+            );
+            $this->log_actions['logout'] = array(
+                'name' => _ws('logged out')
+            );
+            $this->log_actions['signup'] = array(
+                'name' => _ws('signed up')
+            );
+            $this->log_actions['my_profile_edit'] = array(
+                'name' => _ws('edited profile in customer portal')
+            );
+            $this->log_actions['access_disable'] = array(
+                'name' => _ws('enabled access for contact')
+            );
+            $this->log_actions['access_enable'] = array(
+                'name' => _ws('disabled access for contact')
+            );
         }
         return $this->log_actions;
     }

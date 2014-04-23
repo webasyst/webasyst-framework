@@ -56,8 +56,8 @@
                 </ul>
             </div>
             {/if}
-            <h4>{$file.id|escape} {if $file.parent}<span class="hint">[s`parent theme file`]</span>{/if}</h4>
-            <span id="wa-design-desc" class="hint">{$file.description|escape}</span>
+            <h4>{$file.id|escape} {if !empty($file.parent)}<span class="hint">[s`parent theme file`]</span>{/if}</h4>
+            <span id="wa-design-desc" class="hint">{if isset($file.description)}{$file.description|escape}{/if}</span>
 
             {if !empty($file.custom)}
             <div id="wa-design-settings" style="{if $file.id}display: none; {/if}">

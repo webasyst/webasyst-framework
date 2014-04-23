@@ -323,6 +323,11 @@ HTML;
         return waRequest::request($name, $default);
     }
 
+    public function cookie($name, $default = null)
+    {
+        return waRequest::cookie($name, $default);
+    }
+
     public function param($name, $default = null)
     {
         return waRequest::param($name, $default);
@@ -384,7 +389,8 @@ HTML;
         if (!$title) {
             return wa()->getResponse()->getTitle();
         } else {
-            return wa()->getResponse()->setTitle($title);
+            wa()->getResponse()->setTitle($title);
+            return '';
         }
     }
 
@@ -454,6 +460,11 @@ HTML;
         } elseif (func_num_args() == 2) {
             self::$params[$key] = $value;
         }
+    }
+
+    public function session($key, $value = null)
+    {
+        return $this->storage($key, $value);
     }
 
     public function storage($key, $value = null)
@@ -827,18 +838,18 @@ HTML;
             return '';
         }
         $html = '<div class="wa-auth-adapters"><ul>';
-        $url = wa()->getRootUrl(false, true).'oauth.php?app='.$this->app().'&provider=';
+        $url = wa()->getRootUrl(false, true).'oauth.php?app='.$this->app().'&amp;provider=';
         foreach ($adapters as $adapter) {
             /**
              * @var waAuthAdapter $adapter
              */
-            $html .= '<li><a href="'.$url.$adapter->getId().'"><img alt="'.$adapter->getName().'" src="'.$adapter->getIcon().'">'.$adapter->getName().'</a></li>';
+            $html .= '<li><a href="'.$url.$adapter->getId().'"><img alt="'.$adapter->getName().'" src="'.$adapter->getIcon().'"/>'.$adapter->getName().'</a></li>';
         }
         $html .= '</ul><p>';
         $html .= _ws("Authorize either by entering your contact information, or through one of the websites listed above.");
         $html .= '</p></div>';
         $html .= <<<HTML
-<script>
+<script type="text/javascript">
 $("div.wa-auth-adapters a").click(function () {
     var left = (screen.width - 600) / 2;
     var top = (screen.height - 400) / 2;

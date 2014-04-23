@@ -161,6 +161,11 @@ class waDateTime
         }
         waLocale::loadByDomain("webasyst", $locale);
 
+        $old_locale = waLocale::getLocale();
+        if ($locale != $old_locale) {
+            wa()->setLocale($locale);
+        }
+
         if ($format === 'humandatetime') {
             if (preg_match("/^[0-9]+$/", $time)) {
                 $time = date("Y-m-d H:i:s", $time);
@@ -190,10 +195,14 @@ class waDateTime
                 }
             }
 
-            return  $result.' '.self::date(self::getFormat('time', $locale), $time, $timezone, $locale);
+            $result = $result.' '.self::date(self::getFormat('time', $locale), $time, $timezone, $locale);
+        } else {
+            $result = self::date(self::getFormat($format, $locale), $time, $timezone, $locale);
         }
-
-        return self::date(self::getFormat($format, $locale), $time, $timezone, $locale);
+        if ($locale != $old_locale) {
+            wa()->setLocale($old_locale);
+        }
+        return $result;
     }
 
     public static function getFormat($format, $locale = null)

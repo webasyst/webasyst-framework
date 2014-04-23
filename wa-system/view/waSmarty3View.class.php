@@ -18,7 +18,7 @@ require_once realpath(dirname(__FILE__).'/../').'/vendors/smarty3/Smarty.class.p
 class waSmarty3View extends waView
 {
     protected $postfix = '.html';
-    
+
     /**
      * @var Smarty
      */
@@ -36,10 +36,10 @@ class waSmarty3View extends waView
         parent::__construct($system, $options);
 
         if (isset($options['auto_literal'])) {
-            $this->smarty->auto_literal =  $options['auto_literal'];
+            $this->smarty->auto_literal = $options['auto_literal'];
         }
         if (isset($options['left_delimiter'])) {
-            $this->smarty->left_delimiter =  $options['left_delimiter'];
+            $this->smarty->left_delimiter = $options['left_delimiter'];
         }
         if (isset($options['right_delimiter'])) {
             $this->smarty->right_delimiter = $options['right_delimiter'];
@@ -60,7 +60,7 @@ class waSmarty3View extends waView
 
 
     }
-    
+
     public function setOptions($options)
     {
         foreach ($options as $k => $v) {
@@ -78,12 +78,10 @@ class waSmarty3View extends waView
 
     protected function prepare()
     {
-           $this->smarty->compile_id = isset($this->options['compile_id']) ?
-               wa()->getApp()."_".$this->options['compile_id'] :
-               wa()->getApp()."_".wa()->getLocale();
-           parent::prepare();
+        $this->setCompileId();
+        parent::prepare();
     }
-        
+
     public function assign($name, $value = null, $escape = false)
     {
         if ($escape) {
@@ -95,56 +93,57 @@ class waSmarty3View extends waView
         }
         $this->smarty->assign($name, $value);
     }
-    
+
     public function clearAssign($name)
     {
-        $this->smarty->clearAssign($name);       
+        $this->smarty->clearAssign($name);
     }
-    
+
     public function clearAllAssign()
     {
         $this->smarty->clearAllAssign();
     }
 
-    public function getVars($name = null) 
+    public function getVars($name = null)
     {
         return $this->smarty->getTemplateVars($name);
     }
-       
-    public function fetch($template, $cache_id = null) 
+
+    public function fetch($template, $cache_id = null)
     {
         waConfig::set('current_smarty', $this);
         $this->prepare();
         return $this->smarty->fetch($template, $cache_id);
     }
 
-    public function display($template, $cache_id = null) 
+    public function display($template, $cache_id = null)
     {
         waConfig::set('current_smarty', $this);
         $this->prepare();
-           return $this->smarty->display($template, $cache_id);
-    }    
-    
+        $this->smarty->display($template, $cache_id);
+    }
+
     public function templateExists($template)
     {
         return $this->smarty->templateExists($template);
     }
-    
+
     public function isCached($template, $cache_id = null)
     {
+        $this->setCompileId();
         return $this->smarty->isCached($template, $cache_id);
     }
-    
+
     public function clearAllCache($exp_time = null, $type = null)
     {
         return $this->smarty->clearAllCache($exp_time, $type);
     }
-    
+
     public function clearCache($template, $cache_id = null)
     {
         return $this->smarty->clearCache($template, $cache_id);
     }
-    
+
     public function cache($lifetime)
     {
         if ($lifetime) {
@@ -154,7 +153,7 @@ class waSmarty3View extends waView
             $this->smarty->caching = false;
         }
     }
-    
+
     public function getCacheId()
     {
         if ($this->smarty->parent && $this->smarty->parent->getTemplateVars('cache_id')) {
@@ -167,18 +166,25 @@ class waSmarty3View extends waView
         }
         return $cache_id;
     }
-    
+
     public function setTemplateDir($path)
     {
         $this->smarty->setTemplateDir($path);
     }
-    
+
     public function autoescape($value = null)
     {
         if ($value === null) {
-            return $this->smarty->escape_html;   
+            return $this->smarty->escape_html;
         } else {
             return $this->smarty->escape_html = $value;
         }
+    }
+
+    private function setCompileId()
+    {
+        $this->smarty->compile_id = isset($this->options['compile_id']) ?
+            wa()->getApp()."_".$this->options['compile_id'] :
+            wa()->getApp()."_".wa()->getLocale();
     }
 }

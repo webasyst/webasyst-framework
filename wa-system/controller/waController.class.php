@@ -52,62 +52,30 @@ abstract class waController
     }
 
     /**
-     * Add record to log
+     * Add record to table wa_log
      *
      * @param string $action
-     * @param int $count
-     * @param int $contact_id
      * @param mixed $params
+     * @param int $subject_contact_id
+     * @param int $contact_id - actor contact id
+     * @throws waException
      * @return bool|int
      */
-    public function log($action, $count = null, $contact_id = null, $params = null)
+    public function logAction($action, $params = null, $subject_contact_id = null, $contact_id = null)
     {
-        /**
-         * @var waSystem
-         */
-        $system = waSystem::getInstance();
-        /**
-         * @var waAppConfig
-         */
-        $config = $system->getConfig();
-        if ($config instanceof waAppConfig) {
-            // Get actions of current application available to log
-            $actions = $config->getLogActions();
-            // Check action
-            if (!isset($actions[$action])) {
-                if (waSystemConfig::isDebug()) {
-                    throw new waException('Unknown action for log '.$action);
-                } else {
-                    return false;
-                }
-            }
-            if ($actions[$action] === false) {
-                return false;
-            }
-            $app_id = $system->getApp();
-        } else {
-            $app_id = 'wa-system';
-        }
-        // Save to database
-        $data = array(
-            'app_id' => $app_id,
-            'contact_id' => $contact_id === null ? $system->getUser()->getId() : $contact_id,
-            'datetime' => date("Y-m-d H:i:s"),
-            'action' => $action
-        );
-        if ($count !== null) {
-            $data['count'] = $count;
-        }
-        
-        if ($params !== null) {
-            $data['params'] = $params;
-        }
-
         if (!class_exists('waLogModel')) {
             wa('webasyst');
         }
         $log_model = new waLogModel();
-        return $log_model->insert($data);
+        return $log_model->add($action, $params, $subject_contact_id, $contact_id);
+    }
+
+    /**
+     * @deprecated
+     */
+    public function log($action, $count = null, $contact_id = null, $params = null)
+    {
+        return $this->logAction($action, $params, null, $contact_id);
     }
 
     /**

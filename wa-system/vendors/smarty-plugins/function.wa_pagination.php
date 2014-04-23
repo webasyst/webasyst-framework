@@ -16,7 +16,7 @@ function smarty_function_wa_pagination($params, &$smarty)
         return '';
     }
 
-    $url = isset($params['url']) ? $params['url'] : '';
+    $url = isset($params['url']) ? $params['url'] : wa()->getConfig()->getRequestUrl(false, true);
 
     $html = '<ul';
     $attrs = isset($params['attrs']) ? $params['attrs'] : array();

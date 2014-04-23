@@ -27,6 +27,8 @@ class waLocale
 
     protected static $init = false;
 
+    protected static $strings = array();
+
     protected function __construct() {}
     protected function __clone() {}
 
@@ -47,6 +49,16 @@ class waLocale
     public static function getLocale()
     {
         return self::$locale;
+    }
+
+    public static function setStrings(array $strings)
+    {
+        self::$strings = $strings;
+    }
+
+    public static function getString($id)
+    {
+        return ifset(self::$strings[$id]);
     }
 
     /**

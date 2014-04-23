@@ -111,4 +111,9 @@ class waAppViewHelper
         return new $class();
     }
 
+    public function config($name)
+    {
+        return $this->wa->getConfig()->getOption($name);
+    }
+
 }

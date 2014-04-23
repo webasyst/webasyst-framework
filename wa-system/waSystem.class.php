@@ -43,11 +43,6 @@ class waSystem
         }
     }
 
-    public static function isLoaded()
-    {
-        return self::$instances !== array();
-    }
-
     /**
      * @return SystemConfig|waAppConfig
      */
@@ -429,11 +424,36 @@ class waSystem
                 $route = null;
                 if ($this->getEnv() == 'frontend') {
                     // logout
+                    
                     if (null !== ( $logout_url = waRequest::get('logout'))) {
+                        
+                        // for getting app
+                        $this->getRouting()->dispatch();
+                        $app = waRequest::param('app');
+                        
+                        // For logging logout action
+                        $data = array(
+                            'app_id' => $app,
+                            'contact_id' => $this->getUser()->getId(),
+                            'datetime' => date("Y-m-d H:i:s"),
+                            'action' => 'logout',
+                            'params' => $this->getEnv()
+                        );
+                        
+                        // logout itself
                         $this->getAuth()->clearAuth();
                         if (!$logout_url) {
                             $logout_url = $this->config->getRequestUrl(false, true);
                         }
+                        
+                        // logging logout
+                        if (!class_exists('waLogModel')) {
+                            wa('webasyst');
+                        }
+                        $log_model = new waLogModel();
+                        $log_model->insert($data);
+                        
+                        // make redirect after logout
                         $this->getResponse()->redirect($logout_url);
                     }
 

@@ -1,19 +1,22 @@
 <?php
 
 /**
- * @see: http://vk.com/developers.php?oid=-1&p=%D0%90%D0%B2%D1%82%D0%BE%D1%80%D0%B8%D0%B7%D0%B0%D1%86%D0%B8%D1%8F_%D1%81%D0%B0%D0%B9%D1%82%D0%BE%D0%B2
+ * @see http://vk.com/dev/auth_sites
  */
 class vkontakteAuth extends waOAuth2Adapter
 {
     const OAUTH_URL = "https://oauth.vk.com/";
     const API_URL = "https://api.vk.com/method/";
+    const API_VERSION = '5.21';
 
+    /**
+     * @return string
+     * @see http://vk.com/dev/oauth_dialog
+     */
     public function getRedirectUri()
     {
         $url = $this->getCallbackUrl();
-        // &scope=
-        // http://vk.com/developers.php?oid=-1&p=%D0%9F%D1%80%D0%B0%D0%B2%D0%B0_%D0%B4%D0%BE%D1%81%D1%82%D1%83%D0%BF%D0%B0_%D0%BF%D1%80%D0%B8%D0%BB%D0%BE%D0%B6%D0%B5%D0%BD%D0%B8%D0%B9
-        return self::OAUTH_URL."authorize?client_id=".$this->app_id."&response_type=code&redirect_uri=".urlencode($url);
+        return self::OAUTH_URL."authorize?client_id=".$this->app_id."&scope=email&response_type=code&redirect_uri=".urlencode($url).'&v='.self::API_VERSION;
     }
 
     public function getControls()
@@ -26,7 +29,6 @@ class vkontakteAuth extends waOAuth2Adapter
 
     public function getAccessToken($code)
     {
-        // http://vk.com/developers.php?oid=-1&p=%D0%90%D0%B2%D1%82%D0%BE%D1%80%D0%B8%D0%B7%D0%B0%D1%86%D0%B8%D1%8F_%D1%81%D0%B0%D0%B9%D1%82%D0%BE%D0%B2#4. Получение access_token
         $url = self::OAUTH_URL."token?client_id=".$this->app_id."&code=".$code."&client_secret=".$this->app_secret."&redirect_uri=".urlencode($this->getCallbackUrl());
         $response = $this->get($url, $status);
         if (!$response) {
@@ -43,7 +45,6 @@ class vkontakteAuth extends waOAuth2Adapter
 
     public function getUserData($token)
     {
-        // http://vk.com/developers.php?oid=-1&p=users.get
         $url = self::API_URL."users.get?uid={$token['user_id']}&fields=contacts,sex,bdate,timezone,photo_medium&access_token={$token['access_token']}";
         $response = $this->get($url, $status);
         if ($response && $response = json_decode($response, true)) {
@@ -62,6 +63,9 @@ class vkontakteAuth extends waOAuth2Adapter
                     'lastname' => $response['last_name'],
                     'photo_url' => $response['photo_medium']
                 );
+                if (!empty($token['email'])) {
+                    $data['email'] = $token['email'];
+                }
                 if ($response['home_phone']) {
                     $data['phone.home'] = $response['home_phone'];
                 }
@@ -83,6 +87,6 @@ class vkontakteAuth extends waOAuth2Adapter
 
     public function getName()
     {
-        return 'ВКонтакте';
+        return wa()->getLocale() == 'en_US' ? 'VK' : 'ВКонтакте';
     }
 }

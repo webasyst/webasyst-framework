@@ -89,7 +89,7 @@ class waDesignActions extends waActions
             }
             $file = $theme->getFile($f);
             $file['id'] = $f;
-            if ($theme->parent_theme_id && $file['parent']) {
+            if ($theme->parent_theme_id && !empty($file['parent'])) {
                 if (!waTheme::exists($theme->parent_theme_id, $app_id)) {
                     $theme_id = $theme->parent_theme_id;
                     if (strpos($theme_id, ':') !== false) {
@@ -247,12 +247,13 @@ class waDesignActions extends waActions
                 if (!$theme->save()) {
                     $errors = _ws('Insufficient file access permissions to save theme settings');
                 } else {
-                    $this->log('template_add');
+                    $this->logAction('template_add', $file);
                 }
             }
         } else {
             if (waRequest::post('file') && $file != waRequest::post('file')) {
-                if (!$this->checkFile($file)) {
+                if (!$this->checkFile(waRequest::post('file'), $errors)) {
+                    $this->displayJson(array(), $errors);
                     return;
                 }
                 $theme->removeFile($file);
@@ -260,7 +261,7 @@ class waDesignActions extends waActions
                 if (!$theme->addFile($file, waRequest::post('description'))->save()) {
                     $errors = _ws('Insufficient file access permissions to save theme settings');
                 } else {
-                    $this->log('template_edit');
+                    $this->logAction('template_edit', $file);
                 }
             } else {
                 $f = $theme->getFile($file);
@@ -273,7 +274,7 @@ class waDesignActions extends waActions
                 if (!$theme->changeFile($file, waRequest::post('description'))) {
                     $errors = _ws('Insufficient file access permissions to save theme settings');
                 } else {
-                    $this->log('template_edit');
+                    $this->logAction('template_edit', $file);
                 }
             }
             @touch($theme->getPath().'/'.waTheme::PATH);
@@ -368,7 +369,7 @@ class waDesignActions extends waActions
         $theme = new waTheme($theme, $this->getAppId());
         $theme->removeFile($file);
         $theme->save();
-        $this->log('template_delete');
+        $this->logAction('template_delete', $file);
 
         $this->displayJson(array());
     }
@@ -479,22 +480,88 @@ class waDesignActions extends waActions
             $theme_id = waRequest::get('theme');
             $theme = new waTheme($theme_id);
             if ($theme->parent_theme && waRequest::post('parent_settings')) {
-                $theme->parent_theme['settings'] = waRequest::post('parent_settings');
-                $theme->parent_theme->save();
+                $this->saveThemeSettings($theme->parent_theme, waRequest::post('parent_settings'), waRequest::file('parent_image'));
             }
-            $theme['settings'] = waRequest::post('settings');
-            $theme->save();
+            $this->saveThemeSettings($theme, waRequest::post('settings'), waRequest::file('image'));
             $this->displayJson(array());
         } catch (waException $e) {
             $this->displayJson(array(), $e->getMessage());
         }
     }
 
+    /**
+     * @param waTheme $theme
+     * @param array $settings
+     * @param waRequestFileIterator $files
+     * @throws waException
+     */
+    protected function saveThemeSettings(waTheme $theme, $settings, $files)
+    {
+        $old_settings = $theme['settings'];
+        foreach ($files as $k => $f) {
+            /**
+             * @var waRequestFile $f
+             */
+            if (isset($old_settings[$k])) {
+                $error = '';
+                $filename = str_replace('*', $f->extension, $old_settings[$k]['filename']);
+                if ($this->uploadImage($f, $theme->path.'/'.$filename, $error)) {
+                    $settings[$k] = $filename;
+                } elseif ($error) {
+                    throw new waException($error);
+                }
+            }
+        }
+        $theme['settings'] = $settings;
+        $theme->save();
+    }
+
+    /**
+     * @param waRequestFile $f
+     * @param string $path
+     * @param string $error
+     * @return bool
+     */
+    protected function uploadImage(waRequestFile $f, $path, &$error = '')
+    {
+        if ($f->uploaded()) {
+            if (!$this->isImageValid($f, $error)) {
+                return false;
+            }
+            $path = str_replace('*', $f->extension, $path);
+            if (!$f->moveTo($path)) {
+                $error = sprintf(_w('Failed to upload file %s.'), $f->name);
+                return false;
+            }
+            return true;
+        } else {
+            if ($f->name) {
+                $error = sprintf(_w('Failed to upload file %s.'), $f->name).' ('.$f->error.')';
+            }
+            return false;
+        }
+    }
+
+    /**
+     * @param waRequestFile $f
+     * @param string $error
+     * @return bool
+     */
+    protected function isImageValid(waRequestFile $f, &$error = '')
+    {
+        $allowed = array('jpg', 'jpeg', 'png', 'gif');
+        if (!in_array(strtolower($f->extension), $allowed)) {
+            $error = sprintf(_ws("Files with extensions %s are allowed only."), '*.'.implode(', *.', $allowed));
+            return false;
+        }
+        return true;
+    }
+
     public function themeDownloadAction()
     {
         $theme_id = waRequest::get('theme');
         $theme = new waTheme($theme_id, $this->getAppId());
-        $this->log('theme_download');
+        $this->logAction('theme_download', $theme_id);
         $target_file = $theme->compress(wa()->getTempPath("themes"));
         waFiles::readFile($target_file, basename($target_file), false);
         waFiles::delete($target_file);
@@ -508,7 +575,7 @@ class waDesignActions extends waActions
             $id = $theme->move(waRequest::post('id'), array(
                 'name' => waRequest::post('name')
             ))->id;
-            $this->log('theme_rename');
+            $this->logAction('theme_rename');
             $this->displayJson(array('redirect'=>"{$this->design_url}theme={$id}&action=theme"));
         } catch (waException $e) {
             $this->displayJson(array(), $e->getMessage());
@@ -535,7 +602,7 @@ class waDesignActions extends waActions
         try {
             $theme = new waTheme(waRequest::post('theme'));
             $duplicate = $theme->duplicate();
-            $this->log('theme_duplicate');
+            $this->logAction('theme_duplicate', $theme->id);
             $this->displayJson(array('redirect'=>"{$this->design_url}theme={$duplicate->id}&action=theme"));
         } catch (waException $e) {
             $this->displayJson(array(), $e->getMessage());
@@ -552,7 +619,7 @@ class waDesignActions extends waActions
             if ($parent && waRequest::post('parent')) {
                 $parent->brush();
             }
-            $this->log('theme_reset');
+            $this->logAction('theme_reset', $theme->id);
             $this->displayJson(array());
         } catch (waException $e) {
             $this->displayJson(array(), $e->getMessage());
@@ -565,7 +632,7 @@ class waDesignActions extends waActions
             $theme_id = waRequest::post('theme');
             $theme = new waTheme($theme_id);
             $theme->purge();
-            $this->log('theme_delete');
+            $this->logAction('theme_delete', $theme_id);
             $this->displayJson(array('redirect'=>$this->design_url,'theme_id'=>$theme_id));
         } catch (waException $e) {
             $this->displayJson(array(), $e->getMessage());
@@ -581,7 +648,7 @@ class waDesignActions extends waActions
             if ($file->uploaded()) {
                 try {
                     $theme = waTheme::extract($file->tmp_name);
-                    $this->log('theme_upload');
+                    $this->logAction('theme_upload', $theme->id);
                     $this->displayJson(array('theme' => $theme['id']));
                 } catch (Exception $e) {
                     waFiles::delete($file->tmp_name);

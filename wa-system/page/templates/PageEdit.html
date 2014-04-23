@@ -37,7 +37,7 @@
         </script>
         {/if}
         <div>
-            <h2>{if $page}{$page.name|escape}{if !$page.status} <span class="wa-page-draft">[s`draft`]</span>{/if}{else}[s`New page`]{/if}</h2>
+            <h2 class="wa-page-name">{if $page}{$page.name|escape}{if !$page.status} <span class="wa-page-draft">[s`draft`]</span>{/if}{else}[s`New page`]{/if}</h2>
             <div class="wa-page-urls small">
                 {if $page}
                     {if !empty($url)}
@@ -134,15 +134,12 @@
         </div>
     </div>
     <div class="wa-editor-core-wrapper">
-        <ul class="wa-page-wysiwyg-html-toggle">
-            <li><a id="wysiwyg" href="#">[s`WYSIWYG`]</a></li>
-            <li class="selected"><a id="html" href="#">HTML</a></li>
+        <ul class="wa-editor-wysiwyg-html-toggle">
+            <li class="selected"><a class="wysiwyg" href="#">[s`WYSIWYG`]</a></li>
+            <li><a class="html" href="#">HTML</a></li>
         </ul>
         <div style="clear:both">
             <textarea style="display:none" id="wa-page-content" name="info[content]">{if $page}{$page.content|escape}{/if}</textarea>
-            <div class="ace">
-                <div id="wa-ace-editor-container"></div>
-            </div>
         </div>
     </div>
     {if $options.save_panel}
@@ -179,13 +176,7 @@
                         if (el.children('b').length) {
                             el = el.children('b');
                         }
-                        if ($(".el-rte").length && $(".el-rte").is(':visible')) {
-                            try {
-                                $("#wa-page-content").elrte()[0].elrte.selection.insertHtml(el.text());
-                            } catch (e) {}
-                        } else {
-                            wa_editor.insert(el.text());
-                        }
+                        $('#wa-page-content').waEditor('insert', el.text());
                         return false;
                     });
                 </script>
@@ -214,10 +205,15 @@
             document.title = "[`New page`] — {$wa->appName()}";
             {/if}
         {/if}
-        waEditorInit({
-            upload_url: "{$upload_url}",
-            lang: "{$lang}"
+
+        $('#wa-page-content').waEditor({
+            lang: "{$lang}",
+            saveButton: '#wa-page-button',
+            uploadFields: {
+                '_csrf': "{waRequest::cookie('_csrf', '')}"
+            }
         });
+
 
         var iButtonInit = function () {
             $("#wa-page-v").iButton({
@@ -279,7 +275,7 @@
                     $("#wa-page-form").append('<input id="wa-page-form-translit" type="hidden" name="translit" value="1">');
                 }
             }
-            waEditorUpdateSource();
+            $('#wa-page-content').waEditor('sync');
             var form = $(this);
             var li = $(".block-pages ul li.selected");
             $("#wa-editor-status").html("<i class='icon16 loading'></i> [s`Saving...`]").fadeIn("slow");
@@ -307,7 +303,7 @@
                 if (response.data.add) {
                     waLoadPage(p.id);
                 } else {
-                    $(".wa-page-editor h2").html(p.name);
+                    $(".wa-page-editor h2.wa-page-name").html(p.name);
                 }
                 {if !empty($url)}
                 var page_url = '{$url|escape}' + p.url;

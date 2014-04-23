@@ -226,7 +226,7 @@ class waTheme implements ArrayAccess
                     }
 
                     $this->info['files'] = array();
-                    if ($files = $xml->files) {
+                    if ($files = $xml->{'files'}) {
                         /**
                          * @var SimpleXMLElement $files
                          */
@@ -236,6 +236,7 @@ class waTheme implements ArrayAccess
                                 $this->info['files'][$path] = array(
                                     'custom' => isset($file['custom']) && (string)$file['custom'] ? true : false
                                 );
+
                                 $this->info['files'][$path]['parent'] = isset($file['parent']) && (bool)$file['parent'] ? 1 : 0;
                                 if ($this->info['files'][$path]['parent']) {
                                     $this->info['files'][$path]['parent_exists'] = $parent_exists;
@@ -250,7 +251,7 @@ class waTheme implements ArrayAccess
                         ksort($this->info['files']);
                     }
                     $this->info['settings'] = array();
-                    if ($settings = $xml->settings) {
+                    if ($settings = $xml->{'settings'}) {
                         /**
                          * @var SimpleXMLElement $settings
                          */
@@ -263,27 +264,49 @@ class waTheme implements ArrayAccess
                                 'control_type' => isset($setting['control_type']) ? (string)$setting['control_type'] : 'text',
                                 'value'        => (string)$setting->{'value'},
                             );
+                            $s = & $this->info['settings'][$var];
+                            foreach ($setting->{'value'} as $value) {
+                                if ($value && ($locale = (string)$value['locale'])) {
+                                    if (!is_array($s['value'])) {
+                                        $s['value'] = array(
+                                            $s['value'],
+                                        );
+                                    }
+                                    $s['value'][$locale] = (string)$value;
+                                }
+                            }
                             foreach ($setting->{'name'} as $value) {
                                 if ($value && ($locale = (string)$value['locale'])) {
-                                    $this->info['settings'][$var]['name'][$locale] = (string)$value;
+                                    $s['name'][$locale] = (string)$value;
                                 }
                             }
                             if ($setting->{'options'}) {
                                 $this->info['settings'][$var]['options'] = array();
                                 foreach ($setting->{'options'}->children() as $option) {
-                                    $this->info['settings'][$var]['options'][(string)$option['value']] = array();
+                                    $s['options'][(string)$option['value']] = array();
                                     foreach ($option->{'name'} as $value) {
                                         if ($value && ($locale = (string)$value['locale'])) {
-                                            $this->info['settings'][$var]['options'][(string)$option['value']]['name'][$locale] = (string)$value;
+                                            $s['options'][(string)$option['value']]['name'][$locale] = (string)$value;
+                                        }
+                                    }
+                                    if ($option->{'description'}) {
+                                        foreach ($option->{'description'} as $value) {
+                                            if ($value && ($locale = (string)$value['locale'])) {
+                                                $s['options'][(string)$option['value']]['description'][$locale] = (string)$value;
+                                            }
                                         }
                                     }
                                 }
                             }
+                            if ($setting->{'filename'}) {
+                                $s['filename'] = (string)$setting->{'filename'};
+                            }
+                            unset($s);
                         }
                     }
 
                     $this->info['thumbs'] = array();
-                    if ($thumbs = $xml->thumbs) {
+                    if ($thumbs = $xml->{'thumbs'}) {
                         /**
                          * @var SimpleXMLElement $thumbs
                          */
@@ -295,6 +318,18 @@ class waTheme implements ArrayAccess
                         }
                     }
 
+                    $this->info['locales'] = array();
+                    if ($locales = $xml->locales) {
+                        /**
+                         * @var SimpleXMLElement $thumbs
+                         */
+                        foreach ($locales->children() as $locale) {
+                            $msgid = (string)$locale->{'msgid'};
+                            foreach ($locale->{'msgstr'} as $msgstr) {
+                                $this->info['locales'][$msgid][(string)$msgstr['locale']] = (string)$msgstr;
+                            }
+                        }
+                    }
                     break;
                 case 'php':
                     //deprecated
@@ -407,10 +442,10 @@ class waTheme implements ArrayAccess
 <!DOCTYPE theme PUBLIC "wa-app-theme" "http://www.webasyst.com/wa-content/xml/wa-app-theme.dtd" >
 <theme id="{$this->id}" system="0" vendor="unknown" author="unknown" app="{$this->app}" version="1.0.0" parent_theme_id="">
     <name locale="en_US">{$this->id}</name>
-    <description locale="en_US"></description>
+    <description locale="en_US">There's no description</description>
     <files>
     </files>
-    <about locale="en_US"></about>
+    <about locale="en_US">There's no about</about>
 </theme>
 XML;
             if ($as_dom) {
@@ -453,7 +488,6 @@ XML;
                                 $query = "/theme/{$field}[@locale='{$locale}']";
                                 if (!($node = $xpath->query($query)->item(0))) {
                                     $node = new DOMElement($field, $value);
-                                    //$xml_node->setAttribute('locale', $locale);
                                     $theme->appendChild($node);
                                     $node->setAttribute('locale', $locale);
                                 } else {
@@ -1109,13 +1143,23 @@ HTACCESS;
                 $s['name'] = isset($s['name']) ? self::prepareField($s['name']) : $var;
                 if (isset($s['options'])) {
                     foreach ($s['options'] as &$o) {
-                        if (isset($o['name'])) {
-                            $o = self::prepareField($o['name']);
+                        if ($s['control_type'] == 'radio') {
+                            $o['name'] = self::prepareField($o['name']);
+                            if (isset($o['description'])) {
+                                $o['description'] = self::prepareField($o['description']);
+                            }
                         } else {
-                            $o = '';
+                            if (isset($o['name'])) {
+                                $o = self::prepareField($o['name']);
+                            } else {
+                                $o = '';
+                            }
                         }
                     }
                     unset($o);
+                }
+                if (isset($s['value']) && is_array($s['value'])) {
+                    $s['value'] = self::getLocale($s['value']);
                 }
             }
             unset($s);
@@ -1128,6 +1172,18 @@ HTACCESS;
             return $settings;
         }
         return $this->settings;
+    }
+
+
+    public function getLocales()
+    {
+        $this->init();
+        $locale = wa()->getLocale();
+        $result = array();
+        foreach ($this->info['locales'] as $id => $str) {
+            $result[$id] = !empty($str[$locale]) ? $str[$locale] : null;
+        }
+        return $result;
     }
 
     private static function getLocale($data = array())
@@ -1160,6 +1216,12 @@ HTACCESS;
         return $themes;
     }
 
+    /**
+     * @param $domains
+     * @param $app_id
+     * @param $theme_id
+     * @return array|bool
+     */
     private static function getRoutingRules($domains, $app_id, $theme_id)
     {
         static $themes;

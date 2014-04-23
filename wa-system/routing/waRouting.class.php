@@ -151,8 +151,7 @@ class waRouting
                     $domain = 'www.'.$this->domain;
                 }
                 if (wa()->getEnv() == 'frontend' && isset($this->routes[$domain])) {
-                    $https = isset($_SERVER['HTTPS']) ? $_SERVER['HTTPS'] : '';
-                    $url = 'http'.(strtolower($https) == 'on' ? 's' : '').'://';
+                    $url = 'http'.(waRequest::isHttps()? 's' : '').'://';
                     $url .= $this->getDomainUrl($domain).'/'.wa()->getConfig()->getRequestUrl();
                     wa()->getResponse()->redirect($url, 301);
                 }
@@ -476,8 +475,7 @@ class waRouting
         $url = self::clearUrl($route['url']);
         if ($domain) {
             if ($domain == waRequest::server('HTTP_HOST')) {
-                $https = isset($_SERVER['HTTPS']) ? $_SERVER['HTTPS'] : '';
-                $https = strtolower($https) == 'on';
+                $https = waRequest::isHttps();
             } else {
                 $https = false;
             }

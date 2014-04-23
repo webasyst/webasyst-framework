@@ -188,12 +188,12 @@ return array(
         ),
     ),
     'wa_log' => array(
-        'id' => array('int', 11, 'null' => 0, 'autoincrement' => 1),
+        'id' => array('bigint', 20, 'null' => 0, 'autoincrement' => 1),
         'app_id' => array('varchar', 32, 'null' => 0),
         'contact_id' => array('int', 11, 'null' => 0),
         'datetime' => array('datetime', 'null' => 0),
         'action' => array('varchar', 255, 'null' => 0),
-        'count' => array('int', 11),
+        'subject_contact_id' => array('int', 11, 'null' => 1),
         'params' => array('text'),
         ':keys' => array(
             'PRIMARY' => 'id',

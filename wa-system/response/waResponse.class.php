@@ -6,7 +6,7 @@
  * @subpackage  response
  * @author      Webasyst LLC
  * @copyright   2014 Webasyst LLC
- * @license     http://webasyst.com/framework/license/ LGPL
+ * @license     http://www.webasyst.com/developers/ LGPL
  */
 class waResponse
 {
@@ -221,7 +221,7 @@ class waResponse
 
         // Added after all that was not erased
         if ($this->status !== null) {
-            header($_SERVER['SERVER_PROTOCOL'].' '.$this->status.' '.self::$statuses[$this->status]);
+            header(waRequest::server('SERVER_PROTOCOL', 'HTTP/1.0').' '.$this->status.' '.self::$statuses[$this->status]);
         }
 
         return $this;

@@ -42,18 +42,23 @@
     li.error a { color: red; }
 
     .wa-themes { background: url({$wa_url}wa-content/img/cloth-background-light.jpg); box-shadow: 0 6px 10px -5px #777 inset; }
-    .wa-themes ul.thumbs { padding: 40px 20px; margin-top: 0; }
+    .wa-themes ul.thumbs { padding: 25px 20px; margin-top: 0; }
     .wa-themes ul.thumbs li { text-align: center; margin-right: 5px; }
     .wa-themes ul.thumbs li a h5 { color: #000; margin-bottom: 10px; }
-    .wa-themes ul.thumbs li a .wa-theme-cover { width: 200px; height: 220px; overflow: hidden; box-shadow: 0 2px 9px #777; margin: 0 auto 10px; background: #fff; }
+    .wa-themes ul.thumbs li a .wa-theme-cover { width: 200px; height: 220px; overflow: hidden; box-shadow: 0 2px 9px #777; margin: 0 auto 10px; background: #fff; position: relative; }
+    .wa-themes ul.thumbs li a .wa-theme-cover .wa-in-use-badge { position: absolute; left: -12px; right: -12px; top: 76%; margin-top: -10px; background: #5a4; color: #fff; font-style: italic; padding: 5px; font-weight: bold; box-shadow: 0 1px 3px rgba(0,0,0,0.2); transform: rotate(-5deg); -webkit-transform: rotate(-5deg); -moz-transform: rotate(-5deg); -o-transform: rotate(-5deg); }
     .wa-themes ul.thumbs li a .wa-theme-cover span.hint { margin-top: 100px; display: block; }
     .wa-themes ul.thumbs li a:hover .wa-theme-cover { box-shadow: 0 4px 13px #666; }
     .wa-themes ul.thumbs li i.icon10 { display: none; }
-    .wa-themes ul.thumbs li:hover i.icon10 { display: inline-block; position: absolute; margin-left: 5px; display: none\9; }
+    .wa-themes ul.thumbs li:hover i.icon10 { display: inline-block; position: absolute; display: none\9; }
     .wa-themes ul.thumbs li strong { padding: 2px 4px 1px; color: #000; background: #ffb; }
-    .wa-themes ul.thumbs li strong.wa-theme-in-use { color: #fff; font-style: italic; background: #5a4; }
-    .wa-themes ul.thumbs li strong.wa-theme-installed { background: #aaa; color: #fff; }
+    .wa-themes ul.thumbs li .wa-theme-installed { color: #008000; display: inline-block; margin-left: -4px; padding: 2px 7px; }
+    .wa-themes ul.thumbs li .wa-theme-installed i.icon10 { position: static; display: inline-block !important; }
     .wa-themes .wa-price { color: #777; }
+
+    h5.wa-themes-group { padding-top: 20px; margin-left: 20px; text-transform: uppercase; color: #777; }    
+    .wa-themes-installed { background: rgba(0,0,0,0.15); }
+    .wa-themes-from-the-store { border-top: 2px dotted rgba(0,0,0,0.15); }
     
     .wa-theme-image-select { padding-left: 0; margin-top: 0; }
     .wa-theme-image-select li { list-style: none; display: inline-block; float: left\9; margin: 0 5px 5px 0; padding: 0; }
@@ -234,7 +239,7 @@
                         }
                     }
                     if (!a || !a.length) {
-                        url = "{$design_url}theme=" + t + '&file=index.html';
+                        url = "{$design_url}theme=" + t + '&action=theme';
                         a = $('#wa-theme-block-' + t + ' a[href="' + url + '"]');
                     }
                     a.click();
@@ -345,8 +350,6 @@
                             var tmp = params[j].split('=');
                             //console.log(tmp);
                             if (tmp[0] == 'theme') {
-                                console.log('test');
-                                console.log($('#wa-theme-list-' + tmp[1] + ' a span.wa-theme-name'));
                                 $("#wa-theme-active").text($('#wa-theme-list-' + tmp[1] + ' a span.wa-theme-name').text());
                                 $('#wa-design-sidebar .wa-theme-block').hide();
                                 $('#wa-theme-block-' + tmp[1]).show();

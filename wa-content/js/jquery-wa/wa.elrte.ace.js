@@ -82,30 +82,21 @@ function waEditorAceInit(options)
         session.setMode("ace/mode/smarty");
     }
     session.setUseWrapMode(true);
+    wa_editor.setOption("maxLines", 10000);
+    wa_editor.setAutoScrollEditorIntoView(true);
     wa_editor.renderer.setShowGutter(false);
     wa_editor.setShowPrintMargin(false);
-    wa_editor.setFontSize(navigator.appVersion.indexOf("Mac")!= -1 ? 13 : 14);
+    if (navigator.appVersion.indexOf('Mac') != -1) {
+        wa_editor.setFontSize(13);
+    } else if (navigator.appVersion.indexOf('Linux') != -1) {
+        wa_editor.setFontSize(15);
+    } else {
+        wa_editor.setFontSize(14);
+    }
     $('.ace_editor').css('fontFamily', '');
     session.setValue($('#' + options.id).hide().val());
     wa_editor.focus();
     wa_editor.navigateTo(0, 0);
-
-    var heightUpdateFunction = function(editor, editor_id) {
-
-        // http://stackoverflow.com/questions/11584061/
-        var newHeight = editor.getSession().getScreenLength() * editor.renderer.lineHeight + editor.renderer.scrollBar.getWidth();
-
-        newHeight *= 1.02; //slightly extend editor height
-
-        if (newHeight < 300) {
-            newHeight = 300;
-        }
-        $('#' + editor_id).height(newHeight.toString() + "px");
-
-        // This call is required for the editor to fix all of
-        // its inner structure for adapting to a change in size
-        editor.resize();
-    };
 
     wa_editor.commands.addCommands([{
         name: 'waSave',
@@ -128,7 +119,6 @@ function waEditorAceInit(options)
     // Whenever a change happens inside the ACE editor, update
     // the size again
     session.on('change', function() {
-        heightUpdateFunction(wa_editor, options.ace_editor_container);
         if(options.change_callback && (typeof(options.change_callback) == 'function')) {
             options.change_callback();
         }
@@ -137,13 +127,8 @@ function waEditorAceInit(options)
         }
     });
 
-    setTimeout(function() {
-        heightUpdateFunction(wa_editor, options.ace_editor_container);
-    }, 50);
-
     $(window).resize(function() {
         wa_editor.resize();
-        heightUpdateFunction(wa_editor, options.ace_editor_container);
     });
 }
 

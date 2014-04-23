@@ -12,6 +12,7 @@
  * @package wa-system
  * @subpackage controller
  */
+
 abstract class waViewAction extends waController
 {
     /**
@@ -93,7 +94,7 @@ abstract class waViewAction extends waController
         return $this->controller;
     }
 
-    public function setLayout(waLayout $layout=null)
+    public function setLayout(waLayout $layout = null)
     {
         if ($this->controller !== null && $this->controller instanceof waViewController) {
             $this->controller->setLayout($layout);
@@ -149,7 +150,7 @@ abstract class waViewAction extends waController
     public function display($clear_assign = true)
     {
         $this->view->cache($this->cache_time);
-        if ($this->cache_time && $this->isCached())  {
+        if ($this->cache_time && $this->isCached()) {
             return $this->view->fetch($this->getTemplate(), $this->cache_id);
         } else {
             if (!$this->cache_time && $this->cache_id) {
@@ -159,14 +160,17 @@ abstract class waViewAction extends waController
             $result = $this->view->fetch($this->getTemplate(), $this->cache_id);
             if ($clear_assign) {
                 $this->view->clearAllAssign();
-            }
+            }            
             return $result;
         }
     }
 
+    /**
+     *
+     * @return waLayout
+     */
     public function getLayout()
     {
         return $this->layout;
     }
 }
-

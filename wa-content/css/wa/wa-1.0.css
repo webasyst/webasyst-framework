@@ -380,7 +380,7 @@ input.long { min-width: 350px !important; width: 350px !important; }
 .field .value input[type="text"], .field .value input[type="password"], .field .value textarea { width: 30%; min-width: 200px; margin: 0; }
 .field .value textarea { min-width: 400px; height: 70px; }
 .field .value input.semi { width: 10%; min-width: 80px; }
-.field .value input.large { width: 35%; }
+.field .value input[type="text"].large, .field .value input[type="password"].large { width: 35%; }
 .field .value img.overhanging { position: absolute; left: -20px; }
 .field .value i.icon16.overhanging { position: absolute; left: -20px; margin: 0; top: 2px; }
 .field .value i.icon10.overhanging { position: absolute; margin-left: -17px; margin-right: 7px; }
@@ -857,6 +857,7 @@ i.icon16.hidden { display: none; }
 .icon16.facebook { background-position:-224px -112px; }
 .icon16.twitter { background-position:-208px -112px; }
 .icon16.google { background-position:-288px -112px; }
+.icon16.linkedin { background-position:-304px -112px; }
 .icon16.vkontakte { background-position:-240px -112px; }
 .icon16.livejournal { background-position:-256px -112px; }
 .icon16.picasa { background-position:-272px -112px; }
@@ -1028,3 +1029,15 @@ i.icon10 { background-repeat:no-repeat; background-image: url(../../../wa-conten
 #wa table.jqplot-table-legend,
 #wa table.jqplot-cursor-legend { border: 0; }
 #wa td.jqplot-table-legend > div { border: 0; }
+
+.wa-editor-wysiwyg-html-toggle { margin-right: 17px; margin-top: -20px; float: right; margin-bottom: 0; }
+.wa-editor-wysiwyg-html-toggle li { list-style: none;float: left;}
+.wa-editor-wysiwyg-html-toggle li.selected a { background: white;}
+.wa-editor-wysiwyg-html-toggle li a { display: block; color: #888; font-weight: bold; padding: 4px 12px 6px; text-decoration: none; font-size: 0.9em; }
+
+#wa .redactor_editor { border: none; }
+#redactor_modal footer { padding: 0 30px 20px; }
+#redactor_modal footer button { background: #fff !important; max-width: 33% !important; }
+#redactor_modal footer button.redactor_modal_action_btn { background: #6c3 !important; float: left; }
+#redactor_modal footer button.redactor_modal_delete_btn { color: red !important; }
+#redactor_modal footer button.redactor_modal_delete_btn:hover { color: white !important; background: red !important; }

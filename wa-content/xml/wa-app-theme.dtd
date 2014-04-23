@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!ELEMENT theme (name+,description*,files*,about*, settings?, thumbs?)>
+<!ELEMENT theme (name+,description*,files*,about*, settings?, thumbs?, locales?)>
 <!ATTLIST theme
 	id CDATA #REQUIRED
 	system (1|0) "0"
@@ -32,19 +32,30 @@
 >
 <!--Theme settings-->
 <!ELEMENT settings (setting+)>
-<!ELEMENT setting (value,name+,description*,options?)>
+<!ELEMENT setting (value,filename?,name+,description*,options?)>
 
 <!ATTLIST setting
         var CDATA #REQUIRED
-        control_type (text|select|checkbox|color|image|image_select) "text"
+        control_type (text|select|checkbox|radio|color|image|image_select) "text"
 >
 <!ELEMENT value (#PCDATA)>
+<!ELEMENT filename (#PCDATA)>
 <!ELEMENT options (option+)>
-<!ELEMENT option (name*)>
+<!ELEMENT option (name*,description*)>
 <!ATTLIST option
         value CDATA #IMPLIED
 >
 <!--List of allowed thumb sizes-->
 <!ELEMENT thumbs (thumb*)>
 <!ELEMENT thumb (#PCDATA)>
+
+<!--Theme strings-->
+<!ELEMENT locales (locale+)>
+<!ELEMENT locale (msgid,msgstr+)>
+<!ELEMENT msgid (#PCDATA)>
+<!ELEMENT msgstr (#PCDATA)>
+<!ATTLIST msgstr
+    locale CDATA #REQUIRED
+>
+
 

@@ -13,7 +13,9 @@
     <link rel="stylesheet" href="{$wa_url}wa-content/js/farbtastic/farbtastic.css" type="text/css" />
 
     <h4 class="heading">[s`Display settings`]</h4>
-    <form id="theme-settings" method="post" action="?module=design&action=themeSettings&theme={$theme.id}">
+    <iframe style="display: none" id="theme-settings-iframe" name="theme-settings-iframe"></iframe>
+    <form id="theme-settings" method="post" action="?module=design&action=themeSettings&theme={$theme.id}" enctype="multipart/form-data" target="theme-settings-iframe">
+        {$wa->csrf()}
         <div class="fields form">
             {foreach $settings as $s_var => $s}
             <div class="field">
@@ -23,6 +25,15 @@
                         <select name="{if !empty($s.parent)}parent_{/if}settings[{$s_var}]">
                             {html_options options=$s.options selected=ifset($s.value)}
                         </select>
+                    {elseif $s.control_type == 'radio'}
+                    {foreach $s.options as $v => $o}
+                        <label>
+                            <input {if ifset($s.value)==$v}checked{/if} type="radio" value="{$v}" name="{if !empty($s.parent)}parent_{/if}settings[{$s_var}]" > {$o.name}
+                            {if !empty($o.description)}
+                            <p class="hint">{$o.description}</p>
+                            {/if}
+                        </label>
+                    {/foreach}
                     {elseif $s.control_type == 'color'}
                         <input class="color" type="text" name="{if !empty($s.parent)}parent_{/if}settings[{$s_var}]" value="{$s.value}">
                     {elseif $s.control_type == 'checkbox'}
@@ -41,17 +52,20 @@
                         </ul>
                         <input type="hidden" name="{if !empty($s.parent)}parent_{/if}settings[{$s_var}]" value="{$s.value}">
                     {elseif $s.control_type == 'image'}
-                        <div class="wa-theme-image-upload">
-                            {if !empty($s.value)}
-                                {if !empty($s.parent)}
-                                    {$_url = $theme.parent_theme->getUrl()}
-                                {else}
-                                    {$_url = $theme->getUrl()}
-                                {/if}
-                                <img src="{$_url}{$s.value}">
+                        <input type="hidden" name="{if !empty($s.parent)}parent_{/if}settings[{$s_var}]" value="{ifset($s.value)}">
+                        <input type="file" name="{if !empty($s.parent)}parent_{/if}image[{$s_var}]">
+                        {if !empty($s.value)}
+                            {if !empty($s.parent)}
+                            {$_url = $theme.parent_theme->getUrl()}
+                            {else}
+                            {$_url = $theme->getUrl()}
                             {/if}
-                            <input type="file" name="{if !empty($s.parent)}parent_{/if}image[{$s_var}]">
-                        </div>
+                            <div class="image"><br>
+                                <img src="{$_url}{$s.value}?v{time()}">
+                                <br>
+                                <a class="small delete-image" href="#">[s`Delete`]</a>
+                            </div>
+                        {/if}
                     {else}
                         {if !$s.value || strlen($s.value) <= 50}
                         <input class="flexible" id="flex-settings-{$s@index}" type="text" name="{if !empty($s.parent)}parent_{/if}settings[{$s_var}]" value="{$s.value|escape}">
@@ -68,6 +82,7 @@
                     <div class="value no-shift">
                         <input type="submit" class="button green" value="[s`Save`]">
                         <span id="theme-settings-message" style="display: none"><i class="icon16 yes" style="margin-top: 0.5em;"></i> [s`Saved`]</span>
+                        <span id="theme-settings-error" class="errormsg" style="display: inline"></span>
                     </div>
                 </div>
             </div>
@@ -250,15 +265,26 @@
     });
 
     $('#theme-settings').submit(function () {
-        var f = $(this);
-        $.post(f.attr('action'), f.serialize(), function (response) {
-            $("#theme-settings-message").fadeIn('slow', function () { $(this).fadeOut('slow'); });
-        }, "json");
-        return false;
+        $("#theme-settings-iframe").one('load', function () {
+            var response = $.parseJSON($(this).contents().find('body').html());
+            if (response.status == 'ok') {
+                $("#theme-settings-error").hide().empty();
+                $("#theme-settings-message").fadeIn('slow', function () { $(this).fadeOut('slow');});
+                waDesignLoad();
+            } else {
+                $("#theme-settings-error").html(response.errors ? response.errors : response);
+                $("#theme-settings-error").fadeIn("slow");
+            }
+        });
     });
 
     $(function () {
 
+        $('a.delete-image').click(function () {
+            $(this).closest('div.value').find("input:hidden").val('');
+            $(this).parent().remove();
+            return false;
+        });
 
         $('.wa-theme-image-select a').click(function () {
             var li = $(this).parent();

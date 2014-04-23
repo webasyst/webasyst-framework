@@ -284,7 +284,7 @@ class waPageActions extends waActions
                 $this->displayJson(array(), _ws('Error saving web page'));
                 return;
             }
-            $this->log('page_edit');
+            $this->logAction('page_edit', $id);
             $childs = $page_model->getChilds($id);
             if ($childs) {
                 $page_model->updateFullUrl($childs, $data['full_url'], $old['full_url']);
@@ -309,7 +309,7 @@ class waPageActions extends waActions
             $is_new = true;
             if ($id = $page_model->add($data)) {
                 $data['id'] = $id;
-                $this->log('page_add');
+                $this->logAction('page_add', $id);
             } else {
                 $this->displayJson(array(), _ws('Error saving web page'));
                 return;
@@ -404,7 +404,7 @@ class waPageActions extends waActions
             }
             // remove from database
             $page_model->delete($id);
-            $this->log('page_delete', 1 + count($childs));
+            $this->logAction('page_delete', $id);
         }
         $this->displayJson(array());
     }
@@ -420,9 +420,10 @@ class waPageActions extends waActions
                 'route' => waRequest::post('route'),
             );
         }
-        $result = $page_model->move(waRequest::post('id', 0, 'int'), $parent_id, waRequest::post('before_id', 0, 'int'));
+        $page_id = waRequest::post('id', 0, 'int');
+        $result = $page_model->move($page_id, $parent_id, waRequest::post('before_id', 0, 'int'));
         if ($result) {
-            $this->log('page_move');
+            $this->logAction('page_move', $page_id);
         }
         $this->displayJson($result, $result ? null: _w('Database error'));
     }
@@ -432,7 +433,7 @@ class waPageActions extends waActions
     {
         $path = wa()->getDataPath('img', true);
 
-        $response = array();
+        $response = '';
 
         if (!is_writable($path)) {
             $p = substr($path, strlen(wa()->getDataPath('', true)));
@@ -446,8 +447,16 @@ class waPageActions extends waActions
             }
             $errors = implode(" \r\n", $errors);
         }
-
-        $this->displayJson($response, $errors);
+        if (waRequest::get('filelink')) {
+            $this->getResponse()->sendHeaders();
+            if ($errors) {
+                echo json_encode(array('error' => $errors));
+            } else {
+                echo stripslashes(json_encode(array('filelink' => $response)));
+            }
+        } else {
+            $this->displayJson($response, $errors);
+        }
     }
 
     /**

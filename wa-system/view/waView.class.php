@@ -168,6 +168,12 @@ abstract class waView
         $this->assign('wa_theme_version', $theme->version());
         $theme_settings = $theme->getSettings(true);
 
+        if ($locales = $theme->getLocales()) {
+            waLocale::setStrings($locales);
+        } else {
+            waLocale::setStrings(array());
+        }
+
         $file = $theme->getFile($template);
         if ($parent_theme = $theme->parent_theme) {
             if (!empty($file['parent'])) {
