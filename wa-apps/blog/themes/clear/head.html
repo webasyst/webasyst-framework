@@ -11,10 +11,6 @@
 <link rel="{$role}" href="{$link}">
 {/foreach}
 
-<!-- rss -->
-{$rss=$wa->blog->rssUrl()}
-{if $rss}<link rel="alternate" type="application/rss+xml" title="[`RSS`] &mdash; {$wa->accountName()}" href="{$rss}">{/if}
-
 {* @event (frontend_action_default|frontend_action_post|frontend_action_page|frontend_action_error).%plugin_id%.head *}
 {foreach $frontend_action as $plugin => $output}
     {if !empty($output.head)}{$output.head}{/if}
