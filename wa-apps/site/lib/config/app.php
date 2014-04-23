@@ -9,12 +9,15 @@ return array(
         16 => 'img/site16.png'
     ),
     'frontend' => true,
-    'version'=>'2.1.0',
+    'version'=>'2.1.1',
     'critical'=>'2.0.0',
     'vendor' => 'webasyst',
     'system' => true,
     'rights' => true,
+    'plugins' => true,
     'themes' => true,
     'pages' => true,
-    'auth' => true
+    'auth' => true,
+    'csrf' => true,
+    'my_account' => true,
 );

@@ -23,7 +23,10 @@ class siteFrontendController extends waViewController
             }
         }
 
-        $this->setLayout(new siteFrontendLayout());
+        if (!waRequest::isXMLHttpRequest()) {
+            $this->setLayout(new siteFrontendLayout());
+        }
+
         try {
             $this->executeAction(new siteFrontendAction($page));
         } catch (Exception $e) {

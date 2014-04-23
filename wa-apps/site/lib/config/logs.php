@@ -1,34 +1,40 @@
 <?php
 
 return array(
-    'page_add' => array(),
-    'page_edit' => array(),
-    'page_delete' => array(),
-    'page_move' => array(),
+    'site_add' => array(
+        'name' => /*_w*/('added a new site')
+    ),
+    'site_edit' => array(
+        'name' => /*_w*/('edited site settings')
+    ),
+    'site_delete' => array(
+        'name' => /*_w*/('deleted site')
+    ),
 
-    'template_add' => array(),
-    'template_edit' => array(),
-    'template_delete' => array(),
+    'file_upload' => array(
+        'name' => /*_w*/('uploaded file')
+    ),
+    'file_delete' => array(
+        'name' => /*_w*/('deleted file')
+    ),
 
-    'theme_upload' => array(),
-    'theme_download' => array(),
-    'theme_delete' => array(),
-    'theme_reset' => array(),
-    'theme_duplicate' => array(),
-    'theme_rename' => array(),
+    'block_add' => array(
+        'name' => /*_w*/('added a new block for site')
+    ),
+    'block_edit' => array(
+        'name' => /*_w*/('edited block for site')
+    ),
+    'block_delete' => array(
+        'name' => /*_w*/('deleted block for site')
+    ),
 
-    'site_add' => array(),
-    'site_edit' => array(),
-    'site_delete' => array(),
-
-    'file_upload' => array(),
-    'file_delete' => array(),
-
-    'block_add' => array(),
-    'block_edit' => array(),
-    'block_delete' => array(),
-
-    'route_add' => array(),
-    'route_edit' => array(),
-    'route_delete' => array(),
+    'route_add' => array(
+        'name' => /*_w*/('added a new routing rule')
+    ),
+    'route_edit' => array(
+        'name' => /*_w*/('edited routing rule')
+    ),
+    'route_delete' => array(
+        'name' => /*_w*/('deleted routing rule')
+    ),
 );

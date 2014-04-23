@@ -80,6 +80,7 @@
 		<div class="dialog-background"> </div>
 		<div class="dialog-window" style="height: 122px; min-height: 122px; width: 350px; min-width: 350px">
 			<form id="s-upload-form" method="post" action="?module=files&action=upload" enctype="multipart/form-data">
+            {$wa->csrf()}
 			<div class="dialog-content">
 					<div class="dialog-content-indent">
 						<h1>[`Upload files`]</h1>
@@ -93,7 +94,8 @@
 			<div class="dialog-buttons">
 					<div class="dialog-buttons-gradient">
 							<input type="submit" class="button green" value="[`Upload`]">
-							[`or`] <a href="#" class="inline-link cancel"><b><i>[`cancel`]</i></b></a> </div>
+							[`or`] <a href="#" class="inline-link cancel"><b><i>[`cancel`]</i></b></a>
+                    </div>
 			</div>
 			</form>
 		</div>

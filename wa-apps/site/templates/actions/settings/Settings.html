@@ -16,7 +16,7 @@
 <div>
 	<div class="block double-padded fields form">
 		<form target="s-settings-iframe" id="s-settings-form" method="post" action="?module=settings&action=save&domain_id={$domain_id}" enctype="multipart/form-data">
-
+        {$wa->csrf()}
 		<div class="field-group">
 		<div class="field">
 			<div class="name bold">[`Domain name`]</div>

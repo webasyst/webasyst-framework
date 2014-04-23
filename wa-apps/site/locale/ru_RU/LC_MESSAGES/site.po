@@ -1326,3 +1326,63 @@ msgstr ""
 "Сайт с доменным именем %s уже зарегистрирован в этой установке Вебасиста. "
 "Удалите сайт %s (приложение «Сайт» > %s > Настройки), чтобы подключить этот "
 "домен к другому сайту."
+
+msgid "My profile"
+msgstr "Мой профиль"
+#: /wa-apps/site/lib/actions/domains/siteDomainsSave.controller.php:18
+msgid "Website with a domain name %s is already registered in this Webasyst installation. Delete %s website (Site app > Settings > %s) to be able to use it's domain name for another website."
+msgstr ""
+
+#: /wa-apps/site/lib/actions/frontend/siteFrontendMy.action.php:18
+#: /wa-apps/site/lib/actions/frontend/siteFrontendMy.action.php:28
+msgid "My account"
+msgstr ""
+
+#: /wa-apps/site/themes/default/my.profile.html:8
+msgid "Contact information successfully updated!"
+msgstr ""
+
+
+#: /wa-apps/site/lib/config/logs.php:5
+msgid "added a new site"
+msgstr "добавил новый сайт"
+
+#: /wa-apps/site/lib/config/logs.php:6
+msgid "edited site settings"
+msgstr "отредактировал настройки сайта"
+
+#: /wa-apps/site/lib/config/logs.php:11
+msgid "deleted site"
+msgstr "удалил сайт"
+
+#: /wa-apps/site/lib/config/logs.php:15
+msgid "uploaded file"
+msgstr "загрузил файл"
+
+#: /wa-apps/site/lib/config/logs.php:18
+msgid "deleted file"
+msgstr "удалил файл"
+
+#: /wa-apps/site/lib/config/logs.php:22
+msgid "added a new block for site"
+msgstr "добавил новый блок для сайта"
+
+#: /wa-apps/site/lib/config/logs.php:25
+msgid "edited block for site"
+msgstr "отредактировал блок для сайта"
+
+#: /wa-apps/site/lib/config/logs.php:28
+msgid "deleted block for site"
+msgstr "удалил блок на сайте"
+
+#: /wa-apps/site/lib/config/logs.php:32
+msgid "added a new routing rule"
+msgstr "добавил новое правило маршрутизации"
+
+#: /wa-apps/site/lib/config/logs.php:35
+msgid "edited routing rule"
+msgstr "отредактировал правило маршрутизации"
+
+#: /wa-apps/site/lib/config/logs.php:38
+msgid "deleted routing rule"
+msgstr "удалил правило маршрутизации"

@@ -1236,3 +1236,22 @@ msgstr ""
 #: /wa-apps/site/lib/actions/settings/siteSettingsSave.controller.php:19
 msgid "Website with a domain name %s is already registered in this Webasyst installation. Delete %s website (Site app > Settings > %s) to be able to use it's domain name for another website."
 msgstr ""
+
+#: /wa-apps/site/lib/actions/frontend/siteFrontendMy.action.php:18
+#: /wa-apps/site/lib/actions/frontend/siteFrontendMy.action.php:28
+msgid "My account"
+msgstr ""
+
+#: /wa-apps/site/lib/actions/frontend/siteFrontendMy.action.php:18
+#: /wa-apps/site/themes/default/my.nav.html:3
+#: /wa-apps/site/themes/default/my.profile.html:5
+msgid "My profile"
+msgstr ""
+
+#: /wa-apps/site/lib/actions/settings/siteSettingsSave.controller.php:19
+msgid "Website with a domain name %s is already registered in this Webasyst installation. Delete %s website (Site app > %s > Settings) to be able to use it's domain name for another website."
+msgstr ""
+
+#: /wa-apps/site/themes/default/my.profile.html:8
+msgid "Contact information successfully updated!"
+msgstr ""

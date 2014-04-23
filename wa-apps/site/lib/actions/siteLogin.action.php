@@ -20,4 +20,11 @@ class siteLoginAction extends waLoginAction
         }
     }
 
+    protected function afterAuth()
+    {
+        $this->getStorage()->del('auth_referer');
+        $url = waRequest::param('secure') ? $this->getConfig()->getCurrentUrl() : wa()->getRouteUrl('/frontend/my');
+        $this->redirect($url);
+    }
+
 }

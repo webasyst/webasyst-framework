@@ -63,9 +63,9 @@ $.wa.site = {
 					if (i < 2) {
 						if (i === 0) {
 							actionName = h;
-						} else if ((actionName == 'files')) {
-							attrMarker = i;
-							break;							
+						} else if (actionName == 'files') {
+                            this.filesAction(hash.slice(i).join('/'));
+							return;
 						} else if (parseInt(h, 10) != h && h.indexOf('=') == -1) {
 							actionName += h.substr(0,1).toUpperCase() + h.substr(1);
 						} else {
@@ -107,7 +107,7 @@ $.wa.site = {
         } else {
             $('#s-save-panel input').replaceWith('<input id="wa-page-button" type="button" class="button green" value="' + $_('Save') + '">');
             $("#s-content").load('?module=pages', 'domain_id=' + this.domain + (id ? '&id=' + id : ''), function () {
-                $(".s-scrollable-part").scrollTop(0);
+// deprecated                $(".s-scrollable-part").scrollTop(0);
                 $.wa.site.savePanel(true, 's-page-editor');
                 $.wa.site.active($("#s-link-pages"));
                 $('#wa-page-button').click(function () {
@@ -148,7 +148,7 @@ $.wa.site = {
             var p = this.parseParams(params);
             $('#s-save-panel input').replaceWith('<input id="wa-design-button" type="button" class="button green" value="' + $_('Save') + '">');
             $("#s-content").load('?module=design', 'domain_id=' + this.domain, function () {
-                $(".s-scrollable-part").scrollTop(0);
+// deprecated                $(".s-scrollable-part").scrollTop(0);
                 $.wa.site.savePanel(!params || params.indexOf('action=') == -1);
                 $.wa.site.active($("#s-link-design"));
                 $('#wa-design-button').click(function () {
@@ -165,7 +165,7 @@ $.wa.site = {
             waDesignLoad();
         } else {
             $("#s-content").load('?module=design', 'domain_id=' + this.domain, function () {
-                $(".s-scrollable-part").scrollTop(0);
+// deprecated                $(".s-scrollable-part").scrollTop(0);
                 $.wa.site.active($("#s-link-design"));
                 waDesignLoad();
             });
@@ -196,20 +196,22 @@ $.wa.site = {
 	filesAction: function (load, path) {
 		this.savePanel(false);
         var page = 1;
-        if (path && path.substr(0, 1) == '?') {
-            path = path.substr(1).split('=');
-            if (path[0] == 'page') {
-                page = path[1];
-            }
-            path = '';
-
-        }
 		if (load === true) {
 			var params = path || this.filesPath();
 		} else {
 			var params = Array.prototype.join.call(arguments, '/');
 			load = false;
 		}
+
+        if (params && (params.indexOf('?') != -1) && params.substr(-1) != '/') {
+            var tmp = params.substr(params.indexOf('?') + 1);
+            params = params.substr(0, params.indexOf('?'));
+            tmp = tmp.split('=');
+            if (tmp[0] == 'page') {
+                page = tmp[1];
+            }
+        }
+
 		//s-files-tree
 		var loadFiles =  function () {
 			$.wa.site.active($("#s-link-files"));
@@ -242,7 +244,7 @@ $.wa.site = {
 			loadFiles();
 		} else {
 			$("#s-content").load('?module=files', 'domain_id=' + this.domain, function () {
-                $(".s-scrollable-part").scrollTop(0);
+// deprecated                $(".s-scrollable-part").scrollTop(0);
 				$("#s-files-tree i.overhanging").click(function () {
 					var i = $(this);
 					if (i.hasClass('rarr')) {
@@ -403,7 +405,7 @@ $.wa.site = {
 	blocksAction: function (params) {
         $('#s-save-panel input').replaceWith('<input id="s-editor-save-button" type="button" class="button green" value="' + $_('Save') + '">');
 		$("#s-content").load('?module=blocks', params, function () {
-            $(".s-scrollable-part").scrollTop(0);
+// deprecated            $(".s-scrollable-part").scrollTop(0);
             waEditorAceInit({
                 id: 'content',
                 save_button: 's-editor-save-button'
@@ -453,7 +455,7 @@ $.wa.site = {
 	savePanel: function (show, add_class) {
 		if (show) {
 			$("#s-save-panel").show();
-			$("#wa div.s-scrollable-part").removeClass('s-no-editor');
+// deprecated			$("#wa div.s-scrollable-part").removeClass('s-no-editor');
             $("#s-save-panel input").removeClass('yellow').addClass('green');
 			$("#wa-editor-status").empty();
             if (add_class) {
@@ -463,7 +465,7 @@ $.wa.site = {
             }
 		} else {
 			$("#s-save-panel").hide();
-			$("#wa div.s-scrollable-part").addClass('s-no-editor');
+// deprecated			$("#wa div.s-scrollable-part").addClass('s-no-editor');
 		}
 	},
 	
@@ -552,13 +554,7 @@ $(function () {
 		if (el.children('b').length) {
 			el = el.children('b');
 		}
-		if ($(".el-rte").length && $(".el-rte").is(':visible')) {
-			try {
-				$("#content").elrte()[0].elrte.selection.insertHtml(el.text());
-			} catch (e) {}
-		} else {
-			wa_editor.insert(el.text());
-		}
+        $('#wa-page-content').waEditor('insert', el.text());
 		return false;
 	});
 	$("#wa-app > div.s-sidebar a, #wa-header a").live('click', function () {
