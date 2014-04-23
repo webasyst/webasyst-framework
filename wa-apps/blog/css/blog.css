@@ -83,16 +83,20 @@ span.b-yellow { background: #ffd; }
 .b-edit-options { margin: 60px 15px 0 -15px /* below the shadow */; background: #eee; }
 .b-edit-options input.b-toolbar-text-input { width: 100%; }
 .b-edit-options select.b-toolbar-select { max-width: 100%;}
-.b-post-editor { border-top: 1px solid #ccc; /* border-bottom: 1px solid #ccc; */ }
-.b-post-editor .b-post-editor-toggle { margin-right: 17px; margin-top: -26px; float: right; margin-bottom:0 }
+.b-post-editor { border-top: 1px solid #ccc; position: relative; }
+.b-post-editor .b-post-editor-toggle { margin-right: 17px; margin-top: -25px; right: 5px; margin-bottom:0; position: absolute; }
 .b-post-editor .b-post-editor-toggle li { list-style: none; float: left; }
 .b-post-editor .b-post-editor-toggle li a { display: block; color: #888; font-weight: bold; padding: 6px 12px 6px; text-decoration: none; font-size: 0.9em; border: 1px solid transparent; }
 .b-post-editor .b-post-editor-toggle li.selected a { background: #fff; border-top: 1px solid #ccc; border-left: 1px solid #ccc; border-right: 1px solid #ccc; }
 .b-post-editor  .b-post-editor-wrapper { background: #fff; }
+.b-post-editor .redactor_toolbar:after { clear:none; } 
 i.b-post-save-indicator { margin-top: 8px; }
 #post-custom-parameters { width: 100%; height: 70px; }
 
 .el-rte .toolbar ul li.wa_post_cut { background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAWtJREFUeNqcUk1Kw0AUfpMMSbBIFnVTj6AIbgXX/oDdiBcQutALCC5CCgHPILjwAMWFdNELuC2uXHiCbmIxtbRNm2Sc79UUTFw0Pvh4k7zv++a9mRHtdrtJRA2qHgPf97sySZLtIAjuq6o9z7tClmmaklKKsW4IIQg6NlgsFiLLssoG0LGBHoENgHXDMAyCjtfaqdLuCPCh425ad6Gif8bDbV3I0eiTHr1GaQQpJUO3yiiOcBkM9KpORhiGTIjj+BfQ5vF1n3OxBj50bDYcfvDuuBbANE1yHId3Rw0Z3/ifc8BHjTsdjycrg7z1/fPeqt2ds2fOr08nNJ1OeQ0+dMxXSq6cESD1O0dk2zbtNnv01j3ltvE/5ywfn1wa2LbLc+aHCCLgui6hNpvNKIqi0jWixga12hafqmVZJVK/c8AGxRr40LHBfPT+cnFTPyzf8uQHf8WcoCPaIzzHDY1NDbPCG8JhfOkuJ98CDADjd/TkDTgrUQAAAABJRU5ErkJggg==) 50% 50% no-repeat; }
+.redactor_toolbar li a.re-wa_post_cut { background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYAgMAAACdGdVrAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAAlQTFRFAAAA////AAAAc8aDcQAAAAJ0Uk5TAAB2k804AAAASklEQVQI12NYBQYMMEo0NDQUQaHKdYEgwyo2EGRYwQqEjAwLWBJYEhgYGkIYQJA1EQQZWMGSDGCFqxiiwBoZslANC0WxQRQPDwwA4JZHKcHWuIEAAAAASUVORK5CYII=) 50% 50% no-repeat; background-size: 12px; }
+
+.b-elrte-wa-split-vertical { color: #aaa; }
 
 /* comments
 ----------- */

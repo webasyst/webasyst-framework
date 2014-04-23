@@ -8,7 +8,7 @@
             //dateFormat: 'yy-mm-dd',
             dateMonthCount: 2,
             dateShowWeek: false,
-            cut_link_label_defaul: '',
+            cut_link_label_default: '',
             version: '1.0'
         },
 
@@ -800,12 +800,12 @@
         cut_str: '<!-- more %text%-->',
         htmlToWysiwyg: function(text) {
             return text.replace(/<!--[\s]*?more[\s]*?(text[\s]*?=[\s]*?['"]([\s\S]*?)['"])*[\s]*?-->/g, function(cut_str, p1, p2) {
-                return p2 ? $.wa_blog.editor.cut_hr.replace('%text%', p2) : $.wa_blog.editor.cut_hr.replace('%text%', $.wa_blog.editor.options.cut_link_label_defaul);
+                return p2 ? $.wa_blog.editor.cut_hr.replace('%text%', p2) : $.wa_blog.editor.cut_hr.replace('%text%', $.wa_blog.editor.options.cut_link_label_default);
             });
         },
         wysiwygToHtml: function(text) {
             return text.replace(/<span[\s\S]*?id=['"]elrte-wa_post_cut['"][\s\S]*?>([\s\S]*?)<\/span>/g, function(cut_hr, p1) {
-                if (!p1 || p1 == '<br>' || p1 == $.wa_blog.editor.options.cut_link_label_defaul) {
+                if (!p1 || p1 == '<br>' || p1 == $.wa_blog.editor.options.cut_link_label_default) {
                     return $.wa_blog.editor.cut_str.replace('%text%', '');
                 } else {
                     return $.wa_blog.editor.cut_str.replace('%text%', 'text="' + p1 + '" ');
@@ -822,7 +822,7 @@
 
                         this.inited = true;
                         var options = $.wa_blog.editor.options;
-                        this.container = $('<div id="blog-ace-editor"></div>').insertAfter(textarea);
+                        this.container = $('<div id="blog-ace-editor"></div>').appendTo("#post_text_wrapper");
                         this.container.wrap('<div class="ace"></div>');
                         var height = $.wa_blog.editor.calcEditorHeight();
 
@@ -932,76 +932,79 @@
                     return Math.max(height, $.wa_blog.editor.getMinEditorHeight()) + $.wa_blog.editor.getExtHeightShift();
                 }
             },
-            elrte : {
+            redactor: {
                 options: {},
                 inited:false,
                 callback:false,
                 init : function(textarea) {
                     if(!this.inited) {
-                        var options = $.wa_blog.editor.options;
-                        elRTE.prototype.options.lang = wa_lang;
-                        elRTE.prototype.options.wa_image_upload = '?module=post&action=image';
-                        elRTE.prototype.options.wa_image_upload_path = wa_img_upload_path;
-                        elRTE.prototype.beforeSave = function () {};
-                        elRTE.prototype.options.toolbars.blogToolbar = ['wa_style', 'alignment', 'colors', 'format', 'indent', 'lists', 'wa_image', 'wa_links', 'wa_elements', 'wa_tables', 'direction', 'wa_post_cut'];
-
-                        this.inited = $.wa_blog.editor.cloneTextarea(textarea,'#' + options['content_id']+'_wrapper','elrte');
-                        var height = $.wa_blog.editor.calcEditorHeight();
-
-                        var sidebarHeight = $('#post-form .sidebar:first .b-edit-options').height();
-                        var minHeight = sidebarHeight - 83;
-                        if (height < minHeight) {
-                            height = minHeight;
-                        }
-
-                        $('#'+this.inited).elrte({
-                            height: height,
-                            cssfiles: [wa_url + "wa-content/css/wa/wa-1.0.css?v"+$.wa_blog.editor.options.version, wa_url + "wa-apps/blog/css/blog.css?v"+$.wa_blog.editor.options.version],
-                            toolbar: 'blogToolbar',
+                        
+                        var options = $.extend({
+                            //boldTag: 'b',
+                            //italicTag: 'i',
+                            deniedTags: false,
+                            minHeight: 300,
+                            buttonSource: false,
+                            paragraphy: false,
+                            convertDivs: false,
+                            toolbarFixedBox: true,
+                            buttons: ['html', 'formatting', 'bold', 'italic', 'underline', 'deleted', 'unorderedlist', 'orderedlist',
+                                'outdent', 'indent', 'image', 'video', 'file', 'table', 'link', 'alignment', '|',
+                                'horizontalrule'],
+                            plugins: ['fontcolor', 'cut'],
                             lang: wa_lang,
-                            width: "100%"
-                        });
-                        $('.workzone, iframe', '#post_text_wrapper').height(this.correctEditorHeight(height));
-
+                            imageUpload: '?module=pages&action=uploadimage&filelink=1',
+                            uploadFields: textarea.data('uploadFields'),
+                            //imageUpload: '?module=post&action=image',
+                            imageUploadErrorCallback: function(json) {
+                                alert(json.error);
+                            },
+                            syncBeforeCallback: function(html) {
+                                html = html.replace(/{[a-z$][^}]*}/gi, function (match, offset, full) {
+                                    var i = full.indexOf("</script", offset + match.length);
+                                    var j = full.indexOf('<script', offset + match.length);
+                                    if (i == -1 || (j != -1 && j < i)) {
+                                        match = match.replace(/&gt;/g, '>');
+                                        match = match.replace(/&lt;/g, '<');
+                                        match = match.replace(/&amp;/g, '&');
+                                        match = match.replace(/&quot;/g, '"');
+                                    }
+                                    return match;
+                                });
+                                return html;
+                            }
+                        }, (options || {}));
+                        
+                        textarea.redactor(options);
+                        textarea.redactor('getBox').css('z-index', 0);
+                        textarea.redactor('getToolbar').css('z-index', 1);
+                        
+                        this.inited = true;
                     }
                     return true;
                 },
                 show: function(textarea) {
                     var text = $.wa_blog.editor.htmlToWysiwyg(textarea.val());
-                    $('#'+this.inited).elrte('val', text);
-                    $(".el-rte").css({'width':'100%'}).show();
-
-                    if(!this.callback) {
-                        $('.el-rte iframe').contents()
-                        .keydown($.wa_blog.editor.editorKeyCallback())
-                        .keypress($.wa_blog.editor.editorKeyCallback(true))
-                        .keyup(function(e) {
-                            //all dialogs should be closed when Escape is pressed
-                            if (e.keyCode == 27) {
-                                $(".dialog:visible").trigger('esc');
-                            }
-                        });
-                        this.callback = true;
-                    }
-                    $('.el-rte iframe').contents().find('body').focus();
+                    textarea.val(text);
+                    
+                    $('.redactor_box').show();
+                    textarea.redactor('getEditor').find('img[src*="$wa_url"]').each(function () {
+                        var s = decodeURIComponent($(this).attr('src'));
+                        $(this).attr('data-src', s);
+                        $(this).attr('src', s.replace(/\{\$wa_url\}/, wa_url));
+                    });
+                    textarea.redactor('set', textarea.val());
+                    textarea.redactor('observeStart');
+                    textarea.redactor('focusEnd');
                 },
-                hide: function() {
-                    $(".el-rte").hide();
+                hide: function(textarea) {
+                    $('.redactor_box').hide();
                 },
                 update : function(textarea) {
                     if(this.inited) {
-                        textarea.val($('#editor_container_elrte').elrte('val'));
+                        //textarea.val($('#editor_container_elrte').elrte('val'));
+                        textarea.val(textarea.redactor('get'));
                     }
-                },
-                correctEditorHeight: function(height) {
-                    var decrease = 0;
-                    $('#post_text_wrapper .el-rte').children('div:not(:hidden)').each(function() {
-                        if (this.className != 'workzone') {
-                            decrease += $(this).outerHeight(true);
-                        }
-                    });
-
-                    return Math.max(height, $.wa_blog.editor.getMinEditorHeight()) - decrease + $.wa_blog.editor.getExtHeightShift();
                 }
             }
         },

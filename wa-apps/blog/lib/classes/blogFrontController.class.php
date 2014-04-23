@@ -29,6 +29,7 @@ class blogFrontController extends waFrontController
                 if ($params['blog_url_type'] > 0) {
                     if ($blog = $blog_model->getByField(array('id' => $params['blog_url_type'], 'status' => blogBlogModel::STATUS_PUBLIC))) {
                         $blogs[] = $blog;
+                        $main_page = true;
                     }
                 } elseif (strlen($blog_url)) {
                     if ($blog = $blog_model->getBySlug($blog_url, true, array('id', 'name', 'url'))) {
@@ -65,8 +66,13 @@ class blogFrontController extends waFrontController
                 } else {
                     throw new waException(_w('Blog not found'), 404);
                 }
-                $this->system->getResponse()->setTitle(htmlentities($title, ENT_QUOTES, 'utf-8'));
-
+                
+                wa()->getResponse()->setTitle($title);
+                if ($main_page) {
+                    wa()->getResponse()->setMeta('keywords', waRequest::param('meta_keywords'));
+                    wa()->getResponse()->setMeta('description', waRequest::param('meta_description'));
+                }
+                
 
                 waRequest::setParam($params);
                 parent::execute($plugin, $module, $action, $default);

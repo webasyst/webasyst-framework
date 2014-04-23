@@ -38,8 +38,8 @@ class blogBlogSettingsAction extends waViewAction
             }
 
             $settings['id'] = $blog_id;
-            $validate_massages = $this->validate($settings);
-            if (!$validate_massages) {
+            $validate_messages = $this->validate($settings);
+            if (!$validate_messages) {
 
                 //TODO handle settings
                 if ($blog_id) {
@@ -67,7 +67,7 @@ class blogBlogSettingsAction extends waViewAction
                     'blog' => $blog_id
                 ));
             } else {
-                $this->view->assign('messages', $validate_massages);
+                $this->view->assign('messages', $validate_messages);
                 $draft_data = $settings;
             }
         }

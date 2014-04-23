@@ -490,7 +490,7 @@ msgid "Frontend settings"
 msgstr ""
 
 #: /wa-apps/blog/templates/actions/settings/Settings.html:63
-msgid "Homepage title"
+msgid "Homepage &lt;title&gt;"
 msgstr ""
 
 #: /wa-apps/blog/templates/actions/settings/Settings.html:72
@@ -1305,4 +1305,190 @@ msgstr ""
 #: /wa-apps/blog/themes/sidebar/content.html:100
 #: /wa-apps/blog/themes/vk/content.html:23
 msgid "Start by writing a post in your <a href=\"%s\">blog backend</a>."
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/backend/Backend.html:251
+#: /wa-apps/blog/templates/actions-mobile/backend/Backend.html:75
+msgid "%d post of %d"
+msgid_plural "%d posts of %d"
+msgstr[0] ""
+msgstr[1] ""
+
+#: /wa-apps/blog/templates/actions/backend/Backend.html:256
+#: /wa-apps/blog/templates/actions-mobile/backend/Backend.html:79
+#: /wa-apps/blog/themes/_webasystcom/stream.html:79
+#: /wa-apps/blog/themes/_webasystcom/stream.html:84
+#: /wa-apps/blog/themes/ascetic/sidebar.html:69
+#: /wa-apps/blog/themes/ascetic/stream.html:21
+#: /wa-apps/blog/themes/ascetic/stream.html:26
+#: /wa-apps/blog/themes/ascetic/stream_posts.html:64
+#: /wa-apps/blog/themes/ascetic/stream_search.html:20
+#: /wa-apps/blog/themes/clear/navigation.html:51
+#: /wa-apps/blog/themes/clear/stream.html:21
+#: /wa-apps/blog/themes/clear/stream.html:26
+#: /wa-apps/blog/themes/clear/stream_posts.html:70
+#: /wa-apps/blog/themes/clear/stream_search.html:20
+#: /wa-apps/blog/themes/custom/content.html:48
+#: /wa-apps/blog/themes/custom/stream.html:21
+#: /wa-apps/blog/themes/custom/stream.html:26
+#: /wa-apps/blog/themes/custom/stream_posts.html:70
+#: /wa-apps/blog/themes/custom/stream_search.html:20
+#: /wa-apps/blog/themes/default/main.html:81
+#: /wa-apps/blog/themes/default/stream.html:22
+#: /wa-apps/blog/themes/default/stream.html:27
+#: /wa-apps/blog/themes/default/stream_posts.html:72
+#: /wa-apps/blog/themes/default/stream_search.html:20
+#: /wa-apps/blog/themes/facebook/navigation.html:72
+#: /wa-apps/blog/themes/facebook/stream.html:21
+#: /wa-apps/blog/themes/facebook/stream.html:26
+#: /wa-apps/blog/themes/facebook/stream_posts.html:70
+#: /wa-apps/blog/themes/facebook/stream_search.html:20
+#: /wa-apps/blog/themes/nifty/navigation.html:48
+#: /wa-apps/blog/themes/nifty/stream.html:21
+#: /wa-apps/blog/themes/nifty/stream.html:26
+#: /wa-apps/blog/themes/nifty/stream_posts.html:70
+#: /wa-apps/blog/themes/nifty/stream_search.html:20
+#: /wa-apps/blog/themes/pinboard/navigation.html:56
+#: /wa-apps/blog/themes/pinboard/stream.html:21
+#: /wa-apps/blog/themes/pinboard/stream.html:26
+#: /wa-apps/blog/themes/pinboard/stream_posts.html:70
+#: /wa-apps/blog/themes/pinboard/stream_search.html:20
+#: /wa-apps/blog/themes/sidebar/content.html:62
+#: /wa-apps/blog/themes/sidebar/stream.html:21
+#: /wa-apps/blog/themes/sidebar/stream.html:26
+#: /wa-apps/blog/themes/sidebar/stream_posts.html:70
+#: /wa-apps/blog/themes/sidebar/stream_search.html:20
+#: /wa-apps/blog/themes/vk/navigation.html:72
+#: /wa-apps/blog/themes/vk/stream.html:21
+#: /wa-apps/blog/themes/vk/stream.html:26
+#: /wa-apps/blog/themes/vk/stream_posts.html:70
+#: /wa-apps/blog/themes/vk/stream_search.html:20
+msgid "%d post"
+msgid_plural "%d posts"
+msgstr[0] ""
+msgstr[1] ""
+
+#: /wa-apps/blog/templates/actions/backend/Backend.html:188
+#: /wa-apps/blog/templates/actions/backend/Backend.html:191
+#: /wa-apps/blog/themes/ascetic/comments.html:24
+#: /wa-apps/blog/themes/ascetic/stream_posts.html:34
+#: /wa-apps/blog/themes/clear/comments.html:24
+#: /wa-apps/blog/themes/clear/stream_posts.html:35
+#: /wa-apps/blog/themes/custom/comments.html:24
+#: /wa-apps/blog/themes/custom/stream_posts.html:35
+#: /wa-apps/blog/themes/default/comments.html:21
+#: /wa-apps/blog/themes/default/stream_posts.html:35
+#: /wa-apps/blog/themes/facebook/comments.html:24
+#: /wa-apps/blog/themes/facebook/stream_posts.html:35
+#: /wa-apps/blog/themes/nifty/comments.html:24
+#: /wa-apps/blog/themes/nifty/stream_posts.html:35
+#: /wa-apps/blog/themes/pinboard/comments.html:24
+#: /wa-apps/blog/themes/pinboard/stream_posts.html:35
+#: /wa-apps/blog/themes/sidebar/comments.html:24
+#: /wa-apps/blog/themes/sidebar/stream_posts.html:35
+#: /wa-apps/blog/themes/vk/comments.html:24
+#: /wa-apps/blog/themes/vk/stream_posts.html:35
+msgid "%d comment"
+msgid_plural "%d comments"
+msgstr[0] ""
+msgstr[1] ""
+
+#: /wa-apps/blog/templates/actions/comments/Comments.html:57
+msgid "%d comment of %d (including deleted)"
+msgid_plural "%d comments of %d (including deleted)"
+msgstr[0] ""
+msgstr[1] ""
+
+#: /wa-apps/blog/templates/actions/comments/Comments.html:61
+msgid "Loading next %d comment..."
+msgid_plural "Loading next %d comments..."
+msgstr[0] ""
+msgstr[1] ""
+
+#: /wa-apps/blog/lib/cli/blogReminder.cli.php:89
+msgid "in %d day"
+msgid_plural "in %d days"
+msgstr[0] ""
+msgstr[1] ""
+
+#: /wa-apps/blog/lib/config/logs.php:5
+msgid "published blog post"
+msgstr ""
+
+#: /wa-apps/blog/lib/config/logs.php:8
+msgid "edited blog post"
+msgstr ""
+
+#: /wa-apps/blog/lib/config/logs.php:11
+msgid "deleted blog post"
+msgstr ""
+
+#: /wa-apps/blog/lib/config/logs.php:15
+msgid "added comment to blog post"
+msgstr ""
+
+#: /wa-apps/blog/lib/config/logs.php:18
+msgid "deleted comment to blog post"
+msgstr ""
+
+#: /wa-apps/blog/lib/config/logs.php:21
+msgid "restored comment to blog post"
+msgstr ""
+
+#: /wa-apps/blog/lib/config/logs.php:25
+msgid "created a new blog"
+msgstr ""
+
+#: /wa-apps/blog/lib/config/logs.php:28
+msgid "deleted blog"
+msgstr ""
+
+#: /wa-apps/blog/lib/config/logs.php:31
+msgid "modified blog settings"
+msgstr ""
+
+#: /wa-apps/blog/lib/config/site.php:90
+msgid "Homepage META Keywords"
+msgstr ""
+
+#: /wa-apps/blog/lib/config/site.php:94
+msgid "Homepage META Description"
+msgstr ""
+
+#: /wa-apps/blog/lib/config/site.php:98
+msgid "RSS feed title"
+msgstr ""
+
+#: /wa-apps/blog/themes/_webasystcom/stream.html:79
+#: /wa-apps/blog/themes/ascetic/stream.html:21
+#: /wa-apps/blog/themes/clear/stream.html:21
+#: /wa-apps/blog/themes/custom/stream.html:21
+#: /wa-apps/blog/themes/default/stream.html:22
+#: /wa-apps/blog/themes/facebook/stream.html:21
+#: /wa-apps/blog/themes/nifty/stream.html:21
+#: /wa-apps/blog/themes/pinboard/stream.html:21
+#: /wa-apps/blog/themes/sidebar/stream.html:21
+#: /wa-apps/blog/themes/vk/stream.html:21
+msgid "of %d post"
+msgid_plural "of %d posts"
+msgstr[0] ""
+msgstr[1] ""
+
+#: /wa-apps/blog/themes/default/main.html:36
+msgid "Follow %s"
+msgstr ""
+
+#: /wa-apps/blog/themes/default/main.html:40
+#: /wa-apps/blog/themes/default/main.html:40
+msgid "Facebook"
+msgstr ""
+
+#: /wa-apps/blog/themes/default/main.html:43
+#: /wa-apps/blog/themes/default/main.html:43
+msgid "Twitter"
+msgstr ""
+
+#: /wa-apps/blog/themes/default/main.html:50
+#: /wa-apps/blog/themes/default/main.html:50
+msgid "VK"
 msgstr ""

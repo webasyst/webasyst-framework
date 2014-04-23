@@ -264,7 +264,7 @@
           <div class="b-post-editor" id="post-editor">
             <ul class="b-post-editor-toggle">
               <li>
-                <a id="elrte" href="javascript:void(0);">[`WYSIWYG`]</a>
+                  <a id="redactor" href="javascript:void(0);">[`WYSIWYG`]</a>
               </li>
               <li>
                 <a id="ace" href="javascript:void(0);">[`HTML`]</a>
@@ -386,6 +386,10 @@
     <script type="text/javascript" src="{$wa_url}wa-content/js/jquery-ui/i18n/jquery.ui.datepicker-{$wa->locale()}.js"></script>
 {/if}
 
+<script src="{$wa_app_static_url}js/redactor_plugins.js"></script>
+<link type="text/css" rel="stylesheet" href="{$wa_url}wa-content/js/redactor/redactor.css">
+<script src="{$wa_url}wa-content/js/redactor/redactor.min.js"></script>
+{if $lang!='en'}<script src="{$wa_url}wa-content/js/redactor/{$lang}.js"></script>{/if}
 
 <script type="text/javascript" src="{$wa_url}wa-content/js/ace/ace.js"></script>
 <script type="text/javascript" src="{$wa_url}wa-content/js/elrte/elrte.min.js"></script>
@@ -395,7 +399,6 @@
 <script type="text/javascript" src="{$wa_url}wa-content/js/elrte/elrte-wa.js"></script>
 {wa_js file="js/blog-post-edit.min.js"}
 {$wa_app_static_url}js/postEdit.js
-{$wa_app_static_url}js/elrte-blog.js
 {/wa_js}
 
 <script type="text/javascript">
@@ -412,9 +415,14 @@
     'editor_id':'post_text',
     'wa_url':"{$wa_url}",
     'wa_app_static_url':"{$wa_app_static_url}",
-    'cut_link_label_defaul': "[`Continue reading →`]",
+    'cut_link_label_default': "[`Continue reading →`]",
     'version':'{$wa->version()}'
   }});
+  
+  $('#post_text').data('uploadFields', {
+    '_csrf': "{waRequest::cookie('_csrf', '')}"
+  });
+  
 </script>
 
 {foreach $smarty.capture as $name => $template}

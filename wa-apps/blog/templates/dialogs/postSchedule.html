@@ -22,10 +22,10 @@
         <p class="hint{if !$cron_schedule_time && !$last_schedule_cron_time} b-cron-error{/if}">
         {if $cron_schedule_time || $last_schedule_cron_time}
           <i class="icon10 yes"></i>
-          {if $cron_schedule_time}
-              {$cron_schedule_time|wa_datetime:'humandatetime'|string_format:'[`Cron is working properly. Latest execution time: %s`]'}
-          {else}
+          {if $last_schedule_cron_time}
               {$last_schedule_cron_time|wa_datetime:'humandatetime'|string_format:'[`Cron is working properly. Latest execution time: %s`]'}
+          {else}
+              {$cron_schedule_time|wa_datetime:'humandatetime'|string_format:'[`Cron is working properly. Latest execution time: %s`]'}
           {/if}
         {else}
           <i class="icon10 no"></i>

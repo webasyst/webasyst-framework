@@ -27,7 +27,8 @@ class blogScheduleCli extends waCliController
                 try {
                     waLog::log("Attempt publishing post with id [{$post['id']}]", $log_file);
                     $data = array(
-                    	"status" => blogPostModel::STATUS_PUBLISHED,
+                        "status" => blogPostModel::STATUS_PUBLISHED,
+                        "datetime" => date("Y-m-d H:i:s")
                     );
                     $r = $post_model->updateItem($post['id'], $data, $post);
                     waLog::log($r ? "success": "fail", $log_file);

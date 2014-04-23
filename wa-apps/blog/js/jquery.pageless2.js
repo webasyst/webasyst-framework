@@ -61,6 +61,9 @@
             page: currentPage++
         }, function (response, textStatus, jqXHR) {
             var html = response.data ? response.data.content : response;
+            if (typeof settings.prepareContent === 'function') {
+                html = settings.prepareContent(html);
+            }
             if (typeof settings.renderContent === 'function') {
                 settings.renderContent(html, $(settings.target));
             } else {

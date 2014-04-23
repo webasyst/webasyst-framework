@@ -178,9 +178,10 @@ class blogFrontendCommentController extends waJsonController
             $view = wa()->getView(array('template_dir' => $theme_path));
             $view->assign('comment', array_shift($comments));
 
-            $this->response['template']	 = $view->fetch($template);
-            $this->response['count_str'] = $count." "._w('comment', 'comments', $count);
-            $this->response['parent']	 = $this->parent_id;
+            $this->response['template']	  = $view->fetch($template);
+            $this->response['count_str']  = $count." "._w('comment', 'comments', $count);
+            $this->response['parent']	  = $this->parent_id;
+            $this->response['comment_id'] = $this->comment_id;
         } else {
             throw new waException(_w('Comment not found'), 404);
         }

@@ -12,7 +12,7 @@ msgstr ""
 "%10)>=2)&&((n%10)<=4))&&(((n%100)<10)||((n%100)>=20)))?(1):2));\n"
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
-"X-Generator: Poedit 1.6.3\n"
+"X-Generator: Poedit 1.6.4\n"
 "Language: ru_RU\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
@@ -207,7 +207,7 @@ msgstr "Опубликовано"
 
 #: /wa-apps/blog/templates/actions/post/PostEdit.html:98
 msgid "WYSIWYG"
-msgstr "WYSIWYG"
+msgstr "Визуальный редактор"
 
 #: /wa-apps/blog/templates/actions/post/PostEdit.html:147
 msgid "Publication deadline"
@@ -494,8 +494,8 @@ msgid "Frontend settings"
 msgstr "Настройки общедоступной части"
 
 #: /wa-apps/blog/templates/actions/settings/Settings.html:63
-msgid "Homepage title"
-msgstr "Заголовок главной страницы"
+msgid "Homepage &lt;title&gt;"
+msgstr "Заголовок главной страницы &lt;title&gt;"
 
 #: /wa-apps/blog/templates/actions/settings/Settings.html:72
 msgid "Title format"
@@ -1350,3 +1350,67 @@ msgstr "Добро пожаловать в ваш новый блог!"
 #: /wa-apps/blog/themes/vk/content.html:23
 msgid "Start by writing a post in your <a href=\"%s\">blog backend</a>."
 msgstr "Начните с создания записи в <a href=\"%s\">бекенде блога</a>."
+
+#: /wa-apps/blog/lib/config/logs.php:5
+msgid "published blog post"
+msgstr "опубликовал блог-пост"
+
+#: /wa-apps/blog/lib/config/logs.php:8
+msgid "edited blog post"
+msgstr "отредактировал блог-пост"
+
+#: /wa-apps/blog/lib/config/logs.php:11
+msgid "deleted blog post"
+msgstr "удалил блог-пост"
+
+#: /wa-apps/blog/lib/config/logs.php:15
+msgid "added comment to blog post"
+msgstr "добавил комментарий в блоге"
+
+#: /wa-apps/blog/lib/config/logs.php:18
+msgid "deleted comment to blog post"
+msgstr "удалил комментарий в блоге"
+
+#: /wa-apps/blog/lib/config/logs.php:21
+msgid "restored comment to blog post"
+msgstr "восстановил комментарий в блоге"
+
+#: /wa-apps/blog/lib/config/logs.php:25
+msgid "created a new blog"
+msgstr "создал новый блог"
+
+#: /wa-apps/blog/lib/config/logs.php:28
+msgid "deleted blog"
+msgstr "удалил блог"
+
+#: /wa-apps/blog/lib/config/logs.php:31
+msgid "modified blog settings"
+msgstr "изменил настройки блога"
+
+#: /wa-apps/blog/lib/config/site.php:90
+msgid "Homepage META Keywords"
+msgstr "META Keywords главной страницы"
+
+#: /wa-apps/blog/lib/config/site.php:94
+msgid "Homepage META Description"
+msgstr "META Description главной страницы"
+
+#: /wa-apps/blog/lib/config/site.php:98
+msgid "RSS feed title"
+msgstr "Заголовок RSS-ленты"
+
+#: /wa-apps/blog/themes/default/main.html:36
+msgid "Follow %s"
+msgstr "Читать %s"
+
+#: /wa-apps/blog/themes/default/main.html:40
+msgid "Facebook"
+msgstr "Фейсбук"
+
+#: /wa-apps/blog/themes/default/main.html:43
+msgid "Twitter"
+msgstr "Твиттер"
+
+#: /wa-apps/blog/themes/default/main.html:50
+msgid "VK"
+msgstr "ВКонтакте"

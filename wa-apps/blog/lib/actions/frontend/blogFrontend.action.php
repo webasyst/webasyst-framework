@@ -81,6 +81,11 @@ class blogFrontendAction extends blogViewAction
                 $is_search = true;
             }
         }
+        $query = $this->getRequest()->get('query', '', waRequest::TYPE_STRING_TRIM);
+        if ($query) {
+            $this->search_params['text'] = urldecode($query);
+            $options['highlighted'] = true;
+        }
         $blogs = blogHelper::getAvailable();
 
 
@@ -114,12 +119,16 @@ class blogFrontendAction extends blogViewAction
                 $stream_title .= intval($this->search_params['day']).' ';
             }
             if (isset($this->search_params['month'])) {
-                $stream_title .= _ws(date("F", gmmktime(0, 0, 0, intval($this->search_params['month'])))).' ';
+                $stream_title .= _ws(date("F", gmmktime(0, 0, 0, intval($this->search_params['month']), 1))).' ';
             }
 
             $stream_title .= $this->search_params['year'].' — '.$this->getResponse()->getTitle();
             $this->getResponse()->setTitle($stream_title);
 
+        } else if (!empty($this->search_params['text'])) {
+            $stream_title = urldecode($this->search_params['text']);
+            $this->getResponse()->setTitle($stream_title);
+            $is_search = true;
         }
         $this->view->assign('stream_title', $stream_title);
 
@@ -163,7 +172,8 @@ class blogFrontendAction extends blogViewAction
         $this->view->assign('post_count', $post_model->searchCount());
         $this->view->assign('show_comments', !isset($options['comments']) || $options['comments']);
         $this->view->assign('posts_per_page', $posts_per_page);
-
+        $this->view->assign('blog_query', $query);
+        
         /**
          * Backward compatibility with older themes
          * @deprecated

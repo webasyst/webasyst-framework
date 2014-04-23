@@ -73,7 +73,7 @@ return array(
             'default' => 'blog_post',
         ),
         'title'         => array(
-            'name'        => _w('Homepage title'),
+            'name'        => _w('Homepage &lt;title&gt;'),
             'type'        => 'radio_text',
             'description' => '',
             'items'       => array(
@@ -86,8 +86,16 @@ return array(
                 ),
             ),
         ),
+        'meta_keywords' => array(
+            'name' => _w('Homepage META Keywords'),
+            'type' => 'input'
+        ),
+        'meta_description' => array(
+            'name' => _w('Homepage META Description'),
+            'type' => 'textarea'
+        ),
         'rss_title' => array(
-            'name' => _wp('Rss feed title'),
+            'name' => _w('RSS feed title'),
             'type' => 'radio_text',
             'description' => '',
             'items' => array(
