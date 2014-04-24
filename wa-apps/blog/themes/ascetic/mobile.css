@@ -1,0 +1,39 @@
+/*
+ * Webasyst “Ascetic” theme family
+ * (additional CSS for mobile multi-touch devices)
+ *
+ * @link http://www.webasyst.com/
+ * @author Webasyst LLC
+ * @copyright 2012 Webasyst LLC
+ * @package Webasyst
+ */
+
+* { -webkit-text-size-adjust: 100%; }
+
+.container { padding: 1px 15px 0; min-width: 0; }
+
+.sidebar.left { width: 100%; float: none; }
+.sidebar.right { width: 100%; float: none; }
+.content.left { margin-left: 0; }
+.content.right { margin-right: 0; }
+.app-header { min-height: 0; padding-top: 0; }
+.top-padded { padding-top: 0; }
+
+#header { margin-bottom: 20px; }
+#header ul#wa-apps li.selected { background: none; }
+#footer { padding-bottom: 30px; }
+#footer .container { margin: 0 15px; }
+#footer #copyright { padding-left: 0; }
+#footer #sub-links { margin-left: 0; margin-top: 30px; }
+#footer #sub-links ul li { float: none; margin-bottom: 5px; }
+
+.content img { max-width: 100%; }
+.post h3 { font-size: 1.5em; }
+#page { margin: 0 0 20px; }
+#timeline { display:none; }
+#blog-list { padding-bottom: 20px; }
+
+.comment-form-fields label { width: auto; float: none; }
+.comment-form-fields input { width: 80%; }
+.comment-form textarea { width: 100%; }
+.comment-form .comment-submit { padding-left: 0; }

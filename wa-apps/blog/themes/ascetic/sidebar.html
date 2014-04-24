@@ -1,0 +1,86 @@
+{* @var $action string default|error|page|post Current action*}
+
+{*
+    <div id="search" role="search">
+        <form>
+            <input type="search" value="search" />
+            <input type="submit" value="Find" />
+        </form>
+    </div>
+*}
+
+{if ( ( ($action eq 'default') && empty($action_info.search))|| ($action eq 'error') || ($action eq 'page'))}
+    {* static info page list *}
+    <div id="site-pages">
+        {$blog_pages=$wa->blog->pages()}
+        {if $blog_pages}
+        {if !isset($page_id)}{$page_id = null}{/if}
+        {wa_print_tree tree=$blog_pages attrs = 'id="page-list"' class="menu-v" elem ='<a href=":url" title=":title">:name</a>' selected=$page_id}
+        {/if}
+    </div>
+{/if}
+
+<p class="small" role="contentinfo">
+    {if $action eq 'default'}
+        {if !empty($action_info.search.contact_id)}
+            {$c= $wa->contact($action_info.search.contact_id)}
+
+            <img width="96" src="{$c->getPhoto(96)}" title="{$c->get('name','html')}" alt=""><br>
+            <strong>{$c.name}</strong>
+
+            {$ca = $c->get('about','html')}
+            {if $ca}
+                <br><br>
+                {$ca}
+            {/if}
+
+            <br>
+            {$c->get('url','html')}
+        {/if}
+    {/if}
+</p>
+
+{if ($action eq 'default') && empty($action_info.search)}
+    {* timeline navigation *}
+
+    {$datetime = [
+        'year' => $wa->param('year'),
+        'month' => $wa->param('month')
+    ]}
+    {$sidebar_timeline = $wa->blog->timeline($wa->param('blog_id'), $datetime)}
+
+    <div id="timeline">
+
+    {if !empty($sidebar_timeline)}
+        <ul class="menu-v">
+            {$year=null}
+            {foreach $sidebar_timeline as $year_month => $item}
+                {if $year neq $item.year}
+                    {if !$item@first}
+                            </ul>
+                        </li>
+                    {/if}
+                    <li {if $item.year_selected}class="selected"{/if}>
+                    {$year=$item.year}
+                    <a href="{$item.year_link}">{$item.year|default:'NULL'}</a>
+                    <ul>
+                {/if}
+                <li {if $item.selected}class="selected"{/if}>
+                    <a href="{$item.link}" title="{_w("%d post","%d posts",$item.count)}">{_ws(date("F",gmmktime(0,0,0,$item.month,1)))}</a>
+                </li>
+    {if $item@last}
+            </ul>
+        </li>
+            {/if}
+            {/foreach}
+        </ul>
+    {/if}
+    </div>
+    {* end timeline navigation *}
+
+{/if}
+
+{* @event (frontend_action_default|frontend_action_post|frontend_action_page|frontend_action_error).%plugin_id%.sidebar *}
+{foreach $frontend_action as $plugin => $output}
+    {if !empty($output.sidebar)}{$output.sidebar}{/if}
+{/foreach}
