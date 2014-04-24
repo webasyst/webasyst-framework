@@ -1,0 +1,69 @@
+<div class="sidebar right300px">
+    {$photo_stream}
+    <hr class="photostream-divider">
+    <h4 id="photo-name" itemprop="name">{$photo.name}</h4>
+    {if $photo.description}
+        <p id="photo-description" itemprop="description">{$photo.description}</p>
+    {/if}
+    {if $albums || $tags}
+        <p class="small">
+            {if $albums}
+                <span id="photo-albums">
+                [`Albums`]: <span class="photo-info">{$albums}</span><br>
+                </span>
+            {/if}
+            {if $tags}
+                <span class="tags" id="photo-tags">
+                    [`Tags`]: <span class="photo-info">{$tags}</span>
+                </span>
+            {/if}
+        </p>
+    {/if}
+    <div id="photo-hook-sidebar">
+        {* @event frontend_photo.%plugin_id%.sidebar *}
+        {foreach $frontend_photo as $plugin_id => $item}{if !empty($item.sidebar)}{$item.sidebar}{/if}{/foreach}
+    </div>
+    {if $exif}
+        <p class="exif small" id="photo-exif">
+            {$exif}
+        </p>
+    {/if}
+    {if $author}
+        <p class="hint">
+            <span id="photo-author">
+                [`Uploaded by`] <span class="photo-info">{$author}</span>
+            </span>
+        </p>
+    {/if}
+
+    {* @event frontend_photo.%plugin_id%.content *}
+    {foreach $frontend_photo as $plugin_id => $item}{if !empty($item.content)}{$item.content}{/if}{/foreach}
+</div>
+<div class="content right300px">
+    <div class="align-center">
+        <div class="photo{if $photo.stack_count > 0 || $photo.parent_id != 0} stack{/if}">
+            <div id="stack-nav">{$stack_nav}</div>
+            <div class="image">
+                <div class="corner top left">
+                    {* @event frontend_photo.%plugin_id%.top_left *}
+                    {foreach $frontend_photo as $plugin_id => $item}{if !empty($item.top_left)}
+                        {$item.top_left}
+                    {/if}{/foreach}
+                </div>
+                <div class="corner top right">
+                    {* @event frontend_photo.%plugin_id%.top_right *}
+                    {foreach $frontend_photo as $plugin_id => $item}{if !empty($item.top_right)}
+                        {$item.top_right}
+                    {/if}{/foreach}
+                </div>
+                <a href="{$photo.next_photo_url}" title="[`Next →`]">
+                    {$wa->photos->getImgHtml($photo, '970', ['class'=>'shadowed', 'id' => 'photo','itemprop' => 'image'])}
+                </a>
+            </div>
+        </div>
+    </div>
+    <div id="photo-hook-bottom">
+    {* @event frontend_photo.%plugin_id%.bottom *}
+    {foreach $frontend_photo as $plugin_id => $item}{if !empty($item.bottom)}{$item.bottom}{/if}{/foreach}
+    </div>
+</div>
