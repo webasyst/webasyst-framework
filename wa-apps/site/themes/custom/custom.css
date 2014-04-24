@@ -18,7 +18,7 @@ body { line-height: 1; }
 /* Common HTML elements, fonts, and colors
 ------------------------------------------ */
 html,
-body { width: 100%; min-height: 100%; font-family: Helvetica, Arial, sans-serif; font-size: 13px; background: url("img/cloth.jpg"); /* customize core background image here */ }
+body { width: 100%; min-height: 100%; font-family: 'Roboto', Helvetica, Arial, sans-serif; font-size: 13px; background: url("img/cloth.jpg"); /* customize core background image here */ }
 a { color: #03c; outline:0 none; }
 a:focus { outline:none; outline-offset:-4px; }
 a:visited { color: #63c; }
