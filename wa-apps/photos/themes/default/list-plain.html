@@ -1,9 +1,10 @@
-<div class="view-plain" id="photo-list">
+<!-- PLAIN PHOTO LIST -->
 
+<div class="view-plain" id="photo-list">
     {* @event frontend_collection.%plugin_id%.plain_list *}
     {if !empty($frontend_collection)}{foreach $frontend_collection as $item}{if !empty($item.plain_list)}{$item.plain_list}{/if}{/foreach}{/if}
     {foreach $photos as $photo}
-        <div itemscope itemtype ="http://schema.org/Photograph">
+        <figure itemscope itemtype ="http://schema.org/Photograph">
             {if $photo.name}
                 <h5 itemprop="name">{$photo.name}</h5>
             {/if}
@@ -31,44 +32,13 @@
                 {* @event prepare_photos_frontend.plain.%plugin_id% *}
                 {foreach $photo.hooks.plain as $plugin => $output}{$output}{/foreach}
             </div>
-        </div>
+        </figure>
         <br>
     {/foreach}
 </div>
 
-<div class="lazyloading-wrapper" style="display:none;">
-    {if $page < $pages_count}
-        {_w('%d photo', '%d photos', (count($photos) + $offset))}&nbsp;{_w('of %d', 'of %d', $total_photos_count)}
-        <br>
-        <a href="?page={$page + 1}" class="lazyloading-link">[`Show more photos`]</a>
-    {elseif $page && $pages_count}
-        {_w('of %d','of %d', $total_photos_count)}
-    {/if}
-    <span class="lazyloading-progress" style="display:none">
-       <i class="icon16 loading"></i>
-       [`Loading`] {_w('%d photo','%d photos',min($photos_per_page, 9999))}...
-    </span>
-</div>
-
-{* switch on/off lazy loading *}
-{if !$lazy_load && !$wa->globals('disable_pageless')}
-    <script type="text/javascript">
-    $(function() {
-        $.photos.setLazyLoad({
-            auto: true,  // auto load next pages(true|false) (if omitted than considered as true)
-            total_count: {$total_photos_count}
-        });
-    });
-    </script>
-{/if}
-
-{* and paging in case JS is disabled… *}
-{if $pages_count > 1}
+{if isset($pages_count) && $pages_count > 1}
 <div class="block lazyloading-paging">
-    <ul class="menu-h">
-    {for $p=1 to $pages_count}
-        <li{if $p == $page} class="selected"{/if}><a href="?page={$p}">{$p}</a></li>
-    {/for}
-    </ul>
+    {wa_pagination total=$pages_count attrs=['class' => "menu-h"]}
 </div>
 {/if}

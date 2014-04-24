@@ -1,0 +1,49 @@
+<!-- TILED PHOTO LIST -->
+
+{if !empty($title)}{$title}{/if}
+
+{* @event frontend_collection.%plugin_id%.thumbs_list *}
+{if !empty($frontend_collection)}{foreach $frontend_collection as $item}{if !empty($item.thumbs_list)}{$item.thumbs_list}{/if}{/foreach}{/if}
+<ul class="view-thumbs{if $wa->param('action') eq 'album'} album-float-left-view{/if}" id="photo-list">
+{foreach from=$photos item=photo}
+    <li{if $photo.stack_count > 0} class="stacked"{/if} itemscope itemtype ="http://schema.org/Photograph">
+        <div class="image">
+            <a href="{$photo.frontend_link}">
+                <div class="corner top left">
+                    {* @event prepare_photos_frontend.top_left.%plugin_id% *}
+                    {foreach $photo.hooks.top_left as $plugin => $output}{$output}{/foreach}
+                </div>
+                <div class="corner top right">
+                    {* @event prepare_photos_frontend.top_right.%plugin_id% *}
+                    {foreach $photo.hooks.top_right as $plugin => $output}{$output}{/foreach}
+                    {if $photo.stack_count > 0}<span class="indicator">{$photo.stack_count}</span>{/if}
+                </div>
+                
+                {$wa->photos->getImgHtml($photo, '250x0', ['itemprop' => 'image'])}
+                
+                {* <h5 itemprop="name">{$photo.name}</h5> *}
+
+                {* @event prepare_photos_frontend.name.%plugin_id% *}
+                {foreach $photo.hooks.name as $plugin => $output}{$output}{/foreach}
+
+                {if $photo.rate > 0}
+                    <div class="rating nowrap">{$wa->photos->ratingHtml($photo.rate, 10)}</div>
+                {/if}                        
+
+                {if $photo.description}
+                    <p itemprop="description" class="small">{$photo.description}</p>
+                {/if}
+
+                {* @event prepare_photos_frontend.thumb.%plugin_id% *}
+                {foreach $photo.hooks.thumb as $plugin => $output}{$output}{/foreach}
+            </a>
+        </div>
+    </li>
+{/foreach}
+</ul>
+
+{if isset($pages_count) && $pages_count > 1}
+<div class="block lazyloading-paging">
+    {wa_pagination total=$pages_count attrs=['class' => "menu-h"]}
+</div>
+{/if}

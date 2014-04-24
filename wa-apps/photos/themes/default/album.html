@@ -18,8 +18,9 @@
 {* @event frontend_collection.%plugin_id%.content *}
 {foreach $frontend_collection as $item}{if !empty($item.content)}{$item.content}{/if}{/foreach}
 
-{include file='view-plain.html'}
-{*
-    or replace 'view-plain' with the following if you want thumbnail view for albums
-    {include file='view-thumbs.html' disable_sidebar=true}
-*}
+{* display album according to the album's custom parameter "view" *}
+{if !empty($album.view) && $album.view == 'thumbs'}
+	{include file='list-thumbs.html'}
+{else}
+	{include file='list-plain.html'}
+{/if}
