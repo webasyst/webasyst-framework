@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <title>{$wa->title()|escape}</title>
+  <meta name="Keywords" content="{$wa->meta('keywords')|escape}" />
+  <meta name="Description" content="{$wa->meta('description')|escape}" />
+
+  <link rel="shortcut icon" href="/favicon.ico"/>
+
+  <!-- css -->
+  <link href="{$wa_theme_url}ascetic.css?v{$wa_theme_version}" rel="stylesheet" type="text/css"/>
+  <link href="{$wa_theme_url}mobile.css?v{$wa_theme_version}"{if !$wa->isMobile()} media="screen and (max-width: 760px)"{/if} rel="stylesheet" type="text/css">
+  {if $wa->isMobile()}
+      <meta name="viewport" content="width=device-width; initial-scale=1; maximum-scale=1; user-scalable=0;" />
+  {/if}
+  {$wa->css()} {* links active plugins CSS *}
+
+  <!-- js -->
+  <script type="text/javascript" src="{$wa_url}wa-content/js/jquery/jquery-1.8.2.min.js"></script>
+  {$wa->js()} {* links active plugins JS *}
+
+  {$wa->headJs()} {* links Google Analytics tracking code and current site's custom JS (Site app) *}
+  
+  <!-- custom default theme settings -->
+  <style>
+    {if !empty($theme_settings.nav_bg_color)}
+        #header { background: {$theme_settings.nav_bg_color}; }
+    {/if}
+    {if !empty($theme_settings.nav_text_color)}
+        #header,
+        #header ul#wa-apps li a,
+        #header ul#wa-apps li strong { color: {$theme_settings.nav_text_color} !important; }
+    {/if}
+  </style>
+    
+</head>
+<body>
+  <div id="header" role="navigation">
+    <div class="container">
+      <ul id="wa-apps">
+        {foreach $wa->apps() as $a}
+          <li{if $a.url==$wa_app_url} class="selected"{/if}><a href="{$a.url}">{$a.name}</a></li>
+        {/foreach}
+        {if $wa->isAuthEnabled()}
+          {if $wa->user()->isAuth()}
+            <li class="float-right small"><a href="?logout">[s`Log out`]</a></li>
+            <li class="float-right small">
+              {$my_url = $wa->myUrl()}
+              {if !empty($my_url)}
+                <a href="{$my_url}" class="bold">{$wa->user('name')}</a>
+              {else}
+                <strong>{$wa->user('name')}</strong>
+              {/if}
+            </li>
+          {else}
+            <li class="float-right small"><a href="{$wa->signupUrl()}">[s`Sign up`]</a></li>
+            <li class="float-right small"><a href="{$wa->loginUrl()}">[s`Log in`]</a></li>
+          {/if}
+        {/if}
+      </ul>
+      <div class="clear-both"></div>
+    </div>
+  </div>
+  <div id="main">
+    <div class="container app-header"></div>
+      <div class="container">
+        {if $wa->currentUrl() == $wa_app_url && !empty($error_code) && $error_code == 404}
+          <div class="welcome">
+            <h1>[`Welcome to your new site!`]</h1>
+            <p>{sprintf('[`Start by creating a page in your <a href="%s">site backend</a>.`]', $wa_backend_url|cat:'site/#/pages/')}</p>
+          </div>
+        {else}
+          {$content}
+        {/if}
+        <div class="clear-both"></div>
+      </div>
+  </div>
+  <div id="footer">
+    <div class="container">
+      <div id="poweredby" class="float-right hint">
+        [`We are using <a href="http://www.webasyst.com/">Webasyst</a>`] <span class="dots" title="Webasyst"></span>
+      </div>
+      <div id="copyright">
+        &copy; {time()|wa_datetime:"Y"}
+        <a href="{$wa_url}">{$wa->accountName()}</a>
+      </div>
+      <!-- <div id="sub-links" >
+        suggested place for your footer links
+        <ul>
+          <li><a href="#">About</a></li>
+          <li><a href="#">Terms Of Service</a></li>
+        </ul>
+      </div> -->
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE theme PUBLIC "wa-app-theme" "http://www.webasyst.com/wa-content/xml/wa-app-theme.dtd" >
+<theme id="ascetic" system="1" vendor="webasyst" author="Webasyst" app="site" version="1.1.1">
+  <name locale="en_US">Ascetic (Default 1.0)</name>
+  <name locale="ru_RU">Аскетик (Default 1.0)</name>
+  <files>
+    <file path="index.html">
+      <description locale="en_US">Common layout</description>
+      <description locale="ru_RU">Основной макет</description>
+    </file>
+    <file path="ascetic.css">
+      <description locale="en_US">Core CSS file</description>
+      <description locale="ru_RU">Основной файл CSS-стилей</description>
+    </file>
+    <file path="mobile.css">
+      <description locale="en_US">Additional CSS for multi-touch mobile devices</description>
+      <description locale="ru_RU">Дополнительный CSS для мобильных устройств</description>
+    </file>
+    <file path="page.html">
+      <description locale="en_US">Page content</description>
+      <description locale="ru_RU">Содержимое страницы</description>
+    </file>
+    <file path="sidebar.html">
+      <description locale="en_US">Page navigation sidebar</description>
+      <description locale="ru_RU">Колонка с навигацией по страницам</description>
+    </file>
+    <file path="login.html">
+		<description locale="en_US">Login page</description>
+		<description locale="ru_RU">Страница входа для пользователей</description>
+	</file>
+    <file path="signup.html">
+        <description locale="en_US">Sign up page</description>
+        <description locale="ru_RU">Страница регистрации пользователей</description>
+    </file>
+    <file path="forgotpassword.html">
+        <description locale="en_US">Forgot password page</description>
+        <description locale="ru_RU">Страница сброса пароля</description>
+    </file>
+    <file path="error.html">
+      <description locale="en_US">404 and other errors</description>
+      <description locale="ru_RU">404 и другие ошибки</description>
+    </file> 
+  </files>
+  <settings>
+    <setting var="nav_bg_color" control_type="color">
+        <value>#000000</value>
+        <name locale="en_US">Top navigation menu background color</name>
+        <name locale="ru_RU">Цвет фона верхнего навигационного меню</name>
+    </setting>
+    <setting var="nav_text_color" control_type="color">
+        <value>#CCCCCC</value>
+        <name locale="en_US">Top navigation menu text color</name>
+        <name locale="ru_RU">Цвет ссылок в верхнем навигационном меню</name>
+    </setting>
+  </settings>
+</theme>
