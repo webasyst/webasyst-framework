@@ -3,6 +3,7 @@
 <theme id="custom" system="0" vendor="webasyst" author="Webasyst" app="blog" parent_theme_id="site:custom" version="1.1.0">
     <name locale="en_US">CUSTOM</name>
     <name locale="ru_RU">CUSTOM</name>
+    <description locale="ru_RU"/>
     <files>
         <file path="index.html" custom="0" parent="1">
         </file>
@@ -20,11 +21,11 @@
         </file>        
         <file path="content.html" custom="0">
             <description locale="en_US">Main layout and navigation for the Blog app content</description>
-			<description locale="ru_RU">Основное макет вывода содержимого и навигации в приложении «Блог»</description>
+            <description locale="ru_RU">Основное макет вывода содержимого и навигации в приложении «Блог»</description>
         </file>
         <file path="head.html" custom="0">
-			<description locale="en_US">Blog app's &lt;head&gt; instructions</description>
-			<description locale="en_US">Блок &lt;head&gt; приложения «Блог»</description>
+            <description locale="en_US">Blog app's &lt;head&gt; instructions</description>
+            <description locale="en_US">Блок &lt;head&gt; приложения «Блог»</description>
         </file>
         <file path="stream.html" custom="0">
             <description locale="en_US">Post stream wrapper</description>
@@ -69,6 +70,10 @@
         <file path="error.html" custom="0">
             <description locale="en_US">404 and other errors</description>
             <description locale="ru_RU">404 и другие ошибки</description>
+        </file>
+        <file path="blog.js" custom="0">
+            <description locale="en_US">JS</description>
+            <description locale="ru_RU">JS</description>
         </file>
     </files>
   <about locale="en_US">
@@ -117,5 +122,5 @@
 </pre>
 
 ]]>
-  </about>    
-<description locale="ru_RU"/></theme>
+  </about>
+</theme>
