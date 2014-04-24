@@ -168,11 +168,7 @@ abstract class waView
         $this->assign('wa_theme_version', $theme->version());
         $theme_settings = $theme->getSettings(true);
 
-        if ($locales = $theme->getLocales()) {
-            waLocale::setStrings($locales);
-        } else {
-            waLocale::setStrings(array());
-        }
+        $locales = $theme->getLocales();
 
         $file = $theme->getFile($template);
         if ($parent_theme = $theme->parent_theme) {
@@ -184,7 +180,11 @@ abstract class waView
             if ($parent_settings = $parent_theme->getSettings(true)) {
                 $theme_settings = $theme_settings + $parent_settings;
             }
+            if ($parent_theme->getLocales()) {
+                $locales += $parent_theme->getLocales();
+            }
         }
+        waLocale::setStrings($locales);
         $this->assign('theme_settings', $theme_settings);
         $this->assign('wa_theme_url', $theme->url);
         $this->setTemplateDir($theme->path);
