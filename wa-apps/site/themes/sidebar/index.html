@@ -7,6 +7,12 @@
     <meta name="Description" content="{$wa->meta('description')|escape}" />
 
     {if !empty($canonical)}<link rel="canonical" href="{$canonical}"/>{/if}
+    <link rel="shortcut icon" href="/favicon.ico"/>
+    {if $wa->blog}
+        <!-- rss -->
+        {$rss=$wa->blog->rssUrl()}
+        {if $rss}<link rel="alternate" type="application/rss+xml" title="[s`RSS`] &mdash; {$wa->accountName()}" href="{$rss}">{/if}
+    {/if}
     
     <!-- css -->
     <link href="{$wa_theme_url}sidebar.css?v{$wa_theme_version}" rel="stylesheet" type="text/css"/>
