@@ -71,6 +71,9 @@ class waGettext
                 }
             } elseif (substr($string, 0, 1) == '"') {
                 if (isset($buffer['msgid_plural'])) {
+                    if(!isset($buffer['msgstr'])){
+                        $buffer['msgstr'] = array('');
+                    }
                     $buffer['msgstr'][count($buffer['msgstr']) - 1] .= $this->prepare($string);
                 } else {
                     if (!isset($buffer['msgstr'])) {
@@ -86,10 +89,10 @@ class waGettext
             $messages[$buffer['msgid']] = $buffer['msgstr'];
         }
 
-        $meta = $this->meta2array($messages['']);
+        $meta = $this->meta2array(isset($messages['']) ? $messages[''] : '');
         unset($messages['']);
         return array(
-            'meta' => $meta,
+            'meta'     => $meta,
             'messages' => $messages,
         );
     }
@@ -120,7 +123,7 @@ class waGettext
             }
         }
         if (isset($array['Plural-Forms'])) {
-            $data  = explode(";", $array['Plural-Forms']);
+            $data = explode(";", $array['Plural-Forms']);
             $array['Plural-Forms'] = array();
             foreach ($data as $s) {
                 if (trim($s)) {

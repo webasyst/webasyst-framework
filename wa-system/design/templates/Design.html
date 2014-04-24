@@ -327,13 +327,8 @@
             }
             if (hash.length) {
                 if (hash == 'themes') {
-                {if $themes_welcome}
-                    $('#wa-design-sidebar').hide();
-                    $('#wa-design-container').removeClass('left200px').css('margin-left', 0);
-                {/if}
                     $('#wa-design-sidebar .wa-theme-block:visible .wa-themes.link').parent().addClass('selected');
                     $("#wa-design-container").load("?module=design&action=themes", function () {
-                        {if $themes_welcome}$('#themes-close').show();{/if}
                         if ($(".s-scrollable-part").length) {
                             $(".s-scrollable-part").scrollTop(0);
                         } else {
@@ -374,13 +369,7 @@
                     });
                 }
             } else {
-                {if $themes_welcome}
-                $('#wa-design-sidebar').hide();
-                $('#wa-design-container').removeClass('left200px').css('margin-left', 0);
-                $('#wa-theme-link').click();
-                {else}
                 $("#wa-theme-list li a:first").click();
-                {/if}
             }
         }
         $(document).ready(function () {

@@ -40,7 +40,6 @@ class waDesignActions extends waActions
             $routing_url = wa()->getAppUrl('site').'#/routing/';
         }
         $this->display(array(
-            'themes_welcome' => $this->getUser()->getRights('installer') && count($routes) == 1 && empty($routes[0]['theme']),
             'template_path' => $this->getConfig()->getRootPath().'/wa-system/design/templates/',
             'design_url' => $this->design_url,
             'themes_url' => $this->themes_url,
