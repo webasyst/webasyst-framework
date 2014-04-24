@@ -84,7 +84,7 @@ ul.view-thumbs { padding: 0; margin: 0; list-style: none; text-align: center; }
 ul.view-thumbs li a { text-decoration: none; }
 ul.view-thumbs li { display: inline-block; position: relative; vertical-align: top; width: 131px; margin-right: 10px; margin-bottom: 14px; }
 ul.view-thumbs li img.shadowed { -moz-box-shadow: 0 1px 3px #aaa; -webkit-box-shadow: 0 1px 3px #aaa; box-shadow: 0 1px 3px #aaa; margin-bottom: 5px; }
-ul.view-thumbs.album-float-left-view { margin-top: 10px; }
+ul.view-thumbs.album-float-left-view { margin-top: 10px; float: left; }
 ul.view-thumbs.album-float-left-view li { display: block; margin-right: 10px; float: left; }
 
 ul.view-thumbs.bigger-thumbs li { width: 268px; }

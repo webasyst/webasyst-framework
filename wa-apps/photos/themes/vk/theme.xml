@@ -3,8 +3,9 @@
 <theme id="vk" system="0" vendor="webasyst" author="Webasyst" app="photos" parent_theme_id="site:vk" version="1.1.0">
     <name locale="en_US">VK</name>
     <name locale="ru_RU">Вконтакте</name>
+    <description locale="ru_RU">Ваш сайт во «Вконтакте» в виде iframe-приложения.</description>
     <files>
-    	<file path="index.html" custom="0" parent="1">
+        <file path="index.html" custom="0" parent="1">
         </file>
         <file path="vk.css" custom="0" parent="1">
         </file>
@@ -16,11 +17,11 @@
         </file>
         <file path="content.html" custom="0">
             <description locale="en_US">Main layout and navigation for the Photos app content</description>
-			<description locale="ru_RU">Основное макет вывода содержимого и навигации в приложении «Фото»</description>
+            <description locale="ru_RU">Основное макет вывода содержимого и навигации в приложении «Фото»</description>
         </file>
         <file path="head.html" custom="0">
-			<description locale="en_US">Photos app's &lt;head&gt; instructions</description>
-			<description locale="en_US">Блок &lt;head&gt; приложения «Фото»</description>
+            <description locale="en_US">Photos app's &lt;head&gt; instructions</description>
+            <description locale="en_US">Блок &lt;head&gt; приложения «Фото»</description>
         </file>
         <file path="view-thumbs.html" custom="0">
             <description locale="en_US">Photo list thumbnails view</description>
@@ -44,36 +45,40 @@
         </file>
         <file path="page.html" custom="0">
             <description locale="en_US">Static page content</description>
-			<description locale="ru_RU">Содержимое информационной страницы</description>
+            <description locale="ru_RU">Содержимое информационной страницы</description>
         </file>
         <file path="login.html" custom="0">
-			<description locale="en_US">Login page</description>
-			<description locale="ru_RU">Страница входа для пользователей</description>
-		</file>
-    	<file path="signup.html" custom="0">
-        	<description locale="en_US">Sign up page</description>
-	        <description locale="ru_RU">Страница регистрации пользователей</description>
-    	</file>
-	    <file path="forgotpassword.html" custom="0">
-    	    <description locale="en_US">Forgot password page</description>
-        	<description locale="ru_RU">Страница сброса пароля</description>
-	    </file>
-    	<file path="error.html" custom="0">
-	      <description locale="en_US">404 and other errors</description>
-    	  <description locale="ru_RU">404 и другие ошибки</description>
-	    </file>
-	    <file path="navigation.html" custom="0">
+            <description locale="en_US">Login page</description>
+            <description locale="ru_RU">Страница входа для пользователей</description>
+        </file>
+        <file path="signup.html" custom="0">
+            <description locale="en_US">Sign up page</description>
+            <description locale="ru_RU">Страница регистрации пользователей</description>
+        </file>
+        <file path="forgotpassword.html" custom="0">
+            <description locale="en_US">Forgot password page</description>
+            <description locale="ru_RU">Страница сброса пароля</description>
+        </file>
+        <file path="error.html" custom="0">
+          <description locale="en_US">404 and other errors</description>
+          <description locale="ru_RU">404 и другие ошибки</description>
+        </file>
+        <file path="navigation.html" custom="0">
             <description locale="en_US">Internal app navigation</description>
             <description locale="ru_RU">Внутренняя навигация приложения</description>
         </file>
-    	<file path="footer.html" custom="0">
-    		<description locale="en_US">App specific footer content</description>
-    		<description locale="ru_RU">Содержимое футера приложения</description>
+        <file path="footer.html" custom="0">
+            <description locale="en_US">App specific footer content</description>
+            <description locale="ru_RU">Содержимое футера приложения</description>
         </file>
         <file path="searchform.html" custom="0">
-    		<description locale="en_US">Internal app search form</description>
-    		<description locale="ru_RU">Форма поиска в приложении</description>
-        </file>            
+            <description locale="en_US">Internal app search form</description>
+            <description locale="ru_RU">Форма поиска в приложении</description>
+        </file>      
+        <file path="lazyloading.js">
+            <description locale="en_US">Lazy loading JS</description>
+            <description locale="ru_RU">Скрипты загрузки контента «на лету»</description>
+        </file>         
     </files>
     <about locale="en_US">
 <![CDATA[
@@ -100,9 +105,7 @@
 </ul>
 <p>Если вы используете тему VK для вашей фотогалереи (приложения «Фото»), то в настройках приложения «Фото» должна быть включена опция создания эскизов произвольного размера по требования («на лету»). В целях оптимизации работы фотогалереи рекомендуется добавить указанные размеры в список предопределенных размеров эскизов, чтобы эскизы создавались для фотографий сразу во время загрузки на сервер.</p>
 ]]>
-    </about>
-    <description locale="ru_RU">Ваш сайт во «Вконтакте» в виде iframe-приложения.</description>
-    <thumbs>
+    </about><thumbs>
         <thumb>130x87</thumb>
         <thumb>259x185</thumb>
         <thumb>604</thumb>
