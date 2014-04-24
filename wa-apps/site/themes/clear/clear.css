@@ -305,6 +305,7 @@ i.icon10 { background-repeat:no-repeat; height:10px; width:10px; display:inline-
 .title a { text-decoration: none; color: #000; font-weight: bold; }
 .title a:hover { color: #000 !important; }
 .title span { color: #ccc; font-size: 80%; position: relative; top: -0.1em; display: none\9; }
+.title span:after { content: '☆'; }
 h2.title { font-size: 300%; letter-spacing: 0.2em; }
 
 .app-navigation { border-top: 1px solid #ccc; border-bottom: 1px solid #ccc; font-size: 1.0em; margin-top: 2em; }
