@@ -24,11 +24,11 @@
         </file>        
         <file path="content.html" custom="0">
             <description locale="en_US">Main layout and navigation for the Blog app content</description>
-			<description locale="ru_RU">Основное макет вывода содержимого и навигации в приложении «Блог»</description>
+            <description locale="ru_RU">Основное макет вывода содержимого и навигации в приложении «Блог»</description>
         </file>
         <file path="head.html" custom="0">
-			<description locale="en_US">Blog app's &lt;head&gt; instructions</description>
-			<description locale="en_US">Блок &lt;head&gt; приложения «Блог»</description>
+            <description locale="en_US">Blog app's &lt;head&gt; instructions</description>
+            <description locale="en_US">Блок &lt;head&gt; приложения «Блог»</description>
         </file>
         <file path="stream.html" custom="0">
             <description locale="en_US">Post stream wrapper</description>
@@ -78,9 +78,13 @@
             <description locale="en_US">Internal app page tree</description>
             <description locale="ru_RU">Внутренняя навигация по информационным страницам приложения</description>
         </file>
-    	<file path="footer.html" custom="0">
-    		<description locale="en_US">App specific footer content</description>
-    		<description locale="ru_RU">Содержимое футера приложения</description>
+        <file path="footer.html" custom="0">
+            <description locale="en_US">App specific footer content</description>
+            <description locale="ru_RU">Содержимое футера приложения</description>
+        </file>
+        <file path="blog.js" custom="0">
+            <description locale="en_US">JS</description>
+            <description locale="ru_RU">JS</description>
         </file>
     </files>
     <about locale="en_US">
