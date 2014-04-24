@@ -44,39 +44,8 @@
 
 <div class="clear-both"></div>
 
-<div class="lazyloading-wrapper align-center" style="display:none;">
-    {if $page < $pages_count}
-        {_w('%d photo', '%d photos', (count($photos) + $offset))}&nbsp;{_w('of %d', 'of %d', $total_photos_count)}
-        <br>
-        <a href="?page={$page+1}" class="lazyloading-link">[`Show more photos`]</a>
-    {elseif $page && $pages_count}
-        {_w('of %d', 'of %d', $total_photos_count)}
-    {/if}
-    <span class="lazyloading-progress" style="display:none">
-       <i class="icon16 loading"></i>
-       [`Loading`] {_w('%d photo', '%d photos', min($photos_per_page, 9999))}...
-    </span>
-</div>
-
-{* switch on/off lazy loading *}
-{if !$lazy_load && !$wa->globals('disable_pageless')}
-    <script type="text/javascript">
-    $(function() {
-        $.photos.setLazyLoad({
-            auto: true, // auto load next pages(true|false) (if omitted than considered as true)
-            total_count: {$total_photos_count}
-        });
-    });
-    </script>
-{/if}
-
-{* and paging in case JS is disabled… *}
-{if $pages_count > 1}
-<div class="block lazyloading-paging align-center">
-    <ul class="menu-h">
-    {for $p=1 to $pages_count}
-        <li{if $p == $page} class="selected"{/if}><a href="?page={$p}">{$p}</a></li>
-    {/for}
-    </ul>
+{if isset($pages_count) && $pages_count > 1}
+<div class="block lazyloading-paging">
+    {wa_pagination total=$pages_count attrs=['class' => "menu-h"]}
 </div>
 {/if}
