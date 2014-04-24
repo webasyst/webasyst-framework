@@ -54,6 +54,14 @@
     <title>{$wa->title()|escape}</title>
     <meta name="Keywords" content="{$wa->meta('keywords')|escape}" />
     <meta name="Description" content="{$wa->meta('description')|escape}" />
+    
+    <link rel="shortcut icon" href="/favicon.ico"/>
+    {if $wa->blog}
+        <!-- rss -->
+        {$rss=$wa->blog->rssUrl()}
+        {if $rss}<link rel="alternate" type="application/rss+xml" title="[s`RSS`] &mdash; {$wa->accountName()}" href="{$rss}">{/if}
+    {/if}
+    
     <!-- css -->
     <link href="{$wa_theme_url}vk.css?v{$wa_theme_version}" rel="stylesheet" type="text/css"/>
     {if $wa->shop && $wa->shop->currency() == 'RUB'} <link href="{$wa_url}wa-content/font/ruble/arial/fontface.css" rel="stylesheet" type="text/css">{/if}
