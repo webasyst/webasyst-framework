@@ -45,7 +45,8 @@ class photosViewHelper extends waAppViewHelper
     public function photo($id, $size = null)
     {
         $id = max(1,intval($id));
-        return array_shift($this->photos("id/{$id}", $size));
+        $photos = $this->photos("id/{$id}", $size);
+        return array_shift($photos);
     }
 
     public function option($name)
@@ -56,6 +57,7 @@ class photosViewHelper extends waAppViewHelper
     /**
      *
      * Get photos albums tree
+     * @param bool $return_html
      * @return string
      */
     public function albums($return_html = true)
@@ -107,6 +109,7 @@ class photosViewHelper extends waAppViewHelper
      * @param array $photo
      * @param string $size
      * @param array $attributes user-attribure, e.g. class or style
+     * @return string
      */
     public function getImgHtml($photo, $size, $attributes = array())
     {

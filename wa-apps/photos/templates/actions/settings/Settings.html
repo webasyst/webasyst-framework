@@ -135,6 +135,29 @@
                             </div>
 
                         </div>
+                    </div>
+
+                    <h6 class="heading">@2x</h6>
+                    <div class="field-group">
+                        <div class="field">
+                            <div class="name">
+                                [`@2x image thumbnail generation`]
+                            </div>
+                            <div class="value no-shift">
+                                <label><input type="checkbox" name="enable_2x" value="1" {if !empty($settings.enable_2x)}checked{/if}> [`Automatic @2x image thumbnail generation (recommended)`]</label>
+                                <br>
+                                <span class="hint">[`Enabling this option will allow automatic creation of image thumbnails on-fly for devices with high pixel density displays, e.g. Retina displays. Generating bigger images require more memory resources for image generation, requires more disk space for storing images, but significantly improves user experience on devices with high-end displays`]</span>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <div class="name">
+                                [`Thumbnail quality @2x`]
+                            </div>
+                            <div class="value">
+                                <input type="input" name="save_quality_2x" value="{if !empty($settings.save_quality_2x)}{str_replace(',', '.', $settings.save_quality_2x)}{/if}"><br>
+                                <span class="hint">[`JPEG compression quality for photo thumbnails. From 0 (min quality, min file size) to 100 (max quality, max file size). 70 is recommended.`]</span>
+                            </div>
+                        </div>
                         <div class="field">
                             <div class="value submit">
                                 <input type="submit" name="save" class="button green" value="[`Save`]">

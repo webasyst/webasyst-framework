@@ -70,7 +70,7 @@ class photosPhotoSaveFieldController extends waJsonController
                     $this->photo_model->updateById($allowed_photo_id, $data);
                 }
                 if ($name == 'name') {
-                    $this->response['value'] = photosPhoto::escape($value);
+                    $this->response['value'] = $value;
                 }
             }
 

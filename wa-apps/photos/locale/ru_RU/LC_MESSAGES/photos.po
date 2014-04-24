@@ -12,7 +12,7 @@ msgstr ""
 "%10)>=2)&&((n%10)<=4))&&(((n%100)<10)||((n%100)>=20)))?(1):2));\n"
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
-"X-Generator: Poedit 1.6.3\n"
+"X-Generator: Poedit 1.6.4\n"
 "Language: ru_RU\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
@@ -188,8 +188,8 @@ msgid "Photo “%s” will be deleted without the ability to restore. "
 msgstr "Фотография «%s» будет безвозвратно удалена. "
 
 #: /wa-apps/photos/templates/actions/dialog/DialogConfirm.html:12
-msgid "This will unstack %d photo. "
-msgid_plural "This will unstack %d photos. "
+msgid "This will unstack %d photo."
+msgid_plural "This will unstack %d photos."
 msgstr[0] "Группа из %d фотографии будет разобрана."
 msgstr[1] "Группа из %d фотографий будет разобрана."
 msgstr[2] "Группа из %d фотографий будет разобрана."
@@ -1057,7 +1057,7 @@ msgid "top rated"
 msgstr "по оценке"
 
 #: /wa-apps/photos/lib/config/site.php:20
-msgid "Homepage title"
+msgid "Homepage &lt;title&gt;"
 msgstr "Заголовок главной страницы"
 
 #: /wa-apps/photos/lib/config/site.php:29
@@ -1456,3 +1456,97 @@ msgid ""
 msgstr ""
 "Загрузите фотографии, щелкнув по ссылке выше или перетащив фотографии из "
 "папки на вашем компьютере прямо на эту страницу."
+
+#: /wa-apps/photos/templates/layouts/Sidebar.html:50
+msgid "Create an album using the green icon above."
+msgstr "Создайте новый альбом с помощью зеленой иконки выше."
+
+#: /wa-apps/photos/templates/actions/dialog/DialogConfirm.html:6
+msgid "%d photo will be deleted without the ability to restore."
+msgid_plural "%d photos will be deleted without the ability to restore."
+msgstr[0] "%d фотография будет удалена без возможности восстановления."
+msgstr[1] "%d фотографии будут удалены без возможности восстановления."
+msgstr[2] "%d фотографий будут удалены без возможности восстановления."
+
+#: /wa-apps/photos/lib/config/logs.php:5
+msgid "created a new photo album"
+msgstr "создал новый фотоальбом"
+
+#: /wa-apps/photos/lib/config/logs.php:8
+msgid "deleted photo album"
+msgstr "удалил фотоальбом"
+
+#: /wa-apps/photos/lib/config/logs.php:12
+msgid "uploaded photos"
+msgstr "загрузил фото"
+
+#: /wa-apps/photos/lib/config/logs.php:15
+msgid "moved photo to another album"
+msgstr "переместил фото в другой альбом"
+
+#: /wa-apps/photos/lib/config/logs.php:18
+msgid "grouped photos"
+msgstr "сгруппировал фото"
+
+#: /wa-apps/photos/lib/config/logs.php:21
+msgid "ungrouped photos"
+msgstr "разгруппировал фото"
+
+#: /wa-apps/photos/lib/config/logs.php:24
+msgid "deleted photos"
+msgstr "удалил фото"
+
+#: /wa-apps/photos/lib/config/logs.php:27
+msgid "rated photos"
+msgstr "оценил фото"
+
+#: /wa-apps/photos/lib/config/logs.php:30
+msgid "edited photos"
+msgstr "отредактировал фото"
+
+#: /wa-apps/photos/lib/config/logs.php:33
+msgid "reverted to original photo"
+msgstr "восстановил оригинал фото"
+
+#: /wa-apps/photos/lib/config/site.php:34
+msgid "Homepage META Keywords"
+msgstr "META Keywords главной страницы"
+
+#: /wa-apps/photos/lib/config/site.php:38
+msgid "Homepage META Description"
+msgstr "META Description главной страницы"
+
+#: /wa-apps/photos/templates/actions/settings/Settings.html:144
+msgid "@2x image thumbnail generation"
+msgstr "Эскизы изображений @2x"
+
+#: /wa-apps/photos/templates/actions/settings/Settings.html:147
+msgid "Automatic @2x image thumbnail generation (recommended)"
+msgstr "Разрешить создание эскизов @2x по требованию (рекомендуется)"
+
+#: /wa-apps/photos/templates/actions/settings/Settings.html:149
+msgid ""
+"Enabling this option will allow automatic creation of image thumbnails on-"
+"fly for devices with high pixel density displays, e.g. Retina displays. "
+"Generating bigger images require more memory resources for image generation, "
+"requires more disk space for storing images, but significantly improves user "
+"experience on devices with high-end displays"
+msgstr ""
+"Включение этой настройки позволит автоматически создавать эскизы изображений "
+"для устройств с высокой плотностью пикселей, например, для устройств с "
+"Retina-дисплеем. Формирование таких изображений требует больше оперативной "
+"памяти сервера и больше места для хранения файлов, однако это существенно "
+"улучшит отображение товаров на современных мониторах."
+
+#: /wa-apps/photos/templates/actions/settings/Settings.html:154
+msgid "Thumbnail quality @2x"
+msgstr "Качество эскизов @2x"
+
+#: /wa-apps/photos/templates/actions/settings/Settings.html:158
+msgid ""
+"JPEG compression quality for photo thumbnails. From 0 (min quality, min file "
+"size) to 100 (max quality, max file size). 70 is recommended."
+msgstr ""
+"Качество сжатия JPEG для эскизов. От 0 (низкое качество, минимальный размер "
+"файла) до 100 (выше качество, больше размер файла). Рекомендуемое значение: "
+"70."

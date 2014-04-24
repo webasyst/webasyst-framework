@@ -9,7 +9,7 @@ return array(
     'plugins'=>true,
     'pages' => true,
     'mobile' => true,
-    'version'=>'1.1.0',
+    'version'=>'1.1.1',
     'vendor'=>'webasyst',
     'img' => 'img/photos.png',
     'icon'=>array(

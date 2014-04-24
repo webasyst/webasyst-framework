@@ -31,13 +31,18 @@ $file = false;
 $size = false;
 
 // app settings
+/**
+ * @var photosConfig $app_config
+ */
 $app_config = wa('photos')->getConfig();
 
 $main_thumbnail_size = photosPhoto::getBigPhotoSize();
 
-if (preg_match('@((?:\d{2}/){2}([0-9]+)(?:\.[0-9a-f]+)?)/\\2\.(\d+(?:x\d+)?)\.([a-z]{3,4})@i', $request_file, $matches)) {
-    $file = $matches[1].'.'.$matches[4];
-    $main_thumb_file = $matches[1].'/'.$matches[2].'.'.$main_thumbnail_size.'.'.$matches[4];
+$enable_2x = false;
+
+if (preg_match('#((?:\d{2}/){2}([0-9]+)(?:\.[0-9a-f]+)?)/\\2\.(\d+(?:x\d+)?)(@2x)?\.([a-z]{3,4})#i', $request_file, $matches)) {
+    $file = $matches[1].'.'.$matches[5];
+    $main_thumb_file = $matches[1].'/'.$matches[2].'.'.$main_thumbnail_size.'.'.$matches[5];
 
     $sizes = explode('x', $matches[3]);
 
@@ -49,6 +54,15 @@ if (preg_match('@((?:\d{2}/){2}([0-9]+)(?:\.[0-9a-f]+)?)/\\2\.(\d+(?:x\d+)?)\.([
         if (in_array($size, $thumbnail_sizes) === false) {
             $file = false;
         }
+    }
+    if ($matches[4] && $app_config->getOption('enable_2x')) {
+        $enable_2x = true;
+        $size = explode('x', $size);
+        foreach ($size as &$s) {
+            $s *= 2;
+        }
+        unset($s);
+        $size = implode('x', $size);
     }
 }
 wa()->getStorage()->close();
@@ -68,10 +82,10 @@ if ($file && file_exists($protected_path.$file) && !file_exists($public_path.$re
         $protected_path.$file,
         $size,
         $app_config->getOption('sharpen'),
-        $max_size ? $max_size : false
+        $max_size ? ($enable_2x ? 2 * $max_size : $max_size) : false
     );
     if ($image) {
-        $quality = $app_config->getSaveQuality();
+        $quality = $app_config->getSaveQuality($enable_2x);
         $image->save($public_path.$request_file, $quality);
         clearstatcache();
     }

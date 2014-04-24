@@ -37,6 +37,9 @@ class photosViewTree
 
     public function display($view_type = 'backend')
     {
+        if (empty($this->elements)) {
+            return '';
+        }
         $result = $view_type == 'backend' ?
                     '<ul class="menu-v with-icons"><li class="drag-newposition"></li>' :
                     '<ul class="menu-v album-tree">';

@@ -46,6 +46,9 @@
     </h5>
     <div class="hierarchical" id="album-list">
       {$albums}
+      <div class="block p-empty-album-list" {if $albums}style="display: none;"{/if}>
+        <p class="hint align-center">[`Create an album using the green icon above.`]</p>
+      </div>
     </div>
   </div>
   <div class="block" {if !isset($cloud) || empty($cloud)}style="display:none;"{/if} id="tag-cloud-block">
@@ -92,10 +95,10 @@
       
 </div>
 {capture name="template-album-list-item"}{literal}
-  <li class="drag-newposition ui-droppable"></li>
+  <li class="drag-newposition new-item"></li>
   <li class="dr {%#o.type == Album.TYPE_STATIC ? 'static' : 'dynamic'%}" rel="{%#o.id%}">
     <span class="count"></span>
-    <a href="#/album/{%#o.id%}" class="ui-droppable"><i class="icon16 {%#o.type == Album.TYPE_STATIC ? 'pictures' : 'funnel' %}"></i>{%#o.name%}
+    <a href="#/album/{%#o.id%}" class="new-item"><i class="icon16 {%#o.type == Album.TYPE_STATIC ? 'pictures' : 'funnel' %}"></i>{%#o.name%}
          {% if (o.status <= 0) { %}<i class="icon10 lock-bw no-overhanging"></i>{% } %}
          <strong class="small highlighted count-new"></strong>
     </a>

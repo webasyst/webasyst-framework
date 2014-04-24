@@ -10,21 +10,21 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
-"X-Generator: Poedit 1.6.3\n"
+"X-Generator: Poedit 1.6.4\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "Language: en_US\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
 
 #: /wa-apps/photos/templates/actions/dialog/DialogConfirm.html:6
-msgid "%d photo will be deleted without the ability to restore. "
-msgid_plural "%d photos will be deleted without the ability to restore. "
+msgid "%d photo will be deleted without the ability to restore."
+msgid_plural "%d photos will be deleted without the ability to restore."
 msgstr[0] ""
 msgstr[1] ""
 
 #: /wa-apps/photos/templates/actions/dialog/DialogConfirm.html:12
-msgid "This will unstack %d photo. "
-msgid_plural "This will unstack %d photos. "
+msgid "This will unstack %d photo."
+msgid_plural "This will unstack %d photos."
 msgstr[0] ""
 msgstr[1] ""
 
@@ -1058,7 +1058,7 @@ msgid "top rated"
 msgstr ""
 
 #: /wa-apps/photos/lib/config/site.php:20
-msgid "Homepage title"
+msgid "Homepage &lt;title&gt;"
 msgstr ""
 
 #: /wa-apps/photos/lib/config/site.php:29
@@ -1472,4 +1472,95 @@ msgstr ""
 msgid ""
 "Start uploading photos by clicking the link above or by dragging selected "
 "photos anywhere on this page."
+msgstr ""
+
+#: /wa-apps/photos/templates/layouts/Sidebar.html:50
+msgid "Create an album using the green icon above."
+msgstr ""
+
+#: /wa-apps/photos/lib/actions/photo/photosPhotoAddToAlbums.controller.php:66
+#: /wa-apps/photos/lib/actions/photo/photosPhotoAssignTags.controller.php:47
+#: /wa-apps/photos/lib/actions/photo/photosPhotoDelete.controller.php:59
+#: /wa-apps/photos/lib/actions/photo/photosPhotoManageAccessSave.controller.php:68
+#: /wa-apps/photos/lib/actions/photo/photosPhotoSaveField.controller.php:82
+#: /wa-apps/photos/lib/actions/photo/photosPhotoSaveFields.controller.php:78
+#: /wa-apps/photos/lib/actions/stack/photosStackMake.controller.php:51
+msgid "out of %d selected"
+msgid_plural "out of %d selected"
+msgstr[0] ""
+msgstr[1] ""
+
+#: /wa-apps/photos/lib/config/logs.php:5
+msgid "created a new photo album"
+msgstr ""
+
+#: /wa-apps/photos/lib/config/logs.php:8
+msgid "deleted photo album"
+msgstr ""
+
+#: /wa-apps/photos/lib/config/logs.php:12
+msgid "uploaded photos"
+msgstr ""
+
+#: /wa-apps/photos/lib/config/logs.php:15
+msgid "moved photo to another album"
+msgstr ""
+
+#: /wa-apps/photos/lib/config/logs.php:18
+msgid "grouped photos"
+msgstr ""
+
+#: /wa-apps/photos/lib/config/logs.php:21
+msgid "ungrouped photos"
+msgstr ""
+
+#: /wa-apps/photos/lib/config/logs.php:24
+msgid "deleted photos"
+msgstr ""
+
+#: /wa-apps/photos/lib/config/logs.php:27
+msgid "rated photos"
+msgstr ""
+
+#: /wa-apps/photos/lib/config/logs.php:30
+msgid "edited photos"
+msgstr ""
+
+#: /wa-apps/photos/lib/config/logs.php:33
+msgid "reverted to original photo"
+msgstr ""
+
+#: /wa-apps/photos/lib/config/site.php:34
+msgid "Homepage META Keywords"
+msgstr ""
+
+#: /wa-apps/photos/lib/config/site.php:38
+msgid "Homepage META Description"
+msgstr ""
+
+#: /wa-apps/photos/templates/actions/settings/Settings.html:144
+msgid "@2x image thumbnail generation"
+msgstr ""
+
+#: /wa-apps/photos/templates/actions/settings/Settings.html:147
+msgid "Automatic @2x image thumbnail generation (recommended)"
+msgstr ""
+
+#: /wa-apps/photos/templates/actions/settings/Settings.html:149
+msgid ""
+"Enabling this option will allow automatic creation of image thumbnails on-"
+"fly for devices with high pixel density displays, e.g. Retina displays. "
+"Generating bigger images require more memory resources for image generation, "
+"requires more disk space for storing images, but significantly improves user "
+"experience on devices with high-end displays"
+msgstr ""
+
+#: /wa-apps/photos/templates/actions/settings/Settings.html:154
+msgid "Thumbnail quality @2x"
+msgstr ""
+
+#: /wa-apps/photos/templates/actions/settings/Settings.html:158
+msgid ""
+"JPEG compression quality for photo thumbnails. From 0 (min quality, min file "
+"size) to 100 (max quality, max file size). 70 is recommended."
 msgstr ""

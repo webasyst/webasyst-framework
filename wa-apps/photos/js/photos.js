@@ -2788,11 +2788,21 @@
         onCreateAlbum: function(album, parent_id) {
             // update album-list in left sidebar
             var html = tmpl('template-album-list-item', album);
+            var album_list = $('#album-list');
+
+            var ul;
             if (!parent_id) {
-                $('#album-list ul:first').prepend(html);
+                ul = album_list.find('ul:first');
+                if (!ul.length) {
+                    album_list.find('.p-empty-album-list').hide();
+                    ul = album_list.prepend(
+                            '<ul class="menu-v with-icons"><li class="drag-newposition"></li></ul>'
+                    ).find('ul:first');
+                }
+                album_list.find('ul:first').prepend(html);
             } else {
-                var li = $('#album-list li[rel='+parent_id+']');
-                var ul = li.find('ul:first');
+                var li = album_list.find('li[rel='+parent_id+']');
+                ul = li.find('ul:first');
                 if (!ul.length) {
                     li.append('<ul class="menu-v with-icons"></ul>');
                     ul = li.find('ul:first');
@@ -2800,6 +2810,8 @@
                 }
                 ul.prepend(html);
             }
+
+            album_list.find('.new-item').removeClass('new-item').mouseover();
 
             // update album-list in upload-form
             if(!album.type) {
@@ -2822,12 +2834,16 @@
 
             // update album-list in upload-form
             $('#p-upload-step2 select[name=album_id] option[value='+album.id+']').html(album.name);
+
+            this.setTitle(album.not_escaped_name);
         },
 
         // visual corrections after deleting album
         onDeleteAlbum: function(album_id) {
+
             // remove from sidebar-tree
-            var li = $('#album-list li[rel='+album_id+']'),
+            var album_list = $('#album-list'),
+                li = album_list.find('li[rel='+album_id+']'),
                 subtree = li.find('ul:first'),
                 ul_wrapper = li.parents('ul:first'),
                 children;
@@ -2858,6 +2874,10 @@
                     }
                     ul_wrapper.remove();
                 }
+            }
+            
+            if (!album_list.find('ul:first').length) {
+                album_list.find('.p-empty-album-list').show();
             }
 
             // remove from album-list in upload-form

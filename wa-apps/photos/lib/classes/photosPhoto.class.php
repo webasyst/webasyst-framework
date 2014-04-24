@@ -160,7 +160,7 @@ class photosPhoto
                         $h = $image->width*$height/$width;
                     }
                 }
-                $image->crop($w, $h)->resize($width, $height);
+                $image->crop($w, $h)->resize($width, $height, waImage::INVERSE);
                 break;
             case 'max':
             case 'width':

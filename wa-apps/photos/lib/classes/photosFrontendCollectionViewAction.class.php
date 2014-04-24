@@ -56,13 +56,21 @@ class photosFrontendCollectionViewAction extends photosFrontendViewAction
         $photos = photosCollection::extendPhotos($photos);
         if ($this->hash) {
             $title = $collection->getTitle();
-            waRequest::setParam('title', $title);
+            if (!$title) {
+                $this->getResponse()->setTitle(waRequest::param('title') ? waRequest::param('title') : wa()->accountName());
+            } else {
+                $this->getResponse()->setTitle($title);
+            }
+            
             $this->view->assign('title', photosPhoto::escape($title));
+            
         } else {
+            $this->getResponse()->setTitle(waRequest::param('title') ? waRequest::param('title') : wa()->accountName());
+            $this->getResponse()->setMeta('keywords', waRequest::param('meta_keywords'));
+            $this->getResponse()->setMeta('description', waRequest::param('meta_description'));
             $this->view->assign('title', '');
         }
-        $this->workupPhotos($photos);
-
+        
         $total_count = $collection->count();
 
         $this->view->assign('photos_per_page', $this->photos_per_page);
@@ -92,14 +100,5 @@ class photosFrontendCollectionViewAction extends photosFrontendViewAction
         $v = wa()->getVersion();
         $this->getResponse()->addJs('js/lazy.load.js?v='.$v, true);
         $this->getResponse()->addJs('js/frontend.photos.js?v='.$v, true);
-    }
-
-    protected function workupPhotos(&$photos)
-    {
-        foreach ($photos as &$photo) {
-            $photo['name'] = photosPhoto::escape($photo['name']);
-        }
-        unset($photo);
-        return $photos;
     }
 }

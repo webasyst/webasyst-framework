@@ -171,7 +171,11 @@
 
                 hide = function() {
                     var item = el.parent();
-                    item.find('ul:first').hide();
+                    var list = item.find('.hierarchical:first');
+                    if (!list.length) {
+                        list = item.find('ul:first');
+                    }
+                    list.hide();
                     arr.removeClass('darr').addClass('rarr');
                     $.photos_sidebar.countSubtree(item);
                     newStatus = 'hidden';
@@ -179,7 +183,11 @@
 
                 show = function() {
                     var item = el.parent();
-                    item.find('ul:first').show();
+                    var list = item.find('.hierarchical:first');
+                    if (!list.length) {
+                        list = item.find('ul:first');
+                    }
+                    list.show();
                     arr.removeClass('rarr').addClass('darr');
                     $.photos_sidebar.countItem(item);
                     newStatus = 'shown';

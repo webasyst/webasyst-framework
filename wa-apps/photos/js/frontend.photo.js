@@ -33,7 +33,10 @@ $(function() {
                     function(html) {
                         if (html) {
                             var rendered = $('<div></div>').html(html);
-                            html = rendered.find('.stream-wrapper ul').html();
+                            if ($.Retina) {
+                                rendered.find('.stream-wrapper .photostream li:not(.dummy) img').retina();
+                            }
+                            html = rendered.find('.stream-wrapper ul').children();
                             rendered.remove();
                             self.trigger('append', html);
                             $.photos.onLoadTail();
@@ -71,7 +74,10 @@ $(function() {
                     function(html) {
                         if (html) {
                             var rendered = $('<div></div>').html(html);
-                            html = rendered.find('.stream-wrapper ul').html();
+                            if ($.Retina) {
+                                rendered.find('.stream-wrapper .photostream li:not(.dummy) img').retina();
+                            }
+                            html = rendered.find('.stream-wrapper ul').children();
                             rendered.remove();
                             self.trigger('prepend', html);
                             $.photos.onLoadHead();
@@ -92,6 +98,9 @@ $(function() {
             this.options = options;
             $.photos.hotkey_manager.set();
             $.photos.renderMap();
+            if ($.Retina) {
+                $('#photo').retina();
+            }
             this.onInit();
         },
         onInit: function() {},
@@ -249,7 +258,7 @@ $(function() {
                     stream.prepend = function(photos) {
                         photos = workup(photos);
                         return prepend.call(this, photos);
-                    }
+                    };
                     
                     stream.append(__photo_stream_data);  // __photo_stream_data comes with photo-stream html block
                     stream.setCurrentById(photo_id);
@@ -448,7 +457,11 @@ $(function() {
                 replaceImg(
                     $('#photo'), 
                     photo.thumb.url + (photo.edit_datetime ? '?' + Date.parseISO(photo.edit_datetime) : ''),
-                    null
+                    function() {
+                        if ($.Retina) {
+                            $(this).retina();
+                        }
+                    }
                 );
                 // than load rest part of photo's info 
                 f.xhr = $.get('loadPhoto',
@@ -488,7 +501,11 @@ $(function() {
                     replaceImg(
                         $('#photo'), 
                         photo.thumb.url + (photo.edit_datetime ? '?' + Date.parseISO(photo.edit_datetime) : ''),
-                        null
+                        function() {
+                            if ($.Retina) {
+                                $(this).retina();
+                            }
+                        }
                     );
                 }
                 
@@ -711,6 +728,9 @@ $(function() {
                     photo.thumb_custom.url, 
                     function() {
                         preload_photo_img.attr('data-photo-id', photo.id);
+                        if ($.Retina) {
+                            $(this).retina();
+                        }
                     }
                 );
             },
@@ -724,6 +744,9 @@ $(function() {
                     function() {
                         if (photo.thumb_custom.size && typeof photo.thumb_custom.size === 'object') {
                             $(this).width(photo.thumb_custom.size.width).height(photo.thumb_custom.size.height);
+                        }
+                        if ($.Retina) {
+                            $(this).retina();
                         }
                     }
                 );
@@ -753,6 +776,10 @@ $(function() {
             });
             return false;
         });
+        
+        if ($.Retina) {
+            photo_stream.find('ul.photostream li:not(.dummy) img').retina();
+        }
 
         // click to arrows in stack-navigation parenl
         var stack_nav = $('#stack-nav');
