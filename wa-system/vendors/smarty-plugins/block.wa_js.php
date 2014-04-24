@@ -47,7 +47,7 @@ function smarty_block_wa_js($params, $content, &$smarty) {
                     }
                     if (isset($ui_custom[$jquery_f])) {
                         if (!$result) {
-                            $result = '<script type="text/javascript" src="' . $wa->getRootUrl() . 'wa-content/js/jquery-ui/jquery-ui.custom.min.js"></script>'."\n";
+                            $result = '<script type="text/javascript" src="' . $wa->getRootUrl() . 'wa-content/js/jquery-ui/jquery-ui.custom.min.js?v'.$wa->getVersion('webasyst').'"></script>'."\n";
                         }
                         // include locale
                         if ($ui_custom[$jquery_f] && $locale != 'en_US') {
