@@ -1,10 +1,11 @@
-{* post list: view mode depends on the context: either "stream_search.html" or "stream_posts.html" *}
+{* post stream (list) wrapper *}
 
 {if !$is_lazyloading}
 <div id="post-stream" role="main" class="lazyloading" {if $wa->param('blog_url')}itemscope itemtype="http://schema.org/Blog"{/if}>
 {/if}
 
-    {if !$is_lazyloading and !empty($stream_title)}<h1>{$stream_title}</h1>{/if}
+    {if !$is_lazyloading and !empty($stream_title)}<h1>{$stream_title|escape}</h1>{/if}
+    
     <a name="page_{$page}"></a>
 
         {if $is_search}
@@ -42,7 +43,7 @@
 <script type="text/javascript">
 $.pageless({
         auto: true, // auto load next pages
-        url: '?layout=lazyloading',
+        url: '?layout=lazyloading{if $blog_query}&query={urlencode($blog_query)}{/if}',
         target: '.lazyloading:first',
         scroll: function(response){
             var progress = '';
@@ -52,6 +53,19 @@ $.pageless({
         },
         count: {$pages},
         paging_selector:'#stream-paging'
+        
+        {if $blog_query}
+            
+            ,prepareContent: function(html) {
+                // hightlight search query in content text after lazyloading
+                var tmp = $('<div></div>').append(html);
+                $.blog_utils.highlight(tmp);
+                var html = tmp.html();
+                tmp.remove();
+                return html;
+            }
+            
+        {/if}
 });
 </script>
 {/if}

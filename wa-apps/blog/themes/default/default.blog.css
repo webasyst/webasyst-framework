@@ -1,0 +1,97 @@
+/*
+ * Webasyst Default theme family
+ *
+ * Blog app CSS
+ * (requires linking base default.css file from the Site app)
+ *
+ * @link http://www.webasyst.com/
+ * @author Webasyst LLC
+ * @copyright 2014 Webasyst LLC
+ * @package Webasyst
+ */
+
+/* Blog app specific layout changes to base default.css
+------------------------------------------------------- */
+
+.page { background: #fff; }
+.page-nav .nav-sidebar { width: 25%; float: right; background: #fff; padding: 3% 5%; }
+.page-nav .nav-hotties { margin-left: 0; border-left: none; }
+.page-nav .nav-hotties ul.menu-h li { padding-right: 0; }
+.page-content { margin-right: 25%; margin-left: 0; border-left: none; position: static; }
+
+.subscribe { padding: 25px; background: #eee; margin-bottom: 20px; }
+.subscribe ul { list-style: none; padding-left: 0; margin-bottom: 0; }
+.subscribe ul li { margin-bottom: 10px; }
+.subscribe ul li a { text-decoration: none; }
+.subscribe ul li i.icon16 { margin-top: 0.1em; margin-right: 0.5em; }
+
+.post { margin-bottom: 80px; margin-right: 50px; }
+.post h3 { font-size: 2em; margin-right: 5px; margin-bottom: 8px; }
+.post h3 a { text-decoration: none; }
+.post img { max-width: 100%; height: auto !important; }
+.post .text { margin-top: 5px; margin-right: 10px; }
+.post textarea { width: 100%; min-height: 300px; margin-top: 10px; height: 250px; }
+.post.search-match { margin-top: 20px; margin-bottom: 50px; }
+.post.search-match h3 { font-size: 1.5em; margin-bottom: 5px; }
+.post.search-match p { margin-top: 5px; }
+
+.credentials { overflow: hidden; line-height: 1.3em; }
+.credentials a,
+.credentials span { display: inline-block; vertical-align: middle; padding-left: 0 !important; //display: inline;}
+.credentials .userpic { min-width: 20px; display: block; float: left; margin-right: 2px; border-radius: 50%; }
+.credentials .username { margin: 0; }
+.credentials .username, .credentials .username a { color: #777; padding: 0; display: inline; }
+.credentials a.username:hover { color: red; }
+.credentials .date,
+.credentials .icon16 { margin: 0 3px; }
+.post .credentials { margin-bottom: 20px;}
+
+.comments { margin: 30px 50px 10px 0; }
+.comments h3 { margin: 0 0 20px; }
+.comments h4 { margin: 0 0 10px; }
+.comments .credentials .date { margin: 0 5px; padding-top: 1px; }
+.comments .credentials .userpic { margin-right: 5px; }
+.comments .credentials .userpic.icon16 { min-width: 0; width: 16px; height: 16px; margin: 7px 4px 0; }
+.comments textarea { height: 100px; min-height: 100px; width: 75%; margin-top: 0; } 
+.comments ul,
+.comments ul li { padding: 0; margin: 0 0 20px 0; list-style: none;}
+.comments ul li ul { margin:20px 0 0 0; }
+.comments ul li span.hint a { color: #aaa; text-decoration: underline; }
+.comments .text { margin: 5px 0 5px 28px; }
+.comments .actions { margin: 0 0 5px 28px; font-size: 0.9em; }
+.comments ul li a.comment-delete { margin: 0 0 0 5px; padding: 0; color: #d99; text-decoration: underline; }
+.comments ul li a.comment-delete:hover { background: red; color: white; }
+.comments ul li ul { padding-left: 25px; }
+.comments ul li .comment-form { padding: 10px 30px; margin-top: 0; }
+.comments ul li .comment-form textarea { min-height: 100px; }
+.comment.in-reply-to { background: #eee; margin: -8px -8px -13px; padding: 8px 35px 8px 8px; position: relative; }
+.comment.new { background: #ffc; margin: -8px -8px -13px; padding: 8px 35px 8px 8px; }
+
+ul.auth-type { padding: 0 0 10px !important; list-style: none; }
+ul.auth-type li { padding-right: 10px; display: inline-block; float: left\9; display: inline\9; }
+ul.auth-type li a { padding: 5px 6px; }
+ul.auth-type li a img { margin-right: 5px; top: 4px; position: relative; }
+
+.comment-form { padding: 0; margin-top: 30px; }
+.comment-form h4 { margin: 0 0 20px; font-weight: normal; }
+.comment-form-fields p { margin: 0 0 10px; }
+.comment-form-fields p a { display: inline !important; }
+.comment-form-fields label { width: 110px; display: block; clear: left; float: left; margin: 0 10px 0 0; color: #aaa; padding-top: 3px; }
+.comment-form-fields input { width: 20em;}
+.comment-form textarea { min-width: 70%; min-height: 160px; }
+.comment-form .comment-submit { padding:0 0 0 120px;}
+.comment-form .userpic { width: 20px; height: 20px; float: left; margin-right: 5px; border-radius: 50%; }
+.comment-form ul.menu-h.auth-type li a img { float: left; margin-right: 3px; position: relative; top: 2px; }
+.comment-form ul.menu-h.auth-type { padding-bottom: 20px; }
+
+.pageless-wrapper { font-style: italic; }
+
+/* Plugins
+---------- */
+
+.categories {  }
+.categories ul.menu-v { padding-left: 10px; }
+.categories ul.menu-v li { float: none; line-height: 1.2em; font-size: 0.9em; margin: 2px 0; }
+.categories ul.menu-v li.selected a { color: #000; text-decoration: none; font-weight: bold; }
+
+.tags.cloud { padding: 10px 0; border: 1px solid #ccc; text-align: center; }

@@ -1,7 +1,7 @@
-{* post list: default view mode *}
+{* post stream (list): default view mode *}
 
 {foreach $posts as $post}
-    <div class="post" id="post-{$post.id}" {if $wa->param('blog_url')}itemprop="blogPosts" {/if}itemscope itemtype="http://schema.org/BlogPosting">
+    <section class="post" id="post-{$post.id}" {if $wa->param('blog_url')}itemprop="blogPosts" {/if}itemscope itemtype="http://schema.org/BlogPosting">
         <h3>
             <a href="{$post.link}" itemprop="url">{$post.title}</a>
 
@@ -24,15 +24,23 @@
             {/if}
 
             {if $post.user.posts_link}
-                <a href="{$post.user.posts_link}" class="username" rel="author">{$post.user.name}</a>
+                <a href="{$post.user.posts_link}" class="username">{$post.user.name}</a>
             {else }
-                <span class="username" rel="author">{$post.user.name}</span>
+                <span class="username">{$post.user.name}</span>
             {/if}
             <span class="hint date">{$post.datetime|wa_datetime:"humandate"}</span>
             {if $show_comments && $post.comments_allowed}
-                <a href="{$post.link}#comments" class="small">
-                    {if !empty($post.comment_count)}{_w('%d comment','%d comments',$post.comment_count)}{else}[`no comments`]{/if}
-                </a>
+            	{if !empty($post.comment_count)}
+            	    <a href="{$post.link}#comments" class="small">
+        	            {_w('%d comment','%d comments',$post.comment_count)}
+    	            </a>
+                {else}
+                    {*
+                	<a href="{$post.link}#comments" class="hint">
+                    	[`no comments`]
+	                </a>
+	                *}
+                {/if}
             {/if}
 
         </div>
@@ -58,7 +66,7 @@
             </div>
         {/if}
 
-    </div>
+    </section>
 {foreachelse}
     {if $page lt 2}
         {_w('%d post','%d posts',0)}

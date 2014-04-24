@@ -1,8 +1,12 @@
-{* dedicated post page *}
-
 <div itemscope itemtype="http://schema.org/BlogPosting">
 
-    <div class="post" role="main" id="post-{$post.id}">
+    <article class="post" role="main" id="post-{$post.id}">
+        
+        <div class="breadcrumbs">
+            <a href="{$wa->blog->url()}">[`All posts`]</a>
+            <span class="rarr">→</span>
+        </div>
+        
         <h1 itemprop="name">
             {$post.title}
 
@@ -17,12 +21,17 @@
                 <a href="{$post.user.posts_link}">
                     <img src="{$post.user.photo_url_20}" class="userpic" alt="">
                 </a>
-                <a href="{$post.user.posts_link}" class="username" rel="author" itemprop="author">{$post.user.name}</a>
+                <a href="{$post.user.posts_link}" class="username" itemprop="author">{$post.user.name}</a>
             {else}
                 <img src="{$post.user.photo_url_20}" class="userpic" alt="">
-                <span class="username" rel="author" itemprop="author">{$post.user.name}</span>
+                <span class="username" itemprop="author">{$post.user.name}</span>
             {/if}
             <meta itemprop="datePublished" content="{$post.datetime|date_format:'Y-m-d\TH:i'}">
+            
+            {*
+                <a href="ADD_YOUR_GOOGLE_PLUS_PROFILE_URL_HERE" rel="author"><i class="icon16 google"></i></a>
+            *}
+            
             <span class="hint date" title="{$post.datetime|wa_datetime}">{$post.datetime|wa_datetime:"humandate"}</span>
         </div>
 
@@ -44,7 +53,13 @@
             </div>
         {/if}
 
-    </div>
+        {*
+        <div class="share">
+            COULD BE A GOOD PLACE FOR SHARE BUTTONS
+        </div>
+        *}
+
+    </article>
 
     {* @event frontend_post.%plugin_id%.footer *}
     {foreach $frontend_post as $plugin => $output}

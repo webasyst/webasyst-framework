@@ -1,5 +1,7 @@
 $(function(){
 
+    $.blog_utils.highlight('#post-stream')
+
     var move_form_add = function(target, id, setfocus) {
         form_refresh();
         $('.comment-form').find('input[name=parent]').val( id );
@@ -10,6 +12,8 @@ $(function(){
     };
 
     var form_refresh = function(empty) {
+    
+        //comment form submit refresh
         var form = $('.comment-form');
         form.find('.errormsg').remove();
         form.find('.error').removeClass('error');
@@ -20,15 +24,20 @@ $(function(){
         }
     };
 
-    // comments
     $('.comment-reply').live('click', function(){
+    
+        // reply to a comment
         var item = $(this).parents('.comment');
         var id = item.length?parseInt($(item).attr('id').replace(/^[\D]+/,'')):0;
         move_form_add($(this).parent(), id, true);
+        $('.comment').removeClass('in-reply-to');
+        item.addClass('in-reply-to');
         return false;
     });
 
     $('.comment-form input:submit').click(function(){
+    
+        //save comment
         var button = $(this);
         button.attr('disabled', true).next().show();
 
@@ -44,6 +53,8 @@ $(function(){
                 return;
             }
             if ( response.status && response.status == 'ok' && response.data) {
+            
+                // saved
                 var template = $(response.data.template);
                 var count_str = response.data.count_str;
 
@@ -53,7 +64,7 @@ $(function(){
                 } else {
                     target = container.parent();
                     if (!target.next('ul').size()) {
-                        target.after('<ul class="menu-v with-icons"></ul>');
+                        target.after('<ul></ul>');
                     }
                     target = target.next('ul');
                 }
@@ -61,12 +72,19 @@ $(function(){
                 target.append( $('<li />').append(template) );
                 move_form_add('.comments', 0);
 
+                if ( response.data.comment_id )
+                    $('#comment-' + response.data.comment_id).addClass('new');
+                    
                 $('.not-comment').remove();
+                $('.comment').removeClass('in-reply-to');
                 $('.comment-count').show().html(count_str);
 
                 template.trigger('plugin.comment_add');
                 form_refresh(true);
+                
             } else if( response.status && response.status == 'fail' ) {
+            
+                // error
                 form_refresh();
                 var errors = response.errors;
                 $(errors).each(function($name){
@@ -147,3 +165,29 @@ $(function(){
 
 });
 
+$.blog_utils = {
+    query: '',
+    init: function() {
+        // search highlight
+        if (location.href.indexOf('?') !== -1) {
+            var pos = location.href.indexOf('?');
+            var params = location.href.slice(pos + 1).split('&');
+            for (var i = 0; i < params.length; i += 1) {
+                if (params[i].indexOf('query=') !== -1) {
+                    this.query = params[i].slice(params[i].indexOf('query=') + 6);
+                    break;
+                }
+            }
+        }
+    },
+    highlight: function(container) {
+        if (this.query) {
+            $(container).find('.search-match').find('h3 a, p').each(function() {
+                var text = $(this).html();
+                text = text.replace(new RegExp('(' + $.blog_utils.query + ')', 'i'), '<span class="highlighted">$1</span>');
+                $(this).html(text);
+            });
+        }
+    }
+};
+$.blog_utils.init();

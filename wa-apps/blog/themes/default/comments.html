@@ -1,5 +1,3 @@
-{* comment list and a comment posting form *}
-
 <script type="text/javascript">
 $(document).ready(function() {
     var provider_list = $('#user-auth-provider');
@@ -18,17 +16,15 @@ $(document).ready(function() {
 });
 </script>
 
-
-<div class="comments" itemscope itemtype="http://schema.org/UserComments">
+<section class="comments" itemscope itemtype="http://schema.org/UserComments">
     <a name="comments"></a>
         <h3 class="comment-count" {if $post.comment_count == 0}style="display: none;"{/if}>{_w('%d comment','%d comments',$post.comment_count)}</h3>
 
         {if $post.comment_count == 0}
-            <ul class="menu-v with-icons">
+            <ul>
                 <!-- placeholder for new comments -->
             </ul>
         {/if}
-
 
         {$depth=-1}
         {foreach $post.comments as $comment}
@@ -48,7 +44,7 @@ $(document).ready(function() {
             {/if}
             {if $comment.depth > $depth}
 
-            <ul class="menu-v with-icons">
+            <ul>
                 <li>
                 {$depth=$comment.depth}
             {/if}
@@ -64,9 +60,9 @@ $(document).ready(function() {
         </li>
     </ul>
 
+</section>
 
-</div>
-<div class="comment-form">
+<section class="comment-form">
     <a name="comment0"></a>
     <form action="{$post.comment_link}" method="post">
         <h4>[`Add comment`]</h4>
@@ -79,7 +75,7 @@ $(document).ready(function() {
                     {sprintf('[`To add a comment please <a href="%s">sign up</a> or <a href="%s">login</a>`]',$wa->signupUrl(),$wa->loginUrl())}
                 </div>
                 {elseif $auth_adapters}
-                    <ul class="menu-h auth-type" id="user-auth-provider">
+                    <ul class="auth-type" id="user-auth-provider">
                         {if $require_authorization}
                         <li data-provider="signup" {if !$current_auth_source}class="selected"{/if}><a href="#">[`Sign up`]</a></li>
                         {else}
@@ -141,5 +137,5 @@ $(document).ready(function() {
             <img src="{$wa_url}wa-content/img/loading16.gif" style="display: none;" alt="">
         </div>
     </form>
-</div>
+</section>
 

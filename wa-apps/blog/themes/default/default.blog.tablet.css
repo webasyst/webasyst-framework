@@ -1,0 +1,14 @@
+/*
+ * Webasyst Default theme family
+ *
+ * Blog app CSS for tablet computers
+ * (requires linking base default.css file from the Site app)
+ *
+ * @link http://www.webasyst.com/
+ * @author Webasyst LLC
+ * @copyright 2014 Webasyst LLC
+ * @package Webasyst
+ */
+
+.page-nav .nav-sidebar { width: 20%;  padding: 3% 3%; }
+.page-content { clear: none; margin-right: 20%; }

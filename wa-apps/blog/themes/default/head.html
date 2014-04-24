@@ -1,0 +1,18 @@
+<!-- blog css -->
+<link href="{$wa_active_theme_url}default.blog.css?v{$wa_theme_version}" rel="stylesheet" type="text/css">
+<link href="{$wa_active_theme_url}default.blog.tablet.css?v{$wa_theme_version}" media="screen and (min-width: 760px) and (max-width: 1024px)" rel="stylesheet" type="text/css"/>
+<link href="{$wa_active_theme_url}default.blog.mobile.css?v{$wa_theme_version}" rel="stylesheet"{if !$wa->isMobile()} media="screen and (max-width: 760px)"{/if} type="text/css">
+
+<!-- blog js -->
+<script type="text/javascript" src="{$wa_active_theme_url}blog.js?v{$wa_theme_version}"></script>
+<script type="text/javascript" src="{$wa_url}wa-content/js/jquery-wa/wa.core.js?v{$wa->version(true)}"></script>
+
+<!-- next & prev links -->
+{foreach $links as $role => $link}
+<link rel="{$role}" href="{$link}">
+{/foreach}
+
+{* @event (frontend_action_default|frontend_action_post|frontend_action_page|frontend_action_error).%plugin_id%.head *}
+{foreach $frontend_action as $plugin => $output}
+    {if !empty($output.head)}{$output.head}{/if}
+{/foreach}

@@ -1,20 +1,20 @@
-{* post list: minimalistic view mode; used for post filtering by tags, author, search, etc. *}
+{* post stream (list): minimalistic view mode; used for post filtering by tags, author, search, etc. *}
 
 {foreach $posts as $post}
-<div class="post search-match" id="post-{$post.id}" {if $wa->param('blog_url')}itemprop="blogPosts"{/if} itemscope itemtype="http://schema.org/BlogPosting">
-            <h3><a href="{$post.link}" itemprop="url">{$post.title}</a></h3>
-    <span class="hint">
-        {if $post.user.posts_link}
-            <a href="{$post.user.posts_link}" class="username" rel="author">{$post.user.name}</a>
-        {else}
-            <span class="username" rel="author">{$post.user.name}</span>
-        {/if}
-        {$post.datetime|wa_datetime:"humandate"}
-    </span>
-    <p>
-        {$post.text|strip_tags|truncate:400}
-    </p>
-</div>
+    <section class="post search-match" id="post-{$post.id}" {if $wa->param('blog_url')}itemprop="blogPosts"{/if} itemscope itemtype="http://schema.org/BlogPosting">
+                <h3><a href="{$post.link}" itemprop="url">{$post.title}</a></h3>
+        <span class="hint">
+            {if $post.user.posts_link}
+                <a href="{$post.user.posts_link}" class="username">{$post.user.name}</a>
+            {else}
+                <span class="username">{$post.user.name}</span>
+            {/if}
+            {$post.datetime|wa_datetime:"humandate"}
+        </span>
+        <p>
+            {$post.text|strip_tags|truncate:400}
+        </p>
+    </section>
 {foreachelse}
     {if !isset($page) || $page lt 2}
         {_w('%d post','%d posts',0)}
