@@ -272,7 +272,7 @@ i.icon10 { background-repeat:no-repeat; height:10px; width:10px; display:inline-
 
 .welcome { text-align: center; font-size: 130%; padding: 80px 0 150px; }
 
-#header { margin-top: 0px; background: #f6f7f8; border: 1px solid #d3d6db; border-bottom: 0; border-top: 0; }
+#header { margin-top: 0px; background: #f6f7f8; border: 1px solid #d3d6db; border-bottom: 0; -webkit-border-radius: 3px 3px 0 0; -moz-border-radius: 3px 3px 0 0; border-radius: 3px 3px 0 0; }
 #header a i.icon16 { margin-top: -0.2em; }
 
 #header .auth a { font-style: italic; font-size: 0.8em; }
