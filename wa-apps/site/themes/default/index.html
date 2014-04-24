@@ -1,95 +1,259 @@
 <!DOCTYPE html>
-<html>
+<html{if $wa->globals('isMyAccount')} class="my"{/if}>
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-  <title>{$wa->title()|escape}</title>
-  <meta name="Keywords" content="{$wa->meta('keywords')|escape}" />
-  <meta name="Description" content="{$wa->meta('description')|escape}" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>{$wa->title()|escape}</title>
+    <meta name="Keywords" content="{$wa->meta('keywords')|escape}" />
+    <meta name="Description" content="{$wa->meta('description')|escape}" />
 
-  <!-- css -->
-  <link href="{$wa_theme_url}default.css?v{$wa_theme_version}" rel="stylesheet" type="text/css"/>
-  <link href="{$wa_theme_url}mobile.css?v{$wa_theme_version}"{if !$wa->isMobile()} media="screen and (max-width: 760px)"{/if} rel="stylesheet" type="text/css">
-  {if $wa->isMobile()}
-      <meta name="viewport" content="width=device-width; initial-scale=1; maximum-scale=1; user-scalable=0;" />
-  {/if}
-  {$wa->css()} {* links active plugins CSS *}
-
-  <!-- js -->
-  <script type="text/javascript" src="{$wa_url}wa-content/js/jquery/jquery-1.8.2.min.js"></script>
-  {$wa->js()} {* links active plugins JS *}
-
-  {$wa->headJs()} {* links Google Analytics tracking code and current site's custom JS (Site app) *}
-  
-  <!-- custom default theme settings -->
-  <style>
-    {if !empty($theme_settings.nav_bg_color)}
-        #header { background: {$theme_settings.nav_bg_color}; }
+    {if !empty($canonical)}<link rel="canonical" href="{$canonical}"/>{/if}
+    <link rel="shortcut icon" href="/favicon.ico"/>
+    {if $wa->blog}
+        <!-- rss -->
+        {$rss=$wa->blog->rssUrl()}
+        {if $rss}<link rel="alternate" type="application/rss+xml" title="{$wa->accountName()}" href="{$rss}">{/if}
     {/if}
-    {if !empty($theme_settings.nav_text_color)}
-        #header,
-        #header ul#wa-apps li a,
-        #header ul#wa-apps li strong { color: {$theme_settings.nav_text_color} !important; }
+    
+    <!-- fonts -->
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400italic,700italic,400,700&amp;subset=latin,cyrillic' rel='stylesheet' type='text/css'>
+    
+    <!-- css -->
+    <link href="{$wa_theme_url}default.css?v{$wa_theme_version}" rel="stylesheet" type="text/css"/>
+    <link href="{$wa_theme_url}default.colors.css?v{$wa_theme_version}" rel="stylesheet" type="text/css"/>
+    <link href="{$wa_theme_url}default.mobile.css?v{$wa_theme_version}"{if !$wa->isMobile()} media="screen and (max-width: 760px)"{/if} rel="stylesheet" type="text/css"/>
+    <link href="{$wa_theme_url}default.tablet.css?v{$wa_theme_version}" media="screen and (min-width: 760px) and (max-width: 1024px)" rel="stylesheet" type="text/css"/>
+    <link href="{$wa_theme_url}default.wide.css?v{$wa_theme_version}" media="screen and (min-width: 1440px)" rel="stylesheet" type="text/css"/>
+    <link href="{$wa_theme_url}css/waslidemenu.css?v{$wa_theme_version}" rel="stylesheet" type="text/css"/>
+    {if $wa->shop && $wa->shop->currency() == 'RUB'} <link href="{$wa_url}wa-content/font/ruble/arial/fontface.css" rel="stylesheet" type="text/css">{/if}
+    {$wa->css()} {* links active plugins CSS *}
+    
+    <!-- js -->
+    <script type="text/javascript" src="{$wa_url}wa-content/js/jquery/jquery-1.8.2.min.js"></script>
+    <script type="text/javascript" src="{$wa_theme_url}default.js?v{$wa_theme_version}"></script>
+    <script type="text/javascript" src="{$wa_theme_url}js/jquery.waslidemenu.min.js?v{$wa_theme_version}"></script>
+    {if $wa->isMobile()}
+        <meta name="viewport" content="width=device-width; initial-scale=1; maximum-scale=1; user-scalable=0;" />
     {/if}
-  </style>
+    {$wa->js()} {* links active plugins JS *}
+    
+    {include file="`$wa_active_theme_path`/head.html" inline}
+    
+    {$wa->headJs()} {* links Google Analytics tracking code and site's custom JS (defined in Site app settings) *}
+    
+    <!--[if lt IE 9]>
+    <script>
+    document.createElement('header');
+    document.createElement('nav');
+    document.createElement('section');
+    document.createElement('article');
+    document.createElement('aside');
+    document.createElement('footer');
+    document.createElement('figure');
+    document.createElement('hgroup');
+    document.createElement('menu');
+    </script>
+    <![endif]-->
     
 </head>
-<body>
-  <div id="header" role="navigation">
-    <div class="container">
-      <ul id="wa-apps">
-        {foreach $wa->apps() as $a}
-          <li{if $a.url==$wa_app_url} class="selected"{/if}><a href="{$a.url}">{$a.name}</a></li>
-        {/foreach}
-        {if $wa->isAuthEnabled()}
-          {if $wa->user()->isAuth()}
-            <li class="float-right small"><a href="?logout">[s`Log out`]</a></li>
-            <li class="float-right small">
-              {if !empty($my_url)}
-                <a href="{$my_url}" class="bold">{$wa->user('name')}</a>
-              {else}
-                <strong>{$wa->user('name')}</strong>
-              {/if}
-            </li>
-          {else}
-            <li class="float-right small"><a href="{$wa->signupUrl()}">[s`Sign up`]</a></li>
-            <li class="float-right small"><a href="{$wa->loginUrl()}">[s`Log in`]</a></li>
-          {/if}
-        {/if}
-      </ul>
-      <div class="clear-both"></div>
-    </div>
-  </div>
-  <div id="main">
-    <div class="container app-header"></div>
-      <div class="container">
-        {if $wa->currentUrl() == $wa_app_url && !empty($error_code) && $error_code == 404}
-          <div class="welcome">
-            <h1>[`Welcome to your new site!`]</h1>
-            <p>{sprintf('[`Start by creating a page in your <a href="%s">site backend</a>.`]', $wa_backend_url|cat:'site/#/pages/')}</p>
-          </div>
-        {else}
-          {$content}
-        {/if}
-        <div class="clear-both"></div>
-      </div>
-  </div>
-  <div id="footer">
-    <div class="container">
-      <div id="poweredby" class="float-right hint">
-        [`We are using <a href="http://www.webasyst.com/">Webasyst</a>`] <span class="dots" title="Webasyst"></span>
-      </div>
-      <div id="copyright">
-        &copy; {time()|wa_datetime:"Y"}
-        <a href="{$wa_url}">{$wa->accountName()}</a>
-      </div>
-      <!-- <div id="sub-links" >
-        suggested place for your footer links
-        <ul>
-          <li><a href="#">About</a></li>
-          <li><a href="#">Terms Of Service</a></li>
-        </ul>
-      </div> -->
-    </div>
-  </div>
+<body{if $theme_settings.color_scheme} class="color_scheme_{str_replace('img/banner/teaser/','', str_replace('.png','',$theme_settings.color_scheme))}"{/if}>
+
+    <!-- TOP NAVIGATION & BANNER -->
+    <header>
+        
+        <div class="container" id="header-container">
+
+            <h2>
+                <a href="{$wa_url}">
+                    {if $theme_settings.logo}
+                        <img src="{$wa_theme_url}{$theme_settings.logo}" alt="{$wa->accountName()}" id="logo" />
+                    {else}
+                        {$wa->accountName()}
+                    {/if}
+                </a>
+            </h2>
+
+            <button class="apps-toggle"></button>
+            
+            <nav role="navigation">
+            
+                <!-- core site sections (apps) -->
+                <ul class="apps">
+                    {foreach $wa->apps() as $a}
+                        <li{if $a.url==$wa_app_url} class="selected"{/if}><a href="{$a.url}">{$a.name}</a></li>
+                    {/foreach}
+                </ul>
+            
+                {if $wa->shop}
+                    <!-- cart -->
+                    {$cart_total = $wa->shop->cart->total()}
+                    <div id="cart" class="cart{if !$cart_total} empty{/if}">
+                         <a href="{$wa->getUrl('shop/frontend/cart')}" class="cart-summary">
+                             [s`Cart`]:
+                             <strong class="cart-total">{wa_currency_html($cart_total, $wa->shop->currency())}</strong>
+                         </a>
+                         <div id="cart-content">
+                             {* <div class="cart-just-added">
+                                %s is now in your shopping cart
+                             </div> *}
+                         </div>
+                         <a href="{$wa->getUrl('shop/frontend/checkout')}" class="cart-to-checkout" style="display: none;">
+                             [s`Proceed to checkout`] &rarr;
+                         </a>
+                    </div>
+                {/if}
+                
+                {if $wa->isAuthEnabled()}
+                    <ul class="auth">
+                         {if $wa->user()->isAuth()}
+                            {if $wa->shop}
+                                <li><a href="{$wa->getUrl('shop/frontend/my')}"><i class="icon16 userpic20 float-left" style="background-image: url('{$wa->user()->getPhoto(20)}');"></i>[s`My account`]</a></li>
+                            {else}
+                                    <li><strong>{$wa->user('name')}</strong></li>
+                                {/if}
+                             <li><a href="?logout">[s`Log out`]</a></li>
+                        {else}
+                            <li><a href="{$wa->loginUrl()}">[s`Log in`]</a></li>
+                            <li><a href="{$wa->signupUrl()}">[s`Sign up`]</a></li>
+                        {/if}
+                    </ul>
+                {/if}
+                
+                <!-- phone number -->
+                {if $wa->shop->settings('phone')}
+                    <div class="contact-info">{$wa->shop->settings('phone')}</div>
+                {/if}  
+            
+            </nav>
+             
+        </div>
+        
+        <div class="banner" role="banner">
+            <div class="container">
+                {if !empty($theme_settings.banner_caption)}
+                    <h3>{$theme_settings.banner_caption|escape}</h3>
+                {/if}
+                
+                {if $wa->shop}
+                    <!-- PRODUCT SEARCH FORM -->
+                    <form method="get" action="{$wa->getUrl('shop/frontend/search')}" class="search">
+                        <input type="search" name="query" {if !empty($query)}value="{$query}"{/if} id="search" placeholder="[s`Find products`]">
+                        <button type="submit"></button>
+                    </form>
+                {/if}
+                <div class="clear-both"></div>
+            </div>
+        </div>
+        
+    </header>
+    
+    <!-- APP CONTENT -->
+    <main role="main">
+        <div class="container">
+            <div class="page">
+                {include file="`$wa_active_theme_path`/main.html" inline}
+            </div>
+        </div>
+    </main>
+    
+    <!-- FOOTER -->
+    <footer role="contentinfo">
+        <div class="container">
+            <div class="footer-block" id="copyright">
+                &copy; {time()|wa_datetime:"Y"}
+                <a href="{$wa_url}">{$wa->accountName()}</a>
+            </div>
+            
+            <div class="footer-block">
+                <a href="#" class="top">[s`Social`]</a>
+                
+                {if !empty($theme_settings.facebook)}<a href="{$theme_settings.facebook}"><i class="icon16 facebook"></i>[s`Facebook`]</a>{/if}
+                {if !empty($theme_settings.twitter)}<a href="https://twitter.com/{$theme_settings.twitter}"><i class="icon16 twitter"></i>[s`Twitter`]</a>{/if}
+                {if !empty($theme_settings.vk)}<a href="{$theme_settings.vk}"><i class="icon16 vk"></i>[s`VK`]</a>{/if}
+                
+            </div>
+                       
+            {if $wa->shop}
+                <div class="footer-block">
+                    <a href="{$wa->getUrl('shop/frontend')}" class="top">[s`Shop`]</a>
+                    <a href="{$wa->getUrl('shop/frontend/cart')}">[s`Cart`]</a>
+                    <a href="{$wa->getUrl('shop/frontend/checkout')}">[s`Checkout`]</a>
+                </div>
+            {/if}
+
+            {if $wa->photos}
+                <div class="footer-block">
+                    <a href="{$wa->getUrl('photos/frontend')}" class="top">[s`Photos`]</a>
+                    <a href="{$wa->getUrl('photos/frontend')}">[s`Photostream`]</a>
+                    <a href="{$wa->getUrl('photos/frontend')}favorites/">[s`Favorites`]</a>
+                </div>
+            {/if}
+            
+            {if $wa->blog}
+                <div class="footer-block">
+                    <a href="{$wa->getUrl('blog/frontend')}" class="top">[s`Blog`]</a>
+                    <a href="{$wa->getUrl('blog/frontend/rss')}">[s`Subscribe`]</a>
+                    {$blogs = $wa->blog->blogs()}
+                    {foreach $blogs as $b}
+                        <a href="{$b.link}">{$b.name}</a>
+                    {/foreach}
+                </div>
+            {/if}
+
+            <div class="footer-block">
+                <a href="#" class="top">[s`Contact us`]</a>
+                
+                {if $wa->shop}
+                    <span>{$wa->shop->settings('phone')}</span>
+                    <a href="mailto:{$wa->shop->settings('email')}">{$wa->shop->settings('email')}</a>
+                    <br><br>
+                {/if}
+            </div>
+                        
+            {*
+            <div class="footer-block">
+                <a href="#" class="top">Top link</a>
+                <a href="#">Link 1</a>
+                <a href="#">Link 2</a>
+                <a href="#">Link 3</a>
+            </div>
+            *}
+            
+            <div class="clear-both"></div>
+        </div>
+        {include file="`$wa_active_theme_path`/footer.html" inline}
+    </footer>
+    
+    {if !empty($theme_settings.followus_leash)}
+        <aside class="followus-leash">
+            <div class="inner" id="followus-leash-inner">
+                {if $wa->mailer && $wa->getUrl('mailer/frontend/subscribe')}
+                    <div class="gray align-center bold">[`Subscribe to our email newsletter`]</div>
+                    <div class="block double-padded align-center">
+                        <form action="{$wa->getUrl('mailer/frontend/subscribe')}" id="mailer-subscribe-form" target="mailer-subscribe-iframe">
+                            <input type="email" name="email" placeholder="your@email.here">
+                            <input type="submit" value="[s`Submit`]">
+                        </form>
+                        <iframe id="mailer-subscribe-iframe" name="mailer-subscribe-iframe" src="javascript:true" style="width:0;height:0;border:0px solid #fff;"></iframe>
+                        <h3 style="display:none" id="mailer-subscribe-thankyou">[s`Thank you!`]</h3>
+                    </div>
+                    <p class="hint align-center">[`Or follow us on Facebook and Twitter`]:</p>
+                {/if}
+                
+                <p class="hint align-center">
+                    {if !empty($theme_settings.facebook)}<a href="{$theme_settings.facebook}"><i class="icon16 facebook"></i>[s`Facebook`]</a>{/if}
+                    {if !empty($theme_settings.twitter)}<a href="https://twitter.com/{$theme_settings.twitter}"><i class="icon16 twitter"></i>[s`Twitter`]</a>{/if}
+                    {if !empty($theme_settings.vk)}<a href="{$theme_settings.vk}"><i class="icon16 vk"></i>[s`VK`]</a>{/if}
+                </p>
+            </div>
+            <div class="toggler">
+                <a id="followus-leash-toggler" class="inline-link" href="#"><b><i>[`Follow us`]</i></b> <i class="icon16 uarr"></i></a>
+                <i class="icon16 twitter"></i>
+                <i class="icon16 facebook"></i>
+            </div>
+        </aside>
+    {/if}
+    
+    {if $wa->isMobile()}<input id="isMobile">{/if}
+    
 </body>
 </html>

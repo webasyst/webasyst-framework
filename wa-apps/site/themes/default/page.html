@@ -1,7 +1,11 @@
-{include file="sidebar.html"}
-<div class="content left">
-  <div id="page" role="main">
-    <h1>{$page.name}</h1>
-    {$page.content}
-  </div>
-</div>
+{if !empty($breadcrumbs)}
+    <div class="breadcrumbs">
+        {foreach $breadcrumbs as $breadcrumb}
+            <a href="{$breadcrumb.url}">{$breadcrumb.name|escape}</a> <span class="rarr">&rarr;</span>
+        {/foreach}
+    </div>
+{/if}
+
+<h1>{$page.name}</h1>
+
+{$page.content}
