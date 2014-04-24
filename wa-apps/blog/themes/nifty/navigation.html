@@ -45,7 +45,7 @@
 						<ul class="menu-v">
 	                {/if}
 	                <li {if $item.selected}class="bold"{/if}>
-	                    <a href="{$item.link}" title="{_w("%d post","%d posts",$item.count)}">{_ws(date("F",gmmktime(0,0,0,$item.month)))}</a>
+	                    <a href="{$item.link}" title="{_w("%d post","%d posts",$item.count)}">{_ws(date("F",gmmktime(0,0,0,$item.month,1)))}</a>
 	                </li>
 				    {if $item@last}
 				            </ul>
