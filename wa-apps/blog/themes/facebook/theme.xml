@@ -4,23 +4,17 @@
     <name locale="en_US">Facebook</name>
     <name locale="ru_RU">Facebook</name>
     <files>
-        <file path="index.html" custom="0" parent="1">
-        </file>
-        <file path="facebook.css" custom="0" parent="1">
-        </file>
-        <file path="facebook.js" custom="0" parent="1">
-        </file>        
         <file path="facebook.blog.css" custom="0">
             <description locale="en_US">Core Blog app CSS</description>
             <description locale="ru_RU">Основной CSS приложения «Блог»</description>
         </file>      
         <file path="content.html" custom="0">
             <description locale="en_US">Main layout and navigation for the Blog app content</description>
-			<description locale="ru_RU">Основное макет вывода содержимого и навигации в приложении «Блог»</description>
+            <description locale="ru_RU">Основное макет вывода содержимого и навигации в приложении «Блог»</description>
         </file>
         <file path="head.html" custom="0">
-			<description locale="en_US">Blog app's &lt;head&gt; instructions</description>
-			<description locale="en_US">Блок &lt;head&gt; приложения «Блог»</description>
+            <description locale="en_US">Blog app's &lt;head&gt; instructions</description>
+            <description locale="en_US">Блок &lt;head&gt; приложения «Блог»</description>
         </file>
         <file path="stream.html" custom="0">
             <description locale="en_US">Post stream wrapper</description>
@@ -70,14 +64,24 @@
             <description locale="en_US">Internal app navigation</description>
             <description locale="ru_RU">Внутренняя навигация приложения</description>
         </file>
-    	<file path="footer.html" custom="0">
-    		<description locale="en_US">App specific footer content</description>
-    		<description locale="ru_RU">Содержимое футера приложения</description>
+        <file path="footer.html" custom="0">
+            <description locale="en_US">App specific footer content</description>
+            <description locale="ru_RU">Содержимое футера приложения</description>
         </file>
         <file path="searchform.html" custom="0">
-    		<description locale="en_US">Internal app search form</description>
-    		<description locale="ru_RU">Форма поиска в приложении</description>
-        </file> 
+            <description locale="en_US">Internal app search form</description>
+            <description locale="ru_RU">Форма поиска в приложении</description>
+        </file>
+        <file path="index.html" custom="0" parent="1">
+        </file>
+        <file path="facebook.css" custom="0" parent="1">
+        </file>
+        <file path="facebook.js" custom="0" parent="1">
+        </file>
+        <file path="blog.js" custom="0">
+            <description locale="en_US">JS</description>
+            <description locale="ru_RU">JS</description>
+        </file>
     </files>
     <about locale="en_US">
 <![CDATA[
