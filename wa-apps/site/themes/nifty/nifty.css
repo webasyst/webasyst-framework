@@ -18,7 +18,7 @@ body { line-height: 1; }
 /* Common HTML elements, fonts, and colors
 ------------------------------------------ */
 html,
-body { width: 100%; min-height: 100%; font-family: Arial, sans-serif; font-size: 12px; background: #fff url('img/top-noisy-bg.jpg') repeat-x; }
+body { width: 100%; min-height: 100%; font-family: 'Marmelad', Arial, sans-serif; font-size: 12px; background: #fff url('img/top-noisy-bg.jpg') repeat-x; }
 a { color: #25c; outline:0 none; }
 a:focus { outline:none; outline-offset:-4px; }
 a:visited { color: #65c; }
