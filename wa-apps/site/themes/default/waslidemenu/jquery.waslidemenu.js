@@ -86,16 +86,16 @@
             base.o.previousHeight = 0;
         };
         // go to selected item
-        base.gotoSelected = function (depth) {
+        base.gotoSelected = function (depth, animate) {
             // we need to go deeper
             base.hideOtherMenus(depth, base.scrollToTop);
             // height fix
             base.heightFix(depth);
             // sliiiiide to other level
-            base.animateSlide(depth);
+            base.animateSlide(depth, animate);
         };
         // animate function
-        base.animateSlide = function (depth) {
+        base.animateSlide = function (depth, animate) {
             var amount = Math.abs(depth * 100),
                 callback_slide = depth > 0 ? base.o.onSlideForward : base.o.onSlideBack;
 
@@ -103,21 +103,24 @@
             if (callback_slide && typeof (callback_slide) === 'function') {
                 callback_slide(base);
             }
-
-            base.$movable.animate(
-                {
-                    'left': depth > 0 ? '-=' + amount + '%' : '+=' + amount + '%'
-                },
-                base.o.slideSpeed,
-                base.o.slideEasing,
-                function () {
-                    base.scrollToTop(depth);
-                    // afterSlide callback
-                    if (base.o.afterSlide && typeof (base.o.afterSlide) === 'function') {
-                        base.o.afterSlide(base);
+            if (animate) {
+                base.$movable.animate(
+                    {
+                        'left': depth > 0 ? '-=' + amount + '%' : '+=' + amount + '%'
+                    },
+                    base.o.slideSpeed,
+                    base.o.slideEasing,
+                    function () {
+                        base.scrollToTop(depth);
+                        // afterSlide callback
+                        if (base.o.afterSlide && typeof (base.o.afterSlide) === 'function') {
+                            base.o.afterSlide(base);
+                        }
                     }
-                }
-            );
+                );
+            } else {
+                base.$movable.css('left', '-' + amount + '%');
+            }
         };
 
         base.scrollToTop = function (depth) {
@@ -273,7 +276,7 @@
                         // slide to them
                         depth += 1;
                     }
-                    base.gotoSelected(depth);
+                    base.gotoSelected(depth, false);
                     // heightFix hack if we show last menu
                     base.heightFix($selectedItemChildrenLen);
                 }
@@ -322,7 +325,7 @@
 
             // if we can go deeper or up
             if ($menu_children.length > 0 || depth < 0) {
-                base.gotoSelected(depth);
+                base.gotoSelected(depth, true);
             }
         };
 

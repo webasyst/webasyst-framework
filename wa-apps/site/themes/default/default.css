@@ -316,7 +316,7 @@ header .cart a:hover { color: #fff !important; background: #00b204; }
 header .cart a:hover strong { color: #ff7 !important; }
 header .cart .cart-just-added { display: none; padding: 9px 18px; font-size: 0.9em; }
 header .cart .cart-to-checkout { display: none; text-align: center; font-weight: bold; padding: 11px 18px; color: #fff; box-shadow: 0 10px 20px -15px rgba(0, 0, 0, 0.7); }
-header .cart.empty a { background: #fff !important; color: #006bd8; }
+header .cart.empty a { background: #f3f3f3 !important; color: #006bd8; }
 header .cart.empty a:hover { background: #009103 !important; }
 header .cart.empty a:visited,
 header .cart.empty a strong { color: #25c; }
@@ -325,7 +325,7 @@ header .cart.fixed a { text-align: center; }
 header .cart.fixed .cart-just-added,
 header .cart.fixed .cart-to-checkout { display: block; }
 
-header .banner { background: #2dcc70 url('img/banner/green.png') center center; background-size: 200px 200px; text-align: center; padding: 30px; clear: both; border-bottom: 1px solid rgba(0,0,0,0.1); }
+header .banner { background: #2dcc70 url('img/backgrounds/green.png') center center; background-size: 200px 200px; text-align: center; padding: 30px; clear: both; border-bottom: 1px solid rgba(0,0,0,0.1); }
 header .banner h3 { color: #ffe; font-size: 1.4em; font-weight: normal; }
 
 header .banner .search { display: inline-block; width: 40%; }
@@ -390,7 +390,6 @@ footer a:hover { color: yellow !important; }
 
 .followus-leash { position: fixed; bottom: 0; left: 30px; background: #fff; box-shadow: 0 2px 9px rgba(0,0,0,0.4); font-size: 1.1em; z-index: 9999; width: 360px; }
 .followus-leash .toggler { background: #2DCC70; padding: 12px 13px 11px; }
-.followus-leash .toggler i.icon16 { margin-top: 0; }
 .followus-leash .toggler a { color: #fff; margin-right: 20px; }
 .followus-leash .toggler a b { font-weight: bold; }
 .followus-leash .toggler a:hover { color: #ff7 !important; }

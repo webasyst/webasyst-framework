@@ -16,7 +16,7 @@
 
 .color_scheme_blue a { color: #0082dd; }
 .color_scheme_blue .price { color: #ce0052; }
-.color_scheme_blue .banner { background: #39ade6 url('img/banner/blue.png'); background-size: 420px 420px; }
+.color_scheme_blue .banner { background: #39ade6 url('img/backgrounds/blue.png'); background-size: 420px 420px; }
 .color_scheme_blue .banner h3 { color: #fff; text-shadow: 0 1px 0 rgba(0,0,0,0.25); }
 .color_scheme_blue main { background: #effaff; }
 .color_scheme_blue header .cart a { background: #fd0; color: #1f61b3; }
@@ -43,7 +43,7 @@
 
 .color_scheme_red a { color: #0082dd; }
 .color_scheme_red .price { color: #f00; }
-.color_scheme_red .banner { background: #da2e2e url('img/banner/red.png'); background-size: 103px 23px; }
+.color_scheme_red .banner { background: #da2e2e url('img/backgrounds/red.png'); background-size: 103px 23px; }
 .color_scheme_red .banner h3 { color: #fff; }
 .color_scheme_red main { background: #fee; }
 .color_scheme_red header .cart a { background: #c00; color: #fff; }
@@ -71,9 +71,9 @@
 
 .color_scheme_yellow a { color: #0082dd; }
 .color_scheme_yellow .price { color: #ce0052; }
-.color_scheme_yellow .banner { background: #ffee43 url('img/banner/yellow.png'); background-size: 300px 300px; border-bottom: 0; }
+.color_scheme_yellow .banner { background: #ffee43 url('img/backgrounds/yellow.png'); background-size: 300px 300px; border-bottom: 0; }
 .color_scheme_yellow .banner h3 { color: #945d0e; }
-.color_scheme_yellow main { background: #ffee43 url('img/banner/yellow.png'); background-size: 300px 300px; margin-top: -1px; }
+.color_scheme_yellow main { background: #ffee43 url('img/backgrounds/yellow.png'); background-size: 300px 300px; margin-top: -1px; }
 .color_scheme_yellow header .cart a { background: #ffee43; color: #1f61b3; }
 .color_scheme_yellow header .cart a strong { color: #ce0052; }
 .color_scheme_yellow header .cart a:hover { background: #fe0 !important; color: #945d0e !important; }

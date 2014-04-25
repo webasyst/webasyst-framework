@@ -87,19 +87,20 @@
             <name locale="ru_RU">Логотип компании</name>
         </setting>
         <setting var="banner_caption" control_type="text">
-            <value>Put your custom text in design theme settings</value>
+            <value locale="en_US">Put your custom text in design theme settings</value>
+            <value locale="ru_RU">Измените этот текст в настройках темы дизайна</value>
             <name locale="en_US">Site-wide banner caption</name>
             <name locale="ru_RU">Заголовок на основном баннере</name>
         </setting>
         <setting var="color_scheme" control_type="image_select">
-            <value>img/banner/teaser/green.png</value>
+            <value>img/backgrounds/themesettings/green.png</value>
             <name locale="ru_RU">Цветовая гамма</name>
             <name locale="en_US">Color scheme</name>
             <options>
-                <option value="img/banner/teaser/green.png"></option>
-                <option value="img/banner/teaser/blue.png"></option>
-                <option value="img/banner/teaser/red.png"></option>
-                <option value="img/banner/teaser/yellow.png"></option>
+                <option value="img/backgrounds/themesettings/green.png"></option>
+                <option value="img/backgrounds/themesettings/blue.png"></option>
+                <option value="img/backgrounds/themesettings/red.png"></option>
+                <option value="img/backgrounds/themesettings/yellow.png"></option>
             </options>
         </setting>
         <setting var="page_nav_mode" control_type="radio">
@@ -156,14 +157,6 @@
         <locale>
             <msgid>Or follow us on Facebook and Twitter</msgid>
             <msgstr locale="ru_RU">Или подписывайтесь в соцсетях</msgstr>
-        </locale>
-        <locale>
-            <msgid>Hello</msgid>
-            <msgstr locale="es_ES">Hola</msgstr>
-            <msgstr locale="fr_FR">Bonjour</msgstr>
-            <msgstr locale="ja_JP">こんにちは</msgstr>
-            <msgstr locale="ru_RU">Привет</msgstr>
-            <msgstr locale="de_DE">Hallo</msgstr>
         </locale>
     </locales>
 </theme>

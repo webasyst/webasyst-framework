@@ -4,7 +4,7 @@
         <a href="{$wa_app_url}" class="nav-sidebar-header" style="display: none;">[`Navigation`]</a>
             
         <div class="nav-sidebar-body">
-            <div class="{if $theme_settings.page_nav_mode == 'slidemenu'}slidemenu{else}dropdown{/if}">
+            <div{if $theme_settings.page_nav_mode == 'slidemenu'} class="slidemenu" data-back-lbl="[s`Back`]"{else} class="dropdown"{/if}>
             	{wa_print_tree tree=$wa->site->pages() class="menu-v" attrs = 'id="page-list"' elem ='<a href=":url">:name</a>' collapsible_class='collapsible' selected=$page.id|default:0}
             	<div class="clear-both"></div>
             </div>

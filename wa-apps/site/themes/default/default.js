@@ -2,9 +2,14 @@ $(document).ready(function() {
 
     if ($('.slidemenu').length)
     {
+        var _back_lbl = 'Back';
+        if ( $('.slidemenu').attr('data-back-lbl') )
+            _back_lbl = $('.slidemenu').attr('data-back-lbl');
+            
         $('.slidemenu').waSlideMenu({
             slideSpeed          : 300,
             loadSelector        : '#page-content',
+            backLinkContent     : _back_lbl,
             excludeUri          : ['/', '#'],
             loadOnlyLatest      : false,
             setTitle            : true,
@@ -20,6 +25,17 @@ $(document).ready(function() {
             $('.apps-negative').hide().slideToggle(200);
         } else {
             $('.apps-negative').slideToggle(200);
+        }
+    });
+    
+    // SIDEBAR HEADER click
+    $('a.nav-sidebar-header').click(function(){
+    
+        // on devices without :hover event (tablets such as iPad) clicking on sidebar header link should show the sidebar
+        var _sidebar_visible = $('.nav-sidebar-body').css('opacity');
+        if ( !parseInt(_sidebar_visible) )
+        {
+            return false;
         }
     });
     
