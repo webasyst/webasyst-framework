@@ -268,9 +268,7 @@ class waTheme implements ArrayAccess
                             foreach ($setting->{'value'} as $value) {
                                 if ($value && ($locale = (string)$value['locale'])) {
                                     if (!is_array($s['value'])) {
-                                        $s['value'] = array(
-                                            $s['value'],
-                                        );
+                                        $s['value'] = array();
                                     }
                                     $s['value'][$locale] = (string)$value;
                                 }
@@ -555,8 +553,18 @@ XML;
                         if ($settings = $xpath->query($query)->item(0)) {
                             foreach ($this->changed['settings'] as $var => $changed) {
                                 $query = "/theme/settings/setting[@var='{$var}']/value";
-                                if ($value = $xpath->query($query)->item(0)) {
+                                $value_items = $xpath->query($query);
+                                $length = $value_items->length;
+
+                                if ($length && ($value = $value_items->item(0))) {
                                     $value->nodeValue = ifempty($this->settings[$var]['value']);
+                                    if ($value->hasAttribute('locale')) {
+                                        $value->removeAttribute('locale');
+                                    }
+                                    $parent = $value->parentNode;
+                                    for ($index = 1; $index < $length; $index++) {
+                                        $parent->removeChild($value_items->item($index));
+                                    }
                                 }
                             }
                         }
@@ -1159,7 +1167,7 @@ HTACCESS;
                     unset($o);
                 }
                 if (isset($s['value']) && is_array($s['value'])) {
-                    $s['value'] = self::getLocale($s['value']);
+                    $s['value'] = $s['value'][self::getLocale($s['value'])];
                 }
             }
             unset($s);

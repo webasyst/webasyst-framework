@@ -46,7 +46,7 @@ jQuery.fn.waEditor = function (options) {
             buttons: ['html', 'formatting', 'bold', 'italic', 'underline', 'deleted', 'unorderedlist', 'orderedlist',
                 'outdent', 'indent', 'image', 'video', 'file', 'table', 'link', 'alignment', '|',
                 'horizontalrule'],
-            plugins: ['fontcolor'],
+            plugins: ['fontcolor', 'fontsize', 'fontfamily'],
             imageUpload: '?module=pages&action=uploadimage&filelink=1',
             imageUploadErrorCallback: function(json) {
                 alert(json.error);

@@ -70,6 +70,10 @@ $.Redactor.opts.langs['ru'] = {
 	alignment: 'Выравнивание',
 	filename: 'Название (необязательно)',
 	edit: 'Ред.',
-	center: 'По центру'
+	center: 'По центру',
+    change_font_size: 'Изменить размер шрифта',
+    remove_font_size: 'По умолчанию',
+    change_font_family: 'Изменить шрифт',
+    remove_font_family: 'По умолчанию'
 };
 })( jQuery );

@@ -165,23 +165,17 @@ class waResponse
      */
     public function addHeader($name, $value, $replace = true)
     {
-        $name = strtolower($name);
-
-        if (in_array($name, array('expires', 'last-modified'))) {
+        if (in_array(strtolower($name), array('expires', 'last-modified'))) {
             $value = gmdate('D, d M Y H:i:s', is_int($value) ? $value : strtotime($value)).' GMT';
         }
 
-        if (!isset($this->headers[$name])) {
+        if (!isset($this->headers[$name]) || $replace) {
             $this->headers[$name] = $value;
-        } else {
-            if ($replace) {
-                $this->headers[$name] = $value;
-            } else {
-                if (!is_array($this->headers[$name])) {
-                    settype($this->headers[$name], 'array');
-                }
-                $this->headers[$name][] = $value;
+        } elseif (!$replace) {
+            if (!is_array($this->headers[$name])) {
+                settype($this->headers[$name], 'array');
             }
+            $this->headers[$name][] = $value;
         }
 
         return $this;
