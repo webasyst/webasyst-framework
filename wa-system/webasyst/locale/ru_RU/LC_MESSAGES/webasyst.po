@@ -3568,10 +3568,60 @@ msgid "Revert"
 msgstr "Восстановить"
 
 msgid "Website request"
-msgstr ""
+msgstr "Запрос с сайта"
 
 msgid "Thank you!"
 msgstr "Спасибо!"
 
 msgid "Your message has been sent."
 msgstr "Ваше сообщение было отправлено."
+
+msgid "Proceed to checkout"
+msgstr "Оформить заказ"
+
+msgid "Checkout"
+msgstr "Оформить заказ"
+
+msgid "Shop"
+msgstr "Магазин"
+
+msgid "Blog"
+msgstr "Блог"
+
+msgid "Photos"
+msgstr "Фото"
+
+msgid "Photostream"
+msgstr "Фотопоток"
+
+msgid "Favorites"
+msgstr "Избранное"
+
+#: /wa-system/image/waImage.class.php:64
+msgid "Not an image or invalid image:"
+msgstr "Не является файлом изображения:"
+
+#: /wa-system/image/waImage.class.php:322
+msgid "File must be writable:"
+msgstr "Файл должен быть доступен для записи:"
+
+msgid "Facebook"
+msgstr "Фейсбук"
+
+msgid "Twitter"
+msgstr "Твиттер"
+
+msgid "VK"
+msgstr "ВКонтакте"
+
+msgid "Social"
+msgstr "Соцсети"
+
+msgid "Contact us"
+msgstr "Обратная связь"
+
+msgid "Submit"
+msgstr "Отправить"
+
+msgid "Back"
+msgstr "Назад"
