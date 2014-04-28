@@ -79,6 +79,10 @@
             <description locale="en_US">App specific footer content</description>
             <description locale="ru_RU">Содержимое футера приложения</description>
         </file>
+        <file path="default.js" custom="0">
+            <description locale="en_US">Core Default theme JS</description>
+            <description locale="ru_RU">Скрипты темы Default</description>
+        </file>
         <file path="lazyloading.js">
             <description locale="en_US">Lazy loading JS</description>
             <description locale="ru_RU">Скрипты загрузки контента «на лету»</description>
