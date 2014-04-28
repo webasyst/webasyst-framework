@@ -124,8 +124,7 @@ class waResponse
             (bool)$http_only
         );
 
-        // New value available only after the page reloads
-        // $_COOKIE[$name] = $value;
+        $_COOKIE[$name] = $value;
         
         return $this;
     }
