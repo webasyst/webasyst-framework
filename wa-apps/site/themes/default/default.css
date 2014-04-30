@@ -338,7 +338,7 @@ header .banner .search button { width: 60px; height: 36px; background-image: url
 ------- */
 
 main { clear: both; margin: 0; background: #efe; }
-.page { background: #fff; box-shadow: 1px 2px 5px rgba(0,0,0,0.1); top: -46px; position: relative; z-index: 9; background: #fafaf1; }
+.page { box-shadow: 1px 2px 5px rgba(0,0,0,0.1); top: -46px; position: relative; z-index: 9; background: #fafaf1; }
 
 /* Sidebar as column */
 
@@ -388,7 +388,7 @@ footer a:hover { color: yellow !important; }
 .poweredby a:visited { color: #ccc !important; }
 .poweredby .dots { font-size: 0.8em; text-decoration: none; display: block; width: 54px; height: 9px; background: url("/wa-content/img/dots/all-dots-default-order.png") no-repeat 0 3px; padding-top: 3px; margin: 10px auto; }
 
-.followus-leash { position: fixed; bottom: 0; left: 30px; background: #fff; box-shadow: 0 2px 9px rgba(0,0,0,0.4); font-size: 1.1em; z-index: 9999; width: 360px; }
+.followus-leash { position: fixed; bottom: 0; left: 30px; background: #fff; box-shadow: 0 2px 9px rgba(0,0,0,0.4); font-size: 1.1em; z-index: 9999; width: 380px; }
 .followus-leash .toggler { background: #2DCC70; padding: 12px 13px 11px; }
 .followus-leash .toggler a { color: #fff; margin-right: 20px; }
 .followus-leash .toggler a b { font-weight: bold; }

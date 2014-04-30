@@ -15,7 +15,7 @@
     {/if}
     
     <!-- fonts -->
-    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400italic,700italic,400,700&amp;subset=latin,cyrillic' rel='stylesheet' type='text/css'>
+    <link href='//fonts.googleapis.com/css?family=Open+Sans:400italic,700italic,400,700&amp;subset=latin,cyrillic' rel='stylesheet' type='text/css'>
     
     <!-- css -->
     <link href="{$wa_theme_url}default.css?v{$wa_theme_version}" rel="stylesheet" type="text/css"/>
@@ -55,7 +55,7 @@
     <![endif]-->
     
 </head>
-<body{if $theme_settings.color_scheme} class="color_scheme_{str_replace('img/banner/teaser/','', str_replace('.png','',$theme_settings.color_scheme))}"{/if}>
+<body{if $theme_settings.color_scheme} class="color_scheme_{str_replace('img/backgrounds/themesettings/','', str_replace('.png','',$theme_settings.color_scheme))}"{/if}>
 
     <!-- TOP NAVIGATION & BANNER -->
     <header>
@@ -119,7 +119,7 @@
                 {/if}
                 
                 <!-- phone number -->
-                {if $wa->shop->settings('phone')}
+                {if $wa->shop && $wa->shop->settings('phone')}
                     <div class="contact-info">{$wa->shop->settings('phone')}</div>
                 {/if}  
             
