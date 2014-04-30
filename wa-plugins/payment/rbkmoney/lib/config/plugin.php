@@ -5,7 +5,7 @@ return array(
     'icon'        => 'img/rbkmoney16.png',
     'logo'        => 'img/rbkmoney.png',
     'vendor'      => 'webasyst',
-    'version'     => '1.0.0',
-    'locale'      => array('ru_RU', ),
+    'version'     => '1.1.0',
+    'locale'      => array('ru_RU'),
     'type'        => waPayment::TYPE_ONLINE,
 );
