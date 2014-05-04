@@ -419,7 +419,7 @@ class russianpostShipping extends waShipping
 
     public function tracking($tracking_id = null)
     {
-        return 'Отслеживание отправления: <a href="http://www.russianpost.ru/rp/servise/ru/home/postuslug/trackingpo" target="_blank">http://www.russianpost.ru/rp/servise/ru/home/postuslug/trackingpo</a>';
+        return 'Отслеживание отправления: <a href="http://www.russianpost.ru/Tracking20/" target="_blank">http://www.russianpost.ru/Tracking20/</a>';
     }
 
     public function allowedCurrency()
