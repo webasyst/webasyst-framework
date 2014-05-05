@@ -13,11 +13,14 @@ class contactsBackendAutocompleteController extends waJsonController
             return;
         }
 
-        if(strpos($term, '@') !== FALSE) {
+        if(preg_match("/^[\d\+]+$/",$term) == true) {
+            $contacts = new contactsCollection('/search/phone*='.$term);
+		} elseif (strpos($term, '@') !== FALSE) {
             $contacts = new contactsCollection('/search/email*='.$term);
         } else {
             $contacts = new contactsCollection('/search/name*='.$term);
         }
+
 
         $this->response = array();
         $term_safe = htmlspecialchars($term);
