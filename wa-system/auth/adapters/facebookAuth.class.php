@@ -43,7 +43,7 @@ class facebookAuth extends waOAuth2Adapter
     public function getUserData($token)
     {
         // get user data
-        $url = "https://graph.facebook.com/me?access_token=".$token."&fields=id,picture,link,first_name,last_name,email,name,locale,username,gender";
+        $url = "https://graph.facebook.com/me?access_token=".$token."&fields=id,picture,link,first_name,last_name,email,name,locale,gender";
         $response = $this->get($url);
         if ($response && $response = json_decode($response, true)) {
             if (isset($response['error'])) {
@@ -56,7 +56,6 @@ class facebookAuth extends waOAuth2Adapter
                 'name' => $response['name'],
                 'firstname' => $response['first_name'],
                 'lastname' => $response['last_name'],
-                //'login' => $response['username'],
                 'locale' => $response['locale'],
             );
             if (!empty($response['picture']) && isset($response['picture']['data']['url'])) {
