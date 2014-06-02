@@ -82,7 +82,7 @@ class Swift_Mime_SimpleMimeEntity implements Swift_Mime_MimeEntity
      */
     public function __construct(Swift_Mime_HeaderSet $headers, Swift_Mime_ContentEncoder $encoder, Swift_KeyCache $cache, Swift_Mime_Grammar $grammar)
     {
-        $getmypid = !in_array('getmypid', explode(',', ini_get('disable_functions'))) ? getmypid() : '';
+        $getmypid = !in_array('getmypid', array_map('trim', explode(',', ini_get('disable_functions')))) ? getmygid() : '';
         $this->_cacheKey = md5(uniqid($getmypid.mt_rand(), true));
         $this->_cache = $cache;
         $this->_headers = $headers;
@@ -142,7 +142,7 @@ class Swift_Mime_SimpleMimeEntity implements Swift_Mime_MimeEntity
      *
      * @see LEVEL_TOP, LEVEL_MIXED, LEVEL_RELATED, LEVEL_ALTERNATIVE
      *
-     * @return integer
+     * @return int
      */
     public function getNestingLevel()
     {
@@ -240,7 +240,7 @@ class Swift_Mime_SimpleMimeEntity implements Swift_Mime_MimeEntity
     /**
      * Get the maximum line length of the body of this entity.
      *
-     * @return integer
+     * @return int
      */
     public function getMaxLineLength()
     {
@@ -252,7 +252,7 @@ class Swift_Mime_SimpleMimeEntity implements Swift_Mime_MimeEntity
      *
      * Though not enforced by the library, lines should not exceed 1000 chars.
      *
-     * @param integer $length
+     * @param int     $length
      *
      * @return Swift_Mime_SimpleMimeEntity
      */
@@ -277,7 +277,7 @@ class Swift_Mime_SimpleMimeEntity implements Swift_Mime_MimeEntity
      * Set all children of this entity.
      *
      * @param array   $children      Swift_Mime_Entity instances
-     * @param integer $compoundLevel For internal use only
+     * @param int     $compoundLevel For internal use only
      *
      * @return Swift_Mime_SimpleMimeEntity
      */
@@ -417,8 +417,8 @@ class Swift_Mime_SimpleMimeEntity implements Swift_Mime_MimeEntity
      */
     public function getBoundary()
     {
-        $getmypid = !in_array('getmypid', explode(',', ini_get('disable_functions'))) ? getmypid() : '';
         if (!isset($this->_boundary)) {
+            $getmypid = !in_array('getmypid', array_map('trim', explode(',', ini_get('disable_functions')))) ? getmygid() : '';
             $this->_boundary = '_=_swift_v4_' . time() . '_' . md5($getmypid.mt_rand().uniqid('', true)) . '_=_';
         }
 
@@ -688,7 +688,7 @@ class Swift_Mime_SimpleMimeEntity implements Swift_Mime_MimeEntity
      */
     protected function getRandomId()
     {
-        $getmypid = !in_array('getmypid', explode(',', ini_get('disable_functions'))) ? getmypid() : '';
+        $getmypid = !in_array('getmypid', array_map('trim', explode(',', ini_get('disable_functions')))) ? getmygid() : '';
         $idLeft = md5($getmypid . '.' . time() . '.' . uniqid(mt_rand(), true));
         $idRight = !empty($_SERVER['SERVER_NAME']) ? $_SERVER['SERVER_NAME'] : 'swift.generated';
         $id = $idLeft . '@' . $idRight;

@@ -70,7 +70,7 @@ class Swift_Mime_Grammar
                 '|[\x21-\x27\x2A-\x5B\x5D-\x7E])';
         // Uses recursive PCRE (?1) -- could be a weak point??
         self::$_grammar['ccontent'] = '(?:' . self::$_grammar['ctext'] . '|' .
-                self::$_grammar['quoted-pair'] . '|(?1))';
+                self::$_grammar['quoted-pair'] . (version_compare(PHP_VERSION, '5.2.17') > 0 ? '|(?1)' : '').')';
         self::$_grammar['comment'] = '(\((?:' . self::$_grammar['FWS'] . '|' .
                 self::$_grammar['ccontent']. ')*' . self::$_grammar['FWS'] . '?\))';
         self::$_grammar['CFWS'] = '(?:(?:' . self::$_grammar['FWS'] . '?' .
