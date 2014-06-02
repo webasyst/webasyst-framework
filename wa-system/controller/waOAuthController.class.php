@@ -91,16 +91,22 @@ class waOAuthController extends waViewController
                 $photo_url_parts = explode('/', $photo_url);
                 // copy photo to tmp dir
                 $path = wa()->getTempPath('auth_photo/'.$contact_id.'.'.md5(end($photo_url_parts)), $app_id);
-                if (function_exists('curl_init')) {
+                $s = parse_url($photo_url, PHP_URL_SCHEME);
+                $w = stream_get_wrappers();
+                if (in_array($s, $w) && ini_get('allow_url_fopen')) {
+                    $photo = file_get_contents($photo_url);
+                } elseif (function_exists('curl_init')) {
                     $ch = curl_init($photo_url);
                     curl_setopt($ch, CURLOPT_HEADER, 0);
                     curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
                     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+                    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+                    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
                     curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 25);
                     $photo = curl_exec($ch);
                     curl_close($ch);
                 } else {
-                    $photo = file_get_contents($photo_url);
+                    $photo = null;
                 }
                 if ($photo) {
                     file_put_contents($path, $photo);

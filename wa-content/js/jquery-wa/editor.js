@@ -113,7 +113,7 @@ jQuery.fn.waEditor = function (options) {
         } else {
             session.setValue(' ');
         }
-        editor.setOption("maxLines", 2);
+        editor.setOption("minLines", 2);
         editor.setOption("maxLines", 10000);
         editor.setAutoScrollEditorIntoView(true);
 
@@ -156,13 +156,17 @@ jQuery.fn.waEditor = function (options) {
             $(this).attr('data-src', s);
             $(this).attr('src', s.replace(/\{\$wa_url\}/, wa_url));
         });
-        self.redactor('getBox').css('z-index', 0);
-        self.redactor('getToolbar').css('z-index', 1);
+        if (self.redactor('getBox')) {
+            self.redactor('getBox').css('z-index', 0);
+        }
+        if (self.redactor('getToolbar')) {
+            self.redactor('getToolbar').css('z-index', 1);
+        }
 
 
         wrapper.find('.html').click(function () {
             if ($(this).parent().hasClass('selected')) {
-                return false
+                return false;
             }
             if ($.storage) {
                 $.storage.set(wa_app + '/editor', 'html');
@@ -214,7 +218,14 @@ jQuery.fn.waEditor = function (options) {
             editor.navigateTo(0, 0);
         } else {
             wrapper.find('.ace').hide();
-            self.redactor('focus');
+            if (!options['iframe']) {
+                self.redactor('focus');
+            }
+            else {
+                setTimeout(function(){
+                    self.redactor('focus');
+                }, 100);
+            }
         }
     });
     return result;

@@ -381,7 +381,11 @@ HTML;
                 return new waContact();
             }
         }
-        return new waContact($id);
+        $contact_model = new waContactModel();
+        if ($contact = $contact_model->getById($id)) {
+            return new waContact($contact);
+        }
+        return new waContact();
     }
 
     public function title($title = null)

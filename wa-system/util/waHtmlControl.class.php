@@ -1,4 +1,5 @@
 <?php
+
 /**
  *
  * @author WebAsyst Team
@@ -66,25 +67,25 @@ class waHtmlControl
      * @param string $type Type of control (use standard or try to found registered control types) (also support raw control type)
      * @param string $name Control name
      * @param array $params
-     * @param array[string]mixed $params Control params
-     * @param array[string]mixed $params['namespace'] array of string or string with control namespace
-     * @param array[string]mixed $params['class'] array of string or string with control CSS class
-     * @param array[string]mixed $params['style'] HTML property of control
-     * @param array[string]mixed $params['value']
-     * @param array[string]mixed $params['size'] HTML property of control
-     * @param array[string]mixed $params['maxlength'] HTML property of control
-     * @param array[string]mixed $params['cols'] HTML property of control
-     * @param array[string]mixed $params['rows'] HTML property of control
-     * @param array[string]mixed $params['wrap']
-     * @param array[string]mixed $params['callback']
-     * @param array[string]array $params['options'] variants for selectable control
-     * @param array[string][][string]string $params['options']['title'] variant item title for selectable control
-     * @param array[string][][string]mixed $params['options']['value'] variant item value for selectable control
+     * @param array [string]mixed $params Control params
+     * @param array [string]mixed $params['namespace'] array of string or string with control namespace
+     * @param array [string]mixed $params['class'] array of string or string with control CSS class
+     * @param array [string]mixed $params['style'] HTML property of control
+     * @param array [string]mixed $params['value']
+     * @param array [string]mixed $params['size'] HTML property of control
+     * @param array [string]mixed $params['maxlength'] HTML property of control
+     * @param array [string]mixed $params['cols'] HTML property of control
+     * @param array [string]mixed $params['rows'] HTML property of control
+     * @param array [string]mixed $params['wrap']
+     * @param array [string]mixed $params['callback']
+     * @param array [string]array $params['options'] variants for selectable control
+     * @param array [string][][string]string $params['options']['title'] variant item title for selectable control
+     * @param array [string][][string]mixed $params['options']['value'] variant item value for selectable control
      *
-     * @param array[string]string $params['title_wrapper'] title output format format
-     * @param array[string]string $params['description_wrapper'] description output format
-     * @param array[string]string $params['control_wrapper'] control ouput format
-     * @param array[string]string $params['control_separator'] control items separator
+     * @param array [string]string $params['title_wrapper'] title output format format
+     * @param array [string]string $params['description_wrapper'] description output format
+     * @param array [string]string $params['control_wrapper'] control ouput format
+     * @param array [string]string $params['control_separator'] control items separator
      *
      * @return string
      */
@@ -115,6 +116,8 @@ class waHtmlControl
             if (!isset($params['options'])) {
                 $params['options'] = self::getControlParams($options);
             }
+        } elseif (!empty($params['options_callback']) && !isset($params['options'])) {
+            $params['options'] = self::getControlParams($params['options_callback']);
         }
 
 
@@ -201,7 +204,24 @@ class waHtmlControl
     private static function getControlParams($raw_params)
     {
         $options = null;
-        if (preg_match('/^([_\w]+)::([_\w]+)(\s+.+)?$/', $raw_params, $matches) && class_exists($matches[1]) && in_array($matches[2], get_class_methods($matches[1]))) {
+        if (is_array($raw_params)) {
+            $callback = array_shift($raw_params);
+            if (function_exists($callback)) {
+                $options = call_user_func_array($callback, $raw_params);
+            } elseif (is_string($callback) && class_exists($callback)) {
+                $callback = array($callback);
+                $callback[] = array_shift($raw_params);
+                if (in_array($callback[1], get_class_methods($callback[0]))) {
+                    $options = call_user_func_array($callback, $raw_params);
+                }
+            } elseif (is_object($callback) && ($class = get_class($callback))) {
+                $callback = array($callback);
+                $callback[] = array_shift($raw_params);
+                if (in_array($callback[1], get_class_methods($class))) {
+                    $options = call_user_func_array($callback, $raw_params);
+                }
+            }
+        } elseif (preg_match('/^([_\w]+)::([_\w]+)(\s+.+)?$/', $raw_params, $matches) && class_exists($matches[1]) && in_array($matches[2], get_class_methods($matches[1]))) {
             $callback = array($matches[1], $matches[2]);
             $options = isset($matches[3]) ? call_user_func($callback, $matches[3]) : call_user_func($callback);
         } elseif (preg_match('/([_\w]+)(.*)/', $raw_params, $matches) && function_exists($matches[1])) {
@@ -496,15 +516,15 @@ HTML;
         $control .= "<select name=\"{$name}\" autocomplete=\"off\"";
         $control .= self::addCustomParams(array('class', 'style', 'id', 'readonly', 'autofocus'), $params);
         $control .= ">\n";
-        $groupbox = null;
+        $group = null;
         foreach ($options as $option) {
-            if ($groupbox && (empty($option['group']) || (strcasecmp($option['group'], $groupbox) != 0))) {
-                $groupbox = false;
+            if ($group && (empty($option['group']) || (strcasecmp($option['group'], $group) != 0))) {
+                $group = false;
                 $control .= "\n</optgroup>\n";
             }
-            if (!empty($option['group']) && ($option['group'] != $groupbox)) {
-                $groupbox = (string)$option['group'];
-                $control .= "\n<optgroup label=\"".htmlentities($groupbox, ENT_QUOTES, self::$default_charset)."\"".self::addCustomParams(array('class', 'style'), $option).">\n";
+            if (!empty($option['group']) && ($option['group'] != $group)) {
+                $group = (string)$option['group'];
+                $control .= "\n<optgroup label=\"".htmlentities($group, ENT_QUOTES, self::$default_charset)."\"".self::addCustomParams(array('class' => 'group_class', 'group_style' => 'style'), $option).">\n";
             }
 
             ++$id;
@@ -524,7 +544,7 @@ HTML;
             $option_title = htmlentities(self::_wp(ifset($option['title'], $option_value), $params), ENT_QUOTES, self::$default_charset);
             $control .= ">{$option_title}</option>\n";
         }
-        if ($groupbox) {
+        if ($group) {
             $control .= "\n</optgroup>\n";
         }
         $control .= "</select>";
@@ -786,7 +806,11 @@ HTML;
             if (isset($params[$param])) {
                 $param_value = $params[$param];
                 if (is_array($param_value)) {
-                    $param_value = implode(' ', $param_value);
+                    if (array_filter($param_value, 'is_array')) {
+                        $param_value = json_encode($param_value);
+                    } else {
+                        $param_value = implode(' ', $param_value);
+                    }
                 }
                 if ($param_value !== false) {
                     if (in_array($param, array('title', 'description'))) {

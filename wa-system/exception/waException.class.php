@@ -12,9 +12,10 @@
  * @package wa-system
  * @subpackage exception
  */
+
 class waException extends Exception
 {
-    const CONTEXT_RADIUS  = 5;
+    const CONTEXT_RADIUS = 5;
 
     private function getFileContext()
     {
@@ -23,25 +24,25 @@ class waException extends Exception
         if ($file && is_readable($file)) {
             $line_number = $this->getLine();
             $i = 0;
-            foreach(file($file) as $line) {
+            foreach (file($file) as $line) {
                 $i++;
-                if($i >= $line_number - self::CONTEXT_RADIUS && $i <= $line_number + self::CONTEXT_RADIUS) {
+                if ($i >= $line_number - self::CONTEXT_RADIUS && $i <= $line_number + self::CONTEXT_RADIUS) {
                     if ($i == $line_number) {
-                        $context[] = ' >>'. $i ."\t". $line;
+                        $context[] = ' >>'.$i."\t".$line;
                     } else {
-                        $context[] = '   '. $i ."\t". $line;
+                        $context[] = '   '.$i."\t".$line;
                     }
                 }
-                if($i > $line_number + self::CONTEXT_RADIUS) break;
+                if ($i > $line_number + self::CONTEXT_RADIUS) break;
             }
         }
-        return "\n". implode("", $context);
+        return "\n".implode("", $context);
     }
 
     public static function dump()
     {
         $message = '';
-        foreach(func_get_args() as $v) {
+        foreach (func_get_args() as $v) {
             $message .= ($message ? "\n" : '').wa_dump_helper($v);
         }
         throw new self($message, 500);
@@ -84,25 +85,43 @@ class waException extends Exception
             $response->setStatus(404);
             $response->sendHeaders();
         }
-
+        $request = htmlentities(var_export($_REQUEST, true), ENT_NOQUOTES, 'utf-8');
+        $params = htmlentities(var_export(waRequest::param(), true), ENT_NOQUOTES, 'utf-8');
+        $context = htmlentities($this->getFileContext(), ENT_NOQUOTES, 'utf-8');
+        $trace = htmlentities($this->getTraceAsString(), ENT_NOQUOTES, 'utf-8');
         $result = <<<HTML
-<div style="width:99%; position:relative">
-<h2 id='Title'>{$message}</h2>
-<div id="Context" style="display: block;"><h3>Error with code {$this->getCode()} in '{$this->getFile()}' around line {$this->getLine()}:</h3><pre>{$this->getFileContext()}</pre></div>
-<div id="Trace"><h2>Call stack</h2><pre>{$this->getTraceAsString()}</pre></div>
-<div id="Request"><h2>Request</h2><pre>
+<div style="width:99%; position:relative; text-align: left;">
+	<h2 id='Title'>{$message}</h2>
+	<div id="Context" style="display: block;">
+		<h3>Error with code {$this->getCode()} in '{$this->getFile()}' around line {$this->getLine()}:</h3>
+		<pre>{$context}</pre>
+	</div>
+	<div id="Trace">
+		<h2>Call stack</h2>
+		<pre>{$trace}</pre>
+	</div>
+	<div id="Request">
+		<h2>Request</h2>
+		<pre>{$request}</pre>
+    </div>
+</div>
+<div style="text-align: left;">
+    <h2>Params</h2>
+    <pre>{$params}</pre>
+</div>
 HTML;
-        $result .= var_export($_REQUEST, true);
-        $result .= "</pre></div></div>
-<div><h2>Params</h2><pre>";
-        $result .= var_export(waRequest::param(), true);
-        if ($additional_info) {
-            $result .= "</pre></div></div>
-            <div><h2>Error while initializing waSystem during error generation</h2><pre>";
-            $result .= $additional_info;
-        }
-        $result .= "</pre></div></div>";
 
+        if ($additional_info) {
+            $additional_info = htmlentities($additional_info, ENT_NOQUOTES, 'utf-8');
+            $result .= <<<HTML
+
+<div style="text-align: left;">
+    <h2>Error while initializing waSystem during error generation</h2>
+    <pre>{$additional_info}</pre>
+</div>
+HTML;
+
+        }
         return $result;
     }
 }

@@ -236,6 +236,11 @@ abstract class waSystemPlugin
     {
         return $this->getSettings($name);
     }
+    
+    public function __isset($name)
+    {
+        return $this->getSettings($name) !== null;
+    }
 
     public function _w($string)
     {

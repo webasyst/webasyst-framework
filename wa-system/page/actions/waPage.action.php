@@ -11,7 +11,7 @@ class waPageAction extends waViewAction
         if ($id = waRequest::param('page_id')) {
             $page = $this->getPageModel()->get($id);
             foreach ($page as $k => $v) {
-                if ($k != 'content') {
+                if ($k != 'content' && $k != 'title') {
                     $page[$k] = htmlspecialchars($v);
                 }
             }
@@ -35,7 +35,7 @@ class waPageAction extends waViewAction
                 $p = $this->getPageModel()->select('id, parent_id, name, title, url, full_url')->where("id = ?", $p['parent_id'])->fetch();
                 $parents[] = $p;
                 $breadcrumbs[] = array(
-                    'name' => $p['title'] ? $p['title'] : $p['name'],
+                    'name' => $p['name'],
                     'url' => $root_url.$p['full_url']
                 );
                 $root_page_id = $p['id'];
