@@ -15,20 +15,20 @@
 </nav>
 
 <article class="page-content">
-    {if $wa->currentUrl() == $wa_app_url && (empty($page.content) || $page.content == '')}
-    
-        <div class="welcome">
-            <h1>[`Welcome to your new site!`]</h1>
-            <p>{sprintf('[`Start by creating a page in your <a href="%s">site backend</a>.`]', $wa_backend_url|cat:'site/#/pages/')}</p>
-        </div>
+    <div id="page-content">
+        {if $wa->currentUrl() == $wa_app_url && (empty($page.content) || $page.content == '')}
         
-    {else}
+            <div class="welcome">
+                <h1>[`Welcome to your new site!`]</h1>
+                <p>{sprintf('[`Start by creating a page in your <a href="%s">site backend</a>.`]', $wa_backend_url|cat:'site/#/pages/')}</p>
+            </div>
+            
+        {else}
         
-        <div id="page-content">
             {$content} {* see page.html *}
-        </div>
-        
-    {/if}
+            
+        {/if}
+    </div>
     
     <div class="clear-both"></div>
     

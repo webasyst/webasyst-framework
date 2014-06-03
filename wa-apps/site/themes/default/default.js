@@ -8,13 +8,14 @@ $(document).ready(function() {
             
         $('.slidemenu').waSlideMenu({
             slideSpeed          : 300,
-            loadSelector        : '#page-content',
+            loadContainer       : '#page-content',
             backLinkContent     : _back_lbl,
             excludeUri          : ['/', '#'],
             loadOnlyLatest      : false,
             setTitle            : true,
             scrollToTopSpeed    : 200,
-            backOnTop           : false
+            backOnTop           : false,
+            beforeLoad          : function(){}
         });
     }
     
@@ -29,16 +30,19 @@ $(document).ready(function() {
     });
     
     // SIDEBAR HEADER click
-    $('a.nav-sidebar-header').click(function(){
-    
-        // on devices without :hover event (tablets such as iPad) clicking on sidebar header link should show the sidebar
-        var _sidebar_visible = $('.nav-sidebar-body').css('opacity');
-        if ( !parseInt(_sidebar_visible) )
-        {
-            return false;
-        }
-    });
-    
+    // on devices without :hover event (handheld tablets such as iPad) clicking on sidebar header link should show the sidebar
+    if ( (!!('ontouchstart' in window)) && window.matchMedia("only screen and (min-width: 760px) and (max-width: 1024px)").matches )
+    {
+        $('.nav-sidebar-body').css('opacity',1);
+        $('.nav-sidebar-body').hide();
+        $('a.nav-sidebar-header').click(function(){        
+            {
+                $('.nav-sidebar-body').slideToggle(200);
+                return false;
+            }
+        });
+    }
+        
     // FOLLOW US toggle
     $('a#followus-leash-toggler').click(function(){
 

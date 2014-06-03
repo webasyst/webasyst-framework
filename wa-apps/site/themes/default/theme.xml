@@ -1,18 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE theme PUBLIC "wa-app-theme" "http://www.webasyst.com/wa-content/xml/wa-app-theme.dtd">
-<theme id="default" system="0" vendor="webasyst" author="Webasyst" app="site" version="2.0.0">
+<theme id="default" system="0" vendor="webasyst" author="Webasyst" app="site" version="2.0.1">
     <name locale="en_US">Default 2.0</name>
-    <name locale="ru_RU">Default 2.0</name>
+    <name locale="ru_RU">Дефолт 2.0</name>
     <description locale="en_US">Adaptive design theme for all base Webasyst apps</description>
     <description locale="ru_RU">Семейство адаптивных тем дизайна для всех базовых приложений Webasyst</description>
     <files>
         <file path="index.html" custom="0">
     		<description locale="en_US">Core layout of the Default theme family</description>
-    		<description locale="ru_RU">Основной макет тем дизайна семейства Default</description>
+    		<description locale="ru_RU">Основной макет тем дизайна семейства «Дефолт»</description>
         </file>
         <file path="default.css" custom="0">
     		<description locale="en_US">Core CSS of the Default theme family</description>
-    		<description locale="ru_RU">Основной файл CSS-стилей семейства тем дизайна Default</description>
+    		<description locale="ru_RU">Основной файл CSS-стилей семейства тем дизайна «Дефолт»</description>
+        </file>
+        <file path="default.colors.css" custom="0">
+    		<description locale="en_US">Default theme color schemes</description>
+    		<description locale="ru_RU">Цветовые схемы темы дизайна «Дефолт»</description>
         </file>
         <file path="default.mobile.css" custom="0">
     		<description locale="en_US">Additional CSS for multi-touch mobile devices</description>
@@ -103,14 +107,20 @@
                 <option value="img/backgrounds/themesettings/yellow.png"></option>
             </options>
         </setting>
+        <setting var="custom_background" control_type="image">
+            <value></value>
+            <filename>img/custom_background.*</filename>
+            <name locale="en_US">Custom background</name>
+            <name locale="ru_RU">Свое фоновое изображение</name>
+        </setting>
         <setting var="page_nav_mode" control_type="radio">
             <value>slidemenu</value>
             <name locale="ru_RU">Меню навигации</name>
             <name locale="en_US">Navigation menu</name>
             <options>
                 <option value="slidemenu">
-                    <name locale="ru_RU">Сдвигающееся (рекомендуется)</name>
-                    <name locale="en_US">Slide menu (recommended)</name>
+                    <name locale="ru_RU">Прокручивающееся (waSlideMenu)</name>
+                    <name locale="en_US">Slide menu (waSlideMenu)</name>
                     <description locale="ru_RU">Рекомендуется для многоуровневых навигационных меню, в которых на каждом уровне примерно одинаковое количество элементов-ссылок</description>
                     <description locale="en_US">Great for multi-level menus with relatively equal number of elements on each navigation level</description>
                 </option>

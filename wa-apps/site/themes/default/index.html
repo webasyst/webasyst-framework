@@ -106,7 +106,9 @@
                     <ul class="auth">
                          {if $wa->user()->isAuth()}
                             {if $wa->shop}
-                                <li><a href="{$wa->getUrl('shop/frontend/my')}"><i class="icon16 userpic20 float-left" style="background-image: url('{$wa->user()->getPhoto(20)}');"></i>[s`My account`]</a></li>
+                                <li>
+                                    <a href="{$wa->myUrl()}"><i class="icon16 userpic20 float-left" style="background-image: url('{$wa->user()->getPhoto(20)}');"></i> [s`My account`]</a>
+                                </li>
                             {else}
                                     <li><strong>{$wa->user('name')}</strong></li>
                                 {/if}
@@ -126,8 +128,8 @@
             </nav>
              
         </div>
-        
-        <div class="banner" role="banner">
+
+        <div class="banner" role="banner"{if $theme_settings.custom_background} style="background-image: url('{$wa_theme_url}{$theme_settings.custom_background}');"{/if}>
             <div class="container">
                 {if !empty($theme_settings.banner_caption)}
                     <h3>{$theme_settings.banner_caption|escape}</h3>

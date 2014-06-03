@@ -22,4 +22,5 @@ body { font-size: 15px; -webkit-text-size-adjust: 100%; }
 .nav-sidebar-body .waSlideMenu-wrapper ul.menu-v { margin-top: 1px; } 
 .nav-sidebar:hover .nav-sidebar-body { top: 46px; left: 0; transition: opacity 0.3s; opacity: 1; box-shadow: 0 2px 15px rgba(0,0,0,0.15); }
 .nav-hotties { margin-left: 0%; border-left: none; }
-.page-content { clear: both; margin-left: 0%; border-left: none; box-shadow: none; }
+
+.page-content { clear: both; margin-left: 0%; border-left: none; box-shadow: none; padding: 2% 3%; }

@@ -31,12 +31,6 @@
 .color_scheme_blue .filters,
 .color_scheme_blue .product-sidebar,
 .color_scheme_blue .subscribe { background-color: #effaff; }
-.color_scheme_blue input[type="button"],
-.color_scheme_blue input[type="submit"] { background: #fd0; color: #1f61b3; }
-.color_scheme_blue input[type="button"]:hover,
-.color_scheme_blue input[type="submit"]:hover { background: #fe0; }
-.color_scheme_blue input[type="button"]:active,
-.color_scheme_blue input[type="submit"]:active { background: #ea0; }
 .color_scheme_blue .search button { background: #fd0; }
 .color_scheme_blue .filters .ui-slider-horizontal .ui-widget-header { background: #fc0; }
 .color_scheme_blue .followus-leash .toggler { background: #39ADE6; }
@@ -47,9 +41,10 @@
 .color_scheme_red .banner h3 { color: #fff; }
 .color_scheme_red main { background: #fee; }
 .color_scheme_red header .cart a { background: #c00; color: #fff; }
-.color_scheme_red header .cart a strong { color: #ff7; }
 .color_scheme_red header .cart a:hover { background: #e33 !important; color: #fff !important; }
 .color_scheme_red header .cart a:hover strong { color: #fff !important; }
+.color_scheme_red header .cart a.cart-to-checkout { color: #006bd8 !important; }
+.color_scheme_red header .cart a.cart-to-checkout:hover { color: #fff !important; }
 .color_scheme_red .dropdown-sidebar .nav-sidebar-header { background-color: #ffefef; }
 .color_scheme_red .page,
 .color_scheme_red .nav-sidebar,
@@ -59,7 +54,7 @@
 .color_scheme_red .product-sidebar,
 .color_scheme_red .subscribe { background-color: #ffefef; }
 .color_scheme_red input[type="button"],
-.color_scheme_red input[type="submit"] { background: #c00; color: #fff; }
+.color_scheme_red input[type="submit"] { background: #c00; color: #fff; text-shadow: 0 1px 0 #000; }
 .color_scheme_red input[type="button"]:hover,
 .color_scheme_red input[type="submit"]:hover { background: #e33; }
 .color_scheme_red input[type="button"]:active,
@@ -86,12 +81,6 @@
 .color_scheme_yellow .bullets,
 .color_scheme_yellow .filters,
 .color_scheme_yellow .product-sidebar { background-color: #fffae7; }
-.color_scheme_yellow input[type="button"],
-.color_scheme_yellow input[type="submit"] { background: #ffee43; color: #945d0e; }
-.color_scheme_yellow input[type="button"]:hover,
-.color_scheme_yellow input[type="submit"]:hover { background: #fe0; }
-.color_scheme_yellow input[type="button"]:active,
-.color_scheme_yellow input[type="submit"]:active { background: #ea0; }
 .color_scheme_yellow .banner .search input { box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2); }
 .color_scheme_yellow .search button { background: #fd0; }
 .color_scheme_yellow .filters .ui-slider-horizontal .ui-widget-header { background: #fc0; }
