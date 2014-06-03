@@ -2,7 +2,7 @@
 
 return array(
     'code' => 'CAD',
-    'sign' => '$',
+    'sign' => 'CDN$ ',
     'sign_position' => 0,
     'sign_delim' => '',
     'title' => 'Canadian dollar',
