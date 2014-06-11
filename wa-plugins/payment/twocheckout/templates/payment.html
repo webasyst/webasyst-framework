@@ -1,5 +1,5 @@
 <form id="payment-form" action="{$form_url}" method="POST" target="_top">
-{foreach $form as $field=>$value}
+{foreach $form as $name=>$value}
 <input type="hidden" name="{$name|escape}" value="{$value|escape}">
 {/foreach}
     {if $auto_submit}
