@@ -81,7 +81,7 @@ final class waDbStatement
 
         $matches = array();
 
-        if (preg_match_all('/([sibfl]?)(\?|:[A-z0-9_]+)/', $this->query, $matches, PREG_OFFSET_CAPTURE)) {
+        if (preg_match_all('/([sibfl]?)(\?|:[a-zA-Z0-9_]+)/', $this->query, $matches, PREG_OFFSET_CAPTURE)) {
             $unnamed_count = 0;
             foreach ($matches[0] as $id => $match) {
                 $match[2] = $matches[1][$id][0];
