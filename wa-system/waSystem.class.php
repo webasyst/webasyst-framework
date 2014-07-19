@@ -811,7 +811,8 @@ class waSystem
                 }
                 $apps[] = array(
                     'url' => $path.'/'.$url,
-                    'name' => $escape ? htmlspecialchars($name) : $name
+                    'name' => $escape ? htmlspecialchars($name) : $name,
+                    'app' => $r['app']
                 );
             }
         }
