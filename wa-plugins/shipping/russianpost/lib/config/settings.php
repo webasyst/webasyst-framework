@@ -90,21 +90,21 @@ return array(
         'control_type' => 'RegionRatesControl',
     ),
     'halfkilocost' => array(
-        'value'        => array(1 => 138.80, 2 => 140.70, 3 => 146.40, 4 => 178.30, 5 => 199.00, ),
+        'value'        => array(1 => 149.90, 2 => 152.0, 3 => 158.10, 4 => 192.60, 5 => 215.00, ),
         'title'        => 'Стоимость отправки посылки весом до 0.5 килограмм (включительно)',
         'description'  => '',
         'control_type' => 'WeightCosts',
     ),
 
     'overhalfkilocost' => array(
-        'value'        => array(1 => 12.00, 2 => 13.90, 3 => 20.30, 4 => 29.20, 5 => 33.70, ),
+        'value'        => array(1 => 13.40, 2 => 15.60, 3 => 22.30, 4 => 31.80, 5 => 36.40, ),
         'title'        => 'Стоимость отправки каждых дополнительных 0.5 килограмм',
         'description'  => '',
         'control_type' => 'WeightCosts',
     ),
 
     'air'    => array(
-        'value'        => '254.70',
+        'value'        => '295.00',
         'title'        => 'Надбавка за отправление «Авиа»',
         'description'  => 'Укажите стоимость в рублях',
         'control_type' => waHtmlControl::INPUT,
@@ -198,5 +198,4 @@ return array(
     ),
 
 );
-
 //EOF

@@ -1,6 +1,9 @@
 <?php
 
 /**
+ * Плагин расчета доставки Почтой России.
+ * 
+ * @see http://www.russianpost.ru/rp/servise/ru/home/postuslug/bookpostandparcel/parcelltariff
  *
  * @property $region
  * @property $halfkilocost
@@ -21,10 +24,16 @@
  * @property string $bank_account_number
  * @property string $bik
  * @property string $color
- *
  */
 class russianpostShipping extends waShipping
 {
+    
+    /**
+     * Регистрирует пользовательские элементы управления плагина для использования в интерфейсе настроек.
+     * Элементы управления формируются методами класса плагина, имена которых начинаются на 'settings'
+     * и содержат идентификатор, указанный при вызове метода registerControl().
+     * Параметры указанных элементов управления настроек должны содержаться в файле плагина lib/config/settings.php.
+     */
     protected function initControls()
     {
         $this
@@ -33,6 +42,14 @@ class russianpostShipping extends waShipping
         parent::initControls();
     }
 
+    /**
+     * Формирует HTML-код пользовательского элемента управления с идентификатором 'WeightCosts'.
+     * 
+     * @see waHtmlControl::getControl()
+     * @param string $name Идентификатор элемента управления, указанный в файле настроек
+     * @param array $params Параметры элемента управления, указанные в файле настроек
+     * @return string HTML-код элемента управления
+     */
     public static function settingWeightCosts($name, $params = array())
     {
         foreach ($params as $field => $param) {
@@ -63,6 +80,14 @@ class russianpostShipping extends waShipping
         return $control;
     }
 
+    /**
+     * Формирует HTML-код пользовательского элемента управления с идентификатором 'RegionRatesControl'.
+     *
+     * @see waHtmlControl::getControl()
+     * @param string $name Идентификатор элемента управления
+     * @param array $params Параметры элемента управления
+     * @return string
+     */
     public static function settingRegionRatesControl($name, $params = array())
     {
         foreach ($params as $field => $param) {
@@ -130,11 +155,22 @@ class russianpostShipping extends waShipping
             $control .= "</tbody>";
             $control .= "</table>";
         } else {
-            $control .= 'Не определено ни одной области. Для работы модуля необходимо определить хотя бы одну область в России (см. раздел «Страны и области»).';
+            $control .= 'Для Российской Федерации не указаны регионы. Добавьте хотя бы один регион в настройках стран и регионов.';
         }
         return $control;
     }
 
+    /**
+     * Ограничивает диапазон адресов, по которым возможна доставка с помощью этого плагина.
+     *
+     * @example <pre>return array(
+     *   'country' => 'rus', // или array('rus', 'ukr')
+     *   'region'  => '77',
+     *   // или array('77', '50', '69', '40');
+     *   // либо не указывайте элемент 'region', если вам не нужно ограничивать доставку отдельными регионами указанной страны
+     * );</pre>
+     * @return array Верните пустой array(), если необходимо разрешить доставку по любым адресам без ограничений
+     */
     public function allowedAddress()
     {
         $address = array(
@@ -149,6 +185,27 @@ class russianpostShipping extends waShipping
         return array($address);
     }
 
+    /**
+     * Возвращает массив полей формы запроса адреса доставки, которые должны запрашиваться у покупателя во время оформления заказа.
+     *
+     * @see waShipping::requestedAddressFields()
+     * @example <pre>return array(
+     *     // поле запрашивается
+     *     'zip'     => array(),
+     *
+     *     // скрытое поле с указанным вручную значением
+     *     'country' => array('hidden' => true, 'value' => 'rus', 'cost' => true),
+     *
+     *     // параметр 'cost' означает, что значение данного поля используется для предварительного расчета стоимости доставки
+     *     'region'  => array('cost' => true),
+     *     'city'    => array(),
+     *
+     *     // поле не запрашивается
+     *     'street'  => false,
+     * );</pre>
+     * @return array|bool Верните false, если плагин не длолжен запрашивать адрес доставки;
+     * верните пустой array(), если все поля адреса должны запрашиваться у покупателя
+     */
     public function requestedAddressFields()
     {
         return array(
@@ -160,6 +217,15 @@ class russianpostShipping extends waShipping
         );
     }
 
+    /**
+     * Получение стоимости вариантов доставки, доступных для указанного тарифного пояса.
+     * 
+     * @see http://www.russianpost.ru/rp/servise/ru/home/postuslug/bookpostandparcel/parcelltariff
+     * @param float $weight Суммарный вес отправления
+     * @param float $price Суммарная стоимость отправляемых товаров
+     * @param int $zone Идентификатор тарифного пояса: от 1 до 5
+     * @return array
+     */
     private function getZoneRates($weight, $price, $zone)
     {
         $zone = max(1, min(5, $zone));
@@ -182,6 +248,50 @@ class russianpostShipping extends waShipping
         return $rate;
     }
 
+    /**
+     * Основной метод расчета стоимости доставки.
+     * Возвращает массив предварительно рассчитанной стоимости и сроков доступных вариантов доставки,
+     * либо сообщение об ошибке для отображения покупателю,
+     * либо false, если способ доставки в текущих условиях не дложен быть доступен.
+     * 
+     * 
+     * @example <pre>
+     * //возврат массива вариантов доставки
+     * return array(
+     *     'option_id_1' => array(
+     *          'name'         => $this->_w('...'),
+     *          'description'  => $this->_w('...'),
+     *          'est_delivery' => '...',
+     *          'currency'     => $this->currency,
+     *          'rate'         => $this->cost,
+     *      ),
+     *      ...
+     * );
+     * 
+     * //сообщение об ошибке
+     * return 'Для расчета стоимости доставки укажите регион доставки';
+     * 
+     * //способ доставки недоступен
+     * return false;</pre>
+     *
+     * Полезные методы базового класса (waShipping), которые можно использовать в коде метода calculate():
+     * 
+     *     <pre>
+     *     // суммарная стоимость отправления
+     *     $price = $this->getTotalPrice();
+     *     
+     *     // суммарный вес отправления
+     *     $weight = $this->getTotalWeight();
+     *     
+     *     // массив с информацией о заказанных товарах
+     *     $items = $this->getItems();
+     *     
+     *     // массив с полной информацией об адресе получателя либо значение указанного поля адреса
+     *     $address = $this->getAddress($field = null);
+     *     </pre>
+     * 
+     * @return mixed
+     */
     public function calculate()
     {
         $weight = $this->getTotalWeight();
@@ -222,6 +332,18 @@ class russianpostShipping extends waShipping
         return $services;
     }
 
+    /**
+     * Возвращает массив с информацией о печатных формах, формируемых плагином.
+     *
+     * @example return <pre>array(
+     *    'form_id' => array(
+     *        'name' => _wp('Printform name'),
+     *        'description' => _wp('Printform description'),
+     *    ),
+     * );</pre>
+     * @param waOrder $order Объект, содержащий информацию о заказе
+     * @return array
+     */
     public function getPrintForms(waOrder $order = null)
     {
         return extension_loaded('gd') ? array(
@@ -236,6 +358,15 @@ class russianpostShipping extends waShipping
         ) : array();
     }
 
+    /**
+     * Возвращает HTML-код указанной печатной формы.
+     *
+     * @param string $id Идентификатор формы, определенный в методе getPrintForms()
+     * @param waOrder $order Объект, содержащий информацию о заказе
+     * @param array $params Дополнительные необязательные параметры, передаваемые в шаблон печатной формы
+     * @throws waException
+     * @return string HTML-код формы
+     */
     public function displayPrintForm($id, waOrder $order, $params = array())
     {
         $method = 'displayPrintForm'.$id;
@@ -248,9 +379,15 @@ class russianpostShipping extends waShipping
         } else {
             throw new waException('Print form not found');
         }
-
     }
 
+    /**
+     * Вспомогательный метод для печати формы с идентификатором 113.
+     * 
+     * @param waOrder $order Объект, содержащий информацию о заказе
+     * @param array $params
+     * @return string HTML-код формы
+     */
     private function displayPrintForm113(waOrder $order, $params = array())
     {
         $strict = true;
@@ -318,6 +455,9 @@ class russianpostShipping extends waShipping
         return $this->view()->fetch($this->path.'/templates/form113.html');
     }
 
+    /**
+     * Кеширование экземпляра класса шаблонизатора (Smarty) для многократного использования.
+     */
     private function view()
     {
         static $view;
@@ -327,6 +467,12 @@ class russianpostShipping extends waShipping
         return $view;
     }
 
+    /**
+     * Разбиение адреса получателя на подстроки длиной от 25 до 40 символов для удобного отображения на печатной форме. 
+     * 
+     * @param waOrder $order Объект, содержащий информацию о заказе
+     * @return array
+     */
     private function splitAddress(waOrder $order)
     {
         $address_chunks = array(
@@ -346,6 +492,13 @@ class russianpostShipping extends waShipping
         return $address;
     }
 
+    /**
+     * Вспомогательный метод для печати формы с идентификатором 116.
+     *
+     * @param waOrder $order Объект, содержащий информацию о заказе
+     * @param array $params
+     * @return string HTML-код формы
+     */
     private function displayPrintForm116(waOrder $order, $params = array())
     {
         $strict = true;
@@ -416,22 +569,47 @@ class russianpostShipping extends waShipping
         }
         return $this->view()->fetch($this->path.'/templates/form116.html');
     }
-
+    
+    /**
+     * Возвращает информацию о статусе отправления (HTML).
+     *
+     * @see waShipping::tracking()
+     * @example return _wp('Online shipment tracking: <a href="link">link</a>.');
+     * @param string $tracking_id Необязательный идентификатор отправления, указанный пользователем
+     * @return string
+     */
     public function tracking($tracking_id = null)
     {
         return 'Отслеживание отправления: <a href="http://www.russianpost.ru/Tracking20/" target="_blank">http://www.russianpost.ru/Tracking20/</a>';
     }
 
+    /**
+     * Возвращает ISO3-код валюты или массив кодов валют, которые поддерживает этот плагин.
+     *
+     * @see waShipping::allowedCurrency()
+     * @return array|string
+     */
     public function allowedCurrency()
     {
         return 'RUB';
     }
 
+    /**
+     * Возвращает обозначение единицы веса или массив единиц веса, которые поддерживает этот плагин.
+     *
+     * @see waShipping::allowedWeightUnit()
+     * @return array|string
+     */
     public function allowedWeightUnit()
     {
         return 'kg';
     }
 
+    /**
+     * Предварительная подготовка данных для сохранения настроек с помощью метода saveSettings() базового класса waSystemPlugin.
+     * 
+     * @see waSystemPlugin::saveSettings()
+     */
     public function saveSettings($settings = array())
     {
         $fields = array(
@@ -452,6 +630,15 @@ class russianpostShipping extends waShipping
         return parent::saveSettings($settings);
     }
 
+    /**
+     * Отображение указанного фрагмента текста на изображении печатной формы.
+     * 
+     * @param resource $image Графический ресурс
+     * @param string $text Текст
+     * @param int $x Горизонтальная координата
+     * @param int $y Вертикальная координата
+     * @param int $font_size Размер шрифта
+     */
     private function printOnImage(&$image, $text, $x, $y, $font_size = 35)
     {
         $y += $font_size;
@@ -500,6 +687,17 @@ class russianpostShipping extends waShipping
                 break;
         }
     }
+    
+    /**
+     * Посимвольное отображение указанного фрагмента текста на изображении печатной формы.
+     * 
+     * @param resource $image Графический ресурс
+     * @param string $text Текст
+     * @param int $x Горизонтальная координата
+     * @param int $y Вертикальная координата
+     * @param int $cell_size Размер смещения вправо для отображения следующего символа
+     * @param int $font_size Размер шрифта
+     */
     private function printOnImagePersign(&$image, $text, $x, $y, $cell_size = 34, $font_size = 35)
     {
         $size = mb_strlen($text, 'UTF-8');
@@ -508,6 +706,14 @@ class russianpostShipping extends waShipping
             $x += $cell_size;
         }
     }
+    
+    /**
+     * Чтение содержимого графического файла.
+     * 
+     * @param string $file Путь к файлу
+     * @param array $info Массив информации об изображении
+     * @return resource|bool В случае ошибки возвращает false 
+     */
     private function read($file, &$info)
     {
         if ($file) {
