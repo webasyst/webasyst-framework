@@ -1,9 +1,12 @@
 <?php
+
 /**
  *
- * @author WebAsyst Team
+ * @author Webasyst
  * @name WebMoney
- * @description WebMoney payment module
+ * @description Плагин оплаты через WebMoney.
+ *
+ * Поля, доступные в виде параметров настроек плагина, указаны в файле lib/config/settings.php.
  * @property-read string $LMI_MERCHANT_ID
  * @property-read string $LMI_PAYEE_PURSE
  * @property-read string $secret_key
@@ -18,26 +21,40 @@ class webmoneyPayment extends waPayment implements waIPayment
     const PROTOCOL_WEBMONEY_LEGACY = 'webmoney_legacy';
     const PROTOCOL_PAYMASTER = 'paymaster';
 
+    /**
+     * Возвращает ISO3-коды валют, поддерживаемых платежной системой,
+     * допустимые для выбранного в настройках протокола подключения и указанного номера кошелька продавца.
+     *
+     * @see waPayment::allowedCurrency()
+     * @return mixed
+     */
     public function allowedCurrency()
     {
         $currency = false;
+
+        /**
+         * В зависимости от выбранного в настройках протокола подключения возвращаем либо массив всех поддерживаемых валют,
+         * либо код валюты, соответствующей кошельку продавца, указанному в настройках.
+         * Если во втором случае поддерживаемая валюта не определена, возвращаем false.
+         */
         switch ($this->protocol) {
             case self::PROTOCOL_WEBMONEY_LEGACY:
             case self::PROTOCOL_PAYMASTER:
-                $currency = array('RUB', 'USD', 'EUR', 'UAH', 'UZS', 'BYR');
+                $currency = array('RUB', 'UAH', 'USD', 'EUR', 'UZS', 'BYR');
                 break;
             case self::PROTOCOL_WEBMONEY:
             default:
-                if (preg_match('/^([RZ])\d+$/i', trim($this->LMI_PAYEE_PURSE), $matches)) {
-                    $currency_map = array(
-                        'Z' => 'USD',
-                        'R' => 'RUB',
-                        'E' => 'EUR',
-                        'D' => 'USD',
-                        'U' => 'UAH',
-                        'Y' => 'UZS',
-                        'B' => 'BYR',
-                    );
+                $currency_map = array(
+                    'R' => 'RUB',
+                    'U' => 'UAH',
+                    'Z' => 'USD',
+                    'E' => 'EUR',
+                    'D' => 'USD',
+                    'Y' => 'UZS',
+                    'B' => 'BYR',
+                );
+                $pattern = '/^(['.implode('', array_keys($currency_map)).'])\d+$/i';
+                if (preg_match($pattern, trim($this->LMI_PAYEE_PURSE), $matches)) {
                     $key = strtoupper($matches[1]);
                     if (isset($currency_map[$key])) {
                         $currency = $currency_map[$key];
@@ -48,13 +65,32 @@ class webmoneyPayment extends waPayment implements waIPayment
         return $currency;
     }
 
+    /**
+     * Генерирует HTML-код формы оплаты.
+     *
+     * Платежная форма может отображаться во время оформления заказа или на странице просмотра ранее оформленного заказа.
+     * Значение атрибута "action" формы может содержать URL сервера платежной системы либо URL текущей страницы (т. е. быть пустым).
+     * Во втором случае отправленные пользователем платежные данные снова передаются в этот же метод для дальнейшей обработки, если это необходимо,
+     * например, для проверки, сохранения в базу данных, перенаправления на сайт платежной системы и т. д.
+     * @param array $payment_form_data Содержимое POST-запроса, полученное при отправке платедной формы
+     *     (если в формы оплаты не указано значение атрибута "action")
+     * @param waOrder $order_data Объект, содержащий всю доступную информацию о заказе
+     * @param bool $auto_submit Флаг, обозначающий, должна ли платежная форма автоматически отправить данные без участия пользователя
+     *     (удобно при оформлении заказа)
+     * @return string HTML-код платежной формы
+     * @throws waException
+     */
     public function payment($payment_form_data, $order_data, $auto_submit = false)
     {
+        // заполняем обязательный элемент данных с описанием заказа
         if (empty($order_data['description'])) {
             $order_data['description'] = 'Заказ '.$order_data['order_id'];
         }
+
+        // вызываем класс-обертку, чтобы гарантировать использование данных в правильном формате
         $order = waOrder::factory($order_data);
 
+        // добавляем в платежную форму поля, требуемые платежной системой WebMoney
         $hidden_fields = array(
             'LMI_MERCHANT_ID'        => $this->LMI_MERCHANT_ID,
             'LMI_PAYMENT_AMOUNT'     => number_format($order->total, 2, '.', ''),
@@ -76,7 +112,13 @@ class webmoneyPayment extends waPayment implements waIPayment
         }
 
         $transaction_data = $this->formalizeData($hidden_fields);
+
+        // добавляем служебные URL:
+
+        // URL возврата покупателя после успешного завершения оплаты
         $hidden_fields['LMI_SUCCESS_URL'] = $this->getAdapter()->getBackUrl(waAppPayment::URL_SUCCESS, $transaction_data);
+
+        // URL возврата покупателя после неудачной оплаты
         $hidden_fields['LMI_FAILURE_URL'] = $this->getAdapter()->getBackUrl(waAppPayment::URL_FAIL, $transaction_data);
 
         switch ($this->protocol) {
@@ -101,9 +143,19 @@ class webmoneyPayment extends waPayment implements waIPayment
         $view->assign('form_options', $this->getFormOptions());
         $view->assign('auto_submit', $auto_submit);
 
+        // для отображения платежной формы используем собственный шаблон
         return $view->fetch($this->path.'/templates/payment.html');
     }
 
+    /**
+     * Инициализация плагина для обработки вызовов от платежной системы.
+     *
+     * Для обработки вызовов по URL вида /payments.php/webmoney/* необходимо определить
+     * соответствующее приложение и идентификатор, чтобы правильно инициализировать настройки плагина.
+     * @param array $request Данные запроса (массив $_REQUEST)
+     * @return waPayment
+     * @throws waPaymentException
+     */
     protected function callbackInit($request)
     {
         if (!empty($request['LMI_PAYMENT_NO']) && !empty($request['wa_app']) && !empty($request['wa_merchant_contact_id'])) {
@@ -111,29 +163,47 @@ class webmoneyPayment extends waPayment implements waIPayment
             $this->merchant_id = $request['wa_merchant_contact_id'];
         } else {
             self::log($this->id, array('error' => 'empty required field(s)'));
-            throw new waException('Empty required field(s)');
+            throw new waPaymentException('Empty required field(s)');
         }
         return parent::callbackInit($request);
     }
 
     /**
+     * Обработка вызовов платежной системы.
      *
-     * @param array $data - get from gateway
-     * @throws waException
-     * @return void
+     * Проверяются параметры запроса, и при необходимости вызывается обработчик приложения.
+     * Настройки плагина уже проинициализированы и доступны в коде метода.
+     *
+     *
+     * @param array $request Данные запроса (массив $_REQUEST), полученного от платежной системы
+     * @throws waPaymentException
+     * @return array Ассоциативный массив необязательных параметров результата обработки вызова:
+     *     'redirect' => URL для перенаправления пользователя
+     *     'template' => путь к файлу шаблона, который необходимо использовать для формирования веб-страницы, отображающей результат обработки вызова платежной системы;
+     *                   укажите false, чтобы использовать прямой вывод текста
+     *                   если не указано, используется системный шаблон, отображающий строку 'OK'
+     *     'header'   => ассоциативный массив HTTP-заголовков (в форме 'header name' => 'header value'),
+     *                   которые необходимо отправить в браузер пользователя после завершения обработки вызова,
+     *                   удобно для случаев, когда кодировка символов или тип содержимого отличны от UTF-8 и text/html
+     *
+     *     Если указан путь к шаблону, возвращаемый результат в исходном коде шаблона через переменную $result variable;
+     *     параметры, переданные методу, доступны в массиве $params.
      */
-    protected function callbackHandler($data)
+    protected function callbackHandler($request)
     {
-        $transaction_data = $this->formalizeData($data);
+        // приводим данные о транзакции к универсальному виду
+        $transaction_data = $this->formalizeData($request);
 
+        // проверяем поддержку типа указанный транзакции данным плагином
         if (!in_array($transaction_data['type'], $this->supportedOperations())) {
             self::log($this->id, array('error' => 'unsupported payment operation'));
-            throw new waException('Unsupported payment operation');
+            throw new waPaymentException('Unsupported payment operation');
         }
         if (!$this->LMI_MERCHANT_ID) {
-            throw new waException('Empty merchant data');
+            throw new waPaymentException('Empty merchant data');
         }
 
+        // определяем способ обработки транзакции приложением в зависимости от типа транзакции
         switch ($transaction_data['type']) {
             case self::OPERATION_CHECK:
                 $app_payment_method = self::CALLBACK_CONFIRMATION;
@@ -142,19 +212,26 @@ class webmoneyPayment extends waPayment implements waIPayment
 
             case self::OPERATION_AUTH_CAPTURE:
             default:
-                $this->verifySign($data);
+                if (!$this->verifySign($request)) {
+                    self::log($this->id, array('error' => 'invalid hash'));
+                    throw new waPaymentException('Invalid hash', 403);
+                }
                 //TODO log payer WM ID
                 $app_payment_method = self::CALLBACK_PAYMENT;
                 $transaction_data['state'] = self::STATE_CAPTURED;
                 break;
         }
 
-        $transaction_data = $this->saveTransaction($transaction_data, $data);
+        // сохраняем данные транзакции в базу данных
+        $transaction_data = $this->saveTransaction($transaction_data, $request);
 
-        $transaction_data['success_back_url'] = isset($data['wa_success_url']) ? $data['wa_success_url'] : null;
+        $transaction_data['success_back_url'] = ifset($request['wa_success_url']);
 
+        // вызываем соответствующий обработчик приложения для каждого из поддерживаемых типов транзакций
         $result = $this->execAppCallback($app_payment_method, $transaction_data);
 
+        // в зависимости от успешности или неудачи обработки транзакции приложением отображаем сообщение либо отправляем соответствующий HTTP-заголовок
+        // информацию о результате обработки дополнительно пишем в лог плагина
         if (!empty($result['result'])) {
             self::log($this->id, array('result' => 'success'));
             $message = 'YES';
@@ -167,6 +244,11 @@ class webmoneyPayment extends waPayment implements waIPayment
         exit;
     }
 
+    /**
+     * Возвращает URL запроса к платежной системе в зависимости от выбранного в настройках протокола подключения.
+     *
+     * @return string
+     */
     protected function getEndpointUrl()
     {
         switch ($this->protocol) {
@@ -201,7 +283,7 @@ class webmoneyPayment extends waPayment implements waIPayment
         $result = false;
         switch ($this->protocol) {
             case self::PROTOCOL_PAYMASTER:
-                /*
+                /**
                  * Check user sign
                  * base64
                  * md5
@@ -233,8 +315,8 @@ class webmoneyPayment extends waPayment implements waIPayment
                 foreach ($fields as $field) {
                     $hash_string .= (isset($data[$field]) ? $data[$field] : '').';';
                 }
-                /* 11.Secret Key
-                 *
+                /**
+                 *  11.Secret Key
                  */
                 $hash_string .= $this->secret_key.';';
                 $transaction_hash = strtolower(base64_encode(md5($hash_string, true)));
@@ -244,9 +326,10 @@ class webmoneyPayment extends waPayment implements waIPayment
             case self::PROTOCOL_WEBMONEY_LEGACY:
             case self::PROTOCOL_WEBMONEY:
             default:
-                /*
+                /**
                  * Check user sign
-                 * md5*/
+                 * md5
+                 */
                 $fields = array(
                     /* 1.Кошелек продавца (LMI_PAYEE_PURSE);*/
                     'LMI_PAYEE_PURSE',
@@ -290,12 +373,14 @@ class webmoneyPayment extends waPayment implements waIPayment
     }
 
     /**
-     * Convert transaction raw data to formatted data
-     * @param array $transaction_raw_data - transaction raw data
-     * @return array $transaction_data
+     * Конвертирует исходные данные о транзакции, полученные от платежной системы, в формат, удобный для сохранения в базе данных.
+     *
+     * @param array $request Исходные данные
+     * @return array $transaction_data Форматированные данные
      */
-    protected function formalizeData($transaction_raw_data)
+    protected function formalizeData($request)
     {
+        // формируем полный список полей, относящихся к транзакциям, которые обрабатываются платежной системой WebMoney
         $fields = array(
             'LMI_MERCHANT_ID',
             'LMI_PAYMENT_NO',
@@ -316,20 +401,35 @@ class webmoneyPayment extends waPayment implements waIPayment
             'LMI_SYS_PAYMENT_DATE',
         );
         foreach ($fields as $f) {
-            if (!isset($transaction_raw_data[$f])) {
-                $transaction_raw_data[$f] = null;
+            if (!isset($request[$f])) {
+                $request[$f] = null;
             }
         }
-        $transaction_data = parent::formalizeData($transaction_raw_data);
-        $transaction_data['type'] = !empty($transaction_raw_data['LMI_PREREQUEST']) ? self::OPERATION_CHECK : (!empty($transaction_raw_data['LMI_HASH']) ? self::OPERATION_AUTH_CAPTURE : 'N/A');
-        if (!$transaction_raw_data['LMI_SYS_PAYMENT_ID'] && ($transaction_raw_data['LMI_SYS_INVS_NO'] || $transaction_raw_data['LMI_SYS_TRANS_NO'])) {
-            $transaction_data['native_id'] = $transaction_raw_data['LMI_SYS_INVS_NO'].':'.$transaction_raw_data['LMI_SYS_TRANS_NO'];
+
+        // выполняем базовую обработку данных 
+        $transaction_data = parent::formalizeData($request);
+
+
+        // добавляем дополнительные данные:
+
+        // тип транзакции
+        $transaction_data['type'] = !empty($request['LMI_PREREQUEST']) ? self::OPERATION_CHECK : (!empty($request['LMI_HASH']) ? self::OPERATION_AUTH_CAPTURE : 'N/A');
+
+        // идентификатор транзакции, присвоенный платежной системой
+        if (!$request['LMI_SYS_PAYMENT_ID'] && ($request['LMI_SYS_INVS_NO'] || $request['LMI_SYS_TRANS_NO'])) {
+            $transaction_data['native_id'] = $request['LMI_SYS_INVS_NO'].':'.$request['LMI_SYS_TRANS_NO'];
         } else {
-            $transaction_data['native_id'] = $transaction_raw_data['LMI_SYS_PAYMENT_ID'];
+            $transaction_data['native_id'] = $request['LMI_SYS_PAYMENT_ID'];
         }
-        $transaction_data['order_id'] = $transaction_raw_data['LMI_PAYMENT_NO'];
-        $transaction_data['amount'] = $transaction_raw_data['LMI_PAYMENT_AMOUNT'];
-        $transaction_data['currency_id'] = $transaction_raw_data['LMI_CURRENCY'];
+
+        // номер заказа
+        $transaction_data['order_id'] = $request['LMI_PAYMENT_NO'];
+
+        // сумма заказа
+        $transaction_data['amount'] = $request['LMI_PAYMENT_AMOUNT'];
+
+        // идентификатор валюты заказа
+        $transaction_data['currency_id'] = $request['LMI_CURRENCY'];
         if (empty($transaction_data['currency_id'])) {
             $currency = $this->allowedCurrency();
             if ($currency && !is_array($currency)) {
@@ -340,6 +440,12 @@ class webmoneyPayment extends waPayment implements waIPayment
         return $transaction_data;
     }
 
+    /**
+     * Возвращает список операций с транзакциями, поддерживаемых плагином.
+     *
+     * @see waPayment::supportedOperations()
+     * @return array
+     */
     public function supportedOperations()
     {
         return array(
@@ -365,5 +471,4 @@ class webmoneyPayment extends waPayment implements waIPayment
         );
         return $protocols;
     }
-
 }
