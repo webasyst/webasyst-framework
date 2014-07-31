@@ -1,7 +1,8 @@
 {if !empty($form_url)}
 <form class="qiwi-form" action="{$form_url}" method="POST" target="_top">
     <div class="pay-button">
-        <input type="submit" value="[`Proceed to QIWI secure website to make payment`]" />
+        <input type="submit" value="Оплатить на сайте QIWI{*[`Proceed to QIWI secure website to make payment`]*}" />
+        <div class="qiwi-error" style="color: red; margin-left: 2em; display: inline-block; ">{foreach $messages as $message}{$message|escape|nl2br}{if !$message@last}<br/>{/if}{/foreach}</div>
     </div>
 
 </form>
@@ -21,7 +22,7 @@
 
     <div class="pay-button">
         <input type="submit" value="Выставить счёт QIWI{*[`Proceed to QIWI secure website to make payment`]*}" />
-        <div class="qiwi-error" style="color: red; margin-left: 2em; display: inline-block; ">{foreach $messages as $message}{$message|escape}{if !$message@last}<br>{/if}{/foreach}</div>
+        <div class="qiwi-error" style="color: red; margin-left: 2em; display: inline-block; ">{foreach $messages as $message}{$message|escape|nl2br}{if !$message@last}<br/>{/if}{/foreach}</div>
     </div>
 
 </form>
