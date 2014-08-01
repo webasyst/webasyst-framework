@@ -60,7 +60,7 @@ class webasystApiTokenController extends waController
                 $format = 'JSON';
             }
         }
-        echo waAPIDecorator::factory($format)->decorate($response);
+        echo waAPIDecorator::getInstance($format)->decorate($response);
     }
 
     protected function checkRequest()
