@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE theme PUBLIC "wa-app-theme" "http://www.webasyst.com/wa-content/xml/wa-app-theme.dtd">
-<theme id="facebook" system="0" vendor="webasyst" author="Webasyst" app="blog" parent_theme_id="site:facebook" version="1.1.0">
+<theme id="facebook" system="0" vendor="webasyst" author="Webasyst" app="blog" parent_theme_id="site:facebook" version="1.1.3">
     <name locale="en_US">Facebook</name>
     <name locale="ru_RU">Facebook</name>
     <files>
@@ -44,21 +44,19 @@
             <description locale="en_US">One comment template</description>
             <description locale="ru_RU">Вывод одного комментария из списка</description>
         </file>
-        <file path="login.html" custom="0">
-            <description locale="en_US">Login page</description>
-            <description locale="ru_RU">Страница входа для пользователей</description>
+        <file path="my.nav.html">
+            <description locale="en_US">Customer account navigation menu</description>
+            <description locale="ru_RU">Меню навигации в личном кабинете покупателя</description>
         </file>
-        <file path="signup.html" custom="0">
-            <description locale="en_US">Sign up page</description>
-            <description locale="ru_RU">Страница регистрации пользователей</description>
+        <file path="login.html" parent="1">
         </file>
-        <file path="forgotpassword.html" custom="0">
-            <description locale="en_US">Forgot password page</description>
-            <description locale="ru_RU">Страница сброса пароля</description>
+        <file path="signup.html" parent="1">
         </file>
-        <file path="error.html" custom="0">
-            <description locale="en_US">404 and other errors</description>
-            <description locale="ru_RU">404 и другие ошибки</description>
+        <file path="forgotpassword.html" parent="1">
+        </file>
+        <file path="my.profile.html" parent="1">
+        </file>
+        <file path="error.html" parent="1">
         </file>
         <file path="navigation.html" custom="0">
             <description locale="en_US">Internal app navigation</description>
@@ -78,7 +76,7 @@
         </file>
         <file path="facebook.js" custom="0" parent="1">
         </file>
-        <file path="blog.js" custom="0">
+        <file path="facebook.blog.js" custom="0">
             <description locale="en_US">JS</description>
             <description locale="ru_RU">JS</description>
         </file>
