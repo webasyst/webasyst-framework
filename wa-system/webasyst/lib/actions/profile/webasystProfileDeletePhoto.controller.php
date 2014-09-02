@@ -9,7 +9,7 @@ class webasystProfileDeletePhotoController extends waJsonController
         $contact['photo'] = 0;
         $contact->save();
 
-        $oldDir = wa()->getDataPath("photo/".$contact->getId(), TRUE, 'contacts');
+        $oldDir = wa()->getDataPath(waContact::getPhotoDir($contact->getId()), true, 'contacts', false);
         if (file_exists($oldDir)) {
             waFiles::delete($oldDir);
         }

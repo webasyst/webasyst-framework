@@ -2,7 +2,7 @@
 
 return array(
     'code' => 'MDL',
-    'sign' => 'leu',
+    'sign' => 'lei',
     'sign_position' => null,
     'sign_delim' => null,
     'title' => 'Moldovan leu',

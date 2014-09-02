@@ -126,6 +126,7 @@ class waAuthUser extends waUser
                     'datetime_in' => date("Y-m-d H:i:s"),
                     'datetime_out' => null
                 ));
+                // TODO: insert record in waLog
             } else {
                 if ($last_datetime = strtotime($time)) {
                     if (time() - $last_datetime > self::$options['activity_timeout']) {
@@ -135,6 +136,7 @@ class waAuthUser extends waUser
                             'datetime_in' => date("Y-m-d H:i:s"),
                             'datetime_out' => null
                         ));
+                        // TODO: insert record in waLog
                     }
                 }
             }

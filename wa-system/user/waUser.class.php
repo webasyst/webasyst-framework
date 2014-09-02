@@ -56,13 +56,19 @@ class waUser extends waContact
 
     public static function getStatusByInfo($info)
     {
-        if (!isset($info['login']) || !$info['login']) {
-            return 'not-complete';
-        }
         $timeout = self::$options['online_timeout']; // in sec
         if (isset($info['last_datetime']) && $info['last_datetime'] && $info['last_datetime'] != '0000-00-00 00:00:00') {
             if (time() - strtotime($info['last_datetime']) < $timeout) {
-                return 'online';
+                $m = new waLoginLogModel();
+                $datetime_out = $m->select('datetime_out')->
+                        where('contact_id = i:0', array($this->id))->
+                        order('id DESC')->
+                        limit(1)->fetchField();
+                if (!$datetime_out) {
+                    return 'online';
+                } else {
+                    return 'offline';
+                }
             }
         }
         return 'offline';

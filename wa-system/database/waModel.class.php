@@ -101,7 +101,10 @@ class waModel
     }
 
     /**
-     * @return array field_id => default value (if set) or empty string
+     * Returns array corresponding to all table fields and containing their default values defined in table
+     * description file.
+     *
+     * @return array
      */
     public function getEmptyRow()
     {
@@ -249,10 +252,34 @@ class waModel
     }
 
     /**
-     * Execute query
-     * @param string $sql
-     * @param mixed $params
-     * @return resource|boolean
+     * Executes a SQL query without returning its result.
+     *
+     * @param string $sql SQL query, optionally containing placeholders:
+     *     - simple placeholders in the form of '?' characters
+     *     - named placeholders in the form type:name
+     *         Named placeholder 'type' must be one of the following:
+     *         i: integer or array of integers
+     *         b: Boolean value, which will be converted to 1 or 0
+     *         l: string value, in which % and _ characters will be escaped with backslash \
+     *         f: decimal value, in which commas will be replaced by dots.
+     *         s: string value or array of strings; its items will be included in quotation marks and concatenated into
+     *            a string, separated by comma
+     *         Named placeholder 'name' must match one of the keys of $params array.
+     *
+     * @param mixed $params One or more optional parameters to insert actual values instead of placeholders into SQL query.
+     *     For simple placeholders marked as '?', specify additional parameters for exec() method, each parameter per
+     *     placeholder, their order matching that of placeholders used in SQL query.
+     * @example $model->exec('UPDATE table_name SET name = ? WHERE id = ?', $name, $id);
+     *
+     *     For named placeholders, $params must contain an associative array of items corresponding to the following coniditions:
+     *     a) The key of array item must match one of placeholder names specified in SQL query
+     *     b) The value of array item will be inserted into SQL query instead of all placeholders with names matching
+     *        the key of this array item.
+     *     The order of array items has no importance for named placeholders.
+     * @example $data = array('name' => 'John', 'id' => 25,);
+     *     $model->exec('UPDATE table_name SET name = s:name WHERE id = i:id', $data);
+     *
+     * @return resource|bool
      */
     public function exec($sql, $params = null)
     {
@@ -278,9 +305,12 @@ class waModel
     }
 
     /**
-     * Executes query and returns iterator of the result
+     * Executes an SQL query and returns its result as an instance of class waDbResultSelect, waDbResultInsert,
+     * waDbResultUpdate, waDbResultDelete, or waDbResultReplace. To access the result of the SQL query, calling public
+     * methods of the class corresponding to the specific query type is necessary.
      *
-     * @param string $sql
+     * @param string $sql SQL query to be executed, optionally containing placeholders as described for method exec()
+     * @see self::exec()
      * @param mixed $params
      * @return waDbResultDelete|waDbResultInsert|waDbResultReplace|waDbResultSelect|waDbResultUpdate
      */
@@ -320,15 +350,17 @@ class waModel
     }
 
     /**
+     * Updates table record with specified value of model's id field value.
      *
-     * Update table by primary key
-     *
-     * @param string $id
-     * @param array $data
-     * @param string $options
-     * @param bool $return_object
-     *
-     * @see method updateByField
+     * @param string $id The value of model's id field, which is searched for across all table records to replace
+     *     values of fields specified in $data parameter in the found record.
+     * @param array $data Associative array of new values for specified fields of the found record.
+     * @param string $options Optional key words for SQL query UPDATE: LOW_PRIORITY or IGNORE.
+     * @param bool $return_object Flag requiring to return an instance of class waDbResultUpdate to enable you to call
+     *     its public methods to access response received from database server. By default (false)
+     *     method returns a Boolean value identifying the successful query result, or null if incorrect
+     *     parameters have been passed.
+     * @return bool|null|waDbResultUpdate Result of query execution
      */
     public function updateById($id, $data, $options = null, $return_object = false)
     {
@@ -336,25 +368,33 @@ class waModel
     }
 
     /**
-     * Update table by field/fields
+     * Updates the contents of records containing the specified field values.
+     * Method accepts parameters in two different modes:
+     * - for searching values in one field
+     * - for searching values in several fields
      *
-     * @param string|array $field
-     * @param string $value
-     * @param array $data
-     * @param string $options
-     * @param bool $return_object - return bool result or object of waDbResultUpdate
+     * @param string|array $field (single field) Name of the table field whose value needs to be updated.
+     *     (multiple fields) Associative array of table fields by whose values table records must be searched.
+     * @param string $value (single field) Existing value of the specified field, which needs to be replaced with a new
+     *     value. Instead of one searched value, you may specify an array; in this case the specified field is updated
+     *     for all records where field's value matches one of array items.
+     * @param array $data Associative array of new values to be updated for found records.
+     * @param string $options Optional key words for SQL query UPDATE: LOW_PRIORITY or IGNORE.
+     * @param bool $return_object (single field) Flag requiring to return an instance of class waDbResultUpdate to
+     *     enable you to call its public methods to access response received from database server. By default (false)
+     *     method returns a Boolean value identifying the successful query result, or null if incorrect
+     *     parameters have been passed.
      *
-     * @example
-     * 1) Update by one field and one value
-     * $this->updateByField('field', $value, $data, $options);
-     *    $data - updated data
-     *    field = $value - condition for update
-     * 2) Update by one field and a few values
-     * $this->updateByField('field', array($value1, $value2), $data, $options);
-     * 3) Update by a few fields and values
+     * @example <pre>
+     * // Update by one field and one value
+     * $this->updateByField('field_name', $value, $data, $options);
+     * // Update by one field and multiple values
+     * $this->updateByField('field_name', array($value1, $value2), $data, $options);
+     * // Update by multiple fields and values
      * $this->updateByField(array('field1' => $value1, 'field2' => $value2), $data, $options);
+     * </pre>
      *
-     * @return bool|null|waDbResultUpdate - result of execution update query
+     * @return bool|null|waDbResultUpdate Result of query execution
      */
     public function updateByField($field, $value, $data = null, $options = null, $return_object = false)
     {
@@ -386,6 +426,17 @@ class waModel
         return null;
     }
 
+    /**
+     * Replaces a table record using SQL operator REPLACE.
+     *
+     * @param array $data Data array
+     * @example <pre>array(
+     *     array('item_id' => 18, 'order_id' => 984),
+     *     array('item_id' => 19, 'order_id' => 976),
+     *     ...
+     * )</pre>
+     * @return resource|bool
+     */
     public function replace($data)
     {
         $values = array();
@@ -466,11 +517,16 @@ class waModel
     }
 
     /**
-     * Inserts a new record to the table
+     * Inserts a new record into the table.
      *
-     * @param array $data field => value
-     * @param int $type pass 1 (or true) for `ON DUPLICATE KEY UPDATE`; pass 2 for `INSERT IGNORE`.
-     * @return bool|int|resource
+     * @param array $data Associative array of values with keys matching the names of table fields.
+     * @param int $type Execution mode for SQL query INSERT:
+     *     0: query is executed without additional conditions (default mode)
+     *     1: query is executed with condition ON DUPLICATE KEY UPDATE
+     *     2: query is executed with key word IGNORE
+     * @return resource|int|bool Returns result object
+     *     or id of newly added record (if id field has AUTO_INCREMENT property)
+     *     or true (if there are no data to be inserted)
      */
     public function insert($data, $type = 0)
     {
@@ -521,6 +577,28 @@ class waModel
         return $this->multipleInsert($data);
     }
 
+    /**
+     * Inserts several records with specified values.
+     *
+     * @param array $data Array of values to be inserted into the table, which can be specified in several ways:
+     *     a) Array items consist of associative subarrays containing items of the form 'field' => 'value'.
+     *        Individual records corresponding to each subarray are inserted into the database table.
+     * @example <pre>array(
+     *     array('name' => 'bag', 'color' => 'red'),
+     *     array('name' => 'bag', 'color' => 'green'),
+     *     array('name' => 'bag', 'color' => 'blue'),
+     * );</pre>
+     *
+     *     b) Array items have the form 'field' => 'value'. If one of array items contains an array of values, then
+     *        multiple records are inserted into the table, each corresponding to one of such subarray items. Otherwise
+     *        calling of this method is equivalent to calling method insert().
+     * @example <pre>array(
+     *     'name'  => 'bag',
+     *     'color' => array('red', 'green', 'blue'),
+     * );</pre>
+     *
+     * @return resource|bool Returns true if there are no data to be inserted.
+     */
     public function multipleInsert($data)
     {
         if (!$data) {
@@ -578,12 +656,68 @@ class waModel
         return false;
     }
 
+    /**
+     * Returns table contents as an array, each of its items being a subarray corresponding to one of table records.
+     *
+     * @param string $key Name of table field to group table records by. If non-empty, values of specified (existing)
+     *     field are used as keys of the returned array. If empty, method returns default zero-indexed array.
+     *
+     * @param int|bool $normalize Value grouping mode applied in case of non-empty $key value. Available modes:
+     *     0 or false: Values of $key field are used as array keys.
+     * @example <pre>$model->getAll('id');
+     * array(
+     *     3 => array('id' => 3, 'name' => 'John', 'age' => 25),
+     *     4 => array('id' => 4, 'name' => 'Mary', 'age' => 25),
+     *     5 => array('id' => 5, 'name' => 'Mike', 'age' => 27),
+     * )</pre>
+     *
+     *     1 or true: Values of $key field are used as array keys. Additionally, subarray items with keys matching $key
+     *     value are removed from each subarray to avoid returning excessive data.
+     * @example <pre>$model->getAll('id', 1);
+     * //table has only 2 fields ('id' values are removed from subarrays)
+     * array(
+     *     3 => 'John',
+     *     4 => 'Mary',
+     *     5 => 'Mike',
+     * )</pre>
+     * @example <pre>$model->getAll('id', 1);
+     * //table has more than 2 fields ('id' values are removed from subarrays)
+     * array(
+     *     3 => array('name' => 'John', 'age' => 25),
+     *     4 => array('name' => 'Mary', 'age' => 25),
+     *     5 => array('name' => 'Mike', 'age' => 27),
+     * )</pre>
+     *
+     *     2: Records containing equal values of $key field are listed as items of subarrays which are included as items
+     *     of returned array having $key field values as their keys. Additionally, items with keys matching $key field
+     *     name are removed from each subarray (like for 1|true).
+     * @example <pre>$model->getAll('age', 2);
+     * //'age' field values are used as array keys to group table data
+     * array(
+     *     array(
+     *         25 => array(
+     *             0 => array('id' => 3, 'name' => 'John')
+     *             1 => array('id' => 4, 'name' => 'Mary')
+     *         ),
+     *         27 => array(
+     *             0 => array('id' => 5, 'name' => 'Mike')
+     *         ),
+     *     ),
+     * )</pre>
+     *
+     * @return array
+     */
     public function getAll($key = null, $normalize = false)
     {
         $sql = "SELECT * FROM ".$this->table;
         return $this->query($sql)->fetchAll($key, $normalize);
     }
 
+    /**
+     * Returns the number of records stored in the table.
+     *
+     * @return int
+     */
     public function countAll()
     {
         return $this->query("SELECT COUNT(*) FROM ".$this->table)->fetchField();
@@ -638,7 +772,7 @@ class waModel
     }
 
     /**
-     * Returns name of the table
+     * Returns table name defined in model class.
      *
      * @return string
      */
@@ -647,16 +781,40 @@ class waModel
         return $this->table;
     }
 
+    /**
+     * Returns the name of id field defined in model class.
+     *
+     * @return string
+     */
     public function getTableId()
     {
         return $this->id;
     }
 
+    /**
+     * Returns data from table record with specified value in id field ($this->id).
+     *
+     * @param mixed|array $value Field value or array of values
+     * @return array|null
+     */
     public function getById($value)
     {
         return $this->getByField($this->id, $value, is_array($value) ? $this->id : false);
     }
 
+    /**
+     * Returns data from table records containing specified values of specified fields.
+     * Method accepts 2 modes of passing parameters: for one value and for multiple values.
+     *
+     * @param string|array $field (one field) Field name
+     *     (multiple fields) or associative array with field names as keys
+     * @param mixed|array|bool $value (one field) Field value or array of values
+     *     (multiple fields) or Boolean flag requiring to return data from all found records. By default (false),
+     *     only first found record is returned.
+     * @param bool $all (one field) Boolean flag requiring to return data of all found records.
+     * @param int|bool $limit (one field) Number of records to be returned. By default (false) this limitation is disabled.
+     * @return array|null
+     */
     public function getByField($field, $value = null, $all = false, $limit = false)
     {
         if (is_array($field)) {
@@ -729,10 +887,10 @@ class waModel
     }
 
     /**
-     * Returns the number of rows in the table with the specified field
+     * Returns the number of records with the value of the specified field matching the specified value.
      *
-     * @param string $field
-     * @param string $value
+     * @param string $field Name of field to be checked
+     * @param string $value Value to be checked in the specified field of all table records
      * @return int
      */
     public function countByField($field, $value = null)
@@ -745,9 +903,10 @@ class waModel
     }
 
     /**
-     * Delete records from table by primary key
+     * Deletes record containing specified value of id field.
      *
-     * @param $value
+     * @param $value Value (or array of values) to be checked in the id field ($this->id) of all table records
+     *     to find those which must be deleted.
      * @return bool
      */
     public function deleteById($value)
@@ -756,11 +915,13 @@ class waModel
     }
 
     /**
-     * Delete records from table by field
+     * Deletes records with specified values of specified fields.
      *
-     * @param string|array $field
-     * @param int|float|string|array $value
-     * @return bool
+     * @param string|array $field Name of one field to be checked or associative array with multiple field names as
+     *     item keys and their values as item values.
+     * @param int|float|string|array $value Value or array of values to be checked in specified field. Applicable only
+     *     for single field name specified in $field parameter; ignored, if array is specified in $field.
+     * @return bool Whether deleted successfully
      */
     public function deleteByField($field, $value = null)
     {
@@ -783,9 +944,9 @@ class waModel
     }
 
     /**
-     * Checks exists or not field in the table
+     * Verifies whether specified field exists in model's table.
      *
-     * @param string $field
+     * @param string $field Field name
      * @return bool
      */
     public function fieldExists($field)
@@ -840,10 +1001,9 @@ class waModel
     }
 
     /**
-     * Checks whether or not the connection to the server is working.
-     * If it has gone down, an automatic reconnection is attempted.
+     * Restores connection to the database management server in case of its failure.
      *
-     * @return bool
+     * @return bool Always returns true.
      */
     public function ping()
     {

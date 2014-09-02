@@ -18,6 +18,13 @@ class waCurrency
     protected static $data;
     protected static $format_data = array();
 
+    /**
+     * Returns information about a currency by its ISO3 code, which is retrieved from its config file located in
+     *     wa-system/currency/data/.
+     *
+     * @param string $currency Currency's ISO3 code
+     * @return array
+     */
     public static function getInfo($currency)
     {
         if (!$currency) {
@@ -104,14 +111,29 @@ class waCurrency
     }
 
     /**
-     * Format amount according to currency settings and current locale settings.
+     * Returns formatted amount value with currency.
      *
-     * TODO: document format string specifications. For now, see unit tests for some usage clues.
+     * @see wa_currency()
+     * @see wa_currency_html()
      *
-     * @param string $format
-     * @param float $n amount to format
-     * @param string $currency 3-letter iso code
-     * @param string $locale
+     * @param string $format Amount format. The format string must begin with % character and may contain the following
+     *     optional parts in the specified order:
+     *     - Precision (number of digits after decimal separator) expressed as an arbitrary integer value. If not
+     *       specified, then 2 decinal digits are displayed by default.
+     *     - Display type (as a number; e.g., "123456", or in words; e.g., 'one hundred and twenty-three thousand four
+     *       hundred and fifty-six"). To use the numerical format, specify i; for verbal format, use w. The verbal
+     *       expression of a number contains its integer part only, the decimal part is ignored. If the display type is
+     *       not specified, then the numerical format is used by default.
+     *     - Currency sign or name. To add it to the formatted amount value, specify one of the following identifiers in
+     *       curly brackets:
+     *         {n}: full cyrrency name; e.g., "dollar"
+     *         {s}: brief currency name or sign; e.g., "$"
+     *         {f}: name of the fractional currency unit; e.g., "cent/cents"
+     *         {c}: currency code; e.g., "USD".
+     * @param float $n Original number to be formatted
+     * @param string $currency Currency's ISO3 code
+     * @param string $locale Locale id
+     * @return string E.g., 'en_US'
      */
     public static function format($format, $n, $currency, $locale = null)
     {
@@ -296,6 +318,15 @@ class waCurrency
         return self::$data;
     }
 
+    /**
+     * Returns the list of all available currencies.
+     *
+     * @param string|bool $type Currency data item id specified in currency cofiguration file in wa-system/currency/data/:
+     *     - 'all': this value (or true), returns all currency data items
+     *     - 'code': currency ISO3 code
+     *     - 'sign': currency symbol
+     *     - 'title': currency name
+     */
     public static function getAll($type = 'title')
     {
         $data = self::getData();

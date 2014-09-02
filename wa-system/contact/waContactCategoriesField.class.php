@@ -65,7 +65,7 @@ class waContactCategoriesField extends waContactChecklistField
             $this->model = new waContactCategoryModel();
         }
         if (!$this->categories) {
-            $this->categories = $this->model->getALl('id');
+            $this->categories = $this->model->getAll('id');
         }
 
         // Checklist options, category_id => name
@@ -74,19 +74,6 @@ class waContactCategoriesField extends waContactChecklistField
             $options[$id] = $row['name'];
         }
 
-        // Admins are allowed to see everything, and person outside of contacts app can see a list of categories too
-        if (wa()->getApp() != 'contacts' || wa()->getUser()->getRights('contacts', 'category.all')) {
-            return $options;
-        }
-
-        // Only load categories available for current user
-        $crm = new contactsRightsModel();
-        $allowed = $crm->getAllowedCategories();
-        foreach($options as $id => $row) {
-            if (!isset($allowed[$id])) {
-                unset($options[$id]);
-            }
-        }
         return $options;
     }
 

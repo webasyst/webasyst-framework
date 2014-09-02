@@ -112,10 +112,16 @@ class waContactModel extends waModel
         $contact_data_text_model = new waContactDataTextModel();
         $contact_data_text_model->deleteByField('contact_id', $id);
 
-
-        // Delete contact from logs
-        $login_log_model = new waLoginLogModel();
-        $login_log_model->deleteByField('contact_id', $id);
+//        // Delete contact from logs
+//        $login_log_model = new waLoginLogModel();
+//        $login_log_model->deleteByField('contact_id', $id);
+        
+        // Clear references
+        $this->updateByField(array(
+            'company_contact_id' => $id
+        ), array(
+            'company_contact_id' => 0
+        ));
 
         // Delete contact
         return $this->deleteById($id);

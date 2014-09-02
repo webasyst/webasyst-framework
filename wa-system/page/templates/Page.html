@@ -42,12 +42,13 @@
 
     .wa-page-urls a i { margin: 0}
     
+    .block-pages h4.heading { margin-bottom: 10px; margin-top: 5px; margin-left: -2px; }
     .block-pages ul.menu-v.with-icons li a { word-break: break-all; }
 
     a.wa-page-link .count i.icon10 { display: none; }
     a.wa-page-link:hover .count i.icon10 { display: block; }
-    .wa-page-gray-toolbar { background: #EEE; padding-left: 15px; padding-bottom: 13px; }
-    .wa-page-gray-toolbar h2 { font-family: 'Lucida Grande'; }
+    .wa-page-gray-toolbar { background: #EEE; padding-left: 15px; padding-bottom: 17px; padding-top: 13px; }
+    .wa-page-gray-toolbar h2 { font-family: 'Lucida Grande'; margin-bottom: 10px; }
     .wa-page-save-panel { position: fixed; bottom: 0; left: 0; right: 0; background: #eee; padding-left: 470px; z-index: 9; }
 
     .block-pages ul li.drag-newposition.active { border-top: 2px solid #BB8; background: none; }
@@ -89,8 +90,8 @@
         {foreach $routes as $r => $route}
         <div class="block block-pages">
         <h4 class="heading">
-        	<span class="count"><span style="display: none;"></span><i class="icon10 add wa-page-add no-parent"></i></span>
-            <i class="icon16 darr"></i>{if $r}{$r|escape}{else}[s`Unpublished`]{/if}
+        	{if $r}<span class="count"><span style="display: none;"></span><i class="icon16 add wa-page-add no-parent"></i></span>{/if}
+            <i class="icon16 darr"></i> {if $r}{str_replace('www.','',$r)|escape|truncate:23:'...':false:true}{else}[s`Unpublished`]{/if}
             {if !$r && count($routes) > 1}
             <a id="wa-page-settle" style="margin-left: 10px;" href="#"><i class="icon16 exclamation"></i></a>
             <div id="wa-page-settle-dialog" style="display: none;">

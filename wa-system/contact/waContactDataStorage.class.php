@@ -24,7 +24,7 @@ class waContactDataStorage extends waContactStorage
      * 
      * @return waContactDataModel
      */
-    protected function getModel()
+    public function getModel()
     {
         if (!$this->model) {
             $this->model = new waContactDataModel();
@@ -153,7 +153,21 @@ class waContactDataStorage extends waContactStorage
                 }
             }
         }
+        
         if ($data) {
+            
+            // float with ',' convert to string with '.'
+            
+            foreach ($data as $f => &$f_rows) {
+                foreach ($f_rows as $s => &$row) {
+                    if (isset($row['value']) && is_float($row['value'])) {
+                        $row['value'] = str_replace(',', '.', ('' . $row['value']));
+                    }
+                }
+                unset($row);
+            }
+            unset($f_rows);
+            
             // find records to update
             $rows = $this->getModel()->getByField(array(
                 'contact_id' => $contact->getId(),

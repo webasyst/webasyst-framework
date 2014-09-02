@@ -2,7 +2,7 @@
 
 return array(
     'code' => 'AED',
-    'sign' => 'د.إ',
+    'sign' => 'AED',
     'sign_position' => null,
     'sign_delim' => null,
     'title' => 'United Arab Emirates dirham',

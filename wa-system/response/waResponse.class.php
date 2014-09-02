@@ -89,16 +89,16 @@ class waResponse
     protected $google_analytics = array();
 
     /**
-     * Send a cookie.
+     * Sets a cookie value.
      *
-     * @param   string  $name       The name of the cookie
-     * @param   mixed   $value      The value of the cookie
-     * @param   int     $expire     The time the cookie expires
-     * @param   string  $path       The path on the server in which the cookie will be available on
-     * @param   string  $domain     The domain that the cookie is available to
-     * @param   bool    $secure     Transmitted over a secure HTTPS connection from the client?
-     * @param   bool    $http_only  Cookie will be made accessible only through the HTTP protocol?
-     * @return  waResponse
+     * @param   string  $name       Cookie name
+     * @param   mixed   $value      Cookie value
+     * @param   int     $expire     Expiration time
+     * @param   string  $path       Path to URL "subdirectory" within which cookie must be valid
+     * @param   string  $domain     Domain name for which cookie must be valid
+     * @param   bool    $secure     Flag making cookie value available only if passed over HTTPS
+     * @param   bool    $http_only  Flag making cookie value accessible only via HTTP and not accessible to client scripts (JavaScript)
+     * @return  waResponse  Instance of waResponse class
      */
     public function setCookie(
         $name,
@@ -125,12 +125,12 @@ class waResponse
         );
 
         $_COOKIE[$name] = $value;
-        
+
         return $this;
     }
 
     /**
-     * Get HTTP status.
+     * Returns the server response code.
      *
      * @return  int
      */
@@ -140,10 +140,10 @@ class waResponse
     }
 
     /**
-     * Set HTTP status.
+     * Sets server response status.
      *
-     * @param   int   $code  Code of HTTP status
-     * @return  waResponse
+     * @param  int  $code  Server status code
+
      */
     public function setStatus($code = 200)
     {
@@ -155,12 +155,13 @@ class waResponse
     }
 
     /**
-     * Set HTTP header.
+     * Adds a header to be sent by server in response to user request.
+     * All added headers will be sent to user when method sendHeaders() is called.
      *
-     * @param   string  $name
-     * @param   mixed   $value
-     * @param   bool    $replace
-     * @return  waResponse
+     * @param  string  $name Header name
+     * @param  mixed   $value Header value
+     * @param  bool    $replace Flag requiring to replace previously set value of specified header
+     * @return  waResponse  Instance of waResponse class
      */
     public function addHeader($name, $value, $replace = true)
     {
@@ -181,9 +182,9 @@ class waResponse
     }
 
     /**
-     * Get current header or all headers (name = null).
+     * Returns response header value.
      *
-     * @param   string|null  $name
+     * @param  string|null  $name  Id of header whose value must be returned. If not specified, entire header array is returned.
      * @return  mixed
      */
     public function getHeader($name = null)
@@ -196,9 +197,9 @@ class waResponse
     }
 
     /**
-     * Send HTTP headers.
+     * Sends all previously added headers.
      *
-     * @return  waResponse
+     * @return  waResponse  Instance of waResponse class
      */
     public function sendHeaders()
     {
@@ -221,11 +222,10 @@ class waResponse
     }
 
     /**
-     * Redirect to URL.
+     * Redirects user to specified URL.
      *
-     * @param   string  $url
-     * @param   int     $code  Code of HTTP status
-     * @return  void
+     * @param   string  $url   URL to redirect to
+     * @param   int     $code  Server response code to return with the redirect
      */
     public function redirect($url, $code = 302)
     {
@@ -235,9 +235,9 @@ class waResponse
 
         exit;
     }
-    
+
     /**
-     * Get meta tag "title".
+     * Return current TITLE value.
      *
      * @return  string
      */
@@ -247,10 +247,11 @@ class waResponse
     }
 
     /**
-     * Set meta tag "title".
+     * Sets the page TITLE value.
+     * This value is accessible in Smarty templates using {$wa->title()}.
      *
-     * @param   string  $title
-     * @return  waResponse
+     * @param   string  $title  Page TITLE value
+     * @return  waResponse  Instance of waResponse class
      */
     public function setTitle($title)
     {
@@ -258,11 +259,12 @@ class waResponse
     }
 
     /**
-     * Set meta tag.
+     * Sets a META value.
+     * This value is accessible in Smarty templates using {$wa->meta()}.
      *
-     * @param   string|array  $name
-     * @param   mixed         $value
-     * @return  waResponse
+     * @param   string|array  $name   META data item id: page title ('title'), META tags keywords ('keywords'), description ('description')
+     * @param   mixed         $value  META field value
+     * @return  waResponse  Instance of waResponse class
      */
     public function setMeta($name, $value = null)
     {
@@ -276,9 +278,10 @@ class waResponse
     }
 
     /**
-     * Get current meta tag or all tags (name = null).
+     * Returns META data: page TITLE, META tags 'keywords', 'description'.
      *
-     * @param   string|null  $name
+     * @param  string|null  $name  META data item id whose value must be returned: 'title', 'keywords', or 'description'.
+     *     If not specified, the method returns entire META data array.
      * @return  mixed
      */
     public function getMeta($name = null)
@@ -291,10 +294,11 @@ class waResponse
     }
 
     /**
-     * Add string to Google Analytics.
+     * Adds a JavaScript code string for Google Analytics.
+     * Code added for Google Analytics is included in HTML templates using {$wa->headJs()}.
      *
-     * @param   string  $str
-     * @return  waResponse
+     * @param  string  $str  JavaScript code string
+     * @return  waResponse  Instance of waResponse class
      */
     public function addGoogleAnalytics($str)
     {
@@ -314,11 +318,13 @@ class waResponse
     }
 
     /**
-     * Add JavaScript file.
+     * Adds a URL to the JavaScript file list.
+     * All added URLs are available in Smarty templates using {$wa->js()}.
      *
-     * @param   string       $url
-     * @param   string|bool  $app_id
-     * @return  waResponse
+     * @param  string       $url     URL of a JavaScript file. If $app_id is specified, then the URL must be relative to specified
+     *     app's directory URL. Otherwise JavaScript file URL must be relative to framework's root URL.
+     * @param  string|bool  $app_id  Optional app id
+     * @return  waResponse  Instance of waResponse class
      */
     public function addJs($url, $app_id = false)
     {
@@ -340,11 +346,11 @@ class waResponse
     }
 
     /**
-     * Gets JavaScript files as compiled HTML string or an array of URL's.
+     * Returns the list of previously added JavaScript file URLs.
      *
-     * @param   bool  $html    Return scripts as HTML string or an array of URL's?
-     * @param   bool  $strict  Use strict HTML format (XHTML)?
-     * @return  string|array   
+     * @param  bool  $html   Determines whether method must return an HTML string for including JavaScript files or an array of URLs
+     * @param  bool  $strict  Determines whether XHTML format must be used instead of default HTML
+     * @return  string|array  HTML string or array of URLs
      */
     public function getJs($html = true, $strict = false)
     {
@@ -356,16 +362,80 @@ class waResponse
         foreach ($this->js as $url) {
             $result .= '<script'.($strict ? ' type="text/javascript"' : '').' src="'.$url.'"></script>'.PHP_EOL;
         }
+
+        if (wa()->getEnv() == 'frontend') {
+            $app_id =  wa()->getApp();
+            $key = wa()->getRouting()->getDomain().'/theme';
+            $hash = false;
+            if (waRequest::get('theme_hash') && ($theme = waRequest::get('set_force_theme')) !== null) {
+                $hash = waRequest::get('theme_hash');
+            } elseif (($theme = wa()->getStorage()->get($app_id.'/'.$key)) || ($theme = wa()->getStorage()->get($key))) {
+                $app_settings_model = new waAppSettingsModel();
+                $hash = $app_settings_model->get($app_id, 'theme_hash');
+                if (!$hash) {
+                    $hash = $app_settings_model->get('webasyst', 'theme_hash');
+                }
+                if ($hash) {
+                    $hash = md5($hash);
+                }
+            }
+            if (!$hash || !$theme || !waTheme::exists($theme)) {
+                return $result;
+            }
+            $theme = new waTheme($theme, $app_id);
+            $theme = $theme['name'];
+            $url = '?theme_hash='.$hash.'&set_force_theme=';
+            $result .= '
+<script type="text/javascript">
+$(function () {
+    var div = $("<div></div>");
+    div.css({
+        position: "fixed",
+        bottom: 0,
+        left: 0,
+        right: 0,
+        opacity: 0.9,
+        padding: "15px",
+        "text-align": "center",
+        background: "#ffd",
+        "border-top": "4px solid #eea",
+        "border-image": "url(\''.wa()->getUrl().'wa-content/img/recovery-mode-background.png\') 10 10 10 10 repeat",
+        "font-family": "Lucida Grande",
+        "font-size": "14px",
+        "z-index": 100500,
+    });
+    div.html("'.sprintf(_ws('<strong>%s</strong> theme preview in action'), $theme).'");';
+            if (wa()->getUser()->isAuth() && wa()->getUser()->getRights('shop')) {
+                $result .= '
+    div.prepend(\'<a href="'.$url.'" style="float: right;">'._ws('Stop preview session').'</a>\');
+    div.find("a").click(function () {
+        $("body").append($(\'<iframe style="display:none" src="\' + $(this).attr("href") + \'" />\').load(function () {
+            $(this).remove();
+            div.remove();
+            if (location.href.indexOf("theme_hash") != -1) {
+                location.href = location.href.replace(/(theme_hash|set_force_theme)=[^&]*&?/g, "");
+            }
+        }));
+        return false;
+    });';
+            }
+            $result .= '
+    $("body").append(div);
+});
+</script>';
+        }
+
         return $result;
     }
 
-    
+
     /**
-     * Add CSS file.
+     * Adds a URL to the CSS file list. All added CSS file URLs are available in Smarty templates using {$wa->css()}.
      *
-     * @param   string       $url
-     * @param   string|bool  $app_id
-     * @return  waResponse
+     * @param  string       $url     Relative URL of a CSS file. If $app_id is specified, then the URL must be relative to
+     *     specified app's directory URL. Otherwise the CSS file URL must be relative to framework's root URL.
+     * @param  string|bool  $app_id  Optional app id
+     * @return waResponse Instance of waResponse class
      */
     public function addCss($url, $app_id = false)
     {
@@ -387,11 +457,11 @@ class waResponse
     }
 
     /**
-     * Gets CSS styles as compiled HTML string or an array of URL's.
+     * Returns the list of previously added CSS file URLs.
      *
-     * @param   bool  $html    Return styles as HTML string or an array of URL's?
-     * @param   bool  $strict  Use strict HTML format (XHTML)?
-     * @return  string|array   Compiled HTML string or an array of URL's
+     * @param  bool  $html    Determines whether method must return an HTML string for including CSS files or an array of URLs
+     * @param  bool  $strict  Determines whether XHTML format must be used instead of default HTML
+     * @return  string|array  HTML string or array of URLs
      */
     public function getCss($html = true, $strict = false)
     {

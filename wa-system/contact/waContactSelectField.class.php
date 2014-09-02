@@ -14,6 +14,7 @@
  */
 class waContactSelectField extends waContactField
 {
+    protected $validate_range = true;
     /**
      * Options for this select. array(id => name). Ids are stored in DB, and names are shown to user.
      * Default implementation uses 'options' parameter passed to constructor in $options
@@ -111,6 +112,6 @@ class waContactSelectFormatter  extends waContactFieldFormatter
 {
     public function format($data)
     {
-        return isset($this->options[$data]) ? $this->options[$data]: $data;
+        return htmlspecialchars(isset($this->options[$data]) ? $this->options[$data] : $data);
     }
 }

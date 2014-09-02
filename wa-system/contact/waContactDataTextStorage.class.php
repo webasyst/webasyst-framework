@@ -24,7 +24,7 @@ class waContactDataTextStorage extends waContactDataStorage
      *
      * @return waContactDataModel|waContactDataTextModel
      */
-    protected function getModel()
+    public function getModel()
     {
         if (!$this->model) {
             $this->model = new waContactDataTextModel();

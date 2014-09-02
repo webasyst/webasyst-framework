@@ -5,6 +5,7 @@
     {if $vars}<li id="wa-help-vars" class="selected"><a href="#">{$app.name|escape}</a></li>{/if}
     <li id="wa-help-wa"{if !$vars} class="selected"{/if}><a href="#">$wa</a></li>
     <li id="wa-help-smarty"><a href="#">Smarty</a></li>
+    {if !empty($blocks)}<li id="wa-helper-blocks"><a href="#">[s`Blocks`]</a></li>{/if}
 </ul>
 
 <!-- app specific vars -->
@@ -52,6 +53,19 @@
         {/foreach}
     </div>
 </div>
+
+{if !empty($blocks)}
+<div id="wa-helper-blocks-content" class="tab-content wa-dropdown-content" style="display:none">
+    <div class="fields">
+        {foreach $blocks as $block_id => $b}
+        <div class="field">
+            <div class="name"><a href="#" class="inline-link"><b><i>{literal}{$wa->block('{/literal}{$block_id|escape}{literal}')}{/literal}</i></b></a></div>
+            <div class="value"><span class="hint">{$b.description}</span></div>
+        </div>
+        {/foreach}
+    </div>
+</div>
+{/if}
 
 <script type="text/javascript">
     $("#wa-editor-help ul.tabs li a").click(function () {

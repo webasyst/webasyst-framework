@@ -94,7 +94,7 @@ function wa_header()
 
     $logout = _ws('logout');
     $userpic = '<img width="32" height="32" src="'.$user->getPhoto(32).'" alt="">';
-    $username = htmlspecialchars($user['name'], ENT_QUOTES, 'utf-8');
+    $username = htmlspecialchars(waContactNameField::formatName($user), ENT_QUOTES, 'utf-8');
 
     // If the user has access to contacts app then show a link to his profile
     if (wa()->appExists('contacts')) {
@@ -147,7 +147,7 @@ function wa_header()
         <ul>
             {$apps_html}
             <li>
-                <a href="#" class="inline-link" id="wa-moreapps"><i class="icon10 darr" id="wa-moreapps-arrow"></i><b><i>{$more}</i></b></a>
+                <a href="#" id="wa-moreapps"></a>
             </li>
         </ul>
     </div>

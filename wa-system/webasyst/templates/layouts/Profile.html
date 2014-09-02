@@ -37,6 +37,7 @@
     {$wa_url}wa-content/js/jquery-plugins/jquery.store.js
     {$wa_url}wa-content/js/jquery-plugins/jquery.hoverIntent.minified.js
     {$wa_url}wa-content/js/jquery-wa/wa.dialog.js
+    {$wa_app_static_url}js/jquery.sticky.js
     {/wa_js}
     <script type="text/javascript" src="{$wa_url}wa-content/js/jquery-wa/wa.core.js?{$wa->version()}"></script>
     <script type="text/javascript" src="?module=profile&action=loc&v={$wa->version()}"></script>
@@ -45,11 +46,11 @@
     * Contacts app
     *}
     {wa_js file="js/compiled/contacts.js"}
+        {$wa_app_static_url}js/fieldTypes.js
         {$wa_app_static_url}js/wa.controller.js
         {$wa_app_static_url}js/wa.grid.js
         {$wa_app_static_url}js/wa.history.js
         {$wa_app_static_url}js/wa.contactEditor.js
-        {$wa_app_static_url}js/fieldTypes.js
     {/wa_js}
 
     {$wa->js(false)}

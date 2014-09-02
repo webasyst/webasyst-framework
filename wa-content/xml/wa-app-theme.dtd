@@ -24,6 +24,7 @@
     path CDATA #REQUIRED
     custom (1|0) "0"
     parent (1|0) "0"
+    modified (1|0) "0"
 >
 <!-- THeme usage hints and instructions -->
 <!ELEMENT about (#PCDATA)>

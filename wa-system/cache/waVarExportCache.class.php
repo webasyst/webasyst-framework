@@ -18,7 +18,7 @@ class waVarExportCache extends waFileCache
     protected function writeToFile($file, $v)
     {
         if ((!file_exists($file) && is_writable(dirname($file))) || is_writable($file)) {
-            return file_put_contents($file, "<?php\nreturn ".var_export($v, true).";");
+            return file_put_contents($file, "<?php\nreturn ".var_export($v, true).";\n");
         } elseif (waSystemConfig::isDebug()) {
             throw new waException("Cannot write to cache file ".$file, 601);
         }

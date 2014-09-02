@@ -29,6 +29,7 @@ abstract class waLoginAction extends waViewAction
         // try auth
         try {
             if ($auth->auth()) {
+                $this->logAction('login', wa()->getEnv());
                 $this->afterAuth();
             }
         } catch (waException $e) {

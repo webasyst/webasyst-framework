@@ -73,9 +73,4 @@ class yandexAuth extends waOAuth2Adapter
             return parent::getName();
         }
     }
-
-    public function getIcon()
-    {
-        return 'http://api.yandex.ru/login/doc/dg/images/login-with-yandex-5.png';
-    }
 }

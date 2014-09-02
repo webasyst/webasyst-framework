@@ -474,7 +474,7 @@ class waRouting
     {
         $url = self::clearUrl($route['url']);
         if ($domain) {
-            if ($domain == waRequest::server('HTTP_HOST')) {
+            if (parse_url($domain, PHP_URL_HOST) == waRequest::server('HTTP_HOST')) {
                 $https = waRequest::isHttps();
             } else {
                 $https = false;

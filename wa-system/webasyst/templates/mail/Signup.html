@@ -3,6 +3,10 @@
 [s`Login to your account`]: <a href="{$wa->loginUrl(true)}">{$wa->loginUrl(true)}</a><br />
 [s`Email`]: {$email}<br /><br />
 
+{if !empty($email_confirmation_hash)}
+[s`Confirm your email by clicking this link`]: <a href="{$wa->signupUrl(true)}?confirm={$email_confirmation_hash}">{$wa->signupUrl(true)}?confirm={$email_confirmation_hash}</a>
+{/if}<br /><br />
+
 --
 <br />
 {$wa->accountName()}

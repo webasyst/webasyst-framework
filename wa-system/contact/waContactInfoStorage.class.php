@@ -19,11 +19,16 @@ class waContactInfoStorage extends waContactStorage
      */
     protected $model;
 
-    public function load(waContact $contact, $fields = null)
-    {
+    public function getModel() {
         if (!$this->model) {
             $this->model = new waContactModel();
         }
+        return $this->model;
+    }
+    
+    public function load(waContact $contact, $fields = null)
+    {
+        $this->getModel();
         $data = $this->model->getById($contact->getId());
         if (!$data) {
             throw new waException('Contact does not exist: '.$contact->getId(), 404);
@@ -33,8 +38,10 @@ class waContactInfoStorage extends waContactStorage
 
     public function save(waContact $contact, $fields)
     {
-        if (!$this->model) {
-            $this->model = new waContactModel();
+        $this->getModel();
+        if (isset($fields['birthday']) && isset($fields['birthday']['value'])) {
+            $fields = array_merge($fields, $fields['birthday']['value']);
+            unset($fields['birthday']);
         }
         if ($contact->getId()) {
             return $this->model->updateById($contact->getId(), $fields);
@@ -79,9 +86,7 @@ class waContactInfoStorage extends waContactStorage
         }
 
         $set = implode(',', $set);
-        if (!$this->model) {
-            $this->model = new waContactModel();
-        }
+        $this->getModel();
         $this->model->exec("UPDATE wa_contact AS c SET ".$set.$cwhere);
     }
 
@@ -106,6 +111,7 @@ class waContactInfoStorage extends waContactStorage
                     GROUP BY f
                     HAVING num > 1
                 ) AS t";
+        $this->getModel();
         $r = $this->model->query($sql)->fetchField();
         return $r ? $r : 0;
     }
@@ -131,9 +137,7 @@ class waContactInfoStorage extends waContactStorage
                 WHERE `$field` IN (:values)".
                     ($excludeIds ? " AND id NOT IN (:excludeIds) " : ' ').
                 "GROUP BY f";
-        if (!$this->model) {
-            $this->model = new waContactModel();
-        }
+        $this->getModel();
         $r = $this->model->query($sql, array('values' => $values, 'excludeIds' => $excludeIds));
         return $r->fetchAll('f', true);
     }

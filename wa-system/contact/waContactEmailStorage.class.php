@@ -24,7 +24,7 @@ class waContactEmailStorage extends waContactStorage
      * 
      * @return waContactEmailsModel
      */
-    protected function getModel()
+    public function getModel()
     {
         if (!$this->model) {
             $this->model = new waContactEmailsModel();

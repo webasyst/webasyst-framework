@@ -119,7 +119,7 @@ class waImageImagick extends waImage
         $extension = pathinfo($file, PATHINFO_EXTENSION);
         $type = $this->_save_function($extension, $quality);
         $this->im->setImageCompressionQuality($quality);
-
+        $this->im->stripImage();
         if ($this->im->getNumberImages() > 1 && $extension == "gif") {
             $res = $this->im->writeImages($file, true);
         }

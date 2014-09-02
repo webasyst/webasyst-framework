@@ -27,6 +27,7 @@ class webasystBackendActions extends waViewActions
 
     public function logoutAction()
     {
+        $this->logAction('logout', wa()->getEnv());
         // Clear auth data
         $this->getUser()->logout();
 
@@ -46,7 +47,7 @@ class webasystBackendActions extends waViewActions
 
         $contact = new waContact($id);
         $rand = $contact['photo'];
-        $file = wa()->getDataPath("photo/$id/$rand.original.jpg", TRUE, 'contacts');
+        $file = wa()->getDataPath(waContact::getPhotoDir($id)."$rand.original.jpg", TRUE, 'contacts');
 
         $size = waRequest::get('size');
         if (!file_exists($file)) {

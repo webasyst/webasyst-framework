@@ -38,7 +38,7 @@ function smarty_function_wa_pagination($params, &$smarty)
     while ($p <= $total) {
         if ($p > $nb && ($total - $p) > $nb && abs($page - $p) > $n && ($p < $page ? ($page - $n - $p > 1) : ($total - $nb > $p))) {
             $p = $p < $page ? $page - $n : $total - $nb + 1;
-            $html .= '<li><span>...<span></li>';
+            $html .= '<li><span>...</span></li>';
         } else {
             $page_url = $url.($url && $p == 1 ? ($url_params ? '?'.$url_params : '') : '?page='.$p.($url_params ? '&'.$url_params : ''));
             $html .= '<li'.($p == $page ? ' class="selected"' : '').'><a href="'.$page_url.'">'.$p.'</a></li>';

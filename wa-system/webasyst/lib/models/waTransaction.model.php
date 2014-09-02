@@ -43,11 +43,11 @@ class waTransactionModel extends waModel
     {
         $sql = "SELECT * FROM ".$this->table." WHERE order_id=i:order_id AND plugin=s:plugin
             AND (type='".waPayment::OPERATION_AUTH_ONLY."' OR type='".waPayment::OPERATION_AUTH_CAPTURE
-            ."') AND state='CAPTURED' ORDER BY create_datetime DESC";
+            ."') AND state='CAPTURED' AND result=1 ORDER BY create_datetime DESC";
         $result = $this->query($sql, array('order_id'=>$order_id, 'plugin'=>$plugin))->fetchAll();
         return $result;
     }
-    
+
     public function getCancelable($order_id)
     {
         $sql = "SELECT * FROM ".$this->table." WHERE order_id=i:order_id AND state='"

@@ -73,22 +73,53 @@ class waContact implements ArrayAccess
         }
     }
 
+    /**
+     * Returns contact's numeric id.
+     *
+     * @return int
+     */
     public function getId()
     {
         return $this->id;
     }
 
+    /**
+     * Returns the value of contact's name property.
+     *
+     * @return string
+     */
     public function getName()
     {
         return $this->get('name');
     }
 
+    /**
+     * Returns contact's photo URL.
+     *
+     * @param int|string|null $width Image width. Arbitrary integer value, or string value 'original', which requires
+     *     that method must return the URL of the original image originally uploaded from a user's computer. Defaults to 96.
+     * @param int|string|null $height Image height (integer). If not specified, the integer value specified for the
+     *     $width parameter is used.
+     * @return string
+     */
     public function getPhoto($width = null, $height = null)
     {
-        return self::getPhotoUrl($this->id, $this->id ? $this->get('photo') : null, $width, $height);
+        return self::getPhotoUrl($this->id, $this->id ? $this->get('photo') : null, $width, $height, $this['is_company'] ? 'company' : 'person');
     }
 
-    public static function getPhotoUrl($id, $ts, $width = null, $height = null)
+    /**
+     * Returns the photo URL of the specified contact.
+     *
+     * @param $id Contact id
+     * @param $ts Contact photo id stored in contact's 'photo' property. If not specified, the URL of the default
+     *     userpic is returned.
+     * @param int|string|null $width Image width. Arbitrary integer value, or string value 'original', which requires
+     *     that method must return the URL of the original image originally uploaded from a user's computer. Defaults to 96.
+     * @param int|string|null $height Image height (integer). If not specified, the integer value specified for the
+     *     $width parameter is used.
+     * @return string
+     */
+    public static function getPhotoUrl($id, $ts, $width = null, $height = null, $type = 'person')
     {
         if ($width === 'original') {
             $size = 'original';
@@ -101,14 +132,16 @@ class waContact implements ArrayAccess
             $size = $width.'x'.$height;
         }
 
+        $dir = self::getPhotoDir($id, false);
+        
         if ($ts) {
             if (waSystemConfig::systemOption('mod_rewrite')) {
-                return wa()->getDataUrl('photo/'.$id.'/'.$ts.'.'.$size.'.jpg', true, 'contacts');
+                return wa()->getDataUrl("photos/{$dir}{$ts}.{$size}.jpg", true, 'contacts');
             } else {
-                if (file_exists(wa()->getDataPath('photo/'.$id.'/'.$ts.'.'.$size.'.jpg', true, 'contacts'))) {
-                    return wa()->getDataUrl('photo/'.$id.'/'.$ts.'.'.$size.'.jpg', true, 'contacts');
+                if (file_exists(wa()->getDataPath("photos/{$dir}{$ts}.{$size}.jpg", true, 'contacts'))) {
+                    return wa()->getDataUrl("photos/{$dir}{$ts}.{$size}.jpg", true, 'contacts');
                 } else {
-                    return wa()->getDataUrl('photo/thumb.php/'.$id.'/'.$ts.'.'.$size.'.jpg', true, 'contacts');
+                    return wa()->getDataUrl("photos/thumb.php/{$dir}{$ts}.{$size}.jpg", true, 'contacts');
                 }
             }
         } else {
@@ -116,10 +149,32 @@ class waContact implements ArrayAccess
             if (!in_array($size, array(20, 32, 50, 96))) {
                 $size = 96;
             }
-            return wa()->getRootUrl().'wa-content/img/userpic'.$size.'.jpg';
+            if ($type == 'company') {
+                return wa()->getRootUrl().'wa-content/img/company'.$size.'.jpg';
+            } else {
+                return wa()->getRootUrl().'wa-content/img/userpic'.$size.'.jpg';
+            }
         }
     }
+    
+    public static function getPhotoDir($contact_id, $with_prefix = true)
+    {
+        $str = str_pad($contact_id, 4, '0', STR_PAD_LEFT);
+        $str = substr($str, -2).'/'.substr($str, -4, 2);
+        $path = "{$str}/{$contact_id}/";
+        if ($with_prefix) {
+            return "photos/{$path}";
+        }
+        return $path;
+    }
 
+    /**
+     * Adds an image to contact.
+     *
+     * @param string $file Path to image file
+     * @throws waException
+     * @return string
+     */
     public function setPhoto($file)
     {
         if (!file_exists($file)) {
@@ -130,13 +185,14 @@ class waContact implements ArrayAccess
         }
 
         $rand = mt_rand();
-        $path = wa()->getDataPath("photo", true, 'contacts')."/".$this->getId();
+        $path = wa()->getDataPath(self::getPhotoDir($this->getId()), true, 'contacts');
         // delete old image
         if (file_exists($path)) {
             waFiles::delete($path);
         }
         waFiles::create($path);
         $filename = $path."/".$rand.".original.jpg";
+        waFiles::create($filename);
         waImage::factory($file)->save($filename, 90);
         waFiles::copy($filename, $path."/".$rand.".jpg");
 
@@ -146,9 +202,9 @@ class waContact implements ArrayAccess
     }
 
     /**
-     * Delete contact
+     * Deletes current contact.
      *
-     * @return bool result
+     * @return bool Whether contact was deleted successfully
      */
     public function delete()
     {
@@ -160,13 +216,32 @@ class waContact implements ArrayAccess
     }
 
     /**
-     * Get field value of the contact
+     * Returns the value of a contact's property.
      *
-     * @param string $field_id field to retrieve; either col from wa_contact table, or 'email', or custom
-     *                          field from wa_contact_data. 'field_id:subfield_id' for composite fields is allowed.
-     *                          'field_id.ext' for fields with extension is allowed.
-     * @param string $format   data format to use. Default is the same as $this[$field_id].
-     *                          'value' for simple
+     * @param string $field_id Contact property id:
+     *     - field name from wa_contact table
+     *     - 'email'
+     *     - any custom field name from wa_contact_data table
+     *
+     *     Additional allowed formats of property id:
+     *     - 'field_id:subfield_id' for composite fields; e.g., 'address:street'
+     *     - 'field_id.ext' for subfields of multi-fields with extension; e.g., 'phone.work'
+     *
+     * @param string|null $format Data format:
+     *     - 'default': simple text value of a contact property; for multi-fields, the first of available values is returned
+     *     - 'value':   simple text value of a contact property; for multi-fields, an array of all available values is returned
+     *     - 'html':    the full value of a contact property formatted by means of HTML code for displaying in a web page
+     *     - 'js':      simple text value of a contact property; for multi-fields, an array of all available values is
+     *                  returned, which contains the following elements for each value:
+     *         a) 'value': the value of a contact property formatted by means of HTML code for displaying in a web page
+     *         b) 'data':  simple text value of a multi-field property as a string or array
+     *         In addition to these basic elements, each sub-array of the returned array may contain other elements
+     *         specific to various contact properties.
+     *
+     *     - If no format is specified: simple text value of a contact property is returned; for multi-fields, an array
+     *       of all available values is returned, which contains a value element with a property's simple text value as
+     *       well as other elements specific to various contact properties.
+     *
      * @return mixed
      */
     public function get($field_id, $format = null)
@@ -190,25 +265,35 @@ class waContact implements ArrayAccess
             $format = explode('|', $format);
         }
 
-
         // Try to use field object
         $field = waContactFields::get($field_id, 'enabled');
         if ($field) {
-            $result = $field->get($this, $format);
-
             // Composite field
             // @todo: make simple method for check composite fields
             if ($subfield && $field instanceof waContactCompositeField) {
+                $result = $field->get($this);
                 if (!$field->isMulti()) {
-                    $result['value'] = isset($result['data'][$subfield]) ? $result['data'][$subfield] : null;
-                    unset($result['data']);
+                    if (isset($result['data'][$subfield])) {
+                        $result['value'] = $result['data'][$subfield];
+                        $result['data'] = array($subfield => $result['data'][$subfield]);
+                    } else {
+                        $result['value'] = "";
+                    }
+                    $result = $field->format($result, $format);
                 } else {
                     foreach ($result as &$row) {
-                        $row['value'] = isset($row['data'][$subfield]) ? $row['data'][$subfield] : null;
-                        unset($row['data']);
+                        if (isset($row['data'][$subfield])) {
+                            $row['value'] = $row['data'][$subfield];
+                            $row['data'] = array($subfield => $row['data'][$subfield]);
+                        } else {
+                            $row['value'] = "";
+                        }
+                        $row = $field->format($row, $format);
                     }
                     unset($row);
                 }
+            } else {
+                $result = $field->get($this, $format);
             }
 
             // Multi field access by extension
@@ -249,6 +334,30 @@ class waContact implements ArrayAccess
             }
             // no special formatting
             else {
+                if ($field_id === 'firstname' &&
+                        $result === null &&
+                        !trim($this['middlename'] !== null ? $this['middlename'] : '') &&
+                        !trim($this['lastname'] !== null ? $this['lastname'] : '') &&
+                        !trim($this['company'] !== null ? $this['company'] : '')
+                    )
+                {
+                    $eml = $this->get('email', 'value');
+                    if ($eml) {
+                        if (is_array($eml)) {
+                            $eml = array_values($eml);
+                            $eml = reset($eml);
+                        } else {
+                            $eml = '';
+                        }
+                        $pos = strpos($eml, '@');
+                        if ($pos == false) {
+                            return $eml;
+                        } else {
+                            return substr($eml, 0, $pos);
+                        }
+                    }
+                }
+
                 return $result;
             }
         }
@@ -267,6 +376,25 @@ class waContact implements ArrayAccess
                 elseif ($result === null) {
                     $result = waContactFields::getStorage('data')->get($this, $field_id);
                 }
+
+                // special case for is_company field when is_company IS NULL (e.g.: new contact)
+                // and from firstname, middlename, lastname and company, only company is not empty
+                if ($field_id == 'is_company' &&
+                        $result === null &&
+                        !trim($this['firstname'] !== null ? $this['firstname'] : '') &&
+                        !trim($this['middlename'] !== null ? $this['middlename'] : '') &&
+                        !trim($this['lastname'] !== null ? $this['lastname'] : '') &&
+                        trim($this['company'] !== null ? $this['company'] : '')
+                    )
+                {
+                    $result = '1';
+                }
+                // special case for firstname field when middlename, lastname, company empty, but email is not
+                // form firstname from email
+                if ($field_id === 'firstname') {
+
+                }
+
             }
             if ($result && is_array($result)) {
                 $result = current($result);
@@ -278,6 +406,12 @@ class waContact implements ArrayAccess
         }
     }
 
+    /**
+     * Returns the first value of a contact's multi-field.
+     *
+     * @param string $field_id Contact property id
+     * @return mixed
+     */
     public function getFirst($field_id)
     {
         $value = $this->get($field_id);
@@ -301,6 +435,14 @@ class waContact implements ArrayAccess
         return substr($this['password'], 0, 6).$this->id.substr($this['password'], -6);
     }
 
+    /**
+     * Returns full information about contact, which is stored in cache.
+     *
+     * @param unknown_type $format Data format
+     * @see self::get()
+     * @param unknown_type $all Flag requiring to return the values of fields marked as hidden in file
+     *     wa-system/contact/data/fields.php.
+     */
     public function load($format = false, $all = false)
     {
         if (!$this->id) {
@@ -315,7 +457,9 @@ class waContact implements ArrayAccess
                  * @var waContactField $field
                  */
                 if (!isset($cache[$field->getId()])) {
-                    $load[$field->getStorage()->getType()] = true;
+                    if ($field->getStorage()) {
+                        $load[$field->getStorage()->getType()] = true;
+                    }
                 }
             }
 
@@ -349,6 +493,12 @@ class waContact implements ArrayAccess
         }
     }
 
+    /**
+     * Validates specified values of contact properties.
+     *
+     * @param array $data Associative array of contact property values.
+     * @return int|array Zero, if no errors were found in provided data, or array of error messages otherwise
+     */
     public function validate($data=array())
     {
         foreach ($data as $key => $value) {
@@ -377,15 +527,30 @@ class waContact implements ArrayAccess
     }
 
     /**
-     * Save unsaved data
-     * If saving was succesfully returns 0 and array of errors themselves
      *
-     * @param array $data
-     * @param bool $validate
-     * @return int|array
+     * @return boolean
+     */
+    public function exists()
+    {
+        if (!$this->id) {
+            return false;
+        } else {
+            $model = new waContactModel();
+            return !!$model->select('id')->where("id = i:0", array($this->id))->fetch();
+        }
+    }
+
+    /**
+     * Saves contact's data to database.
+     *
+     * @param array $data Associative array of contact property values.
+     * @param bool $validate Flag requiring to validate property values. Defaults to false.
+     * @return int|array Zero, if saved successfully, or array of error messages otherwise
      */
     public function save($data = array(), $validate = false)
     {
+        $is_user = $this->get('is_user');
+
         $add = array();
         foreach ($data as $key => $value) {
             if (strpos($key, '.')) {
@@ -418,6 +583,17 @@ class waContact implements ArrayAccess
             }
         }
         $this->data['name'] = $this->get('name');
+        $this->data['firstname'] = $this->get('firstname');
+        $this->data['is_company'] = $this->get('is_company');
+        if ($this->id && isset($this->data['is_user'])) {
+            $log_model = new waLogModel();
+            if ($this->data['is_user'] == '-1' && $is_user != '-1') {
+                $log_model->add('access_disable', null, $this->id, wa()->getUser()->getId());
+            } else if ($this->data['is_user'] != '-1' && $is_user == '-1') {
+                $log_model->add('access_enable', null, $this->id, wa()->getUser()->getId());
+            }
+        }
+
         $save = array();
         $errors = array();
         $contact_model = new waContactModel();
@@ -431,6 +607,36 @@ class waContact implements ArrayAccess
                 if ($f->isMulti() && !is_array($value)) {
                     $value = array($value);
                 }
+                if ($f->isMulti()) {
+                    foreach ($value as &$val) {
+                        if (is_string($val)) {
+                            $val = trim($val);
+                        } else if (isset($val['value']) && is_string($val['value'])) {
+                            $val['value'] = trim($val['value']);
+                        } else if ($f instanceof waContactCompositeField && isset($val['data']) && is_array($val['data'])) {
+                            foreach ($val['data'] as &$v) {
+                                if (is_string($v)) {
+                                    $v = trim($v);
+                                }
+                            }
+                            unset($v);
+                        }
+                    }
+                    unset($val);
+                } else {
+                    if (is_string($value)) {
+                        $value = trim($value);
+                    } else if (isset($value['value']) && is_string($value['value'])) {
+                        $value['value'] = trim($value['value']);
+                    } else if ($f instanceof waContactCompositeField && isset($value['data']) && is_array($value['data'])) {
+                        foreach ($value['data'] as &$v) {
+                            if (is_string($v)) {
+                                $v = trim($v);
+                            }
+                        }
+                        unset($v);
+                    }
+                }
                 if ($validate !== 42) { // this deep dark magic is used when merging contacts
                     if ($validate) {
                         if ($e = $f->validate($value, $this->id)) {
@@ -442,8 +648,8 @@ class waContact implements ArrayAccess
                         }
                     }
                 }
-                if (!$errors) {
-                    $save[$f->getStorage()->getType()][$field] = $value;
+                if (!$errors && $f->getStorage()) {
+                    $save[$f->getStorage()->getType()][$field] = $f->prepareSave($value);
                 }
             } elseif ($contact_model->fieldExists($field)) {
                 $save['waContactInfoStorage'][$field] = $value;
@@ -451,6 +657,7 @@ class waContact implements ArrayAccess
                 $save['waContactDataStorage'][$field] = $value;
             }
         }
+
         // Returns errors
         if ($errors) {
             return $errors;
@@ -470,6 +677,9 @@ class waContact implements ArrayAccess
             }
             $this->data = array();
             wa()->event(array('contacts', 'save'), $this);
+            $this->removeCache();
+            $this->clearDisabledFields();
+
         } catch (Exception $e) {
             // remove created contact
             if ($is_add && $this->id) {
@@ -481,6 +691,28 @@ class waContact implements ArrayAccess
         return $errors ? $errors : 0;
     }
 
+    public function clearDisabledFields()
+    {
+        if (!$this->id) {
+            return;
+        }
+        $disabled_fields = waContactFields::getAll($this['is_company'] ? 'company_disabled' : 'person_disabled', true);
+        $data = array();
+        foreach ($disabled_fields as $field_id => $field) {
+            $data[$field->getStorage()->getType()][$field_id] = $field->prepareSave(null);
+        }
+
+        foreach ($data as $storage => $storage_data) {
+            waContactFields::getStorage($storage)->set($this, $storage_data);
+        }
+
+    }
+
+    /**
+     * Returns contact's locale id.
+     *
+     * @return string
+     */
     public function getLocale()
     {
         if (!$this->id) {
@@ -511,6 +743,11 @@ class waContact implements ArrayAccess
         return $locale;
     }
 
+    /**
+     * Returns contact's time zone value.
+     *
+     * @return string
+     */
     public function getTimezone()
     {
         $timezone = $this->get('timezone');
@@ -521,17 +758,18 @@ class waContact implements ArrayAccess
     }
 
     /**
-     * Returns data for this contact from cache without any database queries
-     * Used by contactStorage.
+     * Returns the value of a contact's property stored in cache, without accessing the database.
      *
-     * @param string $field_id field to retrieve data for; omit to get all data from cache
-     * @param mixed $old_value true to consider only values from DB; false (default) to add values set to this contact but not saved yet
-     * @return array|null
+     * @param string $field_id Contact property id. If not specified, information about all properties of a contact is returned.
+     * @param mixed $old_value Flag requiring to return only contact property values retrieved from the database and to
+     *         ignore dynamically added ones. If not specified, false is used by default: return both values stored in
+     *         the database and those added dynamically.
+     * @return mixed
      */
     public function getCache($field_id = null, $old_value = false)
     {
         if (!$field_id) {
-            $result = $old_value ? array() : $this->data;
+            $result = $old_value ? array() : (array)$this->data;
             if ($this->id && isset(self::$cache[$this->id])) {
                 $result += self::$cache[$this->id];
             }
@@ -622,6 +860,18 @@ class waContact implements ArrayAccess
         }
     }
 
+    /**
+     * Returns the properties of a cointact relating to specified app.
+     *
+     * @param string|null $app_id App id
+     * @param string|null $name Id of the contact property associated with the specified app which must be returned. If
+     *      not specified, an associative array of all properties of a contact is returned, which are associated with
+     *      the specified app.
+     * @param string|null $default The default value, which must be returned, if the specified contact property for the
+     *     specified app is not available. If contact property id is not specified for $default parameter, then the
+     *     value of $default parameter is ignored.
+     * @return mixed
+     */
     public function getSettings($app_id, $name = null, $default = null)
     {
         // For general settings
@@ -641,6 +891,14 @@ class waContact implements ArrayAccess
         }
     }
 
+    /**
+     * Saves properties of specified contact to database.
+     *
+     * @param string $app_id Id of the app for which a value of a contact property must be set
+     * @param string $name Contact property id
+     * @param mixed $value Contact property value
+     * @return bool Whether saved successfully
+     */
     public function setSettings($app_id, $name, $value = null)
     {
         $setting_model = new waContactSettingsModel();
@@ -650,6 +908,12 @@ class waContact implements ArrayAccess
         return $setting_model->set($this->id, $app_id, $name, $value);
     }
 
+    /**
+     * Deletes contact's property relating to specified app.
+     *
+     * @param string $app_id App id
+     * @param string $name Contact property id
+     */
     public function delSettings($app_id, $name)
     {
         $setting_model = new waContactSettingsModel();
@@ -658,11 +922,18 @@ class waContact implements ArrayAccess
 
 
     /**
-     * Returns rights of the contact
+     * Returns information about a contact's access rights configuration.
      *
-     * @param string $app_id - application id (contacs, orders, ...)
-     * @param string $name - key of the right, if it is null method return all rights of the contact for application
-     * @param bool $assoc - only if $name is null when true returns associative array of the rights
+     * @param string $app_id Id of the app for which contact's access rights configuration must be returned.
+     * @param string $name String id of the access rights element available for the specified app. If not specified,
+     *     all values of access rights for the current contact are returned. If % character is appended to the access
+     *     rights element id, then the access rights values for that element are returned as an array. The array
+     *     structure is defined by the value of the $assoc parameter.
+     * @param bool $assoc Flag defining the structure of the returned array:
+     *     - true (default): multi-fields of access rights configuration elements are included in the returned array
+     *       with access rights elements' ids as array keys and 1 as their values.
+     *     - false: array keys are incremented starting from 0, array item values containing the ids of access
+     *       rights configuration elements of access rights multi-fields enabled for a user.
      * @return int|bool
      */
     public function getRights($app_id, $name = null, $assoc = true)
@@ -701,10 +972,11 @@ class waContact implements ArrayAccess
     }
 
     /**
-     * Check the user is admin of the application
+     * Returns information about whether a user has full (adminstrative) access rights to all installed apps or only one
+     * specified app.
      *
-     * @param string $app_id
-     * @return bool - true if contact is admin
+     * @param string $app_id App id. If not specified, access rights for all installed apps are verified.
+     * @return bool
      */
     public function isAdmin($app_id = 'webasyst')
     {
@@ -717,13 +989,14 @@ class waContact implements ArrayAccess
     }
 
     /**
-     * Set right
+     * Sets access rights for a user.
+     * If a user has administrative access rights for the specified app, then an attempt to change his access rights
+     * configuration using this method is ignored.
      *
-     * @param string $app_id
-     * @param string $name
-     * @param int $value
-     *
-     * @return bool - result
+     * @param string $app_id Id of the app for which contact's access rights must be set
+     * @param string $name Access rights element id supported by specified app
+     * @param int $value Access rights value
+     * @return bool Whether access rights have been set successfully
      */
     public function setRight($app_id, $name, $value)
     {
@@ -734,16 +1007,26 @@ class waContact implements ArrayAccess
         return true;
     }
 
-
+    /**
+     * Returns user's status: "online", "offline"
+     *
+     * @return string
+     */
     public function getStatus()
     {
-        if (!$this->get('login')) {
-            return 'not-complete';
-        }
         $timeout = self::$options['online_timeout']; // in sec
         if (($last = $this->get('last_datetime')) && $last != '0000-00-00 00:00:00') {
             if (time() - strtotime($last) < $timeout) {
-                return 'online';
+                $m = new waLoginLogModel();
+                $datetime_out = $m->select('datetime_out')->
+                        where('contact_id = i:0', array($this->id))->
+                        order('id DESC')->
+                        limit(1)->fetchField();
+                if ($datetime_out === null) {
+                    return 'online';
+                } else {
+                    return 'offline';
+                }
             }
         }
         return 'offline';
@@ -764,7 +1047,12 @@ class waContact implements ArrayAccess
         return $this->get($offset);
     }
 
-
+    /**
+     * Adds an extra value to specified contact property.
+     *
+     * @param string $field Contact property id
+     * @param mixed $value Property value
+     */
     public function add($field, $value)
     {
         $this->set($field, $value, true);
@@ -780,11 +1068,13 @@ class waContact implements ArrayAccess
     }
 
     /**
-     * Returns hash of the password
-     * You can override this function in file wa-config/SystemConfig.class.php
-     * (add function wa_password_hash ($password) { return ...})
+     * Returns hash for specified password string.
      *
-     * @param string $password
+     * By default, hash is generated using PHP function md5(). If configuration file wa-config/SystemConfig.class.php
+     * contains information about user-defined function wa_password_hash(), then that function is used for generating
+     * password hash instead of md5().
+     *
+     * @param string $password Password string
      * @return string
      */
     public static function getPasswordHash($password)
@@ -797,9 +1087,9 @@ class waContact implements ArrayAccess
     }
 
     /**
-     * Add contact to the category
+     * Adds contact to a category.
      *
-     * @param int|string $category_id - id or system key (app_id) of the category
+     * @param int|string $category_id Category's simple numeric or system string key (app_id)
      * @throws waException
      */
     public function addToCategory($category_id)
@@ -818,6 +1108,14 @@ class waContact implements ArrayAccess
         }
     }
 
+    /**
+     * Sets a value for specified contact property.
+     *
+     * @param string $field_id Contact property id
+     * @param mixed $value Property value
+     * @param bool $add Flag requiring to add specified value to existing values of a multi-field. If false,
+     *     all existing values of the specified multi-field are deleted and replaced with specified value.
+     */
     public function set($field_id, $value, $add = false)
     {
         if (strpos($field_id, '.') !== false) {
@@ -856,7 +1154,11 @@ class waContact implements ArrayAccess
         $this->data[$offset] = null;
     }
 
-
+    /**
+     * Returns current data and time relative to contact's locale and time zone configuration.
+     *
+     * @return string
+     */
     public function getTime()
     {
         return waDateTime::format("datetime", null, $this->get('timezone'), $this->getLocale());

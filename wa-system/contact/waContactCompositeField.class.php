@@ -43,7 +43,7 @@ class waContactCompositeField extends waContactField
                 }
                 return $data;
             } else {
-                return $this->format(current($data), $format);
+                return $this->format($data, $format);
             }
         } else {
             return array();
@@ -81,7 +81,7 @@ class waContactCompositeField extends waContactField
                 }
             }
         } else if ($data !== null) {
-            return array(_w('Data must be an array.'));
+            return array(_ws('Data must be an array.'));
         }
 
         if (!$this->isMulti() && $errors) {
@@ -101,7 +101,23 @@ class waContactCompositeField extends waContactField
             }
             $data['value'] = implode("<br>\n", $value);
         }
-
+        
+        $found = true;
+        
+        if (strpos($format, ',')) {
+            // when formats are delimeted by comma, use the first one that exists
+            $found = false;
+            foreach(explode(',', $format) as $format) {
+                if ($format == 'value' || $format == 'html' || $this->getFormatter($format)) {
+                    $found = true;
+                    break;
+                }
+            }
+            if (!$found) {
+                return $data;
+            }
+        }
+        
         if ($format == 'html') {
             // Override logic for this format to avoid double htmlspecialchars()
             $result = $data['value'];
@@ -236,6 +252,10 @@ class waContactCompositeField extends waContactField
         return $value;
     }
 
+    /**
+     * @param string $subfield_name
+     * @return array|waContactField
+     */
     public function getFields($subfield_name = null)
     {
         $fields = array();

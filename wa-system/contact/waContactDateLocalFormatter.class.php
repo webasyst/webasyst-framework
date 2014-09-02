@@ -22,7 +22,8 @@ class waContactDateLocalFormatter extends waContactFieldFormatter
             $value =& $data;
         }
         if ($value) {
-            $value = waDateTime::format('date', $value);
+            $format = isset($this->options['format']) ? $this->options['format'] : 'date';
+            $value = waDateTime::format($format, $value);
         }
         unset($value); // being paranoid
 

@@ -234,10 +234,13 @@ class waTheme implements ArrayAccess
                             $path = (string)$file['path'];
                             if (in_array(pathinfo($path, PATHINFO_EXTENSION), array('js', 'html', 'css'))) {
                                 $this->info['files'][$path] = array(
-                                    'custom' => isset($file['custom']) && (string)$file['custom'] ? true : false
+                                    'custom' => isset($file['custom']) && (string)$file['custom'] ? true : false,
                                 );
+                                if (isset($file['modified']) && (string)$file['modified']) {
+                                    $this->info['files'][$path]['modified'] = true;
+                                }
 
-                                $this->info['files'][$path]['parent'] = isset($file['parent']) && (bool)$file['parent'] ? 1 : 0;
+                                $this->info['files'][$path]['parent'] = isset($file['parent']) && (string)$file['parent'] ? true : false;
                                 if ($this->info['files'][$path]['parent']) {
                                     $this->info['files'][$path]['parent_exists'] = $parent_exists;
                                 }
@@ -363,6 +366,7 @@ class waTheme implements ArrayAccess
             throw new waException("Unexpected file extension");
         }
         $options['custom'] = 1;
+        $options['modified'] = 1;
         $this->setFiles(array($path => $options));
         return $this;
     }
@@ -397,16 +401,17 @@ class waTheme implements ArrayAccess
     public function changeFile($file, $description)
     {
         $this->init();
+        $this->setFiles(array($file => array('modified' => true)));
         if (!isset($this->info['files'][$file]) || !$this->info['files'][$file]['custom']) {
-            return true;
+            return $this->save();
         }
         if (is_array($description)) {
             if ($this->info['files'][$file]['description'] == $description) {
-                return true;
+                return $this->save();
             }
         } else {
             if (self::prepareField($this->info['files'][$file]['description']) == $description) {
-                return true;
+                return $this->save();
             }
         }
         $this->setFiles(array($file => array('description' => $description)));
@@ -425,7 +430,7 @@ class waTheme implements ArrayAccess
             throw new waException('PHP extension DOM required');
         }
         $path = $this->path.'/'.self::PATH;
-        if (file_exists($path)) {
+        if (file_exists($path) && filesize($path)) {
             if ($as_dom) {
                 $xml = new DOMDocument(1.0, 'UTF-8');
                 $xml->preserveWhiteSpace = true;
@@ -515,7 +520,11 @@ XML;
                                     $file->setAttribute('path', $file_path);
                                 }
                                 $file->setAttribute('custom', $info['custom'] ? '1' : '0');
-                                if (isset($info['parent'])) {
+
+                                if (!empty($info['modified']) || (string)$file->getAttribute('modified')) {
+                                    $file->setAttribute('modified', $info['modified'] ? '1' : '0');
+                                }
+                                if (!empty($info['parent'])) {
                                     $file->setAttribute('parent', $info['parent'] ? '1' : '0');
                                 }
 
@@ -648,6 +657,21 @@ XML;
             return $this;
         }
     }
+
+    public function revertFile($file)
+    {
+        if ($f = $this->getFile($file)) {
+            if ($f['parent'] && $this->parent_theme_id) {
+                $this->getParentTheme()->revertFile($file);
+                return;
+            } else {
+                waFiles::copy($this->path_original . '/' . $file, $this->path . '/' . $file);
+            }
+            $this->setFiles(array($file => array('modified' => 0)));
+            $this->save();
+        }
+    }
+
 
     /**
      *
@@ -988,6 +1012,9 @@ HTACCESS;
                 }
                 if (isset($properties['custom'])) {
                     $this->info['files'][$path]['custom'] = $properties['custom'] ? true : false;
+                }
+                if (isset($properties['modified'])) {
+                    $this->info['files'][$path]['modified'] = $properties['modified'] ? true : false;
                 }
                 if (isset($properties['parent'])) {
                     $this->info['files'][$path]['parent'] = $properties['parent'] ? true : false;

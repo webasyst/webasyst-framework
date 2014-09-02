@@ -99,7 +99,8 @@ class waLocale
             $locale_path = waSystem::getInstance()->getAppPath('locale', $domain);
         }
         if (isset(self::$loaded[$locale][$domain])) {
-            return;
+//            todo: do something
+//            return;
         }
         if (file_exists($locale_path)) {
             self::load($locale, $locale_path, $domain, false);

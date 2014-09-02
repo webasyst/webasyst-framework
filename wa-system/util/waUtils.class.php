@@ -7,7 +7,7 @@ class waUtils
         if (!file_exists($file) || is_writable($file)) {
             if ($h = @fopen($file, 'w+')) {
                 if (flock($h, LOCK_EX)) {
-                    $result = fwrite($h, "<?php\nreturn ".($export ? var_export($var, true) : $var).";");
+                    $result = fwrite($h, "<?php\nreturn ".($export ? var_export($var, true) : $var).";\n");
                     fflush($h);
                     flock($h, LOCK_UN);
                 } else {
@@ -19,5 +19,4 @@ class waUtils
         }
         return false;
     }
-
 }

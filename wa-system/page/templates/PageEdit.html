@@ -250,23 +250,44 @@
             return false;
         });
 
-        {if !$page || !$page.id}
+        {if (!$page || !$page.id) && empty($options.disable_auto_url) }
+            $.fn.onKeyFinish = function (defer, callback) {
+                return this.each(function () {
+                    var that = $(this);
+                    that.currentValue = that.val();
+                    that.interval = null;
+                    $(this).off('keyup.wapages');
+                    $(this).on('keyup.wapages', function (e) {
+                        clearInterval(that.interval);
+                        if (that.currentValue != that.val()) {
+                            that.interval = setInterval(function () {
+                                clearInterval(that.interval);
+                                callback.call(that);
+                                that.currentValue = that.val();
+                            }, defer);
+                        }
+                    });
+                });
+            };
             $("#wa-page-settings input:first").focus();
-            $('#wa-page-settings input[name="info[name]"]').blur(function () {
+            $('#wa-page-settings input[name="info[name]"]').onKeyFinish(300, function () {
                 if (!$("#wa-page-form-translit").length) {
                     $("#wa-page-form").append('<input id="wa-page-form-translit" type="hidden" name="translit" value="1">');
                 }
                 var url = $('#wa-page-settings input[name="info[url]"]');
-                if ($(this).val() && !url.val()) {
+                if ($(this).val() && (!url.val() || !url.data('changed'))) {
                     $.post("?module=pages&action=translit", { str: $(this).val()}, function (response) {
                         $("#wa-page-form-translit").remove();
                         if (response.status == 'ok') {
-                            if (!url.val()) {
+                            if (!url.val() || !url.data('changed')) {
                                 url.val(response.data.str);
                             }
                         }
                     }, "json");
                 }
+            });
+            $('#wa-page-settings input[name="info[url]"]').on('keyup', function () {
+               $(this).data('changed', 1);
             });
         {/if}
 

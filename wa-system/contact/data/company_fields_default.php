@@ -1,6 +1,9 @@
 <?php
 return array (
-  'name' => array (),
+  'name' => array (
+      'required' => false,
+  ),
+  'company_contact_id' => array(),
   'company' => array (
         'required' => true,
       ),

@@ -1,132 +1,79 @@
-{if $options.js.ace}
-<script src="{$wa_url}wa-content/js/ace/ace.js"></script>
-{/if}
+{if $options.js.ace}<script src="{$wa_url}wa-content/js/ace/ace.js"></script>{/if}
+{if $options.js.editor}<script src="{$wa_url}wa-content/js/jquery-wa/wa.elrte.ace.js?v{$wa->version()}"></script>{/if}
 
-{if $options.js.editor}
-<script src="{$wa_url}wa-content/js/jquery-wa/wa.elrte.ace.js?v{$wa->version()}"></script>
-{/if}
-
-<style>
-    .wa-design { margin-bottom: 80px; }
-
-    .wa-editor-core-wrapper { background: white; }
-    .wa-design-gray-toolbar { background: #eee; padding-left: 15px; padding-bottom: 13px; }
-    .wa-design-gray-toolbar h4 { font-size: 1.3em;}
-    .wa-design-save-panel { position: fixed; bottom: 0; left: 0; right: 0; background: #eee; padding-left: 420px; z-index: 1}
-
-    .wa-app-block { margin: 0; padding: 15px 15px 5px 42px;}
-    .wa-app-block span.hint { white-space: nowrap;}
-    .wa-app-block h2.short-header { line-height: 0.9em; vertical-align: top; min-width: 166px; font-weight: normal; font-size: 1.3em; }
-    .wa-app-block h2.short-header img { float: left; margin: -5px 7px 0 -32px; width: 24px; height: 24px; vertical-align: middle;box-sizing:border-box; -moz-box-sizing:border-box; -webkit-box-sizing:border-box}
-    .wa-app-block h2.short-header .hint { font-size: 0.66em; }
-
-    .wa-dropdown { float: right; margin: 5px 20px 0 0; }
-    .wa-dropdown .wa-dropdown-content { padding: 20px;  width: auto; width: 760px;  min-height: 180px; max-height: 310px; overflow: auto; overflow-x: hidden;}
-    .wa-dropdown .wa-dropdown-content .field .name .inline-link b i { font-weight: bold; }
-    .wa-dropdown .wa-dropdown-content .field .name { width: 340px; }
-    .wa-dropdown .wa-dropdown-content .field .value { margin-left: 350px; }
-    .wa-dropdown .wa-dropdown-content .field.subfield .name { margin-left: 20px; }
-    .wa-dropdown .wa-dropdown-content .field.subfield .name .inline-link b i { font-weight: normal; font-size: 0.9em; }
-    .wa-dropdown .wa-drop-link { position: relative; padding: 6px 0 0 ; display: block;}
-    .wa-dropdown .wa-dropdown-block { display: none; position: absolute; bottom:1.4em; right:0; background: #F3F3F3; border: 2px solid #AAAAAA; box-shadow: 0 2px 10px #777; -webkit-box-shadow: 0 2px 10px #777; -moz-box-shadow: 0 2px 10px #777; -o-box-shadow: 0 2px 10px #777; z-index: 100;}
-    .wa-dropdown ul.tabs { height: 45px; padding-top: 6px; }
-    .wa-dropdown ul.tabs li.selected a { background: #fff;}
-    .wa-dropdown ul.tabs li.no-tab { min-width: 70px;}
-    .wa-dropdown ul.tabs li a { position: relative; padding:5px 15px 8px; height: 30px;}
-    .wa-dropdown ul.tabs li.no-tab { padding:4px 0.8em 0 40px;}
-    .wa-dropdown ul.tabs li.no-tab .hint { font-weight: bold;}
-    .wa-dropdown ul.tabs li.no-tab p { margin: 0 ; line-height: 16px; white-space: nowrap;}
-    .wa-dropdown ul.tabs li.no-tab img { float: left; vertical-align: top; margin:2px 0 0 -32px; width: 24px; height: 24px; }
-    .wa-dropdown .field .name { word-wrap: break-word; }
-
-    li.error a { color: red; }
-
-    .wa-themes { background: url({$wa_url}wa-content/img/cloth-background-light.jpg); box-shadow: 0 6px 10px -5px #777 inset; }
-    .wa-themes ul.thumbs { padding: 25px 20px; margin-top: 0; }
-    .wa-themes ul.thumbs li { text-align: center; margin-right: 5px; }
-    .wa-themes ul.thumbs li a h5 { color: #000; margin-bottom: 10px; }
-    .wa-themes ul.thumbs li a .wa-theme-cover { width: 200px; height: 220px; overflow: hidden; box-shadow: 0 2px 9px #777; margin: 0 auto 10px; background: #fff; position: relative; }
-    .wa-themes ul.thumbs li a .wa-theme-cover .wa-in-use-badge { position: absolute; left: -12px; right: -12px; top: 76%; margin-top: -10px; background: #5a4; color: #fff; font-style: italic; padding: 5px; font-weight: bold; box-shadow: 0 1px 3px rgba(0,0,0,0.2); transform: rotate(-5deg); -webkit-transform: rotate(-5deg); -moz-transform: rotate(-5deg); -o-transform: rotate(-5deg); }
-    .wa-themes ul.thumbs li a .wa-theme-cover span.hint { margin-top: 100px; display: block; }
-    .wa-themes ul.thumbs li a:hover .wa-theme-cover { box-shadow: 0 4px 13px #666; }
-    .wa-themes ul.thumbs li i.icon10 { display: none; }
-    .wa-themes ul.thumbs li:hover i.icon10 { display: inline-block; position: absolute; display: none\9; }
-    .wa-themes ul.thumbs li strong { padding: 2px 4px 1px; color: #000; background: #ffb; }
-    .wa-themes ul.thumbs li .wa-theme-installed { color: #008000; display: inline-block; margin-left: -4px; padding: 2px 7px; }
-    .wa-themes ul.thumbs li .wa-theme-installed i.icon10 { position: static; display: inline-block !important; }
-    .wa-themes .wa-price { color: #777; }
-
-    h5.wa-themes-group { padding-top: 20px; margin-left: 20px; text-transform: uppercase; color: #777; }    
-    .wa-themes-installed { background: rgba(0,0,0,0.15); }
-    .wa-themes-from-the-store { border-top: 2px dotted rgba(0,0,0,0.15); }
-    
-    .wa-theme-image-select { padding-left: 0; margin-top: 0; }
-    .wa-theme-image-select li { list-style: none; display: inline-block; float: left\9; margin: 0 5px 5px 0; padding: 0; }
-    .wa-theme-image-select a { display: block; max-height: 100px; max-width: 100px; overflow: hidden; border: 4px solid #fff; }
-    .wa-theme-image-select li.selected a { border-color: #FDDA3B; border-radius: 4px; }
-    
-/*     .wa-theme-image-upload { display: inline-block; } */
-    .wa-theme-image-upload img { margin-bottom: 10px; display: block; }
-
-    .wa-theme-preview i.icon16 { margin-right: 5px; }
-
-    .wa-theme-about h1 { margin-bottom: 20px; }
-    .wa-theme-about p { line-height: 1.5em; }
-    .wa-theme-about pre { background: none repeat scroll 0 0 #EEEEEE; border-left: 3px solid #CCCCCC; color: #777777; font-size: 0.9em; padding: 20px; }
-
-    ul.menu-h.wa-theme-filter-colors li { border-radius: 20px; padding: 8px; margin-right: 5px; box-shadow: 0 1px 2px #777; }
-    ul.menu-h.wa-theme-filter-colors li.wa-themes-all { border-color: transparent; box-shadow: none; }
-    ul.menu-h.wa-theme-filter-colors li.wa-themes-white { background: #fff; }
-    ul.menu-h.wa-theme-filter-colors li.wa-themes-black { background: #444; }
-    ul.menu-h.wa-theme-filter-colors li.wa-themes-red { background: #ce4444; }
-    ul.menu-h.wa-theme-filter-colors li.wa-themes-green { background: #5dc166; }
-    ul.menu-h.wa-theme-filter-colors li.wa-themes-blue { background: #33a5d4; }
-    ul.menu-h.wa-theme-filter-colors li.wa-themes-yellow { background: #e7d400; }
-    ul.menu-h.wa-theme-filter-colors li.wa-themes-purple { background: #8963a9; }
-
-    ul.menu-h.wa-theme-filter-price li { font-size: 0.9em; margin-top: 3px; padding: 5px 0; }
-    ul.menu-h.wa-theme-filter-price li.selected a { background: #ddd; }
-    .wa-theme ul.menu-v a.disabled { color: #aaa; }
-    .wa-theme h4.heading { margin-bottom: 10px; margin-top: 20px; }
-
-    ul.with-icons.wa-theme { padding: 0 5px 0 3px; margin-top: 12px; }
-    ul.with-icons.wa-theme li a { padding-left: 33px; }
-    
-    .wa-theme-selector li { width: 200px; }
-    .wa-theme-selector li a { padding: 12px 13px; font-size: 1.3em; word-break: break-all; line-height: 1em; }
-    .wa-theme-selector li a img { width: 24px; height: 24px; float: left; margin-right: 5px; margin-top: -3px; margin-left: -3px; }
-    .wa-theme-selector li ul.menu-v { width: 250px; }
-    .wa-theme-selector li ul.menu-v li { width: 208px; padding-left: 34px; }
-    .wa-theme-selector li ul.menu-v li a { padding: 7px 4px; font-size: 1em; }
-    .wa-theme-selector li ul.menu-v li.no-icon { padding-left: 14px; padding-right: 28px; }
-    .wa-theme-selector li ul.menu-v li.selected a { background: inherit; }
-    .wa-theme-routes { padding-left: 10px; padding-right: 10px; word-wrap: break-word; }
-    .wa-theme-routes a i.icon10 { display: none; position: absolute; }
-    .wa-theme-routes a:hover i.icon10 { display: inline; }
-    .wa-theme-routes .hint a.no-underline { text-decoration: none !important; }    
-    .wa-theme-block { margin-top: 6px;}
-    .wa-theme-block ul.wa-theme li { padding: 4px 2px 4px 24px;}
-    .wa-theme-block ul.wa-theme li.top-padded { padding-top: 15px; }
-    .wa-theme-block ul.wa-theme li a { padding-left: 30px; word-break: break-all; }
-    .wa-theme-block h4 { margin: 10px 10px 0; word-break: break-all; }
-    
-    #wa-design-sidebar { width: 210px; }
-    #wa-design-container { margin-left: 210px; }
-    #wa-design-container .value .icon16.color { margin-left: 4px; margin-top: 3px; cursor: pointer; }
-
-</style>
+<link rel="stylesheet" href="{$wa_url}wa-content/css/wa/design.css?{$wa->version(true)}">
 
 {if $options.container}
 <div class="shadowed wa-design">
 {/if}
-    <div id="wa-design-sidebar" class="sidebar left200px" style="min-height:300px">
-        {include file="`$template_path`Sidebar.html"}
+    <div>
+        <!-- theme navigation -->
+        <ul class="menu-h dropdown wa-theme-globalnav" id="wa-design-menu">
+            <li class="wa-theme-globalnav-switch">
+                <!-- active app settlement / theme selector -->
+                <a href="#" class="inline-link" id="wa-theme-active">
+                    <img src="{$wa_url}{$app.icon.48}">
+                    <b><i><span class="url">{if $route}{$_route_label = $route._domain|cat:'/':$route.url}{else}{$_route_label = $theme.name}{/if}{str_replace('www.','',$_route_label)|truncate:23:'...':false:true}</span></i></b>
+                    <i class="icon10 darr"></i>
+                    <br>
+                    <span class="hint">{if $route}{$theme.name}{/if}</span>
+                </a>
+                <ul id="wa-theme-list" class="menu-v">
+                    {foreach $themes_routes as $r}
+                        {if is_array($r)}
+                            {$_t = $themes[$r.theme]}
+                            {$_url = "{$design_url}theme={$r.theme}&domain={urlencode($r._domain)}&route={$r._id}"}
+                            <li class="no-icon 2{if $current_url == $_url} selected{/if}" data-routing="{$r._routing_url}">
+                                <a class="bold" href="{$design_url}theme={$r.theme}&domain={urlencode($r._domain)}&route={$r._id}">
+                                    <span class="url">{$_r_label = $r._domain|cat:'/':$r.url}{str_replace('www.','',$_r_label)|truncate:23:'...':false:true}</span>
+                                    <span class="hint">{$_t.name}</span>
+                                </a>
+                            </li>
+                            {if !empty($r.theme_mobile) && ($r.theme_mobile != $r.theme)}
+                                {$_t = $themes[$r.theme_mobile]}
+                                {$_url = "{$design_url}theme={$r.theme_mobile}&domain={urlencode($r._domain)}&route={$r._id}"}
+                                <li class="no-icon 3{if $current_url == $_url} selected{/if}" data-routing="{$r._routing_url}">
+                                    <a class="bold" href="{$design_url}theme={$r.theme_mobile}&domain={urlencode($r._domain)}&route={$r._id}">
+                                        <i class="icon16 mobile float-right"></i>
+                                        <span class="url">{$_r_label = $r._domain|cat:'/':$r.url}{str_replace('www.','',$_r_label)|truncate:23:'...':false:true}</span>
+                                        <span class="hint">{$_t.name}</span>
+                                    </a>
+                                </li>
+                            {/if}
+                        {else}
+                            {$_t = $themes[$r]}
+                            {$_url = "{$design_url}theme={$_t.id}"}
+                            <li class="no-icon 1{if $current_url == $_url} selected{/if}">
+                                <a href="{$design_url}theme={$_t.id}">
+                                    <span class="url">{$_t.name}</span>
+                                </a>
+                            </li>
+                        {/if}
+                    {/foreach}
+                </ul>
+            </li>
+    
+            {if $theme.preview_url}
+                <li class="float-right">
+                    <a href="{$theme.preview_url|escape}" target="_blank" class="wa-theme-preview" title="[s`Site`]"><i class="icon48 preview"></i>[s`Site`]</a>
+                </li>
+            {/if}    
+            
+            <li data-action="theme" class="info selected"><a class="wa-themes-link" href="{$design_url}theme={$theme.id}&action=theme"><i class="icon48 appearance"></i>[s`Appearance`]</a></li>
+            {if !empty($options.pages)}
+            <li><a class="wa-themes-link" href="{$design_url}pages/"><i class="icon48 pages"></i>[s`Pages`]</a></li>
+            {/if}
+            <li data-action="edit" class="templates"><a href="{$design_url}theme={$theme.id}&action=edit"><i class="icon48 templates"></i>[s`Templates`]</a></li>
+            <li class="themes"><a class="wa-themes-link" href="{$themes_url}"><i class="icon48 store"></i>[s`Themes`]</a></li>
+            <li data-action="settings" class="settings"><a href="{$design_url}action=settings"><i class="icon48 settings"></i>[s`Settings`]</a></li>
+        </ul>
     </div>
-    <div id="wa-design-container" class="content left200px bordered-left blank">
-        <div  class="block double-padded">
+
+    <div id="wa-design-container" class="blank">
+        <div class="block double-padded">
             [s`Loading`]... <i class="icon16 loading"></i>
+            <div class="clear"></div>
         </div>
-        <div class="clear"></div>
     </div>
     <div class="dialog" id="wa-design-preview">
         <div class="dialog-background"> </div>
@@ -157,123 +104,98 @@
             }
             return true;
         }
-
         $(window).on('beforeunload', function () {
             if ($("#wa-design-button").length && $('#wa-design-button').hasClass('yellow')) {
                 return "[s`Unsaved changes will be lost if you leave this page now. Are you sure?`]";
             }
         });
 
-        $("#wa-theme-upload-link").click(function () {
-            if (!waDesignConfirm()) return false;
-            $(".wa-theme-dialog-error").text('');
-            $("#wa-theme-upload-dialog div.loading").hide();
-            $("#wa-theme-upload-dialog").waDialog({
-                disableButtonsOnSubmit: true,
-                onSubmit: function () {
-                    $("#wa-theme-upload-dialog div.loading").show();
-                    $("#wa-theme-upload-iframe").one('load', function () {
-                        $("#wa-input-file").replaceWith('<input id="wa-input-file" type="file" name="theme_files[]" multiple="" >');
-                        $("#wa-input-file").bind('change', function () {
-                            $("#wa-theme-upload-form").submit();
-                        });
-                        var response;
-                        try {
-                            response = $.parseJSON($(this).contents().text());
-                            if (response.status == 'fail') {
-                                $("#wa-theme-upload-dialog div.loading").hide();
-                                $("#wa-input-file").replaceWith('<input id="wa-input-file" type="file" name="theme_files[]" multiple="" >');
-                                handleError(response);
-                            } else if (response.status == 'ok') {
-                                $("#wa-theme-upload-dialog").hide();
-                                $(".wa-theme-dialog-error").text('');
-                                location.reload();
-                            }
-                        } catch(e) {
-                            response = {
-                                'errors':[]
-                            };
-                            var message = $(this).contents().find('h1:first, h2:first');
-                            if(message.length) {
-                                response.errors.push([message.text()]);
-                            } else {
-                                response.errors.push(['JavaScript error: '+e.message]);
-                            }
-                            $("#wa-theme-upload-dialog div.loading").hide();
-                            $("#wa-input-file").replaceWith('<input id="wa-input-file" type="file" name="theme_files[]" multiple="" >');
-                            handleError(response);
-                        }
-                    });
-
-                },
-                onLoad: function () {
-
-                }
-            });
-            return false;
-        });
-
-        $('.wa-theme-selector').on('mouseover', function () {
+        $('.wa-theme-globalnav').on('mouseover', function () {
             $('#wa-theme-list').css('display', '');
         });
 
-        $("#wa-theme-list li a").click(function () {
-            $('#wa-theme-list').hide();
-            if ($(this).attr('id') != 'wa-theme-upload-link') {
-                var t = $(this).parent().data('theme');
-                if (t) {
-                    $("#wa-theme-active").text($(this).find('span.wa-theme-name').text());
-                    if ($(this).hasClass('bold')) {
-                        $("#wa-theme-active").addClass('bold');
-                    } else {
-                        $("#wa-theme-active").removeClass('bold');
-                    }
-                    var a, url;
-                    var params = location.hash.split('&');
-                    for (var i = 0; i < params.length; i++) {
-                        var tmp = params[i].split('=');
-                        if (tmp[0] == 'file') {
-                            var url = "{$design_url}theme=" + t + '&file=' + tmp[1];
-                            var a = $('#wa-theme-block-' + t + ' a[href="' + url + '"]');
-                            break;
-                        }
-                    }
-                    if (!a || !a.length) {
-                        url = "{$design_url}theme=" + t + '&action=theme';
-                        a = $('#wa-theme-block-' + t + ' a[href="' + url + '"]');
-                    }
-                    a.click();
-                    location.href = url;
+        var waDesignHash = function (url) {
+            if (!url || !url.length) {
+                return '';
+            }
+            url = url.replace(/\/$/, '').replace(/^#/, '')
+            var urls = url.split('/');
+            var n = urls.length;
+            url = urls[n - 1];
+            var i = n - 2;
+            while (i >= 0 && urls[i].indexOf('=') != -1) {
+                url = urls[i] + '/' + url;
+                i--;
+            }
+            return url;
+        }
 
+        var waDesignParams = function (url) {
+            url = waDesignHash(url);
+            var params_ar = url.split('&');
+            var params = {};
+            for (var i = 0; i < params_ar.length; i++) {
+                var tmp = params_ar[i].split('=');
+                params[tmp[0]] = tmp[1];
+            }
+            return params;
+        }
+
+        $("#wa-theme-list li a").click(function (e, set_active_only) {
+            $('#wa-theme-list').hide();
+            $('#wa-theme-list li.selected').removeClass('selected');
+            $(this).parent().addClass('selected');
+            var href = $(this).attr('href');
+            var params = waDesignParams(href);
+            if (params['theme']) {
+                $("#wa-theme-active span.url").html($(this).find('span.url').html());
+                if ($(this).find('span.hint').length) {
+                    $("#wa-theme-active span.hint").html($(this).find('span.hint').html());
+                } else {
+                    $("#wa-theme-active span.hint").empty();
+                }
+                $('#wa-design-menu > li > a').each(function () {
+                    if ($(this).parent().data('action')) {
+                        $(this).attr('href', href + '&action=' + $(this).parent().data('action'));
+                    } else if ($(this).attr('href').indexOf('theme=') !== -1) {
+                        $(this).attr('href', $(this).attr('href').replace(/theme=[^&]+/, 'theme=' + params['theme']));
+                    }
+                });
+                if (set_active_only) {
                     return false;
                 }
+                var hash = location.hash;
+                if (hash.indexOf('theme=') !== -1) {
+                    if (hash.indexOf('action=settings') !== -1) {
+                        if (!params['route']) {
+                            location.href = $(this).attr('href');
+                        } else {
+                            hash = hash.replace(/route=[^&]/, 'route=' + params['route']);
+                            $.wa.setHash(hash.replace(/theme=[^&]+/, 'theme=' + params['theme']));
+                        }
+                    } else {
+                        if (!params['route']) {
+                            hash = hash.replace(/&route=[^&]+/, '');
+                        } else if (hash.indexOf('route=') != -1) {
+                            hash = hash.replace(/route=[^&]+/, 'route=' + params['route']);
+                        } else {
+                            hash = hash + '&route=' + params['route'];
+                        }
+                        $.wa.setHash(hash.replace(/theme=[^&]+/, 'theme=' + params['theme']));
+                    }
+                } else {
+                    location.href = $(this).attr('href');
+                }
+                {if !$options.is_ajax}waDesignLoad();{/if}
+                return false;
             }
         });
 
-        function handleError(data) {
-            var error = '';
-            if ( typeof data.errors == 'string') {
-                error += (error?'\n':'') + data.errors;
-            } else {
-                for(error_item in data.errors) {
-                    error += (error?'\n':'') + data.errors[error_item][0];
-                }
-            }
-            if($(".dialog:visible").length) {
-                $(".dialog:visible .wa-theme-dialog-error").html(error+'<br><br>');
-            } else if($(".wa-theme-dialog-error:first:visible").length) {
-                $(".wa-theme-dialog-error:first:visible").html('<br><br>'+error+'<br><br>');
-            } else {
-                alert('Error:'+error);
-            }
-            $("#wa-theme-name-dialog input[type=submit]").removeAttr('disabled');
-            $("#wa-theme-upload-dialog input[type=submit]").removeAttr('disabled');
-        };
-
-        $(".wa-theme-preview").click(function () {
+        $(document).on('click', ".wa-theme-preview", function () {
             var url = $(this).attr('href');
-            if (!$(this).hasClass('used')) {
-                $("#wa-current-theme").html($(this).parents('div:first').find('h4').text());
+            var tmp_params = waDesignParams($('#wa-theme-list li.selected a').attr('href'));
+            if (!tmp_params['route']) {
+                $('#wa-current-theme').html($('#wa-theme-active .url').html());
                 $("#wa-design-preview").waDialog({
                     esc: false,
                     onSubmit: function () {
@@ -291,43 +213,53 @@
             if (!waDesignConfirm()) return false;
         });
 
-        $("div.wa-theme-block ul li").on('click', 'a', function () {
-            if ($(this).hasClass('wa-theme-preview')) return;
-            if (!waDesignConfirm()) return false;
-            $("#wa-design-sidebar li.selected").removeClass('selected');
-            $(this).parent().addClass('selected');
-            $.wa.setHash($(this).attr('href'));
-            {if $options.is_ajax}
-                return false;
-            {else}
-                waDesignLoad();
-            {/if}
-        });
+        {if !$options.is_ajax}
+            $('#wa-design-menu > li > a').click(function () {
+                waDesignLoad($(this).attr('href').replace(/.*?#\//, '').replace(/\/$/, ''));
+            });
+        {/if}
 
-        $("#wa-theme-link").on('click', function () {
-            if (!waDesignConfirm()) return false;
-            $("div.wa-theme-block ul li.selected").removeClass('selected');
-            $(this).parent().addClass('selected');
-            $.wa.setHash($(this).attr('href'));
-            {if !$options.is_ajax}
-            waDesignLoad();
-            {/if}
-            return false;
-        });
-
+        var site_routing_full = function () {};
         var wa_design_not_load = false;
         function waDesignLoad(hash) {
+            var hash_params = waDesignParams(hash || location.hash);
+            if (hash_params['theme']) {
+                var current_theme_url = 'theme=' + hash_params['theme'];
+                if (hash_params['domain']) {
+                    current_theme_url += '&domain=' + hash_params['domain'];
+                }
+                if (hash_params['route']) {
+                    current_theme_url += '&route=' + hash_params['route'];
+                }
+                if ($('#wa-theme-list a[href="{$design_url}' + current_theme_url + '"]').length) {
+                    $('#wa-theme-list a[href="{$design_url}' + current_theme_url + '"]').trigger('click', [true]);
+                } else {
+                    $('#wa-theme-list a[href^="{$design_url}theme=' + hash_params['theme'] + '"]:first').trigger('click', [true]);
+                }
+            }
+
+            var a = $('#wa-design-menu li.selected a');
+            if (a.length) {
+                var a_params = waDesignParams(a.attr('href'));
+                if (a_params['route']) {
+                    $('#wa-design-menu li.settings a').attr('href', a.attr('href') + '&action=settings');
+                    $('#wa-design-menu li.settings').show();
+                } else {
+                    $('#wa-design-menu li.settings').hide();
+                }
+            }
+
             if (wa_design_not_load) {
                 wa_design_not_load = false;
                 return;
             }
             if (hash  === undefined) {
-                var hash = location.hash.replace(/\/$/, '').replace(/^#/, '');
-                hash = hash.replace(/.*\/([^\/])/, '$1');
+                hash = waDesignHash(location.hash);
             }
             if (hash.length) {
                 if (hash == 'themes') {
-                    $('#wa-design-sidebar .wa-theme-block:visible .wa-themes.link').parent().addClass('selected');
+                    $('#wa-design-menu > .selected').removeClass('selected');
+                    $('#wa-design-menu .themes').addClass('selected');
                     $("#wa-design-container").load("?module=design&action=themes", function () {
                         if ($(".s-scrollable-part").length) {
                             $(".s-scrollable-part").scrollTop(0);
@@ -335,9 +267,34 @@
                             $(document).scrollTop(0);
                         }
                     });
+                } else if (hash.substr(0, 5) == 'pages') {
+
+                } else if (hash.indexOf('action=settings') != -1) {
+                    $('#wa-design-menu > .selected').removeClass('selected');
+                    $('#wa-design-menu .settings ').addClass('selected');
+                    if ($('#wa-theme-list li.selected').length) {
+                        var li = $('#wa-theme-list li.selected');
+                    } else {
+                        var li = $('#wa-theme-list li:first');
+                    }
+                    $("#wa-design-container").load(li.data('routing') + '&reload_on_change=1', function () {
+                        $("#wa-design-container .back").remove();
+                        $(".s-route-core").hide();
+                        $('.s-route-details .fields').
+                                prepend($('<div class="field-group"></div>').
+                                        append($('<div class="field"><div class="name">URL</div></div>').
+                                                append($('<div class="value"></div>').html($('#s-route-where').html()))
+                                )
+                        );
+                        $("#wa-design-container .s-route-delete").closest('div').remove();
+                    });
                 } else {
                     if (hash.indexOf('action=') == -1) {
-                        hash = 'action=edit&' + hash;
+                        if (hash.indexOf('file=') == -1) {
+                            hash = 'action=theme&' + hash;
+                        } else {
+                            hash = 'action=edit&' + hash;
+                        }
                     }
                     if (hash.indexOf('theme=') != -1) {
                         var params = hash.split('&');
@@ -345,12 +302,16 @@
                             var tmp = params[j].split('=');
                             //console.log(tmp);
                             if (tmp[0] == 'theme') {
-                                $("#wa-theme-active").text($('#wa-theme-list-' + tmp[1] + ' a span.wa-theme-name').text());
-                                $('#wa-design-sidebar .wa-theme-block').hide();
-                                $('#wa-theme-block-' + tmp[1]).show();
                                 $('#wa-design-sidebar a[href="' + location.hash + '"]').parent().addClass('selected');
                             }
                         }
+                    }
+                    if (hash.indexOf('action=edit') !== -1) {
+                        $('#wa-design-menu > .selected').removeClass('selected');
+                        $('#wa-design-menu .templates').addClass('selected');
+                    } else if (hash.indexOf('action=theme') !== -1) {
+                        $('#wa-design-menu > .selected').removeClass('selected');
+                        $('#wa-design-menu .info').addClass('selected');
                     }
                     $("#wa-design-container").load("?module=design&" + hash, function (responseText, textStatus, XMLHttpRequest) {
                         if ($(".s-scrollable-part").length) {
@@ -361,7 +322,7 @@
                         try{
                             if (response = $.parseJSON(responseText)) {
                                 if(response.data && response.data.redirect) {
-                                    var href = location.href.replace(/(\?|#).*$/,'') + response.data.redirect;
+                                    var href = location.href.replace(/#.*$/,'') + response.data.redirect;
                                     location.replace(href);
                                 }
                             }

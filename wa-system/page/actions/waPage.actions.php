@@ -443,7 +443,7 @@ class waPageActions extends waActions
             $f = waRequest::file('file');
             $name = $f->name;
             if ($this->processFile($f, $path, $name, $errors)) {
-                $response = wa()->getDataUrl('img/'.$name, true);
+                $response = wa()->getDataUrl('img/'.$name, true, null, !!waRequest::get('absolute'));
             }
             $errors = implode(" \r\n", $errors);
         }
@@ -576,6 +576,34 @@ class waPageActions extends waActions
             $app = null;
         }
 
+        if (wa()->appExists('site')) {
+            $model = new waModel();
+            $blocks = $model->query('SELECT * FROM site_block ORDER BY sort')->fetchAll('id');
+
+            $apps = wa()->getApps();
+            foreach ($apps as $_app_id => $_app) {
+                $path = $this->getConfig()->getAppsPath($_app_id, 'lib/config/site.php');
+                if (file_exists($path)) {
+                    $site_config = include($path);
+                    if (!empty($site_config['blocks'])) {
+                        foreach ($site_config['blocks'] as $block_id => $block) {
+                            if (!is_array($block)) {
+                                $block = array('content' => $block, 'description' => '');
+                            }
+                            $block_id = $_app_id.'.'.$block_id;
+                            if (!isset($blocks[$block_id])) {
+                                $block['id'] = $block_id;
+                                $block['app'] = $_app;
+                                $blocks[$block_id] = $block;
+                            }
+                        }
+                    }
+                }
+            }
+        } else {
+            $blocks = array();
+        }
+
         $this->display(array(
             'vars' => $vars,
             'file' => $file,
@@ -598,8 +626,10 @@ class waPageActions extends waActions
                 '{include file="..."}' => _ws('Embeds a Smarty template into the current content. <em>file</em> attribute specifies a template filename within the current design theme folder'),
                 '{if}...{else}...{/if}' => _ws('Similar to PHP if statements'),
                 '{foreach from=$a key=k item=v}...{foreachelse}...{/foreach}' => _ws('{foreach} is for looping over arrays of data'),
-            )
+            ),
+            'blocks' => $blocks
         ), $this->getConfig()->getRootPath().'/wa-system/page/templates/Help.html');
+
     }
 
     /**

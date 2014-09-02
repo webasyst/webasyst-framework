@@ -24,7 +24,7 @@ class waContactCategoryStorage extends waContactStorage
      *
      * @return waContactCategoriesModel
      */
-    protected function getModel()
+    public function getModel()
     {
         if (!$this->model) {
             $this->model = new waContactCategoriesModel();
@@ -44,16 +44,6 @@ class waContactCategoryStorage extends waContactStorage
         }
         
         $categories = $this->getModel()->getContactCategories($contact->getId());
-        if (wa()->getApp() == 'contacts' && !wa()->getUser()->getRights('contacts', 'category.all')) {
-            // only show categories allowed for current user to see
-            $crm = new contactsRightsModel();
-            $allowed = $crm->getAllowedCategories();
-            foreach($categories as $id => $row) {
-                if (!isset($allowed[$id])) {
-                    unset($categories[$id]);
-                }
-            }
-        }
         
         return array(
             'categories' => array(
@@ -70,22 +60,6 @@ class waContactCategoryStorage extends waContactStorage
         
         if (empty($fields['categories'][0])) {
             $fields['categories'] = array();
-        }
-
-        if (wa()->getApp() == 'contacts' && !wa()->getUser()->getRights('contacts', 'category.all')) {
-            // only save categories available for current user to see, and do not change others
-            $crm = new contactsRightsModel();
-            $cats = $this->getModel()->getContactCategories($contact->getId());
-            $allowed = $crm->getAllowedCategories();
-            $set = $fields['categories'] ? array_flip($fields['categories']) : array();
-            foreach($allowed as $id => $cat) {
-                if (isset($set[$id])) {
-                    $cats[$id] = true;
-                } else {
-                    unset($cats[$id]);
-                }
-            }
-            $fields['categories'] = array_keys($cats);
         }
 
         $this->getModel()->setContactCategories($contact->getId(), $fields['categories']);

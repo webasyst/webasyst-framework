@@ -12,6 +12,7 @@
  * @package wa-system
  * @subpackage payment
  */
+
 abstract class waPayment extends waSystemPlugin
 {
     const TRANSACTION_CONFIRM = 'confirm';
@@ -606,10 +607,11 @@ abstract class waPayment extends waSystemPlugin
     protected function formalizeData($transaction_raw_data)
     {
         $transaction_data = array(
-            'plugin'      => $this->id,
-            'merchant_id' => $this->merchant_id,
-            'date_time'   => date('Y-m-d H:i:s'),
-            'result'      => true
+            'plugin'          => $this->id,
+            'merchant_id'     => $this->merchant_id,
+            'date_time'       => date('Y-m-d H:i:s'),
+            'update_datetime' => date('Y-m-d H:i:s'),
+            'result'          => true
         );
         return $transaction_data;
     }
@@ -673,6 +675,37 @@ abstract class waPayment extends waSystemPlugin
     public static function execTransactionCallback($request, $module_id)
     {
         return self::callback($module_id, $request);
+    }
+
+
+    /**
+     * @return array Array of available currencies in format for options at waHtmlControl
+     */
+    public static function settingCurrencySelect()
+    {
+        $options = array();
+        $options[''] = '-';
+        $app_config = wa()->getConfig();
+        if (method_exists($app_config, 'getCurrencies')) {
+            $currencies = $app_config->getCurrencies();
+            foreach ($currencies as $code => $currency) {
+                $options[$code] = array(
+                    'value'       => $code,
+                    'title'       => $currency['title'].' ('.$code.')',
+                    'description' => $currency['code'],
+                );
+            }
+        } else {
+            $currencies = waCurrency::getAll();
+            foreach ($currencies as $code => $currency_name) {
+                $options[$code] = array(
+                    'value'       => $code,
+                    'title'       => $currency_name.' ('.$code.')',
+                    'description' => $code,
+                );
+            }
+        }
+        return $options;
     }
 
     /**

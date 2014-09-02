@@ -116,23 +116,25 @@ abstract class waContactField
      * @param string $locale - locale
      * @return string
      */
-    public function getName($locale = null)
+    public function getName($locale = null, $escape = false)
     {
         if (!$locale) {
             $locale = waSystem::getInstance()->getLocale();
         }
 
+        $name = '';
         if (isset($this->name[$locale])) {
-            return $this->name[$locale];
+            $name = $this->name[$locale];
         } else if (isset($this->name['en_US'])) {
             if ($locale == waSystem::getInstance()->getLocale() && wa()->getEnv() == 'backend') {
-                return _ws($this->name['en_US']);
+                $name = _ws($this->name['en_US']);
             } else {
-                return waLocale::translate('webasyst', $locale, $this->name['en_US']);
+                $name = waLocale::translate('webasyst', $locale, $this->name['en_US']);
             }
         } else {
-            return reset($this->name); // reset() returns the first value
+            $name = reset($this->name); // reset() returns the first value
         }
+        return $escape ? htmlspecialchars($name, ENT_QUOTES) : $name;
     }
 
     public function isMulti()
@@ -164,6 +166,9 @@ abstract class waContactField
     {
         if ($name) {
             return $this->options['storage'];
+        }
+        if (!$this->options['storage']) {
+            return null;
         }
         return waContactFields::getStorage($this->options['storage']);
     }
@@ -333,7 +338,7 @@ abstract class waContactField
                 }
             }
         } else if ($data !== null) {
-            return array(_w('Data must be an array.'));
+            return array(_ws('Data must be an array.'));
         }
 
         // array of duplicates $sort => contact_id
@@ -451,7 +456,7 @@ abstract class waContactField
                                 }
                             }
                         } else if ($data !== null) {
-                            return array(_w('Data must be an array.'));
+                            return array(_ws('Data must be an array.'));
                         }
 
                         if ($this->getParameter('required') && $allEmpty) {
@@ -464,7 +469,7 @@ abstract class waContactField
                         $value = $this->format($data, 'value');
                         if (!$validator->isValid($value)) {
                             $errors = implode("<br />", $validator->getErrors());
-                        } else if ($this->getParameter('required') && empty($value)) {
+                        } else if ($this->getParameter('required') && empty($value) && $value !== '0') {
                             $errors = _ws('This field is required');
                         }
                     }
@@ -627,6 +632,13 @@ abstract class waContactField
         $this->options[$p] = $value;
     }
 
+    public function getParameters()
+    {
+        $options = $this->options;
+        $options['localized_names'] = $this->name;
+        return $options;
+    }
+    
     /**
      * Set array of parameters
      * @param array $param parameter => value
@@ -688,11 +700,16 @@ abstract class waContactField
         if ($this->isMulti() && $ext) {
             $name_input .= '[value]';
         }
-
-        $result = '<input '.$attrs.' type="text" name="'.htmlspecialchars($name_input).'" value="'.htmlspecialchars($value).'">';
+        
+        $disabled = '';
+        if (wa()->getEnv() === 'frontend' && isset($params['my_profile']) && $params['my_profile'] == '1') {
+            $disabled = 'disabled="disabled"';
+        }
+        
+        $result = '<input '.$attrs.' '.$disabled.' type="text" name="'.htmlspecialchars($name_input).'" value="'.htmlspecialchars($value).'">';
         if ($ext) {
             // !!! add a proper <select>?
-            $result .= '<input type="hidden" name="'.htmlspecialchars($name.'[ext]').'" value="'.htmlspecialchars($ext).'">';
+            $result .= '<input type="hidden" '.$disabled.' name="'.htmlspecialchars($name.'[ext]').'" value="'.htmlspecialchars($ext).'">';
         }
 
         return $result;
@@ -769,6 +786,11 @@ abstract class waContactField
     public static function __set_state($state)
     {
          return new $state['_type']($state['id'], $state['name'], $state['options']);
+    }
+    
+    public function prepareSave($value)
+    {
+        return $value;
     }
 }
 

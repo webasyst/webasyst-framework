@@ -105,17 +105,8 @@ class waAuth implements waiAuth
 
     protected function checkBan($data)
     {
-        $contact_data_model = new waContactDataModel();
-        $rows = $contact_data_model->getByField(array(
-            'contact_id' => $data['id'],
-            'field' => array('is_banned', 'banned_reason')
-        ), true);
-        $result = array();
-        foreach ($rows as $row) {
-            $result[$row['field']] = $row['value'];
-        }
-        if (!empty($result['is_banned'])) {
-            throw new waException(isset($result['banned_reason']) ? $result['banned_reason'] : _ws('Access denied.'));
+        if ($data['is_user'] == -1) {
+            throw new waException(_ws('Access denied.'));
         }
     }
 

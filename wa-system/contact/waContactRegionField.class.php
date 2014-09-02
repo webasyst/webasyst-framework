@@ -143,7 +143,9 @@ class waContactRegionField extends waContactField
         } else {
             $xhr_url = ifset($params['xhr_url'], wa()->getRouteUrl('/frontend/regions'));
         }
-        $region_countries = json_encode($region_countries);
+        $crossDomain = ifset($params['xhr_cross_domain'], 0);
+        $dataType = isset($params['xhr_cross_domain']) ? 'jsonp' : 'json';
+        $region_countries = str_replace("{", "{ ", str_replace("}", " }", json_encode($region_countries)));
         $empty_option = '<'._ws('select region').'>';
         $js = <<<EOJS
 <script>if($){ $(function() {
@@ -213,26 +215,32 @@ class waContactRegionField extends waContactField
             // Selected country has regions. Load them into <select> via XHR.
             showInput('');
             input.before('<i class="icon16 loading"></i>');
-            $.post(xhr_url, { country: country }, function(r) {
-                input.prev('.loading').remove();
-                if (r.data && r.data.options && r.data.oOrder) {
-                    select.children().remove();
-                    select.append($('<option value=""></option>').text("{$empty_option}"));
-                    var o, selected = false;
-                    for (i = 0; i < r.data.oOrder.length; i++) {
-                        o = $('<option></option>').attr('value', r.data.oOrder[i]).text(r.data.options[r.data.oOrder[i]]).attr('disabled', r.data.oOrder[i] === '');
-                        if (!selected && old_val === r.data.oOrder[i]) {
-                            o.attr('selected', true);
-                            selected = true;
+            $.ajax(xhr_url, {
+                type: 'post',
+                crossDomain: {$crossDomain},
+                data: { country: country },
+                dataType: '{$dataType}',
+                success: function(r) {
+                    input.prev('.loading').remove();
+                    if (r.data && r.data.options && r.data.oOrder) {
+                        select.children().remove();
+                        select.append($('<option value=""></option>').text("{$empty_option}"));
+                        var o, selected = false;
+                        for (i = 0; i < r.data.oOrder.length; i++) {
+                            o = $('<option></option>').attr('value', r.data.oOrder[i]).text(r.data.options[r.data.oOrder[i]]).attr('disabled', r.data.oOrder[i] === '');
+                            if (!selected && old_val === r.data.oOrder[i]) {
+                                o.attr('selected', true);
+                                selected = true;
+                            }
+                            select.append(o);
                         }
-                        select.append(o);
+                        select.data('country', country);
+                        showSelect();
+                    } else {
+                        showInput('');
                     }
-                    select.data('country', country);
-                    showSelect();
-                } else {
-                    showInput('');
                 }
-            }, 'json');
+            });
         } else {
             // Selected country has no regions. Show <input>.
             if (!input.is(':visible')) {

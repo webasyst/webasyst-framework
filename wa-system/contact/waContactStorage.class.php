@@ -90,6 +90,12 @@ abstract class waContactStorage
         return $result;
     }
     
+    /**
+     * Get related with storage model
+     * @return waModel
+     */
+    abstract public function getModel();
+
     abstract protected function save(waContact $contact, $fields);
     
     /**

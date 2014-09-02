@@ -66,7 +66,7 @@ class waSystemConfig
         }
 
         $url = $this->getRequestUrl();
-        if ($url === 'robots.txt' || $url === 'favicon.ico') {
+        if ($url === 'robots.txt' || $url === 'favicon.ico' || $url == 'apple-touch-icon.png') {
             $this->responseStatic($url);
         }
     }
@@ -237,14 +237,14 @@ class waSystemConfig
         }
     }
 
-    public function getBackendUrl($with_rool_url = false)
+    public function getBackendUrl($with_root_url = false)
     {
         if (!$this->getSystemOption('mod_rewrite')) {
             $backend_url = 'index.php/'.$this->getSystemOption('backend_url');
         } else {
             $backend_url = $this->getSystemOption('backend_url');
         }
-        if ($with_rool_url) {
+        if ($with_root_url) {
             return $this->getRootUrl().$backend_url."/";
         } else {
             return $backend_url;
@@ -260,6 +260,7 @@ class waSystemConfig
             'wa_path_system'    => $root_path.DIRECTORY_SEPARATOR.'wa-system',
             'wa_path_log'        => $root_path.DIRECTORY_SEPARATOR.'wa-log',
             'wa_path_data'        => $root_path.DIRECTORY_SEPARATOR.'wa-data',
+            'wa_path_content'        => $root_path.DIRECTORY_SEPARATOR.'wa-content',
             'wa_path_config'    => $root_path.DIRECTORY_SEPARATOR.'wa-config',
             'wa_path_cache'        => $root_path.DIRECTORY_SEPARATOR.'wa-cache',
             'wa_path_plugins'    => $root_path.DIRECTORY_SEPARATOR.'wa-plugins',

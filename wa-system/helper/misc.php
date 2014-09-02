@@ -240,3 +240,34 @@ function wa_make_pattern($string, $separator = '/')
     $cleanup_pattern = '@('.implode('|',$metacharacters).')@';
     return preg_replace($cleanup_pattern,'\\\\$1',$string);
 }
+
+/**
+ * Calculate diff of multidimensional and hierarchical arrays
+ * @param array $value1
+ * @param array $value2
+ * @param mixed $diff Result of diff
+ * @return boolean If or not differ
+ */
+function wa_array_diff_r($value1, $value2, &$diff) {
+    if (is_array($value1) && is_array($value2)) {
+        $kyes = array_unique(array_merge(array_keys($value1), array_keys($value2)));
+        $result = false;
+        foreach ($kyes as $k) {
+            $v1 = ifset($value1[$k]);
+            $v2 = ifset($value2[$k]);
+            $r = wa_array_diff_r($v1, $v2, $diff[$k]);
+            if (!$r) {
+                unset($diff[$k]);
+            }
+            $result = $result || $r;
+        }
+        return $result;
+    } elseif ($value1 !== $value2) {
+        $diff = $value1;
+        return true;
+    } else {
+        return false;
+    }
+}
+
+

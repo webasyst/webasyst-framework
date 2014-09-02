@@ -54,6 +54,9 @@ class webasystLoginAction extends waLoginAction
         if (!$redirect || substr($redirect, 0, strlen($backend_url) + 1) == $backend_url.'?') {
             $redirect = $backend_url;
         }
+        
+        wa()->getUser()->setSettings('webasyst', 'backend_url', $this->getConfig()->getHostUrl() . $backend_url);
+        
         $this->redirect(array('url' => $redirect));
     }
 

@@ -25,28 +25,47 @@ class waContactNameField extends waContactStringField
             ));
         }
     }
-
+    
     public function get(waContact $contact, $format = null)
-    {
+    {        
         if ($contact['is_company']) {
             $name = $contact['company'];
         } else {
+            $fst = trim($contact['firstname']);
+            $mdl = trim($contact['middlename']);
+            $lst = trim($contact['lastname']);
+            $cmp = trim($contact['company']);
+            $eml = trim($contact->get('email', 'default'));
+            
             $name = array();
-            foreach(array('firstname', 'middlename', 'lastname') as $part) {
-                if ( ($part = trim($contact[$part])) || $part === '0') {
-                    $name[] = $part;
+            if ($fst || $fst === '0' || $mdl || $mdl === '0' || $lst || $lst === '0') 
+            {
+                $name[] = $lst;
+                $name[] = $fst;
+                $name[] = $mdl;
+            } 
+            else if ($cmp || $cmp === '0')
+            {
+                $name[] = $cmp;
+            }
+            else if ($eml)
+            {
+                $pos = strpos($eml, '@');
+                if ($pos == false) {
+                    $name[] = $eml;
+                } else {
+                    $name[] = substr($eml, 0, $pos);
                 }
             }
-
+            foreach ($name as $i => $n) {
+                if (!$n && $n !== '0') { 
+                    unset($name[$i]);
+                }
+            }
             $name = trim(implode(' ', $name));
         }
-        if (!$name) {
-            $email = $contact->get('email', 'default');
-            if (is_array($email)) {
-                $email = array_shift($email);
-            }
-            $name = strtok($email, '@');
-            $this->set($contact, $name);
+        if (!$name && $name !== '0') {
+            $name = $contact->getId() ? $contact->getId() : '';
         }
 
         return $this->format($name, $format);
@@ -76,17 +95,21 @@ class waContactNameField extends waContactStringField
         return $value;
     }
 
-    public static function formatName(&$info)
+    public static function formatName($contact)
     {
-        $name = array();
-        foreach(array('firstname', 'middlename', 'lastname') as $part) {
-            if (!isset($info[$part])) {
-                continue;
+        if ($contact['is_company']) {
+            return $contact['name'];
+        } else {
+            $name = array();
+            foreach(array('firstname', 'middlename', 'lastname') as $part) {
+                if (!isset($contact[$part])) {
+                    continue;
+                }
+                if ( ( $part = trim($contact[$part]))) {
+                    $name[] = $part;
+                }
             }
-            if ( ( $part = trim($info[$part]))) {
-                $name[] = $part;
-            }
+            return implode(' ', $name);
         }
-        return implode(' ', $name);
     }
 }

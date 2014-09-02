@@ -2,7 +2,7 @@
 
 /**
  *
- * @author WebAsyst Team
+ * @author Webasyst
  *
  */
 class waHtmlControl

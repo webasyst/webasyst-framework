@@ -5,11 +5,13 @@ class waContactsCollection
     protected $hash;
 
     protected $fields = array();
-    protected $order_by = 'c.id';
+    protected $order_by = '';
     protected $group_by;
     protected $where;
     protected $where_fields = array();
     protected $joins;
+    protected $join_index = array();
+    protected $info = array();
 
     protected $title = '';
     protected $count;
@@ -27,6 +29,8 @@ class waContactsCollection
     protected $alias_index = array();
 
     protected $models;
+    
+    protected $left_joins = array();
 
     /**
      * Constructor for collection of contacts
@@ -65,13 +69,30 @@ class waContactsCollection
             $hash = substr($hash, 1);
         }
         $this->hash = trim($hash, '/');
+        
         if (substr($this->hash, 0 ,9) == 'contacts/') {
             $this->hash = substr($this->hash, 9);
         }
         if ($this->hash == 'all') {
             $this->hash = '';
         }
-        $this->hash = explode('/', $this->hash);
+        $this->hash = explode('/', $this->hash, 2);
+        
+        if (isset($this->hash[1])) {
+            $escapedS = 'ESCAPED_BACKSLASH';
+            while(FALSE !== strpos($this->hash[1], $escapedS)) {
+                $escapedS .= rand(0, 9);
+            }
+            $this->hash[1] = str_replace('\/', $escapedS, $this->hash[1]);
+        }
+        
+        if ($this->hash[0] !== 'search' && isset($this->hash[1]) && strpos($this->hash[1], '/')) {
+            $this->hash[1] = substr($this->hash[1], 0, strpos($this->hash[1], '/'));
+        }
+        
+        if (isset($this->hash[1])) {
+            $this->hash[1] = str_replace($escapedS, '/', $this->hash[1]);
+        }
     }
 
     /**
@@ -84,6 +105,7 @@ class waContactsCollection
         if ($this->count === null) {
             $sql = $this->getSQL();
             $sql = "SELECT COUNT(".($this->joins ? 'DISTINCT ' : '')."c.id) ".$sql;
+            //header("X-SQL-COUNT:". $sql);
             $this->count = (int)$this->getModel()->query($sql)->fetchField();
 
             if ($this->update_count && $this->count != $this->update_count['count']) {
@@ -102,24 +124,44 @@ class waContactsCollection
         return $this->title;
     }
 
+    public function addField($field, $alias)
+    {
+        $this->fields[$alias] = $field;
+    }
+
     protected function getFields($fields)
     {
         $contact_model = $this->getModel();
-        if ($fields == '*') {
+        if (substr($fields, 0, 1) == '*') {
+            $extra_fileds = substr($fields, 2);
             $fields = $contact_model->getMetadata();
             unset($fields['password']);
+            
             $fields = array_keys($fields);
+            foreach ($fields as &$f) {
+                $f = 'c.'.$f;
+            }
+            unset($f);
+            
             $this->post_fields['_internal'] = array('_online_status');
             $this->post_fields['email'] = array('email');
             $this->post_fields['data'] = array();
-            $result = 'c.'.implode(",c.", $fields);
+            
+            if ($extra_fileds) {
+                $extra_fileds = $this->getFields($extra_fileds);
+                $fields = array_merge($fields, explode(",", $extra_fileds));
+                $fields = array_unique($fields);
+            }
+            
+            $result = implode(",", $fields);
             foreach($this->fields as $alias => $expr) {
                 $result .= ",".$expr.' AS '.$alias;
             }
+            
             return $result;
         }
 
-        $required_fields = array('id' => 'c'); // field => table, to be added later in any case
+        $required_fields = array('id' => 'c', 'is_company' => 'c'); // field => table, to be added later in any case
 
         if (!is_array($fields)) {
             $fields = explode(",", $fields);
@@ -159,7 +201,6 @@ class waContactsCollection
         foreach($this->fields as $alias => $expr) {
             $fields[] = $expr.' AS '.$alias;
         }
-
         return implode(",", $fields);
     }
 
@@ -173,16 +214,17 @@ class waContactsCollection
      */
     public function getContacts($fields = "id", $offset = 0, $limit = 50)
     {
-        $sql = "SELECT ".($this->joins ? 'DISTINCT ' : '').$this->getFields($fields)." ".$this->getSQL();
+        $sql = "SELECT ".$this->getFields($fields)." ".$this->getSQL();
         $sql .= $this->getGroupBy();
         $sql .= $this->getOrderBy();
         $sql .= " LIMIT ".($offset ? $offset.',' : '').(int)$limit;
-        //header("X-SQL: ".str_replace("\n", " ", $sql));
+        //header("X-SQL-". mt_rand() . ": ". str_replace("\n", " ", $sql));
         $data = $this->getModel()->query($sql)->fetchAll('id');
         $ids = array_keys($data);
 
         //
         // Load fields from other storages
+
         //
         if ($ids && $this->post_fields) {
             // $fill[table][field] = null
@@ -195,7 +237,7 @@ class waContactsCollection
                  */
                 $fill[$field->getStorage(true)][$fid] = false;
             }
-
+            
             foreach ($this->post_fields as $table => $fields) {
                 if ($table == '_internal') {
                     foreach ($fields as $f) {
@@ -209,16 +251,30 @@ class waContactsCollection
                                 $size = substr($f, 10);
                             }
                             foreach ($data as $id => &$v) {
-                                $v[$f] = waContact::getPhotoUrl($id, $v['photo'], $size);
+                                $v[$f] = waContact::getPhotoUrl($id, $v['photo'], $size, $size, $v['is_company'] ? 'company' : 'person');
                             }
                             unset($v);
                         } else {
                             switch($f) {
                                 case '_online_status':
+                                    
+                                    $llm = new waLoginLogModel();
+                                    $contact_ids_map = $llm->select('DISTINCT contact_id')->where('datetime_out IS NULL')->fetchAll('contact_id');
+                                    $timeout = waUser::getOption('online_timeout');
                                     foreach($data as &$v) {
-                                        $v['_online_status'] = waUser::getStatusByInfo($v);
+                                        if (isset($v['last_datetime']) && $v['last_datetime'] && $v['last_datetime'] != '0000-00-00 00:00:00') {
+                                              if (time() - strtotime($v['last_datetime']) < $timeout) {
+                                                  if (isset($contact_ids_map[$v['id']])) {
+                                                      $v['_online_status'] = 'online';
+                                                  } else {
+                                                      $v['_online_status'] = 'offline';
+                                                  }
+                                              }
+                                          }
+                                          $v['_online_status'] = 'offline';
                                     }
                                     unset($v);
+                                    
                                     break;
                                 case '_access':
                                     $rm = new waContactRightsModel();
@@ -251,7 +307,6 @@ class waContactsCollection
 
                 $model = $this->getModel($table);
                 $post_data = $model->getData($ids, $data_fields);
-
                 foreach ($post_data as $contact_id => $contact_data) {
                     foreach ($contact_data as $field_id => $value) {
                         if (!($f = waContactFields::get($field_id))) {
@@ -298,21 +353,21 @@ class waContactsCollection
                 return;
             }
             $this->prepared = true;
-            if ($this->options['check_rights'] && !wa()->getUser()->getRights('contacts', 'category.all')) {
-                // Add user rights
-                $group_ids = waSystem::getInstance()->getUser()->getGroups();
-                $group_ids[] = 0;
-                $group_ids[] = -waSystem::getInstance()->getUser()->getId();
-                $this->joins[] = array(
-                    'table' => 'wa_contact_categories',
-                    'alias' => 'cc',
-                );
-                $this->joins[] = array(
-                    'table' => 'contacts_rights',
-                    'alias' => 'r',
-                    'on' => 'r.category_id = cc.category_id AND r.group_id IN ('.implode(",", $group_ids).')'
-                );
-            }
+//            if ($this->options['check_rights'] && !wa()->getUser()->getRights('contacts', 'category.all')) {
+//                // Add user rights
+//                $group_ids = waSystem::getInstance()->getUser()->getGroups();
+//                $group_ids[] = 0;
+//                $group_ids[] = -waSystem::getInstance()->getUser()->getId();
+//                $this->joins[] = array(
+//                    'table' => 'wa_contact_categories',
+//                    'alias' => 'cc',
+//                );
+//                $this->joins[] = array(
+//                    'table' => 'contacts_rights',
+//                    'alias' => 'r',
+//                    'on' => 'r.category_id = cc.category_id AND r.group_id IN ('.implode(",", $group_ids).')'
+//                );
+//            }
         }
     }
 
@@ -337,8 +392,8 @@ class waContactsCollection
         if ($auto_title || !isset($this->alias_index['data'])) {
             $this->alias_index['data'] = 0;
         }
-
-        $query = urldecode($query);
+        
+        //$query = urldecode($query);   // sometime this urldecode broke query, better make urldecode (if needed) outside the searchPrepare
 
         // `&` can be escaped in search request. Need to split by not escaped ones only.
         $escapedBS = 'ESCAPED_BACKSLASH';
@@ -358,10 +413,23 @@ class waContactsCollection
             if (! ( $part = trim($part))) {
                 continue;
             }
-            $part = str_replace(array($escapedBS, $escapedAmp), array('\\\\', '\\&'), $part);
+            $part = str_replace(array($escapedBS, $escapedAmp), array('\\', '&'), $part);
             $parts = preg_split("/(\\\$=|\^=|\*=|==|!=|>=|<=|=|>|<|@=)/uis", $part, 2, PREG_SPLIT_DELIM_CAPTURE);
+
             if ($parts) {
-                if ($parts[0] == 'email') {
+                if ($parts[0] === 'name' && $parts[1] === '*=') {
+                    $t_a = preg_split("/\s+/", $parts[2]);
+                    $cond = array();
+                    foreach ($t_a as $t) {
+                        $t = trim($t);
+                        if ($t) {
+                            $t = $model->escape($t, 'like');
+                            $cond[] = "c.name LIKE '%{$t}%'";
+                        }
+                    }
+                    $this->addWhere(implode(" AND ", $cond));
+                    $title[] = _ws('Name').$parts[1].$parts[2];
+                } else if ($parts[0] == 'email') {
                     if (!isset($this->joins['email'])) {
                         $this->joins['email'] = array(
                             'table' => 'wa_contact_emails',
@@ -370,7 +438,7 @@ class waContactsCollection
                     }
                     $title[] = waContactFields::get($parts[0])->getName().$parts[1].$parts[2];
                     $this->where[] = 'e.email'.$this->getExpression($parts[1], $parts[2]);
-                } elseif ($model->fieldExists($parts[0])) {
+                } else if ($model->fieldExists($parts[0])) {
                     if ($f = waContactFields::get($parts[0])) {
                         $title[] = $f->getName().$parts[1].$parts[2];
                     } else {
@@ -386,25 +454,96 @@ class waContactsCollection
                     }
                     $title[] = _ws('Category').$parts[1].$parts[2];
                     $this->where[] = 'cc.category_id'.$this->getExpression($parts[1], $parts[2]);
+
                 } else {
-                    $alias = "d".($this->alias_index['data']++);
                     $field_parts = explode('.', $parts[0]);
                     $f = $field_parts[0];
                     if ($fo = waContactFields::get($f)) {
                         $title[] = $fo->getName().$parts[1].$parts[2];
                     }
                     $ext = isset($field_parts[1]) ? $field_parts[1] : null;
-                    $on = $alias.'.contact_id = c.id AND '.$alias.".field = '".$model->escape($f)."'";
-                    $on .= ' AND '.$alias.".value ".$this->getExpression($parts[1], $parts[2]);
-                    if ($ext !== null) {
-                        $on .= " AND ".$alias.".ext = '".$model->escape($ext)."'";
-                    }
-                    $this->joins[] = array(
-                        'table' => 'wa_contact_data',
-                        'alias' => $alias,
-                        'on' => $on
-                    );
+                    $on = ":table.contact_id = c.id AND :table.field = '".$model->escape($f)."'";
                     $this->where_fields[] = $f;
+
+                    $op = $parts[1];
+                    $term = $parts[2];
+                    
+                    if ($f === 'address:country') {
+                        
+                        $al1 = $this->addJoin('wa_contact_data', $on);
+                        $whr = "{$al1}.value ".$this->getExpression($op, $term);
+                        if ($ext !== null) {
+                            $whr .= " AND {$al1}.ext = '".$model->escape($ext)."'";
+                            $whr = "({$whr})";
+                        }
+                        
+                        // search by l18n name of countries
+                        if ($op === '*=') {
+                            if (wa()->getLocale() === 'en_US') {
+                                $al2 = $this->addLeftJoin('wa_country', ":table.iso3letter = {$al1}.value");
+                                $whr .= " OR {$al2}.name ".$this->getExpression($parts[1], $parts[2]);
+                            } else if (wa()->getLocale() !== 'en_US') {
+                                $iso3letters = array();
+                                $country_model = new waCountryModel();
+                                $countries = $country_model->all();
+                                $term = mb_strtolower($term);
+                                foreach ($countries as &$cntr) {
+                                    if (mb_strpos(mb_strtolower($cntr['name']), $term) === 0) {
+                                        $iso3letters[] = $cntr['iso3letter'];
+                                    }
+                                }
+                                unset($cntr);
+
+                                if ($iso3letters) {
+                                    $al2 = $this->addLeftJoin('wa_country', ":table.iso3letter = {$al1}.value");
+                                    $whr .= " OR {$al2}.iso3letter IN ('".implode("','", $iso3letters)."')";
+                                }
+                            }
+                        }
+                        
+                        $this->addWhere($whr);
+                        
+                    } else if ($f === 'address:region') {
+                        
+                        if (strpos($term, ":") !== false) {
+                            // country_code : region_code - search by country code AND region code AND only in wa_region
+                            $term = explode(":", $term);
+                            $country_iso3 = $model->escape($term[0]);
+                            $code = $model->escape($term[1]);
+                            $al1 = $this->addJoin('wa_contact_data', $on);
+                            $whr = array();
+                            if ($ext !== null) {
+                                $whr[] = "{$al1}.ext = '".$model->escape($ext)."'";
+                            }
+                            $al2 = $this->addJoin('wa_contact_data', ":table.contact_id = c.id AND :table.field = 'address:country'");
+                            $al3 = $this->addJoin('wa_region', ":table.code = {$al1}.value AND :table.country_iso3 = {$al2}.value");
+                            $whr[] = "{$al3}.country_iso3 = '{$country_iso3}'";
+                            $whr[] = "{$al3}.code = '{$code}'";
+                            $whr = implode(" AND ", $whr);
+                        } else {
+                            $al1 = $this->addJoin('wa_contact_data', $on);
+                            $whr = "{$al1}.value".$this->getExpression($op, $term);
+                            if ($ext !== null) {
+                                $whr .= " AND {$al1}.ext = '".$model->escape($ext)."'";
+                                $whr = "({$whr})";
+                            }
+                            if ($op === "*=") {
+                                // if search by like, search by wa_region.name but taking into account country
+                                $al2 = $this->addJoin('wa_contact_data', ":table.contact_id = c.id AND :table.field = 'address:country'");
+                                $al3 = $this->addLeftJoin('wa_region', ":table.code = {$al1}.value AND :table.country_iso3 = {$al2}.value");
+                                $whr .= " OR {$al3}.name ".$this->getExpression($op, $term);
+                            }
+                        }
+                        $this->addWhere($whr);
+                        
+                    } else {
+                        $on .= ' AND :table.value '.$this->getExpression($op, $term);
+                        if ($ext !== null) {
+                            $on .= " AND :table.ext = '".$model->escape($ext)."'";
+                        }
+                        $this->addJoin('wa_contact_data', $on);
+                    }
+                    
                 }
             }
         }
@@ -416,7 +555,7 @@ class waContactsCollection
             $bs = '\\\\';
             $title = preg_replace("~{$bs}(_|%|&|{$bs})~", '\1', $title);
         }
-        if ($auto_title) {
+        if ($auto_title && $title) {
             $this->addTitle($title, ' ');
         }
     }
@@ -424,7 +563,7 @@ class waContactsCollection
 
     public function addTitle($title, $delim = ', ')
     {
-        if (!$title) {
+        if (!$title && $title !== '0' && $title !== 0) {
             return;
         }
         if ($this->title) {
@@ -438,14 +577,16 @@ class waContactsCollection
         return $this->where_fields;
     }
 
-    protected function categoryPrepare($id)
+    protected function categoryPrepare($id, $auto_title = false)
     {
 
         $category_model = new waContactCategoryModel();
         $category = $category_model->getById($id);
 
         if ($category) {
-            $this->title = $category['name'];
+            if ($auto_title) {
+                $this->title = $category['name'];
+            }
             $this->update_count = array(
                 'model' => $category_model,
                 'id' => $id,
@@ -453,11 +594,7 @@ class waContactsCollection
             );
         }
 
-        $this->joins[] = array(
-            'table' => 'wa_contact_categories',
-            'alias' => 'ct',
-        );
-        $this->where[] = "ct.category_id = ".(int)$id;
+        $this->addJoin('wa_contact_categories', null, ':table.category_id = '.(int)$id);
     }
 
     protected function usersPrepare($params, $auto_title = true)
@@ -566,11 +703,11 @@ class waContactsCollection
             case '!=':
                 return " ".$op." '".$model->escape($value)."'";
             case "^=":
-                return " LIKE '".$model->escape($value)."%'";
+                return " LIKE '".$model->escape($value, 'like')."%'";
             case "$=":
-                return " LIKE '%".$model->escape($value)."'";
+                return " LIKE '%".$model->escape($value, 'like')."'";
             case "*=":
-                return " LIKE '%".$model->escape($value)."%'";
+                return " LIKE '%".$model->escape($value, 'like')."%'";
             case '@=':
                 $values = array();
                 foreach (explode(',', $value) as $v) {
@@ -597,7 +734,11 @@ class waContactsCollection
                 } else {
                     $on = "c.id = ".($alias ? $alias : $join['table']).".contact_id";
                 }
-                $sql .= (isset($join['type']) ? " ".$join['type'] : '')." JOIN ".$join['table']." ".$alias." ON ".$on;
+                $sql .= (isset($join['type']) ? " ".$join['type'] : '')." JOIN ".$join['table']." ".$alias;
+                if (isset($join['force_index'])) {
+                    $sql .= ' FORCE INDEX ('.$join['force_index'].')';
+                }
+                $sql .= " ON ".$on;
             }
         }
 
@@ -605,64 +746,34 @@ class waContactsCollection
             $sql .= " JOIN wa_contact_emails _e ON c.id = _e.contact_id";
         }
 
+        if ($this->left_joins) {
+            foreach ($this->left_joins as $join) {
+                $alias = isset($join['alias']) ? $join['alias'] : '';
+                if (isset($join['on'])) {
+                    $on = $join['on'];
+                } else {
+                    $on = "c.id = ".($alias ? $alias : $join['table']).".contact_id";
+                }
+                $sql .= (isset($join['type']) ? " ".$join['type'] : '')." LEFT JOIN ".$join['table']." ".$alias;
+                if (isset($join['force_index'])) {
+                    $sql .= ' FORCE INDEX ('.$join['force_index'].')';
+                }
+                $sql .= " ON ".$on;
+            }            
+        }
+        
         if ($this->where) {
             $where = $this->where;
             if ($with_primary_email) {
                 $where[] = "_e.sort = 0";
             }
+            if (!empty($where['_or'])) {
+                $where['_or'] = "(" . implode(" OR ", $where['_or']) . ")";
+            }
             $sql .= " WHERE ".implode(" AND ", $where);
         }
-
+        
         return $sql;
-    }
-    
-    public function getContactOffset($contact)
-    {
-        $this->prepare();
-        $order = explode(',', $this->order_by);
-        
-        if (count($order) == 3) {
-            $this->where['_offset'] = '('.$this->getContactOffsetCondition($contact, $order[0]).' OR ('.
-            $this->getContactOffsetCondition($contact, $order[0], true). ' AND '.$this->getContactOffsetCondition($contact, $order[1]).' ) OR ('.
-                $this->getContactOffsetCondition($contact, $order[0], true). ' AND '.
-                $this->getContactOffsetCondition($contact, $order[1], true). ' AND '.
-                $this->getContactOffsetCondition($contact, $order[2]). '))';
-        } else if (count($order) == 2) {
-            $this->where['_offset'] = '('.$this->getContactOffsetCondition($contact, $order[0]).' OR ('.
-            $this->getContactOffsetCondition($contact, $order[0], true). ' AND '.$this->getContactOffsetCondition($contact, $order[1]).' ))';
-        } else {
-            $this->where['_offset'] = $this->getContactOffsetCondition($contact, $order[0]);
-        }
-        
-        $sql = "SELECT COUNT(".($this->joins ? 'DISTINCT ' : '')."c.id) ".$this->getSQL();
-        // remove condition
-        unset($this->where['_offset']);
-        // return count
-        
-        return (int)$this->getModel()->query($sql)->fetchField();
-    }
-    
-    protected function getContactOffsetCondition($contact, $order, $eq = false)
-    {
-        $order = trim($order);
-        $order = explode(' ', $order);
-
-        if (!isset($order[1])) {
-            $order[1] = 'asc';
-        }
-        $order[1] = strtolower($order[1]);
-        if (strstr($order[0], '.') !== false) {
-            list($t, $f) = explode('.', $order[0]);
-        } else {
-            $f = $order[0];
-        }
-        $v = $contact[$f];
-        
-        $model = $this->getModel();
-        $v = $model->escape($v);
-        
-        // return condition
-        return $order[0].($eq ? ' = ' : ($order[1] == 'asc' ? ' < ': ' > '))."'$v'";
     }
 
     /**
@@ -728,13 +839,156 @@ class waContactsCollection
                 'type' => 'LEFT'
             );
             $this->group_by = 'c.id';
-            return $this->order_by = 'data_count '.$order;
+            $this->order_by = 'data_count '.$order;
         } else if ($field) {
-            $contact_model = $this->getModel();
-            if ($contact_model->fieldExists($field)) {
-                return $this->order_by = $field." ".$order;
-            }
+            $this->order_by = $field." ".$order;
         }
-        return '';
+        return $this->order_by;
+    }
+
+    public function addJoin($table, $on = null, $where = null, $options = array())
+    {
+        $type = '';
+        if (is_array($table)) {
+            if (isset($table['on'])) {
+                $on = $table['on'];
+            }
+            if (isset($table['where'])) {
+                $where = $table['where'];
+            }
+            if (isset($table['type'])) {
+                $type = $table['type'];
+            }
+            $table = $table['table'];
+        }
+
+        $alias = $this->getTableAlias($table);
+
+        if (!isset($this->join_index[$alias])) {
+            $this->join_index[$alias] = 1;
+        } else {
+            $this->join_index[$alias]++;
+        }
+        $alias .= $this->join_index[$alias];
+
+        $join = array(
+            'table' => $table,
+            'alias' => $alias,
+            'type' => $type
+        );
+        if (!empty($options['force_index'])) {
+            $join['force_index'] = $options['force_index'];
+        }
+        if ($on) {
+            $join['on'] = str_replace(':table', $alias, $on);
+        }
+        $this->joins[] = $join;
+        if ($where) {
+            $this->addWhere(str_replace(':table', $alias, $where));
+        }
+        return $alias;
+    }
+    
+    public function addLeftJoin($table, $on = null, $where = null, $options = array())
+    {
+        $type = '';
+        if (is_array($table)) {
+            if (isset($table['on'])) {
+                $on = $table['on'];
+            }
+            if (isset($table['where'])) {
+                $where = $table['where'];
+            }
+            if (isset($table['type'])) {
+                $type = $table['type'];
+            }
+            $table = $table['table'];
+        }
+
+        $alias = $this->getTableAlias($table);
+
+        if (!isset($this->join_index[$alias])) {
+            $this->join_index[$alias] = 1;
+        } else {
+            $this->join_index[$alias]++;
+        }
+        $alias .= $this->join_index[$alias];
+
+        $join = array(
+            'table' => $table,
+            'alias' => $alias,
+            'type' => $type
+        );
+        if (!empty($options['force_index'])) {
+            $join['force_index'] = $options['force_index'];
+        }
+        if ($on) {
+            $join['on'] = str_replace(':table', $alias, $on);
+        }
+        $this->left_joins[] = $join;
+        if ($where) {
+            $this->addWhere(str_replace(':table', $alias, $where));
+        }
+        return $alias;
+    }
+
+    public function setGroupBy($group_by)
+    {
+        $this->group_by = $group_by;
+    }
+
+    public function addWhere($condition, $or = false)
+    {
+        $p = strpos(strtolower($condition), ' or ');
+        if ($or) {
+            if (!isset($this->where['_or'])) {
+                $this->where['_or'] = array();
+            }
+            $where = &$this->where['_or'];
+        } else {
+            $where = &$this->where;
+        }
+        if ($p !== false) {
+            $where[] = "({$condition})";
+        } else {
+            $where[] = $condition;
+        }
+        return $this;
+    }
+
+    public function getJoinedAlias($table)
+    {
+        $alias = $this->getTableAlias($table);
+        return $alias.$this->join_index[$alias];
+    }
+
+    protected function getTableAlias($table)
+    {
+        $t = explode('_', $table);
+        $alias = '';
+        foreach ($t as $tp) {
+            if ($tp == 'hub') {
+                continue;
+            }
+            $alias .= substr($tp, 0, 1);
+        }
+        if (!$alias) {
+            $alias = $table;
+        }
+        return $alias;
+    }
+
+    public function getHash($params_only = false)
+    {
+        if ($params_only) {
+            return $this->hash[1];
+        } else {
+            return $this->hash;
+        }
+    }
+    
+    public function getInfo()
+    {
+        return $this->info;
     }
 }

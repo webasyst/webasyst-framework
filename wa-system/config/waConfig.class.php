@@ -17,12 +17,12 @@ class waConfig
   protected static $config = array();
 
   /**
-   * Returns value of config parameter by name.
+   * Returns value of configuration parameter by name.
    *
-   * @param string $name    A config parameter name
-   * @param mixed  $default A default value
+   * @param string $name Parameter name
+   * @param mixed  $default Default value
    *
-   * @return mixed value, if the config parameter exists, otherwise null
+   * @return mixed|null
    */
   public static function get($name, $default = null)
   {
@@ -30,11 +30,10 @@ class waConfig
   }
 
   /**
-   * Indicates whether or not a config parameter exists.
+   * Indicates whether a configuration parameter exists.
    *
-   * @param string $name A config parameter name
-   *
-   * @return bool true, if the config parameter exists, otherwise false
+   * @param string $name Parameter name
+   * @return bool
    */
   public static function has($name)
   {
@@ -42,12 +41,12 @@ class waConfig
   }
 
   /**
-   * Sets a config parameter.
+   * Sets a value to a configuration parameter.
    *
-   * If a config parameter with the name already exists the value will be overridden.
+   * Non-existent parameter will be created.
    *
-   * @param string $name  A config parameter name
-   * @param mixed  $value A config parameter value
+   * @param string $name  Parameter name
+   * @param mixed  $value Parameter value
    */
   public static function set($name, $value)
   {
@@ -55,12 +54,12 @@ class waConfig
   }
 
   /**
-   * Sets an array of config parameters.
+   * Sets an array of configuration parameters.
    *
-   * If an existing config parameter name matches any of the keys in the supplied
+   * If the name of an existing parameter matches any of the keys of the supplied
    * array, the associated value will be overridden.
    *
-   * @param array $parameters An associative array of config parameters and their associated values
+   * @param array $parameters Associative array of configuration parameters and their associated values
    */
   public static function add($parameters = array())
   {
@@ -68,9 +67,9 @@ class waConfig
   }
 
   /**
-   * Retrieves all configuration parameters.
+   * Returns all configuration parameters.
    *
-   * @return array An associative array of configuration parameters.
+   * @return array Associative array of configuration parameters.
    */
   public static function getAll()
   {
@@ -78,7 +77,7 @@ class waConfig
   }
 
   /**
-   * Clears all current config parameters.
+   * Clears all current configuration parameters.
    */
   public static function clear()
   {

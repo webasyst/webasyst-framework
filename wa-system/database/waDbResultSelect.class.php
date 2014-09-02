@@ -22,7 +22,7 @@ class waDbResultSelect extends waDbResult implements IteratorAggregate
      * @var waDbResultIterator
      */
     protected $iterator;
-    
+
     /**
      * Preload
      */
@@ -30,7 +30,7 @@ class waDbResultSelect extends waDbResult implements IteratorAggregate
     {
         $this->iterator = $this->adapter->getIterator($this->result);
     }
-    
+
     /**
      * Get Itterator
      *
@@ -41,19 +41,19 @@ class waDbResultSelect extends waDbResult implements IteratorAggregate
         $this->iterator->rewind();
         return $this->iterator;
     }
-    
+
     /**
-     * Returns array 
-     * 
+     * Returns the contents of the first found record as a combination of a zero-indexed and associative array.
+     *
      * @return array
      */
     public function fetch()
     {
         return $this->iterator->fetch();
     }
-    
+
     /**
-     * Returns array with types of keys
+     * Returns the contents of the first found record as a zero-indexed array.
      *
      * @return array
      */
@@ -61,9 +61,9 @@ class waDbResultSelect extends waDbResult implements IteratorAggregate
     {
         return $this->iterator->fetchArray();
     }
-    
+
     /**
-     * Returns assoc array
+     * Returns the contents of the first found record as an associative array.
      *
      * @return array
      */
@@ -71,7 +71,7 @@ class waDbResultSelect extends waDbResult implements IteratorAggregate
     {
         return $this->iterator->fetchAssoc();
     }
-    
+
     /**
      * Returns numeric array
      *
@@ -83,10 +83,12 @@ class waDbResultSelect extends waDbResult implements IteratorAggregate
     }
 
     /**
-     * Returns value of the column (field)
-     * @param bool|string $field
-     * @param bool|int $seek
-     * @return bool|mixed
+     * Returns the value of the specified field in the first found record.
+     *
+     * @param bool|string $field Optional database field name whose value must be returned. If not specified, the value
+     *     of the first database field is returned.
+     * @param bool|int $seek Flag requiring to return the value of the next found database record next time this method is called.
+     * @return bool|mixed Field value, or false if no data are found
      */
     public function fetchField($field = false, $seek = false)
     {
@@ -94,7 +96,7 @@ class waDbResultSelect extends waDbResult implements IteratorAggregate
         if ($seek !== false) {
             $this->iterator->seek($seek);
         }
-        
+
         $data   = $this->iterator->fetch();
         if (!$data) {
             return false;
@@ -105,21 +107,31 @@ class waDbResultSelect extends waDbResult implements IteratorAggregate
         }
         return (isset($data[$field])) ? $data[$field] : false;
     }
-    
+
     /**
-     * Returns all values
+     * Returns the contents of all found database records as an array of sub-arrays corresponding to individual records.
      *
-     * @param string $key - use one of the values as array index
-     * @param int|bool $normalize
+     * @param string $key Name of table field, by whose value table records will be grouped. The keys of the returned
+     *     array will be the values of the specified field.
+     * @param int|bool $normalize Value grouping mode applied when a non-empty value is specified for $key parameter;
+     *     acceptable values for this parameter are these:
+     *     - 0 or true: if the table contains more than one record with equal values of the specified field, then only
+     *       the first of such records are included in the returned array
+     *     - 1 or true: similar to previous mode; additionally, items with keys matching the specified field name are
+     *       removed from each subarray
+     *     - 2: if the table contains more than one record with equal values of the specified field, then all such
+     *       records are included in the returned array so that records with equal values of the specified field are
+     *       grouped as items of subarrays whose keys match the values of the specified field; additionally, items with
+     *       keys matching the specified field name are removed from each subarray (as described for mode 1/true)
      * @return array
      */
     public function fetchAll($key = null, $normalize = false)
     {
         return $this->getIterator()->export($key, $normalize);
     }
-    
+
     /**
-     * Returns numbers of the records
+     * Returns the number of found database records.
      *
      * @return int
      */
@@ -127,10 +139,10 @@ class waDbResultSelect extends waDbResult implements IteratorAggregate
     {
         return $this->iterator->count();
     }
-    
+
     /**
      * Free the resource
-     * 
+     *
      * @return boolean
      */
     public function free()
@@ -140,9 +152,9 @@ class waDbResultSelect extends waDbResult implements IteratorAggregate
         }
         return true;
     }
-    
+
     /**
-     * Rewind itterator
+     * Rewind iterator
      *
      * @return waDbResultSelect
      */
@@ -172,6 +184,6 @@ class waDbResultSelect extends waDbResult implements IteratorAggregate
     {
         return true;
     }
-    
-    
+
+
 }

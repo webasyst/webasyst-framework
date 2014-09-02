@@ -235,7 +235,7 @@ class waPlugin
         if (file_exists($file)) {
             return include($file);
         } else {
-            return array();
+            return;
         }
     }
 }

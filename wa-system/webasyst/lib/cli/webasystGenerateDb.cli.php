@@ -66,7 +66,11 @@ class webasystGenerateDbCli extends waCliController
 
         foreach ($tables as $t) {
             echo $t."\n";
-            $schema[$t] = $this->model->describe($t, 1);
+            try {
+                $schema[$t] = $this->model->describe($t, 1);
+            } catch (waDbException $ex) {
+                print "\tError: ".$ex->getMessage()."\n";
+            }
         }
 
         if ($schema) {
