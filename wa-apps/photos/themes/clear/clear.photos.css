@@ -176,3 +176,50 @@ ul.view-mixed.album-float-left-view li.brick { display: block; margin-right: 10p
 .icon10.star-half { background-position:-10px -16px; }
 .icon10.star-empty { background-position:-20px -16px; }
 .icon16.loading { background-image: url("/wa-content/img/loading16.gif"); background-position:0 0; }
+
+
+/* TABLET
+========= */
+
+@media screen and (min-width: 760px) and (max-width: 1024px) {
+    
+}
+
+/* MOBILE
+========= */
+
+@media screen and (max-width: 760px) {
+
+    .container.paper { overflow-x: hidden; }
+    #gallery-nav { margin-top: 0; }
+    
+    .image img { height: auto !important; }
+    ul.view-thumbs li { width: auto; }
+    ul.view-thumbs li img.shadowed { box-shadow: none; }
+    ul.view-thumbs li h5 { display: none; }
+    ul.view-mixed { margin-left: -15px; }
+    
+    .sidebar { margin-bottom: 20px; }
+    .sidebar.left { width: 100%; float: none; }
+    .sidebar.right, .sidebar.right.double { width: 100%; float: none; }
+    .content.left { margin-left: 0; }
+    .content.right, .content.right.double { margin-right: 0; }
+    .sidebar p { clear: both; }
+    
+    .stream-nav { display: none; }
+    
+    .comment-form-fields label { width: auto; float: none; }
+    .comment-form-fields input { width: 80%; }
+    .comment-form textarea { width: 90%; }
+    .comment-form .comment-submit { padding-left: 0; }
+    .comment-form .wa-captcha img { margin-bottom: 10px; }
+
+}
+
+/* WIDE
+========= */
+
+@media screen and (min-width: 1300px) {
+
+
+}
