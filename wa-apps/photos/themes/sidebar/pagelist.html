@@ -1,6 +1,0 @@
-<!-- static info page tree -->
-{$photos_pages=$wa->photos->pages()}
-{if $photos_pages}
-    {wa_print_tree tree=$photos_pages class="menu-v" attrs = 'id="page-list"' elem ='
-    <a href=":url" title=":title">:name</a>' collapsible_class='collapsible' selected=$wa->param('page_id') unfolded=true}
-{/if}

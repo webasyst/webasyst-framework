@@ -1,0 +1,51 @@
+<!-- plugin hook -->
+{* @event frontend_layout.%plugin_id%.header *}
+{foreach $frontend_layout as $item}{if !empty($item.header)}{$item.header}{/if}{/foreach}
+
+{if !$wa->globals('isMyAccount')}
+    <!-- navigation menu -->
+    <nav class="app-navigation" role="navigation">
+    
+        <ul class="menu-h">
+    
+            <!-- core filters -->
+            <li {if $wa->currentUrl() == $wa_app_url} class="selected"{/if}>
+                <a href="{$wa_app_url}">[`Photostream`]</a>
+            </li>
+            <li {if $wa->param('action') neq 'page' && $wa->param('action') neq 'album' && $wa->param('hash') == 'favorites'} class="selected"{/if}>
+                <a href="{$wa_app_url}favorites/">[`Editors’ choice`]</a>
+            </li>
+            
+            <!-- plugins -->
+            {* @event frontend_sidebar.%plugin_id%.menu *}
+            {foreach $frontend_sidebar as $plugin_id => $item}{if !empty($item.menu)}
+                <li class="{$plugin_id}">{$item.menu}</li>
+            {/if}{/foreach}
+            
+            <!-- static page list -->
+            {$photos_pages = $wa->photos->pages()}
+            {foreach $photos_pages as $page}
+                <li{if strlen($page.url)>1 && $wa->currentUrl()|strstr:$page.url} class="selected"{/if}><a href="{$page.url}">{$page.name}</a></li>
+            {/foreach}
+    
+        </ul>
+        
+    </nav>
+{/if}
+
+<div class="container">
+    <main class="content" {if $action == 'photo'} itemscope itemtype="http://schema.org/Photograph"{/if}>
+    
+        <!-- integrnal navigation breadcrumbs -->
+        {if isset($breadcrumbs)}
+            <div class="breadcrumbs">
+                {foreach $breadcrumbs as $breadcrumb}
+                    <a href="{$breadcrumb.full_url}">{$breadcrumb.name|escape}</a> <span class="rarr">&rarr;</span>
+                {/foreach}
+            </div>
+        {/if}
+    
+        {$content}
+        
+    </main>
+</div>

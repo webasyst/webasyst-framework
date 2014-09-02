@@ -19,21 +19,23 @@
                 
                 {$wa->photos->getImgHtml($photo, '300x300', ['itemprop' => 'image'])}
                 
-                <h5 itemprop="name">{$photo.name}</h5>
-
-                {* @event prepare_photos_frontend.name.%plugin_id% *}
-                {foreach $photo.hooks.name as $plugin => $output}{$output}{/foreach}
-
-                {if $photo.rate > 0}
-                    <div class="rating nowrap">{$wa->photos->ratingHtml($photo.rate, 10)}</div>
-                {/if}                        
-
-                {if $photo.description}
-                    <p itemprop="description" class="small">{$photo.description}</p>
-                {/if}
-
-                {* @event prepare_photos_frontend.thumb.%plugin_id% *}
-                {foreach $photo.hooks.thumb as $plugin => $output}{$output}{/foreach}
+                <div class="stripe">
+                    {* <h5 itemprop="name">{$photo.name}</h5> *}
+    
+                    {* @event prepare_photos_frontend.name.%plugin_id% *}
+                    {foreach $photo.hooks.name as $plugin => $output}{$output}{/foreach}
+    
+                    {if $photo.rate > 0}
+                        <div class="rating nowrap">{$wa->photos->ratingHtml($photo.rate, 16)}</div>
+                    {/if}                        
+    
+                    {if $photo.description}
+                        <p itemprop="description" class="small">{$photo.description}</p>
+                    {/if}
+    
+                    {* @event prepare_photos_frontend.thumb.%plugin_id% *}
+                    {foreach $photo.hooks.thumb as $plugin => $output}{$output}{/foreach}
+                </div>
                 
             </a>
         </div>

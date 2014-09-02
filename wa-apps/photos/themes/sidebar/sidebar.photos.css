@@ -1,12 +1,12 @@
 /*
- * Webasyst Sidebar theme family
+ * Webasyst Sidebar 2.0 theme family
  *
  * Photos app CSS
- * (requires linking base sidebar.css file from the Site app)
+ * (extends base sidebar.css file from the Site app)
  *
  * @link http://www.webasyst.com/
  * @author Webasyst LLC
- * @copyright 2013 Webasyst LLC
+ * @copyright 2014 Webasyst LLC
  * @package Webasyst
  */
 
@@ -27,8 +27,6 @@ h1.search-criteria { margin-bottom: 1em; }
 .sub-albums { margin-bottom: 25px; margin-top: 10px; line-height: 1.3em; }
 .sub-albums a { padding: 0 1em 0 0; }
 
-/* photostream */
-
 ul.photostream { padding: 0; margin: 0; list-style: none; position: relative;}
 ul.photostream li { float: left; padding-right: 7px;  }
 ul.photostream li img { width: 48px; height: 48px; }
@@ -36,9 +34,9 @@ ul.photostream li.selected img { border: 4px solid #FDDA3B; margin: -4px -4px -2
 ul.photostream li.stream-nav { position: absolute; top: 18px; }
 ul.photostream li.stream-nav i { display: block; width: 12px; height: 14px; }
 ul.photostream li.stream-nav.rewind { left: -16px; padding: 0; }
-ul.photostream li.stream-nav.rewind i { background: url('img/photostream-rewind.png') no-repeat; }
+ul.photostream li.stream-nav.rewind i { background: url('img/photostream-rewind.png') no-repeat; background-size: 12px 14px;}
 ul.photostream li.stream-nav.ff { right: -16px; padding: 0; }
-ul.photostream li.stream-nav.ff i { background: url('img/photostream-ff.png') no-repeat;}
+ul.photostream li.stream-nav.ff i { background: url('img/photostream-ff.png') no-repeat; background-size: 12px 14px; }
 
 .photostream-divider { margin-top: 90px; border-top: 1px solid #ccc; margin-bottom: 20px; }
 
@@ -47,9 +45,10 @@ ul.photostream li.stream-nav.ff i { background: url('img/photostream-ff.png') no
 .photo { margin-bottom: 0; width: 100%; margin-bottom: 1.5em; }
 .photo img { max-width: 100%; height: auto !important; }
 
-.stack-nav { font-size: 120%; margin-bottom: 10px; }
-.stack-nav .rewind { position: relative; left: -2px; top: 5px; }
-.stack-nav .ff { position: relative; left: 2px; top: 5px; }
+.stack .stack-nav { font-size: 120%; padding: 4px 8px 4px; display: inline-block; position: relative; background: #000; display: block\9; background: transparent\9; }
+.stack .stack-nav img { width: 22px; height: 20px; }
+.stack .stack-nav .rewind { position: absolute; left: -30px; top: 3px; }
+.stack .stack-nav .ff { position: absolute; right: -30px; left: auto; top: 3px; }
 
 .image { position: relative; display: block; max-width: 100%; display: block\9; /* IE8- hack */ }
 .image img { max-width: 100%; height: auto !important; }
@@ -59,13 +58,11 @@ ul.photostream li.stream-nav.ff i { background: url('img/photostream-ff.png') no
 .image .corner.right { right:10px; }
 .image .corner.bottom { bottom:5px; }
 .image .corner .indicator { color: #fff; background: rgba(0,0,0,0.5); border-radius: 10px; padding: 3px 6px; }
-.image .stripe { position:absolute; z-index:9; bottom: 5px; left: 0; right: 0; background: rgba(0,0,0,0.3); color: #fff; padding: 10px; }
+.image .stripe { position:absolute; z-index:9; bottom: 5px; left: 0; right: 0; background: rgba(0,0,0,0.3); color: #fff; padding: 0; text-align: center; }
 .image .stripe h5 { margin-bottom: 0; text-shadow: 0 2px 2px #000; }
 .image .stripe p { margin: 0.3em 0 0; }
-.image .stack { position: absolute; top: 5px; left: 0; right: 0; color: #fff; padding: 10px; }
-.image .stack .stack-nav { font-size: 120%; padding: 4px 8px 2px; display: inline-block; position: relative; background: #000; /* IE8- hack */ display: block\9; background: transparent\9; }
-.image .stack .stack-nav .rewind { position: absolute; left: -30px; top: 3px; }
-.image .stack .stack-nav .ff { position: absolute; right: -30px; left: auto; top: 3px; }
+.image .stripe a { text-decoration: none; color: #eee; display: block; margin: 3px 0; }
+.image .stack { position: absolute; top: 5px; left: 0; right: 0; color: #fff; padding: 10px; text-align: center;  }
 
 #photo-name { margin-top: 30px; }
 
@@ -77,12 +74,10 @@ ul.photostream li.stream-nav.ff i { background: url('img/photostream-ff.png') no
 
 .view-plain { margin-top: 20px; }
 .view-plain h5 { margin-bottom: 3px; }
-.view-plain p { margin-bottom: 0; }
-.view-plain .image { margin: 5px 0 0; text-align: left\9; /* IE8- hack */ }
-.view-plain .stack { margin-top: 20px; }
+.view-plain p { margin-bottom: 10px; margin-top: 10px; max-width: 80%; }
+.view-plain .image { margin: 0; text-align: left\9; /* IE8- hack */ }
 
 ul.view-thumbs { padding: 0; margin: 0; list-style: none; }
-ul.view-thumbs li a { text-decoration: none; color: #000; }
 ul.view-thumbs li h5 { margin-bottom: 5px; }
 ul.view-thumbs li { display: inline-block; position: relative; vertical-align: top; width: 300px; margin-right: 20px; margin-bottom: 20px; }
 ul.view-thumbs li img.shadowed { -moz-box-shadow: 0 1px 3px #aaa; -webkit-box-shadow: 0 1px 3px #aaa; box-shadow: 0 1px 3px #aaa; margin-bottom: 5px; }
@@ -163,15 +158,52 @@ ul.view-mixed.album-float-left-view li.brick { display: block; margin-right: 10p
 .image .p-declined { color: white; background: red; padding: 15px; font-size: 1.2em; }
 .image .p-awaiting-moderation { color: white; background: gray; padding: 15px; font-size: 1.2em; }
 
-.icon10,
-.icon16 { background-image: url("img/stars.png"); }
-.icon16.star,
-.icon16.star-full { background-position:-16px 0; }
-.icon16.star-half { background-position:-32px 0; }
-.icon16.star-empty { background-position:-48px 0; }
-.icon16.star-hover { background-position:-64px 0; }
-.icon10.star,
-.icon10.star-full { background-position:0 -16px; }
-.icon10.star-half { background-position:-10px -16px; }
-.icon10.star-empty { background-position:-20px -16px; }
-.icon16.loading { background-image: url("/wa-content/img/loading16.gif"); background-position:0 0; }
+
+/* TABLET
+========= */
+
+@media screen and (min-width: 760px) and (max-width: 1024px) {
+
+    ul.view-thumbs { margin-right: -25px; }
+    
+}
+
+
+/* MOBILE
+========= */
+
+@media screen and (max-width: 760px) {
+
+    .container.paper { overflow-x: hidden; }
+    #gallery-nav { margin-top: 0; }
+    
+    .image img { height: auto !important; }
+    ul.view-thumbs li { width: auto; }
+    ul.view-thumbs li img.shadowed { box-shadow: none; }
+    ul.view-thumbs li h5 { display: none; }
+    ul.view-mixed { margin-left: -15px; }
+    
+    .sidebar { margin-bottom: 20px; }
+    .sidebar.left { width: 100%; float: none; }
+    .sidebar.right, .sidebar.right.double { width: 100%; float: none; }
+    .content.left { margin-left: 0; }
+    .content.right, .content.right.double { margin-right: 0; }
+    .sidebar p { clear: both; }
+    
+    .stream-nav { display: none; }
+    
+    .comment-form-fields label { width: auto; float: none; }
+    .comment-form-fields input { width: 80%; }
+    .comment-form textarea { width: 90%; }
+    .comment-form .comment-submit { padding-left: 0; }
+    .comment-form .wa-captcha img { margin-bottom: 10px; }
+
+}
+
+
+/* WIDE
+========= */
+
+@media screen and (min-width: 1300px) {
+
+}

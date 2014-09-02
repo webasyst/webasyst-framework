@@ -1,0 +1,26 @@
+{if $albums = $wa->photos->albums(0)}
+    {if $wa->globals('selected_album')}{$selected_album = $wa->globals('selected_album')}{else}{$selected_album = 0}{/if}
+    <!-- albums -->
+    <div class="block">
+        {wa_print_tree tree=$albums selected=$selected_album unfolded=$theme_settings.sidebar_unfolded_nav collapsible_class='collapsible' class="menu-v album-tree" elem ='<a href=":url" title=":name">:name</a>'}
+    </div>
+{/if}
+
+{* @event frontend_sidebar.%plugin_id%.section *}
+{foreach $frontend_sidebar as $plugin_id => $output}
+  {if !empty($output.section)}
+	<div class="block {$plugin_id}">
+            {$output.section}
+    </div>
+  {/if}
+{/foreach}
+
+{if $cloud = $wa->photos->tags()}
+    <!-- tags -->
+    <div class="tags block align-center">
+        {foreach $cloud as $tag}
+            <a href="{$wa_app_url}tag/{$tag.uri_name}/" style="font-size: {$tag.size}%; opacity: {$tag.opacity}">{$tag.name|escape}</a>
+        {/foreach}
+    </div>
+{/if}
+
