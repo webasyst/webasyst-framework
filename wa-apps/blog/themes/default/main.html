@@ -1,129 +1,122 @@
-<nav class="page-nav right" role="navigation">
+<nav class="page-nav" role="navigation">
 
     {* @event (frontend_action_default|frontend_action_post|frontend_action_page|frontend_action_error).%plugin_id%.nav_before *}
     {foreach $frontend_action as $plugin => $output}
     	{if !empty($output.nav_before)}{$output.nav_before}{/if}
     {/foreach}
 
-    <!-- blog list -->
-    {$blogs = $wa->blog->blogs()}
-    {if count($blogs) > 1}
-        <div class="nav-hotties">
-            <ul class="menu-h">
-                <li class="{if is_array($wa->globals('blog_id')) && empty($is_search)}bold{/if}"><a href="{$wa->blog->url()}">[`All posts`]</a></li>
-                {foreach $blogs as $blog}
-                    <li class="{if $wa->globals('blog_id') eq $blog.id && empty($is_search)}{if $action == 'post'}bold{else}selected{/if}{/if}">
-                        <a href="{$blog.link}">{$blog.name}</a>
-                    </li>
-                {/foreach}
-            </ul>
-        </div>
-    {/if}
-    
     <div class="nav-sidebar">
     
-        <!-- search -->
-        <form method="get" action="{$wa_app_url}" class="search">
-            <input type="search" name="query" {if !empty($blog_query)}value="{$blog_query}"{/if} id="search" placeholder="[`Search posts`]">
-            <button type="submit">[s`Find`]</button>
-            <div class="clear-both"></div>
-        </form>
-			
-        <!-- subscribe -->
-		{$rss = $wa->blog->rssUrl()}
-		{if $rss}
-			<div class="subscribe">
-                <h4>{sprintf('[`Follow %s`]', $wa->accountName())}</h4>
-                <ul>
-        			<li><a href="{$rss}" title="[s`RSS`]"><i class="icon16 rss"></i>[s`RSS`]</a></li>
-    				{if !empty($theme_settings.facebook)}
-    				    <li><a href="{$theme_settings.facebook|escape}" title="[`Facebook`]"><i class="icon16 facebook"></i>[`Facebook`]</a></li>
-    				{/if}
-    				{if !empty($theme_settings.twitter)}
-        				<li><a href="https://twitter.com/{str_replace('@','',$theme_settings.twitter|escape)}" title="[`Twitter`]"><i class="icon16 twitter"></i>[`Twitter`]</a></li>
-        				<li>
-        				    <a href="https://twitter.com/{str_replace('@','',$theme_settings.twitter|escape)}" class="twitter-follow-button">Follow @{str_replace('@','',$theme_settings.twitter|escape)}</a>
-        				    <script src="//platform.twitter.com/widgets.js" type="text/javascript"></script>
-        				</li>
-    				{/if}
-    				{if !empty($theme_settings.vk)}
-    				    <li><a href="{$theme_settings.vk|escape}" title="[`VK`]"><i class="icon16 vk"></i>[`VK`]</a></li>
-    				{/if}
-    			</ul>
-    		</div>
-		{/if}
+        <div class="nav-sidebar-body">
 
-        <!-- info pages -->
-        {$blog_pages=$wa->blog->pages()}
-        {if $blog_pages}
-            {wa_print_tree tree=$blog_pages class="tree" attrs = 'id="page-list"' elem ='
-            <a href=":url" title=":title">:name</a>' selected=$wa->param('page_id')}
-        {/if}
+            {if $wa->currentUrl() != $wa_app_url}
+                <!-- back home nav -->
+                <ul class="menu-h single-link">
+                    <li class="waSlideMenu-back"><a href="{$wa->blog->url()}">[`All posts`]</a></li>
+                </ul>
+            {/if}            
 
-        <!-- timeline navigation -->
-        {$timeline = $wa->blog->timeline()}
-        {if !empty($timeline)}
+            <!-- subscribe -->
+    		{$rss = $wa->blog->rssUrl()}
+    		{if $rss}
+    			<div class="subscribe">
+                    <ul>
+            			<li><a href="{$rss}" title="[s`RSS`]"><i class="icon16 rss"></i>[s`RSS`]</a></li>
+        				{if !empty($theme_settings.facebook)}
+        				    <li><a href="{$theme_settings.facebook|escape}" title="[s`Facebook`]"><i class="icon16 facebook"></i><span>[s`Facebook`]</span></a></li>
+        				{/if}
+        				{if !empty($theme_settings.twitter)}
+            				<li><a href="https://twitter.com/{str_replace('@','',$theme_settings.twitter|escape)}" title="[s`Twitter`]"><i class="icon16 twitter"></i><span>[`Twitter`]</span></a></li>
+            				<li id="twitter-follow-code">
+            				    <a href="https://twitter.com/{str_replace('@','',$theme_settings.twitter|escape)}" class="twitter-follow-button">Follow @{str_replace('@','',$theme_settings.twitter|escape)}</a>
+            				    <script src="//platform.twitter.com/widgets.js" type="text/javascript"></script>
+            				</li>
+        				{/if}
+        				{if !empty($theme_settings.vk)}
+        				    <li><a href="{$theme_settings.vk|escape}" title="[s`VK`]"><i class="icon16 vk"></i><span>[s`VK`]</span></a></li>
+        				{/if}
+        				{if !empty($theme_settings.gplus)}
+        				    <li><a href="{$theme_settings.gplus|escape}" title="[s`Google+`]"><i class="icon16 gplus"></i><span>[s`Google+`]</span></a></li>
+        				{/if}
+        			</ul>
+        		</div>
+    		{/if}
 
-			<ul class="tree timeline">
-			{$year=null}
-			{foreach $timeline as $year_month => $item}
-				{if $year neq $item.year}
-					{if !$item@first}
-	                        </ul>
-                        </li>
-                    {/if}
-	                <li{if $item.year_selected} class="selected"{/if}>
-    	            {$year=$item.year}
-        	        <a href="{$item.year_link}">{$item.year|default:'NULL'}</a>
-					<ul class="tree">
-                {/if}
-                <li {if $item.selected}class="selected"{/if}>
-                    <a href="{$item.link}" title="{_w("%d post","%d posts",$item.count)}">{_ws(date("F",gmmktime(0,0,0,$item.month,1)))}</a>
-                </li>
-			    {if $item@last}
-			            </ul>
-		    	    </li>
-	            {/if}
-            {/foreach}
-	        </ul>
-
-    	{/if}
+            <!-- search -->
+            <form method="get" action="{$wa_app_url}" class="search">
+                <input type="search" name="query" {if !empty($blog_query)}value="{$blog_query}"{/if} placeholder="[`Search posts`]">
+                <button type="submit"></button>
+                <div class="clear-both"></div>
+            </form>
             
-    	<!-- plugins -->
-		{* @event (frontend_action_default|frontend_action_post|frontend_action_page|frontend_action_error).%plugin_id%.sidebar *}
-		{foreach $frontend_action as $plugin => $output}
-		  {if !empty($output.sidebar)}
-			<li class="collapsible">
-				<a href="#" onClick="return false">
-    				{if substr($plugin, -7) == '-plugin'}{$wa->pluginName(substr($plugin, 0, -7))}{else}[`More`]{/if}
-            	</a>
-            	<div class="inner">
-                    {$output.sidebar}
-				</div>
-			</li>
-          {/if}
-        {/foreach}
+            <!-- timeline navigation -->
+            {$timeline = $wa->blog->timeline()}
+            {if !empty($timeline)}
+            
+    			<ul class="tree timeline">
+    			{$year=null}
+    			{foreach $timeline as $year_month => $item}
+    				{if $year neq $item.year}
+    					{if !$item@first}
+    	                        </ul>
+                            </li>
+                        {/if}
+    	                <li{if $item.year_selected} class="selected"{/if}>
+        	            {$year=$item.year}
+            	        <a href="{$item.year_link}">{$item.year|default:'NULL'}</a>
+    					<ul class="tree">
+                    {/if}
+                    <li {if $item.selected}class="selected"{/if}>
+                        <a href="{$item.link}" title="{_w("%d post","%d posts",$item.count)}">{_ws(date("F",gmmktime(0,0,0,$item.month,1)))}</a>
+                    </li>
+    			    {if $item@last}
+    			            </ul>
+    		    	    </li>
+    	            {/if}
+                {/foreach}
+    	        </ul>
+    
+        	{/if}
+                
+        	<!-- plugins -->
+    		{* @event (frontend_action_default|frontend_action_post|frontend_action_page|frontend_action_error).%plugin_id%.sidebar *}
+    		{foreach $frontend_action as $plugin => $output}
+    		  {if !empty($output.sidebar)}
+    		      <hr>
+    		      <div class="{$plugin}">
+                      {$output.sidebar}
+                  </div>
+              {/if}
+            {/foreach}
+        
+        </div>
 
     </div>
 
 </nav>
 
-<div class="page-content">
+<div class="page-content" itemscope itemtype="http://schema.org/WebPage">
 
     {if empty($posts) && $wa->currentUrl() == $wa_app_url}
 
        <div class="welcome">
             <h1>[`Welcome to your new blog!`]</h1>
-            <p>{sprintf('[`Start by writing a post in your <a href="%s">blog backend</a>.`]', $wa_backend_url|cat:'blog/')}</p>
+            <p>{sprintf('[`Start by <a href="%s">writing a post</a> in your blog backend.`]', $wa_backend_url|cat:'blog/')}</p>
         </div>
     
     {else}
 
         <!-- internal navigation breadcrumbs -->
         {if isset($breadcrumbs)}
-            <div class="breadcrumbs">
+            <div class="breadcrumbs" itemprop="breadcrumb">
+                {if $wa->globals('isMyAccount')}
+                    {* within My Account we exclude first node from navigation because links are on the page already *}
+                    {$breadcrumbs[0] = null}
+                {/if}
                 {foreach $breadcrumbs as $breadcrumb}
-                    <a href="{$breadcrumb.url}">{$breadcrumb.name|escape}</a> <span class="rarr">&rarr;</span>
+                    {if $breadcrumb}
+                        <a href="{$breadcrumb.url}">{$breadcrumb.name|escape}</a> <span class="rarr">&rarr;</span>
+                    {/if}
                 {/foreach}
             </div>
         {/if}

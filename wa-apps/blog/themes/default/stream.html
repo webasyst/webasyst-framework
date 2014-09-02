@@ -1,7 +1,7 @@
 {* post stream (list) wrapper *}
 
 {if !$is_lazyloading}
-<div id="post-stream" role="main" class="lazyloading" {if $wa->param('blog_url')}itemscope itemtype="http://schema.org/Blog"{/if}>
+<div id="post-stream" role="main" class="lazyloading" {if $wa->param('blog_url')}itemscope itemtype="http://schema.org/Blog"{/if}> 
 {/if}
 
     {if !$is_lazyloading and !empty($stream_title)}<h1>{$stream_title|escape}</h1>{/if}
@@ -44,6 +44,7 @@
 $.pageless({
         auto: true, // auto load next pages
         url: '?layout=lazyloading{if $blog_query}&query={urlencode($blog_query)}{/if}',
+        times: 2,
         target: '.lazyloading:first',
         scroll: function(response){
             var progress = '';

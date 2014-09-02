@@ -4,9 +4,13 @@
             <img src="{$comment.user.photo_url_20|default:$comment.user.photo_url}" class="userpic{if $comment.auth_provider && ($comment.auth_provider neq blogCommentModel::AUTH_GUEST) && ($comment.auth_provider neq blogCommentModel::AUTH_USER)} icon16{/if}" alt="">
         </a>
         {if empty($comment.site)}
-            <span class="username" itemprop="creator">{$comment.name}</span>
+            <span class="username" itemprop="author">{$comment.name}</span>
         {else}
-            <a href="{$comment.site}" class="username" itemprop="creator">{$comment.name}</a>
+            <a href="{$comment.site}" class="username" itemprop="author">{$comment.name}</a>
+        {/if}
+
+        {if $comment.user.id}
+            <span class="staff">{$wa->accountName()}</span>
         {/if}
 
         {* @event prepare_comments_frontend.%plugin_id%.authorname_suffix *}
@@ -15,7 +19,7 @@
         {/if}
 
         <meta itemprop="commentTime" content="{$comment.datetime|date_format:'Y-m-d\TH:i'}">
-        <span class="hint date" title="{$comment.datetime|wa_datetime}" itemprop="commentTime" datetime="{$comment.datetime|date_format:'Y-m-d\TH:i'}">{$comment.datetime|wa_datetime:"humandatetime"}</span>
+        <span class="hint date" title="{$comment.datetime|wa_datetime}" datetime="{$comment.datetime|date_format:'Y-m-d\TH:i'}">{$comment.datetime|wa_datetime:"humandatetime"}</span>
     </div>
 
     {* @event prepare_comments_frontend.%plugin_id%.before *}

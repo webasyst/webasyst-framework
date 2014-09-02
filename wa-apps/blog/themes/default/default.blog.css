@@ -1,5 +1,5 @@
 /*
- * Webasyst Default theme family
+ * Webasyst Default 2.0 theme family
  *
  * Blog app CSS
  * (requires linking base default.css file from the Site app)
@@ -8,24 +8,25 @@
  * @author Webasyst LLC
  * @copyright 2014 Webasyst LLC
  * @package Webasyst
+ *
+ * ... extends base Site app's default.css
  */
 
-/* Blog app specific layout changes to base default.css
-------------------------------------------------------- */
-
-.page { background: #fff; }
-.page-nav .nav-sidebar { width: 25%; float: right; background: #fff; padding: 3% 5%; }
+.page-nav .nav-sidebar { width: 220px; float: right; padding: 0; }
+.page-nav .nav-sidebar .search { margin: 16px; }
+.page-nav .nav-sidebar .search input { margin-bottom: 0; }
 .page-nav .nav-hotties { margin-left: 0; border-left: none; }
 .page-nav .nav-hotties ul.menu-h li { padding-right: 0; }
-.page-content { margin-right: 25%; margin-left: 0; border-left: none; position: static; }
+.page-content { margin-right: 220px; margin-left: 0; border-left: none; box-shadow: 3px 0 8px -8px rgba(0, 0, 0, 0.7); }
 
-.subscribe { padding: 25px; background: #eee; margin-bottom: 20px; }
-.subscribe ul { list-style: none; padding-left: 0; margin-bottom: 0; }
-.subscribe ul li { margin-bottom: 10px; }
+.subscribe { padding: 6px 16px; background: #eed; margin-bottom: 0; }
+.subscribe ul { list-style: none; padding-left: 0; margin-bottom: 0; margin-top: 0; }
+.subscribe ul li { margin: 12px 0; }
 .subscribe ul li a { text-decoration: none; }
 .subscribe ul li i.icon16 { margin-top: 0.1em; margin-right: 0.5em; }
+.subscribe #twitter-follow-code { overflow: hidden; }
 
-.post { margin-bottom: 80px; margin-right: 50px; }
+.post { margin-bottom: 80px; }
 .post h3 { font-size: 2em; margin-right: 5px; margin-bottom: 8px; }
 .post h3 a { text-decoration: none; }
 .post img { max-width: 100%; height: auto !important; }
@@ -37,7 +38,7 @@
 
 .credentials { overflow: hidden; line-height: 1.3em; }
 .credentials a,
-.credentials span { display: inline-block; vertical-align: middle; padding-left: 0 !important; //display: inline;}
+.credentials span { display: inline-block; vertical-align: middle; padding-left: 0; }
 .credentials .userpic { min-width: 20px; display: block; float: left; margin-right: 2px; border-radius: 50%; }
 .credentials .username { margin: 0; }
 .credentials .username, .credentials .username a { color: #777; padding: 0; display: inline; }
@@ -76,10 +77,10 @@ ul.auth-type li a img { margin-right: 5px; top: 4px; position: relative; }
 .comment-form h4 { margin: 0 0 20px; font-weight: normal; }
 .comment-form-fields p { margin: 0 0 10px; }
 .comment-form-fields p a { display: inline !important; }
-.comment-form-fields label { width: 110px; display: block; clear: left; float: left; margin: 0 10px 0 0; color: #aaa; padding-top: 3px; }
-.comment-form-fields input { width: 20em;}
+.comment-form-fields label { width: 160px; display: block; clear: left; float: left; margin: 0 10px 0 0; color: #aaa; padding-top: 3px; }
+.comment-form-fields input { width: 20em; }
 .comment-form textarea { min-width: 70%; min-height: 160px; }
-.comment-form .comment-submit { padding:0 0 0 120px;}
+.comment-form .comment-submit { padding:0 0 0 170px;}
 .comment-form .userpic { width: 20px; height: 20px; float: left; margin-right: 5px; border-radius: 50%; }
 .comment-form ul.menu-h.auth-type li a img { float: left; margin-right: 3px; position: relative; top: 2px; }
 .comment-form ul.menu-h.auth-type { padding-bottom: 20px; }
@@ -89,9 +90,54 @@ ul.auth-type li a img { margin-right: 5px; top: 4px; position: relative; }
 /* Plugins
 ---------- */
 
-.categories {  }
-.categories ul.menu-v { padding-left: 10px; }
-.categories ul.menu-v li { float: none; line-height: 1.2em; font-size: 0.9em; margin: 2px 0; }
-.categories ul.menu-v li.selected a { color: #000; text-decoration: none; font-weight: bold; }
+ul.menu-v.categories { margin-bottom: 20px; }
+ul.menu-v.categories li { border: none; }
+ul.menu-v.categories li a { padding: 5px 16px; }
+ul.menu-v.categories li.selected a { color: #000; text-decoration: none; font-weight: bold; }
 
-.tags.cloud { padding: 10px 0; border: 1px solid #ccc; text-align: center; }
+.tags.cloud { text-align: center; }
+
+
+/* TABLET
+========= */
+
+@media screen and (min-width: 760px) and (max-width: 1024px) {
+
+    .page-nav .nav-sidebar { width: 180px; }
+    .page-content { margin-right: 180px; }
+    
+    .comment-form-fields input,
+    .comment-form textarea { width: auto; min-width: 0; }
+    
+    .subscribe { padding-left: 10px; padding-right: 10px; }
+   
+}
+
+
+/* MOBILE
+========= */
+
+@media screen and (max-width: 760px) {
+ 
+    .search,
+    .category-plugin,
+    .tag-plugin,
+    .nav-sidebar hr,
+    .timeline { display: none; }
+    
+    .subscribe ul li { display: inline-block; }
+    .subscribe ul li a span { display: none; }
+    .subscribe:after { clear: both; }
+    .subscribe #twitter-follow-code { display: none; }
+     
+    .post { margin-right: 0 !important; overflow-x: hidden; }
+    .post h3 { font-size: 1.3em; }
+    .post img { max-width: 100%; height: auto !important; }
+    
+    .comment-form-fields label { width: auto; float: none; }
+    .comment-form-fields input { width: 80%; }
+    .comment-form textarea { width: 90%; }
+    .comment-form .comment-submit { padding-left: 0; }
+    .comment-form .wa-captcha img { margin-bottom: 10px; }
+
+}

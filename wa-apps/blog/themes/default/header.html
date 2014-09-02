@@ -1,0 +1,18 @@
+<!-- blog & page list list -->
+{$blogs = $wa->blog->blogs()}
+{$pages = $wa->blog->pages()}
+{if count($blogs) > 1 || count($pages)}
+    <ul class="menu-h">
+        {foreach $blogs as $blog}
+            <li class="{if $wa->globals('blog_id') eq $blog.id && empty($is_search)}selected{/if}">
+                <a href="{$blog.link}">{$blog.name}</a>
+            </li>
+        {/foreach}
+        
+        <!-- pages -->            
+        {foreach $pages as $page}
+            <li{if strlen($page.url)>1 && $wa->currentUrl()|strstr:$page.url} class="selected"{/if}><a href="{$page.url}">{$page.name}</a></li>
+        {/foreach}
+    </ul>
+{/if}
+
