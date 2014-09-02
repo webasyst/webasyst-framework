@@ -1,7 +1,6 @@
 <!DOCTYPE html>
-
-{$vk_app_id = "YOUR_APP_ID"}
-{$vk_app_secret = "YOUR_APP_SECRET"}
+{$vk_app_id = $theme_settings.vk_app_id}
+{$vk_app_secret = $theme_settings.vk_app_secret}
 {$viewer_id = $wa->get('viewer_id')}
 {if $viewer_id}
     {$auth_key = md5("`$vk_app_id`_`$viewer_id`_`$vk_app_secret`")}
@@ -9,26 +8,25 @@
         {$wa->storage('vk_user_id', $viewer_id)}
     {/if}
 {/if}
-
 {$vk_tabs = [
     [
         'url' => '/',
-        'name' => 'My new VK app'
+        'name' => 'Главная'
     ]
     ,
     [
         'url' => '/shop/',
-        'name' => 'Shop online!'
+        'name' => 'Магазин'
     ]
     ,
     [
         'url' => '/blog/',
-        'name' => 'My blog'
+        'name' => 'Новости'
     ]
     ,
     [
         'url' => '/photos/',
-        'name' => 'My photo gallery'
+        'name' => 'Фотогалерея'
     ]
 ]}
 {*
@@ -94,11 +92,6 @@
                          <i class="icon16 cart"></i>[s`Cart`]: <strong class="cart-total">{wa_currency_html($cart_total, $wa->shop->currency())}</strong>
                      </a>
                 </div>
-
-                <!-- search form (app dependent) -->
-                <div class="search float-right">
-                    {include file="`$wa_active_theme_path`/searchform.html" inline}
-                </div> 
             {/if}   
             
             <h2 class="block vk-app-title float-left">
@@ -113,8 +106,11 @@
 
             <div class="clear-both"></div>               
 
-            <!-- phone number -->
+            <!-- phone & product search -->
             {if $wa->shop && $wa->shop->settings('phone')}
+                <div class="search float-right">
+                    {include file="`$wa_active_theme_path`/searchform.html" inline}
+                </div> 
                 <div class="block float-right">
                     [s`Order by phone`]: <strong>{$wa->shop->settings('phone')}</strong>
                 </div>

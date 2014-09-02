@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE theme PUBLIC "wa-app-theme" "http://www.webasyst.com/wa-content/xml/wa-app-theme.dtd">
-<theme id="vk" system="0" vendor="webasyst" author="Webasyst" app="site" version="1.1.1">
+<theme id="vk" system="0" vendor="webasyst" author="Webasyst" app="site" version="1.1.3">
   <name locale="en_US">VK</name>
   <name locale="ru_RU">Вконтакте</name>
-  <description locale="ru_RU">Ваш сайт во «Вконтакте» в виде iframe-приложения.</description>
+  <description locale="ru_RU">Ваш сайт во «Вконтакте» в виде Iframe-приложения.</description>
   <files>
     <file path="index.html" custom="0">
 		<description locale="en_US">Core layout of the VK theme family</description>
@@ -49,6 +49,14 @@
         <description locale="en_US">Forgot password page</description>
         <description locale="ru_RU">Страница сброса пароля</description>
     </file>
+    <file path="my.profile.html">
+        <description locale="en_US">My profile: contact info editing form</description>
+        <description locale="ru_RU">Мой профиль: редактирование контактной информации</description>
+    </file>
+     <file path="my.nav.html">
+        <description locale="en_US">My profile navigation</description>
+        <description locale="ru_RU">Навигационное меню внутри личного кабинета</description>
+    </file>
     <file path="error.html" custom="0">
 		<description locale="en_US">404 and other errors</description>
 		<description locale="ru_RU">404 и другие ошибки</description>
@@ -64,4 +72,20 @@
 <p>Темы <b>VK</b> разработаны для внедрения сайтов, созданных на основе фреймворка Вебасист, в соцсеть «<a href="http://vk.com">Вконтакте</a>» в виде iframe-приложений. Семейство тем VK универсальное — подходит для всех базовых приложений фреймворка Вебасист: Сайт, Блог, Фото, Shop-Script и других. Родительской (основной) темой семейства, включающей в себя базовый набор CSS-стилей и общий макет дизайна index.html, является тема для приложения «Сайт» (данная тема). Все темы VK для других приложений (Блог, Фото и других) используют базовый CSS и index.html из родительской (основной) темы.</p>
 ]]>
   </about>
+  <settings>
+    <setting var="vk_app_id" control_type="text">
+        <value>YOUR_VK_APP_ID</value>
+        <name locale="en_US">VK App ID</name>
+        <name locale="ru_RU">ID приложения «Вконтакте»</name>
+        <description locale="en_US"></description>
+        <description locale="ru_RU"><![CDATA[Для встраивания сайта в соцсеть в виде приложения необходимо создать приложение для «Вконтакте». Инструкция: <a href="http://www.webasyst.ru/help/27/shop-script-5-vkontakte-online-store/" target="_blank">http://www.webasyst.ru/help/27/shop-script-5-vkontakte-online-store/</a>]]></description>
+    </setting>
+    <setting var="vk_app_secret" control_type="text">
+        <value>YOUR_VK_APP_SECRET</value>
+        <name locale="en_US">VK App Secret</name>
+        <name locale="ru_RU">Защищенный ключ приложения «Вконтакте»</name>
+        <description locale="en_US"></description>
+        <description locale="ru_RU"><![CDATA[Для встраивания сайта в соцсеть в виде приложения необходимо создать приложение для «Вконтакте». Инструкция: <a href="http://www.webasyst.ru/help/27/shop-script-5-vkontakte-online-store/" target="_blank">http://www.webasyst.ru/help/27/shop-script-5-vkontakte-online-store/</a>]]></description>
+    </setting>
+  </settings>
 </theme>

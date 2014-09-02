@@ -209,6 +209,10 @@ input.error, textarea.error { border: 2px solid red; }
 /* Misc .table table
 -------------------- */
 
+table th { color: #aaa; }
+table th,
+table td { padding: 3px; }
+
 table.table { margin-top: 25px; width: 100%; border-spacing:0; border-collapse:collapse; }
 table.table th { padding-left: 7px; padding-right: 7px; }
 table.table td { padding: 15px 7px; border-bottom: 1px solid #ddd; }
@@ -282,7 +286,7 @@ i.icon10 { background-repeat:no-repeat; height:10px; width:10px; display:inline-
 #header div#cart.empty i.icon16.cart { background-image: url('img/cart-empty.png'); opacity: 0.4; margin-right: 0.8em; margin-top: 0.1em; }
 
 #header .search { padding-top: 1px; padding-right: 0px; }
-#header .search input { -webkit-appearance: none; background: #E9EDF1 url("img/search10.png") no-repeat scroll 8px 6px; color: #2B587A; font-weight: bold; border: none; -moz-border-radius: 5px; -webkit-border-radius: 5px; border-radius: 5px; font-size: 1em; padding: 3px 0px 3px 25px; outline: 0; display: block; margin: 0; width: 130px; }
+#header .search input { -webkit-appearance: none; background: #E9EDF1 url("img/search10.png") no-repeat scroll 8px 6px; color: #2B587A; font-weight: bold; border: none; -moz-border-radius: 5px; -webkit-border-radius: 5px; border-radius: 5px; font-size: 1em; padding: 3px 0px 3px 25px; outline: 0; display: block; margin: 0 10px 0 0; width: 130px; }
 #header .search input::-webkit-input-placeholder { color: #607387; font-weight: bold; }
 #header .search input:-moz-placeholder,
 #header .search input::-moz-placeholder { color: #607387; font-weight: bold; }
@@ -304,7 +308,7 @@ i.icon10 { background-repeat:no-repeat; height:10px; width:10px; display:inline-
 .tags { line-height: 2em; min-height: 50px; }
 .tags a { color: green !important; display: inline !important; padding: 5px 7px !important; }
 
-#footer { clear: both; margin-top: 10px; color: #777; padding-bottom: 25px; }
+#footer { clear: both; margin-top: 10px; color: #777; padding-bottom: 35px; }
 #footer #sub-links { margin-left: 30px; }
 #footer #sub-links ul { list-style: none; padding: 0; margin: 0; }
 #footer #sub-links ul li { float: left;  padding: 0 15px 0 0; }
