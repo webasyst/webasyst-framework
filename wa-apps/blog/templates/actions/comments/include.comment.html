@@ -58,7 +58,11 @@
     <p class="b-comment-text">[`Comment deleted`]</p>
   {else}
     {if isset($comment.post) && (!$comment.post || (!$comment.editable && ($comment.post && $comment.post.status neq blogPostModel::STATUS_PUBLISHED)))}
-      <p class="b-comment-text">[`Comment for unpublished post`]</p>
+        <p class="b-comment-text gray">
+            {$comment.text|escape|nl2br}</span>
+        </p>
+        <p class="b-comment-text hint italic">[`Comment to an unpublished post (not visible anymore)`]</p>
+      
     {else}
       {* COMMENT TEXT *} 
       <p class="b-comment-text">

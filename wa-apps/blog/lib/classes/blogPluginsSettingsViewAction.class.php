@@ -1,6 +1,6 @@
 <?php
 /**
- * @author WebAsyst Team
+ * @author Webasyst
  *
  */
 class blogPluginsSettingsViewAction extends waViewAction

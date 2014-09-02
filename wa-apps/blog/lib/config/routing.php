@@ -20,9 +20,15 @@ return array(
 
         '<blog_url>/<post_url>/comment/'                           => 'frontend/comment',
         '<post_url>/comment/'                                      => 'frontend/comment',
+        'my/' => array(
+            'module' => 'frontend',
+            'action' => 'my',
+            'secure' => true,
+        ),
         'login/'                                                   => 'login',
         'forgotpassword/'                                          => 'forgotpassword',
         'signup/'                                                  => 'signup',
+        'data/regions/'                                            => 'frontend/regions',
         'logout/'                                                  => 'frontend/logout',
         'rss/'                                                     => 'frontend/rss',
         'author/<contact_id>/'                                     => 'frontend',
@@ -35,9 +41,15 @@ return array(
     1 => array(
         '<post_url>/comment/'                           => 'frontend/comment',
         'logout/'                                       => 'frontend/logout',
+        'my/' => array(
+            'module' => 'frontend',
+            'action' => 'my',
+            'secure' => true,
+        ),
         'login/'                                        => 'login',
         'forgotpassword/'                               => 'forgotpassword',
         'signup/'                                       => 'signup',
+        'data/regions/'                                 => 'frontend/regions',
         'rss/'                                          => 'frontend/rss',
         'author/<contact_id>/'                          => 'frontend',
 
@@ -51,9 +63,15 @@ return array(
     2 => array(
         '<post_url>/comment/'                                                     => 'frontend/comment',
         'logout/'                                                                 => 'frontend/logout',
+        'my/' => array(
+            'module' => 'frontend',
+            'action' => 'my',
+            'secure' => true,
+        ),
         'login/'                                                                  => 'login',
         'forgotpassword/'                                                         => 'forgotpassword',
         'signup/'                                                                 => 'signup',
+        'data/regions/'                                                           => 'frontend/regions',
         "{$blog_prefix}/rss/"                                                     => 'frontend/rss',
         'rss/'                                                                    => 'frontend/rss',
         'author/<contact_id>/'                                                    => 'frontend',

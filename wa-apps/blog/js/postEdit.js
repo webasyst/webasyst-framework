@@ -804,13 +804,19 @@
             });
         },
         wysiwygToHtml: function(text) {
-            return text.replace(/<span[\s\S]*?id=['"]elrte-wa_post_cut['"][\s\S]*?>([\s\S]*?)<\/span>/g, function(cut_hr, p1) {
-                if (!p1 || p1 == '<br>' || p1 == $.wa_blog.editor.options.cut_link_label_default) {
-                    return $.wa_blog.editor.cut_str.replace('%text%', '');
+            var tmp = $('<p></p>').html($(text));
+            if (tmp.find('#elrte-wa_post_cut').length) {
+                var cut_item = tmp.find('#elrte-wa_post_cut');
+                var p = cut_item.html();
+                if (!p || p === '<br>' || p === $.wa_blog.editor.options.cut_link_label_default) {
+                    cut_item.replaceWith($.wa_blog.editor.cut_str.replace('%text%', ''));
                 } else {
-                    return $.wa_blog.editor.cut_str.replace('%text%', 'text="' + p1 + '" ');
+                    cut_item.replaceWith($.wa_blog.editor.cut_str.replace('%text%', 'text="' + p + '" '));
                 }
-            });
+                return tmp.html();
+            } else {
+                return text;
+            }
         },
         editors : {
             ace : {
@@ -945,15 +951,15 @@
                             deniedTags: false,
                             minHeight: 300,
                             buttonSource: false,
-                            paragraphy: false,
-                            convertDivs: false,
+                            paragraphy: true,
+                            convertDivs: true,
                             toolbarFixedBox: true,
                             buttons: ['html', 'formatting', 'bold', 'italic', 'underline', 'deleted', 'unorderedlist', 'orderedlist',
                                 'outdent', 'indent', 'image', 'video', 'file', 'table', 'link', 'alignment', '|',
                                 'horizontalrule'],
-                            plugins: ['fontcolor', 'cut'],
+                            plugins: ['fontcolor', 'fontsize', 'fontfamily', 'cut'],
                             lang: wa_lang,
-                            imageUpload: '?module=pages&action=uploadimage&filelink=1',
+                            imageUpload: '?module=pages&action=uploadimage&filelink=1&absolute=1',
                             uploadFields: textarea.data('uploadFields'),
                             //imageUpload: '?module=post&action=image',
                             imageUploadErrorCallback: function(json) {
@@ -972,13 +978,19 @@
                                     return match;
                                 });
                                 return html;
+                            },
+                            changeCallback: function() {
+                                if ($('#postpublish-edit').is(':visible')) {
+                                    $('#postpublish-edit').removeClass('green').addClass('yellow');
+                                }
+                                if ($('#b-post-save-button').is(':visible')) {
+                                    $('#b-post-save-button').removeClass('green').addClass('yellow');
+                                }
                             }
                         }, (options || {}));
-                        
                         textarea.redactor(options);
                         textarea.redactor('getBox').css('z-index', 0);
                         textarea.redactor('getToolbar').css('z-index', 1);
-                        
                         this.inited = true;
                     }
                     return true;

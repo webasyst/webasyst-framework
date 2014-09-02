@@ -1492,3 +1492,36 @@ msgstr ""
 #: /wa-apps/blog/themes/default/main.html:50
 msgid "VK"
 msgstr ""
+
+#: /wa-apps/blog/templates/actions/comments/include.comment.html:64
+msgid "Comment to an unpublished post (not visible anymore)"
+msgstr ""
+
+#: /wa-apps/blog/lib/actions/frontend/blogFrontendMy.action.php:36
+#: /wa-apps/blog/lib/actions/frontend/blogFrontendMy.action.php:46
+msgid "My account"
+msgstr ""
+
+#: /wa-apps/blog/lib/actions/frontend/blogFrontendMy.action.php:36
+msgid "My profile"
+msgstr ""
+
+#: /wa-apps/blog/themes/ascetic/index.html:116
+#: /wa-apps/blog/themes/clear/content.html:14
+#: /wa-apps/blog/themes/custom/content.html:99
+#: /wa-apps/blog/themes/default/main.html:104
+#: /wa-apps/blog/themes/facebook/content.html:23
+#: /wa-apps/blog/themes/nifty/content.html:12
+#: /wa-apps/blog/themes/pinboard/content.html:5
+#: /wa-apps/blog/themes/sidebar/content.html:100
+#: /wa-apps/blog/themes/vk/content.html:23
+msgid "Start by <a href=\"%s\">writing a post</a> in your blog backend."
+msgstr ""
+
+#: /wa-apps/blog/lib/config/site.php:115
+msgid "Core content loaded according to the requested resource: a blog post, post stream, a page, etc."
+msgstr ""
+
+#: /wa-apps/blog/lib/config/site.php:124
+msgid "0 for published, 1 for deleted"
+msgstr ""

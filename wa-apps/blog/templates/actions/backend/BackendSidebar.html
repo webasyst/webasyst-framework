@@ -148,10 +148,11 @@
             {if $wa->user()->getRights($wa->app(), 'design')}
             <li {if $module == 'design' || $module == 'themes'}class="selected"{/if}><a href="?module=design"><i class="icon16 design"></i>[s`Design`]</a></li>
             {/if}
+            <li class="top-padded{if $module == 'settings'} selected{/if}"><a href="?module=settings"><i class="icon16 settings"></i>[`Settings`]</a></li>
+            
             {if $wa->user()->isAdmin($wa->app())}
-            <li {if $action == 'plugins'}class="selected"{/if}><a href="?module=plugins"><i class="icon16 plugins"></i>[`Plugins`]</a></li>
+                <li{if $action == 'plugins'} class="selected"{/if}><a href="?module=plugins"><i class="icon16 plugins"></i>[`Plugins`]</a></li>
             {/if}
-            <li {if $module == 'settings'}class="selected"{/if}><a href="?module=settings"><i class="icon16 settings"></i>[`Settings`]</a></li>
 
             {* @event backend_sidebar.%plugin_id%.system *}
             <!-- plugin hook: "backend_sidebar.system" -->

@@ -329,7 +329,7 @@ SQL;
              * @return array[string][string][]string $return['%plugin_id%']['where'] Where conditions
              * @return array[string][string][]string $return['%plugin_id%']['order'] order conditions
              */
-            $res = wa()->event('search_posts_'.wa()->getEnv(), $options);
+            $res = wa('blog')->event('search_posts_'.wa()->getEnv(), $options);
             foreach ($res as $plugin_options) {
                 foreach ($plugin_options as $properties => $values) {
                     if ($values) {
@@ -924,8 +924,12 @@ SQL;
                     'id' => $data['id']
                 ));
             } else {
-                if (isset($options['transliterate']) && $options['transliterate'] && !$data['url'] && $data['title']) {
-                    $data['url'] = blogHelper::transliterate($data['title']);
+                if (!empty($options['transliterate']) && !$data['url']) {
+                    if ($data['title']) {
+                        $data['url'] = blogHelper::transliterate($data['title']);
+                    } else {
+                        $data['url'] = $this->genUniqueUrl('');
+                    }
                 }
                 $url_validator = new blogSlugValidator();
             }

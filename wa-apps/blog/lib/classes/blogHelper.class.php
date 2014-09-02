@@ -452,6 +452,9 @@ class blogHelper
                 $url = array_shift($url);
             }
         } else {
+            if ($blog_id) {
+                $params['blog_url_type'] = $blog_id;
+            }
             $url = wa()->getRouteUrl($route_rule, $params, $absolute);
         }
         return $url;
