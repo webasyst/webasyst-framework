@@ -311,6 +311,14 @@ class waContactFields
             throw new waException('Unable to find field '.$id.' in '.$file);
         }
         unset($fields[$k]);
+        
+        $fields = array_values($fields);
+        foreach ($fields as $field) {
+            if ($field instanceof waContactField) {
+                $field->prepareVarExport();
+            }
+        }
+        
         waUtils::varExportToFile(array_values($fields), $file, true);
         unset(self::$fieldStatus[$id], self::$personDisabled[$id], self::$companyDisabled[$id]);
     }
@@ -351,6 +359,11 @@ class waContactFields
         }
         if (!$changed) {
             $fields[] = $field;
+        }
+        foreach ($fields as $field) {
+            if ($field instanceof waContactField) {
+                $field->prepareVarExport();
+            }
         }
         waUtils::varExportToFile($fields, $file, true);
 

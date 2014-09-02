@@ -299,7 +299,7 @@ class waContact implements ArrayAccess
             // Multi field access by extension
             if ($field->isMulti() && $ext) {
                 foreach ($result as $sort => $row) {
-                    if ($row['ext'] !== $ext) {
+                    if (!empty($row['ext']) && $row['ext'] !== $ext) {
                         unset($result[$sort]);
                     }
                 }
