@@ -2,10 +2,12 @@
 <html{if $wa->globals('isMyAccount')} class="my"{/if}>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1{if $wa->isMobile()}, maximum-scale=1, user-scalable=0{/if}" />
+
     <title>{$wa->title()|escape}</title>
     <meta name="Keywords" content="{$wa->meta('keywords')|escape}" />
     <meta name="Description" content="{$wa->meta('description')|escape}" />
-
+    
     {if !empty($canonical)}<link rel="canonical" href="{$canonical}"/>{/if}
     <link rel="shortcut icon" href="/favicon.ico"/>
     {if $wa->blog}
@@ -19,21 +21,16 @@
     
     <!-- css -->
     <link href="{$wa_theme_url}default.css?v{$wa_theme_version}" rel="stylesheet" type="text/css"/>
-    <link href="{$wa_theme_url}default.colors.css?v{$wa_theme_version}" rel="stylesheet" type="text/css"/>
-    <link href="{$wa_theme_url}default.mobile.css?v{$wa_theme_version}"{if !$wa->isMobile()} media="screen and (max-width: 760px)"{/if} rel="stylesheet" type="text/css"/>
-    <link href="{$wa_theme_url}default.tablet.css?v{$wa_theme_version}" media="screen and (min-width: 760px) and (max-width: 1024px)" rel="stylesheet" type="text/css"/>
-    <link href="{$wa_theme_url}default.wide.css?v{$wa_theme_version}" media="screen and (min-width: 1440px)" rel="stylesheet" type="text/css"/>
     <link href="{$wa_theme_url}waslidemenu/waslidemenu.css?v{$wa_theme_version}" rel="stylesheet" type="text/css"/>
     {if $wa->shop && $wa->shop->currency() == 'RUB'} <link href="{$wa_url}wa-content/font/ruble/arial/fontface.css" rel="stylesheet" type="text/css">{/if}
     {$wa->css()} {* links active plugins CSS *}
     
     <!-- js -->
     <script type="text/javascript" src="{$wa_url}wa-content/js/jquery/jquery-1.8.2.min.js"></script>
+    {* when optimizing your production environment, consider loading jQuery 1.8.2 from CDN instead of local load, e.g. <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script> *}
     <script type="text/javascript" src="{$wa_theme_url}default.js?v{$wa_theme_version}"></script>
     <script type="text/javascript" src="{$wa_theme_url}waslidemenu/jquery.waslidemenu.min.js?v{$wa_theme_version}"></script>
-    {if $wa->isMobile()}
-        <meta name="viewport" content="width=device-width; initial-scale=1; maximum-scale=1; user-scalable=0;" />
-    {/if}
+
     {$wa->js()} {* links active plugins JS *}
     
     {include file="`$wa_active_theme_path`/head.html" inline}
@@ -55,40 +52,89 @@
     <![endif]-->
     
 </head>
-<body{if $theme_settings.color_scheme} class="color_scheme_{str_replace('img/backgrounds/themesettings/','', str_replace('.png','',$theme_settings.color_scheme))}"{/if}>
+<body{if $theme_settings.color_scheme} class="color_scheme_{str_replace('img/backgrounds/themesettings/','', str_replace(array('.png','.jpg','bokeh_','abstract_','sky_'),'',$theme_settings.color_scheme))}"{/if}>
 
-    <!-- TOP NAVIGATION & BANNER -->
     <header>
+    
+        {$extendednav = ($wa->shop || $theme_settings.logo) && !$wa->globals('isMyAccount')}
         
-        <div class="container" id="header-container">
+        {if count($wa->apps())>0 || $wa->isAuthEnabled()}
+        
+            <!-- GLOBAL HEADER -->
+            <div id="globalnav"{if $extendednav} class="dimmed"{/if}>
+                <div class="container">
+        
+                    <button id="mobile-nav-toggle"><!-- nav toggle for mobile devices --></button>
+                    
+                    <nav role="navigation">
+                    
+                        <!-- core site sections (apps) -->
+                        {if !$extendednav}<h2><a href="{$wa_url}">{$wa->accountName()}</a></h2>{/if}
+                        <ul class="apps">
+                            {foreach $wa->apps() as $a}
+                                <li{if $a.url==$wa_app_url && !$wa->globals('isMyAccount')} class="selected"{/if}><a href="{$a.url}">{$a.name}</a></li>
+                            {/foreach}
+                        </ul>
+                        
+                        {if $wa->isAuthEnabled()}
+                            <!-- user auth -->
+                            <ul class="auth">
+                                                        
+                                {if $wa->user()->isAuth()}
+                                    {if $wa->myUrl()}
+                                        <li{if $wa->globals('isMyAccount')} class="bold"{/if}>
+                                            <a href="{$wa->myUrl()}" class="not-visited"><i class="icon16 userpic20 float-left" style="background-image: url('{$wa->user()->getPhoto(20)}');"></i> [s`My account`]</a>
+                                        </li>
+                                    {else}
+                                         <li><strong>{$wa->user('name')}</strong></li>
+                                    {/if}
+                                    <li><a href="?logout" class="not-visited">[s`Log out`]</a></li>
+                                {else}
+                                    <li><a href="{$wa->loginUrl()}" class="not-visited">[s`Log in`]</a></li>
+                                    <li><a href="{$wa->signupUrl()}" class="not-visited">[s`Sign up`]</a></li>
+                                {/if}
+                            </ul>
+                        {/if}
 
-            <h2>
-                <a href="{$wa_url}">
-                    {if $theme_settings.logo}
-                        <img src="{$wa_theme_url}{$theme_settings.logo}" alt="{$wa->accountName()}" id="logo" />
-                    {else}
-                        {$wa->accountName()}
-                    {/if}
-                </a>
-            </h2>
+                        {if $wa->shop && $wa->shop->settings('phone')}
+                            <!-- offline contact information -->
+                            <div class="offline">
+                                <b>{$wa->shop->settings('phone')}</b>
+                                {if $wh = $wa->shop->settings('workhours')}
+                                    <span class="hint">{$wh.days_from_to}{if $wh.hours_from && $wh.hours_to} {$wh.hours_from}—{$wh.hours_to}{/if}</span>
+                                {/if}
+                            </div>                            
+                        {/if}
+                        
+                    </nav>
+                    <div class="clear-both"></div>
+                     
+                </div>
+            </div>
+            
+        {/if}
 
-            <button class="apps-toggle"></button>
-            
-            <nav role="navigation">
-            
-                <!-- core site sections (apps) -->
-                <ul class="apps">
-                    {foreach $wa->apps() as $a}
-                        <li{if $a.url==$wa_app_url} class="selected"{/if}><a href="{$a.url}">{$a.name}</a></li>
-                    {/foreach}
-                </ul>
-            
+        {if $extendednav}
+    
+            <!-- EXTENDED HEADER if Shop-Script is installed or site logo is uploaded -->
+            <div class="container extendednav" id="header-container">
+                <h2>
+                    <a href="{if $wa->shop}{$wa->getUrl('shop/frontend')}{else}{$wa_url}{/if}">
+                        {if $theme_settings.logo}
+                            <img src="{$wa_theme_url}{$theme_settings.logo}" alt="{$wa->accountName()}" id="logo" />
+                            <span>{$wa->shop->settings('name')}</span>
+                        {else}
+                            {$wa->shop->settings('name')}
+                        {/if}
+                    </a>
+                </h2>
                 {if $wa->shop}
                     <!-- cart -->
                     {$cart_total = $wa->shop->cart->total()}
+
                     <div id="cart" class="cart{if !$cart_total} empty{/if}">
                          <a href="{$wa->getUrl('shop/frontend/cart')}" class="cart-summary">
-                             [s`Cart`]:
+                             <i class="cart-icon"></i>
                              <strong class="cart-total">{wa_currency_html($cart_total, $wa->shop->currency())}</strong>
                          </a>
                          <div id="cart-content">
@@ -96,60 +142,50 @@
                                 %s is now in your shopping cart
                              </div> *}
                          </div>
-                         <a href="{$wa->getUrl('shop/frontend/checkout')}" class="cart-to-checkout" style="display: none;">
-                             [s`Proceed to checkout`] &rarr;
+                         <a href="{$wa->getUrl('shop/frontend/cart')}" class="cart-to-checkout" style="display: none;">
+                             [s`View cart`]
                          </a>
                     </div>
-                {/if}
-                
-                {if $wa->isAuthEnabled()}
-                    <ul class="auth">
-                         {if $wa->user()->isAuth()}
-                            {if $wa->shop}
-                                <li>
-                                    <a href="{$wa->myUrl()}"><i class="icon16 userpic20 float-left" style="background-image: url('{$wa->user()->getPhoto(20)}');"></i> [s`My account`]</a>
-                                </li>
-                            {else}
-                                    <li><strong>{$wa->user('name')}</strong></li>
-                                {/if}
-                             <li><a href="?logout">[s`Log out`]</a></li>
-                        {else}
-                            <li><a href="{$wa->loginUrl()}">[s`Log in`]</a></li>
-                            <li><a href="{$wa->signupUrl()}">[s`Sign up`]</a></li>
-                        {/if}
-                    </ul>
-                {/if}
-                
-                <!-- phone number -->
-                {if $wa->shop && $wa->shop->settings('phone')}
-                    <div class="contact-info">{$wa->shop->settings('phone')}</div>
-                {/if}  
-            
-            </nav>
-             
-        </div>
+                    {if $wa->shop && $wa->shop->settings('phone')}
+                        
+                        <!-- product search -->
+                        <form method="get" action="{$wa->getUrl('shop/frontend/search')}" class="search">
+                            <input type="search" name="query" {if !empty($query)}value="{$query}"{/if} placeholder="[s`Find products`]">
+                            <button type="submit"></button>
+                        </form>
 
-        <div class="banner" role="banner"{if $theme_settings.custom_background} style="background-image: url('{$wa_theme_url}{$theme_settings.custom_background}');"{/if}>
-            <div class="container">
-                {if !empty($theme_settings.banner_caption)}
-                    <h3>{$theme_settings.banner_caption|escape}</h3>
+                    {/if}
                 {/if}
-                
-                {if $wa->shop}
-                    <!-- PRODUCT SEARCH FORM -->
-                    <form method="get" action="{$wa->getUrl('shop/frontend/search')}" class="search">
-                        <input type="search" name="query" {if !empty($query)}value="{$query}"{/if} id="search" placeholder="[s`Find products`]">
-                        <button type="submit"></button>
-                    </form>
-                {/if}
-                <div class="clear-both"></div>
-            </div>
-        </div>
+                <div class="clear-both"></div> 
+            </div>        
+        
+        {/if}
         
     </header>
     
     <!-- APP CONTENT -->
-    <main role="main">
+    <main role="main"{if $theme_settings.custom_background} class="custom-background{if $theme_settings.custom_background_stretch} stretched{/if}"{/if}>
+        <div class="banner{if !$theme_settings.custom_background} {str_replace('img/backgrounds/themesettings/','', str_replace(array('.png','.jpg'),'',$theme_settings.color_scheme))}{else} {$theme_settings.custom_background_banner_text_color}" style="background-image: url('{$wa_theme_url}{$theme_settings.custom_background}');{/if}">
+            <div class="container">
+
+                {if !empty($theme_settings.banner_caption)}
+                    <h3>{$theme_settings.banner_caption|escape}</h3>
+                {/if}
+
+                {if $wa->globals('isMyAccount')}
+                
+                    {* focused personal accounts navigation *}
+                    {$wa->myNav('menu-h bottom-padded')}
+                    
+                {else}
+
+                    {include file="`$wa_active_theme_path`/header.html" inline}
+                
+                {/if}
+
+                <div class="clear-both"></div>
+            </div>
+        </div>
         <div class="container">
             <div class="page">
                 {include file="`$wa_active_theme_path`/main.html" inline}
@@ -163,15 +199,6 @@
             <div class="footer-block" id="copyright">
                 &copy; {time()|wa_datetime:"Y"}
                 <a href="{$wa_url}">{$wa->accountName()}</a>
-            </div>
-            
-            <div class="footer-block">
-                <a href="#" class="top">[s`Social`]</a>
-                
-                {if !empty($theme_settings.facebook)}<a href="{$theme_settings.facebook}"><i class="icon16 facebook"></i>[s`Facebook`]</a>{/if}
-                {if !empty($theme_settings.twitter)}<a href="https://twitter.com/{$theme_settings.twitter}"><i class="icon16 twitter"></i>[s`Twitter`]</a>{/if}
-                {if !empty($theme_settings.vk)}<a href="{$theme_settings.vk}"><i class="icon16 vk"></i>[s`VK`]</a>{/if}
-                
             </div>
                        
             {if $wa->shop}
@@ -207,10 +234,9 @@
                 {if $wa->shop}
                     <span>{$wa->shop->settings('phone')}</span>
                     <a href="mailto:{$wa->shop->settings('email')}">{$wa->shop->settings('email')}</a>
-                    <br><br>
                 {/if}
             </div>
-                        
+
             {*
             <div class="footer-block">
                 <a href="#" class="top">Top link</a>
@@ -222,40 +248,37 @@
             
             <div class="clear-both"></div>
         </div>
-        {include file="`$wa_active_theme_path`/footer.html" inline}
-    </footer>
-    
-    {if !empty($theme_settings.followus_leash)}
-        <aside class="followus-leash">
-            <div class="inner" id="followus-leash-inner">
+        <div class="followus">
+            <div class="container">
+
                 {if $wa->mailer && $wa->getUrl('mailer/frontend/subscribe')}
-                    <div class="gray align-center bold">[`Subscribe to our email newsletter`]</div>
-                    <div class="block double-padded align-center">
+                    <div class="mailer-subscribe">
+                        
                         <form action="{$wa->getUrl('mailer/frontend/subscribe')}" id="mailer-subscribe-form" target="mailer-subscribe-iframe">
+                            [s`Subscribe to our email newsletter`]:
                             <input type="email" name="email" placeholder="your@email.here">
-                            <input type="submit" value="[s`Submit`]">
+                            <input type="submit" value="[s`Subscribe`]">
                         </form>
-                        <iframe id="mailer-subscribe-iframe" name="mailer-subscribe-iframe" src="javascript:true" style="width:0;height:0;border:0px solid #fff;"></iframe>
-                        <h3 style="display:none" id="mailer-subscribe-thankyou">[s`Thank you!`]</h3>
+                        <iframe id="mailer-subscribe-iframe" name="mailer-subscribe-iframe" src="javascript:true" style="width:0;height:0;border:0px solid #666;float:right;background: #666;"></iframe>
+                        <p style="display:none" id="mailer-subscribe-thankyou"><i>[s`Thank you! We’ll keep you posted.`]</i></p>
                     </div>
-                    <p class="hint align-center">[`Or follow us on Facebook and Twitter`]:</p>
                 {/if}
                 
-                <p class="hint align-center">
-                    {if !empty($theme_settings.facebook)}<a href="{$theme_settings.facebook}"><i class="icon16 facebook"></i>[s`Facebook`]</a>{/if}
-                    {if !empty($theme_settings.twitter)}<a href="https://twitter.com/{$theme_settings.twitter}"><i class="icon16 twitter"></i>[s`Twitter`]</a>{/if}
-                    {if !empty($theme_settings.vk)}<a href="{$theme_settings.vk}"><i class="icon16 vk"></i>[s`VK`]</a>{/if}
-                </p>
+                <div class="social">
+                    {if $wa->blog && $rss}<a href="{$rss}" title="[s`RSS`]"><i class="icon24 rss"></i></a>{/if}
+                    {if !empty($theme_settings.facebook)}<a href="{$theme_settings.facebook}" title="[s`Facebook`]"><i class="icon24 facebook"></i></a>{/if}
+                    {if !empty($theme_settings.twitter)}<a href="https://twitter.com/{$theme_settings.twitter}" title="[s`Twitter`]"><i class="icon24 twitter"></i></a>{/if}
+                    {if !empty($theme_settings.vk)}<a href="{$theme_settings.vk}" title="[s`VK`]"><i class="icon24 vk"></i></a>{/if}
+                    {if !empty($theme_settings.instagram)}<a href="http://instagram.com/{$theme_settings.instagram}" title="[s`Instagram`]"><i class="icon24 instagram"></i></a>{/if}
+                    {if !empty($theme_settings.youtube)}<a href="{$theme_settings.youtube}" title="[s`Youtube`]"><i class="icon24 youtube"></i></a>{/if}
+                    {if !empty($theme_settings.pinterest)}<a href="{$theme_settings.pinterest}" title="[s`Pinterest`]"><i class="icon24 pinterest"></i></a>{/if}
+                    {if !empty($theme_settings.gplus)}<a href="{$theme_settings.gplus}" title="[s`Google+`]"><i class="icon24 gplus"></i></a>{/if}
+                </div>
+                
             </div>
-            <div class="toggler">
-                <a id="followus-leash-toggler" class="inline-link" href="#"><b><i>[`Follow us`]</i></b> <i class="icon16 uarr"></i></a>
-                <i class="icon16 twitter"></i>
-                <i class="icon16 facebook"></i>
-            </div>
-        </aside>
-    {/if}
-    
-    {if $wa->isMobile()}<input id="isMobile">{/if}
+        </div>
+        {include file="`$wa_active_theme_path`/footer.html" inline}
+    </footer>
     
 </body>
 </html>
