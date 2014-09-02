@@ -89,3 +89,42 @@
 ul.menu-v.categories { padding-left: 10px; border-top: 1px solid #ccc; }
 ul.menu-v.categories li { line-height: 1.2em; font-size: 0.9em; margin: 12px 0 0; }
 ul.menu-v.categories li.selected a { color: #000; text-decoration: none; font-weight: bold; }
+
+
+/* TABLET
+========= */
+
+@media screen and (min-width: 760px) and (max-width: 1024px) {
+    
+}
+
+/* MOBILE
+========= */
+
+@media screen and (max-width: 760px) {
+
+    .post { margin-right: 0; }
+    .post h3 { font-size: 1.5em; }
+    .post .hero, .post .hero.superhero { margin-right: -15px; }
+    .post img { max-width: 100%; height: auto !important; }
+    
+    #page { margin: 0 0 20px; }
+    #timeline { display:none; }
+    #blog-list { padding-bottom: 20px; }
+    #blog-nav { padding-left: 10px; }
+    
+    .comment-form-fields label { width: auto; float: none; }
+    .comment-form-fields input { width: 80%; }
+    .comment-form textarea { width: 100%; }
+    .comment-form .comment-submit { padding-left: 0; }
+    .comment-form .wa-captcha img { margin-bottom: 10px; }
+
+}
+
+/* WIDE
+========= */
+
+@media screen and (min-width: 1300px) {
+
+
+}
