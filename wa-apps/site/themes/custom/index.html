@@ -5,6 +5,7 @@
 	<title>{$wa->title()|escape}</title>
 	<meta name="Keywords" content="{$wa->meta('keywords')|escape}" />
 	<meta name="Description" content="{$wa->meta('description')|escape}" />
+	<meta name="viewport" content="width=device-width, initial-scale=1{if $wa->isMobile()}, maximum-scale=1, user-scalable=0{/if}" />
 
     {if !empty($canonical)}<link rel="canonical" href="{$canonical}"/>{/if}
     <link rel="shortcut icon" href="/favicon.ico"/>
@@ -14,26 +15,33 @@
         {if $rss}<link rel="alternate" type="application/rss+xml" title="[s`RSS`] &mdash; {$wa->accountName()}" href="{$rss}">{/if}
     {/if}
     
-    <!-- fonts -->
-    <link href='http://fonts.googleapis.com/css?family=Roboto:400,700,700italic,400italic&subset=latin,cyrillic-ext' rel='stylesheet' type='text/css'>
-
 	<!-- css -->
 	<link href="{$wa_theme_url}custom.css?v{$wa_theme_version}" rel="stylesheet" type="text/css"/>
-	<link href="{$wa_theme_url}custom.mobile.css?v{$wa_theme_version}"{if !$wa->isMobile()} media="screen and (max-width: 760px)"{/if} rel="stylesheet" type="text/css"/>
     {if $wa->shop && $wa->shop->currency() == 'RUB'} <link href="{$wa_url}wa-content/font/ruble/arial/fontface.css" rel="stylesheet" type="text/css">{/if}
 	{$wa->css()} {* links active plugins CSS *}
 	
 	<!-- js -->
     <script type="text/javascript" src="{$wa_url}wa-content/js/jquery/jquery-1.8.2.min.js"></script>
     <script type="text/javascript" src="{$wa_theme_url}custom.js?v{$wa_theme_version}"></script>    
-	{if $wa->isMobile()}
-		<meta name="viewport" content="width=device-width; initial-scale=1; maximum-scale=1; user-scalable=0;" />
-	{/if}
     {$wa->js()} {* links active plugins JS *}
     
     {include file="`$wa_active_theme_path`/head.html" inline}
     
     {$wa->headJs()} {* links Google Analytics tracking code and current site's custom JS (Site app) *}
+
+    <!--[if lt IE 9]>
+    <script>
+    document.createElement('header');
+    document.createElement('nav');
+    document.createElement('section');
+    document.createElement('article');
+    document.createElement('aside');
+    document.createElement('footer');
+    document.createElement('figure');
+    document.createElement('hgroup');
+    document.createElement('menu');
+    </script>
+    <![endif]-->
     
     <!-- custom theme settings styles -->
     <style>
