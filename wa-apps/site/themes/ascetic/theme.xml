@@ -39,7 +39,15 @@
     <file path="error.html">
       <description locale="en_US">404 and other errors</description>
       <description locale="ru_RU">404 и другие ошибки</description>
-    </file> 
+    </file>
+     <file path="my.profile.html">
+        <description locale="en_US">My profile: contact info editing form</description>
+        <description locale="ru_RU">Мой профиль: редактирование контактной информации</description>
+    </file>
+     <file path="my.nav.html">
+        <description locale="en_US">My profile navigation</description>
+        <description locale="ru_RU">Навигационное меню внутри личного кабинета</description>
+    </file>
   </files>
   <settings>
     <setting var="nav_bg_color" control_type="color">
