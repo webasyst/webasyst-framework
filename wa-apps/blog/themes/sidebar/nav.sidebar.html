@@ -1,0 +1,36 @@
+<!-- plugins -->
+{* @event (frontend_action_default|frontend_action_post|frontend_action_page|frontend_action_error).%plugin_id%.sidebar *}
+{foreach $frontend_action as $plugin => $output}
+	<div class="block">
+        {$output.sidebar}
+	</div>
+{/foreach}
+
+<!-- timeline navigation -->
+{$timeline = $wa->blog->timeline()}
+{if !empty($timeline)}
+    <div class="block">
+    	<ul class="menu-v">
+    	{$year=null}
+    	{foreach $timeline as $year_month => $item}
+    		{if $year neq $item.year}
+    			{if !$item@first}
+                        </ul>
+                    </li>
+                {/if}
+                <li class="collapsible {if $item.year_selected}bold{/if}">
+                {$year=$item.year}
+    	        <a href="{$item.year_link}">{$item.year|default:'NULL'}</a>
+    			<ul class="menu-v">
+            {/if}
+            <li {if $item.selected}class="bold"{/if}>
+                <a href="{$item.link}" title="{_w("%d post","%d posts",$item.count)}">{_ws(date("F",gmmktime(0,0,0,$item.month,1)))}</a>
+            </li>
+    	    {if $item@last}
+    	            </ul>
+        	    </li>
+            {/if}
+        {/foreach}
+        </ul>
+    </div>
+{/if}

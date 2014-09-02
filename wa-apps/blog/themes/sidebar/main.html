@@ -1,0 +1,84 @@
+{* @event (frontend_action_default|frontend_action_post|frontend_action_page|frontend_action_error).%plugin_id%.nav_before *}
+{foreach $frontend_action as $plugin => $output}
+	{if !empty($output.nav_before)}{$output.nav_before}{/if}
+{/foreach}
+
+{if !$wa->globals('isMyAccount')}
+    <!-- navigation menu -->
+    <nav class="app-navigation" role="navigation">
+    
+        <!-- subscription links -->
+        {$rss = $wa->blog->rssUrl()}
+        {if $rss}
+        	<div class="float-right subscribe">
+        		<a href="{$rss}" title="[s`Subscribe`]" class="bold"><i class="icon16 rss"></i>RSS</a>
+        		{*
+        		&nbsp;
+        		<a href="#" title="Facebook"><i class="icon16 facebook"></i>Facebook</a>
+        		<a href="#" title="Twitter"><i class="icon16 twitter"></i>Twitter</a>
+        		*}
+        	</div>
+        {/if}
+        
+        <!-- search -->
+        <form method="get" action="{$wa_app_url}" class="search float-right">
+            <input type="search" name="query" {if !empty($blog_query)}value="{$blog_query}"{/if} placeholder="[`Search posts`]">
+            <div class="clear-both"></div>
+        </form>
+        
+        <ul class="menu-h">
+    
+        	<!-- blog list -->
+            {$blogs = $wa->blog->blogs()}
+            {if count($blogs)>1}
+                <li class="{if is_array($wa->globals('blog_id')) && empty($is_search)}selected{/if}"><a href="{$wa->blog->url()}">[`All posts`]</a></li>
+                {foreach $blogs as $blog}
+                    <li class="{if $wa->globals('blog_id') eq $blog.id && empty($is_search)}selected{/if}">
+                        <a href="{$blog.link}">{$blog.name}</a>
+                    </li>
+                {/foreach}
+            {else}
+                {$blog=current($blogs)}
+                <li{if empty($is_search)} class="bold"{/if}>
+                    <a href="{$wa->blog->url()}">{$blog.name}</a>
+                </li>
+            {/if}
+            
+            <!-- static page list -->
+            {$blog_pages = $wa->blog->pages()}
+            {foreach $blog_pages as $page}
+                <li{if strlen($page.url)>1 && $wa->currentUrl()|strstr:$page.url} class="selected"{/if}><a href="{$page.url}">{$page.name}</a></li>
+            {/foreach}
+    			
+        </ul>
+        
+    </nav>
+{/if}
+
+<div class="container">
+    <main class="content">
+    
+        {if empty($posts) && $wa->currentUrl() == $wa_app_url}
+    
+            <div class="welcome">
+                <h1>[`Welcome to your new blog!`]</h1>
+                <p>{sprintf('[`Start by <a href="%s">writing a post</a> in your blog backend.`]', $wa_backend_url|cat:'blog/')}</p>
+            </div>
+        
+        {else}
+    
+            <!-- integrnal navigation breadcrumbs -->
+            {if isset($breadcrumbs)}
+                <div class="breadcrumbs">
+                    {foreach $breadcrumbs as $breadcrumb}
+                        <a href="{$breadcrumb.url}">{$breadcrumb.name|escape}</a> <span class="rarr">&rarr;</span>
+                    {/foreach}
+                </div>
+            {/if}
+            
+            {$content}
+    
+        {/if}
+        
+    </main>
+</div>

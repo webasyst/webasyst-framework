@@ -23,7 +23,7 @@
                 <span class="username" rel="author" itemprop="author">{$post.user.name}</span>
             {/if}
             <meta itemprop="datePublished" content="{$post.datetime|date_format:'Y-m-d\TH:i'}">
-            <span class="hint date" title="{$post.datetime|wa_datetime}">{$post.datetime|wa_datetime:"humandate"}</span>
+            <span class="gray date" title="{$post.datetime|wa_datetime}">{$post.datetime|wa_datetime:"humandate"}</span>
         </div>
 
         {* @event prepare_posts_frontend.%plugin_id%.before *}

@@ -1,28 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE theme PUBLIC "wa-app-theme" "http://www.webasyst.com/wa-content/xml/wa-app-theme.dtd">
-<theme id="sidebar" system="0" vendor="webasyst" author="Webasyst" app="blog" parent_theme_id="site:sidebar" version="1.1.0">
-    <name locale="en_US">Sidebar</name>
-    <name locale="ru_RU">Sidebar</name>
+<theme id="sidebar" system="0" vendor="webasyst" author="Webasyst" app="blog" parent_theme_id="site:sidebar" version="2.0.0">
+    <name locale="en_US">Sidebar 2.0</name>
+    <name locale="ru_RU">Sidebar 2.0</name>
     <files>
         <file path="index.html" custom="0" parent="1">
         </file>
         <file path="sidebar.css" custom="0" parent="1">
         </file>
-        <file path="sidebar.mobile.css" custom="0" parent="1">
-        </file>
-        <file path="sidebar.tablet.css" custom="0" parent="1">
-        </file>
-        <file path="sidebar.wide.css" custom="0" parent="1">
-        </file>
         <file path="sidebar.blog.css" custom="0">
             <description locale="en_US">Core Blog app CSS</description>
             <description locale="ru_RU">Основной CSS приложения «Блог»</description>
+        </file>      
+        <file path="sidebar.blog.js" custom="0">
+            <description locale="en_US">JS</description>
+            <description locale="ru_RU">JS</description>
         </file>
-        <file path="sidebar.blog.mobile.css" custom="0">
-            <description locale="en_US">Additional Blog app CSS for multi-touch mobile devices</description>
-            <description locale="ru_RU">Дополнительный CSS приложения «Блог» для мобильных устройств</description>
-        </file>        
-        <file path="content.html" custom="0">
+        <file path="main.html" custom="0">
             <description locale="en_US">Main layout and navigation for the Blog app content</description>
             <description locale="ru_RU">Основное макет вывода содержимого и навигации в приложении «Блог»</description>
         </file>
@@ -74,17 +68,27 @@
             <description locale="en_US">404 and other errors</description>
             <description locale="ru_RU">404 и другие ошибки</description>
         </file>
-        <file path="pagelist.html" custom="0">
-            <description locale="en_US">Internal app page tree</description>
-            <description locale="ru_RU">Внутренняя навигация по информационным страницам приложения</description>
+        <file path="nav.sidebar.html" custom="0">
+            <description locale="en_US">Internal app navigation tree</description>
+            <description locale="ru_RU">Внутренняя навигация приложения</description>
         </file>
         <file path="footer.html" custom="0">
             <description locale="en_US">App specific footer content</description>
             <description locale="ru_RU">Содержимое футера приложения</description>
         </file>
-        <file path="blog.js" custom="0">
-            <description locale="en_US">JS</description>
-            <description locale="ru_RU">JS</description>
+        <file path="my.nav.html">
+            <description locale="en_US">Customer account navigation menu</description>
+            <description locale="ru_RU">Меню навигации в личном кабинете покупателя</description>
+        </file>
+        <file path="login.html" parent="1">
+        </file>
+        <file path="signup.html" parent="1">
+        </file>
+        <file path="forgotpassword.html" parent="1">
+        </file>
+        <file path="my.profile.html" parent="1">
+        </file>
+        <file path="error.html" parent="1">
         </file>
     </files>
     <about locale="en_US">
