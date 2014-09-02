@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE theme PUBLIC "wa-app-theme" "http://www.webasyst.com/wa-content/xml/wa-app-theme.dtd">
-<theme id="nifty" system="0" vendor="webasyst" author="Webasyst" app="photos" parent_theme_id="site:nifty" version="1.1.0">
+<theme id="nifty" system="0" vendor="webasyst" author="Webasyst" app="photos" parent_theme_id="site:nifty" version="1.1.2">
     <name locale="en_US">Nifty</name>
     <name locale="ru_RU">Nifty</name>
     <description locale="ru_RU">Семейство адаптивных тем дизайна.</description>
@@ -9,20 +9,10 @@
         </file>
         <file path="nifty.css" custom="0" parent="1">
         </file>
-        <file path="nifty.mobile.css" custom="0" parent="1">
-        </file>
-        <file path="nifty.tablet.css" custom="0" parent="1">
-        </file>
-        <file path="nifty.wide.css" custom="0" parent="1">
-        </file>
         <file path="nifty.photos.css" custom="0">
-            <description locale="en_US">Core Photos app CSS</description>
-            <description locale="ru_RU">Основной CSS приложения «Фото»</description>
         </file>
-        <file path="nifty.photos.mobile.css" custom="0">
-            <description locale="en_US">Additional Photos app CSS for multi-touch mobile devices</description>
-            <description locale="ru_RU">Дополнительный CSS приложения «Фото» для мобильных устройств</description>
-        </file>        
+        <file path="nifty.photos.js" custom="0">
+        </file>
         <file path="content.html" custom="0">
             <description locale="en_US">Main layout and navigation for the Photos app content</description>
             <description locale="ru_RU">Основное макет вывода содержимого и навигации в приложении «Фото»</description>
@@ -63,21 +53,19 @@
             <description locale="en_US">Static page content</description>
             <description locale="ru_RU">Содержимое информационной страницы</description>
         </file>
-        <file path="login.html" custom="0">
-            <description locale="en_US">Login page</description>
-            <description locale="ru_RU">Страница входа для пользователей</description>
+        <file path="my.nav.html">
+            <description locale="en_US">Customer account navigation menu</description>
+            <description locale="ru_RU">Меню навигации в личном кабинете покупателя</description>
         </file>
-        <file path="signup.html" custom="0">
-            <description locale="en_US">Sign up page</description>
-            <description locale="ru_RU">Страница регистрации пользователей</description>
+        <file path="my.profile.html" parent="1">
         </file>
-        <file path="forgotpassword.html" custom="0">
-            <description locale="en_US">Forgot password page</description>
-            <description locale="ru_RU">Страница сброса пароля</description>
+        <file path="login.html" parent="1">
         </file>
-        <file path="error.html" custom="0">
-          <description locale="en_US">404 and other errors</description>
-          <description locale="ru_RU">404 и другие ошибки</description>
+        <file path="signup.html" parent="1">
+        </file>
+        <file path="forgotpassword.html" parent="1">
+        </file>
+        <file path="error.html" parent="1">
         </file>
         <file path="navigation.html" custom="0">
             <description locale="en_US">Internal app navigation</description>
@@ -87,10 +75,6 @@
             <description locale="en_US">App specific footer content</description>
             <description locale="ru_RU">Содержимое футера приложения</description>
         </file>
-        <file path="lazyloading.js">
-            <description locale="en_US">Lazy loading JS</description>
-            <description locale="ru_RU">Скрипты загрузки контента «на лету»</description>
-        </file>  
     </files>
     <about locale="en_US">
 <![CDATA[

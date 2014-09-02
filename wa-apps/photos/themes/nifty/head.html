@@ -1,19 +1,16 @@
-    <!-- photos app css -->
-    <link href="{$wa_active_theme_url}nifty.photos.css?v{$wa_theme_version}" rel="stylesheet" type="text/css">
-    <link href="{$wa_active_theme_url}nifty.photos.mobile.css?v{$wa_theme_version}"{if !$wa->isMobile()} media="screen and (max-width: 760px)"{/if} rel="stylesheet" type="text/css">
+<!-- photos app css -->
+<link href="{$wa_active_theme_url}nifty.photos.css?v{$wa_theme_version}" rel="stylesheet" type="text/css">
 
-    <!-- js -->
-    <script type="text/javascript" src="{$wa_url}wa-content/js/jquery-wa/wa.core.js?v{$wa->version(true)}"></script>
-    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
-    <script type="text/javascript" src="{$wa_active_theme_url}lazyloading.js?v{$wa->version(true)}"></script>
-    {if $wa->photos->config('enable_2x')}
-    <script type="text/javascript" src="{$wa_url}wa-content/js/jquery-plugins/jquery.retina.js?v{$wa->version(true)}"></script>
-    <script type="text/javascript">$(window).load(function(){ $('#photo-list img,.photo img').retina()});</script>
-    {/if}
-    {if $nofollow}
-        <!-- "nofollow" for duplicate photo pages (context dependent) -->
-        <meta name="robots" content="nofollow" />
-    {/if}
+<!-- js -->
+<script type="text/javascript" src="{$wa_active_theme_url}nifty.photos.js?v{$wa->version(true)}"></script>
+{if $wa->photos->config('enable_2x')}
+<script type="text/javascript" src="{$wa_url}wa-content/js/jquery-plugins/jquery.retina.min.js?v{$wa->version(true)}"></script>
+<script type="text/javascript">$(window).load(function(){ $('#photo-list img,.photo img').retina()});</script>
+{/if}
+{if $nofollow}
+    <!-- "nofollow" for duplicate photo pages (context dependent) -->
+    <meta name="robots" content="nofollow" />
+{/if}
 
-    {* @event frontend_assets.%plugin_id% *}
-    {foreach $frontend_assets as $item}{if !empty($item)}{$item}{/if}{/foreach}
+{* @event frontend_assets.%plugin_id% *}
+{foreach $frontend_assets as $item}{if !empty($item)}{$item}{/if}{/foreach}
