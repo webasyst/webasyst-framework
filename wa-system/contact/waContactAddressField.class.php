@@ -132,24 +132,6 @@ class waContactAddressField extends waContactCompositeField
         return $value;
     }
 
-    public function getFields($subfield_name = null, $ignore_hidden = true)
-    {
-        $fields = array();
-        foreach ($this->options['fields'] as $f) {
-            if ($f->getId() === $subfield_name) {
-                return $f;
-            }
-            if ($ignore_hidden && $f instanceof waContactHiddenField) {
-                continue;
-            }
-            $fields[$f->getId()] = $f;
-        }
-        if ($subfield_name !== null) {
-            return null;
-        }
-        return $fields;
-    }
-
     public function set(waContact $contact, $value, $params = array(), $add = false)
     {
         $result = parent::set($contact, $value, $params, $add);
@@ -308,6 +290,9 @@ class waContactAddressOneLineFormatter extends waContactFieldFormatter
             /**
              * @var waContactField $field
              */
+            if ($field instanceof waContactHiddenField) {
+                continue;
+            }
             $id = $field->getId();
             if (isset($data['data'][$id]) && trim($data['data'][$id])) {
                 if ($id === 'country') {
