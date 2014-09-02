@@ -12,7 +12,7 @@ msgstr ""
 "%10)>=2)&&((n%10)<=4))&&(((n%100)<10)||((n%100)>=20)))?(1):2));\n"
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
-"X-Generator: Poedit 1.6.4\n"
+"X-Generator: Poedit 1.6.8\n"
 "Language: ru_RU\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
@@ -1550,3 +1550,34 @@ msgstr ""
 "Качество сжатия JPEG для эскизов. От 0 (низкое качество, минимальный размер "
 "файла) до 100 (выше качество, больше размер файла). Рекомендуемое значение: "
 "70."
+
+#: /wa-apps/photos/lib/actions/frontend/photosFrontendMy.action.php:36
+#: /wa-apps/photos/lib/actions/frontend/photosFrontendMy.action.php:46
+msgid "My account"
+msgstr "Личный кабинет"
+
+#: /wa-apps/photos/lib/actions/frontend/photosFrontendMy.action.php:36
+msgid "My profile"
+msgstr "Мой профиль"
+
+#: /wa-apps/photos/themes/ascetic/index.html:88
+#: /wa-apps/photos/themes/clear/home.html:11
+#: /wa-apps/photos/themes/custom/home.html:11
+#: /wa-apps/photos/themes/default/home.html:11
+#: /wa-apps/photos/themes/facebook/home.html:11
+#: /wa-apps/photos/themes/nifty/home.html:11
+#: /wa-apps/photos/themes/pinboard/home.html:7
+#: /wa-apps/photos/themes/sidebar/home.html:11
+#: /wa-apps/photos/themes/vk/home.html:11
+msgid "Start by <a href=\"%s\">uploading photos</a> in your gallery backend."
+msgstr ""
+"Начните с <a href=\"%s\">загрузки фотографий</a> в бекенде фотогалереи."
+
+#: /wa-apps/photos/themes/default/album.html:39
+msgid "There are no photos in this album."
+msgstr "В этом альбоме нет фотографий."
+
+#: /wa-apps/photos/themes/default/photos-plain.html:47
+#: /wa-apps/photos/themes/default/photos-thumbs.html:41
+msgid "Load more"
+msgstr "Загрузить еще"

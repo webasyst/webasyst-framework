@@ -181,7 +181,7 @@
             <input type="checkbox" id="photos-checkbox-{%#p.id%}" name="photo_id[]" value="{%#p.id%}" 
                         {% if (o.selected) { %}checked="checked"{% } %}
             >
-            <label for="photos-checkbox-{%#p.id%}"><strong>{%#p.name%}</strong></label>
+            <label for="photos-checkbox-{%#p.id%}"><strong{% if (p.status <= 0) { %} class="gray" title="[`Private photo`]"{% } %}>{%#p.name%}</strong></label>
             <span class="p-rate" {% if (p.rate == 0) { %}style="display: none;"{% } %}>
                 {%#$.photos.getRatingHtml(p.rate, 10, true)%}
             </span>

@@ -9,9 +9,10 @@ return array(
     'plugins'=>true,
     'pages' => true,
     'mobile' => true,
-    'version'=>'1.1.1',
+    'version'=>'1.1.2',
     'vendor'=>'webasyst',
     'img' => 'img/photos.png',
+    'my_account' => true,
     'icon'=>array(
         16 => 'img/photos16.png',
         24 => 'img/photos24.png',

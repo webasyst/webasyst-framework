@@ -6,19 +6,30 @@ class photosAlbumParamsModel extends waModel
 
     /**
      * Get custom params of album
-     * @param int $album_id
-     * @return array params in key=>value format
+     * @param int|array $album_id
+     * @return array 
+     *  if album_id is int, than array key=>value format
+     *  if album_id is array, than array of arrays in album_id => array of key=>value format
      */
     public function get($album_id)
     {
         $params = array();
-        $album_params = $this->getByField('album_id', $album_id, true);
-        foreach ($album_params as &$p) {
-            $params[$p['name']] = $p['value'];
+        $album_params = $this->getByField('album_id', array_map('intval', (array) $album_id), true);
+        if (is_numeric($album_id)) {
+            foreach ($album_params as $p) {
+                $params[$p['name']] = $p['value'];
+            }
+        } else {
+            foreach ($album_params as $p) {
+                if (!isset($params[$p['album_id']])) {
+                    $params[$p['album_id']] = array();
+                }
+                $params[$p['album_id']][$p['name']] = $p['value'];
+            }            
         }
-        unset($p);
         return $params;
     }
+
 
     /**
      * Set custom params to album

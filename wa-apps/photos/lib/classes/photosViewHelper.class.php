@@ -58,9 +58,10 @@ class photosViewHelper extends waAppViewHelper
      *
      * Get photos albums tree
      * @param bool $return_html
+     * @param bool $custom_params get with custom params or not
      * @return string
      */
-    public function albums($return_html = true)
+    public function albums($return_html = true, $custom_params = true)
     {
         $album_model = new photosAlbumModel();
         $albums = $album_model->getAlbums(true);
@@ -68,6 +69,20 @@ class photosViewHelper extends waAppViewHelper
             $a['name'] = htmlspecialchars($a['name']);
         }
         unset($a);
+        
+        if ($custom_params) {
+            $album_params_model = new photosAlbumParamsModel();
+            $params = $album_params_model->get(array_keys($albums));
+            foreach ($albums as $a_id => &$a) {
+                foreach (ifset($params[$a_id], array()) as $k => $v) {
+                    if (!isset($a[$k])) {
+                        $a[$k] = $v;
+                    }
+                }
+            }
+            unset($a);
+        }
+        
         if ($return_html) {
             $tree = new photosViewTree($albums);
             return $tree->display('frontend');

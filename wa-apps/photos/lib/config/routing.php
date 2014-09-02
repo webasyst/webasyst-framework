@@ -34,9 +34,15 @@ return array(
         'photo/<url>/loadList' => 'frontend/loadList',
         'photo/<url>/' => 'frontend/photo',
 
+        'my/' => array(
+            'module' => 'frontend',
+            'action' => 'my',
+            'secure' => true,
+        ),
         'login/' => 'login',
         'forgotpassword/' => 'forgotpassword',
         'signup/' => 'signup',
+        'data/regions/' => 'frontend/regions',
         'logout/' => 'frontend/logout',
         '<url>/loadPhoto' => 'frontend/loadPhoto',
         '<url>/' => 'frontend/album',
@@ -72,9 +78,15 @@ return array(
         'album/<url>/loadPhoto' => 'frontend/loadPhoto',
         'album/<url>/' => 'frontend/album',
 
+        'my/' => array(
+            'module' => 'frontend',
+            'action' => 'my',
+            'secure' => true,
+        ),
         'login/' => 'login',
         'forgotpassword/' => 'forgotpassword',
         'signup/' => 'signup',
+        'data/regions/' => 'frontend/regions',
         'logout/' => 'frontend/logout',
 
         '<url>/loadList' => 'frontend/loadList',

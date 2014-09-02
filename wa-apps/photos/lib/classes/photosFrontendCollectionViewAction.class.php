@@ -70,6 +70,7 @@ class photosFrontendCollectionViewAction extends photosFrontendViewAction
             $this->getResponse()->setMeta('description', waRequest::param('meta_description'));
             $this->view->assign('title', '');
         }
+        $this->workupPhotos($photos);
         
         $total_count = $collection->count();
 
@@ -100,5 +101,11 @@ class photosFrontendCollectionViewAction extends photosFrontendViewAction
         $v = wa()->getVersion();
         $this->getResponse()->addJs('js/lazy.load.js?v='.$v, true);
         $this->getResponse()->addJs('js/frontend.photos.js?v='.$v, true);
+    }
+    
+    // redefine in descendants classes
+    protected function workupPhotos($photos)
+    {
+        
     }
 }

@@ -78,8 +78,8 @@
         <li id="sidebar-design"><a href="#/design/"><i class="icon16 design"></i>[s`Design`]</a></li>
         {/if}
         {if $wa->user()->isAdmin('photos')}
-          <li id="sidebar-plugins"><a href="#/plugins/"><i class="icon16 plugins"></i>[`Plugins`]</a></li>
-          <li id="sidebar-settings"><a href="#/settings/"><i class="icon16 settings"></i>[`Settings`]</a></li>
+            <li id="sidebar-settings" class="top-padded"><a href="#/settings/"><i class="icon16 settings"></i>[`Settings`]</a></li>
+            <li id="sidebar-plugins"><a href="#/plugins/"><i class="icon16 plugins"></i>[`Plugins`]</a></li>
         {/if}
       </ul>
     </div>
