@@ -33,6 +33,14 @@ class sitePagesActions extends waPageActions
             $d = $domain_model->getByName($domain);
             $this->options['data']['info[domain_id]'] = $d['id'];
         }
+        if (!waRequest::get('id') && !waRequest::get('parent_id')) {
+            if (!$this->getPageModel()->countByField(array(
+                'domain_id' => siteHelper::getDomainId(),
+                'route' => waRequest::get('route'),
+            ))) {
+                $this->options['disable_auto_url'] = true;
+            }
+        }
         parent::editAction();
     }
 

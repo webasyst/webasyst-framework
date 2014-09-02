@@ -3,6 +3,7 @@
 	{if $vars}<li id="s-helper-vars" class="selected"><a href="#">{$app.name|escape}</a></li>{/if}
 	<li id="s-helper-wa"{if !$vars} class="selected"{/if}><a href="#">$wa</a></li>
 	<li id="s-helper-smarty"><a href="#">Smarty</a></li>
+    <li id="s-helper-blocks"><a href="#">[`Blocks`]</a></li>
 </ul>
 {if $vars}
 <div id="s-helper-vars-content" class="tab-content s-dropdown-content">
@@ -43,6 +44,17 @@
 	   </div>
 	   {/foreach}
 	</div>
+</div>
+
+<div id="s-helper-blocks-content" class="tab-content s-dropdown-content" style="display:none">
+    <div class="fields">
+        {foreach $blocks as $block_id => $b}
+        <div class="field">
+            <div class="name"><a href="#" class="inline-link"><b><i>{literal}{$wa->block('{/literal}{$block_id|escape}{literal}')}{/literal}</i></b></a></div>
+            <div class="value"><span class="hint">{$b.description}</span></div>
+        </div>
+        {/foreach}
+    </div>
 </div>
 
 <script type="text/javascript">

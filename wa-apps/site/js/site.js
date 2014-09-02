@@ -142,14 +142,14 @@ $.wa.site = {
     designAction: function (params) {
         if ($('#wa-design-container').length) {
             waDesignLoad(params === undefined ? '' : params);
-            $.wa.site.savePanel(!params || params.indexOf('action=') == -1);
+            $.wa.site.savePanel(params && (params.indexOf('action=edit') != -1 || params.indexOf('file=') != -1));
             $('#wa-design-button').removeClass('yellow').addClass('green');
         } else {
             var p = this.parseParams(params);
             $('#s-save-panel input').replaceWith('<input id="wa-design-button" type="button" class="button green" value="' + $_('Save') + '">');
             $("#s-content").load('?module=design', 'domain_id=' + this.domain, function () {
 // deprecated                $(".s-scrollable-part").scrollTop(0);
-                $.wa.site.savePanel(!params || params.indexOf('action=') == -1);
+                $.wa.site.savePanel(params && (params.indexOf('action=edit') != -1 || params.indexOf('file=') != -1));
                 $.wa.site.active($("#s-link-design"));
                 $('#wa-design-button').click(function () {
                     $("#wa-design-form").submit();
@@ -440,6 +440,71 @@ $.wa.site = {
             $("tr#route-" + id + ' .s-route-settings').click();
 		});
 	},
+
+    personalSettingsAction: function (hash) {
+        var d = this.domain;
+        this.savePanel(false);
+        var f = function () {
+            $("#s-personal-content").html('<i class="icon16 loading"></i>').load('?module=personal&action=settings&hash=' + (hash || ''), 'domain_id=' + d, function () {
+                $('ul.s-personal-structure li.selected').removeClass('selected');
+            });
+        }
+
+        if ($('#s-personal-content').length) {
+            f();
+        } else {
+            this.personalAction(f);
+        }
+    },
+
+    personalAppAction: function (app_id) {
+        var d = this.domain;
+        this.savePanel(false);
+        var f = function () {
+            $("#s-personal-content").html('<i class="icon16 loading"></i>').load('?module=personal&action=app&app_id=' + app_id, 'domain_id=' + d, function () {
+                $('ul.s-personal-structure li.selected').removeClass('selected');
+                $('#s-personal-app-' + app_id).addClass('selected');
+                $('#s-app-frontend-link').html($('#s-personal-app-' + app_id).data('link')).attr('href', $('#s-personal-app-' + app_id).data('link'));
+            });
+        }
+        if ($('#s-personal-content').length) {
+            f();
+        } else {
+            this.personalAction(f);
+        }
+    },
+
+    personalProfileAction: function () {
+        var d = this.domain;
+        this.savePanel(false);
+        var f = function () {
+            $("#s-personal-content").html('<i class="icon16 loading"></i>').load('?module=personal&action=profile', 'domain_id=' + d, function () {
+                $('ul.s-personal-structure li.selected').removeClass('selected');
+                $('#s-personal-profile-link').addClass('selected');
+            });
+        }
+        if ($('#s-personal-content').length) {
+            f();
+        } else {
+            this.personalAction(f);
+        }
+    },
+
+    personalAction: function (callback) {
+        this.savePanel(false);
+        $("#s-content").load('?module=personal', 'domain_id=' + this.domain, function () {
+            $.wa.site.active($("#s-link-personal"));
+            if (callback) {
+                callback();
+            } else {
+                if ($('#s-personal-settings-link').data('enabled')) {
+                    $.wa.setHash($('ul.s-personal-structure a:first').attr('href'));
+                } else {
+                    $.wa.setHash('#/personal/settings/');
+                }
+            }
+        });
+    },
 	
 	parseParams: function (params) {
 		if (!params) return {};
@@ -554,7 +619,11 @@ $(function () {
 		if (el.children('b').length) {
 			el = el.children('b');
 		}
-        $('#wa-page-content').waEditor('insert', el.text());
+        if ($('#wa-page-content').length) {
+            $('#wa-page-content').waEditor('insert', el.text());
+        } else {
+            wa_editor.insert(el.text());
+        }
 		return false;
 	});
 	$("#wa-app > div.s-sidebar a, #wa-header a").live('click', function () {

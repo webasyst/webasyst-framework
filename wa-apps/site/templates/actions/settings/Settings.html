@@ -16,223 +16,176 @@
 <div>
 	<div class="block double-padded fields form">
 		<form target="s-settings-iframe" id="s-settings-form" method="post" action="?module=settings&action=save&domain_id={$domain_id}" enctype="multipart/form-data">
-        {$wa->csrf()}
-		<div class="field-group">
-		<div class="field">
-			<div class="name bold">[`Domain name`]</div>
-			<div class="value">
-				<strong>http://</strong><input type="text" class="bold" name="url" value="{$domain|escape}" /><br />
-				<span class="hint">
-					[`A valid URL pointing to this Webasyst installation.`]<br />
-					[`E.g. <em>domain.com</em> if Webasyst is installed into domain.com's root folder, <em>domain.com/wa</em> if Webasyst is installed into /wa/ subfolder on domain.com. Do not put slash at the end of the URL.`]<br />
-					<strong>[`IMPORTANT`]:</strong> [`The URL entered must point to the root of this Webasyst framework installation.`]
-				</span>
-			</div>
-		</div>
-		<div class="field">
-			<div class="name bold">[`Site name`]</div>
-			<div class="value no-shift">
-				<input id="s-domain-title" type="checkbox" {if !$title}checked="checked"{/if} /> <label for="s-domain-title">[`Matches domain name`]</label>
-				<div {if !$title}style="display:none"{/if}>
-					<input type="text" class="bold" name="title" value="{$title|escape}" /><br />
-					<span class="hint">[`Site alias used within site selection menu (at the top left corner), and as the anchor name in frontend's <em>$wa->apps()</em> navigation menu array.`]</span>
-				</div>
-			</div>
-		</div>
-		<div class="field">
-			<div class="name">
-				<strong>&#123;$wa-&gt;apps()&#125; [`menu`]</strong>
-				<br />
-				<span class="hint"> [`The array defining core website navigation menu`]</span>
-			</div>
-			<div class="value no-shift">
-				<input type="radio" name="wa_apps_type" {if !$domain_apps_type}checked{/if} id="waapps-auto" value="0" /><label for="waapps-auto"> [`All settled apps`] <span class="hint">[`Automatically define navigation menu according to the routing rules`]</span></label>
-			</div>
-			<div class="value">
-				<input type="radio" name="wa_apps_type" {if $domain_apps_type}checked{/if} id="waapps-select" value="1" /><label for="waapps-select"> [`Setup manually`]</label>
-				<div {if !$domain_apps_type}style="display:none"{/if}>
-                    <table id="s-wa-apps" class="zebra s-settings-apps">
-						{foreach $domain_apps as $row}
-						<tr>
-	   					   <td class="s-app"><a style="display:inline" href="#" onclick="return false"><i class="icon16 sort"></i></a>
-						      <span>{$row.name|escape}</span>
-						      <input style="display:none" type="text" name="apps[name][]" value="{$row.name|escape}" />
-						   </td>
-						   <td>
-						      <span>{$row.url|escape}</span>
-						      <input style="display:none" type="text" name="apps[url][]" value="{$row.url|escape}" />
-						   </td>
-    		               <td class="s-actions">
-			                    <a href="#" class="s-apps-edit" title="[`Edit`]"><i class="icon16 edit"></i></a>
-			                    <a href="#" class="s-apps-delete" title="[`Delete`]"><i class="icon16 delete"></i></a>
-			               </td>
-						</tr>
-						{/foreach}
-					</table>
-					<div style="display:none; float: right;"><em class="hint">[`When done editing, click “Save” to apply changes.`]</em></div>
-					<a href="#" class="inline-link" id="s-apps-add"><i class="icon16 add"></i>
-					   <b><i>[`Add link`]</i></b>
-					</a>
-
-				</div>
-			</div>
-		</div>
-		</div>
-
-		<div class="field-group">
-		<div class="field">
-			<div class="name">[`Background`]</div>
-			<div class="value">
-				<ul class="menu-h s-site-background-selector">
-                    {$classes = array('white', 'grey', 'blue', 'yellow', 'red', 'green', 'purple')}
-                    {foreach $classes as $c}
-                    <li class="s-{$c}"><a href="javascript:void(0)"><input type="radio" name="background" value="{$c}"{if $style==$c} checked="checked"{/if}></a></li>
-                    {/foreach}
-                    <li style="">
-                        <a href="javascript:void(0)" style="margin-right: 5px;{if substr($style, 0, 1) == '.'}background:url({$wa_url}wa-data/public/site/background/{$domain_id}{$style}){/if}">
-                            <input name="background" type="radio" value="{if substr($style, 0, 1) == '.'}{$style}{/if}"{if substr($style, 0, 1) == '.'} checked="checked"{/if}>
-                        </a>
-                        <span class="small">[`Custom`]:</span>
-                        <input id="background_file" type="file" name="background_file">
-                    </li>
-                </ul>
-                <script type="text/javascript">
-                    $(".s-site-background-selector a").click(function (e) {
-                        if (e.target.tagName != 'INPUT') {
-                            $(this).children('input').click();
-                        }
-                    });
-                    $(".s-site-background-selector input:radio").click(function (e) {
-                        var c = $(this).val();
-                        if (c) {
-                            if (c.substr(0, 1) == '.') {
-                                $("#wa").removeAttr('class');
-                                $("#wa").css('background', 'url({$wa_url}wa-data/public/site/background/{$domain_id}' + c + ')');
-                            } else {
-                                $("#wa").removeAttr('style');
-                                $("#wa").attr('class', 's-' + c);
-                            }
-                        } else {
-                            $("#wa").removeAttr('class');
-                        }
-                        return true;
-                    });
-                    $("#background_file").change(function () {
-                       $(this).parent().children('a').click();
-                    });
-                </script>
-				<span class="hint">[`Background is for customizing your Site app backend, which is useful when you have multiple websites powered by the single Webasyst installation. Selected background will not be shown in the frontend.`]</span>
-			</div>
-		</div>
-        <div class="field">
-            <div class="name">[`Custom head JS`]</div>
-            <div class="value">
-            	[`Google Analytics Property ID`]: 
-                <input type="text" name="google_analytics" value="{$google_analytics|escape}">
-                <br />
-                <span class="hint">[`E.g. <strong>UA-123456-1</strong><br />If you are using <a href="https://www.google.com/analytics/">Google Analytics</a> to track your website visits and conversions, instead of embedding Google Analytics JS code manually, enter your Google Analytics Property ID here. A valid Google Analytics code will be automatically embedded into every app and every design theme before the closing &lt;/head&gt; tag.`]</span>
-                <br /><br />
-            </div>
-            <div class="value no-shift">
-            	[`Additional JS code to be added before the closing &lt;/head&gt; tag:`]<br />
-                <textarea name="head_js" placeholder="&lt;script&gt;&lt;/script&gt;">{$head_js|escape}</textarea><br />
-                <span class="hint">
-                	&lt;/head&gt;
-                </span>
-            </div>
-        </div>
-        </div>
-
-        <div class="field-group">
-        <div class="field">
-            <div class="name">[`Favicon`]</div>
-            <div class="value">
-                <i class="icon16 favicon"
-                    style="background-image: url('{$favicon}');"></i>
-                [`Upload another favicon`] (.ico, 16x16): <input name="favicon" type="file" />
-                {if isset($favicon_message)}<br /><span class="small" style="color: #f00;">{$favicon_message}</span>{/if}
-            </div>
-        </div>
-        <div class="field">
-            <div class="name">robots.txt</div>
-            <div class="value">
-                <textarea name="robots">{$robots|escape}</textarea>
-                <br />
-                {if isset($robots_message)}<span class="small" style="color: #f00;">{$robots_message}</span>{else}<span class="hint">[`Contents of this site's robots.txt file.`]</span>{/if}
-            </div>
-        </div>
-        </div>
-
-        <div class="field-group">
-            <div class="field">
-                <div class="name">[`Authorization`]</div>
-                <div class="value no-shift">
-                    <input id="s-auth-enabled" name="auth_enabled" type="checkbox" {if !$auth_apps}disabled="disabled"{/if} {if $auth_config['auth']}checked="checked"{/if} />
-                    <label for="s-auth-enabled">[`Enable sign up and login forms for this site`]</label>
-                    {if $auth_apps}
-                    <div id="s-auth-app" {if !$auth_config['auth']} style="display:none"{/if}>
-                        <br>
-                        [`Select the app that will handle authorization forms:`]
-                        <ul class="menu-v">
-                            {foreach $auth_apps as $app}
-                            <li>
-                                <input id="s-auth-app-{$app.id}" type="radio" name="auth_app" value="{$app.id}" {if $app.id == $auth_config['app']}checked="checked"{/if}>
-                                &nbsp;
-                                <label for="s-auth-app-{$app.id}"><img class="s-app16x16icon-menu-v" src="{$wa_url}{$app.icon.16}"></i>{$app.name|escape}</label>
+            {$wa->csrf()}
+    		<div class="field-group">
+        		<div class="field">
+        			<div class="name bold">[`Domain name`]</div>
+        			<div class="value">
+        				<strong>http://</strong><input type="text" class="bold" name="url" value="{$domain|escape}" /><br />
+        				<span class="hint">
+        					[`A valid URL pointing to this Webasyst installation.`]<br />
+        					[`E.g. <em>domain.com</em> if Webasyst is installed into domain.com's root folder, <em>domain.com/wa</em> if Webasyst is installed into /wa/ subfolder on domain.com. Do not put slash at the end of the URL.`]<br />
+        					<strong>[`IMPORTANT`]:</strong> [`The URL entered must point to the root of this Webasyst framework installation.`]
+        				</span>
+        			</div>
+        		</div>
+        		<div class="field">
+        			<div class="name bold">[`Site name`]</div>
+        			<div class="value no-shift">
+        				<input id="s-domain-title" type="checkbox" {if !$title}checked="checked"{/if} /> <label for="s-domain-title">[`Matches domain name`]</label>
+        				<div {if !$title}style="display:none"{/if}>
+        					<input type="text" class="bold" name="title" value="{$title|escape}" /><br />
+        					<span class="hint">[`Site alias used within site selection menu (at the top left corner), and as the anchor name in frontend's <em>$wa->apps()</em> navigation menu array.`]</span>
+        				</div>
+        			</div>
+        		</div>
+        		<div class="field">
+        			<div class="name">
+        				<strong>&#123;$wa-&gt;apps()&#125; [`menu`]</strong>
+        				<br />
+        				<span class="hint"> [`The array defining core website navigation menu`]</span>
+        			</div>
+        			<div class="value no-shift">
+        				<input type="radio" name="wa_apps_type" {if !$domain_apps_type}checked{/if} id="waapps-auto" value="0" /><label for="waapps-auto"> [`All settled apps`] <span class="hint">[`Automatically define navigation menu according to the routing rules`]</span></label>
+        			</div>
+        			<div class="value">
+        				<input type="radio" name="wa_apps_type" {if $domain_apps_type}checked{/if} id="waapps-select" value="1" /><label for="waapps-select"> [`Setup manually`]</label>
+        				<div {if !$domain_apps_type}style="display:none"{/if}>
+                            <table id="s-wa-apps" class="zebra s-settings-apps">
+        						{foreach $domain_apps as $row}
+        						<tr>
+        	   					   <td class="s-app"><a style="display:inline" href="#" onclick="return false"><i class="icon16 sort"></i></a>
+        						      <span>{$row.name|escape}</span>
+        						      <input style="display:none" type="text" name="apps[name][]" value="{$row.name|escape}" />
+        						   </td>
+        						   <td>
+        						      <span>{$row.url|escape}</span>
+        						      <input style="display:none" type="text" name="apps[url][]" value="{$row.url|escape}" />
+        						   </td>
+            		               <td class="s-actions">
+        			                    <a href="#" class="s-apps-edit" title="[`Edit`]"><i class="icon16 edit"></i></a>
+        			                    <a href="#" class="s-apps-delete" title="[`Delete`]"><i class="icon16 delete"></i></a>
+        			               </td>
+        						</tr>
+        						{/foreach}
+        					</table>
+        					<div style="display:none; float: right;"><em class="hint">[`When done editing, click “Save” to apply changes.`]</em></div>
+        					<a href="#" class="inline-link" id="s-apps-add"><i class="icon16 add"></i>
+        					   <b><i>[`Add link`]</i></b>
+        					</a>
+        
+        				</div>
+        			</div>
+        		</div>
+    		</div>
+    
+    		<div class="field-group">
+        		<div class="field">
+        			<div class="name">[`Background`]</div>
+        			<div class="value">
+        				<ul class="menu-h s-site-background-selector">
+                            {$classes = array('white', 'grey', 'blue', 'yellow', 'red', 'green', 'purple')}
+                            {foreach $classes as $c}
+                            <li class="s-{$c}"><a href="javascript:void(0)"><input type="radio" name="background" value="{$c}"{if $style==$c} checked="checked"{/if}></a></li>
+                            {/foreach}
+                            <li style="">
+                                <a href="javascript:void(0)" style="margin-right: 5px;{if substr($style, 0, 1) == '.'}background:url({$wa_url}wa-data/public/site/background/{$domain_id}{$style}){/if}">
+                                    <input name="background" type="radio" value="{if substr($style, 0, 1) == '.'}{$style}{/if}"{if substr($style, 0, 1) == '.'} checked="checked"{/if}>
+                                </a>
+                                <span class="small">[`Custom`]:</span>
+                                <input id="background_file" type="file" name="background_file">
                             </li>
-                            {/foreach}
                         </ul>
-                        <br>
-                    <input id="s-auth-captcha" name="auth_captcha" type="checkbox" {if $auth_config['signup_captcha']}checked="checked"{/if} />
-                    <label for="s-auth-captcha">[`Enable captcha for signup form`]</label>
-                    
-                    <hr>
-                    
-                    <input id="s-auth-adapters" name="auth_adapters" type="checkbox" {if !empty($auth_config['adapters'])}checked="checked"{/if}>
-                    <label for="s-auth-adapters">
-                    	[`Third-party authorization`]
-                    	<span class="hint">[`Enables your site visitors to quickly sign up or sign in via accounts on external popular platforms, e.g. Facebook and Twitter. <a href="http://www.webasyst.com/framework/docs/dev/auth-adapters/" target="_blank">Setup instructions</a> <i class="icon10 new-window"></i>`]</span>
-                    </label>
-                    <br>
-                    <div id="s-auth-adapters-list" style="padding-left: 20px;{if empty($auth_config['adapters'])}display:none{/if}">
-                        <ul class="menu-v">
-                        {foreach $auth_adapters as $adapter_id => $adapter}
-                        <li>
-                            <input class="adapter" id="s-auth-adapter-{$adapter_id}" name="adapter_ids[]" value="{$adapter_id}" type="checkbox" {if !empty($auth_config['adapters'][$adapter_id])}checked="checked"{/if}>
-                            <label for="s-auth-adapter-{$adapter_id}">
-                                <img style="vertical-align: middle; padding-bottom: 3px;" alt="{$adapter->getName()}" src="{$adapter->getIcon()}">
-                                {$adapter->getName()}
-                            </label>
-                            <div class="adapter-controls"{if empty($auth_config['adapters'][$adapter_id])} style="display:none"{/if}>
-                            {foreach $adapter->getControls() as $control_id => $control_name}
-                            <div class="field">
-                                <div class="name" style="width: 120px;">
-                                	<span class="small">{$control_name}</span>
-                                </div>
-                                <div class="value" style="margin-left: 130px;"><input type="text" name="adapters[{$adapter_id}][{$control_id}]" value="{if !empty($auth_config['adapters'][$adapter_id])}{$auth_config['adapters'][$adapter_id][$control_id]}{/if}" style="font-size: 0.9em;"></div>
-                            </div>
-                            {/foreach}
-                            </div>
-                            <div class="clear"></div>
-                        </li>
-                        {/foreach}
-                        </ul>
+                        <script type="text/javascript">
+                            $(".s-site-background-selector a").click(function (e) {
+                                if (e.target.tagName != 'INPUT') {
+                                    $(this).children('input').click();
+                                }
+                            });
+                            $(".s-site-background-selector input:radio").click(function (e) {
+                                var c = $(this).val();
+                                if (c) {
+                                    if (c.substr(0, 1) == '.') {
+                                        $("#wa").removeAttr('class');
+                                        $("#wa").css('background', 'url({$wa_url}wa-data/public/site/background/{$domain_id}' + c + ')');
+                                    } else {
+                                        $("#wa").removeAttr('style');
+                                        $("#wa").attr('class', 's-' + c);
+                                    }
+                                } else {
+                                    $("#wa").removeAttr('class');
+                                }
+                                return true;
+                            });
+                            $("#background_file").change(function () {
+                               $(this).parent().children('a').click();
+                            });
+                        </script>
+        				<span class="hint">[`Background is for customizing your Site app backend, which is useful when you have multiple websites powered by the single Webasyst installation. Selected background will not be shown in the frontend.`]</span>
+        			</div>
+        		</div>
+                <div class="field">
+                    <div class="name">[`Custom head JS`]</div>
+                    <div class="value">
+                    	[`Google Analytics Property ID`]: 
+                        <input type="text" name="google_analytics" value="{$google_analytics|escape}">
+                        <br />
+                        <span class="hint">[`E.g. <strong>UA-123456-1</strong><br />If you are using <a href="https://www.google.com/analytics/">Google Analytics</a> to track your website visits and conversions, instead of embedding Google Analytics JS code manually, enter your Google Analytics Property ID here. A valid Google Analytics code will be automatically embedded into every app and every design theme before the closing &lt;/head&gt; tag.`]</span>
+                        <br /><br />
+                    </div>
+                    <div class="value no-shift">
+                    	[`Additional JS code to be added before the closing &lt;/head&gt; tag:`]<br />
+                        <textarea name="head_js" placeholder="&lt;script&gt;&lt;/script&gt;">{$head_js|escape}</textarea><br />
+                        <span class="hint">
+                        	&lt;/head&gt;
+                        </span>
                     </div>
                 </div>
-                    {else}
-                    <br><br>
-                    <em>[`To enable authorization on this website, install and settle at least one app that supports authorization forms.`]</em>
-                    {/if}
+            </div>
+    
+            <div class="field-group">
+                <div class="field">
+                    <div class="name">[`Favicon`]</div>
+                    <div class="value">
+                        <i class="icon16 favicon"
+                            style="background-image: url('{$favicon}');"></i>
+                        [`Upload favicon`] (.ICO): <input name="favicon" type="file" />
+                        {if isset($favicon_message)}<br /><span class="small" style="color: #f00;">{$favicon_message}</span>{/if}
+                    </div>
+                </div>
+                <div class="field">
+                    <div class="name">[`Touch icon for iOS`]</div>
+                    <div class="value">
+                        {if $touchicon}<img src="{$touchicon}" class="s-touchicon"><br>{/if}
+                        [`Upload iOS touch icon`] (.PNG, [`from 152x152 and up to 1024x1024 px`]): <input name="touchicon" type="file" />
+                        {if isset($touchicon_message)}<br /><span class="small" style="color: #f00;">{$touchicon_message}</span>{/if}
+                    </div>
+                </div>
+                <div class="field">
+                    <div class="name">robots.txt</div>
+                    <div class="value">
+                        <textarea name="robots">{$robots|escape}</textarea>
+                        <br />
+                        {if isset($robots_message)}<span class="small" style="color: #f00;">{$robots_message}</span>{else}<span class="hint">[`Contents of this site's robots.txt file.`]</span>{/if}
+                    </div>
                 </div>
             </div>
-        </div>
-
-        <div class="field">
+    
+            <div class="field-group">
+                <div class="field">
+                    <div class="name">[`Authorization`]</div>
+                    <div class="value no-shift">
+                        {sprintf('[`Personal &rarr; <a href="%s">Auth &amp; Sign Up</a>`]', '#/personal/settings/')}
+                    </div>
+                </div>
+            </div>
+    
+            <div class="field">
                 <div class="value">
                     <input type="submit" name="save" class="button green" value="[`Save`]">
                     <span id="s-settings-form-status" style="display:none">[`Saved`]</span>
                 </div>
-        </div>
+            </div>
         </form>
         <iframe style="display:none" name="s-settings-iframe" id="s-settings-iframe"></iframe>
     </div>

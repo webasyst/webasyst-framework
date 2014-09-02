@@ -3,35 +3,54 @@
 </script>
 {if !$wa->get('details')}
 <div class="s-editor s-white s-app-settings">
-	<form id="s-settings-form" method="post" action="?module=routing&action=save&domain_id={$domain_id}&route={$route_id}">
+	<form id="s-settings-form" method="post" action="{$wa_backend_url}site/?module=routing&action=save&domain_id={$domain_id}&route={$route_id}">
+    {if $wa->get('reload_on_change')}<input type="hidden" name="correct_url" value="1">{/if}
 	<div class="float-left s-route">
 		<div class="block s-route-core">
    				
    	        <a href="#" class="cancel back s-route-block">&larr; [`Back`]</a>
 
-            {if empty($route.redirect)}
-   	        <div class="s-route-block" id="s-route-what">
-                {if strlen($route_id)}
-                        <img src="{$wa_url}{$app.icon.24}" />
-                        <h3>{$app.name}</h3>
-                {else}
-    			    <img src="{$wa_url}{$app.icon.24}" />
-    				<select class="s-select-app" name="params[app]">
-                        {foreach $apps as $app}
-                        <option value="{$app.id}" data-img="{$app.icon.24}">{$app.name}</option>
-                        {/foreach}
-                        <option value="" data-img="wa-apps/site/img/arrow.png">[`Redirect`]...</option>
-                    </select>
+            {if strlen($route_id)}
+
+                <!-- existing route -->
+                {if empty($route.redirect)}
+       	            <div class="s-route-block" id="s-route-what">
+                            <img src="{$wa_url}{$app.icon.24}" />
+                            <h3>{$app.name}</h3>
+    
+                    </div>
                 {/if}
-            </div>
+                
+                <div class="s-route-block" id="s-route-where">
+        		    <span class="gray">
+        		        {$domain}/
+        		    </span><input type="text" name="params[url]" value="{if strlen($route_id)}{$route.url|escape}{/if}" class="bold large" placeholder="*" />
+                </div>
+          
+            {else}
+
+                <!-- new route -->
+                <div class="s-route-block" id="s-route-where">
+        		    <span class="gray">
+        		        {$domain}/
+        		    </span><input type="text" name="params[url]" value="{if strlen($route_id)}{$route.url|escape}{/if}" class="bold large" placeholder="*" />
+                </div>
+                
+                {if empty($route.redirect)}
+           	        <div class="s-route-block" id="s-route-what">
+            		    <span class="gray">&rarr;</span>
+        			    <img src="{$wa_url}{$app.icon.24}" />
+        				<select class="s-select-app" name="params[app]">
+                            {foreach $apps as $app}
+                            <option value="{$app.id}" data-img="{$app.icon.24}">{$app.name}</option>
+                            {/foreach}
+                            <option value="" data-img="wa-apps/site/img/arrow.png">[`Redirect`]...</option>
+                        </select>
+                    </div>
+                {/if}
+
             {/if}
 
-            <div class="s-route-block" id="s-route-where">
-    		    <span class="gray">
-    		        <span class="overhanging">{if strlen($route_id)}@{else}&rarr;{/if}</span>
-    		        {$domain}/
-    		    </span><input type="text" name="params[url]" value="{if strlen($route_id)}{$route.url|escape}{/if}" class="bold large" placeholder="*" />
-            </div>
             
             <div class="s-route-block" style="{if empty($route.redirect)}display: none;{/if}" id="s-route-to">
                 &rarr;
@@ -128,7 +147,7 @@
 </div>
 
 <script type="text/javascript">
-
+$(function () {
     $("select.s-select-app").on('change', function () {
         if ($(this).val()) {
             $('.s-route-details').html('<i class="icon16 loading"></i>').load('?module=routing&action=edit', 'domain_id={$domain_id}&app=' + $(this).val() + '&details=1', function () {
@@ -173,9 +192,18 @@
 	$("#s-settings-form").submit(function () {
 		var f = $(this);
 		$("#s-settings-form-status").html('<i style="vertical-align:middle" class="icon16 loading"></i> [`Saving...`]').fadeIn("slow");
-		$.post(f.attr('action'), f.serialize(), function (response) {
+        var callback = function (response) {
             if (response.status == 'ok') {
                 {if strlen($route_id)}
+                    {if $wa->get('reload_on_change')}
+                        if (response.data.change) {
+                            location.reload();
+                        }
+                    {/if}
+                    if (response.data.delete) {
+                        $('#route-{$route_id}').insertAfter($('#route-' + response.data.delete));
+                        $('#route-' + response.data.delete).remove();
+                    }
                     $('#route-{$route_id} .s-editable-url').text(response.data.url);
                     if (response.data.redirect) {
                         $('#route-{$route_id} .redirect').text(response.data.redirect);
@@ -187,26 +215,38 @@
                         }
                     }
                 {/if}
-                if (response.data.add) {
-                    if (response.data.add == 'top') {
-                        $('#s-rules').prepend(response.data.html);
-                    } else {
-                        $('#s-rules').append(response.data.html);
+                    if (response.data.add) {
+                        if (response.data.add == 'top') {
+                            $('#s-rules').prepend(response.data.html);
+                        } else {
+                            $('#s-rules').append(response.data.html);
+                        }
                     }
-                }
-                $("#s-settings-form-status").html('<i style="vertical-align:middle" class="icon16 yes"></i>[`Saved`]').fadeOut('slow', function () {
-                    site_routing_full();
-                });
+                    $("#s-settings-form-status").html('<i style="vertical-align:middle" class="icon16 yes"></i>[`Saved`]').fadeOut('slow', function () {
+                        site_routing_full();
+                    });
             } else if (response.status == 'fail') {
                 $("#s-settings-form-status").html('<span class="small" style="color: #f00;">' + response.errors + '</span>');
                 f.find('input.button:submit').removeClass('green').addClass('red');
             }
-		}, "json");
+        }
+		$.post(f.attr('action'), f.serialize(), function (response) {
+            if (response.status == 'ok' && response.data.confirm) {
+                if (confirm(response.data.confirm)) {
+                    $.post(f.attr('action') + '&replace=' + response.data.replace, f.serialize(), callback, 'json')
+                } else {
+                    $("#s-settings-form-status").empty();
+                }
+            } else {
+                callback(response);
+            }
+        }, "json");
 		return false;
 	});
     $("#s-settings-form .cancel").click(function () {
         site_routing_full();
         return false;
     });
+ });
 </script>
 {/if}

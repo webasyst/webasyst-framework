@@ -85,5 +85,30 @@ class siteHelperAction extends waViewAction
             '{if}...{else}...{/if}' => _w('Similar to PHP if statements'),
             '{foreach from=$a key=k item=v}...{foreachelse}...{/foreach}' => _w('{foreach} is for looping over arrays of data'),
         ));
+
+        $model = new siteBlockModel();
+        $blocks = $model->order('sort')->fetchAll('id');
+
+        $apps = wa()->getApps();
+        foreach ($apps as $app_id => $app) {
+            $path = $this->getConfig()->getAppsPath($app_id, 'lib/config/site.php');
+            if (file_exists($path)) {
+                $site_config = include($path);
+                if (!empty($site_config['blocks'])) {
+                    foreach ($site_config['blocks'] as $block_id => $block) {
+                        if (!is_array($block)) {
+                            $block = array('content' => $block, 'description' => '');
+                        }
+                        $block_id = $app_id.'.'.$block_id;
+                        if (!isset($blocks[$block_id])) {
+                            $block['id'] = $block_id;
+                            $block['app'] = $app;
+                            $blocks[$block_id] = $block;
+                        }
+                    }
+                }
+            }
+        }
+        $this->view->assign('blocks', $blocks);
     }
 }

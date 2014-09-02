@@ -37,7 +37,7 @@ class siteRoutingSaveController extends waJsonController
                             $route['url'] .= '/*';
                         }
                     }
-                    $routes[$domain] = array($route_id => $route) + $routes[$domain];
+                    $routes[$domain] = array($route_id => $route) + (isset($routes[$domain]) ? $routes[$domain] : array());
                     $this->response['add'] = 'top';
                 }
                 // save
@@ -87,7 +87,47 @@ class siteRoutingSaveController extends waJsonController
             $this->response['html'] = $html;
         } else {
             $old = $routes[$domain][$route_id];
-            $routes[$domain][$route_id] = $this->getRoute($old);
+            $new = $this->getRoute($old);
+
+            if (waRequest::post('correct_url') && strpos($new['url'], '*') === false) {
+                if (!$new['url']) {
+                    $new['url'] = '*';
+                } elseif (substr($new['url'], -1) == '/') {
+                    $new['url'] .= '*';
+                } elseif (substr($new['url'], -1) != '*' && strpos(substr($new['url'], -5), '.') === false) {
+                    $new['url'] .= '/*';
+                }
+            }
+
+            if (($new['url'] != $old['url']) || ($new['theme'] != $old['theme']) || ($new['theme_mobile'] != $old['theme_mobile'])) {
+                $this->response['change'] = 1;
+            }
+
+            if ($replace_id = waRequest::get('replace')) {
+                $this->response['delete'] = $replace_id;
+                $tmp = array();
+                foreach ($routes[$domain] as $r_id => $r) {
+                    if ($r_id == $replace_id) {
+                        $tmp[$route_id] = $new;
+                    } else {
+                        $tmp[$r_id] = $r;
+                    }
+                }
+                $routes[$domain] = $tmp;
+            } else {
+                foreach ($routes[$domain] as $r_id => $r) {
+                    if ($r_id != $route_id && $r['url'] == $new['url']) {
+                        $old_app = $r['app'] ? wa()->getAppInfo($r['app']) : array();
+                        $old_app = ifset($old_app['name']);
+                        $new_app = $new['app'] ? wa()->getAppInfo($new['app']) : array();
+                        $new_app = ifset($new_app['name']);
+                        $this->response['confirm'] = sprintf(_w('The URL %s is already used by %s app. If you proceed, this will replace %s app with %s app on this URL.'), $new['url'], $old_app, $old_app, $new_app);
+                        $this->response['replace'] = $r_id;
+                        return;
+                    }
+                }
+                $routes[$domain][$route_id] = $new;
+            }
 
             // save
             waUtils::varExportToFile($routes, $path);
@@ -190,6 +230,10 @@ class siteRoutingSaveController extends waJsonController
                         $r[$string[0]] = $string[1];
                     }
                 }
+            }
+        } else {
+            if (isset($params['app'])) {
+                unset($params['app']);
             }
         }
 

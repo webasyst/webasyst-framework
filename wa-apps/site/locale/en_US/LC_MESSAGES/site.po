@@ -8,7 +8,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 1.6.3\n"
+"X-Generator: Poedit 1.6.8\n"
 "Language: en_US\n"
 
 #: /wa-apps/site/templates/layouts/Sidebar.html:51
@@ -1234,7 +1234,10 @@ msgid "Start by creating a page in your <a href=\"%s\">site backend</a>."
 msgstr ""
 
 #: /wa-apps/site/lib/actions/settings/siteSettingsSave.controller.php:19
-msgid "Website with a domain name %s is already registered in this Webasyst installation. Delete %s website (Site app > Settings > %s) to be able to use it's domain name for another website."
+msgid ""
+"Website with a domain name %s is already registered in this Webasyst "
+"installation. Delete %s website (Site app > Settings > %s) to be able to use "
+"it's domain name for another website."
 msgstr ""
 
 #: /wa-apps/site/lib/actions/frontend/siteFrontendMy.action.php:18
@@ -1249,9 +1252,256 @@ msgid "My profile"
 msgstr ""
 
 #: /wa-apps/site/lib/actions/settings/siteSettingsSave.controller.php:19
-msgid "Website with a domain name %s is already registered in this Webasyst installation. Delete %s website (Site app > %s > Settings) to be able to use it's domain name for another website."
+msgid ""
+"Website with a domain name %s is already registered in this Webasyst "
+"installation. Delete %s website (Site app > %s > Settings) to be able to use "
+"it's domain name for another website."
 msgstr ""
 
 #: /wa-apps/site/themes/default/my.profile.html:8
 msgid "Contact information successfully updated!"
+msgstr ""
+
+#: /wa-apps/site/templates/actions/personal/Personal.html:37
+msgid ""
+"Personal account structure is defined by the list of installed Webasyst apps "
+"linked in the current website frontend."
+msgstr ""
+
+#: /wa-apps/site/templates/actions/personal/Personal.html:41
+msgid "Auth & Sign Up settings"
+msgstr ""
+
+#: /wa-apps/site/templates/actions/personal/PersonalApp.html:8
+msgid ""
+"This app cannot be enabled for personal accounts on this domain, because the "
+"app is not settled in this domain's routing settings. Add this app to the "
+"routing table first so it becomes published on this site, and then you’ll be "
+"able to link it in personal accounts navigation."
+msgstr ""
+
+#: /wa-apps/site/templates/actions/personal/PersonalApp.html:9
+msgid "Setup routing"
+msgstr ""
+
+#: /wa-apps/site/templates/actions/personal/PersonalApp.html:15
+#: /wa-apps/site/templates/actions/personal/PersonalSettings.html:7
+msgid "Disabled"
+msgstr ""
+
+#: /wa-apps/site/templates/actions/personal/PersonalApp.html:19
+#: /wa-apps/site/templates/actions/personal/PersonalSettings.html:13
+msgid "Enabled"
+msgstr ""
+
+#: /wa-apps/site/templates/actions/personal/PersonalApp.html:26
+msgid ""
+"%s personal account URL: <a href=\"%s\">%s</a> <i class=\"icon10 new-window "
+"top-padded\"></i>"
+msgstr ""
+
+#: /wa-apps/site/templates/actions/personal/PersonalApp.html:31
+msgid "%s personal account is disabled on this site."
+msgstr ""
+
+#: /wa-apps/site/templates/actions/personal/PersonalProfile.html:3
+msgid ""
+"Personal account profile URL: <a href=\"%s\">%s</a> <i class=\"icon10 new-"
+"window top-padded\"></i>"
+msgstr ""
+
+#: /wa-apps/site/templates/actions/personal/PersonalProfile.html:5
+msgid "My profile form fields"
+msgstr ""
+
+#: /wa-apps/site/templates/actions/personal/PersonalSettings.html:1
+msgid "Authorization on %s"
+msgstr ""
+
+#: /wa-apps/site/templates/actions/personal/PersonalSettings.html:16
+msgid ""
+"User sign up, authorization and personal accounts are not enabled on %s."
+msgstr ""
+
+#: /wa-apps/site/templates/actions/personal/PersonalSettings.html:20
+msgid ""
+"User sign up, authorization and personal accounts are enabled on %s. <a id="
+"\"configure-app\" href=\"#\" class=\"inline-link\"><b><i>Configure URLs</i></"
+"b></a>"
+msgstr ""
+
+#: /wa-apps/site/templates/actions/personal/PersonalSettings.html:22
+msgid ""
+"Select the app that will host authorization forms. The URLs of my profile, "
+"signup and authorization pages will be defined by the selected app routing:"
+msgstr ""
+
+#: /wa-apps/site/templates/actions/personal/PersonalSettings.html:46
+msgid "Auth"
+msgstr ""
+
+#: /wa-apps/site/templates/actions/personal/PersonalSettingsSignup.html:176
+msgid "Confirm email on sign up"
+msgstr ""
+
+#: /wa-apps/site/templates/actions/personal/PersonalSettingsSignup.html:177
+msgid "A confirmation link will be sent to user after sign up"
+msgstr ""
+
+#: /wa-apps/site/templates/actions/personal/PersonalSettingsSignup.html:184
+msgid "Text"
+msgstr ""
+
+#: /wa-apps/site/templates/actions/personal/PersonalSettingsSignup.html:189
+msgid "Variables"
+msgstr ""
+
+#: /wa-apps/site/templates/actions/personal/PersonalSettingsSignup.html:214
+msgid "Sign up form fields"
+msgstr ""
+
+#: /wa-apps/site/templates/actions/personal/PersonalSettingsSignup.html:231
+msgid "Edit field label"
+msgstr ""
+
+#: /wa-apps/site/templates/actions/personal/PersonalSettingsSignup.html:236
+msgid "Edit hint for this field"
+msgstr ""
+
+#: /wa-apps/site/templates/actions/personal/PersonalSettingsSignup.html:244
+msgid "Edit button label"
+msgstr ""
+
+#: /wa-apps/site/templates/actions/settings/Settings.html:152
+msgid "Upload favicon"
+msgstr ""
+
+#: /wa-apps/site/templates/actions/settings/Settings.html:160
+msgid "from 152x152 and up to 1024x1024 px"
+msgstr ""
+
+#: /wa-apps/site/templates/actions/settings/Settings.html:178
+msgid "Personal &rarr; <a href=\"%s\">Auth &amp; Sign Up settings</a>"
+msgstr ""
+
+#: /wa-apps/site/templates/layouts/Sidebar.html:44
+msgid "Personal"
+msgstr ""
+
+#: /wa-apps/site/templates/layouts/Sidebar.html:59
+msgid "File manager"
+msgstr ""
+
+#: /wa-apps/site/lib/actions/settings/siteSettings.action.php:150
+msgid ""
+"Touch icon you upload here will not take effect for you website %s because "
+"your website is set for a subfolder on a domain. Touch icon uploaded using "
+"the form above will be set only for websites set from the domain root folder."
+msgstr ""
+
+#: /wa-apps/site/lib/actions/settings/siteSettings.action.php:159
+msgid ""
+"File apple-touch-icon.png exists in the Webasyst framework installation "
+"folder. The touch icon you upload here will be overridden by the icon "
+"uploaded as file unless you delete this file."
+msgstr ""
+
+#: /wa-apps/site/lib/actions/settings/siteSettingsSave.controller.php:213
+msgid "Files with extension *.png are allowed only."
+msgstr ""
+
+#: /wa-apps/site/lib/config/logs.php:5
+msgid "added a new site"
+msgstr ""
+
+#: /wa-apps/site/lib/config/logs.php:8
+msgid "edited site settings"
+msgstr ""
+
+#: /wa-apps/site/lib/config/logs.php:11
+msgid "deleted site"
+msgstr ""
+
+#: /wa-apps/site/lib/config/logs.php:15
+msgid "uploaded file"
+msgstr ""
+
+#: /wa-apps/site/lib/config/logs.php:18
+msgid "deleted file"
+msgstr ""
+
+#: /wa-apps/site/lib/config/logs.php:22
+msgid "added a new block for site"
+msgstr ""
+
+#: /wa-apps/site/lib/config/logs.php:25
+msgid "edited block for site"
+msgstr ""
+
+#: /wa-apps/site/lib/config/logs.php:28
+msgid "deleted block for site"
+msgstr ""
+
+#: /wa-apps/site/lib/config/logs.php:32
+msgid "added a new routing rule"
+msgstr ""
+
+#: /wa-apps/site/lib/config/logs.php:35
+msgid "edited routing rule"
+msgstr ""
+
+#: /wa-apps/site/lib/config/logs.php:38
+msgid "deleted routing rule"
+msgstr ""
+
+#: /wa-apps/site/themes/ascetic/index.html:71
+#: /wa-apps/site/themes/clear/content.html:10
+#: /wa-apps/site/themes/custom/content.html:5
+#: /wa-apps/site/themes/default/main.html:7
+#: /wa-apps/site/themes/facebook/content.html:26
+#: /wa-apps/site/themes/nifty/content.html:7
+#: /wa-apps/site/themes/pinboard/content.html:5
+#: /wa-apps/site/themes/sidebar/content.html:7
+#: /wa-apps/site/themes/vk/content.html:26
+msgid "Start by <a href=\"%s\">creating a page</a> in your site backend."
+msgstr ""
+
+#: /wa-apps/site/themes/default/my.profile.html:56
+msgid "Change password"
+msgstr ""
+
+#: /wa-apps/site/themes/default/my.profile.html:69
+msgid "Delete photo"
+msgstr ""
+
+#: /wa-apps/site/themes/default/signup.html:3
+msgid "You successfully confirmed email."
+msgstr ""
+
+#: /wa-apps/site/templates/actions/settings/Settings.html:157
+msgid "Touch icon for iOS"
+msgstr ""
+
+#: /wa-apps/site/templates/actions/settings/Settings.html:160
+msgid "Upload iOS touch icon"
+msgstr ""
+
+#: /wa-apps/site/templates/actions/personal/Personal.html:41
+msgid "Auth &amp; Sign Up settings"
+msgstr ""
+
+#: /wa-apps/site/templates/actions/settings/Settings.html:178
+msgid "Personal &rarr; <a href=\"%s\">Auth &amp; Sign Up</a>"
+msgstr ""
+
+#: /wa-apps/site/templates/actions/personal/PersonalProfile.html:5
+msgid "My profile page is not available on this site, because user authorization on this site is hosted by <strong>%s</strong> app, while it’s personal account functionality is disabled. Either enable <a href=\"#/personal/app/%s/\">%s app’s personal account</a> on this site, or change the app that hosts user authorization in <a href=\"%s\">Auth &amp; Sign Up</a> settings."
+msgstr ""
+
+#: /wa-apps/site/lib/actions/routing/siteRoutingSave.controller.php:114
+msgid "The URL %s is already used by %s app. If you proceed, this will replace %s app with %s app on this URL."
+msgstr ""
+
+#: /wa-apps/site/templates/actions/personal/PersonalApp.html:26
+msgid "%s personal account URL: <a id=\"s-app-frontend-link\" href=\"%s\" target=\"_blank\">%s</a> <i class=\"icon10 new-window top-padded\"></i>"
 msgstr ""

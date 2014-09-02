@@ -9,7 +9,7 @@ return array(
         16 => 'img/site16.png'
     ),
     'frontend' => true,
-    'version'=>'2.1.1',
+    'version'=>'2.2.0',
     'critical'=>'2.0.0',
     'vendor' => 'webasyst',
     'system' => true,

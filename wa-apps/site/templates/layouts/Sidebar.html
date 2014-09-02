@@ -3,7 +3,7 @@
         {foreach from=$domains item=d key=d_id}
         <li{if $d_id == $domain_id} class="selected"{/if}>
             <a href="?domain_id={$d_id}">
-                <i class="icon16 favicon" style="background-image:url(http://{$d.name|escape}/favicon.ico)"></i>{$d.title|escape}
+                <i class="icon16 favicon" style="background-image:url(http://{$d.name|escape}/favicon.ico)"></i>{str_replace('www.','',$d.title)|escape}
             </a>
         </li>
         {/foreach}
@@ -34,14 +34,14 @@
 <div class="s-site-mgmt-tab">
 	<div class="block">
     	<h5 class="heading">
-			<div class="s-site-mgmt-current-url">{$domains[$domain_id].title|escape}</div>
-            <span class="count"><a id="s-domain" href="http://{$domains[$domain_id].name|escape}/" title="[`Open website in a new window`]" target="_blank"><i class="icon16 new-window"></i></a></span>
+			<div class="s-site-mgmt-current-url">{str_replace('www.','',$domains[$domain_id].title)|escape}</div>
         </h5>
     </div>
     <ul class="menu-v s-links with-icons">
         <li id="s-link-pages"><a href="#/pages/"><i class="icon16 notebook"></i>[s`Pages`]</a></li>
         <li id="s-link-design"><a href="#/design/"><i class="icon16 palette"></i>[s`Design`]</a></li>
         <li id="s-link-routing"><a href="#/routing/"><i class="icon16 split"></i>[`Structure`]</a></li>
+        <li id="s-link-personal"><a href="#/personal/"><i class="icon16 access"></i>[`Personal`]</a></li>
         <li id="s-link-settings"><a href="#/settings/"><i class="icon16 settings"></i>[`Settings`]</a></li>
 
         {* @event backend_sidebar.%plugin_id%.menu_li *}
@@ -56,7 +56,7 @@
 <div class="block double-padded">
 	<ul class="menu-v with-icons s-links">
 		{if $rights.blocks}<li id="s-link-blocks"><a href="#/blocks/"><i class="icon16 zone"></i>[`Blocks`]</a></li>{/if}
-		{if $rights.files}<li id="s-link-files"><a href="#/files/"><i class="icon16 upload"></i>[`Files`]</a></li>{/if}
+		{if $rights.files}<li id="s-link-files"><a href="#/files/"><i class="icon16 upload"></i>[`File manager`]</a></li>{/if}
 		{if $rights.admin}
     	    	<li class="s-add-new-site top-padded"><a href="#" class="small"><i class="icon10 add"></i>[`New site`]</a> </li>
         	{/if}
