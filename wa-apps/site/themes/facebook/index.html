@@ -1,8 +1,6 @@
 <!DOCTYPE html>
-
-{$fb_app_id = 'YOUR_APP_ID'}
+{$fb_app_id = $theme_settings.facebook_app_id}
 {$fb_url = "https://apps.facebook.com/`$fb_app_id`/"}
-
 {if !$wa->user()->isAuth() || !$wa->user('facebook_id')}
     {if $wa->post("signed_request")}
     {$fb_signed_request = explode('.', $wa->post("signed_request"), 2)}
@@ -12,7 +10,6 @@
     {/if}
     {/if}
 {/if}
-
 {$fb_tabs = [
     [
         'url' => '/',
@@ -48,7 +45,6 @@
     The 'url' must represent the URL you have entered in your Site routing settings for the appropriate Facebook-enabled app, i.e. Shop-Script, Blog, Photos, Site, etc.
 
 *}
-
 <html xmlns:fb="https://www.facebook.com/2008/fbml">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>

@@ -208,6 +208,10 @@ input.error, textarea.error { border: 2px solid red; }
 /* Misc .table table
 -------------------- */
 
+table th { color: #aaa; }
+table th,
+table td { padding: 3px; }
+
 table.table { margin-top: 25px; width: 100%; border-spacing:0; border-collapse:collapse; }
 table.table th { padding-left: 7px; padding-right: 7px; }
 table.table td { padding: 15px 7px; border-bottom: 1px solid #ddd; }
