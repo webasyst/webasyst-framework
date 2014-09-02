@@ -1,4 +1,5 @@
-<div class="page" role="main">
+<div class="page app-nav-ousted" role="main">
+
     <!-- navigation breadcrumbs -->
     {if !empty($breadcrumbs)}
         <div class="breadcrumbs">
@@ -7,6 +8,19 @@
             {/foreach}
         </div>
     {/if}
-    <h1>{$page.name}</h1>
-    {$page.content}
+
+    <h1 itemprop="name">{$page.name}</h1>
+    
+    {$subpages = $wa->site->pages($page.id)}
+    {if $subpages}
+        <ul class="sub-links">
+            {foreach $subpages as $p}
+                <li><a href="{$p.url}">{$p.name}</a></li>
+            {/foreach}
+        </ul>
+    {/if}
+
+    <div itemprop="description">
+        {$page.content}
+    </div>
 </div>

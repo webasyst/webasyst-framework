@@ -1,0 +1,114 @@
+<h1>[s`My profile`]</h1>
+
+{if $saved}
+    <strong><i class="icon16 saved"></i><span style="color:green">[s`Contact information successfully updated!`]</span></strong>
+{/if}
+
+{if isset($smarty.get.emailconfirmed) && $smarty.get.emailconfirmed == 1}
+    <strong><i class="icon16 saved"></i><span style="color:green">[s`Contact information successfully updated!`]</span></strong>
+{/if}
+
+<div id="wa-my-info-wrapper">
+    <div class="wa-form" id="wa-my-info-read-wrapper"{if !empty($form->errors)} style="display: none;"{/if}>
+
+        {foreach $user_info as $id => $info}
+            <div class="wa-field">
+                <div class="wa-name">{$info.name}</div>
+                <div class="wa-value">{$info.value}</div>
+            </div>
+        {/foreach}
+
+        <div class="wa-field">
+            <div class="wa-value">
+                <input type="button" class="button" id="wa-my-info-edit" value="[s`Edit`]"/>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="clear-both"></div>
+
+    <form action="" enctype="multipart/form-data" method="post"{if empty($form->errors)} style="display: none;"{/if} id="wa-my-info-edit-wrapper">
+        <div class="wa-form">
+
+            {$form->html()}
+
+            <div class="wa-field">
+                <div class="wa-value">
+                    <input type="submit" value="[s`Save`]">
+                    <a href="#" id="wa-my-info-cancel">[s`cancel`]</a>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+    (function () {
+        var $wrapper = $('#wa-my-info-wrapper'),
+            $form = $wrapper.find('#wa-my-info-edit-wrapper'),
+            $info = $wrapper.find('#wa-my-info-read-wrapper'),
+            $password = $form.find('.wa-field-password'),
+            $photo = $form.find('.wa-field-photo');
+
+        if ($password.length) {
+            var $change_link = $('<span><a href="#">[s`Change password`]</a></span>'),
+                $password_inputs = $password.find('p');
+
+            $password.find('.wa-value').prepend($change_link);
+
+            $change_link.on('click', 'a', function(e) {
+                e.preventDefault();
+                $change_link.hide();
+                $password_inputs.slideDown();
+            });
+        }
+
+        if ($photo.length) {
+            var $delete_photo = $('<span><a href="#">[s`Delete photo`]</a></span>'),
+                $photo_input = $photo.find('[name="profile[photo]"]'),
+                $user_photo = $photo.find('img:first'),
+                $default_photo = $photo.find('img:last');
+
+            if ($user_photo[0] != $default_photo[0]) {
+                $default_photo
+                        .hide()
+                        .after($delete_photo);
+
+                $delete_photo.on('click', 'a', function(e) {
+                    e.preventDefault();
+                    $default_photo.show();
+                    $user_photo.hide();
+                    $delete_photo.hide();
+                    $photo_input.val('');
+                });
+            } else {
+                $default_photo.show();
+            }
+        }
+
+        $wrapper
+                .on('click', '#wa-my-info-edit', function (e) {
+                    e.preventDefault();
+                    if ($password.length) {
+                        $change_link.show();
+                        $password_inputs.hide();
+                    }
+                    if ($photo.length) {
+                        if ($user_photo[0] != $default_photo[0]) {
+                            $delete_photo.show();
+                            $default_photo.hide();
+                        }
+                    }
+                    $form.show();
+                    $info.hide();
+                })
+                .on('click', '#wa-my-info-cancel', function(e){
+                    e.preventDefault();
+                    $form.hide();
+                    $info.show();
+                });
+    })();
+</script>
+
+{$wa->globals('isMyAccount', true)}

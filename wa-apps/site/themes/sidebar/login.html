@@ -2,6 +2,6 @@
     <div id="page" role="main">
         <h1>[`Login`]</h1>
         {$wa->authAdapters()}
-        {$wa->loginForm($error)}
+        {$wa->loginForm($error, empty($without_form))}
     </div>
 </div>

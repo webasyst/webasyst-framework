@@ -5,6 +5,7 @@
     <title>{$wa->title()|escape}</title>
     <meta name="Keywords" content="{$wa->meta('keywords')|escape}" />
     <meta name="Description" content="{$wa->meta('description')|escape}" />
+    <meta name="viewport" content="width=device-width, initial-scale=1{if $wa->isMobile()}, maximum-scale=1, user-scalable=0{/if}" />
 
     {if !empty($canonical)}<link rel="canonical" href="{$canonical}"/>{/if}
     <link rel="shortcut icon" href="/favicon.ico"/>
@@ -14,52 +15,65 @@
         {if $rss}<link rel="alternate" type="application/rss+xml" title="[s`RSS`] &mdash; {$wa->accountName()}" href="{$rss}">{/if}
     {/if}
     
+    <!-- fonts -->
+    <link href='//fonts.googleapis.com/css?family=PT+Sans:400,700,400italic,700italic|PT+Serif:400,700,400italic,700italic&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
+    
     <!-- css -->
     <link href="{$wa_theme_url}sidebar.css?v{$wa_theme_version}" rel="stylesheet" type="text/css"/>
-    <link href="{$wa_theme_url}sidebar.mobile.css?v{$wa_theme_version}"{if !$wa->isMobile()} media="screen and (max-width: 760px)"{/if} rel="stylesheet" type="text/css"/>
-    <link href="{$wa_theme_url}sidebar.tablet.css?v{$wa_theme_version}" media="screen and (min-width: 760px) and (max-width: 1024px)" rel="stylesheet" type="text/css"/>
-    <link href="{$wa_theme_url}sidebar.wide.css?v{$wa_theme_version}" media="screen and (min-width: 1440px)" rel="stylesheet" type="text/css"/>
-    {if $wa->shop && $wa->shop->currency() == 'RUB'} <link href="{$wa_url}wa-content/font/ruble/arial/fontface.css" rel="stylesheet" type="text/css">{/if}
+    {if $wa->shop && $wa->shop->currency() == 'RUB'} <link href="{$wa_url}wa-content/font/ruble/georgia/fontface.css" rel="stylesheet" type="text/css">{/if}
     {$wa->css()} {* links active plugins CSS *}
     
     <!-- js -->
     <script type="text/javascript" src="{$wa_url}wa-content/js/jquery/jquery-1.8.2.min.js"></script>
-    <script type="text/javascript" src="{$wa_theme_url}sidebar.js?v{$wa_theme_version}"></script>    
-    {if $wa->isMobile()}
-        <meta name="viewport" content="width=device-width; initial-scale=1; maximum-scale=1; user-scalable=0;" />
-    {/if}
+    <script type="text/javascript" src="{$wa_theme_url}sidebar.js?v{$wa_theme_version}"></script>
     {$wa->js()} {* links active plugins JS *}
     
     {include file="`$wa_active_theme_path`/head.html" inline}
     
     {$wa->headJs()} {* links Google Analytics tracking code and current site's custom JS (Site app) *}
+    
+    <!--[if lt IE 9]>
+    <script>
+    document.createElement('header');
+    document.createElement('nav');
+    document.createElement('section');
+    document.createElement('article');
+    document.createElement('aside');
+    document.createElement('footer');
+    document.createElement('figure');
+    document.createElement('hgroup');
+    document.createElement('menu');
+    </script>
+    <![endif]-->
+        
 </head>
 <body id="{$wa_app}">
-    <div id="sidebar" role="navigation">
 
-        <!-- TITLE -->
+    <nav id="sidebar" role="navigation" class="{if $theme_settings.sidebar_color_scheme}{str_replace('img/backgrounds/themesettings/','', str_replace('.png','',$theme_settings.sidebar_color_scheme))}{/if}{if $wa->isAuthEnabled()} bottom-padded{/if}">
+
+        <button id="tablet-toggle-sidebar"></button>
+
         <h2 class="title">
-            <a href="{$wa_url}">{$wa->accountName()}</a>
+            <a href="{$wa_url}">
+                {if $theme_settings.logo}
+                    <img src="{$wa_theme_url}{$theme_settings.logo}" alt="{$wa->accountName()}" id="logo" />
+                {else}
+                    {$wa->accountName()}
+                {/if}
+            </a>
         </h2>
         
-        <!-- in case Shop-Script is installed  -->
-        {if $wa->shop}            
-            <!-- product search form  -->
-            <div class="search">
-                <form method="get" action="{$wa->getUrl('shop/frontend/search')}">
-                    <input type="search" name="query" {if !empty($query)}value="{$query}"{/if} id="search" placeholder="[s`Find products`]">
-                </form>
-            </div>         
-            <!-- shopping cart info -->
-            {$cart_total = $wa->shop->cart->total()}
-             <div id="cart" class="{if !$cart_total} empty{/if}">
-                 <a href="{$wa->getUrl('shop/frontend/cart')}" class="cart-total">
-                     {wa_currency_html($cart_total, $wa->shop->currency())}
-                 </a>
-             </div>
+        {if $wa->shop && $wa->shop->settings('phone')}
+            <!-- offline contact information -->
+            <div class="offline">
+                <b>{$wa->shop->settings('phone')}</b>
+                {if $wh = $wa->shop->settings('workhours')}
+                    <span class="hint">{$wh.days_from_to}{if $wh.hours_from && $wh.hours_to} {$wh.hours_from}—{$wh.hours_to}{/if}</span>
+                {/if}
+            </div>                            
         {/if}
         
-        <!-- main website sections -->
+        <!-- global site sections (apps) -->
         <div class="block">
             <ul class="menu-v apps">
                 {foreach $wa->apps() as $a}
@@ -68,8 +82,9 @@
             </ul>
         </div>
         
-        <div class="block">
-            {include file="`$wa_active_theme_path`/pagelist.html" inline}
+        <!-- in-app navigation -->
+        <div id="fixed-nav-sidebar">
+            {include file="`$wa_active_theme_path`/nav.sidebar.html" inline}
         </div>
 
         {if $wa->isAuthEnabled()}
@@ -91,20 +106,23 @@
             </div>
         {/if}
 
-    </div>
+    </nav>
     
-    <div id="main">
-        <div class="container">
-            <!-- INTERNAL APP NAVIGATION & CONTENT -->
-            {include file="`$wa_active_theme_path`/content.html" inline}
-        </div>
+    <div id="main" itemscope itemtype="http://schema.org/WebPage">
+    
+        {if $wa->globals('isMyAccount')}
+            <nav class="app-navigation">
+                {$wa->myNav('menu-h bottom-padded')}
+            </nav>
+        {/if}
         
-        <!-- FOOTER -->
-        <div id="footer">
+        {include file="`$wa_active_theme_path`/main.html" inline}
+
+        <footer id="footer">
             <div class="container">
                 <div class="hr"></div>
                 {include file="`$wa_active_theme_path`/footer.html" inline}
-                <!--
+                {*
                    <div id="sub-links" class="float-left">
                     <ul>
                           <li><a href="#">About</a></li>
@@ -112,9 +130,9 @@
                           <li><a href="#">Privacy policy</a></li>
                     </ul>
                   </div>
-                -->
+                *}
             </div>
-        </div>        
+        </footer>
         
         <div class="clear-both"></div>
     </div>

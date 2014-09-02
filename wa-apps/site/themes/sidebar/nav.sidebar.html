@@ -1,0 +1,4 @@
+<div class="block">
+    <!-- Site page tree -->
+    {wa_print_tree tree=$wa->site->pages() class="menu-v" attrs = 'id="page-list"' elem ='<a href=":url">:name</a>' collapsible_class='collapsible' selected=$page.id|default:0 unfolded=$theme_settings.sidebar_unfolded_nav}
+</div>

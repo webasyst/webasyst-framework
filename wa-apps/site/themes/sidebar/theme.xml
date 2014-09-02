@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE theme PUBLIC "wa-app-theme" "http://www.webasyst.com/wa-content/xml/wa-app-theme.dtd">
-<theme id="sidebar" system="0" vendor="webasyst" author="Webasyst" app="site" version="1.1.1">
-  <name locale="en_US">Sidebar</name>
-  <name locale="ru_RU">Sidebar</name>
+<theme id="sidebar" system="0" vendor="webasyst" author="Webasyst" app="site" version="2.0.0">
+  <name locale="en_US">Sidebar 2.0</name>
+  <name locale="ru_RU">Sidebar 2.0</name>
   <description locale="ru_RU">Семейство адаптивных тем дизайна.</description>
   <files>
     <file path="index.html" custom="0">
@@ -13,23 +13,11 @@
 		<description locale="en_US">Core CSS of the Sidebar theme family</description>
 		<description locale="ru_RU">Основной файл CSS-стилей семейства тем дизайна Sidebar</description>
     </file>
-    <file path="sidebar.mobile.css" custom="0">
-		<description locale="en_US">Additional CSS for multi-touch mobile devices</description>
-		<description locale="ru_RU">Дополнительный CSS для мобильных устройств</description>
-    </file>
-    <file path="sidebar.tablet.css" custom="0">
-		<description locale="en_US">Additional CSS for tablet computers (e.g. iPad)</description>
-		<description locale="ru_RU">Дополнительный CSS для планшетных компьютеров (например, iPad)</description>
-    </file>
-    <file path="sidebar.wide.css" custom="0">
-		<description locale="en_US">Additional CSS for wide-screen devices</description>
-		<description locale="ru_RU">Дополнительный CSS для устройств с широким экраном</description>
-    </file>
     <file path="sidebar.js" custom="0">
 		<description locale="en_US">JS</description>
 		<description locale="ru_RU">JS</description>
     </file>
-	<file path="content.html" custom="0">
+	<file path="main.html" custom="0">
 		<description locale="en_US">Main layout for the Site app content</description>
 		<description locale="en_US">Основной вывод приложения «Сайт»</description>
 	</file>
@@ -61,21 +49,42 @@
 		<description locale="en_US">404 and other errors</description>
 		<description locale="ru_RU">404 и другие ошибки</description>
     </file>
-    <file path="pagelist.html" custom="0">
-        <description locale="en_US">Internal app page tree</description>
-        <description locale="ru_RU">Внутренняя навигация по информационным страницам приложения</description>
+    <file path="my.profile.html">
+        <description locale="en_US">My profile: contact info editing form</description>
+        <description locale="ru_RU">Мой профиль: редактирование контактной информации</description>
+    </file>
+     <file path="my.nav.html">
+        <description locale="en_US">My profile navigation</description>
+        <description locale="ru_RU">Навигационное меню внутри личного кабинета</description>
+    </file>
+    <file path="nav.sidebar.html" custom="0">
+        <description locale="en_US">Internal app navigation tree</description>
+        <description locale="ru_RU">Внутренняя навигация приложения</description>
     </file>
   </files>
   <about locale="en_US">
 <![CDATA[
-<p><b>Sidebar</b> is a universal adaptive design theme family for all basic Webasyst apps: Site, Blog, Photos, Shop-Script, and others. The parent (main) theme of the family, which includes the basic set of CSS rules and the common layout template index.html, is the Sidebar (i.e. this) theme for the Site application. All Sidebar design themes used in other applications (e.g., Blog or Photos) link common CSS and index.html layout file from the main (i.e. this) theme.</p>
+<p><b>Sidebar 2.0</b> is a universal adaptive design theme family for all basic Webasyst apps: Site, Blog, Photos, Shop-Script, and others. The parent (main) theme of the family, which includes the basic set of CSS rules and the common layout template index.html, is the Sidebar (i.e. this) theme for the Site application. All Sidebar design themes used in other applications (e.g., Blog or Photos) link common CSS and index.html layout file from the main (i.e. this) theme.</p>
 <p>Sidebar design themes automatically link CSS depending on a visitor's device. Supported devices and platforms: iOS or Android based mobile devices, tablet computers such as iPad, common desktop computers and laptops.</p>
 ]]>
   </about>
   <about locale="ru_RU">
 <![CDATA[
-<p><b>Sidebar</b> — это универсальное семейство адаптивных тем дизайна для всех базовых приложений фреймворка Вебасист: Сайт, Блог, Фото, Shop-Script и других. Родительской (основной) темой семейства, включающей в себя базовый набор CSS-стилей и общий макет дизайна index.html, является тема Sidebar для приложения «Сайт» (данная тема). Все темы дизайна Sidebar для других приложений (Блог, Фото и других) используют базовый CSS и index.html из родительской (основной) темы.</p>
+<p><b>Sidebar 2.0</b> — это универсальное семейство адаптивных тем дизайна для всех базовых приложений фреймворка Вебасист: Сайт, Блог, Фото, Shop-Script и других. Родительской (основной) темой семейства, включающей в себя базовый набор CSS-стилей и общий макет дизайна index.html, является тема Sidebar для приложения «Сайт» (данная тема). Все темы дизайна Sidebar для других приложений (Блог, Фото и других) используют базовый CSS и index.html из родительской (основной) темы.</p>
 <p>Темы дизайна семейства Sidebar оптимизированы для всех современных браузеров, планшетных компьютеров и мобильных устройств на основе iOS и Android. CSS-стили подключаются в зависимости от разрешения и типа устройства, которым пользуется посетитель сайта.</p>
 ]]>
   </about>
+  <settings>
+        <setting var="logo" control_type="image">
+            <value></value>
+            <filename>img/logo.*</filename>
+            <name locale="en_US">Logo</name>
+            <name locale="ru_RU">Логотип</name>
+        </setting>
+        <setting var="sidebar_unfolded_nav" control_type="checkbox">
+            <value>1</value>
+            <name locale="en_US">Automatically unfold sidebar navigation tree</name>
+            <name locale="ru_RU">Автоматически разворачивать дерево навигации в боковой панели</name>
+        </setting>
+  </settings>
 </theme>
