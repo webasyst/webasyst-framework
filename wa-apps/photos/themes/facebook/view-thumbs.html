@@ -1,10 +1,6 @@
 {if !empty($title)}{$title}{/if}
 
-{if !empty($bigger_thumbs)}
-    {$size = '259x185'}
-{else}
-    {$size = '130x87'}
-{/if}
+{$size = '206x206'}
 
 {* @event frontend_collection.%plugin_id%.thumbs_list *}
 {if !empty($frontend_collection)}{foreach $frontend_collection as $item}{if !empty($item.thumbs_list)}{$item.thumbs_list}{/if}{/foreach}{/if}

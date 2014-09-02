@@ -5,4 +5,4 @@
     {foreach $frontend_collection as $item}{if !empty($item.search_name)}{$item.search_name}{/if}{/foreach}
 </h1>
 {/capture}
-{include file='view-thumbs.html' bigger_thumbs=true disable_sidebar=false title=$smarty.capture.search_criterial_title}
+{include file='view-thumbs.html' disable_sidebar=false title=$smarty.capture.search_criterial_title}

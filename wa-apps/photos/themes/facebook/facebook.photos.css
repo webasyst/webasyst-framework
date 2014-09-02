@@ -80,14 +80,15 @@ ul.photostream li.stream-nav.ff i { background: url('img/photostream-ff.png') no
 .view-plain img.shadowed { -moz-box-shadow: 0 1px 3px #aaa; -webkit-box-shadow: 0 1px 3px #aaa; box-shadow: 0 1px 3px #aaa; }
 .view-plain .stack { margin-top: 20px; }
 
-ul.view-thumbs { padding: 0; margin: 0; list-style: none; text-align: center; }
+ul.view-thumbs { padding: 0; margin: 0 -40px; list-style: none; text-align: center; }
 ul.view-thumbs li a { text-decoration: none; }
-ul.view-thumbs li { display: inline-block; position: relative; vertical-align: top; width: 131px; margin-right: 10px; margin-bottom: 14px; }
+ul.view-thumbs li { display: inline-block; position: relative; vertical-align: top; margin-right: 0; margin-bottom: 0; }
+ul.view-thumbs li img { width: 206px; height: 206px; border: 1px solid #ccc; }
 ul.view-thumbs li img.shadowed { -moz-box-shadow: 0 1px 3px #aaa; -webkit-box-shadow: 0 1px 3px #aaa; box-shadow: 0 1px 3px #aaa; margin-bottom: 5px; }
-ul.view-thumbs.album-float-left-view { margin-top: 10px; float: left; }
-ul.view-thumbs.album-float-left-view li { display: block; margin-right: 10px; float: left; }
-
-ul.view-thumbs.bigger-thumbs li { width: 268px; }
+/*
+ul.view-thumbs.album-float-left-view { float: left; }
+ul.view-thumbs.album-float-left-view li { display: block; float: left; }
+*/
 
 /* comments */
 
