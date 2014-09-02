@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE theme PUBLIC "wa-app-theme" "http://www.webasyst.com/wa-content/xml/wa-app-theme.dtd">
-<theme id="clear" system="0" vendor="webasyst" author="Webasyst" app="site" version="1.1.1">
+<theme id="clear" system="0" vendor="webasyst" author="Webasyst" app="site" version="1.1.2">
   <name locale="en_US">Clear</name>
   <name locale="ru_RU">Clear</name>
   <description locale="ru_RU">Семейство адаптивных тем дизайна.</description>
@@ -12,18 +12,6 @@
     <file path="clear.css" custom="0">
 		<description locale="en_US">Core CSS of the Clear theme family</description>
 		<description locale="ru_RU">Основной файл CSS-стилей семейства тем дизайна Clear</description>
-    </file>
-    <file path="clear.mobile.css" custom="0">
-		<description locale="en_US">Additional CSS for multi-touch mobile devices</description>
-		<description locale="ru_RU">Дополнительный CSS для мобильных устройств</description>
-    </file>
-    <file path="clear.tablet.css" custom="0">
-		<description locale="en_US">Additional CSS for tablet computers (e.g. iPad)</description>
-		<description locale="ru_RU">Дополнительный CSS для планшетных компьютеров (например, iPad)</description>
-    </file>
-    <file path="clear.wide.css" custom="0">
-		<description locale="en_US">Additional CSS for wide-screen devices</description>
-		<description locale="ru_RU">Дополнительный CSS для устройств с широким экраном</description>
     </file>
     <file path="clear.js" custom="0">
 		<description locale="en_US">JS</description>
@@ -60,6 +48,14 @@
     <file path="forgotpassword.html" custom="0">
         <description locale="en_US">Forgot password page</description>
         <description locale="ru_RU">Страница сброса пароля</description>
+    </file>
+    <file path="my.profile.html">
+        <description locale="en_US">My profile: contact info editing form</description>
+        <description locale="ru_RU">Мой профиль: редактирование контактной информации</description>
+    </file>
+    <file path="my.nav.html">
+        <description locale="en_US">My profile navigation</description>
+        <description locale="ru_RU">Навигационное меню внутри личного кабинета</description>
     </file>
     <file path="error.html" custom="0">
 		<description locale="en_US">404 and other errors</description>
