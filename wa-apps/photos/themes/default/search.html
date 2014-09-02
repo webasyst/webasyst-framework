@@ -1,8 +1,9 @@
-{capture search_criterial_title}
-<h1 class="search-criteria">
-    {$title}
-    {* @event frontend_collection.%plugin_id%.search_name *}
-    {foreach $frontend_collection as $item}{if !empty($item.search_name)}{$item.search_name}{/if}{/foreach}
-</h1>
-{/capture}
-{include file='list-thumbs.html' disable_sidebar=false title=$smarty.capture.search_criterial_title}
+{if !empty($title)}
+    <h1 class="search-criteria">
+        {$title}
+        {* @event frontend_collection.%plugin_id%.search_name *}
+        {foreach $frontend_collection as $item}{if !empty($item.search_name)}{$item.search_name}{/if}{/foreach}
+    </h1>
+{/if}
+
+{include file='photos-thumbs.html'}

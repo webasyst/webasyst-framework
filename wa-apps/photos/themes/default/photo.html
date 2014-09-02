@@ -1,7 +1,7 @@
 <!-- image -->
 <section class="slideshow">
 
-    <div class="photo{if $photo.stack_count > 0 || $photo.parent_id != 0} stack{/if}">
+    <div class="photo">
         <div class="image">
             <div class="corner top left">
                 {* @event frontend_photo.%plugin_id%.top_left *}
@@ -19,7 +19,7 @@
                 <div id="stack-nav">{$stack_nav}</div>
             </div>
             <a href="{$photo.next_photo_url}" title="[`Next →`]">
-                {$wa->photos->getImgHtml($photo, '970', ['id' => 'photo','itemprop' => 'image'])}
+                {$wa->photos->getImgHtml($photo, '970x0', ['id' => 'photo','itemprop' => 'image'])}
             </a>
         </div>
     </div>
@@ -34,7 +34,7 @@
    
 </section>
 
-<div class="page-content">
+<div>
 
     <!-- photo info -->
     <h4 id="photo-name" itemprop="name">{$photo.name}</h4>

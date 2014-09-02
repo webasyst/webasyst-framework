@@ -1,41 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE theme PUBLIC "wa-app-theme" "http://www.webasyst.com/wa-content/xml/wa-app-theme.dtd">
-<theme id="default" system="0" vendor="webasyst" author="Webasyst" app="photos" parent_theme_id="site:default" version="2.0.0">
+<theme id="default" system="0" vendor="webasyst" author="Webasyst" app="photos" parent_theme_id="site:default" version="2.1.0">
     <name locale="en_US">Default 2.0</name>
-    <name locale="ru_RU">Default 2.0</name>
+    <name locale="ru_RU">Дефолт 2.0</name>
     <description locale="ru_RU">Семейство адаптивных тем дизайна.</description>
     <files>
         <file path="index.html" custom="0" parent="1">
         </file>
         <file path="default.css" custom="0" parent="1">
         </file>
-        <file path="default.mobile.css" custom="0" parent="1">
-        </file>
-        <file path="default.tablet.css" custom="0" parent="1">
-        </file>
-        <file path="default.wide.css" custom="0" parent="1">
-        </file>
         <file path="default.photos.css" custom="0">
-            <description locale="en_US">Core Photos app CSS</description>
-            <description locale="ru_RU">Основной CSS приложения «Фото»</description>
         </file>
-        <file path="default.photos.mobile.css" custom="0">
-            <description locale="en_US">Additional Photos app CSS for multi-touch mobile devices</description>
-            <description locale="ru_RU">Дополнительный CSS приложения «Фото» для мобильных устройств</description>
-        </file>        
-        <file path="main.html" custom="0">
-            <description locale="en_US">Main layout and navigation for the Photos app content</description>
-            <description locale="ru_RU">Основное макет вывода содержимого и навигации в приложении «Фото»</description>
-        </file>
+        <file path="default.photos.js" custom="0">
+        </file> 
         <file path="head.html" custom="0">
             <description locale="en_US">Photos app's &lt;head&gt; instructions</description>
             <description locale="en_US">Блок &lt;head&gt; приложения «Фото»</description>
         </file>
-        <file path="list-thumbs.html" custom="0">
+        <file path="header.html" custom="0">
+    		<description locale="en_US">App specific header content</description>
+    		<description locale="ru_RU">Содержимое «шапки» приложения</description>
+    	</file>
+        <file path="main.html" custom="0">
+            <description locale="en_US">Main layout and navigation for the Photos app content</description>
+            <description locale="ru_RU">Основное макет вывода содержимого и навигации в приложении «Фото»</description>
+        </file>
+    	<file path="footer.html">
+            <description locale="en_US">App specific footer content</description>
+            <description locale="ru_RU">Содержимое футера приложения</description>
+        </file>
+        <file path="photos-thumbs.html" custom="0">
             <description locale="en_US">Photo list thumbnails view</description>
             <description locale="ru_RU">Список фотографий эскизами</description>
         </file>
-        <file path="list-plain.html" custom="0">
+        <file path="photos-plain.html" custom="0">
             <description locale="en_US">Photo list plain view</description>
             <description locale="ru_RU">Список фотографий «простыней»</description>
         </file>
@@ -59,57 +57,37 @@
             <description locale="en_US">Static page content</description>
             <description locale="ru_RU">Содержимое информационной страницы</description>
         </file>
-        <file path="login.html" custom="0">
-            <description locale="en_US">Login page</description>
-            <description locale="ru_RU">Страница входа для пользователей</description>
+        <file path="my.nav.html">
+            <description locale="en_US">Customer account navigation menu</description>
+            <description locale="ru_RU">Меню навигации в личном кабинете покупателя</description>
         </file>
-        <file path="signup.html" custom="0">
-            <description locale="en_US">Sign up page</description>
-            <description locale="ru_RU">Страница регистрации пользователей</description>
+        <file path="login.html" parent="1">
         </file>
-        <file path="forgotpassword.html" custom="0">
-            <description locale="en_US">Forgot password page</description>
-            <description locale="ru_RU">Страница сброса пароля</description>
+        <file path="signup.html" parent="1">
         </file>
-        <file path="error.html" custom="0">
-          <description locale="en_US">404 and other errors</description>
-          <description locale="ru_RU">404 и другие ошибки</description>
+        <file path="forgotpassword.html" parent="1">
+        </file>
+        <file path="my.profile.html" parent="1">
+        </file>
+        <file path="error.html" parent="1">
         </file>
         <file path="footer.html" custom="0">
             <description locale="en_US">App specific footer content</description>
             <description locale="ru_RU">Содержимое футера приложения</description>
         </file>
-        <file path="default.js" custom="0">
-            <description locale="en_US">Core Default theme JS</description>
-            <description locale="ru_RU">Скрипты темы Default</description>
-        </file>
-        <file path="lazyloading.js">
-            <description locale="en_US">Lazy loading JS</description>
-            <description locale="ru_RU">Скрипты загрузки контента «на лету»</description>
+        <file path="default.js" parent="1">
         </file>
     </files>
     <about locale="en_US">
 <![CDATA[
 <p><b>Default</b> is a universal adaptive design theme family for all basic Webasyst apps: Site, Blog, Photos, Shop-Script, and others. The parent (main) theme of the family, which includes the basic set of CSS rules and the common layout template index.html, is the Default theme for the Site application. All Default design themes used in other applications (e.g., Blog or Photos) link common CSS and index.html layout file from the main theme.</p>
 <p>Default design themes automatically link CSS depending on a visitor's device. Supported devices and platforms: iOS or Android based mobile devices, tablet computers such as iPad, common desktop computers and laptops.</p>
-<h3>Photo thumbnails</h3>
-<p>In the Default theme of the Photos app thumbnails of the following sizes are used by default (see template file view_mixed.html):</p>
-<ul>
-    <li>250x0</li>
-</ul>
-<p>If you are using the Default theme for your online photo gallery (Photos app), then you should have the “Allow on demand generation of custom-sized thumbnails” option enabled in the Photos app settings. For better performance of your photo gallery, it is recommended to add the specified sizes to the predefined values list so that thumbnails are generated at the time when photos are uploaded to the server.</p>
 ]]>
     </about>
     <about locale="ru_RU">
 <![CDATA[
 <p><b>Default</b> — это универсальное семейство адаптивных тем дизайна для всех базовых приложений фреймворка Вебасист: Сайт, Блог, Фото, Shop-Script и других. Родительской (основной) темой семейства, включающей в себя базовый набор CSS-стилей и общий макет дизайна index.html, является тема Default для приложения «Сайт» (данная тема). Все темы дизайна Default для других приложений (Блог, Фото и других) используют базовый CSS и index.html из родительской (основной) темы.</p>
 <p>Темы дизайна семейства Default оптимизированы для всех современных браузеров, планшетных компьютеров и мобильных устройств на основе iOS и Android. CSS-стили подключаются в зависимости от разрешения и типа устройства, которым пользуется посетитель сайта.</p>
-<h3>Эскизы фотографий</h3>
-<p>В теме Default для приложения «Фото» используются эскизы следующих размеров (шаблон view_mixed.html):</p>
-<ul>
-    <li>250x0</li>
-</ul>
-<p>Если вы используете тему Default для вашей фотогалереи (приложения «Фото»), то в настройках приложения «Фото» должна быть включена опция создания эскизов произвольного размера по требования («на лету»). В целях оптимизации работы фотогалереи рекомендуется добавить указанные размеры в список предопределенных размеров эскизов, чтобы эскизы создавались для фотографий сразу во время загрузки на сервер.</p>
 ]]>
     </about>
     <thumbs>

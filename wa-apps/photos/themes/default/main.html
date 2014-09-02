@@ -2,143 +2,72 @@
 {* @event frontend_layout.%plugin_id%.header *}
 {foreach $frontend_layout as $item}{if !empty($item.header)}{$item.header}{/if}{/foreach}
 
-{if $action == 'photo'}
-    {* in Default theme sidebar becomes dropdown on pages presenting a single photo *}
-    {$_DROPDOWN_SIDEBAR = 1}
+{if $action == 'photo' || $action == 'album'}
+    {* no navigation sidebar for album and one-by-one photo view *}
+    {$_NAV_SIDEBAR = 0}
+{else}
+    {$_NAV_SIDEBAR = 1}
 {/if}
 
-{if !empty($_DROPDOWN_SIDEBAR)}
-<div class="dropdown-sidebar">
-{/if}
-    
-    <nav class="page-nav" role="navigation">
-    
+<nav class="page-nav" role="navigation">
+
+    {if $_NAV_SIDEBAR}
         <div class="nav-sidebar">
-            
-            <!-- albums -->
-            <a href="{$wa_app_url}" class="nav-sidebar-header">[`Albums`]</a>
-            
+        
             <div class="nav-sidebar-body">
-    
-                <!-- core filters -->
-                <ul class="menu-v">
-                    <li {if $wa->currentUrl() == $wa_app_url} class="selected"{/if}>
-                        <a href="{$wa_app_url}">[`Photostream`]</a>
-                    </li>
-                    <li {if $wa->param('action') neq 'page' && $wa->param('action') neq 'album' && $wa->param('hash') == 'favorites'} class="selected"{/if}>
-                        <a href="{$wa_app_url}favorites/">[`Editors’ choice`]</a>
-                    </li>
-                    <!-- plugins -->
-                    {* @event frontend_sidebar.%plugin_id%.menu *}
-                    {foreach $frontend_sidebar as $plugin_id => $item}{if !empty($item.menu)}
-                        <li>{$item.menu}</li>
-                    {/if}{/foreach}            
-                </ul>
-    
+                
+                <!-- albums -->
                 {if $albums = $wa->photos->albums(0)}
-                    <div{if $theme_settings.page_nav_mode == 'slidemenu'} class="slidemenu" data-back-lbl="[s`Back`]"{else} class="dropdown"{/if}>
-                        {wa_print_tree tree=$albums unfolded=true collapsible_class='collapsible' class="menu-v album-tree" elem ='<a href=":url" title=":name">:name</a>'}
+                    <div class="slidemenu" data-back-lbl="[s`Back`]">
+                        {wa_print_tree tree=$albums unfolded=true collapsible_class='collapsible' class="menu-v bottom-padded album-tree" elem ='<a href=":url" title=":name">:name</a>'}
                     </div>
                 {/if}
-    
+
                 <!-- tags -->
-                {if $cloud = $wa->photos->tags()}
-                    <div class="dropdown">
-                        <ul class="menu-v">
-                            <li class="collapsible">
-                                <a href="#" onClick="return false">[`Tags`]</a>
-                                <ul class="menu-v">
-                                    <li>
-                                    
-                                        <div class="tags block align-center">
-                                            {foreach $cloud as $tag}
-                                                <a href="{$wa_app_url}tag/{$tag.uri_name}/" style="font-size: {$tag.size}%; opacity: {$tag.opacity}">{$tag.name|escape}</a>
-                                            {/foreach}
-                                        </div>
-                                
-                                    </li>
-                                </ul>
-                            </li>
-                        </ul>
-      
-                    </div>
+                {if $cloud = $wa->photos->tags()}      
+                    <p class="tags block align-center">
+                        {foreach $cloud as $tag}
+                            <a href="{$wa_app_url}tag/{$tag.uri_name}/" style="font-size: {$tag.size}%; opacity: {$tag.opacity}">{$tag.name|escape}</a>
+                        {/foreach}
+                    </p>
                 {/if}
                 
-                <!-- more plugins -->
+                <!-- plugins -->
                 {* @event frontend_sidebar.%plugin_id%.section *}
                 {$_hook_frontend_sidebar_section = false}
                 {foreach $frontend_sidebar as $plugin => $output}
                     {if !empty($output.section)}
-                        {$_hook_frontend_sidebar_section = true}
+                        <hr>
+                        <div class="{$plugin}">
+                            {$output.section}
+                        </div>
                     {/if}
                 {/foreach}
-                {if $_hook_frontend_sidebar_section}
-                    <div{if $theme_settings.page_nav_mode == 'slidemenu'} class="slidemenu" data-back-lbl="[s`Back`]"{else} class="dropdown"{/if}>
-                        <ul class="menu-v">
-                            {foreach $frontend_sidebar as $plugin => $output}
-                                {if !empty($output.section)}
-                                    <li class="collapsible">
-                                        <a href="#" onClick="return false">
-                                            {if substr($plugin, -7) == '-plugin'}{$wa->pluginName(substr($plugin, 0, -7))}{else}[`More`]{/if}
-                                        </a>
-                                        <ul class="menu-v">
-                                            <li>
-                                                <div class="inner shadowed">
-                                                    {$output.section}
-                                                </div>
-                                            </li>
-                                        </ul>
-                                    </li>
-                                {/if}
-                            {/foreach}
-                        </ul>
-                    </div>
-                {/if}
-        
-            </div>
-   
-            <div class="clear-both"></div>
-            
-        </div>
-        
-        
-        {$photos_pages=$wa->photos->pages()}
-        {if $photos_pages}
-            <div class="nav-hotties nav-sidebar-ousted dropdown">
-                <ul class="menu-h">
-                    <!-- info pages -->
-                    {foreach $photos_pages as $_page}
-                        <li class="{if !empty($_page.childs)}collapsible{/if} {if !empty($_page.childs)}collapsible{/if}">
-                            <a href="{$_page.url|escape}">{$_page.name}</a>
-                            {if !empty($_page.childs)}
-                                {wa_print_tree tree=$_page.childs class="menu-v" attrs = 'id="page-list"' elem ='
-                        <a href=":url" title=":title">:name</a>' collapsible_class='collapsible' selected=$wa->param('page_id')}
-                            {/if}
-                        </li>
-                    {/foreach}
-                </ul>
-            </div>
-        {/if}
-    
-    </nav>
-    
-    <article id="page-content" {if $action == 'photo'}itemscope itemtype="http://schema.org/Photograph"{else}class="page-content"{/if}>
-    
-        <!-- integrnal navigation breadcrumbs -->
-        {if !empty($breadcrumbs)}
-            <div class="breadcrumbs">
-                {foreach $breadcrumbs as $breadcrumb}
-                    <a href="{$breadcrumb.full_url}">{$breadcrumb.name|escape}</a> <span class="rarr">&rarr;</span>
-                {/foreach}
-            </div>
-        {/if}
-    
-            {$content}
-        
-        <div class="clear-both"></div>
-        
-    </article>
 
-{if !empty($_DROPDOWN_SIDEBAR)}
-</div>
-{/if}
+            </div>
+        </div>
+    {/if}
+
+</nav>
+
+<article class="page-content{if $_NAV_SIDEBAR} with-sidebar{else}{/if}" itemscope itemtype="http://schema.org/{if $action == 'photo'}Photograph{else}WebPage{/if}">
+
+    {if !empty($breadcrumbs)}
+        {if $wa->globals('isMyAccount')}
+            {* within My Account we exclude first node from navigation because links are on the page already *}
+            {$breadcrumbs[0] = null}
+        {/if}
+        <div class="breadcrumbs" itemprop="breadcrumb">
+            {foreach $breadcrumbs as $breadcrumb}
+                {if $breadcrumb}
+                    <a href="{$breadcrumb.full_url}">{$breadcrumb.name|escape}</a> <span class="rarr">&rarr;</span>
+                {/if}
+            {/foreach}
+        </div>
+    {/if}
+
+    {$content}
+    
+    <div class="clear-both"></div>
+    
+</article>
