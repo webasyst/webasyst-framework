@@ -1,0 +1,256 @@
+<div class="fields" style="min-width: 600px; margin-top: 50px; margin-left: 25px; width: 100%;">
+    <div class="field-group">
+        <div class="field">
+            <div class="name">
+                [`Access level`]
+            </div>
+            <div class="value c-access-rights" id="c-access-rights-wrapper">
+                <select id="c-access-rights-toggle" style="display:block;">
+                    <option value="remove"{if !$fullAccess && $noAccess} selected="selected"{/if}>[`No access`]</option>
+                    <option value="0"{if !$fullAccess && !$noAccess} selected="selected"{/if}>[`Limited access`]</option>
+                    <option value="1"{if $fullAccess} selected="selected"{/if}>[`Administrator`]</option>
+                </select>
+
+                <span id="c-access-rights-hint-full" class="c-access-rights-hint" style="display:none">[`Full access to all applications and user management.`]</span>
+                <span id="c-access-rights-hint-limited" class="c-access-rights-hint" style="display:none">[`Set up access rights for each application`]</span>
+                <i class="icon16 loading" style="margin-left:16px;display:none;"></i>
+                <span class="c-access-rights-hint c-access-saved-hint" style="display:none"><i class="icon10 yes"></i> [`Saved`]</span>
+
+                <table id="c-access-rights-by-app" style="display: none; "><tbody>
+                    {foreach from=$apps key=app_id item=app}
+                        <tr id="c-ar-tr-{$app_id}" class="c-ar-app-row">
+                            <td class="c-app-icon">
+                                <img src="{$wa_url}{$app.img}">
+                            </td>
+                            <td class="c-app-name">
+                                <span class="c-access-color-noaccess">{$app.name|escape}</span>
+                            </td>
+                            <td class="c-app-access" style="min-width: 400px;">
+                                <select name="{$app_id}">
+                                    <option value="0" selected="selected">[`No access`]</option>
+                                    {if $app.customizable}
+                                        <option value="1">[`Limited access`]</option>
+                                    {/if}
+                                    <option value="2">[`Full access`]</option>
+                                </select>
+                                {* 'customize' link *}
+                                {if $app.customizable}
+                                    <a href="javascript:void(0)" class="small customize-link" style="display: none">[`Customize`]</a>
+                                {/if}
+
+                                {* (i) icon with tooltip *}
+                                {if $app_id == 'contacts'}
+                                    <i class="icon16 info c-ar-tooltip"></i>
+                                    <div style="display:none" class="c-ar-tooltip-html"><i></i>
+                                        <strong>[`NOTE:`]</strong> [`Limited and Full access levels in Contacts application DO NOT allow managing user accounts and categories. These access rights are granted to Administrator only.`]
+                                    </div>
+                                {/if}
+
+                                {* Loading icon and 'Saved' message *}
+                                <i class="icon16 loading" style="margin-left: 16px; display: none;"></i>
+                                <span class="c-access-saved-hint" style="display: none"><i class="icon10 yes"></i> [`Saved`]</span>
+                            </td>
+                        </tr>
+                    {/foreach}
+                </tbody></table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript" src="{$wa_url}wa-content/js/jquery-plugins/jquery-tooltip/jquery.tooltip.patched.min.js"></script>
+<script type="text/javascript">
+$(function() {
+    // highlight group link in sidebar
+    $('#wa-app .sidebar .selected').removeClass('selected');
+    $('#wa-app .sidebar li[rel=group{$group.id}]').addClass('selected');
+
+    var apps = {json_encode($apps)};
+    var group = {json_encode($group)};
+
+    // Dialog to customize app access
+    var openCustomizeDialog = function(cancelCallback) {
+        if (typeof cancelCallback !== 'function') {
+            cancelCallback = null;
+        }
+
+        var tr = $(this).parents('.c-ar-app-row');
+        var app = apps[tr.find('select').attr('name')];
+
+        $.wa.dialogCreate('c-ar-dialog', {
+            url: '?module=rights&app='+app.id+'&id=-'+group.id,
+            small: false,
+            onload: function() {
+                var dialog = $(this);
+                dialog.find('.dialog-buttons-gradient').empty()
+                    .append(
+                        $('<input type="submit" class="button green" value="[`Save`]">').click(function() {
+                            $(this).attr('disabled', true);
+                            dialog.find('.loading').show();
+                            var form = dialog.find('form');
+                            $.post(form.attr('action'), form.serialize(), $.wa.dialogHide, 'json');
+                        })
+                    )
+                    .append(' '+$_('or')+' ')
+                    .append(
+                        $('<a href="javascript:void(0)" class="inline-link"><b><i>[`cancel`]</i></b></a>').click(function() {
+                            $.wa.dialogHide();
+                            if (cancelCallback) {
+                                cancelCallback();
+                            }
+                        })
+                    )
+                    .append('<i class="icon16 loading" style="margin-left: 16px; display: none;"></i>');
+            },
+            oncancel: cancelCallback
+        });
+        return false;
+    }
+    $('#c-access-rights-wrapper .customize-link').click(openCustomizeDialog);
+
+    // Helper to setup UI colors and everything for one app and save it via AJAX
+    var updateApp = function(app, nosave) {
+        if(!app) {
+            return;
+        }
+        var tr = $('#c-ar-tr-'+app.id);
+
+        if (!app.access) {
+            // no access
+            tr.find('.c-app-name span').attr('class', 'c-access-color-noaccess');
+            tr.find('select').val(0);
+            tr.find('.customize-link').hide();
+            tr.find('.c-ar-tooltip').hide();
+        } else if(app.access == 1) {
+            // limited access
+            tr.find('.c-app-name span').attr('class', 'c-access-color-limited');
+            tr.find('select').val(1);
+            // when saving, they're shown later, when customize dialog is open
+            if (nosave) {
+                tr.find('.customize-link').show();
+                tr.find('.c-ar-tooltip').show();
+            }
+        } else { // app.access > 1
+            // Full access
+            tr.find('.c-app-name span').attr('class', 'c-access-color-full');
+            tr.find('select').val(2);
+            tr.find('.customize-link').hide();
+            tr.find('.c-ar-tooltip').show();
+        }
+
+        if (!nosave) {
+            tr.find('.loading').show();
+            $('#c-access-rights-wrapper select').attr('disabled', true);
+
+            $.post('?module=rights&action=save&id=-'+group.id, {
+                app_id: app.id,
+                name: 'backend',
+                value: app.access
+            }, function() {
+                $('#c-access-rights-wrapper select').attr('disabled', false);
+                tr.find('.loading').hide();
+                if (nosave !== 'sneaky') {
+                    tr.find('.c-access-saved-hint').stop().css('opacity', 1).show().animate({
+                        opacity: 0
+                    }, 2000, function() {
+                        $(this).hide();
+                    });
+                }
+
+                // if access rights are set to 'limited', open a customize dialog
+                if(app.access == 1) {
+                    openCustomizeDialog.call(tr.find('.customize-link'), function() {
+                        app.access = app.oldAccess;
+                        updateApp(app, 'sneaky');
+                    });
+                    tr.find('.customize-link').show();
+                    tr.find('.c-ar-tooltip').show();
+                }
+            }, 'json');
+        }
+    };
+
+    // Admin status control
+    var arToggle = $('#c-access-rights-toggle');
+    var lastToggleValue = arToggle.val();
+    var arToggleOnchange = function(nosave){
+        var fullAccess;
+        var newToggleValue = arToggle.val();
+        switch(newToggleValue) {
+            case 'remove':
+                fullAccess = 0;
+                $('#c-access-rights-hint-limited').hide();
+                $('#c-access-rights-hint-full').hide();
+                $('#c-access-rights-by-app').hide();
+                break;
+            case '0':
+                fullAccess = 0;
+                $('#c-access-rights-hint-limited').show();
+                $('#c-access-rights-hint-full').hide();
+                $('#c-access-rights-by-app').show();
+                break;
+            case '1':
+                fullAccess = 1;
+                $('#c-access-rights-hint-limited').hide();
+                $('#c-access-rights-hint-full').show();
+                $('#c-access-rights-by-app').hide();
+                break;
+        }
+
+        // Reset application rights
+        for(var id in apps) {
+            if (newToggleValue != lastToggleValue) {
+                apps[id].access = 0;
+            }
+            updateApp(apps[id], true);
+        }
+        lastToggleValue = newToggleValue;
+
+        if (!nosave) {
+            var wr = $('#c-access-rights-wrapper');
+            wr.children('.loading').show();
+            $('#c-access-rights-wrapper select').attr('disabled', true);
+
+            $.post('?module=rights&action=save&id=-'+group.id, {
+                app_id: 'webasyst',
+                name: 'backend',
+                value: fullAccess ? 1 : 0
+            }, function() {
+                $('#c-access-rights-wrapper select').attr('disabled', false);
+                wr.children('.loading').hide();
+                wr.children('.c-access-saved-hint').stop().css('opacity', 1).show().animate({
+                    opacity: 0
+                }, 2000, function() {
+                    $(this).hide();
+                });
+            }, 'json');
+        }
+    };
+    arToggleOnchange(true);
+    arToggle.change(function() {
+        arToggleOnchange();
+    });
+
+    // On select change update app access
+    $('#c-access-rights-wrapper tr select').change(function() {
+        var self = $(this);
+        var app = apps[self.attr('name')];
+        app.oldAccess = app.access;
+        app.access = parseInt(self.val());
+        updateApp(app);
+    });
+
+    // Tooltips on info icons
+    $('#c-access-rights-wrapper .c-ar-tooltip').tooltip({
+        bodyHandler: function() {
+            return $(this).parent().find('.c-ar-tooltip-html').html();
+        },
+        extraClass: "tooltip",
+        noHideOnClick: true,
+        showURL: false
+    });
+
+    $.wa.controller.setTitle($('#c-ga-header h1').text());
+});
+</script>
+

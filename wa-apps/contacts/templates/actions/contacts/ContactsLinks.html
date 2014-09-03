@@ -1,72 +1,72 @@
 
-<h2>[`Delete contacts`] <span style="color: #aaa;">({{$all}})</span></h2>
+<h2>[`Delete contacts`] <span style="color: #aaa;">({$all})</span></h2>
 
 <p>[`Contact deletion cannot be undone.`]</p>
 
-{{if $contacts}}
+{if $contacts}
     <p><strong style="color:red;">[`IMPORTANT NOTE:`]</strong>
-        {{if $all == count($contacts)}}
+        {if $all == count($contacts)}
             [`All selected contacts have links to other applications.`]
-        {{else}}
-            {{sprintf(_w('%d of %d selected contacts shown below have links to other applications.'), count($contacts), $all)}}
-        {{/if}}
+        {else}
+            {sprintf(_w('%d of %d selected contacts shown below have links to other applications.'), count($contacts), $all)}
+        {/if}
 
-        {{if !$superadmin}}
+        {if !$superadmin}
             [`Deletion of these contacts is allowed to Administrator only.`]
-        {{else}}
+        {else}
             [`After deletion of these contacts other applications will refer to not existing contacts.`]
-        {{/if}}
+        {/if}
     </p>
     <table class="zebra full-width">
-        {{foreach from=$contacts item=name key=id}}
-            {{if $superadmin}}
-                {{foreach from=$links[$id] item=app_links key=app_id}}
-                    {{foreach from=$app_links item=l}}
+        {foreach from=$contacts item=name key=id}
+            {if $superadmin}
+                {foreach from=$links[$id] item=app_links key=app_id}
+                    {foreach from=$app_links item=l}
                         <tr>
-                            <td class="min-width"><img src="{{wa_backend_url()}}?action=photo&id={{$id}}&size=20" width="20" height="20"></td>
-                            <td>{{$name|escape}}</td>
-                            <td>{{$apps[$app_id].name}}/{{$l.role|truncate:50|escape}}</td>
+                            <td class="min-width"><img src="{wa_backend_url()}?action=photo&id={$id}&size=20" width="20" height="20"></td>
+                            <td>{$name|escape}</td>
+                            <td>{$apps[$app_id].name}/{$l.role|truncate:50|escape}</td>
                             <td>
-                                {{_w("%d link", "%d links", $l.links_number)}}
+                                {_w("%d link", "%d links", $l.links_number)}
                             </td>
                         </tr>
-                    {{/foreach}}
-                {{/foreach}}
-            {{else}}
+                    {/foreach}
+                {/foreach}
+            {else}
                 <tr>
-                    <td class="min-width"><img src="{{wa_backend_url()}}?action=photo&id={{$id}}&size=20" width="20" height="20"></td>
-                    <td>{{$name|escape}}</td>
+                    <td class="min-width"><img src="{wa_backend_url()}?action=photo&id={$id}&size=20" width="20" height="20"></td>
+                    <td>{$name|escape}</td>
                 </tr>
-            {{/if}}
-        {{/foreach}}
+            {/if}
+        {/foreach}
     </table>
-{{/if}}
+{/if}
 
 <script type="text/javascript">
-    {{if $contacts}}
+    {if $contacts}
         $('#delete-dialog .dialog-window').css({
             'min-height': null,
             'bottom': null
         });
         $.wa.waCenterDialog($('#delete-dialog').removeClass('small'));
-    {{/if}}
+    {/if}
 
-    {{if $superadmin || $ids}}
+    {if $superadmin || $ids}
         var buttons = $('#delete-dialog .dialog-buttons-gradient');
 
-        {{if !$contacts}}
+        {if !$contacts}
             var button_text = "[`Delete contacts`]";
-        {{elseif $superadmin}}
+        {elseif $superadmin}
             var button_text = "[`Delete anyway`]";
-        {{else}}
-            var button_text = "{{sprintf(_w('Delete %d of %d selected'), count($ids), $all)}}";
-        {{/if}}
+        {else}
+            var button_text = "{sprintf(_w('Delete %d of %d selected'), count($ids), $all)}";
+        {/if}
 
         buttons.empty().append($('<input type="submit" class="button red" value="'+button_text+'">').click(function() {
             var url = '?module=contacts&action=delete';
             var self = $(this).attr('disabled', true).after('<i class="icon16 loading"></i>');
-            var ids = {{json_encode($ids)}};
-            $.post(url, {'id[]': ids}, function (response) {
+            var ids = {json_encode($ids)};
+            $.post(url, { 'id[]': ids }, function (response) {
                 $.wa.dialogHide();
                 var message = response.data.message;
                 $.wa.controller.afterInitHTML = function () {
@@ -92,5 +92,5 @@
             $.wa.dialogHide();
             return false;
         }));
-    {{/if}}
+    {/if}
 </script>

@@ -28,16 +28,40 @@ class contactsDefaultLayout extends waLayout
                 }
             }
         }
-
-        // Plugin assets
-        if ($this->getConfig()->getInfo('edition') === 'full') {
-            wa()->event('assets');
+        
+        /**
+         * Include plugins js and css
+         * @event backend_assets
+         * @return array[string]string $return[%plugin_id%]
+         */
+        $this->view->assign('backend_assets', wa()->event('backend_assets'));
+        
+        /**
+         * Include plugins js templates
+         * @event backend_tempaltes
+         * @return array[string]string $return[%plugin_id%]
+         */
+        $this->view->assign('backend_templates', wa()->event('backend_templates'));
+        
+        $this->view->assign(array(
+            'admin' => wa()->getUser()->getRights('contacts', 'backend') > 1,
+            'global_admin' => wa()->getUser()->getRights('webasyst', 'backend') > 0,
+            'fields' => $fields,
+            'groups' => $this->getGroups(),
+            'paginator_type' => wa('contacts')->getConfig('contacts')->getOption('paginator_type'),
+            'lang' => substr(wa()->getLocale(), 0, 2)
+        ));
+    }
+    
+    public function getGroups()
+    {
+        $m = new waGroupModel();
+        $groups = $m->getAll();
+        foreach ($groups as &$g) {
+            $g['name'] = htmlspecialchars($g['name']);
         }
-
-        $this->view->assign('admin', wa()->getUser()->getRights('contacts', 'backend') > 1);
-        $this->view->assign('global_admin', wa()->getUser()->getRights('webasyst', 'backend') > 0);
-        $this->view->assign('fields', $fields);
-        $this->view->assign('versionFull', $this->getConfig()->getInfo('edition') === 'full');
+        unset($g);
+        return $groups;
     }
 }
 

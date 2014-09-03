@@ -1,91 +1,23 @@
 (function($) {
     $.wa.grid = {
-        init: function (config) {
-            if (config) {
-                this.config = config;
-            }
-            this.defaultSettings = {limit: 30, offset: 0, sort: 'name', order: 1, view: 'table'};
+        
+        count: 0,
+        
+        // last loaded data by grid
+        data: {},
+        
+        highlight_terms: [],
+        
+        init: function () {
+            
+            this.defaultSettings = {
+                limit: 30, 
+                offset: 0, 
+                sort: 'name', 
+                order: 1, 
+                view: 'table'
+            };
             this.settings = $.extend({}, this.defaultSettings);
-            this.fields = [
-                {id: 'photo', title: $_('Photo'), // attrs: '',
-                    filter: function (data) {
-                        var src;
-                        if (!data.photo || data.photo == '0') {
-                            src = $.wa.controller.options.url+'wa-content/img/userpic96.jpg';
-                        } else if (''+parseInt(data.photo) == data.photo) {
-                            src = $.wa.controller.options.url+'wa-data/public/contacts/photo/'+data.id+'/'+data.photo+'.96x96.jpg';
-                        } else {
-                            src = data.photo;
-                        }
-                        return '<div class="image"><a href="#/contact/'+data.id+'"><img src="' + src + '" /></a></div>';
-                    }
-                },
-                {id: 'f', title: 'Field', filter: function (data, options) {
-                    var h = options.hash.replace(/duplicates/, 'search');
-                    return '<a href="#' + h.substr(0, h.length - 1) + '=' + encodeURIComponent(data.f) +'/0/~data/0/list/">'+ data.f + '</a>';
-                }, sorted: true},
-                {id: 'n', title: 'Number', sorted: true}
-            ];
-
-            for (var field_id in this.config.fields) {
-                f = {
-                    id: field_id,
-                    title: this.config.fields[field_id].name
-                };
-                if (field_id == 'email') {
-                    f.filter = function (d, p) {
-                        if (p && p.value) {
-                            return '<a href="mailto:' + encodeURIComponent(p.value.value || p.value) + '">' + $.wa.encodeHTML(p.value.value || p.value) + '</a>';
-                        } else {
-                            return '';
-                        }
-                    };
-                    f.attrs = 'class="alist"';
-                } else if (field_id == 'company') {
-                    f['filter'] = function (data) {
-                        if (data.company && !$.wa.controller.free) {
-                            return '<a href="#/contacts/search/company=' + encodeURIComponent(data.company) + '/">' + $.wa.encodeHTML(data.company) + '</a>';
-                        } else {
-                            return $.wa.encodeHTML(data.company);
-                        }
-                    };
-                    f['sorted'] = true;
-                } else if (field_id == 'name') {
-                    f['attrs'] = 'class="wa-c-name"';
-                    f['filter'] = function (data) {
-                        return '<a href="#/contact/'+ data.id +'">'+ $.wa.encodeHTML(data.name || '') + '</a>';
-                    };
-                    f['sorted'] = true;
-                }
-                this.fields.push(f);
-            }
-
-            this.fields.push({
-                id: '_access',
-                title: $_('Access'),
-                filter: function(data) {
-                    if (data._access == 'admin') {
-                        return '<strong>'+$_('Administrator')+'</strong>';
-                    } else if (!data._access) {
-                        return '<span style="color: red; white-space: nowrap">'+$_('No access')+'</span>';
-                    } else if (data._access == 'custom') {
-                        return '<span style="white-space: nowrap">'+$_('Limited access')+'</span>';
-                    } else {
-                        return data._access; // not used and should not be
-                    }
-                }
-            });
-            this.fields.push({
-                id: '_online_status', title: '',
-                filter: function (data) {
-                    switch (data._online_status) {
-                        case 'online':
-                            return '<i class="icon10 online"></i>';
-                        default: // 'offline', 'not-complete'
-                            return '';
-                    }
-                }
-            });
 
             // Since 'change' does not propagate in IE, we cannot use it with live events.
             // In IE have to use 'click' instead.
@@ -94,14 +26,200 @@
             $('#records-per-page').live($.browser.msie ? 'click' : 'change', function() {
                 var newLimit = $(this).val();
                 var newOffset = 0;
-
-                // Change offset correctly
-                if(that.settings && that.settings.offset) {
-                    newOffset = Math.floor(that.settings.offset / newLimit)*newLimit;
+                if (that.settings && that.settings.offset) {
+                    newOffset = that.settings.offset;
                 }
-
                 $.wa.setHash($.wa.grid.hash + $.wa.grid.getHash({limit: newLimit, offset: newOffset}));
             });
+        },
+
+        formatFieldValue: function(v, f) {
+            if (f.id === '_access') {
+                if (v == 'admin') {
+                    return '<strong>'+$_('Administrator')+'</strong>';
+                } else if (!v) {
+                    return '<span style="color: red; white-space: nowrap">'+$_('No access')+'</span>';
+                } else if (v == 'custom') {
+                    return '<span style="white-space: nowrap">'+$_('Limited access')+'</span>';
+                } else {
+                    return v; // not used and should not be
+                }
+            }
+            if (v) {
+                return $.wa.encodeHTML(v);
+            } else {
+                return '';
+            }
+        },
+                
+        setHightlightTerms: function(terms) {
+            var q = [];
+            //var terms = data.q || ((data.info && data.info.q) ? data.info.q : []) || [];
+            if ($.isArray(terms) && terms.length) {
+                for (var i = 0, n = terms.length; i < n; i += 1) {
+                    q.push(terms[i] || '');
+                }
+            } else if (typeof terms === 'string') {
+                q.push(terms || '');
+            }
+            return this.highlight_terms = terms;
+        },
+                
+        highlight: function(t) {
+            var r = t;
+            var q = this.highlight_terms;
+            if (r && !$.isEmptyObject(q)) {
+                var parser = $.parseXML ? $.parseXML : $.parseHTML;
+                var replacer = function(r) {
+                    for (var i = 0, n = q.length; i < n; i += 1) {
+                        if (q[i]) {
+                            r = ('' + r).replace(
+                                new RegExp('(' + 
+                                    q[i].replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&") + 
+                                ')', 'ig'), 
+                                '<span class="highlighted">$1</span>'
+                            );
+                        }
+                    }
+                    return r;
+                };
+                try {
+                    var id = 'wrapper' + ('' + Math.random()).slice(2);
+                    var elem = parser.call($, '<div id="' + id + '">' + r + '</div>');
+                    var workup = function(elem) {
+                        return elem.contents().map(function(i, el) {
+                            if (el.nodeType == 3) {
+                                return replacer($.wa.encodeHTML($(el).text()));
+                            } else {
+                                if ($(el).contents().length) {
+                                    var html = $('<div>');
+                                    workup($(el)).each(function(i, e) {
+                                        html.append(e);
+                                    });
+                                    return html.find(':first').get(0);
+                                } else {
+                                    return el;
+                                }
+                            }
+                        });
+                    };
+                    var html = $('<div>');
+                    workup($(elem).find('#' + id)).each(function(i, el) {
+                        html.append(el);
+                    });
+                    return html.html();
+                } catch (error) {
+                    if (console) {
+                        console.log([r, error]);
+                    }
+                    return replacer(r);
+                }
+            }
+            return r;
+        },
+                
+        formNamesHtml: function(contact) {
+            var name = this.highlight($.wa.encodeHTML(contact.name));
+            var lastname = this.highlight($.wa.encodeHTML(contact.lastname));
+            var middlename = this.highlight($.wa.encodeHTML(contact.middlename));
+            var firstname = this.highlight($.wa.encodeHTML(contact.firstname));
+
+            var strong = false;
+
+            var contacted = [
+                    firstname,
+                    middlename,
+                    lastname
+            ].join(' ').trim();
+
+            if (contact.lastname) {
+                lastname = '<strong>' + lastname + '</strong>';
+                strong = true;
+            } else if (contact.firstname) {
+                firstname = '<strong>' + firstname + '</strong>';
+                strong = true;
+            } else if (contact.middlename) {
+                middlename = '<strong>' + middlename + '</strong>';
+                strong = true;
+            }
+
+            var contacted_html = [
+                firstname,
+                middlename,
+                lastname
+            ].join(' ').trim();
+
+            var name_html = [];
+
+            // person
+            if (!parseInt(contact.is_company, 10)) {
+
+                if (contact.title) {
+                    name_html.push("<span class='title'>" + this.highlight($.wa.encodeHTML(contact.title)) + "</span>");
+                }
+                if (contacted) {
+                    name_html.push(contacted_html);
+                } else if (name) {
+                    name_html.push(name);
+                } else {
+                    name_html.push($('<span></span>').text($_("<no-name>")).html());
+                }
+
+                name_html = name_html.join(' ').trim();
+
+                var company_html = '';
+                if (contact.jobtitle || contact.company) {
+                    if (contact.jobtitle) {
+                        company_html += '<span class="title">' + this.highlight($.wa.encodeHTML(contact.jobtitle)) + '</span>';
+                    }
+                    if (contact.jobtitle && contact.company) {
+                        company_html += ' <span class="at">'+$_('@')+'</span> ';
+                    }
+                    if (contact.company) {
+                        if (strong) {
+                            company_html += '<span class="company">' + this.highlight($.wa.encodeHTML(contact.company))  + '</span>';
+                        } else {
+                            company_html += '<span class="company"><strong>' + this.highlight($.wa.encodeHTML(contact.company))  + '</strong></span>';
+                        }
+                    }
+                }
+
+                return [name_html, company_html];
+
+            } else {
+                company_html = '';
+                if (strong) {
+                    company_html += (contact.company ? this.highlight($.wa.encodeHTML(contact.company)) : name);
+                } else {
+                    company_html += (contact.company ? "<strong>" + this.highlight($.wa.encodeHTML(contact.company)) : name) + "</strong>";
+                }
+
+                return [company_html];
+            }
+
+        },
+
+        viewtable: function(data, no_pading) {
+            var html = tmpl('template-contacts-list-table', data);
+            this.count = data.count;
+            if (!no_pading) {
+                html += this.getPaging(data.count);
+            }
+            return html;
+        },
+
+        viewlist: function(data) {
+            var html = tmpl('template-contacts-list-list', data);
+            this.count = data.count;
+            html += this.getPaging(data.count);
+            return html;
+        },
+
+        viewthumbs: function(data) {
+            var html = tmpl('template-contacts-list-thumbs', data);
+            this.count = data.count;
+            html += this.getPaging(data.count);
+            return html;
         },
 
         load: function (url, ps, elem, hash, options) {
@@ -109,21 +227,13 @@
             this.options = options;
             this.hash = hash;
             this.settings = $.extend({}, this.defaultSettings);
-            var active_fields = ['id', 'name', 'email', 'company'];
+            
             for (var n in ps) {
-                if (n != 'fields') {
-                    if (ps[n] !== null) {
-                        this.settings[n] = ps[n];
-                    }
-                } else {
-                    active_fields = ps[n];
+                if (ps[n] !== null) {
+                    this.settings[n] = ps[n];
                 }
             }
-            if (typeof active_fields != 'string' && active_fields.join) {
-                this.settings.fields = active_fields.join(',');
-            } else {
-                this.settings.fields = active_fields;
-            }
+            
             var self = this;
             var r = Math.random();
             $.wa.controller.random = r; // prevents a lost request from updating a page
@@ -131,6 +241,10 @@
             $.post(url, this.settings, function (response) {
                 if ($.wa.controller.random != r || response.status != 'ok') {
                     return false;
+                }
+                
+                if (response.data.contacts) {
+                    $.wa.grid.data = response.data;
                 }
 
                 // if there's no contacts on current page, but there are contacts in this view
@@ -143,20 +257,16 @@
                     return false;
                 }
 
+                var beforeLoadReturn = null;
                 if (self.options && self.options.beforeLoad) {
-                    self.options.beforeLoad.call($.wa.controller, response.data);
+                    beforeLoadReturn = self.options.beforeLoad.call($.wa.controller, response.data);
                 }
-                $("#contacts-container .tools-view li.selected").removeClass('selected');
-                $("#contacts-container .tools-view li[rel=" + self.settings.view + "]").addClass('selected');
-
+                
                 if (response.data.title) {
-                    $.wa.controller.setTitle(response.data.title);
+                    $.wa.controller.setTitle(response.data.title, true);
                 }
                 if (response.data.desc) {
                     $.wa.controller.setDesc(response.data.desc);
-                }
-                if (response.data.fields) {
-                    active_fields = response.data.fields;
                 }
 
                 // Update history
@@ -165,23 +275,29 @@
                 }
 
                 elem = $(elem);
-                elem.html(self.view(self.settings.view, response.data, active_fields));
-                if (!options.hide_head) {
-                    var pre = self.topLineHtml(self.settings.view);
-                    if (pre) {
-                        elem.before($(pre));
-                    }
+                if (beforeLoadReturn !== false) {
+                    elem.html(self.view(self.settings.view, response.data/*, active_fields*/));
                 }
                 if (self.options && self.options.afterLoad) {
                     self.options.afterLoad(response.data);
                 }
+                
+                $.wa.controller.clearLastView();
+                
             }, "json");
         },
 
-        getSelected: function () {
-            var data = new Array();
+        getSelected: function (int) {
+            var data = [];
             $("input.selector:checked").each(function () {
-                data.push(this.value);
+                if (int) {
+                    var value = parseInt(this.value, 10);
+                    if (!isNaN(value)) {
+                        data.push(value);
+                    }
+                } else {
+                    data.push(this.value);
+                }
             });
             return data;
         },
@@ -191,232 +307,41 @@
             return false;
         },
 
-        selectItems: function (obj) {
+        selectItems: function (obj, container) {
+            container = $('#' + (container || 'contacts-container'));
             if ($(obj).is(":checked")) {
-                $('#contacts-container').find('input.selector').attr('checked', 'checked').parents('.contact-row').addClass('selected');
+                container.find('input.selector').attr('checked', 'checked').parents('.contact-row,.item-row').addClass('selected');
             } else {
-                $('#contacts-container').find('input.selector').removeAttr('checked').parents('.contact-row').removeClass('selected');
+                container.find('input.selector').removeAttr('checked').parents('.contact-row,.item-row').removeClass('selected');
             }
             $.wa.controller.updateSelectedCount();
         },
 
-        viewtable: function (data, active_fields) {
-            var html = '<table class="zebra full-width bottom-bordered">' +
-            '<thead><tr>' +
-            '<th class="wa-check-td min-width"><input onclick="$.wa.grid.selectItems(this)" type="checkbox" /></th>' +
-            '<th class="min-width"></th>';
-            for (var i = 0; i < this.fields.length; i++) {
-                if (active_fields.indexOf(this.fields[i].id) == -1) continue;
-                if (this.fields[i].sorted) {
-                    var p = {sort: this.fields[i].id, order: 1};
-                    if (this.settings.sort == p.sort) {
-                        p.order = 1 - this.settings.order;
-                    }
-
-                    html += '<th><a style="white-space:nowrap" href="#' + this.hash + this.getHash(p) + '">' +
-                    this.fields[i].title +
-                        (this.settings.sort == p.sort ?
-                            (p.order ?
-                                ' <i class="icon10 darr"></i>' :
-                                ' <i class="icon10 uarr"></i>') :
-                            '') +
-                        '</a></th>';
-                } else {
-                    html += '<th>' + this.fields[i].title + '</th>';
-                }
-            }
-            html += '</tr></thead>';
-            for (var i = 0; i < data.contacts.length; i++) {
-
-                var contact = data.contacts[i];
-                html += '<tr class="contact-row">' +
-                '<td><input class="selector" type="checkbox" value="' + contact.id + '" /></td>' +
-                '<td></td>';
-                for (var j = 0; j < this.fields.length; j++) {
-                    if (active_fields.indexOf(this.fields[j].id) == -1) continue;
-                    var v = contact[this.fields[j].id];
-                    if (v == undefined) {
-                        v = '';
-                    } else if (typeof(v) == 'object') {
-                        var temp_v = [];
-                        for (var l = 0; l < v.length; l++) {
-                            if (typeof(v[l]) == 'object') {
-                                temp_v.push('<span title="' + v[l].ext + '">' + (this.fields[j].filter ? this.fields[j].filter(contact, {hash: this.hash, value: v[l].value}) : v[l].value) + '</span>');
-                            } else {
-                                temp_v.push($.trim(this.fields[j].filter ? this.fields[j].filter(contact, {hash: this.hash, value: v[l]}) : v[l]));
-                            }
-                        }
-                        v = temp_v.join(', ');
-                    } else if (this.fields[j].filter) {
-                        v = this.fields[j].filter(contact, {hash: this.hash, value: v});
-                    } else {
-                        v = $.wa.encodeHTML(v);
-                    }
-                    html += '<td '+ (this.fields[j].attrs ? this.fields[j].attrs : '') +'>' + v + '</td>';
-                }
-                html += '</tr>';
-            }
-            html += '</table>';
-            html += this.getPaging(data.count);
-            return html;
-        },
-
-        getFieldById: function (id) {
-            for (var i = 0; i < this.fields.length; i++) {
-                if (this.fields[i].id == id) {
-                    return this.fields[i];
-                }
-            }
-            return {};
-        },
-
-        topLineHtml: function(view) {
-            if (view != 'list' && view != 'thumbs') {
-                return '';
-            }
-
-            var html = '<div class="c-list-top-line"><input onclick="$.wa.grid.selectItems(this)" type="checkbox"><span>'+$_('Sort by')+':</span>';
-
-            // Sort options
-            var names = {
-                'name': $_('Name'),
-                'company': $_('Company')
-            };
-            for(var k in names) {
-                var p = {sort: k, order: 1};
-                if (this.settings.sort == p.sort) {
-                    p.order = 1 - this.settings.order;
-                }
-                html += '<a href="#' + this.hash + this.getHash(p) + '">'+
-                            names[k]+
-                            (this.settings.sort == p.sort ?
-                                (p.order ?
-                                    '<i class="icon10 darr"></i>' :
-                                    '<i class="icon10 uarr"></i>')
-                                : '')+
-                        '</a>';
-            }
-            return html;
-        },
-
-        viewthumbs: function (data) {
-            $("#contacts-container .contacts-data").removeClass('not-padded').addClass('padded');
-            var html = '<ul class="thumbs li100px">';
-            for (var i = 0; i < data.contacts.length; i++) {
-                var contact = data.contacts[i];
-
-                var f = this.getFieldById('photo');
-                var photo = contact.photo;
-                if (f.filter) {
-                    photo = f.filter(contact, {hash: this.hash, value: photo});
-                }
-                var url = '#/contact/' + contact.id;
-                name = contact.name;
-                f = this.getFieldById('name');
-                if (f.filter) {
-                    name = f.filter(contact, {hash: this.hash, value: name});
-                }
-
-                // The item must be inside .contact-row container. When selected, .contact-row
-                // becomes .contact-row.selected (code in $.wa.grid.selectItems() and $.wa.controller.init())
-                html += '<li class="contact-row">' +
-                photo +
-                '<div class="c-name-check"><input class="selector" value="' + contact.id + '" type="checkbox"><a href="'+url+'">' + name + '</a></div>' +
-                '<div class="status"></div>' +
-                '</li>';
-            }
-            html += '</ul>';
-            html += this.getPaging(data.count);
-            return html;
-        },
-
-        viewlist: function (data) {
-            $("#contacts-container .contacts-data").removeClass('padded').addClass('not-padded');
-            var html = '<ul class="zebra">';
-            for (var i = 0; i < data.contacts.length; i++) {
-                var f = this.getFieldById('photo');
-                contact = data.contacts[i];
-                var photo = contact.photo;
-                if (f.filter) {
-                    photo = f.filter(contact, {hash: this.hash, value: photo});
-                }
-                name = contact.name;
-                f = this.getFieldById('name');
-                if (f.filter) {
-                    name = f.filter(contact, {hash: this.hash, value: name});
-                }
-                var url = '#/contact/' + contact.id;
-                html += '<li class="contact-row"><div class="profile image96px">' + photo +
-                '<div class="details"><input class="selector" name="c_list_selector" value="' + contact.id + '" type="'+(this.options.selector == 'radio' ? 'radio' : 'checkbox')+'">' +
-                '<p class="contact-name"><a href="'+url+'">' + name + '</a></p>';
-                var skip = {
-                    title: true,
-                    name: true,
-                    photo: true,
-                    firstname: true,
-                    middlename: true,
-                    lastname: true,
-                    locale: true,
-                    timezone: true
-                };
-                for (var field_id in this.config.fields) {
-                    if (skip[field_id]) {
-                        continue;
-                    }
-                    if (!contact[field_id] || contact[field_id] == '0000-00-00' || (typeof contact[field_id].length != 'undefined' && !contact[field_id].length)) {
-                        continue;
-                    }
-                    f = this.config.fields[field_id];
-
-                    if (f.fields) {
-                        if (typeof(contact[field_id]) == 'object') {
-                            for (var j = 0; j < contact[field_id].length; j++) {
-                                html += '<p><span class="c-details-label">' + f['name'];
-                                if($.trim(contact[field_id][j].ext)) {
-                                    // is it a predefined extension?
-                                    if (f.ext && f.ext[contact[field_id][j].ext]) {
-                                        html += ' <span>(' + f.ext[contact[field_id][j].ext] + ')</span>';
-                                    } else {
-                                        html += ' <span>(' + $.wa.encodeHTML(contact[field_id][j].ext) + ')</span>';
-                                    }
-                                }
-                                html += ':</span> ' + this.viewlistvalue(contact[field_id][j], f) + '</p>';
-                            }
-                        } else {
-                            html += '<p><span class="c-details-label">' + f['name'] + ':</span> ' + this.viewlistvalue(contact[field_id], true) + '</p>';
-                        }
-                    } else {
-                        html += '<p><span class="c-details-label">' + f['name'] + ':</span> ';
-                        if (typeof(contact[field_id]) == 'object') {
-                            v = [];
-                            for (var j = 0; j < contact[field_id].length; j++) {
-                                v.push(this.viewlistvalue(contact[field_id][j], f));
-                            }
-                            html += v.join(', ');
-                        } else {
-                            html += this.viewlistvalue(contact[field_id], f);
-                        }
-                        html += '</p>';
-                    }
-                }
-                html += '</div></div></li>';
-
-            }
-            html += '</ul>';
-
-            if (!this.options.hide_foot) {
-                html += this.getPaging(data.count);
-            }
-            return html;
-        },
+//        getFieldById: function (id) {
+//            for (var i = 0; i < this.fields.length; i++) {
+//                if (this.fields[i].id == id) {
+//                    return this.fields[i];
+//                }
+//            }
+//            return {};
+//        },
 
         viewlistvalue: function (v, f) {
-            if (typeof(v) != 'object') {
+            if (typeof v !== 'object') {
+                if (f.type === 'Select') {
+                    var options = f.options || {};
+                    if (options[v] !== undefined) {
+                        v = options[v];
+                    }
+                }
                 return $.wa.encodeHTML(v);
             }
 
             var html = '';
-
+            if (f.icon) {
+                html += '<i class="icon16 ' + f.icon + '"></i>';
+            }
+            
             // value should be encoded only if there's only value and ext
             var enc = true;
             for(var i in v) {
@@ -425,7 +350,7 @@
                     break;
                 }
             }
-
+            
             if (v.value) {
                 html += enc ? $.wa.encodeHTML(v.value) : v.value;
             }
@@ -446,6 +371,12 @@
             }
             $("#list-views li.selected").removeClass('selected');
             $("#list-views li[rel=" + view + "]").addClass('selected');
+            $("#contacts-container .contacts-data").removeClass('padded').addClass('not-padded');
+            var q = data.highlight_terms || ((data.info && data.info.highlight_terms) ? data.info.highlight_terms : []) || [];
+            if (typeof q === 'string') {
+                q = [q];
+            }
+            $.wa.grid.setHightlightTerms(q);
             return this['view' + view](data, params);
         },
 
@@ -461,21 +392,40 @@
             return hash;
         },
 
-        getPaging: function (n) {
+        /**
+         * Make paginator
+         * 
+         * @param {Number} n
+         * @param {Boolean} show_total need to show "Total contacts" area. Default: true
+         * @param {Boolean} show_options need to show "Show X records on page" selector: Default: true
+         * @returns {String} html block if paginator
+         */
+        getPaging: function (n, show_total, show_options) {
+    
+            show_total = typeof show_total === 'undefined' ? true : show_total;
+            show_options = typeof show_options === 'undefined' ? true : show_options;
             var html = '<div class="block paging">';
 
+            var type = $.wa.controller.options.paginator_type;
+
             // "Show X records on page" selector
-            var options = '';
-            var o = [30, 50, 100, 200, 500];
-            for(var i = 0; i < o.length; i++) {
-                options += '<option value="'+o[i]+'"'+(this.settings.limit == o[i] ? ' selected="selected"' : '')+'>'+o[i]+'</option>';
+            if (show_options) {
+                var options = '';
+                var o = [30, 50, 100, 200, 500];
+                for(var i = 0; i < o.length; i++) {
+                    options += '<option value="'+o[i]+'"'+(this.settings.limit == o[i] ? ' selected="selected"' : '')+'>'+o[i]+'</option>';
+                }
+                if (n > o[0]) {
+                    html += '<span class="c-page-num">'+$_('Show %s records on a page').replace('%s', '<select id="records-per-page">'+
+                            options+
+                        '</select>')+'</span>';
+                }
             }
-            html += '<span class="c-page-num">'+$_('Show %s records on a page').replace('%s', '<select id="records-per-page">'+
-                    options+
-                '</select>')+'</span>';
 
             // Total number of contacts in view
-            html += '<span class="total">'+$_('Contacts')+': '+n+'</span>';
+            if (show_total && type === 'page') {
+                html += '<span class="total">'+$_('Contacts')+': '+n+'</span>';
+            }
 
             // Pagination
             var pages = Math.ceil(n / parseInt(this.settings.limit));
@@ -484,19 +434,33 @@
                 if (this.hash[this.hash.length-1] != '/') {
                     this.hash += '/';
                 }
-
-                html += '<span>'+$_('Pages')+':</span>';
+                if (type === 'page') {
+                    html += '<span>'+$_('Pages')+':</span>';
+                }
                 if (pages == 1) {
                     return '';
                 }
-                var f = 0;
-                for (var i = 1; i <= pages; i++) {
-                    if (Math.abs(p - i) < 3 || i < 5 || pages - i < 3) {
-                        html += '<a ' + (i == p ? 'class="selected"' : '') + ' href="#' + this.hash + this.getHash({offset: (i - 1) * this.settings.limit}) + '">' + i + '</a>';
-                        f = 0;
-                    } else if (f++ < 3) {
-                        html += '.';
+                
+                if (type === 'page') {
+                    var f = 0;
+                    for (var i = 1; i <= pages; i++) {
+                        if (Math.abs(p - i) < 2 || i < 2 || pages - i < 1) {
+                            html += '<a ' + (i == p ? 'class="selected"' : '') + ' href="#' + this.hash + this.getHash({offset: (i - 1) * this.settings.limit}) + '">' + i + '</a>';
+                            f = 0;
+                        } else if (f++ < 3) {
+                            html += '.';
+                        }
                     }
+                } else {
+                    html += (parseInt(this.settings.offset, 10) + 1) + '&mdash;' + Math.min(n, (parseInt(this.settings.offset, 10) + parseInt(this.settings.limit, 10)));
+                    html += ' ' + $_('of') + ' '  + n;
+                }
+            } else if (type !== 'page') {
+                if (pages <= 0) {
+                    html += $_('No contacts.');
+                } else {
+                    html += Math.min(parseInt(this.settings.offset, 10) + 1, n) + '&mdash;' + Math.min(n, (parseInt(this.settings.offset, 10) + parseInt(this.settings.limit, 10)));
+                    html += ' ' + $_('of') + ' '  + n;
                 }
             }
 

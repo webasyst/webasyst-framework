@@ -2,6 +2,9 @@
     $.wa.controller = {
         /** Remains true for free (not premium) version of Contacts app. */
         free: true,
+        
+        // last 10 hashes
+        hashes: [],
 
         /** Kinda constructor. All the initialization stuff. */
         init: function (options) {
@@ -17,8 +20,11 @@
             });
 
             this.lastView = {
-                title: $.storage.get('contacts/lastview/title'),
-                hash: $.storage.get('contacts/lastview/hash')
+                title: null,
+                hash: null,
+                sort: null,
+                order: null,
+                offset: null
             };
             this.options = options;
             this.random = null;
@@ -38,7 +44,7 @@
                     return false;
                 }
                 return true;
-            }
+            };
 
             // .selected class for selected items in list
             $("#contacts-container .contacts-data input.selector").live('click', function () {
@@ -133,17 +139,32 @@
                 $.storage.del('contacts/last-hash');
             });
 
-            if (this.initFull) {
-                this.initFull(options);
-            }
+            $('#c-core').off('click.contact-choose', '.contact-row a.contact').on('click.contact-choose', '.contact-row a.contact', function() {
+                $.wa.controller.setLastView({
+                    offset: $(this).data('offset') || 0,
+                    sort: $.wa.grid.settings.sort,
+                    order: $.wa.grid.settings.order,
+                    title: $.wa.controller.getTitle(),
+                    hash: location.hash || ''
+                });
+            });
+            $('#c-core').off('click.contact-choose', 'a.contact.next, a.contact.prev').on('click.contact-choose', 'a.contact.next, a.contact.prev', function() {
+                $.wa.controller.setLastView({
+                    offset: $(this).data('offset') || 0,
+                });
+            });
+            
         }, // end of init()
 
         // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
         // *   Dispatch-related
         // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-        /** Cancel the next n automatic dispatches when window.location.hash changes */
-        stopDispatch: function (n) {
+        /** 
+         * Cancel the next n automatic dispatches when window.location.hash changes 
+         * {Number} n
+         * */
+        stopDispatch: function (n, push_hash) {
             this.stopDispatchIndex = n;
         },
 
@@ -163,22 +184,40 @@
           * e.g. for #/aaa/bbb/ccc/111/dd/12/ee/ff
           * a method $.wa.controller.AaaBbbCccAction(['111', 'dd', '12', 'ee', 'ff']) will be called.
           */
-        dispatch: function (hash) {
-            if (this.stopDispatchIndex > 0) {
-                this.stopDispatchIndex--;
-                return false;
-            }
-
+        dispatch: function (hash, args) {
             if (hash === undefined) {
                 hash = this.getHash();
             } else {
                 hash = this.cleanHash(hash);
             }
+            var h = hash.replace(/^[^#]*#\/*/, '');
+            var prev_h = (this.previousHash || '').replace(/^[^#]*#\/*/, '');
+            if (h !== prev_h) {
+                this.hashes.unshift(hash.replace(/^[^#]*#\/*/, ''));
+            }
+            if (this.hashes.length > 10) {
+                this.hashes.pop();
+            }
+            
+            if (this.stopDispatchIndex > 0) {
+                this.previousHash = hash;
+                this.stopDispatchIndex--;
+                return false;
+            }
 
             if (this.previousHash == hash) {
                 return;
             }
+            var old_hash = this.previousHash;
             this.previousHash = hash;
+
+            var e = new $.Event('wa_before_dispatched');
+            $(window).trigger(e, [hash]);
+            if (e.isDefaultPrevented()) {
+                this.previousHash = old_hash;
+                window.location.hash = old_hash;
+                return false;
+            }
 
             hash = hash.replace(/^[^#]*#\/*/, '');
 
@@ -193,7 +232,7 @@
                         if (i < 2) {
                             if (i === 0) {
                                 actionName = h;
-                            } else if (parseInt(h, 10) != h) {
+                            } else if (parseInt(h, 10) != h && h.indexOf('.') == -1) {
                                 actionName += h.substr(0,1).toUpperCase() + h.substr(1);
                             } else {
                                 attrMarker = i;
@@ -209,12 +248,14 @@
                     if (this[actionName + 'Action']) {
                         this.currentAction = actionName;
                         this.currentActionAttr = attr;
-                        this[actionName + 'Action'](attr);
+                        this[actionName + 'Action'].apply(this, [].concat([attr], args || []));
+                        //this[actionName + 'Action'](attr);
                     } else {
                         save_hash = false;
                         if (console) {
                             console.log('Invalid action name:', actionName+'Action');
                         }
+                        $.wa.setHash('#/contacts/all/');
                     }
                 } else {
                     //if (console) console.log('DefaultAction');
@@ -238,7 +279,8 @@
             // Highlight current item in history, if exists
             this.highlightSidebar();
 
-            $(document).trigger('hashchange', [hash]);
+            $(document).trigger('hashchange', [hash]); // Kinda legacy
+            $(window).trigger('wa-dispatched');
         },
 
         /** Load last page  */
@@ -260,30 +302,42 @@
             this.contactsAllAction();
         },
 
-        /** Access control form for a group. */
-        groupsRightsAction: function(p) {
-            if (!p || !p[0]) {
-                if (console) {
-                    console.log('Group id not specified for groupsRightsAction.');
-                }
-                return;
-            }
-
-            this.loadHTML("?module=groups&action=rights&id="+p[0], null, function() {
-                this.setBlock();
-            });
-        },
-
         /** Empty form to create a user group */
         groupsCreateAction: function(params) {
-            this.groupsEditAction();
+            this.current_group_id = 0;
+            this.groupsEditAction(params, $_('New user group'));
         },
 
         /** Form to edit or create a user group */
-        groupsEditAction: function(params) {
-            this.loadHTML("?module=groups&action=editor"+(params && params[0] ? '&id='+params[0] : ''), null, function() {
-                this.setBlock();
-            });
+        groupsEditAction: function(params, title) {
+            var title = $_('New user group');
+            if (params[0]) {
+                //title = $_('Edit user group');
+                this.current_group_id = params[0];
+                title = this.groups[this.current_group_id].name;
+            }
+            if ($('#c-users-sidebar-menu').length) {
+                this.showLoading();
+            } else {
+                this.setBlock('contacts-users', title);
+            }
+            this.setTitle(title);
+            this.load(
+                '#c-core .c-core-content', "?module=groups&action=editor"+(params && params[0] ? '&id='+params[0] : ''), 
+                null, 
+                null,
+                function() {
+                    this.setTitle(title);
+                    $('#c-group-edit-name').focus();
+                    $('.wa-page-heading .loading').hide();
+                    $('#c-users-sidebar-menu li.selected').removeClass('selected');
+                    if (!params || !params[0]) {
+                        $('#c-create-group-toggle').addClass('selected');
+                    } else {
+                        $('#list-group li[rel=group' + params[0] + ']').addClass('selected');
+                    }
+                }
+            );
         },
 
         /** Empty form to create a contacts category */
@@ -335,23 +389,60 @@
             return false;
         },
 
-        /** List of contacts in user group.  */
+        deleteCustomField: function(field_id) {
+            $('.custom-field-th[data-field-id="'+field_id+'"]').remove();
+            $('.custom-field-td[data-field-id="'+field_id+'"]').remove();
+            var len = $('.custom-field-th').length;
+            if (!len) {
+                $('.with-custom-fields').removeClass('with-custom-fields');
+                $('.list-with-custom-fields').removeClass('list-with-custom-fields');
+            } else {
+                var bounds = ['first', 'last'];
+                for (var i = 0; i < bounds.length; i+= 1) {
+                    var bound = bounds[i];
+                    var th = $('.custom-field-th.' + bound);
+                    if (!th.length) {
+                        th.removeClass(bound);
+                        $('.custom-field-td.' + bound).removeClass(bound);
+                        $('.custom-field-th:' + bound).addClass(bound);
+                        $('.contact-row').each(function() {
+                            $(this).find('.custom-field-td:' + bound).addClass(bound);
+                        });
+                    }
+                }
+            }
+        },
+        
         contactsGroupAction: function (params) {
             if (!params || !params[0]) {
                 return;
             }
-
-            this.showLoading();
             var p = this.parseParams(params.slice(1), 'contacts/group/'+params[0]);
             p.fields = ['name', 'email', 'company', '_access'];
             p.query = 'group/' + params[0];
+            $('.wa-page-heading').css({
+                width: ''
+            });
             this.loadGrid(p, '/contacts/group/' + params[0] + '/', false, {
+                beforeLoad: function(data) {
+                    this.current_group_id = params[0];
+                    if (data.count > 0) {
+                        this.setBlock('contacts-users', null, ['group-settings', 'group-actions']);
+                    } else {
+                        this.setBlock('contacts-users', null, 'group-settings');
+                        
+                        $('#contacts-container').html(
+                            '<div class="block double-padded" style="margin-top: 35px;">' + 
+                                '<p>' + $_('No users in this group.') + '</p> <p>' + 
+                                    $_('To add users to group, go to <a href="#/users/all/">All users</a>, select them, and click <strong>Actions with selected / Add to group</strong>.') +
+                                '</p>' + 
+                            '</div>'
+                        );
+                        return false;
+                    }
+                },
                 afterLoad: function (data) {
                     $('#list-group li[rel="group'+params[0]+'"]').children('span.count').html(data.count);
-                },
-                beforeLoad: function() {
-                    this.current_group_id = params[0];
-                    this.setBlock('contacts-list', null, ['group-actions']);
                 }
             });
         },
@@ -373,9 +464,10 @@
                             $.post('?module=groups&action=delete', {'id': params[0]}, function() {
                                 // Remove deleted group from sidebar
                                 $('#wa-app .sidebar a[href="#/contacts/group/'+params[0]+'/"]').parent().remove();
-                                if ($('#list-group').children().size() <= 0) {
-                                    $.wa.controller.reloadSidebar();
+                                if ($('#list-group').find('.c-group').length <= 0) {
+                                    $('#list-group').find('.c-shown-on-no-groups').show();
                                 }
+                                delete $.wa.controller.groups[params[0]];
                                 $.wa.dialogHide();
                                 $.wa.setHash('#/users/all/');
                             });
@@ -394,10 +486,22 @@
             return false;
         },
 
+        clearLastView: function() {
+            this.lastView = {
+                title: null,
+                hash: null,
+                sort: null,
+                order: null,
+                offset: null
+            };
+        },
+
         /** Empty form to create a new contact. */
         contactsAddAction: function (params) {
-            this.loadHTML("?module=contacts&action=add"+(params && params[0] ? '&company=1' : ''), null, function() {
-                this.setBlock('contacts-info');
+            this.setBlock('contacts-info');
+            this.load($("#c-core .c-core-content"), "?module=contacts&action=add"+(params && params[0] ? '&company=1' : ''), {}, null, function() {
+                $.wa.controller.setTitle($_('New contact'), true);
+                $.wa.controller.clearLastView();
             });
         },
 
@@ -406,6 +510,11 @@
             var p = {};
             if (params[1]) {
                 p = {'tab': params[1]};
+            }
+            if (this.lastView && this.lastView.hash !== null) {
+                p['last_hash'] = this.lastView.hash;
+                p['sort'] = this.lastView.sort;
+                p['offset'] = this.lastView.offset;
             }
             this.showLoading();
             this.load("#c-core", "?module=contacts&action=info&id=" + params[0], p, function() {
@@ -436,18 +545,7 @@
 
         /** Anvanced search form (in premium contacts) or search results list, including simple search. */
         contactsSearchAction: function (params, options) {
-            if (!params || !params[0] || params[0] == 'form') {
-                if (!this.contactsSearchForm) {
-                    if (console) {
-                        console.log('No advanced search in free contacts.');
-                        setTimeout(function() { $.wa.setHash('#/'); }, 1);
-                    }
-                    return;
-                }
-                return this.contactsSearchForm(params && params[0] === 'form' ? params.slice(1) : []);
-            }
             this.showLoading();
-
             if (params[0] == 'results') {
                 if (!options) {
                     options = {search: true};
@@ -463,19 +561,17 @@
             if (options && options.search) {
                 p.search = 1;
             }
-
+            if (!params[5]) {
+                p.view = 'list';
+            }
             var hash = this.cleanHash('#/contacts/search/'+filters);
-            var el = null;
+            $.wa.controller.setBlock('contacts-list', null, ['search-actions']);
             this.loadGrid(p, hash.substr(1), null, {
-                beforeLoad: function() {
-                    this.setBlock('contacts-list', false, ['search-actions']);
-                    el = this.setTitle();
+                afterLoad: function(data) {
+                    $.wa.controller.hideLoading();
                     if (options && options.search) {
                         $("#list-main .item-search").show();
                         $("#list-main .item-search a").attr('href', '#/contacts/search/results/' + params[0] + '/');
-                        //if (!this.free) {
-                        //    $('<a style="display:block" href="#/contacts/search/form/' + params[0] + '/">'+$_('edit search')+'</a>').insertAfter(el);
-                        //}
                         p.search = 1;
                     }
                 }
@@ -510,12 +606,96 @@
             p.fields = ['name', 'email', 'company', '_access'];
             this.loadGrid(p, '/users/all/', false, {
                 beforeLoad: function() {
-                    this.setBlock('contacts-list');
+                    this.setBlock('contacts-users', $_('All users'), ['group-actions']);
                 },
                 afterLoad: function (data) {
                     $('#sb-all-users-li span.count').html(data.count);
+                    $('#c-core .sidebar ul.stack li:first').addClass('selected');
                 }
             });
+        },
+        
+        usersAddAction: function(params) {
+            this.setBlock('contacts-users', $_('New user'), false);
+            this.setTitle($_('New user'));
+            $('.wa-page-heading').find('.loading').hide();
+            $('.contacts-data').html(
+                '<div class="block double-padded">' + 
+                    '<p>' + 
+                        $_('You can grant access to your account backend to any existing contact.') + '<br><br>' +
+                        $_('Find a contact, or <a href="#/contacts/add/">create a new contact</a>, and then customize their access rights on Access tab.') + 
+                    '</p>' + 
+                '</div>');
+        },
+
+        addToGroupDialog: function () {
+            if ($.wa.grid.getSelected().length <= 0) {
+                return false;
+            }
+            $.wa.controller.last_selected = $.wa.grid.getSelected();
+            $.wa.dialogCreate('c-d-add-to-group', {
+                url: "?module=groups&action=add"
+            });
+        },
+                
+        addToGroup: function(ids) {
+            $.post('?module=groups&action=contactSave', {
+                    'id[]': $.wa.grid.getSelected(),
+                    'groups[]': ids || []
+                }, function (response) {
+                    $.wa.controller.last_selected = [];
+                    if (response.status === "ok") {
+                        $.wa.controller.updateGroupCounters(response.data.counters || {});
+                        $.wa.controller.afterInitHTML = function () {
+                            $.wa.controller.showMessage(response.data.message, true, 'float-left max-width');
+                        };
+                        $.wa.controller.redispatch();
+                        $.wa.dialogHide();
+                        $.wa.grid.selectItems($('#c-select-all-items').attr('checked', false));
+                    } else {
+                        $.wa.controller.showMessage(response.data.message);
+                    }
+            }, "json");
+        },
+        
+        updateGroupCounters: function(counters) {
+            if (!$.isEmptyObject(counters)) {
+                for (var id in counters) {
+                    if (counters.hasOwnProperty(id)) {
+                        var cnt = counters[id] || 0;
+                        $('#list-group').find('li[rel=group'+id+'] .count').text(cnt);
+                        if (this.groups[id]) {
+                            this.groups[id].cnt = cnt;
+                        }
+                    }
+                }
+            }
+        },
+
+        merge: function() {
+            var selected = $.wa.grid.getSelected();
+            if (selected.length < 2) {
+                return false;
+            }
+            var hash = selected.join(',');
+            $.wa.setHash('/contacts/merge/' + hash);
+        },
+
+        contactsMergeAction: function (params) {
+            if (params[0]) {
+                var ids = [];
+                var items = params[0].split(',');
+                for (var i = 0; i < items.length; i += 1) {
+                    if (parseInt(items[i], 10)) {
+                        ids.push(items[i]);
+                    }
+                }
+                $('#c-abc-index').remove();
+                this.showLoading();
+                this.load( "#c-core .c-core-content", '?module=contacts&action=mergeSelectMaster', { ids: ids });
+            } else {
+                $.wa.setHash('/contacts/all/');
+            }
         },
 
         // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -573,7 +753,7 @@
         /** Dialog to choose categories to add selected contacts to. */
         dialogAddSelectedToCategory: function() {
             if ($.wa.grid.getSelected().length <= 0 || $('#list-category li:not(.empty):not(.selected):not(.hint)').size() <= 0) {
-                $.wa.controller.showMessage('<span class="errormsg">'+$_('No categories available')+'</span>', true);
+                //$.wa.controller.showMessage('<span class="errormsg">'+$_('No categories available')+'</span>', true);
                 return;
             }
             var self = this;
@@ -594,34 +774,58 @@
                 .append(
                     $('<input type="submit" class="button red" value="'+$_('Exclude')+'">').click(function() {
                         $('<i style="margin: 8px 0 0 10px" class="icon16 loading"></i>').insertAfter(this);
-                        $.post('?module=categories&type=del', {'categories': [$.wa.controller.current_category_id], 'contacts': ids}, function(response) {
-                            $.wa.dialogHide();
-                            $.wa.controller.afterInitHTML = function () {
-                                $.wa.controller.showMessage(response.data.message);
-                            };
-                            $.wa.controller.redispatch();
-                        }, 'json');
+                        $.post('?module=categories&action=deleteFrom', {
+                                categories: [$.wa.controller.current_category_id], 
+                                contacts: ids
+                            },
+                            function(response) {
+                                $.wa.dialogHide();
+                                if (response.status === 'ok') {
+                                    $.wa.controller.afterInitHTML = function () {
+                                        $.wa.controller.showMessage(response.data.message);
+                                    };
+                                    $.wa.controller.redispatch();
+                                }
+                            }, 'json');
                     })
                 )
                 .append(' '+$_('or')+' ')
                 .append($('<a href="javascript:void(0)">'+$_('cancel')+'</a>').click($.wa.dialogHide))
             });
         },
-
-        /** Remove selected contacts from current group and show success message above contacts list.
-          * Not used and probably needs to be rewritten. */
-        excludeFromGroup: function () {
-            var group_id = $.wa.grid.settings.group;
-            $.post("?module=contacts&action=groups&type=del",
-                {'group_id': group_id, 'id[]': $.wa.grid.getSelected()},
-                function (response) {
-                if (response.status == 'ok') {
-                    $.wa.controller.afterInitHTML = function () {
-                        $.wa.controller.showMessage(response.data.message);
-                    };
-                    $.wa.controller.redispatch();
-                }
-            }, "json");
+        
+        /** Confirm to remove selected contacts from current category. */
+        dialogRemoveSelectedFromGroup: function(ids) {
+            ids = ids || $.wa.grid.getSelected();
+            if (ids.length <= 0 || !$.wa.controller.current_group_id) {
+                return;
+            }
+            $('<div id="confirm-remove-from-category-dialog" class="small"></div>').waDialog({
+                content: $('<h2></h2>').text($_('Exclude users from group "%s"?').replace('%s', $('h1.wa-page-heading').text())),
+                buttons: $('<div></div>')
+                .append(
+                    $('<input type="submit" class="button red" value="'+$_('Exclude')+'">').click(function() {
+                        $('<i style="margin: 8px 0 0 10px" class="icon16 loading"></i>').insertAfter(this);
+                        $.post('?module=groups&action=deleteFrom', {
+                                groups: [$.wa.controller.current_group_id], 
+                                contacts: ids
+                            }, 
+                            function(response) {
+                                $.wa.dialogHide();
+                                if (response.status === 'ok') {
+                                    $.wa.controller.updateGroupCounters(response.data.counters || {});
+                                    $.wa.controller.afterInitHTML = function () {
+                                        $.wa.controller.showMessage(response.data.message, null);
+                                    };
+                                    $.wa.controller.redispatch();
+                                }
+                            }, 
+                        'json');
+                    })
+                )
+                .append(' '+$_('or')+' ')
+                .append($('<a href="javascript:void(0)">'+$_('cancel')+'</a>').click($.wa.dialogHide))
+            });
         },
 
         /** For a set of contact ids (defaults to currently selected) show a delete confirm dialog
@@ -649,14 +853,59 @@
         addListTab: function(showCallback) {
             this.listTabs.push(showCallback);
         },
+                
+        addGroup: function(group) {
+            if (!$.isEmptyObject(group)) {
+                $.wa.controller.groups[group.id] = group;
+                $('#list-group').replaceWith(this.renderGroups($.wa.controller.groups));
+            }
+        },
+                
+        renderGroups: function(groups) {
+            var groups_html = '<ul class="menu-v with-icons collapsible" id="list-group">';
+            groups_html 
+                += '<li class="hint c-shown-on-no-groups" style="padding:0 20px; ' + (!$.isEmptyObject(groups) ? 'display: none;' : '') + '">'
+                    + $_('User groups are for organizing Webasyst users and setting common access rights for groups.')
+                + '</li>';
+            
+            if (!$.isEmptyObject(groups)) {
+                var grps = [];
+                for (var i in groups) {
+                    if (groups.hasOwnProperty(i)) {
+                        grps.push(groups[i]);
+                    }
+                }
+                grps = grps.sort(function (s1, s2) {
+                    return s1.name.toString().localeCompare(s2.name.toString());
+                });
+                for (var i = 0, n = grps.length; i < n; i += 1) {
+                    var group = grps[i];
+                    groups_html += '<li rel="group' + group.id + '" class="c-group">';
+                    groups_html += '<span class="count">' + group.cnt + '</span>';
+                    groups_html += '<a href="#/contacts/group/' + group.id + '/"><img src="../../wa-content/img/users/' + group.icon + '.png"> <b class="name">' + group.name + '</b></a>';
+                    groups_html += '</li>';
+                }
+            }
+            groups_html += '</ul>';
+            return groups_html;
+        },
+                
+        updateGroup: function(id, group) {
+            this.groups[id] = group;
+            var item = $('#list-group').find('li[rel=group' + id + ']');
+            item.html(
+                '<span class="count">' + group.cnt + '</span>' + 
+                '<a href="#/contacts/group/' + group.id + '"><img src="../../wa-content/img/users/' + group.icon + '.png"> <b>' + group.name + '</b></a>'
+            );
+        },
 
         /** Prepare application layout to load new content. */
-        setBlock: function (name, title, menus) {
+        setBlock: function (name, title, menus, options) {
             if (!name) {
                 name = 'default';
             }
 
-            if (title === undefined) {
+            if (title === undefined || title === null) {
                 title = $_('Loading...');
             }
 
@@ -664,13 +913,66 @@
             this.block = name;
             $("#c-core .c-core-header").remove();
 
-            var el = $('#c-core .c-core-content');
-            if (el.size() <= 0) {
-                el = $('#c-core').empty()
-                                .append($('<div class="contacts-background"><div class="block not-padded c-core-content"></div></div>'))
-                                .find('.c-core-content');
+            options = options || {};
+            menus = typeof menus === 'undefined' ? [] : menus;
+            
+            var el = '';
+            
+            if (name === 'contacts-users') {
+                el = $('#c-core .c-core-content');
+                var groups_html = '';
+                if (options.groups !== false) {
+                    groups_html += this.renderGroups(options.groups || this.groups);
+                }
+                $('#c-core').html(
+                    '<div class="shadowed" id="c-users-page">' + 
+                        '<div class="sidebar left200px" style="min-height: 300px;">' + 
+                            '<ul class="menu-v with-icons stack" id="c-users-sidebar-menu">' + 
+                                '<li class="selected" style="margin-left: 17px;"><a class="" href="#/users/all/"><i class="icon16 user"></i>' + $_('All users') + '</a></li>' + 
+                                '<li style="margin-left: 15px;"><a class="small" href="#/users/add/"><i class="icon10 add"></i>' + $_('New user') + '</a></li>' + 
+                                '<li class="" style="text-transform: uppercase;"><h5 class="heading">' + $_('Groups') + '</h5></li>' + 
+                                    groups_html +  
+                                '<li class="small" id="c-create-group-toggle" style="margin-left: 14px;">' + 
+                                    '<a href="#/groups/create/"><i class="icon10 add"></i>' + $_('New group') + '</a>' + 
+                                '</li>' + 
+                            '</ul>' + 
+                        '</div>' + 
+                        '<div class="content left200px bordered-left blank">' +
+                            '<div class="block not-padded c-core-content">' + 
+                                '<div class="block" style="overflow:hidden;">' + 
+                                    '<div class="c-actions-wrapper float-right" style="margin: 8px;"></div>' + 
+                                    '<h1 class="wa-page-heading">' + (title || $_('All users')) + ' <i class="icon16 loading"></i></h1>' +  
+                                '</div>' + 
+                                '<div class="block not-padded tab-content float-left" style="width: 100%;" id="contacts-container">'  + 
+                                    '<div class="block not-padded contacts-data"></div>' + 
+                                '</div>' + 
+                            '</div>' + 
+                            '<div class="clear"></div>' + 
+                        '</div>' + 
+                        '<div class="clear"></div>' + 
+                    '</div>');
+                el = $('#c-core .c-core-content');
+                $('#c-create-group-toggle').click(function() {
+                    $.wa.controller.last_selected = [];
+                });
+                if ($.isArray(menus)) {
+                    this.showMenus(menus);
+                } else {
+                    el.find('.c-list-toolbar').remove();
+                }
+            } else {
+                el = $('#c-core').empty().
+                    append(
+                        $(
+                            '<div class="contacts-background">' + 
+                                '<div class="block not-padded c-core-content"></div>' + 
+                            '</div>'
+                        )
+                    ).find(
+                        '.c-core-content'
+                    );
+                el.html('<div class="block"><div class="c-actions-wrapper"></div><h1 class="wa-page-heading">' + title + ' <i class="icon16 loading"></i></h1></div>');
             }
-            el.html('<div class="block"><h1 class="wa-page-heading">' + title + ' <i class="icon16 loading"></i></h1></div>');
 
             // Scroll to window top
             $.scrollTo(0);
@@ -679,19 +981,10 @@
             // Some menus need to be shown near the header
             //
             // Actions with group
-            if (menus && menus.indexOf('group-actions') >= 0 && this.current_group_id) {
-                el.find('div.block').prepend(
-                    '<ul class="menu-h c-actions">'+
-                        '<li>'+
-                            '<a href="#/groups/edit/'+this.current_group_id+'/"><i class="icon16 edit"></i>'+$_('Edit group')+'</a>'+
-                        '</li>'+
-                        '<li>'+
-                            '<a href="#/groups/rights/'+this.current_group_id+'/"><i class="icon16 lock-unlocked"></i>'+$_('Customize access')+'</a>'+
-                        '</li>'+
-                        '<li>'+
-                            '<a href="#/groups/delete/'+this.current_group_id+'/" onclick="return $.wa.controller.groupsDeleteAction();"><i class="icon16 delete"></i>'+$_('Delete')+'</a>'+
-                        '</li>'+
-                    '</ul>');
+            if (menus && menus.indexOf('group-settings') >= 0 && this.current_group_id) {
+                el.find('.c-actions-wrapper').html(
+                    '<a href="#/groups/edit/' + this.current_group_id + '/"><i class="icon16 settings"></i></a>'
+                );
             } else
             // Actions with category
             if (menus && menus.indexOf('category-actions') >= 0 && this.current_category_id && this.global_admin) {
@@ -711,18 +1004,6 @@
                     '<ul class="menu-h c-actions">'+
                         '<li>'+
                             '<a href="#" onclick="return $.wa.controller.saveSearchAsFilter()"><i class="icon16 save-as-filter"></i>'+$_('Save as a filter')+'</a>'+
-                        '</li>'+
-                    '</ul>');
-            } else
-            // actions with list
-            if (menus && menus.indexOf('list-actions') >= 0 && this.current_view_id) {
-                el.find('div.block').prepend(
-                    '<ul class="menu-h c-actions">'+
-                        '<li>'+
-                            '<a href="#/lists/edit/'+this.current_view_id+'/"><i class="icon16 edit"></i>'+$_('Edit list')+'</a>'+
-                        '</li>'+
-                        '<li>'+
-                            '<a href="#" onclick="return $.wa.controller.deleteList('+this.current_view_id+')"><i class="icon16 delete"></i>'+$_('Delete')+'</a>'+
                         '</li>'+
                     '</ul>');
             } else
@@ -778,9 +1059,10 @@
                     if (!el.next().hasClass('clear-left')) {
                         $('<div class="clear-left"></div>').insertAfter(el);
                     }
-                    this.showMenus(menus ? menus : []);
+                    this.showMenus((menus || []).concat(['merge', 'delete']));
                     el.find('#contacts-container').append('<div class="block not-padded contacts-data"></div>');
                     break;
+                case 'contacts-users':
                 case 'contacts-info':
                 case 'default':
                     break;
@@ -789,10 +1071,12 @@
                     throw new Error('Unknown block: '+name);
             }
 
+            // Kinda legacy
             if (this.afterInitHTML) {
                 this.afterInitHTML();
                 this.afterInitHTML = '';
             }
+            $(window).trigger('wa_after_init_html', [name, title, menus]);
         },
 
         /** Add or update a toolbar above contacts list. */
@@ -800,54 +1084,55 @@
             // Actions with selected
             var toolbar =
                 '<li>' +
-                    '<a href="javascript:void(0)" class="inline-link"><b><i><strong>'+$_('Actions with selected')+'</strong></i></b><i class="icon10 darr"></i></a>' +
+                    '<a href="javascript:void(0)" class="inline-link"><b><i>'+$_('Actions with selected')+' (<span id="selected-count" class="selected-count">0</span>)</i></b><i class="icon10 darr"></i></a>' +
                         '<ul class="menu-v" id="actions-with-selected">' +
-                            '<li class="line-after">'+
-                                '<span id="selected-count">0</span> <span id="selected-count-word-form">'+$_(0, 'contacts selected')+'</span>'+
-                            '</li>'+
+                            ((show.indexOf('group-actions') >= 0) ?
+                                '<li>' +
+                                    '<a href="#" onclick="$.wa.controller.addToGroupDialog(); return false"><i class="icon16 contact"></i>'+$_('Add to group')+'</a>'+
+                                '</li>' : '') +
                             '<li id="add-to-category-link">' +
                                 '<a href="#" onclick="$.wa.controller.dialogAddSelectedToCategory(); return false"><i class="icon16 contact"></i>'+$_('Add to category')+'</a>' +
                             '</li>' +
+                            ((show.indexOf('group-actions') >= 0 && this.current_group_id) ?
+                                '<li>' +
+                                    '<a href="#" onclick="$.wa.controller.dialogRemoveSelectedFromGroup(); return false"><i class="icon16 contact"></i>'+$_('Exclude from this group')+'</a>'+
+                                '</li>' : '') +
                             ((show.indexOf('category-actions') >= 0 && this.current_category_id) ?
                                 '<li>' +
                                     '<a href="#" onclick="$.wa.controller.dialogRemoveSelectedFromCategory(); return false"><i class="icon16 contact"></i>'+$_('Exclude from this category')+'</a>'+
                                 '</li>' : '') +
-                            ((show.indexOf('list-actions') >= 0 && this.current_view_id) ?
+                            ((show.indexOf('merge') >= 0 && $.wa.controller.merge && $.wa.controller.admin) ?
+                                '<li class="two-or-more disabled">' +
+                                    '<a href="#" onClick="$.wa.controller.merge(); return false"><i class="icon16 merge"></i>'+$_('Merge contacts')+'</a>' +
+                                '</li>' : '') + 
+                            (show.indexOf('delete') >= 0 ?
                                 '<li>' +
-                                    '<a href="#" onclick="$.wa.controller.dialogRemoveSelectedFromList(); return false"><i class="icon16 from-list"></i>'+$_('Exclude from this list')+'</a>'+
-                                '</li>' : '') +
-                            ($.wa.controller.addToListDialog ?
-                                '<li>' +
-                                    '<a href="#" onclick="$.wa.controller.addToListDialog(); return false"><i class="icon16 add-to-list"></i>'+$_('Add to list')+'</a>' +
-                                '</li>' : '') +
-                            (($.wa.controller.contactsMerge && $.wa.controller.admin) ?
-                                '<li>' +
-                                    '<a href="#" onClick="$.wa.controller.contactsMerge(); return false"><i class="icon16 merge"></i>'+$_('Merge')+'</a>' +
-                                '</li>' : '') +
-                            ($.wa.controller.exportDialog ?
-                                '<li>' +
-                                    '<a href="#" onclick="$.wa.controller.exportDialog(); return false"><i class="icon16 export"></i>'+$_('Export')+'</a>' +
-                                '</li>' : '') +
-                            '<li>' +
-                                '<a href="#" onclick="$.wa.controller.contactsDelete(); return false" class="red" id="show-dialog-delete"><i class="icon16 delete"></i>'+$_('Delete')+'</a>' +
-                            '</li>' +
+                                    '<a href="#" onclick="$.wa.controller.contactsDelete(); return false" class="red" id="show-dialog-delete"><i class="icon16 delete"></i>'+$_('Delete')+'</a>' +
+                                '</li>' : '' )+
                         '</ul>' +
                     '</li>';
 
             // View selection
             toolbar =
                 '<ul id="list-views" class="menu-h float-right">' +
-                    '<li rel="table"><a href="#" onclick="return $.wa.grid.setView(\'table\');"><i class="icon16 only view-table"></i></a></li>' +
-                    '<li rel="list"><a href="#" onclick="return $.wa.grid.setView(\'list\');"><i class="icon16 only view-thumb-list"></i></a></li>' +
-                    '<li rel="thumbs"><a href="#" onclick="return $.wa.grid.setView(\'thumbs\');"><i class="icon16 only view-thumbs"></i></a></li>' +
+                    '<li rel="table"><a href="#"><i class="icon16 only view-table" title="' + $_('List') + '"></i></a></li>' +
+                    '<li rel="list"><a href="#" title="' + $_('Details') + '"><i class="icon16 only view-thumb-list"></i></a></li>' +
+                    '<li rel="thumbs"><a href="#" title="' + $_('Userpics') + '"><i class="icon16 only view-thumbs"></i></a></li>' +
                 '</ul>' +
-                '<ul id="c-list-toolbar-menu" class="menu-h dropdown disabled">' + toolbar + '</ul>';
-
+                '<div id="c-list-toolbar-menu-wrapper">' + 
+                    '<input id="c-select-all-items" onclick="$.wa.grid.selectItems(this)" type="checkbox">' + 
+                    '<ul id="c-list-toolbar-menu" class="menu-h dropdown disabled" style="display:inline-block;">' + toolbar + '</ul>' + 
+                '</div>';
             var el = $('#contacts-container').find('.c-list-toolbar');
             if (el.size() <= 0) {
                 el = $('<div class="block c-list-toolbar"></div>').prependTo($('#contacts-container'));
             }
             el.html(toolbar);
+            
+            $('#contacts-container').off('click.contacts_view', '#list-views > li').on('click.contacts_view', '#list-views > li', function() {
+                $.wa.grid.setView($(this).closest('li').attr('rel'));
+                return false;
+            });
             $.wa.controller.updateSelectedCount();
         },
 
@@ -883,6 +1168,10 @@
                 if ($('#list-category li:not(.empty):not(.selected)').size() <= 0) {
                     $('#add-to-category-link').addClass('disabled');
                 }
+                // Merge link is only active when there are 2 or more contacts selected
+                if (cnt < 2) {
+                    $('#actions-with-selected li.two-or-more').addClass('disabled');
+                }
             }
         },
 
@@ -897,17 +1186,8 @@
         },
 
         /** Load content from url and put it into elem. Params are passed to url as get parameters. */
-        load: function (elem, url, params, beforeLoadCallback) {
-            var r = Math.random();
-            this.random = r;
-            $.get(url, params, function (response) {
-                if ($.wa.controller.random == r) {
-                    if (beforeLoadCallback) {
-                        beforeLoadCallback.call($.wa.controller);
-                    }
-                    $(elem).html(response);
-                }
-            });
+        load: function (elem, url, params, beforeLoadCallback, afterLoadCallback) {
+            $.wa.contactEditor.load.apply(this, Array.prototype.slice.apply(arguments));
         },
 
         /** Helper function to parse contacts list params from a hash */
@@ -938,34 +1218,40 @@
                     $.storage.set('contacts/limit/'+hashkey, p.limit);
                 }
             } else {
-                p.limit = $.storage.get('contacts/limit/'+hashkey);
+                p.limit = $.storage.get('contacts/limit/'+hashkey) || 30;
             }
             return p;
         },
 
         /** Helper to set browser window title. */
-        setBrowserTitle: function(title) {
-            document.title = title + ' — ' + this.accountName;
-        },
-
-        /** Helper to set contacts list header. */
-        setTitle: function (title, options) {
-            var el = $("#c-core h1.wa-page-heading");
-            if (typeof title != 'undefined') {
-                this.lastView = {
-                    title: title,
-                    hash: window.location.hash.toString()
-                };
-                $.storage.set('contacts/lastview/title', this.lastView.title);
-                $.storage.set('contacts/lastview/hash', this.lastView.hash);
-
-                el.text(title);
-                this.setBrowserTitle(title);
-                if (options && options.click) {
-                    el.click(options.click);
-                }
+        setTitle: function(title, page_header) {
+            this.title = title;
+            if (this.accountName) {
+                document.title = title + ' — ' + this.accountName;
+            } else {
+                document.title = title;
             }
-            return el;
+            if (page_header) {
+                $("#c-core h1.wa-page-heading").text(typeof page_header === 'string' ? page_header : title);
+            }
+        },
+                
+        getTitle: function() {
+            return this.title || '';
+        },
+                
+        setLastView: function(options) {
+            this.lastView = $.extend(this.lastView, options);
+        },
+                
+        clearLastView: function() {
+            this.lastView = {
+                title: null,
+                hash: null,
+                sort: null,
+                order: null,
+                offset: null
+            };
         },
 
         /** Helper to load contacts list */
@@ -981,7 +1267,7 @@
         },
 
         /** Append a message above contacts list. */
-        showMessage: function (message, deleteContent) {
+        showMessage: function (message, deleteContent, style) {
             var oldMessages = $('#c-core .wa-message');
             if (deleteContent) {
                 oldMessages.remove();
@@ -992,7 +1278,8 @@
                 return;
             }
 
-            var html = $('<div class="wa-message wa-success"><a onclick="$(this).parent().empty().hide();"><i class="icon16 close"></i></a></div>')
+            style = style || '';
+            var html = $('<div class="wa-message wa-success ' + style + '"><a onclick="$(this).parent().empty().hide();"><i class="icon16 close"></i></a></div>')
                 .prepend($('<span class="wa-message-text"></span>').append(message));
 
             if (oldMessages.size()) {
@@ -1049,79 +1336,6 @@
             return hash;
         },
 
-        /** Helper to switch to particular tab in a tab set. */
-        switchToTab: function(tab, onto, onfrom, tabContent) {
-            if (typeof(tab) == 'string') {
-                if (tab.substr(0, 2) == 't-') {
-                    tab = '#'+tab;
-                } else if (tab[0] != '#') {
-                    tab = "#t-" + tab;
-                }
-                tab = $(tab);
-            } else {
-                tab = $(tab);
-            }
-            if (tab.size() <= 0 || tab.hasClass('selected')) {
-                return;
-            }
-
-            if (!tabContent) {
-                var id = tab.attr('id');
-                if (!id || id.substr(0, 2) != 't-') {
-                    return;
-                }
-                tabContent = $('#tc-'+id.substr(2));
-            }
-
-            if (onfrom) {
-                var oldTab = tab.parent().children('.selected');
-                if (oldTab.size() > 0) {
-                    oldTab.each(function(k, v) {
-                        onfrom.call(v);
-                    });
-                }
-            }
-
-            var doSwitch = function() {
-                tab.parent().find('li.selected').removeClass('selected');
-                tab.removeClass('hidden').css('display', '').addClass('selected');
-                tabContent.siblings('.tab-content').addClass('hidden');
-                tabContent.removeClass('hidden');
-                if (onto) {
-                    onto.call(tab[0]);
-                }
-            };
-
-            // sliding animation (jquery.effects.core.min.js required)
-            if ($.effects && $.effects.slideDIB && !tab.is(':visible')) {
-                $.wa.controller.loadTabSlidingAnimation();
-                tab.hide().removeClass('hidden').show('slideDIB', {direction: 'down'}, 300, function() {
-                    doSwitch();
-                });
-            } else {
-                doSwitch();
-            }
-        },
-
-        /** Helper to append appropriate events to a checkbox list. */
-        initCheckboxList: function(ul) {
-            ul = $(ul);
-
-            var updateStatus = function(i, cb) {
-                var self = $(cb || this);
-                if (self.is(':checked')) {
-                    self.parent().addClass('highlighted');
-                } else {
-                    self.parent().removeClass('highlighted');
-                }
-            };
-
-            ul.find('input[type="checkbox"]')
-                .click(updateStatus)
-                .each(updateStatus);
-            return ul;
-        },
-
         collapseSidebarSection: function(el, action) {
             if (!action) {
                 action = 'coollapse';
@@ -1144,11 +1358,13 @@
                 el.parent().find('ul.collapsible').hide();
                 arr.removeClass('darr').addClass('rarr');
                 newStatus = 'hidden';
+                el.trigger('collapsible', ['hide']);
             };
             var show = function() {
                 el.parent().find('ul.collapsible').show();
                 arr.removeClass('rarr').addClass('darr');
                 newStatus = 'shown';
+                el.trigger('collapsible', ['show']);
             };
 
             switch(action) {

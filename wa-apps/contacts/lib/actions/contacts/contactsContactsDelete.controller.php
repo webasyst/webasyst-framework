@@ -6,24 +6,22 @@ class contactsContactsDeleteController extends waJsonController
     {
         $superadmin = $this->getUser()->getRights('webasyst', 'backend');
         $contacts = waRequest::post('id', array(), 'array_int');
-
+        
         // do not try to delete self
         if (in_array($this->getUser()->getId(), $contacts)) {
             throw new waRightsException('Access denied: attempt to delete own account.');
         }
+        
 
-        // Only allow actions with contacts available for current user
-        if (!$this->getRights('category.all')) {
-            $crm = new contactsRightsModel();
-            $ccm = new waContactCategoriesModel();
-            $allowed = array_keys($crm->getAllowedCategories());
-            foreach($ccm->getContactsCategories($contacts) as $id => $cats) {
-                if (!array_intersect($allowed, $cats)) {
-                    throw new waRightsException('Access denied: no access to contact '.$id);
-                }
-            }
+        $this->getRights();
+        
+        $crm = new contactsRightsModel();
+        $contacts = $crm->getAllowedContactsIds($contacts);
+        if (!$contacts) {
+            throw new waRightsException('Access denied: no access to contacts ');
         }
-
+        
+        
         // Deletion of contacts with links to other applications is only allowed to superadmins
         if (!$superadmin && ( $links = wa()->event('links', $contacts))) {
             foreach ($links as $app_id => $l) {
@@ -52,12 +50,30 @@ class contactsContactsDeleteController extends waJsonController
             waUser::revokeUser($user_id);
         }
 
-        // Bye bye...
         $contact_model = new waContactModel();
-        $contact_model->delete($contacts); // also throws a contacts.delete event
+        
+        $cnt = count($contacts);
+        if ($cnt > 30) {
+            $log_params = $cnt;
+        } else {
+            // contact names
+            $log_params = $contact_model->getName($contacts);
+        }
 
-        $this->response['deleted'] = count($contacts);
+        $history_model = new contactsHistoryModel();
+        foreach ($contacts as $contact_id) {
+            $history_model->deleteByField(array(
+                'type' => 'add',
+                'hash' => '/contact/' . $contact_id
+            ));
+        }
+        
+        // Bye bye...
+        $contact_model->delete($contacts); // also throws a contacts.delete event
+        
+        $this->response['deleted'] = $cnt;
         $this->response['message'] = sprintf(_w("%d contact has been deleted", "%d contacts have been deleted", $this->response['deleted']), $this->response['deleted']);
-        $this->log('contact_delete', count($contacts));
+        
+        $this->logAction('contact_delete', $log_params);
     }
 }

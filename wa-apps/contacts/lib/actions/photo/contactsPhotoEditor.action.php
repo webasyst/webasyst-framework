@@ -28,7 +28,7 @@ class contactsPhotoEditorAction extends waViewAction
             }
         } else {
             // Is there a photo for this contact?
-            $filename = wa()->getDataPath("photo/$id/{$contact['photo']}.original.jpg", TRUE);
+            $filename = wa()->getDataPath(waContact::getPhotoDir($id)."{$contact['photo']}.original.jpg", TRUE);
             if (file_exists($filename)) {
                 $this->view->assign('oldPreview', $contact->getPhoto());
                 $this->view->assign('oldImage', $contact->getPhoto('original'));

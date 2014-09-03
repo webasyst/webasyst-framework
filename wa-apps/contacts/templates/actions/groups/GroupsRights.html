@@ -1,9 +1,10 @@
-<div class="block padded c-core-header">
-    <a href="#/contacts/group/{{$group.id}}" id="c-gr-last-view"><i class="icon10 larr"></i>{{$group.name|escape}}</a>
+{*<div class="block padded c-core-header">
+    <a href="#/contacts/group/{$group.id}" id="c-gr-last-view"><i class="icon10 larr"></i>{$group.name|escape}</a>
 </div>
 <div class="block" id="c-ga-header">
-    <h1>{{$group.name|escape|string_format:"[`Access rights for group &ldquo;%s&rdquo;`]"}}</h1>
+    <h1>{$group.name|escape|string_format:"[`Access rights for group &ldquo;%s&rdquo;`]"}</h1>
 </div>
+*}
 
 <div class="tab-content">
     <div class="block double-padded">
@@ -15,9 +16,9 @@
                     </div>
                     <div class="value c-access-rights" id="c-access-rights-wrapper">
                         <select id="c-access-rights-toggle">
-                            <option value="remove"{{if !$fullAccess && $noAccess}} selected="selected"{{/if}}>[`No access`]</option>
-                            <option value="0"{{if !$fullAccess && !$noAccess}} selected="selected"{{/if}}>[`Limited access`]</option>
-                            <option value="1"{{if $fullAccess}} selected="selected"{{/if}}>[`Administrator`]</option>
+                            <option value="remove"{if !$fullAccess && $noAccess} selected="selected"{/if}>[`No access`]</option>
+                            <option value="0"{if !$fullAccess && !$noAccess} selected="selected"{/if}>[`Limited access`]</option>
+                            <option value="1"{if $fullAccess} selected="selected"{/if}>[`Administrator`]</option>
                         </select>
 
                         <span id="c-access-rights-hint-full" class="c-access-rights-hint" style="display:none">[`Full access to all applications and user management.`]</span>
@@ -26,41 +27,41 @@
                         <span class="c-access-rights-hint c-access-saved-hint" style="display:none"><i class="icon10 yes"></i> [`Saved`]</span>
 
                         <table id="c-access-rights-by-app" style="display: none; "><tbody>
-                            {{foreach from=$apps key=app_id item=app}}
-                                <tr id="c-ar-tr-{{$app_id}}" class="c-ar-app-row">
+                            {foreach from=$apps key=app_id item=app}
+                                <tr id="c-ar-tr-{$app_id}" class="c-ar-app-row">
                                     <td class="c-app-icon">
-                                        <img src="{{$wa_url}}{{$app.img}}">
+                                        <img src="{$wa_url}{$app.img}">
                                     </td>
                                     <td class="c-app-name">
-                                        <span class="c-access-color-noaccess">{{$app.name|escape}}</span>
+                                        <span class="c-access-color-noaccess">{$app.name|escape}</span>
                                     </td>
                                     <td class="c-app-access" style="min-width: 400px;">
-                                        <select name="{{$app_id}}">
+                                        <select name="{$app_id}">
                                             <option value="0" selected="selected">[`No access`]</option>
-                                            {{if $app.customizable}}
+                                            {if $app.customizable}
                                                 <option value="1">[`Limited access`]</option>
-                                            {{/if}}
+                                            {/if}
                                             <option value="2">[`Full access`]</option>
                                         </select>
-                                        {{* 'customize' link *}}
-                                        {{if $app.customizable}}
+                                        {* 'customize' link *}
+                                        {if $app.customizable}
                                             <a href="javascript:void(0)" class="small customize-link" style="display: none">[`Customize`]</a>
-                                        {{/if}}
+                                        {/if}
 
-                                        {{* (i) icon with tooltip *}}
-                                        {{if $app_id == 'contacts'}}
+                                        {* (i) icon with tooltip *}
+                                        {if $app_id == 'contacts'}
                                             <i class="icon16 info c-ar-tooltip"></i>
                                             <div style="display:none" class="c-ar-tooltip-html"><i></i>
                                                 <strong>[`NOTE:`]</strong> [`Limited and Full access levels in Contacts application DO NOT allow managing user accounts and categories. These access rights are granted to Administrator only.`]
                                             </div>
-                                        {{/if}}
+                                        {/if}
 
-                                        {{* Loading icon and 'Saved' message *}}
+                                        {* Loading icon and 'Saved' message *}
                                         <i class="icon16 loading" style="margin-left: 16px; display: none;"></i>
                                         <span class="c-access-saved-hint" style="display: none"><i class="icon10 yes"></i> [`Saved`]</span>
                                     </td>
                                 </tr>
-                            {{/foreach}}
+                            {/foreach}
                         </tbody></table>
                     </div>
                 </div>
@@ -70,15 +71,15 @@
     <div class="clear-left"></div>
 </div>
 
-<script type="text/javascript" src="{{$wa_url}}wa-content/js/jquery-plugins/jquery-tooltip/jquery.tooltip.patched.min.js"></script>
+<script type="text/javascript" src="{$wa_url}wa-content/js/jquery-plugins/jquery-tooltip/jquery.tooltip.patched.min.js"></script>
 <script type="text/javascript">
 $(function() {
     // highlight group link in sidebar
     $('#wa-app .sidebar .selected').removeClass('selected');
-    $('#wa-app .sidebar li[rel=group{{$group.id}}]').addClass('selected');
+    $('#wa-app .sidebar li[rel=group{$group.id}]').addClass('selected');
 
-    var apps = {{json_encode($apps)}};
-    var group = {{json_encode($group)}};
+    var apps = {json_encode($apps)};
+    var group = {json_encode($group)};
 
     // Dialog to customize app access
     var openCustomizeDialog = function(cancelCallback) {
@@ -262,7 +263,7 @@ $(function() {
         showURL: false
     });
 
-    $.wa.controller.setBrowserTitle($('#c-ga-header h1').text());
+    $.wa.controller.setTitle($('#c-ga-header h1').text());
 });
 </script>
 

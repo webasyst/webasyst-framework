@@ -1,23 +1,23 @@
 
 <div class="block" id="c-ce-header">
-	{{if $category}}
-		<h1>{{sprintf(_w('Edit category &ldquo;%s&rdquo;'), htmlspecialchars($category.name))}}</h1>
-	{{else}}
+	{if $category}
+		<h1>{sprintf(_w('Edit category &ldquo;%s&rdquo;'), htmlspecialchars($category.name))}</h1>
+	{else}
 		<h1>[`New category`]</h1>
-	{{/if}}
+	{/if}
 </div>
 
 <div id="tc-ge-members" class="tab-content">
 	<div class="block double-padded">
 		<form action="?module=categories&action=save" id="category-editor-form">
 			<div class="fields" style="width:100%">
-				{{if $category}}
-					<input name="id" type="hidden" value="{{$category.id}}">
-				{{/if}}
+				{if $category}
+					<input name="id" type="hidden" value="{$category.id}">
+				{/if}
 				<input name="user_operation" type="hidden" value="set">
 				<div class="field c-header-edit">
 					<div class="name large">[`Name:`]</div>
-					<div class="value"><span><input name="name" type="text" class="large" value="{{$category.name|escape}}" style="width:55%"></span></div>
+					<div class="value"><span><input name="name" type="text" class="large" value="{$category.name|escape}" style="width:55%"></span></div>
 				</div>
 				<div class="field buttons">
 					<div class="value submit">
@@ -54,9 +54,9 @@
 				$.wa.controller.reloadSidebar();
 				$.wa.setHash('#/contacts/category/'+response.data.id+'/');
 
-				{{if empty($category)}}
+				{if empty($category)}
 					$.wa.controller.collapseSidebarSection('#c-sb-categories-header', 'uncollapse');
-				{{/if}}
+				{/if}
 			} else if (response.status == 'fail') {
 				form.find('.validation-notice').html(response.errors.join('<br />'));
 			}
@@ -72,6 +72,6 @@
 			input.select();
 		}, 1);
 	}
-	$.wa.controller.setBrowserTitle($('#c-ce-header h1').text());
+	$.wa.controller.setTitle($('#c-ce-header h1').text());
 }).call({});
 </script>

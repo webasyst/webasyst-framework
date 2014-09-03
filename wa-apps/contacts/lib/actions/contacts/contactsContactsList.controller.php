@@ -41,21 +41,43 @@ class contactsContactsListController extends waJsonController
         } else {
             $h = $hash = '';
         }
-        $collection = $this->getCollection($h);
+
+        $h_parts = explode('/', $h, 2);
+        $add_fields = array();
+        if ($h_parts[0] == 'explore') {
+            $collection = new contactsCollection();
+            $event_params = array(
+                'collection' => $collection,
+                'hash' => $h_parts[1]
+            );
+            $result = wa()->event('explore', $event_params);
+            if ($result) {
+                $result = reset($result);
+                $add_fields = ifset($result['fields']);
+                $this->response['add_fields'] = $add_fields;
+                $this->response['name'] = $result['name'];
+            }
+        } else {
+            $collection = new contactsCollection($h);
+        }
+        
+        $this->response['fields'] = array();
+        
+        $fields = '*,photo_url_32,photo_url_96';
+        if ($h_parts[0] === 'users') {
+            $fields .= ',_access';
+            $this->response['fields']['_access'] = array(
+                'id' => '_access',
+                'name' => _w('Access'),
+                'type' => 'Access',
+                'vertical' => true
+            );
+        }
+        
         $collection->orderBy($this->sort, $this->order);
         $this->response['count'] = $collection->count();
+        
         $view = waRequest::post('view');
-        switch ($view) {
-            case 'list':
-                $fields = '*';
-                break;
-            case 'thumbs':
-                $fields = 'id,name,photo';
-                break;
-            case 'table':
-            default:
-                $fields = waRequest::post('fields');
-        }
 
         if ($view == 'list') {
             // Preload info to cache to avoid excess DB access
@@ -63,14 +85,15 @@ class contactsContactsListController extends waJsonController
             $cm->preload();
         }
 
-        if ($hash && $fields != '*') {
-            if ( ( $wf = $collection->getWhereFields())) {
-                $fields = $fields.",".implode(",", $wf);
-            }
-            $this->response['fields'] = explode(',', $fields);
+        $this->response['contacts'] = array_values(
+            $collection->getContacts($fields, $this->offset, $this->limit)
+        );
+        $this->workupContacts($this->response['contacts']);
+        $this->response['total_count'] = $collection->count();
+        foreach ($this->response['contacts'] as $i => &$c) {
+            $c['offset'] = $this->offset + $i;
         }
-
-        $this->response['contacts'] = array_values($collection->getContacts($fields, $this->offset, $this->limit));
+        unset($c);
 
         if ($view == 'list') {
             // Need to format field values correctly for this view.
@@ -78,12 +101,29 @@ class contactsContactsListController extends waJsonController
                 $c = new waContact($cdata['id']);
                 $c->setCache($cdata);
                 $data = $c->load('list,js') + $cdata;
+                contactsHelper::normalzieContactFieldValues($data, waContactFields::getInfo($c['is_company'] ? 'company' : 'person', true));
                 if (isset($data['photo'])) {
                     $data['photo'] = $c->getPhoto();
                 }
                 $c->removeCache(array_keys($cdata));
                 $cdata = $data;
             }
+            
+            $this->response['fields'] = array_merge($this->response['fields'], contactsHelper::getFieldsDescription(array(
+                'title',
+                'name',
+                'photo',
+                'firstname',
+                'middlename',
+                'lastname',
+                'locale',
+                'timezone',
+                'jobtitle',
+                'company',
+                'sex',
+                'company_contact_id'
+            ), true));
+            
             unset($cdata);
         }
 
@@ -106,6 +146,8 @@ class contactsContactsListController extends waJsonController
 
         $title = $collection->getTitle();
 
+        $hm = new contactsHistoryModel();
+        
         if ($hash) {
             $type = explode('/', $hash);
             $hash = substr($hash, 0, 1) == '/' ? $hash : '/contacts/'.$hash;
@@ -117,12 +159,9 @@ class contactsContactsListController extends waJsonController
             }
 
             // save history
-            if ($type == 'search' || $type == 'import') {
-                $history = new contactsHistoryModel();
-                if ($history->save($hash, $title, $type, $this->response['count'])) {
-                    // new search performed, save to statistics log
-                    $this->log('search', 1);
-                }
+            if ($type == 'search') {
+                $hm->save($hash, $title, $type, $this->response['count']);
+                $this->logAction('search');
             }
 
             // Information about system category in categories view
@@ -137,10 +176,43 @@ class contactsContactsListController extends waJsonController
         }
 
         // Update history in user's browser
-        $historyModel = new contactsHistoryModel();
-        $this->response['history'] = $historyModel->get();
+        $this->response['history'] = $hm->get();
         $this->response['title'] = $title;
     }
+    
+    public function workupContacts(&$contacts)
+    {
+        if (!$contacts) {
+            return array();
+        }
+        $contact_fields = array(
+            array_keys(waContactFields::getAll('person', true)),
+            array_keys(waContactFields::getAll('company', true)),
+        );
+        foreach ($contacts as &$c) {
+            $fields = $contact_fields[intval($c['is_company'])];
+            $data = array(
+                'id' => $c['id']
+            );
+            foreach ($fields as $fld_id) {
+                if (array_key_exists($fld_id, $c)) {
+                    $data[$fld_id] = $c[$fld_id];
+                    unset($c[$fld_id]);
+                }
+            }
+            $c = array_merge($data, $c);            
+        }
+        unset($c);
+        
+        // load that fields, that are top
+        if ($this->getRequest()->request('top')) {
+            foreach ($contacts as &$c) {
+                $c['top'] = contactsHelper::getTop(new waContact($c['id']));
+            }
+            unset($c);
+        }
+    }
+    
 }
 
 // EOF

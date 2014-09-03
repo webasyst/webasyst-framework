@@ -12,11 +12,40 @@ class contactsBackendAutocompleteController extends waJsonController
         if(mb_strlen($term) < 2) {
             return;
         }
-
+        
+        $type = waRequest::request('type', null, waRequest::TYPE_STRING_TRIM);
+        
+        $model = new waModel();
         if(strpos($term, '@') !== FALSE) {
             $contacts = new contactsCollection('/search/email*='.$term);
         } else {
-            $contacts = new contactsCollection('/search/name*='.$term);
+            $contacts = new contactsCollection();
+            $t_a = preg_split("/\s+/", $term);
+            $cond = array();
+            foreach ($t_a as $t) {
+                $t = trim($t);
+                if ($t) {
+                    $t = $model->escape($t, 'like');
+                    if ($type === 'person') {
+                        $cond[] = "(c.firstname LIKE '{$t}%' OR c.middlename LIKE '{$t}%' OR c.lastname LIKE '{$t}%')";
+                    } else if ($type === 'company') {
+                        $cond[] = "c.name LIKE '{$t}%'";
+                    } else {
+                        $cond[] = "(c.firstname LIKE '{$t}%' OR c.middlename LIKE '{$t}%' OR c.lastname LIKE '{$t}%' OR c.name LIKE '{$t}%')";
+                    }
+                }
+            }
+            if ($cond) {
+                $contacts->addWhere(implode(" AND ", $cond));
+            }
+        }
+        
+        if ($type) {
+            if ($type === 'person') {
+                $contacts->addWhere("is_company = 0");
+            } else if ($type === 'company') {
+                $contacts->addWhere("is_company = 1");
+            }
         }
 
         $this->response = array();
@@ -44,7 +73,19 @@ class contactsBackendAutocompleteController extends waJsonController
 
     protected function prepare($str, $term_safe)
     {
-        return preg_replace('~('.preg_quote($term_safe, '~').')~ui', '<span class="bold highlighted">\1</span>', htmlspecialchars($str));
+        $str = htmlspecialchars($str);
+        $reg = array();
+        foreach (preg_split("/\s+/", $term_safe) as $t) {
+            $t = trim($t);
+            if ($t) {
+                $reg[] = preg_quote($t, '~');
+            }
+        }
+        if ($reg) {
+            $reg = implode('|', $reg);
+            $str = preg_replace('~('.$reg.')~ui', '<span class="bold highlighted">\1</span>', $str);
+        }
+        return $str;
     }
 }
 

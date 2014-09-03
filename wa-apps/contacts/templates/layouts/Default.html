@@ -1,106 +1,130 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd"><html>
+<!DOCTYPE html>
+<html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>{$wa->appName()} &mdash; {$wa->accountName()}</title>
+<meta http-equiv="X-UA-Compatible" content="IE=edge;chrome=1" />
 
-
-<title>{{$wa->appName()}} &mdash; {{$wa->accountName()}}</title>
-
-<link rel="stylesheet" type="text/css" href="{{$wa_url}}wa-content/js/jquery-plugins/jquery-imageareaselect/imgareaselect-default.css?{{$wa->version()}}" />
-{{$wa->css()}}
-<link rel="stylesheet" type="text/css" href="{{$wa_app_static_url}}css/contacts.css?{{$wa->version()}}" media="screen" />
+<link rel="stylesheet" type="text/css" href="{$wa_url}wa-content/js/jquery-plugins/jquery-imageareaselect/imgareaselect-default.css?{$wa->version()}" />
+{$wa->css()}
+<link rel="stylesheet" type="text/css" href="{$wa_app_static_url}css/contacts.css?{$wa->version()}" media="screen" />
 <!--[if IE 7]>
-	<link type="text/css" href="{{$wa_app_static_url}}css/contacts.ie7.css?{{$wa->version()}}" rel="stylesheet">
+    <link type="text/css" href="{$wa_app_static_url}css/contacts.ie7.css?{$wa->version()}" rel="stylesheet">
 <![endif]-->
 <!--[if IE 8]>
-	<link type="text/css" href="{{$wa_app_static_url}}css/contacts.ie8.css?{{$wa->version()}}" rel="stylesheet">
+    <link type="text/css" href="{$wa_app_static_url}css/contacts.ie8.css?{$wa->version()}" rel="stylesheet">
 <![endif]-->
 
-{{*
+<link href="{$wa_url}wa-content/js/jquery-plugins/ibutton/jquery.ibutton.min.css" rel="stylesheet" type="text/css" />
+<link href="{$wa_url}wa-content/css/jquery-ui/base/jquery.ui.autocomplete.css" rel="stylesheet" type="text/css" />
+
+{*
   * jQuery with plugins
-  *}}
-<script type="text/javascript" src="{{$wa_url}}wa-content/js/jquery/jquery-1.8.2.min.js"></script>
-{{wa_js file="js/compiled/contacts-jquery.js"}}
-	{{$wa_url}}wa-content/js/jquery-ui/jquery.ui.core.min.js
-	{{$wa_url}}wa-content/js/jquery-ui/jquery.ui.widget.min.js
-	{{$wa_url}}wa-content/js/jquery-ui/jquery.ui.datepicker.min.js
-	{{$wa_url}}wa-content/js/jquery-ui/jquery.ui.mouse.min.js
-	{{$wa_url}}wa-content/js/jquery-ui/jquery.ui.draggable.min.js
-	{{$wa_url}}wa-content/js/jquery-ui/jquery.ui.droppable.min.js
-	{{$wa_url}}wa-content/js/jquery-ui/jquery.ui.sortable.min.js
+  *}
+<script type="text/javascript" src="{$wa_url}wa-content/js/jquery/jquery-1.7.1.min.js"></script>
+{wa_js file="js/compiled/contacts-jquery.js"}
+    {$wa_url}wa-content/js/jquery-wa/wa.core.js
+    {$wa_url}wa-content/js/jquery-wa/wa.dialog.js
+    {$wa_url}wa-content/js/jquery-ui/jquery-ui.custom.min.js
+    {$wa_url}wa-content/js/jquery-plugins/ibutton/jquery.ibutton.min.js
+    {$wa_url}wa-content/js/jquery-plugins/jquery.history.js
+    {$wa_url}wa-content/js/jquery-plugins/jquery.store.js
+    {$wa_url}wa-content/js/jquery-ui/jquery.ui.core.min.js
+    {$wa_url}wa-content/js/jquery-ui/jquery.ui.widget.min.js
+    {$wa_url}wa-content/js/jquery-ui/jquery.ui.mouse.min.js
+    {$wa_url}wa-content/js/jquery-ui/jquery.ui.position.min.js
+    {$wa_url}wa-content/js/jquery-ui/jquery.ui.autocomplete.min.js
+    {$wa_url}wa-content/js/jquery-ui/jquery.ui.draggable.min.js
+    {$wa_url}wa-content/js/jquery-ui/jquery.ui.droppable.min.js
+    {$wa_url}wa-content/js/jquery-ui/jquery.ui.sortable.min.js
+    {$wa_url}wa-content/js/jquery-plugins/jquery.formalize.js
+    {$wa_url}wa-content/js/jquery-plugins/jquery-imageareaselect/jquery.imgareaselect.min.js
+    {$wa_url}wa-content/js/jquery-plugins/jquery.json.js
+    {$wa_url}wa-content/js/jquery-plugins/jquery.scrollTo-min.js
+    {$wa_url}wa-content/js/jquery-plugins/json2.js
+    {$wa_url}wa-content/js/jquery-plugins/jquery.hoverIntent.minified.js
+    {$wa_app_static_url}js/jquery.sticky.js
+    {$wa_app_static_url}js/tmpl.min.js
+{/wa_js}
+<script type="text/javascript" src="?action=loc&v={$wa->version()}"></script>
 
-	{{if $versionFull}}
-		{{$wa_url}}wa-content/js/jquery-ui/jquery.ui.button.min.js
-		{{$wa_url}}wa-content/js/jquery-ui/jquery.ui.dialog.min.js
-	{{/if}}
+<script type="text/javascript" src="{$wa_url}wa-content/js/jquery-ui/jquery.ui.datepicker.min.js"></script>
+{if $lang!='en'}
+    <script type="text/javascript" src="{$wa_url}wa-content/js/jquery-ui/i18n/jquery.ui.datepicker-{$wa->locale()}.js"></script>
+{/if}
 
-	{{$wa_url}}wa-content/js/jquery-plugins/jquery.formalize.js
-	{{$wa_url}}wa-content/js/jquery-plugins/jquery.history.js
-	{{$wa_url}}wa-content/js/jquery-plugins/jquery-imageareaselect/jquery.imgareaselect.min.js
-	{{$wa_url}}wa-content/js/jquery-plugins/jquery.json.js
-	{{$wa_url}}wa-content/js/jquery-plugins/jquery.scrollTo-min.js
-	{{$wa_url}}wa-content/js/jquery-plugins/json2.js
-	{{$wa_url}}wa-content/js/jquery-plugins/jquery.store.js
-	{{$wa_url}}wa-content/js/jquery-plugins/jquery.hoverIntent.minified.js
-	{{$wa_url}}wa-content/js/jquery-wa/wa.dialog.js
-{{/wa_js}}
-<script type="text/javascript" src="{{$wa_url}}wa-content/js/jquery-wa/wa.core.js?{{$wa->version()}}"></script>
-<script type="text/javascript" src="?action=loc&v={{$wa->version()}}"></script>
-
-{{*
+{*
   * Contacts app
-  *}}
-{{wa_js file="js/compiled/contacts{{if $versionFull}}-full{{/if}}.js"}}
-	{{$wa_app_static_url}}js/wa.controller.js
-	{{if $versionFull}}
-		{{$wa_app_static_url}}js/wa.controller.full.js
-		{{$wa_app_static_url}}js/wa.controller.settings.js
-	{{/if}}
-	{{$wa_app_static_url}}js/wa.grid.js
-	{{$wa_app_static_url}}js/wa.history.js
-	{{if $versionFull}}
-		{{$wa_app_static_url}}js/wa.history.full.js
-	{{/if}}
-	{{$wa_app_static_url}}js/wa.contactEditor.js
-	{{$wa_app_static_url}}js/fieldTypes.js
-{{/wa_js}}
+  *}
+{wa_js file="js/compiled/contacts.js"}
+    {$wa_app_static_url}js/wa.controller.js
+    {$wa_app_static_url}js/wa.grid.js
+    {$wa_app_static_url}js/wa.history.js
+    {$wa_app_static_url}js/fieldTypes.js
+    {$wa_app_static_url}js/wa.contactEditor.js
+{/wa_js}
 
-{{$wa->js(false)}}
+<script src="https://maps.googleapis.com/maps/api/js?sensor=false" type="text/javascript"></script>
+
+{$wa->js(false)}
+
+{* @event backend_assets.%plugin_id% *}
+{foreach $backend_assets as $item}
+    {$item}
+{/foreach}
+
 </head>
-<body id="{{$wa_app}}"><div id="wa">
-	{{wa_header}}
-	<div id="wa-app">
-		<div class="sidebar left200px">{{$sidebar}}</div>
-		<div class="content left200px" id="c-core">
-			<div class="contacts-background">
-				<div class="block not-padded c-core-content">
-				{{if isset($content) && $content}}
-					{{$content}}
-				{{else}}
-					<div class="block">
-						<h1 class="wa-page-heading">[`Loading...`]</h1>
-					</div>
-				{{/if}}
-				</div>
-			</div>
-		</div>
-	</div>
-	<div id="wa-cache" style="display:none"></div>
-</div></body>
+<body id="{$wa_app}"><div id="wa">
+    {wa_header}
+    <div id="wa-app">
+        <div class="sidebar left200px" id="c-sidebar">{$sidebar}</div>
+        <div class="content left200px" id="c-core">
+            <div class="contacts-background">
+                <div class="block not-padded c-core-content">
+                {if isset($content) && $content}
+                    {$content}
+                {else}
+                    <div class="block">
+                        <h1 class="wa-page-heading">[`Loading...`]</h1>
+                    </div>
+                {/if}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="wa-cache" style="display:none"></div>
+</div>
+
+{* js templates *}
+{include file="./include.templates.html" inline}
+
+{* @event backend_templates.%plugin_id% *}
+{foreach $backend_templates as $item}
+    {$item}
+{/foreach}
+
 <script type="text/javascript">
 $.wa.controller.init({
-	url: "{{$wa_url}}",
-	backend_url: "{{wa_backend_url()}}"
+    url: "{$wa_url}",
+    backend_url: "{wa_backend_url()}",
+    rights: {
+        edit: {json_encode(!!$wa->user()->getRights('contacts', 'edit'))}
+    },
+    paginator_type: {json_encode($paginator_type)}
 });
-$.wa.grid.init({fields: {{json_encode($fields)}}, app_url: "{{$wa_app_static_url}}"});
-$.wa.controller.global_admin = {{if empty($global_admin)}}0{{else}}1{{/if}};
-$.wa.controller.admin = {{if empty($admin)}}0{{else}}1{{/if}};
-$.wa.controller.accountName = "{{$wa->accountName()|replace:'"':'\"'}}";
-{{if empty($content)}}
-	if($.wa.controller.getHash()) {
-		$.wa.controller.dispatch();
-	} else {
-		$.wa.controller.lastPage();
-	}
-{{/if}}
+$.wa.grid.init({ fields: {json_encode($fields)}, app_url: "{$wa_app_static_url}"});
+$.wa.controller.global_admin = {if empty($global_admin)}0{else}1{/if};
+$.wa.controller.admin = {if empty($admin)}0{else}1{/if};
+$.wa.controller.accountName = "{$wa->accountName()|replace:'"':'\"'}";
+$.wa.controller.groups = {json_encode($groups)};
+{if empty($content)}
+    if($.wa.controller.getHash()) {
+        $.wa.controller.dispatch();
+    } else {
+        $.wa.controller.lastPage();
+    }
+{/if}
 </script>
+
+</body>
 </html>

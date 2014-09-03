@@ -3,14 +3,15 @@
 class contactsHistoryModel extends waModel
 {
     protected $table = 'contacts_history';
-    const NUM_HISTORY_KEEP = 15;
+    const NUM_HISTORY_KEEP = 150;
     const NUM_HISTORY_SHOW = 5;
+    const NUM_SEARCH_HISTORY_SHOW = 100;
 
 
     /** Get all history for current user, or a single history record
       * @param int $id (defaults to null) id of a record to fetch
       * @return array if $id is specified, then null (if not found) or a single array with keys: id, type, name, hash, contact_id, position, accessed, cnt; if no $id, then a list of such arrays is returned. */
-    public function get($id=null) {
+    public function get($id = null) {
         if ($id) {
             $sql = "SELECT * FROM {$this->table} WHERE id=i:id";
             return $this->query($sql, array('id' => $id))->fetchRow();
@@ -22,10 +23,36 @@ class contactsHistoryModel extends waModel
                 WHERE contact_id=:uid
                 ORDER BY position, accessed DESC";
         $history = $this->query($sql, array('uid' => $currentUserId))->fetchAll();
-
+        $contact_ids = array();
+        foreach ($history as $h) {
+            if ($h['type'] === 'add') {
+                $contact_id = (int) str_replace('/contact/', '', $h['hash']);
+                if ($contact_id) {
+                    $contact_ids[] = $contact_id;
+                }
+            }
+        }
+        
+        $contacts = array();
+        if ($contact_ids) {
+            $col = new contactsCollection('id/' . implode(',', $contact_ids));
+            $contacts = $col->getContacts('id,is_company,photo_url_20');
+        }
+        
+        foreach ($history as &$h) {
+            if ($h['type'] === 'add') {
+                $contact_id = (int) str_replace('/contact/', '', $h['hash']);
+                $contact = ifset($contacts[$contact_id], array('is_company' => 0, 'photo_url_20' => waContact::getPhotoUrl(null, null, 20, 20, 'person')));
+                $h['icon'] = $contact['photo_url_20'];
+            }
+        }
+        unset($h);
+        
+        
         // leave only NUM_HISTORY_SHOW temporary items (i.e. position == 0 and type != import)
         $ra_limit = self::NUM_HISTORY_SHOW; // recently added
         $s_limit = self::NUM_HISTORY_SHOW; // search history
+        
         $not_shown = array();
         foreach($history as $k => $v) {
             if ($v['position'] > 0) {
@@ -57,7 +84,31 @@ class contactsHistoryModel extends waModel
             $history = array_merge($history);
         }
 
+        
         return $history;
+    }
+    
+    public function getByType($type, $limit = null)
+    {
+        return $this->select('*')
+                ->where(
+                        'contact_id = i:contact_id AND type = s:type', 
+                        array(
+                            'contact_id' => wa()->getUser()->getId(), 
+                            'type' => $type
+                        ))
+                ->order('position, accessed DESC')
+                ->limit(!$limit ? 
+                    ($type === 'search' ? self::NUM_SEARCH_HISTORY_SHOW : self::NUM_HISTORY_SHOW) : 
+                    (int) $limit
+                )->fetchAll();
+    }
+    
+    public function countByType($type)
+    {
+        return $this->select('COUNT(id)')->where('contact_id = i:contact_id AND type = s:type', 
+                array('contact_id' => wa()->getUser()->getId(), 'type' => $type)
+        )->order('position, accessed DESC')->fetchField();        
     }
 
     /** Create a new record in history or update an existing one.
@@ -93,6 +144,7 @@ class contactsHistoryModel extends waModel
             }
 
             if ($set) {
+                $set[] = 'accessed=:accessed';
                 $set = implode(',', $set);
 
                 $sql = "UPDATE {$this->table} SET {$set} WHERE id=i:id";
@@ -100,7 +152,7 @@ class contactsHistoryModel extends waModel
                     'id' => $id,
                     'name' => $name,
                     'count' => $count,
-                    'time' => date('Y-m-d H:i:s')
+                    'accessed' => date('Y-m-d H:i:s')
                 ));
             }
         } else if ($type) {
@@ -109,13 +161,14 @@ class contactsHistoryModel extends waModel
                 'type' => $type,
                 'name' => $name,
                 'hash' => $hash,
-                'cnt' => $count ? $count : -1,
+                'cnt' => $count !== null ? (int) $count : -1,
                 'contact_id' => $currentUserId,
                 'accessed' => date('Y-m-d H:i:s'),
             ));
         }
 
         $this->prune();
+        
         return $newRecord;
     }
 
@@ -148,7 +201,7 @@ class contactsHistoryModel extends waModel
         if ($limit === null) {
             $limit = self::NUM_HISTORY_KEEP;
         }
-
+        
         // How many records are there?
         $sql = "SELECT COUNT(*) FROM {$this->table} WHERE contact_id=i:uid AND position=0".$typeSql;
         $total = $this->query($sql, array('uid' => $currentUserId, 'type' => $type))->fetchField();

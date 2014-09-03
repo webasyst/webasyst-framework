@@ -1,0 +1,293 @@
+<script id="template-contacts-list-table" type="text/html">
+{literal}
+    {% var contacts = o.contacts || []; %}
+    {% var fields = $.extend({}, o.fields || {}); %}
+    {% var custom_fields = {}; %}
+    {% var vertical_fields = {}; %}
+    {% var custom_count = 0; %}
+    {% for (var field_id in fields) { %}
+        {% if (!fields.hasOwnProperty(field_id)) { %}
+            {% continue; %}
+        {% } %}
+        {% if (fields[field_id].type === 'Custom') { %}
+            {% custom_fields[field_id] = fields[field_id]; %}
+            {% custom_count += 1; %}
+            {% delete fields[field_id]; %}
+        {% } else if (fields[field_id].vertical) { %}
+            {% vertical_fields[field_id] = fields[field_id]; %}
+            {% delete fields[field_id]; %}
+        {% } %}
+    {% } %}
+    <table class="view-list table {% if (!$.isEmptyObject(custom_fields)) { %}list-with-custom-fields{% } %} {% if (custom_count === 1) { %}one-field{% } %}">
+        <thead class="c-list-top-line">
+            <tr>
+                <td class="first-td"></td>
+                {% if (!$.isEmptyObject(vertical_fields)) { %}
+                    {% for (var field_id in vertical_fields) { %}
+                        {% if (!vertical_fields.hasOwnProperty(field_id)) { %}
+                            {% continue; %}
+                        {% } %}
+                        <td></td>
+                    {% } %}
+                {% } %}
+                <td class="c-email-td"></td>
+                {% if (!$.isEmptyObject(custom_fields)) { %}
+                    {% var k = 0; %}
+                    {% for (var field_id in custom_fields) { %}
+                        {% if (!custom_fields.hasOwnProperty(field_id)) { %}
+                            {% continue; %}
+                        {% } %}
+                        <td class="custom-field-th {% if (k === 0) { %}first{% } %} {% if (k === custom_count - 1) { %}last{% } %}" data-field-id="{%#field_id%}">
+                            <div class="wrapper">
+                                <span class="name">{%=''+custom_fields[field_id].name%}</span>
+                            </div>
+                        </td>
+                        {% k += 1; %}
+                    {% } %}
+                {% } %}
+                <td class="c-service-column c-service-th" style="display:none;"></td>
+            </tr>
+        </thead>
+        <tbody>
+        {% for (var i = 0, n = contacts.length, contact = contacts[0]; i < n; contact = contacts[++i]) { %}
+            <tr class="contact-row">
+                <td class="profile {% if (!$.isEmptyObject(custom_fields)) { %}with-custom-fields{% } %}">
+                    <div class="details">
+                        <input class="selector" name="c_list_selector" value="{%#contact.id%}" type="checkbox">
+                        <a href="#/contact/{%#contact.id%}/" class="details-header contact" data-offset="{%#contact.offset%}">
+                            <span class="name">
+                                {% var names = $.wa.grid.formNamesHtml(contact); %}
+                                {%#names[0]%}
+                            </span>
+                        </a>
+                        {% if (names[1]) { %}
+                            <span class="jobtitle-company">{%#names[1]%}</span>
+                        {% } %}
+                    </div>
+                </td>
+                <td class="c-email-td">
+                    {% if (!$.isEmptyObject(contact.email)) { %}
+                        {% for (var e = 0; e < contact.email.length; e += 1) { %}
+                            <a href="mailto:{%=contact.email[e]%}">{%=contact.email[e]%}</a>{% if (e < contact.email.length - 1) { %}, {% } %}
+                        {% } %}
+                    {% } %}
+                </td>
+                {% if (!$.isEmptyObject(vertical_fields)) { %}
+                    {% for (var field_id in vertical_fields) { %}
+                        {% if (!vertical_fields.hasOwnProperty(field_id)) { %}
+                            {% continue; %}
+                        {% } %}
+                        {% var v = $.wa.grid.formatFieldValue(contact[vertical_fields[field_id].id], vertical_fields[field_id]); %}
+                        <td>{%#''+v%}</td>
+                    {% } %}
+                {% } %}
+                {% if (!$.isEmptyObject(custom_fields)) { %}  
+                    {% var k = 0; %}
+                    {% for (var field_id in custom_fields) { %}
+                        {% if (!custom_fields.hasOwnProperty(field_id)) { %}
+                            {% continue; %}
+                        {% } %}
+                        {% var v = $.wa.grid.formatFieldValue(contact[custom_fields[field_id].id], custom_fields[field_id]); %}
+                        <td class="custom-field-td {% if (k === 0) { %}first{% } %} {% if (k === custom_count - 1) { %}last{% } %}" data-field-id="{%#field_id%}">{%#''+v%}</td>
+                        {% k += 1; %}
+                    {% } %}
+                {% } %}
+                <td class="c-service-column c-service-td" style="display:none;"></td>
+            </tr>
+        {% } %}
+        </tbody>
+    </table>
+{/literal}
+</script>
+
+<script id="template-contacts-fields" type="text/html">
+{literal}
+    {% var contact = o.contact || {}; %}
+    
+    {% var fields = $.extend({}, o.fields || {}); %}
+    {% for (var field_id in fields) { %}
+        {% if (!fields.hasOwnProperty(field_id) || fields[field_id].type === 'Custom') { continue;  } %}
+        {% var f = fields[field_id]; %}
+        {% if (!contact[field_id] || 
+                contact[field_id] == '0000-00-00' || 
+                (typeof contact[field_id].length != 'undefined' && !contact[field_id].length)
+            ) { continue; } %}
+        {% if (f.fields) { %}
+            {% if (typeof contact[field_id] == 'object') { %}
+                {% for (var j = 0; j < contact[field_id].length; j++) { %}
+                    {% if (f.type !== 'Address') { %}
+                        <p>
+                            <span class="c-details-label">{%=f.name%}
+                                {% if ($.trim(contact[field_id][j].ext)) { %}
+                                    // is it a predefined extension?
+                                    {% if (f.ext && f.ext[contact[field_id][j].ext]) { %}
+                                         <span>({%=f.ext[contact[field_id][j].ext]%})</span>
+                                    {% } else { %}
+                                        <span>({%=contact[field_id][j].ext%})</span>
+                                    {% } %}
+                                {% } %}:
+                            </span>
+                        {%#$.wa.grid.highlight($.wa.grid.viewlistvalue(contact[field_id][j], f))%}</p>
+                    {% } else { %}
+                        <p>
+                            {%#$.wa.grid.highlight($.wa.grid.viewlistvalue(contact[field_id][j], f))%}
+                            {% if ($.trim(contact[field_id][j].ext)) { %}
+                                <em class="hint">{%#f.ext[contact[field_id][j].ext]%}</em>
+                            {% } %}
+                        </p>
+                    {% } %}
+                {% } %}
+            {% } else { %}
+                <p>
+                    <span class="c-details-label">{%=f.name%}:</span>
+                    {%#$.wa.grid.highlight($.wa.grid.viewlistvalue(contact[field_id], true))%}
+                </p>
+            {% } %}
+        {% } else { %}
+            <p>
+                {% if (f.type !== 'Email' && f.type !== 'IM' && f.type !== 'Phone' && f.type !== 'SocialNetwork') { %}
+                    <span class="c-details-label">{%=f.name%}:</span>
+                {% } %}
+                {% if (typeof(contact[field_id]) === 'object') { %}
+                    {% var v = [], t; %} 
+                    {% for (var j = 0; j < contact[field_id].length; j++) { %}
+                        {% t = $.wa.grid.viewlistvalue(contact[field_id][j], f); %}
+                        {% if (f.type === 'Email' || f.type === 'Url') { %}
+                            {% var m = t.match(/<a[\s\S]*?>([^<|^>]*?)</); %}
+                            {% if (m && m[1]) { %}
+                                {% t = t.replace(/(<a[\s\S]*?>)([^<|^>]*?)</, "$1" + $.wa.grid.highlight(m[1]) + "<"); %}
+                            {% } %}
+                        {% } else { %}
+                            {% t = $.wa.grid.highlight(t); %}
+                        {% } %}
+                        {% v.push(t); %}
+                    {% } %}
+                    {%#v.join(', ')%}
+                {% } else { %}
+                    {%#$.wa.grid.highlight($.wa.grid.viewlistvalue(contact[field_id], f))%}
+                {% } %}
+            </p>
+        {% } %}
+    {% } %}
+{/literal}
+</script>
+
+<script id="template-contacts-list-list" type="text/html">
+{literal}
+    {% var contacts = o.contacts || []; %}
+    {% var fields = $.extend({}, o.fields || {}); %}
+    {% var custom_fields = {}; %}
+    {% var custom_count = 0; %}
+    {% var vertical_fields = {}; %}
+    {% for (var field_id in fields) { %}
+        {% if (!fields.hasOwnProperty(field_id)) { %}
+            {% continue; %}
+        {% } %}
+        {% if (fields[field_id].type === 'Custom') { %}
+            {% custom_fields[field_id] = fields[field_id]; %}
+            {% custom_count += 1; %}
+            {% delete fields[field_id]; %}
+        {% } else if (fields[field_id].vertical) { %}
+            {% vertical_fields[field_id] = fields[field_id]; %}
+            {% delete fields[field_id]; %}
+        {% } %}
+    {% } %}
+    <table class="view-list list {% if (!$.isEmptyObject(custom_fields)) { %}list-with-custom-fields{% } %} {% if (custom_count === 1) { %}one-field{% } %}">
+        <thead class="c-list-top-line">
+            <tr>
+                <td class="first-td"></td>
+                {% if (!$.isEmptyObject(vertical_fields)) { %}
+                    {% for (var field_id in vertical_fields) { %}
+                        {% if (!vertical_fields.hasOwnProperty(field_id)) { %}
+                            {% continue; %}
+                        {% } %}
+                        <td></td>
+                    {% } %}
+                {% } %}
+                {% if (!$.isEmptyObject(custom_fields)) { %}
+                        {% var k = 0; %}
+                        {% for (var field_id in custom_fields) { %}
+                            {% if (!custom_fields.hasOwnProperty(field_id)) { %}
+                                {% continue; %}
+                            {% } %}
+                            <td class="custom-field-th {% if (k === 0) { %}first{% } %} {% if (k === custom_count - 1) { %}last{% } %}" data-field-id="{%#field_id%}">
+                                <div class="wrapper">
+                                    <span class="name">{%=''+custom_fields[field_id].name%}</span>
+                                </div>
+                            </td>
+                            {% k += 1; %}
+                        {% } %}
+                {% } %}
+                <td class="c-service-column c-service-th" style="display:none;"></td>
+            </tr>
+        </thead>
+        <tbody>
+        {% for (var i = 0, n = contacts.length, contact = contacts[0]; i < n; contact = contacts[++i]) { %}
+            <tr class="contact-row">
+                <td class="profile image32px {% if (!$.isEmptyObject(custom_fields)) { %}with-custom-fields{% } %}">
+                    {% if (contact.photo_url_32) { %}
+                        <div class="image"><img src="{%#contact.photo_url_32%}"></div>
+                    {% } %}
+                    <div class="details">
+                        <input class="selector" name="c_list_selector" value="{%#contact.id%}" type="checkbox">
+                        <a href="#/contact/{%#contact.id%}" class="details-header contact" data-offset="{%#contact.offset%}">
+                            <h1 class="name">
+                                {% var names = $.wa.grid.formNamesHtml(contact); %}
+                                {%#names[0]%}
+                            </h1>
+                        </a>
+                        {% if (names[1]) { %}
+                            <h1 class="jobtitle-company">{%#names[1]%}</h1>
+                        {% } %}
+                        {% include('template-contacts-fields', { fields: fields || {}, contact: contact }); %}
+                    </div>
+                </td>
+                {% if (!$.isEmptyObject(vertical_fields)) { %}
+                    {% for (var field_id in vertical_fields) { %}
+                        {% if (!vertical_fields.hasOwnProperty(field_id)) { %}
+                            {% continue; %}
+                        {% } %}
+                        {% var v = $.wa.grid.formatFieldValue(contact[vertical_fields[field_id].id], vertical_fields[field_id]); %}
+                        <td>{%#''+v%}</td>
+                    {% } %}
+                {% } %}
+                {% if (!$.isEmptyObject(custom_fields)) { %}
+                    {% var k = 0; %}
+                    {% for (var field_id in custom_fields) { %}
+                        {% if (!custom_fields.hasOwnProperty(field_id)) { %}
+                            {% continue; %}
+                        {% } %}
+                        {% var v = $.wa.grid.formatFieldValue(contact[custom_fields[field_id].id], custom_fields[field_id]); %}
+                        <td class="custom-field-td {% if (k === 0) { %}first{% } %} {% if (k === custom_count - 1) { %}last{% } %}" data-field-id="{%#field_id%}">{%#''+v%}</td>
+                        {% k += 1; %}
+                    {% } %}
+                {% } %}
+                <td class="c-service-column c-service-td" style="display:none;"></td>
+            </tr>
+        {% } %}
+        </tbody>
+    </table>
+{/literal}
+</script>
+
+<script id="template-contacts-list-thumbs" type="text/html">
+{literal}
+    {% var contacts = o.contacts || []; %}
+    <ul class="view-list thumbs li100px">
+    {% for (var i = 0, n = contacts.length, contact = contacts[0]; i < n; contact = contacts[++i]) { %}
+        <li class="contact-row">
+            {% if (contact.photo_url_96) { %}
+                <div class="image"><a href="#/contact/{%#contact.id%}"><img src="{%#contact.photo_url_96%}"></a></div>
+            {% } %}
+            <input class="selector" name="c_list_selector" value="{%#contact.id%}" type="checkbox">
+            <a href="#/contact/{%#contact.id%}" class="details-header contact" data-offset="{%#contact.offset%}">
+                <h1 class="name">
+                    {% var names = $.wa.grid.formNamesHtml(contact); %}
+                    {%#names[0]%}
+                </h1>
+            </a>
+        </li>
+    {% } %}
+    </ul>
+{/literal}
+</script>

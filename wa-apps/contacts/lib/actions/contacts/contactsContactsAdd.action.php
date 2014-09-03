@@ -9,11 +9,14 @@ class contactsContactsAddAction extends waViewAction
         }
 
         $type = waRequest::get('company') ? 'company' : 'person';
-        $fields = waContactFields::getInfo($type, TRUE);
+        $fields = array();
+        foreach (waContactFields::getAll($type, true) as $field_id => $field) {
+            $fields[$field_id] = $field->getInfo();
+            $fields[$field_id]['top'] = $field->getParameter('top');
+        }
+        
         $this->view->assign('contactFields', $fields);
         $this->view->assign('contactType', $type);
-        $this->view->assign('header', _w('New '.($this->getConfig()->getInfo('edition') === 'full' ? $type : 'contact')));
-        $this->view->assign('limitedCategories', $this->getRights('category.all') ? 0 : 1);
     }
 }
 

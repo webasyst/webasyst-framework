@@ -20,9 +20,10 @@ class contactsPhotoCropController extends waJsonController
 
         // Path to file we need to crop
         $rand = mt_rand();
-        $filename = wa()->getDataPath("photo/$id/$rand.original.jpg", TRUE, 'contacts');
+        $dir = waContact::getPhotoDir($id, true);
+        $filename = wa()->getDataPath("{$dir}$rand.original.jpg", true, 'contacts');
 
-        $oldDir = wa()->getDataPath("photo/$id", TRUE, 'contacts');
+        $oldDir = wa()->getDataPath("{$dir}", true, 'contacts');
 
         $no_old_photo = false;
         if (!$orig) {
@@ -58,8 +59,8 @@ class contactsPhotoCropController extends waJsonController
             unlink($newFile);
         } else {
             // cropping an old file. Move it temporarily to temp dir to delete all cached thumbnails
-            $oldFile = wa()->getDataPath("photo/$id/{$contact['photo']}.original.jpg", TRUE, 'contacts');
-            $tempOldFile = wa()->getTempPath("$id/$rand.original.jpg", 'contacts');
+            $oldFile = wa()->getDataPath("{$dir}{$contact['photo']}.original.jpg", TRUE, 'contacts');
+            $tempOldFile = wa()->getTempPath("{$id}/{$rand}.original.jpg", 'contacts');
             waFiles::move($oldFile, $tempOldFile);
 
             // Delete thumbnails
@@ -78,7 +79,7 @@ class contactsPhotoCropController extends waJsonController
         }
 
         // Crop and save selected area
-        $croppedFilename = wa()->getDataPath("photo/$id/$rand.jpg", TRUE, 'contacts');
+        $croppedFilename = wa()->getDataPath("{$dir}{$rand}.jpg", TRUE, 'contacts');
         try {
             $img = waImage::factory($filename);
             $scale = $img->width / $ww;
@@ -99,7 +100,7 @@ class contactsPhotoCropController extends waJsonController
                 $old_app = wa()->getApp();
                 waSystem::setActive('contacts');
             }
-            $this->log('photo_add', 1);
+            $this->logAction('photo_add', null, $contact->getId());
             if ($old_app) {
                 waSystem::setActive($old_app);
             }

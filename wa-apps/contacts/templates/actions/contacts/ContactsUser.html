@@ -1,571 +1,800 @@
-{{*
+{*
   * User tab in contact profile.
   * There's no separate action for this template. It gets included from ContactsInfo.html
   * and template variables are loaded in ContactsInfoAction.
-  *}}
+  *}
 
-{{if $contact.is_user && empty($own_profile)}}
-    <ul class="menu-h c-actions">
-        <li><a href="javascript:void(0);" id="delete-user"><i class="icon16 delete"></i> [`Delete user account`]</a></li>
-    </ul>
-{{/if}}
-
-{{if !$contact.is_user}}
-    {{* Form to create new user *}}
-    <form id="form-user-account" method="post" action="?module=contacts&action=user&id={{$contact.id}}">
-        <div class="fields">
-            <div class="field">
-                <div class="name">[`Login`]</div>
-                <div class="value"><input type="text" name="login" /></div>
-            </div>
-            <div class="field">
-                <div class="name">[`Password`]</div>
-                <div class="value">
-                    <input type="password" name="password" />
-                    {{if $contact.password}}
-                        <span class="hint">[`Leave blank to keep existing password.`]</span>
-                    {{/if}}
-                </div>
-            </div>
-            <div class="field">
-                <div class="name">[`Confirm password`]</div>
-                <div class="value"><input type="password" name="confirm_password" /></div>
-            </div>
-            <div class="field">
-                <div class="value">
-                    <input type="submit" class="button green" value="[`Save`]">
-                </div>
-            </div>
-        </div>
-    </form>
-{{else}}{{* Contact is already a user, show info *}}
-    <div class="fields" style="min-width:51%">
+{$email = ''}
+{$emails = $contact->get('email', 'value')}
+{if is_array($emails) && $emails}
+    {$email = reset($emails)}    
+{/if}
+  
+<div class="block not-padded" style="width: 100%; float: left; display: block;">
+    <div class="fields">
         <div class="field">
-            <div class="name">[`Login`]</div>
-            <div class="value">
-                <strong class="large">{{$contact.login|escape}}</strong>
-                <a href="javascript:void(0)" id="show-passwd-form" style="margin-left: 1.2em" class="small inline-link"><b><i>[`change password`]</i></b></a>
-            </div>
-        </div>
-
-        {{* Change password form *}}
-        <form id="form-edit-user-password" style="display:none;clear:left" method="post" action="?module=contacts&action=user&a=passwd&id={{$contact.id}}">
-            <div class="field ">
-                <div class="name">[`New password`]</div>
-                <div class="value">
-                    <input name="password" type="password" id="newpass">
+            <div class="name">[`Access`]</div>
+            <div class="value c-ibutton-checkbox">
+                <div class="left" style="width: 45%;">
+                    {if empty($own_profile)}
+                    <ul class="menu-h">
+                        <li><span class="status {if $contact.is_user != '-1'}off{/if}">[`Disabled`]</span></li>
+                        <li><input type="checkbox" {if $contact.is_user != '-1'}checked{/if} id="c-access"></li>
+                        <li><span class="status {if $contact.is_user == '-1'}off{/if}">[`Enabled`]</span></li>
+                    </ul>
+                    {else}
+                        {if $contact.is_user == '-1'}[`Disabled`]{else}[`Enabled`]{/if}
+                    {/if}
                 </div>
-            </div>
-            <div class="field">
-                <div class="name">[`Confirm password`]</div>
-                <div class="value">
-                    <input name="confirm_password" type="password" id="newpass-comfirm">
-                </div>
-            </div>
-            <div class="field">
-                <div class="value">
-                    <input type="submit" class="button green" value="[`Save`]"> [`or`] <a class="inline-link" href="javascript:void(0)" id="cancel-passwd-change"><b><i>[`cancel`]</i></b></a>
-                    <i class="icon16 loading" style="margin-left: 16px; display: none;"></i>
-                </div>
-            </div>
-        </form>
-
-        <div class="field">
-            <div class="name">[`Status`]</div>
-            <div class="value bold">
-                {{assign var=status value=$contact->getStatus()}}
-                {{if $status == 'online'}}
-                    <i class="icon10 online"></i> <span class="c-user-status-online">[`Online`]</span>
-                {{else}}
-                    {{if !$contact.last_datetime}}
-                        <span style="color:red">[`Never logged in`]</span>
-                    {{else}}
-                        [`Last login`]: {{$contact.last_datetime|wa_date:"datetime"}}
-                    {{/if}}
-                {{/if}}
-            </div>
-        </div>
-
-        {{if $superadmin}}
-            {{* Groups checklist *}}
-            <div class="field">
-                <div class="name">[`Belongs to groups`]</div>
-                <div class="value">
-                    {{if $groups}}
-                        {{foreach from=$groups key=id item=name name=u_groups}}
-                            <a href="#/contacts/group/{{$id}}">{{if strlen($name) > 0}}{{$name|escape}}{{else}}[`&lt;no name&gt;`]{{/if}}</a>{{if !$smarty.foreach.u_groups.last}},{{/if}}
-                        {{/foreach}}
-                    {{else}}
-                        [`&lt;none&gt;`]
-                    {{/if}}
-                    {{if $all_groups}}
-                        <a href="javascript:void(0)" style="margin-left: 1.2em" class="small inline-link" id="open-customize-groups"><b><i>[`customize groups`]</i></b></a>
-                    {{/if}}
-                </div>
-            </div>
-            {{if $all_groups}}
-                <form id="form-customize-groups" style="display:none;clear:left" method="post" action="?module=groups&action=contactSave&id={{$contact.id}}">
-                    <div class="field">
-                        <div class="value">
-                            <div class="c-checkbox-menu-container"><div>
-                                <ul class="menu-v compact with-icons c-checkbox-menu">
-                                    {{foreach from=$all_groups key=id item=name}}
-                                        <li><label><input type="checkbox" name="groups[]" value="{{$id}}"{{if !empty($groups[$id])}} checked="checked"{{/if}} />{{if strlen($name) > 0}}{{$name|escape}}{{else}}[`&lt;no name&gt;`]{{/if}}</label></li>
-                                    {{/foreach}}
-                                </ul>
-                            </div></div>
+                <div class="right" style="width: 53%;">
+                    
+                    <div class="field c-shown-on-enabled" id="tc-user-status-field" style="{if $contact.is_user === '-1'}display:none;{/if}">
+                        <div class="name" style="width: 100%;">[`Status`]:
+                            {$status = $contact->getStatus()}
+                            {if $status == 'online'}
+                                <span class="bold">
+                                    <i class="icon10 online"></i> <span class="c-user-status-online">[`Online`]</span>
+                                </span>
+                            {else}
+                                <span class="bold">
+                                    <i class="icon10 status-yellow"></i> <span class="c-user-status-offline">
+                                        [`Offline`]
+                                            {if !$contact.last_datetime}
+                                                <span class="small no-bold">([`never logged in`])</span>
+                                            {else}
+                                                <span class="small no-bold">([`last login:`] {$contact.last_datetime|wa_date:"datetime"})</span>
+                                            {/if}
+                                    </span>
+                                </span>
+                            {/if}
                         </div>
+                    </div>
+                    <div id="tc-user-access-disabled" class="c-shown-on-disabled" style="{if $contact.is_user != '-1'}display:none;{/if}">
+                        {if $contact.is_user == '-1'}{$access_disable_msg}{/if}
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+
+        <div class="field c-shown-on-enabled" id="tc-customer-portal-filed"  style="{if $contact.is_user === '-1'}display:none;{/if}">
+            <div class="name">[`Customer portal`]</div>
+            <div class="value">
+                <p>
+                    {if $personal_portal_available}
+                        [`Available`]
+                    {else}
+                        [`Not available`]
+                    {/if}<br>
+                    <span class="hint">
+                        [`Customer Portal is a part of your site available for registered clients and containing their personal data. To access their customer portals your clients must log in with email and password.`]
+                        {if $superadmin}
+                            <a href="{$backend_url}site/#/personal/settings" class="no-underline">[`Personal portal settings`]</a> [`in Site app`]
+                        {/if}
+                    </span>
+                </p>
+            </div>
+        </div>        
+        
+    </div>
+</div>
+
+{if $access_to_contacts}
+    
+<div class="block not-padded c-shown-on-enabled" style="width: 100%; float:left; {if $contact.is_user === '-1'}display:none;{/if}" id="c-available-resourses">
+    <div class="fields">
+        {if $superadmin}
+            <div class="field">
+                <div class="name">[`Backend`]</div>
+                <div class="value">
+                    {if $gFullAccess}
+                        <p>
+                            <strong class="large">[`Administrator`]</strong>
+                            <span style="margin-left:1em">[`This access level is inherited from groups. To change you must customize these group settings or group membership for this user.`]</span>
+                        </p>
+                    {elseif $fullAccess && !empty($own_profile)}
+                        <p>
+                            <strong class="large">[`Administrator`]</strong>
+                            <span style="margin-left:1em">[`You can not revoke administrative access level for yourself. Only another Administrator can do this.`]</span>
+                        </p>
+                    {else}
+                        <select id="c-access-rights-toggle">
+                            <option value="remove"{if !$fullAccess && $noAccess} selected="selected"{/if}>[`No access`]</option>
+                            <option value="0"{if (!$fullAccess && !$noAccess) || (!$fullAccess && $contact['is_user'] == '1')} selected="selected"{/if}>[`Limited access`]</option>
+                            <option value="1"{if $fullAccess} selected="selected"{/if}>[`Administrator`]</option>
+                        </select>
+
+                        {if !$gNoAccess}
+                            <span id="c-access-rights-hint-warning" class="c-access-not-allowed-hint" style="display:none;color:red"><span>[`Can not set &ldquo;No access&rdquo; because some access rights are inherited from groups. To revoke access rights, customize group settings or group membership for this user.`]</span></span>
+                        {/if}
+
+                        <i class="icon16 loading" style="margin-left:16px;display:none;white-space:normal"></i>
+                        <span class="c-access-rights-hint c-access-saved-hint" style="display:none"><i class="icon10 yes"></i> [`Saved`]</span>
+                    {/if}
+                </div>
+            </div>
+
+            <div id="c-credentials-block" style="display:none;">
+                <form id="c-credentials-form" method="post" action="?module=contacts&action=user&id={$contact.id}&a=create_credentials">
+                    <div class="field">
+                        <div class="name">[`Login`]</div>
                         <div class="value">
-                            <input type="submit" class="button green" value="[`Save`]">
-                            [`or`] <a class="inline-link" href="javascript:void(0)" id="cancel-customize-groups"><b><i>[`cancel`]</i></b></a>
-                            <i class="icon16 loading" style="margin-left: 16px; display: none;"></i>
+                            <input type="text" name="login" class="c-login-input" value="{if $contact.login}{$contact.login}{/if}" autocomplete="off" /><br>
+                            <span class="hint">
+                                [`Login name is required to access your account backend.`]<br>
+                                [`Ex.: john, agent07, and etc.`]
+                            </span>
+                        </div>
+                    </div>
+                    <div class="field ">
+                        <div class="name">[`New password`]</div>
+                        <div class="value">
+                            <input name="password" type="password" class="c-password-input" autocomplete="off" />
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="name">[`Confirm password`]</div>
+                        <div class="value">
+                            <input name="confirm_password" type="password" class="c-confirm-password-input" autocomplete="off" /><br>
+                            <span class="hint">[`The same password is used to access personal account and backend.`]</span>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="name"></div>
+                        <div class="value">
+                            <input type="submit" class="button green" value="[`Save`]"> [`or`]
+                            <a class="inline-link cancel" href="javascirt:void(0);"><b><i>[`cancel`]</i></b></a>
                         </div>
                     </div>
                 </form>
-            {{/if}}
-        {{/if}}
-    </div>{{* div.fields with basic user info *}}
-
-    {{*
-      * Access control
-      *}}
-    {{if $superadmin}}
-        <div class="fields" style="min-width:51%">
-            <div class="field" style="min-width:500px">
-                <div class="name">[`Access`]</div>
-                <div class="value c-access-rights" id="c-access-rights-wrapper">
-                    {{if $gFullAccess}}
-                        <strong class="large">[`Administrator`]</strong>
-                        <span style="margin-left:1em">[`This access level is inherited from groups. To change you must customize these group settings or group membership for this user.`]</span>
-                    {{elseif $fullAccess && !empty($own_profile)}}
-                        <strong class="large">[`Administrator`]</strong>
-                        <span style="margin-left:1em">[`You can not revoke administrative access level for yourself. Only another Administrator can do this.`]</span>
-                    {{else}}
-                        <select id="c-access-rights-toggle" style="float:left;margin:0 1.2em 0 3px">
-                            <option value="remove"{{if !$fullAccess && $noAccess}} selected="selected"{{/if}}>[`No access`]</option>
-                            <option value="0"{{if !$fullAccess && !$noAccess}} selected="selected"{{/if}}>[`Limited access`]</option>
-                            <option value="1"{{if $fullAccess}} selected="selected"{{/if}}>[`Administrator`]</option>
-                        </select>
-
-                        {{if !$gNoAccess}}
-                            <span id="c-access-rights-hint-warning" class="c-access-not-allowed-hint" style="display:none;color:red"><span>[`Can not set &ldquo;No access&rdquo; because some access rights are inherited from groups. To revoke access rights, customize group settings or group membership for this user.`]</span></span>
-                        {{else}}
-                            <span id="c-access-rights-hint-customize" class="c-access-not-allowed-hint" style="font-weight:bold;display:none;color:red"><span>[`Set up access rights for each application`]</span></span>
-                        {{/if}}
-                        <i class="icon16 loading" style="margin-left:16px;display:none;white-space:normal"></i>
-                        <span class="c-access-rights-hint c-access-saved-hint" style="display:none"><i class="icon10 yes"></i> [`Saved`]</span>
-
-                        <table id="c-access-rights-by-app"><tbody>
-                            {{foreach from=$apps key=app_id item=app}}
-                                <tr id="c-ar-tr-{{$app_id}}" class="c-ar-app-row">
+            </div>
+                            
+            <div id="c-login-block" style="display:none;">
+                <form id="c-login-form" method="post" action="?module=contacts&action=user&id={$contact.id}&a=create_login">
+                    <div class="field">
+                        <div class="name">[`Login`]</div>
+                        <div class="value">
+                            <div class="c-one-tab">
+                                <span class="c-login">{if $contact.login}{$contact.login}{/if}</span>
+                                <a href="javascript:void(0)" class="small inline-link c-tab-toggle" style=""><b><i>[`change login`]</i></b></a>
+                            </div>
+                            <div class="c-two-tab" style="display:none;">
+                                <input type="text" name="login" class="c-login-input" value="{if $contact.login}{$contact.login}{/if}" autocomplete="off" /><br>
+                                <span class="hint">
+                                    [`Login name is required to access your account backend.`]<br>
+                                    [`Ex.: john, agent07, and etc.`]
+                                </span><br><br>                            
+                                <input type="submit" class="button green" value="[`Save`]"> [`or`]
+                                <a class="inline-link c-tab-toggle" href="javascirt:void(0);"><b><i>[`cancel`]</i></b></a>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+                                
+            <div id="c-password-block" style="display:none;">
+                <form id="c-password-form" method="post" action="?module=contacts&action=user&id={$contact.id}&a=passwd">
+                    <div class="c-one-tab">
+                        <div class="field">
+                            <div class="name">[`Password`]</div>
+                            <div class="value">
+                                <a href="javascript:void(0)" class="small inline-link c-tab-toggle"><b><i>[`change password`]</i></b></a><br>
+                                <span class="hint">[`The same password is used to access personal account and backend.`]</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="c-two-tab" style="display:none;">
+                        <div class="field ">
+                            <div class="name">[`New password`]</div>
+                            <div class="value">
+                                <input name="password" type="password" class="c-password-input" autocomplete="off" />
+                            </div>
+                        </div>
+                        <div class="field">
+                            <div class="name">[`Confirm password`]</div>
+                            <div class="value">
+                                <input name="confirm_password" type="password" class="c-confirm-password-input" autocomplete="off" />
+                            </div>
+                        </div>
+                        <div class="field">
+                            <div class="value">
+                                <input type="submit" class="button green" value="[`Save`]"> [`or`] 
+                                <a class="inline-link c-tab-toggle" href="javascript:void(0)"><b><i>[`cancel`]</i></b></a>
+                                <i class="icon16 loading" style="margin-left: 16px; display: none;"></i>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            
+            <div class="c-shown-on-access">
+                <div class="field">
+                    <div class="name">[`Belongs to groups`]</div>
+                    <div class="value">
+                        {if $groups}
+                            {foreach $groups as $id => $name}
+                                <a href="#/contacts/group/{$id}">{if strlen($name) > 0}{$name|escape}{else}[`&lt;no name&gt;`]{/if}</a>{if !$name@last},{/if}
+                            {/foreach}
+                        {else}
+                            [`&lt;none&gt;`]
+                        {/if}
+                        {if $all_groups}
+                            <a href="javascript:void(0)" style="margin-left: 1.2em" class="small inline-link" id="open-customize-groups"><b><i>[`customize groups`]</i></b></a>
+                        {/if}
+                    </div>
+                </div>
+                {if $all_groups}
+                    <form id="form-customize-groups" style="display:none;clear:left" method="post" action="?module=groups&action=contactSave&id={$contact.id}">
+                        <div class="field">
+                            <div class="value">
+                                <div class="c-checkbox-menu-container"><div>
+                                    <ul class="menu-v compact with-icons c-checkbox-menu">
+                                        {foreach $all_groups as $id => $name}
+                                            <li><label><input type="checkbox" name="groups[]" value="{$id}"{if !empty($groups[$id])} checked="checked"{/if} />{if strlen($name) > 0}{$name|escape}{else}[`&lt;no name&gt;`]{/if}</label></li>
+                                        {/foreach}
+                                    </ul>
+                                </div></div>
+                            </div>
+                            <div class="value">
+                                <input type="hidden" name="set" value="1">
+                                <input type="submit" class="button green" value="[`Save`]">
+                                [`or`] <a class="inline-link" href="javascript:void(0)" id="cancel-customize-groups"><b><i>[`cancel`]</i></b></a>
+                                <i class="icon16 loading" style="margin-left: 16px; display: none;"></i>
+                            </div>
+                        </div>
+                    </form>
+                {/if}
+                <div class="field c-access-rights" id="c-access-rights-by-app">
+                    <div class="name">[`Access rights`]</div>
+                    <div class="value c-access-rights" id="c-access-rights-wrapper">
+                        <p>[`Backend access rights are customized for every app separately and appear to be a combination of personal and group access rights.`]</p>
+                        <table>
+                            <tbody>
+                            {foreach from=$apps key=app_id item=app}
+                                <tr id="c-ar-tr-{$app_id}" class="c-ar-app-row">
                                     <td class="c-app-icon">
-                                        <img src="{{$wa_url}}{{$app.img}}">
+                                        <img src="{$wa_url}{$app.img}">&nbsp;
                                     </td>
                                     <td class="c-app-name">
-                                        <span class="c-access-color-noaccess">{{$app.name|escape}}</span>
+                                        <span class="c-access-color-noaccess">{$app.name|escape}</span>
                                     </td>
                                     <td class="c-app-access" style="min-width:400px;white-space:normal">
-                                        {{if $app.gaccess >= 2}}
+                                        {if $app.gaccess >= 2}
                                             [`Full access is inherited from groups.`]
-                                        {{else}}
-                                            <select name="{{$app_id}}" style="float: left;margin:0 1.2em 12px 0">
-                                                <option value="0"{{if $app.gaccess}} class="not-allowed"{{elseif !$app.customizable}} selected="selected"{{/if}}>[`No access`]</option>
-                                                {{if $app.customizable}}
-                                                    <option value="1"{{if $app.gaccess}} selected="selected"{{/if}}>[`Limited access`]</option>
-                                                {{/if}}
+                                        {else}
+                                            <select name="{$app_id}" style="float: left;margin:0 1.2em 12px 0">
+                                                <option value="0"{if $app.gaccess} class="not-allowed"{elseif !$app.customizable} selected="selected"{/if}>[`No access`]</option>
+                                                {if $app.customizable}
+                                                    <option value="1"{if $app.gaccess} selected="selected"{/if}>[`Limited access`]</option>
+                                                {/if}
                                                 <option value="2">[`Full access`]</option>
                                             </select>
 
-                                            {{* 'Customize' link *}}
-                                            {{if $app.customizable}}
+                                            {* 'Customize' link *}
+                                            {if $app.customizable}
                                                 <a href="javascript:void(0)" class="small customize-link" style="display: none">[`Customize`]</a>
-                                            {{/if}}
+                                            {/if}
 
-                                            {{* (i) icon with tooltip *}}
-                                            {{if $app_id == 'contacts'}}
+                                            {* (i) icon with tooltip *}
+                                            {if $app_id == 'contacts'}
                                                 <i class="icon16 info c-ar-tooltip"></i>
                                                 <div style="display:none" class="c-ar-tooltip-html"><i></i>
                                                     <strong>[`NOTE:`]</strong> [`Limited and Full access levels in Contacts application DO NOT allow managing user accounts and categories. These access rights are granted to Administrator only.`]
                                                 </div>
-                                            {{/if}}
+                                            {/if}
 
-                                            {{* Loading icon and 'Saved' message *}}
+                                            {* Loading icon and 'Saved' message *}
                                             <i class="icon16 loading" style="margin-left: 16px; display: none;"></i>
                                             <span class="c-access-saved-hint" style="display: none"><i class="icon10 yes"></i> [`Saved`]</span>
 
-                                            {{* Message to show when user tries to revoke access given by group. *}}
-                                            {{if $app.gaccess > 0}}
+                                            {* Message to show when user tries to revoke access given by group. *}
+                                            {if $app.gaccess > 0}
                                                 <span class="c-access-not-allowed-hint" style="display:none;color:red"><span>[`Can not set &ldquo;No access&rdquo; because some access rights are inherited from groups. To revoke access rights, customize group settings or group membership for this user.`]</span></span>
-                                            {{/if}}
-                                        {{/if}}
+                                            {/if}
+                                        {/if}
                                     </td>
                                 </tr>
-                            {{/foreach}}
-                        </tbody></table>
-                    {{/if}}
-                </div>{{* div.value *}}
-            </div>{{* div.field *}}
-        </div>{{* div.fields with access control *}}
-    {{/if}}
-{{/if}}
+                            {/foreach}
+                        </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        {/if}
+    </div>
+</div>
+    
+{/if}
+    
 <div class="clear-left"></div>
 
-<script type="text/javascript" src="{{$wa_url}}wa-content/js/jquery-plugins/jquery-tooltip/jquery.tooltip.patched.min.js"></script>
+<script type="text/javascript" src="{$wa_url}wa-content/js/jquery-plugins/jquery-tooltip/jquery.tooltip.patched.min.js"></script>
+
+{if empty($readonly) && !$wa->request('readonly')}
+
 <script type="text/javascript">
-{{if !$contact.is_user}}
-    // Create new user form submit
-    $("#form-user-account").submit(function () {
-        var form = $(this);
-        form.find('input.error').removeClass('error');
+
+{if !$fullAccess && $noAccess}
+    $('.c-shown-on-access').hide();
+{else}
+    $('.c-shown-on-access').show();
+{/if}
+
+{if $all_groups}
+    // Groups checklist
+    $.wa.contactEditor.initCheckboxList('#form-customize-groups .c-checkbox-menu');
+    $('#open-customize-groups').click(function() {
+        $('#form-customize-groups').toggle();
+    });
+    $('#cancel-customize-groups').click(function() {
+        var form = $('#form-customize-groups').hide();
+        form.find('.loading').hide();
         form.find('.errormsg').remove();
-        if (!$.trim(this.login.value)) {
-            $(this.login).addClass('error').after('<em class="errormsg">'+"[`Login is required.`]"+'</em>');
-            return false;
-        }
-
-        if (this.password.value != this.confirm_password.value) {
-            form.find('input[type="password"]').addClass('error');
-            $(this.confirm_password).after().after('<em class="errormsg">'+"[`Passwords do not match.`]"+'</em>');
-            return false;
-        }
-
-        $.post(form.attr('action'), form.serialize(), function (response) {
+        return false;
+    });
+    $('#form-customize-groups').submit(function() {
+        var form = $(this);
+        form.find('.errormsg').remove();
+        form.find('.loading').show();
+        $.post(form.attr('action'), form.serialize(), function(response) {
             if (response.status == 'ok') {
-                $.wa.controller.contactAction([{{$contact.id}}, 'user']);
-                $.wa.controller.reloadSidebar();
+                $.wa.controller.contactAction([{$contact.id}, 'user']);
             } else if (response.status == 'fail') {
-                form.find('input[type="submit"]').parent().prepend($('<em class="errormsg" style="margin-bottom:10px">'+response.errors.join('<br>')+'</em>'));
+                form.find('.c-checkbox-menu-container').after($('<em class="errormsg">'+response.errors.join('<br />')+'</em>'));
             }
         }, 'json');
         return false;
     });
+{/if}
 
-    // 'Create user account' actions menu item
-    $(function () {
-        $("#create-user-account").click(function () {
-            $.wa.controller.switchToTab('#t-user');
-            {{if $versionFull}}
-                $(this).parent().hide();
-            {{/if}}
-            return false;
-        });
-        $("#close-user-account").click(function () {
-            $.wa.controller.switchToTab('#t-contact');
-            {{if $versionFull}}
-                $("#create-user-account").parent().show();
-
-                // sliding tab animation
-                $('#t-user').hide('slideDIB', {direction: 'down'}, 300, function() {
-                    $(this).addClass('hidden')
-                });
-            {{/if}}
-            return false;
-        });
-    });
-{{else}}{{* Contact is already a user *}}
-
-    {{if $all_groups}}
-        // Groups checklist
-        $.wa.controller.initCheckboxList('#form-customize-groups .c-checkbox-menu');
-        $('#open-customize-groups').click(function() {
-            $('#form-customize-groups').toggle();
-        });
-        $('#cancel-customize-groups').click(function() {
-            var form = $('#form-customize-groups').hide();
-            form.find('.loading').hide();
-            form.find('.errormsg').remove();
-            return false;
-        });
-        $('#form-customize-groups').submit(function() {
-            var form = $(this);
-            form.find('.errormsg').remove();
-            form.find('.loading').show();
-            $.post(form.attr('action'), form.serialize(), function(response) {
-                if (response.status == 'ok') {
-                    $.wa.controller.contactAction([{{$contact.id}}, 'user']);
-                } else if (response.status == 'fail') {
-                    form.find('.c-checkbox-menu-container').after($('<em class="errormsg">'+response.errors.join('<br />')+'</em>'));
-                }
-            }, 'json');
-            return false;
-        });
-    {{/if}}
-
-    // Delete user dialog
-    $('#delete-user').click(function() {
-        $.wa.dialogCreate('user-delete-dialog', {
-            small: true,
-            content: "<h2>[`Are you sure?`]</h2><p>[`Contact will not be deleted, but the user won't be able to log in anymore.`]</p>",
-            buttons: $('<div></div>').append(
-                    $('<input type="submit" class="button red" value="'+"[`Delete user account`]"+'">').click(function() {
-                        $.post('?module=contacts&action=user&id={{$contact.id}}&a=delete', {nojoke: '1'}, function() {
-                            // reload the tab
-                            $.wa.controller.contactAction([{{$contact.id}}]);
-                            $.wa.controller.reloadSidebar();
-                            $.wa.dialogHide();
-                        });
-                    })
-                ).append(" [`or`] ").append(
-                    $('<a href="#" class="inline-link" id="close-dialog-delete"><b><i>'+"[`cancel`]"+'</i></b></a>')
-                        .click($.wa.dialogHide)
-                )
-        });
-    });
-
-    // Change password form
-    $('#cancel-passwd-change').click(function() {
-        var form = $('#form-edit-user-password').hide();
-        form.find('input[type="password"]').removeClass('error').val('');
-        form.find('.errormsg').remove();
-        form.find('.loading').hide();
-        return false;
-    });
-    $('#show-passwd-form').click(function() {
-            $('#form-edit-user-password').toggle().find('input:visible:first').focus();
-    });
-    $('#form-edit-user-password').submit(function() {
+    var login = {if $contact.login}'{$contact.login}'{else}null{/if};
+    var password = {if $contact.password}true{else}false{/if};
+    
+    // create credentials form
+    $("#c-credentials-form").submit(function () {
         var form = $(this);
         form.find('input.error').removeClass('error');
         form.find('.errormsg').remove();
-        var pass = $('#newpass').val();
+        var login_input = form.find('.c-login-input');
+        if (!$.trim(login_input.val())) {
+            login_input.addClass('error').after('<em class="errormsg">'+"[`Login is required.`]"+'</em>');
+            return false;
+        }
+
+        $.post(form.attr('action'), form.serialize(), function (r) {
+            if (r.status === 'ok') {
+                $.wa.controller.reloadSidebar();
+                login = r.data.login.trim();
+                form.hide();
+                $('#c-login-block').show()
+                    .find('.c-login-input').val(login).end()
+                    .find('.c-login').text(login);
+                $('#c-access-rights-toggle').change();
+            } else if (r.status === 'fail') {
+                form.find('input[type="submit"]').parent().prepend($('<em class="errormsg" style="margin-bottom:10px">'+r.errors.join('<br>')+'</em>'));
+            }
+        }, 'json');
+        return false;
+    }).find('.cancel').click(function() {
+        $('#c-credentials-block').hide();
+        return false;
+    });
+    
+    // change login form
+    $("#c-login-form").submit(function () {
+        var form = $(this);
+        form.find('input.error').removeClass('error');
+        form.find('.errormsg').remove();
+        var login_input = form.find('.c-login-input');
+        var login_value = $.trim(login_input.val());
+        if (login === login_value) {
+            return false;
+        }
+        if (!login_value) {
+            login_input.addClass('error').after('<em class="errormsg">'+"[`Login is required.`]"+'</em>');
+            return false;
+        }
+        
+        $.post(form.attr('action'), form.serialize(), function (r) {
+            if (r.status === 'ok') {
+                $.wa.controller.reloadSidebar();
+                var new_login = r.data.login.trim()
+                $('#c-login-block').show()
+                    .find('.c-login-input').val(new_login).end()
+                    .find('.c-login').text(new_login).end()
+                    .find('.c-one-tab').show().end()
+                    .find('.c-two-tab').hide();
+                if (!login) {
+                    login = new_login;
+                    $('#c-access-rights-toggle').change();
+                }
+                login = new_login;
+            } else if (r.status === 'fail') {
+                form.find('input[type="submit"]').parent().prepend($('<em class="errormsg" style="margin-bottom:10px">'+r.errors.join('<br>')+'</em>'));
+            }
+        }, 'json');
+        return false;
+    }).find('.c-tab-toggle').click(function() {
+        $("#c-login-form")
+            .find('.c-one-tab').toggle().end()
+            .find('.c-two-tab').toggle().end();
+        var tab = $("#c-login-form").find('.c-two-tab');
+        if (tab.is(':visible')) {
+            tab.find('.c-login-input').focus();
+        }
+        return false;
+    });
+
+    // Change password form
+    $('#c-password-form').submit(function() {
+        var form = $(this);
+        form.find('input.error').removeClass('error');
+        form.find('.errormsg').remove();
+        var password_input = form.find('.c-password-input');
+        var confirm_password_input = form.find('.c-confirm-password-input');
+        var pass = password_input.val();
 
         // do passwords match?
-        if (pass !== $('#newpass-comfirm').val()) {
-            form.find('input[type="password"]').addClass('error');
-            $(this.confirm_password).after().after('<em class="errormsg">'+"[`Passwords do not match.`]"+'</em>');
+        if (pass !== confirm_password_input.val()) {
+            password_input.addClass('error');
+            confirm_password_input.after().after('<em class="errormsg">'+"[`Passwords do not match.`]"+'</em>');
             return false;
         }
 
         form.find('.loading').show();
         $.post($.wa.contactEditor.passwdSaveUrl || form.attr('action'), form.serialize(), function(response) {
-            if (response.status == 'ok') {
-                form.hide();
-                form.find('input[type="password"]').removeClass('error').val('');
+            if (response.status === 'ok') {
                 form.find('.errormsg').remove();
                 form.find('.loading').hide();
-            } else if (response.status == 'fail') {
-                $(form[0].confirm_password).after('<em class="errormsg">'+response.errors.join('<br />')+'</em>');
+                password = true;
+                $('#c-password-block').show()
+                    .find('.c-password-input').val('').end()
+                    .find('.c-confirm-password-input').val('').end()
+                    .find('.c-one-tab').show().end()
+                    .find('.c-two-tab').hide();
+            } else if (response.status === 'fail') {
+                 confirm_password_input.after('<em class="errormsg">'+response.errors.join('<br />')+'</em>');
             }
         }, 'json');
         return false;
+    }).find('.c-tab-toggle').click(function() {
+        $("#c-password-form")
+            .find('.c-one-tab').toggle().end()
+            .find('.c-two-tab').toggle().end();
+        var tab = $("#c-login-form").find('.c-two-tab');
+        if (tab.is(':visible')) {
+            tab.find('.c-password-input').focus();
+        }
+        return false;
     });
 
-    //
-    // Access control logic
-    //
-    $(function() {
-        // apps data, including personal and group rights
-        var apps = {{json_encode($apps)}};
+//
+// Access control logic
+//
+$(function() {
 
-        // true if user groups don't have any rights set up
-        var gNoAccess = {{$gNoAccess}};
+    var arToggle = $('#c-access-rights-toggle');
+    
+    {if empty($own_profile)}
+        var accessCheckbox = $('#c-access');
 
-        // Dialog to customize app access
-        var openCustomizeDialog = function(cancelCallback) {
-            if (typeof cancelCallback !== 'function') {
-                cancelCallback = null;
-            }
-            var tr = $(this).parents('.c-ar-app-row');
-            var app = apps[tr.find('select').attr('name')];
-
-            $.wa.dialogCreate('c-ar-dialog', {
-                url: '?module=rights&app='+app.id+'&id='+$.wa.contactEditor.contact_id,
-                small: false,
-                onload: function() {
-                    var dialog = $(this);
-
-                    // Change buttons
-                    dialog.find('.dialog-buttons-gradient').empty()
-                        .append(
-                            $('<input type="submit" class="button green" value="[`Save`]">').click(function() {
-                                $(this).attr('disabled', true);
-                                dialog.find('.loading').show();
-                                var form = dialog.find('form');
-                                $.post(form.attr('action'), form.serialize(), $.wa.dialogHide, 'json');
-                            })
-                        )
-                        .append(' '+$_('or')+' ')
-                        .append(
-                            $('<a href="javascript:void(0)" class="inline-link"><b><i>[`cancel`]</i></b></a>').click(function() {
-                                $.wa.dialogHide();
-                                if (cancelCallback) {
-                                    cancelCallback();
-                                }
-                            })
-                        )
-                        .append('<i class="icon16 loading" style="margin-left:16px;display:none;"></i>');
-                },
-                oncancel: cancelCallback
+        $('#c-info-tabs').bind('after_switch_tab', function() {
+            $('#c-access').iButton({
+                labelOn : "",
+                labelOff : "",
+                classContainer: 'ibutton-container mini'
+            }).change(function () {
+                var status = $(this).closest("div.c-ibutton-checkbox").find('span.status').removeClass('off');
+                var fields = $('#tc-user').find('.fields:first');
+                if (this.checked) {
+                    status.eq("0").addClass('off');
+                    var icon = $('#t-user').find('i.c-access-icon').removeClass('key key-bw delete');
+                    if ($('#c-access-rights-toggle').val() === 'remove') {
+                        icon.addClass('key-bw');
+                    } else {
+                        icon.addClass('key');
+                    }
+                    $('.available-resources').show();
+                    arToggle.val("remove");
+                    arToggleOnchange();
+                    fields.removeClass('gray');
+                    $('.c-shown-on-enabled').show();
+                    $('.c-shown-on-disabled').hide();
+                } else {
+                    status.eq("1").addClass('off');
+                    $('#t-user').find('i.c-access-icon').removeClass('key key-bw delete').addClass('delete');
+                    $('.available-resources').hide();
+                    arToggle.val("remove");
+                    arToggleOnchange();
+                    fields.addClass('gray');
+                    $('.c-shown-on-enabled').hide();
+                    $('.c-shown-on-disabled').show();
+                }
             });
-            return false;
-        };
-        $('#c-access-rights-wrapper .customize-link').click(openCustomizeDialog);
+            $('#c-access').blur();
+        });
+    {/if}
 
-        // Helper to show given element and fade slowly (default duration is 2 seconds)
-        var blinkHint = function(el, duration) {
-            $(el).stop().css('opacity', 1).show().animate({
-                opacity: 0
-            }, duration || 2000, function() {
-                $(this).hide();
-            });
-        };
-
-        // Helper to setup UI colors and everything for one app and save it via AJAX
-        var updateApp = function(app, nosave) {
-            if(!app) {
-                return;
+    $($.wa.contactEditor).bind('set_mode', function(e, params) {
+        if (params.field_id === 'email') {
+            var emails = params.field.getValue();
+            var email = '';
+            if (!$.isEmptyObject(emails) && $.isArray(emails)) {
+                email = emails[0].value;
+                var f = $('#tc-user-login-filed');
+                if (email) {
+                    f.find('.email-value').html('<strong class="large">' + email + '</strong>');
+                } else {
+                    f.find('.email-value').html('<strong style="color:red">' + $_('Email address is not specified') + '</strong>');
+                }
             }
-            var tr = $('#c-ar-tr-'+app.id);
+        }
+    });
+    
+    // apps data, including personal and group rights
+    var apps = {json_encode($apps)};
 
-            // group access cannot be greater than personal access
-            if (app.gaccess > app.access) {
-                app.access = app.gaccess;
-                tr.find('select').val(app.access);
+    // true if user groups don't have any rights set up
+    var gNoAccess = {$gNoAccess};
+
+    // Dialog to customize app access
+    var openCustomizeDialog = function(cancelCallback) {
+        if (typeof cancelCallback !== 'function') {
+            cancelCallback = null;
+        }
+        var tr = $(this).parents('.c-ar-app-row');
+        var app = apps[tr.find('select').attr('name')];
+
+        $.wa.dialogCreate('c-ar-dialog', {
+            url: '?module=rights&app='+app.id+'&id='+$.wa.contactEditor.contact_id,
+            small: false,
+            onload: function() {
+                var dialog = $(this);
+
+                // Change buttons
+                dialog.find('.dialog-buttons-gradient').empty()
+                    .append(
+                        $('<input type="submit" class="button green" value="[`Save`]">').click(function() {
+                            $(this).attr('disabled', true);
+                            dialog.find('.loading').show();
+                            var form = dialog.find('form');
+                            $.post(form.attr('action'), form.serialize(), $.wa.dialogHide, 'json');
+                        })
+                    )
+                    .append(' '+$_('or')+' ')
+                    .append(
+                        $('<a href="javascript:void(0)" class="inline-link"><b><i>[`cancel`]</i></b></a>').click(function() {
+                            $.wa.dialogHide();
+                            if (cancelCallback) {
+                                cancelCallback();
+                            }
+                        })
+                    )
+                    .append('<i class="icon16 loading" style="margin-left:16px;display:none;"></i>');
+            },
+            oncancel: cancelCallback
+        });
+        return false;
+    };
+    $('#c-access-rights-by-app .customize-link').click(openCustomizeDialog);
+
+    // Helper to show given element and fade slowly (default duration is 2 seconds)
+    var blinkHint = function(el, duration) {
+        $(el).stop().css('opacity', 1).show().animate({
+            opacity: 0
+        }, duration || 2000, function() {
+            $(this).hide();
+        });
+    };
+
+    // Helper to setup UI colors and everything for one app and save it via AJAX
+    var updateApp = function(app, nosave) {
+        if(!app) {
+            return;
+        }
+        var tr = $('#c-ar-tr-'+app.id);
+
+        // group access cannot be greater than personal access
+        if (app.gaccess > app.access) {
+            app.access = app.gaccess;
+            tr.find('select').val(app.access);
+        }
+
+        if (!app.access) {
+            // no access
+            tr.find('.c-app-name span').attr('class', 'c-access-color-noaccess');
+            tr.find('select').val(0);
+            tr.find('.customize-link').hide();
+            tr.find('.c-ar-tooltip').hide();
+        } else if(app.access == 1) {
+            // limited access
+            tr.find('.c-app-name span').attr('class', 'c-access-color-limited');
+            tr.find('select').val(1);
+            // when saving, they're shown later, when customize dialog is open
+            if (nosave) {
+                tr.find('.customize-link').show();
+                tr.find('.c-ar-tooltip').show();
             }
+        } else { // app.access > 1
+            // Full access
+            tr.find('.c-app-name span').attr('class', 'c-access-color-full');
+            tr.find('select').val(2);
+            tr.find('.customize-link').hide();
+            tr.find('.c-ar-tooltip').show();
+        }
 
-            if (!app.access) {
-                // no access
-                tr.find('.c-app-name span').attr('class', 'c-access-color-noaccess');
-                tr.find('select').val(0);
-                tr.find('.customize-link').hide();
-                tr.find('.c-ar-tooltip').hide();
-            } else if(app.access == 1) {
-                // limited access
-                tr.find('.c-app-name span').attr('class', 'c-access-color-limited');
-                tr.find('select').val(1);
-                // when saving, they're shown later, when customize dialog is open
-                if (nosave) {
+        if (!nosave) {
+            tr.find('.loading').show();
+            $('#c-access-rights-wrapper select').attr('disabled', true);
+            $.post('?module=rights&action=save&id='+$.wa.contactEditor.contact_id, {
+                app_id: app.id,
+                name: 'backend',
+                value: app.access
+            }, function() {
+                $('#c-access-rights-wrapper select').attr('disabled', false);
+                tr.find('.loading').hide();
+                if (nosave !== 'sneaky') {
+                    blinkHint(tr.find('.c-access-saved-hint'));
+                }
+
+                // if access rights are set to 'limited', open a customize dialog
+                if(app.access == 1) {
+                    openCustomizeDialog.call(tr.find('.customize-link'), function() {
+                        app.access = app.oldAccess;
+                        updateApp(app, 'sneaky');
+                    });
                     tr.find('.customize-link').show();
                     tr.find('.c-ar-tooltip').show();
                 }
-            } else { // app.access > 1
-                // Full access
-                tr.find('.c-app-name span').attr('class', 'c-access-color-full');
-                tr.find('select').val(2);
-                tr.find('.customize-link').hide();
-                tr.find('.c-ar-tooltip').show();
-            }
+            }, 'json');
+        }
+    };
 
-            if (!nosave) {
-                tr.find('.loading').show();
-                $('#c-access-rights-wrapper select').attr('disabled', true);
-                $.post('?module=rights&action=save&id='+$.wa.contactEditor.contact_id, {
-                    app_id: app.id,
-                    name: 'backend',
-                    value: app.access
-                }, function() {
-                    $('#c-access-rights-wrapper select').attr('disabled', false);
-                    tr.find('.loading').hide();
-                    if (nosave !== 'sneaky') {
-                        blinkHint(tr.find('.c-access-saved-hint'));
-                    }
-
-                    // if access rights are set to 'limited', open a customize dialog
-                    if(app.access == 1) {
-                        openCustomizeDialog.call(tr.find('.customize-link'), function() {
-                            app.access = app.oldAccess;
-                            updateApp(app, 'sneaky');
-                        });
-                        tr.find('.customize-link').show();
-                        tr.find('.c-ar-tooltip').show();
-                    }
-                }, 'json');
-            }
-        };
-
-        // Global admin status control logic
-        var arToggle = $('#c-access-rights-toggle');
-        var lastToggleValue = arToggle.val();
-        var arToggleOnchange = function(nosave){
-            $('#c-access-rights-hint-warning').hide();
-            $('#c-access-rights-hint-customize').hide();
-            var fullAccess;
-            var newToggleValue = arToggle.val();
-            switch(newToggleValue) {
-                case 'remove':
-                    if (gNoAccess) {
+    // Global admin status control logic
+    var lastToggleValue = arToggle.val();
+    var arToggleOnchange = function(nosave){
+        $('#c-access-rights-hint-warning').hide();
+        $('#c-access-rights-hint-customize').hide();
+        var fullAccess;
+        var isUser = 0;
+        var newToggleValue = arToggle.val();
+        var icon = $('#t-user').find('i.c-access-icon').removeClass('key key-bw delete');
+        switch(newToggleValue) {
+            case 'remove':
+                icon.addClass('key-bw');
+                if (gNoAccess) {
+                    fullAccess = 0;
+                    $('#c-access-rights-by-app').hide();
+                    $('.c-shown-on-access').hide();
+                    break;
+                }
+                arToggle.val(lastToggleValue || '0');
+                $('#c-access-rights-hint-warning').show();
+                isUser = 0;
+                return;
+            case '0':
+                icon.addClass('key');
+                if (!login && !password) {
+                    $('#c-credentials-block').show().find('.c-login-input').focus();
+                    return;
+                } else {
+                    if (login) {
                         fullAccess = 0;
-                        $('#c-access-rights-by-app').hide();
+                        $('#c-access-rights-by-app').show();
+                        $('.c-shown-on-access').show();
+                        isUser = 1;
+                        $('#c-login-block').show();
+                        $('#c-password-block').show();
+                        break;
+                    } else {
+                        $('#c-login-block').show().find('.c-tab-toggle:first').click();
+                        $('#c-password-block').show();
                         break;
                     }
-
-                    arToggle.val(lastToggleValue || '0');
-                    $('#c-access-rights-hint-warning').show();
-                    return;
-                case '0':
-                    fullAccess = 0;
-                    $('#c-access-rights-by-app').show();
-                    break;
-                case '1':
-                    fullAccess = 1;
-                    $('#c-access-rights-by-app').hide();
-                    break;
-            }
-
-            // Reset personal app rights to match group rights
-            for(var id in apps) {
-                if (newToggleValue != lastToggleValue) {
-                    apps[id].access = apps[id].gaccess;
                 }
-                updateApp(apps[id], true);
-            }
-
-            lastToggleValue = newToggleValue;
-
-            if (!nosave) {
-                var wr = $('#c-access-rights-wrapper');
-                wr.children('.loading').show();
-                $('#c-access-rights-wrapper select').attr('disabled', true);
-
-                $.post('?module=rights&action=save&id='+$.wa.contactEditor.contact_id, {
-                    app_id: 'webasyst',
-                    name: 'backend',
-                    value: fullAccess ? 1 : 0
-                }, function() {
-                    $('#c-access-rights-wrapper select').attr('disabled', false);
-                    wr.children('.loading').hide();
-                    if (gNoAccess && newToggleValue == '0') {
-                        $('#c-access-rights-hint-customize').show();
+            case '1':
+                icon.addClass('key');
+                if (!login && !password) {
+                    $('#c-credentials-block').show().find('.c-login-input').focus();
+                } else {
+                    if (login) {
+                        fullAccess = 1;
+                        $('#c-access-rights-by-app').hide();
+                        $('.c-shown-on-access').show();
+                        isUser = 1;
+                        $('#c-login-block').show();
+                        $('#c-password-block').show();
+                        break;
                     } else {
-                        $('#c-access-rights-hint-warning').hide();
-                        blinkHint(wr.children('.c-access-rights-hint.c-access-saved-hint'));
+                        $('#c-login-block').show().find('.c-tab-toggle:first').click();
+                        $('#c-password-block').show();
+                        break;
                     }
-                });
+                }
+            default:
+                icon.addClass('key');
+                break;
+        }
+        
+        {if empty($own_profile)}
+            if (!accessCheckbox.is(':checked')) {
+                fullAccess = 0;
+                isUser = -1;
+                icon.removeClass('key key-bw delete').addClass('delete');
             }
-        };
-        arToggleOnchange(true);
-        arToggle.change(function() {
-            arToggleOnchange();
-        });
+        {/if}
 
-        // On select change update app access
-        $('#c-access-rights-wrapper td select').change(function() {
-            var self = $(this);
-            var app = apps[self.attr('name')];
-            var newAccess = parseInt(self.val());
-
-            // personal access cannot be less than group access
-            if (app.gaccess > newAccess) {
-                self.val(app.access);
-                self.parents('tr').find('.loading,.c-access-saved-hint').hide();
-                self.parents('tr').find('.c-access-not-allowed-hint').show();
-                return;
+        // Reset personal app rights to match group rights
+        for(var id in apps) {
+            if (newToggleValue != lastToggleValue) {
+                apps[id].access = apps[id].gaccess;
             }
-            self.parents('tr').find('.c-access-not-allowed-hint').hide();
-            app.oldAccess = app.access;
-            app.access = newAccess;
-            updateApp(app);
-        });
+            updateApp(apps[id], true);
+        }
 
-        // Tooltips on info icons
-        $('#c-access-rights-wrapper .c-ar-tooltip').tooltip({
-            bodyHandler: function() {
-                return $(this).parent().find('.c-ar-tooltip-html').html();
-            },
-            extraClass: "tooltip",
-            noHideOnClick: true,
-            showURL: false
-        });
+        lastToggleValue = newToggleValue;
+
+        if (!nosave) {
+            var wr = $('#c-access-rights-wrapper');
+            wr.children('.loading').show();
+            $('#c-access-rights-wrapper select').attr('disabled', true);
+
+            $.post('?module=rights&action=save&id='+$.wa.contactEditor.contact_id, {
+                app_id: 'webasyst',
+                name: 'backend',
+                value: fullAccess ? 1 : 0,
+                is_user: isUser
+            }, function(r) {
+                $('#c-access-rights-wrapper select').attr('disabled', false);
+                wr.children('.loading').hide();
+                if (gNoAccess && newToggleValue == '0') {
+                    $('#c-access-rights-hint-customize').show();
+                } else {
+                    $('#c-access-rights-hint-warning').hide();
+                    blinkHint(wr.children('.c-access-rights-hint.c-access-saved-hint'));
+                }
+                if (isUser == '-1') {
+                    $('#tc-user-access-disabled').show();
+                    $('#tc-user-access-disabled').find('span').html(r.data.access_disable_msg);
+                }
+            }, 'json');
+        }
+    };
+    arToggleOnchange(true);
+    arToggle.change(function() {    
+        arToggleOnchange();
     });
-{{/if}}
+
+    // On select change update app access
+    $('#c-access-rights-by-app select').change(function() {
+        var self = $(this);
+        var app = apps[self.attr('name')];
+        var newAccess = parseInt(self.val());
+
+        // personal access cannot be less than group access
+        if (app.gaccess > newAccess) {
+            self.val(app.access);
+            self.parents('tr').find('.loading,.c-access-saved-hint').hide();
+            self.parents('tr').find('.c-access-not-allowed-hint').show();
+            return;
+        }
+        self.parents('tr').find('.c-access-not-allowed-hint').hide();
+        app.oldAccess = app.access;
+        app.access = newAccess;
+        updateApp(app);
+    });
+
+    // Tooltips on info icons
+    $('#c-access-rights-wrapper .c-ar-tooltip').tooltip({
+        bodyHandler: function() {
+            return $(this).parent().find('.c-ar-tooltip-html').html();
+        },
+        extraClass: "tooltip",
+        noHideOnClick: true,
+        showURL: false
+    });
+
+});
 </script>
+
+{/if}

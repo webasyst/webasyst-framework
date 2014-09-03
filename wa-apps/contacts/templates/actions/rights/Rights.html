@@ -1,31 +1,31 @@
 <div class="c-dialog-limited-app">
 	<div class="profile image50px">
-		<div class="image"><img src="{{$wa_url}}{{$app.img}}" alt="" /></div>
+		<div class="image"><img src="{$wa_url}{$app.img}" alt="" /></div>
 		<div class="details">
-			<h3>{{$app.name}}</h3>
+			<h3>{$app.name}</h3>
 		</div>
 	</div>
 </div>
 <div class="c-dialog-limited-user">
-	<div class="c-access-grant-arrow"><img src="{{$wa_app_static_url}}img/arrow-right32.png" /></div>
+	<div class="c-access-grant-arrow"><img src="{$wa_app_static_url}img/arrow-right32.png" /></div>
 	<div class="profile image50px">
-		{{if !empty($user)}}
-			<div class="image"><img src="{{$user->getPhoto(50)}}" width="50" height="50" alt="" /></div>
-		{{/if}}
-		<div class="details {{if empty($user)}}c-header-thumb-no{{/if}}">
-			{{if !empty($user)}}
-				<h3>{{$user.name|escape}}</h3>
-			{{else}}
-				<h3 class="c-group-name">{{if $group.name}}{{$group.name|escape}}{{else}}[`&lt;no name&gt;`]{{/if}}</h3>
-			{{/if}}
+		{if !empty($user)}
+			<div class="image"><img src="{$user->getPhoto(50)}" width="50" height="50" alt="" /></div>
+		{/if}
+		<div class="details {if empty($user)}c-header-thumb-no{/if}">
+			{if !empty($user)}
+				<h3>{$user.name|escape}</h3>
+			{else}
+				<h3 class="c-group-name">{if $group.name}{$group.name|escape}{else}[`&lt;no name&gt;`]{/if}</h3>
+			{/if}
 		</div>
 	</div>
 </div>
 <div class="clear"></div>
-<form action="?module=rights&action=save&id={{if !empty($user)}}{{$user.id}}{{else}}-{{$group.id}}{{/if}}">
+<form action="?module=rights&action=save&id={if !empty($user)}{$user.id}{else}-{$group.id}{/if}">
 	<div class="c-access-app-limited">
-		<input type="hidden" name="app_id" value="{{$app.id}}">
-		{{$html}}
+		<input type="hidden" name="app_id" value="{$app.id}">
+		{$html}
 	</div>
 </form>
 

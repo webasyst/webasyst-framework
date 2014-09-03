@@ -1,50 +1,50 @@
-{{if !$categories}}
-	<h2>[`No categories available`]</h2>
-{{else}}
-	<h2>[`Add contacts to categories`]</h2>
-	<div style="margin:2em 0 0 0">
-		<ul class="menu-v compact with-icons c-checkbox-menu">
-			{{foreach from=$categories key=id item=name}}
-				<li><label><input type="checkbox"{{if !empty($disabled[$id])}} checked="checked" disabled="disabled" value=""{{else}} value="{{$id}}"{{/if}} />{{$name|escape}}</label></li>
-			{{/foreach}}
-		</ul>
-	</div>
-	<script type="text/javascript">
-		$(function() {
-			// init checklist
-			$.wa.controller.initCheckboxList('#add-to-category-dialog .c-checkbox-menu');
+{if !$categories}
+    <h2>[`No categories available`]</h2>
+{else}
+    <h2>[`Add contacts to categories`]</h2>
+    <div style="margin:2em 0 0 0">
+    <ul class="menu-v compact with-icons c-checkbox-menu">
+            {foreach $categories as $id => $category}
+                <li><label><input type="checkbox"{if !empty($disabled[$id])} checked="checked" disabled="disabled" value=""{else} value="{$id}"{/if} />{$category.name|escape}</label></li>
+            {/foreach}
+        </ul>
+    </div>
+    <script type="text/javascript">
+        $(function() {
+            // init checklist
+            $.wa.contactEditor.initCheckboxList('#add-to-category-dialog .c-checkbox-menu');
 
-			// disable submit when there's no categories selected
-			$('#add-to-category-dialog .c-checkbox-menu li input:checkbox').change(function() {
-					if ($('#add-to-category-dialog .c-checkbox-menu li input:checkbox:checked:not(:disabled)').size() > 0) {
-						$('#add-to-category-dialog .dialog-buttons-gradient input.button').attr('disabled', false);
-					} else {
-						$('#add-to-category-dialog .dialog-buttons-gradient input.button').attr('disabled', true);
-					}
-			});
+            // disable submit when there's no categories selected
+            $('#add-to-category-dialog .c-checkbox-menu li input:checkbox').change(function() {
+                    if ($('#add-to-category-dialog .c-checkbox-menu li input:checkbox:checked:not(:disabled)').size() > 0) {
+                        $('#add-to-category-dialog .dialog-buttons-gradient input.button').attr('disabled', false);
+                    } else {
+                        $('#add-to-category-dialog .dialog-buttons-gradient input.button').attr('disabled', true);
+                    }
+            });
 
-			// dialog buttons
-			$('#add-to-category-dialog .dialog-buttons-gradient').empty().append(
-				$('<div></div>')
-					.append(
-						$('<input type="submit" class="button green" value="'+"[`Add`]"+'" disabled="disabled">').click(function() {
-							var ids = [];
-							$('#add-to-category-dialog input[type="checkbox"]:checked').each(function(i, cb) {
-								var v = $(cb).val();
-								if (v) {
-									ids.push(v);
-								}
-							});
-							$.wa.controller.addToCategory(ids);
-							$.wa.dialogHide();
-						})
-					)
-					.append(' [`or`] ')
-					.append($('<a href="javascript:void(0)">'+"[`cancel`]"+'</a>').click(function() {
-						$.wa.dialogHide();
-					}))
-			);
-		});
-	</script>
-{{/if}}
+            // dialog buttons
+            $('#add-to-category-dialog .dialog-buttons-gradient').empty().append(
+                $('<div></div>')
+                    .append(
+                        $('<input type="submit" class="button green" value="'+"[`Add`]"+'" disabled="disabled">').click(function() {
+                            var ids = [];
+                            $('#add-to-category-dialog input[type="checkbox"]:checked').each(function(i, cb) {
+                                var v = $(cb).val();
+                                if (v) {
+                                    ids.push(v);
+                                }
+                            });
+                            $.wa.controller.addToCategory(ids);
+                            $.wa.dialogHide();
+                        })
+                    )
+                    .append(' [`or`] ')
+                    .append($('<a href="javascript:void(0)">'+"[`cancel`]"+'</a>').click(function() {
+                        $.wa.dialogHide();
+                    }))
+            );
+        });
+    </script>
+{/if}
 

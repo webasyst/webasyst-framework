@@ -5,7 +5,6 @@ class contactsCategoriesController extends waJsonController
 {
     public function execute()
     {
-        $this->checkAccess();
         switch (waRequest::get('type')) {
             case 'add':
                 $this->addToCategory();
@@ -13,30 +12,6 @@ class contactsCategoriesController extends waJsonController
             case 'del':
                 $this->removeFromCategory();
                 break;
-        }
-    }
-
-    protected function checkAccess() {
-        if ($this->getRights('category.all')) {
-            return;
-        }
-
-        // Only allow actions with categories available for current user
-        $crm = new contactsRightsModel();
-        $allowed = $crm->getAllowedCategories();
-        foreach(waRequest::post('categories', array(), 'array_int') as $id) {
-            if (!isset($allowed[$id])) {
-                throw new waRightsException('Access denied');
-            }
-        }
-        
-        // Only allow actions with contacts available for current user
-        $allowed = array_keys($allowed);
-        $ccm = new waContactCategoriesModel();
-        foreach($ccm->getContactsCategories(waRequest::post('contacts', array(), 'array_int')) as $id => $cats) {
-            if (!array_intersect($allowed, $cats)) {
-                throw new waRightsException('Access denied');
-            }
         }
     }
     

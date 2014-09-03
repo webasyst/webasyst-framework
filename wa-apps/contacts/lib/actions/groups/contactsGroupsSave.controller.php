@@ -13,60 +13,36 @@ class contactsGroupsSaveController extends waJsonController
 
         // Create a group or retreive by id
         $id = waRequest::post('id');
-        $name = waRequest::post('name');
+        $name = waRequest::post('name', '', waRequest::TYPE_STRING_TRIM);
+        $icon = waRequest::post('icon', null, waRequest::TYPE_STRING_TRIM);
 
+        $data = array();
+        if ($name || $name === '0') {
+            $data['name'] = $name;
+        }
+        if ($icon) {
+            $data['icon'] = $icon;
+        }
+        
         if (!$id) {
-            if (!$name && $name !== '0') {
+            if (!isset($data['name'])) {
                 throw new waException('No group id and no name given.');
             }
-
-            $id = $group_model->add($name);
-            $this->log('group_add', 1);
-        } else if ($name || $name === '0') {
-            $group_model->updateById($id, array('name' => $name));
-        }
-
-        if (!$id) {
-            throw new waException('Still no id here...'); // should not happen
+            $id = $group_model->insert($data);
+            $this->logAction('group_add', $id);
+        } else {
+            $group_model->updateById($id, $data);
         }
 
         $group = $group_model->getById($id);
         if (!$group) {
             throw new waException('No group with such id: '.$id);
         }
-
+        $group = $group_model->getById($id);
+        $group['name'] = htmlspecialchars($group['name']);
         $this->response['id'] = $id;
-
-        $users = waRequest::post('users', array(), 'array_int');
-
-        $type = waRequest::post('user_operation');
-        $user_groups_model = new waUserGroupsModel();
-        switch ($type) {
-            case 'del':
-                if ($users) {
-                    $user_groups_model->delete($users, $id);
-                }
-                break;
-            case 'set':
-                $user_groups_model->emptyGroup($id);
-                // breakthrough
-            case 'add':
-            default:
-                if (!$users){
-                    break;
-                }
-                $data = array();
-                foreach ($users as $contact_id) {
-                    $data[] = array($contact_id, $id);
-                }
-                $user_groups_model->add($data);
-
-                if ($type == 'set') {
-                    $group_model->updateCount($id, count($users));
-                }
-
-                break;
-        }
+        $this->response['group'] = $group;
+        
     }
 }
 

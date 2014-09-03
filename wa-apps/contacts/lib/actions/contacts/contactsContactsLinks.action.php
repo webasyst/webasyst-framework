@@ -17,17 +17,11 @@ class contactsContactsLinksAction extends waViewAction
         if (in_array($this->getUser()->getId(), $ids)) {
             die('<p>'._w('You can not delete yourself.').'</p><p>'._w('Please eliminate yourself from deletion list.').'</p>');
         }
-
-        // Only allow actions with contacts available for current user
-        if (!$this->getRights('category.all')) {
-            $crm = new contactsRightsModel();
-            $ccm = new waContactCategoriesModel();
-            $allowed = array_keys($crm->getAllowedCategories());
-            foreach($ccm->getContactsCategories($ids) as $id => $cats) {
-                if (!array_intersect($allowed, $cats)) {
-                    throw new waRightsException('Access denied');
-                }
-            }
+        
+        $crm = new contactsRightsModel();
+        $ids = $crm->getAllowedContactsIds($ids);
+        if (!$ids) {
+            throw new waRightsException('Access denied');
         }
 
         $superadmin = wa()->getUser()->getRights('webasyst', 'backend');

@@ -1,195 +1,111 @@
-{{* Add contact button *}}
-{{if !empty($admin) || (!empty($show_create) && !empty($categories))}}
-    <div class="block">
-        {{if empty($versionFull)}}
-            <a href="#/contacts/add/" class="bold no-underline">
-                <i class="icon16 add"></i>[`New contact`]
-            </a>
-        {{else}}
-            <ul class="menu-h dropdown">
-                <li style="display: block">
-                    <a href="#/contacts/add/" class="bold no-underline">
-                        <i class="icon16 add"></i>
-                        <strong class="underline">[`New contact`]</strong>
-                        <i class="icon10 darr"></i>
-                    </a>
-                    <ul class="menu-v">
-                        <li>
-                            <a href="#/contacts/add/">
-                                [`Person`]
-                            </a>
-                        </li>
-                        <li class="line-after">
-                            <a href="#/contacts/add/company/">
-                                [`Company`]
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#/contacts/import/">
-                                [`Import...`]
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-            </ul>
-        {{/if}}
-    </div>
-{{/if}}
+{* Add contact button *}
 
-{{*
+{if !empty($admin) || (!empty($show_create) && !empty($categories))}
+    <div class="block" id="add-new-contact-block">
+        <a href="#/contacts/add/" class="bold no-underline">
+            <i class="icon16 add"></i>[`New contact`]
+        </a>
+    </div>
+{/if}
+
+{*
   * Recently added
-  *}}
+  *}
 <div class="block wrapper" style="display:none">
     <span class="count"><a href="#" class="hint c-search-close" onclick="return $.wa.history.clear('creation')" title="[`clear`]"><i class="icon10 close"></i></a></span>
     <h5 class="heading">[`Recently added`]</h5>
     <ul class="menu-v with-icons compact" id="wa-creation-history">
-        {{* Updated via JS *}}
+        {* Updated via JS *}
     </ul>
 </div>
 
-{{*
+{*
   * Search and search history
-  *}}
-<form id="search-form" onsubmit="$.wa.controller.simpleSearch(); return false">
+  *}
+<form id="search-form">
     <div class="block">
-        <input id="search-text" type="text" class="search-input-only" value="" />
-        {{if !empty($versionFull)}}
-            <a href="#/contacts/search/" class="hint">[`Advanced search`]</a>
-        {{/if}}
+        <input id="search-text" type="search" class="search-input-only" value="" placeholder="[`search by name or email`]" />
     </div>
 </form>
+
 <div class="block wrapper" style="display:none">
     <span class="count"><a href="#" class="hint c-search-close" onclick="return $.wa.history.clear('search')" title="[`clear`]"><i class="icon10 close"></i></a></span>
-    <h5 class="heading">[`Recent Searches`]</h5>
+    <h5 class="heading">[`Recent searches`]</h5>
     <ul class="menu-v with-icons compact" id="wa-search-history">
-        {{* Updated via JS *}}
+        {* Updated via JS *}
     </ul>
 </div>
 <script>
-    $.wa.defaultInputValue($('#search-text'), "[`search by name or email`]", 'empty');
-    {{if !empty($history)}}
+    $('#search-form').submit(function() {
+        $.wa.controller.simpleSearch();    
+        return false;
+    });
+    {if !empty($history)}
         $(function() {
-            $.wa.history.updateHistory({{json_encode($history)}});
+            $.wa.history.updateHistory({json_encode($history)});
         });
-    {{/if}}
+    {/if}
 </script>
 
-{{if !empty($versionFull)}}
-    {{*
-      * All contacts link in full version
-      *}}
-    <div class="block">
-        <ul class="menu-v with-icons compact">
-            <li id="sb-all-contacts-li">
-                <span class="count">{{$totalContacts}}</span>
-                <a class="bold" href="#/"><i class="icon16 contact"></i><b class="c-item-bold">[`All contacts`]</b></a>
-            </li>
-        </ul>
-    </div>
+<div class="block">    
+    <ul class="menu-v with-icons compact">
+        <li id="sb-all-contacts-li">
+            <span class="count">{$totalContacts}</span>
+            <a class="bold" href="#/"><i class="icon16 contact"></i><b class="c-item-bold">[`All contacts`]</b></a>
+        </li>
+    </ul>
 
-    {{*
-      * Filters
-      *}}
-    <div class="block">
-        <h5 class="heading collapse-handler" id="c-sb-filters-header"><i class="icon16 darr"></i><b>[`My filters`]</b></h5>
-        <div class="collapsible1 hierarchical views" id="my-filters-list">
-            {{$filters}}
-        </div>
-    </div>
-
-    {{*
-      * Lists
-      *}}
-    <div class="block">
-        <h5 class="heading collapse-handler" id="c-sb-lists-header"><i class="icon16 darr"></i><b>[`Lists`]</b></h5>
-        <ul class="menu-v with-icons collapsible">
-            {{foreach from=$lists item=l}}
-                 <li rel="list{{$l.id}}">
-                     <span class="count">{{$l.count}}</span>
-                     <a href="#/contacts/list/{{$l.id}}/"><i class="icon16 folder"></i><b>{{$l.name|escape}}</b></a>
-                 </li>
-            {{/foreach}}
-        </ul>
-    </div>
-{{/if}}
-
-<div class="block">
-    {{*
-      * All contacts link in free version
-      *}}
-    {{if empty($versionFull)}}
-        <ul class="menu-v with-icons compact">
-            <li id="sb-all-contacts-li">
-                <span class="count">{{$totalContacts}}</span>
-                <a class="bold" href="#/"><i class="icon16 contact"></i><b class="c-item-bold">[`All contacts`]</b></a>
-            </li>
-        </ul>
-    {{/if}}
-
-    {{*
+    {*
       * Categories
-      *}}
-    {{if !empty($categories) || !empty($superadmin)}}
-        {{if !empty($superadmin)}}
+      *}
+    {if !empty($categories) || !empty($superadmin)}
+        {if !empty($superadmin)}
             <span class="count c-action-link"><a href="#/categories/create/" title="[`New category`]"><i class="icon16 add"></i></a></span>
-        {{/if}}
+        {/if}
         <h5 class="heading collapse-handler" id="c-sb-categories-header"><i class="icon16 darr"></i><b>[`Categories`]</b></h5>
         <ul class="menu-v with-icons collapsible" id="list-category">
-            {{if !empty($categories)}}
-                {{foreach from=$categories item=c}}
-                     <li rel="category{{$c.id}}">
-                         <span class="count">{{$c.cnt}}</span>
-                         <a href="#/contacts/category/{{$c.id}}/">
-                            {{if !empty($c.icon) && strpos($c.icon, '/') !== false}}
-                                <img class="c-app16x16icon-menu-v" src="{{if substr($c.icon, 0, 4) == 'http'}}{{$c.icon}}{{else}}{{$wa_url}}{{$c.icon}}{{/if}}" />
-                            {{else}}
-                                <i class="icon16 {{ifempty($c.icon, 'contact')}}"></i>
-                            {{/if}}
-                            <b>{{$c.name|escape}}</b>
+            {if !empty($categories)}
+                {foreach from=$categories item=c}
+                     <li rel="category{$c.id}">
+                         <span class="count">{$c.cnt}</span>
+                         <a href="#/contacts/category/{$c.id}/">
+                            {if !empty($c.icon) && strpos($c.icon, '/') !== false}
+                                <img class="c-app16x16icon-menu-v" src="{if substr($c.icon, 0, 4) == 'http'}{$c.icon}{else}{$wa_url}{$c.icon}{/if}" />
+                            {else}
+                                <i class="icon16 {ifempty($c.icon, 'contact')}"></i>
+                            {/if}
+                            <b>{$c.name|escape}</b>
                         </a>
                      </li>
-                {{/foreach}}
-            {{else}}
+                {/foreach}
+            {else}
                 <li class="hint" style="padding:0">
-                    [`Categories are for classifying contacts, e.g. customers, providers, partners, etc. Webasyst users can be customized to have access to certain contact categories only.`]
+                    [`Categories are for classifying contacts, e.g. customers, providers, partners, etc.`]
                 </li>
-            {{/if}}
+            {/if}
         </ul>
-    {{/if}}
+    {/if}
 </div>
 
-{{if !empty($superadmin)}}
+{if !empty($superadmin)}
     <div class="block">
-        {{*
+        {*
           * All users link
-          *}}
+          *}
         <ul class="menu-v with-icons compact">
             <li id="sb-all-users-li">
-                <span class="count">{{if !empty($totalUsers)}}{{$totalUsers}}{{else}}0{{/if}}</span>
-                <a class="bold" href="#/users/all/"><i class="icon16 user"></i><b class="c-item-bold">[`All users`]</b></a>
+                <span class="count">{if !empty($totalUsers)}{$totalUsers}{else}0{/if}</span>
+                <a class="bold" href="#/users/all/"><i class="icon16 user"></i><b class="c-item-bold">[`Users`]</b></a>
             </li>
         </ul>
-
-        {{*
-          * User groups
-          *}}
-        <span class="count"><a href="#/groups/create/" title="[`New user group`]"><i class="icon16 add"></i></a></span>
-        <h5 class="heading collapse-handler" id="c-sb-groups-header"><i class="icon16 darr"></i><b>[`Groups`]</b></h5>
-        <ul class="menu-v with-icons collapsible" id="list-group">
-            {{if !empty($groups)}}
-                {{foreach from=$groups key=id item=g}}
-                    <li rel="group{{$id}}">
-                        <span class="count">{{$g.cnt}}</span>
-                        <a href="#/contacts/group/{{$id}}/"><i class="icon16 user"></i><b>{{$g.name|escape}}</b></a>
-                    </li>
-                {{/foreach}}
-            {{else}}
-                <li class="hint" style="padding:0">
-                    [`User groups are for organizing Webasyst users and setting common access rights for groups.`]
-                </li>
-            {{/if}}
-        </ul>
     </div>
-{{/if}}
+{/if}
+
+{* @event backend_sidebar.%plugin_id% *}
+{foreach $backend_sidebar as $plugin_id => $item}
+    {if !empty($item)}
+        {$item}
+    {/if}
+{/foreach}
 
 <div class="block c-sidebar-indent"></div>

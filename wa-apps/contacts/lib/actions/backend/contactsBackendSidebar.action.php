@@ -14,20 +14,23 @@ class contactsBackendSidebarAction extends waViewAction
         $this->view->assign('totalContacts', $cc->count());
 
         // only show categories available to current user
-        $crm = new contactsRightsModel();
+//        $crm = new contactsRightsModel();
         $wcrm = new waContactRightsModel();
         $ccm = new waContactCategoryModel();
-        $allowed = $crm->getAllowedCategories();
-        $categories = array();
-        if($allowed === true) {
-            $categories = $ccm->getAll();
-        } else if ($allowed) {
-            foreach($ccm->getAll() as $cat) {
-                if (isset($allowed[$cat['id']])) {
-                    $categories[] = $cat;
-                }
-            }
-        }
+//        $allowed = $crm->getAllowedCategories();
+//        $categories = array();
+//        if($allowed === true) {
+//            $categories = $ccm->getAll();
+//        } else if ($allowed) {
+//            foreach($ccm->getAll() as $cat) {
+//                if (isset($allowed[$cat['id']])) {
+//                    $categories[] = $cat;
+//                }
+//            }
+//        }
+        
+        $categories = $ccm->getAll();
+        
         $this->view->assign('categories', $categories);
 
         // User views are only available to global admin
@@ -38,8 +41,8 @@ class contactsBackendSidebarAction extends waViewAction
             $this->view->assign('superadmin', TRUE);
             $this->view->assign('admin', TRUE);
 
-            $group_model = new waGroupModel();
-            $this->view->assign('groups', $group_model->getAll());
+//            $group_model = new waGroupModel();
+//            $this->view->assign('groups', $group_model->getAll());
 
             $cc = new contactsCollection('/users/all/');
             $this->view->assign('totalUsers', $cc->count());
@@ -49,6 +52,9 @@ class contactsBackendSidebarAction extends waViewAction
 
         // is user allowed to add contacts?
         $this->view->assign('show_create', $wcrm->get(null, null, 'create'));
+
+        $event_params = array();
+        $this->view->assign('backend_sidebar', wa()->event('backend_sidebar', $event_params, array('top_li')));
     }
 }
 

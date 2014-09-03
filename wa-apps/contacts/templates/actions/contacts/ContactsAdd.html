@@ -1,8 +1,8 @@
 <div class="block">
-	<h1>{{$header}}</h1>
+    <h1 class="wa-page-heading"></h1>
 </div>
 
-<div class="tab-content">
+<div class="tab-content" id="c-info-container">
 	<div class="block double-padded">
 		<div class="fields">
 			<div id="contact-info-block">
@@ -19,15 +19,22 @@
 // contactEditor initialization code
 $.wa.contactEditor.contact_id = null;
 $.wa.contactEditor.current_user_id = null;
-$.wa.contactEditor.contactType = '{{$contactType}}';
-$.wa.contactEditor.limitedCategories = {{$limitedCategories}};
-$.wa.contactEditor.initFactories({{json_encode($contactFields)}});
+$.wa.contactEditor.contactType = '{$contactType}';
+{* $.wa.contactEditor.limitedCategories = {$limitedCategories}; *}
+$.wa.contactEditor.initFactories({json_encode($contactFields)});
 $.wa.contactEditor.initAllEditors();
 $.wa.contactEditor.initContactInfoBlock('edit');
-$.wa.controller.setBrowserTitle("{{$header}}");
 $(function() {
 	window.setTimeout(function() { // voodoo magic... does not work without setTimeout() in IE8.
-		$.wa.contactEditor.fieldEditors.firstname.domElement.find('.val:visible')[0].focus();
+        {if $contactType == 'person'}
+            if ($.wa.contactEditor.fieldEditors.firstname) {
+                $.wa.contactEditor.fieldEditors.firstname.domElement.find('.val:visible')[0].focus();
+            }
+        {else}
+            if ($.wa.contactEditor.fieldEditors.company) {
+                $.wa.contactEditor.fieldEditors.company.domElement.find('.val:visible')[0].focus();
+            }
+        {/if}
 	}, 1);
 });
 </script>

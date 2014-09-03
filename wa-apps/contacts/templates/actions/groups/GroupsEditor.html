@@ -1,170 +1,138 @@
+<div class="block" style="padding: 16px 20px;">
 
-<div class="block" id="c-ge-header">
-	{{if $group}}
-		<h1>{{sprintf(_w('Edit group &ldquo;%s&rdquo;'), htmlspecialchars($group.name))}}</h1>
-	{{else}}
-		<h1>[`New user group`]</h1>
-	{{/if}}
+    <form action="?module=groups&action=save" id="group-editor-form">
+
+        <div id="c-group-edit-name-block">
+            <span>
+                <input name="name" type="text" class="large" id="c-group-edit-name" value="{$group.name|escape}" style="width:55%; font-weight: bold; font-size: 1.8em;">
+                <i class="icon16 loading" style="display:none;"></i>
+            </span>
+            <div class="c-actions-wrapper float-right" style="margin: 2px -2px 2px 0;"><a href="#/groups/edit/100/"><i class="icon16 settings"></i></a></div>
+        </div>
+
+        <div class="fields c-group-settings" style="width:100%">
+            {if $group}
+                <input name="id" type="hidden" value="{$group.id}">
+            {/if}
+
+            <div class="field" style="margin-top: 10px;">
+                <div class="name">[`Icon`]</div>
+                <div class="value">
+                    <ul class="menu-h icons" style="width: 75%; float: left;" id="c-group-edit-icon">
+                        {foreach $icons as $i}
+                            <li {if (!$group && $i@first) || ($group && $group.icon == $i)}class="selected"{/if} data-icon="{$i}"><a href="javascript:void(0);"><img src="../../wa-content/img/users/{$i}.png"></a></li>
+                        {/foreach}
+                    </ul>
+                    <i class="icon16 loading" style="display:none;"></i>
+                </div>
+            </div>
+
+            <div class="field buttons">
+                <em class="validation-notice errormsg"></em>
+                <input type="submit" value="[`Save`]" class="button green"> 
+                <i class="icon16 loading" style="margin-left: 16px; display: none;"></i>
+                
+                {if $group}
+                    [`or`]
+                    <a href="javascript:void(0);" class="cancel" id="c-edit-group-cancel">[`cancel`]</a>
+                {/if}
+
+                {if $group}
+                    <a href="javascript:void(0);" id="c-delete-group" class="no-underline delete float-right small" style="margin-top: 14px;">[`Delete group`]</a>
+                {/if}
+
+            </div>
+
+        </div>
+    </form>
+                
+    <div class="block not-padded" style="background: white; margin: 0 -20px;">
+        {if $group && $is_global_admin}
+            <form>
+                {include file="./includeGroupsRights.html" inline}            
+            </form>
+        {/if}
+        <div class="clear"></div>
+    </div>
+                
 </div>
-
-<div id="tc-ge-members" class="tab-content">
-	<div class="block double-padded">
-		<form action="?module=groups&action=save" id="group-editor-form">
-			<div class="fields" style="width:100%">
-				{{if $group}}
-					<input name="id" type="hidden" value="{{$group.id}}">
-				{{/if}}
-				<input name="user_operation" type="hidden" value="set">
-				<div class="field c-header-edit">
-					<div class="name large">[`Name:`]</div>
-					<div class="value"><span><input name="name" type="text" class="large" value="{{$group.name|escape}}" style="width:55%"></span></div>
-				</div>
-				<div class="field c-sort-block">
-					<p>[`Select users you want to add to this group:`]</p>
-					<ul class="thumbs">
-						<li>
-							<p class="status">[`Included`]</p>
-							<select multiple="multiple" style="width: 250px;" size="8" name="users[]" id="group-members">
-								{{foreach from=$members item=user}}
-									<option value="{{$user.id}}">{{$user.name|escape}}</option>
-								{{/foreach}}
-							</select>
-						</li>
-						<li class="c-sort-btns">
-							<p><input type="button" value="&larr;" id="btn-move-left" /></p>
-							<p><input type="button" value="&rarr;" id="btn-move-right" /></p>
-						</li>
-						<li>
-							<p class="status">[`Not included`]</p>
-							<select multiple="multiple" style="width: 250px;" size="8" id="group-not-members">
-								{{foreach from=$notIncluded item=user}}
-									<option value="{{$user.id}}">{{$user.name|escape}}</option>
-								{{/foreach}}
-							</select>
-						</li>
-					</ul>
-				</div>
-				<div class="field buttons">
-					<div class="value submit">
-						<em class="validation-notice errormsg"></em>
-
-						<input type="submit" value="[`Save`]" class="button green"> [`or`] <a href="#" onclick="$.wa.back(); return false;">[`cancel`]</a>
-						<i class="icon16 loading" style="margin-left: 16px; display: none;"></i>
-					</div>
-				</div>
-			</div>
-		</form>
-		<div class="clear-left"></div>
-	</div>
-</div>
-
-<div class="clear-left"></div>
 
 <script type="text/javascript">
 (function() {
-	// Move <option>s between <select> lists
-	var initListSelect = function(leftList, rightList, moveLeftBtn, moveRightBtn) {
-		var fireChange = function() {
-			rightList.change();
-			leftList.change();
-		};
-		var deselect = function() {
-			leftList.val([]);
-			rightList.val([]);
-		};
-		var moveSelectedLeft = function() {
-			rightList.children('option:selected').appendTo(leftList);
-			fireChange();
-		};
-		var moveSelectedRight = function() {
-			leftList.children('option:selected').appendTo(rightList);
-			fireChange();
-		};
-		var selectAndMove = function() {
-			var o = $(this);
-			deselect();
-			o.attr('selected', true);
-			if ($(o.parent()).attr('id') == leftList.attr('id')) {
-				moveSelectedRight();
-			} else {
-				moveSelectedLeft();
-			}
-		};
+    
+    {if $group}
+        $('#c-delete-group').click(function() {
+            return $.wa.controller.groupsDeleteAction();
+        });
+    {/if}
 
-		moveLeftBtn.click(moveSelectedLeft);
-		moveRightBtn.click(moveSelectedRight);
-		leftList.dblclick(function() {
-			var self = $(this);
-			// have to do it the hard way because IE8 does not trigger double click events on <option> elements.
-			selectAndMove.call(self.children('[value="'+self.val()+'"]')[0]);
-		});
-		rightList.dblclick(function() {
-			var self = $(this);
-			selectAndMove.call(self.children('[value="'+self.val()+'"]')[0]);
-		});
-	};
-	initListSelect($('#group-members'), $('#group-not-members'), $('#btn-move-left'), $('#btn-move-right'));
+    var form = $('#group-editor-form');
+    
+    
+    {if $group}
+        $("#c-edit-group-cancel").click(function() {
+            $.wa.setHash('/contacts/group/{$group.id}/');
+            return false;
+        });
+    {/if}
+    
+    // validate on submission and send data via ajax
+    form.submit(function() {
+        if (!form[0].name.value.trim()) {
+            form[0].name.value = "[`<no name>`]";
+        }
+        // ajax request
+        form.find('.buttons .loading').show();
+        form.find('#group-members option').attr('selected', true);
+        var serializeData = form.serializeArray();
+        var icon = $('#c-group-edit-icon li.selected');
+        serializeData.push({
+            name: 'icon',
+            value: icon.data('icon')
+        });
+        $.post(form.attr('action'), serializeData, function (response) {
+            form.find('.buttons .loading').hide();
+            if (response.status == 'ok') {
+                //$.wa.controller.reloadSidebar();
+                {if $group}
+                    // Go to group list
+                    $('#list-group li[rel="group' + response.data.id + '"] .name').html(response.data.group.name);
+                    $.wa.controller.updateGroup('{$group.id}', response.data.group);
+                    $.wa.controller.setTitle(response.data.group.name);
+                    $.wa.setHash('#/contacts/group/'+response.data.id+'/');
+                {else}
+                    if (!$.isEmptyObject($.wa.controller.last_selected)) {
+                        $.post('?module=groups&action=contactSave', {
+                            'id[]': $.wa.controller.last_selected,
+                            'groups[]': response.data.id
+                        }, function (r) {
+                            $.wa.controller.addGroup(response.data.group);
+                            $.wa.controller.setTitle(response.data.group.name);
+                            $.wa.controller.last_selected = [];
+                            $.wa.controller.updateGroupCounters(r.data.counters || { });
+                            $.wa.controller.afterInitHTML = function () {
+                                $.wa.controller.showMessage(r.data.message, true, 'float-left max-width');
+                            };
+                            $.wa.setHash('#/groups/edit/'+response.data.id+'/');
+                        }, 'json');
+                    } else {
+                        // Go to access control
+                        $.wa.controller.addGroup(response.data.group);
+                        $.wa.setHash('#/groups/edit/'+response.data.id+'/');
+                    }
+                {/if}
+            } else if (response.status == 'fail') {
+                form.find('.validation-notice').html(response.errors.join('<br />'));
+            }
+        }, 'json');
+        return false;
+    });
 
-	var form = $('#group-editor-form');
-
-	// Button status control
-	var saveButton = form.find('input[type="submit"]');
-	var enableSave = function() {
-		saveButton.attr('disabled', false).addClass('green').removeClass('gray').attr('value', "[`Save`]");
-	};
-	var disableSave = function() {
-		saveButton.attr('disabled', true).addClass('gray').removeClass('green').attr('value', "[`Saved`]");;
-		form.find('select').one('change', enableSave);
-		form.find('input').one('keyup', enableSave);
-	};
-
-	//
-	// form submission
-	//
-
-	// validation stuff
-	var resetErrorMsgs = function() {
-		form.find('.validation-notice').html('');
-		form.find('input').removeClass('error');
-	};
-
-	// validate on submission and send data via ajax
-	form.submit(function() {
-		if (!form[0].name.value) {
-			form[0].name.value = "[`<no name>`]";
-		}
-
-		// ajax request
-		form.find('.loading').show();
-		form.find('#group-members option').attr('selected', true);
-		$.post(form.attr('action'), form.serialize(), function (response) {
-			disableSave();
-			form.find('.loading').hide();
-			if (response.status == 'ok') {
-				$.wa.controller.reloadSidebar();
-				{{if $group}}
-					// Go to group list
-					$.wa.setHash('#/contacts/group/'+response.data.id+'/');
-				{{else}}
-					// Go to access control
-					$.wa.controller.collapseSidebarSection('#c-sb-groups-header', 'uncollapse');
-					$.wa.setHash('#/groups/rights/'+response.data.id+'/');
-				{{/if}}
-			} else if (response.status == 'fail') {
-				form.find('.validation-notice').html(response.errors.join('<br />'));
-			}
-		}, 'json');
-		return false;
-	});
-
-	var input = $('#group-editor-form input[name="name"]')[0];
-	if (input) {
-		// voodoo magic... doesn't work without timeout in some browsers
-		setTimeout(function() {
-			input.focus();
-			input.select();
-		}, 1);
-	}
-	$.wa.controller.setBrowserTitle($('#c-ge-header h1').text());
+    $('#c-group-edit-icon a').click(function() {
+        var item = $(this);
+        item.closest('.icons').find('li.selected').removeClass('selected');
+        item.closest('li').addClass('selected').data('icon');
+        return false;
+    });
 }).call({});
 </script>

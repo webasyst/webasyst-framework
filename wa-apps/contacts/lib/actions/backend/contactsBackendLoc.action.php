@@ -50,6 +50,7 @@ class contactsBackendLocAction extends waViewAction
             'Internet',
             'Limited access',
             'Merge',
+            'Merge contacts',
             'Must be a number.',
             'Incorrect Email address format.',
             'Incorrect URL format.',
@@ -86,10 +87,68 @@ class contactsBackendLocAction extends waViewAction
             'Exclude contacts from list &ldquo;%s&rdquo;?',
             'Exclude',
             'select region',
+            'day',
+            'month',
+            'year',
+            'New user group',
+            'Access rights for group &ldquo;%s&rdquo;',
+            'All users',
+            'Groups',
+            'New group',
+            'Person',
+            'Search',
+            '@',
+            'No users in this group.',
+            'To add users to group, go to <a href="#/users/all/">All users</a>, select them, and click <strong>Actions with selected / Add to group</strong>.',
+            'map',
+            'There is no geographic location info for these contacts.',
+            'on the map',
+            'Shown',
+            'User groups are for organizing Webasyst users and setting common access rights for groups.',
+            'Add to group',
+            'Close settings panel',
+            'Apply',
+            'Exclude users from group "%s"?',
+            'Exclude from this group',
+            'Edit user group',
+            'Photo',
+            'Access',
+            'Person',
+            'Company',
+            'or',
+            'Loading...', 
+            'New user',
+            'of',
+            'New contact',
+            'Email address is not specified',
+            'You can grant access to your account backend to any existing contact.',
+            'Find a contact, or <a href="#/contacts/add/">create a new contact</a>, and then customize their access rights on Access tab.',
+            'No contacts.',
+            'Details',
+            'List',
+            'Userpics'
         ) as $s) {
             $strings[$s] = _w($s);
         }
 
+        foreach (array(
+            'January',
+            'February',
+            'March',
+            'April',
+            'May',
+            'June',
+            'July',
+            'August',
+            'September',
+            'October',
+            'November',
+            'December'
+        ) as $s)
+        {
+            $strings[$s] = _ws($s);
+        }
+        
         // multiple forms
         foreach(array(
             array('contacts selected', 'contact selected'),

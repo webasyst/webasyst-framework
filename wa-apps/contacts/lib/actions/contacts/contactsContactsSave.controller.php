@@ -44,35 +44,40 @@ class contactsContactsSaveController extends waJsonController
 
         $oldLocale = $this->getUser()->getLocale();
 
+        // get old data for logging
+        if ($this->id) {
+            $old_data = array();
+            foreach ($data as $field_id => $field_value) {
+                $old_data[$field_id] = $this->contact->get($field_id);
+            }
+        }
+        
         $response = array();
         if (!$errors = $this->contact->save($data, true)) {
             if ($this->id) {
+                $new_data = array();
                 foreach ($data as $field_id => $field_value) {
                     if (!isset($errors[$field_id])) {
                         $response[$field_id] = $this->contact->get($field_id, 'js');
+                        $new_data[$field_id] = $this->contact->get($field_id);
                     }
                 }
+                if (empty($errors)) {
+                    $this->logContactEdit($old_data, $new_data);
+                }
+                
                 $response['name'] = $this->contact->get('name', 'js');
-                $fields = array('email', 'phone', 'im');
-                $top = array();
-                foreach ($fields as $f) {
-                    if ($v = $this->contact->get($f, 'top,html')) {
-                        $top[] = array(
-                            'id' => $f,
-                            'name' => waContactFields::get($f)->getName(),
-                            'value' => is_array($v) ? implode(', ', $v) : $v,
-                        );
-                    }
-                }
-                $response['top'] = $top;
+                $response['top'] = contactsHelper::getTop($this->contact);
+                $response['id'] = $this->contact->getId();
             } else {
                 $response = array('id' => $this->contact->getId());
-                $this->log('contact_add', 1);
+                $response['address'] = $this->contact->get('address', 'js');
+                $this->logAction('contact_add', null, $this->contact->getId());
             }
 
             // Update recently added menu item
-            if( ( $name = $this->contact->get('name')) || $name === '0') {
-                $name = trim($this->contact->get('title').' '.$name);
+            $name = waContactNameField::formatName($this->contact);
+            if($name || $name === '0') {
                 $history = new contactsHistoryModel();
                 $history->save('/contact/'.$this->contact->getId(), $name, $this->id ? null : 'add');
                 $history = $history->get(); // to update history in user's browser
@@ -81,7 +86,7 @@ class contactsContactsSaveController extends waJsonController
 
         // Reload page with new language if user just changed it in own profile
         if ($this->contact->getId() == $this->getUser()->getId() && $oldLocale != $this->contact->getLocale()) {
-            $response['reload'] = TRUE;
+            $response['reload'] = true;
         }
 
         $this->response = array(
@@ -90,6 +95,15 @@ class contactsContactsSaveController extends waJsonController
         );
         if (isset($history)) {
             $this->response['history'] = $history;
+        }
+    }
+    
+    public function logContactEdit($old_data, $new_data)
+    {
+        $diff = array();
+        wa_array_diff_r($old_data, $new_data, $diff);
+        if (!empty($diff)) {
+            $this->logAction('contact_edit', $diff, $this->contact->getId());
         }
     }
 }

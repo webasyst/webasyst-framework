@@ -8,7 +8,7 @@ class contactsPhotoDeleteController extends waJsonController
         $id = $this->getId();
 
         // Delete the old photos if they exist
-        $oldDir = wa()->getDataPath("photo/$id", TRUE);
+        $oldDir = wa()->getDataPath(waContact::getPhotoDir($id), TRUE);
         if (file_exists($oldDir)) {
             waFiles::delete($oldDir);
         }

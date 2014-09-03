@@ -1,243 +1,269 @@
+<script type="text/javascript" src="{$wa_url}wa-content/js/jquery-plugins/fileupload/jquery.iframe-transport.js"></script>
+<script type="text/javascript" src="{$wa_url}wa-content/js/jquery-plugins/fileupload/jquery.fileupload.js"></script>
+
 <div class="block" id="c-ge-header">
-	{{if $env == 'backend'}}
-		<h1>[`Change photo for contact`] {{$contact['name']|escape}}</h1>
-	{{else}}
-		<h1>[`Change photo`]</h1>
-	{{/if}}
+    {if $env == 'backend'}
+        <h1>[`Change photo for contact`] {$contact['name']|escape}</h1>
+    {else}
+        <h1>[`Change photo`]</h1>
+    {/if}
 </div>
 <div class="tab-content">
-	<div class="block double-padded">
-		<div style="float:right;width:120px">
-			<div class="wa-contact-photo" style="margin: 0px;"><div id="new-photo-preview" style="width: 96px; height: 96px; background-repeat: no-repeat; overflow: hidden;"><img src="{{if !empty($oldPreview)}}{{$oldPreview}}{{else}}{{$wa_url}}wa-content/img/userpic96.jpg{{/if}}" alt="Preview" width="96" height="96" /></div></div>
-		</div>
-		<div id="new-photo-wrapper" style="margin:0 140px 0 0">
-		</div>
-		<form id="save-selection-form" action="{{$crop_url}}" method="post">
-			<div style="text-align: center;">
-				<input type="hidden" name="id" value="{{$contactId}}" />
-				<input id="x1" type="hidden" name="x1" value="" />
-				<input id="y1" type="hidden" name="y1" value="" />
-				<input id="x2" type="hidden" name="x2" value="" />
-				<input id="y2" type="hidden" name="y2" value="" />
-				<input id="w" type="hidden" name="w" value="" />
-				<input id="h" type="hidden" name="h" value="" />
-				<input id="ww" type="hidden" name="ww" value="" /> {{* img display width *}}
-				<input id="orig" type="hidden" name="orig" value="{{if !empty($orig)}}1{{else}}0{{/if}}" /> {{* whether we crop old image again *}}
-			</div>
-		</form>
+    <div class="block double-padded">
+        <div style="float:right;width:120px">
+            <div class="wa-contact-photo" style="margin: 0px;"><div id="new-photo-preview" style="width: 96px; height: 96px; background-repeat: no-repeat; overflow: hidden;"><img src="{if !empty($oldPreview)}{$oldPreview}{else}{$wa_url}wa-content/img/userpic96.jpg{/if}" alt="Preview" width="96" height="96" /></div></div>
+        </div>
+        <div id="new-photo-wrapper" style="margin:0 140px 0 0">
+            {if !$contact['photo']}
+                <div style="position: relative; width: 200px; height: 200px; display: block; text-align: center; " id="new-photo-area">
+                    <h2 class="hint" style="padding-top: 92px;">[`Drop photo here`]</h2>
+                    <div class="imgareaselect-border1" style="position: absolute; font-size: 0px; left: 0px; top: 0px; width: 200px; height: 200px;"></div>
+                    <div class="imgareaselect-border2" style="position: absolute; font-size: 0px; left: 0px; top: 0px; width: 200px; height: 200px;"></div>
+                    <div class="imgareaselect-border3" style="position: absolute; font-size: 0px; left: 0px; top: 0px; width: 200px; height: 200px;"></div>
+                    <div class="imgareaselect-border4" style="position: absolute; font-size: 0px; left: 0px; top: 0px; width: 200px; height: 200px;"></div>
+                </div>
+            {/if}            
+        </div>
+        <form id="save-selection-form" action="{$crop_url}" method="post">
+            <div style="text-align: center;">
+                <input type="hidden" name="id" value="{$contactId}" />
+                <input id="x1" type="hidden" name="x1" value="" />
+                <input id="y1" type="hidden" name="y1" value="" />
+                <input id="x2" type="hidden" name="x2" value="" />
+                <input id="y2" type="hidden" name="y2" value="" />
+                <input id="w" type="hidden" name="w" value="" />
+                <input id="h" type="hidden" name="h" value="" />
+                <input id="ww" type="hidden" name="ww" value="" /> {* img display width *}
+                <input id="orig" type="hidden" name="orig" value="{if !empty($orig)}1{else}0{/if}" /> {* whether we crop old image again *}
+            </div>
+        </form>
 
-		<div id="photo-iframe-wrapper" style="display: none"><iframe id="photo-iframe" name="sendfile" width="1" height="1"></iframe></div>
+        <div id="photo-iframe-wrapper" style="display: none"><iframe id="photo-iframe" name="sendfile" width="1" height="1"></iframe></div>
 
-		<p id="c-pe-hint-photo" style="margin:1.5em 0 0.75em 0{{if !empty($oldPreview)}};display:none{{/if}}">[`Select an image file (JPG, GIF or PNG) to change photo:`]</p>
-		<p id="c-pe-hint-no-photo" style="margin:1.2em 0 0.4em 0{{if empty($oldPreview)}};display:none{{/if}}">[`Upload image (JPG, GIF or PNG):`]</p>
-		<form id="imageform" target="sendfile" action="{{$tmpimage_url}}" method="post" enctype="multipart/form-data">
-			<div class="c-photo-loading-image"><input id="fileselect" type="file" name="photo" /><i id="photo-loading-image" class="icon16 loading" style="margin-left:16px;display:none"></i><input id="photo-id-input" type="hidden" name="id" value=""></div>
-		</form>
+        <p id="c-pe-hint-photo" style="margin:1.5em 0 0.75em 0{if !empty($oldPreview)};display:none{/if}">
+            [`To change drop another photo or upload file (JPG, GIF или PNG):`]
+        </p>
+        <p id="c-pe-hint-no-photo" style="margin:1.2em 0 0.4em 0{if empty($oldPreview)};display:none{/if}">
+            [`Or upload file (JPG, GIF or PNG):`]
+        </p>
+        <form id="imageform" target="sendfile" action="{$tmpimage_url}" method="post" enctype="multipart/form-data">
+            <div class="c-photo-loading-image"><input id="fileselect" type="file" name="photo" /><i id="photo-loading-image" class="icon16 loading" style="margin-left:16px;display:none"></i><input id="photo-id-input" type="hidden" name="id" value=""></div>
+        </form>
 
-		<div id="photo-editor-buttons">
-		</div>
-	</div>
+        <div id="photo-editor-buttons">
+        </div>
+    </div>
 </div>
 <script type="text/javascript">
-	// contact id into the file upload form
-	$('#photo-id-input').val({{$contactId}});
+    // contact id into the file upload form
+    $('#photo-id-input').val({$contactId});
 
-	// Remove artifacts that imgAreaSelect creates when we're done
-	$(document).one('hashchange', function() {
-		$('#c-pe-photo-big').imgAreaSelect({remove: true});
-	});
+    // Remove artifacts that imgAreaSelect creates when we're done
+    $(document).one('hashchange', function() {
+        $('#c-pe-photo-big').imgAreaSelect({ remove: true});
+    });
 
-	// buttons
-	$('#photo-editor-buttons').empty()
-		.append(
-			$('<div id="save-selection-buttons-wrapper"></div>')
-				.append(
-					$('<input class="button red" id="save-selection-delete-photo" type="submit" value="'+"[`Delete photo`]"+'" style="float:right;margin-right:140px" />')
-						// Handler for deleting old image
-						.click(function(){
-								if (!confirm('[`Are you sure you want to delete this photo?`]')) {
-									return false;
-								}
-								$.get("{{$delete_url}}",
-									function(data) {
-										{{if $logged_user_id == $contact['id']}}
-											// If user removed their own photo, then update it in top right corner too
-											$('#wa-usercorner .profile.image32px img').attr('src', '{{$wa_url}}wa-content/img/userpic32.jpg');
-										{{/if}}
-										window.location = "{{$back_url}}";
-									}
-								);
-								return false;
-							}
-						)
-				)
-				.append(
-					$('<input id="save-selection-form-submit" class="button green" type="submit" value="'+"[`Save`]"+'" />')
-						// Submitting photo area selection
-						.click(function(e) {
-							var form = $('#save-selection-form');
-							$('#save-selection-form-submit').attr("disabled","disabled");
+    $('#fileselect').fileupload({
+        autoUpload: true
+    }).bind('fileuploadalways', function(e, data) {
+        onUpload($('<body />').html(data.result).html());
+    });
 
-							$.ajax({
-								type: 'POST',
-								url: form.attr('action'),
-								data: form.serialize(),
-								dataType: 'json',
-								success: function(data) {
-									if (data.status != 'ok') {
-										alert('Unable to complete request.');
-									} else if (data.data.error) {
-										alert('Error processing request: '+data.data.error);
-									} else {
-										var url = data.data.url;
+    // buttons
+    $('#photo-editor-buttons').empty()
+        .append(
+            $('<div id="save-selection-buttons-wrapper"></div>')
+                .append(
+                    $('<input class="button red" id="save-selection-delete-photo" type="submit" value="'+"[`Delete photo`]"+'" style="float:right;margin-right:140px" />')
+                        // Handler for deleting old image
+                        .click(function(){
+                                if (!confirm('[`Are you sure you want to delete this photo?`]')) {
+                                    return false;
+                                }
+                                $.get("{$delete_url}",
+                                    function(data) {
+                                        {if $logged_user_id == $contact['id']}
+                                            // If user removed their own photo, then update it in top right corner too
+                                            $('#wa-usercorner .profile.image32px img').attr('src', '{$wa_url}wa-content/img/userpic32.jpg');
+                                        {/if}
+                                        window.location = "{$back_url}";
+                                    }
+                                );
+                                return false;
+                            }
+                        )
+                )
+                .append(
+                    $('<input id="save-selection-form-submit" class="button green" type="submit" value="'+"[`Save`]"+'" />')
+                        // Submitting photo area selection
+                        .click(function(e) {
+                            var form = $('#save-selection-form');
+                            $('#save-selection-form-submit').attr("disabled","disabled");
 
-										// Update photo in profile
-										$('.profile .photo img').attr('src', data.data.url);
+                            $.ajax({
+                                type: 'POST',
+                                url: form.attr('action'),
+                                data: form.serialize(),
+                                dataType: 'json',
+                                success: function(data) {
+                                    if (data.status != 'ok') {
+                                        alert('Unable to complete request.');
+                                    } else if (data.data.error) {
+                                        alert('Error processing request: '+data.data.error);
+                                    } else {
+                                        var url = data.data.url;
 
-										// Update photo in sidebar, if it's there
-										var i = $('#wa-creation-history .selected .icon16');
-										if (i.size() > 0) {
-											var bi = i.css('background-image').substr(4);
-											bi = bi.substr(0, bi.length-1)+'&_t='+Math.random();
-											i.css('background-image', 'url('+bi+')');
-										}
+                                        // Update photo in profile
+                                        $('.profile .photo img').attr('src', data.data.url);
 
-										{{if $logged_user_id == $contact['id']}}
-											// If user changed their own photo, then update it in top right corner too
-											$('#wa-usercorner .profile.image32px img').attr('src', data.data.url.replace('96x96', '32x32'));
-										{{/if}}
-									}
-									window.location = "{{$back_url}}";
-								},
-								error: function(jqXHR, textStatus, errorThrown) {
-									if (console) {
-										console.log(jqXHR, textStatus, errorThrown);
-									}
-									alert('Fatal error processing request: ' + (textStatus || 'unknown') + '. Is image too large?');
-								}
-							});
-							return false;
-						})
-				)
-				.append(" [`or`] ")
-				.append($('<a href="{{$back_url}}">'+"[`cancel`]"+'</a>'))
-		)
-		.append(
-			$('<input id="cancel-button" class="button gray" type="submit" value="'+"[`Close`]"+'" />')
-				.click(function() {
-					window.location = "{{$back_url}}";
-				})
-		);
+                                        // Update photo in sidebar, if it's there
+                                        var i = $('#wa-creation-history .selected .icon16');
+                                        if (i.size() > 0) {
+                                            var bi = i.css('background-image').substr(4);
+                                            bi = bi.substr(0, bi.length-1)+'&_t='+Math.random();
+                                            i.css('background-image', 'url('+bi+')');
+                                        }
 
-	/** this function prepares image area selector for new image - either old image or just uploaded new one. */
-	var prepareSelector = function(url) {
-		// Remove old imgs, if any
-		$('#c-pe-photo-big').imgAreaSelect({remove: true}).remove();
+                                        {if $logged_user_id == $contact['id']}
+                                            // If user changed their own photo, then update it in top right corner too
+                                            $('#wa-usercorner .profile.image32px img').attr('src', data.data.url.replace('96x96', '32x32'));
+                                        {/if}
+                                    }
+                                    window.location = "{$back_url}";
+                                },
+                                error: function(jqXHR, textStatus, errorThrown) {
+                                    if (console) {
+                                        console.log(jqXHR, textStatus, errorThrown);
+                                    }
+                                    alert('Fatal error processing request: ' + (textStatus || 'unknown') + '. Is image too large?');
+                                }
+                            });
+                            return false;
+                        })
+                )
+                .append(" [`or`] ")
+                .append($('<a href="{$back_url}">'+"[`cancel`]"+'</a>'))
+        )
+        .append(
+            $('<input id="cancel-button" class="button gray" type="submit" value="'+"[`Close`]"+'" />')
+                .click(function() {
+                    window.location = "{$back_url}";
+                })
+        );
 
-		// Set up preview and image
-		var preview = $('#new-photo-preview img');
-		var image = $('<img id="c-pe-photo-big" style="max-width:100%">').prependTo($('#new-photo-wrapper'));
-		preview[0].src = image[0].src = url.replace(/&amp;/g, '&');
+    /** this function prepares image area selector for new image - either old image or just uploaded new one. */
+    var prepareSelector = function(url) {
+        // Remove old imgs, if any
+        $('#c-pe-photo-big').imgAreaSelect({ remove: true}).remove();
 
-		// Updates form fields and preview when selection changes
-		var selectionCallback = function (img, selection) {
-			if (!selection.width || !selection.height)
-				return;
+        // Set up preview and image
+        var preview = $('#new-photo-preview img');
+        var image = $('<img id="c-pe-photo-big" style="max-width:100%">').prependTo($('#new-photo-wrapper'));
+        preview[0].src = image[0].src = url.replace(/&amp;/g, '&');
 
-			var scaleX = preview.parent().width() / selection.width;
-			var scaleY = preview.parent().height() / selection.height;
+        // Updates form fields and preview when selection changes
+        var selectionCallback = function (img, selection) {
+            if (!selection.width || !selection.height)
+                return;
 
-			preview.css({
-				width: Math.round(scaleX * image.width()),
-				height: Math.round(scaleY * image.height()),
-				marginLeft: -Math.round(scaleX * selection.x1),
-				marginTop: -Math.round(scaleY * selection.y1)
-			});
+            var scaleX = preview.parent().width() / selection.width;
+            var scaleY = preview.parent().height() / selection.height;
 
-			$('#x1').val(selection.x1);
-			$('#y1').val(selection.y1);
-			$('#x2').val(selection.x2);
-			$('#y2').val(selection.y2);
-			$('#w').val(selection.width);
-			$('#h').val(selection.height);
-			$('#ww').val(image.width());
-		};
+            preview.css({
+                width: Math.round(scaleX * image.width()),
+                height: Math.round(scaleY * image.height()),
+                marginLeft: -Math.round(scaleX * selection.x1),
+                marginTop: -Math.round(scaleY * selection.y1)
+            });
 
-		// Function to initialize image area selection plugin when image is ready
-		var initArea = function() {
-			window.setTimeout(function() {
-				var nfw = $('#new-photo-wrapper');
-				image.imgAreaSelect({
-					aspectRatio: '1:1',
-					handles: true,
-					fadeSpeed: 200,
-					x1: Math.floor(image.width() - Math.min(image.width(), image.height()))/2,
-					y1: Math.floor(image.height() - Math.min(image.width(), image.height()))/2,
-					x2: Math.floor(image.width() + Math.min(image.width(), image.height()))/2,
-					y2: Math.floor(image.height() + Math.min(image.width(), image.height()))/2,
-					onSelectChange: selectionCallback,
-					onInit: selectionCallback
-				});
+            $('#x1').val(selection.x1);
+            $('#y1').val(selection.y1);
+            $('#x2').val(selection.x2);
+            $('#y2').val(selection.y2);
+            $('#w').val(selection.width);
+            $('#h').val(selection.height);
+            $('#ww').val(image.width());            
+        };
 
-				// Show save selection buttons
-				$('#save-selection-buttons-wrapper').show();
-				$('#cancel-button').hide();
-				$('#c-pe-hint-no-photo').hide();
-				$('#c-pe-hint-photo').show();
+        // Function to initialize image area selection plugin when image is ready
+        var initArea = function() {
+            window.setTimeout(function() {
+                var nfw = $('#new-photo-wrapper');
+                image.imgAreaSelect({
+                    aspectRatio: '1:1',
+                    handles: true,
+                    fadeSpeed: 200,
+                    x1: Math.floor(image.width() - Math.min(image.width(), image.height()))/2,
+                    y1: Math.floor(image.height() - Math.min(image.width(), image.height()))/2,
+                    x2: Math.floor(image.width() + Math.min(image.width(), image.height()))/2,
+                    y2: Math.floor(image.height() + Math.min(image.width(), image.height()))/2,
+                    onSelectChange: selectionCallback,
+                    onInit: selectionCallback
+                });
 
-				// Remove 'loading...' image, if any
-				$('#photo-loading-image').hide();
-			}, 1);
-		};
+                // Show save selection buttons
+                $('#save-selection-buttons-wrapper').show();
+                $('#cancel-button').hide();
+                $('#c-pe-hint-no-photo').hide();
+                $('#c-pe-hint-photo').show();
 
-		if (image[0].complete) {
-			initArea();
-		} else {
-			image.load(initArea);
-		}
-	}; // end of prepareSelector()
+                // Remove 'loading...' image, if any
+                $('#photo-loading-image').hide();
+            }, 1);
+        };
 
-	// Initialize selector for pre-loaded image, if any
-	{{if !empty($oldImage)}}
-		prepareSelector("{{$oldImage}}");
-		$('#cancel-button').hide();
-		$('#c-pe-hint-no-photo').hide();
-		$('#c-pe-hint-photo').show();
-	{{else}}
-		$('#save-selection-buttons-wrapper').hide();
-		$('#cancel-button').show();
-		$('#c-pe-hint-no-photo').show();
-		$('#c-pe-hint-photo').hide();
-	{{/if}}
+        if (image[0].complete) {
+            initArea();
+        } else {
+            image.load(initArea);
+        }
+    }; // end of prepareSelector()
 
-	// File upload handler
-	$('iframe#photo-iframe').load(function(){
-		var url = $('iframe#photo-iframe').contents().find("body").html();
-		if (!url) {
-			// this is the initial iframe load event, we don't need it
-			return;
-		}
+    // Initialize selector for pre-loaded image, if any
+    {if !empty($oldImage)}
+        prepareSelector("{$oldImage}");
+        $('#cancel-button').hide();
+        $('#c-pe-hint-no-photo').hide();
+        $('#c-pe-hint-photo').show();
+    {else}
+        $('#save-selection-buttons-wrapper').hide();
+        $('#cancel-button').show();
+        $('#c-pe-hint-no-photo').show();
+        $('#c-pe-hint-photo').hide();
+    {/if}
 
-		if (url.substr(0, 6) == 'error:') {
-			alert('Error uploading image: '+url.substr(6));
-			// Reset the file upload selector
-			$('#imageform')[0].reset();
-			return;
-		}
+    var onUpload = function(result) {
+        if (!result) {
+            // this is the initial iframe load event, we don't need it
+            return;
+        }
 
-		$('#orig').val('0');
-		prepareSelector(url);
-	});
+        if (result.substr(0, 6) === 'error:') {
+            alert('Error uploading image: '+result.substr(6));
+            // Reset the file upload selector
+            $('#imageform')[0].reset();
+            return;
+        }
 
-	// auto submit for file uploading form
-	$('#fileselect').change(function(){
-		// show 'loading...' image
-		$('#photo-loading-image').show();
+        $('#orig').val('0');
+        $('#new-photo-area').remove();
+        prepareSelector(result);
+    };
 
-		// remove 'delete image' link
-		$('#save-selection-delete-photo').remove();
+    // auto submit for file uploading form
+    $('#fileselect').change(function(){
+        // show 'loading...' image
+        $('#photo-loading-image').show();
 
-		$('#imageform').submit();
-	});
+        // remove 'delete image' link
+        $('#save-selection-delete-photo').remove();
+
+        $('#imageform').submit();
+    });
+    
+    $(window).unbind('wa_before_dispatched.photo_editor').bind('wa_before_dispatched.photo_editor', function() {
+        $('#c-pe-photo-big').imgAreaSelect({ remove: true}).remove();
+    });
+    
 </script>
 

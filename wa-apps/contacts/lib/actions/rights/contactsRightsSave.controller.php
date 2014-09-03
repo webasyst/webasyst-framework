@@ -15,6 +15,8 @@ class contactsRightsSaveController extends waJsonController
         $value = (int)waRequest::post('value');
         $contact_id = waRequest::get('id');
 
+        $has_backend_access_old = $this->hasBackendAccess($contact_id);
+        
         if (!$name && !$value) {
             $values = waRequest::post('app');
             if (!is_array($values)) {
@@ -26,11 +28,11 @@ class contactsRightsSaveController extends waJsonController
 
         $right_model = new waContactRightsModel();
         $is_admin = $right_model->get($contact_id, 'webasyst', 'backend', false);
-
+        
         if ($is_admin && $app_id != 'webasyst') {
             throw new waException('Cannot change application rights for global admin.');
         }
-
+        
         // If $contact_id used to have limited access and we're changing global admin privileges,
         // then need to notify all applications to remove their custom access records.
         if (!$is_admin && $app_id == 'webasyst' && $name == 'backend') {
@@ -72,7 +74,7 @@ class contactsRightsSaveController extends waJsonController
              */
             $right_config = new $class_name();
         }
-
+        
         foreach($values as $name => $value) {
             if ($right_config && $right_config->setRights($contact_id, $name, $value)) {
                 // If we've got response from custom rights config, then no need to update main rights table
@@ -92,8 +94,68 @@ class contactsRightsSaveController extends waJsonController
         }
 
         waSystem::setActive('contacts');
-        $this->response = true;
+
+        if ($contact_id) {
+            // TODO: use waContact method for disabling
+            $is_user = waRequest::post('is_user', null, 'int');
+            if ($is_user === -1 || $is_user === 0 || $is_user === 1) {
+                $contact = new waContact($contact_id);
+                $contact->save(array(
+                    'is_user' => $is_user
+                ));
+                $this->response['access_disable_msg'] = contactsHelper::getAccessDisableMsg($contact);
+            }
+        }
+        
+        $has_backend_access_new = $this->hasBackendAccess($contact_id);
+        if ($has_backend_access_new !== $has_backend_access_old) {
+            if ($has_backend_access_new) {
+                $this->logAction("grant_backend_access", null, $contact_id);
+            } else {
+                $this->logAction("revoke_backend_access", null, $contact_id);
+            }
+        }
+        
     }
+    
+    public function hasBackendAccess($contact_id)
+    {
+        $ugm = new waUserGroupsModel();
+        $rm = new waContactRightsModel();
+        $ownAccess = $rm->getApps(-$contact_id, 'backend', FALSE, FALSE);
+        if(!isset($ownAccess['webasyst'])) {
+            $ownAccess['webasyst'] = 0;
+        }
+        $groups = $ugm->getGroups($contact_id);
+        $groupAccess = $rm->getApps(array_keys($groups), 'backend', FALSE, FALSE);
+        if(!isset($groupAccess['webasyst'])) {
+            $groupAccess['webasyst'] = 0;
+        }
+        
+        $system = waSystem::getInstance();
+        $apps = $system->getApps();
+        $noAccess = true;
+        $gNoAccess = true;
+        foreach($apps as $app_id => &$app) {
+            $app['id'] = $app_id;
+            $app['customizable'] = isset($app['rights']) ? (boolean) $app['rights'] : false;
+            $app['access'] = $ownAccess['webasyst'] ? 2 : 0;
+            if (!$app['access'] && isset($ownAccess[$app_id])) {
+                $app['access'] = $ownAccess[$app_id];
+            }
+            $app['gaccess'] = $groupAccess['webasyst'] ? 2 : 0;
+            if (!$app['gaccess'] && isset($groupAccess[$app_id])) {
+                $app['gaccess'] = $groupAccess[$app_id];
+            }
+            $noAccess = $noAccess && !$app['gaccess'] && !$app['access'];
+            $gNoAccess = $gNoAccess && !$app['gaccess'];
+        }
+        unset($app);
+        
+        return $ownAccess['webasyst'] || !$noAccess;
+        
+    }
+    
 }
 
 // EOF
