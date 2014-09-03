@@ -7,7 +7,7 @@
         {foreach $apps as $key => $key_apps}
         <ul id="apps-{$key}" class="menu-v with-icons s-personal-structure stack">
             {foreach $key_apps as $app_id => $app}
-            <li id="s-personal-app-{$app_id}" data-app="{$app_id}" data-link="{$app.link}"{if $app_id == $auth_app} data-auth-app="1"{/if}>
+            <li id="s-personal-app-{$app_id}" data-app="{$app_id}" {if !empty($app.link)}data-link="{$app.link}"{/if}{if $app_id == $auth_app} data-auth-app="1"{/if}>
                 <a href="#/personal/app/{$app_id}/"{if $key=='disabled'} class="s-disabled"{/if}>
                     <span class="s-onoff">
                         {if $key == 'enabled'}<i class="icon16 sort"></i>{/if}

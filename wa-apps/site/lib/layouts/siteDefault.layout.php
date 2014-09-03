@@ -9,6 +9,7 @@ class siteDefaultLayout extends waLayout
 
         $this->view->assign('apps', siteHelper::getApps());
         $this->view->assign('domain_id', $this->domain_id);
+        $this->view->assign('domain_url', siteHelper::getDomain());
         $this->view->assign('domains', siteHelper::getDomains(true));
         $this->view->assign('pages', $this->getPages());
         $this->view->assign('domain_root_url', siteHelper::getDomainUrl());

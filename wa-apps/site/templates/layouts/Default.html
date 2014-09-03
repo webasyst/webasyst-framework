@@ -68,7 +68,8 @@
 	<script type="text/javascript">
 	$.wa.site.init({
         domain: {$domain_id}, static_url: "{$wa_app_static_url}",
-        wa_url: "{$wa_url}", root_url: "{$domain_root_url}"
+        wa_url: "{$wa_url}", root_url: "{$domain_root_url}",
+        domain_url: "{$domain_url|escape}"
     });
     var wa_url = "{$wa_url}";
 	</script>
