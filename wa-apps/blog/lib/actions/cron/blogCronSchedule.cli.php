@@ -7,6 +7,10 @@
 
 class blogCronScheduleCli extends waCliController
 {
+    public function __construct()
+    {
+        waLog::deprecated(__CLASS__);
+    }
 
     public function execute()
     {

@@ -52,6 +52,7 @@ function wa_dumpc()
  */
 function wa_print_r()
 {
+    waLog::deprecated(__FUNCTION__);
     $args = func_get_args(); // Can't be used as a function argument directly before PHP 5.3
     call_user_func_array('wa_dumpc', $args);
     exit;
@@ -131,6 +132,7 @@ function wa_is_int($val)
  */
 function int_ok($val)
 {
+    waLog::deprecated(__FUNCTION__);
     return wa_is_int($val);
 }
 

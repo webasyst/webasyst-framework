@@ -247,6 +247,7 @@ class waContactFields
      */
     public static function createField($field)
     {
+        waLog::deprecated(__METHOD__);
         if (!($field instanceof waContactField)) {
             throw new waException('Invalid contact field '.print_r($field, TRUE));
         }

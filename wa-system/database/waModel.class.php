@@ -574,6 +574,7 @@ class waModel
      */
     public function multiInsert($data)
     {
+        waLog::deprecated(__METHOD__);
         return $this->multipleInsert($data);
     }
 

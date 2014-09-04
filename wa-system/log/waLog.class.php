@@ -31,6 +31,15 @@ class waLog
         fclose($fd);
         return true;
     }
+    
+    public static function deprecated($message) {
+        
+        if(version_compare(PHP_VERSION, "5.3.0", ">=")) {
+            trigger_error( $message, E_USER_DEPRECATED);
+        } else {
+            trigger_error( "Deprecated " . $message, E_USER_NOTICE);
+        }
+    }
 }
 
 // EOF

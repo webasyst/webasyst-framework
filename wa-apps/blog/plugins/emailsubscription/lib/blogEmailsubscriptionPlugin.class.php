@@ -53,6 +53,9 @@ class blogEmailsubscriptionPlugin extends blogPlugin
      */
     public function cronAction($params)
     {
+
+        waLog::deprecated(__METHOD__);
+
         $model = new blogEmailsubscriptionLogModel();
         $row = $model->getByField('status', 0);
         if ($row) {

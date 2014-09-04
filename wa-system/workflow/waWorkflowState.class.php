@@ -86,6 +86,7 @@ class waWorkflowState extends waWorkflowEntity
      */
     protected function getAvailableActions($params = null)
     {
+        waLog::deprecated(__METHOD__);
         /**
          * return array(
          *        'Workflow1Action1',

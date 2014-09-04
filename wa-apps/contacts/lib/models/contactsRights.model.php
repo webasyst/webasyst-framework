@@ -48,7 +48,8 @@ class contactsRightsModel extends waModel
      * @return array|boolean category_id => read|write or TRUE for admins 
      */
     public function getAllowedCategories($user_id = null) {
-        
+
+        waLog::deprecated(__METHOD__);
         return true;
         
     }
