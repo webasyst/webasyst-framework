@@ -238,19 +238,31 @@ class waRouting
         static $_page_routes;
 
         if ($_page_routes === null || !isset($_page_routes[$app_id])) {
-            $class = $app_id.'PageModel';
-            /**
-             * @var waPageModel $model
-             */
-            $model = new $class();
-            $query = $model->select('id, full_url');
 
-            $query->where("domain = ? AND route = ?", array(self::getDomain(null, true), $route['url']));
-
-            if (!waRequest::get('preview')) {
-                $query->where("status = 1");
+            if ($cache = wa($app_id)->getCache()) {
+                $cache_key = 'urls/'.self::getDomain(null, true). '/'. self::clearUrl($route['url']);
+                $rows = $cache->get($cache_key, 'pages');
             }
-            $rows = $query->fetchAll();
+
+            if (!$cache || $rows === null) {
+                $class = $app_id . 'PageModel';
+                /**
+                 * @var waPageModel $model
+                 */
+                $model = new $class();
+                $query = $model->select('id, full_url');
+
+                $query->where("domain = ? AND route = ?", array(self::getDomain(null, true), $route['url']));
+
+                if (!waRequest::get('preview')) {
+                    $query->where("status = 1");
+                }
+                $rows = $query->fetchAll();
+                if ($cache) {
+                    $cache->set($cache_key, $rows, 3600, 'pages');
+                }
+            }
+
             $page_routes = array();
             foreach ($rows as $row) {
                 $page_routes[] = array(
@@ -338,6 +350,14 @@ class waRouting
     }
 
 
+    /**
+     * @param string $path
+     * @param array $params
+     * @param bool $absolute
+     * @param string $domain_url
+     * @param string $route_url
+     * @return string
+     */
     public function getUrl($path, $params = array(), $absolute = false, $domain_url = null, $route_url = null)
     {
         if (is_bool($params)) {
@@ -359,7 +379,18 @@ class waRouting
             $params['action'] = $parts[2];
         }
         $routes = array();
-        if (!$this->route || $this->route['app'] != $app ||
+
+        $check_current_route = true;
+        if ($this->route && $params) {
+            foreach ($params as $k => $v) {
+                if (isset($this->route[$k]) && $this->route[$k] != $v) {
+                    $check_current_route = false;
+                    break;
+                }
+            }
+        }
+
+        if (!$this->route || !$check_current_route || $this->route['app'] != $app ||
             ($domain_url && $domain_url != $this->getDomain()) ||
             ($route_url && $this->route['url'] != $route_url) ||
         (isset($this->route['module']) && isset($params['module']) && $this->route['module'] != $params['module'])
@@ -474,7 +505,7 @@ class waRouting
     {
         $url = self::clearUrl($route['url']);
         if ($domain) {
-            if (parse_url($domain, PHP_URL_HOST) == waRequest::server('HTTP_HOST')) {
+            if (parse_url('http://'.$domain, PHP_URL_HOST) == waRequest::server('HTTP_HOST')) {
                 $https = waRequest::isHttps();
             } else {
                 $https = false;

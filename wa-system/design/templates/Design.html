@@ -277,17 +277,21 @@
                     } else {
                         var li = $('#wa-theme-list li:first');
                     }
-                    $("#wa-design-container").load(li.data('routing') + '&reload_on_change=1', function () {
-                        $("#wa-design-container .back").remove();
-                        $(".s-route-core").hide();
-                        $('.s-route-details .fields').
-                                prepend($('<div class="field-group"></div>').
-                                        append($('<div class="field"><div class="name">URL</div></div>').
-                                                append($('<div class="value"></div>').html($('#s-route-where').html()))
-                                )
-                        );
-                        $("#wa-design-container .s-route-delete").closest('div').remove();
-                    });
+                    if (li.data('routing')) {
+                        $("#wa-design-container").load(li.data('routing') + '&reload_on_change=1', function () {
+                            $("#wa-design-container .back").remove();
+                            $(".s-route-core").hide();
+                            $('.s-route-details .fields').
+                                    prepend($('<div class="field-group"></div>').
+                                            append($('<div class="field"><div class="name">URL</div></div>').
+                                                    append($('<div class="value"></div>').html($('#s-route-where').html()))
+                                    )
+                            );
+                            $("#wa-design-container .s-route-delete").closest('div').remove();
+                        });
+                    } else {
+                        $.wa.setHash(location.hash.replace(/&?action=settings/, ''));
+                    }
                 } else {
                     if (hash.indexOf('action=') == -1) {
                         if (hash.indexOf('file=') == -1) {

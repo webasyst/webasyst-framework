@@ -165,15 +165,19 @@ abstract class waView
     {
         $this->assign('wa_active_theme_path', $theme->path);
         $this->assign('wa_active_theme_url', $theme->url);
-        $this->assign('wa_theme_version', $theme->version());
         $theme_settings = $theme->getSettings(true);
 
         $locales = $theme->getLocales();
+
+        $version = $theme->version();
 
         $file = $theme->getFile($template);
         if ($parent_theme = $theme->parent_theme) {
             if (!empty($file['parent'])) {
                 $theme = $parent_theme;
+            }
+            if ($theme->version() > $version) {
+                $version = $theme->version();
             }
             $this->assign('wa_parent_theme_url', $parent_theme->url);
             $this->assign('wa_parent_theme_path', $parent_theme->path);
@@ -184,6 +188,7 @@ abstract class waView
                 $locales += $parent_theme->getLocales();
             }
         }
+        $this->assign('wa_theme_version', $version);
         waLocale::setStrings($locales);
         $this->assign('theme_settings', $theme_settings);
         $this->assign('wa_theme_url', $theme->url);

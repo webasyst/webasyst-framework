@@ -61,7 +61,7 @@ class waUser extends waContact
             if (time() - strtotime($info['last_datetime']) < $timeout) {
                 $m = new waLoginLogModel();
                 $datetime_out = $m->select('datetime_out')->
-                        where('contact_id = i:0', array($this->id))->
+                        where('contact_id = i:0', array($info['id']))->
                         order('id DESC')->
                         limit(1)->fetchField();
                 if (!$datetime_out) {

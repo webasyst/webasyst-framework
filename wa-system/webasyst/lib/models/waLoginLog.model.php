@@ -30,4 +30,6 @@ class waLoginLogModel extends waModel
         return $this->query($sql)->fetchAll('contact_id', true);
     }
 
+
+
 }

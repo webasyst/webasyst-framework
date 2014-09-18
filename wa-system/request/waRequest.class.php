@@ -474,6 +474,9 @@ class waRequest
         if (!empty($_SERVER['HTTP_HTTPS']) && (strtolower($_SERVER['HTTP_HTTPS']) == 'on' || $_SERVER['HTTP_HTTPS'] == '1')) {
             return true;
         }
+        if (!empty($_SERVER['HTTP_SSL']) && $_SERVER['HTTP_SSL'] == 1) {
+            return true;
+        }
         return false;
     }
 }

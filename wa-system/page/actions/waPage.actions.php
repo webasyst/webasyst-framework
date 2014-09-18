@@ -452,7 +452,7 @@ class waPageActions extends waActions
             if ($errors) {
                 echo json_encode(array('error' => $errors));
             } else {
-                echo stripslashes(json_encode(array('filelink' => $response)));
+                echo json_encode(array('filelink' => $response));
             }
         } else {
             $this->displayJson($response, $errors);
@@ -495,18 +495,24 @@ class waPageActions extends waActions
 
     protected function saveFile(waRequestFile $f, $path, &$name)
     {
-        if (file_exists($path.DIRECTORY_SEPARATOR.$f->name)) {
-            $i = strrpos($f->name, '.');
-            $name = substr($f->name, 0, $i);
-            $ext = substr($f->name, $i + 1);
+        $name = $f->name;
+        if (!preg_match('//u', $name)) {
+            $tmp_name = @iconv('windows-1251', 'utf-8//ignore', $name);
+            if ($tmp_name) {
+                $name = $tmp_name;
+            }
+        }
+        if (file_exists($path.DIRECTORY_SEPARATOR.$name)) {
+            $i = strrpos($name, '.');
+            $ext = substr($name, $i + 1);
+            $name = substr($name, 0, $i);
             $i = 1;
             while (file_exists($path.DIRECTORY_SEPARATOR.$name.'-'.$i.'.'.$ext)) {
                 $i++;
             }
             $name = $name.'-'.$i.'.'.$ext;
-            return $f->moveTo($path, $name);
         }
-        return $f->moveTo($path, $f->name);
+        return $f->moveTo($path, $name);
     }
 
     public function helpAction()

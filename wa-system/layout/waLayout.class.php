@@ -29,6 +29,27 @@ class waLayout extends waController
     public function __construct()
     {
         $this->view = waSystem::getInstance()->getView();
+
+        if (wa()->getEnv() == 'frontend') {
+            // save utm to cookie
+            $utm = array();
+            foreach (waRequest::get() as $k => $v) {
+                if (substr($k, 0, 4) == 'utm_') {
+                    $utm[substr($k, 4)] = $v;
+                }
+            }
+            if ($utm) {
+                // save utm to cookie
+                wa()->getResponse()->setCookie('utm', json_encode($utm), time() + 30 * 86400, null, '', false, true);
+            }
+            // save referer
+            if ($ref = waRequest::server('HTTP_REFERER')) {
+                $ref_parts = @parse_url($ref);
+                if ($ref_parts['host'] != waRequest::server('HTTP_HOST')) {
+                    wa()->getResponse()->setCookie('referer', waRequest::server('HTTP_REFERER'), time() + 30 * 86400, null, '', false, true);
+                }
+            }
+        }
     }
 
 

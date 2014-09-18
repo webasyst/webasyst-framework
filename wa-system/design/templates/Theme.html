@@ -39,10 +39,12 @@
                     {sprintf(_ws('%s design theme is currently not in use on your websites.'), $theme.name|escape)}
                 </p>
             {/if}            
-            
+
+            {if $cover}
             <p>
-                <img src="{$theme->getUrl()}cover.png" />
+                <img src="{$cover}" />
             </p>
+            {/if}
             
             <p style="line-height: 2.2em;">
                 <a id="theme-start-using" href="#" class="button green">{sprintf('[s`Start using %s theme`]', $theme.name|escape)}</a>
@@ -77,13 +79,17 @@
                     <div class="value no-shift">
                         
                         <p class="bold">
+                            {$_theme_usages = []}
                             {foreach $theme_routes as $_r}
+                                {if $_r['_domain'] != $wa->get('domain') && $_r['_id'] != $wa->get('route')}
+                                    {$_theme_usages[] = htmlspecialchars("{$_r._domain}/{$_r.url}")}
+                                {/if}
                                 <a target="_blank" href="{$_r._url}" class="no-underline">{$_r._domain}/{$_r.url} <i class="icon10 new-window"></i></a><br>
                             {/foreach}
                         </p>
                         {if count($theme_routes) > 1}
                             <p class="gray">
-                                {sprintf('[s`All listed routes are linking %s design theme right now.`]', $theme.name|escape)}
+                                <i class="icon10 exclamation"></i> {sprintf('[s`Customizing %s theme settings below will affect all listed routes. If you want to keep individual designs, use separate theme copies (clones) for each route.`]', $theme.name|escape)}
                             </p>
                         {/if}
                         
@@ -249,7 +255,7 @@
                                     <label>
                                         <input name="route" value="{$r._domain}|{$r._id}" type="radio" {if $r@first}checked{/if}>
                                         {$r._domain}/{$r.url}
-                                        <span class="hint">{$r.theme}</span>
+                                        <span class="hint">{if isset($r.theme)}{$r.theme}{else}default{/if}</span>
                                     </label>
                                 </div>
                             {foreachelse}
@@ -550,7 +556,7 @@
         $.post("?module=design&action=themeCopy", { theme: theme_id}, function (response) {
             if (response.status == 'ok') {
                 if(response.data.redirect) {
-                    location.href = location.href.replace(/(\?|#).*$/,'') + response.data.redirect;
+                    location.href = location.href.replace(/#.*$/,'') + response.data.redirect;
                     location.reload();
                 } else {
                     location.reload(true);

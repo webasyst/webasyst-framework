@@ -8,10 +8,10 @@ return array (
         'required' => true,
       ),
   'email' => array (),
-  'about' => array (),
   'phone' => array (),
   'address' => array (),
   'url' => array (),
+  'about' => array (),
   'categories' => array (),
 );
 // EOF

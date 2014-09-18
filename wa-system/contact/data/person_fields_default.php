@@ -17,6 +17,7 @@ return array (
   'birthday' => array ('allow_self_edit' => 1),
   'locale' => array ('allow_self_edit' => 1),
   'timezone' => array ('allow_self_edit' => 1),
+  'socialnetwork' => array('allow_self_edit' => 1),
   'about' => array ('allow_self_edit' => 1),
   'categories' => array (),
 );

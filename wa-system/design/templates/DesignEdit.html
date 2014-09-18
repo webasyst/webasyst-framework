@@ -1,6 +1,11 @@
 <div id="wa-design-sidebar" class="sidebar left200px" style="min-height:300px">
     <div class="wa-theme-block">
         <h4 class="heading">{$theme.name}</h4>
+        {if $theme_usages && $route_url}
+        <div class="block">
+            <p class="hint" style="margin-bottom: 0;"><i class="icon10 exclamation"></i> {sprintf('[s`This design theme is also used on <strong>%s</strong>. Editing theme template files will affect both %s and other listed routes.`]', implode(', ', $theme_usages), $route_url)}</p>
+        </div>
+        {/if}
         <ul class="menu-v with-icons wa-theme wa-theme-templates">
             {foreach $theme_files as $f_id => $f}
             <li class="{if $f_id == $file.id}selected {/if}{if $f@first}top-padded {/if}{if $f.parent}{if !empty($f.parent_exists)}inherit{else}error{/if}{/if}">

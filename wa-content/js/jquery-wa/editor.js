@@ -102,7 +102,7 @@ jQuery.fn.waEditor = function (options) {
         if (navigator.appVersion.indexOf('Mac') != -1) {
             editor.setFontSize(13);
         } else if (navigator.appVersion.indexOf('Linux') != -1) {
-            editor.setFontSize(15);
+            editor.setFontSize(16);
         } else {
             editor.setFontSize(14);
         }

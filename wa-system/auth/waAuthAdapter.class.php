@@ -46,6 +46,11 @@ abstract class waAuthAdapter
         return wa()->getRootUrl().'wa-content/img/auth/'.$this->getId().'.png';
     }
 
+    public function getUrl()
+    {
+        return wa()->getRootUrl(false, true).'oauth.php?app='.wa()->getApp().'&amp;provider='.$this->getId();
+    }
+
     public function getCallbackUrl($absolute = true)
     {
         return wa()->getRootUrl($absolute, true).'oauth.php?provider='.$this->getId();

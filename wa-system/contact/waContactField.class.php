@@ -440,6 +440,7 @@ abstract class waContactField
                 /**
                  * @var waValidator $validator
                  */
+                $validator->setOption($this->options);
                 if ($validator instanceof waValidator) {
                     if ($this->isMulti()) {
                         $allEmpty = true;
@@ -788,7 +789,7 @@ abstract class waContactField
          return new $state['_type']($state['id'], $state['name'], $state['options']);
     }
     
-    public function prepareSave($value)
+    public function prepareSave($value, waContact $contact = null)
     {
         return $value;
     }

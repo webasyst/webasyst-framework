@@ -232,18 +232,19 @@ class waSystem
     }
 
     /**
-     * @param string $key
-     * @param int $ttl
+     * @param string $type
      * @param string $app_id
-     * @return waiCache
+     * @return waCache
      */
-    public function getCache($key, $ttl = 0, $app_id = null)
+    public function getCache($type = 'default', $app_id = null)
     {
         if ($app_id === null) {
-            $app_id = $this->getApp();
+            $app_id = $this->getConfig()->getApplication();
         }
-        $class = isset(self::$factories_config['cache']) ? self::$factories_config['cache'] : 'waSerializeCache';
-        return new $class($key, $ttl, $app_id);
+        if ($app_id != $this->getConfig()->getApplication()) {
+            return wa($app_id)->getCache($type);
+        }
+        return $this->getConfig()->getCache($type);
     }
 
     /**
@@ -467,7 +468,7 @@ class waSystem
                         );
 
                         // logout itself
-                        $this->getAuth()->clearAuth();
+                        $this->getUser()->logout();
                         if (!$logout_url) {
                             $logout_url = $this->config->getRequestUrl(false, true);
                         }
@@ -817,17 +818,19 @@ class waSystem
                         }
                         if (isset($app_info['img'])) {
                             $app_info['img'] = 'wa-apps/'.$app.'/'.$app_info['img'];
-                        } else {
-                            $app_info['img'] = isset($app_info['icon'][48]) ? $app_info['icon'][48] : 'wa-apps/'.$app.'/img/'.$app.".png";
+                        } elseif (isset($app_info['icon'][48])) {
+                            $app_info['img'] = $app_info['icon'][48];
                         }
-                        if (!isset($app_info['icon'][48])) {
-                            $app_info['icon'][48] = $app_info['img'];
-                        }
-                        if (!isset($app_info['icon'][24])) {
-                            $app_info['icon'][24] = $app_info['icon'][48];
-                        }
-                        if (!isset($app_info['icon'][16])) {
-                            $app_info['icon'][16] = $app_info['icon'][24];
+                        if (isset($app_info['img'])) {
+                            if (!isset($app_info['icon'][48])) {
+                                $app_info['icon'][48] = $app_info['img'];
+                            }
+                            if (!isset($app_info['icon'][24])) {
+                                $app_info['icon'][24] = $app_info['icon'][48];
+                            }
+                            if (!isset($app_info['icon'][16])) {
+                                $app_info['icon'][16] = $app_info['icon'][24];
+                            }
                         }
                         self::$apps[$app] = $app_info;
                     }
@@ -946,8 +949,8 @@ class waSystem
      * Returns URL corresponding to specified combination of app's module and action based on the contents of
      * configuration file routing.php of specified app.
      *
-     * @param  string  $path      App, module, and action IDs separated by slash /
-     * @param  array   $params    Associative array of the following optional parameters:
+     * @param string  $path      App, module, and action IDs separated by slash /
+     * @param array   $params    Associative array of the following optional parameters:
      *     - 'domain': domain name specified for one of existing websites
      *     - 'module': module id
      *     - 'action': action id
@@ -955,11 +958,13 @@ class waSystem
      *         e.g., 'category_url' is such a dynamic parameter in the following routing configuration entry:
      *         'category/<category_url>/' => 'frontend/category',
      * @param  bool    $absolute  Flag requiring to return an absolute URL instead of a relative one.
-     * @return  string
+     * @param string $domain
+     * @param string $route
+     * @return string
      */
-    public function getRouteUrl($path, $params = array(), $absolute = false)
+    public function getRouteUrl($path, $params = array(), $absolute = false, $domain = null, $route = null)
     {
-        return $this->getRouting()->getUrl($path, $params, $absolute);
+        return $this->getRouting()->getUrl($path, $params, $absolute, $domain, $route);
     }
 
     /**

@@ -27,12 +27,19 @@ class waContactPhoneField extends waContactStringField
     protected function setValue($value)
     {
         if (is_array($value) && isset($value['value'])) {
-            $value = $value['value'];
+            $v = $value['value'];
+        } else {
+            $v = $value;
         }
-        $value = trim((string)$value);
-        if ($value) {
-            $value = str_replace(str_split('+-()'), '', $value);
-            $value = preg_replace('/(\d)\s+(\d)/i', '$1$2', $value);
+        $v = trim((string)$v);
+        if ($v) {
+            $v = str_replace(str_split('+-()'), '', $v);
+            $v = preg_replace('/(\d)\s+(\d)/i', '$1$2', $v);
+        }
+        if (is_array($value) && isset($value['value'])) {
+            $value['value'] = $v;
+        } else {
+            $value = $v;
         }
         return $value;
     }

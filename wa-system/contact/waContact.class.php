@@ -299,7 +299,7 @@ class waContact implements ArrayAccess
             // Multi field access by extension
             if ($field->isMulti() && $ext) {
                 foreach ($result as $sort => $row) {
-                    if (!empty($row['ext']) && $row['ext'] !== $ext) {
+                    if (empty($row['ext']) || $row['ext'] !== $ext) {
                         unset($result[$sort]);
                     }
                 }
@@ -649,7 +649,7 @@ class waContact implements ArrayAccess
                     }
                 }
                 if (!$errors && $f->getStorage()) {
-                    $save[$f->getStorage()->getType()][$field] = $f->prepareSave($value);
+                    $save[$f->getStorage()->getType()][$field] = $f->prepareSave($value, $this);
                 }
             } elseif ($contact_model->fieldExists($field)) {
                 $save['waContactInfoStorage'][$field] = $value;
@@ -669,6 +669,22 @@ class waContact implements ArrayAccess
             if (!$this->id) {
                 $is_add = true;
                 $storage = 'waContactInfoStorage';
+
+                if (wa()->getEnv() == 'frontend') {
+                    if ($ref = waRequest::cookie('referer')) {
+                        $save['waContactDataStorage']['referer'] = $ref;
+                        $save['waContactDataStorage']['referer_host'] = parse_url($ref, PHP_URL_HOST);
+                    }
+                    if ($utm = waRequest::cookie('utm')) {
+                        $utm = json_decode($utm, true);
+                        if ($utm && is_array($utm)) {
+                            foreach ($utm as $k => $v) {
+                                $save['waContactDataStorage']['utm_'.$k] = $v;
+                            }
+                        }
+                    }
+                }
+
                 $this->id = waContactFields::getStorage($storage)->set($this, $save[$storage]);
                 unset($save[$storage]);
             }

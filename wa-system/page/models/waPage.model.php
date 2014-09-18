@@ -66,14 +66,18 @@ class waPageModel extends waModel
                 WHERE ".$this->domain_field." = s:".$this->domain_field." AND route = s:route AND parent_id ".
                 (!isset($data['parent_id']) || $data['parent_id'] === null ? "IS NULL" : " = i:parent_id");
         $data['sort'] = (int)$this->query($sql, $data)->fetchField() + 1;
-        return $this->insert($data);
+        $r = $this->insert($data);
+        $this->clearCache();
+        return $r;
     }
 
 
     public function update($id, $data)
     {
         $data['update_datetime'] = date("Y-m-d H:i:s");
-        return $this->updateById($id, $data);
+        $r = $this->updateById($id, $data);
+        $this->clearCache();
+        return $r;
     }
 
     public function delete($id)
@@ -90,6 +94,7 @@ class waPageModel extends waModel
                 if ($this->deleteById($id)) {
                     // update sort
                     $this->updateSortOnDelete($page);
+                    $this->clearCache();
                     return true;
                 } else {
                     return false;
@@ -187,6 +192,7 @@ class waPageModel extends waModel
                     $data['old_full_url'] .= '/';
                 }
             }
+            $this->clearCache();
             return $data;
         } else {
             return false;
@@ -222,6 +228,21 @@ class waPageModel extends waModel
 
     public function setParams($id, $params)
     {
+        $this->clearCache();
         return $this->getParamsModel()->save($id, $params);
+    }
+
+    public function getPublishedPages($domain, $route)
+    {
+        $sql = "SELECT id, parent_id, name, title, full_url, url, create_datetime, update_datetime FROM ".$this->table.'
+                    WHERE status = 1 AND domain = s:domain AND route = s:route ORDER BY sort';
+        return $this->query($sql, array('domain' => $domain, 'route' => $route))->fetchAll('id');
+    }
+
+    public function clearCache()
+    {
+        if ($cache = wa($this->app_id)->getCache()) {
+            $cache->deleteGroup('pages');
+        }
     }
 }

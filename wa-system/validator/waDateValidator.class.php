@@ -14,7 +14,6 @@
  */
 class waDateValidator extends waValidator
 {
-
     protected function init()
     {
         parent::init();
@@ -30,27 +29,28 @@ class waDateValidator extends waValidator
     {
         parent::isValid($value);
         if (is_array($value)) {
+            $error = null;
             $year = null;
-            if (isset($value['year'])) {
+            if (!empty($value['year'])) {
                 $year = $value['year'];
-                if ($year < 0 || $year > date('Y') || !is_numeric($year) || floor($year) != $year) {
-                    $this->setError($this->getMessage('incorrect_date'));
+                if ($year < 1 || $year > date('Y') || !is_numeric($year) || floor($year) != $year) {
+                    $error = $this->getMessage('incorrect_date');
                 }
             };
 
             $month = null;
-            if (isset($value['month'])) {
+            if (!empty($value['month'])) {
                 $month = $value['month'];
                 if ($month < 1 || $month > 12) {
-                    $this->setError($this->getMessage('incorrect_date'));
+                    $error = $this->getMessage('incorrect_date');
                 }
             };
 
             $day = null;
-            if (isset($value['day'])) {
+            if (!empty($value['day'])) {
                 $day = $value['day'];
                 if ($day < 1) {
-                    $this->setError($this->getMessage('incorrect_date'));
+                    $error = $this->getMessage('incorrect_date');
                 }
             };
 
@@ -63,20 +63,24 @@ class waDateValidator extends waValidator
                         $leap = date("L", strtotime("{$year}-01-01"));
                     }
                     if ($leap && $day > 29) {
-                        $this->setError($this->getMessage('incorrect_date'));
+                        $error = $this->getMessage('incorrect_date');
                     }
                     if (!$leap && $day > 28) {
-                        $this->setError($this->getMessage('incorrect_date'));
+                        $error = $this->getMessage('incorrect_date');
                     }
                 } else if (in_array($month, array('1', '3', '5', '7', '8', '10', '12'))) {
                     if ($day > 31) {
-                        $this->setError($this->getMessage('incorrect_date'));
+                        $error = $this->getMessage('incorrect_date');
                     }
                 } else {
                     if ($day > 30) {
-                        $this->setError($this->getMessage('incorrect_date'));
+                        $error = $this->getMessage('incorrect_date');
                     }
                 }
+            }
+
+            if ($error) {
+                $this->setError($error);
             }
 
         } else {
@@ -94,6 +98,30 @@ class waDateValidator extends waValidator
             }
         }
         return $this->getErrors() ? false : true;
+    }
+    
+    public function isEmpty($value) {
+        if (is_array($value)) {
+            if (empty($value['year']) && empty($value['month']) && empty($value['day'])) {
+                return true;
+            }
+        } else {
+            return parent::isEmpty($value);
+        }
+    }
+    
+    public function getMessage($name, $variables = array())
+    {
+        $message = isset($this->messages[$name]) ? $this->messages[$name] : _ws('Invalid');
+        foreach ($variables as $k => $v) {
+            if (!$this->isEmpty($v)) {
+                if (is_array($v)) {
+                    $v = implode(', ', $v);
+                }
+                $message = str_replace('%'.$k.'%', $v, $message);
+            }
+        }
+        return $message;
     }
 
 }

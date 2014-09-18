@@ -51,6 +51,23 @@ class waOAuthController extends waViewController
         if ($row) {
             $contact_id = $row['contact_id'];
         }
+
+        if (wa()->getUser()->isAuth()) {
+            $contact = wa()->getUser();
+            if ($contact_id && $contact_id != $contact->getId()) {
+                // delete old link
+                $contact_data_model->deleteByField(array(
+                    'contact_id' => $contact_id,
+                    'field' => $data['source'].'_id'
+                ));
+                // save new link
+                $contact->save(array(
+                    $data['source'].'_id' => $data['source_id']
+                ));
+            }
+            $contact_id = $contact->getId();
+        }
+
         // try find user by email
         if (!$contact_id && isset($data['email'])) {
             $contact_model = new waContactModel();
@@ -113,13 +130,15 @@ class waOAuthController extends waViewController
                     $contact->setPhoto($path);
                 }
             }
-        } else {
+        } elseif (empty($contact)) {
             $contact = new waContact($contact_id);
         }
 
         // auth user
         if ($contact_id) {
-            wa()->getAuth()->auth(array('id' => $contact_id));
+            if (!wa()->getUser()->isAuth()) {
+                wa()->getAuth()->auth(array('id' => $contact_id));
+            }
             return $contact;
         }
         return false;

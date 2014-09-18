@@ -863,13 +863,18 @@ HTML;
         if (!empty($config['fields'][$f->getId()]['placeholder'])) {
             $attrs .= ' placeholder="'.htmlspecialchars($config['fields'][$f->getId()]['placeholder']).'"';
         }
-        $html = '<div class="wa-field wa-field-'.$f->getId().'">
-                <div class="wa-name">'.$name.'</div>
-                <div class="wa-value">'.$f->getHTML($params, $attrs);
-        if ($error) {
-            $html .= '<em class="wa-error-msg">'.$error.'</em>';
-        }
-        $html .= '</div></div>';
+		
+		if ($f instanceof waContactHiddenField) {
+			$html = $f->getHTML($params, $attrs);
+		} else {
+			$html = '<div class="wa-field wa-field-'.$f->getId().'">
+					<div class="wa-name">'.$name.'</div>
+					<div class="wa-value">'.$f->getHTML($params, $attrs);
+			if ($error) {
+				$html .= '<em class="wa-error-msg">'.$error.'</em>';
+			}
+			$html .= '</div></div>';
+		}
         return $html;
     }
 
@@ -883,12 +888,12 @@ HTML;
             return '';
         }
         $html = '<div class="wa-auth-adapters"><ul>';
-        $url = wa()->getRootUrl(false, true).'oauth.php?app='.$this->app().'&amp;provider=';
+
         foreach ($adapters as $adapter) {
             /**
              * @var waAuthAdapter $adapter
              */
-            $html .= '<li><a href="'.$url.$adapter->getId().'"><img alt="'.$adapter->getName().'" src="'.$adapter->getIcon().'"/>'.$adapter->getName().'</a></li>';
+            $html .= '<li><a href="'.$adapter->getUrl().'"><img alt="'.$adapter->getName().'" src="'.$adapter->getIcon().'"/>'.$adapter->getName().'</a></li>';
         }
         $html .= '</ul><p>';
         $html .= _ws("Authorize either by entering your contact information, or through one of the websites listed above.");
@@ -905,6 +910,11 @@ $("div.wa-auth-adapters a").click(function () {
 HTML;
 
         return $html;
+    }
+
+    public function debug()
+    {
+        return waSystemConfig::isDebug();
     }
 
     public function oauth($provider, $config, $token, $code = null)

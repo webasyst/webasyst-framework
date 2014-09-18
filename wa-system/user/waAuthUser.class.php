@@ -124,11 +124,13 @@ class waAuthUser extends waUser
                 $login_log_model->insert(array(
                     'contact_id' => $this->id,
                     'datetime_in' => date("Y-m-d H:i:s"),
-                    'datetime_out' => null
+                    'datetime_out' => $force == 'logout' ? date("Y-m-d H:i:s") : null
                 ));
                 // TODO: insert record in waLog
             } else {
-                if ($last_datetime = strtotime($time)) {
+                if ($force == 'logout') {
+                    $login_log_model->updateById($last_activity['id'], array('datetime_out' => date("Y-m-d H:i:s")));
+                } elseif ($last_datetime = strtotime($time)) {
                     if (time() - $last_datetime > self::$options['activity_timeout']) {
                         $login_log_model->updateById($last_activity['id'], array('datetime_out' => $time));
                         $login_log_model->insert(array(
@@ -159,7 +161,7 @@ class waAuthUser extends waUser
     public function logout()
     {
         // Update last datetime of the current user
-        $this->updateLastTime(true);
+        $this->updateLastTime('logout');
         // clear auth
         waSystem::getInstance()->getAuth()->clearAuth();
         $this->id = $this->data = null;

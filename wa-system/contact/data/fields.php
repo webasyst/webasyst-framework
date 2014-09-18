@@ -97,7 +97,6 @@ return array(
             'top' => new waContactSocialNetworkTopFormatter(),
             'js' => new waContactSocialNetworkJSFormatter()
         ),
-        'top' => true,
         'domain' => array(
             'facebook' => 'facebook.com',
             'vkontakte' => 'vk.com',

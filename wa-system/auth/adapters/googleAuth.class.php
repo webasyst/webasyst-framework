@@ -58,6 +58,11 @@ class googleAuth extends waOAuth2Adapter
                 'lastname' => $response['family_name']
             );
             if (isset($response['locale'])) {
+                if ($response['locale'] == 'ru') {
+                    $response['locale'] = 'ru_RU';
+                } elseif ($response['locale'] == 'en') {
+                    $response['locale'] = 'en_US';
+                }
                 $data['locale'] = $response['locale'];
             }
             if (isset($response['email'])) {

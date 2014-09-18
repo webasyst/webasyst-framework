@@ -17,7 +17,6 @@ class waContactsCollection
     protected $count;
 
     protected $options = array(
-        'check_rights' => false
     );
 
     protected $update_count;
@@ -39,18 +38,18 @@ class waContactsCollection
      * @param array $options
      * @example
      *     All contacts where name contains John
-     *     $collection = new contactsCollection('/search/name*=John/');
+     *     $collection = new waContactsCollection('/search/name*=John/');
      *
      *     All contacts in the list with id 100500
-     *     $collection = new contactsCollection('/list/100500/');
+     *     $collection = new waContactsCollection('/list/100500/');
      *
      *     Contacts with ids from list
-     *     $collection = new contactsCollection('/id/1,10,100,500/');
+     *     $collection = new waContactsCollection('/id/1,10,100,500/');
      *     or
-     *     $collection = new contactsCollection('/search/id=1,10,100,500/');
+     *     $collection = new waContactsCollection('/search/id=1,10,100,500/');
      *
      *     All contacts
-     *     $collection = new contactsCollection();
+     *     $collection = new waContactsCollection();
      */
     public function __construct($hash = '', $options = array())
     {
@@ -60,7 +59,7 @@ class waContactsCollection
         $this->setHash($hash);
     }
 
-    protected function setHash($hash)
+    public function setHash($hash)
     {
         if (is_array($hash)) {
             $hash = '/id/'.implode(',', $hash);
@@ -336,7 +335,7 @@ class waContactsCollection
     }
 
 
-    protected function prepare($new = false, $auto_title = true)
+    public function prepare($new = false, $auto_title = true)
     {
         if (!$this->prepared || $new) {
             $type = $this->hash[0];
@@ -344,6 +343,24 @@ class waContactsCollection
                 $method = strtolower($type).'Prepare';
                 if (method_exists($this, $method)) {
                     $this->$method(isset($this->hash[1]) ? $this->hash[1] : '', $auto_title);
+                } else {
+                    $params = array(
+                        'collection' => $this,
+                        'auto_title' => $auto_title,
+                        'new'        => $new,
+                    );
+                    /**
+                * @event contacts_collection
+                * @param array [string]mixed $params
+                * @param array [string]waContactsCollection $params['collection']
+                * @param array [string]boolean $params['auto_title']
+                * @param array [string]boolean $params['new']
+                * @return bool null if ignored, true when something changed in the collection
+                */
+                    $processed = wa()->event(array('contacts', 'contacts_collection'), $params);
+                    if (!$processed) {
+                        $this->where[] = 0;
+                    }
                 }
             } elseif ($auto_title) {
                 $this->addTitle(_ws('All contacts'));
@@ -353,21 +370,6 @@ class waContactsCollection
                 return;
             }
             $this->prepared = true;
-//            if ($this->options['check_rights'] && !wa()->getUser()->getRights('contacts', 'category.all')) {
-//                // Add user rights
-//                $group_ids = waSystem::getInstance()->getUser()->getGroups();
-//                $group_ids[] = 0;
-//                $group_ids[] = -waSystem::getInstance()->getUser()->getId();
-//                $this->joins[] = array(
-//                    'table' => 'wa_contact_categories',
-//                    'alias' => 'cc',
-//                );
-//                $this->joins[] = array(
-//                    'table' => 'contacts_rights',
-//                    'alias' => 'r',
-//                    'on' => 'r.category_id = cc.category_id AND r.group_id IN ('.implode(",", $group_ids).')'
-//                );
-//            }
         }
     }
 
@@ -570,6 +572,11 @@ class waContactsCollection
             $this->title .= $delim;
         }
         $this->title .= $title;
+    }
+    
+    public function setTitle($title)
+    {
+        $this->title = $title;
     }
 
     public function getWhereFields()
@@ -990,5 +997,20 @@ class waContactsCollection
     public function getInfo()
     {
         return $this->info;
+    }
+    
+    public function setInfo($info)
+    {
+        $this->info = $info;
+    }
+    
+    public function getUpdateCount()
+    {
+        return $this->update_count;
+    }
+    
+    public function setUpdateCount($update_count)
+    {
+        $this->update_count = $update_count;
     }
 }

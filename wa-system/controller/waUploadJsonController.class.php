@@ -68,6 +68,13 @@ class waUploadJsonController extends waJsonController
     
     protected function save(waRequestFile $f)
     {
-        return $f->moveTo($this->path, $f->name);
+        $name = $f->name;
+        if (!preg_match('//u', $name)) {
+            $tmp_name = @iconv('windows-1251', 'utf-8//ignore', $name);
+            if ($tmp_name) {
+                $name = $tmp_name;
+            }
+        }
+        return $f->moveTo($this->path, $name);
     }
 }

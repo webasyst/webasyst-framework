@@ -171,9 +171,7 @@ class waPlugin
         }
         // Remove plugin settings
         $app_settings_model = new waAppSettingsModel();
-        $sql = "DELETE FROM ".$app_settings_model->getTableName()."
-                WHERE app_id = s:app_id";
-        $app_settings_model->exec($sql, array('app_id' => $this->app_id.".".$this->id));
+        $app_settings_model->del($this->app_id.".".$this->id);
 
         if (!empty($this->info['rights'])) {
             // Remove rights to plugin

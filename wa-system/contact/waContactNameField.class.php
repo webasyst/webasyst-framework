@@ -29,6 +29,31 @@ class waContactNameField extends waContactStringField
     public function get(waContact $contact, $format = null)
     {        
         if ($contact['is_company']) {
+            $name = !empty($contact['company']) ? $contact['company'] : '';
+        } else {
+            $name = array();
+            foreach(array('firstname', 'middlename', 'lastname') as $part) {
+                if ( ($part = trim($contact[$part])) || $part === '0') {
+                    $name[] = $part;
+                }
+            }
+
+            $name = trim(implode(' ', $name));
+        }
+        if (!$name && $name !== '0') {
+            $email = $contact->get('email', 'default');
+            $name = strtok($email, '@');
+        }
+        
+        return $this->format($name, $format);
+    }
+    
+    public function prepareSave($value, waContact $contact = null) {
+        
+        if (!$contact) {
+            return $value;
+        }
+        if ($contact['is_company']) {
             $name = $contact['company'];
         } else {
             $fst = trim($contact['firstname']);
@@ -67,8 +92,7 @@ class waContactNameField extends waContactStringField
         if (!$name && $name !== '0') {
             $name = $contact->getId() ? $contact->getId() : '';
         }
-
-        return $this->format($name, $format);
+        return $name;
     }
 
     public function set(waContact $contact, $value, $params = array(), $add = false)
@@ -97,19 +121,46 @@ class waContactNameField extends waContactStringField
 
     public static function formatName($contact)
     {
-        if ($contact['is_company']) {
-            return $contact['name'];
+        if (!is_array($contact) && !($contact instanceof waContact)) {
+            return '';
+        }
+        if (!empty($contact['is_company'])) {
+            $name = !empty($contact['company']) ? $contact['company'] : '';
         } else {
             $name = array();
             foreach(array('firstname', 'middlename', 'lastname') as $part) {
-                if (!isset($contact[$part])) {
-                    continue;
-                }
-                if ( ( $part = trim($contact[$part]))) {
-                    $name[] = $part;
+                if (!empty($contact[$part])) {
+                    if ( ($part = trim($contact[$part])) || $part === '0') {
+                        $name[] = $part;
+                    }
                 }
             }
-            return implode(' ', $name);
+
+            $name = trim(implode(' ', $name));
         }
-    }
+        if (!$name && $name !== '0') {
+            $email = '';
+            if ($contact instanceof waContact) {
+                $email = $contact->get('email', 'default');
+            } else if (!empty($contact['email'])) {
+                $email = $contact['email'];
+                if (is_array($email)) {
+                    if (isset($email['value'])) {
+                        $email = $email['value'];
+                    } else {
+                        $email = array_shift($email);
+                        if (is_array($email) && isset($email['value'])) {
+                            $email = $email['value'];
+                        } else if (!is_string($email)) {
+                            $email = '';
+                        }
+                    }
+                } else if (!is_string($email)) {
+                    $email = '';
+                }
+            }
+            $name = strtok($email, '@');
+        }
+        return $name;
+    }    
 }

@@ -89,7 +89,7 @@ function waEditorAceInit(options)
     if (navigator.appVersion.indexOf('Mac') != -1) {
         wa_editor.setFontSize(13);
     } else if (navigator.appVersion.indexOf('Linux') != -1) {
-        wa_editor.setFontSize(15);
+        wa_editor.setFontSize(16);
     } else {
         wa_editor.setFontSize(14);
     }

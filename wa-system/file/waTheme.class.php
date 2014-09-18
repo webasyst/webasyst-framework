@@ -19,6 +19,8 @@
  * @property string $description
  * @property string $about
  * @property string $version
+ * @property-read string $id
+ * @property-read string $slug
  * @property-read string $vendor
  * @property-read string $author
  * @property-read string $app_id

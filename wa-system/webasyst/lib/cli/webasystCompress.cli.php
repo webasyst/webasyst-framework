@@ -35,14 +35,24 @@ class webasystCompressCli extends waCliController
             $action = '';
         }
         $help = <<<HELP
-Usage: php wa.php {$action} SLUG
+Usage: php wa.php {$action} slug [params]
+Slug examples:
+    myapp
+    someapp/plugins/myplugin
+    someapp/themes/mytheme
+    wa-plugins/payment/myplugin
+    wa-plugins/shipping/myplugin
+    wa-plugins/sms/myplugin
 Optional parameters:
-    -style true|false|vendors Options for code style checks:
-        true Check all code
-        false Disable code checking
-        vendors (default choice) Check all code except for lib/vendors/ and js/vendors/ directories, if available)
-    -no-compress Do not compress source files to archive
-    -test Skip minimal checking: routing setup, code style, database configuration file.
+    -style true|false|no-vendors Options for code style checks:
+        true         Check all code.
+        false        Disable code checking.
+        no-vendors   (default choice) Check all code except for lib/vendors/ and js/vendors/ directories, if available.
+    -skip compress|test|all|none Options to skip some operations:
+        compress     Do not compress source files to archive.
+        test         Skip minimal checking: routing setup, code style, database configuration file.
+        all          Skip all above.
+        none         (default choice) Do not skip anything.
 HELP;
 
         print($help)."\n";
@@ -70,22 +80,26 @@ HELP;
                     throw new Exception("invalid SLUG");
                 }
 
+                $skip = ifset($params['skip'], '');
+
                 $this->initPath();
 
                 $compress = true;
-                if (!isset($params['test']) || empty($params['test'])) {
+
+
+                if (in_array($skip, array('test', 'all'), true)) {
                     //test minimal requirements
                     $compress = $this->test();
                 }
 
                 if ('theme' != $this->type) {
-                    $style = ifset($params['style'], 'vendors');
+                    $style = ifset($params['style'], 'no-vendors');
                     if ($style !== 'false') {
                         $this->codeStyle($style);
                     }
                 }
 
-                if ($compress && !isset($params['no-compress'])) {
+                if ($compress && !in_array($skip, array('compress', 'all'), true)) {
                     $this->compress();
                 }
             }
@@ -182,7 +196,7 @@ HELP;
         );
         foreach ($this->files as $file) {
             if (in_array(pathinfo($file, PATHINFO_EXTENSION), $ext)) {
-                if (($param === 'vendors') && preg_match('@^(lib/)?vendors/@', $file)) {
+                if (($param === 'no-vendors') && preg_match('@^(lib/)?vendors/@', $file)) {
                     continue;
                 }
                 if (preg_match('@\.min\.(js|css)$@', $file)) {
@@ -192,7 +206,7 @@ HELP;
             }
         }
 
-        include_once 'PHP/CodeSniffer.php';
+        @include_once 'PHP/CodeSniffer.php';
         if (!class_exists('PHP_CodeSniffer')) {
             $this->trace('WARNING: Code style check skipped:');
             $this->trace('         PEAR extension CodeSniffer required');
@@ -592,10 +606,10 @@ HELP;
         $blacklist = array_merge(
             $blacklist,
             array(
-                '@^lib/updates/dev/.+@'                               => 'Dev stage updates',
+                '@^lib/updates/dev/.+@'                               => 'developer stage updates',
                 '@\.(bak|old|user|te?mp|www)(\.(php|css|js|html))?$@' => 'temp file',
                 '@(/|^)(\.DS_Store|\.desktop\.ini|thumbs\.db)$@'      => 'system file',
-                '@\b\.(svn|git)\b@'                                   => 'CVS file',
+                '@\b\.(svn|git|hg_archival\.txt)\b@'                  => 'CVS file',
                 '@\.(zip|rar|gz)$@'                                   => 'archive',
                 '@\.log$@'                                            => 'log file',
                 '@\.md5$@'                                            => 'checksum file',
@@ -608,7 +622,7 @@ HELP;
             foreach ($blacklist as $pattern => $description) {
                 if (preg_match($pattern, $file)) {
                     unset($files[$id]);
-                    echo "exclude {$description}:\t{$file}\n";
+                    echo "Skip {$description}:\t{$file}\n";
                     break;
                 }
             }
