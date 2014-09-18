@@ -105,6 +105,7 @@ table.s-settings-apps { margin-top: 10px; }
 table.s-routing #s-routing-addrule { display: none; }
 table.s-routing td.s-url { padding-left: 19px; width: 50%; }
 table.s-routing td.s-url span { color: #aaa; }
+table.s-routing td.s-url span.s-editable-url { color: #000; }
 table.s-routing td.s-url input { width: 100px; }
 table.s-routing td.s-app { vertical-align: middle; padding-top: 10px; min-width: 100px; }
 table.s-routing td.s-app img { float: left; top: 5px; width: 24px; height: 24px; margin-right: 6px; margin-top: -6px; }

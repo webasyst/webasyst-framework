@@ -16,8 +16,11 @@ class siteDesignActions extends waDesignActions
         'is_ajax' => true
     );
 
-    protected function getRoutes()
+    protected function getRoutes($all = false)
     {
+        if ($all) {
+            return parent::getRoutes();
+        }
         $routes = wa()->getRouting()->getByApp($this->getAppId());
         $result = array();
         $domain = siteHelper::getDomain();

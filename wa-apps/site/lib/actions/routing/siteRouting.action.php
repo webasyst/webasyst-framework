@@ -12,8 +12,6 @@ class siteRoutingAction extends waViewAction
             if (isset($route['app']) && isset($apps[$route['app']])) {
                 $auth_apps[$route['app']] = true;
                 $route['app'] = $apps[$route['app']];
-            } elseif (!isset($route['redirect'])) {
-                unset($routes[$route_id]);
             }
         }
 

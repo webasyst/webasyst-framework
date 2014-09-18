@@ -12,11 +12,15 @@
                     {foreach $routes as $route_id=>$route}
                     <tr id="route-{$route_id}">
                         <td class="s-url">
-                            <span><a style="display:inline" href="#"><i class="icon16 sort"></i></a></span> <span class="s-domain-url">{$url}/</span><span class="s-editable-url" style="color:#000">{$route.url|escape|truncate:30:'...':false:true}</span>
+                            <span><a style="display:inline" href="#"><i class="icon16 sort"></i></a></span> <span class="s-domain-url">{$url}/</span><span class="s-editable-url" {if !empty($route.private) || (!empty($route.app) && !is_array($route.app))} style="color: #aaa;"{/if}">{$route.url|escape|truncate:30:'...':false:true}</span>
                         </td>
-                        <td class="s-app{if !empty($route.private)} gray{/if}">
+                        <td class="s-app{if !empty($route.private) || (!empty($route.app) && !is_array($route.app))} gray{/if}">
                             {if !empty($route.app)}
-                            <img src="{$wa_url}{$route.app.icon.24}" class="s-app24x24icon-menu-v" alt="">{$route.app.name}
+                                {if is_array($route.app)}
+                                <img src="{$wa_url}{$route.app.icon.24}" class="s-app24x24icon-menu-v" alt="">{$route.app.name}
+                                {else}
+                                {$route.app|escape}
+                                {/if}
                             {else}
                             <img src="{$wa_app_static_url}img/arrow.png" class="s-app24x24icon-menu-v" alt="">
                             <span class="redirect">{$route.redirect|escape}</span>

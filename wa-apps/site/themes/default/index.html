@@ -146,7 +146,7 @@
                              [s`View cart`]
                          </a>
                     </div>
-                    {if $wa->shop && $wa->shop->settings('phone')}
+                    {if $wa->shop}
                         
                         <!-- product search -->
                         <form method="get" action="{$wa->getUrl('shop/frontend/search')}" class="search">

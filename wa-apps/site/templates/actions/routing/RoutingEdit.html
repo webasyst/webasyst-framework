@@ -15,9 +15,12 @@
                 <!-- existing route -->
                 {if empty($route.redirect)}
        	            <div class="s-route-block" id="s-route-what">
+                        {if $app}
                             <img src="{$wa_url}{$app.icon.24}" />
                             <h3>{$app.name}</h3>
-    
+                        {else}
+                            {$route.app|escape}
+                        {/if}
                     </div>
                 {/if}
                 
@@ -26,6 +29,14 @@
         		        {$domain}/
         		    </span><input type="text" name="params[url]" value="{if strlen($route_id)}{$route.url|escape}{/if}" class="bold large" placeholder="*" />
                 </div>
+
+                {if empty($route.redirect) && !$app}
+                <div class="block half-padded float-right">
+                    <ul class="menu-h">
+                        <li><a href="#" class="s-route-action s-route-delete" title="[`Delete rule`]"><i class="icon16 delete"></i>[`Delete rule`]</a></li>
+                    </ul>
+                </div>
+                {/if}
           
             {else}
 
@@ -48,6 +59,7 @@
                         </select>
                     </div>
                 {/if}
+
 
             {/if}
 
@@ -123,6 +135,7 @@
 					</div>
 				</div>
                 {/if}
+                {if !empty($route.redirect) || $app}
 				<div class="field">
 					<div class="value">
 
@@ -137,7 +150,8 @@
 						<input type="submit" name="save" class="button green" value="[`Save`]" />
 						<span id="s-settings-form-status"></span>
 					</div>
-				</div>					
+				</div>
+                {/if}
 			</div>
 		</div>
 {if !$wa->get('details')}
@@ -184,6 +198,8 @@ $(function () {
                     $(".s-editor .sidebar").animate({ 'width':'75%'}, 'slow');
                     $("#s-rules").removeClass('s-routing-minimized');
                     $("#s-rules .s-domain-url").show();
+                } else {
+                    alert(response.errors);
                 }
             }, "json");
         }

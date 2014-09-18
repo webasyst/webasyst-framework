@@ -87,6 +87,10 @@ class sitePersonalAction extends waViewAction
 
     protected function getItems($app_id, &$link = null)
     {
+        if (!wa()->appExists($app_id)) {
+            return array();
+        }
+
         $old_app = wa()->getApp();
 
         if ($old_app != $app_id) {

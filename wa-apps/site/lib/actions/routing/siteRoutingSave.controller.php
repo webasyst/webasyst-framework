@@ -116,7 +116,7 @@ class siteRoutingSaveController extends waJsonController
                 $routes[$domain] = $tmp;
             } else {
                 foreach ($routes[$domain] as $r_id => $r) {
-                    if ($r_id != $route_id && $r['url'] == $new['url']) {
+                    if (isset($r['app']) && $r_id != $route_id && $r['url'] == $new['url']) {
                         $old_app = $r['app'] ? wa()->getAppInfo($r['app']) : array();
                         $old_app = ifset($old_app['name']);
                         $new_app = $new['app'] ? wa()->getAppInfo($new['app']) : array();

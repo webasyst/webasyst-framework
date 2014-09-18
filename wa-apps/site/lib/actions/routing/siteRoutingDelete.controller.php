@@ -19,8 +19,12 @@ class siteRoutingDeleteController extends waJsonController
             $path = $this->getConfig()->getPath('config', 'routing');
             $all_routes = file_exists($path) ? include($path) : array();
             $all_routes[$domain] = $routes;
-            waUtils::varExportToFile($all_routes, $path);
-            $this->log('route_delete');
+
+            if (!waUtils::varExportToFile($all_routes, $path)) {
+                $this->errors = sprintf(_w('Settings could not be saved due to the insufficient file write permissions for the file "%s".'), 'wa-config/routing.php');
+            } else {
+                $this->logAction('route_delete');
+            }
         }
     }
 }

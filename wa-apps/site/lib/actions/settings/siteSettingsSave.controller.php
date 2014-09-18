@@ -31,7 +31,11 @@ class siteSettingsSaveController extends waJsonController
             $old = wa()->getDataPath('data/'.$domain.'/', true, 'site', false);
             if (file_exists($old)) {
                 waFiles::move($old, wa()->getDataPath('data/'.$url.'/', true));
-                waFiles::delete($old);
+                clearstatcache();
+                try {
+                    waFiles::delete($old, true);
+                } catch (waException $e) {
+                }
             }
             $domain = $url;
             siteHelper::setDomain(siteHelper::getDomainId(), $domain);
