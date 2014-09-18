@@ -106,7 +106,7 @@ class waAppConfig extends SystemConfig
             // add system actions for design and pages
             if (!empty($this->info['themes'])) {
                 $actions = array_merge($actions, array(
-                    'template_ add' => array(
+                    'template_add' => array(
                         'name' => _ws('added a new template')
                     ),
                     'template_edit' => array(
