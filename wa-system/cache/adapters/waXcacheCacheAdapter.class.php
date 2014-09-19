@@ -16,6 +16,10 @@
 /**
  * Cache adapter class to store data with XCache
  *
+ * Required keys for $options
+ *  - 'prefix' - Unique prefix for variables stored in cache. This value
+ *               must be unique for the server!
+ *
  */
 class waXcacheCacheAdapter extends waCacheAdapter
 {
