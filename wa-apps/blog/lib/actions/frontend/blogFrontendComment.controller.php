@@ -166,7 +166,7 @@ class blogFrontendCommentController extends waJsonController
         $this->getResponse()->addHeader('Content-type', 'application/json');
         if ($this->comment_id && ($comment = $this->comment_model->getById($this->comment_id) )) {
             $count = $this->comment_model->getCount($comment['blog_id'], $comment['post_id']);
-            $comments = $this->comment_model->prepareView(array($comment), array('photo_url_20'),array('user'=>true,'escape'=>true));
+            $comments = $this->comment_model->prepareView(array($comment), array('photo_url_20', 'photo_url_50'),array('user'=>true,'escape'=>true));
 
             $theme = waRequest::param('theme', 'default');
             $theme_path = wa()->getDataPath('themes', true).'/'.$theme;
