@@ -573,13 +573,13 @@ HTML;
             unset($checkbox_params['options']);
         }
         $id = 0;
-        foreach ($options as $option) {
+        foreach ($options as $key => $option) {
             //TODO check that $option is array
             $checkbox_params['value'] = empty($option['value']) ? $option['value'] : 1;
             $checkbox_params['checked'] = in_array($option['value'], $params['value'], true) || !empty($params['value'][$option['value']]);
             $checkbox_params['title'] = empty($option['title']) ? null : $option['title'];
             $checkbox_params['description'] = ifempty($option['description']);
-            $control .= self::getControl(self::CHECKBOX, $option['value'], $checkbox_params);
+            $control .= self::getControl(self::CHECKBOX, $key, $checkbox_params);
             if (++$id < count($options)) {
                 $control .= $params['control_separator'];
             }
