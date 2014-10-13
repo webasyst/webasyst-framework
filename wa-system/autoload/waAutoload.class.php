@@ -243,6 +243,7 @@ class waAutoload
         'waArrayObjectDiff'        => 'util/waArrayObjectDiff.class.php',
         'waCSV'                    => 'util/waCSV.class.php',
         'waHtmlControl'            => 'util/waHtmlControl.class.php',
+        'waString'                 => 'util/waString.class.php',
         'waUtils'                  => 'util/waUtils.class.php',
 
         'waEmailValidator'         => 'validator/waEmailValidator.class.php',
