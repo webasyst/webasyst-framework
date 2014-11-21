@@ -45,6 +45,50 @@
     </form>
 </div>
 
+{$auth_adapters = $wa->authAdapters(true)}
+{if $auth_adapters}
+    <div class="clear-both"></div>
+    <div class="wa-auth-adapters wa-connect">
+        <h3>[s`Connected accounts`]</h3>
+    
+        {$linked_adapters = []}
+        {$other_adapters = []}
+        {foreach $auth_adapters as $a}
+            {if $wa->user("{$a->getId()}_id")}
+                {$linked_adapters[] = $a}
+            {else}
+                {$other_adapters[] = $a}
+            {/if}
+        {/foreach}
+    
+        {if $linked_adapters}
+            <ul>
+            {foreach $linked_adapters as $a}
+                <li><span><img alt="{$a->getName()}" src="{$a->getIcon()}"/>{$a->getName()}</span></li>
+            {/foreach}
+            </ul>
+        {/if}
+    
+        {if $other_adapters}
+            <p>[s`Connect this account to your social network accounts so next time you can log in without entering your password:`]</p>
+            <div class="wa-auth-adapters"><ul>
+                {foreach $other_adapters as $a}
+                <li><a href="{$a->getUrl()}"><img alt="{$a->getName()}" src="{$a->getIcon()}"/>{$a->getName()}</a></li>
+                {/foreach}
+            </ul></div>
+            <script type="text/javascript">
+                $("div.wa-auth-adapters a").click(function () {
+                    var left = (screen.width - 600) / 2;
+                    var top = (screen.height - 400) / 2;
+                    window.open($(this).attr('href'),'oauth', "width=600,height=400,left="+left+",top="+top+",status=no,toolbar=no,menubar=no");
+                    return false;
+                });
+            </script>
+        {/if}
+    
+    </div>
+{/if}
+
 <script>
     (function () {
         var $wrapper = $('#wa-my-info-wrapper'),
