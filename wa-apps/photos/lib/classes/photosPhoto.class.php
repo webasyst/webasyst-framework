@@ -398,12 +398,12 @@ class photosPhoto
         ));
     }
 
-    public static function getEmbedImgHtml($photo, $size, $attributes = array())
+    public static function getEmbedImgHtml($photo, $size, $attributes = array(), $style = true)
     {
         if ($photo['width'] && $photo['height']) {
 
             $real_sizes = photosPhoto::getRealSizesOfThumb($photo, $size);
-            if ($real_sizes && $real_sizes['width'] && $real_sizes['height']) {
+            if ($real_sizes && $real_sizes['width'] && $real_sizes['height'] && $style) {
                 $attributes['style'] = !empty($attributes['style']) ? $attributes['style'] : '';
                 $attributes['style'] .= 'width: '.(int)$real_sizes['width'].'px; height: '.(int)$real_sizes['height'].'px; ';
             }

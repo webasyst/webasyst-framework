@@ -82,12 +82,21 @@ class photosPhotoLoadController extends waJsonController
 
         // get author
         $contact =  new waContact($this->photo['contact_id']);
-        $this->response['author'] = array(
-            'id' => $contact['id'],
-            'name' => photosPhoto::escape($contact['name']),
-            'photo_url' => $contact->getPhoto(photosPhoto::AUTHOR_PHOTO_SIZE),
-            'backend_url' => $this->getConfig()->getBackendUrl(true) . 'contacts/#/contact/' . $contact['id']
-        );
+        try {
+            $this->response['author'] = array(
+                'id' => $contact['id'],
+                'name' => photosPhoto::escape($contact['name']),
+                'photo_url' => $contact->getPhoto(photosPhoto::AUTHOR_PHOTO_SIZE),
+                'backend_url' => $this->getConfig()->getBackendUrl(true) . 'contacts/#/contact/' . $contact['id']
+            );
+        } catch (waException $e) {
+            $this->response['author'] = array(
+                'id' => $this->photo['contact_id'],
+                'name' => '',
+                'photo_url' => wa()->getRootUrl().'wa-content/img/userpic'.photosPhoto::AUTHOR_PHOTO_SIZE.'.jpg',
+                'backend_url' => ''
+            );
+        }
 
         // for making inline-editable widget
         $this->response['frontend_link_template'] = photosFrontendPhoto::getLink(array(

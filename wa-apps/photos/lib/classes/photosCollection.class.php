@@ -219,7 +219,7 @@ class photosCollection
                     if ($this->frontend_rights_user) {
                         $this->addRightsCondition(new waUser($this->frontend_rights_user));
                     } else {
-                        $this->where[] = 'p.status = 1';
+                        $this->where[] = 'p.status = 1 AND p.url IS NOT NULL AND LENGTH(TRIM(p.url)) > 0';
                     }
                 } else {
                     $this->addRightsCondition(wa()->getUser());
@@ -684,7 +684,8 @@ class photosCollection
         $data = $this->getModel()->query($sql)->fetchAll('id');
         if (!$data) {
             return array();
-        }
+        }        
+        
         if ($this->post_fields) {
             $ids = array_keys($data);
             foreach ($this->post_fields as $table => $fields) {

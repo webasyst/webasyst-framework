@@ -32,13 +32,13 @@ $(function() {
                 f.xhr = $.get(url, 
                     function(html) {
                         if (html) {
-                            var rendered = $('<div></div>').html(html);
+                            var rendered = $('<div></div>').appendTo('body').html(html);
                             if ($.Retina) {
                                 rendered.find('.stream-wrapper .photostream li:not(.dummy) img').retina();
                             }
                             html = rendered.find('.stream-wrapper ul').children();
                             rendered.remove();
-                            self.trigger('append', html);
+                            self.trigger('append', [html]);
                             $.photos.onLoadTail();
                         } else {
                             return is_end = true;
@@ -73,13 +73,13 @@ $(function() {
                 f.xhr = $.get(url, 
                     function(html) {
                         if (html) {
-                            var rendered = $('<div></div>').html(html);
+                            var rendered = $('<div></div>').appendTo('body').html(html);
                             if ($.Retina) {
                                 rendered.find('.stream-wrapper .photostream li:not(.dummy) img').retina();
                             }
                             html = rendered.find('.stream-wrapper ul').children();
                             rendered.remove();
-                            self.trigger('prepend', html);
+                            self.trigger('prepend', [html]);
                             $.photos.onLoadHead();
                         } else {
                             return is_start = true;
@@ -168,23 +168,27 @@ $(function() {
                 lng = photo_map.attr('data-lng');
             if (lat && lng) {
                 photo_map.show();
-                var latLng = new google.maps.LatLng(lat, lng),
-                    options = {
-                        zoom: 11,
-                        center: latLng,
-                        mapTypeId: google.maps.MapTypeId.ROADMAP,
-                        disableDefaultUI: true,
-                        zoomControlOptions: {
-                            position: google.maps.ControlPosition.TOP_LEFT,
-                            style: google.maps.ZoomControlStyle.SMALL
-                        }
-                    };
-                map = new google.maps.Map(photo_map.get(0), options);
-                var marker = new google.maps.Marker({
-                    position: latLng,
-                    map: map,
-                    title: $('#photo-name').val()
-                });
+                try {
+                    var latLng = new google.maps.LatLng(lat, lng),
+                        options = {
+                            zoom: 11,
+                            center: latLng,
+                            mapTypeId: google.maps.MapTypeId.ROADMAP,
+                            disableDefaultUI: true,
+                            zoomControlOptions: {
+                                position: google.maps.ControlPosition.TOP_LEFT,
+                                style: google.maps.ZoomControlStyle.SMALL
+                            }
+                        };
+                    map = new google.maps.Map(photo_map.get(0), options);
+                    var marker = new google.maps.Marker({
+                        position: latLng,
+                        map: map,
+                        title: $('#photo-name').val()
+                    });
+                } catch (Exception) {
+                    
+                }
             } else {
                 photo_map.hide();
             }
@@ -548,7 +552,7 @@ $(function() {
                 if (!is_preloaded) {
                     $.photos.renderPhotoImg(photo);
                 }
-                $('#photo').attr('data-photo-id', photo.id);
+                $('#photo').attr('data-photo-id', photo.id).trigger('render', [data]);
                 
                 $('#photo-name').html(photo.name);
                 $('#photo-description').html(photo.description);
@@ -772,7 +776,9 @@ $(function() {
             var photo_id = self.attr('data-photo-id');
             photo_stream.trigger('home', function() {
                 var photo = $.photos.photo_stream_cache.getById(photo_id);
-                $.photos.loadPhotoCompletly(photo);
+                if (photo) {
+                    $.photos.loadPhotoCompletly(photo);
+                }
             });
             return false;
         });

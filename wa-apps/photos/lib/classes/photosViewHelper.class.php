@@ -126,13 +126,13 @@ class photosViewHelper extends waAppViewHelper
      * @param array $attributes user-attribure, e.g. class or style
      * @return string
      */
-    public function getImgHtml($photo, $size, $attributes = array())
+    public function getImgHtml($photo, $size, $attributes = array(), $style = true)
     {
         $attributes['data-size'] = $size;
         $attributes['data-photo-id'] = $photo['id'];
         $attributes['class'] = !empty($attributes['class']) ? $attributes['class'] : '';
         $attributes['class'] .= ' photo_img';    // !Important: obligatory class. Need in frontend JS
-        return photosPhoto::getEmbedImgHtml($photo, $size, $attributes);
+        return photosPhoto::getEmbedImgHtml($photo, $size, $attributes, $style);
     }
     
     public function ratingHtml($rating, $size = 10, $show_when_zero = false)
