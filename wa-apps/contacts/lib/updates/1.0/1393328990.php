@@ -85,11 +85,13 @@ foreach ($fields as $f_id) {
     $f = waContactFields::get($f_id);
     if ($f) {
         $ext = $f->getParameter('ext');
-        foreach ($ext as $k => $v) {
-            $ext[$k] = strtolower($v);
+        if ($ext && is_array($ext)) {
+            foreach ($ext as $k => $v) {
+                $ext[$k] = strtolower($v);
+            }
+            $f->setParameter('ext', $ext);
+            waContactFields ::updateField($f);
         }
-        $f->setParameter('ext', $ext);
-        waContactFields ::updateField($f);
     }
 }
 

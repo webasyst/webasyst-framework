@@ -7,7 +7,7 @@ class contactsContactsMergeController extends waJsonController
     {
         // only allowed to admin
         if ($this->getRights('backend') <= 1) {
-            throw new waRightsException('Access denied.');
+            throw new waRightsException(_w('Access denied'));
         }
 
         // Ids of contacts to merge
@@ -36,9 +36,17 @@ class contactsContactsMergeController extends waJsonController
             $message = _w("No contacts were merged");
         }
         if ($merge_result['users']) {
-            $message .= '<br />'.$merge_result['users']." "._w("contact", "contacts", $merge_result['users'])._w(" were skipped because they have user accounts");
+            $message .= '<br />' . _w("%d contact was skipped because they have user accounts", "%d contacts were skipped because they have user accounts",  $merge_result['users']);
         }
+        
+        $this->response['merge_result'] = $merge_result;
         $this->response['message'] = $message;
+        $this->response['slalve_ids'] = $merge_ids;
+        $master = new waContact($master_id);
+        $this->response['master'] = array(
+            'id' => $master['id'],
+            'name' => $master['name']
+        );
     }
 
     /**
@@ -180,7 +188,7 @@ class contactsContactsMergeController extends waJsonController
         // update photo
         if ($update_photo) {
             $rand = mt_rand();
-            $apth = waContact::getPhotoDir($master['id']);
+            $path = waContact::getPhotoDir($master['id']);
             
             // delete old image
             if (file_exists($path)) {

@@ -11,7 +11,7 @@
 <div class="tab-content">
     <div class="block double-padded">
         <div style="float:right;width:120px">
-            <div class="wa-contact-photo" style="margin: 0px;"><div id="new-photo-preview" style="width: 96px; height: 96px; background-repeat: no-repeat; overflow: hidden;"><img src="{if !empty($oldPreview)}{$oldPreview}{else}{$wa_url}wa-content/img/userpic96.jpg{/if}" alt="Preview" width="96" height="96" /></div></div>
+            <div class="wa-contact-photo" style="margin: 0px;"><div id="new-photo-preview" style="width: 96px; height: 96px; background-repeat: no-repeat; overflow: hidden; border-radius: 50%;"><img src="{if !empty($oldPreview)}{$oldPreview}{else}{$wa_url}wa-content/img/userpic96.jpg{/if}" alt="Preview" width="96" height="96" /></div></div>
         </div>
         <div id="new-photo-wrapper" style="margin:0 140px 0 0">
             {if !$contact['photo']}

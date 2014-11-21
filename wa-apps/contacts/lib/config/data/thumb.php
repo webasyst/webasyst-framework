@@ -35,7 +35,17 @@ if (!$contact_id || count($file) != 3) {
     exit;    
 }
 
-$size = explode("x", $file[1]);
+if (substr($file[1], -3) == '@2x') {
+    $file[1] = substr($file[1], 0, -3);
+    $size = explode("x", $file[1]);
+    foreach ($size as &$s) {
+        $s *= 2;
+    }
+    unset($s);
+} else {
+    $size = explode("x", $file[1]);
+}
+
 
 if (count($size) != 2 || !$size[0] || !$size[1]) {
     header("Location: {$root_url}wa-content/img/userpic96.jpg");

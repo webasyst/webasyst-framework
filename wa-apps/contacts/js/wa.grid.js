@@ -287,10 +287,10 @@
             }, "json");
         },
 
-        getSelected: function (int) {
+        getSelected: function (is_int) {
             var data = [];
             $("input.selector:checked").each(function () {
-                if (int) {
+                if (is_int) {
                     var value = parseInt(this.value, 10);
                     if (!isNaN(value)) {
                         data.push(value);

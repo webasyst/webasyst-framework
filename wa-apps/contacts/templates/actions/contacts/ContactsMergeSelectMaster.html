@@ -19,7 +19,7 @@
                 <li class="contact-row">
                     <div class="profile image96px">
                         <div class="image"><a href="#/contact/{$c.id}">
-                            <img src="{$c.photo_url_96}" alt="">
+                            <img src="{$c.photo_url_96}" class="userpic" alt="">
                         </a></div>
                         <div class="details">
                             <input name="c_list_selector" value="{$c.id}" type="radio">
@@ -27,7 +27,7 @@
                                 {if $c.master_only}
                                     <i class="icon16 exclamation"></i>
                                 {/if}
-                                <a href="#/contact/{$c.id}">{$c.name}</a>
+                                <a href="#/contact/{$c.id}" class="no-underline">{$c.name}</a>
                                 <span class="hide-when-not-selected bold" style="color:#109010;">&mdash; [`selected as a master contact`]</span>
                             </p>
                             {if $c.master_only}
@@ -40,6 +40,13 @@
                                     </p>
                                 {/if}
                             {/foreach}
+                            
+                            <div class="hint">
+                                <span>[`ID`]: {$c.id}</span>
+                                <span style="margin-left: 25px;">[`Added`]: {if !empty($c.author.name)}{$c.author.name|escape} {/if}{$c.create_datetime|wa_datetime:'datetime'}</span>
+                                <span style="margin-left: 25px;">[`Method`]: {if $c.create_method}{$c.create_method} ({$c.create_app_id}){else}{$c.create_app_id}{/if}</span>
+                            </div>
+                            
                         </div>
                     </div>
 
@@ -93,11 +100,7 @@
         // Send AXAJ request to merge contacts
         $(this).after('<i class="icon16 loading"></i>');
         $.post("?module=contacts&action=merge", { master_id: master_id, slave_ids: slave_ids }, function (response) {
-            // Come back to previous view
-            $(window).one('wa_after_load', function () {
-                $.wa.controller.showMessage(response.data.message);
-            });
-            $.wa.setHash('#/contact/'+master_id);
+            $(window).trigger('wa_after_merge_contacts', [response]);
         }, "json");
     });
 
@@ -123,12 +126,7 @@
 
     // cancel link
     $('#merge-cancel').click(function() {
-        var hashes = $.wa.controller.hashes;
-        if (hashes[1]) {
-            $.wa.setHash(hashes[1]);
-        } else {
-            $.wa.setHash('');
-        }
+        $(window).trigger('wa_cancel_merge_contacts');
     });
 
     // 'Back to' link

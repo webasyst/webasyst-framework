@@ -21,7 +21,7 @@ class contactsContactsLinksAction extends waViewAction
         $crm = new contactsRightsModel();
         $ids = $crm->getAllowedContactsIds($ids);
         if (!$ids) {
-            throw new waRightsException('Access denied');
+            throw new waRightsException(_w('Access denied'));
         }
 
         $superadmin = wa()->getUser()->getRights('webasyst', 'backend');

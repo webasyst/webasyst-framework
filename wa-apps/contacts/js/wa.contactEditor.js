@@ -19,6 +19,8 @@ $.wa.contactEditorFactory = function(options) {
     var contactEditor = $.extend({
 
         fields: {},
+        
+        fieldsOrder: [],
 
         /** Editor factory templates, filled below */
         factoryTypes: {},
@@ -44,11 +46,13 @@ $.wa.contactEditorFactory = function(options) {
 
         /** Empty and reinit this.editorFactories given data from php.
           * this.factoryTypes must already be set.*/
-        initFactories: function(fields) {
+        initFactories: function(fields, fieldsOrder) {
             this.fields = fields;
+            this.fieldsOrder = fieldsOrder,
             this.editorFactories = {};
             this.fieldEditors = {};
-            for(var fldId in fields) {
+            for (var i = 0; i < fieldsOrder.length; i += 1) {
+                var fldId = fieldsOrder[i];
                 if (typeof fields[fldId] != 'object' || !fields[fldId].type) {
                     throw new Error('Field data error for '+fldId);
                 }
@@ -62,12 +66,13 @@ $.wa.contactEditorFactory = function(options) {
                     this.editorFactories[fldId] = $.extend({}, this.factoryTypes[fields[fldId].type]);
                 }
                 this.editorFactories[fldId].initializeFactory(fields[fldId]);
-            }            
+            }
         },
 
         /** Init (or reinit existing) editors with empty data. */
         initAllEditors: function() {
-            for(var f in this.editorFactories) {
+            for (var i = 0; i < this.fieldsOrder.length; i += 1) {
+                var f = this.fieldsOrder[i];
                 if (typeof this.fieldEditors[f] == 'undefined') {
                     this.fieldEditors[f] = this.editorFactories[f].createEditor(this.contactType, f);
                 } else {
@@ -82,7 +87,8 @@ $.wa.contactEditorFactory = function(options) {
                 // must be an empty array that came from json
                 return;
             }
-            for(var f in newData) {
+            for (var i = 0; i < this.fieldsOrder.length; i += 1) {
+                var f = this.fieldsOrder[i];
                 if (typeof this.editorFactories[f] == 'undefined') {
                     // This can happen when a new field type is added since user opened the page.
                     // Need to reload. (This should not happen often though.)
@@ -137,7 +143,8 @@ $.wa.contactEditorFactory = function(options) {
             el.find('div.field.buttons').remove();
 
             var fieldsToUpdate = [];
-            for(var f in this.fieldEditors) {
+            for (var i = 0; i < this.fieldsOrder.length; i += 1) {
+                var f = this.fieldsOrder[i];
                 fieldsToUpdate.push(f);
                 var fld = this.fieldEditors[f].setMode(mode);
                 $(this).trigger('set_mode', [{
@@ -216,6 +223,12 @@ $.wa.contactEditorFactory = function(options) {
                 el.removeClass('edit-mode');
                 el.addClass('view-mode');
                 $('#edit-contact-double').show();
+                if (el.find('.subname-wrapper').length) {
+                    el.find('.subname').unwrap();
+                }
+                if (el.find('.jobtitle-company-wrapper').length) {
+                    el.find('.jobtitle-company').unwrap();
+                }
             }
 
             $('#tc-contact').trigger('after_switch_mode', [mode, this]);

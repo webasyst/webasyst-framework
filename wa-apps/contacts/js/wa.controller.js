@@ -150,7 +150,7 @@
             });
             $('#c-core').off('click.contact-choose', 'a.contact.next, a.contact.prev').on('click.contact-choose', 'a.contact.next, a.contact.prev', function() {
                 $.wa.controller.setLastView({
-                    offset: $(this).data('offset') || 0,
+                    offset: $(this).data('offset') || 0
                 });
             });
             
@@ -198,7 +198,7 @@
             if (this.hashes.length > 10) {
                 this.hashes.pop();
             }
-            
+
             if (this.stopDispatchIndex > 0) {
                 this.previousHash = hash;
                 this.stopDispatchIndex--;
@@ -616,16 +616,18 @@
         },
         
         usersAddAction: function(params) {
-            this.setBlock('contacts-users', $_('New user'), false);
-            this.setTitle($_('New user'));
-            $('.wa-page-heading').find('.loading').hide();
-            $('.contacts-data').html(
-                '<div class="block double-padded">' + 
-                    '<p>' + 
-                        $_('You can grant access to your account backend to any existing contact.') + '<br><br>' +
-                        $_('Find a contact, or <a href="#/contacts/add/">create a new contact</a>, and then customize their access rights on Access tab.') + 
-                    '</p>' + 
-                '</div>');
+            this.checkAdminRights(function() {
+                this.setBlock('contacts-users', $_('New user'), false);
+                this.setTitle($_('New user'));
+                $('.wa-page-heading').find('.loading').hide();
+                $('.contacts-data').html(
+                    '<div class="block double-padded">' + 
+                        '<p>' + 
+                            $_('You can grant access to your account backend to any existing contact.') + '<br><br>' +
+                            $_('Find a contact, or <a href="#/contacts/add/">create a new contact</a>, and then customize their access rights on Access tab.') + 
+                        '</p>' + 
+                    '</div>');
+            });
         },
 
         addToGroupDialog: function () {
@@ -692,7 +694,25 @@
                 }
                 $('#c-abc-index').remove();
                 this.showLoading();
-                this.load( "#c-core .c-core-content", '?module=contacts&action=mergeSelectMaster', { ids: ids });
+                this.load( "#c-core .c-core-content", '?module=contacts&action=mergeSelectMaster', { ids: ids }, null, function() {
+                    $(window).unbind('wa_after_merge_contacts').one('wa_after_merge_contacts', function(e, response) {
+                        if (response && response.status === 'ok') {
+                            // Come back to previous view
+                            $(window).one('wa_after_load', function () {
+                                $.wa.controller.showMessage(response.data.message);
+                            });
+                            $.wa.setHash('#/contact/'+response.data.master.id);
+                        }
+                    });
+                    $(window).unbind('wa_cancel_merge_contacts').one('wa_cancel_merge_contacts', function(e) {
+                        var hashes = $.wa.controller.hashes;
+                        if (hashes[1]) {
+                            $.wa.setHash(hashes[1]);
+                        } else {
+                            $.wa.setHash('');
+                        }
+                    });
+                });
             } else {
                 $.wa.setHash('/contacts/all/');
             }
@@ -710,16 +730,12 @@
             }
 
             var q = '';
-            /*if (s.indexOf('=') == -1) {*/
-                s = s.replace(/\\/g, '\\\\').replace(/%/g, '\\%').replace(/_/g, '\\_').replace(/&/g, '\\&').replace(/\+/g, '%2B').replace(/\//g, '%2F');
-                if (s.indexOf('@') != -1) {
-                    q = "email*=" + s; //encodeURIComponent(s);
-                } else {
-                    q = "name*=" + s; //encodeURIComponent(s);
-                }
-            /*} else {
-                q = s;
-            }*/
+            s = s.replace(/\//g, '\\/').replace(/&/, '\\&');
+            if (s.indexOf('@') != -1) {
+                q = "email*=" + s; //encodeURIComponent(s);
+            } else {
+                q = "name*=" + s; //encodeURIComponent(s);
+            }
             $.wa.controller.stopDispatch(1);
             $.wa.setHash("#/contacts/search/" + q + '/');
             $.wa.controller.contactsSearchAction([q], {search: true});
@@ -899,6 +915,12 @@
             );
         },
 
+        checkAdminRights: function(fn, context) {
+            $.get('?module=contacts&action=user&a=is_admin', function() {
+                fn.call(context === undefined ? $.wa.controller : context);
+            });
+        },
+
         /** Prepare application layout to load new content. */
         setBlock: function (name, title, menus, options) {
             if (!name) {
@@ -919,10 +941,12 @@
             var el = '';
             
             if (name === 'contacts-users') {
-                el = $('#c-core .c-core-content');
+                
+                el = $('#c-core .c-core-content');                
+
                 var groups_html = '';
                 if (options.groups !== false) {
-                    groups_html += this.renderGroups(options.groups || this.groups);
+                    groups_html += $.wa.controller.renderGroups(options.groups || $.wa.controller.groups);
                 }
                 $('#c-core').html(
                     '<div class="shadowed" id="c-users-page">' + 
@@ -956,7 +980,7 @@
                     $.wa.controller.last_selected = [];
                 });
                 if ($.isArray(menus)) {
-                    this.showMenus(menus);
+                    $.wa.controller.showMenus(menus);
                 } else {
                     el.find('.c-list-toolbar').remove();
                 }
@@ -1143,7 +1167,7 @@
                 return; // could show it somewhere else in theory...
             }
             h1 = $(h1[0]);
-            if (h1.find('.loading').size() > 0) {
+            if (h1.find('.loading').show().size() > 0) {
                 return;
             }
             h1.append('<i class="icon16 loading"></i>');

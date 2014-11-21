@@ -226,7 +226,7 @@
             <tr class="contact-row">
                 <td class="profile image32px {% if (!$.isEmptyObject(custom_fields)) { %}with-custom-fields{% } %}">
                     {% if (contact.photo_url_32) { %}
-                        <div class="image"><img src="{%#contact.photo_url_32%}"></div>
+                        <div class="image"><img src="{%#contact.photo_url_32%}" class="userpic"></div>
                     {% } %}
                     <div class="details">
                         <input class="selector" name="c_list_selector" value="{%#contact.id%}" type="checkbox">
@@ -277,7 +277,7 @@
     {% for (var i = 0, n = contacts.length, contact = contacts[0]; i < n; contact = contacts[++i]) { %}
         <li class="contact-row">
             {% if (contact.photo_url_96) { %}
-                <div class="image"><a href="#/contact/{%#contact.id%}"><img src="{%#contact.photo_url_96%}"></a></div>
+                <div class="image"><a href="#/contact/{%#contact.id%}" class="contact" data-offset="{%#contact.offset%}"><img src="{%#contact.photo_url_96%}" class="userpic"></a></div>
             {% } %}
             <input class="selector" name="c_list_selector" value="{%#contact.id%}" type="checkbox">
             <a href="#/contact/{%#contact.id%}" class="details-header contact" data-offset="{%#contact.offset%}">

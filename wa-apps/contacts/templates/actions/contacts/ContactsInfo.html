@@ -5,18 +5,18 @@
     <link rel="stylesheet" type="text/css" href="{$static_url}css/contacts.css" />
     <link rel="stylesheet" type="text/css" href="{$static_url}css/contacts.ie7.css" />
     <link rel="stylesheet" type="text/css" href="{$static_url}css/contacts.ie8.css" />
-    
+
     {$wa->js(false)}
-    
+
     {* @event backend_assets.%plugin_id% *}
     {foreach $backend_assets as $item}
         {$item}
     {/foreach}
-    
+
 {/if}
 
 <div class="contacts-background" id="c-info-container">
-    
+
     <div class="block padded c-core-header" style="display:none">
         <a href="javascript:void(0)" id="c-e-last-view" class="no-underline"></a>
         {if $last_view_context|default:false}
@@ -38,9 +38,9 @@
                 {/if}
             </div>
         {/if}
-        
+
     </div>
-        
+
     {if $exists}
 
         <!-- content -->
@@ -53,7 +53,7 @@
                 <div class="profile image96px" style="min-height: 120px">
                     {* Photo and a link to change it. *}
                     <div class="photo image">
-                        <img src="{$contact->getPhoto()}" alt="{if $contact.photo}[`Photo`]{else}[`No photo`]{/if}" />
+                        <img src="{$contact->getPhoto()}" alt="{if $contact.photo}[`Photo`]{else}[`No photo`]{/if}" class="userpic" />
                         {if empty($readonly) && !$wa->request('readonly')}
                             <div class="wa-contact-photo-buttons">
                                 <div class="photo-change-link">
@@ -61,8 +61,22 @@
                                 </div>
                             </div>
                         {/if}
+                        
+                        <!-- plugin hook: 'backend_contact_info.photo' -->
+                        {* @event backend_customer.%plugin_id%.photo *}
+                        {if !empty($backend_contact_info)}
+                            {foreach $backend_contact_info as $_}{ifset($_.photo)}{/foreach}
+                        {/if}
+                        
                     </div>
                     <div class="details">
+                        
+                        <!-- plugin hook: 'backend_contact_info.before_header' -->
+                        {* @event backend_customer.%plugin_id%.before_header *}
+                        {if !empty($backend_contact_info)}
+                            {foreach $backend_contact_info as $_}{ifset($_.before_header)}{/foreach}
+                        {/if}
+                        
                         <div class="details-header" id="contact-fullname">
                             <h1 class="name"><span class="title">{$contact.title|escape}</span> {$contact.firstname|escape} {$contact.middlename|escape} {$contact.lastname|escape}</h1>
                             {if !$contact.is_company}
@@ -78,8 +92,29 @@
                                     {/if}
                                 </h1>
                             {/if}
+                            
+                            <!-- plugin hook: 'backend_contact_info.header' -->
+                            {* @event backend_customer.%plugin_id%.header *}
+                            {if !empty($backend_contact_info)}
+                                {foreach $backend_contact_info as $_}{ifset($_.header)}{/foreach}
+                            {/if}
+                            
                         </div>
+                        
+                        <!-- plugin hook: 'backend_contact_info.after_header' -->
+                        {* @event backend_customer.%plugin_id%.after_header *}
+                        {if !empty($backend_contact_info)}
+                            {foreach $backend_contact_info as $_}{ifset($_.after_header)}{/foreach}
+                        {/if}
+                        
                         <p class="status"></p>
+                        
+                        <!-- plugin hook: 'backend_contact_info.before_top' -->
+                        {* @event backend_customer.%plugin_id%.before_top *}
+                        {if !empty($backend_contact_info)}
+                            {foreach $backend_contact_info as $_}{ifset($_.before_top)}{/foreach}
+                        {/if}
+                        
                         <ul id="contact-info-top" class="menu-v compact">
                             {if $top}
                                 {foreach $top as $top_field}
@@ -87,9 +122,15 @@
                                 {/foreach}
                             {/if}
                         </ul>
+                        
+                        <!-- plugin hook: 'backend_contact_info.after_top' -->
+                        {* @event backend_customer.%plugin_id%.after_top *}
+                        {if !empty($backend_contact_info)}
+                            {foreach $backend_contact_info as $_}{ifset($_.after_top)}{/foreach}
+                        {/if}
 
                     </div>
-                </div>    
+                </div>
             </div>
 
             {* Tab controls *}
@@ -100,8 +141,7 @@
                 {if !$contact['is_company'] && ($superadmin || !empty($own_profile))}
                     <li id="t-user">
                         <a href="javascript:void(0)">
-                            [`Access`]
-                            <i class="icon16 c-access-icon {if $contact.is_user == '-1'}delete{else if !$gFullAccess && !$fullAccess && $noAccess}key-bw{else}key{/if}"></i>
+                            {contactsHelper::getAccessTabTitle($contact)}
                         </a>
                     </li>
                 {/if}
@@ -126,7 +166,7 @@
                                 <ul class="hint c-create-method-info">
                                     <li>[`ID`]: {$contact.id}</li>
                                     <li>[`Added`]: {if !empty($author)}{$author.name|escape} {/if}{$contact_create_time}</li>
-                                    <li>[`Method`]: {$contact.create_method} ({$contact.create_app_id})</li>
+                                    <li>[`Method`]: {if $contact.create_method}{$contact.create_method} ({$contact.create_app_id}){else}{$contact.create_app_id}{/if}</li>
                                 </ul>
                             {/if}
                         </div>
@@ -159,14 +199,14 @@
         </div>{* div.block.not-padded.c-core-content *}
 
     {else}
-        
+
         <div class="block" style="text-align: center;">
             <h2 style="margin-top: 50px;">[`Contact not found`] (Contact ID={$contact.id})</h2>
             <div class="clear-left"></div>
         </div>
-        
+
     {/if}
-    
+
 </div>{* div.contacts-background *}
 
 {if $exists}
@@ -188,31 +228,80 @@
         var delete_mode = !edit_mode && window.location.hash.indexOf('/contact/delete') >= 0;
 
         // attach tab controls to tabs
-        {if !$wa->request('no_switchtab')}
-            $('#c-info-tabs li').each(function(k, tab) {
-                tab = $(tab);
-                tab.bind('click.switch_tab', function() {
-                    $.wa.contactEditor.switchToTab(tab, function() {
-                        var id = tab.attr('id').substr(2);
-                        var hash = $.wa.controller.cleanHash('#/contact/' + $.wa.contactEditor.contact_id + '/' + (id == 'contact' ? '' : id+'/'));
-                        if (id == 'contact' || $.wa.controller.cleanHash().indexOf(hash) != 0) {
+        (function() {
+            var wrapper = $('#c-info-tabs');
+
+            // Drag-and-drop tabs, saving their position to local browser storage
+            wrapper.sortable({
+                items: 'li',
+                tolerance: "pointer",
+                distance: 7,
+                delay: 50,
+                update: function(event, ui) {
+                    $.storage.set('contacts/tab_order', wrapper.children().map(function(i, el) {
+                        return el.id;
+                    }).toArray());
+                }
+            });
+
+            // Restore tabs order
+            var old_tabs_order = $.storage.get('contacts/tab_order');
+            if (old_tabs_order) {
+                var children = {};
+                wrapper.children().detach().each(function(i, el) {
+                    children[el.id] = el;
+                });
+
+                $.each(old_tabs_order, function(i, id) {
+                    if (children[id]) {
+                        wrapper.append(children[id]);
+                        delete children[id];
+                    }
+                });
+                $.each(children, function(i, el) {
+                    wrapper.append(el);
+                });
+            }
+
+            // Switch to tab when user clicks on it
+            {if !$wa->request('no_switchtab')}
+                // !!! TODO: use delegation instead?..
+                wrapper.children().each(function(k, tab) {
+                    tab = $(tab);
+                    tab.bind('click.switch_tab', function() {
+                        $.wa.contactEditor.switchToTab(tab, function() {
+                            var id = tab.attr('id').substr(2);
+                            var hash = '#/contact/{$contact.id}/';
+                            if (id != 'contact' || tab.prev().length) {
+                                hash += id+'/';
+                            }
+                            hash = $.wa.controller.cleanHash(hash);
                             if (hash != $.wa.controller.cleanHash()) {
                                 $.wa.controller.stopDispatch(1);
                                 $.wa.setHash(hash);
                             }
-                        }
-                        var input = $('#tc-'+id+' input:visible')[0];
-                        if (input) {
-                            input.focus();
-                        }
+                            var input = $('#tc-'+id+' input:visible')[0];
+                            if (input) {
+                                input.focus();
+                            }
+                        });
                     });
                 });
-            });
-        {else}
-            $('#c-info-tabs li').bind('click.switch_tab', function() {
+            {else}
+                $('#c-info-tabs li').bind('click.switch_tab', function() {
                     $.wa.contactEditor.switchToTab($(this));
                 });
-        {/if}
+            {/if}
+
+            {if $tab}
+                // Switch to active tab
+                $('#t-{$tab}').click();
+            {else}
+                // Open first tab
+                wrapper.children(':first').click();
+            {/if}
+
+        })();
 
         $.wa.contactEditor.update_title = {if !$wa->request('no_update_title')}true{else}false{/if};
         $.wa.contactEditor.wa_backend_url = '{$wa_backend_url}';
@@ -228,12 +317,8 @@
             $.wa.contactEditor.passwdSaveUrl = "{$password_save_url}";
         {/if}
 
-        {if $tab}
-            // Switch to active tab
-            $('#t-{$tab}').click();
-        {/if}
 
-        $.wa.contactEditor.initFactories({json_encode($contactFields)});
+        $.wa.contactEditor.initFactories({json_encode($contactFields)}, {json_encode($contactFieldsOrder)});
         $.wa.contactEditor.initAllEditors();
         $.wa.contactEditor.initFieldEditors({json_encode($fieldValues)});
         $.wa.contactEditor.initContactInfoBlock('view');

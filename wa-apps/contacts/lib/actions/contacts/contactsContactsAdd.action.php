@@ -5,7 +5,7 @@ class contactsContactsAddAction extends waViewAction
     public function execute()
     {
         if (!$this->getRights('create')) {
-            throw new waRightsException('Access denied.');
+            throw new waRightsException(_w('Access denied'));
         }
 
         $type = waRequest::get('company') ? 'company' : 'person';
@@ -16,6 +16,7 @@ class contactsContactsAddAction extends waViewAction
         }
         
         $this->view->assign('contactFields', $fields);
+        $this->view->assign('contactFieldsOrder', array_keys($fields));
         $this->view->assign('contactType', $type);
     }
 }

@@ -8,13 +8,22 @@ class contactsContactsUserController extends waJsonController
         $id = (int)waRequest::get('id', waRequest::TYPE_INT);
         $action = waRequest::get('a');
 
+        if ($action === 'is_admin') {
+            if (!wa()->getUser()->isAdmin()) {
+                throw new waRightsException(_w('Access denied'));
+            } else {
+                $this->response = true;
+            }
+            return;
+        }
+        
         if (waRequest::getMethod() != 'post') {
             throw new waException('Send something via POST to confirm operation.');
         }
 
         $admin = 2 <= $this->getUser()->getRights(wa()->getApp(), 'backend');
         if (!$admin && ($action != 'passwd' || $this->getUser()->getId() != $id)) {
-            throw new waRightsException('Access denied.');
+            throw new waRightsException(_w('Access denied'));
         }
 
         switch($action) {

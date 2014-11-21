@@ -7,7 +7,7 @@ class contactsGroupsDeleteController extends waJsonController
     {
         // only allowed to global admin
         if (!wa()->getUser()->getRights('webasyst', 'backend')) {
-            throw new waRightsException('Access denied.');
+            throw new waRightsException(_w('Access denied'));
         }
 
         if (! ( $id = waRequest::post('id'))) {

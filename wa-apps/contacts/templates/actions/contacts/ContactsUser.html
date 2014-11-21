@@ -119,7 +119,7 @@
                     <div class="field">
                         <div class="name">[`Login`]</div>
                         <div class="value">
-                            <input type="text" name="login" class="c-login-input" value="{if $contact.login}{$contact.login}{/if}" autocomplete="off" /><br>
+                            <input type="text" name="login" class="c-login-input" value="{if $contact.login}{$contact.login|escape}{/if}" autocomplete="off" /><br>
                             <span class="hint">
                                 [`Login name is required to access your account backend.`]<br>
                                 [`Ex.: john, agent07, and etc.`]
@@ -155,17 +155,17 @@
                         <div class="name">[`Login`]</div>
                         <div class="value">
                             <div class="c-one-tab">
-                                <span class="c-login">{if $contact.login}{$contact.login}{/if}</span>
+                                <span class="c-login">{if $contact.login}{$contact.login|escape}{/if}</span>
                                 <a href="javascript:void(0)" class="small inline-link c-tab-toggle" style=""><b><i>[`change login`]</i></b></a>
                             </div>
                             <div class="c-two-tab" style="display:none;">
-                                <input type="text" name="login" class="c-login-input" value="{if $contact.login}{$contact.login}{/if}" autocomplete="off" /><br>
+                                <input type="text" name="login" class="c-login-input" value="{if $contact.login}{$contact.login|escape}{/if}" autocomplete="off" /><br>
                                 <span class="hint">
                                     [`Login name is required to access your account backend.`]<br>
                                     [`Ex.: john, agent07, and etc.`]
                                 </span><br><br>                            
                                 <input type="submit" class="button green" value="[`Save`]"> [`or`]
-                                <a class="inline-link c-tab-toggle" href="javascirt:void(0);"><b><i>[`cancel`]</i></b></a>
+                                <a class="inline-link cancel c-tab-toggle" href="javascirt:void(0);"><b><i>[`cancel`]</i></b></a>
                             </div>
                         </div>
                     </div>
@@ -199,7 +199,7 @@
                         <div class="field">
                             <div class="value">
                                 <input type="submit" class="button green" value="[`Save`]"> [`or`] 
-                                <a class="inline-link c-tab-toggle" href="javascript:void(0)"><b><i>[`cancel`]</i></b></a>
+                                <a class="inline-link cancel c-tab-toggle" href="javascript:void(0)"><b><i>[`cancel`]</i></b></a>
                                 <i class="icon16 loading" style="margin-left: 16px; display: none;"></i>
                             </div>
                         </div>
@@ -347,7 +347,7 @@
     });
 {/if}
 
-    var login = {if $contact.login}'{$contact.login}'{else}null{/if};
+    var login = {if $contact.login}'{$contact.login|escape:javascript}'{else}null{/if};
     var password = {if $contact.password}true{else}false{/if};
     
     // create credentials form
@@ -495,8 +495,13 @@ $(function() {
                         icon.addClass('key');
                     }
                     $('.available-resources').show();
-                    arToggle.val("remove");
-                    arToggleOnchange();
+                    
+                    var  isUser = {if $contact.login}1{else}0{/if};
+                    $.post('?module=rights&action=save&id='+$.wa.contactEditor.contact_id, {
+                        is_user: isUser,
+                        only_is_user: 1
+                    });
+                    
                     fields.removeClass('gray');
                     $('.c-shown-on-enabled').show();
                     $('.c-shown-on-disabled').hide();
@@ -504,8 +509,17 @@ $(function() {
                     status.eq("1").addClass('off');
                     $('#t-user').find('i.c-access-icon').removeClass('key key-bw delete').addClass('delete');
                     $('.available-resources').hide();
-                    arToggle.val("remove");
-                    arToggleOnchange();
+                    
+                    $.post('?module=rights&action=save&id='+$.wa.contactEditor.contact_id, {
+                        is_user: -1,
+                        only_is_user: 1
+                    }, function(r) {
+                        if (r.status === 'ok') {
+                            $('#tc-user-access-disabled').show();
+                            $('#tc-user-access-disabled').html(r.data.access_disable_msg);
+                        }
+                    }, 'json');
+                    
                     fields.addClass('gray');
                     $('.c-shown-on-enabled').hide();
                     $('.c-shown-on-disabled').show();
@@ -662,6 +676,9 @@ $(function() {
         switch(newToggleValue) {
             case 'remove':
                 icon.addClass('key-bw');
+                $('#c-credentials-block').hide();
+                $('#c-login-block').hide();
+                $('#c-password-block').hide();
                 if (gNoAccess) {
                     fullAccess = 0;
                     $('#c-access-rights-by-app').hide();
@@ -675,7 +692,12 @@ $(function() {
             case '0':
                 icon.addClass('key');
                 if (!login && !password) {
-                    $('#c-credentials-block').show().find('.c-login-input').focus();
+                    $('#c-credentials-block').show()
+                            .find('.c-login-input').focus().end()
+                            .find('.cancel').one('click.access', function() {
+                                arToggle.val(lastToggleValue);
+                                arToggleOnchange();
+                        });
                     return;
                 } else {
                     if (login) {
@@ -687,15 +709,26 @@ $(function() {
                         $('#c-password-block').show();
                         break;
                     } else {
-                        $('#c-login-block').show().find('.c-tab-toggle:first').click();
+                        $('#c-login-block').show()
+                            .find('.cancel').one('click.access', function() {
+                                arToggle.val(lastToggleValue);
+                                arToggleOnchange();
+                            }).end()
+                            .find('.c-tab-toggle:first').click();
                         $('#c-password-block').show();
-                        break;
+                        return;
                     }
                 }
             case '1':
                 icon.addClass('key');
                 if (!login && !password) {
-                    $('#c-credentials-block').show().find('.c-login-input').focus();
+                    $('#c-credentials-block').show()
+                            .find('.c-login-input').focus().end()
+                            .find('.cancel').one('click.access', function() {
+                                arToggle.val(lastToggleValue);
+                                arToggleOnchange();
+                        });
+                    return;
                 } else {
                     if (login) {
                         fullAccess = 1;
@@ -706,9 +739,14 @@ $(function() {
                         $('#c-password-block').show();
                         break;
                     } else {
-                        $('#c-login-block').show().find('.c-tab-toggle:first').click();
+                        $('#c-login-block').show()
+                            .find('.cancel').one('click.access', function() {
+                                arToggle.val(lastToggleValue);
+                                arToggleOnchange();
+                            }).end()
+                            .find('.c-tab-toggle:first').click();
                         $('#c-password-block').show();
-                        break;
+                        return;
                     }
                 }
             default:
@@ -722,6 +760,9 @@ $(function() {
                 isUser = -1;
                 icon.removeClass('key key-bw delete').addClass('delete');
             }
+        {else}
+            $('#c-login-block').show();
+            $('#c-password-block').show();
         {/if}
 
         // Reset personal app rights to match group rights
@@ -755,7 +796,7 @@ $(function() {
                 }
                 if (isUser == '-1') {
                     $('#tc-user-access-disabled').show();
-                    $('#tc-user-access-disabled').find('span').html(r.data.access_disable_msg);
+                    $('#tc-user-access-disabled').html(r.data.access_disable_msg);
                 }
             }, 'json');
         }

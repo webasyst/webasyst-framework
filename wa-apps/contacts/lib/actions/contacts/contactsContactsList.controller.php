@@ -43,28 +43,15 @@ class contactsContactsListController extends waJsonController
         }
 
         $h_parts = explode('/', $h, 2);
-        $add_fields = array();
-        if ($h_parts[0] == 'explore') {
-            $collection = new contactsCollection();
-            $event_params = array(
-                'collection' => $collection,
-                'hash' => $h_parts[1]
-            );
-            $result = wa()->event('explore', $event_params);
-            if ($result) {
-                $result = reset($result);
-                $add_fields = ifset($result['fields']);
-                $this->response['add_fields'] = $add_fields;
-                $this->response['name'] = $result['name'];
-            }
-        } else {
-            $collection = new contactsCollection($h);
-        }
+        
+        $collection = new contactsCollection($h);
         
         $this->response['fields'] = array();
-        
         $fields = '*,photo_url_32,photo_url_96';
-        if ($h_parts[0] === 'users') {
+        if ($h_parts[0] === 'users' || $h_parts[0] === 'group') {
+            if (!wa()->getUser()->isAdmin()) {
+                throw new waRightsException(_w('Access denied'));
+            }
             $fields .= ',_access';
             $this->response['fields']['_access'] = array(
                 'id' => '_access',

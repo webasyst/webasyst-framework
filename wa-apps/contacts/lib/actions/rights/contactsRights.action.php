@@ -7,7 +7,7 @@ class contactsRightsAction extends waViewAction
     {
         // only allowed to global admin
         if (!wa()->getUser()->getRights('webasyst', 'backend')) {
-            throw new waRightsException('Access denied.');
+            throw new waRightsException(_w('Access denied'));
         }
 
         $contact_id = waRequest::get('id');

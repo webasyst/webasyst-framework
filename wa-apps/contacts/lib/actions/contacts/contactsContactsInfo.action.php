@@ -38,7 +38,7 @@ class contactsContactsInfoAction extends waViewAction
             $r = $cr->getRight(null, $this->id);
             //var_dump($r );exit;
             if (!$r) {
-                throw new waRightsException('Access denied.');
+                throw new waRightsException(_w('Access denied'));
             } else {
                 $this->view->assign('readonly', $r === 'read');
             }
@@ -80,7 +80,8 @@ class contactsContactsInfoAction extends waViewAction
 
             // Update history
             if (empty($this->params['limited_own_profile'])) {
-                if( ( $name = waContactNameField::formatName($this->contact) ) || $name === '0') {
+                $name = $this->contact->get('name');
+                if ($name || $name === '0') {
                     $history = new contactsHistoryModel();
                     $history->save('/contact/'.$this->id, $name);
                 }
@@ -110,6 +111,22 @@ class contactsContactsInfoAction extends waViewAction
         
         $auth = wa()->getAuthConfig();
         $this->view->assign('personal_portal_available', !empty($auth['app']));
+        
+        /*
+         * @event backend_contact_info
+         * @return array[string]array $return[%plugin_id%] array of html output
+         * @return array[string][string]string $return[%plugin_id%]['after_header'] html output
+         * @return array[string][string]string $return[%plugin_id%]['header'] html output
+         * @return array[string][string]string $return[%plugin_id%]['before_header'] html output
+         * @return array[string][string]string $return[%plugin_id%]['before_top'] html output
+         * @return array[string][string]string $return[%plugin_id%]['top'] html output
+         * @return array[string][string]string $return[%plugin_id%]['after_top'] html output
+         * @return array[string][string]string $return[%plugin_id%]['photo'] html output
+         */
+        $backend_contact_info_params = array(
+            'contact_id' => $this->id
+        );
+        $this->view->assign('backend_contact_info', wa()->event('backend_contact_info', $backend_contact_info_params));
         
     }
 
@@ -173,6 +190,7 @@ class contactsContactsInfoAction extends waViewAction
 
             contactsHelper::normalzieContactFieldValues($fieldValues, $contactFields);
             $this->view->assign('contactFields', $contactFields);
+            $this->view->assign('contactFieldsOrder', array_keys($contactFields));
             $this->view->assign('fieldValues', $fieldValues);
 
             // Contact categories
@@ -251,7 +269,7 @@ class contactsContactsInfoAction extends waViewAction
         );
         
         $context = null;
-        $plugins_context = wa()->event('get_last_view_context', $params);
+        $plugins_context = wa()->event('backend_last_view_context', $params);
         foreach ($plugins_context as $cntx) {
             if (!empty($cntx)) {
                 $context = $cntx;

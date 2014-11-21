@@ -21,7 +21,7 @@ $.wa.contactEditor.contact_id = null;
 $.wa.contactEditor.current_user_id = null;
 $.wa.contactEditor.contactType = '{$contactType}';
 {* $.wa.contactEditor.limitedCategories = {$limitedCategories}; *}
-$.wa.contactEditor.initFactories({json_encode($contactFields)});
+$.wa.contactEditor.initFactories({json_encode($contactFields)}, {json_encode($contactFieldsOrder)});
 $.wa.contactEditor.initAllEditors();
 $.wa.contactEditor.initContactInfoBlock('edit');
 $(function() {

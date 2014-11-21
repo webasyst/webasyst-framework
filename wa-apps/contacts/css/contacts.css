@@ -72,8 +72,8 @@ a.c-user-group-setup { margin-left: 10px; }
 
 .contacts-data .zebra li { overflow: hidden; display:block; padding: 5px 0;}
 .contacts-data .zebra li.selected { background: #EEEEDD!important; }
-.contacts-data .contact-row.selected { background: #EEEEDD!important; }
-.contacts-data .contact-row:hover { background: #EEEEDD; }
+/* .contacts-data .contact-row.selected { background: #EEEEDD!important; }
+.contacts-data .contact-row:hover { background: #EEEEDD; } */
 #c-ar-dialog .dialog-window { min-width: 700px; max-width: 800px;}
 .c-dialog-limited-user { float: left; width: 49%; }
 .c-dialog-limited-app { float: right; width: 49%; }
@@ -379,9 +379,13 @@ ul.v-list li { list-style: none; background: white; padding: 8px; border-top: 1p
 #c-core .view-list.thumbs h1 { font-size: 0.8em; word-wrap: break-word; }
 #c-core .view-list.thumbs h1.jobtitle-company { font-size: 1.0em; }
 #c-core .view-list.thumbs td a.details-header { max-width: 80px; }
+#c-core .view-list.thumbs img { width: 96px; }
+/*
 #c-core .view-list.thumbs .contact-row.selected { border-left: 4px solid #EEEEDD; margin-left: -4px;}
 #c-core .view-list.thumbs .contact-row:hover { border-left: 4px solid #EEEEDD; margin-left: -4px;}
 #c-core .view-list.thumbs .contact-row:hover .image img { border: 4px solid #EEEEDD; margin: -4px -2px -2px -4px; }
+*/
+#c-core .view-list.thumbs li.selected img.userpic { border-radius: 50%; }
 #c-core .view-list.thumbs .contact-row:hover.selected .image img { border: 4px solid #FDDA3B; margin: -4px -2px -2px -4px; }
 
 
@@ -419,3 +423,18 @@ ul.v-list li { list-style: none; background: white; padding: 8px; border-top: 1p
 #list-group li { margin-left: -10px; }
 .ui-menu .ui-menu-item a { white-space: nowrap; text-overflow: ellipsis; width: 96%; overflow: hidden; }
 .max-width { width: 100%; }
+
+.c-view-settings .field { width: 80%; }
+
+/* TABLET
+========= */
+
+@media screen and (max-width: 1024px) {
+    
+    .sidebar,
+    .sidebar.left200px { width: 200px !important; }
+    .sidebar.right200px { width: 200px !important; }
+    .content.left200px { margin-left: 200px !important; }
+    .content.right200px { margin-right: 200px !important; }
+        
+}

@@ -131,9 +131,9 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) {
             }
 
             var nameAddition = '';
-            if (mode == 'edit') {
-                //nameAddition = (this.fieldData.required ? '<span class="req-star">*</span>' : '')+':';
-            }
+//            if (mode == 'edit') {
+//                nameAddition = (this.fieldData.required ? '<span class="req-star">*</span>' : '')+':';
+//            }
             var cssClass;
             if (this.contactType === 'person') {
                 if (['firstname', 'middlename', 'lastname'].indexOf(this.fieldData.id) >= 0) {
@@ -342,9 +342,8 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) {
             }
 
             return this.domElement;
-        },
-        
-        
+        }
+
         
     });
     contactEditor.factoryTypes.Text = $.extend({}, contactEditor.factoryTypes.String);
@@ -1113,9 +1112,9 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) {
             // A (composite) field with no inline mode?
             if (typeof sf.newInlineFieldElement != 'function') {
                 var nameAddition = '';
-                if (mode == 'edit') {
-                    //nameAddition = (this.fieldData.required ? '<span class="req-star">*</span>' : '')+':';
-                }
+//                if (mode == 'edit') {
+//                    nameAddition = (this.fieldData.required ? '<span class="req-star">*</span>' : '')+':';
+//                }
                 var wrapper = contactEditor.wrapper('<span class="replace-me-with-value"></span>', i === 0 ? (this.fieldData.name+nameAddition) : '', 'no-bot-margins');
                 var rwv = wrapper.find('span.replace-me-with-value');
 
@@ -1557,7 +1556,7 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) {
                     //.append('<div class="ext"><strong><span style="display:none" class="replace-with-ext"></span></strong></div>')
                     .append(this.fieldValue.value)
                     .append('<span style="display:none" class="replace-with-ext"></span> ')
-                    .append('<a target="_blank" href="//maps.google.ru/maps?q=' + encodeURIComponent(map_url) + '&z=15" class="small map-link">' + $_('map') + '</a>');
+                    .append('<a target="_blank" href="//maps.google.com/maps?q=' + encodeURIComponent(map_url) + '&z=15" class="small map-link">' + $_('map') + '</a>');
                 return result;
             }
 

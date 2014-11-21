@@ -42,7 +42,7 @@ class contactsHelper {
                                 $map_url = $data_for_map[$k]['with_street'];
                             }
                         }
-                        $v .= ' <a target="_blank" href="//maps.google.ru/maps?q=' . urlencode($map_url) . '&z=15" class="small underline map-link">' . _w('map') . '</a>';
+                        $v .= ' <a target="_blank" href="//maps.google.com/maps?q=' . urlencode($map_url) . '&z=15" class="small underline map-link">' . _w('map') . '</a>';
                         $v = '<div data-subfield-index='.$k.'>'.$v.'</div>';
                     }
                     unset($v);
@@ -141,5 +141,55 @@ class contactsHelper {
             return reset($form);
         }
         return '';
+    }
+    
+    public static function getAccessTabTitle(waContact $contact)
+    {
+        $rm = new waContactRightsModel();
+        $ugm = new waUserGroupsModel();
+        $gm = new waGroupModel();
+
+        // Personal and group access rights
+        $groups = $ugm->getGroups($contact['id']);
+        $ownAccess = $rm->getApps(-$contact['id'], 'backend', false, false);
+        $groupAccess = $rm->getApps(array_keys($groups), 'backend', false, false);
+        if(!isset($ownAccess['webasyst'])) {
+            $ownAccess['webasyst'] = 0;
+        }
+        if(!isset($groupAccess['webasyst'])) {
+            $groupAccess['webasyst'] = 0;
+        }
+        
+        // Build application list with personal and group access rights for each app
+        $apps = wa()->getApps();
+        $noAccess = true;
+        $gNoAccess = true;
+        foreach($apps as $app_id => &$app) {
+            $app['id'] = $app_id;
+            $app['customizable'] = isset($app['rights']) ? (boolean) $app['rights'] : false;
+            $app['access'] = $ownAccess['webasyst'] ? 2 : 0;
+            if (!$app['access'] && isset($ownAccess[$app_id])) {
+                $app['access'] = $ownAccess[$app_id];
+            }
+            $app['gaccess'] = $groupAccess['webasyst'] ? 2 : 0;
+            if (!$app['gaccess'] && isset($groupAccess[$app_id])) {
+                $app['gaccess'] = $groupAccess[$app_id];
+            }
+            $noAccess = $noAccess && !$app['gaccess'] && !$app['access'];
+            $gNoAccess = $gNoAccess && !$app['gaccess'];
+        }
+        unset($app);
+        
+        $html = _w('Access');
+        $html .= ' <i class="icon16 c-access-icon ';
+        if ($contact['is_user'] == -1) {
+            $html .= 'delete';
+        } else if (!$groupAccess['webasyst'] && !$ownAccess['webasyst'] && $noAccess) {
+            $html .= 'key-bw';
+        } else {
+            $html .= 'key';
+        }
+        $html .= '"></i>';
+        return $html;
     }
 }

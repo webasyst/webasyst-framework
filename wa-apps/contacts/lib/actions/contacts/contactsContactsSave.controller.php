@@ -21,12 +21,12 @@ class contactsContactsSaveController extends waJsonController
         // Check access
         if (!$this->id) {
             if (!$this->getRights('create')) {
-                throw new waRightsException('Access denied.');
+                throw new waRightsException(_w('Access denied'));
             }
         } else {
             $cr = new contactsRightsModel();
             if ($cr->getRight(null, $this->id) != 'write') {
-                throw new waRightsException('Access denied.');
+                throw new waRightsException(_w('Access denied'));
             }
         }
 
@@ -76,7 +76,7 @@ class contactsContactsSaveController extends waJsonController
             }
 
             // Update recently added menu item
-            $name = waContactNameField::formatName($this->contact);
+            $name = $this->contact->get('name');
             if($name || $name === '0') {
                 $history = new contactsHistoryModel();
                 $history->save('/contact/'.$this->contact->getId(), $name, $this->id ? null : 'add');

@@ -7,9 +7,24 @@ class contactsRightsSaveController extends waJsonController
     {
         // only allowed to global admin
         if (!wa()->getUser()->getRights('webasyst', 'backend')) {
-            throw new waRightsException('Access denied.');
+            throw new waRightsException(_w('Access denied'));
         }
 
+        if (waRequest::request('only_is_user')) {
+            $contact_id = waRequest::request('id', null, 'int');
+            if ($contact_id) {
+                $is_user = waRequest::request('is_user', null, 'int');
+                if ($is_user === 0 || $is_user === 1 || $is_user === -1) {
+                    $contact = new waContact($contact_id);
+                    $contact->save(array(
+                        'is_user' => $is_user
+                    ));
+                    $this->response['access_disable_msg'] = contactsHelper::getAccessDisableMsg($contact);
+                }
+            }
+            return;
+        }
+        
         $app_id = waRequest::post('app_id');
         $name = waRequest::post('name');
         $value = (int)waRequest::post('value');

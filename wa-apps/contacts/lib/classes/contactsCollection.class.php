@@ -1,8 +1,8 @@
 <?php
 
+/**
+ * @deprecated since version 1.1.0
+ */
 class contactsCollection extends waContactsCollection
 {
-    protected $options = array(
-            'check_rights' => true
-    );
 }
