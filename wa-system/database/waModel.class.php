@@ -794,7 +794,7 @@ class waModel
     /**
      * Returns data from table record with specified value in id field ($this->id).
      *
-     * @param mixed|array $value Field value or array of values
+     * @param int|array $value Field value or array of values
      * @return array|null
      */
     public function getById($value)
@@ -843,47 +843,51 @@ class waModel
     }
 
     /**
-     *
      * Returns WHERE condition for the SQL query
      *
      * @param string|array $field
      * @param string|array $value
-     * @param bool $add_table_name - add or not table's name in the query
-     * @throws waException
+     * @param string|bool  $add_table_name table alias to prefix field names with; true to use original table name.
+     * @throws waException when field does not exist.
      * @return string
      */
     protected function getWhereByField($field, $value = null, $add_table_name = false)
     {
-        $where = array();
+        // Several conditions for different fields?
         if (is_array($field)) {
             $add_table_name = $value;
-            if ($add_table_name) {
-                $prefix = is_string($add_table_name) ? $add_table_name."." : $this->table.".";
-            } else {
-                $prefix = "";
-            }
+
+            $where = array();
             foreach ($field as $f => $v) {
-                if (!isset($this->fields[$f])) {
-                    throw new waException(sprintf(_ws('Unknown field %s'), $f));
-                }
-                if (is_array($v)) {
-                    $where[] = $prefix.$this->escapeField($f)." IN ('".implode("','", $this->escape($v))."')";
-                } else {
-                    $where[] = $prefix.$this->escapeField($f).($v === null ? " IS NULL" : " = ".$this->getFieldValue($f, $v));
-                }
+                $where[] = $this->getWhereByField($f, $v, $add_table_name);
             }
-        } elseif (is_array($value)) {
+
+            return implode(" AND ", $where);
+        }
+
+        // Table prefix for field names
+        if ($add_table_name) {
+            $prefix = is_string($add_table_name) ? $add_table_name."." : $this->table.".";
+        } else {
+            $prefix = "";
+        }
+
+        // Single field, multiple values?
+        if (is_array($value)) {
+            if (!isset($this->fields[$field])) {
+                throw new waException(sprintf(_ws('Unknown field %s'), $field));
+            }
             if ($value) {
-                $where[] = ($add_table_name ? $this->table."." : "").$this->escapeField($field)." IN ('".implode("','", $this->escape($value))."')";
+                return $prefix.$this->escapeField($field)." IN ('".implode("','", $this->escape($value))."')";
             } else {
                 // analog field IN ('') - it's always false
-                $where[] = '0'; // or false
-                }
-        } else {
-            $where[] = ($add_table_name ? $this->table."." : "").$this->escapeField($field).
-                       ($value === null ? " IS NULL" : " = ".$this->getFieldValue($field, $value));
+                return '0';
+            }
         }
-        return implode(" AND ", $where);
+
+        // Single field, single value
+        return $prefix.$this->escapeField($field).
+                       ($value === null ? " IS NULL" : " = ".$this->getFieldValue($field, $value));
     }
 
     /**
@@ -905,7 +909,7 @@ class waModel
     /**
      * Deletes record containing specified value of id field.
      *
-     * @param $value Value (or array of values) to be checked in the id field ($this->id) of all table records
+     * @param int|array $value Value (or array of values) to be checked in the id field ($this->id) of all table records
      *     to find those which must be deleted.
      * @return bool
      */

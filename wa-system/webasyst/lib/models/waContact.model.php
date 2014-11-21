@@ -12,14 +12,23 @@ class waContactModel extends waModel
      */
     public function getName($id)
     {
-        $sql = "SELECT id, name FROM ".$this->table." WHERE id ";
+        $sql = "SELECT * FROM ".$this->table." WHERE id ";
         if (is_array($id)) {
             $id = array_unique($id);
             $sql .= " IN ('".implode("','", $this->escape($id, 'int'))."')";
-            return $this->query($sql)->fetchAll('id', true);
+            $rows = $this->query($sql)->fetchAll();
+            $result = array();
+            foreach ($rows as $row) {
+                $result[$row['id']] = waContactNameField::formatName($row);
+            }
+            return $result;
         } else {
             $sql .= " = i:id";
-            return $this->query($sql, array('id' => $id))->fetchField('name');
+            $row = $this->query($sql, array('id' => $id))->fetch();
+            if ($row) {
+                return waContactNameField::formatName($row);
+            }
+            return '';
         }
     }
 

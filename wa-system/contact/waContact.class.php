@@ -135,6 +135,9 @@ class waContact implements ArrayAccess
         $dir = self::getPhotoDir($id, false);
         
         if ($ts) {
+            if ($size != 'original' && wa()->getEnv() == 'backend') {
+                $size .= '@2x';
+            }
             if (waSystemConfig::systemOption('mod_rewrite')) {
                 return wa()->getDataUrl("photos/{$dir}{$ts}.{$size}.jpg", true, 'contacts');
             } else {
@@ -148,6 +151,9 @@ class waContact implements ArrayAccess
             $size = (int)$width;
             if (!in_array($size, array(20, 32, 50, 96))) {
                 $size = 96;
+            }
+            if (wa()->getEnv() == 'backend') {
+                $size .= '@2x';
             }
             if ($type == 'company') {
                 return wa()->getRootUrl().'wa-content/img/company'.$size.'.jpg';
@@ -950,7 +956,7 @@ class waContact implements ArrayAccess
      *       with access rights elements' ids as array keys and 1 as their values.
      *     - false: array keys are incremented starting from 0, array item values containing the ids of access
      *       rights configuration elements of access rights multi-fields enabled for a user.
-     * @return int|bool
+     * @return int|bool|array
      */
     public function getRights($app_id, $name = null, $assoc = true)
     {

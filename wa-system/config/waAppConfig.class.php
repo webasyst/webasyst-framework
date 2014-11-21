@@ -211,7 +211,7 @@ class waAppConfig extends SystemConfig
         }
 
         $this->info = include($this->getAppPath().'/lib/config/app.php');
-        if (wa()->getEnv() == 'backend' && isset($this->info['csrf']) && $this->info['csrf'] && waRequest::method() == 'post') {
+        if ($this->environment == 'backend' && !empty($this->info['csrf']) && waRequest::method() == 'post') {
             if (waRequest::post('_csrf') != waRequest::cookie('_csrf')) {
                 throw new waException('CSRF Protection', 403);
             }
@@ -285,7 +285,7 @@ class waAppConfig extends SystemConfig
             foreach ($files as $t => $file) {
                 try {
                     if (!$ignore_all) {
-                        include($file);
+                        $this->includeUpdate($file);
                         waFiles::delete($cache_database_dir);
                         $app_settings_model->set($this->application, 'update_time', $t);
                     }
@@ -324,6 +324,11 @@ class waAppConfig extends SystemConfig
             }
         }
 
+    }
+
+    private function includeUpdate($file)
+    {
+        include($file);
     }
 
     public function install()
@@ -531,11 +536,11 @@ class waAppConfig extends SystemConfig
      * Returns path to app's configuration file with specified name.
      *
      * @see waSystemConfig::getConfigPath()
-     * @param $name Name of the configuration file whose path must be returned
-     * @param $user_config Whether path to a file located in wa-config/apps/[app_id]/ directory must be returned,
+     * @param string $name Name of the configuration file whose path must be returned
+     * @param bool $user_config Whether path to a file located in wa-config/apps/[app_id]/ directory must be returned,
      *     which is used for storing custom user configuration. If false is specified, method returns path to a file
      *     located in wa-apps/[app_id]/lib/config/.
-     * @param $app Optional app id, defaults to current app's id
+     * @param string $app Optional app id, defaults to current app's id
      * @return string
      */
     public function getConfigPath($name, $user_config = true, $app = null)

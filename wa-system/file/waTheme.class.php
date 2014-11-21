@@ -269,7 +269,7 @@ class waTheme implements ArrayAccess
                                 'control_type' => isset($setting['control_type']) ? (string)$setting['control_type'] : 'text',
                                 'value'        => (string)$setting->{'value'},
                             );
-                            $s = & $this->info['settings'][$var];
+                            $s = &$this->info['settings'][$var];
                             foreach ($setting->{'value'} as $value) {
                                 if ($value && ($locale = (string)$value['locale'])) {
                                     if (!is_array($s['value'])) {
@@ -322,9 +322,9 @@ class waTheme implements ArrayAccess
                     }
 
                     $this->info['locales'] = array();
-                    if ($locales = $xml->locales) {
+                    if ($locales = $xml->{'locales'}) {
                         /**
-                         * @var SimpleXMLElement $thumbs
+                         * @var SimpleXMLElement $locales
                          */
                         foreach ($locales->children() as $locale) {
                             $msgid = (string)$locale->{'msgid'};
@@ -568,7 +568,13 @@ XML;
                                 $length = $value_items->length;
 
                                 if ($length && ($value = $value_items->item(0))) {
-                                    $value->nodeValue = ifempty($this->settings[$var]['value']);
+                                    if (ifset($this->settings[$var]['control_type']) == 'text') {
+                                        $value->nodeValue = '';
+                                        $value->appendChild(new DOMCdataSection(ifempty($this->settings[$var]['value'], '')));
+                                    } else {
+                                        $value->nodeValue = ifempty($this->settings[$var]['value'], '');
+                                    }
+
                                     if ($value->hasAttribute('locale')) {
                                         $value->removeAttribute('locale');
                                     }
@@ -603,6 +609,7 @@ XML;
                 self::protect($this->app, $this->path_custom ? true : false);
             }
         }
+
         return $res;
     }
 
@@ -667,7 +674,7 @@ XML;
                 $this->getParentTheme()->revertFile($file);
                 return;
             } else {
-                waFiles::copy($this->path_original . '/' . $file, $this->path . '/' . $file);
+                waFiles::copy($this->path_original.'/'.$file, $this->path.'/'.$file);
             }
             $this->setFiles(array($file => array('modified' => 0)));
             $this->save();
@@ -721,7 +728,7 @@ XML;
             }
             $instance->save();
             return $instance;
-        } else if (($this->type == self::ORIGINAL) || !empty($this->info['system'])) {
+        } elseif (($this->type == self::ORIGINAL) || !empty($this->info['system'])) {
             return $this->copy($id, $params);
         } else {
             foreach ($params as $param => $value) {
@@ -789,7 +796,7 @@ XML;
             waFiles::create($path);
             $htaccess = <<<HTACCESS
 
-<FilesMatch "\.(php\d*|html?|xml)$">
+<FilesMatch "\\.(php\\d*|html?|xml)$">
     Deny from all
 </FilesMatch>
 
@@ -1065,7 +1072,7 @@ HTACCESS;
         if ($method_name = $this->getMethod($offset)) {
             $value = $this->{$method_name}();
         } elseif ($this->init($offset)) {
-            $value =  & $this->info[$offset];
+            $value =  &$this->info[$offset];
         } elseif (isset($this->extra_info[$offset])) {
             $value = $this->extra_info[$offset];
         }
@@ -1133,7 +1140,7 @@ HTACCESS;
         if (isset($this->info[$offset])) {
             $this->changed[$offset] = true;
             unset($this->info[$offset]);
-        } else if (isset($this->extra_info[$offset])) {
+        } elseif (isset($this->extra_info[$offset])) {
             unset($this->extra_info[$offset]);
         }
     }

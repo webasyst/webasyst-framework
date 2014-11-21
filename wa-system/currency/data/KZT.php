@@ -2,7 +2,7 @@
 
 return array(
     'code' => 'KZT',
-    'sign' => '₸',
+    'sign' => 'T',
     'title' => 'Kazakhstani tenge',
     'name' => array(
         array('tenge', 'tenges'),

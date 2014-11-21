@@ -62,7 +62,7 @@ HELP;
     {
         $slug = waRequest::param(0);
         $params = waRequest::param();
-        $id_pattern = '[a-z][a-z0-9]+';
+        $id_pattern = '[a-z][a-z0-9_]+';
         try {
             if (empty($params) || isset($params['help']) || empty($slug)) {
                 $this->printHelp();
@@ -82,20 +82,45 @@ HELP;
 
                 $skip = ifset($params['skip'], '');
 
-                $this->initPath();
+                if ($skipped = $this->initPath()) {
+                    $this->trace(str_repeat('-', 80));
+                    $this->tracef("IGNORE %d FILE(S)", count($skipped));
+                    $count = 0;
+                    $this->trace(str_repeat('-', 80));
+                    foreach ($skipped as $file => $description) {
+                        $this->tracef('%3s | %-40s | %s', ++$count, $file, $description);
+                    }
+                    $this->trace(str_repeat('-', 80));
+                }
+
 
                 $compress = true;
 
 
-                if (in_array($skip, array('test', 'all'), true)) {
+                if (!in_array($skip, array('test', 'all'), true)) {
                     //test minimal requirements
-                    $compress = $this->test();
+                    if ($compress = $this->test()) {
+                        $this->trace('Config check OK');
+                    }
+                } else {
+                    $this->trace('Config check skipped');
                 }
 
                 if ('theme' != $this->type) {
                     $style = ifset($params['style'], 'no-vendors');
                     if ($style !== 'false') {
-                        $this->codeStyle($style);
+                        $count = $this->codeStyle($style);
+                        if ($count === false) {
+                            $this->trace('Code style check skipped');
+                            $compress = $this->checkCode() && $compress;
+                        } elseif ($count) {
+                            $compress = false;
+                            $this->tracef('Code style check skipped %d errors', $count);
+                        } else {
+                            $this->trace('Code style check OK');
+                        }
+                    } else {
+                        $this->trace('Code style check skipped');
                     }
                 }
 
@@ -104,7 +129,7 @@ HELP;
                 }
             }
         } catch (Exception $ex) {
-            print "ERROR: ".$ex->getMessage()."\n\n";
+            $this->tracef("ERROR: %s\n\n", $ex->getMessage());
             $this->printHelp();
         }
     }
@@ -153,8 +178,6 @@ HELP;
                 $blacklist['@^themes/(?!default).+@'] = 'application\'s themes';
             }
         }
-        $this->cleanup($this->files, $blacklist);
-
 
         waRequest::setParam(
                  array(
@@ -165,17 +188,19 @@ HELP;
                      'extension' => $this->extension_id,
                  )
         );
+        return $this->filter($this->files, $blacklist);
     }
 
     private function getItemConfig($path)
     {
-        $config = array();
         $config_path = $this->path.'/lib/config/'.$path.'.php';
         if (file_exists($config_path)) {
             $config = include($config_path);
             if (!is_array($config)) {
                 $config = array();
             }
+        } else {
+            $config = false;
         }
         return $config;
     }
@@ -185,18 +210,27 @@ HELP;
      */
     private function codeStyle($param)
     {
+        @include_once 'PHP/CodeSniffer.php';
+        if (!class_exists('PHP_CodeSniffer')) {
+            $this->trace('WARNING: Code style check skipped:');
+            $this->trace('         PEAR extension CodeSniffer required');
+            return false;
+        }
 
         error_reporting(E_ALL | E_STRICT);
         $files = array();
         $ext = array(
             'php',
             'js',
-            'html',
+            //'html',
             'css',
         );
         foreach ($this->files as $file) {
             if (in_array(pathinfo($file, PATHINFO_EXTENSION), $ext)) {
                 if (($param === 'no-vendors') && preg_match('@^(lib/)?vendors/@', $file)) {
+                    continue;
+                }
+                if (preg_match('@(js|css)/compiled/.+\.(js|css)$@', $file)) {
                     continue;
                 }
                 if (preg_match('@\.min\.(js|css)$@', $file)) {
@@ -206,58 +240,88 @@ HELP;
             }
         }
 
-        @include_once 'PHP/CodeSniffer.php';
-        if (!class_exists('PHP_CodeSniffer')) {
-            $this->trace('WARNING: Code style check skipped:');
-            $this->trace('         PEAR extension CodeSniffer required');
-            return;
-        }
-        $values = array(
-            'verbosity'   => 0,
-            'tabWidth'    => 4,
-            'encoding'    => 'UTF-8',
-            'interactive' => true,
-            'files'       => $files,
-            'standard'    => 'Webasyst',
-            'sniffs'      => array(),
-            'local'       => true,
-            'reports'     => array(
-                'full' => null,
-            ),
-            'extensions'  => array(
-                'php',
-                'html',
-                'js',
-                'css',
-            )
-        );
+        $count = false;
 
-        if (PHP_CodeSniffer::isInstalledStandard($values['standard']) === false) {
-            $this->tracef('WARNING: %s standard not found, will used PSR2. Some rules are differ', $values['standard']);
-            $values['standard'] = 'PSR2';
-        }
-
-        $phpcs = new PHP_CodeSniffer(
-            $values['verbosity'],
-            $values['tabWidth'],
-            $values['encoding'],
-            $values['interactive']
-        );
-        // Set file extensions if they were specified. Otherwise,
-        // let PHP_CodeSniffer decide on the defaults.
-        if (empty($values['extensions']) === false) {
-            $phpcs->setAllowedFileExtensions($values['extensions']);
-        }
         try {
-            $phpcs->process(
-                  $values['files'],
-                      $values['standard'],
-                      $values['sniffs'],
-                      $values['local']
-            );
+            $count = $this->process($files);
         } catch (Exception $ex) {
             $this->tracef('ERROR: %s', $ex->getMessage());
         }
+        return $count;
+    }
+
+    private function process($files)
+    {
+        $standards = 'Webasyst';
+        if (PHP_CodeSniffer::isInstalledStandard($standards) === false) {
+            $this->tracef('WARNING: %s standard not found, will used PSR2. Some rules are differ', $standards);
+            $standards = 'PSR2';
+        }
+        if (is_array($standards) === false) {
+            $standards = array($standards);
+        }
+
+        $phpcs = new PHP_CodeSniffer(0, 4, 'UTF-8', true);
+        // Set file extensions if they were specified. Otherwise,
+        // let PHP_CodeSniffer decide on the defaults.
+        if (true) {
+            $extensions = array(
+                'php',
+                // 'html',
+                'js',
+                'css',
+            );
+            $phpcs->setAllowedFileExtensions($extensions);
+        }
+
+        if (is_array($files) === false) {
+            $files = array($files);
+        }
+
+
+        // Reset the members.
+
+
+        // Ensure this option is enabled or else line endings will not always
+        // be detected properly for files created on a Mac with the /r line ending.
+        ini_set('auto_detect_line_endings', true);
+
+        $sniffs = array();
+        foreach ($standards as $standard) {
+            $installed = $phpcs->getInstalledStandardPath($standard);
+            if ($installed !== null) {
+                $standard = $installed;
+            } else {
+                if (is_dir($standard) === true
+                    && is_file(realpath($standard.'/ruleset.xml')) === true
+                ) {
+                    $standard = realpath($standard.'/ruleset.xml');
+                }
+            }
+            $sniffs = array_merge($sniffs, $phpcs->processRuleset($standard));
+        }
+        //end foreach
+
+        $sniffRestrictions = array();
+
+        $phpcs->registerSniffs($sniffs, $sniffRestrictions);
+        $phpcs->populateTokenListeners();
+
+        // The SVN pre-commit calls process() to init the sniffs
+        // and ruleset so there may not be any files to process.
+        // But this has to come after that initial setup.
+
+        //define('PHP_CODESNIFFER_IN_TESTS',true);
+        $_SERVER['argc'] = 0;
+        $errors_count = 0;
+        foreach ($files as $file) {
+            $phpcsFile = $phpcs->processFile($file);
+            // Show progress information.
+            if ($phpcsFile !== null) {
+                $errors_count += ($phpcsFile->getErrorCount() + $phpcsFile->getWarningCount());
+            }
+        }
+        return $errors_count;
     }
 
     private function test()
@@ -271,22 +335,14 @@ HELP;
                 break;
             default:
                 # 1. Check settings
-                $settings = $this->getItemConfig($this->type);
+                $result = $this->testConfig() && $result;
                 # 1.1 Routing
-                if (!empty($settings['frontend'])) {
-                    $routing = $this->getItemConfig('routing');
-                    if (empty($routing)) {
-                        $result = false;
-                        $this->tracef("Invalid %s's settings: empty routing for frontend", $this->type);
-                    }
-                } else {
+                $result = $this->testRouting() && $result;
 
-                }
 
                 # 1.2 themes
                 # 1.3 plugins
                 # 2. Check PHP code
-                $result = $this->checkCode() && $result;
                 break;
         }
 
@@ -294,7 +350,11 @@ HELP;
         # 4 Table names
         if (in_array($this->type, array('app', 'plugin'))) {
             $result = $this->testDb() && $result;
+
+            $result = $this->testInstall() && $result;
         }
+
+
         return $result;
     }
 
@@ -303,20 +363,66 @@ HELP;
 //name
         //description
         //version
+        ;
+        $available = array(
+            'name',
+            'description',
+            'icon',
+            'version',
+            'vendor',
+            'frontend',
+        );
+        switch ($this->type) {
+            case 'app':
+                $available = array_merge(
+                    $available,
+                    array(
+                        'plugins',
+                        'themes',
+                        'rights',
+                    )
+                );
+                break;
+            case 'plugin':
+                $available = array_merge(
+                    $available,
+                    array(
+                        'handlers',
+                    )
+                );
+                break;
+        }
+        $keys = array_diff(array_keys($this->config), $available);
+        if ($keys) {
+            $this->tracef("Invalid %s's settings: unknown config options (%s)", $this->type, implode(',', $keys));
+        }
+
+        return empty($keys);
     }
 
     private function testRouting()
     {
-        //verify settings
-        if (!empty($this->config['routing'])) {
-            if ($routing = $this->getItemConfig('routing')) {
-                foreach ($routing as $route) {
-
-                }
+        $result = true;
+        $routing = $this->getItemConfig('routing');
+        if (!empty($this->config['frontend'])) {
+            if (empty($routing)) {
+                $result = false;
+                $this->tracef("Invalid %s's settings: empty routing for frontend", $this->type);
             } else {
-
+                foreach ($routing as $route) {
+                    //TODO
+                }
+            }
+        } else {
+            if ($routing !== false) {
+                $this->tracef("Invalid %s's settings: routing exists but frontend disabled", $this->type);
+                $result = false;
+            }
+            if (!empty($this->config['themes'])) {
+                $this->tracef("Invalid %s's settings: themes option will be ignored", $this->type);
             }
         }
+        return $result;
 
     }
 
@@ -347,14 +453,15 @@ HELP;
         }
 
         if ($namespace) {
-            $pattern = "@^{$namespace}(_.+)?$@";
-            $db = $this->getItemConfig('db');
-            foreach ($db as $table => $info) {
-                if (!preg_match($pattern, $table)) {
-                    $result = false;
-                    $this->tracef("Invalid table name:\t\"%s\"", $table);
-                }
 
+            if ($db = $this->getItemConfig('db')) {
+                $pattern = "@^{$namespace}(_.+)?$@";
+                foreach ($db as $table => $info) {
+                    if (!preg_match($pattern, $table)) {
+                        $result = false;
+                        $this->tracef("Invalid table name:\t\"%s\"", $table);
+                    }
+                }
             }
         } else {
 
@@ -530,14 +637,14 @@ HELP;
         }
         $current = getcwd();
         chdir($this->path);
-        $files_md5_path = "{$this->path}/files.md5";
+        $files_md5_path = "{$this->path}/.files.md5";
         $this->md5($this->files, $files_md5_path);
         $temp_files = array();
         $temp_files[] = $files_md5_path;
         chdir($this->path.'/../');
 
         $archive_files = array();
-        $archive_files[] = array($this->folder.'/files.md5', $files_md5_path);
+        $archive_files[] = array($this->folder.'/.files.md5', $files_md5_path);
         foreach ($this->files as $file) {
             $archive_files[] = $this->folder.'/'.$file;
         }
@@ -601,7 +708,7 @@ HELP;
         return $count;
     }
 
-    private function cleanup(&$files, $blacklist = array())
+    private function filter(&$files, $blacklist = array())
     {
         $blacklist = array_merge(
             $blacklist,
@@ -617,16 +724,17 @@ HELP;
                 '@(/|^)[^\.]+$@'                                      => 'unknown type file',
             )
         );
-
+        $skipped = array();
         foreach ($files as $id => $file) {
             foreach ($blacklist as $pattern => $description) {
                 if (preg_match($pattern, $file)) {
                     unset($files[$id]);
-                    echo "Skip {$description}:\t{$file}\n";
+                    $skipped[$file] = $description;
                     break;
                 }
             }
         }
+        return $skipped;
     }
 
 

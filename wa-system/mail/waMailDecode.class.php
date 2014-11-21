@@ -56,6 +56,33 @@ class waMailDecode
         $this->options = $options + $this->options;
     }
 
+    /** Parse a decoded email header into [name => ..., email => ..., full => ...] */
+    public static function parseAddress($header)
+    {
+        $v = $header;
+        try {
+            $parser = new waMailAddressParser($v);
+            $v = $parser->parse();
+            if (isset($v[0])) {
+                $v = $v[0];
+            }
+        } catch (Exception $e) {
+            if (preg_match('~<([^>]+)>~', $v, $m)) {
+                $email = $m[1];
+            } else if (preg_match('~(\S+\@\S+)~', $v, $m)) {
+                $email = $m[1];
+            } else {
+                $email = explode(' ', $v);
+                $email = $email[0];
+            }
+
+            $name = trim(preg_replace('~<?'.preg_quote($email, '~').'>?~', '', $v));
+            $v = array('name' => $name, 'email' => $email);
+        }
+        $v['full'] = $header;
+        return $v;
+    }
+
     public function decode($file, $full_response = false)
     {
         if (is_resource($file)) {
@@ -112,21 +139,8 @@ class waMailDecode
             } elseif ($h == 'date') {
                 $v = preg_replace("/[^a-z0-9:,\.\s\t\+-]/i", '', $v);
                 $v = date("Y-m-d H:i:s", strtotime($v));
-            } elseif ($h == 'to' || $h == 'cc') {
-                $parser = new waMailAddressParser($v);
-                $v = $parser->parse();
-            } elseif ($h == 'from') {
-                if ($v) {
-                    try {
-                        $parser = new waMailAddressParser($v);
-                        $v = $parser->parse();
-                        if (isset($v[0])) {
-                            $v = $v[0];
-                        }
-                    } catch (Exception $e) {
-                        $v = array('name' => $v, 'email' => '');
-                    }
-                }
+            } elseif ($h == 'to' || $h == 'cc' || $h == 'from' || $h == 'reply-to') {
+                $v = self::parseAddress($v);
             }
         }
         unset($v);

@@ -8,25 +8,25 @@ jQuery.fn.waEditor = function (options) {
             if (typeof options === 'string') {
                 if (options == 'sync') {
                     if (wrapper.find('.wysiwyg').parent().hasClass('selected')) {
-                        self.redactor('sync');
+                        self.redactor('code.sync');
                     } else {
                         self.val(self.data('ace').getValue());
                     }
                 } else if (options == 'insert') {
                     if (wrapper.find('.wysiwyg').parent().hasClass('selected')) {
-                        self.redactor('insertHtml', args[1]);
+                        self.redactor('insert.html', args[1]);
                     } else {
                         self.data('ace').insert(args[1]);
                     }
                 } else if (options == 'get') {
                     if (wrapper.find('.wysiwyg').parent().hasClass('selected')) {
-                        result = self.redactor('get');
+                        result = self.redactor('code.get');
                     } else {
                         result = self.data('ace').getValue();
                     }
                 }
             } else {
-                self.redactor('set', self.val());
+                self.redactor('code.set', self.val());
                 self.data('ace').setValue(self.val());
             }
             return;
@@ -34,19 +34,20 @@ jQuery.fn.waEditor = function (options) {
         var container = self.parent();
         var button = options.saveButton || null;
         var syncCallback = options.syncBeforeCallback;
+        if (options.uploadFields) {
+            options['uploadImageFields'] = options.uploadFields;
+        }
         options = $.extend({
-            //boldTag: 'b',
-            //italicTag: 'i',
             deniedTags: false,
             minHeight: 300,
             buttonSource: false,
             paragraphy: false,
-            convertDivs: false,
-            toolbarFixedBox: true,
+            replaceDivs: false,
+            toolbarFixed: true,
             buttons: ['html', 'formatting', 'bold', 'italic', 'underline', 'deleted', 'unorderedlist', 'orderedlist',
-                'outdent', 'indent', 'image', 'video', 'file', 'table', 'link', 'alignment', '|',
+                'outdent', 'indent', 'image', 'video', 'table', 'link', 'alignment', '|',
                 'horizontalrule'],
-            plugins: ['fontcolor', 'fontsize', 'fontfamily'],
+            plugins: ['fontcolor', 'fontsize', 'fontfamily', 'table', 'video'],
             imageUpload: '?module=pages&action=uploadimage&filelink=1',
             imageUploadErrorCallback: function(json) {
                 alert(json.error);
@@ -151,16 +152,16 @@ jQuery.fn.waEditor = function (options) {
 
         // redactorjs
         self.redactor(options);
-        self.redactor('getEditor').find('img[src*="$wa_url"]').each(function () {
+        self.redactor('core.getEditor').find('img[src*="$wa_url"]').each(function () {
             var s = decodeURIComponent($(this).attr('src'));
             $(this).attr('data-src', s);
             $(this).attr('src', s.replace(/\{\$wa_url\}/, wa_url));
         });
-        if (self.redactor('getBox')) {
-            self.redactor('getBox').css('z-index', 0);
+        if (self.redactor('core.getBox')) {
+            self.redactor('core.getBox').css('z-index', 0);
         }
-        if (self.redactor('getToolbar')) {
-            self.redactor('getToolbar').css('z-index', 1);
+        if (self.redactor('core.getToolbar')) {
+            self.redactor('core.getToolbar').css('z-index', 1);
         }
 
 
@@ -173,14 +174,14 @@ jQuery.fn.waEditor = function (options) {
             }
             wrapper.find('.wa-editor-wysiwyg-html-toggle li.selected').removeClass('selected');
             $(this).parent().addClass('selected');
-            wrapper.find('.redactor_box').hide();
+            self.redactor('core.getBox').hide();
             var p = editor.getCursorPosition();
-            self.redactor('getEditor').find("img[data-src!='']").each(function () {
+            self.redactor('core.getEditor').find("img[data-src!='']").each(function () {
                 $(this).attr('src', $(this).attr('data-src'));
                 $(this).removeAttr('data-src');
             });
-            self.redactor('sync');
-            editor.setValue(self.redactor('getObject').cleanHtml(self.redactor('get')));
+            self.redactor('code.sync');
+            editor.setValue(self.redactor('code.get'));
             wrapper.find('.ace').show();
             editor.focus();
             editor.navigateTo(p.row, p.column);
@@ -196,34 +197,34 @@ jQuery.fn.waEditor = function (options) {
             }
             wrapper.find('.wa-editor-wysiwyg-html-toggle li.selected').removeClass('selected');
             $(this).parent().addClass('selected');
-            self.redactor('set', editor.getValue());
-            self.redactor('getEditor').find('img[src*="$wa_url"]').each(function () {
+            self.redactor('code.set', editor.getValue());
+            self.redactor('core.getEditor').find('img[src*="$wa_url"]').each(function () {
                 var s = decodeURIComponent($(this).attr('src'));
                 $(this).attr('data-src', s);
                 $(this).attr('src', s.replace(/\{\$wa_url\}/, wa_url));
             });
-            self.redactor('observeStart');
-            self.redactor('focus');
+            self.redactor('observe.load');
+            self.redactor('focus.setStart');
             wrapper.find('.ace').hide();
-            wrapper.find('.redactor_box').show();
+            self.redactor('core.getBox').show();
             return false;
         });
 
         if ($.storage && $.storage.get(wa_app + '/editor') == 'html') {
             wrapper.find('.wa-editor-wysiwyg-html-toggle li.selected').removeClass('selected');
             wrapper.find('.html').parent().addClass('selected');
-            wrapper.find('.redactor_box').hide();
+            self.redactor('core.getBox').hide();
             wrapper.find('.ace').show();
             editor.focus();
             editor.navigateTo(0, 0);
         } else {
             wrapper.find('.ace').hide();
             if (!options['iframe']) {
-                self.redactor('focus');
+                self.redactor('focus.setStart');
             }
             else {
                 setTimeout(function(){
-                    self.redactor('focus');
+                    self.redactor('focus.setStart');
                 }, 100);
             }
         }

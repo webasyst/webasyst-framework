@@ -25,9 +25,9 @@ class waContactNameField extends waContactStringField
             ));
         }
     }
-    
+
     public function get(waContact $contact, $format = null)
-    {        
+    {
         if ($contact['is_company']) {
             $name = !empty($contact['company']) ? $contact['company'] : '';
         } else {
@@ -44,12 +44,12 @@ class waContactNameField extends waContactStringField
             $email = $contact->get('email', 'default');
             $name = strtok($email, '@');
         }
-        
+
         return $this->format($name, $format);
     }
-    
+
     public function prepareSave($value, waContact $contact = null) {
-        
+
         if (!$contact) {
             return $value;
         }
@@ -61,14 +61,14 @@ class waContactNameField extends waContactStringField
             $lst = trim($contact['lastname']);
             $cmp = trim($contact['company']);
             $eml = trim($contact->get('email', 'default'));
-            
+
             $name = array();
-            if ($fst || $fst === '0' || $mdl || $mdl === '0' || $lst || $lst === '0') 
+            if ($fst || $fst === '0' || $mdl || $mdl === '0' || $lst || $lst === '0')
             {
                 $name[] = $lst;
                 $name[] = $fst;
                 $name[] = $mdl;
-            } 
+            }
             else if ($cmp || $cmp === '0')
             {
                 $name[] = $cmp;
@@ -83,7 +83,7 @@ class waContactNameField extends waContactStringField
                 }
             }
             foreach ($name as $i => $n) {
-                if (!$n && $n !== '0') { 
+                if (!$n && $n !== '0') {
                     unset($name[$i]);
                 }
             }
@@ -161,6 +161,10 @@ class waContactNameField extends waContactStringField
             }
             $name = strtok($email, '@');
         }
+
+        if (!$name && !empty($contact['name'])) {
+            $name = $contact['name'];
+        }
         return $name;
-    }    
+    }
 }

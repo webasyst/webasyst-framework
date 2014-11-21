@@ -10,7 +10,15 @@ class waMemcachedCacheAdapter extends waCacheAdapter
     protected function init()
     {
         if (!self::$memcached) {
-            self::$memcached = new Memcached('wa');
+            if (!empty($this->options['persistent'])) {
+                self::$memcached = new Memcached($this->options['persistent']);
+                // if servers already exists
+                if (self::$memcached->getServerList()) {
+                    return;
+                }
+            } else {
+                self::$memcached = new Memcached();
+            }
             if (empty($this->options['servers'])) {
                 self::$memcached->addServer('127.0.0.1', 11211);
             } else {

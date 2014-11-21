@@ -222,7 +222,7 @@ class waSignupAction extends waViewAction
     {
         $config = wa()->getAuthConfig();
 
-        $confirmation_hash = hash('md5', time().'rfb2:zfbdbawrsddswr4$h5t3/.`w'.mt_rand().mt_rand().mt_rand());
+        $confirmation_hash = md5(time().'rfb2:zfbdbawrsddswr4$h5t3/.`w'.mt_rand().mt_rand().mt_rand());
         $contact->setSettings(wa()->getApp(), "email_confirmation_hash", $confirmation_hash);
         $ce = new waContactEmailsModel();
         $unconfirmed_email = $ce->getByField(array(

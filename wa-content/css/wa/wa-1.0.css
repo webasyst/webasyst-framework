@@ -1039,9 +1039,9 @@ i.icon10 { background-repeat:no-repeat; background-image: url(../../../wa-conten
 .wa-editor-wysiwyg-html-toggle li.selected a { background: white;}
 .wa-editor-wysiwyg-html-toggle li a { display: block; color: #888; font-weight: bold; padding: 4px 12px 6px; text-decoration: none; font-size: 0.9em; }
 
-#wa .redactor_editor { border: none; }
-#redactor_modal footer { padding: 0 30px 20px; }
-#redactor_modal footer button { background: #fff !important; max-width: 33% !important; }
-#redactor_modal footer button.redactor_modal_action_btn { background: #6c3 !important; float: left; }
-#redactor_modal footer button.redactor_modal_delete_btn { color: red !important; }
-#redactor_modal footer button.redactor_modal_delete_btn:hover { color: white !important; background: red !important; }
+#wa .redactor-editor { border: none; }
+#redactor-modal footer { padding: 0 30px 20px; }
+#redactor-modal footer button { background: #fff !important; max-width: 33% !important; }
+#redactor-modal footer button.redactor-modal-action-btn { background: #6c3 !important; float: left; }
+#redactor-modal footer button.redactor-modal-delete-btn { color: red !important; }
+#redactor-modal footer button.redactor-modal-delete-btn:hover { color: white !important; background: red !important; }

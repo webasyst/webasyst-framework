@@ -3,10 +3,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>{$wa->accountName()}</title>
     {if $env == 'backend'}<meta name="robots" content="noindex, nofollow"/>{/if}
-    <link href="{$wa_url}wa-content/css/wa/wa-1.0.css?v{$wa->version()}" rel="stylesheet" type="text/css" >
-    <!--[if IE 9]><link type="text/css" href="{$wa_url}wa-content/css/wa/wa-1.0.ie9.css" rel="stylesheet"><![endif]-->
-    <!--[if IE 8]><link type="text/css" href="{$wa_url}wa-content/css/wa/wa-1.0.ie8.css" rel="stylesheet"><![endif]-->
-    <!--[if IE 7]><link type="text/css" href="{$wa_url}wa-content/css/wa/wa-1.0.ie7.css" rel="stylesheet"><![endif]-->
+    {$wa->css()}
     <style type="text/css">
         .dialog.newpassword .dialog-window {
             width: 615px;
@@ -19,9 +16,10 @@
     </style>
     <script src="{$wa_url}wa-content/js/jquery/jquery-1.7.1.min.js" type="text/javascript"></script>
     <script src="{$wa_url}wa-content/js/jquery-wa/wa.dialog.js" type="text/javascript"></script>
+    <script src="{$wa_url}wa-content/js/jquery-plugins/blur/blur.min.js" type="text/javascript"></script>
 </head>
 <body>
-<div id="wa-login" style="background: url('{if $background && !$stretch}{$wa_url}{$background}{/if}{if !$background}{$wa_url}wa-content/img/cloth-background.jpg{/if}')">
+<div id="wa-login"{if $background} style="background-image: url('{if $background && !$stretch}{$wa_url}{$background}{/if}{if !$background}{$wa_url}wa-content/img/cloth-background.jpg{/if}')"{/if}>
     {if $background && $stretch}
     <img id="wa-login-stretched-background" src="{$wa_url}{$background}" />
     {/if}
@@ -35,16 +33,8 @@
         </div>
         <div class="dialog-buttons">
             <div class="wa-poweredby">
-                <a href="http://www.webasyst.com/">
-                    Webasyst
-                    <span class="wa-dots">
-                        <span class="wa-dot-red"></span>
-                        <span class="wa-dot-blue"></span>
-                        <span class="wa-dot-yellow"></span>
-                        <span class="wa-dot-pink"></span>
-                        <span class="wa-dot-green"></span>
-                        <span class="wa-dot-cyan"></span>
-                    </span>
+                <a href="http://www.webasyst.com/" title="Webasyst">
+                    <span class="wa-dots"></span>
                 </a>
             </div>
         </div>

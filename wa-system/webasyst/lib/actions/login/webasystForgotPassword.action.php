@@ -9,7 +9,7 @@ class webasystForgotPasswordAction extends waForgotPasswordAction
             if (waRequest::get('key')) {
                 $this->layout->assign('dialog_class', 'newpassword');
             } else {
-                $this->layout->assign('dialog_style', 'min-height: 130px; height: 160px');
+                $this->layout->assign('dialog_style', 'min-height: 150px; height: 200px');
             }
         }
         $this->template = wa()->getAppPath('templates/actions/forgot/ForgotPassword.html', 'webasyst');

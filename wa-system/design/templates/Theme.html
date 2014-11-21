@@ -1,9 +1,9 @@
 <div class="block double-padded blank wa-theme" id="wa-theme-{$theme.id}">
 
-    <h1 class="wa-theme-name">{$theme.name|escape}</h1>
+    <h1 class="wa-theme-name">{sprintf('[s`%s design theme`]', $theme.name|escape)}</h1>
 
     <!-- THEME ACTIONS -->
-    <div class="sidebar right300px">
+    <div class="sidebar right250px">
         <div class="block double-padded wa-theme-actions">
             <ul class="menu-v with-icons">
                 <li class="bottom-padded"><a href="?module=design&amp;action=themeDownload&amp;theme={$theme.id}" class="bold"><i class="icon16 download"></i>[s`Download theme backup`] <span class="hint nowrap">.tar.gz</span></a></li>
@@ -26,7 +26,7 @@
         </div>
     </div>
     
-    <div class="content right300px">
+    <div class="content right250px">
     
         {if !$theme_routes}
                        
@@ -54,49 +54,6 @@
                 {/if}
             </p>
         {else}                        
-    
-
-            <!-- THEME USAGE -->
-            <div class="fields" style="width: 100%">
-                <div class="field">
-                    <div class="name">
-                        [s`Theme path`]
-                    </div>
-                    <div class="value">
-                        {if $theme.type eq waTheme::ORIGINAL}{$theme.original|escape}{else}<strong>{$theme.custom|escape}</strong>{/if}
-                    </div>
-                    {if $theme.type ne waTheme::ORIGINAL}
-                        <div class="value hint">
-                            [s`Last modified`]: <strong>{$theme.mtime|wa_datetime:"humandatetime"}</strong>
-                        </div>
-                    {/if}                
-                </div>
-                
-                <div class="field">
-                    <div class="name">
-                        [s`Theme usage`]
-                    </div>
-                    <div class="value no-shift">
-                        
-                        <p class="bold">
-                            {$_theme_usages = []}
-                            {foreach $theme_routes as $_r}
-                                {if $_r['_domain'] != $wa->get('domain') && $_r['_id'] != $wa->get('route')}
-                                    {$_theme_usages[] = htmlspecialchars("{$_r._domain}/{$_r.url}")}
-                                {/if}
-                                <a target="_blank" href="{$_r._url}" class="no-underline">{$_r._domain}/{$_r.url} <i class="icon10 new-window"></i></a><br>
-                            {/foreach}
-                        </p>
-                        {if count($theme_routes) > 1}
-                            <p class="gray">
-                                <i class="icon10 exclamation"></i> {sprintf('[s`Customizing %s theme settings below will affect all listed routes. If you want to keep individual designs, use separate theme copies (clones) for each route.`]', $theme.name|escape)}
-                            </p>
-                        {/if}
-                        
-                    </div>
-                </div>
-    
-            </div>
             
         
             <!-- THEME SETTINGS FORM -->
@@ -107,9 +64,9 @@
                 <link rel="stylesheet" href="{$wa_url}wa-content/js/farbtastic/farbtastic.css" type="text/css" />
             
                 <iframe style="display: none" id="theme-settings-iframe" name="theme-settings-iframe"></iframe>
-                <h4 class="heading">[s`Display settings`]</h4>
                 <form id="theme-settings" method="post" action="?module=design&action=themeSettings&theme={$theme.id}" enctype="multipart/form-data" target="theme-settings-iframe">
                     {$wa->csrf()}
+                    <br>
                     <div class="fields form">
                         {foreach $settings as $s_var => $s}
                         <div class="field">
@@ -171,22 +128,65 @@
                         </div>
                         {/foreach}
                         
-                        <div class="field-group">
-                            <div class="field">
-                                <div class="value no-shift">
-                                    <input type="submit" class="button green" value="[s`Save`]">
-                                    <span id="theme-settings-message" style="display: none"><i class="icon16 yes" style="margin-top: 0.5em;"></i> [s`Saved`]</span>
-                                    <span id="theme-settings-error" class="errormsg" style="display: inline"></span>
-                                </div>
-                            </div>
-                        </div>
+                        <div class="wa-design-save-panel block bordered-top">
+                            <input type="submit" class="button green" value="[s`Save`]">
+                            <span id="theme-settings-message" style="display: none"><i class="icon16 yes" style="margin-top: 0.5em;"></i> [s`Saved`]</span>
+                            <span id="theme-settings-error" class="errormsg" style="display: inline"></span></div>
                     </div>
                 </form>
             {else}
-                <p><em>{sprintf('[s`%s design theme does not offer customizable display settings. Please use template editor for customizing the theme.`]', $theme.name|escape)}</em></p>
+                <p>
+                    <br>
+                    <em>{sprintf('[s`%s design theme does not offer customizable display settings. Please use template editor for customizing the theme.`]', $theme.name|escape)}</em>
+                </p>
             {/if}    
 
         {/if}
+        
+        <!-- THEME USAGE -->
+        <div class="fields" style="width: 100%">
+        
+            <h4 class="heading">[s`Theme usage`]</h4>
+        
+            <div class="field">
+                <div class="name">
+                    [s`Theme path`]
+                </div>
+                <div class="value">
+                    {if $theme.type eq waTheme::ORIGINAL}{$theme.original|escape}{else}<strong>{$theme.custom|escape}</strong>{/if}
+                </div>
+                {if $theme.type ne waTheme::ORIGINAL}
+                    <div class="value hint">
+                        [s`Last modified`]: <strong>{$theme.mtime|wa_datetime:"humandatetime"}</strong>
+                    </div>
+                {/if}                
+            </div>
+            
+            <div class="field">
+                <div class="name">
+                    [s`Theme usage`]
+                </div>
+                <div class="value no-shift">
+                    
+                    <p class="bold">
+                        {$_theme_usages = []}
+                        {foreach $theme_routes as $_r}
+                            {if $_r['_domain'] != $wa->get('domain') && $_r['_id'] != $wa->get('route')}
+                                {$_theme_usages[] = htmlspecialchars("{$_r._domain}/{$_r.url}")}
+                            {/if}
+                            <a target="_blank" href="{$_r._url}" class="no-underline">{$_r._domain}/{$_r.url} <i class="icon10 new-window"></i></a><br>
+                        {/foreach}
+                    </p>
+                    {if count($theme_routes) > 1}
+                        <p class="gray">
+                            <i class="icon10 exclamation"></i> {sprintf('[s`Customizing %s theme settings below will affect all listed routes. If you want to keep individual designs, use separate theme copies (clones) for each route.`]', $theme.name|escape)}
+                        </p>
+                    {/if}
+                    
+                </div>
+            </div>
+
+        </div>
         
         {if $theme.about}
             <!-- ABOUT -->

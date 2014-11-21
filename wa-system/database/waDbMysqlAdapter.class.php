@@ -176,6 +176,9 @@ class waDbMySQLAdapter extends waDbAdapter
                     if ($row['Key_name'] != 'PRIMARY' && !$row['Non_unique']) {
                         $rows[$row['Key_name']]['unique'] = 1;
                     }
+                    if ($row['Index_type'] == 'FULLTEXT') {
+                        $rows[$row['Key_name']]['fulltext'] = 1;
+                    }
                 }
             }
             $result[':keys'] = $rows;
@@ -196,6 +199,8 @@ class waDbMySQLAdapter extends waDbAdapter
                 }
                 if (isset($field['null']) && !$field['null']) {
                     $type .= ' NOT NULL';
+                } elseif (in_array(strtolower($field['type']), array('timestamp'))) {
+                    $type .= ' NULL';
                 }
                 if (isset($field['default'])) {
                     if ($field['default'] == 'CURRENT_TIMESTAMP') {

@@ -1,35 +1,35 @@
 <?php
 
 class waUploadJsonController extends waJsonController
-{   
+{
     protected $path;
-    
+
     public function execute()
     {
         $this->path = $this->getPath();
-        
+
         if (!is_writable($this->path)) {
             $p = substr($this->path, strlen(wa()->getDataPath('', true)));
-            $this->errors = sprintf(_w("File could not bet saved due to the insufficient file write permissions for the %s folder."), $p);
+            $this->errors = sprintf(_w("File could not be saved due to insufficient write permissions for the %s folder."), $p);
         } else {
             $this->errors = array();
             $this->process();
             $this->errors = implode(" \r\n", $this->errors);
         }
     }
-    
+
     protected function process()
     {
         foreach (waRequest::file('files') as $f) {
             $this->processFile($f);
-        }        
+        }
     }
-    
+
     protected function getPath()
     {
         return wa()->getDataPath('upload', true);
     }
-    
+
     protected function isValid($f)
     {
         $ext = $f->extension;
@@ -65,7 +65,7 @@ class waUploadJsonController extends waJsonController
             return false;
         }
     }
-    
+
     protected function save(waRequestFile $f)
     {
         $name = $f->name;

@@ -14,7 +14,7 @@
         {if $options.login == 'email'}[s`Email`]{else}[s`Login`]{/if}:
         </div>
         <div class="value">
-            <input type="text" class="wa-login-text-input" id="wa-login-input" value="{$login|escape}" name="login" />
+            <input type="text" class="wa-login-text-input" id="wa-login-input" value="{$login|escape}" name="login" placeholder="{if $options.login == 'email'}[s`Email`]{else}[s`Login`]{/if}" />
         </div>
     </div>
     <div class="field">
@@ -22,7 +22,7 @@
             [s`Password`]:
         </div>
         <div class="value">
-            <input type="password" class="wa-login-text-input" name="password" value="{if !empty($password)}{$password}{/if}" />
+            <input type="password" class="wa-login-text-input" name="password" value="{if !empty($password)}{$password}{/if}" placeholder="[s`Password`]" />
             {if $options.remember_enabled}
             <div class="wa-remember-me">
                 <input id="remember-me" name="remember" type="checkbox" {if !empty($remember) || $wa->post('remember')}checked="checked" {/if} value="1" /> <label for="remember-me">[s`Remember me`]</label>
@@ -39,7 +39,7 @@
                 [s`or`]
                 <a class="wa-logincancel" href="{$back_on_cancel}">[s`cancel`]</a>
             {/if}
-            <a href="?forgotpassword" class="wa-forgotpassword">[s`Forgot password?`]</a>
+            <a href="?forgotpassword" class="wa-forgotpassword underline">[s`Forgot password?`]</a>
         </div>
     </div>
 </div>

@@ -71,7 +71,6 @@ $(function () {
 
     }
 
-
 /*
     $('#wa-header').on('mousemove', function () {
         if ($('#wa-moreapps').is(':visible') && !$('#wa-moreapps').hasClass('uarr')) {
@@ -91,8 +90,13 @@ $(function () {
             clearTimeout(this.timeout)
             this.timeout = null;
         }
+    }).on('mouseleave', function () {
+        if (this.timeout) {
+            clearTimeout(this.timeout)
+            this.timeout = null;
+        }
     });
-*/
+*/    
 
     var pixelRatio = !!window.devicePixelRatio ? window.devicePixelRatio : 1;
     $(window).on("load", function() {

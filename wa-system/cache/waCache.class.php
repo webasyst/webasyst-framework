@@ -42,6 +42,7 @@ class waCache
      * @param string $key
      * @param mixed $value
      * @param string|bool $group
+     * @param int $expiration
      * @return mixed
      */
     public function set($key, $value, $expiration = null, $group = null)

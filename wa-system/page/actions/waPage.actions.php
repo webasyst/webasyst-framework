@@ -437,7 +437,7 @@ class waPageActions extends waActions
 
         if (!is_writable($path)) {
             $p = substr($path, strlen(wa()->getDataPath('', true)));
-            $errors = sprintf(_w("File could not bet saved due to the insufficient file write permissions for the %s folder."), $p);
+            $errors = sprintf(_w("File could not be saved due to insufficient write permissions for the %s folder."), $p);
         } else {
             $errors = array();
             $f = waRequest::file('file');

@@ -4,7 +4,7 @@ return array(
     'name' => 'Webasyst',
     'prefix' => 'webasyst',
     'analytics' => true,
-    'version' => '1.2.3',
-    'critical'=>'1.2.0',
+    'version' => '1.3.0',
+    'critical'=>'1.3.0',
     'vendor' => 'webasyst',
 );
