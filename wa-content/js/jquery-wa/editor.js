@@ -38,6 +38,7 @@ jQuery.fn.waEditor = function (options) {
             options['uploadImageFields'] = options.uploadFields;
         }
         options = $.extend({
+            editorOnLoadFocus: true,
             deniedTags: false,
             minHeight: 300,
             buttonSource: false,
@@ -117,9 +118,12 @@ jQuery.fn.waEditor = function (options) {
         editor.setOption("minLines", 2);
         editor.setOption("maxLines", 10000);
         editor.setAutoScrollEditorIntoView(true);
-
-        editor.focus();
-        editor.navigateTo(0, 0);
+        
+        if (options['editorOnLoadFocus'])
+        {
+          editor.focus();
+          editor.navigateTo(0, 0);
+        }
 
         editor.commands.addCommands([{
             name: 'waSave',
@@ -215,17 +219,21 @@ jQuery.fn.waEditor = function (options) {
             wrapper.find('.html').parent().addClass('selected');
             self.redactor('core.getBox').hide();
             wrapper.find('.ace').show();
-            editor.focus();
-            editor.navigateTo(0, 0);
+            if (options['editorOnLoadFocus']) {
+                editor.focus();
+                editor.navigateTo(0, 0);
+            }
         } else {
             wrapper.find('.ace').hide();
-            if (!options['iframe']) {
-                self.redactor('focus.setStart');
-            }
-            else {
-                setTimeout(function(){
+            if (options['editorOnLoadFocus']) {
+                if (!options['iframe']) {
                     self.redactor('focus.setStart');
-                }, 100);
+                }
+                else {
+                    setTimeout(function(){
+                        self.redactor('focus.setStart');
+                    }, 100);
+                }
             }
         }
     });
