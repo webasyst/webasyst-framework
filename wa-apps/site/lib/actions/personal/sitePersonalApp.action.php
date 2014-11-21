@@ -13,7 +13,7 @@ class sitePersonalAppAction extends sitePersonalAction
         $routes = wa()->getRouting()->getByApp($app_id, $domain);
 
         if ($routes) {
-            $event_params = array('app_id' => $app_id, 'routes' => $routes);
+            $event_params = array('app_id' => $app_id, 'domain' => $domain, 'routes' => $routes);
             $result = wa($app_id)->event(array($app_id, 'personal.settings'), $event_params);
             if (!empty($result[$app_id])) {
                 $this->view->assign('personal_settings', $result[$app_id]);

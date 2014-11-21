@@ -9,7 +9,7 @@ class siteBlocksDeleteController extends waJsonController
         $block = $model->getById($id);
         if ($block) {
             $model->deleteById($id);
-            $this->log('block_delete');
+            $this->logAction('block_delete');
         }
     }
 }
