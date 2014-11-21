@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE theme PUBLIC "wa-app-theme" "http://www.webasyst.com/wa-content/xml/wa-app-theme.dtd">
-<theme id="default" system="0" vendor="webasyst" author="Webasyst" app="site" version="2.1.0">
+<theme id="default" system="0" vendor="webasyst" author="Webasyst" app="site" version="2.1.2">
     <name locale="en_US">Default 2.0</name>
     <name locale="ru_RU">Дефолт 2.0</name>
     <description locale="en_US">Adaptive design theme for all base Webasyst apps</description>
@@ -81,13 +81,13 @@
             <name locale="ru_RU">Логотип</name>
         </setting>
         <setting var="banner_caption" control_type="text">
-            <value locale="en_US">Best site ever</value>
-            <value locale="ru_RU">Самый крутой сайт!</value>
+            <value locale="en_US">My best site ever</value>
+            <value locale="ru_RU">Мой самый крутой сайт</value>
             <name locale="en_US">Site-wide banner caption</name>
             <name locale="ru_RU">Заголовок на основном баннере</name>
         </setting>
         <setting var="color_scheme" control_type="image_select">
-            <value>img/backgrounds/themesettings/bokeh_green.jpg</value>
+            <value>img/backgrounds/themesettings/bokeh_vivid.jpg</value>
             <name locale="ru_RU">Цветовая гамма</name>
             <name locale="en_US">Color scheme</name>
             <options>
