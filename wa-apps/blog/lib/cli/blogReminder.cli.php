@@ -5,7 +5,7 @@
  */
 class blogReminderCli extends waCliController
 {
-    public function run()
+    public function run($params = NULL)
     {
         $app_settings_model = new waAppSettingsModel();
         $contact_settings_model = new waContactSettingsModel();

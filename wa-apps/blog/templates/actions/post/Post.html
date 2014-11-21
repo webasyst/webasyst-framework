@@ -45,10 +45,10 @@
         <div class="image">
           {if $contact_rights && $post.contact_id}
           <a href="{$wa_backend_url}contacts/#/contact/{$post.contact_id}">
-            <img src="{$post.user.photo_url_50}" alt="{$post.user.name|escape}">
+            <img src="{$post.user.photo_url_50}" alt="{$post.user.name|escape}" class="userpic">
           </a>
           {else}
-            <img src="{$post.user.photo_url_50}" alt="{$post.user.name|escape}">
+            <img src="{$post.user.photo_url_50}" alt="{$post.user.name|escape}" class="userpic">
           {/if}
         </div>
         <div class="details">
@@ -93,9 +93,11 @@
             <span>{$post.datetime|wa_datetime:"humandatetime"}</span>
 
             {if $blog.status eq blogBlogModel::STATUS_PUBLIC}
+            <p>
               {foreach $post.link item=link}
-                <a target="_blank" href="{$link}">{$link}</a><i class="icon10 new-window"></i>
+                <a target="_blank" class="underline" href="{$link}">{$link}</a><i class="icon10 new-window"></i>
               {/foreach}
+            </p>
             {/if}
           </div>
 

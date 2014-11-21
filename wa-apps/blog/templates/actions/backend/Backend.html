@@ -18,8 +18,7 @@
 
   <div class="b-stream">
 
-    <div class="block triple-padded b-stream-title">
-
+    <div class="b-stream-title">
 
       <div class="float-right ie-menu-h-fix">
         <ul class="menu-h" id="blog-stream-primary-menu">
@@ -103,7 +102,7 @@
 {$contact_id=$wa->user()->get('id')}
 {foreach $posts as $post_id => $post} <!-- post.id:{$post_id}  -->
 
-  <div class="block triple-padded b-post {$post.color}" id="b-post-{$post_id}">
+  <div class="b-post {$post.color}" id="b-post-{$post_id}">
     <h3 style="display:none">
       {if ($post.rights ge blogRightConfig::RIGHT_FULL) or ($contact_id eq $post.contact_id && $post.rights ge blogRightConfig::RIGHT_READ_WRITE)}
         <input type="checkbox" id="blog-post-checkbox-{$post.id}" class="blog-post-checkbox" name="posts[]" value="{$post.id}">
@@ -162,10 +161,10 @@
       <div class="image">
       {if $contact_rights && $post.contact_id}
         <a href="{$wa_backend_url}contacts/#/contact/{$post.contact_id}">
-          <img src="{$post.user.photo_url_20}" alt="">
+          <img src="{$post.user.photo_url_20}" alt="" class="userpic">
         </a>
       {else}
-        <img src="{$post.user.photo_url_20}" alt="">
+        <img src="{$post.user.photo_url_20}" alt="" class="userpic">
       {/if}
       </div>
       <div class="details">
@@ -181,16 +180,16 @@
 
           {if $post.blog_status eq blogBlogModel::STATUS_PUBLIC}
             {foreach $post.link item=link}
-              <a target="_blank" href="{$link}">{$link}</a><i class="icon10 new-window"></i>
+              <a target="_blank" href="{$link}" class="underline">{$link}</a><i class="icon10 new-window"></i>
             {/foreach}
           {else}
             {if $post.comment_new_count > 0}
-              <a href="?module=post&amp;id={$post.id}#comments">{_w('%d comment','%d comments',$post.comment_count,true)}</a>
+              <a href="?module=post&amp;id={$post.id}#comments" class="underline">{_w('%d comment','%d comments',$post.comment_count,true)}</a>
               <strong class="highlighted">+{$post.comment_new_count}</strong>
             {elseif $post.comment_count}
-              <a href="?module=post&amp;id={$post.id}#comments">{_w('%d comment','%d comments',$post.comment_count,true)}</a>
+              <a href="?module=post&amp;id={$post.id}#comments" class="underline">{_w('%d comment','%d comments',$post.comment_count,true)}</a>
             {else}<!-- no comments  -->
-              <a href="?module=post&amp;id={$post.id}#comments">[`No comments`]</a>
+              <a href="?module=post&amp;id={$post.id}#comments" class="underline">[`No comments`]</a>
             {/if}
           {/if}
 

@@ -371,7 +371,7 @@ class blogHelper
         if (isset($item['icon'])) {
             if (strpos($item['icon'], '.')) {
                 $item['icon_url'] = $item['icon'];
-                $item['icon_html'] = '<i class="icon16" style="background-image: url(\''.$item['icon'].'\'); background-repeat: no-repeat;"'.$title.'></i>';
+                $item['icon_html'] = '<i class="icon16" style="background-image: url(\''.$item['icon'].'\'); background-repeat: no-repeat; background-size: auto auto;"'.$title.'></i>';
             } else {
                 $item['icon_url'] = false;
                 $item['icon_html'] = '<i class="icon16 '.$item['icon'].'"'.$title.'></i>';

@@ -43,10 +43,10 @@
                 <div class="image">
                     {if $contact_rights && $post.contact_id}
                         <a href="{$wa_backend_url}contacts/#/contact/{$post.contact_id}">
-                            <img src="{$post.user.photo_url_20}" alt="">
+                            <img class="userpic" src="{$post.user.photo_url_20}" alt="">
                         </a>
                     {else}
-                        <img src="{$post.user.photo_url_20}" alt="">
+                        <img class="userpic" src="{$post.user.photo_url_20}" alt="">
                     {/if}
                 </div>
                 <div class="details">

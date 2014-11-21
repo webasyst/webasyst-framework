@@ -957,10 +957,10 @@
                             buttons: ['html', 'formatting', 'bold', 'italic', 'underline', 'deleted', 'unorderedlist', 'orderedlist',
                                 'outdent', 'indent', 'image', 'video', 'file', 'table', 'link', 'alignment', '|',
                                 'horizontalrule'],
-                            plugins: ['fontcolor', 'fontsize', 'fontfamily', 'cut'],
+                            plugins: ['fontcolor', 'fontsize', 'fontfamily', 'table', 'video', 'cut'],
                             lang: wa_lang,
                             imageUpload: '?module=pages&action=uploadimage&filelink=1&absolute=1',
-                            uploadFields: textarea.data('uploadFields'),
+                            uploadImageFields: textarea.data('uploadFields'),
                             //imageUpload: '?module=post&action=image',
                             imageUploadErrorCallback: function(json) {
                                 alert(json.error);
@@ -989,8 +989,8 @@
                             }
                         }, (options || {}));
                         textarea.redactor(options);
-                        textarea.redactor('getBox').css('z-index', 0);
-                        textarea.redactor('getToolbar').css('z-index', 1);
+                        textarea.redactor('core.getBox').css('z-index', 0);
+                        textarea.redactor('core.getToolbar').css('z-index', 1);
                         this.inited = true;
                     }
                     return true;
@@ -999,23 +999,23 @@
                     var text = $.wa_blog.editor.htmlToWysiwyg(textarea.val());
                     textarea.val(text);
                     
-                    $('.redactor_box').show();
-                    textarea.redactor('getEditor').find('img[src*="$wa_url"]').each(function () {
+                    $('.redactor-box').show();
+                    textarea.redactor('core.getEditor').find('img[src*="$wa_url"]').each(function () {
                         var s = decodeURIComponent($(this).attr('src'));
                         $(this).attr('data-src', s);
                         $(this).attr('src', s.replace(/\{\$wa_url\}/, wa_url));
                     });
-                    textarea.redactor('set', textarea.val());
-                    textarea.redactor('observeStart');
-                    textarea.redactor('focusEnd');
+                    textarea.redactor('code.set', textarea.val());
+                    textarea.redactor('observe.load');
+                    textarea.redactor('focus.setStart');
                 },
                 hide: function(textarea) {
-                    $('.redactor_box').hide();
+                    $('.redactor-box').hide();
                 },
                 update : function(textarea) {
                     if(this.inited) {
                         //textarea.val($('#editor_container_elrte').elrte('val'));
-                        textarea.val(textarea.redactor('get'));
+                        textarea.val(textarea.redactor('code.get'));
                     }
                 }
             }

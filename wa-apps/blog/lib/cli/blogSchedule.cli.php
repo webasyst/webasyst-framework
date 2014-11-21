@@ -5,7 +5,7 @@
  */
 class blogScheduleCli extends waCliController
 {
-    public function run()
+    public function run($params = NULL)
     {
         $app = $this->getApp();
         $app_settings_model = new waAppSettingsModel();

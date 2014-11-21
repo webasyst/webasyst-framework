@@ -2,8 +2,9 @@
 #wa .ui-content { padding-top: 0; }
 #wa .ui-content .ui-listview { margin: 0 -15px; }
 #wa .profile { margin-bottom: 20px; }
-#wa .b-post-body { font-weight: normal; }
+#wa .b-post-body { font-weight: normal; line-height: 1.4em; }
 #wa .b-post-body img { max-width: 100%; }
+#wa .b-stream img.userpic { width: 20px; margin-top: 3px; }
 #wa .pageless-wrapper a { padding: 0; }
 #wa .pageless-wrapper { display: none; }
 #wa .ui-li-desc { margin-top: 20px; }
