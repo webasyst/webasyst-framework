@@ -45,6 +45,7 @@
 .credentials a.username:hover { color: red; }
 .credentials .date,
 .credentials .icon16 { margin: 0 3px; }
+.credentials img.userpic { width: 20px; }
 .post .credentials { margin-bottom: 20px;}
 
 .comments { margin: 30px 50px 10px 0; }
