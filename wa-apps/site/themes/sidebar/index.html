@@ -49,7 +49,7 @@
 </head>
 <body id="{$wa_app}">
 
-    <nav id="sidebar" role="navigation" class="{if $theme_settings.sidebar_color_scheme}{str_replace('img/backgrounds/themesettings/','', str_replace('.png','',$theme_settings.sidebar_color_scheme))}{/if}{if $wa->isAuthEnabled()} bottom-padded{/if}">
+    <nav id="sidebar" role="navigation"{if $wa->isAuthEnabled()} class="bottom-padded"{/if}>
 
         <button id="tablet-toggle-sidebar"></button>
 
@@ -91,17 +91,19 @@
             <!-- auth & sign up links -->
             <div class="auth">
                 <ul class="menu-h">
-                     {if $wa->user()->isAuth()}
-                        {if $wa->shop}
-                            <li><a href="{$wa->getUrl('shop/frontend/my')}"><i class="icon16 userpic20 float-left" style="background-image: url('{$wa->user()->getPhoto(20)}');"></i>[s`My account`]</a></li>
-                        {else}
-                                <li><strong>{$wa->user('name')}</strong></li>
-                            {/if}
-                         <li><a href="?logout">[s`Log out`]</a></li>
-                    {else}
-                        <li><a href="{$wa->loginUrl()}">[s`Log in`]</a></li>
-                        <li><a href="{$wa->signupUrl()}">[s`Sign up`]</a></li>
-                    {/if}
+					{if $wa->user()->isAuth()}
+						{if $wa->myUrl()}
+							<li{if $wa->globals('isMyAccount')} class="bold"{/if}>
+								<a href="{$wa->myUrl()}" class="not-visited"><i class="icon16 userpic20 float-left" style="background-image: url('{$wa->user()->getPhoto(20)}');"></i> [s`My account`]</a>
+							</li>
+						{else}
+							 <li><strong>{$wa->user('name')}</strong></li>
+						{/if}
+						<li><a href="?logout" class="not-visited">[s`Log out`]</a></li>
+					{else}
+						<li><a href="{$wa->loginUrl()}" class="not-visited">[s`Log in`]</a></li>
+						<li><a href="{$wa->signupUrl()}" class="not-visited">[s`Sign up`]</a></li>
+					{/if}
                 </ul>
             </div>
         {/if}
