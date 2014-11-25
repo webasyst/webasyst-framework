@@ -4,9 +4,9 @@
             <img src="{$comment.user.photo_url_20|default:$comment.user.photo_url}" class="userpic{if $comment.auth_provider && ($comment.auth_provider neq blogCommentModel::AUTH_GUEST) && ($comment.auth_provider neq blogCommentModel::AUTH_USER)} icon16{/if}" alt="">
         </a>
         {if empty($comment.site)}
-            <span class="username" itemprop="author">{$comment.name}</span>
+            <span class="username" itemprop="creator">{$comment.name}</span>
         {else}
-            <a href="{$comment.site}" class="username" itemprop="author">{$comment.name}</a>
+            <a href="{$comment.site}" class="username" itemprop="creator">{$comment.name}</a>
         {/if}
 
         {if $comment.user.id}

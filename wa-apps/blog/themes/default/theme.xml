@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE theme PUBLIC "wa-app-theme" "http://www.webasyst.com/wa-content/xml/wa-app-theme.dtd">
-<theme id="default" system="0" vendor="webasyst" author="Webasyst" app="blog" parent_theme_id="site:default" version="2.1.0">
+<theme id="default" system="0" vendor="webasyst" author="Webasyst" app="blog" parent_theme_id="site:default" version="2.2.0">
     <name locale="en_US">Default 2.0</name>
     <name locale="ru_RU">Дефолт 2.0</name>
     <files>
@@ -19,6 +19,10 @@
         <file path="header.html" custom="0">
     		<description locale="en_US">App specific header content</description>
     		<description locale="ru_RU">Содержимое «шапки» приложения</description>
+    	</file>
+    	<file path="banner.html" custom="0">
+    		<description locale="en_US">App specific banner content</description>
+    		<description locale="ru_RU">Контент в области баннера</description>
     	</file>
         <file path="main.html" custom="0">
             <description locale="en_US">Main layout and navigation for the Blog app content</description>

@@ -44,8 +44,10 @@
 
             <!-- search -->
             <form method="get" action="{$wa_app_url}" class="search">
-                <input type="search" name="query" {if !empty($blog_query)}value="{$blog_query}"{/if} placeholder="[`Search posts`]">
-                <button type="submit"></button>
+                <div class="search-wrapper">
+                    <input type="search" name="query" {if !empty($blog_query)}value="{$blog_query}"{/if} placeholder="[`Search posts`]">
+                    <button type="submit"></button>
+                </div>
                 <div class="clear-both"></div>
             </form>
             

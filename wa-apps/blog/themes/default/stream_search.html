@@ -2,7 +2,7 @@
 
 {foreach $posts as $post}
     <section class="post search-match" id="post-{$post.id}" {if $wa->param('blog_url')}itemprop="blogPosts"{/if} itemscope itemtype="http://schema.org/BlogPosting">
-                <h3><a href="{$post.link}" itemprop="url">{$post.title}</a></h3>
+        <h3><a href="{$post.link}" itemprop="url">{$post.title}</a></h3>
         <span class="hint">
             {if $post.user.posts_link}
                 <a href="{$post.user.posts_link}" class="username">{$post.user.name}</a>
