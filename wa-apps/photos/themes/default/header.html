@@ -1,23 +1,8 @@
-<!-- core filters -->
-<ul class="menu-h">
-    
-    <li {if $wa->currentUrl() == $wa_app_url} class="selected"{/if}>
-        <a href="{$wa_app_url}">[`All photos`]</a>
-    </li>
-    <li {if $wa->param('action') neq 'page' && $wa->param('action') neq 'album' && $wa->param('hash') == 'favorites'} class="selected"{/if}>
-        <a href="{$wa_app_url}favorites/">[`Editors’ choice`]</a>
-    </li>
-    
-    <!-- pages -->            
-    {$pages = $wa->photos->pages()}
-    {foreach $pages as $page}
-        <li{if strlen($page.url)>1 && $wa->currentUrl()|strstr:$page.url} class="selected"{/if}><a href="{$page.url}">{$page.name}</a></li>
-    {/foreach}
-    
-    <!-- plugins -->
-    {* @event frontend_sidebar.%plugin_id%.menu *}
-    {foreach $frontend_sidebar as $plugin_id => $item}{if !empty($item.menu)}
-        <li>{$item.menu}</li>
-    {/if}{/foreach}
-
-</ul>
+{if $pages = $wa->photos->pages()}
+    <!-- info pages -->
+    <ul class="pages">
+        {foreach $pages as $page}
+            <li{if strlen($page.url)>1 && $wa->currentUrl()|strstr:$page.url} class="selected"{/if}><a href="{$page.url}">{$page.name}</a></li>
+        {/foreach}
+    </ul>
+{/if}
