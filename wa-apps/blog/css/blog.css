@@ -201,3 +201,15 @@ ul.b-plugin-tag-navigation a span.b-tag { text-decoration: none; }
     .b-post .b-post-body { margin-right: 0; }
     
 }
+
+@media only screen 
+and (min-device-width : 768px) 
+and (max-device-width : 1024px) 
+and (orientation : portrait) { 
+
+    /* iPad portrait mode */
+
+    .sidebar.right200px { display: none; }
+    .content.right200px { margin-right: 0 !important; }
+    
+}
