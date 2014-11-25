@@ -386,12 +386,12 @@
     <script type="text/javascript" src="{$wa_url}wa-content/js/jquery-ui/i18n/jquery.ui.datepicker-{$wa->locale()}.js"></script>
 {/if}
 
-<script src="{$wa_app_static_url}js/redactor_plugins.js"></script>
-<link type="text/css" rel="stylesheet" href="{$wa_url}wa-content/js/redactor/redactor.css">
-<script src="{$wa_url}wa-content/js/redactor/redactor.min.js"></script>
-{if $lang!='en'}<script src="{$wa_url}wa-content/js/redactor/{$lang}.js"></script>{/if}
+<script src="{$wa_app_static_url}js/redactor_plugins.js?v{$wa->version()}"></script>
+<link type="text/css" rel="stylesheet" href="{$wa_url}wa-content/js/redactor/redactor.css?v{$wa->version(true)}">
+<script src="{$wa_url}wa-content/js/redactor/redactor.min.js?v{$wa->version(true)}"></script>
+{if $lang!='en'}<script src="{$wa_url}wa-content/js/redactor/{$lang}.js?v{$wa->version(true)}"></script>{/if}
 
-<script type="text/javascript" src="{$wa_url}wa-content/js/ace/ace.js"></script>
+<script type="text/javascript" src="{$wa_url}wa-content/js/ace/ace.js?v{$wa->version(true)}"></script>
 <script type="text/javascript" src="{$wa_url}wa-content/js/elrte/elrte.min.js"></script>
 {if $lang!='en'}
     <script type="text/javascript" src="{$wa_url}wa-content/js/elrte/i18n/elrte.{$lang}.js"></script>
