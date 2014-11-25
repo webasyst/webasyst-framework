@@ -108,18 +108,31 @@ class waContact implements ArrayAccess
     }
 
     /**
+     * Returns contact's photo URL @2x.
+     *
+     * @param int $size
+     * @return string
+     */
+    public function getPhoto2x($size)
+    {
+        return self::getPhotoUrl($this->id, $this->id ? $this->get('photo') : null, $size, $size, $this['is_company'] ? 'company' : 'person', true);
+    }
+
+    /**
      * Returns the photo URL of the specified contact.
      *
-     * @param $id Contact id
-     * @param $ts Contact photo id stored in contact's 'photo' property. If not specified, the URL of the default
+     * @param int $id Contact id
+     * @param int $ts Contact photo id stored in contact's 'photo' property. If not specified, the URL of the default
      *     userpic is returned.
      * @param int|string|null $width Image width. Arbitrary integer value, or string value 'original', which requires
      *     that method must return the URL of the original image originally uploaded from a user's computer. Defaults to 96.
      * @param int|string|null $height Image height (integer). If not specified, the integer value specified for the
      *     $width parameter is used.
+     * @param string $type
+     * @param bool $retina
      * @return string
      */
-    public static function getPhotoUrl($id, $ts, $width = null, $height = null, $type = 'person')
+    public static function getPhotoUrl($id, $ts, $width = null, $height = null, $type = 'person', $retina = null)
     {
         if ($width === 'original') {
             $size = 'original';
@@ -132,10 +145,14 @@ class waContact implements ArrayAccess
             $size = $width.'x'.$height;
         }
 
+        if ($retina === null) {
+            $retina = (wa()->getEnv() == 'backend');
+        }
+
         $dir = self::getPhotoDir($id, false);
         
         if ($ts) {
-            if ($size != 'original' && wa()->getEnv() == 'backend') {
+            if ($size != 'original' && $retina) {
                 $size .= '@2x';
             }
             if (waSystemConfig::systemOption('mod_rewrite')) {
@@ -152,7 +169,7 @@ class waContact implements ArrayAccess
             if (!in_array($size, array(20, 32, 50, 96))) {
                 $size = 96;
             }
-            if (wa()->getEnv() == 'backend') {
+            if ($retina) {
                 $size .= '@2x';
             }
             if ($type == 'company') {

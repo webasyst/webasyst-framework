@@ -249,8 +249,9 @@ class waContactsCollection
                             } else {
                                 $size = substr($f, 10);
                             }
+                            $retina = isset($this->options['photo_url_2x']) ? $this->options['photo_url_2x'] : null;
                             foreach ($data as $id => &$v) {
-                                $v[$f] = waContact::getPhotoUrl($id, $v['photo'], $size, $size, $v['is_company'] ? 'company' : 'person');
+                                $v[$f] = waContact::getPhotoUrl($id, $v['photo'], $size, $size, $v['is_company'] ? 'company' : 'person', $retina);
                             }
                             unset($v);
                         } else {

@@ -49,13 +49,21 @@ class yandexAuth extends waOAuth2Adapter
                 'url' => 'http://'.$response['display_name'].'.ya.ru',
                 'name' => $response['real_name'],
             );
-            $name = explode(' ', $response['real_name'], 3);
-            if (count($name) == 1) {
-                $data['firstname'] = $name[0];
-                $data['lastname'] = '';
-            } else {
-                $data['firstname'] = $name[1];
-                $data['lastname'] = $name[0];
+            if (isset($response['first_name'])) {
+                $data['firstname'] = $response['first_name'];
+            }
+            if (isset($response['last_name'])) {
+                $data['lastname'] = $response['last_name'];
+            }
+            if (!isset($data['firstname']) && !isset($data['lastname'])) {
+                $name = explode(' ', $response['real_name'], 3);
+                if (count($name) == 1) {
+                    $data['firstname'] = $name[0];
+                    $data['lastname'] = '';
+                } else {
+                    $data['firstname'] = $name[0];
+                    $data['lastname'] = $name[1];
+                }
             }
             if (isset($response['default_email'])) {
                 $data['email'] = $response['default_email'];

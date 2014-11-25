@@ -386,6 +386,7 @@ input.long { min-width: 350px !important; width: 350px !important; }
 .field .value img.overhanging { position: absolute; left: -20px; }
 .field .value i.icon16.overhanging { position: absolute; left: -20px; margin: 0; top: 2px; }
 .field .value i.icon10.overhanging { position: absolute; margin-left: -17px; margin-right: 7px; }
+.field .value i.icon16 { vertical-align: middle; }
 .field .value.no-shift i.icon16.overhanging { top: 8px; }
 .field .value .address-subfield { padding:1px 0; }
 .field .value input, .field .value select { vertical-align:middle; }
@@ -464,9 +465,9 @@ ul.menu-v img.overhanging { margin-left: -24px; margin-top: -8px; position: rela
 ul.menu-v i.icon16.overhanging { position: absolute; left: 4px; margin: 0; top: 2px; }
 ul.menu-v i.icon10.overhanging { position: absolute; left: 9px; margin: 0; }
 ul.menu-v.with-icons li { padding: 5px 2px 5px 24px; margin-left: -4px; }
-ul.menu-v.with-icons a { padding-left: 23px; margin-left: -23px; }
+ul.menu-v.with-icons a { padding-left: 24px; margin-left: -24px; }
 ul.menu-v.with-icons i.icon10 { margin-left: -17px; margin-right: 7px; }
-ul.menu-v.with-icons i.icon16 { margin-left: -20px; margin-right: 4px; }
+ul.menu-v.with-icons i.icon16 { margin-left: -20px; margin-right: 5px; }
 ul.menu-v.with-icons i.icon10.no-overhanging, ul.menu-v.with-icons i.icon16.no-overhanging { margin-left: 0px; margin-right: 0px; }
 ul.menu-v.collapsible { padding-left: 12px; }
 ul.menu-v.compact li { padding-top: 1px; padding-bottom: 1px; }
@@ -916,8 +917,9 @@ i.icon16.hidden { display: none; }
 .icon16.notebooks  { background-position: -80px -80px; }
 .icon16.calendar  { background-position: -48px -48px; }
 .icon16.exclamation { background-position: -64px -48px; }
-.icon16.attachment { background-position: -80px -48px; }
-.icon16.attachment-small { background-position: -96px -48px; }
+.icon16.exclamation-red { background-position: -80px -48px; }
+.icon16.attachment { background-position: -96px -48px; }
+.icon16.attachment-small { background-position: -112px -48px; }
 .icon16.tags { background-position: -480px -48px; }
 .icon16.stack { background-position: -128px -80px; }
 .icon16.checkboxes { background-position: -144px -80px; }
@@ -1073,14 +1075,14 @@ i.icon10 { background-repeat:no-repeat; background-image: url(../../../wa-conten
     #wa-applist { margin-left: 170px; margin-right: 140px; }
     
     .sidebar,
-    .sidebar.left200px { width: 170px !important; }
-    .sidebar.left250px { width: 200px !important; }
-    .sidebar.right200px { width: 170px !important; }
-    .sidebar.right250px { width: 200px !important; }
-    .content.left200px { margin-left: 170px !important; }
-    .content.left250px { margin-left: 200px !important; }
-    .content.right200px { margin-right: 170px !important; }
-    .content.right250px { margin-right: 200px !important; }
+    .sidebar.left200px { width: 170px; }
+    .sidebar.left250px { width: 200px; }
+    .sidebar.right200px { width: 170px; }
+    .sidebar.right250px { width: 200px; }
+    .content.left200px { margin-left: 170px; }
+    .content.left250px { margin-left: 200px; }
+    .content.right200px { margin-right: 170px; }
+    .content.right250px { margin-right: 200px; }
  
     .field .name { width: 125px; }   
     .field .value { margin-left: 150px; }   

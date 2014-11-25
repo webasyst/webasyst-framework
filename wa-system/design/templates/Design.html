@@ -25,7 +25,7 @@
                             {$_url = "{$design_url}theme={$r.theme}&domain={urlencode($r._domain)}&route={$r._id}"}
                             <li class="no-icon 2{if $current_url == $_url} selected{/if}" data-routing="{$r._routing_url}">
                                 <a class="bold" href="{$design_url}theme={$r.theme}&domain={urlencode($r._domain)}&route={$r._id}">
-                                    <span class="url">{$_r_label = $r._domain|cat:'/':$r.url}{str_replace('www.','',$_r_label)|truncate:23:'...':false:true}</span>
+                                    <span data-url="{$r._preview_url|escape}" class="url">{$_r_label = $r._domain|cat:'/':$r.url}{str_replace('www.','',$_r_label)|truncate:23:'...':false:true}</span>
                                     <span class="hint">{$_t.name}</span>
                                 </a>
                             </li>
@@ -52,10 +52,10 @@
                     {/foreach}
                 </ul>
             </li>
-    
+
             {if $theme.preview_url}
                 <li class="float-right">
-                    <a href="{$theme.preview_url|escape}" target="_blank" class="wa-theme-preview" title="[s`Site`]"><i class="icon48 preview"></i>[s`Site`]</a>
+                    <a data-url="{$theme.preview_url|escape}" href="{$theme.preview_url|escape}" target="_blank" class="wa-theme-preview" title="[s`Site`]"><i class="icon48 preview"></i><span data-used="[s`Site`]" data-preview="[s`Preview`]">{if $theme.is_used}[s`Site`]{else}[s`Preview`]{/if}</span></a>
                 </li>
             {/if}    
             
@@ -154,6 +154,13 @@
                 } else {
                     $("#wa-theme-active span.hint").empty();
                 }
+                if ($(this).find('.url').data('url')) {
+                    $('.wa-theme-preview').attr('href', $(this).find('.url').data('url'));
+                    $('.wa-theme-preview').find('span').html($('.wa-theme-preview').find('span').data('used'));
+                } else {
+                    $('.wa-theme-preview').attr('href', $('.wa-theme-preview').data('url'));
+                    $('.wa-theme-preview').find('span').html($('.wa-theme-preview').find('span').data('preview'));
+                }
                 $('#wa-design-menu > li > a').each(function () {
                     if ($(this).parent().data('action')) {
                         $(this).attr('href', href + '&action=' + $(this).parent().data('action'));
@@ -214,7 +221,7 @@
         });
 
         {if !$options.is_ajax}
-            $('#wa-design-menu > li > a').click(function () {
+            $('#wa-design-menu > li > a').not('.wa-theme-preview').click(function () {
                 waDesignLoad($(this).attr('href').replace(/.*?#\//, '').replace(/\/$/, ''));
             });
         {/if}

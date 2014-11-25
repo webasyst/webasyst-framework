@@ -44,8 +44,8 @@ class waLayout extends waController
             }
             // save referer
             if ($ref = waRequest::server('HTTP_REFERER')) {
-                $ref_parts = @parse_url($ref);
-                if ($ref_parts['host'] != waRequest::server('HTTP_HOST')) {
+                $ref_host = @parse_url($ref, PHP_URL_HOST);
+                if ($ref_host != waRequest::server('HTTP_HOST')) {
                     wa()->getResponse()->setCookie('referer', waRequest::server('HTTP_REFERER'), time() + 30 * 86400, null, '', false, true);
                 }
             }

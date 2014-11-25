@@ -138,6 +138,13 @@ class waRouting
             if ($this->domain === null) {
                 return null;
             }
+            $pos = strpos($this->domain, ':');
+            if ($pos !== false) {
+                $port = substr($this->domain, $pos + 1);
+                if ($port == '80' || $port === '443') {
+                    $this->domain = substr($this->domain, 0, $pos);
+                }
+            }
             $u = trim($this->system->getRootUrl(), '/');
             if ($u) {
                 $this->domain .= '/'.$u;
