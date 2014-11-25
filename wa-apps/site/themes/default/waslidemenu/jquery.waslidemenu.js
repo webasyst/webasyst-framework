@@ -198,7 +198,7 @@
                 // TODO: (?) save content if we will fail load next page
                 $.ajax(
                     {
-                        url: url,
+                        url: url+(/\?./.test(url)?'&_=_':'?_=_'),
                         type: 'get'
                     }
                 )

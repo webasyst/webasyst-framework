@@ -52,14 +52,12 @@
 </head>
 <body{if $theme_settings.color_scheme} class="color_scheme_{str_replace('img/backgrounds/themesettings/','', str_replace(array('.png','.jpg','bokeh_','abstract_','sky_'),'',$theme_settings.color_scheme))}"{/if}>
 
-    <header>
-    
-        {$extendednav = ($wa->shop || $theme_settings.logo) && !$wa->globals('isMyAccount')}
-        
+    <header class="globalheader">
+            
         {if count($wa->apps())>0 || $wa->isAuthEnabled()}
         
             <!-- GLOBAL HEADER -->
-            <div id="globalnav"{if $extendednav} class="dimmed"{/if}>
+            <div id="globalnav" class="dimmed">
                 <div class="container">
         
                     <button id="mobile-nav-toggle"><!-- nav toggle for mobile devices --></button>
@@ -67,7 +65,6 @@
                     <nav role="navigation">
                     
                         <!-- core site sections (apps) -->
-                        {if !$extendednav}<h2><a href="{$wa_url}">{$wa->accountName()}</a></h2>{/if}
                         <ul class="apps">
                             {foreach $wa->apps() as $a}
                                 <li{if $a.url==$wa_app_url && !$wa->globals('isMyAccount')} class="selected"{/if}><a href="{$a.url}">{$a.name}</a></li>
@@ -81,7 +78,7 @@
                                 {if $wa->user()->isAuth()}
                                     {if $wa->myUrl()}
                                         <li{if $wa->globals('isMyAccount')} class="bold"{/if}>
-                                            <a href="{$wa->myUrl()}" class="not-visited"><i class="icon16 userpic20 float-left" style="background-image: url('{$wa->user()->getPhoto(20)}');"></i> [s`My account`]</a>
+                                            <a href="{$wa->myUrl()}" class="not-visited"><i class="icon16 userpic20 float-left" style="background-image: url('{$wa->user()->getPhoto2x(20)}');"></i> <strong>{$wa->user('name')}</strong></a>
                                         </li>
                                     {else}
                                          <li><strong>{$wa->user('name')}</strong></li>
@@ -112,57 +109,48 @@
             
         {/if}
 
-        {if $extendednav}
-    
-            <!-- EXTENDED HEADER if Shop-Script is installed or site logo is uploaded -->
-            <div class="container extendednav" id="header-container">
-                <h2>
-                    <a href="{if $wa->shop}{$wa->getUrl('shop/frontend')}{else}{$wa_url}{/if}">
-                        {if $theme_settings.logo}
-                            <img src="{$wa_theme_url}{$theme_settings.logo}" alt="{$wa->accountName()}" id="logo" />
-                            <span>{$wa->shop->settings('name')}</span>
-                        {else}
-                            {$wa->shop->settings('name')}
-                        {/if}
-                    </a>
-                </h2>
-                {if $wa->shop}
-                    <!-- cart -->
-                    {$cart_total = $wa->shop->cart->total()}
 
-                    <div id="cart" class="cart{if !$cart_total} empty{/if}">
-                         <a href="{$wa->getUrl('shop/frontend/cart')}" class="cart-summary">
-                             <i class="cart-icon"></i>
-                             <strong class="cart-total">{wa_currency_html($cart_total, $wa->shop->currency())}</strong>
-                         </a>
-                         <div id="cart-content">
-                             {* <div class="cart-just-added">
-                                %s is now in your shopping cart
-                             </div> *}
-                         </div>
-                         <a href="{$wa->getUrl('shop/frontend/cart')}" class="cart-to-checkout" style="display: none;">
-                             [s`View cart`]
-                         </a>
-                    </div>
-                    {if $wa->shop}
-                        
-                        <!-- product search -->
-                        <form method="get" action="{$wa->getUrl('shop/frontend/search')}" class="search">
-                            <input type="search" name="query" {if !empty($query)}value="{$query}"{/if} placeholder="[s`Find products`]">
-                            <button type="submit"></button>
-                        </form>
-
+        <!-- EXTENDED HEADER with in-app navigation -->
+        <div class="container extendednav" id="header-container">
+            <h2>
+                <a href="{$wa_url}">
+                    {if $theme_settings.logo}
+                        <img src="{$wa_theme_url}{$theme_settings.logo}" alt="{$wa->accountName()}" id="logo" />
+                        <span>{$wa->accountName()}</span>
+                    {else}
+                        {$wa->accountName()}
                     {/if}
-                {/if}
-                <div class="clear-both"></div> 
-            </div>        
-        
-        {/if}
+                </a>
+            </h2>
+            
+            {if $wa->shop}
+                <!-- cart -->
+                {$cart_total = $wa->shop->cart->total()}
+                <div id="cart" class="cart{if !$cart_total} empty{/if}">
+                     <a href="{$wa->getUrl('shop/frontend/cart')}" class="cart-summary">
+                         <i class="cart-icon"></i>
+                         <strong class="cart-total">{wa_currency_html($cart_total, $wa->shop->currency())}</strong>
+                     </a>
+                     <div id="cart-content">
+                         {* <div class="cart-just-added">
+                            %s is now in your shopping cart
+                         </div> *}
+                     </div>
+                     <a href="{$wa->getUrl('shop/frontend/cart')}" class="cart-to-checkout" style="display: none;">
+                         [s`View cart`]
+                     </a>
+                </div>
+            {/if}
+            
+            {include file="`$wa_active_theme_path`/header.html" inline}
+            
+            <div class="clear-both"></div> 
+        </div>        
         
     </header>
     
     <!-- APP CONTENT -->
-    <main role="main"{if $theme_settings.custom_background} class="custom-background{if $theme_settings.custom_background_stretch} stretched{/if}"{/if}>
+    <main class="maincontent{if $theme_settings.custom_background} custom-background{if $theme_settings.custom_background_stretch} stretched{/if}{/if}" role="main">
         <div class="banner{if !$theme_settings.custom_background} {str_replace('img/backgrounds/themesettings/','', str_replace(array('.png','.jpg'),'',$theme_settings.color_scheme))}{else} {$theme_settings.custom_background_banner_text_color}" style="background-image: url('{$wa_theme_url}{$theme_settings.custom_background}');{/if}">
             <div class="container">
 
@@ -177,7 +165,7 @@
                     
                 {else}
 
-                    {include file="`$wa_active_theme_path`/header.html" inline}
+                    {include file="`$wa_active_theme_path`/banner.html" inline}
                 
                 {/if}
 
@@ -192,7 +180,7 @@
     </main>
     
     <!-- FOOTER -->
-    <footer role="contentinfo">
+    <footer class="globalfooter" role="contentinfo">
         <div class="container">
             <div class="footer-block" id="copyright">
                 &copy; {time()|wa_datetime:"Y"}
