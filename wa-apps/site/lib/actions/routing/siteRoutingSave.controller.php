@@ -177,10 +177,11 @@ class siteRoutingSaveController extends waJsonController
         /**
          * @var waPageModel $model
          */
+        $domain = siteHelper::getDomain();
         $model = new $class();
-        $model->updateRoute(siteHelper::getDomain(), $route['url'], $url);
+        $model->updateRoute($domain, $route['url'], $url);
 
-        $params = array('old' => siteHelper::getDomain().'/'.$route['url'], 'new' => siteHelper::getDomain().'/'.$url);
+        $params = array('domain' => $domain, 'old' => $domain.'/'.$route['url'], 'new' => $domain.'/'.$url);
         wa()->event('update.route', $params);
     }
 
