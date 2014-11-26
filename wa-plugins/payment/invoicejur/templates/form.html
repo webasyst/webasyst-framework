@@ -62,44 +62,44 @@ var lang_strings = {
 				<tbody>
 					<tr>
 						<td align=right width="20%"><font class=sc>ИНН</font></td>
-						<td><font class="sc nobr"><b>{$settings.inn}</b></font>
+						<td><font class="sc nobr"><b>{$settings.inn|escape}</b></font>
 						</td>
 					</tr>
 					<tr>
 						<td align=right width="20%"><font class=sc>КПП</font></td>
-						<td><font class="sc nobr"><b>{$settings.kpp}</b></font>
+						<td><font class="sc nobr"><b>{$settings.kpp|escape}</b></font>
 						</td>
 					</tr>
 					<tr>
 						<td align=right><font class=sc>Получатель</font></td>
 						<td><font class="sc nobr"><b>
-						{$settings.company_name}
+						{$settings.company_name|escape}
 						</b></font></td>
 					</tr>
 					<tr>
 						<td align=right><font class=sc>Адрес</font></td>
 						<td><font class="sc nobr"><b>
-						{$settings.company_address}
+						{$settings.company_address|escape}
 						</b></font></td>
 					</tr>
 					<tr>
 						<td align=right><font class=sc>Тел.</font></td>
 						<td><font class="sc nobr"><b>
-						{$settings.company_phone}
+						{$settings.company_phone|escape}
 						</b></font></td>
 					</tr>
 					<tr>
 						<td align=right><font class=sc>Р/счет</font></td>
-						<td><font class="sc nobr"><b>{$settings.bank_account_number}</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Банк <b>{$settings.bank_name}
+						<td><font class="sc nobr"><b>{$settings.bank_account_number|escape}</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Банк <b>{$settings.bank_name|escape}
 						</b></font></td>
 					</tr>
 					<tr>
 						<td align=right>К/счет</td>
-						<td><font class="sc nobr"><b>{$settings.bank_kor_number}</b></font></td>
+						<td><font class="sc nobr"><b>{$settings.bank_kor_number|escape}</b></font></td>
 					</tr>
 					<tr>
 						<td align=right>БИК</td>
-						<td><font class="sc nobr"><b>{$settings.bik} </b></font></td>
+						<td><font class="sc nobr"><b>{$settings.bik|escape} </b></font></td>
 					</tr>
 				</tbody>
 			</table>
@@ -112,7 +112,7 @@ var lang_strings = {
 			<table>
 				<tbody>
 					<tr>
-						<td colspan=2><font class=sc><b class="inline_edit">Счет {$order.id_str} от {$order.datetime|date_format:'d.m.Y'}</b></font></td>
+						<td colspan=2><font class=sc><b class="inline_edit">Счет {$order.id_str|escape} от {$order.datetime|date_format:'d.m.Y'}</b></font></td>
 					</tr>
 					<tr>
 						<td align=right width="20%"><font class=sc>ИНН</font></td>
@@ -127,9 +127,9 @@ var lang_strings = {
 						<td align=right width="20%"><font class=sc>Адрес</font></td>
 						<td><font class=sc><b class="inline_edit">
                         {if !empty($order.billing_address.address)}
-						{$order.billing_address.city}, {$order.billing_address.zip}, {$order.billing_address.street}
+						{$order.billing_address.city|escape}, {$order.billing_address.zip|escape}, {$order.billing_address.street|escape}
                         {else}
-                        {$order.shipping_address.city}, {$order.shipping_address.zip}, {$order.shipping_address.street}
+                        {$order.shipping_address.city|escape}, {$order.shipping_address.zip|escape}, {$order.shipping_address.street|escape}
                         {/if}
                         </b></font></td>
 					</tr>
@@ -155,7 +155,7 @@ var lang_strings = {
 					{foreach $order.items as $item}
 					<tr bgcolor=white>
 						<td><font class=sc>{$item@iteration}</font></td>
-						<td><font class="sc nobr"><b class="inline_edit">{$item.name}</b></font></td>
+						<td><font class="sc nobr"><b class="inline_edit">{$item.name|escape}</b></font></td>
 						<td><font class=sc>шт.</font></td>
 						<td><font class=sc>{$item.quantity}</font></td>
 						<td><font class=sc>{$item.price|wa_format_amount:$order.currency:'%2'}</font></td>
@@ -165,7 +165,7 @@ var lang_strings = {
 					{if $order.shipping > 0}
 					<tr bgcolor=white>
 						<td><font class=sc>{$item@iteration+1}</font></td>
-						<td><font class=sc><b><nobr>Доставка {$order.shipping_name}</nobr></b></font></td>
+						<td><font class=sc><b><nobr>Доставка {$order.shipping_name|escape}</nobr></b></font></td>
 						<td><font class=sc>шт.</font></td>
 						<td><font class=sc>1</font></td>
 						<td class="nowrap"><font class=sc>{$order.shipping|wa_format_amount:$order.currency:'%2'}</font></td>
