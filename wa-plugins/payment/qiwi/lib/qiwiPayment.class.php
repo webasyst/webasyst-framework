@@ -142,11 +142,15 @@ class qiwiPayment extends waPayment implements waIPaymentCancel, waIPaymentRefun
                 $this->order_id = $match[4];
                 $this->callback_test = !empty($match[1]);
             } else {
-                self::log($this->id, 'Ignore test request from QIWI', array(
-                    'app_id'      => $match[2],
-                    'merchant_id' => $match[3],
-                    'order_id'    => $match[4],
-                ));
+                self::log(
+                    $this->id,
+                        'Ignore test request from QIWI',
+                        array(
+                            'app_id'      => $match[2],
+                            'merchant_id' => $match[3],
+                            'order_id'    => $match[4],
+                        )
+                );
             }
             $this->callback_protocol = self::REST;
         } elseif (isset($request['wsdl'])) {
@@ -227,7 +231,8 @@ class qiwiPayment extends waPayment implements waIPaymentCancel, waIPaymentRefun
         switch (ifempty($this->callback_protocol, $this->protocol)) {
             case self::SOAP:
                 $transaction_data['native_id'] = $this->txn;
-                $transaction_data['amount'] = is_object($result) && property_exists(get_class($result), 'amount') && !empty($result->amount) ? str_replace(',', '.', $result->amount) : 0;
+                $transaction_data['amount'] = is_object($result) && property_exists(get_class($result), 'amount') && !empty($result->amount) ? $result->amount : 0;
+                $transaction_data['amount'] = str_replace(',', '.', $transaction_data['amount']);
                 $transaction_data['currency_id'] = 'RUB';
                 $transaction_data['order_id'] = $this->order_id;
                 if (is_object($result) && property_exists(get_class($result), 'user') && !empty($result->user)) {
@@ -270,7 +275,14 @@ class qiwiPayment extends waPayment implements waIPaymentCancel, waIPaymentRefun
                 if ($type == 'request') {
                     $url = "https://w.qiwi.com/api/v2/prv/{$this->login}/bills/".urlencode(ifempty($params['order_id']));
                 } else {
-                    $url = "https://w.qiwi.com/order/external/main.action?shop={$this->login}&transaction=".urlencode(ifempty($params['native_id']));
+                    $url_params = array(
+                        'shop'        => $this->login,
+                        'transaction' => ifempty($params['native_id']),
+                        'successUrl'  => $this->getAdapter()->getBackUrl(waAppPayment::URL_SUCCESS, $params),
+                        'failUrl'     => $this->getAdapter()->getBackUrl(waAppPayment::URL_FAIL, $params),
+
+                    );
+                    $url = 'https://w.qiwi.com/order/external/main.action?'.http_build_query($url_params);
                 }
                 break;
         }
@@ -282,11 +294,12 @@ class qiwiPayment extends waPayment implements waIPaymentCancel, waIPaymentRefun
         $order_data = waOrder::factory($order_data);
         $transaction_model = new waTransactionModel();
         $this->order_id = $order_data->id;
-        $transaction_data = $transaction_model->getByField(array(
+        $search = array(
             'app_id'   => $this->app_id,
             'plugin'   => $this->id,
             'order_id' => $this->order_id,
-        ), 'id');
+        );
+        $transaction_data = $transaction_model->getByField($search, 'id');
         ksort($transaction_data);
         $transaction_data = end($transaction_data);
 
@@ -338,10 +351,11 @@ class qiwiPayment extends waPayment implements waIPaymentCancel, waIPaymentRefun
                 }
             } elseif (in_array($transaction_data['state'], array(self::STATE_DECLINED, self::STATE_CANCELED))) {
                 $transaction_data_model = new waTransactionDataModel();
-                $raw_status = $transaction_data_model->getByField(array(
+                $search = array(
                     'transaction_id' => $transaction_data['id'],
                     'field_id'       => 'status',
-                ));
+                );
+                $raw_status = $transaction_data_model->getByField($search);
 
                 switch (ifempty($raw_status['value'])) {
                     case 'expired':
@@ -923,20 +937,26 @@ class qiwiPayment extends waPayment implements waIPaymentCancel, waIPaymentRefun
             self::log($this->id, 'Empty merchant data');
             $result->updateBillResult = 298;
         } elseif (($this->api_login ? $this->api_login : $this->login) != $login) {
-            self::log($this->id, array(
-                'error'    => 'updateBill: invalid login: '.$login,
-                'expected' => ($this->api_login ? $this->api_login : $this->login),
-                'txn'      => $txn,
-            ));
+            self::log(
+                $this->id,
+                    array(
+                        'error'    => 'updateBill: invalid login: '.$login,
+                        'expected' => ($this->api_login ? $this->api_login : $this->login),
+                        'txn'      => $txn,
+                    )
+            );
             $result->updateBillResult = 150;
         } elseif ($password != ($pass = $this->getPassword($this->order_id))) {
-            self::log($this->id, array(
-                'Invalid password',
-                'test'          => var_export($this->test, true),
-                'callback_test' => var_export($this->callback_test, true),
-                'expected'      => $pass,
-                'password'      => $password,
-            ));
+            self::log(
+                $this->id,
+                    array(
+                        'Invalid password',
+                        'test'          => var_export($this->test, true),
+                        'callback_test' => var_export($this->callback_test, true),
+                        'expected'      => $pass,
+                        'password'      => $password,
+                    )
+            );
             if ($this->test && $this->callback_test) {
                 $result->updateBillResult = 0;
             } else {
@@ -976,12 +996,15 @@ class qiwiPayment extends waPayment implements waIPaymentCancel, waIPaymentRefun
                     $log = $params;
                     $log->password = '***hidden***';
                     $res = var_export(get_object_vars($result), true);
-                    self::log($this->id, array(
-                        'method'  => __METHOD__,
-                        'request' => var_export(get_object_vars($log), true),
-                        'code'    => $this->getBillCodeDescription($result->status),
-                        'result'  => $res,
-                    ));
+                    self::log(
+                        $this->id,
+                            array(
+                                'method'  => __METHOD__,
+                                'request' => var_export(get_object_vars($log), true),
+                                'code'    => $this->getBillCodeDescription($result->status),
+                                'result'  => $res,
+                            )
+                    );
                     if (empty($res['status'])) {
                         self::log($this->id, $soap_client->getDebug());
                     }
@@ -989,10 +1012,13 @@ class qiwiPayment extends waPayment implements waIPaymentCancel, waIPaymentRefun
             } while (empty($result->status) && (++$retry_counter < 5));
 
         } catch (SoapFault $sf) {
-            self::log($this->id, array(
-                'method' => __METHOD__,
-                'error'  => $sf->getMessage(),
-            ));
+            self::log(
+                $this->id,
+                    array(
+                        'method' => __METHOD__,
+                        'error'  => $sf->getMessage(),
+                    )
+            );
         }
         return $result;
     }
@@ -1037,7 +1063,18 @@ class qiwiPayment extends waPayment implements waIPaymentCancel, waIPaymentRefun
         # В поле password будет записано следующее значение:
         # MD5("Заказ1"+MD5("Пароль магазина"))=MD5("Заказ1"+"936638421CA12C3E15E72FA7B75E03CE")= EC19350E3051D8A9834E5A2CF25FD0D9
         #
-        if (setlocale(LC_CTYPE, 'ru_RU.CP-1251', 'ru_RU.CP1251', 'ru_RU.win', 'ru_RU.1251', 'Russian_Russia.1251', 'Russian_Russia.CP-1251', 'Russian_Russia.CP1251', 'Russian_Russia.win') === false) {
+        if (setlocale(
+                LC_CTYPE,
+                'ru_RU.CP-1251',
+                'ru_RU.CP1251',
+                'ru_RU.win',
+                'ru_RU.1251',
+                'Russian_Russia.1251',
+                'Russian_Russia.CP-1251',
+                'Russian_Russia.CP1251',
+                'Russian_Russia.win'
+            ) === false
+        ) {
             self::log($this->id, __METHOD__."\tsetLocale failed");
         }
         $txn = (($this->callback_test && $this->test) ? '_TEST_' : '').$this->app_id.'_'.$this->merchant_id.'_'.$this->prefix.$order_id;

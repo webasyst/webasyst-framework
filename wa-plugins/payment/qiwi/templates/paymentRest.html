@@ -8,6 +8,7 @@
 </form>
 {else}
 <form id="paymentForm" class="qiwi-form" action="" method="POST" onsubmit="return checkqiwiform()" target="_top">
+    {$wa->csrf()}
     <div class="fields">
         <div class="field">
             <div class="name">[`Mobile phone`]:</div>
