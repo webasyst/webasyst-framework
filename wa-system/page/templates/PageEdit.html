@@ -176,7 +176,7 @@
                         if (el.children('b').length) {
                             el = el.children('b');
                         }
-                        $('#wa-page-content').waEditor('insert', el.text());
+                        $('#wa-page-content').waEditor('insert.html', el.text());
                         return false;
                     });
                 </script>
