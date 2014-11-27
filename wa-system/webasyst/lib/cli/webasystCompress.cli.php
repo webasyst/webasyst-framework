@@ -47,6 +47,7 @@ Optional parameters:
     -style true|false|no-vendors Options for code style checks:
         true         Check all code.
         false        Disable code checking.
+        report       Use non-interactive checks
         no-vendors   (default choice) Check all code except for lib/vendors/ and js/vendors/ directories, if available.
     -skip compress|test|all|none Options to skip some operations:
         compress     Do not compress source files to archive.
@@ -107,15 +108,19 @@ HELP;
                 }
 
                 if ('theme' != $this->type) {
-                    $style = ifset($params['style'], 'no-vendors');
-                    if ($style !== 'false') {
+                    $style = explode(',', ifset($params['style'], 'no-vendors'));
+                    if (!in_array('false', $style, true)) {
                         $count = $this->codeStyle($style);
                         if ($count === false) {
                             $this->trace('Code style check skipped');
                             $compress = $this->checkCode() && $compress;
                         } elseif ($count) {
                             $compress = false;
-                            $this->tracef('Code style check skipped %d errors', $count);
+                            if (!in_array('report', $style, true)) {
+                                $this->tracef('Code style check skipped %d errors', $count);
+                            } else {
+                                $this->tracef('Code style check detect %d errors', $count);
+                            }
                         } else {
                             $this->trace('Code style check OK');
                         }
@@ -180,13 +185,14 @@ HELP;
         }
 
         waRequest::setParam(
-                 array(
-                     'namespace' => $namespace,
-                     'prefix'    => isset($this->config['prefix']) ? $this->config['prefix'] : null,
-                     'type'      => $this->type,
-                     'app'       => $this->app_id,
-                     'extension' => $this->extension_id,
-                 )
+            array(
+                'namespace' => $namespace,
+                'prefix'    => isset($this->config['prefix']) ? $this->config['prefix'] : null,
+                'type'      => $this->type,
+                'app'       => $this->app_id,
+                'app_id'    => $this->app_id,
+                'extension' => $this->extension_id,
+            )
         );
         return $this->filter($this->files, $blacklist);
     }
@@ -207,6 +213,8 @@ HELP;
 
     /**
      * @link http://www.webasyst.ru/developers/docs/basics/naming-rules/
+     * @param string[] $param
+     * @return false|int
      */
     private function codeStyle($param)
     {
@@ -227,7 +235,7 @@ HELP;
         );
         foreach ($this->files as $file) {
             if (in_array(pathinfo($file, PATHINFO_EXTENSION), $ext)) {
-                if (($param === 'no-vendors') && preg_match('@^(lib/)?vendors/@', $file)) {
+                if (in_array('no-vendors', $param, true) && preg_match('@^(lib/|js/)?vendors/@', $file)) {
                     continue;
                 }
                 if (preg_match('@(js|css)/compiled/.+\.(js|css)$@', $file)) {
@@ -243,14 +251,14 @@ HELP;
         $count = false;
 
         try {
-            $count = $this->process($files);
+            $count = $this->process($files, !in_array('report', $param, true));
         } catch (Exception $ex) {
             $this->tracef('ERROR: %s', $ex->getMessage());
         }
         return $count;
     }
 
-    private function process($files)
+    private function process($files, $interactive = true)
     {
         $standards = 'Webasyst';
         if (PHP_CodeSniffer::isInstalledStandard($standards) === false) {
@@ -261,7 +269,7 @@ HELP;
             $standards = array($standards);
         }
 
-        $phpcs = new PHP_CodeSniffer(0, 4, 'UTF-8', true);
+        $phpcs = new PHP_CodeSniffer(0, 4, 'UTF-8', $interactive);
         // Set file extensions if they were specified. Otherwise,
         // let PHP_CodeSniffer decide on the defaults.
         if (true) {
@@ -318,7 +326,27 @@ HELP;
             $phpcsFile = $phpcs->processFile($file);
             // Show progress information.
             if ($phpcsFile !== null) {
-                $errors_count += ($phpcsFile->getErrorCount() + $phpcsFile->getWarningCount());
+                $count = ($phpcsFile->getErrorCount() + $phpcsFile->getWarningCount());
+                if (!$interactive && $count) {
+                    $report = array(
+                        'ERROR'   => $phpcsFile->getErrors(),
+                        'WARNING' => $phpcsFile->getWarnings(),
+                    );
+                    $this->tracef("\nFILE: %s", str_replace($this->path.'/', '', $file));
+                    $this->trace(str_repeat('-', 80));
+                    foreach ($report as $type => $errors) {
+                        foreach ($errors as $line => $line_errors) {
+                            foreach ($line_errors as $column => $errors) {
+                                foreach ($errors as $error) {
+                                    $this->tracef('%4d | %s | %s', $line, $type, $error['message']);
+                                }
+                            }
+                        }
+                    }
+                    $this->trace(str_repeat('-', 80));
+                }
+
+                $errors_count += $count;
             }
         }
         return $errors_count;
@@ -339,6 +367,8 @@ HELP;
                 # 1.1 Routing
                 $result = $this->testRouting() && $result;
 
+                $result = $this->testRequirements() && $result;
+
 
                 # 1.2 themes
                 # 1.3 plugins
@@ -358,19 +388,32 @@ HELP;
         return $result;
     }
 
+    private function testRequirements()
+    {
+        $extensions = array();
+        if ($requirements = $this->getItemConfig('requirements')) {
+            foreach ($requirements as $requirement => $requirement_info) {
+                if (preg_match('@^php\.(.+)$@', $requirement, $matches)) {
+                    $extensions[$matches[1]] = ifset($requirement_info['strict']);
+                }
+            }
+        }
+        waRequest::setParam('extensions', $extensions);
+        return true;
+    }
+
     private function testConfig()
     {
-//name
-        //description
-        //version
-        ;
         $available = array(
             'name',
             'description',
-            'icon',
             'version',
             'vendor',
+            'img',
+            'icon',
             'frontend',
+            'license',
+            'critical',
         );
         switch ($this->type) {
             case 'app':
@@ -378,8 +421,16 @@ HELP;
                     $available,
                     array(
                         'plugins',
+                        'sms_plugins',
+                        'shipping_plugins',
+                        'payment_plugins',
+                        'pages',
                         'themes',
                         'rights',
+                        'csrf',
+                        'auth',
+                        'my_account',
+                        'mobile',
                     )
                 );
                 break;
@@ -388,13 +439,26 @@ HELP;
                     $available,
                     array(
                         'handlers',
+                        'rights',
                     )
                 );
+                if ($this->app_id == 'shop') {
+                    $available = array_merge(
+                        $available,
+                        array(
+                            'shop_settings',
+                            'importexport',
+                            'export_profile',
+                        )
+                    );
+                }
                 break;
         }
-        $keys = array_diff(array_keys($this->config), $available);
-        if ($keys) {
-            $this->tracef("Invalid %s's settings: unknown config options (%s)", $this->type, implode(',', $keys));
+        if ($this->config) {
+            $keys = array_diff(array_keys($this->config), $available);
+            if ($keys) {
+                $this->tracef("Invalid %s's settings: unknown config options (%s)", $this->type, implode(',', $keys));
+            }
         }
 
         return empty($keys);
@@ -431,9 +495,9 @@ HELP;
         $install = in_array('lib/config/install.php', $this->files);
         $uninstall = in_array('lib/config/uninstall.php', $this->files);
         if (($install && !$uninstall) || (!$install && $uninstall)) {
-            $this->tracef('WARNING: ');
+            $this->tracef('NOTICE: only one of install.php & uninstall.php present');
         }
-        //check install/uninstall files
+        return true;
     }
 
 
@@ -508,11 +572,11 @@ HELP;
                                     if (preg_match($pattern, $token[1])) {
                                         $result = false;
                                         $this->tracef(
-                                             "Not allowed variable %s at %s:%d\n\t%s",
-                                                 $token[1],
-                                                 $file,
-                                                 $token[2],
-                                                 $description
+                                            "Not allowed variable %s at %s:%d\n\t%s",
+                                            $token[1],
+                                            $file,
+                                            $token[2],
+                                            $description
                                         );
                                     }
                                 }
@@ -591,15 +655,16 @@ HELP;
             }
         }
 
-
-        $requirements = $this->getItemConfig('requirements');
         $extensions = array();
-        foreach ($requirements as $requirement => $requirement_info) {
-            if (preg_match('@^php\.(.+)$@', $requirement, $matches)) {
-                $extensions[$matches[1]] = ifset($requirement_info['strict']);
+        if ($requirements = $this->getItemConfig('requirements')) {
+            foreach ($requirements as $requirement => $requirement_info) {
+                if (preg_match('@^php\.(.+)$@', $requirement, $matches)) {
+                    $extensions[$matches[1]] = ifset($requirement_info['strict']);
+                }
             }
         }
         waRequest::setParam('extensions', $extensions);
+
         $extensions = get_loaded_extensions();
         $extensions = array_diff(
             $extensions,
@@ -693,17 +758,17 @@ HELP;
         } else {
             if (class_exists('waLog')) {
                 waLog::log(
-                     sprintf("Error while create checksum file [%d] %s at", strlen(basename($path)), $path, __METHOD__)
+                    sprintf("Error while create checksum file [%d] %s at", strlen(basename($path)), $path, __METHOD__)
                 );
             }
             throw new Exception('Error while create checksum file', 500);
         }
         $this->tracef(
-             "time: %dms\t%d files, %0.2f KBytes %s",
-                 (microtime(true) - $time) * 1000,
-                 $count,
-                 $total_size / 1024,
-                 getcwd()
+            "time: %dms\t%d files, %0.2f KBytes %s",
+            (microtime(true) - $time) * 1000,
+            $count,
+            $total_size / 1024,
+            getcwd()
         );
         return $count;
     }

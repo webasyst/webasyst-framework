@@ -142,3 +142,27 @@ ul.with-icons.wa-theme li a { padding-left: 33px; }
 .s-ibutton-checkbox ul.menu-h li { padding: 1px 0 10px; vertical-align: middle;}
 .s-ibutton-checkbox ul.menu-h li span { position: relative; }
 .s-app16x16icon-menu-v { width: 16px; height: 16px; }
+
+
+/* TABLET
+========= */
+
+@media screen and (max-width: 1024px) {
+    
+ 
+}
+
+@media only screen 
+and (min-device-width : 768px) 
+and (max-device-width : 1024px) 
+and (orientation : portrait) { 
+
+    /* iPad portrait mode */
+
+    .wa-theme-globalnav li.wa-theme-globalnav-switch { min-width: 176px; }
+    
+    .wa-theme-actions { display: none; }
+    .wa-theme .sidebar.right250px { display: none; }
+    .wa-theme .content.right250px { margin-right: 0; }
+
+}

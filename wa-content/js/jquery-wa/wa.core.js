@@ -35,7 +35,14 @@ $.wa = $.extend(true, $.wa, {
 		}
 		hash = hash.replace(/\/\//g, "/");
 		hash = hash.replace(/^.*#/, '');
-		if (parent && !$.browser.msie) {
+		if ($.browser.safari) {
+			// Work around bug in safari 5.0.5 and down that broke UTF8 hashes
+			if (parent) {
+				parent.window.location = parent.window.location.href.replace(/#.*/, '') + '#' + hash;
+			} else {
+				location = location.href.replace(/#.*/, '') + '#' + hash;
+			}
+		} else if (parent && !$.browser.msie) {
 			parent.window.location.hash = hash;
 		} else {
 			location.hash = hash;
@@ -333,11 +340,11 @@ $(document).ajaxSend(function (event, xhr, settings) {
 		if (typeof(settings.data) == 'string') {
 			if (settings.data.indexOf('_csrf=') == -1) {
 				settings.data += (settings.data.length > 0 ? '&' : '') + '_csrf=' + csrf;
-                xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+				xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
 			}
 		} else if (typeof(settings.data) == 'object') {
 			settings.data['_csrf'] = csrf;
-        }
+		}
 	}
 });
 

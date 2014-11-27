@@ -63,9 +63,6 @@ class waMailDecode
         try {
             $parser = new waMailAddressParser($v);
             $v = $parser->parse();
-            if (isset($v[0])) {
-                $v = $v[0];
-            }
         } catch (Exception $e) {
             if (preg_match('~<([^>]+)>~', $v, $m)) {
                 $email = $m[1];
@@ -77,9 +74,9 @@ class waMailDecode
             }
 
             $name = trim(preg_replace('~<?'.preg_quote($email, '~').'>?~', '', $v));
-            $v = array('name' => $name, 'email' => $email);
+            $v = array(array('name' => $name, 'email' => $email));
         }
-        $v['full'] = $header;
+        $v[0]['full'] = $header;
         return $v;
     }
 
@@ -139,8 +136,13 @@ class waMailDecode
             } elseif ($h == 'date') {
                 $v = preg_replace("/[^a-z0-9:,\.\s\t\+-]/i", '', $v);
                 $v = date("Y-m-d H:i:s", strtotime($v));
-            } elseif ($h == 'to' || $h == 'cc' || $h == 'from' || $h == 'reply-to') {
+            } elseif ($h == 'to' || $h == 'cc') {
                 $v = self::parseAddress($v);
+            } elseif ($h == 'from' || $h == 'reply-to') {
+                $v = self::parseAddress($v);
+                if (isset($v[0])) {
+                    $v = $v[0];
+                }
             }
         }
         unset($v);

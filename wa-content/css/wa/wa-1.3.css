@@ -466,7 +466,7 @@ ul.menu-v i.icon16.overhanging { position: absolute; left: 4px; margin: 0; top: 
 ul.menu-v i.icon10.overhanging { position: absolute; left: 9px; margin: 0; }
 ul.menu-v.with-icons li { padding: 5px 2px 5px 24px; margin-left: -4px; }
 ul.menu-v.with-icons a { padding-left: 24px; margin-left: -24px; }
-ul.menu-v.with-icons i.icon10 { margin-left: -17px; margin-right: 7px; }
+ul.menu-v.with-icons i.icon10 { margin-left: -17px; margin-right: 7px; margin-top: 1px; }
 ul.menu-v.with-icons i.icon16 { margin-left: -20px; margin-right: 5px; }
 ul.menu-v.with-icons i.icon10.no-overhanging, ul.menu-v.with-icons i.icon16.no-overhanging { margin-left: 0px; margin-right: 0px; }
 ul.menu-v.collapsible { padding-left: 12px; }
@@ -1077,12 +1077,24 @@ i.icon10 { background-repeat:no-repeat; background-image: url(../../../wa-conten
     .sidebar,
     .sidebar.left200px { width: 170px; }
     .sidebar.left250px { width: 200px; }
+    .sidebar.left300px { width: 230px; }
+    .sidebar.left350px { width: 260px; }
+    .sidebar.left400px { width: 290px; }
     .sidebar.right200px { width: 170px; }
     .sidebar.right250px { width: 200px; }
+    .sidebar.right300px { width: 230px; }
+    .sidebar.right350px { width: 260px; }
+    .sidebar.right400px { width: 290px; }
     .content.left200px { margin-left: 170px; }
     .content.left250px { margin-left: 200px; }
+    .content.left300px { margin-left: 230px; }
+    .content.left350px { margin-left: 260px; }
+    .content.left400px { margin-left: 290px; }
     .content.right200px { margin-right: 170px; }
     .content.right250px { margin-right: 200px; }
+    .content.right300px { margin-right: 230px; }
+    .content.right350px { margin-right: 260px; }
+    .content.right400px { margin-right: 290px; }
  
     .field .name { width: 125px; }   
     .field .value { margin-left: 150px; }   
