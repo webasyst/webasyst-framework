@@ -313,7 +313,8 @@ class waContactsCollection
                             continue;
                         }
                         if (!$f->isMulti()) {
-                            $post_data[$contact_id][$field_id] = isset($value[0]['data']) ? $value[0]['data'] : $value[0]['value'];
+                            $post_data[$contact_id][$field_id] = isset($value[0]['data']) ? $value[0]['data'] :
+                                (is_array($value[0]) ? $value[0]['value'] : $value[0]);
                         }
                     }
                 }

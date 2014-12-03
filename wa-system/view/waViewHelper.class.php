@@ -294,7 +294,7 @@ HTML;
 <!--[if IE 7]><link type="text/css" href="'.wa()->getRootUrl().'wa-content/css/wa/wa-1.0.ie7.css" rel="stylesheet"><![endif]-->
 <link type="text/css" rel="stylesheet" href="'.wa()->getRootUrl().'wa-content/font/ruble/arial/fontface.css">'."\n";
             
-            if ( !waRequest::isMobile(false) )
+            if ( !waRequest::isMobile() )
                 $css .= '<meta name="viewport" content="width=device-width, initial-scale=1" />'."\n"; //for handling iPad and tablet computer default view properly
             
         } else {
@@ -323,7 +323,7 @@ HTML;
                 $this->version = isset($app_info['version']) ? $app_info['version'] : '0.0.1';
                 if (SystemConfig::isDebug()) {
                     $this->version .= ".".time();
-                } elseif (!$app_id) {
+                } else {
                     $file = wa()->getAppPath('lib/config/build.php', $app_id);
                     if (file_exists($file)) {
                         $build = include($file);
@@ -863,7 +863,8 @@ HTML;
             }
         }
         $params['namespace'] = 'data';
-        if ($f->isMulti()) {
+        $is_multi = $f->isMulti();
+        if ($is_multi) {
             $f->setParameter('multi', false);
         }
         $attrs = $error !== false ? 'class="wa-error"' : '';
@@ -882,6 +883,9 @@ HTML;
 			}
 			$html .= '</div></div>';
 		}
+        if ($is_multi) {
+            $f->setParameter('multi', $is_multi);
+        }
         return $html;
     }
 

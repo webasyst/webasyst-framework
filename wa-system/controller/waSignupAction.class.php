@@ -151,6 +151,11 @@ class waSignupAction extends waViewAction
             if (!empty($data['email'])) {
                 $this->send($contact);
             }
+            /**
+             * @event signup
+             * @param waContact $contact
+             */
+            wa()->event('signup', $contact);
             // after sign up callback
             $this->afterSignup($contact);
 

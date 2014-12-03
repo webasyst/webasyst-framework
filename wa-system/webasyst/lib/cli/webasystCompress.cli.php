@@ -51,7 +51,7 @@ Optional parameters:
         no-vendors   (default choice) Check all code except for lib/vendors/ and js/vendors/ directories, if available.
     -skip compress|test|all|none Options to skip some operations:
         compress     Do not compress source files to archive.
-        test         Skip minimal checking: routing setup, code style, database configuration file.
+        test         Skip minimal checking: routing setup, database configuration file.
         all          Skip all above.
         none         (default choice) Do not skip anything.
 HELP;
@@ -68,7 +68,6 @@ HELP;
             if (empty($params) || isset($params['help']) || empty($slug)) {
                 $this->printHelp();
             } else {
-
                 if (preg_match("@^({$id_pattern})($|/(plugins|themes)/({$id_pattern})$)@", $slug, $matches)) {
                     $this->type = ifset($matches[3], 'app');
                     $this->app_id = $matches[1];

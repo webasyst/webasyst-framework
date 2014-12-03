@@ -56,7 +56,7 @@ class waMailDecode
         $this->options = $options + $this->options;
     }
 
-    /** Parse a decoded email header into [name => ..., email => ..., full => ...] */
+    /** Parse a decoded email header into list of arrays [name => ..., email => ..., full => ...] */
     public static function parseAddress($header)
     {
         $v = $header;

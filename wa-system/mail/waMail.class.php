@@ -85,7 +85,7 @@ class waMail extends Swift_Mailer
     {
         if (!isset(self::$wa_config['from'])) {
             $app_settings_model = new waAppSettingsModel();
-            $email = $app_settings_model->get('webasyst', 'email');
+            $email = $app_settings_model->get('webasyst', 'sender');
             if ($email) {
                 self::$wa_config['from'] = array(
                     $email => $app_settings_model->get('webasyst', 'name')

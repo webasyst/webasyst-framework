@@ -33,7 +33,7 @@
 							<?php if ($env == 'backend') {?></a><?php }?>
 						<?php }?>
 						</p>
-						<h2><?php echo $message;?></h2>
+						<h2><?php echo htmlspecialchars($message);?></h2>
 						<p>
 						<?php if ($app) {?>
 						Please contact app developer.

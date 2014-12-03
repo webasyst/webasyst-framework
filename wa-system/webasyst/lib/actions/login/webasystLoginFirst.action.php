@@ -46,6 +46,7 @@ class webasystLoginFirstAction extends waViewAction
                 $app_settings_model->set('webasyst', 'name', waRequest::post('account_name'));
                 if ($email) {
                     $app_settings_model->set('webasyst', 'email', $email);
+                    $app_settings_model->set('webasyst', 'sender', $email);
                 }
                 // create user
                 $user = new waUser();
