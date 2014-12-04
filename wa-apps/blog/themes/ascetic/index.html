@@ -105,6 +105,10 @@
                     {/if}
                 {/if}
             </ul>
+            {if $wa->globals('isMyAccount')}
+                {* focused personal accounts navigation *}
+                {$wa->myNav('menu-h bottom-padded')}
+            {/if}
             <div class="clear-both"></div>
         </div>
         <div class="container">
