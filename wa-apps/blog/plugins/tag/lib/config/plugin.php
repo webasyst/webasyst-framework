@@ -20,6 +20,8 @@ return array(
         'post_shedule'           => 'postSave',
         'post_delete'            => 'postDelete',
         'frontend_action_default'=> 'frontendSidebar',
+        'frontend_action_post'=> 'frontendSidebar',
+        'frontend_action_page'=> 'frontendSidebar',
     ),
 );
 //EOF
