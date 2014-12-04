@@ -425,8 +425,8 @@ class waSystem
                     throw new waException("Page not found", 404);
                 }
             } elseif (!strncmp($this->config->getRequestUrl(true), 'oauth.php', 9)) {
-                $app_id = $this->getStorage()->get('auth_app', 'webasyst');
-                if (!$this->appExists($app_id)) {
+                $app_id = $this->getStorage()->get('auth_app');
+                if ($app_id && !$this->appExists($app_id)) {
                     throw new waException("Page not found", 404);
                 }
                 $app_system = self::getInstance($app_id);

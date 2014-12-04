@@ -53,6 +53,8 @@
  * @property array[][string]string  $items[]['id']
  * @property array[][string]string  $items[]['name']
  * @property array[][string]string  $items[]['description']
+ * @todo add img property
+ * @property array[][string]string  $items[]['img']
  * @property array[][string]double  $items[]['price']
  * @property array[][string]int  $items[]['quantity']
  * @property array[][string]double  $items[]['total']
@@ -62,7 +64,9 @@
  * @property mixed $contact_%field%
  *
  * @property string $comment
- * @property array[string]string $params
+ * @property array $params
+ * @property array[string]mixed $params[]
+ *
  *
  */
 class waOrder implements ArrayAccess
@@ -101,7 +105,6 @@ class waOrder implements ArrayAccess
             'currency_id'         => 'currency',
             'create_datetime'     => 'datetime',
         );
-        $this->fields = array();
         if (!empty($data)) {
             foreach ($data as $field => $value) {
                 $this->data[$field] = $value;
@@ -293,7 +296,11 @@ class waOrder implements ArrayAccess
             $value = $this->contact->get($field, $format);
             if (is_array($value)) {
                 $res = reset($value);
-                $value = $res['value'];
+                if(is_array($res)) {
+                    $value = $res['value'];
+                } else {
+                    $value = $res;
+                }
             }
             return $value;
         } else {

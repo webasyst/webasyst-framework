@@ -64,7 +64,7 @@ jQuery.fn.waEditor = function (options) {
                 }
                 return true;
             },
-            syncBeforeCallback: function(html) {
+            syncCallback: function (html) {
                 html = html.replace(/{[a-z$][^}]*}/gi, function (match, offset, full) {
                     var i = full.indexOf("</script", offset + match.length);
                     var j = full.indexOf('<script', offset + match.length);
@@ -76,7 +76,10 @@ jQuery.fn.waEditor = function (options) {
                     }
                     return match;
                 });
-                return syncCallback ? syncCallback(html) : html;
+                if (syncCallback) {
+                    html = syncCallback(html);
+                }
+                this.$textarea.val(html);
             }
         }, (options || {}));
         if (button) {
