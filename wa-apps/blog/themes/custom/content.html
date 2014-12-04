@@ -58,12 +58,22 @@
 	                    	</li>
     	            	{/if}
     	            {/if}
-                
+
+                    <!-- search -->
+                    <li class="float-right">            	
+                        <form method="get" action="{$wa_app_url}" class="search">
+                            <div class="search-wrapper">
+                                <input type="search" name="query" {if !empty($blog_query)}value="{$blog_query}"{/if} placeholder="[`Search posts`]">
+                            </div>
+                            <div class="clear-both"></div>
+                        </form>
+                    </li>
+                	
                 	<!-- static page list -->
          	        {foreach $blog_pages as $p}
             	        <li class="float-right{if isset($page_id) and $page_id eq $p.id} selected{/if}"><a href="{$p.url}" title="{$p.title}">{$p.name}</a></li>
                 	{/foreach}
-                	
+    
                 	<!-- plugins -->
 					{* @event (frontend_action_default|frontend_action_post|frontend_action_page|frontend_action_error).%plugin_id%.sidebar *}
 					{if $frontend_action}
