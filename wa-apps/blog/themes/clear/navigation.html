@@ -1,6 +1,16 @@
 <!-- navigation menu -->
 <div class="app-navigation" role="navigation">
 
+    <!-- search -->
+    <div class="float-right block">            	
+        <form method="get" action="{$wa_app_url}" class="search">
+            <div class="search-wrapper">
+                <input type="search" name="query" {if !empty($blog_query)}value="{$blog_query}"{/if} placeholder="[`Search posts`]">
+            </div>
+            <div class="clear-both"></div>
+        </form>
+    </div>
+                    
     <!-- info pages -->
     {$blog_pages=$wa->blog->pages()}
     {if $blog_pages}
