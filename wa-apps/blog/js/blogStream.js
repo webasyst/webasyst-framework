@@ -47,10 +47,36 @@
                 return self.moveHandler.apply(self, [this, eventObject]);
             });
 
+
+            var ensureEverythingIsInside;
             var pageless_options = {
                 scroll: function () {
                     $.wa_blog.common.onContentUpdate();
-                }};
+                },
+                afterLoad: ensureEverythingIsInside = function() {
+                    $('.b-stream .b-post-body').each(function() {
+                        var $post_body = $(this);
+                        if ($post_body.data('ensureEverythingInside')) {
+                            return;
+                        }
+                        $post_body.data('ensureEverythingInside', true);
+                        var post_body_offset_top = $post_body.offset().top;
+                        var post_body_height = 0;
+                        $post_body.find('*').each(function() {
+                            var $img = $(this);
+                            if ({left:1,right:1}[$img.css('float')]) {
+                                var new_height = $img.offset().top + $img.height() - post_body_offset_top;
+                                if (new_height > post_body_height) {
+                                    $post_body.css('min-height', new_height+'px');
+                                    post_body_height = new_height;
+                                }
+                            }
+                        });
+                    });
+                }
+            };
+            ensureEverythingIsInside();
+
             pageless_options = $.extend(true, pageless_options, self.options.pageless);
             $.pageless(pageless_options);
         },

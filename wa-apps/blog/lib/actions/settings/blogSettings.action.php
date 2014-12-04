@@ -52,10 +52,10 @@ class blogSettingsAction extends waViewAction
             $this->view->assign('backend_settings', $this->getFrontendSettings());
             $this->view->assign('routing_settings_url',blogHelper::getRouteSettingsUrl());
         }
-        
+
         $app_settings_model = new waAppSettingsModel();
         $this->view->assign(
-                'last_reminder_cron_time', 
+                'last_reminder_cron_time',
                 $app_settings_model->get('blog', 'last_reminder_cron_time')
         );
         $this->view->assign('cron_command', 'php '.wa()->getConfig()->getRootPath().'/cli.php blog reminder');
@@ -110,7 +110,7 @@ class blogSettingsAction extends waViewAction
         return array(
             'type_items_count' => array(
                     'post_default' => 'none',
-                    'default' => 'posts:overdue:comments',
+                    'default' => 'posts:overdue:comments_to_my_post',
                     'validate' => array('vAvailable', array('none', 'posts', 'overdue', 'comments', 'comments_to_my_post')),
                     'callback' => create_function('$a', '
                  $a = explode(":",$a);
@@ -144,7 +144,7 @@ class blogSettingsAction extends waViewAction
                 $settings[$name] = call_user_func($descriptor['callback'],$settings[$name]);
             }
         }
-        
+
         return $settings;
     }
 
@@ -174,7 +174,7 @@ class blogSettingsAction extends waViewAction
                     $validate = (array) $descriptor['validate'];
 
                     $validator = array_shift($validate);
-                    $args = $validate;                    
+                    $args = $validate;
                     if (method_exists($this, $validator)) {
                         $value = call_user_func_array(array($this, $validator), array_merge(array($value), $args));
                         if ($value === false) {
@@ -188,7 +188,7 @@ class blogSettingsAction extends waViewAction
             }
 
             $this->_save($type, $settings);
-        }        
+        }
     }
 
     private function _save($type = 'frontend', $settings)
@@ -217,7 +217,7 @@ class blogSettingsAction extends waViewAction
                 if ($name === 'reminder') {
                     if ($value !== null) {
                         $user->setSettings($app, 'last_reminder_cron_time', 0);
-                        
+
                         /**
                     * Notify plugins about saving reminder settings
                     * @event reminder_save
@@ -228,14 +228,14 @@ class blogSettingsAction extends waViewAction
                         $user->delSettings($app, 'last_reminder_cron_time');
                     }
                 }
-                
+
             }
         }
-        
+
         // save backend url for cron
         $app_settings_model = new waAppSettingsModel();
         $app_settings_model->set('blog', 'backend_url', wa()->getRootUrl(true).wa()->getConfig()->getBackendUrl());
-        
+
     }
 
     private function vUnint($value) {

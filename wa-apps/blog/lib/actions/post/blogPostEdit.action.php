@@ -137,13 +137,13 @@ class blogPostEditAction extends waViewAction
 
         $this->view->assign('show_comments', $show_comments);
         $this->view->assign('post', $post);
-        
+
         /**
-         * @deprecated 
+         * @deprecated
          * For backward compatibility reason
          */
         $this->view->assign('cron_schedule_time', waSystem::getSetting('cron_schedule', 0, 'blog'));
-        
+
         $this->view->assign('last_schedule_cron_time', waSystem::getSetting('last_schedule_cron_time', 0, 'blog'));
         $this->view->assign('cron_command', 'php '.wa()->getConfig()->getRootPath().'/cli.php blog schedule');
 
@@ -195,10 +195,14 @@ class blogPostEditAction extends waViewAction
 
         $interval_divisor = 60;
         if ($interval_chunk = floor($interval / $interval_divisor)) {
-            $remaining_time[] = $interval_chunk." "._ws("minute", "minutes", $interval_chunk);
+            $remaining_time[] = $interval_chunk." "._w("minute", "minutes", $interval_chunk);
         }
 
-        return sprintf($ago ? '<span class="red">'._w('%s ago').'</span>' : _w('in %s'), implode(" ", $remaining_time));
+        if ($remaining_time) {
+            return sprintf($ago ? '<span class="red">'._w('%s ago').'</span>' : _w('in %s'), implode(" ", $remaining_time));
+        } else {
+            return _w('right now');
+        }
 
     }
 

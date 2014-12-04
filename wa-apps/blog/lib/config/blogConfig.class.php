@@ -96,7 +96,7 @@ class blogConfig extends waAppConfig
         $type = explode(':',$user->getSettings($app, 'type_items_count'));
         $type = array_filter(array_map('trim',$type),'strlen');
         if (!$type) {
-            $type = array('posts','comments','overdue');
+            $type = array('posts','comments_to_my_post','overdue');
         }
 
         $activity_datetime = blogActivity::getUserActivity($user_id, false);
@@ -105,10 +105,11 @@ class blogConfig extends waAppConfig
 
         $counter = array();
 
+        $post_model = new blogPostModel();
         if (in_array('posts',$type) && $full && $blogs) {
-            $post_model = new blogPostModel();
             $post_new_count = $post_model->getAddedPostCount($activity_datetime, $blogs);
-            $counter['posts'] = array_sum($post_new_count);
+            $post_new_count = array_sum($post_new_count);
+            $counter['posts'] = $post_new_count;
         } else {
             $counter['posts'] = false;
         }
@@ -184,7 +185,7 @@ class blogConfig extends waAppConfig
 
     public function checkRights($module, $action)
     {
-        if ($module == 'pages') {
+        if ($module == 'pages' && $action != 'uploadimage') {
             return wa()->getUser()->getRights($this->application, blogRightConfig::RIGHT_PAGES);
         } else {
             return true;

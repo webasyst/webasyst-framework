@@ -86,7 +86,7 @@
       {/foreach}
 
       <!-- end plugin hook: "backend_sidebar.section" -->
-      
+
       {if $writable_blogs}
       <!-- drafts -->
       <div class="block">
@@ -119,7 +119,7 @@
               {elseif $post.status == blogPostModel::STATUS_DEADLINE}
                 <span class="count"><i class="icon16 exclamation"></i></span>
               {/if}
-              <i class="icon16 userpic20" style="background-image: url('{$post.user.photo_url_20}')"></i><span{if isset($post.overdue)} class="bold b-draft-overdue"{/if}>{$post.title|escape|truncate:80}</span>
+              <i class="icon16 userpic20" style="background-image: url('{$post.user.photo_url_20}')"></i><span class="{if isset($post.overdue)}bold b-draft-overdue{/if}{if !empty($post.color)} {$post.color}{/if}">{$post.title|escape|truncate:80}</span>
               {if $post.blog_status == blogBlogModel::STATUS_PRIVATE}
                 <i class="icon10 lock-bw no-overhanging" title="[`Belong to private blog`]"></i>
               {/if}
@@ -149,7 +149,7 @@
             <li {if $module == 'design' || $module == 'themes'}class="selected"{/if}><a href="?module=design"><i class="icon16 design"></i>[s`Design`]</a></li>
             {/if}
             <li class="top-padded{if $module == 'settings'} selected{/if}"><a href="?module=settings"><i class="icon16 settings"></i>[`Settings`]</a></li>
-            
+
             {if $wa->user()->isAdmin($wa->app())}
                 <li{if $action == 'plugins'} class="selected"{/if}><a href="?module=plugins"><i class="icon16 plugins"></i>[`Plugins`]</a></li>
             {/if}

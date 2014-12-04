@@ -1,5 +1,5 @@
 
-<div class="b-comment {if $comment.status == blogCommentModel::STATUS_DELETED}b-deleted{/if}" id="b-comment-{$comment.id}">
+<div class="b-comment {if $comment.status == blogCommentModel::STATUS_DELETED}b-deleted{/if}" id="b-comment-{$comment.id}" data-comment-id="{$comment.id}">
   <span class="b-comment-auth-{$comment.auth_provider|default:blogCommentModel::AUTH_USER}">
     {capture name=commentor_name}
       <i class="icon16{if !$comment.auth_provider || $comment.auth_provider eq blogCommentModel::AUTH_GUEST || $comment.auth_provider eq blogCommentModel::AUTH_USER} userpic20{/if}" style="background-image: url('{$comment.user.photo_url_20}');"></i><span class="bold">{$comment.user.name|escape}</span>

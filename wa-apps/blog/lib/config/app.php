@@ -15,7 +15,7 @@ return array(
     'plugins' => true,
     'pages' => true,
     'mobile' => true,
-    'version' => '1.2.3',
+    'version' => '1.2.4',
     'critical' => '1.0.0',
     'vendor' => 'webasyst',
     'csrf' => true,

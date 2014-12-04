@@ -89,17 +89,17 @@ class blogFrontendPostAction extends blogViewAction
 
 
         $title = $this->getResponse()->getTitle();
-
+        $post_title = htmlspecialchars_decode($post['title'], ENT_QUOTES);
         if ($this->getRequest()->param('title_type', 'blog_post') == 'blog_post') {
             if ($title) {
-                $this->getResponse()->setTitle($title." » ".$post['title']);
+                $this->getResponse()->setTitle($title." » ".$post_title);
             } elseif (isset($available[$post['blog_id']]) && ($title = $available[$post['blog_id']]['title'])) {
-                $this->getResponse()->setTitle($title." » ".$post['title']);
+                $this->getResponse()->setTitle($title." » ".$post_title);
             } else {
-                $this->getResponse()->setTitle($post['title']);
+                $this->getResponse()->setTitle($post_title);
             }
         } else {
-            $this->getResponse()->setTitle($post['title']);
+            $this->getResponse()->setTitle($post_title);
         }
 
         // meta title override default title

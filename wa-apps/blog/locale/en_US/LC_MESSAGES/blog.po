@@ -1525,3 +1525,16 @@ msgstr ""
 #: /wa-apps/blog/lib/config/site.php:124
 msgid "0 for published, 1 for deleted"
 msgstr ""
+#: /wa-apps/blog/lib/actions/post/blogPostEdit.action.php:198
+msgid "minute"
+msgid_plural "minutes"
+msgstr[0] ""
+msgstr[1] ""
+
+#: /wa-apps/blog/lib/actions/post/blogPostEdit.action.php:204
+msgid "right now"
+msgstr ""
+
+#: /wa-apps/blog/lib/config/site.php:76
+msgid "Homepage <title>"
+msgstr ""

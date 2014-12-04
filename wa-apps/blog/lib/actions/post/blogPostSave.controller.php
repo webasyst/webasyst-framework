@@ -243,7 +243,7 @@ class blogPostSaveController extends waJsonController
     private function delete($post)
     {
         $post_model = new blogPostModel();
-        $post = $post_model->getFieldsById($post['id'], array('id', 'blog_id'));
+        $post = $post_model->getFieldsById($post['id'], array('id', 'blog_id', 'contact_id'));
         if ($post) {
             if (!$this->getUser()->isAdmin($this->getApp())) {
                 // author of post

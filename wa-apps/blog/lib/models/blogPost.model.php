@@ -618,14 +618,14 @@ SQL;
         if (isset($data['status'])) {
             switch ($data['status']) {
                 case self::STATUS_PUBLISHED:
-                    if (!isset($data['datetime']) || !$data['datetime']) {
-                        if (!isset($current_data['datetime']) || !$current_data['datetime']) {
-                            $data['datetime'] = date("Y-m-d H:i:s");
-                        } elseif (isset($current_data['status']) && !in_array($current_data['status'], array(self::STATUS_PUBLISHED, self::STATUS_SCHEDULED))) {
-                            $data['datetime'] = date("Y-m-d H:i:s");
-                        } else {
+                    if (empty($current_data['status']) || in_array($current_data['status'], array(self::STATUS_DEADLINE, self::STATUS_DRAFT, self::STATUS_SCHEDULED))) {
+                        $data['datetime'] = date("Y-m-d H:i:s");
+                    } else if (ifset($current_data['status']) == self::STATUS_PUBLISHED) {
+                        if (empty($data['datetime'])) {
                             unset($data['datetime']);
                         }
+                    } else {
+                        unset($data['datetime']);
                     }
                     break;
                 case self::STATUS_DRAFT:

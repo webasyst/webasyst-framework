@@ -32,7 +32,7 @@
                 beforeSave: function() {
                     if (!validateDatetime()) {
                         return false;
-                    }                    
+                    }
                     $.wa_blog.editor.onSubmit();
                 },
 
@@ -45,7 +45,7 @@
                     if (self.inlineSaveController.getAction() == 'draft') {
                         $('#post-url-field .small').removeClass('small').addClass('hint');
                     }
-                    
+
                     var dialog = $('#b-post-edit-custom-params-dialog');
                     if (!dialog.is(':hidden')) {
                         var meta_title = dialog.find(':input[name=meta_title]').val();
@@ -79,7 +79,7 @@
                         }
                         dialog.trigger('close');
                     }
-                            
+
                 }
 
             });
@@ -90,14 +90,11 @@
 
             var editor = null;
             try {
-                editor = $.storage.get('blog/editor');
+                editor = $.storage.get('blog/editor') || 'redactor';
             } catch(e) {
                 this.log('Exception: '+e.message + '\nline: '+e.fileName+':'+e.lineNumber);
             }
-
-            if (editor) {
-                editor = editor.replace(/\W+/g,'');
-            } else {
+            if (!editor || !this.editors[editor]) {
                 for(editor in this.editors) {
                     break;
                 }
@@ -108,6 +105,11 @@
                         break;
                     }
                 }
+            }
+
+            // Place cursor into title field for new posts
+            if (!$('#post-form').find('input[name=post_id]').val()) {
+                $('#post-title').focus();
             }
 
             $.wa.dropdownsCloseEnable();
@@ -160,8 +162,17 @@
                 return false;
             });
 
+            // Stick button bar to the bottom of the window
+            var $window = $(window), $buttons_bar = $('#buttons-bar');
+            $buttons_bar.sticky && $('#buttons-bar').sticky({
+                fixed_class: 'b-fixed-button-bar',
+                isStaticVisible: function (e, o) {
+                    return  $window.scrollTop() + $window.height() >= e.element.offset().top + e.element.outerHeight();
+                }
+            });
 
-            //deadline
+            // ====== Functions declarations section ========
+
             function initDialogs()
             {
 
@@ -202,8 +213,6 @@
                     return false;
                 }
             }
-
-            // ====== Functions declarations section ========
 
             function setEditDatetimeReady()
             {
@@ -634,9 +643,9 @@
                                 return false;
                             }
                         }
-                        if ($('#post-id').val() && (this.id == 'b-post-save-button' || 
+                        if ($('#post-id').val() && (this.id == 'b-post-save-button' ||
                                 this.id == 'b-post-save-draft-button' ||
-                                this.id == 'b-post-save-custom-params')) 
+                                this.id == 'b-post-save-custom-params'))
                         {
                             inline = true;
                         }
@@ -796,7 +805,7 @@
             textarea.hide();
             return id;
         },
-        cut_hr: '<span class="b-elrte-wa-split-vertical" id="elrte-wa_post_cut">%text%</span>',
+        cut_hr: '<span class="b-elrte-wa-split-vertical elrte-wa_post_cut">%text%</span>',
         cut_str: '<!-- more %text%-->',
         htmlToWysiwyg: function(text) {
             return text.replace(/<!--[\s]*?more[\s]*?(text[\s]*?=[\s]*?['"]([\s\S]*?)['"])*[\s]*?-->/g, function(cut_str, p1, p2) {
@@ -804,16 +813,16 @@
             });
         },
         wysiwygToHtml: function(text) {
-            var tmp = $('<p></p>').html($(text));
-            if (tmp.find('#elrte-wa_post_cut').length) {
-                var cut_item = tmp.find('#elrte-wa_post_cut');
+            var tmp = $('<p></p>').html(text);
+            var cut_item = tmp.find('.elrte-wa_post_cut');
+            if (cut_item.length) {
                 var p = cut_item.html();
                 if (!p || p === '<br>' || p === $.wa_blog.editor.options.cut_link_label_default) {
                     cut_item.replaceWith($.wa_blog.editor.cut_str.replace('%text%', ''));
                 } else {
                     cut_item.replaceWith($.wa_blog.editor.cut_str.replace('%text%', 'text="' + p + '" '));
                 }
-                return tmp.html();
+                return tmp.html().replace('<span></span>', '');
             } else {
                 return text;
             }
@@ -830,7 +839,6 @@
                         var options = $.wa_blog.editor.options;
                         this.container = $('<div id="blog-ace-editor"></div>').appendTo("#post_text_wrapper");
                         this.container.wrap('<div class="ace"></div>');
-                        var height = $.wa_blog.editor.calcEditorHeight();
 
                         this.editor = ace.edit('blog-ace-editor');
                         ace.config.set("basePath", wa_url + 'wa-content/js/ace/');
@@ -848,8 +856,15 @@
                         this.editor.setFontSize(13);
                         $('.ace_editor').css('fontFamily', '');
                         session.setValue(textarea.hide().val());
-                        this.editor.focus();
                         this.editor.moveCursorTo(0, 0);
+
+                        if (navigator.appVersion.indexOf('Mac') != -1) {
+                            this.editor.setFontSize(13);
+                        } else if (navigator.appVersion.indexOf('Linux') != -1) {
+                            this.editor.setFontSize(16);
+                        } else {
+                            this.editor.setFontSize(14);
+                        }
 
                         this.editor.commands.addCommand({
                             name: "unfind",
@@ -867,15 +882,14 @@
 
                             // http://stackoverflow.com/questions/11584061/
                             var newHeight = editor.getSession().getScreenLength() * editor.renderer.lineHeight + editor.renderer.scrollBar.getWidth();
-
                             newHeight *= 1.02; //slightly extend editor height
 
                             var sidebarHeight = $('#post-form .sidebar:first .b-edit-options').height();
                             var minHeight = sidebarHeight - 163;
-
                             if (newHeight < minHeight) {
                                 newHeight = minHeight;
                             }
+
                             $('#' + editor_id).height(newHeight.toString() + "px");
 
                             // This call is required for the editor to fix all of
@@ -884,17 +898,18 @@
                         };
 
                         var self = this;
+                        var $window = $(window);
 
                         // Whenever a change happens inside the ACE editor, update
                         // the size again
                         session.on('change', function() {
                             heightUpdateFunction(self.editor, "blog-ace-editor");
+                            $window.scroll(); // trigger sticky bottom buttons
                         });
                         setTimeout(function() {
                             heightUpdateFunction(self.editor, "blog-ace-editor");
                         }, 50);
-
-                        $(window).resize(function() {
+                        $window.resize(function() {
                             self.editor.resize();
                             heightUpdateFunction(self.editor, "blog-ace-editor");
                         });
@@ -914,7 +929,9 @@
                             var text = $.wa_blog.editor.wysiwygToHtml(textarea.val());
                             var p = self.editor.getCursorPosition();
                             self.editor.setValue(text);
-                            self.editor.focus();
+                            if (!$('#post-title').is(':focus')) {
+                                self.editor.focus();
+                            }
                             self.editor.navigateTo(p.row, p.column);
                         } else {
                             if(typeof(console) == 'object') {
@@ -944,12 +961,16 @@
                 callback:false,
                 init : function(textarea) {
                     if(!this.inited) {
-                        
+                        var $window = $(window);
+                        var $save_button = $('#b-post-save-button');
+                        var $postpublish_edit = $('#postpublish-edit');
+                        var sidebar_height = $('#post-form .sidebar:first .b-edit-options').height();
+
                         var options = $.extend({
                             //boldTag: 'b',
                             //italicTag: 'i',
                             deniedTags: false,
-                            minHeight: 300,
+                            minHeight: Math.max(300, sidebar_height - 229),
                             buttonSource: false,
                             paragraphy: true,
                             convertDivs: true,
@@ -980,12 +1001,14 @@
                                 return html;
                             },
                             changeCallback: function() {
-                                if ($('#postpublish-edit').is(':visible')) {
-                                    $('#postpublish-edit').removeClass('green').addClass('yellow');
+                                if ($postpublish_edit.is(':visible')) {
+                                    $postpublish_edit.removeClass('green').addClass('yellow');
                                 }
-                                if ($('#b-post-save-button').is(':visible')) {
-                                    $('#b-post-save-button').removeClass('green').addClass('yellow');
+                                if ($save_button.is(':visible')) {
+                                    $save_button.removeClass('green').addClass('yellow');
                                 }
+                                // Make sure sticky bottom buttons behave correctly when height of an editor changes
+                                $window.scroll();
                             }
                         }, (options || {}));
                         textarea.redactor(options);
@@ -998,7 +1021,7 @@
                 show: function(textarea) {
                     var text = $.wa_blog.editor.htmlToWysiwyg(textarea.val());
                     textarea.val(text);
-                    
+
                     $('.redactor-box').show();
                     textarea.redactor('core.getEditor').find('img[src*="$wa_url"]').each(function () {
                         var s = decodeURIComponent($(this).attr('src'));
@@ -1025,12 +1048,6 @@
         },
         getExtHeightShift: function() {
             return -70;
-        },
-        calcEditorHeight: function() {
-            var viewedAreaHeight = $(document.documentElement).height();
-            var editorAreaHeightOffset = $('#post-editor').offset();
-            var buttonsBarHeight = $('#buttons-bar').outerHeight(true);
-            return height = viewedAreaHeight - editorAreaHeightOffset.top - buttonsBarHeight;
         },
         editorTooggle : function() {
             var self = $(this);
@@ -1067,6 +1084,9 @@
 
                             $('#' + id).parent().addClass('selected');
                             this.editors[id].show(textarea);
+
+                            // Make sure sticky bottom buttons behave correctly when height of an editor changes
+                            setTimeout(function() { $(window).scroll(); }, 0);
                         }
                     } catch(e) {
                         this.log('Exception: '+e.message + '\nline: '+e.fileName+':'+e.lineNumber, e.stack);

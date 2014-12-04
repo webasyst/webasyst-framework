@@ -73,7 +73,7 @@ return array(
             'default' => 'blog_post',
         ),
         'title'         => array(
-            'name'        => _w('Homepage &lt;title&gt;'),
+            'name'        => _w('Homepage <title>'),
             'type'        => 'radio_text',
             'description' => '',
             'items'       => array(

@@ -16,7 +16,20 @@
                 var pageless_options = {
                     scroll:function() {
                         self.parent.common.onContentUpdate();
-                }};
+                    },
+                    afterLoad: function() {
+                        var settings = this;
+                        var existing_comments = {};
+                        $(settings.target).children(':not(.pageless-wrapper)').each(function() {
+                            var $li = $(this);
+                            var comment_id = $li.children('.b-comment').data('comment-id');
+                            if (comment_id && existing_comments[comment_id]) {
+                                $li.remove();
+                            }
+                            existing_comments[comment_id] = 1;
+                        });
+                    }
+                };
                 pageless_options = $.extend(true,pageless_options,self.options.pageless);
                 $.pageless(pageless_options);
             }
@@ -25,7 +38,7 @@
             // comments
             $('.b-comment-reply').live('click', self.replyClick);
             $(this.options.form_selector+' #send').click(self.formSubmit);
-            
+
             // filter
             /*
             $('#b-comments-filter').on('click', 'a', function() {

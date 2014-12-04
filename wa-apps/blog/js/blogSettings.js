@@ -84,6 +84,8 @@
                 return false;
             });
 
+            $('#blog-name').focus();
+
             function setupBlogUrlWidget()
             {
                 var slug = null;

@@ -60,7 +60,7 @@ class blogViewHelper extends waAppViewHelper
      *
      * @param int $post_id
      * @param array $extend_options
-     * @param array $fields    
+     * @param array $fields
      *
      * @return mixed
      */
@@ -71,7 +71,7 @@ class blogViewHelper extends waAppViewHelper
             $post_model = new blogPostModel();
             $search_options = array('id' => $post_id, 'blog_id' => array_keys($available_blogs));
             $extend_data = array('blog' => $available_blogs);
-            $post = $post_model->search($search_options, $extend_options, $extend_data)->fetchSearchItem($fields);
+            $post = $post_model->search($search_options, $extend_options + array('params' => true), $extend_data)->fetchSearchItem($fields);
         }
         $non_escape_fields = array(
             'text'            => true,
@@ -140,7 +140,8 @@ class blogViewHelper extends waAppViewHelper
         $comments = $comment_model->getList(array(
             'offset'  => 0,
             'limit'   => $limit,
-            'blog_id' => $blog_ids
+            'blog_id' => $blog_ids,
+            'approved' => true,
         ), $fields);
 
         $post_ids = array();
@@ -170,10 +171,10 @@ class blogViewHelper extends waAppViewHelper
 
         <form action="{$url}" method="POST" id="{$id}">
         <p>
-        	<input type="text" name="title"/><br/>
-        	<textarea name="text" cols="60" rows="20"></textarea><br/>
-        	{$this->wa->getView()->getHelper()->csrf()}
-        	<input type="submit" value="{$submit}"/>
+            <input type="text" name="title"/><br/>
+            <textarea name="text" cols="60" rows="20"></textarea><br/>
+            {$this->wa->getView()->getHelper()->csrf()}
+            <input type="submit" value="{$submit}"/>
         </p>
         </form>
 HTML;

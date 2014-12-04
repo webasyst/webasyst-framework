@@ -85,10 +85,10 @@ class blogFrontendCommentController extends waJsonController
     {
 
         $comment = array(
-			'blog_id'		 => $this->post['blog_id'],
-			'post_id'		 => $this->post['id'],
-			'contact_id'	 => $this->getUser()->getId(),
-			'text'			 => waRequest::post('text'),
+            'blog_id'		 => $this->post['blog_id'],
+            'post_id'		 => $this->post['id'],
+            'contact_id'	 => $this->getUser()->getId(),
+            'text'			 => waRequest::post('text'),
         );
 
         if ($this->getUser()->getId()) {
@@ -153,6 +153,7 @@ class blogFrontendCommentController extends waJsonController
         try {
             $comment['post_data'] = $this->post;
             $this->comment_id = $this->comment_model->add($comment, $this->parent_id);
+            $this->logAction('comment_add', 'frontend');
             return true;
         }
         catch (Exception $e) {
