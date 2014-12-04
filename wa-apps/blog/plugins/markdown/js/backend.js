@@ -1,12 +1,12 @@
 $(function() {
     if ($.wa_blog.editor) {
-        
+
         var post_content = $("#" + $.wa_blog.editor.options['content_id']);
         var tab = $('#markdown');
         var post_text_markdown = $('#post_text_markdown');
-        
+
         function init() {
-            
+
             function checkEquals() {
                 var markdown_text = post_text_markdown.val();
                 var html_text = post_content.val();
@@ -18,7 +18,7 @@ $(function() {
                     tab.text(tab_text.replace('*', ''));
                 }
             }
-            
+
             checkEquals();
 
             $.extend($.wa_blog.editor.editors, {
@@ -35,7 +35,7 @@ $(function() {
                         if (!this.inited) {
 
                             var that = this;
-                            
+
                             function init() {
                                 if (!$('#blog-markdown-editor').length) {
                                     that.container = $('<div id="blog-markdown-editor"></div>').appendTo("#post_text_wrapper");
@@ -59,7 +59,7 @@ $(function() {
                                         tab.text(tab_text.replace('*', ''));
                                     }
                                 });
-                                
+
                                 that.info_container = text;
 
                                 that.container.parent().prepend(text);
@@ -116,14 +116,16 @@ $(function() {
 
                                 // Whenever a change happens inside the ACE editor, update
                                 // the size again
+                                var $window = $(window);
                                 session.on('change', function() {
                                     heightUpdateFunction(that.editor, "blog-markdown-editor");
+                                    $window.scroll(); // trigger sticky bottom buttons
                                 });
                                 setTimeout(function() {
                                     heightUpdateFunction(that.editor, "blog-markdown-editor");
                                 }, 50);
 
-                                $(window).resize(function() {
+                                $window.resize(function() {
                                     that.editor.resize();
                                     heightUpdateFunction(that.editor, "blog-markdown-editor");
                                 });
@@ -166,33 +168,33 @@ $(function() {
                         $('.b-single-post').removeClass('markdown');
                     },
                     show: function() {
-                
+
                         var markdown_text = post_text_markdown.val();
                         var html_text = post_content.val();
                         var that = this;
                         if (!markdown_text && html_text) {
 
                             if (!$('#post-no-markdown-markup-yet').length) {
-                                var div = $('<div class="block triple-padded" id="post-no-markdown-markup-yet"><p class="align-center">' + $('#markdown_plugin_text_no_markup_yet').html() + 
+                                var div = $('<div class="block triple-padded" id="post-no-markdown-markup-yet"><p class="align-center">' + $('#markdown_plugin_text_no_markup_yet').html() +
                                         '<br><br><input type="button" value="'+$('#markdown_plugin_text_generate').text()+'" /></p></div>').appendTo("#post_text_wrapper");
                                 div.find('input[type=button]').click(function() {
                                     div.hide();
                                     var updated_markdown_text = toMarkdown(post_content.val().trim());
                                     post_text_markdown.val(updated_markdown_text);
                                     that.refresh();
-                                    
+
                                     if (that.container) {
                                         that.container.show();
                                         that.container.parent().show();
                                     }
-                                    
+
                                     return false;
                                 });
                                 this.ext_info_container = div;
                             } else {
                                 this.ext_info_container = $('#post-no-markdown-markup-yet');
                             }
-                            
+
                             var sidebarHeight = $('#post-form .sidebar:first .b-edit-options').height();
                             var minHeight = sidebarHeight - 163;
                             var height = this.ext_info_container.height();
@@ -229,13 +231,13 @@ $(function() {
                     }
                 }
             });
-            
+
             if ($.storage.get('blog/editor') == 'markdown') {
                 $.wa_blog.editor.selectEditor('markdown');
             }
-            
+
         }
-        
+
         function equals(markdown_text, html_text) {
             markdown_text = markdown_text.trim();
             html_text = html_text.trim();
@@ -247,11 +249,11 @@ $(function() {
                 return true;
             }
         }
-        
+
         init();
-        
-        
-        
+
+
+
         var onSubmit = $.wa_blog.editor.onSubmit;
         if (onSubmit instanceof Function) {
             $.wa_blog.editor.onSubmit = function() {
