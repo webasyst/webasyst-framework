@@ -1,3 +1,10 @@
+<!-- search -->
+<div class="float-right block" style="padding-top: 5px;">            	
+    <form method="get" action="{$wa_app_url}">
+        <input type="input" name="query" {if !empty($blog_query)}value="{$blog_query}"{/if} placeholder="[`Search posts`]">
+    </form>
+</div>
+
 <!-- info pages -->
 {$blog_pages=$wa->blog->pages()}
 {if $blog_pages}
