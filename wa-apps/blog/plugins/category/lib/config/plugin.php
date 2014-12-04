@@ -9,6 +9,7 @@ return array(
     'frontend'    => true,
 
     'handlers' => array(
+        // Event => method name of main plugin class
         'search_posts_frontend'  => 'postSearch',
         'search_posts_backend'   => 'postSearch',
         'post_save'              => 'postUpdate',
@@ -17,8 +18,9 @@ return array(
         'post_delete'            => 'postDelete',
         'backend_sidebar'        => 'backendSidebar',
         'backend_post_edit'      => 'backendPostEdit',
-        'frontend_action_default'=> 'frontendSidebar'
-//Event => method_name of primary plugin class
+        'frontend_action_default'=> 'frontendSidebar',
+        'frontend_action_post'   => 'frontendSidebar',
+        'frontend_action_page'   => 'frontendSidebar',
     ),
     'blog_settings' => true,
 );

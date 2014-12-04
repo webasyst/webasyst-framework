@@ -1,6 +1,7 @@
 <div class="block">
   <h6>[`Categories`]</h6>
   {if $categories_all}
+  <input type="hidden" name="plugin[category][0]" value="0">
   <ul class="menu-v compact with-icons">
      {foreach $categories_all as $category}
     <li>
