@@ -467,22 +467,24 @@ class waAppConfig extends SystemConfig
         return include($cache_file);
     }
 
-    protected function getPHPFiles($path)
+    protected function getPHPFiles($path, $ignore=array())
     {
-        if (!($dh = opendir($path))) {
-            throw new waException('Filed to open dir: '.$path);
-        }
-        $result = array();
-        while (($f = readdir($dh)) !== false) {
-            if ($this->isIgnoreFile($f)) {
-                continue;
-            } elseif (is_dir($path.$f)) {
-                $result = array_merge($result, $this->getPHPFiles($path.$f.'/'));
-            } elseif (substr($f, -4) == '.php') {
-                $result[] = $path.$f;
+        try {
+            $directory = new RecursiveDirectoryIterator($path, RecursiveIteratorIterator::SELF_FIRST);
+            $filter = new waRecursivePhpFilterIterator($directory);
+            $filter->ignore($ignore);
+            $iterator = new RecursiveIteratorIterator($filter);
+
+            $result = array();
+
+            foreach($iterator as $file) {
+                $result[] = $file->getPathname();
             }
+
+        } catch (Exception $exc) {
+            throw new waException($exc->getMessage());
         }
-        closedir($dh);
+
         return $result;
     }
 
