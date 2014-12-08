@@ -17,6 +17,12 @@ class photosPlugin extends waPlugin
             $row = array_merge($row, $params);
             $row['value'] = $this->getSettings($name);
             if (isset($row['control_type'])) {
+                if (!empty($row['title'])) {
+                    $row['title'] = _wp($row['title']);
+                }
+                if (!empty($row['description'])) {
+                    $row['description'] = _wp($row['description']);
+                }
                 $controls[$name] = waHtmlControl::getControl($row['control_type'], $name, $row);
             }
         }

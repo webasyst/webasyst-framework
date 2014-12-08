@@ -20,9 +20,9 @@ class photosDefaultLayout extends waLayout
          */
         $this->view->assign('backend_photo_toolbar', wa()->event('backend_photo_toolbar'));
 
-
         $tree = new photosViewTree($albums);
         $this->view->assign('albums', $tree->display());
+        $this->view->assign('albums_count', count($albums));
 
         $collection = new photosCollection();
         $collection_rated = new photosCollection('search/rate>0');

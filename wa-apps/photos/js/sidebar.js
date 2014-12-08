@@ -21,16 +21,16 @@
                         var min_width = 200;
                         var cls = sidebar.attr('class');
                         var width = 0;
-                        
+
                         var m = cls.match(/left([\d]{2,3})px/);
                         if (m && m[1] && (width = parseInt(m[1]))) {
                             var new_width = width + ($(this).is('.right') ? 50 : -50);
                             new_width = Math.max(Math.min(new_width, max_width), min_width);
-                            
+
                             if (new_width != width) {
-                            
-                                arrows_panel.css({'width': new_width.toString() + 'px'});                            
-                                
+
+                                arrows_panel.css({'width': new_width.toString() + 'px'});
+
                                 var replace = ['left' + width + 'px', 'left' + new_width + 'px'];
                                 sidebar.attr('class', cls.replace(replace[0], replace[1]));
                                 sidebar.css('width', '');
@@ -47,16 +47,16 @@
                                 }, 'json');
                             }
                         }
-                        
+
                         return false;
                     });
         },
 
         initCollapsible: function() {
-            $("#album-list-container .collapse-handler").die('click').live('click', function () {
+            $('#p-sidebar').off('click', '.collapse-handler').on('click', '.collapse-handler', function () {
                 $.photos_sidebar._collapseSidebarSection(this, 'toggle');
             });
-            $("#album-list-container .collapse-handler").each(function() {
+            $("#p-sidebar .collapse-handler").each(function() {
                 $.photos_sidebar._collapseSidebarSection(this, 'restore');
             });
             $('#album-list-container').die('uncollapse_section').live('uncollapse_section', function(e, album_item) {
@@ -136,7 +136,10 @@
                 var count = parseInt($(this).text(), 10) || 0;
                 total_count += count;
             });
-            subtree_counter.text(total_count).show();
+            if (!subtree_counter.hasClass('never-recount')) {
+                subtree_counter.text(total_count);
+            }
+            subtree_counter.show();
             counter.hide();
             return total_count;
         },
@@ -165,16 +168,21 @@
             if (!arr.length) {
                 return;
             }
+
+            var item = el.parent();
+            var list = item.find('.hierarchical:first');
+            if (!list.length) {
+                list = item.find('.collapsible-content:first');
+            }
+            if (!list.length) {
+                list = item.find('ul:first');
+            }
+
             var newStatus,
-                id = el.attr('id'),
+                id = el.attr('id') || el.parent().attr('id'),
                 oldStatus = arr.hasClass('darr') ? 'shown' : 'hidden',
 
                 hide = function() {
-                    var item = el.parent();
-                    var list = item.find('.hierarchical:first');
-                    if (!list.length) {
-                        list = item.find('ul:first');
-                    }
                     list.hide();
                     arr.removeClass('darr').addClass('rarr');
                     $.photos_sidebar.countSubtree(item);
@@ -182,11 +190,6 @@
                 },
 
                 show = function() {
-                    var item = el.parent();
-                    var list = item.find('.hierarchical:first');
-                    if (!list.length) {
-                        list = item.find('ul:first');
-                    }
                     list.show();
                     arr.removeClass('rarr').addClass('darr');
                     $.photos_sidebar.countItem(item);

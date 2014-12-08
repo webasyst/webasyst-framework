@@ -14,6 +14,7 @@ class photosPluginsSettingsAction extends waViewAction
                  * @var photosPlugin $plugin
                  */
                 $plugin = waSystem::getInstance()->getPlugin($plugin_id);
+                waSystem::pushActivePlugin($plugin_id, 'photos');
                 $namespace = 'photos_'.$plugin_id;
 
                 $params = array();
@@ -26,13 +27,12 @@ class photosPluginsSettingsAction extends waViewAction
                 $settings_controls = $plugin->getControls($params);
                 $this->getResponse()->setTitle(_w(sprintf('Plugin %s settings', $plugin->getName())));
 
-
                 $this->view->assign('plugin_info', $plugins[$plugin_id]);
 
                 $this->view->assign('plugin_id', $plugin_id);
                 $this->view->assign('settings_controls', $settings_controls);
+                waSystem::popActivePlugin();
             }
-            waSystem::popActivePlugin();
         }
         $this->view->assign('plugins_count', $plugins_count);
     }

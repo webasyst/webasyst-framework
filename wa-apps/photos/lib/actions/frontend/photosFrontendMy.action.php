@@ -45,6 +45,7 @@ class photosFrontendMyAction extends waMyProfileAction
             array(
                 'name' => _w('My account'),
                 'url' => wa()->getRouteUrl('/frontend/my'),
+                'full_url' => wa()->getRouteUrl('/frontend/my'),
             ),
         );
     }

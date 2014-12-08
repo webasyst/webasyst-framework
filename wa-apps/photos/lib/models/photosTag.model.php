@@ -51,7 +51,7 @@ class photosTagModel extends waModel
 //
 //        return $tag_ids;
 //    }
-    
+
     public function getIds($tags)
     {
         $tags = (array) $tags;
@@ -92,7 +92,7 @@ class photosTagModel extends waModel
 
     public function getCloud($key = null)
     {
-        $tags = $this->where('count > 0')->fetchAll($key);
+        $tags = $this->where('count > 0')->order('name')->fetchAll($key);
         if (!empty($tags)) {
             $first = current($tags);
             $max_count = $min_count = $first['count'];
@@ -117,7 +117,7 @@ class photosTagModel extends waModel
         }
         return $tags;
     }
-    
+
     public function popularTags($limit = 10)
     {
         return $this->select('*')->order('count DESC')->limit($limit)->fetchAll();

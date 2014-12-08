@@ -337,7 +337,7 @@ class photosAlbumModel extends waModel
         } else {
             $full_url = $url;
         }
-        
+
         $this->updateById($id, array(
             'url' => $url,
             'full_url' => $full_url
@@ -427,11 +427,11 @@ class photosAlbumModel extends waModel
             $url = $data['url'];
             unset($data['url']);
         }
-        
+
         if (!isset($data['status'])) {
             $data['status'] = $item['status'];
         }
-        
+
         if ($data['status'] <= 0) {
             $data['full_url'] = null;
             if (!isset($data['hash'])) {
@@ -440,7 +440,7 @@ class photosAlbumModel extends waModel
         } else {
             unset($data['full_url']);
         }
-        
+
         $this->updateById($id, $data);
         if ($data['status'] <= 0) {
             $this->privateDescendants($id);
@@ -455,9 +455,9 @@ class photosAlbumModel extends waModel
                 $this->updateUrl($id, $item['url']);
             }
         }
-        
+
         return true;
-        
+
     }
 
     /**
@@ -478,10 +478,12 @@ class photosAlbumModel extends waModel
                 'id' => $album_id
             ))->fetch();
             if ($album) {
+                $url = photosFrontendAlbum::getLink($album);
                 $breadcrumbs[] = array(
                     'album_id' => $album['id'],
                     'name' => $escape ? photosPhoto::escape($album['name']) : $album['name'],
-                    'full_url' => photosFrontendAlbum::getLink($album),
+                    'full_url' => $url,
+                    'url' => $url,
                     'status' => $album['status']
                 );
                 $album_id = $album['parent_id'];
@@ -587,7 +589,7 @@ class photosAlbumModel extends waModel
                 }
             }
         }
-        
+
         return true;
     }
 

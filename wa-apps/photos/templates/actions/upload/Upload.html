@@ -57,7 +57,7 @@
                                                 [`Select user groups you want to have access to these photos:`]
                                                 <div class="block">
                                                     {foreach from=$groups item=g_name key=g_id}
-                                                    <label for="user-group-{$g_id}"><input id="user-group-{$g_id}" name="groups[]" type="checkbox" value="{$g_id}" checked disabled> <span>{$g_name}</span></label><br>
+                                                    <label for="user-group-{$g_id}"><input id="user-group-{$g_id}" name="groups[]" type="checkbox" value="{$g_id}" checked disabled> <span>{$g_name|escape}</span></label><br>
                                                     {/foreach}
                                                 </div>
                                                 <em>[`Uncheck all groups to make photos visible to you only.`]</em>

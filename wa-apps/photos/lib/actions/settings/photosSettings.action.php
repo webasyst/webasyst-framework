@@ -13,9 +13,18 @@ class photosSettingsAction extends waViewAction
             'system' => $this->formatSizes($this->getConfig()->getSizes('system')),
             'custom' => $this->formatSizes($settings['sizes'])
         );
-        $this->view->assign('settings', $settings);        
+        $settings += array(
+            'sharpen' => null,
+            'max_size' => 970,
+            'enable_2x' => null,
+            'save_quality' => null,
+            'save_original' => null,
+            'save_quality_2x' => null,
+            'thumbs_on_demand' => null,
+        );
+        $this->view->assign('settings', $settings);
         $this->view->assign('sidebar_width', $this->getConfig()->getSidebarWidth());
-        
+
     }
 
     protected function formatSizes($sizes)
