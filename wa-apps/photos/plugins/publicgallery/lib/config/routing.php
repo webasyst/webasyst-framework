@@ -10,10 +10,10 @@ return array(
     ),
     1 => array(
         'upload/imageUpload/' => 'frontend/imageUpload',
+        'myphotos/' => 'frontend/myphotos',
+        'myphotos/vote' => 'frontend/vote',
         'myphotos/<url:[^\s]+>/loadPhoto' => 'frontend/loadPhoto',
         'myphotos/<url:[^\s]+>/loadList' => 'frontend/loadList',
         'myphotos/<url:[^\s]+>' => 'frontend/photo',
-        'myphotos/' => 'frontend/myphotos',
-        'myphotos/vote' => 'frontend/vote',
     )
 );

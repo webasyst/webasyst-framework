@@ -36,7 +36,7 @@ msgstr "Произошла ошибка во время загрузки фай�
 msgid ""
 "Failed to upload. Most probably, there were not enough memory to create "
 "thumbnails."
-msgstr "Ошибки при загрузке. Вероятно, "
+msgstr "Ошибки при загрузке. Вероятно, недостаточно памяти для формирования эскизов изображений."
 
 #: /wa-apps/photos/plugins/publicgallery/lib/photosPublicgallery.plugin.php:235
 msgid "My uploads"

@@ -48,9 +48,9 @@ class photosPublicgalleryPlugin extends photosPlugin
             $your_rate = $vote_item['rate'];
         }
         
-        $sidebar = '<p><a href="javascript:void(0);" id="photo-rate" class="p-rate-photo" title="'._wp('Rate').'" data-rate="'.$photo['rate'].'">'.
+        $sidebar = '<p><span href="javascript:void(0);" id="photo-rate" class="p-rate-photo" title="'._wp('Rate').'" data-rate="'.$photo['rate'].'">'.
                     photosPhoto::getRatingHtml($photo['rate'], 16, true)
-                .'</a>'.
+                .'</span>'.
                 '<span class="hint" id="photo-rate-votes-count" data-you-voted="'.(int)($your_rate > 0).'">'.
                     $votes_count_text
                 .'</span></p>';

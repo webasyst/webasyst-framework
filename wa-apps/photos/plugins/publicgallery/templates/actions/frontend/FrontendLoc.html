@@ -1,3 +1,4 @@
 <script>
-    $.wa.locale = $.extend($.wa.locale, {{json_encode($strings)}});
+    $.wa = $.wa || {};
+    $.wa.locale = $.extend($.wa.locale || {}, {{json_encode($strings)}});
 </script>

@@ -14,7 +14,7 @@ $(function() {
                             console.log(r);
                         }
                     } else {
-                        $('#photo-rate-error').show().text(r.errors[0]);
+                        $('#photo-rate-error').show().html(r.errors[0]);
                         return;
                     }
                 }

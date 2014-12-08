@@ -32,7 +32,7 @@ msgstr ""
 
 #: /wa-apps/photos/plugins/publicgallery/templates/actions/frontend/FrontendImageUpload.html:50
 msgid "Failed to upload. Most probably, there were not enough memory to create thumbnails."
-msgstr ""
+msgstr "Failed to upload. Most probably, there was not enough memory to create thumbnails."
 
 #: /wa-apps/photos/plugins/publicgallery/lib/photosPublicgallery.plugin.php:235
 msgid "My uploads"
