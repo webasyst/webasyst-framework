@@ -15,7 +15,7 @@ class waSignupAction extends waViewAction
         }
         // check auth app and url
         $signup_url = wa()->getRouteUrl((isset($auth['app']) ? $auth['app'] : '').'/signup');
-        if (wa()->getConfig()->getRequestUrl(false, true) != $signup_url) {
+        if (urldecode(wa()->getConfig()->getRequestUrl(false, true)) != $signup_url) {
             $this->redirect($signup_url);
         }
         $errors = array();

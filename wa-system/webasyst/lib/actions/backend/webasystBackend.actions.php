@@ -14,7 +14,12 @@ class webasystBackendActions extends waViewActions
     public function defaultAction()
     {
         try {
+            $this->setLayout(new webasystBackendLayout());
             $this->view->assign("username", wa()->getUser()->getName());
+            $template_file = wa()->getDataPath('templates/BackendDefault.html', false, 'webasyst');
+            if (file_exists($template_file)) {
+                $this->template = 'file:'.$template_file;
+            }
         } catch (waException $e) { 
             // user not exists
             if ($e->getCode() == 404) {

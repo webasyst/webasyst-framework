@@ -14,7 +14,8 @@ AddDefaultCharset utf-8
     # Uncomment the following line, if you are having trouble
     #RewriteBase /
 
-    RewriteCond %{REQUEST_URI} !\.(js|css|jpg|jpeg|gif|png)$
+    RewriteCond %{REQUEST_URI} !\.(js|css|jpg|jpeg|gif|png)$ [or]
+    RewriteCond %{REQUEST_URI} apple-touch-icon\.png$
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteRule ^(.*)$ index.php [L,QSA]

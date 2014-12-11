@@ -494,7 +494,7 @@ ul.menu-v li.hr { margin-top: 10px !important; border-top: 1px solid #ccc; paddi
 ul.menu-v li.hr:hover { background: inherit !important; }
 ul.menu-v li a.inline { display:inline; margin:0px; padding:0px; min-width:0px; }
 ul.menu-v.with-icons.stack { margin: 0 0 20px; }
-ul.menu-v.with-icons.stack li { margin: 1px 3px 5px -1px; }
+ul.menu-v.with-icons.stack li { margin: 1px 3px 5px 0; }
 ul.menu-v.with-icons.stack li a { padding-bottom: 7px; padding-left: 26px; padding-top: 7px; }
 ul.menu-v li.gray a, ul.menu-v li.grey a { color: #aaa; }
 ul.menu-v li.gray a:hover, ul.menu-v li.grey a:hover { color: red; }

@@ -1028,6 +1028,9 @@ HTACCESS;
                 if (isset($properties['parent'])) {
                     $this->info['files'][$path]['parent'] = $properties['parent'] ? true : false;
                 }
+                if (!isset($this->info['files'][$path]['description'])) {
+                    $this->info['files'][$path]['description'] = '';
+                }
                 $this->info['files'][$path]['description'] = self::prepareSetField($this->info['files'][$path]['description'], $description);
             }
         }
@@ -1248,7 +1251,7 @@ HTACCESS;
 
     public static function verify($id)
     {
-        if (!preg_match('/^[a-z_][a-z_\-0-9]*$/i', $id)) {
+        if (!preg_match('/^[a-z0-9_\-]+$/i', $id)) {
             throw new waException(sprintf(_ws("Invalid theme id %s"), $id));
         }
     }

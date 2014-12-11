@@ -269,7 +269,7 @@ class waDateTime
             $locale = waSystem::getInstance()->getLocale();
         }
         $locale = waLocale::getInfo($locale);
-        $date_formats = $locale['date_formats'];
+        $date_formats = isset($locale['date_formats']) ? $locale['date_formats'] : array();
 
         $default = array(
             'humandate' => 'd f Y',
@@ -280,9 +280,6 @@ class waDateTime
             'fulldatetime' => 'Y-m-d H:i:s',
             'timestamp' => 'U',
         );
-
-
-
 
         if (isset($date_formats[$format])) {
             return $date_formats[$format];

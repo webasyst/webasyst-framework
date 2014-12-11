@@ -180,28 +180,53 @@ class waLocale
         return number_format($n, $decimals, $locale_info['decimal_point'], $locale_info['thousands_sep']);
     }
 
-    public static function getAll($type = false)
+    /**
+     * @param bool $type
+     * @param bool $enabled_only
+     * @return array|null
+     * @throws waException
+     */
+    public static function getAll($type = false, $enabled_only = true)
     {
         $locale_config = waSystem::getInstance()->getConfigPath().'/locale.php';
         if (file_exists($locale_config)) {
-            $cache = new waSystemCache('config/locale', time() - filemtime($locale_config));
-            if ($cache->isCached()) {
-                $data = $cache->get();
-            } else {
-                $data = array();
-                $locales = include($locale_config);
-                foreach ($locales as $locale) {
-                    if ($info = self::getInfo($locale)) {
+            $enabled_locales = include($locale_config);
+            $ttl = time() - filemtime($locale_config);
+        } else {
+            $enabled_locales = array('en_US', 'ru_RU');
+            $ttl = 86400;
+        }
+
+        $cache = new waSystemCache('config/locale', $ttl);
+        if ($cache->isCached()) {
+            $data = $cache->get();
+        } else {
+            $data = array();
+            foreach ($enabled_locales as $locale) {
+                if ($info = self::getInfo($locale)) {
+                    $data[$locale] = $info;
+                }
+            }
+            $files = waFiles::listdir(dirname(__FILE__)."/data/");
+            foreach ($files as $file) {
+                if (preg_match('/^([a-zA-Z_]+)\.php$/', $file, $matches)) {
+                    $locale = $matches[1];
+                    if (!isset($data[$locale]) && ($info = self::getInfo($locale))) {
                         $data[$locale] = $info;
                     }
                 }
-                $cache->set($data);
             }
-        } else {
-            $data = array(
-                'en_US' => self::getInfo('en_US'),
-                'ru_RU' => self::getInfo('ru_RU'),
-            );
+            $cache->set($data);
+        }
+
+        if ($enabled_only) {
+            $result = array();
+            foreach ($enabled_locales as $locale) {
+                if (isset($data[$locale])) {
+                    $result[$locale] = $data[$locale];
+                }
+            }
+            $data = $result;
         }
 
         if ($type === true) {

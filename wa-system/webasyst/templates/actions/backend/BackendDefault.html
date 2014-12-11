@@ -1,22 +1,9 @@
-<!DOCTYPE html><html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>[`Welcome`] &mdash; {$wa->accountName()}</title>
-{$wa->css()}
-<script type="text/javascript" src="{$wa_url}wa-content/js/jquery/jquery-1.8.2.min.js"></script>
-</head>
-<body>
-{$wa->header()}
-<div id="wa-app" class="block double-padded">
-	<h1>{$username|escape|string_format:"[`Hi %s!`]"}</h1>
-	<div style="border:1px dashed #EAEAEA;padding:10px; margin:10px 0">
-		<p>[`This is your Dashboard.`]</p>
+<h1>{$username|escape|string_format:"[`Hi %s!`]"}</h1>
+<div style="border:1px dashed #EAEAEA;padding:10px; margin:10px 0">
+	<p>[`This is your Dashboard.`]</p>
 
-		<p>[`So far it is empty, but soon it will have useful content.`]<br>
-		[`Until then use icons on the top of this page to work with available applications.`]</p>
+	<p>[`So far it is empty, but soon it will have useful content.`]<br>
+	[`Until then use icons on the top of this page to work with available applications.`]</p>
 
-		<p>[`Thank you for using Webasyst!`]</p>
-	</div>
+	<p>[`Thank you for using Webasyst!`]</p>
 </div>
-</body>
-</html>

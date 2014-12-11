@@ -108,7 +108,7 @@ class waFiles
                 if (file_exists($source_path) && file_exists($target_path) && (filesize($source_path) === 0)) {
                     /*It's ok - it's windows*/
                 } else {
-                    throw new Exception("error on copy from {$source_path} to {$target_path}");
+                    throw new Exception(sprintf(_ws("Error copying file from %s to %s"), $source_path, $target_path));
                 }
             }
         }

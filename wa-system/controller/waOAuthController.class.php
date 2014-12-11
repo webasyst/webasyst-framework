@@ -77,12 +77,19 @@ class waOAuthController extends waViewController
             $contact_id = $contact_model->query($sql)->fetchField('id');
             // save source_id
             if ($contact_id) {
-                $contact_data_model->insert(array(
+                $tmp = array(
                     'contact_id' => $contact_id,
                     'field' => $data['source'].'_id',
-                    'value' => $data['source_id'],
                     'sort' => 0
-                ));
+                );
+                // contact already has this source
+                $row = $contact_data_model->getByField($tmp);
+                if ($row) {
+                    $contact_data_model->updateByField($tmp, array('value' => $data['source_id']));
+                } else {
+                    $tmp['value'] = $data['source_id'];
+                    $contact_data_model->insert($tmp);
+                }
             }
         }
         // create new contact

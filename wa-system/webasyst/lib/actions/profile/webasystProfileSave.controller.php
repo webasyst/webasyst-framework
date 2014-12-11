@@ -44,23 +44,16 @@ class webasystProfileSaveController extends waJsonController
                 }
             }
 
-            // Top fields
-            $response['top'] = array();
-            foreach (array('email', 'phone', 'im') as $f) {
-                if ( ( $v = $this->contact->get($f, 'top,html'))) {
-                    $response['top'][] = array(
-                        'id' => $f,
-                        'name' => waContactFields::get($f)->getName(),
-                        'value' => is_array($v) ? implode(', ', $v) : $v,
-                    );
-                }
-            }
+            $response['top'] = $this->contact->getTopFields();
+            
         }
 
         // Reload page with new language if user just changed it in own profile
         if ($oldLocale != $this->contact->getLocale()) {
             $response['reload'] = TRUE;
         }
+        
+        $response['id'] = $this->contact->getId();
 
         $this->response = array(
            'errors' => $errors,

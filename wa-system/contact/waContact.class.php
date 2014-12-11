@@ -1202,6 +1202,62 @@ class waContact implements ArrayAccess
     {
         return waDateTime::format("datetime", null, $this->get('timezone'), $this->getLocale());
     }
+    
+    public function getTopFields()
+    {
+        $top = array();
+        static $fields = null;
+        if ($fields === null) {
+            $fields = array(
+                waContactFields::getAll('person', true),
+                waContactFields::getAll('company', true),
+            );
+        }
+        
+        $country_model = new waCountryModel();
+        $iso3letters_map = $country_model->select('DISTINCT iso3letter')->fetchAll('iso3letter', true);
+        
+        foreach ($fields[intval($this['is_company'])] as $f) {
+            $info = $f->getInfo();
+            if ($f->getParameter('top') && ($value = $this->get($info['id'], 'top,html')) ) {
+                
+                if ($info['type'] == 'Address') {
+                    $data = $this->get($info['id']);
+                    $data_for_map = $this->get($info['id'], 'forMap');
+                    $value = (array) $value;
+                    foreach ($value as $k => &$v) {
+                        if (isset($data[$k]['data']['country']) && isset($iso3letters_map[$data[$k]['data']['country']])) {
+                            $v = '<img src="'.wa_url().'wa-content/img/country/'.strtolower($data[$k]['data']['country']).'.gif" /> ' . $v;
+                        }
+                        $map_url = '';
+                        if (is_string($data_for_map[$k])) {
+                            $map_url = $data_for_map[$k];
+                        } else {
+                            if (!empty($data_for_map[$k]['coords'])) {
+                                $map_url = $data_for_map[$k]['coords'];
+                            } else if (!empty($data_for_map[$k]['with_street'])) {
+                                $map_url = $data_for_map[$k]['with_street'];
+                            }
+                        }
+                        $v .= ' <a target="_blank" href="//maps.google.com/maps?q=' . urlencode($map_url) . '&z=15" class="small underline map-link">' . _w('map') . '</a>';
+                        $v = '<div data-subfield-index='.$k.'>'.$v.'</div>';
+                    }
+                    unset($v);
+                }
+                
+                $delimiter = ($info['type'] == 'Composite' || $info['type'] == 'Address') ? "<br>" : ", ";
+                
+                $top[] = array(
+                    'id' => $info['id'],
+                    'name' => $f->getName(),
+                    'value' => is_array($value) ? implode($delimiter, $value) : $value,
+                    'icon' => ($info['type'] == 'Email' || $info['type'] == 'Phone') ? strtolower($info['type']) : '',
+                    'pic' => ''
+                );
+            }
+        }
+        return $top;
+    }
 }
 
 // EOF

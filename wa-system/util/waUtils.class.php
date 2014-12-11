@@ -16,6 +16,7 @@ class waUtils
                     $result = false;
                 }
                 fclose($h);
+                @chmod($tmp_file, 0664);
                 if ($result) {
                     if (@rename($tmp_file, $file)) {
                         return true;

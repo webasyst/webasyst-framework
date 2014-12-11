@@ -28,7 +28,7 @@ class waContactLocaleField extends waContactSelectField
 
     function getOptions($id = null) {
         if (!$this->locales) {
-            $this->locales = waLocale::getAll('name_region');
+            $this->locales = waLocale::getAll('name_region', !empty($this->options['all']) ? false: true);
         }
 
         if ($id) {
