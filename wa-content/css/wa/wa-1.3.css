@@ -1061,6 +1061,9 @@ i.icon10 { background-repeat:no-repeat; background-image: url(../../../wa-conten
 (min-resolution: 192dpi) {
     i.icon10 { background-image: url(../../../wa-content/img/icon10@2x.png); background-size: 120px 50px; }
     i.icon16 { background-image: url(../../../wa-content/img/icon16@2x.png); background-size: 512px 128px; }
+    #plugin-list .icon16:not(.star) {
+        background-size: cover;
+    }
 }
 
 
