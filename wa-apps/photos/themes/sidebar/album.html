@@ -9,10 +9,29 @@
 {if $album.description}
     <p class="album-description">{$album.description}</p>
 {/if}
+
+<!-- subalbums -->
 {if $childcrumbs}
-    <ul class="sub-links">
-        {foreach $childcrumbs as $child}
-            <li><a href="{$child.full_url}">{$child.name}</a></li>
+    <ul class="albums subalbums">
+        {foreach $childcrumbs as $a}
+            <li>
+                <a href="{$a.full_url}">
+                    <div class="cover">
+                        {if $a.count > 1}
+                            <div class="sublayer layer1"></div>
+                            <div class="sublayer layer2"></div>
+                        {/if}
+                        {if $a.key_photo}
+                            <img src="{$a.key_photo.thumb.url}{if $a.key_photo.edit_datetime}?{strtotime($a.key_photo.edit_datetime)}{/if}" alt="{$a.name}">
+                        {else}
+                            <img src="{$wa_app_static_url}img/album-dummy.png" alt="{$a.name}">
+                        {/if}                            
+                    
+                        <strong{if $a.status <= 0} class="gray" title="[`Private album`]"{/if}>{$a.name|default:'[`(no name)`]'}{if $a.status <= 0} <i class="icon10 lock-bw"></i>{/if}</strong>
+                        <span class="count">{sprintf( _w('%d photo','%d photos',$a.count), $a.count)}</span>
+                    </div>
+                </a>
+            </li>
         {/foreach}
     </ul>
 {/if}

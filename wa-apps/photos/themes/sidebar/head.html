@@ -6,7 +6,7 @@
     <script type="text/javascript" src="{$wa_active_theme_url}sidebar.photos.js?v{$wa->version(true)}"></script>
     {if $wa->photos->config('enable_2x')}
     <script type="text/javascript" src="{$wa_url}wa-content/js/jquery-plugins/jquery.retina.min.js?v{$wa->version(true)}"></script>
-    <script type="text/javascript">$(window).load(function(){ $('#photo-list img,.photo img').retina()});</script>
+    <script type="text/javascript">$(window).load(function(){ $('#photo-list img,.photo img,.albums img').retina()});</script>
     {/if}
     {if $nofollow}
         <!-- "nofollow" for duplicate photo pages (context dependent) -->

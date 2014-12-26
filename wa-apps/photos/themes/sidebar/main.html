@@ -40,7 +40,7 @@
         {if isset($breadcrumbs)}
             <div class="breadcrumbs">
                 {foreach $breadcrumbs as $breadcrumb}
-                    <a href="{$breadcrumb.full_url}">{$breadcrumb.name|escape}</a> <span class="rarr">&rarr;</span>
+                    <a href="{$breadcrumb.url}">{$breadcrumb.name|escape}</a> <span class="rarr">&rarr;</span>
                 {/foreach}
             </div>
         {/if}
