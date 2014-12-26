@@ -40,6 +40,12 @@
 .credentials .date { margin: 0 3px; }
 .post .credentials { margin-bottom: 20px;}
 
+.photo-album-attachment ul.thumbs { padding-left: 0; }
+.photo-album-attachment ul.thumbs li { list-style: none; display: inline-block; margin: 0 20px 20px 0; }
+.photo-album-attachment .photo { margin-bottom: 20px; }
+.photo-album-attachment .photo img { margin-top: -10px; }
+.post .photo-album-attachment { padding-top: 10px; }
+
 .comment-form { padding: 0; margin-top: 30px; }
 .comment-form h4 { margin: 0 0 20px; font-weight: normal; }
 .comment-form-fields p { margin: 0 0 10px; }
@@ -77,6 +83,12 @@
 .comments ul.menu-h.auth-type li a img { top: 0; }
 
 .pageless-wrapper { font-style: italic; }
+
+html.realtime-preview,
+html.realtime-preview body { background: #fff; }
+html.realtime-preview #sidebar,
+html.realtime-preview .app-navigation { display: none; }
+html.realtime-preview #main { margin-left: 0; border: none; }
 
 /* Plugins
 ---------- */
