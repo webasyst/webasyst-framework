@@ -30,16 +30,16 @@
             {/if}
             <span class="hint date">{$post.datetime|wa_datetime:"humandate"}</span>
             {if $show_comments && $post.comments_allowed}
-            	{if !empty($post.comment_count)}
-            	    <a href="{$post.link}#comments" class="small">
-        	            {_w('%d comment','%d comments',$post.comment_count)}
-    	            </a>
+                {if !empty($post.comment_count)}
+                    <a href="{$post.link}#comments" class="small">
+                        {_w('%d comment','%d comments',$post.comment_count)}
+                    </a>
                 {else}
                     {*
-                	<a href="{$post.link}#comments" class="hint">
-                    	[`no comments`]
-	                </a>
-	                *}
+                    <a href="{$post.link}#comments" class="hint">
+                        [`no comments`]
+                    </a>
+                    *}
                 {/if}
             {/if}
 
@@ -59,6 +59,18 @@
             {/if}
         </div>
 
+        {* attached album photo thumbs *}
+        {if $post.album_id && $post.album.id && $post.album.photos}
+            {$photos_loaded = 1} {* required for proper photo thumbs retinification *}
+            <div class="photo-album-attachment">
+                <ul class="thumbs">
+                    {foreach $post.album.photos as $p}
+                        <li><a href="{$post.link}#photo{$p.id}"><img src="{$p.thumb_crop.url}" class="retinify" width="96" height="96" alt="{$p.name|escape}"></a></li>
+                    {/foreach}
+                </ul>
+            </div>
+        {/if}
+
         {* @event prepare_posts_frontend.%plugin_id%.after *}
         {if !empty($post.plugins.after)}
             <div class="text_after">
@@ -72,3 +84,10 @@
         {_w('%d post','%d posts',0)}
     {/if}
 {/foreach}
+
+{if !empty($photos_loaded) && blogPhotosBridge::is2xEnabled()}
+    <script src="{$wa_url}wa-content/js/jquery-plugins/jquery.retina.min.js"></script>
+    <script>$(function() { "use strict";
+        $.Retina && $('img.retinify').retina();
+    });</script>
+{/if}

@@ -49,6 +49,12 @@
 .credentials img.userpic { width: 20px; }
 .post .credentials { margin-bottom: 20px;}
 
+.photo-album-attachment ul.thumbs { padding-left: 0; }
+.photo-album-attachment ul.thumbs li { list-style: none; display: inline-block; margin: 0 20px 20px 0; }
+.photo-album-attachment .photo { margin-bottom: 20px; }
+.photo-album-attachment .photo img { margin-top: -10px; }
+.post .photo-album-attachment { padding-top: 10px; }
+
 .comments { margin: 30px 50px 10px 0; }
 .comments h3 { margin: 0 0 20px; }
 .comments h4 { margin: 0 0 10px; }
@@ -89,6 +95,15 @@ ul.auth-type li a img { margin-right: 5px; top: 4px; position: relative; }
 
 .pageless-wrapper { font-style: italic; }
 
+html.realtime-preview,
+html.realtime-preview body { background: #fff; }
+html.realtime-preview .globalheader,
+html.realtime-preview .banner,
+html.realtime-preview .globalfooter,
+html.realtime-preview .page-nav { display: none; }
+html.realtime-preview .page-content { margin-right: 0; }
+html.realtime-preview .page { top: 0; margin: 10px 0; }
+
 /* Plugins
 ---------- */
 
@@ -106,7 +121,8 @@ ul.menu-v.categories li.selected a { color: #000; text-decoration: none; font-we
 @media screen and (min-width: 760px) and (max-width: 1024px) {
 
     .page-nav .nav-sidebar { width: 180px; }
-    .page-content { margin-right: 180px; }
+    .page-content { margin-right: 180px; overflow-x: visible; }
+    .post { overflow-x: hidden; }
     
     .comment-form-fields input,
     .comment-form textarea { width: auto; min-width: 0; }
@@ -141,5 +157,9 @@ ul.menu-v.categories li.selected a { color: #000; text-decoration: none; font-we
     .comment-form textarea { width: 90%; }
     .comment-form .comment-submit { padding-left: 0; }
     .comment-form .wa-captcha img { margin-bottom: 10px; }
+    
+    html.realtime-preview body { padding-top: 0; }
+    html.realtime-preview .container { margin: 0 10px; }
+    html.realtime-preview .post h1 { font-size: 2.6em; }
 
 }
