@@ -37,6 +37,10 @@
             {$post.text}
         </div>
 
+        {if $post.album_id && $post.album.id && $post.album.photos}
+            {include 'post.album.html' album=$post.album inline}
+        {/if}
+
         {* @event prepare_posts_frontend.%plugin_id%.after *}
         {if !empty($post.plugins.after)}
             <div class="text_after">
