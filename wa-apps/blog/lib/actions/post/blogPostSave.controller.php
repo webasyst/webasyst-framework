@@ -51,10 +51,32 @@ class blogPostSaveController extends waJsonController
             'comments_allowed'   => max(0,min(1,waRequest::post('comments_allowed', 0, waRequest::TYPE_INT))),
             'public'             => waRequest::post('public'),
             'schedule_datetime'  => waRequest::post('schedule_datetime'),
-            'meta_title' => waRequest::post('meta_title', null, waRequest::TYPE_STRING_TRIM),
-            'meta_keywords' => waRequest::post('meta_keywords', null, waRequest::TYPE_STRING_TRIM),
-            'meta_description' => waRequest::post('meta_description', null, waRequest::TYPE_STRING_TRIM)
+            'meta_title'         => waRequest::post('meta_title', null, waRequest::TYPE_STRING_TRIM),
+            'meta_keywords'      => waRequest::post('meta_keywords', null, waRequest::TYPE_STRING_TRIM),
+            'meta_description'   => waRequest::post('meta_description', null, waRequest::TYPE_STRING_TRIM),
+            'album_id'           => waRequest::post('album_id', null, waRequest::TYPE_INT),
+            'album_link_type'    => waRequest::post('album_link_type', null, waRequest::TYPE_STRING_TRIM),
         );
+
+        if ($post['album_id'] && blogPhotosBridge::isAvailable()) {
+            wa('photos');
+            $album_model = new photosAlbumModel();
+            $album = $album_model->getById($post['album_id']);
+            if (!$album) {
+                $album = $post['album_id'] = null;
+            } else if ($album['status'] <= 0) {
+                $post['album_link_type'] = null;
+            }
+        } else {
+            $post['album_id'] = null;
+        }
+        if (!$post['album_id']) {
+            $post['album_id'] = $post['album_link_type'] = null;
+        } else {
+            if ($post['album_link_type'] != 'photos') {
+                $post['album_link_type'] = 'blog';
+            }
+        }
 
         $this->inline = waRequest::post('inline', false);
 
@@ -161,6 +183,9 @@ class blogPostSaveController extends waJsonController
         if (waRequest::post('transliterate', null)) {
             $options['transliterate'] = true;
         }
+        if (waRequest::post('update_url_on_error')) {
+            $options['update_url_on_error'] = true;
+        }
 
         $this->validate_messages = $this->post_model->validate($post, $options);
 
@@ -210,6 +235,9 @@ class blogPostSaveController extends waJsonController
                         'action' => 'edit',
                         'id' => $post['id'],
                     );
+                    if (waRequest::request('realtime_on')) {
+                        $params['realtime_on'] = 1;
+                    }
                 } elseif ($post['blog_status'] == blogBlogModel::STATUS_PUBLIC) {
                     $params = array(
                         'blog' => $post['blog_id'],

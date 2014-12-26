@@ -49,8 +49,9 @@ class blogSettingsAction extends waViewAction
 
         $this->view->assign('user_settings', $res = $this->getUserSettings());
         if ($is_admin) {
-            $this->view->assign('backend_settings', $this->getFrontendSettings());
+            $this->view->assign('backend_settings', $this->getFrontendSettings()); // to mislead potential foes, apparently...
             $this->view->assign('routing_settings_url',blogHelper::getRouteSettingsUrl());
+            $this->view->assign('photos_app_available', blogPhotosBridge::isAvailable());
         }
 
         $app_settings_model = new waAppSettingsModel();
@@ -65,33 +66,39 @@ class blogSettingsAction extends waViewAction
     {
         return array(
             'show_comments' => array(
-                    'default' => '1',
-                    'post_default' => '0',        // default for waRequest::post function
-                    'validate' => array('vAvailable', array('0', '1')),
-                    'type' => waRequest::TYPE_INT,
-        ),
+                'default' => '1',
+                'post_default' => '0',        // default for waRequest::post function
+                'validate' => array('vAvailable', array('0', '1')),
+                'type' => waRequest::TYPE_INT,
+            ),
             'request_captcha' => array(
-                    'default' => '1',
-                    'post_default' => '0',        // default for waRequest::post function
-                    'validate' => array('vAvailable', array('0', '1')),
-                    'type' => waRequest::TYPE_INT,
-        ),
+                'default' => '1',
+                'post_default' => '0',        // default for waRequest::post function
+                'validate' => array('vAvailable', array('0', '1')),
+                'type' => waRequest::TYPE_INT,
+            ),
             'require_authorization' => array(
-                    'default' => '0',
-                    'post_default' => '0',
-                    'validate' => array('vAvailable', array('0', '1')),
-                    'type' => waRequest::TYPE_INT,
-        ),
+                'default' => '0',
+                'post_default' => '0',
+                'validate' => array('vAvailable', array('0', '1')),
+                'type' => waRequest::TYPE_INT,
+            ),
             'rss_posts_number' => array(
-                    'default' => '10',
-                    'type' => waRequest::TYPE_INT,
-                    'validate' => 'vUnint',
-        ),
+                'default' => '10',
+                'type' => waRequest::TYPE_INT,
+                'validate' => 'vUnint',
+            ),
             'rss_author_tag' => array(
-                    'default' => 'author',
-                    'validate' => array('vAvailable', array('author', '')),
-                    'type' => waRequest::TYPE_STRING_TRIM,
-        ),
+                'default' => 'author',
+                'validate' => array('vAvailable', array('author', '')),
+                'type' => waRequest::TYPE_STRING_TRIM,
+            ),
+            'image_storage' => array(
+                'default' => 'photo_app',
+                'post_default' => 'photo_app',
+                'validate' => array('vAvailable', array('photo_app', 'blog_app')),
+                'type' => waRequest::TYPE_STRING_TRIM,
+            ),
         );
     }
 

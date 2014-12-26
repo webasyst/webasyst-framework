@@ -29,6 +29,7 @@ class blogFrontendRssAction extends blogViewAction
             $posts = $post_model
             ->search(array('blog_id' => $blog_id), $options,$data)
             ->fetchSearchPage(1, $rss_posts_number);
+            blogPhotosBridge::loadAlbums($posts);
         } else {
             $posts = array();
         }
@@ -36,19 +37,19 @@ class blogFrontendRssAction extends blogViewAction
         $link = wa()->getRouteUrl('blog/frontend', array(), true);
         $rss_link = wa()->getRouteUrl('blog/frontend/rss', array(), true);
         $title = waRequest::param('rss_title') ? waRequest::param('rss_title') : wa()->accountName();
-        
+
         $this->view->assign('info',array(
-				'title' => $title,
-				'link' => $link,
-				'description' =>'',
-				'language' => 'ru',
-				'pubDate' => date(DATE_RSS),
-				'lastBuildDate' => date(DATE_RSS),
-				'self' => $rss_link,
+                'title' => $title,
+                'link' => $link,
+                'description' =>'',
+                'language' => 'ru',
+                'pubDate' => date(DATE_RSS),
+                'lastBuildDate' => date(DATE_RSS),
+                'self' => $rss_link,
         ));
         $this->view->assign('blog_name',$this->getResponse()->getTitle());
         $this->view->assign('rss_author_tag',$rss_author_tag);
-        
+
         if ($this->getConfig()->getOption('can_use_smarty')) {
             foreach ($posts as &$post) {
                 try {

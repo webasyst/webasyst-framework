@@ -141,15 +141,7 @@ $.wa_blog = $.extend(true, $.wa_blog, {
                     return self.toggle(this);
                 });
             });
-            if ($.wa_blog.rights.admin > 1) {
-                $('#blogs').sortable({
-                    containment : 'parent',
-                    distance : 5,
-                    tolerance : 'pointer',
-                    stop : self.sortHandler
-                });
-            }
-            
+
             // all drafts / my drafts filter
             (function() {
                 var all_drafts_link = $('#b-all-drafts');
@@ -180,7 +172,7 @@ $.wa_blog = $.extend(true, $.wa_blog, {
                     }
                     return false;
                 }
-                
+
                 function onCollapse() {
                     var icon = $(this).find('i');
                     var show_my_drafts = $.storage.get('blog/my-drafts');
@@ -203,7 +195,7 @@ $.wa_blog = $.extend(true, $.wa_blog, {
                         }
                     }
                 }
-                
+
                 var collapse_handler = $('#blog-drafts').closest('.block').find('.collapse-handler');
                 collapse_handler.click(onCollapse);
                 onCollapse.apply(collapse_handler.get(0));
@@ -211,18 +203,6 @@ $.wa_blog = $.extend(true, $.wa_blog, {
                 all_drafts_link.find('a').click(clickHandler);
                 my_drafts_link.find('a').click(clickHandler);
             })();
-            
-        },
-        sortHandler : function(event, ui) {
-            var url = "?module=blog&action=sort" + "&blog_id="
-                    + $(ui.item).attr('id').replace('blog_li_item_', '') + "&sort="
-                    + ($(ui.item).index() + 1);
-            $.get(url, function(response) {
-                if (response && response.status && response.status == "ok") {
-                } else {
-                    return false;
-                }
-            }, "json");
 
         },
         toggle : function(Element) {
@@ -295,6 +275,5 @@ $.wa_blog = $.extend(true, $.wa_blog, {
 
 });
 
-(function($, window, undefined) {
-    $.wa_blog.common.init();
-})(jQuery, this);
+$.wa_blog.common.init();
+

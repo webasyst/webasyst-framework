@@ -153,6 +153,8 @@ class blogFrontendPostAction extends blogViewAction
         $post['comment_link'] = blogPost::getUrl($post, 'comment');
         $post['link'] = blogPost::getUrl($post);
 
+        $posts = array(&$post);
+        blogPhotosBridge::loadAlbums($posts);
 
         /**
          * Frontend post view page

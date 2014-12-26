@@ -338,10 +338,6 @@ msgstr[1] ""
 msgid "Editing post %s"
 msgstr ""
 
-#: /wa-apps/blog/templates/actions/backend/Backend.html:29
-msgid "Blog settings"
-msgstr ""
-
 #: /wa-apps/blog/templates/actions/backend/Backend.html:36
 msgid "Manage posts"
 msgstr ""
@@ -1537,4 +1533,127 @@ msgstr ""
 
 #: /wa-apps/blog/lib/config/site.php:76
 msgid "Homepage <title>"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/backend/Backend.html:86
+msgid "Blog settings"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/backend/Backend.html:232
+#: /wa-apps/blog/templates/actions/post/Post.html:144
+msgid "Photo album"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/backend/Backend.html:279
+msgid "Start by <a href=\"%s\">writing your first post</a>."
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/backend/Backend.html:281
+msgid "Start by <a href=\"%s\">writing a post</a> or <a href=\"%s\">importing posts</a><br> from your existing blog."
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/blog/BlogSettings.html:89
+msgid "This blog is not visible on your sites now, because there were no routing rules added for Blog app with this particular blog. To make this blog visible on your site, create a route using the form below or using <a href=\"%s\">Site app</a> routing settings."
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/blog/BlogSettings.html:97
+msgid "Specify the public URL for this new blog on your site:"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/blog/BlogSettings.html:101
+msgid "Do not publish this blog on the site just yet"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/blog/BlogSettings.html:209
+msgid "Or enter image URL (image will be scaled to 16x16px)"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/post/PostEdit.html:9
+msgid "Live preview is not available for private and not published blogs."
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/post/PostEdit.html:155
+msgid "Mirror mode"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/post/PostEdit.html:282
+msgid "Visual"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/post/PostEdit.html:306
+msgid "Photo Album"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/post/PostEdit.html:319
+msgid "Attach photo album"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/post/PostEdit.html:329
+msgid "(no name)"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/post/PostEdit.html:329
+msgid "private album"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/post/PostEdit.html:337
+msgid "Photos from the selected album will be automatically embedded after the post content. Photos descriptions and sort order will be defined by Photos app."
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/post/PostEdit.html:341
+msgid "Post URL"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/post/PostEdit.html:346
+msgid "Replace with the direct link to this album"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/post/PostEdit.html:348
+msgid "Great for photo galleries. Blog post will be published in the blog on a regular basis (in both post stream and RSS), but the main post title link will lead to the album page directly (Photos app)."
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/post/PostEdit.html:474
+#: /wa-apps/blog/js/postEdit.js:1354
+msgid "Upload"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/post/PostEdit.html:475
+#: /wa-apps/blog/js/postEdit.js:1355
+msgid "Select from Photos app"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/post/PostEdit.html:476
+#: /wa-apps/blog/js/postEdit.js:1389
+msgid "Insert"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/post/PostEdit.html:477
+msgid "Total photos selected:"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/settings/Settings.html:186
+msgid "Photo storage"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/settings/Settings.html:192
+#: /wa-apps/blog/templates/actions/settings/Settings.html:207
+msgid "Folder"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/settings/Settings.html:199
+#: /wa-apps/blog/templates/actions/settings/Settings.html:214
+msgid "Photos app"
+msgstr ""
+
+#: /wa-apps/blog/lib/actions/backend/blogBackendUpload.controller.php:92
+msgid "Save error"
+msgstr ""
+
+#: /wa-apps/blog/lib/actions/backend/blogBackendUpload.controller.php:45
+msgid "No files to upload!"
+msgstr ""
+
+#: /wa-apps/blog/templates/actions/post/PostEdit.html:478
+#: /wa-apps/blog/js/postEdit.js:989
+msgid "Photos from the attached album will be displayed here."
 msgstr ""

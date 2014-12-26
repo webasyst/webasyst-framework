@@ -4,6 +4,21 @@ class blogPost
 {
     static function getUrl($post, $type = 'post')
     {
+        if ($type == 'post' && !empty($post['album_id']) && $post['album_link_type'] == 'photos') {
+            wa('photos');
+            if (empty($post['album']['full_url'])) {
+                $album_full_url = photosCollection::frontendAlbumHashToUrl('album/'.$post['album_id']);
+            } else {
+                $album_full_url = $post['album']['full_url'];
+            }
+            $url = photosFrontendAlbum::getLink($album_full_url);
+            if (wa()->getEnv() == 'backend') {
+                return array($url);
+            } else {
+                return $url;
+            }
+        }
+
         static $blog_urls = array();
 
         $params = array();

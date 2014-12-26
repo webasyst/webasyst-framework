@@ -21,6 +21,7 @@ class blogPostAction extends waViewAction
         $post['rights'] = $this->getRights("blog.{$post['blog_id']}");
         $posts = array(&$post);
         blogHelper::extendRights($posts, array(), $this->getUser()->getId());
+        blogPhotosBridge::loadAlbums($posts);
 
         if (isset($post['comments']) && $post['comments']) {
             $post['comments'] = blogCommentModel::extendRights($post['comments'], array($post_id => $post));

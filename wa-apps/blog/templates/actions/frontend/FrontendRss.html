@@ -16,7 +16,22 @@
           <author>{$row.user.email|escape} ({$row.user.name|escape})</author>
       {/if}
       <link>{$row.link}</link>
-      <description><![CDATA[{$row.text}]]></description>
+      <description><![CDATA[{$row.text}{strip}
+
+      {if $row.album_id && $row.album.id}
+          {foreach $row.album.photos as $p}
+            {if $p.description}
+                {if $p.description|strstr:'<p>'}
+                    {$p.description}
+                {else}
+                    <p>{$p.description}</p>
+                {/if}
+            {/if}
+            <p><img src="{$p.thumb_big.url}" alt="{$p.name|escape}"></p>
+          {/foreach}
+      {/if}
+
+      {/strip}]]></description>
       <pubDate>{$row.datetime|wa_datetime:DATE_RSS}</pubDate>
       <guid isPermaLink="true">{$row.link}</guid>
     </item>

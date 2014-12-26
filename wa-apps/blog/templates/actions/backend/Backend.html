@@ -1,8 +1,8 @@
 {if $page eq 1}
 
-{wa_js file="js/blog-stream.min.js"}
-{$wa_app_static_url}js/blogStream.js
-{/wa_js}
+  {wa_js file="js/blog-stream.min.js"}
+    {$wa_app_static_url}js/blogStream.js
+  {/wa_js}
 
   <script type="text/javascript">
   $.wa_blog.stream = $.extend(true,$.wa_blog.stream,{
@@ -32,26 +32,21 @@
             </li>
             {/if}
           {/foreach}
-
           <!-- end plugin hook: "backend_stream.menu" -->
-          {if isset($blog_id) && $blog_id && ($wa->blog->rights($blog_id) ge blogRightConfig::RIGHT_FULL)}
-          <li>
-            <a href="?module=blog&amp;action=settings&amp;blog={$blog_id}">
-              <i class="icon16 blog"></i>[`Blog settings`]
-            </a>
-          </li>
-          {/if}
-          {if (empty($blog_id) && ($wa->blog->rights(false) ge blogRightConfig::RIGHT_READ_WRITE)) || (!empty($blog_id) && ($wa->blog->rights($blog_id) ge blogRightConfig::RIGHT_READ_WRITE))}
-          <li>
-            <a href="#manage" class="inline-link" id="blog_manage_posts">
-              <i class="icon16 checkboxes"></i><b><i>[`Select posts`]</i></b>
-            </a>
-          </li>
-          {/if}
 
           <li class="b-search-form">
             <input type="search" name="text" class="search" placeholder="[`Search posts`]" value="{$text}">
           </li>
+
+          {if (empty($blog_id) && ($wa->blog->rights(false) ge blogRightConfig::RIGHT_READ_WRITE)) || (!empty($blog_id) && ($wa->blog->rights($blog_id) ge blogRightConfig::RIGHT_READ_WRITE))}
+          <li>
+            <a href="#manage" id="blog_manage_posts">
+              <i class="icon16 hamburger"></i>
+            </a>
+          </li>
+          {/if}
+
+
 
         </ul>
         <ul class="menu-h" id="blog-stream-manage-menu" style="display:none">
@@ -79,37 +74,35 @@
             {/capture}
           </li>
           <li>
-            <input type="button" value="[`Done`]" class="js-manage-done">
+            <a href="#" class="js-manage-done inline-link gray"><b><i>[`Cancel`]</i></b></a>
           </li>
         </ul>
       </div>
 
-
       <h1>
         {$stream.title|escape}
-        {if $stream.link}
-          <a href="{$stream.link}" target="_blank" title="[`Open on website`]: {$stream.link}">
-            {if empty($text)}<i class="icon16 new-window"></i>{/if}
-          </a>
-        {elseif $stream.blog && $stream.blog.status neq blogBlogModel::STATUS_PUBLIC}
-          <i class="icon16 lock-bw" title="[`Private blog`]"></i>
+
+        {if $stream.blog}
+            <a href="?module=blog&action=settings&blog={$stream.blog.id}" title="[`Blog settings`]">
+                <i class="icon16 settings"></i>
+            </a>
         {/if}
+
       </h1>
 
     </div>
-
 {/if}
+
+
 {$contact_id=$wa->user()->get('id')}
 {foreach $posts as $post_id => $post} <!-- post.id:{$post_id}  -->
 
-  <div class="b-post {$post.color}" id="b-post-{$post_id}">
-    <h3 style="display:none">
+  <div class="b-post {$post.color}{if $post.blog_status ne blogBlogModel::STATUS_PUBLIC} b-private-post{/if}" id="b-post-{$post_id}">
+    <h3 style="display:none" class="b-post-title-bulk-mode">
       {if ($post.rights ge blogRightConfig::RIGHT_FULL) or ($contact_id eq $post.contact_id && $post.rights ge blogRightConfig::RIGHT_READ_WRITE)}
         <input type="checkbox" id="blog-post-checkbox-{$post.id}" class="blog-post-checkbox" name="posts[]" value="{$post.id}">
-        <label for="blog-post-checkbox-{$post.id}">{$post.title|escape}</label>
-      {else}
-        {$post.title|escape}
       {/if}
+      {$post.title|escape}
     </h3>
     <h3>
       {if $post.blog_status eq blogBlogModel::STATUS_PUBLIC}
@@ -180,16 +173,16 @@
 
           {if $post.blog_status eq blogBlogModel::STATUS_PUBLIC}
             {foreach $post.link item=link}
-              <a target="_blank" href="{$link}" class="underline">{$link}</a><i class="icon10 new-window"></i>
+              <a target="_blank" href="{$link}" class="underline">{$link}</a>
             {/foreach}
           {else}
             {if $post.comment_new_count > 0}
-              <a href="?module=post&amp;id={$post.id}#comments" class="underline">{_w('%d comment','%d comments',$post.comment_count,true)}</a>
+              <a href="?module=post&amp;id={$post.id}#comments" class="underline{if !$post.comment_count} gray{/if}">{_w('%d comment','%d comments',$post.comment_count,true)}</a>
               <strong class="highlighted">+{$post.comment_new_count}</strong>
             {elseif $post.comment_count}
-              <a href="?module=post&amp;id={$post.id}#comments" class="underline">{_w('%d comment','%d comments',$post.comment_count,true)}</a>
+              <a href="?module=post&amp;id={$post.id}#comments" class="underline{if !$post.comment_count} gray{/if}">{_w('%d comment','%d comments',$post.comment_count,true)}</a>
             {else}<!-- no comments  -->
-              <a href="?module=post&amp;id={$post.id}#comments" class="underline">[`No comments`]</a>
+              <a href="?module=post&amp;id={$post.id}#comments" class="underline{if !$post.comment_count} gray{/if}">[`No comments`]</a>
             {/if}
           {/if}
 
@@ -226,6 +219,19 @@
       {/if}
     {/if}
 
+    {if $post.album_id && $post.album.id}
+        <div class="b-photo-album-attached">
+            {$photos_loaded = 1}
+            {if $post.album.photos}
+                <ul class="thumbs li100px">
+                    {foreach $post.album.photos as $p}
+                        <li><a href="{$post.album.backend_link}photo/{$p.id}/" title="{$p.name|escape}"><img src="{$p.thumb_crop.url}" class="retinify" width="96" height="96" alt="{$p.name|escape}"></a></li>
+                    {/foreach}
+                </ul>
+            {/if}
+            <p><i class="icon16 pictures"></i><em> [`Photo album`]: <a href="{$post.album.backend_link}" class="bold">{$post.album.name|escape}</a> ({count($post.album.photos)})</em></p>
+        </div>
+    {/if}
 
     {if isset($post.plugins) && isset($post.plugins.after) && $post.plugins.after}
 
@@ -245,43 +251,63 @@
 
 {/foreach}
 
-  {if $posts_count > 0}
-      <div class="block b-post b-number-of-posts {if $stream.blog}{$stream.blog.color}{else}b-white{/if} pageless-wrapper">
-        {sprintf(_w("%d post of %d", "%d posts of %d", $posts_count,false),$posts_count,$posts_total_count)}
-        {if $posts_count < $posts_total_count}
-          <br>
-          <br>
-          <a href="#next" class="pageless-link">[`Show older posts`]</a>
-          <span class="pageless-progress" style="display:none"><i class="icon16 loading"></i>[`Loading`]&nbsp;{_w("%d post", "%d posts", min($posts_total_count-$posts_count,$posts_per_page))}...</span>
-        {/if}
-      </div>
-  {else}
-      <div class="block b-post b-empty-list {if $stream.blog}{$stream.blog.color}{else}b-white {if $stream.all_posts}b-welcome{/if}{/if}">
-        {if $stream.all_posts}
-          [`Hello and welcome to your new blog!<br> Start by writing your first post.`]
-        {else}
-          [`There are no posts in this view.`]
-        {/if}
-      </div>
-  {/if}
-  
-  {if $page ge $pages}
-      <div class="b-torn-paper {if $stream.blog}{$stream.blog.color}{else}b-white{/if}">
-        <div>
-          <div class="b-torn-left"></div>
-          <div class="b-torn"></div>
-          <div class="b-torn-right"></div>
+{if !empty($photos_loaded) && blogPhotosBridge::is2xEnabled()}
+    <script src="{$wa_url}wa-content/js/jquery-plugins/jquery.retina.min.js"></script>
+    <script>$(function() { "use strict";
+        $.Retina && $('img.retinify').retina();
+    });</script>
+{/if}
+
+{if $posts_count > 0}
+  <div class="block b-post b-number-of-posts {if $stream.blog}{$stream.blog.color}{else}b-white{/if} pageless-wrapper">
+    {sprintf(_w("%d post of %d", "%d posts of %d", $posts_count,false),$posts_count,$posts_total_count)}
+    {if $posts_count < $posts_total_count}
+      <br>
+      <br>
+      <a href="#next" class="pageless-link">[`Show older posts`]</a>
+      <span class="pageless-progress" style="display:none"><i class="icon16 loading"></i>[`Loading`]&nbsp;{_w("%d post", "%d posts", min($posts_total_count-$posts_count,$posts_per_page))}...</span>
+    {/if}
+  </div>
+{else}
+  <div class="block b-post b-empty-list {if $stream.blog}{$stream.blog.color}{else}b-white{/if}">
+    {if $stream.all_posts}
+
+        <div class="b-welcome">
+            <h1>[`Welcome to your new blog!`]</h1>
+            <p>
+                {if empty($import_link)}
+                    {sprintf('[`Start by <a href="%s">writing your first post</a>.`]','?module=post&amp;action=edit&amp;id=')}
+                {else}
+                    {sprintf('[`Start by <a href="%s">writing a post</a> or <a href="%s">importing posts</a><br> from your existing blog.`]', '?module=post&amp;action=edit&amp;id=', $import_link)}
+                {/if}
+            </p>
         </div>
-      </div>
-  {/if}
+
+    {else}
+      <p>[`There are no posts in this view.`]</p>
+    {/if}
+  </div>
+{/if}
+
+{if $page ge $pages}
+  <div class="b-torn-paper {if $stream.blog}{$stream.blog.color}{else}b-white{/if}">
+    <div>
+      <div class="b-torn-left"></div>
+      <div class="b-torn"></div>
+      <div class="b-torn-right"></div>
+    </div>
+  </div>
+{/if}
+
 {if $page eq 1}
   </div>
 
-{if isset($dialogs) && $dialogs}
-  <!-- dialog begin -->
-  {foreach $dialogs as $dialog}
-    {$dialog}
-  {/foreach}
-  <!-- dialog end -->
-{/if}
+    {if isset($dialogs) && $dialogs}
+      <!-- dialog begin -->
+      {foreach $dialogs as $dialog}
+        {$dialog}
+      {/foreach}
+      <!-- dialog end -->
+    {/if}
+
 {/if}

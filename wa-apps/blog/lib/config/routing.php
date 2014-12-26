@@ -32,8 +32,8 @@ return array(
         'logout/'                                                  => 'frontend/logout',
         'rss/'                                                     => 'frontend/rss',
         'author/<contact_id>/'                                     => 'frontend',
+        '<blog_url>/postpreview/'                                  => 'frontend/previewTemplate',
         '<blog_url>/<post_url>/'                                   => 'frontend/post',
-
         '<blog_url>/'                                              => 'frontend',
         ''                                                         => 'frontend',
     ),
@@ -57,6 +57,7 @@ return array(
         "<year:{$year}>/<month:{$month}>/<day:{$day}>/" => 'frontend',
         "<year:{$year}>/<month:{$month}>/"              => 'frontend',
         "<year:{$year}>/"                               => 'frontend',
+        'postpreview/'                                  => 'frontend/previewTemplate',
         '<post_url>/'                                   => 'frontend/post',
         ''                                              => 'frontend',
     ),
@@ -87,6 +88,7 @@ return array(
         "{$blog_prefix}/<year:{$year}>/"                                          => 'frontend',
 
         "{$blog_prefix}/<blog_url>/"                                              => 'frontend',
+        'postpreview/'                                                            => 'frontend/previewTemplate',
         '<post_url>/'                                                             => 'frontend/post',
         ''                                                                        => 'frontend',
     ),

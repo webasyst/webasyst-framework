@@ -14,6 +14,8 @@
             $('.js-manage-done').click(function (eventObject) {
                 return self.manageCompleteHandler.apply(self, [this, eventObject]);
             });
+            self.initShiftClickCheckboxes();
+
             $('input.search').keydown(function (eventObject) {
                 if (eventObject.keyCode == 13) {
                     var query = $(this).val(),
@@ -35,8 +37,12 @@
                     return false;
                 }
             });
-            $('input.blog-post-checkbox').live('click', function (eventObject) {
-                return self.counterHandler.apply(self, [this, eventObject]);
+            $('input.blog-post-checkbox').live('change', function () {
+                if (this.checked)
+                    $(this).parent().addClass('bold');
+                else
+                    $(this).parent().removeClass('bold');
+                return self.counterHandler();
             });
 
             $('#postdelete-dialog input[type=button]').click(function (eventObject) {
@@ -47,12 +53,12 @@
                 return self.moveHandler.apply(self, [this, eventObject]);
             });
 
-
             var ensureEverythingIsInside;
             var pageless_options = {
                 scroll: function () {
                     $.wa_blog.common.onContentUpdate();
                 },
+                // Fix for float:left elements getting out of their post containers
                 afterLoad: ensureEverythingIsInside = function() {
                     $('.b-stream .b-post-body').each(function() {
                         var $post_body = $(this);
@@ -79,6 +85,66 @@
 
             pageless_options = $.extend(true, pageless_options, self.options.pageless);
             $.pageless(pageless_options);
+        },
+
+        // Shift+click on a checkbox in post list selects all between this one and previous one clicked
+        initShiftClickCheckboxes: function() {
+
+            var $wrapper = $('.b-stream');
+            var $last_bpost_checked = null;
+            var $last_bpost_unchecked = null;
+            $wrapper.on('click', '.b-post .b-post-title-bulk-mode', function(e) {
+                var $checkbox = $(this).find('.blog-post-checkbox');
+                var $bpost = $checkbox.closest('.b-post');
+                var new_status;
+                if ($checkbox.is(e.target)) {
+                    new_status = $checkbox.prop('checked');
+                } else {
+                    new_status = !$checkbox.prop('checked');
+                    $checkbox.prop('checked', new_status).change();
+                }
+
+                if (new_status) {
+                    if (e.shiftKey && $last_bpost_checked) {
+                        setCheckedBetween($last_bpost_checked, $bpost, true);
+                    }
+                    $last_bpost_checked = $bpost;
+                    $last_bpost_unchecked = null;
+                } else {
+                    if (e.shiftKey && $last_bpost_unchecked) {
+                        setCheckedBetween($last_bpost_unchecked, $bpost, false);
+                    }
+                    $last_bpost_checked = null;
+                    $last_bpost_unchecked = $bpost;
+                }
+            });
+
+            // Disable selection for post titles in selection mode
+            $wrapper.find('.b-post .b-post-title-bulk-mode').attr('unselectable', 'on').css('user-select', 'none').on('selectstart', false);
+
+            function setCheckedBetween($from, $to, status) {
+                if (!$from || !$to || !$from[0] || !$to[0] || $from.is($to[0])) {
+                    return;
+                }
+
+                var is_between = false;
+                $to.parent().children('.b-post').each(function(i, el) {
+                    if (!is_between) {
+                        if ($from.is(el) || $to.is(el)) {
+                            is_between = true;
+                        }
+                    } else {
+                        if ($from.is(el) || $to.is(el)) {
+                            return false;
+                        }
+                        var $checkbox = $(el).find('.blog-post-checkbox');
+                        if ($checkbox.prop('checked') != status) {
+                            $checkbox.prop('checked', status).change();
+                        }
+                    }
+                });
+            }
+
         },
         manageHandler: function (element, event) {
             $('#blog-stream-primary-menu').hide();

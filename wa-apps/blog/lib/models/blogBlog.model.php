@@ -200,13 +200,15 @@ class blogBlogModel extends blogItemModel
     public function sort($id, $sort)
     {
         $blog = $this->getById($id);
-        if ($blog) {
+        if ($blog && $blog['sort'] != $sort) {
 
-            $this->query("UPDATE {$this->table} SET sort = sort - 1 WHERE sort >= i:sort",
-                array('sort' => $blog['sort'], 'max_sort' => $sort));
-            $this->query("UPDATE {$this->table} SET sort = sort + 1 WHERE sort >= i:sort",
-                array('sort' => $sort));
+            if ($sort > $blog['sort']) {
+                $sql = "UPDATE {$this->table} SET sort = sort - 1 WHERE sort > ? AND sort <= ?";
+            } else {
+                $sql = "UPDATE {$this->table} SET sort = sort + 1 WHERE sort < ? AND sort >= ?";
+            }
 
+            $this->query($sql, array($blog['sort'], $sort));
             $this->updateById($id, array('sort' => $sort));
         }
     }
@@ -214,15 +216,15 @@ class blogBlogModel extends blogItemModel
     public function recalculate($ids = array())
     {
         $sql = <<<SQL
-		UPDATE {$this->table}
-		SET `qty` = (
-			SELECT COUNT(blog_post.id)
-			FROM blog_post
-			WHERE
-				blog_post.blog_id = {$this->table}.id
-				AND
-				blog_post.status = s:status
-		)
+        UPDATE {$this->table}
+        SET `qty` = (
+            SELECT COUNT(blog_post.id)
+            FROM blog_post
+            WHERE
+                blog_post.blog_id = {$this->table}.id
+                AND
+                blog_post.status = s:status
+        )
 SQL;
         if ($ids) {
             $sql .= "WHERE {$this->table}.id IN (:ids)";

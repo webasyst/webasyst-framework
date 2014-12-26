@@ -1,18 +1,23 @@
-{wa_js file="js/blog-post.min.js"}
-{$wa_app_static_url}js/blogPost.js
-{/wa_js}
 
   <div class="b-stream b-first-post">
-    <div class="block triple-padded b-stream-title">
+    <div class="b-stream-title">
+
+      <div class="float-right ie-menu-h-fix">
+        <ul class="menu-h" id="blog-stream-primary-menu">
+          <li class="b-search-form">
+            <input type="search" name="text" class="search" placeholder="[`Search posts`]" value="">
+          </li>
+        </ul>
+      </div>
 
       <h1>
       {if isset($blog) && $blog}
-
         {if $blog.status eq blogBlogModel::STATUS_PUBLIC}
           {$blog.name|escape}
-          <a href="{$blog.link|escape:'uri'}" target="_blank" title="[`Open on website`]: {$blog.link}"><i class="icon16 new-window"></i></a>
+          {foreach $blog.link as $l}
+            <a href="{$l|escape:'uri'}" target="_blank" title="[`Open on website`]: {$l|escape}"><i class="icon16 new-window"></i></a>
+          {/foreach}
         {else}
-          <!-- <span title="[`Private blog`]" class="hint"> </span> -->
           {$blog.name|escape}
           <i class="icon16 lock-bw" title="[`Private blog`]"></i>
         {/if}
@@ -26,7 +31,7 @@
       {$post_edit=false}
       {if ($post.rights ge blogRightConfig::RIGHT_FULL) or (($post.contact_id eq $current_contact.id) and ($post.rights ge blogRightConfig::RIGHT_READ_WRITE))}
         {$post_edit=true}
-        <div class="float-right">
+        <div class="float-right block half-padded">
           <ul class="menu-h">
             <li>
               <a href="?module=post&amp;action=edit&amp;id={$post.id}"><i class="icon16 edit"></i>[`Edit post`]</a>
@@ -122,6 +127,23 @@
 
       {$post.text}
 
+      {if $post.album_id && $post.album.id}
+        <div class="b-photo-album-attached">
+          {foreach $post.album.photos as $p}
+              <div class="b-photo">
+                {if $p.description}
+                    {if $p.description|strstr:'<p>'}
+                        {$p.description}
+                    {else}
+                        <p>{$p.description}</p>
+                    {/if}
+                {/if}
+                <img src="{$p.thumb_big.url}" class="retinify" alt="{$p.name|escape}">
+              </div>
+          {/foreach}
+          <p><i class="icon16 pictures"></i> <em>[`Photo album`]: <a href="{$post.album.backend_link}" class="bold">{$post.album.name|escape}</a> ({count($post.album.photos)})</em></p>
+        </div>
+      {/if}
 
       {if isset($post.plugins) && isset($post.plugins.after) && $post.plugins.after}
 
@@ -214,3 +236,15 @@
     <!-- dialog end -->
   </form>
 {/if}
+
+{if $post.album_id && $post.album.id && blogPhotosBridge::is2xEnabled()}
+    <script src="{$wa_url}wa-content/js/jquery-plugins/jquery.retina.min.js"></script>
+    <script>$(function() { "use strict";
+        $.Retina && $('img.retinify').retina();
+    });</script>
+{/if}
+
+{wa_js file="js/blog-post.min.js"}
+    {$wa_app_static_url}js/blogPost.js
+{/wa_js}
+

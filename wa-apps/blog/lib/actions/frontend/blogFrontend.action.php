@@ -92,6 +92,7 @@ class blogFrontendAction extends blogViewAction
         $posts = $post_model
                  ->search($this->search_params, $options, array('blog' => $blogs))
                  ->fetchSearchPage($this->page, $posts_per_page);
+        blogPhotosBridge::loadAlbums($posts);
 
         $stream_title = false;
 

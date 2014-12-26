@@ -15,7 +15,6 @@ RedactorPlugins.cut = function() {
         if (this.code.get().indexOf(this.opts.cut_plugin.element_class) >= 0) {
             return;
         }
-        console.log(e);
         var html = '<span class="b-elrte-wa-split-vertical ' + this.opts.cut_plugin.element_class
             + '">' + this.opts.cut_plugin.wa_post_cut_text_default + '</span>';
         this.insert.html(html);

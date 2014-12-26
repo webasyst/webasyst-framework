@@ -22,7 +22,7 @@ class blogBlogSettingsAction extends waViewAction
         $settings = waRequest::post('settings');
 
         $draft_data = array();
-
+        $validate_messages = array();
         if ($settings) {
 
             $settings['status'] = (isset($settings['status'])) ? blogBlogModel::STATUS_PUBLIC : blogBlogModel::STATUS_PRIVATE;
@@ -43,13 +43,26 @@ class blogBlogSettingsAction extends waViewAction
 
                 //TODO handle settings
                 if ($blog_id) {
+                    $new_blog_created = false;
                     $blog_model->updateById($blog_id, $settings);
                     $this->log('blog_modify');
                 } else {
+                    $new_blog_created = true;
                     $settings['sort'] = (int) $blog_model->select('MAX(`sort`)')->fetchField() + 1;
                     $settings['id'] = $blog_id = $blog_model->insert($settings);
                     $this->getUser()->setRight($this->getApp(), "blog.{$blog_id}", blogRightConfig::RIGHT_FULL);
                     $this->log('blog_add');
+                }
+
+                // Create new settlement if asked to
+                if ($settings['status'] != blogBlogModel::STATUS_PRIVATE) {
+                    $new_route_setup = waRequest::post('new_route_setup', 0, waRequest::TYPE_INT);
+                    $route_enabled = waRequest::post('route_enabled', 0, waRequest::TYPE_INT);
+                    if ($new_route_setup && $route_enabled) {
+                        $this->saveNewRoute($blog_id);
+                    }
+                } else {
+                    $this->removeRoutes($blog_id);
                 }
 
                 // refresh qty post in blogs
@@ -63,13 +76,14 @@ class blogBlogSettingsAction extends waViewAction
                  * @return void
                  */
                 wa()->event('blog_save', $data);
-                $this->redirect(array(
-                    'blog' => $blog_id
-                ));
-            } else {
-                $this->view->assign('messages', $validate_messages);
-                $draft_data = $settings;
+                if ($new_blog_created) {
+                    $this->redirect(array(
+                        'blog' => $blog_id
+                    ));
+                }
             }
+
+            $draft_data = $settings;
         }
 
         $colors = $this->getConfig()->getColors();
@@ -86,7 +100,18 @@ class blogBlogSettingsAction extends waViewAction
             }
 
             $blog['other_settlements'] = blogBlogModel::getPureSettlements($blog);
-            $blog['settlement'] = array_shift($blog['other_settlements']);
+            $main_settlement_id = null;
+            foreach($blog['other_settlements'] as $s_id => $s) {
+                if (empty($blog['settlement']) || !$s['single']) {
+                    $main_settlement_id = $s_id;
+                    $blog['settlement'] = $s;
+                    if (!$s['single']) {
+                        break;
+                    }
+                }
+            }
+            unset($blog['other_settlements'][$main_settlement_id]);
+            $blog['other_settlements'] = array_values($blog['other_settlements']);
 
         } else {
 
@@ -107,7 +132,6 @@ class blogBlogSettingsAction extends waViewAction
             $blog = array_shift($blogs);
             $blog['other_settlements'] = blogBlogModel::getPureSettlements($blog);
             $blog['settlement'] = array_shift($blog['other_settlements']);
-
         }
 
         $this->getResponse()->setTitle($blog_id ? trim(sprintf(_w('%s settings'), $blog['name'])) : _w('New blog'));
@@ -117,10 +141,13 @@ class blogBlogSettingsAction extends waViewAction
         if ($blog_id) {
             $post_model = new blogPostModel();
             $posts_total_count = $post_model->countByField('blog_id', $blog_id);
-            if ($posts_total_count) {
-                $blog_model = new blogBlogModel();
-                $blogs = $blog_model->getAvailable($this->getUser());
-                $this->view->assign('blogs', $blogs);
+        }
+
+        $blog_model = new blogBlogModel();
+        $blogs = $blog_model->getAvailable($this->getUser());
+        foreach($blogs as $id => $b) {
+            if ($b['rights'] < blogRightConfig::RIGHT_FULL) {
+                unset($blogs[$id]);
             }
         }
 
@@ -135,16 +162,23 @@ class blogBlogSettingsAction extends waViewAction
         $this->view->assign('backend_blog_edit', wa()->event('backend_blog_edit', $blog, array('settings')));
         $this->view->assign('posts_total_count', $posts_total_count);
 
+        $this->view->assign('messages', $validate_messages);
+        $this->view->assign('saved', waRequest::post() && !$validate_messages);
+        $this->view->assign('is_admin', wa()->getUser()->isAdmin('blog'));
+        $this->view->assign('domains', wa()->getRouting()->getDomains());
         $this->view->assign('blog_id', $blog_id);
-        $this->view->assign('blog', $blog);
         $this->view->assign('colors', $colors);
         $this->view->assign('icons', $icons);
+        $this->view->assign('blogs', $blogs);
+        $this->view->assign('blog', $blog);
     }
     public function validate(&$data)
     {
         $messages = array();
 
-        $no_settlement = waRequest::post('no_settlement', 0, waRequest::TYPE_INT);
+        $new_route_setup = waRequest::post('new_route_setup', 0, waRequest::TYPE_INT);
+        $route_enabled = waRequest::post('route_enabled', 0, waRequest::TYPE_INT);
+        $no_settlement = $new_route_setup && !$route_enabled;
 
         if ($data['status'] != blogBlogModel::STATUS_PRIVATE && !$no_settlement) {
             if (isset($data['id'])) {
@@ -191,4 +225,84 @@ class blogBlogSettingsAction extends waViewAction
 
         return $messages;
     }
+
+    /** Remove all frontend routes for selected blog */
+    protected function removeRoutes($blog_id)
+    {
+        $path = $this->getConfig()->getPath('config', 'routing');
+        if (!file_exists($path) || !is_writable($path)) {
+            return;
+        }
+
+        $something_changed = false;
+        $route_config = include($path);
+        foreach($route_config as $domain => $routes) {
+            foreach($routes as $k => $route) {
+                if (!empty($route['app']) && ($route['app'] == 'blog') && !empty($route['blog_url_type']) && $route['blog_url_type'] == $blog_id) {
+                    unset($route_config[$domain][$k]);
+                    $something_changed = true;
+                }
+            }
+        }
+
+        if ($something_changed) {
+            waUtils::varExportToFile($route_config, $path);
+        }
+    }
+
+    /** Create new route for this blog if data came via POST */
+    protected function saveNewRoute($blog_id)
+    {
+        // User asked to create new route?
+        if (!waRequest::request('route_enabled')) {
+            return true;
+        }
+
+        // Make sure routing config is writable, and load existing routes
+        $path = $this->getConfig()->getPath('config', 'routing');
+        if (file_exists($path)) {
+            if (!is_writable($path)) {
+                return false;
+            }
+            $routes = include($path);
+        } else {
+            $routes = array();
+        }
+
+        // Route domain
+        $domain = waRequest::post('route_domain', '', 'string');
+        if (!isset($routes[$domain])) {
+            return false;
+        }
+
+        // Route URL
+        $url = waRequest::post('settings', array(), 'array');
+        $url = ifempty($url['url'], '');
+        $url = rtrim($url, '/*');
+        $url .= ($url?'/':'').'*';
+
+        // Determine new numeric route ID
+        $route_ids = array_filter(array_keys($routes[$domain]), 'intval');
+        $new_route_id = $route_ids ? max($route_ids) + 1 : 1;
+
+        $new_route = array(
+            'url' => $url,
+            'app' => $this->getAppId(),
+            'blog_url_type' => $blog_id,
+            'theme' => 'default',
+            'theme_mobile' => 'default',
+        );
+
+        if ($new_route['url'] == '*') {
+            // Add as the last rule
+            $routes[$domain][$new_route_id] = $new_route;
+        } else {
+            // Add as the first rule
+            $routes[$domain] = array($new_route_id => $new_route) + $routes[$domain];
+        }
+
+        waUtils::varExportToFile($routes, $path);
+        return true;
+    }
 }
+

@@ -199,7 +199,7 @@
                 $('#b-settings-blog-type-open-label').addClass('b-unselected');
                 $('#b-settings-blog-type-private-label').removeClass('b-unselected');
 
-                $('#blog-name').val() ? $('#b-settings-blog-url').fadeIn() : null;
+                $('#b-settings-blog-url').slideDown();
             } else {
                 $('#b-settings-blog-type-open-hint').hide();
                 $('#b-settings-blog-type-private-hint').show();
@@ -207,7 +207,7 @@
                 $('#b-settings-blog-type-open-label').removeClass('b-unselected');
                 $('#b-settings-blog-type-private-label').addClass('b-unselected');
 
-                $('#b-settings-blog-url').fadeOut();
+                $('#b-settings-blog-url').slideUp();
             }
         }
 

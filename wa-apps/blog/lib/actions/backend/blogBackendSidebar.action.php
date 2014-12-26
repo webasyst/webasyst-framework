@@ -43,16 +43,28 @@ class blogBackendSidebarAction extends waViewAction
         $new_post_count = 0;
 
         $writable_blogs = false;
+        $blog_id_full_access = null;
+        $can_see_blog_settings = false;
         foreach ($blogs as $blog) {
             $post_count += $blog['qty'];
 
             if ($blog['rights'] >= blogRightConfig::RIGHT_READ_WRITE) {
                 $writable_blogs = true;
             }
+            if ($blog['rights'] >= blogRightConfig::RIGHT_FULL) {
+                $can_see_blog_settings = true;
+                if (empty($blog_id_full_access) || $blog_id == $blog['id']) {
+                    $blog_id_full_access = $blog['id'];
+                }
+            }
 
             if (isset($blog['new_post']) && $blog['new_post'] > 0) {
                 $new_post_count += $blog['new_post'];
             }
+        }
+
+        if (!$can_see_blog_settings) {
+            $can_see_blog_settings = !!$this->user->getRights('blog', blogRightConfig::RIGHT_ADD_BLOG);
         }
 
         if ($writable_blogs) {
@@ -86,7 +98,7 @@ class blogBackendSidebarAction extends waViewAction
             $drafts = false;
             $count_overdue = false;
         }
-        
+
         $params = null;
 
         /**
@@ -139,6 +151,8 @@ class blogBackendSidebarAction extends waViewAction
         $this->view->assign('post_count', $post_count);
         $this->view->assign('new_post_count', $new_post_count);
         $this->view->assign('count_draft_overdue', $count_overdue);
+        $this->view->assign('blog_id_full_access', $blog_id_full_access);
+        $this->view->assign('can_see_blog_settings', $can_see_blog_settings);
         $this->view->assign('writable_blogs', $writable_blogs);
     }
 

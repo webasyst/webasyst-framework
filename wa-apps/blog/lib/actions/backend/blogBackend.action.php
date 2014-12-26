@@ -83,6 +83,9 @@ class blogBackendAction extends waViewAction
         ->search($search_options, $extend_options, array('blog' => $blogs))
         ->fetchSearchPage($page, $posts_per_page);
 
+        // Add photo albums to posts
+        blogPhotosBridge::loadAlbums($posts);
+
         if ($page == 1) {
             $stream['title'] = $this->getResponse()->getTitle();
             $this->chooseLayout();
@@ -102,18 +105,28 @@ class blogBackendAction extends waViewAction
             $this->view->assign('backend_stream', wa()->event('backend_stream', $stream, array('menu')));
         }
 
+        $posts_count = ($page - 1) * $posts_per_page + count($posts);
+        $import_link = null;
+        if ($posts_count <= 0 && !empty($stream['all_posts'])) {
+            // When import plugin is installed, show its link on the welcome page
+            $plugins = wa()->getConfig()->getPlugins();
+            if (!empty($plugins['import'])) {
+                $import_link = wa()->getUrl().'?module=plugins#/settings/custom/import/';
+            }
+        }
 
         $this->view->assign('blogs', $blogs);
         $this->view->assign('blog_id', $blog_id);
         $this->view->assign('text', $text);
-        
+
         $this->view->assign('stream', $stream);
 
         $this->view->assign('page', $page);
 
         $this->view->assign('pages', $post_model->pageCount());
         $this->view->assign('posts_total_count', $post_model->searchCount());
-        $this->view->assign('posts_count', ($page - 1) * $posts_per_page + count($posts));
+        $this->view->assign('posts_count', $posts_count);
+        $this->view->assign('import_link', $import_link);
         $this->view->assign('posts_per_page', $posts_per_page);
         $this->view->assign('contact_rights', $this->getUser()->getRights('contacts', 'backend'));
         if ($this->getConfig()->getOption('can_use_smarty')) {

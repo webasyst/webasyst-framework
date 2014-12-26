@@ -10,6 +10,14 @@
             $('#postdelete-dialog input[type=button]').click(function (eventObject) {
                 return self.deleteHandler.apply(self, [this, eventObject]);
             });
+
+            $('#blog-stream-primary-menu .b-search-form input.search').keydown(function (eventObject) {
+                if (eventObject.keyCode == 13) {
+                    var query = $(this).val();
+                    location.search = '?text=' + encodeURIComponent(query);
+                    return false;
+                }
+            });
         },
         deleteHandler: function (element, event) {
             var form = $(element).parents('form');
