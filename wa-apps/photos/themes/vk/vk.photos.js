@@ -63,7 +63,7 @@ $(function() {
                     tmp.remove();
                     
                     photo_list.trigger('append_photo_list');
-                    
+                    VK && VK.callMethod("resizeWindow", $("body").outerWidth(), $("body").outerHeight());
                 });
             }
         });

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE theme PUBLIC "wa-app-theme" "http://www.webasyst.com/wa-content/xml/wa-app-theme.dtd">
-<theme id="vk" system="0" vendor="webasyst" author="Webasyst" app="photos" parent_theme_id="site:vk" version="1.1.3">
+<theme id="vk" system="0" vendor="webasyst" author="Webasyst" app="photos" parent_theme_id="site:vk" version="1.1.4">
     <name locale="en_US">VK</name>
     <name locale="ru_RU">Вконтакте</name>
     <description locale="ru_RU">Ваш сайт во «Вконтакте» в виде iframe-приложения.</description>
@@ -21,7 +21,7 @@
         </file>
         <file path="head.html" custom="0">
             <description locale="en_US">Photos app's &lt;head&gt; instructions</description>
-            <description locale="en_US">Блок &lt;head&gt; приложения «Фото»</description>
+            <description locale="ru_RU">Блок &lt;head&gt; приложения «Фото»</description>
         </file>
         <file path="view-thumbs.html" custom="0">
             <description locale="en_US">Photo list thumbnails view</description>
