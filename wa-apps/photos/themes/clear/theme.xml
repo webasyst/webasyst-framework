@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE theme PUBLIC "wa-app-theme" "http://www.webasyst.com/wa-content/xml/wa-app-theme.dtd">
-<theme id="clear" system="0" vendor="webasyst" author="Webasyst" app="photos" parent_theme_id="site:clear" version="1.1.2">
+<theme id="clear" system="0" vendor="webasyst" author="Webasyst" app="photos" parent_theme_id="site:clear" version="1.1.3">
     <name locale="en_US">Clear</name>
     <name locale="ru_RU">Clear</name>
     <description locale="ru_RU">Семейство адаптивных тем дизайна.</description>
@@ -23,7 +23,7 @@
         </file>
         <file path="head.html" custom="0">
             <description locale="en_US">Photos app's &lt;head&gt; instructions</description>
-            <description locale="en_US">Блок &lt;head&gt; приложения «Фото»</description>
+            <description locale="ru_RU">Блок &lt;head&gt; приложения «Фото»</description>
         </file>
         <file path="view-thumbs.html" custom="0">
             <description locale="en_US">Photo list thumbnails view</description>
