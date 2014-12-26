@@ -2,56 +2,7 @@
 {* @event frontend_layout.%plugin_id%.header *}
 {foreach $frontend_layout as $item}{if !empty($item.header)}{$item.header}{/if}{/foreach}
 
-{if $action == 'photo' || $action == 'album'}
-    {* no navigation sidebar for album and one-by-one photo view *}
-    {$_NAV_SIDEBAR = 0}
-{else}
-    {$_NAV_SIDEBAR = 1}
-{/if}
-
-<nav class="page-nav" role="navigation">
-
-    {if $_NAV_SIDEBAR}
-        <div class="nav-sidebar">
-        
-            <div class="nav-sidebar-body">
-                
-                <!-- albums -->
-                {if $albums = $wa->photos->albums(0)}
-                    <div class="slidemenu" data-back-lbl="[s`Back`]">
-                        {wa_print_tree tree=$albums unfolded=true collapsible_class='collapsible' class="menu-v bottom-padded album-tree" elem ='<a href=":url" title=":name">:name</a>'}
-                    </div>
-                {/if}
-
-                <!-- tags -->
-                {if $cloud = $wa->photos->tags()}      
-                    <p class="tags block align-center">
-                        {foreach $cloud as $tag}
-                            <a href="{$wa_app_url}tag/{$tag.uri_name}/" style="font-size: {$tag.size}%; opacity: {$tag.opacity}">{$tag.name|escape}</a>
-                        {/foreach}
-                    </p>
-                {/if}
-                
-                <!-- plugins -->
-                {* @event frontend_sidebar.%plugin_id%.section *}
-                {$_hook_frontend_sidebar_section = false}
-                {foreach $frontend_sidebar as $plugin => $output}
-                    {if !empty($output.section)}
-                        <hr>
-                        <div class="{$plugin}">
-                            {$output.section}
-                        </div>
-                    {/if}
-                {/foreach}
-
-            </div>
-        </div>
-    {/if}
-
-</nav>
-
-<article class="page-content{if $_NAV_SIDEBAR} with-sidebar{else}{/if}" itemscope itemtype="http://schema.org/{if $action == 'photo'}Photograph{else}WebPage{/if}">
-
+<article class="page-content" itemscope itemtype="http://schema.org/{if $action == 'photo'}Photograph{else}WebPage{/if}">
     {if !empty($breadcrumbs)}
         {if $wa->globals('isMyAccount')}
             {* within My Account we exclude first node from navigation because links are on the page already *}
@@ -60,7 +11,7 @@
         <div class="breadcrumbs" itemprop="breadcrumb">
             {foreach $breadcrumbs as $breadcrumb}
                 {if $breadcrumb}
-                    <a href="{$breadcrumb.full_url}">{$breadcrumb.name|escape}</a> <span class="rarr">&rarr;</span>
+                    <a href="{$breadcrumb.url}">{$breadcrumb.name|escape}</a> <span class="rarr">&rarr;</span>
                 {/if}
             {/foreach}
         </div>

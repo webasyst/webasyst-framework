@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE theme PUBLIC "wa-app-theme" "http://www.webasyst.com/wa-content/xml/wa-app-theme.dtd">
-<theme id="default" system="0" vendor="webasyst" author="Webasyst" app="photos" parent_theme_id="site:default" version="2.2.0">
+<theme id="default" system="0" vendor="webasyst" author="Webasyst" app="photos" parent_theme_id="site:default" version="2.2.1">
     <name locale="en_US">Default 2.0</name>
     <name locale="ru_RU">Дефолт 2.0</name>
     <description locale="ru_RU">Семейство адаптивных тем дизайна.</description>
@@ -15,7 +15,7 @@
         </file> 
         <file path="head.html" custom="0">
             <description locale="en_US">Photos app's &lt;head&gt; instructions</description>
-            <description locale="en_US">Блок &lt;head&gt; приложения «Фото»</description>
+            <description locale="ru_RU">Блок &lt;head&gt; приложения «Фото»</description>
         </file>
         <file path="header.html" custom="0">
     		<description locale="en_US">App specific header content</description>
@@ -95,7 +95,7 @@
 ]]>
     </about>
     <thumbs>
-        <thumb>250x0</thumb>
-        <thumb>970</thumb>
+        <thumb>200x0</thumb>
+        <thumb>970x0</thumb>
     </thumbs>
 </theme>

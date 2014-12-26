@@ -19,10 +19,11 @@
                         {if $photo.stack_count > 0}<span class="indicator">{$photo.stack_count}</span>{/if}
                     </div>
                     
-                    {$wa->photos->getImgHtml($photo, '250x0', ['itemprop' => 'image'])}
+                    {$wa->photos->getImgHtml($photo, '200x0', ['itemprop' => 'image'])}
                     
+                    <!--
                     <div class="stripe">
-                        {* <h5 itemprop="name">{$photo.name}</h5> *}       
+                        <h5 itemprop="name">{$photo.name}</h5>
                         {* @event prepare_photos_frontend.name.%plugin_id% *}
                         {foreach $photo.hooks.name as $plugin => $output}{$output}{/foreach}       
                         {if $photo.rate > 0}<p class="rating nowrap">{$wa->photos->ratingHtml($photo.rate, 10)}</p>{/if}                        
@@ -30,6 +31,7 @@
                         {* @event prepare_photos_frontend.thumb.%plugin_id% *}
                         {foreach $photo.hooks.thumb as $plugin => $output}{$output}{/foreach}
                     </div>
+                    -->
                     
                 </a>
             </div>
@@ -38,7 +40,9 @@
 </ul>
 
 {if isset($pages_count) && $pages_count > 1}
-<div class="block lazyloading-paging" data-times="2" data-link-text="[`Load more`]">
-    {wa_pagination total=$pages_count attrs=['class' => "menu-h"]}
+<div class="photo-thumbs-lazyloading">
+    <div class="block lazyloading-paging align-center" data-times="2" data-link-text="[`Load more`]">
+        {wa_pagination total=$pages_count attrs=['class' => "menu-h"]}
+    </div>
 </div>
 {/if}

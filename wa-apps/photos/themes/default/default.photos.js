@@ -1,7 +1,10 @@
 $(function() {
-    
+
     var list = $('#photo-list.view-thumbs');
     if (list.length) {
+        list.css({
+            position: 'relative'
+        });
         var handler = $('li', list);
         var options = {
             align: 'center',
@@ -10,7 +13,7 @@ $(function() {
             container: list,
             direction: 'left',
             ignoreInactiveItems: true,
-            itemWidth: '250',
+            itemWidth: '220',
             fillEmptySpace: false,
             flexibleWidth: true,
             offset: 0,
@@ -25,9 +28,6 @@ $(function() {
                 handler.wookmarkInstance.clear();
             }
             handler = $('li', list).addClass('wookmark').fadeIn('slow');
-            list.css({
-                position: 'relative'
-            });
             handler.wookmark(options);
         }
 
@@ -36,9 +36,22 @@ $(function() {
             list.waitForImages(applyLayout);
         });
 
-        list.waitForImages(applyLayout);
+        // A hack to make LIs have height before document.ready
+        list.find('li').each(function() {
+           var $li = $(this);
+           var $img = $li.find('img.photo_img');
+           var height = ($img[0].style.height || '0').replace('px', '');
+           height && $li.height(height);
+        });
+
+        //setTimeout(applyLayout, 0);
+        applyLayout();
+        list.waitForImages(function() {
+            list.find('li').css('height', '');
+            applyLayout();
+        });
     }
-    
+
     $('.waSlideMenu-menu a').click(function(){
 
         if ( !$(this).parent().hasClass('collapsible') && !$(this).parent().hasClass('waSlideMenu-back') )
@@ -47,7 +60,7 @@ $(function() {
             window.location.href = $(this).attr('href');
         }
     });
-    
+
     $('.slidemenu').on('afterLoadDone.waSlideMenu', function () {
         $('img').retina();
     });
@@ -80,19 +93,22 @@ $(function() {
                     win.lazyLoad('sleep');
                     var paging = $('.lazyloading-paging').hide();
 
+                    var loading = paging.parent().find('.loading').parent();
+
                     // determine actual current and next item for getting actual url
                     var current = paging.find('li.selected');
                     var next = current.next();
                     var url = next.find('a').attr('href');
                     if (!url) {
+                        loading.hide();
+                        $('.lazyloading-load-more').hide();
                         win.lazyLoad('stop');
                         return;
                     }
 
                     var photo_list = $('#photo-list');
-                    var loading = paging.parent().find('.loading').parent();
                     if (!loading.length) {
-                        loading = $('<div><i class="icon16 loading"></i>Loading...</div>').insertBefore(paging);
+                        loading = $('<div><i class="icon16 loading"></i>Loading...</div>').insertBefore(paging); // !!! localization?..
                     }
 
                     loading.show();
@@ -111,7 +127,7 @@ $(function() {
                         // check need to stop lazy-loading
                         var current = paging.find('li.selected');
                         var next = current.next();
-                        if (next.length) {
+                        if (next.length && next.find('a').attr('href')) {
                             if (!isNaN(times) && times <= 0) {
                                 win.lazyLoad('sleep');
                                 if (!$('.lazyloading-load-more').length) {
@@ -128,6 +144,7 @@ $(function() {
                                 win.lazyLoad('wake');
                             }
                         } else {
+                            $('.lazyloading-load-more').hide();
                             win.lazyLoad('stop');
                         }
 
@@ -135,11 +152,10 @@ $(function() {
                         tmp.remove();
 
                         photo_list.trigger('append_photo_list');
-
                     });
                 }
             });
         }
     }
-    
+
 });
