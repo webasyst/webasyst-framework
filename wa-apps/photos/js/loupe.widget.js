@@ -182,7 +182,7 @@ $.photos.widget.loupe = {
         this.drag = false;
         var self = this;
         this.trace('enlarge, status='+this.status);
-        $('#photo').removeClass("ui-draggable");
+        $('#photo').removeClass("ui-draggable").closest('.p-image').addClass('p-image-maximized');
         this.offset = this.container.offset();
         this.offset.x = Math
                 .round((this.thumb_data.width - this.photo_data.width) / 2);
@@ -345,12 +345,12 @@ $.photos.widget.loupe = {
                 self.decreaseComplete();
             });
         }
-        $('#photo').addClass("ui-draggable");
         return false;
     },
 
     decreaseComplete : function(skip) {
         this.trace('decreaseComplete, status='+this.status);
+        $('#photo').addClass("ui-draggable").closest('.p-image').removeClass('p-image-maximized');
         this.container.css(this.css.init).show();
         this.helper.hide();
         if(!skip) {

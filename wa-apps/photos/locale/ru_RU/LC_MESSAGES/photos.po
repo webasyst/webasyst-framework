@@ -12,7 +12,7 @@ msgstr ""
 "%10)>=2)&&((n%10)<=4))&&(((n%100)<10)||((n%100)>=20)))?(1):2));\n"
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
-"X-Generator: Poedit 1.6.8\n"
+"X-Generator: Poedit 1.6.10\n"
 "Language: ru_RU\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
@@ -182,6 +182,12 @@ msgid_plural "%d photos will be deleted without the ability to restore. "
 msgstr[0] "%d фотография будет безвозвратно удалена. "
 msgstr[1] "%d фотографии будут безвозвратно удалены. "
 msgstr[2] "%d фотографий будут безвозвратно удалены. "
+
+msgid "%d photo have been successfully uploaded"
+msgid_plural "%d photos have been successfully uploaded"
+msgstr[0] "%d фотография успешно загружена"
+msgstr[1] "%d фотографии успешно загружены"
+msgstr[2] "%d фотографий успешно загружены"
 
 #: /wa-apps/photos/templates/actions/dialog/DialogConfirm.html:9
 msgid "Photo “%s” will be deleted without the ability to restore. "
@@ -1581,3 +1587,93 @@ msgstr "В этом альбоме нет фотографий."
 #: /wa-apps/photos/themes/default/photos-thumbs.html:41
 msgid "Load more"
 msgstr "Загрузить еще"
+
+msgid "(no name)"
+msgstr "(без имени)"
+
+#: /wa-apps/photos/templates/actions/backend/BackendAlbums.html:6
+msgid "The album list is empty."
+msgstr "Список альбомов пуст."
+
+#: /wa-apps/photos/templates/actions/dialog/DialogAlbumSettings.html:17
+#: /wa-apps/photos/templates/actions/dialog/DialogAlbumSettings.html:101
+#: /wa-apps/photos/templates/actions/dialog/DialogCreateAlbum.html:83
+msgid "Filter"
+msgstr "Фильтр"
+
+#: /wa-apps/photos/templates/actions/dialog/DialogAlbumSettings.html:112
+#: /wa-apps/photos/templates/actions/dialog/DialogCreateAlbum.html:110
+msgid "<strong>%s</strong> album only"
+msgstr "Только в альбоме «<strong>%s</strong>»"
+
+#: /wa-apps/photos/templates/actions/dialog/DialogAlbumSettings.html:113
+#: /wa-apps/photos/templates/actions/dialog/DialogCreateAlbum.html:111
+msgid "Dynamic albums filter photos only from albums they belong to."
+msgstr ""
+"Динамическая фильтрация производится только среди фотографий родительского "
+"альбома."
+
+#: /wa-apps/photos/templates/actions/dialog/DialogCreateAlbum.html:77
+msgid "A static album for adding and arranging photos manually."
+msgstr ""
+"Статический альбом, в котором фотографии добавляются и упорядочиваются "
+"вручную."
+
+#: /wa-apps/photos/templates/actions/dialog/DialogCreateAlbum.html:86
+msgid "A dynamic album based on search criteria, e.g. rating or tags."
+msgstr ""
+"Динамический альбом, содержимое которого формируется согласно указанными "
+"фильтрам, например, по оценкам или тегам."
+
+#: /wa-apps/photos/templates/actions/photo/PhotoList.html:82
+msgid "Drag some photos anywhere on this page to start upload"
+msgstr ""
+"Перетащите фотографии в любое место на этой странице, чтобы начать загрузку."
+
+#: /wa-apps/photos/templates/actions/photo/PhotoList.html:172
+msgid "In this album"
+msgstr "В этом альбоме"
+
+#: /wa-apps/photos/templates/actions/photo/PhotoList.html:209
+msgid "This is a key photo for this album"
+msgstr "Фото на обложке альбома"
+
+#: /wa-apps/photos/templates/actions/photo/PhotoList.html:217
+msgid "Private photos are not visible in public albums"
+msgstr "Приватные фотографии не видны в общедоступных опубликованных альбомах"
+
+#: /wa-apps/photos/templates/actions/photo/PhotoList.html:244
+msgid "make key photo"
+msgstr "сделать обложкой альбома"
+
+#: /wa-apps/photos/templates/layouts/Default.html:105
+#: /wa-apps/photos/themes/default/photo.html:18
+msgid "← Previous"
+msgstr "← Предыдущая"
+
+#: /wa-apps/photos/lib/actions/backend/photosBackendLog.controller.php:12
+msgid "Uploaded %d photo"
+msgid_plural "Uploaded %d photos"
+msgstr[0] "Загружена %d фотография"
+msgstr[1] "Загружены %d фотографии"
+msgstr[2] "Загружено %d фотографий"
+
+#: /wa-apps/photos/lib/config/site.php:125
+msgid ""
+"Returns the entire album tree as an array (<em>return_html = false</em>) or "
+"as an pre-rendered HTML (<em>return_html = true</em>). <em>custom_params = "
+"true</em> will include album custom parameters into the output."
+msgstr ""
+"Возвращает дерево альбомов в виде массива (<em>return_html = false</em>) или "
+"готового для отображения HTML-кода дерева (<em>return_html = true</em>). "
+"Если передан параметр <em>custom_params = true</em>, то в массив также будут "
+"добавлены дополнительные параметры альбомов."
+
+#: /wa-apps/photos/lib/config/site.php:126
+msgid ""
+"Returns sub albums by <em>parent_album_id</em>. If <em>parent_album_id</em> "
+"is empty, root albums will be returned."
+msgstr ""
+"Возвращает массив дочерних альбомов по <em>parent_album_id</em>. Если "
+"параметр <em>parent_album_id</em> не указан, будут возвращены корневые "
+"альбомы."

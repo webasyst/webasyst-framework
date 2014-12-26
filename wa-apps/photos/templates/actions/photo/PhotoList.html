@@ -1,6 +1,5 @@
 <script type="text/javascript" src="{$wa_app_static_url}js/lazy.load.js?v={$wa->version()}"></script>
 
-{if !empty($photos) || !empty($album) || !empty($hash)}
 <div class="sidebar right200px" id="p-toolbar">
     <div class="block" id="share-menu-block">
         <h6 class="heading">
@@ -15,7 +14,7 @@
               var blog_smarty_enabled = {json_encode($wa->blog->option('can_use_smarty'))};
               var obligatory_size = {json_encode($big_size)};
               </script>
-              <a href="#"><i class="icon16" style="background-image: url('{$wa_url}wa-apps/blog/img/blog16.png');"></i>[`Blog post`]</a>
+              <a href="#"><i class="icon16" style="background-image: url('{$wa_url}wa-apps/blog/img/blog16.png'); background-size: 16px 16px;"></i>[`Blog post`]</a>
               <div style="display: none">{$wa->blog->postForm('blog-post-form')}</div>
             </li>
             {/if}
@@ -69,20 +68,26 @@
         <p class="p-sort-order-error-disclaimer sort" style="display:none;">[`You do not have sufficient access rights to alter photos sort order in this list.`]</p>
     </div>
 </div>
-{/if}
-            
+
 <div class="content left{$sidebar_width}px right200px" id="p-content">
-    
+
     {if empty($photos) && empty($album) && empty($hash)}
         <div class="block double-padded p-welcome" id="welcome-block">
+            <style>
+                #p-toolbar { display: none; }
+                .p-welcome { margin-right: -150px; }
+            </style>
             <h1>[`Welcome to your new photo gallery!`]</h1>
             <p>[`Start uploading photos by clicking the link above or by dragging selected photos anywhere on this page.`]</p>
-            <div class="p-arrow-upload-link"></div>
+            <img src="{$wa_url}wa-apps/photos/img/drag-photos-here.png" class="p-drag-photos-here" title="[`Drag some photos anywhere on this page to start upload`]" alt="[`Drag some photos anywhere on this page to start upload`]">
         </div>
     {else}
         <div class="block double-padded" id="p-block">
             <h1>
-                <span {if isset($album) && !empty($album.edit_rights)}class="editable"{/if} id="photo-list-name">{$title|escape}</span>
+                {if !empty($album)}
+                    <a href="{if $album.parent_id}#/album/{$album.parent_id}/{else}#/albums/{/if}" class="p-back-to-list">[`← Back`]</a>
+                {/if}
+                <span {if isset($album) && !empty($album.edit_rights)}class="editable"{/if} id="photo-list-name">{if isset($album) && empty($title)}[`(no name)`]{else}{$title|escape}{/if}</span>
                 <input type="text" id="photo-list-name-input" style="display: none;" class="p-photo-h1-edit">
                 {if isset($album)}
                     <span class="{if !empty($album.edit_rights)}editable{/if} hint" id="photo-album-note">{if $album.note}{$album.note}{/if}</span>
@@ -92,7 +97,7 @@
                     <span class="p-smart-album-criteria">
                         {if isset($album.conditions.status) && $album.conditions.status[0] == '<=' && $album.conditions.status[1] == '0'}<i class="icon10 lock-bw"></i>{/if}
                         {if isset($album.conditions.rate)}
-                            {'★'|str_repeat:$album.conditions.rate[1]}{if $album.conditions.rate[0] == '>='}+{else}-{/if}
+                            {'★'|str_repeat:$album.conditions.rate[1]}{*'*}{if $album.conditions.rate[0] == '>='}+{else}-{/if}
                         {/if}
                         {if isset($album.conditions.tag)}
                             <span class="tags small">{$album.conditions.tag[1]|implode:', '}</span>
@@ -135,6 +140,40 @@
                     {/if}
                 </li>
             </ul>
+
+            <div id="place-for-messages"></div>
+
+            {if !empty($album)}
+                {if !empty($album.description)}
+                    <p class="small">{$album.description|strip_tags|truncate:512}</p>
+                {/if}
+                {if $child_albums}
+                    <ul class="thumbs li150px p-albums" id="album-thumbs-list">
+                        {foreach $child_albums as $a}
+                            <li data-album-id="{$a.id}">
+                                <div class="p-image">
+                                    <div class="p-image-corner top left"></div>
+                                    <div class="p-image-corner top right"></div>
+                                    <a href="#/album/{$a.id}/">
+                                        {if $a.key_photo}
+                                            <img src="{$a.key_photo.thumb_96x96.url}{if $a.key_photo.edit_datetime}?{strtotime($a.key_photo.edit_datetime)}{/if}" alt="{$a.name|escape}">
+                                        {else}
+                                            <img src="{$wa_app_static_url}img/album-dummy.png" alt="{$a.name|escape}" style="max-width:100px">
+                                        {/if}
+                                    </a>
+                                </div>
+                                <div class="p-details">
+                                    <strong{if $a.status <= 0} class="gray" title="[`Private album`]"{/if}>{$a.name|default:"[`(no name)`]"|escape}</strong>
+                                    <span class="p-count">{sprintf( _w('%d photo','%d photos',$a.count), $a.count)}</span>
+                                </div>
+                            </li>
+                        {/foreach}
+                    </ul>
+                    <h5 class="heading">[`In this album`]</h5>
+                {/if}
+            {/if}
+
+
             <ul class="thumbs li250px" id="photo-list"></ul>
             <div class="lazyloading-wrapper"></div>
         </div>
@@ -150,7 +189,8 @@
     <li class="{% if (p.stack_count > 0) { %} stacked{% } %}
                 {% if (i == n - 1) { %} last{% } %}
                 {% if (last_login_time < p.upload_timestamp) { %}highlighted{% } %}
-                {% if (o.selected) { %}selected{% } %}" 
+                {% if ($.photos.album && $.photos.album.key_photo_id == p.id) { %}key-photo{% } %}
+                {% if (o.selected) { %}selected{% } %}"
                 data-photo-id="{%#p.id%}"
     >
         <div class="p-image">{% if (p.stack_count > 0) { %}
@@ -158,30 +198,32 @@
             <div class="p-stack layer2"></div>
             <div class="p-stack layer3"></div>{% } %}
                 <div class="p-image-corner top left">
-                    {% if (p.status <= 0) { %}
-                    <i class="icon16 lock-bw p-private-photo" title="[`Private photo`]"></i>
-                    {% } %}
                     {/literal}{* @event prepare_photos_backend[top_left][%plugin_id%]  *}{literal}
                     {% for (var plugin in p.hooks.top_left) { %}
                        {%# p.hooks.top_left[plugin] %}
                     {% } %}
+                    {% if (p.status <= 0) { %}<i class="icon16 lock-bw p-private-photo" title="[`Private photo`]"></i>{% } %}
                 </div>
                 <div class="p-image-corner top right">
                     {% if (p.stack_count > 0) { %}<span class="indicator">{%#p.stack_count%}</span>{% } %}
+                    {% if ($.photos.album) { %}<i class="icon16 medal key-photo-icon" title="[`This is a key photo for this album`]"></i>{% } %}
+
                     {/literal}{* @event prepare_photos_backend[top_right][%plugin_id%]  *}{literal}
                     {% for (var plugin in p.hooks.top_right) { %}
                        {%# p.hooks.top_right[plugin] %}
                     {% } %}
                 </div>
             <a href="#{%#o.hash%}/photo/{%#p.id%}/">
-                <img src="{%#p.thumb.url%}{% if (p.edit_datetime) { %}?{%#Date.parseISO(p.edit_datetime)%}{% } %}" alt=""/>
+                <img src="{%#p.thumb.url%}{% if (p.edit_datetime) { %}?{%#Date.parseISO(p.edit_datetime)%}{% } %}" alt="" {% if ($.photos.album && $.photos.album.status == 1 && p.status <= 0) { %} style="opacity: 0.5" title="[`Private photos are not visible in public albums`]"{% } %} />
             </a>
         </div>
         <div class="p-details">
-            <input type="checkbox" id="photos-checkbox-{%#p.id%}" name="photo_id[]" value="{%#p.id%}" 
+            <input type="checkbox" id="photos-checkbox-{%#p.id%}" name="photo_id[]" value="{%#p.id%}"
                         {% if (o.selected) { %}checked="checked"{% } %}
             >
-            <label for="photos-checkbox-{%#p.id%}"><strong{% if (p.status <= 0) { %} class="gray" title="[`Private photo`]"{% } %}>{%#p.name%}</strong></label>
+            <label>
+                <strong{% if (p.status <= 0) { %} class="gray" title="[`Private photo`]"{% } %}>{%#p.name%}</strong>
+            </label>
             <span class="p-rate" {% if (p.rate == 0) { %}style="display: none;"{% } %}>
                 {%#$.photos.getRatingHtml(p.rate, 10, true)%}
             </span>
@@ -197,6 +239,9 @@
                     <div class="small gray"></div>
                 {% } %}
                 <div class="full-description" style="display:none;"></div>
+            {% } %}
+            {% if ($.photos.album && $.photos.album.edit_rights) { %}
+                <div class="small make-key-photo-link"><a href="javascript:void(0)" class="inline-link"><b><i>[`make key photo`]</i></b></a></div>
             {% } %}
         </div>
         <p class="tags">
@@ -297,17 +342,26 @@
 {$photos_per_page = $wa->photos->option("photos_per_page")}
 <script type="text/javascript">
     {if !empty($string)}
-    $.photos.photo_list_string = {json_encode($string)};
+        $.photos.photo_list_string = {json_encode($string)};
     {else}
-    $.photos.photo_list_string = {
-        'loaded':'{_w('%d photo','%d photos',$loaded)}',
-        'of':'{if !empty($total_count)}{$total_count|string_format:"[`of %d`]"}{else}{/if}',
-        'chunk':'{_w('%d photo','%d photos',min($total_count - $loaded,$photos_per_page))}'
-    };
+        $.photos.photo_list_string = {
+            'loaded':'{_w('%d photo','%d photos',$loaded)}',
+            'of':'{if !empty($total_count)}{$total_count|string_format:"[`of %d`]"}{else}{/if}',
+            'chunk':'{_w('%d photo','%d photos',min($total_count - $loaded,$photos_per_page))}'
+        };
     {/if}
+
     $.photos.setAlbum({if isset($album)}{json_encode($album)}{else}null{/if});
     $.photos.photo_stream_cache.set({json_encode(array_values($photos))});
     $.photos.total_count = {if !empty($total_count)}{$total_count}{else}null{/if};
     $.photos.photos_per_page = {$photos_per_page};
     $.photos.setOption('sort_method', '{$sort_method}');
+    {if !empty($album) && $child_albums}
+        $.photos.initAlbumThumbsDragAndDrop($('#album-thumbs-list'), {$album.id});
+    {/if}
+
+    //
+    // see js/photos.js -> $.photos.onLoadPhotoList()
+    // for additional JS that runs after this template is loaded.
+    //
 </script>

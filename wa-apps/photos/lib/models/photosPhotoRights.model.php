@@ -23,6 +23,11 @@ class photosPhotoRightsModel extends waModel
         if ($check_edit && $photo['contact_id'] != $user->getId() && !$user->getRights('photos', 'edit')) {
             return false;
         }
+
+        if (!empty($photo['app_id'])) {
+            return !!$user->getRights($photo['app_id'], 'backend');
+        }
+
         if ($user->isAdmin()) {
             $where = "(group_id >= 0 OR group_id = -".(int)$user->getId().")";
         } else {
@@ -45,10 +50,40 @@ class photosPhotoRightsModel extends waModel
         if (!$photo_ids) {
             return array();
         }
-        $join = '';
-        $where = $this->getWhereByField('photo_id', (array)$photo_ids);
+
+        $unknown_ids = array();
+        foreach((array) $photo_ids as $id) {
+            $unknown_ids[$id] = $id;
+        }
 
         $user = wa()->getUser();
+        $allowed_ids = array();
+
+        // When a photo belongs to another app, check that app's access permissions
+        $by_app = array();
+        $sql = "SELECT id, app_id FROM photos_photo WHERE id IN (?) AND app_id IS NOT NULL";
+        foreach($this->query($sql, array($photo_ids)) as $row) {
+            empty($by_app[$row['app_id']]) && ($by_app[$row['app_id']] = array());
+            $by_app[$row['app_id']][] = $row['id'];
+        }
+        foreach($by_app as $app_id => $ids) {
+            if ($user->getRights($app_id, 'backend')) {
+                $allowed_ids = array_merge($allowed_ids, $ids);
+            }
+            foreach($ids as $id) {
+                unset($unknown_ids[$id]);
+            }
+        }
+
+        // Anything else to check?
+        if (!$unknown_ids) {
+            return $allowed_ids;
+        }
+
+        // Check all other photos against `photos_photo_rights` table
+        $join = '';
+        $where = $this->getWhereByField('photo_id', $photo_ids);
+
         if ($user->isAdmin()) {
             $where .= " AND (group_id >= 0 OR group_id = -".(int)$user->getId().")";
         } else {
@@ -61,6 +96,6 @@ class photosPhotoRightsModel extends waModel
 
         $sql = "SELECT pr.photo_id FROM ".$this->table." pr $join
                 WHERE $where";
-        return array_keys($this->query($sql)->fetchAll('photo_id'));
+        return array_merge($allowed_ids, array_keys($this->query($sql)->fetchAll('photo_id')));
     }
 }

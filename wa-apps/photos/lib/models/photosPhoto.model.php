@@ -4,7 +4,7 @@ class photosPhotoModel extends waModel
 {
     const SOURCE_BACKEND = 'backend';
     const SOURCE_API = 'api';
-    
+
     protected $table = 'photos_photo';
 
     /**
@@ -533,7 +533,7 @@ class photosPhotoModel extends waModel
         }
         return null;
     }
-    
+
     public function add(waRequestFile $file, $data)
     {
         // check image
@@ -568,7 +568,7 @@ class photosPhotoModel extends waModel
                 unset($data[$name]);
             }
         }
-        
+
         $data = array_merge(array(
             'name' => preg_replace('/\.[^\.]+$/', '' ,basename($file->name)),
             'ext' => $file->extension,
@@ -590,8 +590,8 @@ class photosPhotoModel extends waModel
                 $data['groups'] = array(-wa()->getUser()->getId());
             }
         }
-        
-        if ($data['status'] <= 0) {
+
+        if ($data['status'] <= 0 && !array_key_exists('hash', $data)) {
             $data['hash'] = md5(uniqid(time(), true));
         }
         $photo_id = $data['id'] = $this->insert($data);
@@ -607,6 +607,10 @@ class photosPhotoModel extends waModel
 
         // check rigths to upload folder
         $photo_path = photosPhoto::getPhotoPath($data);
+        $thumb_dir = photosPhoto::getPhotoThumbDir($data);
+        if (file_exists($thumb_dir) && is_writable($thumb_dir)) {
+            waFiles::delete($thumb_dir, true);
+        }
         if ((file_exists($photo_path) && !is_writable($photo_path)) ||
             (!file_exists($photo_path) && !waFiles::create($photo_path))) {
             $this->deleteById($photo_id);
@@ -629,15 +633,19 @@ class photosPhotoModel extends waModel
         if ($photo_id && !empty($data['album_id'])) {
             $album_photos_model = new photosAlbumPhotosModel();
 
-            // update note if album is empty and note is yet null
+            // update note and cover photo if album is empty
             $r = $album_photos_model->getByField('album_id', $data['album_id']);
             if (!$r) {
                 $album_model = new photosAlbumModel();
-                $sql = "UPDATE " . $album_model->getTableName() . " SET note = IFNULL(note, s:note) WHERE id = i:album_id";
+                $sql = "UPDATE " . $album_model->getTableName() . "
+                        SET note = IFNULL(note, s:note),
+                            key_photo_id = i:photo_id
+                        WHERE id = i:album_id";
                 $time = !empty($exif_data['DateTimeOriginal']) ? strtotime($exif_data['DateTimeOriginal']) : time();
                 $album_model->query($sql, array(
                     'note' => mb_strtolower(_ws(date('F', $time))).' '._ws(date('Y', $time)),
-                    'album_id' => $data['album_id']
+                    'album_id' => $data['album_id'],
+                    'photo_id' => $photo_id,
                 ));
             }
 
@@ -670,7 +678,7 @@ class photosPhotoModel extends waModel
 
         return $photo_id;
     }
-    
+
     private function correctOrientation($orientation, waImage $image)
     {
         $angles = array(
@@ -684,7 +692,7 @@ class photosPhotoModel extends waModel
         }
         return false;
     }
-    
+
     private function urlExists($url, $photo_id)
     {
         $where = "url = s:url AND id != i:id";
@@ -705,7 +713,7 @@ class photosPhotoModel extends waModel
         }
         return $url;
     }
-    
+
     public function rotate($id, $clockwise = true)
     {
         $photo_rights_model = new photosPhotoRightsModel();
@@ -765,7 +773,7 @@ class photosPhotoModel extends waModel
                     } catch(Exception $e) {
                         waLog::log($e->getMessage());
                     }
-                    
+
                 } else {
                     throw new waException("Error while rotate. Operation canceled");
                 }
@@ -780,5 +788,14 @@ class photosPhotoModel extends waModel
             throw $e;
         }
     }
-    
+
+    public function countAllByApp()
+    {
+        $sql = "SELECT app_id, count(*)
+                FROM {$this->table}
+                WHERE app_id IS NOT NULL
+                GROUP BY app_id";
+        $result = $this->query($sql)->fetchAll('app_id', true);
+        return ifempty($result, array());
+    }
 }

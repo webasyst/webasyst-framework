@@ -43,15 +43,16 @@ class photosFrontendAlbumAction extends photosFrontendCollectionViewAction
             $this->layout->assign('root_album_id', $root_album_id);
         }
 
-        // "childcrumbs" - list of childs (sub-albums). Use in 'plain' template
-        $childcrumbs = $this->album_model->getChildcrumbs($this->album['id'], true);
+        $child_albums = $this->view->getHelper()->photos->childAlbums($this->album['id']);
+
         waRequest::setParam('breadcrumbs', $breadcrumbs);
         waRequest::setParam('nofollow', $this->album['status'] <= 0 ? true : false);
         waRequest::setParam('disable_sidebar', true);
 
         $this->setThemeTemplate('album.html');
         $this->view->assign('album', $this->album);
-        $this->view->assign('childcrumbs', $childcrumbs);
+        $this->view->assign('childcrumbs', $child_albums);
+        $this->view->assign('child_albums', $child_albums);
 
         $this->getResponse()->addJs('js/common.js?v='.wa()->getVersion(), true);
         $this->finite();

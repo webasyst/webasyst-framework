@@ -135,6 +135,34 @@ class photosAlbumModel extends waModel
         return $descendant;
     }
 
+    public function getChildren($parent_id)
+    {
+        $user = wa()->getUser();
+        if ($user->isAdmin('photos')) {
+            $rights_sql = '(r.group_id >= 0 OR r.group_id = -'.$user->getId().')';
+        } else {
+            $group_ids = $user->getGroups();
+            $group_ids[] = 0;
+            $group_ids[] = -$user->getId();
+            $rights_sql = 'r.group_id IN ('.implode(",", $group_ids).')';
+        }
+
+        $sql = "SELECT a.*, ac.count
+                FROM ".$this->table." a
+                JOIN photos_album_rights r
+                    ON a.id = r.album_id
+                        AND {$rights_sql}
+                LEFT JOIN photos_album_count ac
+                    ON a.id = ac.album_id
+                        AND ac.contact_id = i:contact_id
+                WHERE parent_id=i:parent_id
+                ORDER BY sort";
+        return $this->query($sql, array(
+            'parent_id' => $parent_id,
+            'contact_id' => $user->getId(),
+        ))->fetchAll($this->id);
+    }
+
     public function getAlbums($public_only = false, $type = null, $owned_only = false, $count = true)
     {
         $user = wa()->getUser();
@@ -499,32 +527,6 @@ class photosAlbumModel extends waModel
     }
 
     /**
-    * Get "childcrumbs" (sub-albums) for album (list of childrens)
-
-    * @param int $id
-    * @param bool $escape
-    * @return array of items array('name' => '..', 'full_url' => '..')
-    */
-    public function getChildcrumbs($id, $escape = false)
-    {
-
-        $sql = "SELECT id, full_url, name, note FROM {$this->table} WHERE parent_id = i:id AND status = 1";
-        $result = $this->query($sql, array(
-            'id' => $id
-        ));
-        $childcrumbs = array();
-        foreach ($result as $album) {
-            $childcrumbs[] = array(
-                'id' => $album['id'],
-                'name' => $escape ? photosPhoto::escape($album['name']) : $album['name'],
-                'full_url' => photosFrontendAlbum::getLink($album),
-                'note' => $escape ? photosPhoto::escape($album['note']) : $album['note']
-            );
-        }
-        return $childcrumbs;
-    }
-
-    /**
      * Delete album with all relating info (+ taking into account children. Children 'jump' up one level)
      *
      * @param integer $album_id
@@ -642,5 +644,34 @@ class photosAlbumModel extends waModel
             $counter++;
         }
         return $url;
+    }
+
+    public function keyPhotos(&$albums)
+    {
+        $key_photo_ids = array();
+        foreach($albums as $aid => $a) {
+            if ($a['key_photo_id']) {
+                $key_photo_ids[] = $a['key_photo_id'];
+            }
+        }
+
+        $collection = new photosCollection($key_photo_ids);
+        $photos = $collection->getPhotos('*,thumb_96x96,thumb_192x192');
+        foreach($albums as &$a) {
+            if ($a['key_photo_id'] && !empty($photos[$a['key_photo_id']])) {
+                $a['key_photo'] = $photos[$a['key_photo_id']];
+                $a['key_photo']['thumb'] = $a['key_photo']['thumb_192x192'];
+            } else {
+                if ($a['key_photo_id']) {
+                    $this->updateById($a['id'], array(
+                        'key_photo_id' => null,
+                    ));
+                }
+                $a['key_photo'] = null;
+            }
+        }
+        unset($a);
+
+        return $albums;
     }
 }

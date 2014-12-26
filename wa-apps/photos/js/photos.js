@@ -16,8 +16,43 @@
                 $.History.bind(function () {
                     $.photos.dispatch();
                 });
+
+                $.History.unbind = function (state, handler) {
+                    if (handler) {
+                        if ($.History.handlers.specific[state]) {
+                            $.each($.History.handlers.specific[state], function (i, h) {
+                                if (h === handler) {
+                                    $.History.handlers.specific[state].splice(i, 1);
+                                    return false;
+                                }
+                            });
+                        }
+                    } else {
+                        // We have a generic handler
+                        handler = state;
+                        $.each($.History.handlers.generic, function (i, h) {
+                            if (h === handler) {
+                                $.History.handlers.generic.splice(i, 1);
+                                return false;
+                            }
+                        });
+                    }
+                };
+
+                $.History.one = function(state, handler) {
+                    if (!handler) {
+                        handler = state;
+                        state = null;
+                    }
+                    var h = function() {
+                        handler.call(this);
+                        $.History.unbind.apply($.History, state ? [state, h] : [h]);
+                    };
+                    $.History.bind.apply($.History, state ? [state, h] : [h]);
+                };
             }
             $.wa.errorHandler = function (xhr) {
+                $.storage.del('photos/hash');
                 if (xhr.status === 403) {
                     $("#content").html('<div class="content left'+$.photos_sidebar.width+'px"><div class="block double-padded">' + xhr.responseText + '</div></div>');
                     return false;
@@ -30,20 +65,20 @@
                 return true;
             }
             this.options = options;
-            var hash = window.location.hash;
-            if (hash === '#/' || !hash) {
-                hash = $.storage.get('photos/hash');
-                if (hash && hash != null) {
-                    this.load_from_hash = 2;
-                    $.wa.setHash('#/' + hash);
-                } else {
-                    this.dispatch();
-                }
+            var hash = window.location.hash || $.storage.get('photos/hash');
+            if (hash && hash != window.location.hash) {
+                this.load_from_hash = 2;
+                $.wa.setHash('#/' + hash);
             } else {
-                $.wa.setHash(hash);
+                this.dispatch();
             }
         },
         dispatch: function (hash) {
+            if ($.photos.ignore_dispatch) {
+                $.photos.ignore_dispatch--;
+                return;
+            }
+
             $.photos.hash = '';
             if (hash == undefined) {
                 hash = window.location.hash;
@@ -59,7 +94,7 @@
                         if (i < 2) {
                             if (i === 0) {
                                 actionName = h;
-                            } else if (actionName == 'tag' || actionName == 'search' || actionName == 'plugins' || actionName == 'pages') {
+                            } else if (actionName == 'tag' || actionName == 'search' || actionName == 'plugins' || actionName == 'pages' || actionName == 'app') {
                                 attrMarker = i;
                                 break;
                             } else if (parseInt(h, 10) != h && h.indexOf('=') == -1) {
@@ -84,12 +119,12 @@
                             this.load_from_hash--;
                         }
                         this[actionName + 'Action'].apply(this, attr);
+
                         // save last page to return to by default later
                         $.storage.set('photos/hash', $.photos.hash);
                     } else {
-                        if (console) {
-                            console.log('Invalid action name:', actionName+'Action');
-                        }
+                        $.storage.del('photos/hash');
+                        console && console.log('Invalid action name:', actionName+'Action');
                     }
                 } else {
                     this.beforeAnyAction();
@@ -98,6 +133,14 @@
             } else {
                 this.beforeAnyAction();
                 this.defaultAction();
+            }
+        },
+
+        ignore_dispatch: 0,
+        forceHash: function(hash) {
+            if (hash != window.location.hash) {
+                $.photos.ignore_dispatch = 1;
+                window.location.hash = hash;
             }
         },
 
@@ -194,13 +237,24 @@
         },
 
         defaultAction: function () {
-            $.storage.del('photos/hash');
-            this.photosAction();
+            if (window.location.hash || !$('#album-list ul li.dr').length) {
+                $.storage.set('photos/hash', 'photos/');
+                this.photosAction();
+            } else {
+                $.storage.set('photos/hash', 'albums/');
+                this.albumsAction();
+            }
         },
 
         photosAction: function () {
             $.photos.loadDispatch(arguments, function() {
                 $.photos.load("?module=photo&action=list", $.photos.onLoadPhotoList);
+            });
+        },
+
+        albumsAction: function () {
+            $.photos.loadDispatch(arguments, function() {
+                $.photos.load("?action=albums");
             });
         },
 
@@ -219,6 +273,12 @@
         tagAction: function (name) {
             $.photos.loadDispatch(arguments, function() {
                 $.photos.load("?module=tag&action=photos&tag=" + name, $.photos.onLoadPhotoList);
+            });
+        },
+
+        appAction: function (app_id) {
+            $.photos.loadDispatch(arguments, function() {
+                $.photos.load("?module=photo&action=list&app_id=" + app_id, $.photos.onLoadPhotoList);
             });
         },
 
@@ -407,6 +467,8 @@
                 }
 
             }
+
+            $.Retina && $.photos.options.retina_2x_enabled && target.find('img').retina();
         },
 
         selectPhotoListView: function(view) {
@@ -454,6 +516,16 @@
                 li.find('.count:first').text(album.count);
                 li.find('.count-new:first').text('');
                 $('#album-list-container').trigger('uncollapse_section', li);
+
+                // Album cover selection controller
+                if (album.edit_rights) {
+                    $('#photo-list').on('click', '.make-key-photo-link', function() {
+                        $('#photo-list .key-photo').removeClass('key-photo');
+                        $li = $(this).closest('li').addClass('key-photo');
+                        album.key_photo_id = $li.data('photo-id');
+                        $.post('?module=album&action=keyPhoto', { album_id: album.id, photo_id: album.key_photo_id });
+                    });
+                }
             }
             if(!view) {
                 view = 'thumbs';
@@ -465,13 +537,14 @@
             }
             $.photos.list_template = 'template-photo-'+view;
 
-
             $.photos.renderPhotoList();
             $.photos.fixRightToolbar();
 
             $.photos.setTitle($('#photo-list-name').text());
             $.photos.menu.init('list');
             $.photos.selectPhotoListView(view);
+
+            $.Retina && $.photos.options.retina_2x_enabled && $('#album-thumbs-list img').retina();
 
             $('#p-block .p-content-control li a.album-view').click(function() {
                 var new_view = $(this).attr('data-action');
@@ -744,6 +817,7 @@
                 $.photos.scrollTop();
             }
 
+            $('#content').trigger('photos_list_load');
         },
 
         loadPhoto: function (id) {
@@ -751,20 +825,20 @@
             // to photo-page of another collection by passing the going to page of collection (photo-list)
             if ($.photos.photo_stream_cache.hash != $.photos.hash) {
                 $.photos.loadNewPhoto(id);
-                return;
-            }
-            var photo = $.photos.photo_stream_cache.getById(id);
-            if (!photo) {
-                photo = $.photos.photo_stack_cache.getById(id);
-                if (photo) {
-                    $.photos.setTitle(photo.name_not_escaped);
-                    $.photos.loadPhotoInStack(photo);
-                } else {
-                    $.photos.loadNewPhoto(id);
-                }
             } else {
-                $.photos.setTitle(photo.name_not_escaped);
-                $.photos.loadPhotoCompletly(photo);
+                var photo = $.photos.photo_stream_cache.getById(id);
+                if (!photo) {
+                    photo = $.photos.photo_stack_cache.getById(id);
+                    if (photo) {
+                        $.photos.setTitle(photo.name_not_escaped);
+                        $.photos.loadPhotoInStack(photo);
+                    } else {
+                        $.photos.loadNewPhoto(id);
+                    }
+                } else {
+                    $.photos.setTitle(photo.name_not_escaped);
+                    $.photos.loadPhotoCompletly(photo);
+                }
             }
         },
 
@@ -1831,6 +1905,23 @@
                 photos: photo_stream.photos,
                 current_photo: stream.getCurrent()
             });
+
+            // Go to prev or next photo when user clicks on an arrow over the photo
+            $('#p-block .p-one-photo > .p-image-nav').click(function() {
+                if ($(this).hasClass('p-rewind')) {
+                    var prev = $.photos.photo_stream_cache.getPrev();
+                    if (prev) {
+                        $.photos.goToHash($.photos.getHashByPhotoId(prev.id), false);
+                        $.photos.shift_next = true;
+                    }
+                } else {
+                    var next = $.photos.photo_stream_cache.getNext();
+                    if (next) {
+                        $.photos.goToHash($.photos.getHashByPhotoId(next.id), false);
+                        $.photos.shift_next = true;
+                    }
+                }
+            });
         },
 
         _chooseProperThumb: function(photo)
@@ -2097,7 +2188,7 @@
                             photo_id: data,
                             url: '?module=photo&action=delete',
                             dataType: 'json',
-                            data: { photos_length: original_photo_id.length },
+                            data: { photos_length: $.isArray(original_photo_id) ? original_photo_id.length : 1 },
                             success: function(r, data) {
                                 if (r.status == 'ok') {
                                     denied_photo_id = denied_photo_id.concat(r.data.denied_photo_id);
@@ -2110,8 +2201,8 @@
                             },
                             fullSuccess: function(r) {
                                 var hash;
-                                if (!$.isArray(original_photo_id)) { // one photo page
-                                    if (r.status == 'ok') {
+                                if (r.status == 'ok') {
+                                    if (!$.isArray(original_photo_id)) { // one photo page
                                         if (denied_photo_id.length) {
                                             alert($_("You don't have sufficient access rights"));
                                         }
@@ -2120,25 +2211,48 @@
                                             $.photos.photo_stack_cache.deleteById(photo_id);
                                         } else {
                                             var stream = $.photos.photo_stream_cache,
-                                                next = stream.getNext(photo_id);
+                                                next = stream.getNext(original_photo_id);
                                             if (next) {
                                                 hash = $.photos.getHashByPhotoId(next.id);
+                                            } else {
+                                                hash = stream.hash;
                                             }
                                             stream.deleteById(photo_id);
                                         }
-                                    }
-                                } else { // photo list page
-                                    if (r.status == 'ok') {
+
+                                        $.wa.setHash(hash);
+                                        fn && fn(r);
+                                    } else { // photo list page
                                         if (r.data.alert_msg) {
                                             alert(r.data.alert_msg);
                                         }
+
+                                        var removed_photo_ids = {};
+                                        $.each(photo_id, function(i, id) {
+                                            removed_photo_ids[id] = id;
+                                        });
+                                        if (r.data.denied_photo_id && r.data.denied_photo_id.length) {
+                                            $.each(r.data.denied_photo_id, function(i, id) {
+                                                delete removed_photo_ids[id];
+                                            });
+                                        }
+                                        removed_photo_ids = $.map(removed_photo_ids, function(i, id) {
+                                            $.photos.photo_stream_cache.deleteById(photo_id[i]);
+                                            return id;
+                                        });
+
+                                        $('#photo-list li.selected').trigger('select', false);
+
+                                        if (removed_photo_ids.length) {
+                                            $.photos.makeDeleteAnimation(removed_photo_ids, function() {
+                                                fn && fn(r);
+                                            });
+                                        } else {
+                                            fn && fn(r);
+                                        }
                                     }
-                                }
-                                if (r.status == 'ok' && !r.data.denied_all) {
-                                    $.photos.goToHash(hash || $.photos.hash);
-                                }
-                                if (typeof fn == 'function') {
-                                    fn();
+                                } else {
+                                    fn && fn(r);
                                 }
                             }
                         });
@@ -2527,10 +2641,26 @@
             });
         },
 
+        makeDeleteAnimation: function(photo_ids, done) {
+            var ids = {};
+            $.each(photo_ids, function(i, id) {
+                ids[id] = true;
+            });
+            var $lis = $('#photo-list').children().filter(function() {
+                return !!ids[$(this).data('photo-id')];
+            }).animate({ width: 0 }, function() {
+                $lis.remove();
+                done && done();
+            });
+        },
+
         highlightSidebarItem: function() {
             var href = $.photos.hash;
             $('#p-sidebar li.selected').removeClass('selected');
-            var link = $('#p-sidebar li a[href^="#'+href+'"]');
+            var link = $('#p-sidebar li a[href="#'+(href||'/')+'"]');
+            if (!link.length) {
+                link = $('#p-sidebar li a[href^="#'+(href||'/')+'"]');
+            }
             if (link.length) {
                 link.parents('li:first').addClass('selected');
             }
@@ -3083,6 +3213,23 @@
             }
         },
 
+        // Drag-and-drop to sort sub-albums above photo list in a single album,
+        // or root albums in Albums page
+        initAlbumThumbsDragAndDrop: function($ul, parent_id) {
+            $ul.sortable({
+                handle: 'img',
+                distance: 5,
+                tolerance: 'pointer',
+                stop: function(event, ui) {
+                    $.post("?module=album&action=move", {
+                        id: ui.item.data('album-id'),
+                        before_id: ui.item.next().data('album-id') || 0,
+                        parent_id: parent_id
+                    });
+                }
+            });
+        },
+
         hooks_manager: {
             handlers: {},
             /**
@@ -3175,16 +3322,24 @@ $(function () {
     /**
      * Selection photos in photo-list section
      */
-    // when 'shift' held on and there are selected photo forbid defaul browser selecting
-    $(document).keydown(function(e) {
-        if (e.keyCode == 16) {
-            document.body.onselectstart = function() { return false; };
-        }
-    }).keyup(function(e) {
-        if (e.keyCode == 16) {
-            document.body.onselectstart = null;
-        }
-    });
+
+    // Prevent text selection in photo list while 'shift' key is held.
+    (function() {
+        var prevent_selection = false;
+        $(document).on('selectstart', '#photo-list', function() {
+            return !prevent_selection;
+        });
+        $(document).keydown(function(e) {
+            if (e.keyCode == 16) {
+                prevent_selection = true;
+            }
+        }).keyup(function(e) {
+            if (e.keyCode == 16) {
+                prevent_selection = false;
+            }
+        });
+    })();
+
     // handler of triggerable 'select' event
     $("#photo-list li").live('select', function(e, selected, need_count) {
         selected = selected !== undefined ? selected : true;
@@ -3205,74 +3360,83 @@ $(function () {
         }
     });
 
-    // when select photo by hand. Realizes group selecting of items by shift + click
-    function photoListItemCheckHandler(e, ext) {
-        var shiftKey = e.shiftKey,
-            checked = this.checked;
-        if (ext) {
-            shiftKey = ext.shiftKey;
-            checked = ext.checked;
-        }
-        var self = $(this).parents('li:first');
-        if (checked) {
-            self.addClass('selected');
-        } else {
-            self.removeClass('selected');
-        }
-        if (shiftKey && checked) {   // when hold shift
-            // look before current
-            var photo_list = $('#photo-list'),
-                started = photo_list.data('last_checked') || photo_list.find('li:first').addClass('selected');
 
-            // try find started before current
-            var found = self.prevAll('.selected[data-photo-id='+started.attr('data-photo-id')+']');
-            if (found.length) {
-                var started = started.get(0),
-                    li = self.prev();
-                while (li.length && started != li.get(0)) {
-                    li.addClass('selected').find('input').attr('checked', true);
-                    li = li.prev();
-                }
+    // Shift+click on an image selects all between this one and previous one clicked
+    (function() {
+        var $last_li_checked = null;
+        var $last_li_unchecked = null;
+        $('#content').on('click', '#photo-list li .p-details input:checkbox, #photo-list li .p-details label', function(e) {
+            var $li = $(this).closest('li');
+            var $checkbox = $li.find('.p-details input:checkbox');
+            var new_status;
+            if ($checkbox.is(e.target)) {
+                new_status = $checkbox.prop('checked');
             } else {
-                found = self.nextAll('.selected[data-photo-id='+started.attr('data-photo-id')+']');
-                if (found.length) {
-                    var started = started.get(0),
-                        li = self.next();
-                    while (li.length && started != li.get(0)) {
-                        li.addClass('selected').find('input').attr('checked', true);
-                        li = li.next();
-                    }
+                new_status = !$checkbox.prop('checked');
+                $checkbox.prop('checked', new_status).change();
+            }
+
+            if (new_status) {
+                if (e.shiftKey && $last_li_checked) {
+                    setCheckedBetween($last_li_checked, $li, true);
                 }
+                $last_li_checked = $li;
+                $last_li_unchecked = null;
+            } else {
+                if (e.shiftKey && $last_li_unchecked) {
+                    setCheckedBetween($last_li_unchecked, $li, false);
+                }
+                $last_li_checked = null;
+                $last_li_unchecked = $li;
             }
-            if (!photo_list.data('last_checked') && !found.length) {
-                started.removeClass('selected');
-            }
-        } else {
-            if (checked) {
-                $("#photo-list").data('last_checked', self);
-            }
-        }
-        $('#share-menu-block, #organize-menu-block').trigger('recount');
-    }
-
-    $("#photo-list li input").live('click', photoListItemCheckHandler);
-
-    // when select photo by hand (see below). Firefox version
-    // In Firefox shift+click on label don't delegate to coresponding input
-    if ($.browser.mozilla) {
-        $("#photo-list li label").live('click', function(e) {
-            if (!e.shiftKey) {
+        });
+        function setCheckedBetween($from, $to, status) {
+            if (!$from || !$to || !$from[0] || !$to[0] || $from.is($to[0])) {
                 return;
             }
-            var item = $(e.target),
-                input;
-            if (!$(item).is('label')) {
-                item = $(item).parents('label:first');
-            }
-            input = $('#' + item.attr('for'));
-            input.trigger('click', {shiftKey: e.shiftKey, checked: !input.attr('checked')});
-        });
-    }
+
+            var is_between = false;
+            $to.parent().children().each(function(i, el) {
+                if (!is_between) {
+                    if ($from.is(el) || $to.is(el)) {
+                        is_between = true;
+                    }
+                } else {
+                    if ($from.is(el) || $to.is(el)) {
+                        return false;
+                    }
+                    var $checkbox = $(el).find('.p-details input:checkbox');
+                    if ($checkbox.prop('checked') != status) {
+                        $checkbox.prop('checked', status).change();
+                    }
+                }
+            });
+        }
+    })();
+
+    // Highlight photos when selected
+    $("#photo-list li input").live('change', function () {
+        if (this.checked) {
+            $(this).closest('li').addClass('selected');
+        } else {
+            $(this).closest('li').removeClass('selected');
+        }
+        $('#share-menu-block, #organize-menu-block').trigger('recount');
+    });
+
+    // Hide arrows over the photo if there are nowhere to go in its direction
+    $.photos.hooks_manager.bind('afterLoadPhoto', function() {
+        if ($.photos.photo_stream_cache.getPrev()) {
+            $('#p-block .p-one-photo > .p-image-nav.p-rewind').show();
+        } else {
+            $('#p-block .p-one-photo > .p-image-nav.p-rewind').hide();
+        }
+        if ($.photos.photo_stream_cache.getNext()) {
+            $('#p-block .p-one-photo > .p-image-nav.p-ff').show();
+        } else {
+            $('#p-block .p-one-photo > .p-image-nav.p-ff').hide();
+        }
+    });
 
     $.photos_dragndrop.init();
 });

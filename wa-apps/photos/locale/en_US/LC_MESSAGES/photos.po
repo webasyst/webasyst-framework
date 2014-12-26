@@ -1594,3 +1594,80 @@ msgstr ""
 #: /wa-apps/photos/themes/default/photos-thumbs.html:41
 msgid "Load more"
 msgstr ""
+
+#: /wa-apps/photos/templates/actions/backend/BackendAlbums.html:6
+msgid "The album list is empty."
+msgstr ""
+
+#: /wa-apps/photos/templates/actions/backend/BackendAlbums.html:34
+#: /wa-apps/photos/templates/actions/photo/PhotoList.html:90
+#: /wa-apps/photos/templates/actions/photo/PhotoList.html:166
+#: /wa-apps/photos/lib/classes/photosViewTree.class.php:140
+#: /wa-apps/photos/themes/default/album.html:26
+#: /wa-apps/photos/themes/default/home.html:24
+msgid "(no name)"
+msgstr ""
+
+#: /wa-apps/photos/templates/actions/dialog/DialogAlbumSettings.html:17
+#: /wa-apps/photos/templates/actions/dialog/DialogAlbumSettings.html:101
+#: /wa-apps/photos/templates/actions/dialog/DialogCreateAlbum.html:83
+msgid "Filter"
+msgstr ""
+
+#: /wa-apps/photos/templates/actions/dialog/DialogAlbumSettings.html:112
+#: /wa-apps/photos/templates/actions/dialog/DialogCreateAlbum.html:110
+msgid "<strong>%s</strong> album only"
+msgstr ""
+
+#: /wa-apps/photos/templates/actions/dialog/DialogAlbumSettings.html:113
+#: /wa-apps/photos/templates/actions/dialog/DialogCreateAlbum.html:111
+msgid "Dynamic albums filter photos only from albums they belong to."
+msgstr ""
+
+#: /wa-apps/photos/templates/actions/dialog/DialogCreateAlbum.html:77
+msgid "A static album for adding and arranging photos manually."
+msgstr ""
+
+#: /wa-apps/photos/templates/actions/dialog/DialogCreateAlbum.html:86
+msgid "A dynamic album based on search criteria, e.g. rating or tags."
+msgstr ""
+
+#: /wa-apps/photos/templates/actions/photo/PhotoList.html:82
+#: /wa-apps/photos/templates/actions/photo/PhotoList.html:82
+msgid "Drag some photos anywhere on this page to start upload"
+msgstr ""
+
+#: /wa-apps/photos/templates/actions/photo/PhotoList.html:172
+msgid "In this album"
+msgstr ""
+
+#: /wa-apps/photos/templates/actions/photo/PhotoList.html:209
+msgid "This is a key photo for this album"
+msgstr ""
+
+#: /wa-apps/photos/templates/actions/photo/PhotoList.html:217
+msgid "Private photos are not visible in public albums"
+msgstr ""
+
+#: /wa-apps/photos/templates/actions/photo/PhotoList.html:244
+msgid "make key photo"
+msgstr ""
+
+#: /wa-apps/photos/templates/layouts/Default.html:105
+#: /wa-apps/photos/themes/default/photo.html:18
+msgid "← Previous"
+msgstr ""
+
+#: /wa-apps/photos/lib/actions/backend/photosBackendLog.controller.php:12
+msgid "Uploaded %d photo"
+msgid_plural "Uploaded %d photos"
+msgstr[0] ""
+msgstr[1] ""
+
+#: /wa-apps/photos/lib/config/site.php:125
+msgid "Returns the entire album tree as an array (<em>return_html = false</em>) or as an pre-rendered HTML (<em>return_html = true</em>). <em>custom_params = true</em> will include album custom parameters into the output."
+msgstr ""
+
+#: /wa-apps/photos/lib/config/site.php:126
+msgid "Returns sub albums by <em>parent_album_id</em>. If <em>parent_album_id</em> is empty, root albums will be returned."
+msgstr ""

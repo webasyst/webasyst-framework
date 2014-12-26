@@ -50,11 +50,17 @@ class photosDialogEmbedPhotoListAction extends waViewAction
         }
 
         $context = photosPhoto::getEmbedPhotoListContext($hash, $size, $limit);
+        $domains = $context['domains'];
+        if (count($domains) <= 1) {
+            $domains = array();
+        }
 
         $this->view->assign('sizes', $sizes);
         $this->view->assign('size',  $size);
         $this->view->assign('context', $context);
         $this->view->assign('is_entire', !$photo_ids);
         $this->view->assign('entire_context', $entire_context);
+        $this->view->assign('original_domain', wa()->getRootUrl(true));
+        $this->view->assign('domains', $domains);
     }
 }

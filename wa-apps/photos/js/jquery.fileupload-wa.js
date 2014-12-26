@@ -53,6 +53,24 @@
             // option of the $.ajax upload requests:
             dataType: 'json',
 
+            // Add CSS class #wa.file-hover when user drags a file over the document
+            dragover: function (e) {
+                if (location.hash.substr(0, 7) == '#/pages') {
+                    return;
+                }
+
+                if (!window.dropZoneTimeout) {
+                    $('#wa').addClass('file-hover');
+                } else {
+                    clearTimeout(window.dropZoneTimeout);
+                }
+
+                window.dropZoneTimeout = setTimeout(function () {
+                    $('#wa').removeClass('file-hover');
+                    window.dropZoneTimeout = null;
+                }, 100);
+            },
+
             // The add callback is invoked as soon as files are added to the fileupload
             // widget (via file input selection, drag & drop or add API call).
             // See the basic file upload widget for more information:
@@ -257,8 +275,34 @@
                     $('#p-upload-filescount').hide();
                     $("#upload-error").show();
                 }
-                // log action
-                $.get('?module=backend&action=log&action_to_log=photos_upload');
+
+                var that = self.data('fileupload');
+                var files_count = that.filesCount;
+
+                if (files_count) {
+                    var waiting = 2;
+                    var data = null;
+                    var showMessage = function() {
+                        var $place_for_messages = $('#place-for-messages').hide();
+                        $place_for_messages.html('<p><span class="highlighted"><i class="icon10 yes"></i> <em></em></span></p>').slideDown();
+                        $place_for_messages.find('.highlighted em').text(data);
+                        setTimeout(function() {
+                            $place_for_messages.slideUp(function() {
+                                $place_for_messages.html('');
+                            });
+                        }, 5000);
+                    };
+                    $('#content').one('photos_list_load', function() {
+                        waiting--;
+                        !waiting && showMessage();
+                    });
+                    // log action and get localized message at the same time
+                    $.get('?module=backend&action=log&action_to_log=photos_upload&count='+files_count, function(r) {
+                        data = r.data;
+                        waiting--;
+                        !waiting && showMessage();
+                    }, 'json');
+                }
 
                 if (!self.data('is_error') && !self.data('is_aborted')) {
                     var parent_id = parseInt($('#p-uploader-parent').val(), 10);

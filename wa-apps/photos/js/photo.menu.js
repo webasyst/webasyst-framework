@@ -171,7 +171,42 @@
                             d.find('textarea[name=html]').val(context.html);
                             d.find('input[name=url]').val(context.url);
                             $.storage.set('photos/embed_size', size);
+                            saveContextData();
+                            updateDomainInFields();
                         });
+
+                        var $domain_selector = d.find('select[name=domain]');
+                        if ($domain_selector.length) {
+                            saveContextData();
+                            updateDomainInFields();
+                            $domain_selector.change(updateDomainInFields);
+                        }
+                        function saveContextData() {
+                            if ($domain_selector.length) {
+                                $.each(['textarea[name=html]', 'input[name=url]'], function(i, selector) {
+                                    var $el = $(selector);
+                                    $el.data('context_data', $el.val());
+                                });
+                            }
+                        }
+                        function updateDomainInFields() {
+                            if (!$domain_selector.length) {
+                                return false;
+                            }
+
+                            $.each(['textarea[name=html]', 'input[name=url]'], function(i, selector) {
+                                var $el = $(selector);
+                                $el.val($el.data('context_data').split($domain_selector.data('original-domain')).join($domain_selector.val()));
+                            });
+
+                            var $selectted_option = $domain_selector.children(':selected');
+                            if ($selectted_option.data('frontend-url')) {
+                                d.find('input[name=link]').val($selectted_option.data('frontend-url')).closest('.field').slideDown();
+                                d.find('a.link').attr('href', $selectted_option.data('frontend-url'));
+                           } else {
+                                d.find('input[name=link]').closest('.field').slideUp();
+                           }
+                        }
 
                         d.find('input[name=url], textarea[name=html], input[name=link]').click(function() {
                             var selection = $(this).getSelection();
@@ -255,7 +290,7 @@
         }
 
     });
-    
+
     $('#restore-original').live('click', function() {
         if (confirm($_('This will reset all changes you applied to the image after upload, and will restore the image to its original. Are you sure?'))) {
             $.photos.setCover();
@@ -264,5 +299,5 @@
             });
         }
     });
-    
+
 })(jQuery);

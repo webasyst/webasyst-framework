@@ -1,4 +1,4 @@
-<div class="dialog width650px height400px" id="album-create-dialog">
+<div class="dialog width700px height500px" id="album-create-dialog">
     <div class="dialog-background"></div>
     <div class="dialog-window">
         <form method="post" action="?module=album&action=save{if $parent}&parent_id={$parent.id}{/if}">
@@ -13,36 +13,19 @@
                                 [`Album name`]
                             </div>
                             <div class="value">
-                                <input name="name" type="text" class="large" >
+                                <input name="name" type="text" class="large p-full-width-input long" />
                             </div>
                         </div>
-                    </div>
-                    <div class="field-group">
-                        <div class="field">
+                        <div class="field" id="frontend-url-field" style="display:none">
                             <div class="name">
-                                [`Album type`]
+                                [`Frontend URL`]
                             </div>
-                            <div class="value no-shift">
-                                <ul class="thumbs li200px p-album-type-selector">
-                                    <li>
-                                        <label for="type-static">
-                                            <input id="type-static" type="radio" name="type" value="0" {if $parent && $parent.type == photosAlbumModel::TYPE_DYNAMIC}disabled{else}checked="checked"{/if}>
-                                            <strong>[`Album`]</strong>
-                                            <i class="icon16 pictures"></i>
-                                            <br><br>
-                                            <span class="hint">[`Static album which allows adding and arranging photos in manually`]</span>
-                                        </label>
-                                    </li>
-                                    <li>
-                                        <label for="type-dynamic">
-                                            <input id="type-dynamic" type="radio" name="type" value="1" {if $parent && $parent.type == photosAlbumModel::TYPE_DYNAMIC}checked="checked"{/if}>
-                                            <strong>[`Smart album`]</strong>
-                                            <i class="icon16 funnel"></i>
-                                            <br><br>
-                                            <span class="hint">[`Dynamic album based on search criteria, e.g. rating, album hierarchy, tags`].</span>
-                                        </label>
-                                    </li>
-                                </ul>
+                            <div class="value">
+                                {if isset($full_base_url)}
+                                    <span>{$full_base_url}</span><input type="text" name="url" value="">/
+                                {else}
+                                    <span class="hint">[`This album will not be visible in the public gallery because there are no routing rules for the Photos app in your website settings. Use Site app (Routing section) to settle Photos app on your website and to start publishing photos.`]</span>
+                                {/if}
                             </div>
                         </div>
                     </div>
@@ -64,7 +47,7 @@
                                 <label for="ac-access-private">
                                     <i class="icon10 lock-bw overhanging"></i>
                                     <input id="ac-access-all-groups" type="hidden" name="groups[]" value="0" >
-                                    <input id="ac-access-private" type="radio" name="status" value="0" {if $parent && $parent.status <= 0}checked="checked""{/if}>
+                                    <input id="ac-access-private" type="radio" name="status" value="0" {if $parent && $parent.status <= 0}checked="checked"{/if}>
                                     [`Private`]
                                     <span class="hint">
                                         [`Album is visible only to authorized users of the Photos app, or by a private link`].
@@ -90,15 +73,58 @@
                         </div>
                     </div>
 
+                    <div class="field-group">
+                        <div class="field">
+                            <div class="name">
+                                [`Album type`]
+                            </div>
+                            <div class="value no-shift">
+                                <ul class="thumbs li200px p-album-type-selector">
+                                    <li{if !$parent || $parent.type != photosAlbumModel::TYPE_DYNAMIC} class="selected"{/if}>
+                                        <label for="type-static">
+                                            <input id="type-static" type="radio" name="type" value="0" {if $parent && $parent.type == photosAlbumModel::TYPE_DYNAMIC}disabled{else}checked="checked"{/if}>
+                                            <strong>[`Album`]</strong>
+                                            <i class="icon16 pictures"></i>
+                                            <br><br>
+                                            <span class="hint">[`A static album for adding and arranging photos manually.`]</span>
+                                        </label>
+                                    </li>
+                                    <li{if $parent && $parent.type == photosAlbumModel::TYPE_DYNAMIC} class="selected"{/if}>
+                                        <label for="type-dynamic">
+                                            <input id="type-dynamic" type="radio" name="type" value="1"{if $parent && $parent.type == photosAlbumModel::TYPE_DYNAMIC} checked="checked"{/if}>
+                                            <strong>[`Filter`]</strong>
+                                            <i class="icon16 funnel"></i>
+                                            <br><br>
+                                            <span class="hint">[`A dynamic album based on search criteria, e.g. rating or tags.`]</span>
+                                        </label>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
                     {* Smart (dynamic) album specific settings *}
-                    <div class="field-group" id="ac-dynamic-field-group" style="display:none;">
+                    <div class="field-group" id="ac-dynamic-field-group"{if !$parent || $parent.type != photosAlbumModel::TYPE_DYNAMIC} style="display:none;"{/if}>
                         <div class="field">
                             <div class="name">
                                 [`Smart album`]
                             </div>
-                            <div class="value">
+                            <div class="value no-shift">
+
                                 <table class="zebra p-smart-album-setup">
-                                    <tbody><tr>
+                                    <tbody>
+                                    {if $parent}
+                                        <tr>
+                                            <td class="min-width" style="vertical-align: top;">
+                                                <input type="checkbox" disabled="disabled" checked="checked">
+                                            </td>
+                                            <td colspan="3">
+                                                {sprintf('[`<strong>%s</strong> album only`]', $parent.name|escape)}
+                                                <p class="hint" style="margin-bottom: 0;">[`Dynamic albums filter photos only from albums they belong to.`]</p>
+                                            </td>
+                                        </tr>
+                                    {/if}
+                                    <tr>
                                         <td class="min-width">
                                             <input id="ac-condition-rate" type="checkbox" name="condition[]" value="rate">
                                         </td>
@@ -145,7 +171,7 @@
                                         <td>
                                             <select name="access">
                                                 <option value="public">[`public`]</option>
-                                                <option value=private">[`private`]</option>
+                                                <option value="private">[`private`]</option>
                                             </select>
                                         </td>
                                         <td>
@@ -156,7 +182,7 @@
                         </div>
                         <div class="field">
                             <div class="name">[`Order`]</div>
-                            <div class="value">
+                            <div class="value no-shift">
                                 <select name="order">
                                     <option value="">[`uploaded`]</option>
                                     <option value="rate">[`top rated`]</option>
@@ -179,7 +205,7 @@
     </div>
 </div>
 <script type="text/javascript">
-    $(function () {
+    $(function () { "use strict";
         var d = $("#album-create-dialog");
         $("a.p-privacy-settings-link", d).click(function () {
            if ($("div.p-privacy-settings", d).is(":hidden")) {
@@ -195,8 +221,9 @@
         });
 
         var height_static = $('.dialog-window', d).height(),
-            height_dynamic = height_static + 150;
+            height_dynamic = height_static + 10;
         $('input[name=type]').change(function() {
+            $(this).closest('li').addClass('selected').siblings().removeClass('selected');
             if (this.value == '1') {
                 $('#ac-dynamic-field-group').show();
                 $('#ac-album-rate', d).rateWidget({
@@ -210,6 +237,7 @@
                 $('#ac-dynamic-field-group').hide();
                 $('.dialog-window', d).height(height_static);
             }
+            $(window).resize();
         });
 
         // check corresponding checkbox when change control
@@ -225,6 +253,64 @@
         $('select[name=access]', d).click(function() {
             $('#ac-condition-access').attr('checked', true);
         });
+
+        var url_controller = {
+            $url_field: $('#frontend-url-field'),
+            $url_input: $('#frontend-url-field input[name="url"]'),
+            $title_input: d.find('input[name="name"]'),
+            $public_status_input: $('#ac-access-public'),
+            is_title_ignored: false,
+
+            // User modified the title field.
+            // Transliterate title and generate URL automatically.
+            setTitle: function() {
+                if (url_controller.is_title_ignored) {
+                    return;
+                }
+                $.post('?action=transliterate', { t: url_controller.$title_input.val() }, function(r) {
+                    if (r.status == 'ok' && !url_controller.is_title_ignored) {
+                        url_controller.$url_input.val(r.data.t);
+                        url_controller.ensureVisibility();
+                    }
+                }, 'json');
+            },
+
+            // User entered something in the URL field by hand.
+            // Ignore title updates from now on.
+            ignoreTitle: function() {
+                this.is_title_ignored = true;
+                this.ensureVisibility();
+            },
+
+            // Show or hide URL input field depending on state of this form
+            ensureVisibility: function() {
+                var is_public = this.$public_status_input.prop('checked');
+                if (is_public && (this.is_title_ignored || this.$url_input.val())) {
+                    this.$url_field.slideDown();
+                } else {
+                    this.$url_field.slideUp();
+                }
+            },
+
+            init: function() {
+                $("input[name=status]", d).change(function() {
+                    url_controller.ensureVisibility();
+                });
+
+                var timeout = null;
+                $("input[name=name]", d).keyup(function() {
+                    timeout && clearTimeout(timeout);
+                    timeout = setTimeout(function() {
+                        url_controller.setTitle();
+                    }, 300);
+                });
+
+                this.$url_input.one('keypress', function() {
+                    url_controller.ignoreTitle();
+                });
+            }
+        };
+        url_controller.init();
 
         setTimeout(function() {
             d.find('input[name="name"]').focus();

@@ -122,9 +122,11 @@ return array(
             )
         ),
         '$wa' => array(
-            '$wa->photos->tags()' => _w('Returns entire tag list as an array with the following structure: (<em>"id"</em>, <em>"name"</em>, <em>"count"</em>, <em>"size"</em>, <em>"opacity"</em>)'),
+            '$wa->photos->albums([<em>return_html</em>, [<em>custom_params</em>]])' => _w('Returns the entire album tree as an array (<em>return_html = false</em>) or as an pre-rendered HTML (<em>return_html = true</em>). <em>custom_params = true</em> will include album custom parameters into the output.'),
+            '$wa->photos->childAlbums([<em>parent_album_id</em>])' => _w('Returns sub albums by <em>parent_album_id</em>. If <em>parent_album_id</em> is empty, root albums will be returned.'),
             '$wa->photos->photo(<em>photo_id</em>[,<em>size</em>])' => _w('Returns photo by id (<em>photo_id</em>) as an array with the following structure: (<em>"id"</em>, <em>"name"</em>, <em>"description"</em>, <em>"ext"</em>, <em>"size"</em>, <em>"type"</em>, <em>"rate"</em>, <em>"width"</em>, <em>"height"</em>, <em>"contact_id"</em>, <em>"upload_datetime"</em>, <em>"edit_datetime"</em>, <em>"status"</em>, <em>"hash"</em>, <em>"url"</em>, <em>"parent_id"</em>, <em>"stack_count"</em>, <em>"sort"</em>, <em>"thumb_%size%"</em>). Optional <em>size</em> parameter can be used to fetch particular thumbnail size: should be provided in pixels, or as one of the predefined values: <em>"big"</em> for 970, <em>"middle"</em> for 750, <em>"thumbs"</em> for 200x0, <em>"crop"</em> for 96x96'),
             '$wa->photos->photos(<em>search_conditions</em>[,<em>size</em>[, <em>limit</em>]])' => _w('Returns photo list array by search criteria, e.g. <em>"tag/vacations"</em>, <em>"album/12"</em>, <em>"id/1,5,7"</em>. <em>size</em> parameter indicates thumbnail size. <em>limit</em> parameter is MySQL-like: can be either a number (max number of photos to be returned) or a pair of offset, limit (start from and the max number of records to be returned)'),
+            '$wa->photos->tags()' => _w('Returns entire tag list as an array with the following structure: (<em>"id"</em>, <em>"name"</em>, <em>"count"</em>, <em>"size"</em>, <em>"opacity"</em>)'),
             '$wa->photos->themePath("<em>theme_id</em>")' => _ws('Returns path to theme folder by <em>theme_id</em>'),
         ),
     ),

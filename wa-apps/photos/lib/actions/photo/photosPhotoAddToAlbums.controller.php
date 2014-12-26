@@ -44,7 +44,7 @@ class photosPhotoAddToAlbumsController extends waJsonController
             $this->response['albums'] = array_values($albums);
             $this->response['old_albums'] = $old_albums;
         } else {
-            // otherwise coping photos to albums
+            // otherwise copy photos to albums
             $allowed_photo_id = $photo_rights_model->filterAllowedPhotoIds($this->photo_ids, true);
             $denied_photo_id = array_values(array_diff($this->photo_ids, $allowed_photo_id));
 
@@ -54,9 +54,11 @@ class photosPhotoAddToAlbumsController extends waJsonController
 
             if ($allowed_album_id && $allowed_photo_id) {
                 $this->album_photos_model->add($allowed_photo_id, $allowed_album_id);
-                $this->response['albums'] = array_values($this->getAlbumsCounters());
                 $this->log('photos_move', 1);
             }
+
+            $albums = $this->getAlbumsCounters();
+            $this->response['albums'] = array_values($albums);
 
             if ($denied_photo_id) {
                 $this->response['alert_msg'] = photosPhoto::sprintf_wplural(
@@ -67,6 +69,41 @@ class photosPhotoAddToAlbumsController extends waJsonController
                 ) . ', ' . _w("because you don't have sufficient access rights") . '.';
             }
         }
+
+        // Set cover photos for albums if first photo just been added to it
+        $photo_model = new photosPhotoModel();
+        $album_model = new photosAlbumModel();
+        $allowed_photo_id = isset($allowed_photo_id) ? $allowed_photo_id : array($photo_id);
+        $no_cover_album_ids = array();
+        foreach(ifset($allowed_album_id, $album_id) as $album_id) {
+            if (!empty($albums[$album_id]) && empty($albums[$album_id]['key_photo_id'])) {
+                $no_cover_album_ids[] = $album_id;
+            }
+        }
+        $photos = array();
+        while ($allowed_photo_id && $no_cover_album_ids) {
+            // Get random photo from added and make sure it exists
+            shuffle($allowed_photo_id);
+            $photo_id = array_pop($allowed_photo_id);
+            if (!empty($photos[$photo_id])) {
+                $photo = $photos[$photo_id];
+            } else {
+                $photos[$photo_id] = $photo = $photo_model->getById($photo_id);
+            }
+            if (!$photo) {
+                continue;
+            }
+
+            // Photo exists, so add it back
+            $allowed_photo_id[] = $photo_id;
+
+            // Set cover for one album
+            $album_id = array_pop($no_cover_album_ids);
+            $album_model->updateById($album_id, array(
+                'key_photo_id' => $photo_id,
+            ));
+            photosPhoto::generateThumbs($photo, array('192x192'));
+        }
     }
 
     private function getAlbumsCounters()
@@ -74,7 +111,7 @@ class photosPhotoAddToAlbumsController extends waJsonController
         $config = $this->getConfig();
         $last_activity_datetime = $config->getLastLoginTime();
         $albums = array();
-        $photo_albums = $this->album_photos_model->getAlbums($this->photo_ids, array('id', 'name'));
+        $photo_albums = $this->album_photos_model->getAlbums($this->photo_ids, array('id', 'name', 'key_photo_id'));
         foreach ($photo_albums as &$p_albums) {
             foreach ($p_albums as $a_id => &$album) {
                 if (!isset($albums[$a_id])) {

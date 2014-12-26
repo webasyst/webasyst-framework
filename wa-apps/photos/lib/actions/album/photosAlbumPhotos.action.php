@@ -22,12 +22,15 @@ class photosAlbumPhotosAction extends waViewAction
         }
         $album['edit_rights'] = $album_rights_model->checkRights($album, true);
 
+        $child_albums = $album_model->getChildren($album['id']);
+        $album_model->keyPhotos($child_albums);
+
         $hash = '/album/'.$id;
         $frontend_link = photosCollection::getFrontendLink($hash);
         $collection = new photosCollection($hash);
 
         $config = $this->getConfig();
-        
+
         $count = $config->getOption('photos_per_page');
         $photos = $collection->getPhotos("*,thumb,thumb_crop,thumb_middle,thumb_big,tags,edit_rights", 0, $count);
         $photos = photosCollection::extendPhotos($photos);
@@ -54,6 +57,7 @@ class photosAlbumPhotosAction extends waViewAction
         $this->template = 'templates/actions/photo/PhotoList.html';
         $this->view->assign('sidebar_width', $config->getSidebarWidth());
         $this->view->assign('album', $album);
+        $this->view->assign('child_albums', $child_albums);
         $this->view->assign('frontend_link', $frontend_link);
         $this->view->assign('photos', $photos);
         $this->view->assign('title', $collection->getTitle());

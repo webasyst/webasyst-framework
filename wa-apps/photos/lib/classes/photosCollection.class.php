@@ -208,7 +208,7 @@ class photosCollection
              * @param array[string]array $params['options']
              */
             wa()->event('extra_prepare_collection', $params);
-            
+
             if ($this->prepared) {
                 return;
             }
@@ -397,11 +397,27 @@ class photosCollection
             $this->addTitle( sprintf( _w('Tagged “%s”'), $tag['name'] ) );
         }
     }
-    
+
+    protected function appPrepare($app_id, $auto_title = true)
+    {
+        $this->setCheckRights(false);
+        $model = $this->getModel();
+        $this->where[] = "p.app_id = '".$model->escape($app_id)."'";
+
+        if ($auto_title) {
+            $name = $app_id;
+            $apps = wa()->getApps();
+            if (!empty($apps[$app_id])) {
+                $name = $apps[$app_id]['name'];
+            }
+            $this->addTitle($name);
+        }
+    }
+
     protected function tagPrepareIntersection($tag_names)
     {
         $tag_model = new photosTagModel();
-        
+
         $in = array();
         $title = array();
         foreach (explode(',', $tag_names) as $tag_name) {
@@ -414,7 +430,7 @@ class photosCollection
         if (!$in) {
             $this->where[] = "0";
         } else {
-            $sql = "SELECT photo_id, COUNT(tag_id) cnt FROM `photos_photo_tags` 
+            $sql = "SELECT photo_id, COUNT(tag_id) cnt FROM `photos_photo_tags`
                 WHERE tag_id IN (".  implode(',', $in).")
                 GROUP BY photo_id
                 HAVING cnt = ".count($in);
@@ -684,8 +700,8 @@ class photosCollection
         $data = $this->getModel()->query($sql)->fetchAll('id');
         if (!$data) {
             return array();
-        }        
-        
+        }
+
         if ($this->post_fields) {
             $ids = array_keys($data);
             foreach ($this->post_fields as $table => $fields) {
@@ -934,7 +950,7 @@ class photosCollection
         $this->where[] = $condition;
         return $this;
     }
-    
+
     public function addTitle($title, $delim = ', ')
     {
         if (!$title) {
@@ -945,13 +961,13 @@ class photosCollection
         }
         $this->title .= $title;
     }
-    
+
     public function setTitle($title)
     {
         $this->title = $title;
     }
-    
-    public function setCheckRights($check_rights) 
+
+    public function setCheckRights($check_rights)
     {
         $this->check_rights = $check_rights;
     }

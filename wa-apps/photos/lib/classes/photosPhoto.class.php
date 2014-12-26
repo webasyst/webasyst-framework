@@ -7,8 +7,11 @@ class photosPhoto
 
     public static function getPhotoUrl($photo, $size = null, $absolute = false)
     {
+        if (!$size) {
+            $size = 970;
+        }
         $path = self::getPhotoFolder($photo['id']).'/'.$photo['id'];
-        if ($photo['status'] <= 0) {
+        if ($photo['status'] <= 0 && !empty($photo['hash'])) {
             $path .= '.'.$photo['hash'];
         }
         $path .= '/'.$photo['id'].'.'.($size ?  $size.'.' : '').$photo['ext'];
@@ -28,7 +31,7 @@ class photosPhoto
     public static function getPhotoUrlTemplate($photo, $absolute = false)
     {
         $path = self::getPhotoFolder($photo['id']).'/'.$photo['id'];
-        if ($photo['status'] <= 0) {
+        if ($photo['status'] <= 0 && !empty($photo['hash'])) {
             $path .= '.'.$photo['hash'];
         }
         $path .= '/'.$photo['id'].'.%size%.'.$photo['ext'];
@@ -43,10 +46,10 @@ class photosPhoto
     public static function getPhotoThumbDir($photo)
     {
         $path = self::getPhotoFolder($photo['id']).'/'.$photo['id'];
-        if ($photo['status'] <= 0 && $photo['hash']) {
+        if ($photo['status'] <= 0 && !empty($photo['hash'])) {
             $path .= '.'.$photo['hash'].'/';
         }
-        return wa()->getDataPath($path, true);
+        return wa()->getDataPath($path, true, 'photos');
     }
 
     public static function getPhotoThumbPath($photo, $size)
@@ -64,7 +67,7 @@ class photosPhoto
     public static function getPhotoPath($photo)
     {
         $file_name = self::getPhotoFolder($photo['id']).'/'.$photo['id'];
-        if ($photo['status'] <= 0 && $photo['hash']) {
+        if ($photo['status'] <= 0 && !empty($photo['hash'])) {
             $file_name .= '.'.$photo['hash'];
         }
         $file_name .= '.'.$photo['ext'];
@@ -99,7 +102,7 @@ class photosPhoto
         $main_thumbnail_path = self::getPhotoThumbPath($photo, $main_thumbnail_size);
 
         $quality = wa('photos')->getConfig()->getSaveQuality();
-        
+
         foreach ((array)$sizes as $size) {
             if ($size == $main_thumbnail_size) {
                 continue;
@@ -406,6 +409,8 @@ class photosPhoto
             if ($real_sizes && $real_sizes['width'] && $real_sizes['height'] && $style) {
                 $attributes['style'] = !empty($attributes['style']) ? $attributes['style'] : '';
                 $attributes['style'] .= 'width: '.(int)$real_sizes['width'].'px; height: '.(int)$real_sizes['height'].'px; ';
+                $attributes['width'] = (int) $real_sizes['width'];
+                $attributes['height'] = (int) $real_sizes['height'];
             }
         }
         if (!isset($attributes['alt'])) {
@@ -478,8 +483,62 @@ class photosPhoto
             'link' => $link,
             'smarty_code' => $smarty_code,
             'count' => count($photos),
-            'all_public' => $all_public
+            'all_public' => $all_public,
+            'domains' => self::getDomains($hash),
         );
+    }
+
+    /** Description of all framework settlements. */
+    public static function getDomains($hash, $photo=null)
+    {
+        $domains = array();
+
+        // Params for getRouteUrl() based on $hash or $photo
+        if ($photo) {
+            $route_module_action = 'photos/frontend/photo';
+            $route_url_params = array(
+                'url' => $photo['url'].(isset($photo['status']) && ($photo['status'] <= 0 && !empty($photo['hash'])) ? ':'.$photo['hash'] : '')
+            );
+        } else {
+            $route_module_action = 'photos/frontend';
+            $route_url_params = array();
+            $hash = trim($hash, '#/');
+            $hash = explode('/', $hash);
+            if (count($hash) >= 2) {
+                if ($hash[0] == 'album') {
+                    $route_module_action = 'photos/frontend/album';
+                    $route_url_params = array(
+                        'url' => photosCollection::frontendAlbumHashToUrl('album/'.$hash[1]),
+                    );
+                } else {
+                    $route_url_params[$hash[0]] = $hash[1];
+                }
+            } else if (count($hash) == 1) {
+                $route_url_params[$hash[0]] = $hash[0];
+            }
+        }
+
+        // Domains with Photos frontend
+        foreach(wa()->getRouting()->getByApp('photos') as $domain => $params) {
+            $domain_url = 'http://'.rtrim(wa()->getRouting()->getDomainUrl($domain), '/').'/';
+            $domains[$domain_url] = array(
+                'url' => $domain_url,
+                'frontend_url' => wa()->getRouteUrl($route_module_action, $route_url_params, true, $domain),
+            );
+        }
+
+        // Other domains
+        foreach(array_merge(wa()->getRouting()->getDomains(), array(waRequest::server('HTTP_HOST').wa()->getConfig()->getRootUrl())) as $domain) {
+            $domain_url = 'http://'.rtrim(wa()->getRouting()->getDomainUrl($domain), '/').'/';
+            if (empty($domains[$domain_url])) {
+                $domains[$domain_url] = array(
+                    'url' => $domain_url,
+                    'frontend_url' => '',
+                );
+            }
+        }
+
+        return $domains;
     }
 
     public static function getBigPhotoSize()
@@ -527,7 +586,7 @@ class photosPhoto
         }
         return $html;
     }
-    
+
     public static function escape($data)
     {
         if (is_array($data)) {

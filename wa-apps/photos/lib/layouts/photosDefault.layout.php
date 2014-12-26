@@ -11,6 +11,14 @@ class photosDefaultLayout extends waLayout
 
         $album_model = new photosAlbumModel();
         $albums = $album_model->getAlbums();
+
+        $top_level_albums_count = 0;
+        foreach($albums as $a) {
+            if (!$a['parent_id']) {
+                $top_level_albums_count++;
+            }
+        }
+
         /**
          * Extend photo toolbar in photo-page
          * Add extra item to toolbar
@@ -23,6 +31,9 @@ class photosDefaultLayout extends waLayout
         $tree = new photosViewTree($albums);
         $this->view->assign('albums', $tree->display());
         $this->view->assign('albums_count', count($albums));
+        $this->view->assign('top_level_albums_count', $top_level_albums_count);
+
+        $this->view->assign('app_albums', self::getAppAlbums());
 
         $collection = new photosCollection();
         $collection_rated = new photosCollection('search/rate>0');
@@ -47,8 +58,8 @@ class photosDefaultLayout extends waLayout
         $this->view->assign('backend_assets', wa()->event('backend_assets'));
 
         $photo_tag_model = new photosTagModel();
-        $cloud = $photo_tag_model->getCloud();
-        $this->view->assign('cloud', $cloud);
+        $this->view->assign('cloud', $photo_tag_model->getCloud());
+        $this->view->assign('popular_tags', $photo_tag_model->popularTags());
 
         $this->view->assign('rights', array(
             'upload' => $this->getRights('upload'),
@@ -56,11 +67,53 @@ class photosDefaultLayout extends waLayout
         ));
 
         $config = $this->getConfig();
-        
         $this->view->assign('big_size', $config->getSize('big'));
         $this->view->assign('sidebar_width', $config->getSidebarWidth());
-        
-        $tag_model = new photosTagModel();
-        $this->view->assign('popular_tags', $tag_model->popularTags());
+    }
+
+    public static function getAppAlbums($force_app_ids=array())
+    {
+        $photo_model = new photosPhotoModel();
+        $apps = wa()->getApps();
+
+        $result = array();
+        $counts = $photo_model->countAllByApp();
+        $counts += array_fill_keys((array)$force_app_ids, 0);
+
+        $force_app_ids = array_fill_keys((array)$force_app_ids, true);
+
+        foreach($counts as $app_id => $count) {
+
+            // Check that app exists and check access rights, unless app is forced to be present in the result
+            if (empty($force_app_ids[$app_id])) {
+                if ($count <= 0 || empty($apps[$app_id]) || !wa()->getUser()->getRights($app_id, 'backend')) {
+                    continue;
+                }
+            }
+
+            if (!empty($apps[$app_id])) {
+                $name = $apps[$app_id]['name'];
+                if (!empty($apps[$app_id]['icon'][16])) {
+                    $icon = $apps[$app_id]['icon'][16];
+                } else {
+                    $icon = reset($apps[$app_id]['icon']);
+                }
+            } else {
+                $name = $app_id;
+                $icon = $apps['photos']['icon'][16];
+            }
+            if ($icon) {
+                $icon = wa()->getConfig()->getRootUrl().$icon;
+            }
+
+            $result[$app_id] = array(
+                'id' => $app_id,
+                'name' => $name,
+                'count' => $count,
+                'icon' => $icon,
+            );
+        }
+
+        return $result;
     }
 }

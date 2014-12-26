@@ -1,5 +1,5 @@
 (function($) {
-    
+
     $.photos_dragndrop = {
         helper_shift: 20,
 
@@ -127,7 +127,7 @@
                     if (ui.draggable.hasClass('dr')) {
                         return false;
                     }
-                    
+
                     var sort_enable = isSortEnable();
                     if (!sort_enable) {
                         showSortHint();
@@ -139,17 +139,17 @@
                 out: function(event, ui) {
                     $.photos_dragndrop._unactivatePhotoListItem.call(this);
                 },
-                drop: function(event, ui) {                    
+                drop: function(event, ui) {
                     var sort_enable = isSortEnable();
-                    
+
                     // sorting in not static album is illegal
                     var album = $.photos.getAlbum();
-                    
+
                     // drop into itself is illegal
                     var draggable = ui.draggable.parents('li:first'),
                         self = $(this);
-                
-                    
+
+
                     if (draggable.get(0) == this || self.hasClass('selected')) {
                         $.photos_dragndrop._unactivatePhotoListItem.call(this);
                         return false;
@@ -160,10 +160,10 @@
                     if (!selected.length) {
                         selected = draggable;
                     }
-                    
+
                     $.photos_dragndrop._unactivatePhotoListItem.call(this);
                     $.photos_dragndrop._unactivatePhotoListItem.call(draggable);
-                    
+
                     if (!sort_enable) {
                         return false;
                     }
@@ -249,6 +249,7 @@
         _initDropBetweenAlbums: function() {
             // drop between albums
             $("li.drag-newposition", $('#album-list')).liveDroppable({
+                accept: 'li.dr',
                 greedy: true,
                 tolerance: 'pointer',
                 over: function(event, ui) {
@@ -367,6 +368,17 @@
         _initDropInsideAlbums: function() {
             // drop inside album
             $("li.dr a", $('#album-list')).liveDroppable({
+                accept: function(el) {
+                    // Albums in sidebar, image from single photo page
+                    if (el.is('li.dr, img#photo')) {
+                        return true;
+                    }
+                    // Images from photo lists
+                    if (el.closest('li[data-photo-id]').length) {
+                        return true;
+                    }
+                    return false;
+                },
                 tolerance: 'custom',
                 greedy: true,
                 out: function(event, ui) {
@@ -647,7 +659,7 @@
                 );
             });
         },
-        
+
         _unbindExtDragActivate: function() {
             $(document).unbind('mousemove.ext_drag_activate');
         },
@@ -663,7 +675,7 @@
                     $.photos_dragndrop._bindExtDragActivate(self, className);
                 } else {
                     self.addClass(className);
-                }  
+                }
         },
 
         // clear (unactive) action
@@ -789,7 +801,7 @@
         }
 
     };
-    
+
     function isSortEnable() {
         var album = $.photos.getAlbum();
         if (!album || album.type !== Album.TYPE_STATIC || album.edit_rights === false) {
@@ -797,7 +809,7 @@
         }
         return true;
     }
-    
+
     function showSortHint() {
         var sort_method = $.photos.getOption('sort_method');
         if (sort_method) {
@@ -806,10 +818,10 @@
             block.find('.' + sort_method).show();
         }
     }
-    
+
     function hideSortHint() {
             var block = $('#hint-menu-block').hide();
             block.children().hide();
     }
-    
+
 })(jQuery);

@@ -1,4 +1,4 @@
-<div class="dialog width600px height500px" id="album-settings-dialog">
+<div class="dialog width700px height500px" id="album-settings-dialog">
     <div class="dialog-background"></div>
     <form method="post" action="?module=album&action=save">
     <div class="dialog-window">
@@ -13,6 +13,11 @@
                             </div>
                             <div class="value">
                                 <input type="text" name="name" class="large p-full-width-input" value="{$album.name|escape}">
+                                {if $album.type == photosAlbumModel::TYPE_DYNAMIC}
+                                    <i class="icon16 funnel" title="[`Filter`]"></i>
+                                {else}
+                                    <i class="icon16 pictures" title="[`Album`]"></i>
+                                {/if}
                             </div>
                         </div>
                         <div class="field" id="frontend-url-field" {if $album.status <= 0}style="display:none"{/if}>
@@ -21,7 +26,7 @@
                             </div>
                             <div class="value">
                                 {if isset($album.full_base_url)}
-                                    {if $album.full_base_url}{$album.full_base_url}{/if}<input type="text" name="url" value="{$album.url}">/
+                                    <span>{if $album.full_base_url}{$album.full_base_url}{/if}</span><input type="text" name="url" value="{$album.url}">/
                                     <em class="errormsg"></em>
                                 {else}
                                     <span class="hint">[`This album will not be visible in the public gallery because there are no routing rules for the Photos app in your website settings. Use Site app (Routing section) to settle Photos app on your website and to start publishing photos.`]</span>
@@ -84,8 +89,8 @@
                                 [`Description`]
                                 </label>
                             </div>
-                            <div class="value">
-                                <textarea id="description" name="description" rows="10" cols="5">{if $album.description}{$album.description}{/if}</textarea>
+                            <div class="value no-shift">
+                                <textarea id="description" name="description" rows="10" cols="5">{$album.description|escape}</textarea>
                             </div>
                         </div>
                     </div>
@@ -93,11 +98,23 @@
                     <div class="field-group" id="dynamic-field-group">
                         <div class="field">
                             <div class="name">
-                                [`Smart album`]
+                                [`Filter`]
                             </div>
-                            <div class="value">
+                            <div class="value no-shift">
                                 <table class="zebra p-smart-album-setup">
-                                    <tbody><tr>
+                                    <tbody>
+                                    {if !empty($parent)}
+                                        <tr>
+                                            <td class="min-width" style="vertical-align: top;">
+                                                <input type="checkbox" disabled="disabled" checked="checked">
+                                            </td>
+                                            <td colspan="3">
+                                                {sprintf('[`<strong>%s</strong> album only`]', $parent.name|escape)}
+                                                <p class="hint" style="margin-bottom: 0;">[`Dynamic albums filter photos only from albums they belong to.`]</p>
+                                            </td>
+                                        </tr>
+                                    {/if}
+                                    <tr>
                                         <td class="min-width">
                                             <input id="condition-rate" type="checkbox" name="condition[]" value="rate" {if isset($album.conditions.rate)}checked{/if}>
                                         </td>
@@ -144,7 +161,7 @@
                                         <td>
                                             <select name="access">
                                                 <option value="public" {if isset($album.conditions.status[1]) && $album.conditions.status[1] == 1}selected{/if}>[`public`]</option>
-                                                <option value=private    {if isset($album.conditions.status[1]) && $album.conditions.status[1] == 0}selected{/if}>[`private`]</option>
+                                                <option value="private" {if isset($album.conditions.status[1]) && $album.conditions.status[1] == 0}selected{/if}>[`private`]</option>
                                             </select>
                                         </td>
                                         <td>
@@ -155,7 +172,7 @@
                         </div>
                         <div class="field">
                             <div class="name">[`Order`]</div>
-                            <div class="value">
+                            <div class="value no-shift">
                                 <select name="order">
                                     <option value="">[`uploaded`]</option>
                                     <option value="rate"{if isset($params.order) && $params.order == 'rate'}selected{/if}>[`top rated`]</option>
@@ -171,7 +188,7 @@
                                 [`Custom parameters`]
                                 </label>
                             </div>
-                            <div class="value">
+                            <div class="value no-shift">
                                 <textarea id="custom-settings" name="params" rows="10" cols="5">{if $params}{foreach $params as $k=>$v}{if $k!='order'}{$k}={$v|escape|cat:"\n"}{/if}{/foreach}{/if}</textarea><br>
                                 <span class="hint">[`Optional set of custom <em>key=value</em> parameters which can be used within a frontend's theme template as <em>&#123;$album.key&#125;</em>. Each key=value pair should be on a separate line.`]</span>
                             </div>

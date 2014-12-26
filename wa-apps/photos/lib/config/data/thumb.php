@@ -43,14 +43,11 @@ $enable_2x = false;
 if (preg_match('#((?:\d{2}/){2}([0-9]+)(?:\.[0-9a-f]+)?)/\\2\.(\d+(?:x\d+)?)(@2x)?\.([a-z]{3,4})#i', $request_file, $matches)) {
     $file = $matches[1].'.'.$matches[5];
     $main_thumb_file = $matches[1].'/'.$matches[2].'.'.$main_thumbnail_size.'.'.$matches[5];
+    $size = $matches[3];
 
-    $sizes = explode('x', $matches[3]);
-
-    $gen_thumbs = $app_config->getOption('thumbs_on_demand');
-    $size = implode('x', $sizes);
-
-    if ($file && !$gen_thumbs) {
+    if ($file && !$app_config->getOption('thumbs_on_demand')) {
         $thumbnail_sizes = $app_config->getSizes();
+        $thumbnail_sizes[] = '192x192'; // for album covers
         if (in_array($size, $thumbnail_sizes) === false) {
             $file = false;
         }

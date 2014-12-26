@@ -9,21 +9,28 @@ class photosPhotoListAction extends waViewAction
 
     public function execute()
     {
-        $this->collection = new photosCollection('');
+        $app_id = waRequest::request('app_id');
+        if ($app_id && wa()->appExists($app_id) && wa()->getUser()->getRights($app_id, 'backend')) {
+            $hash = 'app/'.$app_id;
+        } else {
+            $hash = '';
+        }
+        $this->collection = new photosCollection($hash);
 
         $config = $this->getConfig();
-        
+
         $count = $config->getOption('photos_per_page');
         $photos = $this->getPhotos(0, $count);
         $photos = photosCollection::extendPhotos($photos);
         $this->view->assign('photos', $photos);
 
         $this->view->assign('sidebar_width', $config->getSidebarWidth());
-        $this->view->assign('frontend_link', photosCollection::getFrontendLink(''));
+        $this->view->assign('frontend_link', $hash ? '' : photosCollection::getFrontendLink($hash));
         $this->view->assign('title', $this->collection->getTitle());
         $this->view->assign('total_count', $this->collection->count());
         $this->view->assign('big_size', $config->getSize('big'));
         $this->view->assign('sort_method', 'upload_datetime');
+        $this->view->assign('hash', $hash);
     }
 
     public function getTemplate()

@@ -45,13 +45,21 @@
         </div>
         <div class="dialog-buttons">
             <div class="block double-padded float-right">
-                [`Image size`]:
                 <select name="size">
                     {foreach $sizes as $sz}
                         <option value="{$sz}" {if $sz == $size}selected{/if}>{$sz}px</option>
                     {/foreach}
                 </select>
             </div>
+            {if !empty($domains)}
+                <div class="block double-padded float-right">
+                    <select name="domain" data-original-domain="{$original_domain|escape}">
+                        {foreach $domains as $d}
+                            <option value="{$d.url|escape}" data-frontend-url="{$d.frontend_url|escape}">{$d.url|escape|truncate:42:'...':false:true}</option>
+                        {/foreach}
+                    </select>
+                </div>
+            {/if}
             <div class="dialog-buttons-gradient">
                 <input class="button cancel" type="submit" value="[`Close`]">
             </div>

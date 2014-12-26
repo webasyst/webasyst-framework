@@ -22,5 +22,7 @@ class photosDialogCreateAlbumAction extends waViewAction
         $photo_tag_model = new photosTagModel();
         $cloud = $photo_tag_model->getCloud('name');
         $this->view->assign('cloud', $cloud);
+
+        $this->view->assign('full_base_url', photosFrontendAlbum::getLink());
     }
 }

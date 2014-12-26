@@ -7,6 +7,12 @@
         <a href="?module=upload" id="p-upload-link"><i class="icon16 upload"></i>[`Upload photos`]</a>
       </li>
       {/if}
+      <li id="sidebar-all-albums">
+        <span class="count" id="count">{if $top_level_albums_count > 0}{$top_level_albums_count}{/if}</span>
+        <a href="#/albums/">
+          <i class="icon16 apps"></i>[`Albums`]
+        </a>
+      </li>
       <li id="sidebar-all-photos">
         <span class="count" id="count">{if $count > 0}{$count}{/if}</span>
         <a href="#/">
@@ -19,6 +25,15 @@
           <i class="icon16 star"></i>[`Rated`]
         </a>
       </li>
+      {foreach $app_albums as $item}
+        <li>
+            <span class="count">{$item.count}</span>
+            <a href="#/app/{$item.id}">
+                <img class="p-app16x16icon-menu-v" src="{$item.icon}">
+                {$item.name}
+            </a>
+        </li>
+      {/foreach}      
       {* @event backend_sidebar.%plugin_id%.menu *}
       {foreach $backend_sidebar as $plugin_id => $item}
         {if !empty($item.menu)}

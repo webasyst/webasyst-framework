@@ -17,9 +17,9 @@ class photosUploadPhotoController extends waJsonController
             throw new waRightsException(_w("You don't have sufficient access rights"));
         }
         $this->response['files'] = array();
-        
+
         $this->model = new photosPhotoModel();
-        
+
         $album_rights_model = new photosAlbumRightsModel();
 
         // rights for photos
@@ -29,6 +29,7 @@ class photosUploadPhotoController extends waJsonController
             $status = -1; // only author have access to this photo
             $groups = array(-$this->getUser()->getId());
         }
+
         // work with album
         $album_id = (int) waRequest::post('album_id');
         if ($album_id > 0 && !$album_rights_model->checkRights($album_id, true)) {
@@ -37,11 +38,42 @@ class photosUploadPhotoController extends waJsonController
             );
             return;
         }
+
         $this->getStorage()->close();
+
+        foreach (self::getFilesFromPost() as $file) {
+            if ($file->error_code != UPLOAD_ERR_OK) {
+                $this->response['files'][] = array(
+                    'name' => $file->name,
+                    'error' => $file->error
+                );
+            } else {
+                try {
+                    $this->response['files'][] = $this->save($file, array(
+                        'status' => $status,
+                        'groups' => $groups,
+                        'album_id' => $album_id
+                    ));
+                } catch (Exception $e) {
+                    $this->response['files'][] = array(
+                        'name' => $file->name,
+                        'error' => $e->getMessage()
+                    );
+                }
+            }
+        }
+    }
+
+    public static function getFilesFromPost()
+    {
         if (waRequest::server('HTTP_X_FILE_NAME')) {
             $name = waRequest::server('HTTP_X_FILE_NAME');
             $size = waRequest::server('HTTP_X_FILE_SIZE');
-            $file_path = wa()->getTempPath('photos/upload/').$name;
+
+            $safe_name = trim(preg_replace('~[^a-z\.]~', '', waLocale::transliterate($name)), ". \n\t\r");
+            $safe_name || ($safe_name = uniqid('p'));
+            $file_path = wa()->getTempPath('photos/upload/').$safe_name;
+
             $append_file = is_file($file_path) && $size > filesize($file_path);
             clearstatcache();
             file_put_contents(
@@ -56,38 +88,12 @@ class photosUploadPhotoController extends waJsonController
                 'tmp_name' => $file_path,
                 'error' => 0
             ));
-            try {
-                $this->response['files'][] = $this->save($file);
-            } catch (Exception $e) {
-                $this->response['files'][] = array(
-                    'error' => $e->getMessage()
-                );
-            }
+
+            return array($file);
         } else {
-            $files = waRequest::file('files');
-            foreach ($files as $file) {
-                if ($file->error_code != UPLOAD_ERR_OK) {
-                    $this->response['files'][] = array(
-                        'error' => $file->error
-                    );
-                } else {
-                    try {
-                        $this->response['files'][] = $this->save($file, array(
-                            'status' => $status,
-                            'groups' => $groups,
-                            'album_id' => $album_id
-                        ));
-                    } catch (Exception $e) {
-                        $this->response['files'][] = array(
-                            'name' => $file->name,
-                            'error' => $e->getMessage()
-                        );
-                    }
-                }
-            }
+            return waRequest::file('files');
         }
     }
-
 
     protected function save(waRequestFile $file, $data)
     {
@@ -95,14 +101,14 @@ class photosUploadPhotoController extends waJsonController
         if (!$id) {
             throw new waException(_w("Save error"));
         }
-        
+
         $photo = $this->model->getById($id);
-        
+
         $parent_id = (int) waRequest::post('parent_id');
         if ((int) waRequest::post('parent_id')) {
             $this->model->appendToStack($parent_id, array($id));
         }
-        
+
         return array(
             'name' => $file->name,
             'type' => $file->type,

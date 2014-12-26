@@ -27,9 +27,16 @@ class photosDialogEmbedPhotoAction extends waViewAction
             $size = $sizes[0];
         }
 
+        $domains = photosPhoto::getDomains(null, $photo);
+        if (count($domains) <= 1) {
+            $domains = array();
+        }
+
         $this->view->assign('photo', $photo);
         $this->view->assign('sizes', $sizes);
         $this->view->assign('size',  $size);
         $this->view->assign('contexts', $contexts);
+        $this->view->assign('original_domain', wa()->getRootUrl(true));
+        $this->view->assign('domains', $domains);
     }
 }

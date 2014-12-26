@@ -8,41 +8,41 @@
     <!--[if lte IE 9]>
         <link rel="stylesheet" href="{$wa_app_static_url}css/photos.ie.css">
     <![endif]-->
+    <link type="text/css" rel="stylesheet" href="{$wa_url}wa-content/js/jquery-plugins/jquery-tagsinput/jquery.tagsinput.css">
+    <link type="text/css" rel="stylesheet" href="{$wa_url}wa-content/js/jquery-plugins/jquery-autocomplete/jquery.autocomplete.css">
 
     <script src="{$wa_url}wa-content/js/jquery/jquery-1.11.1.min.js" type="text/javascript"></script>
     <script src="{$wa_url}wa-content/js/jquery/jquery-migrate-1.2.1.min.js" type="text/javascript"></script>
 
-{wa_js file="js/photos-jquery.min.js"}
-{$wa_url}wa-content/js/jquery-wa/wa.core.js
-{$wa_url}wa-content/js/jquery-wa/wa.dialog.js
-{$wa_url}wa-content/js/jquery-plugins/jquery.history.js
-{$wa_url}wa-content/js/jquery-plugins/jquery.json.js
-{$wa_url}wa-content/js/jquery-plugins/jquery.store.js
-{$wa_url}wa-content/js/jquery-ui/jquery.ui.core.min.js
-{$wa_url}wa-content/js/jquery-ui/jquery.ui.widget.min.js
-{$wa_url}wa-content/js/jquery-ui/jquery.ui.mouse.min.js
-{$wa_url}wa-content/js/jquery-ui/jquery.ui.draggable.min.js
-{$wa_url}wa-content/js/jquery-ui/jquery.ui.droppable.min.js
-{$wa_url}wa-content/js/jquery-ui/jquery.ui.sortable.min.js
-{$wa_app_static_url}js/sidebar.js
-{$wa_app_static_url}js/dragndrop.js
-{$wa_app_static_url}js/tmpl.min.js
-{$wa_app_static_url}js/inline.editable.widget.js
-{$wa_app_static_url}js/active.menu.js
-{$wa_app_static_url}js/rate.widget.js
-{$wa_app_static_url}js/common.js
-{$wa_app_static_url}js/photo.stream.slider.js
-{$wa_app_static_url}js/photos.js
-{$wa_app_static_url}js/list.menu.js
-{$wa_app_static_url}js/photo.menu.js
-{$wa_app_static_url}js/loupe.widget.js
-{$wa_app_static_url}js/jquery-fieldselection.min.js
-{/wa_js}
-
-    <script type="text/javascript" src="{$wa_url}wa-content/js/jquery-plugins/jquery-tagsinput/jquery.tagsinput.min.js"></script>
-    <link type="text/css" rel="stylesheet" href="{$wa_url}wa-content/js/jquery-plugins/jquery-tagsinput/jquery.tagsinput.css">
-    <script type="text/javascript" src="{$wa_url}wa-content/js/jquery-plugins/jquery-autocomplete/jquery.autocomplete.min.js"></script>
-    <link type="text/css" rel="stylesheet" href="{$wa_url}wa-content/js/jquery-plugins/jquery-autocomplete/jquery.autocomplete.css">
+    {wa_js file="js/photos-jquery.min.js"}
+        {$wa_url}wa-content/js/jquery-wa/wa.core.js
+        {$wa_url}wa-content/js/jquery-wa/wa.dialog.js
+        {$wa_url}wa-content/js/jquery-plugins/jquery.history.js
+        {$wa_url}wa-content/js/jquery-plugins/jquery.json.js
+        {$wa_url}wa-content/js/jquery-plugins/jquery.store.js
+        {$wa_url}wa-content/js/jquery-ui/jquery.ui.core.min.js
+        {$wa_url}wa-content/js/jquery-ui/jquery.ui.widget.min.js
+        {$wa_url}wa-content/js/jquery-ui/jquery.ui.mouse.min.js
+        {$wa_url}wa-content/js/jquery-ui/jquery.ui.draggable.min.js
+        {$wa_url}wa-content/js/jquery-ui/jquery.ui.droppable.min.js
+        {$wa_url}wa-content/js/jquery-ui/jquery.ui.sortable.min.js
+        {$wa_url}wa-content/js/jquery-plugins/jquery.retina.min.js
+        {$wa_url}wa-content/js/jquery-plugins/jquery-tagsinput/jquery.tagsinput.min.js
+        {$wa_url}wa-content/js/jquery-plugins/jquery-autocomplete/jquery.autocomplete.min.js
+        {$wa_app_static_url}js/sidebar.js
+        {$wa_app_static_url}js/dragndrop.js
+        {$wa_app_static_url}js/tmpl.min.js
+        {$wa_app_static_url}js/inline.editable.widget.js
+        {$wa_app_static_url}js/active.menu.js
+        {$wa_app_static_url}js/rate.widget.js
+        {$wa_app_static_url}js/common.js
+        {$wa_app_static_url}js/photo.stream.slider.js
+        {$wa_app_static_url}js/photos.js
+        {$wa_app_static_url}js/list.menu.js
+        {$wa_app_static_url}js/photo.menu.js
+        {$wa_app_static_url}js/loupe.widget.js
+        {$wa_app_static_url}js/jquery-fieldselection.min.js
+    {/wa_js}
 
     <script type="text/javascript" src="?action=loc&amp;v={$wa->version()}"></script>
     <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
@@ -102,6 +102,8 @@
                 {% } %}
                 <!-- plugin hook: backend-photo-image-corner-top-right -->
             </div>
+            <i class="p-image-nav p-rewind" title="[`← Previous`]"></i>
+            <i class="p-image-nav p-ff" title="[`Next →`]"></i>
             <a href="#" class="next" title="[`Next →`]"><img src="{%#p.thumb.url %}{% if (p.edit_datetime) { %}?{%#Date.parseISO(p.edit_datetime)%}{% } %}" id="photo" {% if (typeof p.thumb.size === 'object' && p.thumb.size) { %}style="{% if (p.thumb.size.width) { %}width: {%#p.thumb.size.width %}px; {% } %} {% if (p.thumb.size.height) { %}height: {%#p.thumb.size.height%}px;{% } %}"{% } %}
             /></a>
         </div>
@@ -323,10 +325,10 @@
 {% } %}
 {/literal}{/capture}
 
-{capture name="template-photo-author"}{literal}       
+{capture name="template-photo-author"}{literal}
     {% if (o.author.id) { %}
         <div class="image">
-            <a href="{%#o.author.backend_url%}" title="{%#$_('Photo downloaded by') + ' ' + o.author.name + ' ' + o.photo.upload_datetime_formatted %}"><img src="{%#o.author.photo_url%}"></a>
+            <a href="{%#o.author.backend_url%}" title="{%#$_('Photo downloaded by') + ' ' + o.author.name + ' ' + o.photo.upload_datetime_formatted %}"><img src="{%#o.author.photo_url%}" class="userpic"></a>
         </div>
         <div class="details">
             <a href="{/literal}{$wa_backend_url}contacts/#/contact/{literal}{%#o.author.id%}">{%#o.author.name%}</a><br>[`uploaded on`] {%#o.photo.upload_datetime_formatted %}
@@ -398,6 +400,7 @@
         last_login_datetime: Date.parseISO('{$last_login_datetime}'),
         last_login_time: {json_encode(strtotime($last_login_datetime))},
         title_suffix: " — {$wa->accountName()}",
+        retina_2x_enabled: {if $wa->photos->config('enable_2x')}1{else}0{/if},
         photo_list_render_chunk: 25
     });
     var Album = {

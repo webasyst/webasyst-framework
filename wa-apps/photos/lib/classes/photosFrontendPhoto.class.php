@@ -10,7 +10,7 @@ class photosFrontendPhoto
         $link = null;
         if (is_null($album)) {
             $link = $wa->getRouteUrl('photos/frontend/photo', array(
-                'url' => $photo['url'].(isset($photo['status']) && $photo['status'] <= 0 ? ':'.$photo['hash'] : '')
+                'url' => $photo['url'].(isset($photo['status']) && ($photo['status'] <= 0 && !empty($photo['hash'])) ? ':'.$photo['hash'] : '')
             ), true);
         } else if (is_array($album)) {
             $link = $wa->getRouteUrl('photos/frontend/photo', array(
