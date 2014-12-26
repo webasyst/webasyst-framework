@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE theme PUBLIC "wa-app-theme" "http://www.webasyst.com/wa-content/xml/wa-app-theme.dtd">
-<theme id="custom" system="0" vendor="webasyst" author="Webasyst" app="blog" parent_theme_id="site:custom" version="1.1.2">
+<theme id="custom" system="0" vendor="webasyst" author="Webasyst" app="blog" parent_theme_id="site:custom" version="1.1.3">
     <name locale="en_US">CUSTOM</name>
     <name locale="ru_RU">CUSTOM</name>
     <description locale="ru_RU"/>
@@ -40,6 +40,10 @@
         <file path="post.html" custom="0">
             <description locale="en_US">Dedicated post page</description>
             <description locale="ru_RU">Страница одной записи блога</description>
+        </file>
+        <file path="post.album.html" custom="0">
+            <description locale="en_US">Photo album attached to the blog post</description>
+            <description locale="ru_RU">Фотоальбом, прикрепленный к записи в блоге</description>
         </file>
         <file path="page.html" custom="0">
             <description locale="en_US">Static info page</description>
