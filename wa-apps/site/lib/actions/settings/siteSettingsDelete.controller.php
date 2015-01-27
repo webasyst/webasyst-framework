@@ -36,7 +36,7 @@ class siteSettingsDeleteController extends waJsonController
                     // delete site from db
                     $domain_model->deleteById($domain_id);
                     wa()->event('domain_deleted', $domain);
-                    $this->log('site_delete');
+                    $this->logAction('site_delete');
                 } 
             }
         }
