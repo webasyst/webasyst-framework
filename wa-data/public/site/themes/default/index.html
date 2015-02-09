@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html{if $wa->globals('isMyAccount')} class="my"{/if}><head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1{if $wa->isMobile()}, maximum-scale=1, user-scalable=0{/if}" />
+
+    <title>{$wa->title()|escape}</title>
+    <meta name="Keywords" content="{$wa->meta('keywords')|escape}" />
+    <meta name="Description" content="{$wa->meta('description')|escape}" />
+    
+    {if !empty($canonical)}
+<link rel="canonical" href="{$canonical}"/>{/if}
+    <link rel="shortcut icon" href="/favicon.ico"/>
+    {if $wa->blog}
+        <!-- rss -->
+        {$rss=$wa->blog->rssUrl()}
+        {if $rss}<link rel="alternate" type="application/rss+xml" title="{$wa->accountName()}" href="{$rss}">{/if}
+    {/if}
+    
+    <!-- fonts -->
+    <link href='//fonts.googleapis.com/css?family=Open+Sans:400italic,700italic,400,700&amp;subset=latin,cyrillic' rel='stylesheet' type='text/css'>
+    
+    <!-- css -->
+    <link href="{$wa_theme_url}default.css?v{$wa_theme_version}" rel="stylesheet" type="text/css"/>
+    <link href="{$wa_theme_url}waslidemenu/waslidemenu.css?v{$wa_theme_version}" rel="stylesheet" type="text/css"/>
+    {if $wa->shop && $wa->shop->currency() == 'RUB'} <link href="{$wa_url}wa-content/font/ruble/arial/fontface.css" rel="stylesheet" type="text/css">{/if}
+    {$wa->css()} {* links active plugins CSS *}
+    
+    <!-- js -->
+    <script type="text/javascript" src="{$wa_url}wa-content/js/jquery/jquery-1.8.2.min.js"></script>
+    {* when optimizing your production environment, consider loading jQuery 1.8.2 from CDN instead of local load, e.g. <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script> *}
+    <script type="text/javascript" src="{$wa_theme_url}default.js?v{$wa_theme_version}"></script>
+    <script type="text/javascript" src="{$wa_theme_url}waslidemenu/jquery.waslidemenu.min.js?v{$wa_theme_version}"></script>
+
+    {$wa->js()} {* links active plugins JS *}
+    
+    {include file="`$wa_active_theme_path`/head.html" inline}
+    
+    {$wa->headJs()} {* links Google Analytics tracking code and site's custom JS (defined in Site app settings) *}
+    
+    <!--[if lt IE 9]>
+    <script>
+    document.createElement('header');
+    document.createElement('nav');
+    document.createElement('section');
+    document.createElement('article');
+    document.createElement('aside');
+    document.createElement('footer');
+    document.createElement('figure');
+    document.createElement('hgroup');
+    document.createElement('menu');
+    </script>
+    <![endif]-->
+    
+</head>
+
+    <body>
+    
+<div id="main">
+      <div id="head">
+    <div class="hills1">
+          <div class="hills2">
+        <div class="top_links">
+              <ul>
+            <li>{if $wa->isAuthEnabled()}
+                  <ul class="auth">
+                {if $wa->user()->isAuth()}
+                {if $wa->shop}
+                <li> <a href="/my/"><i class="icon16 userpic20 float-left" style="background-image: url('{$wa->user()->getPhoto(20)}');"></i> Личный кабинет</a> </li>
+                {else}
+                <li><strong>{$wa->user('name')}</strong></li>
+                {/if}
+                <li><a href="?logout">[s`Log out`]</a></li>
+                {else}
+                <li><a href="{$wa->loginUrl()}">[s`Log in`]</a></li>
+                <li><a href="{$wa->signupUrl()}">[s`Sign up`]</a></li>
+                {/if}
+              </ul>
+                  {/if}</li>
+            <li></li>
+          </ul>
+            </div>
+        <div class="logo"> <a href="/"><img src="/wa-data/public/site/themes/default/img/logo.png" alt="Интернет магазин детской одежды Пчелкин Дом" title="Интернет магазин детской одежды Пчелкин Дом"></a> </div>
+        <div class="plask">
+              <div class="left"> <span>ICQ&nbsp;&nbsp;&nbsp;
+                <img src="http://status.icq.com/5/online1.gif" border=0 alt="" border=0>646834892
+                </span><br>
+            <span>Skype 
+                <!--
+						Skype 'My status' button
+						http://www.skype.com/go/skypebuttons
+						--> 
+                <script type="text/javascript" src="http://download.skype.com/share/skypebuttons/js/skypeCheck.js"></script> 
+                <img src="http://mystatus.skype.com/smallicon/pchelkindom.ru" style="border: none;" width="16" height="16" alt=""><a href="skype:pchelkindom.ru?call">pchelkindom.ru</a> </span><br>
+            <span>E-mail <img src="/wa-data/public/site/themes/default/img/mail_logo.gif" alt=""><a href="mailto:zakaz@pchelkindom.ru">zakaz@pchelkindom.ru</a></span> </div>
+              <div class="right">{include file="`$wa_active_theme_path`/head.contacts.html" inline}</div>
+            </div>
+        <div class="bee1">&nbsp;</div>
+        <div class="bee2">{if $wa->shop} 
+              <!-- cart --> 
+              {$cart_total = $wa->shop->cart->total()}
+              <div id="cart" class="cart{if !$cart_total} empty{/if}"> <a href="{$wa->getUrl('shop/frontend/cart')}" class="cart-summary"> <b class="cartname"> [s`Cart`]:</b><br>
+                <strong class="cart-total">{wa_currency_html($cart_total, $wa->shop->currency())}</strong> </a> <br>
+            <a href="{$wa->getUrl('shop/frontend/checkout')}" class="cart-to-checkout" style="display: none; font-size:10px;"> [s`Proceed to checkout`] </a> </div>
+              {/if} </div>
+      </div>
+        </div>
+    <div id="navigation">
+          <div class="bg_left">
+        <div class="bg_right">
+              <div class="clear-both"></div>
+              {$_hook_frontend_sidebar_section = false}
+              {foreach $frontend_nav as $plugin => $output}
+              {if !empty($output.section)}
+              {$_hook_frontend_sidebar_section = true}
+              {/if}
+              {/foreach}        
+              {$shop_pages=$wa->shop->pages()}
+              {$cloud = $wa->shop->tags()}
+              
+              {if $shop_pages} 
+              <!-- info pages -->
+              <ul class="menu-h" id="page-list">
+                <li> 
+                    <a href="/" title="Главная">Главная</a>
+                </li>
+                <li style="background:#000;; color:#fff !important;"> 
+                    <a href="/dostavka-oplata/" title="Доставка-оплата">Доставка-оплата</a>
+                </li>
+                <li>
+                    <a href="/kak-sdyelat-zakaz/" title="Как сделать заказ?">Как сделать заказ?</a>
+                </li>
+                <li style="background:#000;; color:#fff !important;"> 
+                    <a href="/tablitsa-razmyerov/" title="Таблица размеров">Таблица размеров</a>
+                </li>
+                <li >
+                    <a href="/obratnaya-svyaz/" title="Обратная связь">Контакты</a>
+                </li>
+              </ul>
+              {*wa_print_tree tree=$shop_pages class="menu-h" attrs = 'id="page-list"' elem =' <a href=":url" title=":title">:name</a>' collapsible_class='collapsible' selected=$wa->param('page_id')*}
+              {else}
+              <div class="clear-right"></div>
+              {/if}
+              <div class="search"> {if $wa->shop} 
+              <div class="cpt_product_search">
+             
+                          <!-- product search -->
+                         <form method="get" action="{$wa->getUrl('shop/frontend/search')}" class="search">
+                            <input type="search" id="search" name="query" {if !empty($query)}value="{$query}"{/if} placeholder="[s`Find products`]">
+                            <button type="submit"></button>
+                        </form>
+            
+                </div>
+            {/if}
+            <div class="clear-both"></div>
+          </div>
+            </div>
+      </div>
+        </div>
+  </div>
+      <!-- End of header -->
+ <div class="content-container">
+  <div id="pagecontent">
+    <div id="left">
+          <div><!-- filtering by product features -->    
+{if !empty($filters)}
+<h1>Подбор товара</h1>
+{if waRequest::isXMLHttpRequest()}
+
+<link href="{$wa_url}wa-content/css/jquery-ui/base/jquery.ui.slider.css" rel="stylesheet" type="text/css">
+<script type="text/javascript" src="{$wa_url}wa-content/js/jquery-ui/jquery.ui.core.min.js?v{$wa->version(true)}"></script>
+<script type="text/javascript" src="{$wa_url}wa-content/js/jquery-ui/jquery.ui.widget.min.js?v{$wa->version(true)}"></script>
+<script type="text/javascript" src="{$wa_url}wa-content/js/jquery-ui/jquery.ui.mouse.min.js?v{$wa->version(true)}"></script>
+<script type="text/javascript" src="{$wa_url}wa-content/js/jquery-ui/jquery.ui.slider.min.js?v{$wa->version(true)}"></script>
+{/if}
+
+<div class="filters{if !empty($theme_settings.ajax_filters)} ajax{/if}">
+    <form method="get" action="{$wa->currentUrl(0,1)}" data-loading="{$wa_parent_theme_url}img/loading16.gif">
+        {foreach $filters as $fid => $filter}
+            <div class="filter-param">
+                {if $fid == 'price'}
+                    {$c = $wa->shop->currency(true)}
+                    <h5>[`Price`]</h5>
+                    <div class="slider">
+                    [`from`] <input type="text" class="min" name="price_min" {if $wa->get('price_min')}value="{(int)$wa->get('price_min')}"{/if} placeholder="{floor($filter.min)}">
+                    [`to`] <input type="text" class="max" name="price_max" {if $wa->get('price_max')}value="{(int)$wa->get('price_max')}"{/if} placeholder="{ceil($filter.max)}"> {$c.sign}
+                    </div>
+                {else}
+                    <h5>{$filter.name|escape}</h5>
+                    {if $filter.type == 'boolean'}
+                        <label><input type="radio" name="{$filter.code}"{if $wa->get($filter.code)} checked{/if} value="1"> [`Yes`]</label>
+                        <label><input type="radio" name="{$filter.code}"{if $wa->get($filter.code) === '0'} checked{/if} value="0"> [`No`]</label>
+                        <label><input type="radio" name="{$filter.code}"{if $wa->get($filter.code, '') === ''} checked{/if} value=""> [`Any`]</label>
+                    {elseif isset($filter.min)}
+                    {$_v = $wa->get($filter.code)}
+                    <div class="slider">
+                    [`from`] <input type="text" class="min" name="{$filter.code}[min]" placeholder="{$filter.min}" {if !empty($_v.min)}value="{$_v.min}"{/if}>
+                    [`to`] <input type="text" class="max" name="{$filter.code}[max]" placeholder="{$filter.max}" {if !empty($_v.max)}value="{$_v.max}"{/if}>
+                    {if !empty($filter.unit)}
+                        {$filter.unit.title}
+                        {if $filter.unit.value != $filter.base_unit.value}<input type="hidden" name="{$filter.code}[unit]" value="{$filter.unit.value}">{/if}
+                    {/if}
+                    </div>
+                    {*elseif $fid == '29'}
+                    {shopSize::sizeFilter($filter)*}
+                    {else}
+                    {foreach $filter.values as $v_id => $v}
+                        <label>
+                            <input type="checkbox" name="{$filter.code}[]" {if in_array($v_id, (array)$wa->get($filter.code, array()))}checked{/if} value="{$v_id}"> {$v}
+                        </label>
+                    {/foreach}
+                    {/if}
+                {/if}
+            </div>            
+        {/foreach}
+        {if $wa->get('sort')}<input type="hidden" name="sort" value="{$wa->get('sort')|escape}">{/if}
+        {if $wa->get('order')}<input type="hidden" name="order" value="{$wa->get('order')|escape}">{/if}
+        <input type="submit" class="gray" value="[`Filter products`]">
+    </form>
+</div>
+{/if}  </div>
+        <div class="clear-both"></div>
+        <!-- categories -->
+        <div class=""> 
+              {if isset($category)}{$selected_category=$category.id}{elseif isset($product.category_id)}{$selected_category=$product.category_id}{else}{$selected_category=null}  {/if}
+              
+{wa_print_tree tree=$wa->shop->categories(0, null, true) selected=$selected_category unfolded=false class="menu-v category-tree" elem ='<a href=":url" title=":name">:name</a>'}
+
+            </div>
+        <div class="clear-both"></div>
+        <div>
+    {foreach $frontend_nav as $plugin => $_}
+        {if $plugin == 'productbrands-plugin' && !empty($_)}
+        <div class="brandblock">
+        <topic>[`Brands`]</topic>
+            {$_}
+            <br><a style="margin-left: 20px;" href="/shop/auxpage_all-brends/">Все бренды >>></a>
+        </div>
+        {/if}
+    {/foreach}
+</div>
+
+ <div class="clear-both"></div>
+        <div>{include file="`$wa_active_theme_path`/left.contacts.html" inline}</div>
+        <div>
+        <topic>Новости</topic>
+            {*$latest_posts = shopPostsPlugin::getBlog(1)*}
+            <div class="postblock">{foreach $latest_posts as $post}
+            <div class="post">
+                  <div class="date">{$post.datetime|wa_datetime:"humandate"}</div>
+                  <div class="title">
+                  <a href="{$post.link}">{$post.title}</a>
+                      {* @event prepare_posts_frontend.%plugin_id%.post_title *}
+                      {if !empty($post.plugins.post_title)}
+                      {foreach $post.plugins.post_title as $plugin => $output}{$output}{/foreach}
+                      {/if} 
+              </div>
+                  <!-- <p>{$post.text|strip_tags|truncate:125}</p> --> 
+                </div>
+                
+            {/foreach}</div>
+            <br><a style="margin-left: 20px;" href="/blog/">Смотреть все >>></a>
+            <div class="clear-both"></div></br>
+            </div>
+                    
+            <div>        
+            <topic>Блог</topic>
+            {*$latest_posts = shopPostsPlugin::getBlog(2)*}
+            <div class="postblock">{foreach $latest_posts as $post}
+            <div class="post">
+                  <div class="date">{$post.datetime|wa_datetime:"humandate"}</div>
+                  <div class="title">
+                  <a href="{$post.link}">{$post.title}</a>
+                      {* @event prepare_posts_frontend.%plugin_id%.post_title *}
+                      {if !empty($post.plugins.post_title)}
+                      {foreach $post.plugins.post_title as $plugin => $output}{$output}{/foreach}
+                      {/if} 
+              </div>
+                  <!-- <p>{$post.text|strip_tags|truncate:125}</p> --> 
+                </div>
+                
+            {/foreach}</div>
+            <br><a style="margin-left: 20px;" href="/post/">Смотреть все >>></a>
+            <div class="clear-both"></div></br>
+            </div>
+         
+        <div align="center">
+              <br/>
+               
+            <!--LiveInternet counter--><script type="text/javascript"><!--
+						document.write("<a href='http://www.liveinternet.ru/click' "+
+						"target=_blank><img src='http://counter.yadro.ru/hit?t44.13;r"+
+						escape(document.referrer)+((typeof(screen)=="undefined")?"":
+						";s"+screen.width+"*"+screen.height+"*"+(screen.colorDepth?
+						screen.colorDepth:screen.pixelDepth))+";u"+escape(document.URL)+
+						";h"+escape(document.title.substring(0,80))+";"+Math.random()+
+						"' alt='' title='LiveInternet' "+
+						"border='0' width='31' height='31'></a>")
+						//--></script><!--/LiveInternet--> 
+            
+            <script type="text/javascript">
+						var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+						document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+						</script> 
+            <script type="text/javascript">
+						try {
+						var pageTracker = _gat._getTracker("UA-10113467-1");
+						pageTracker._trackPageview();
+						} catch(err) {}</script>
+            
+                  <!-- begin WebMoney Transfer : accept label --> 
+                  &nbsp;<a href="http://www.megastock.ru/" target="_blank"><img src="http://www.megastock.ru/Doc/88x31_accept/blue_rus.gif" alt="www.megastock.ru" border="0"></a> 
+                  <!-- end WebMoney Transfer : accept label --> 
+                  <!-- begin WebMoney Transfer : attestation label --> 
+                  &nbsp;<a href="https://passport.webmoney.ru/asp/certview.asp?wmid=425144048921" target="_blank"><img src="http://www.megastock.ru/doc/88x31_merchant/azure_rus.gif" alt=" 425144048921" border="0"></a> 
+                  <!-- end WebMoney Transfer : attestation label --> 
+                
+            <br>
+            <p>Пчелкин Дом в соцсетях:</p>
+            <p><a target="_blank" title="Пчелкин Дом Вконтакте" href="http://vk.com/club17410078"><img alt="Пчелкин Дом Вконтакте" height="32" width="32" src="/wa-data/public/site/themes/default/img/vk.jpg" title="Пчелкин Дом Вконтакте" /></a> <a target="_blank" title="Пчелкин Дом в Facebook" href="https://www.facebook.com/www.pchelkindom.ru"><img title="Пчелкин Дом в Facebook" height="32" width="32" src="/wa-data/public/site/themes/default/img/facebook.jpg" alt="Пчелкин Дом в Facebook" /></a> <a target="_blank" title="Пчелкин Дом в Твиттер" href="https://twitter.com/PchelkinDom"><img alt="Пчелкин Дом в Твиттер" height="32" width="32" src="/wa-data/public/site/themes/default/img/twitter.jpg" title="Пчелкин Дом в Твиттер" /></a> <a target="_blank" title="Пчелкин Дом в Одноклассники" href="http://www.odnoklassniki.ru/group/53175436181741  "><img alt="Пчелкин Дом в Одноклассниках" height="32" width="32" src="/wa-data/public/site/themes/default/img/odnoklassniki.jpg" title="Пчелкин Дом в Одноклассниках" /></a></p>
+            <!-- Yandex.Metrika counter --> 
+            
+            <script type="text/javascript">
+
+</script>
+            <noscript>
+                <div><img src="//mc.yandex.ru/watch/260426" style="position:absolute; left:-9999px;" alt="" /></div>
+                </noscript>
+            <!-- /Yandex.Metrika counter --> 
+          
+       </div>     
+      </div>
+    <div id="center"> 
+        <!-- APP CONTENT -->
+        <main role="main">
+              <div class="">
+            <div class="page"> {include file="`$wa_active_theme_path`/main.html" inline}
+              <p><br><br>
+              </p>
+                </div>
+          </div>
+            </main>
+        <div class="clear"></div>
+      </div>
+  </div>
+</div>
+<div class="clear"></div>
+</div>
+<!-- End of main container -->
+<div id="footer">
+<!-- plugin hook: 'frontend_footer' -->
+  <div class="right_angle">
+    <div class="left_angle">
+      <div class="bee"></div>
+      <div class="text">
+        <p class="intro">2009-2014 (c) Пчелкин Дом - интернет магазин детской одежды. </p>
+        {if $shop_pages} 
+        <!-- info pages --> 
+        {wa_print_tree tree=$shop_pages class="menu-footer" attrs = 'id="page-list"' elem =' <a href=":url" title=":title">:name</a>' collapsible_class='collapsible' selected=$wa->param('page_id')}
+        {else}
+        <div class="clear-right"></div>
+        {/if}
+        {if $wa->isAuthEnabled()}
+        <ul class="footer-auth">
+              {if $wa->user()->isAuth()}
+              {if $wa->shop}
+              <li> <a href="{$wa->myUrl()}"> [s`My account`]</a> </li>
+              {else}
+              <li><strong>{$wa->user('name')}</strong></li>
+              {/if}
+              <li><a href="">[s`Log out`]</a></li>
+              {else}
+              <li><a href="{$wa->loginUrl()}">[s`Log in`]</a></li>
+              <li><a href="{$wa->signupUrl()}">[s`Sign up`]</a></li>
+              {/if}
+            </ul>
+        {/if} </div>
+    </div>
+  </div>
+</div>
+
+<!-- End of main container -->
+<div style="display: none; z-index:100;" id="add_to_cart"> <!--<img src="img/bee.gif" class="opacity">--> </div>
+
+ 
+</body>
+</html>
