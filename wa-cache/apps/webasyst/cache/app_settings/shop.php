@@ -15,8 +15,8 @@ return array (
   2 => 
   array (
     'app_id' => 'shop',
-    'name' => 'use_product_currency',
-    'value' => 'true',
+    'name' => 'theme_hash',
+    'value' => '54d8a9f39819e.1423485427',
   ),
   3 => 
   array (
@@ -27,7 +27,7 @@ return array (
   4 => 
   array (
     'app_id' => 'shop',
-    'name' => 'theme_hash',
-    'value' => '54d8a9f39819e.1423485427',
+    'name' => 'use_product_currency',
+    'value' => 'true',
   ),
 );

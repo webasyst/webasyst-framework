@@ -2,19 +2,20 @@
 return array (
   'pchelkinazabava.ru' => 
   array (
+    4 => 
+    array (
+      'url' => 'mailer/*',
+      'app' => 'mailer',
+      'theme' => 'default',
+      'theme_mobile' => 'default',
+      'locale' => 'ru_RU',
+    ),
     0 => 
     array (
       'url' => 'blog/*',
       'app' => 'blog',
       'locale' => 'ru_RU',
       'blog_url_type' => 1,
-    ),
-    1 => 
-    array (
-      'url' => 'mailer/*',
-      'app' => 'mailer',
-      'locale' => 'ru_RU',
-      'private' => true,
     ),
     2 => 
     array (
@@ -33,14 +34,13 @@ return array (
       'shipping_id' => '0',
       'currency' => 'RUB',
     ),
-    3 => 
+    5 => 
     array (
       'url' => 'site/*',
       'app' => 'site',
       'theme' => 'default',
       'theme_mobile' => 'default',
       'locale' => 'ru_RU',
-      'private' => '1',
     ),
   ),
 );

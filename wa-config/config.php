@@ -1,8 +1,6 @@
 <?php
-
 return array (
-  'debug' => false,
+  'debug' => true,
   'identity_hash' => '4f829fe92706b6692488664bf4a3e45c',
   'mod_rewrite' => '1',
 );
-//EOF
