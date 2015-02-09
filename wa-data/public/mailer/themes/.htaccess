@@ -1,0 +1,4 @@
+
+<FilesMatch "\.(php\d*|html?|xml)$">
+    Deny from all
+</FilesMatch>
