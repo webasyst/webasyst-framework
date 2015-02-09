@@ -1,7 +1,0 @@
-<form id="add-comment-form">
-    <i class="icon16 userpic20" style="background-image: url('{$comments_author.photo}');"></i>{$comments_author.name|escape}
-    <p><textarea name="text" id="comment-text"></textarea></p>
-    <input type="hidden" name="comment_id" id="comment-id" value="0">
-    <input type="hidden" name="photo_id" id="photo-id" value="{if isset($photo_id)}{$photo_id}{else}0{/if}">
-    <input id="add-comment-button" type="button" value="[`Add comment`]" /> <em class="hint">Ctrl+Enter</em>
-</form>
