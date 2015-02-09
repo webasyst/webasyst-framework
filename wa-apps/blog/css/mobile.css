@@ -1,0 +1,16 @@
+#wa h1.gray { color: #aaa; }
+#wa .ui-content { padding-top: 0; }
+#wa .ui-content .ui-listview { margin: 0 -15px; }
+#wa .profile { margin-bottom: 20px; }
+#wa .b-post-body { font-weight: normal; line-height: 1.4em; }
+#wa .b-post-body img { max-width: 100%; }
+#wa .b-stream img.userpic { width: 20px; margin-top: 3px; }
+#wa .pageless-wrapper a { padding: 0; }
+#wa .pageless-wrapper { display: none; }
+#wa .ui-li-desc { margin-top: 20px; }
+#wa .ui-li { border: none; } 
+#wa .ui-li h3 { font-size: 2em; margin: 1.5em 0 0; } 
+#wa .ui-li .profile .image { float: left; margin-right: 5px; margin-top: -4px; }
+#wa .ui-li .ui-btn-inner a.ui-link-inherit { padding: 0; }
+#wa .ui-li-heading { white-space: normal; overflow: visible; }
+#wa .ui-li-desc {  white-space: normal; overflow: visible; font-size: 14px; }

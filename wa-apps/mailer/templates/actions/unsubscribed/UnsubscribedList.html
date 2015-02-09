@@ -1,0 +1,260 @@
+<div class="block double-padded">
+    <div class="block half-padded float-right">
+        <i class="icon16 search before-input"></i><input id="search-unsubscribed" type="search" placeholder="[`search by email`]" value="{$search|escape}">
+    </div>
+    <h1>[`Unsubscribed  `]</h1>
+
+    <p>
+        [`This list contains the email addresses of contacts who have clicked on the “unsubscribe” link in a received message. These addresses are automatically excluded from the recipient lists of all future mailings.`]
+        {sprintf_wp('You can also %sunsubscribe any address yourself%s.', '<a href="javascript:void(0)" id="unsibscribe-dialog-link" class="inline-link"><b><i>', '</i></b></a>')}
+    </p>
+
+    {if !$list}
+        {if $search}
+            <p>[`No unsubscribers match search criteria.`]</p>
+        {else}
+            <p>[`No one unsubscribed yet.`]</p>
+        {/if}
+    {/if}
+</div>
+
+{if $list}
+    <table class="zebra single-lined" id="unsubscribed-list-table">
+        <thead><tr>
+            <th class="m-first">
+                {if $order == 'email'}
+                    <a href="#/unsubscribed/{$start}/{$records}/!email/{$search_url_append}">[`Email`] <i class="icon16 uarr"></i></a>
+                {elseif $order == '!email'}
+                    <a href="#/unsubscribed/{$start}/{$records}/email/{$search_url_append}">[`Email`] <i class="icon16 darr"></i></a>
+                {else}
+                    <a href="#/unsubscribed/{$start}/{$records}/email/{$search_url_append}">[`Email`]</a>
+                {/if}
+            </th>
+            <th class="m-last">
+                {if $order == 'datetime'}
+                    <a href="#/unsubscribed/{$start}/{$records}/!datetime/{$search_url_append}">[`Unsubscribe date`] <i class="icon16 uarr"></i></a>
+                {elseif $order == '!datetime'}
+                    <a href="#/unsubscribed/{$start}/{$records}/datetime/{$search_url_append}">[`Unsubscribe date`] <i class="icon16 darr"></i></a>
+                {else}
+                    <a href="#/unsubscribed/{$start}/{$records}/datetime/{$search_url_append}">[`Unsubscribe date`]</a>
+                {/if}
+            </th>
+        </tr></thead><tbody>
+        {foreach $list as $row}
+            <tr rel="{$row.list_id}">
+                <td class="email-field m-first">{$row.email|escape}</td>
+                <td class="date-field m-last">{$row.datetime_formatted}</td>
+            </tr>
+        {/foreach}
+    </tbody></table>
+
+    <div class="block paging">
+        <div class="c-page-list">
+            <span style="margin-right:20px;">[`Total addresses:`] {$total_rows}</span>
+            {if count($pagination) > 1}
+            <span>
+            {foreach $pagination as $page => $offset}
+            {if $offset !== false}
+                <a{if $current_page == $page} class="selected"{/if} href="#/unsubscribed/{$offset}/{$records}/{$order}/{$search_url_append}">{$page}</a>
+            {else}
+                ...
+            {/if}
+            {/foreach}
+            {if $current_page != 1}
+                <a href="#/unsubscribed/{$start-$records}/{$records}/{$order}/{$search_url_append}" class="prevnext"><i class="icon10 larr"></i> пред</a>
+            {/if}
+            {if $current_page != $page}
+                <a href="#/unsubscribed/{$start+$records}/{$records}/{$order}/{$search_url_append}" class="prevnext">след <i class="icon10 rarr"></i></a>
+            {/if}
+            </span>
+            {/if}
+        </div>
+        <div class="c-page-num">[`Show`]
+            {$records_on_page = [30, 50, 100, 200, 500]}
+            <select id="records-per-page">
+                {foreach $records_on_page as $onpage}
+                <option value="{$onpage}"{if $records==$onpage} selected="selected"{/if}>{$onpage}</option>
+                {/foreach}
+            </select> [`records`]
+        </div>
+        <div class="clear"></div>
+    </div>
+{/if}
+
+<div id="unsibscribe-dialog" class="hidden">
+
+    <h1>[`Unsubscribe contact`]</h1>
+
+    <div class="fields width100px">
+        <div class="field">
+            <div class="name">[`Email`]</div>
+            <div class="value">
+                <input type="text">
+            </div>
+        </div>
+        <div class="hidden linked-to-contact field">
+            <div class="name">[`Linked to contact`]</div>
+            <div class="value">{* Updated via JS *}</div>
+        </div>
+    </div>
+
+    <div class="hidden buttons">
+        <div class="hidden show-when-selected">
+            <input type="submit" class="button green" value="[`Unsubscribe `]">
+            [`or`]
+            <a href="javascript:void(0)">[`cancel`]</a>
+        </div>
+        <div class="hidden show-when-empty">
+            <input type="submit" class="button" value="[`Cancel`]">
+        </div>
+    </div>
+</div>
+
+<script>(function() { "use strict";
+    $('#records-per-page').on('change', function(e){
+        var records = $(this).val();
+        $.storage.set('mailer/unsubscribed_records', records);
+        window.location.hash = '#/unsubscribed/0/'+records+'/{$order}/{$search_url_append}';
+    });
+
+    // Click on a table row opens dialog
+    var existing_dialog = null;
+    $('#unsubscribed-list-table tbody tr').click(function() {
+        var tr = $(this);
+
+        // Remove old dialog from DOM
+        if (existing_dialog) {
+            existing_dialog.empty().remove();
+            existing_dialog = null;
+        }
+        existing_dialog = $('<div></div>').waDialog({
+            content: '<i class="icon16 loading"></i>',
+            width: '440px',
+            height: '250px'
+        });
+
+        var random = $.wa.mailer.random = Math.random();
+        $.post('?module=unsubscribed&action=info', { email: tr.find('.email-field').text(), list_id: tr.attr('rel') }, function(html) {
+            if (random != $.wa.mailer.random) {
+                return;
+            }
+            existing_dialog.find('.dialog-content-indent').html(html);
+        });
+    });
+
+    // Search field
+    var submitSearch = function() {
+        var input = $(this);
+        var search_string = input.val();
+        var new_hash = $.wa.mailer.cleanHash('#/unsubscribed/0/{$records}/{$order}/' + encodeURIComponent(search_string));
+        if ($.wa.mailer.getHash() != new_hash) {
+            input.prev('.icon16').removeClass('search').addClass('loading');
+            window.location.hash = new_hash;
+        }
+        return false;
+    };
+    $('#search-unsubscribed').keyup(function(e) {
+        if (e.which != 13 && e.which != 10) {
+            return false;
+        }
+        return submitSearch.apply(this);
+    });
+    $('#search-unsubscribed').bind('search', submitSearch);
+
+    // Dialog to unsubscribe any contact
+    (function() {
+        var wrapper = $('#unsibscribe-dialog');
+        var dialog = null;
+        var dialog_buttons = null;
+
+        $('#unsibscribe-dialog-link').click(showDialog);
+
+        // Create new or show existing dialog
+        function showDialog() {
+            if (dialog) {
+                dialog.show();
+            } else {
+                wrapper.waDialog({
+                    width: '440px',
+                    height: '250px',
+                    onLoad: function() {
+                        dialog = $(this);
+                        dialog_buttons = dialog.find('.dialog-buttons-gradient');
+                        initDialog();
+                    }
+                });
+            }
+        }
+
+        // Init dialog when shown first time
+        function initDialog() {
+
+            // Move buttons where appropriate
+            var buttons = wrapper.find('.buttons').appendTo(dialog_buttons.empty()).show();
+            buttons.find('.show-when-empty').show();
+
+            // Autocomplete
+            var text_input = wrapper.find('input:text');
+            var contact_data = null;
+            text_input.autocomplete({
+                source: '?module=unsubscribed&action=autocomplete',
+                minLength: 1,
+                delay: 300,
+                html: 1,
+                focus: function() {
+                    return false;
+                },
+                select: function(event, ui) {
+                    text_input.val(ui.item.value);
+                    contact_data = ui.item;
+                    updateDialog();
+                    return false;
+                }
+            });
+
+            // Buttons effect
+            dialog_buttons.on('click', '.show-when-empty .button, .show-when-selected a', function() {
+                text_input.val('');
+                updateDialog();
+                dialog.trigger('close');
+            });
+            dialog_buttons.on('click', '.show-when-selected .button:visible',  submit);
+            text_input.on('keyup', updateDialog);
+
+            function submit() {
+                dialog_buttons.find('.button:visible').parent().append('<i class="icon16 loading"></i>');
+                $.post('?module=unsubscribed&action=save', { email: text_input.val() }, function() {
+                    dialog.trigger('close');
+                    $.wa.mailer.redispatch();
+                });
+                return false;
+            }
+
+            // Update dialog visible state after email has been changed in text input
+            var linked_contact = wrapper.find('.linked-to-contact');
+            function updateDialog() {
+                var email = text_input.val();
+                if (contact_data && contact_data.email == email) {
+                    linked_contact.show().find('.value').empty().append($('<a href="../contacts/#/contact/'+contact_data.id+'" target="_blank"></a>').text(contact_data.name));
+                    buttons.find('.show-when-selected').show();
+                    buttons.find('.show-when-empty').hide();
+                } else if (email.indexOf('@') >= 0) {
+                    linked_contact.show().find('.value').html("[`N/A`]");
+                    buttons.find('.show-when-selected').show();
+                    buttons.find('.show-when-empty').hide();
+                } else {
+                    linked_contact.hide();
+                    buttons.find('.show-when-selected').hide();
+                    buttons.find('.show-when-empty').show();
+                }
+            }
+        }
+    })();
+
+    {if !$search}
+        $('#unsubscribers-sb-link .count').html('{$total_rows}');
+    {/if}
+
+    $.wa.mailer.setTitle();
+})();</script>
+

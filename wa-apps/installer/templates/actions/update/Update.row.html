@@ -1,0 +1,118 @@
+<tr>
+
+    <td class="i-update-icon">
+    
+        {* ICON *}
+        
+        {if $item_type eq 'app'}
+            <img src="{$item.icons.48}" alt="">
+        {else}
+            &nbsp;
+        {/if}
+    </td>
+
+    <td class="i-update-name">
+    
+        {* PRODUCT NAME *}
+        
+        {if $item_type eq 'plugin' ||  $item_type eq 'theme' }
+
+            {* theme or plugin *}
+            
+            {if !empty($item.icons) && false}
+                <img src="{$item.icons.16}" alt="">
+            {else}
+                <i class="icon16 {if $item_type eq 'plugin'}plugins{else}design{/if}"></i>
+            {/if}            
+            
+            {if $item_type eq 'plugin'}
+                {sprintf('[`Plugin "<strong>%s</strong>"`]',{$item.name|default:$item_id|escape})}
+            {elseif $item_type eq 'theme' }
+                {sprintf('[`Theme "<strong>%s</strong>"`]',{$item.name|default:$item_id|escape})}
+            {else}
+                {$item.name|default:$item_id|escape}
+            {/if}
+        {else}
+
+            {* apps and system plugins *}
+            
+            {if $item_type eq 'systemplugin'}
+                <strong>{sprintf('[`Plugin "<strong>%s</strong>"`]',{$item.name|default:$item_id|escape})}</strong>
+            {else}
+                <strong class="large">{$item.name|default:$item_id|escape}</strong>
+            {/if}
+
+        {/if}
+
+        {if !empty($item.vendor_name)}
+            <span class="hint">{$item.vendor_name|escape}</span>
+        {/if}
+    </td>
+
+    <td class="i-update-data">
+    
+        {* UPDATE INFO & CHANGELOG *}
+
+        {if $item.version}
+            <strong>{$item.version}</strong>
+        {/if}
+        {if $item.installed.version}
+            <span class="hint">{$item.installed.version|string_format:'[`Your current version is %s.`]'}</span>
+        {/if}
+
+        {* changelog text *}
+        {if !empty($item.changelog)}
+            <div class="js-changelog">
+                {foreach $item.changelog as $record}
+                    <h4 class="gray"{if $record@first} style="display:none;"{/if}>{$record.version}{if !empty($record.datetime)} <span class="hint">{$record.datetime|wa_date:'humandate'|escape}</span>{/if}</h4>
+                    {$record.content|nl2br}
+                    {if !$record@last}<br><br>{/if}
+                    {if $record@first && !$record@last}
+                        <a class="inline-link js-changelog-more" href="#"><b><i>[`more`]</i></b></a>
+                        <span style="display: none;">
+                    {/if}
+                    {if !$record@first && $record@last}
+                        </span>
+                    {/if}
+                {/foreach}
+            </div>
+        {/if}
+
+    </td>
+
+    <td class="i-update-button">
+    
+        {* UPDATE BUTTON *}
+    
+        {if $item.applicable}
+            {if !empty($item.commercial) && empty($item.purchased)}
+
+            {* not allowed to install the app, i.e. expired *}
+                {if $item_type eq 'app'}
+                    {$link="apps/`$item.id`"}
+                {elseif $item_type eq 'theme'}
+                    {$link="themes/`$item.id`"}
+                {elseif $item_type eq 'plugin'}
+                    {$link="plugins/`$item.app`/`$item.id`"}
+                {/if}
+                {if !empty($item.domains) && count($item.domains)>1}
+                    <p class="small red bold">{sprintf('[`To get the update, you need to have separate %s app license for every individual domain the app is used on: %s`]', $item.name,implode(', ',(array)$item.domains))}</p>
+                {else}
+                    {if !empty($item.domains)}{$_domain=reset($item.domains)}{else}{$_domain=$domain}{/if}
+                    <p class="small red">{sprintf('[`License for this app is either expired or not valid for this domain (%s)`]',$_domain)}</p>
+                {/if}
+                <input type="button" onClick="javascript:window.location.href='{$wa_backend_url}installer/#/{$link}/';" value="[`Get license`]">
+            {else}
+
+                <!-- ok to update -->
+                <input type="hidden" name="app_id[{$item.slug}]"
+                       value="{$item.vendor}{if isset($item.edition) && $item.edition}:{$item.edition}{/if}"
+                       id="checkbox_{$item.slug|replace:'/':'___'}">
+                <input type="submit" id="update_{$item.slug|replace:'/':'___'}" value="[`Install update`]">
+            {/if}
+        {/if}
+
+        {include file="../../includes/requirements.html" inline}
+    </td>
+
+</tr>

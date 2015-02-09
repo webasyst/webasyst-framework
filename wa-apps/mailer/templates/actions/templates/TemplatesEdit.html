@@ -1,0 +1,362 @@
+<form id="form-edit-template" action="?module=templates&action=save" method="post" style="overflow:visible">
+
+{*
+ * Right sidebar.
+ *}
+<div class="sidebar right200px"><div class="block m-editor-toolbar">
+
+    <div class="block">
+        <div id="description-viewer">
+            <p>{ifset($params.description)|escape}</p>
+        </div>
+        <ul class="menu-v with-icons" style="margin-top:-15px;">
+            <li id="description-link">
+                {if trim(ifset($params.description))}
+                    <a href="javascript:void(0)"><i class="icon16 edit"></i><span class="small">[`Edit description`]</span></a>
+                {else}
+                    <a href="javascript:void(0)"><i class="icon16 edit"></i><span>[`Add a description`]</span></a>
+                {/if}
+            </li>
+        </ul>
+        <div id="description-editor" style="display:none;margin-bottom:10px;">
+            <textarea style="height:8em;width:159px" name="params[description]" placeholder="[`Type here a description for your reference only. It will not be shown to your campaign recipients.`]">{ifset($params.description)|escape}</textarea>
+            {if !empty($t.id)}
+                <input type="button" value="[`Save`]">
+            {/if}
+        </div>
+
+        <div id="m-portf-uploaded-image">
+            {if !empty($t.image)}
+                <img src="{$t.image}" style="max-width:159px">
+            {/if}
+        </div>
+
+        <ul class="menu-v with-icons">
+            {* !!! Preview images functionality is (temporarily?..) disabled.
+            <li style="min-height:0"><i class="icon16 image"></i><div id="m-t-file-uploader" style="margin:-25px 0 0 -23px;padding:5px 5px 5px 23px"></div></li>
+            <li id="m-portf-delete-image" class="small" style="{if empty($t.image)}display:none;{/if}margin-top:-15px">
+                <a href="javascript:void(0)"><i class="icon10 no"></i><span style="display:inline-block;margin-top:3px">[`Delete thumbnail`]</span></a>
+            </li>
+            *}
+
+            <li class="bottom-padded" style="padding-left:5px;margin-top:-10px;">
+                <div class="bold" style="margin:0 0 10px 0">[`Author`]:</div>
+                <div class="profile image32px">
+                    <div class="image">
+                        <a href="/webasyst/contacts/#/contact/{$creator.id}"><img width="32" height="32" src="{$creator->getPhoto(32)}" alt=""></a>
+                    </div>
+                    <div class="details">
+                        <a href="/webasyst/contacts/#/contact/{$creator.id}" style="margin:0;padding:0">{$creator.name|escape}</a>
+                        {ifempty($t.create_datetime, time())|wa_date:'humandatetime'}
+                    </div>
+                </div>
+            </li>
+
+            {if !empty($t.id)}
+
+                {if class_exists('ZipArchive')}
+                    <li><a href="?module=templates&action=export&id={$t.id}"><i class="icon16 download"></i>
+                        [`Export to file (zip)`]
+                    </a></li>
+                {/if}
+
+                <li><a href="#" id="message-delete"><i class="icon16 delete"></i>
+                    [`Delete template`]
+                </a></li>
+            {/if}
+        </ul>
+    </div>
+
+
+</div></div>{* div.sidebar.right200px, div.block.m-editor-toolbar *}
+
+{*
+ * Main area between sidebars.
+ *}
+<div class="content right200px"><div class="shadowed m-editor" style="margin-bottom:0">
+<div class="m-envelope-stripes-1"><div class="m-envelope-stripes-2" style="overflow:hidden">
+    <div class="block m-core-header">
+        <a href="#/templates/" class="no-underline"><i class="icon10 larr"></i>[`Templates`]</a>
+    </div>
+
+
+    <div class="block campaign-header tab-content">
+        <div class="block fields m-subject">
+            {if !empty($t.id)}
+            <input type="hidden" name="id" value="{$t.id}" />
+            {/if}
+            {if isset($params.sort)}
+            <input type="hidden" name="params[sort]" value="{$params.sort|escape}" />
+            {/if}
+
+            <h1>
+                <input id="message-subject" type="text" name="data[subject]" value="{if isset($t.id)}{$t.subject|escape}{/if}" placeholder="[`&lt;type a subject of your message&gt;`]" />
+            </h1>
+        </div>
+    </div>
+
+    <div class="m-editor wysiwyg-html clear-both wa-editor-core-wrapper">
+
+        <ul class="mode-toggle wa-editor-wysiwyg-html-toggle">
+            <li class="selected wysiwyg toolbar-bg">
+                <a class="wysiwyg" href="javascript:void(0)">[`Design editor`]</a>
+            </li>
+            <li>
+                <a class="html" href="javascript:void(0)">HTML</a>
+            </li>
+        </ul>
+
+        <div style="clear:both">
+            <textarea id="message-body" class="padded" name="data[body]">{if isset($t.id)}{$t.body|escape}{/if}</textarea>
+        </div>
+    </div>
+
+    <div class="block triple-padded" id="editor-step-1-buttons">
+        <input type="submit" class="button green" value="[`Save`]" />
+        <span class="hint">[`Ctrl+S`]</span>
+    </div>
+
+</div></div>{* div.m-envelope-stripes-1, div.m-envelope-stripes-2 *}
+</div></div>{* div.content.right200px, div.shadowed.m-editor *}
+
+</form>
+
+<div class="clear-left"></div>
+
+<script>
+var wa_url = "{$wa_url}";
+var wa_app = "{$wa->app()}";
+
+(function () { "use strict";
+
+    // Prepare three-column layout
+    $('#content').removeClass('shadowed').removeClass('blank');
+
+    var form = $('#form-edit-template');
+    var submit_btn = form.find("input[type=submit]");
+    var textarea = $("#message-body");
+
+    var min_h = 200;
+
+    textarea = $.wa.mailer.initWYSIWYG(textarea, submit_btn, min_h, "{waRequest::cookie('_csrf', '')}", "{$lang}");
+
+    // Save button: save template without leaving the page
+    var saveTemplate = function () {
+        if (submit_btn.attr('disabled')) {
+            return false;
+        }
+        textarea.waEditor('sync');
+        var process_message = $('<span class="process-message"><i class="icon16 loading" style="margin:6px 0 0 .5em"></i></span>');
+        submit_btn.attr('disabled', true).parent().append(process_message);
+        $.post(form.attr('action'), form.serialize(), function (response) {
+            submit_btn.attr('disabled', false);
+            if (response.status == 'ok') {
+                if (response.data.image) {
+                    var img = uploaded_image_div.find('img');
+                    if (img.size() <= 0) {
+                        img = $('<img src="" style="max-width:159px">').appendTo(uploaded_image_div);
+                    }
+                    img.attr('src', response.data.image);
+                    file_uploader_div.find('.qq-upload-button a').addClass('small').html("[`Change thumbnail`]");
+                }
+
+                var descr = $.trim($('#description-editor').hide().find('textarea').val());
+                $('#description-viewer').show().find('p').text(descr);
+                if (descr) {
+                    $('#description-link').show().find('a span').addClass('small').html("[`Edit description`]");
+                } else {
+                    $('#description-link').show().find('a span').removeClass('small').html("[`Add a description`]");
+                }
+
+                submit_btn.removeClass('yellow').addClass('green');
+                process_message.find('.loading').removeClass('loading').addClass('yes');
+                process_message.append('<span> '+$_('Saved')+'</span>');
+                process_message.animate({ opacity: 0 }, 2000, function() {
+                    process_message.remove();
+                });
+
+                $.wa.setHash('#/template/' + response.data.id + "/");
+            }
+        }, "json");
+        return false;
+    };
+    form.submit(function(e) {
+        e.preventDefault();
+        saveTemplate();
+        return false;
+    });
+
+    // Save on Ctrl+S, or Cmd+S
+    (function() {
+        var isCtrlS = function(event) {
+            if (event.which == 19) { // Mac users
+                return true;
+            }
+            if (event.which == 115 && event.ctrlKey) {
+                return true;
+            }
+            if (String.fromCharCode(event.which).toLowerCase() == 's' && event.ctrlKey) { // for chrome
+                return true;
+            }
+            return false;
+        };
+        var h;
+        $(document).on('keydown', h = function(event) {
+            // Change button color to yellow when something's typed into the editor
+            if (
+                (event.which < 33 || event.which > 40) &&
+                (event.which > 27 || event.which == 8 || event.which == 13) &&
+                (event.which < 112 || event.which > 124) &&
+                (!event.ctrlKey || event.which != 67)
+            )
+            {
+                if (event && event.target && event.target.name == 'params[description]') {
+                    return; // ignore changes in description
+                }
+                submit_btn.removeClass('green').addClass('yellow');
+            }
+
+            if (!isCtrlS(event)) {
+                return;
+            }
+            form.submit();
+            event.preventDefault();
+            return false;
+        });
+
+        // Confirmation before user leaves page
+        var h2;
+        $(window).on('wa.before_dispatched', h2 = function(e) {
+            if (submit_btn && submit_btn.hasClass('yellow') && form && form.closest('html').length) {
+                if (!confirm("[`Unsaved changes will be lost if you leave this page now. Are you sure?`]")) {
+                    e.preventDefault();
+                    return false;
+                }
+            }
+            $(window).off('wa.before_dispatched', h2);
+            $(document).off('keydown', h);
+            return true;
+        });
+    })();
+
+    // Description editor
+    $('#description-link a, #description-viewer').click(function() {
+        $('#description-viewer').hide();
+        $('#description-link').hide();
+        $('#description-editor').show();
+    });
+    $('#description-editor input').click(function() {
+        var ta = $(this).siblings('textarea');
+        var descr = $.trim(ta.val());
+        $('#description-viewer').show().find('p').text(descr);
+        if (descr) {
+            $('#description-link').show().find('a span').addClass('small').html("[`Edit description`]");
+        } else {
+            $('#description-link').show().find('a span').removeClass('small').html("[`Add a description`]");
+        }
+        $('#description-editor').hide();
+        $.post(form.attr('action'), { 'params[description]': ta.val(), 'id': '{ifempty($t.id)}' });
+    });
+
+    // Link to delete template
+    {if !empty($t.id)}
+        $("#message-delete").click(function () {
+            if (!confirm("[`Do you really want to remove this template (you will not be able to undo this action)?`]")) {
+                return false;
+            }
+            $(this).children('.icon16').removeClass('delete').addClass('loading');
+            $.post("?module=campaigns&action=delete", { id: '{$t.id}' }, function (response) {
+                if (response.status == 'ok') {
+                    $.storage.del('mailer/hash');
+                    $.wa.mailer.stopDispatch(1);
+                    window.location.hash = '#/templates/';
+                    $.wa.mailer.load("?module=templates", function() {
+                        submit_btn = null;
+                        $('#content h1').parent().after(
+                            $('<div class="block"></div>').html(
+                                '<div class="info-block"><p>'+
+                                    "{sprintf_wp('Template &ldquo;%s&rdquo; has been successfully deleted.', htmlspecialchars(ifempty($t.subject, _w('<no subject>'))))}"+
+                                '</p></div>'
+                            )
+                        );
+                    });
+                    $.wa.mailer.reloadSidebar();
+                }
+            }, "json");
+            return false;
+        });
+    {/if}
+
+    // Highlight link in sidebar
+    $('#wa-app > .sidebar .selected').removeClass('selected');
+    $('#templates-list-item').addClass('selected');
+
+    //
+    // File uploader setup
+    //
+    var file_uploader_div = $('#m-t-file-uploader');
+    var uploaded_image_div = $('#m-portf-uploaded-image');
+    var delete_image_block = $('#m-portf-delete-image');
+    var upload_action = '?action=upload';
+    var file_id = 'template_preview';
+    var uploaded_action = '?action=uploaded&id='+file_id+'&resize_x=213&crop_y=128&offset_y=0';
+    var showImage = function(img, src) {
+    };
+{* !!! Preview images functionality is (temporarily?..) disabled.
+    new qq.FileUploader({
+        element: file_uploader_div[0],
+        action: upload_action,
+        //debug: true,
+        template: '<div class="qq-uploader">' +
+                '<div class="qq-upload-drop-area remove-when-no-dnd"><span>'+"[`Drag and drop an image file here (JPG, GIF, PNG)`]"+'</span></div>' +
+                '<div class="qq-upload-button"><a{if !empty($t.image)} class="small"{/if}>'+"{if empty($t.image)}[`Upload thumbnail`]{else}[`Change thumbnail`]{/if}"+'</a></div>' +
+                '<ul class="hidden qq-upload-list"></ul>' +
+             '</div>',
+        onComplete: function(id, fileName, responseJSON) {
+            file_uploader_div.find('.qq-upload-list').empty();
+            if (responseJSON.error) {
+                return;
+            }
+            form.find('[name="delete_image"]').remove();
+            delete_image_block.show();
+            file_uploader_div.find('.qq-upload-button a').addClass('small').html("[`Change thumbnail`]");
+            saveTemplate();
+        },
+        onCancel: function(id, fileName){
+            file_uploader_div.siblings('img').remove();
+            file_uploader_div.find('.qq-upload-list').empty();
+        },
+        params: {
+            file_id: file_id,
+            action: 'upload',
+            image: 1
+        }
+    });
+
+    // File uploader UI fix
+    file_uploader_div.find('.remove-when-no-dnd').remove();
+    $('.qq-upload-button input[multiple]', file_uploader_div[0]).live('mouseover', function() {
+        file_uploader_div.find('.qq-upload-button a').addClass('hovered');
+        $(this).one('mouseout', function() {
+            file_uploader_div.find('.qq-upload-button a').removeClass('hovered');
+        });
+    });
+
+    // Delete image link
+    delete_image_block.find('a').click(function() {
+        form.append('<input type="hidden" name="delete_image" value="1">');
+        delete_image_block.hide();
+        uploaded_image_div.find('img').remove();
+
+        {if !empty($t.id)}
+            // Save image immidiately
+            saveTemplate();
+        {/if}
+
+        file_uploader_div.find('.qq-upload-button a').removeClass('small').html("[`Upload thumbnail`]");
+    });
+*}
+
+    $.wa.mailer.setTitle();
+})();</script>
+

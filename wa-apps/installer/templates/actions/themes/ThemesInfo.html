@@ -1,0 +1,370 @@
+<div class="block i-product-page">
+{if empty($theme)}
+    <div class="content">
+        <div class="i-breadcrumbs">
+            <a href="#/themes/">[`All themes`]</a>
+            {if strlen($query)}
+                <a href="#/themes{$query}/" data-href="#/themes%s%s/" class="js-item-link">[`List`]</a>
+            {/if}
+        </div>
+        <h1>[`Application not found`]</h1>
+        {if !empty($error)}
+            <p class="error">{$error|escape}</p>
+        {/if}
+    </div>
+{else}
+    {$current_url = "#/themes/`$theme.id`/"}
+    {$current_data_url = "#/themes%s%s/`$theme.id`/"}
+    <div class="sidebar">
+    <div class="i-get-started">
+
+        <!-- action block -->
+        {if $theme.installed}
+
+            <!-- already installed -->
+            <div class="align-center">
+                {if $theme.commercial && !$theme.purchased}
+                    {* PAID APP, LICENSE IS NOT VALID *}
+                    {if $theme.license_expire}
+                        {* EXPIRED LICENSE *}
+                        <a class="button green" href="{$theme.renew_url|escape}">[`Renew license`]</a>
+                        <p class="red"><i class="icon16 no"></i>{sprintf("[`License for using %s on <strong>%s</strong> has expired on %s`]",$theme.name|escape,installerHelper::getDomain()|escape,waDatetime::format('humandate',$theme.license_expire))}</p>
+                    {else}
+                        {* NEVER LICENSED *}
+                        <form action="{$theme.purchase_url|escape}" method="post">
+                            <input type="hidden" name="app_id[]" value="{$theme.slug}{if !empty($theme.edition)}:{$theme.edition}{/if}">
+                            {foreach $theme.inherited as $inherited}
+                                <input type="hidden" name="app_id[]" value="{$inherited.slug}{if !empty($theme.edition)}:{$theme.edition}{/if}">
+                            {/foreach}
+                            <input type="hidden" name="hash" value="{$identity_hash}">
+                            {if !empty($promo_id)}
+                                <input type="hidden" name="promo_id" value="{$promo_id|escape}">
+                            {/if}
+                            <input type="hidden" name="domain" value="{$domain}">
+                            <input type="hidden" name="installer_url" value="{$wa->currentUrl(true,true)}">
+                            
+                            
+                                <input type="submit" class="button green" value="[`Link license`]">
+                                <p class="red"><i class="icon16 no"></i>{sprintf("[`Installation and usage of %s theme on <strong>%s</strong> is not licensed. Updates are disabled. Buy a new license or link your existing %s theme license to this Webasyst installation.`]",$theme.name|escape,installerHelper::getDomain()|escape, $theme.name|escape)}</p>
+                            
+                        </form>
+                    {/if}
+                {else}
+                
+                    {* LICENSED INSTALLATION: EITHER FREE OR PAID *}
+                    
+                    {if $theme.action == waInstallerApps::ACTION_UPDATE}
+                    
+                        {* UPDATES ARE AVAILABLE *}
+                        <form action="?module=update&action=manager" method="post">
+                            <input type="hidden" name="app_id[{$theme.slug}]" value="{$theme.vendor}{if !empty($theme.edition)}:{$theme.edition}{/if}">
+                            {if !empty($theme.inherited)}{foreach $theme.inherited as $inherited}
+                                <input type="hidden" name="app_id[{$inherited.slug}]" value="{$theme.vendor}{if !empty($theme.edition)}:{$theme.edition}{/if}">
+                            {/foreach}{/if}
+                            <input type="submit" class="button blue" value="[`Install update`]"{if !$theme.applicable} disabled="disabled"{/if}>
+                            <p>
+                                {sprintf("[`A newer version of %s <strong>%s</strong> is available for installation (your current version is %s).`]",$theme.name|escape,$theme.version,$theme.installed.version)}
+                                {if $theme.changelog}
+                                    <a href="{$current_url}changelog/" data-href="{$current_data_url}changelog/" class="js-item-link">[`View release notes`]</a>
+                                {/if}
+                            </p>
+
+                            {if !$theme.applicable}
+                                <div style="display: none">
+                                    <p class="hint">[`This application cannot be updated`]</p>
+                                    {include file="templates/includes/requirements.html" item=$theme inline}
+                                </div>
+                            {/if}
+
+                        </form>
+                        
+                    {elseif $theme.commercial}
+                    
+                        {if $theme.license_expire}
+                            {* COMMERCIAL LICENSE WITH AN EXPIRE DATE *}
+                            <p><em class="i-installed-label"><i class="icon16 yes"></i>{sprintf("[`This is a licensed installation of %s on %s. License is valid through <strong>%s</strong>.`]",$theme.name|escape, installerHelper::getDomain()|escape, $theme.license_expire)}</em></p>
+                            <a class="button green" href="{$theme.renew_url|escape}" style="display: inline-block;">[`Extend license`]</a>
+                            <br><br>
+                        {else}
+                            {* VALID LICENSE *}
+                            <p><em class="i-installed-label"><i class="icon16 yes"></i>{sprintf("[`This is a valid licensed installation of %s on <strong>%s</strong>.`]",$theme.name|escape, installerHelper::getDomain()|escape)}</em></p>
+                            <a class="button green" href="{* $theme.buymore_url|escape *}https://www.webasyst.com/my/#/neworder/">[`Buy more licenses`]</a>
+                            <p>{sprintf("[`Additional licenses are required if you are using %s on more than one domain name (<a href='%s' target='_blank'>one license per domain</a>).`]",$theme.name|escape, '[`http://www.webasyst.com/help/1200/paid-app-licensing/`]')}</p>
+                        {/if}
+                        
+                    {else}
+                    
+                        {* FREE APP *}
+                        {if !empty($theme.reviews.url)}
+                            <p>
+                                <a href="{$theme.reviews.url}" class="large bold">[`Write a review`]</a>
+                                <i class="icon16 new-window"></i>
+                            </p>
+                        {/if}
+                        <p><em class="i-installed-label"><i class="icon16 yes"></i>{sprintf("[`You have the latest version of %s installed: <strong>%s</strong>`]",$theme.name|escape,$theme.installed.version)}</em></p>
+                        
+                    {/if}
+                {/if}
+            </div>
+
+        {else}
+
+            <!-- not installed -->
+
+            <div class="align-center">
+                {if $theme.commercial && empty($theme.purchased)}
+                {* PAID THEME *}
+                    <form action="{$theme.purchase_url|escape}" method="post">
+                        <input type="hidden" name="app_id[]" value="{$theme.slug}">
+                        {foreach $theme.inherited as $inherited}
+                            <input type="hidden" name="app_id[]" value="{$inherited.slug}{if !empty($theme.edition)}:{$theme.edition}{/if}">
+                        {/foreach}
+                        <input type="hidden" name="hash" value="{$identity_hash}">
+                        {if !empty($promo_id)}
+                            <input type="hidden" name="promo_id" value="{$promo_id|escape}">
+                        {/if}
+                        <input type="hidden" name="domain" value="{$domain}">
+                        <input type="hidden" name="installer_url" value="{$wa->currentUrl(true,true)}">
+                        <input type="submit" class="button green" value="[`Buy & Install`]"{if !$theme.applicable} disabled="disabled"{/if}>
+                    </form>
+                    <p class="gray">{sprintf('[`%s will be automatically downloaded from Webasyst Store and installed immediately after you make payment.`]', $theme.name|escape)} [`If you already have a license, click the button above to link it to this Webasyst installation.`]</p>
+                {else}
+                {* FREE THEME *}
+                    <form action="?module=update&action=manager" method="post">
+                        <input type="hidden" name="app_id[{$theme.slug}]" value="{$theme.vendor}{if !empty($theme.edition)}:{$theme.edition}{/if}">
+                        {if !empty($theme.inherited)}{foreach $theme.inherited as $inherited}
+                            <input type="hidden" name="app_id[{$inherited.slug}]" value="{$theme.vendor}">
+                        {/foreach}{/if}
+                        <input type="submit" class="button green" value="[`Install`]"{if !$theme.applicable} disabled="disabled"{/if}>
+                    </form>
+                    <p class="gray">{sprintf('[`%s will be downloaded from Webasyst Store and installed automatically.`]', $theme.name|escape)}</p>
+                {/if}
+                {if !$theme.applicable}
+                {* DEPENDENCIES *}
+                    <p class="hint">[`This application cannot be installed`]</p>
+                    {include file="templates/includes/requirements.html" item=$theme inline}
+                {/if}
+
+            </div>
+
+        {/if}
+
+        <!-- pricing -->
+        <div class="fields width100px">
+            {if !$theme.installed}
+                {if $theme.commercial}
+                    <div class="field-group">
+                        <div class="field">
+                            <div class="name">
+                                [`Price`]
+                            </div>
+                            {if $theme.lease_price == 'free'}
+                                {* free to install on this particular installation (cloud) *}
+                                <div class="value">
+                                    <strong>[`Free`]</strong>
+                                </div>
+                            {else}
+                                <div class="value">
+                                    {if !empty($theme.compare_price)}<strike class="gray">{$theme.compare_price}</strike>&nbsp; {/if}
+                                    <strong{if !empty($theme.compare_price)} class="highlighted"{/if}>{$theme.price}</strong>
+                                </div>
+                                {if $theme.lease_price}
+                                    <div class="value">
+                                        [`or`]
+                                    </div>
+                                    <div class="value">
+                                        <strong>{sprintf('[`%s/mo`]',$theme.lease_price)}</strong>
+                                    </div>
+                                {/if}
+                            {/if}
+                        </div>
+                    </div>
+                {else}
+                    <div class="field">
+                        <div class="name">
+                            [`Price`]
+                        </div>
+                        <div class="value">
+                            <strong>[`Free`]</strong>
+                        </div>
+                    </div>
+                {/if}
+            {/if}
+            <div class="field">
+                <div class="name">
+                    [`License`]
+                </div>
+                <div class="value">
+                
+                
+                    {if !empty($theme.license_text)}
+                        [`Commercial`]
+                        <a href="#/show/license/" class="js-action">[`View`]</a>
+                        <div class="dialog">
+                            <div class="dialog-background"></div>
+                            <div class="dialog-window" style="left: 29%; top: 25%;">
+                                <div class="dialog-content">
+                                    <div class="dialog-content-indent">
+                                        <h2>{$theme.name|string_format:'[`%s end user license agreement`]'|escape}</h2>
+                                        <p>{$theme.license_text|escape|nl2br}</p>
+                                    </div>
+                                </div>
+                                <div class="dialog-buttons">
+                                    <div class="block double-padded">
+                                        <a href="#/hide/license" class="js-action">[`Close`]</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {else}
+                        {$theme.license|default:'[`No license`]'|escape}
+                        {if !empty($theme.license_url)}<a href="{$theme.license_url|escape}" target="_blank">[`View`]</a> <i class="icon10 new-window"></i>{/if}
+                    {/if}
+
+                </div>
+            </div>
+            <div class="field">
+                <div class="name">
+                    [`Developer`]
+                </div>
+                <div class="value">
+                    {$theme.vendor_name|default:$theme.vendor|escape}
+                </div>
+            </div>
+        </div>
+
+        <div class="clear-both"></div>
+
+    </div>
+
+    <!-- product misc details -->
+    <div class="block double-padded">
+        <div class="fields width100px">
+
+            <div class="field">
+                <div class="name">
+                    [`Version`]
+                </div>
+                <div class="value">
+                    {$theme.version}{if $theme.changelog}
+                        <a href="{$current_url}changelog/" data-href="{$current_data_url}changelog/" class="js-item-link" style="font-size: 0.9em;">[`View release notes`]</a>
+                    {/if}
+                </div>
+            </div>
+            <div class="field">
+                <div class="name">
+                    [`Updated`]
+                </div>
+                <div class="value">
+                    {$theme.update_datetime|wa_datetime:'humandate'}
+                </div>
+            </div>
+            {*
+            <div class="field">
+                <div class="name">
+                    [`Size`]
+                </div>
+                <div class="value">
+                    <strong>{10241024|wa_format_file_size:'%0.2f':'[`B,KB,MB`]'}</strong>
+                </div>
+            </div>
+            *}
+        </div>
+
+        {if $theme.installed}
+            {if !$theme.system}
+                <div class="block top-padded align-center clear-both">
+                    <form action="?module=themes&amp;action=remove" method="POST" onsubmit="return confirm(this.title);" title="[`This will delete application source code and data without the ability to recover. Are you sure?`]">
+                        {$wa->csrf()}
+                        <input type="hidden" name="extras_id[{$theme.slug}]" value="{$theme.installed.vendor}{if !empty($theme.installed.edition)}:{$theme.installed.edition}{/if}">
+                        {if !empty($theme.inherited)}{foreach $theme.inherited as $inherited}
+                            <input type="hidden" name="extras_id[{$inherited.slug}]" value="{$theme.installed.vendor}{if !empty($theme.installed.edition)}:{$theme.installed.edition}{/if}">
+                        {/foreach}{/if}
+                        <input type="submit" value="[`Delete this theme`]" class="button red">
+                    </a>
+                    </form>
+                </div>
+            {/if}
+        {/if}
+    </div>
+    </div>
+
+    <div class="content">
+
+        <div class="i-breadcrumbs">
+            <a href="#/themes/">[`All themes`]</a>
+            {if !empty($theme.vendor)} &raquo; <a href="#/themes&vendor={$theme.vendor}/" data-href="#/themes%s%s&vendor={$theme.vendor}/" data-filter="vendor" class="js-item-link">{$theme.vendor_name|escape}</a>{/if}
+        </div>
+
+        <article class="i-summary">
+
+            <div class="profile">
+                <div class="image">
+                    <img src="{$theme.icon}" alt="">
+                </div>
+                <div class="details">
+                    <h1>{$theme.name}{if isset($theme.status_label) && $theme.status_label} <span class="highlighted i-theme-label">{$theme.status_label}</span>{/if}</h1>
+                    <p>{$theme.summary}</p>
+
+                    <nav>
+                        <ul class="menu-h">
+                            <li class="selected"{if empty($theme.reviews.url)} style="display: none;"{/if}><a href="{$current_url}" data-href="{$current_data_url}" class=" js-item-link">[`Overview`]</a></li>
+                            {if !empty($theme.reviews.url)}
+                                <li><a href="{$theme.reviews.url}" target="_blank">[`Reviews`] <span class="hint">{$theme.reviews.count|escape}</span> <i class="icon10 new-window"></i></a></li>
+                            {/if}
+                        </ul>
+                    </nav>
+
+                </div>
+            </div>
+            {if $theme.screenshots}
+                <div class="i-screenshots">
+                    {$screenshot = reset($theme.screenshots)}
+                    {if $screenshot}
+                        <div id="current">
+                            <img src="{$screenshot.img}" alt="" title="{$screenshot.description|escape}"/>
+                            <!-- or YouTube / Vimeo video here -->
+                        </div>
+                    {/if}
+                    {if count($theme.screenshots)>1}
+                        <ul class="thumbs">
+                            {foreach $theme.screenshots as $screenshot}
+                                <li{if $screenshot@first} class="selected"{/if}><a href="#/show/screenshot/" class="js-action"><img data-src="{$screenshot.img}" src="{$screenshot.thumb}" alt="" title="{$screenshot.description|escape}"/></a></li>
+                            {/foreach}
+                        </ul>
+                    {/if}
+                </div>
+            {/if}
+
+        </article>
+
+        <section class="i-description" id="tab-{$theme.id|escape}-info">
+            <p>{$theme.description}</p>
+        </section>
+
+        {if !empty($theme.changelog)}
+            <section id="tab-{$theme.id|escape}-changelog" style="display:none;">
+                {foreach $theme.changelog as $changelog}
+
+                    <div><strong>{$changelog.version}</strong><p>{$changelog.content|nl2br}</p></div>
+                {/foreach}
+            </section>
+        {/if}
+
+        {*
+            <section class="reviews">
+                <h3>Reviews</h3>
+            </section>
+        *}
+    </div>
+{/if}
+</div>
+<script type="text/javascript">
+    <!--
+    if($){
+        $.layout.window.setTitle('{$theme.name|default:'[`Application not found`]'|cat:" — ":{$wa->accountName(false)}|escape:'javascript'}');
+    }
+    //-->
+</script>
+{block name=footer}
+{/block}

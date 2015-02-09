@@ -1,0 +1,1634 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: site\n"
+"POT-Creation-Date: 2011-12-07 18:35+0400\n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: site\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=((((n%10)==1)&&((n%100)!=11))?(0):(((((n"
+"%10)>=2)&&((n%10)<=4))&&(((n%100)<10)||((n%100)>=20)))?(1):2));\n"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-Basepath: .\n"
+"X-Generator: Poedit 1.6.6\n"
+"Language: ru_RU\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPath-1: .\n"
+
+msgid "Site"
+msgstr "Сайт"
+
+#: /wa-apps/site/templates/layouts/Sidebar.html:87
+msgid "Files"
+msgstr "Файлы"
+
+#: /wa-apps/site/templates/actions/files/Files.html:64
+msgid "New folder"
+msgstr "Новая папка"
+
+#: /wa-apps/site/templates/actions/files/Files.html:82
+msgid "Upload files"
+msgstr "Загрузить файлы"
+
+#: /wa-apps/site/templates/actions/files/Files.html:30
+msgid "Selected files"
+msgstr "Выбранные файлы"
+
+#: /wa-apps/site/templates/actions/files/Files.html:125
+msgid "Move to folder"
+msgstr "Переместить в папку"
+
+#: /wa-apps/site/templates/actions/themes/ThemesRow.html:76
+msgid "Delete"
+msgstr "Удалить"
+
+#: /wa-apps/site/templates/actions/files/Files.html:38
+msgid "Folder"
+msgstr "Папка"
+
+#: /wa-apps/site/templates/actions/themes/ThemesDefault.html:82
+msgid "Rename"
+msgstr "Переименовать"
+
+#: /wa-apps/site/templates/actions/files/Files.html:50
+msgid "File"
+msgstr "Файл"
+
+#: /wa-apps/site/templates/actions/files/Files.html:51
+msgid "Modified"
+msgstr "Изменен"
+
+#: /wa-apps/site/templates/actions/files/Files.html:52
+msgid "Size"
+msgstr "Размер"
+
+#: /wa-apps/site/templates/actions/files/Files.html:70
+msgid "Create"
+msgstr "Создать"
+
+#: /wa-apps/site/templates/layouts/Sidebar.html:43
+msgid "or"
+msgstr "или"
+
+#: /wa-apps/site/templates/layouts/Sidebar.html:43
+msgid "cancel"
+msgstr "отмена"
+
+#: /wa-apps/site/templates/actions/themes/ThemesDefault.html:66
+msgid "Uploading..."
+msgstr "Загрузка..."
+
+#: /wa-apps/site/templates/actions/themes/ThemesDefault.html:72
+msgid "Upload"
+msgstr "Загрузить"
+
+#: /wa-apps/site/templates/layouts/Default.html:63
+msgid "Save"
+msgstr "Сохранить"
+
+#: /wa-apps/site/templates/actions/files/Files.html:133
+msgid "Move"
+msgstr "Переместить"
+
+#: /wa-apps/site/templates/actions/files/Files.html:315
+msgid "Delete folder"
+msgstr "Удалить папку"
+
+#: /wa-apps/site/templates/actions/files/Files.html:315
+msgid "Folder will be deleted without the ability to recover."
+msgstr "Папка будет удалена без возможности восстановления."
+
+#: /wa-apps/site/templates/actions/files/Files.html:355
+msgid "Delete files"
+msgstr "Удалить файлы"
+
+#: /wa-apps/site/templates/actions/files/Files.html:355
+msgid "Files will be deleted without the ability to recover."
+msgstr "Файлы будут удалены без возможности восстановления."
+
+#: /wa-apps/site/templates/actions/settings/Settings.html:2
+msgid "Site setup"
+msgstr "Настройка сайта"
+
+#: /wa-apps/site/templates/actions/settings/Settings.html:9
+msgid "Delete entire website"
+msgstr "Удалить сайт"
+
+#: /wa-apps/site/templates/layouts/Sidebar.html:50
+msgid "Routing"
+msgstr "Маршрутизация"
+
+#: /wa-apps/site/templates/actions/settings/Settings.html:17
+msgid "Settings"
+msgstr "Настройки"
+
+#: /wa-apps/site/templates/actions/settings/Settings.html:22
+msgid "New rule"
+msgstr "Новое правило"
+
+#: /wa-apps/site/templates/actions/settings/Settings.html:326
+msgid "App settings"
+msgstr "Настройки приложения"
+
+#: /wa-apps/site/templates/actions/settings/Settings.html:327
+msgid "Edit URL"
+msgstr "Изменить URL"
+
+#: /wa-apps/site/templates/actions/settings/Settings.html:328
+msgid "Delete rule"
+msgstr "Удалить правило"
+
+#: /wa-apps/site/templates/layouts/Sidebar.html:39
+msgid "http://www.webasyst.com/framework/docs/site/structure/"
+msgstr "http://www.webasyst.ru/developers/docs/creating-a-website-tutorial/"
+
+#: /wa-apps/site/lib/actions/helper/siteHelper.action.php:18
+msgid "Help"
+msgstr "Помощь"
+
+#: /wa-apps/site/templates/actions/settings/Settings.html:64
+msgid "Site URL"
+msgstr "Адрес сайта"
+
+#: /wa-apps/site/templates/actions/settings/Settings.html:67
+msgid "A valid URL pointing to this Webasyst installation."
+msgstr ""
+"Действующий адрес (URL), который ведет на данную установку фреймворка "
+"Webasyst."
+
+#: /wa-apps/site/templates/actions/settings/Settings.html:71
+msgid "Site name"
+msgstr "Название сайта"
+
+#: /wa-apps/site/templates/actions/settings/Settings.html:73
+msgid "Matches Site URL"
+msgstr "Совпадает с адресом сайта"
+
+#: /wa-apps/site/templates/actions/settings/Settings.html:85
+msgid "menu"
+msgstr "меню"
+
+#: /wa-apps/site/templates/actions/settings/Settings.html:87
+msgid "The array defining core website navigation menu"
+msgstr "Массив, который определяет основное меню навигации на сайте"
+
+#: /wa-apps/site/templates/actions/settings/Settings.html:90
+msgid "All settled apps"
+msgstr "Все приложения"
+
+#: /wa-apps/site/templates/actions/settings/Settings.html:90
+msgid "Automatically define navigation menu according to the routing rules"
+msgstr ""
+"Меню навигации будет сформировано автоматически согласно правилам "
+"маршрутизации этого сайта"
+
+#: /wa-apps/site/templates/actions/settings/Settings.html:93
+msgid "Setup manually"
+msgstr "Настроить"
+
+#: /wa-apps/site/templates/actions/settings/Settings.html:170
+msgid "Edit"
+msgstr "Редактировать"
+
+#: /wa-apps/site/templates/actions/settings/Settings.html:113
+msgid "When done editing, click “Save” to apply changes."
+msgstr ""
+"После завершения редактирования не забудьте нажать на кнопку «Сохранить»"
+
+#: /wa-apps/site/templates/actions/settings/Settings.html:115
+msgid "Add link"
+msgstr "Добавить ссылку"
+
+#: /wa-apps/site/templates/actions/settings/Settings.html:125
+msgid "Favicon"
+msgstr "Фавиконка"
+
+#: /wa-apps/site/templates/actions/settings/Settings.html:129
+msgid "Upload another favicon"
+msgstr "Загрузить другую иконку"
+
+#: /wa-apps/site/templates/actions/settings/Settings.html:138
+msgid "Contents of this site's robots.txt file."
+msgstr "Содержимое файла robots.txt этого сайта"
+
+#: /wa-apps/site/templates/layouts/Default.html:92
+msgid "Saved"
+msgstr "Сохранено"
+
+#: /wa-apps/site/templates/actions/settings/Settings.html:162
+msgid "Redirect"
+msgstr "Перенаправление"
+
+#: /wa-apps/site/templates/actions/settings/Settings.html:186
+msgid "This will delete the link from the menu. Are you sure?"
+msgstr "Ссылка будет удалена из меню. Продолжить?"
+
+#: /wa-apps/site/templates/actions/settings/Settings.html:230
+msgid "This will delete the rule from website structure. Are you sure?"
+msgstr "Правило будет удалено из структуры сайта. Продолжить?"
+
+#: /wa-apps/site/templates/layouts/Sidebar.html:67
+msgid "New page"
+msgstr "Новая страница"
+
+#: /wa-apps/site/templates/actions/pages/Pages.html:19
+msgid "Page settings"
+msgstr "Настройки страницы"
+
+#: /wa-apps/site/templates/actions/pages/Pages.html:25
+msgid "This will delete entire page. Are you sure?"
+msgstr "Будет удалена вся страница. Продолжить?"
+
+#: /wa-apps/site/templates/layouts/Sidebar.html:75
+msgid "draft"
+msgstr "черновик"
+
+#: /wa-apps/site/templates/layouts/Design.html:13
+msgid "Preview"
+msgstr "Просмотр"
+
+#: /wa-apps/site/lib/config/site.php:7
+msgid "Page name"
+msgstr "Название страницы"
+
+#: /wa-apps/site/templates/actions/pages/Pages.html:69
+msgid "Draft"
+msgstr "Черновик"
+
+#: /wa-apps/site/templates/actions/pages/Pages.html:71
+msgid "Published"
+msgstr "Опубликовано"
+
+#: /wa-apps/site/templates/actions/pages/Pages.html:78
+msgid "Page URL"
+msgstr "URL страницы"
+
+#: /wa-apps/site/lib/config/site.php:18
+msgid "Title"
+msgstr "Заголовок"
+
+#: /wa-apps/site/templates/actions/pages/Pages.html:114
+msgid "Page custom parameters"
+msgstr "Дополнительные параметры страницы"
+
+#: /wa-apps/site/templates/actions/pages/Pages.html:118
+msgid "http://www.webasyst.com/framework/docs/site/pages/"
+msgstr "http://www.webasyst.ru/developers/docs/features/page-parameters/"
+
+#: /wa-apps/site/templates/actions/pages/Pages.html:127
+msgid "WYSIWYG"
+msgstr "Визуальный редактор"
+
+#: /wa-apps/site/templates/actions/snippets/Snippets.html:2
+msgid "Block"
+msgstr "Блок"
+
+#: /wa-apps/site/templates/actions/snippets/Snippets.html:17
+msgid "New block"
+msgstr "Новый блок"
+
+#: /wa-apps/site/templates/actions/snippets/Snippets.html:32
+msgid "Block settings"
+msgstr "Настройки блока"
+
+#: /wa-apps/site/templates/actions/snippets/Snippets.html:37
+msgid "Embed block into a page or a template"
+msgstr "Встроить на страницу или в шаблон"
+
+#: /wa-apps/site/templates/actions/snippets/Snippets.html:45
+msgid "ID"
+msgstr "ID"
+
+#: /wa-apps/site/templates/actions/design/Design.html:35
+msgid "Description"
+msgstr "Описание"
+
+#: /wa-apps/site/templates/actions/snippets/Snippets.html:112
+msgid "This will permanently delete this snipper. Are you sure?"
+msgstr ""
+"Блок будет удален и перестанет подключаться в шаблонах и на страницах, на "
+"которые был добавлен до этого. Удалить блок?"
+
+#: /wa-apps/site/templates/layouts/Design.html:23
+msgid "New file"
+msgstr "Новый файл"
+
+#: /wa-apps/site/templates/actions/design/Design.html:14
+msgid "Template settings"
+msgstr "Настройки шаблона"
+
+#: /wa-apps/site/templates/actions/design/Design.html:26
+msgid "File name"
+msgstr "Имя файла"
+
+#: /wa-apps/site/templates/actions/design/Design.html:30
+msgid "File should have one of the allowed extensions: .html, .css, .js"
+msgstr ""
+"Имя файла должно оканчиваться одним из следующих расширений: .html, .css, ."
+"js."
+
+#: /wa-apps/site/templates/actions/design/Design.html:39
+msgid "Optional template description"
+msgstr "Необязательное описание шаблона"
+
+#: /wa-apps/site/templates/actions/routing/Routing.html:2
+msgid "settings"
+msgstr "настройки"
+
+#: /wa-apps/site/templates/actions/routing/Routing.html:8
+msgid "{$app.name|escape} app settled at"
+msgstr "«{$app.name|escape}» по адресу"
+
+#: /wa-apps/site/templates/actions/routing/Routing.html:16
+msgid "Settlement name"
+msgstr "Название поселения"
+
+#: /wa-apps/site/templates/actions/routing/Routing.html:19
+msgid "Name is used in the <em>$wa->apps</em> navigation menu of this website"
+msgstr "Название используется в меню навигации <em>$wa->apps</em> этого сайта"
+
+#: /wa-apps/site/templates/actions/routing/Routing.html:23
+msgid "Design theme"
+msgstr "Тема оформления"
+
+#: /wa-apps/site/templates/actions/routing/Routing.html:29
+msgid "Mobile design theme"
+msgstr "Мобильная тема оформления"
+
+#: /wa-apps/site/templates/actions/routing/Routing.html:33
+msgid "Design theme for mobile multi-touch devices such as iPhone and Android"
+msgstr ""
+"Тема оформления для мобильных multi-touch устройств (iPhone, Android и пр.)"
+
+#: /wa-apps/site/templates/actions/routing/Routing.html:47
+msgid "Custom parameters"
+msgstr "Дополнительные параметры"
+
+#: /wa-apps/site/templates/actions/routing/Routing.html:53
+msgid "http://www.webasyst.com/framework/docs/site/design/"
+msgstr "http://www.webasyst.ru/developers/docs/design/"
+
+#: /wa-apps/site/templates/layouts/Default.html:88
+msgid "Saving..."
+msgstr "Сохранение..."
+
+#: /wa-apps/site/templates/layouts/Default.html:45
+msgid "Loading"
+msgstr "Загрузка"
+
+#: /wa-apps/site/templates/layouts/Default.html:56
+msgid "Cheat sheet"
+msgstr "Шпаргалка"
+
+#: /wa-apps/site/templates/layouts/Default.html:102
+msgid "An error occurred while saving"
+msgstr "При попытке сохранения произошла ошибка"
+
+#: /wa-apps/site/templates/layouts/Default.html:120
+msgid "Unsaved changes will be lost if you leave this page now. Are you sure?"
+msgstr "Несохраненные изменения будут потеряны. Уйти с этой страницы?"
+
+#: /wa-apps/site/templates/layouts/Sidebar.html:33
+msgid "New site"
+msgstr "Новый сайт"
+
+#: /wa-apps/site/templates/layouts/Sidebar.html:26
+msgid "Open website"
+msgstr "Открыть сайт"
+
+#: /wa-apps/site/templates/layouts/Sidebar.html:27
+msgid "Site info"
+msgstr "Настройки сайта"
+
+#: /wa-apps/site/templates/layouts/Sidebar.html:36
+msgid "E.g. mydomain.com, www.mydomain.com, subdomain.mydomain.com"
+msgstr "Например, mydomain.ru, www.mydomain.ru, subdomain.mydomain.ru"
+
+#: /wa-apps/site/templates/layouts/Sidebar.html:42
+msgid "Create site"
+msgstr "Создать сайт"
+
+#: /wa-apps/site/templates/layouts/Sidebar.html:51
+msgid "Apps"
+msgstr "Приложения"
+
+#: /wa-apps/site/templates/layouts/Sidebar.html:68
+msgid "Pages"
+msgstr "Страницы"
+
+#: /wa-apps/site/templates/layouts/Sidebar.html:86
+msgid "Blocks"
+msgstr "Блоки"
+
+#: /wa-apps/site/lib/actions/files/siteFilesUploadimage.controller.php:25
+msgid "Files with extensions %s are allowed only."
+msgstr "Разрешена загрузка файлов только с расширениями %s."
+
+#: /wa-apps/site/lib/actions/files/siteFilesAddFolder.controller.php:14
+msgid ""
+"Folder could not bet created due to the insufficient file write permissions "
+"for the %s folder."
+msgstr ""
+"Не удалось создать папку из-за недостаточных прав на перезапись содержимого "
+"папки %s."
+
+#: /wa-apps/site/lib/actions/files/siteFilesAddFolder.controller.php:18
+msgid "An unkown error occured when attempting to create a folder."
+msgstr "При попытке создания папки произошла неизвестная ошибка."
+
+#: /wa-apps/site/lib/actions/files/siteFilesDelete.controller.php:21
+msgid "Folder could not bet deleted due to the insufficient permissions."
+msgstr "Не удалось удалить папку из-за недостаточных прав доступа."
+
+#: /wa-apps/site/lib/actions/files/siteFilesMove.controller.php:13
+msgid ""
+"Files could not bet moved due to the insufficient file write permissions for "
+"the %s folder."
+msgstr ""
+"Не удалось переместить файлы из-за недостаточных прав на перезапись "
+"содержимого папки %s."
+
+#: /wa-apps/site/lib/actions/files/siteFilesMove.controller.php:23
+msgid "Can not move file “%s” to a new location"
+msgstr "Не удалось переместить файл %s в указанную папку"
+
+#: /wa-apps/site/lib/actions/files/siteFilesMove.controller.php:35
+msgid "Can not move to a new location"
+msgstr "Не удалось переместить в указанную папку"
+
+#: /wa-apps/site/lib/actions/files/siteFilesRename.controller.php:17
+msgid "Files with extension .%s are not allowed to security considerations."
+msgstr ""
+"Файлы с расширением .%s не допускаются из соображений обеспечения "
+"безопасности."
+
+#: /wa-apps/site/lib/actions/files/siteFilesRename.controller.php:22
+msgid ""
+"Folder or file could not bet renamed due to the insufficient file write "
+"permissions for the %s folder."
+msgstr ""
+"Не удалось переименовать файл (папку) из-за недостаточных прав на перезапись "
+"содержимого папки %s."
+
+#: /wa-apps/site/lib/actions/files/siteFilesRename.controller.php:33
+msgid "File (folder) can not be renamed"
+msgstr "Не удалось переименовать файл (папку)"
+
+#: /wa-apps/site/lib/actions/files/siteFilesRename.controller.php:37
+msgid "Enter the new name"
+msgstr "Введите новое имя"
+
+#: /wa-apps/site/lib/actions/files/siteFilesRename.controller.php:39
+msgid "Selected folder (file) does not exist anymore"
+msgstr "Выбранная папка (файл) не существует"
+
+#: /wa-apps/site/lib/actions/files/siteFilesUpload.controller.php:13
+msgid ""
+"File could not bet saved due to the insufficient file write permissions for "
+"the %s folder."
+msgstr ""
+"Не удалось сохранить файл из-за недостаточных прав на перезапись содержимого "
+"папки %s"
+
+#: /wa-apps/site/lib/actions/files/siteFilesUpload.controller.php:38
+msgid ""
+"Files with extension .%s are not allowed for upload due to the security "
+"considerations."
+msgstr ""
+"Загрузка файлов с расширением .%s не допускается из соображений обеспечения "
+"безопасности."
+
+#: /wa-apps/site/lib/actions/files/siteFilesUpload.controller.php:56
+msgid "Failed to upload file %s."
+msgstr "Не удалось загрузить файл %s"
+
+#: /wa-apps/site/lib/actions/settings/siteSettings.action.php:100
+msgid ""
+"Favicon image you upload here will not take effect for you website %s "
+"because your website is set for a subfolder on a domain. Favicon uploaded "
+"using the form above will be set only for websites set from the domain root "
+"folder."
+msgstr ""
+"Иконка, загруженная с помощью этой формы, не будет применена к сайту %s, "
+"потому что сайт расположен в подкаталоге домена. Загруженная через данную "
+"форму иконка может быть установлена только для сайтов, размещенных в "
+"корневом каталоге домена."
+
+#: /wa-apps/site/lib/actions/settings/siteSettings.action.php:101
+msgid ""
+"Rules you set above for robots.txt will not take effect for you website %s "
+"because your website is set for a subfolder on a domain. Rules for robots."
+"txt from the form above will be effective only for websites set to the "
+"domain root folder."
+msgstr ""
+"Правила для файла robots.txt, установленные с помощью этой формы, не "
+"применятся для сайта %s, потому что этот сайт расположен в подкаталоге "
+"домена. Содержимое robots.txt, добавленное с помощью этой формы, может быть "
+"использовано только для сайтов, расположенных в корневом каталоге домена."
+
+#: /wa-apps/site/lib/actions/settings/siteSettings.action.php:105
+msgid ""
+"File favicon.ico exists in the Webasyst framework installation folder. The "
+"favicon you upload here will be overridden by the icon uploaded as file "
+"unless you delete this file."
+msgstr ""
+"Файл favicon.ico обнаружен в каталоге установки Webasyst. Вместо иконки, "
+"сохраненной на этой странице, будет отображаться иконка из указанного файла."
+
+#: /wa-apps/site/lib/actions/settings/siteSettings.action.php:108
+msgid ""
+"File robots.txt exists in the Webasyst framework installation folder. Rules "
+"for robots.txt you specify above will not take effect unless you delete this "
+"file."
+msgstr ""
+"Файл robots.txt обнаружен в каталоге установки Webasyst. Правила для файла "
+"robots.txt, сохраненные на этой странице, не будут применены."
+
+#: /wa-apps/site/lib/actions/settings/siteSettingsSave.controller.php:71
+msgid ""
+"Settings could not be saved due to the insufficient file write permissions "
+"for the \"%s\" folder."
+msgstr ""
+"Не удалось сохранить настройки из-за недостаточных прав на перезапись "
+"содержимого папки «%s»."
+
+msgid ""
+"Settings could not be saved due to the insufficient file write permissions "
+"for the file \"%s\"."
+msgstr ""
+"Не удалось сохранить настройки из-за недостаточных прав на запись файла «%s»."
+
+#: /wa-apps/site/lib/actions/settings/siteSettingsSave.controller.php:84
+msgid "Files with extension *.ico are allowed only."
+msgstr "Допускаются только файлы с расширением *.ico."
+
+#: /wa-apps/site/lib/actions/settings/siteSettingsSave.controller.php:103
+msgid ""
+"File could not be saved due to the insufficient file write permissions for "
+"the \"%s\" folder."
+msgstr ""
+"Не удалось сохранить файл из-за недостаточных прав на перезапись содержимого "
+"папки «%s»."
+
+#: /wa-apps/site/lib/actions/settings/siteSettingsSave.controller.php:90
+msgid "Failed to upload file."
+msgstr "Не удалось загрузить файл."
+
+#: /wa-apps/site/lib/actions/backend/siteBackendLoc.action.php:14
+msgid "File URL"
+msgstr "URL файла"
+
+#: /wa-apps/site/lib/actions/backend/siteBackendLoc.action.php:19
+msgid "Delete file"
+msgstr "Удалить файл"
+
+#: /wa-apps/site/lib/actions/backend/siteBackendLoc.action.php:21
+msgid "will be deleted without the ability to recover."
+msgstr "будет удален без возможности восстановления."
+
+#: /wa-apps/site/lib/config/site.php:20
+msgid "META Keywords"
+msgstr "META Keywords"
+
+#: /wa-apps/site/lib/config/site.php:21
+msgid "META Description"
+msgstr "META Description"
+
+#: /wa-apps/site/lib/actions/helper/siteHelper.action.php:9
+msgid "URL of this Webasyst installation (relative)"
+msgstr "URL установки Webasyst (относительный)"
+
+#: /wa-apps/site/lib/actions/helper/siteHelper.action.php:10
+msgid "URL of the current app settlement (relative)"
+msgstr "URL текущего поселения приложения (относительный)"
+
+#: /wa-apps/site/lib/actions/helper/siteHelper.action.php:11
+msgid "URL to access Webasyst backend (relative)"
+msgstr "URL доступа к бекенду Webasyst (относительный)"
+
+#: /wa-apps/site/lib/actions/helper/siteHelper.action.php:12
+msgid "URL of the current app design theme folder (relative)"
+msgstr "URL папки с файлами текущей темы оформления (относительный)"
+
+#: /wa-apps/site/lib/actions/helper/siteHelper.action.php:16
+msgid "Returns current page URL (either absolute or relative)"
+msgstr "Возвращает URL текущей страницы (абсолютный либо относительный)"
+
+#: /wa-apps/site/lib/actions/helper/siteHelper.action.php:17
+msgid "Returns this domain’s root URL (absolute)"
+msgstr "Возвращает корневой URL этого домена (абсолютный)"
+
+#: /wa-apps/site/lib/actions/helper/siteHelper.action.php:18
+msgid ""
+"Returns value of the global var by <em>key</em>. Global var array is "
+"initially empty, and can be used arbitrarily."
+msgstr ""
+"Возвращает значение глобальной переменной по ключу <em>key</em>. Массив "
+"глобальных переменных изначально пуст и может использоваться произвольным "
+"образом"
+
+#: /wa-apps/site/lib/actions/helper/siteHelper.action.php:19
+msgid "Assigns global var a new value"
+msgstr "Присваивает новое значение глобальной пемеренной"
+
+msgid "Assigns a new title"
+msgstr "Устанавливает новый заголовок"
+
+#: /wa-apps/site/lib/actions/helper/siteHelper.action.php:20
+msgid "Returns GET parameter value (same as PHP $_GET[\"<em>key</em>\"])"
+msgstr ""
+"Возаращает значение GET-параметра (аналогично $_GET[\"<em>key</em>\"] в PHP)"
+
+#: /wa-apps/site/lib/actions/helper/siteHelper.action.php:21
+msgid ""
+"Based on current session data returns <em>true</em> or <em>false</em> if "
+"user is using a multi-touch mobile device; if no session var reflecting "
+"current website version (mobile or desktop) is available, User Agent "
+"information is used"
+msgstr ""
+"Возвращает <em>true</em> или <em>false</em> в зависимости от того, "
+"использует ли пользователь в данный момент мобильное multi-touch устройство "
+"(iPhone, Android и пр.) или нет; если переменная сессии, содержащая тип "
+"версии сайта (мобильный или стандартный), отсутствует, то используется "
+"информация из заголовков User Agent"
+
+#: /wa-apps/site/lib/actions/helper/siteHelper.action.php:23
+msgid "Returns POST parameter value (same as PHP $_POST[\"<em>key</em>\"])"
+msgstr ""
+"Возвращает значение POST-параметра (аналогично $_POST[\"<em>key</em>\"] в "
+"PHP)"
+
+#: /wa-apps/site/lib/actions/helper/siteHelper.action.php:24
+msgid "Returns SERVER parameter value (same as PHP $_SERVER[\"KEY\"])"
+msgstr ""
+"Возвращает значение параметра массива SERVER (аналогично $_SERVER[\"<em>key</"
+"em>\"] в PHP)"
+
+#: /wa-apps/site/lib/actions/helper/siteHelper.action.php:25
+msgid "Returns SESSION var value (same as PHP $_SESSION[\"<em>key</em>\"])"
+msgstr ""
+"Возвращает значение переменной сессии SESSION (аналогично "
+"$_SESSION[\"<em>key</em>\"] в PHP)"
+
+#: /wa-apps/site/lib/actions/helper/siteHelper.action.php:26
+msgid "Embeds HTML block by ID"
+msgstr "Отображает содержимое блока по его идентификатору"
+
+#: /wa-apps/site/lib/actions/helper/siteHelper.action.php:27
+msgid ""
+"Returns authorized user data from associated record in “Contacts” app. "
+"\"<em>field</em>\" (string) is optional and indicates the field id to be "
+"returned. If not  Returns <em>false</em> if user is not authorized"
+msgstr ""
+"Возвращает массив с данными авторизованного пользователя из соответствующей "
+"записи приложения «Контакты». Если указан необязательный параметр "
+"\"<em>field</em>\" (string), то возвращается содержимое конкретного поля "
+"записи о контакте. Если пользователь не авторизован, функция возвращает "
+"<em>false</em>"
+
+#: /wa-apps/site/lib/actions/helper/siteHelper.action.php:28
+msgid "Returns User Agent info by specified “<em>key</em>” parameter:"
+msgstr "Возвращает информацию User Agent по указанному параметру <em>key</em>:"
+
+#: /wa-apps/site/lib/actions/helper/siteHelper.action.php:30
+msgid ""
+"— <em>\"isMobile\"</em>: returns <em>true</em> or <em>false</em> if user is "
+"using a multi-touch mobile device (iOS, Android and similar), based solely "
+"on User Agent string;"
+msgstr ""
+"— <em>\"isMobile\"</em>: основываясь на содержимом заголовков User Agent, "
+"возвращает <em>true</em> или <em>false</em> в зависимости от того, "
+"использует ли пользователь в данный момент мобильное multi-touch устройство "
+"(iPhone, Android и пр.) или нет;"
+
+#: /wa-apps/site/lib/actions/helper/siteHelper.action.php:31
+msgid "— not specified: returns entire User Agent string;"
+msgstr "— не указано: возвращает всю строку User Agent"
+
+#: /wa-apps/site/lib/actions/helper/siteHelper.action.php:69
+msgid "Displays a simple variable (non array/object)"
+msgstr "Отображает переменную (не подходит для массивов и объектов)"
+
+#: /wa-apps/site/lib/actions/helper/siteHelper.action.php:70
+msgid "Displays the 5th element of a zero-indexed array"
+msgstr "Отображает 5-й элемент массива, считая с нулевого индекса"
+
+#: /wa-apps/site/lib/actions/helper/siteHelper.action.php:72
+msgid "Displays variable key value of an array. Similar to PHP $foo[$bar]"
+msgstr ""
+"Отображает значение элемента массива с переменным ключом. Аналогично "
+"использованию $foo[$bar] в PHP"
+
+#: /wa-apps/site/lib/actions/helper/siteHelper.action.php:73
+msgid "Displays the object property named <em>bar</em>"
+msgstr "Отображает свойство объекта с именем <em>bar</em>"
+
+#: /wa-apps/site/lib/actions/helper/siteHelper.action.php:74
+msgid "Displays the return value of object method named <em>bar()</em>"
+msgstr ""
+"Отображает значение, возвращаемое методом объекта с именем <em>bar()</em>"
+
+#: /wa-apps/site/lib/actions/helper/siteHelper.action.php:75
+msgid "Escapes a variable for safe display in HTML"
+msgstr "Экранирует переменную для безопасного отображения в HTML-коде"
+
+#: /wa-apps/site/lib/actions/helper/siteHelper.action.php:77
+msgid "Outputs the sum of <em>$x</em> and <em>$y</em>"
+msgstr "Отображает сумму <em>$x</em> и <em>$y</em>"
+
+#: /wa-apps/site/lib/actions/helper/siteHelper.action.php:78
+msgid "Assigns variable a value"
+msgstr "Присваивает значение переменной"
+
+#: /wa-apps/site/lib/actions/helper/siteHelper.action.php:80
+msgid "Content between {literal} tags will not be parsed by Smarty"
+msgstr "Текст между тегами {literal} не обрабатывается Smarty"
+
+#: /wa-apps/site/lib/actions/helper/siteHelper.action.php:82
+msgid "Similar to PHP if statements"
+msgstr "Аналогично конструкции if в PHP"
+
+#: /wa-apps/site/lib/actions/helper/siteHelper.action.php:83
+msgid "{foreach} is for looping over arrays of data"
+msgstr "Используется для перебора элементов в массивах данных"
+
+#: /wa-apps/site/lib/actions/snippets/siteSnippetsSave.controller.php:12
+msgid "Only latin characters, numbers and underscore symbol are allowed."
+msgstr ""
+"Допускается использование только латинских букв, цифр и символа подчеркивания"
+
+#: /wa-apps/site/lib/config/data/welcome.html:2
+msgid "This website is powered by the Site app."
+msgstr "Этот сайт работает на основе приложения «Сайт»."
+
+#: /wa-apps/site/lib/config/data/welcome.html:3
+msgid "Refer to this tutorial to build your new site"
+msgstr "Посмотрите статью документации Webasyst с примером создания сайта"
+
+#: /wa-apps/site/lib/config/data/welcome.html:4
+msgid "http://www.webasyst.com/framework/docs/site/tutorial/"
+msgstr "http://www.webasyst.ru/developers/docs/creating-a-website-tutorial/"
+
+#: /wa-apps/site/lib/config/site.php:8
+msgid "Page title (&lt;title&gt;)"
+msgstr "Заголовок страницы (&lt;title&gt;)"
+
+#: /wa-apps/site/lib/config/site.php:9
+msgid "Page content"
+msgstr "Содержимое страницы"
+
+#: /wa-apps/site/lib/config/site.php:10
+msgid "Page last update datetime"
+msgstr "Время последнего обновления страницы"
+
+#: /wa-apps/site/lib/config/site.php:14
+msgid "Page list (only id, name, title, url, create_datetime, update_datetime)"
+msgstr ""
+"Список страниц (только id, name, title, url, create_datetime, "
+"update_datetime)"
+
+#: /wa-apps/site/lib/config/site.php:15
+msgid "Returns page info (array) by <em>id</em> (int)"
+msgstr ""
+"Возвращает информацию о странице (массив) по идентификатору <em>id</em> (int)"
+
+#: /wa-apps/site/lib/config/site.php:19
+msgid "Content"
+msgstr "Содержимое"
+
+#: /wa-apps/site/lib/config/site.php:24
+msgid "Error code (e.g. 404)"
+msgstr "Код ошибки (например, 404)"
+
+#: /wa-apps/site/lib/config/site.php:25
+msgid "Error message"
+msgstr "Сообщение об ошибке"
+
+#: /wa-apps/site/lib/config/siteRightConfig.class.php:9
+msgid "Available sites"
+msgstr "Доступные сайты"
+
+#: /wa-apps/site/lib/config/install.php:14
+msgid "Welcome"
+msgstr "Добро пожаловать"
+
+msgid "Locale"
+msgstr "Локаль"
+
+msgid "Auto"
+msgstr "Авто"
+
+msgid ""
+"Edit this layout in your <a href=\"{$wa_backend_url}\">Webasyst backend</a> "
+"using “Site” app."
+msgstr ""
+"Оформление сайта настраивается <a href=\"{$wa_backend_url}\">в бекенде</a> с "
+"помощью приложения «Сайт»."
+
+msgid "Image will be uploaded into"
+msgstr "Изображение будет загружено в"
+
+#: /wa-apps/site/templates/actions/settings/Settings.html:146
+msgid "Authorization"
+msgstr "Авторизация"
+
+#: /wa-apps/site/themes/default/error.html:7
+msgid "Error"
+msgstr "Ошибка"
+
+#: /wa-apps/site/js/site-jquery.min.js:49
+msgid "Cancel"
+msgstr "Отмена"
+
+#: /wa-apps/site/js/site.js:215
+msgid "Disable this URL"
+msgstr "Выключить этот адрес"
+
+#: /wa-apps/site/js/site.js:216
+msgid "disable"
+msgstr "выкл"
+
+#: /wa-apps/site/js/site.js:222
+msgid "Enable this URL"
+msgstr "Включить этот адрес"
+
+#: /wa-apps/site/js/site.js:223
+msgid "enable"
+msgstr "вкл"
+
+#: /wa-apps/site/themes/default/index.html:24
+msgid "Logout"
+msgstr "Выйти"
+
+#: /wa-apps/site/themes/default/index.html:27
+msgid "Sign up"
+msgstr "Регистрация"
+
+#: /wa-apps/site/themes/default/index.html:28
+msgid "Login"
+msgstr "Вход"
+
+#: /wa-apps/site/themes/default/index.html:45
+msgid "Powered by Webasyst"
+msgstr "Работает на основе Webasyst"
+
+#: /wa-apps/site/themes/default/error.html:8
+msgid "The requested resource is not available."
+msgstr "Запрашиваемый ресурс недоступен."
+
+#: /wa-apps/site/templates/actions/settings/Settings.html:148
+msgid "Enable sign up and login forms for this site"
+msgstr "Включить формы регистрации и входа для этого сайта"
+
+#: /wa-apps/site/templates/actions/settings/Settings.html:152
+msgid "Select the app that will handle authorization forms:"
+msgstr ""
+"Выберите приложение, которое будет отвечать за функциональность форм "
+"регистрации и авторизации пользователей на этом сайте:"
+
+msgid "Enable captcha for signup form"
+msgstr "Требовать ввод капчи (captcha) в форме регистрации"
+
+#: /wa-apps/site/templates/layouts/Sidebar.html:22
+msgid ""
+"Enter the URL of your new website. You should own the domain and map it into "
+"your Webasyst installation (the URL should be the effective URL to access "
+"this Webasyst installation). Contact your hosting provider on how to map "
+"your domain name."
+msgstr ""
+"Введите URL нового сайта. Вы должны быть владельцем доменного имени и "
+"предварительно настроить домен так, чтобы он указывал на данную установку "
+"Webasyst. Для настройки доменного имени обратитесь за помощью к вашему "
+"хостинг-провайдеру."
+
+#: /wa-apps/site/templates/actions/routing/RoutingEdit.html:64
+msgid ""
+"Optional set of custom <em>key=value</em> parameters which can be used "
+"within design templates and pages of this settlement as <em>&#123;$wa-"
+">globals(\"key\")&#125;</em>. Each key=value pair should be on a separate "
+"line."
+msgstr ""
+"Необязательный набор параметров вида <em>key=value</em>, к значениям которых "
+"можно обращаться шаблонах дизайна и страницах этого поселения как <em>&#123;"
+"$wa->globals(\"key\")&#125;</em>. Каждая пара key=value должна быть указана "
+"на отдельной строке."
+
+#: /wa-apps/site/templates/actions/routing/Routing.html:68
+msgid "Select route to manage its settings"
+msgstr "Выберите правило маршрутизации для редактирования его настроек"
+
+#: /wa-apps/site/templates/actions/routing/Routing.html:36
+msgid ""
+"Rules are processed one by one in the given order. The first rule matching "
+"current HTTP request (web address) will be processed. Use * symbol in the "
+"URL fields for wildcard."
+msgstr ""
+"Правила обрабатываются по одному в указанном порядке. Обработка начинается с "
+"первого правила в списке и заканчивается на правиле, которое соответствует "
+"текущему HTTP-запросу (адресу). Для обозначения любых символов в качестве "
+"маски используйте звездочку (*)."
+
+#: /wa-apps/site/templates/actions/blocks/Blocks.html:37
+msgid "View original"
+msgstr "Посмотреть оригинал"
+
+#: /wa-apps/site/templates/actions/settings/Settings.html:27
+msgid ""
+"E.g. <em>domain.com</em> if Webasyst is installed into domain.com's root "
+"folder, <em>domain.com/wa</em> if Webasyst is installed into /wa/ subfolder "
+"on domain.com. Do not put slash at the end of the URL."
+msgstr ""
+"Например, <em>domain.ru</em>, если Webasyst устанавливается в корневую "
+"директорию домена domain.ru, или <em>domain.ru/wa</em>, если Webasyst "
+"устанавливается в поддиректорию /wa/ домена domain.ru. В конце URL добавлять "
+"косую черту (/) не нужно."
+
+#: /wa-apps/site/templates/actions/settings/Settings.html:36
+msgid ""
+"Site alias used within site selection menu (at the top left corner), and as "
+"the anchor name in frontend's <em>$wa->apps()</em> navigation menu array."
+msgstr ""
+"Псевдоним сайта, используемый в меню выбора сайтов (в верхнем левом углу) и "
+"в качестве текста ссылки в меню навигации фронтенда <em>$wa->apps()</em>."
+
+#: /wa-apps/site/templates/actions/settings/Settings.html:82
+msgid "Background"
+msgstr "Фон"
+
+#: /wa-apps/site/templates/actions/settings/Settings.html:93
+msgid "Custom"
+msgstr "Загрузить"
+
+#: /wa-apps/site/templates/actions/settings/Settings.html:122
+msgid ""
+"Background is for customizing your Site app backend, which is useful when "
+"you have multiple websites powered by the single Webasyst installation. "
+"Selected background will not be shown in the frontend."
+msgstr ""
+"Фон используется для индивидуальной настройки бекенда приложения «Сайт» — "
+"это удобно, если вы управляете несколькими сайтами внутри одной установки "
+"фреймворка Вебасист. Выбранный фон не виден во фронтенде."
+
+#: /wa-apps/site/templates/actions/settings/Settings.html:126
+msgid "Custom head JS"
+msgstr "Пользовательский JavaScript-код внутри &lt;head&gt;"
+
+#: /wa-apps/site/templates/actions/settings/Settings.html:128
+msgid "Google Analytics Property ID"
+msgstr "Google Analytics Property ID"
+
+#: /wa-apps/site/templates/actions/settings/Settings.html:131
+msgid ""
+"E.g. <strong>UA-123456-1</strong><br />If you are using <a href=\"https://"
+"www.google.com/analytics/\">Google Analytics</a> to track your website "
+"visits and conversions, instead of embedding Google Analytics JS code "
+"manually, enter your Google Analytics Property ID here. A valid Google "
+"Analytics code will be automatically embedded into every app and every "
+"design theme before the closing &lt;/head&gt; tag."
+msgstr ""
+"Например, <strong>UA-123456-1</strong><br />Если вы используете <a href="
+"\"https://www.google.com/analytics/\">Google Analytics</a> для отслеживания "
+"статистики посещений и конверсии вашего сайта, то вместо внедрения кода "
+"Google Analytics вручную достаточно просто ввести здесь ваш Google Analytics "
+"Property ID. Правильный код Google Analytics автоматически вставится во все "
+"темы оформления всех приложений перед закрывающим тегом &lt;/head&gt;."
+
+#: /wa-apps/site/templates/actions/settings/Settings.html:135
+msgid "Additional JS code to be added before the closing &lt;/head&gt; tag:"
+msgstr ""
+"Дополнительный JavaScript-код для вставки перед закрывающим тегом &lt;/"
+"head&gt;:"
+
+#: /wa-apps/site/templates/actions/settings/Settings.html:193
+msgid "Third-party authorization"
+msgstr "Авторизация через внешние сервисы"
+
+#: /wa-apps/site/templates/actions/settings/Settings.html:194
+msgid ""
+"Enables your site visitors to quickly sign up or sign in via accounts on "
+"external popular platforms, e.g. Facebook and Twitter. <a href=\"http://www."
+"webasyst.com/framework/docs/dev/auth-adapters/\" target=\"_blank\">Setup "
+"instructions</a> <i class=\"icon10 new-window\"></i>"
+msgstr ""
+"Позволяет посетителям вашего сайта быстро зарегистрироваться или "
+"авторизоваться через аккаунты в популярных сторонних сервисах, например, "
+"через «Фейсбук» или «Твиттер». <a href=\"http://www.webasyst.ru/developers/"
+"docs/auth/auth-adapters/\" target=\"_blank\">Документация по настройке</a> "
+"<i class=\"icon10 new-window\"></i>"
+
+#: /wa-apps/site/templates/actions/settings/Settings.html:224
+msgid ""
+"To enable authorization on this website, install and settle at least one app "
+"that supports authorization forms."
+msgstr ""
+"Чтобы сделать доступной авторизацию на этом сайте, установите хотя бы одно "
+"приложение, которое поддерживает формы авторизации,  и настройте для него "
+"маршрутизацию."
+
+#: /wa-apps/site/templates/actions/settings/Settings.html:344
+msgid ""
+"This will delete entire website including all its pages without the ability "
+"to recover. Are you sure?"
+msgstr ""
+"Будет удален весь сайт со всеми страницами без возможности восстановления. "
+"Удалить?"
+
+#: /wa-apps/site/templates/actions/pages/Pages.html:190
+msgid ""
+"The page is not available on the website because “Site” app is not connected "
+"in the website structure."
+msgstr ""
+"Эта страница недоступна на сайте, потому что приложение «Сайт» не подключено "
+"к структуре сайта."
+
+#: /wa-apps/site/templates/actions/pages/Pages.html:112
+msgid ""
+"Optional set of custom <em>key=value</em> parameters which can be used "
+"within page.html template or this page content as <em>&#123;$page.key&#125;</"
+"em>. Each key=value pair should be on a separate line."
+msgstr ""
+"Необязательный набор параметров вида <em>key=value</em>, к значениям которых "
+"можно обращаться в шаблоне page.html или в содержимом данной страницы как "
+"<em>&#123;$page.key&#125;</em>. Каждая пара key=value должна быть указана на "
+"отдельной строке."
+
+#: /wa-apps/site/lib/config/site.php:13
+msgid ""
+"Returns the array of pages associated with the current “Site” app "
+"settlement. Each page is an array of ( <em>\"id\", \"name\", \"title\", \"url"
+"\", \"create_datetime\", \"update_datetime\", \"content\"[, \"custom_1\", "
+"\"custom_2\", …]</em> )"
+msgstr ""
+"Возвращает массив страниц, связанных с данным поселением приложения «Сайт». "
+"Каждая страница представляет собой массив со следующей структурой: <em>\"id"
+"\", \"name\", \"title\", \"url\", \"create_datetime\", \"update_datetime\", "
+"\"content\"[, \"custom_1\", \"custom_2\", …]</em>"
+
+#: /wa-apps/site/lib/config/site.php:29
+msgid "Email feedback form"
+msgstr "Форма для отправки сообщений"
+
+#: /wa-apps/site/lib/actions/helper/siteHelper.action.php:16
+msgid ""
+"Returns name of this Webasyst installation (name is specified in “Installer” "
+"app settings)"
+msgstr ""
+"Возвращает название данной установки Webasyst, указанное в настройках "
+"приложения «Инсталлер»"
+
+#: /wa-apps/site/lib/actions/helper/siteHelper.action.php:17
+msgid ""
+"Returns this site’s core navigation menu which is either set automatically "
+"or manually in the “Site settings” screen"
+msgstr ""
+"Возвращает основное меню навигации этого сайта, сформированное автоматически "
+"или настроенное вручную в настройках сайта"
+
+#: /wa-apps/site/lib/actions/helper/siteHelper.action.php:24
+msgid ""
+"Returns user locale, e.g. \"en_US\", \"ru_RU\". In case user is authorized, "
+"locale is retrieved from “Contacts” app user record, or detected "
+"automatically otherwise"
+msgstr ""
+"Возвращает языковую локаль пользователя, например, en_US, ru_RU. Если "
+"пользователь авторизован, информация о локали извлекается из приложения "
+"«Контакты»; в противном случае определяется автоматически."
+
+#: /wa-apps/site/lib/actions/helper/siteHelper.action.php:31
+msgid ""
+"— <em>\"platform\"</em>: current visitor device platform name, e.g. "
+"<em>windows, mac, linux, ios, android, blackberry</em>;"
+msgstr ""
+"— <em>platform</em>: название системной платформы устройства пользователя, "
+"например, <em>windows, mac, linux, ios, android, blackberry</em>;"
+
+#: /wa-apps/site/lib/actions/helper/siteHelper.action.php:73
+msgid ""
+"Displays the \"<em>bar</em>\" key value of an array. Similar to PHP "
+"$foo[\"bar\"]"
+msgstr ""
+"Отображает значение ключа массива «<em>bar</em>» аналогично $foo[\"bar\"] в "
+"PHP."
+
+#: /wa-apps/site/lib/actions/helper/siteHelper.action.php:78
+msgid ""
+"Outputs <em>$var</em> datetime in a user-friendly form. Supported <em>"
+"$format</em> values: <em>monthdate, date, dtime, datetime, fulldatetime, "
+"time, fulltime, humandate, humandatetime</em>"
+msgstr ""
+"Отображает время <em>$var</em> в удобном для чтения виде. Доступные значения "
+"<em>$format</em>: <em>monthdate, date, dtime, datetime, fulldatetime, time, "
+"fulltime, humandate, humandatetime</em>."
+
+#: /wa-apps/site/lib/actions/helper/siteHelper.action.php:81
+msgid ""
+"Direct PHP function access. E.g. <em>{time()}</em> displays the current "
+"timestamp"
+msgstr ""
+"Прямой доступ к функциям PHP. Например, <em>{time()}</em> отображает текущую "
+"метку времени UNIX."
+
+#: /wa-apps/site/lib/actions/helper/siteHelper.action.php:83
+msgid ""
+"Embeds a Smarty template into the current content. <em>file</em> attribute "
+"specifies a template filename within the current design theme folder"
+msgstr ""
+"Внедряет шаблон Smarty в текущее содержимое. Атрибут <em>file</em> указывает "
+"на имя файла шаблона в папке используемой темы оформления."
+
+#: /wa-apps/site/lib/actions/blocks/siteBlocksSave.controller.php:43
+msgid "Block with id \"%s\" already exists"
+msgstr "Блок с идентификатором «%s» уже существует."
+
+#: /wa-apps/site/lib/actions/pages/sitePages.actions.php:71
+msgid "Database error"
+msgstr "Ошибка базы данных"
+
+#: /wa-apps/site/themes/default/signup.html:4
+msgid "Thank you!"
+msgstr "Спасибо!"
+
+#: /wa-apps/site/themes/default/signup.html:5
+msgid "You have successfully signed up."
+msgstr "Регистрация завершена успешно."
+
+#: /wa-apps/site/themes/default/sidebar.html:4
+#: /wa-apps/site/templates/actions/blocks/Blocks.html:41
+msgid "Revert to original"
+msgstr "Восстановить из оргинала"
+
+#: /wa-apps/site/templates/actions/blocks/Blocks.html:194
+msgid ""
+"This will reset all customizations you applied to this block. Are you sure?"
+msgstr ""
+"Восстановление из оригинала сбросит все изменения, которые вы применяли к "
+"блоку. Продолжить?"
+
+#: /wa-apps/site/templates/actions/design/Design.html:61
+msgid "File will be deleted without the ability to recover. Are you sure?"
+msgstr "Файл будет удален без возможности восстановления. Удалить?"
+
+#: /wa-apps/site/templates/layouts/Sidebar.html:36
+msgid "Open website in a new window"
+msgstr "Открыть в новом окне"
+
+#: /wa-apps/site/js/site.js:263
+msgid "Download"
+msgstr "Скачать"
+
+#: /wa-apps/site/templates/actions/routing/RoutingEdit.html:48
+msgid "Privacy"
+msgstr "Публичность"
+
+#: /wa-apps/site/templates/actions/routing/RoutingEdit.html:51
+msgid "Private settlement"
+msgstr "Скрытое поселение"
+
+#: /wa-apps/site/templates/actions/routing/RoutingEdit.html:52
+msgid ""
+"When this option is enabled, the settlement is treated as hidden (not "
+"published), i.e. accessible by the direct URL but not included either in the "
+"$wa->apps array or in the main Sitemaps file. The private setting is useful "
+"for temporary settlements, such as “Under Construction” pages, and for other "
+"settlements which should not be included in the core website navigation menu "
+"or indexed by search engines."
+msgstr ""
+"При включении этой настройки поселение будет считаться скрытым (не "
+"публичным). Оно будет доступно по своему прямому адресу, но не будет "
+"включено в массив $wa->apps и основной Sitemap-файл. Скрытыми удобно делать "
+"временные поселения, например, страницы «Сайт находится в разработке», и "
+"поселения, которые не должны быть включены в основное меню навигации либо "
+"индексироваться поисковыми системами."
+
+#: /wa-apps/site/lib/actions/helper/siteHelper.action.php:77
+msgid ""
+"Displays structured information about variable. Arrays and objects are "
+"explored recursively with values indented to show structure."
+msgstr ""
+"Отображает подробную информацию о структуре переменной, массива или объекта."
+
+#: /wa-apps/site/lib/actions/helper/siteHelper.action.php:77
+msgid ""
+"Displays structured information about variable. Arrays and objects are "
+"explored recursively with values indented to show structure. Similar to PHP "
+"var_dump($foo)"
+msgstr ""
+"Отображает подробную информацию о структуре переменной, массива или объекта. "
+"Работает аналогично функции PHP var_dump($foo)"
+
+#: /wa-apps/site/themes/default/index.html:46
+msgid "We are using <a href=\"http://www.webasyst.com/\">Webasyst</a>"
+msgstr "Мы используем <a href=\"http://www.webasyst.ru\">Webasyst</a>"
+
+#: /wa-apps/site/themes/custom/index.html:73
+msgid "Facebook"
+msgstr "Фейсбук"
+
+#: /wa-apps/site/themes/custom/index.html:74
+msgid "Twitter"
+msgstr "Твиттер"
+
+#: /wa-apps/site/templates/actions/routing/RoutingEdit.html:11
+msgid "Close"
+msgstr "Закрыть"
+
+#: /wa-apps/site/templates/layouts/Sidebar.html:22
+msgid "http://www.webasyst.com/developers/docs/creating-a-website-tutorial/"
+msgstr "http://www.webasyst.ru/developers/docs/creating-a-website-tutorial/"
+
+#: /wa-apps/site/themes/vk/footer.html:4
+msgid ""
+"We are using <a href=\"http://www.webasyst.com/\" target=\"_blank"
+"\">Webasyst</a>"
+msgstr ""
+"Мы используем <a href=\"http://www.webasyst.ru/\" target=\"_blank"
+"\">Webasyst</a>"
+
+#: /wa-apps/site/templates/layouts/Sidebar.html:22
+msgid "http://www.webasyst.com/developers/docs/routing/site-app-routing/"
+msgstr "http://www.webasyst.ru/developers/docs/routing/site-app-routing/"
+
+#: /wa-apps/site/templates/actions/routing/Routing.html:4
+msgid "Site structure"
+msgstr "Структура сайта"
+
+#: /wa-apps/site/templates/actions/routing/Routing.html:33
+msgid ""
+"Site structure is defined by routing rules. Each rule sets which app should "
+"run by which URL (web address). Similar to how folders are used to organize "
+"files on a computer, routing rules are used to create a website powered by "
+"multiple apps."
+msgstr ""
+"Структура сайта определяется правилами маршрутизации. Каждое правило "
+"указывает по какому адресу какое приложение работает. По аналогии с тем, как "
+"папки используются для организации файлов на компьютере, правила "
+"маршрутизации используются для распределения приложений по разделам сайта."
+
+#: /wa-apps/site/templates/actions/routing/RoutingEdit.html:10
+msgid "Back"
+msgstr "Назад"
+
+#: /wa-apps/site/templates/actions/settings/Settings.html:22
+msgid "Domain name"
+msgstr "Доменное имя"
+
+#: /wa-apps/site/templates/actions/settings/Settings.html:28
+msgid "IMPORTANT"
+msgstr "ВАЖНО"
+
+#: /wa-apps/site/templates/actions/settings/Settings.html:28
+msgid ""
+"The URL entered must point to the root of this Webasyst framework "
+"installation."
+msgstr "Введенный адрес должен указывать на корневую папку установки Webasyst."
+
+#: /wa-apps/site/templates/actions/settings/Settings.html:35
+msgid "Matches domain name"
+msgstr "Совпадает с доменным именем"
+
+#: /wa-apps/site/templates/layouts/Sidebar.html:42
+msgid "Structure"
+msgstr "Структура"
+
+#: /wa-apps/site/lib/actions/helper/siteHelper.action.php:33
+msgid "Returns path to theme folder by <em>theme_id</em> and <em>APP_ID</em>"
+msgstr ""
+"Возвращает путь к папке темы дизайна по <em>theme_id</em> и <em>APP_ID</em>"
+
+#: /wa-apps/site/themes/clear/content.html:9
+#: /wa-apps/site/themes/custom/content.html:4
+#: /wa-apps/site/themes/default/index.html:67
+#: /wa-apps/site/themes/facebook/content.html:25
+#: /wa-apps/site/themes/nifty/content.html:6
+#: /wa-apps/site/themes/sidebar/content.html:6
+#: /wa-apps/site/themes/vk/content.html:25
+msgid "Welcome to your new site!"
+msgstr "Добро пожаловать на ваш новый сайт!"
+
+#: /wa-apps/site/themes/clear/content.html:10
+#: /wa-apps/site/themes/custom/content.html:5
+#: /wa-apps/site/themes/default/index.html:68
+#: /wa-apps/site/themes/facebook/content.html:26
+#: /wa-apps/site/themes/nifty/content.html:7
+#: /wa-apps/site/themes/sidebar/content.html:7
+#: /wa-apps/site/themes/vk/content.html:26
+msgid "Start by <a href=\"%s\">creating a page</a> in your site backend."
+msgstr "Начните с <a href=\"%s\">создания страницы</a> в бекенде сайта."
+
+msgid "Start by creating a page in your <a href=\"%s\">site backend</a>."
+msgstr "Начните с создания страницы в <a href=\"%s\">бекенде сайта</a>."
+
+#: /wa-apps/site/lib/actions/settings/siteSettingsSave.controller.php:19
+msgid ""
+"Website with a domain name %s is already registered in this Webasyst "
+"installation. Delete %s website (Site app > %s > Settings) to be able to use "
+"it's domain name for another website."
+msgstr ""
+"Сайт с доменным именем %s уже зарегистрирован в этой установке Вебасиста. "
+"Удалите сайт %s (приложение «Сайт» > %s > Настройки), чтобы подключить этот "
+"домен к другому сайту."
+
+msgid "My profile"
+msgstr "Мой профиль"
+
+#: /wa-apps/site/lib/actions/domains/siteDomainsSave.controller.php:18
+msgid ""
+"Website with a domain name %s is already registered in this Webasyst "
+"installation. Delete %s website (Site app > Settings > %s) to be able to use "
+"it's domain name for another website."
+msgstr ""
+"Сайт с доменным именем %s уже зарегистрирован в этой установке Вебасиста. "
+"Удалите сайт %s (приложение «Сайт» > %s > Настройки), чтобы подключить этот "
+"домен к другому сайту."
+
+#: /wa-apps/site/lib/actions/frontend/siteFrontendMy.action.php:18
+#: /wa-apps/site/lib/actions/frontend/siteFrontendMy.action.php:28
+msgid "My account"
+msgstr "Личный кабинет"
+
+#: /wa-apps/site/themes/default/my.profile.html:8
+msgid "Contact information successfully updated!"
+msgstr "Контактная информация успешно обновлена!"
+
+#: /wa-apps/site/lib/config/logs.php:5
+msgid "added a new site"
+msgstr "добавил новый сайт"
+
+#: /wa-apps/site/lib/config/logs.php:6
+msgid "edited site settings"
+msgstr "отредактировал настройки сайта"
+
+#: /wa-apps/site/lib/config/logs.php:11
+msgid "deleted site"
+msgstr "удалил сайт"
+
+#: /wa-apps/site/lib/config/logs.php:15
+msgid "uploaded file"
+msgstr "загрузил файл"
+
+#: /wa-apps/site/lib/config/logs.php:18
+msgid "deleted file"
+msgstr "удалил файл"
+
+#: /wa-apps/site/lib/config/logs.php:22
+msgid "added a new block for site"
+msgstr "добавил новый блок для сайта"
+
+#: /wa-apps/site/lib/config/logs.php:25
+msgid "edited block for site"
+msgstr "отредактировал блок для сайта"
+
+#: /wa-apps/site/lib/config/logs.php:28
+msgid "deleted block for site"
+msgstr "удалил блок на сайте"
+
+#: /wa-apps/site/lib/config/logs.php:32
+msgid "added a new routing rule"
+msgstr "добавил новое правило маршрутизации"
+
+#: /wa-apps/site/lib/config/logs.php:35
+msgid "edited routing rule"
+msgstr "отредактировал правило маршрутизации"
+
+#: /wa-apps/site/lib/config/logs.php:38
+msgid "deleted routing rule"
+msgstr "удалил правило маршрутизации"
+
+#: /wa-apps/site/templates/actions/personal/Personal.html:37
+msgid ""
+"Personal account structure is defined by the list of installed Webasyst apps "
+"linked in the current website frontend."
+msgstr ""
+"Структура личного кабинета определяется списком установленных и подключенных "
+"на данном сайте приложений Webasyst."
+
+#: /wa-apps/site/templates/actions/personal/Personal.html:41
+msgid "Auth & Sign Up settings"
+msgstr "Настройки авторизации"
+
+#: /wa-apps/site/templates/actions/personal/PersonalApp.html:8
+msgid ""
+"This app cannot be enabled for personal accounts on this domain, because the "
+"app is not settled in this domain's routing settings. Add this app to the "
+"routing table first so it becomes published on this site, and then you’ll be "
+"able to link it in personal accounts navigation."
+msgstr ""
+"Это приложение нельзя включить в личном кабинете, так как приложение не "
+"подключено в правилах маршрутизации сайта. Добавьте правило маршрутизации "
+"для этого приложения в настройках структуры сайта, после чего вы сможете "
+"включить его в личном кабинете."
+
+#: /wa-apps/site/templates/actions/personal/PersonalApp.html:9
+msgid "Setup routing"
+msgstr "Настроить маршрутизацию"
+
+#: /wa-apps/site/templates/actions/personal/PersonalApp.html:15
+#: /wa-apps/site/templates/actions/personal/PersonalSettings.html:7
+msgid "Disabled"
+msgstr "Выключена"
+
+#: /wa-apps/site/templates/actions/personal/PersonalApp.html:19
+#: /wa-apps/site/templates/actions/personal/PersonalSettings.html:13
+msgid "Enabled"
+msgstr "Включена"
+
+#: /wa-apps/site/templates/actions/personal/PersonalApp.html:26
+msgid ""
+"%s personal account URL: <a href=\"%s\">%s</a> <i class=\"icon10 new-window "
+"top-padded\"></i>"
+msgstr ""
+"«%s» в личном кабинете: <a href=\"%s\">%s</a> <i class=\"icon10 new-window "
+"top-padded\"></i>"
+
+#: /wa-apps/site/templates/actions/personal/PersonalApp.html:31
+msgid "%s personal account is disabled on this site."
+msgstr "Личный кабинет приложения «%s» выключен на этом сайте."
+
+#: /wa-apps/site/templates/actions/personal/PersonalProfile.html:3
+msgid ""
+"Personal account profile URL: <a href=\"%s\">%s</a> <i class=\"icon10 new-"
+"window top-padded\"></i>"
+msgstr ""
+"Настройка профиля в личном кабинете: <a href=\"%s\">%s</a> <i class=\"icon10 "
+"new-window top-padded\"></i>"
+
+#: /wa-apps/site/templates/actions/personal/PersonalProfile.html:5
+msgid "My profile form fields"
+msgstr "Поля формы настройки профиля"
+
+#: /wa-apps/site/templates/actions/personal/PersonalSettings.html:1
+msgid "Authorization on %s"
+msgstr "Авторизация на %s"
+
+#: /wa-apps/site/templates/actions/personal/PersonalSettings.html:16
+msgid ""
+"User sign up, authorization and personal accounts are not enabled on %s."
+msgstr ""
+"Регистрация пользователей, авторизация и личный кабинет выключены на сайте "
+"%s."
+
+#: /wa-apps/site/templates/actions/personal/PersonalSettings.html:20
+msgid ""
+"User sign up, authorization and personal accounts are enabled on %s. <a id="
+"\"configure-app\" href=\"#\" class=\"inline-link\"><b><i>Configure URLs</i></"
+"b></a>"
+msgstr ""
+"Регистрация пользователей, авторизация и личный кабинет включены на %s. <a "
+"id=\"configure-app\" href=\"#\" class=\"inline-link\"><b><i>Настроить</i></"
+"b></a>"
+
+#: /wa-apps/site/templates/actions/personal/PersonalSettings.html:22
+msgid ""
+"Select the app that will host authorization forms. The URLs of my profile, "
+"signup and authorization pages will be defined by the selected app routing:"
+msgstr ""
+"Выберите приложение, которое будет отвечать за функциональность форм "
+"регистрации и авторизации пользователей на этом сайте. Адреса страниц "
+"регистрации, входа и личного кабинета будут определяться правилами "
+"маршрутизации выбранного приложения:"
+
+#: /wa-apps/site/templates/actions/personal/PersonalSettings.html:46
+msgid "Auth"
+msgstr "Авторизация"
+
+#: /wa-apps/site/templates/actions/personal/PersonalSettingsSignup.html:176
+msgid "Confirm email on sign up"
+msgstr "Подтверждение email-адреса после регистрации"
+
+#: /wa-apps/site/templates/actions/personal/PersonalSettingsSignup.html:177
+msgid "A confirmation link will be sent to user after sign up"
+msgstr ""
+"Ссылка на подтверждение адреса будет отправлена пользователю на указанный им "
+"электронный адрес"
+
+#: /wa-apps/site/templates/actions/personal/PersonalSettingsSignup.html:184
+msgid "Text"
+msgstr "Текст"
+
+#: /wa-apps/site/templates/actions/personal/PersonalSettingsSignup.html:189
+msgid "Variables"
+msgstr "Переменные"
+
+#: /wa-apps/site/templates/actions/personal/PersonalSettingsSignup.html:214
+msgid "Sign up form fields"
+msgstr "Поля формы регистрации"
+
+#: /wa-apps/site/templates/actions/personal/PersonalSettingsSignup.html:231
+msgid "Edit field label"
+msgstr "Редактировать название поля"
+
+#: /wa-apps/site/templates/actions/personal/PersonalSettingsSignup.html:236
+msgid "Edit hint for this field"
+msgstr "Редактировать подсказку к полю"
+
+#: /wa-apps/site/templates/actions/personal/PersonalSettingsSignup.html:244
+msgid "Edit button label"
+msgstr "Редактировать текст на кнопке"
+
+#: /wa-apps/site/templates/actions/settings/Settings.html:152
+msgid "Upload favicon"
+msgstr "Загрузить фавиконку"
+
+#: /wa-apps/site/templates/actions/settings/Settings.html:160
+msgid "from 152x152 and up to 1024x1024 px"
+msgstr "от 152х152 до 1024х1024 пикселей"
+
+#: /wa-apps/site/templates/actions/settings/Settings.html:178
+msgid "Personal &rarr; <a href=\"%s\">Auth &amp; Sign Up settings</a>"
+msgstr "Личный кабинет &rarr; <a href=\"%s\">Настройки авторизации</a>"
+
+#: /wa-apps/site/templates/layouts/Sidebar.html:44
+msgid "Personal"
+msgstr "Личный кабинет"
+
+#: /wa-apps/site/templates/layouts/Sidebar.html:59
+msgid "File manager"
+msgstr "Файл-менеджер"
+
+#: /wa-apps/site/lib/actions/settings/siteSettings.action.php:150
+msgid ""
+"Touch icon you upload here will not take effect for you website %s because "
+"your website is set for a subfolder on a domain. Touch icon uploaded using "
+"the form above will be set only for websites set from the domain root folder."
+msgstr ""
+"Изображение, загруженное с помощью этой формы, не будет использовано на "
+"сайте %s, потому что сайт расположен в подкаталоге домена. Загруженная через "
+"данную форму иконка может быть установлена только для сайтов, размещенных в "
+"корневом каталоге домена."
+
+#: /wa-apps/site/lib/actions/settings/siteSettings.action.php:159
+msgid ""
+"File apple-touch-icon.png exists in the Webasyst framework installation "
+"folder. The touch icon you upload here will be overridden by the icon "
+"uploaded as file unless you delete this file."
+msgstr ""
+"Файл apple-touch-icon.png обнаружен в каталоге установки Webasyst. Вместо "
+"иконки, сохраненной на этой странице, будет отображаться иконка из "
+"указанного файла."
+
+#: /wa-apps/site/lib/actions/settings/siteSettingsSave.controller.php:213
+msgid "Files with extension *.png are allowed only."
+msgstr "Разрешена загрузка только PNG-файлов."
+
+#: /wa-apps/site/themes/default/my.profile.html:56
+msgid "Change password"
+msgstr "Сменить пароль"
+
+#: /wa-apps/site/themes/default/my.profile.html:69
+msgid "Delete photo"
+msgstr "Удалить фото"
+
+#: /wa-apps/site/themes/default/signup.html:3
+msgid "You successfully confirmed email."
+msgstr "Вы успешно подтвердили ваш email-адрес."
+
+#: /wa-apps/site/templates/actions/settings/Settings.html:157
+msgid "Touch icon for iOS"
+msgstr "Фавиконка для iOS"
+
+#: /wa-apps/site/templates/actions/settings/Settings.html:160
+msgid "Upload iOS touch icon"
+msgstr "Загрузить iOS-фавиконку"
+
+#: /wa-apps/site/templates/actions/personal/Personal.html:41
+msgid "Auth &amp; Sign Up settings"
+msgstr "Настройки авторизации"
+
+#: /wa-apps/site/templates/actions/settings/Settings.html:178
+msgid "Personal &rarr; <a href=\"%s\">Auth &amp; Sign Up</a>"
+msgstr "Личный кабинет &rarr; <a href=\"%s\">Настройки авторизации</a>"
+
+#: /wa-apps/site/templates/actions/personal/PersonalProfile.html:5
+msgid ""
+"My profile page is not available on this site, because user authorization on "
+"this site is hosted by <strong>%s</strong> app, while it’s personal account "
+"functionality is disabled. Either enable <a href=\"#/personal/app/%s/\">%s "
+"app’s personal account</a> on this site, or change the app that hosts user "
+"authorization in <a href=\"%s\">Auth &amp; Sign Up</a> settings."
+msgstr ""
+"Страница управления профилем на этом сайте недоступна, так как личный "
+"кабинет приложения «<strong>%s</strong>», отвечающего за функциональность "
+"форм регистрации и авторизации на этом сайте, отключен. Для включения "
+"страницы управления профилем необходимо либо включить <a href=\"#/personal/"
+"app/%s/\">личный кабинет приложения «%s»</a>, либо <a href=\"%s\">в "
+"настройках авторизации</a> выбрать другое приложения, которое будет отвечать "
+"за функциональность форм регистрации и авторизации на этом сайте."
+
+#: /wa-apps/site/lib/actions/routing/siteRoutingSave.controller.php:114
+msgid ""
+"The URL %s is already used by %s app. If you proceed, this will replace %s "
+"app with %s app on this URL."
+msgstr ""
+"Адрес %s уже используется приложением «%s». Сохранив изменения, поселение "
+"приложения «%s» по этому адресу будет полностью заменено поселением "
+"приложения «%s»."
+
+#: /wa-apps/site/templates/actions/personal/PersonalApp.html:26
+msgid ""
+"%s personal account URL: <a id=\"s-app-frontend-link\" href=\"%s\" target="
+"\"_blank\">%s</a> <i class=\"icon10 new-window top-padded\"></i>"
+msgstr ""
+"«%s» в личном кабинете: <a id=\"s-app-frontend-link\" href=\"%s\" target="
+"\"_blank\">%s</a> <i class=\"icon10 new-window top-padded\"></i>"

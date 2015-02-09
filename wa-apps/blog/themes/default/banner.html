@@ -1,0 +1,11 @@
+{$blogs = $wa->blog->blogs()}
+{if count($blogs) > 1}
+    <!-- blog list -->
+    <ul class="menu-h">
+        {foreach $blogs as $blog}
+            <li class="{if $wa->globals('blog_id') eq $blog.id && empty($is_search)}selected{/if}">
+                <a href="{$blog.link}">{$blog.name}</a>
+            </li>
+        {/foreach}
+    </ul>
+{/if}

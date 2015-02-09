@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>{$wa->appName()} &mdash; {$wa->accountName()}</title>
+    {$wa->css()}
+    <link type="text/css" rel="stylesheet" href="{$wa_url}wa-content/js/fileuploader/fileuploader.css"/>
+    <link type="text/css" rel="stylesheet" href="{$wa_url}wa-content/css/jquery-ui/base/jquery.ui.autocomplete.css" />
+    <link type="text/css" rel="stylesheet" href="{$wa_app_static_url}css/mailer.css?{$wa->version()}"/>
+    <link type="text/css" rel="stylesheet" href="{$wa_app_static_url}css/redactor.css?v{$wa->version()}">
+
+    <script src="{$wa_url}wa-content/js/jquery/jquery-1.8.2.min.js"></script>
+    <script src="{$wa_url}wa-content/js/jquery-plugins/jquery.history.js"></script>
+    <script src="{$wa_url}wa-content/js/jquery-plugins/jquery.json.js"></script>
+    <script src="{$wa_url}wa-content/js/jquery-plugins/jquery.store.js"></script>
+    <script src="{$wa_url}wa-content/js/jquery-ui/jquery.ui.core.min.js"></script>
+    <script src="{$wa_url}wa-content/js/jquery-ui/jquery.ui.widget.min.js"></script>
+    <script src="{$wa_url}wa-content/js/jquery-ui/jquery.ui.mouse.min.js"></script>
+    <script src="{$wa_url}wa-content/js/jquery-ui/jquery.ui.position.min.js"></script>
+    <script src="{$wa_url}wa-content/js/jquery-ui/jquery.ui.autocomplete.min.js"></script>
+    {*<script src="{$wa_url}wa-content/js/jquery-ui/jquery.ui.autocomplete.html.js"></script>*}
+    <script src="{$wa_url}wa-content/js/jquery-ui/jquery.ui.draggable.min.js"></script>
+    <script src="{$wa_url}wa-content/js/jquery-ui/jquery.ui.sortable.min.js"></script>
+    <script src="{$wa_url}wa-content/js/fileuploader/fileuploader.js"></script>
+    <script src="{$wa_url}wa-content/js/jquery-wa/wa.core.js"></script>
+    <script src="{$wa_url}wa-content/js/jquery-wa/wa.dialog.js"></script>
+
+    <script src="{$wa_app_static_url}js/vendor/raphael-min.js"></script>
+    <script src="{$wa_app_static_url}js/vendor/g.raphael-min.js"></script>
+    <script src="{$wa_app_static_url}js/vendor/beautify-html.js"></script>
+
+    <script src="{$wa_url}wa-content/js/ace/ace.js?v{$wa->version(true)}"></script>
+    <script src="{$wa_app_static_url}js/redactor.min.js?v{$wa->version()}"></script>
+    {if $wa->locale() !== 'en_US'}
+    <script src="{$wa_app_static_url}js/redactor.{substr($wa->locale(), 0, 2)}.js?v{$wa->version()}"></script>
+    {/if}
+    <script src="{$wa_app_static_url}js/redactor.vars.js"></script>
+    <script src="{$wa_app_static_url}js/editor.js?v{$wa->version()}"></script>
+
+
+    <script src="{$wa_app_static_url}js/vendor/g.pie.modified.js?v{$wa->version()}"></script>
+    <script src="{$wa_app_static_url}js/mailer.js?v{$wa->version()}"></script>
+    <script src="?action=loc&v={{$wa->version()}}"></script>
+    
+    <script type="text/javascript" src="{$wa_url}wa-content/js/jquery-ui/jquery.ui.datepicker.min.js"></script>
+    {if $wa->locale() !== 'en_US'}
+        <script type="text/javascript" src="{$wa_url}wa-content/js/jquery-ui/i18n/jquery.ui.datepicker-{$wa->locale()}.js"></script>
+    {/if}
+
+    {*
+     * Plugin blocks
+     *}
+    {foreach $plugin_blocks as $block}
+        {$block.html}
+    {/foreach}
+</head>
+<body>
+    <div id="wa">
+        {$wa->header()}
+        <div id="wa-app">
+            <div class="sidebar left200px m-sidebar">
+                {$sidebar}
+            </div>
+            <div class="content left200px">
+                <div id="content" class="shadowed blank">
+                    {$content}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="hidden block" id="available-smarty-variables">
+        <div class="fields width100px variables-wrapper" style="max-width:600px;">
+            <div class="field one-var" style="margin: 10px 0;">
+                <div class="name">
+                    <span class="hidden var-code">&lt;a href=&quot;{sprintf('{$unsubscribe_link}')}&quot;&gt;[`Unsubscribe`]&lt;/a&gt;</span>
+                    <a href="javascript:void(0)" class="strong inline-link"><b><i>[`Unsubscribe URL`]</i></b></a>
+                </div>
+                <div class="value hint">
+                    [`In every outgoing message this variable will be replaced with a personal recipient link that can be used to unsubscribe from your future mailings.`]
+                </div>
+            </div>
+
+            <div class="field" style="padding:0 5px 10px 1px">
+                [`Following variables will be replaced with recipient's contact data:`]
+            </div>
+
+            {foreach mailerHelper::getVars() as $var_id => $var_name}
+                <div class="field one-var">
+                    <div class="name">
+                        <a href="javascript:void(0)" class="inline-link"><b><i><span class="var-code">{$var_id|escape}</span></i></b></a>
+                    </div>
+                    <div class="value hint">{$var_name|escape}</div>
+                </div>
+            {/foreach}
+        </div>
+    </div>
+
+    <script>$(function() {
+        $.wa.mailer.init({
+            lang: '{substr($wa->locale(), 0, 2)}'
+        });
+    });</script>
+</body>
+</html>

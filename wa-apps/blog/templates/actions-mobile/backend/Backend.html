@@ -1,0 +1,81 @@
+{if $page == 1 && !empty($posts)}
+    <script type="text/javascript">
+        $(function() {
+            $.pageless({
+                url: location.href.replace(/[&\?]page=[\d]+/, ''),
+                target: '.b-stream',
+                count: {$pages},
+                auto: true,
+                beforeLoad: function() {
+                    $.mobile.showPageLoadingMsg();
+                },
+                afterLoad: function() {
+                    $('.b-stream').listview('refresh');
+                    $('#wa-app').page('destroy').page();
+                    $.mobile.hidePageLoadingMsg();
+                },
+                renderContent: function(content, target) {
+                    var tmp = $('<div></div>').html(content);
+                    target.append(tmp.find('li'));
+                    $('.pageless-wrapper:first').html(tmp.find('.pageless-wrapper:first').html());
+                    tmp.remove();
+                },
+                pageless_wrapper: false
+            });
+        });
+    </script>
+    
+    <h1 class="gray">{$stream.title|escape}</h1>
+{/if}
+
+{if !empty($posts)}
+
+    {if $page == 1}
+    <ul data-role="listview" data-divider-theme="d" data-theme="d" class="b-stream">
+    {/if}
+    
+    {foreach $posts as $post_id => $post}
+        <li >
+            <h3 {if isset($post.new) && $post.new} class="highlighted"{/if}>{$post.title|escape}</h3>
+        </li>
+        <li id="b-post-{$post.id}" data-corners="false" data-shadow="false" data-icon="false" data-wrapperels="div" data-theme="d">
+            <div class="profile">
+                <div class="image">
+                    {if $contact_rights && $post.contact_id}
+                        <a href="{$wa_backend_url}contacts/#/contact/{$post.contact_id}">
+                            <img class="userpic" src="{$post.user.photo_url_20}" alt="">
+                        </a>
+                    {else}
+                        <img class="userpic" src="{$post.user.photo_url_20}" alt="">
+                    {/if}
+                </div>
+                <div class="details">
+                    <div class="b-post-credentials">
+                        {if $contact_rights && $post.contact_id}
+                            <a class="hint b-gray-link" href="{$wa_backend_url}contacts/#/contact/{$post.contact_id}">{$post.user.name|escape}</a>
+                        {else}
+                           <span>{$post.user.name|escape}</span>
+                        {/if}
+                        <span>{$post.datetime|wa_datetime:"humandatetime"}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="b-post-body">
+                {$post.text}
+            </div>
+        </li>
+    {/foreach}
+    
+    {if $page == 1}
+    </ul>
+    {/if}
+{/if}
+
+<div class="pageless-wrapper">
+    {sprintf(_w("%d post of %d", "%d posts of %d", $posts_count,false), $posts_count, $posts_total_count)}
+    {if $posts_count < $posts_total_count}
+        <br><br>
+        <a href="#next" class="pageless-link">[`Show older posts`]</a>
+        <span class="pageless-progress" style="display:none"><i class="icon16 loading"></i>[`Loading`]&nbsp;{_w("%d post", "%d posts", min($posts_total_count-$posts_count,$posts_per_page))}...</span>
+    {/if}
+</div>

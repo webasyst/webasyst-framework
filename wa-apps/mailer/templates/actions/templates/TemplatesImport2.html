@@ -1,0 +1,26 @@
+<div class="block triple-padded">
+    <h1>[`Import template`]</h1>
+
+    <p>[`Please select html file to import:`]</p>
+    <ul id="import-index-selector" class="zebra">
+        {foreach $html_files as $i => $filename}
+            <li><label>
+                <input type="radio" name="import_index" value="{$i}">
+                {$filename}
+            </label></li>
+        {/foreach}
+    </ul>
+</div>
+
+<script>(function() {
+    // Import index selector
+    $('#import-index-selector input:radio').change(function() {
+        $('#import-index-selector input:radio').attr('disabled', true);
+        $.wa.mailer.showLoading();
+        $.get('?module=templates&action=import2&import_index='+$(this).val(), {}, function(html) {
+            $("#content").html(html);
+        });
+    });
+
+    $.wa.mailer.setTitle();
+})();</script>

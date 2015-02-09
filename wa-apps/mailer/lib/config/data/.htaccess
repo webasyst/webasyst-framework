@@ -1,0 +1,7 @@
+<ifModule mod_rewrite.c>
+    RewriteEngine On
+
+    RewriteCond %{REQUEST_URI} \.(jpg|jpeg|png|gif)$ [nocase]
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^(.*)$ file.php [L]
+</ifModule>

@@ -1,0 +1,70 @@
+<div class="block double-padded">
+    <ul class="menu-v with-icons">
+        {foreach from=$domains item=d key=d_id}
+        <li{if $d_id == $domain_id} class="selected"{/if}>
+            <a href="?domain_id={$d_id}">
+                <i class="icon16 favicon" style="background-image:url(http://{$d.name|escape}/favicon.ico)"></i>{str_replace('www.','',$d.title)|escape}
+            </a>
+        </li>
+        {/foreach}
+    </ul>
+</div>
+
+<div style="display:none" id="addsite-dialog">
+	<form method="post" action="?module=domains&amp;action=save">
+		<div class="dialog-content">
+			<h1>[`New site`]</h1>
+			<p>
+				<strong class="large">http://</strong><input type="text" id="domain-name" name="name" class="bold large long" value="" placeholder="www.mydomain.ru" />
+				<br /><span class="hint">[`E.g. mydomain.com, www.mydomain.com, subdomain.mydomain.com`]</span>
+			</p>
+
+			<p>[`Enter the URL of your new website. You should own the domain and map it into your Webasyst installation (the URL should be the effective URL to access this Webasyst installation). Contact your hosting provider on how to map your domain name.`] <a href="[`http://www.webasyst.com/developers/docs/routing/site-app-routing/`]" target="_blank">[`Help`]</a> <i class="icon10 new-window"></i></p>
+            <span class="errormsg"></span>
+		</div>
+		<div class="dialog-buttons">
+			<input type="submit" class="button green" value="[`Create site`]">
+			[`or`] <a href="#" class="inline-link cancel"><b><i>[`cancel`]</i></b></a>
+
+		</div>
+	</form>
+</div>
+
+
+<div class="s-site-mgmt-tab">
+	<div class="block">
+    	<h5 class="heading">
+			<div class="s-site-mgmt-current-url">{str_replace('www.','',$domains[$domain_id].title)|escape}</div>
+        </h5>
+    </div>
+    <ul class="menu-v s-links with-icons">
+        <li id="s-link-pages"><a href="#/pages/"><i class="icon16 notebook"></i>[s`Pages`]</a></li>
+        <li id="s-link-design"><a href="#/design/"><i class="icon16 palette"></i>[s`Design`]</a></li>
+        <li id="s-link-routing"><a href="#/routing/"><i class="icon16 split"></i>[`Structure`]</a></li>
+        <li id="s-link-personal"><a href="#/personal/"><i class="icon16 access"></i>[`Personal`]</a></li>
+        <li id="s-link-settings"><a href="#/settings/"><i class="icon16 settings"></i>[`Settings`]</a></li>
+
+        {* @event backend_sidebar.%plugin_id%.menu_li *}
+        <!-- plugin hook: "backend_sidebar.menu" -->
+        {foreach $backend_sidebar as $plugin => $output}
+        {if is_array($output) && isset($output.menu_li)}{$output.menu_li}{/if}
+        {/foreach}
+    </ul>
+</div>
+
+
+<div class="block double-padded">
+	<ul class="menu-v with-icons s-links">
+		{if $rights.blocks}<li id="s-link-blocks"><a href="#/blocks/"><i class="icon16 zone"></i>[`Blocks`]</a></li>{/if}
+		{if $rights.files}<li id="s-link-files"><a href="#/files/"><i class="icon16 upload"></i>[`File manager`]</a></li>{/if}
+		{if $rights.admin}
+    	    	<li class="s-add-new-site top-padded"><a href="#" class="small"><i class="icon10 add"></i>[`New site`]</a> </li>
+        	{/if}
+
+        {* @event backend_sidebar.%plugin_id%.system_li *}
+        <!-- plugin hook: "backend_sidebar.system" -->
+        {foreach $backend_sidebar as $plugin => $output}
+        {if is_array($output) && isset($output.system_li)}{$output.system_li}{/if}
+        {/foreach}
+	</ul>
+</div>

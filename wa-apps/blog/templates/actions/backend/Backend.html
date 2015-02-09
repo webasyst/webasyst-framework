@@ -1,0 +1,313 @@
+{if $page eq 1}
+
+  {wa_js file="js/blog-stream.min.js"}
+    {$wa_app_static_url}js/blogStream.js
+  {/wa_js}
+
+  <script type="text/javascript">
+  $.wa_blog.stream = $.extend(true,$.wa_blog.stream,{
+    'options':{
+      pageless:{
+        url: location.href.replace(/[&\?]page=[\d]+/, ''),
+        target: '.b-stream',
+        count: {$pages}
+      }
+    }
+  });
+  </script>
+
+  <div class="b-stream">
+
+    <div class="b-stream-title">
+
+      <div class="float-right ie-menu-h-fix">
+        <ul class="menu-h" id="blog-stream-primary-menu">
+
+          {* @event backend_stream.%plugin_id%.menu *}
+          <!-- plugin hook: "backend_stream.menu" -->
+          {foreach $backend_stream as $plugin => $output}
+            {if is_array($output) && isset($output.menu)}
+            <li>
+              <!-- begin {$plugin} -->{$output.menu}<!-- end {$plugin} -->
+            </li>
+            {/if}
+          {/foreach}
+          <!-- end plugin hook: "backend_stream.menu" -->
+
+          <li class="b-search-form">
+            <input type="search" name="text" class="search" placeholder="[`Search posts`]" value="{$text}">
+          </li>
+
+          {if (empty($blog_id) && ($wa->blog->rights(false) ge blogRightConfig::RIGHT_READ_WRITE)) || (!empty($blog_id) && ($wa->blog->rights($blog_id) ge blogRightConfig::RIGHT_READ_WRITE))}
+          <li>
+            <a href="#manage" id="blog_manage_posts">
+              <i class="icon16 hamburger"></i>
+            </a>
+          </li>
+          {/if}
+
+
+
+        </ul>
+        <ul class="menu-h" id="blog-stream-manage-menu" style="display:none">
+          {$move_blog_count = 0}
+          {foreach $blogs as $blog_item_id => $blog_item}
+          {if $blog_item.rights ge blogRightConfig::RIGHT_READ_WRITE && (!isset($blog_id) || !$blog_id || $blog_item.id ne $blog_id)}
+          {$move_blog_count = $move_blog_count+1}
+          {/if}{/foreach}
+          {if $move_blog_count>((!isset($blog_id) || !$blog_id)?1:0)}
+          <li>
+            <a id="postmove-dialog-confirm" href="#" class="dialog-confirm">
+              <i class="icon16 move"></i>[`Move to blog`] <span class="indicator js-blog-selected-posts-counter">0</span>
+            </a>
+            {capture append="dialogs"}
+              {include file='./../../dialogs/postMove.html' inline}
+            {/capture}
+          </li>
+          {/if}
+          <li>
+            <a id="postdelete-dialog-confirm" href="#" class="dialog-confirm">
+              <i class="icon16 delete"></i>[`Delete`] <span class="indicator js-blog-selected-posts-counter">0</span>
+            </a>
+            {capture append="dialogs"}
+              {include file='./../../dialogs/postDelete.html' post=false inline}
+            {/capture}
+          </li>
+          <li>
+            <a href="#" class="js-manage-done inline-link gray"><b><i>[`Cancel`]</i></b></a>
+          </li>
+        </ul>
+      </div>
+
+      <h1>
+        {$stream.title|escape}
+
+        {if $stream.blog}
+            <a href="?module=blog&action=settings&blog={$stream.blog.id}" title="[`Blog settings`]">
+                <i class="icon16 settings"></i>
+            </a>
+        {/if}
+
+      </h1>
+
+    </div>
+{/if}
+
+
+{$contact_id=$wa->user()->get('id')}
+{foreach $posts as $post_id => $post} <!-- post.id:{$post_id}  -->
+
+  <div class="b-post {$post.color}{if $post.blog_status ne blogBlogModel::STATUS_PUBLIC} b-private-post{/if}" id="b-post-{$post_id}">
+    <h3 style="display:none" class="b-post-title-bulk-mode">
+      {if ($post.rights ge blogRightConfig::RIGHT_FULL) or ($contact_id eq $post.contact_id && $post.rights ge blogRightConfig::RIGHT_READ_WRITE)}
+        <input type="checkbox" id="blog-post-checkbox-{$post.id}" class="blog-post-checkbox" name="posts[]" value="{$post.id}">
+      {/if}
+      {$post.title|escape}
+    </h3>
+    <h3>
+      {if $post.blog_status eq blogBlogModel::STATUS_PUBLIC}
+        {if ($post.rights ge blogRightConfig::RIGHT_FULL) or ($contact_id eq $post.contact_id && $post.rights ge blogRightConfig::RIGHT_READ_WRITE)}
+          {$post_link = "?module=post&amp;id=`$post.id`&amp;action=edit"}
+        {else}
+          {$post_link = false}
+        {/if}
+      {else}
+        {$post_link = "?module=post&amp;id=`$post.id`"}
+      {/if}
+      {if $post_link}
+        <a href="{$post_link}"{if isset($post.new) && $post.new} class="highlighted"{/if}>{$post.title|escape}</a>
+      {else}
+        <span{if isset($post.new) && $post.new} class="highlighted"{/if}>{$post.title|escape}</span>
+      {/if}
+
+      {if $post.blog_status ne blogBlogModel::STATUS_PUBLIC}
+        <i class="icon16 lock-bw" title="[`Private post`]"></i>
+      {/if}
+
+      {if isset($post.plugins) && isset($post.plugins.post_title) && $post.plugins.post_title}
+
+        {* @event prepare_posts_backend.%plugin_id%.post_title *}
+        <!-- plugin hook: "prepare_posts_backend.*.post_title" -->
+        {foreach $post.plugins.post_title as $plugin => $output}
+
+          <!-- begin "prepare_posts_backend.{$plugin}.post_title" -->
+          {$output}
+          <!-- end "prepare_posts_backend.{$plugin}.post_title" -->
+        {/foreach}
+        <!-- end plugin hook: "prepare_posts_backend.*.post_title" -->
+      {/if}
+
+      {if isset($post.plugins) && isset($post.plugins.post_title_right) && $post.plugins.post_title_right}
+
+        {* @event prepare_posts_backend.%plugin_id%.post_title_right *}
+        <!-- plugin hook: "prepare_posts_backend.*.post_title_right" -->
+        {foreach $post.plugins.post_title_right as $plugin => $output}
+
+          <!-- begin "prepare_posts_backend.{$plugin}.post_title_right" -->
+          {$output}
+          <!-- end "prepare_posts_backend.{$plugin}.post_title_right" -->
+        {/foreach}
+        <!-- end plugin hook: "prepare_posts_backend.*.post_title_right" -->
+      {/if}
+    </h3>
+    <div class="profile image20px">
+      <div class="image">
+      {if $contact_rights && $post.contact_id}
+        <a href="{$wa_backend_url}contacts/#/contact/{$post.contact_id}">
+          <img src="{$post.user.photo_url_20}" alt="" class="userpic">
+        </a>
+      {else}
+        <img src="{$post.user.photo_url_20}" alt="" class="userpic">
+      {/if}
+      </div>
+      <div class="details">
+
+        <div class="b-post-credentials">
+          {if $contact_rights && $post.contact_id}
+            <a class="hint b-gray-link" href="{$wa_backend_url}contacts/#/contact/{$post.contact_id}">{$post.user.name|escape}</a>
+          {else}
+            <span>{$post.user.name|escape}</span>
+          {/if}
+
+          <span>{$post.datetime|wa_datetime:"humandatetime"}</span>
+
+          {if $post.blog_status eq blogBlogModel::STATUS_PUBLIC}
+            {foreach $post.link item=link}
+              <a target="_blank" href="{$link}" class="underline">{$link}</a>
+            {/foreach}
+          {else}
+            {if $post.comment_new_count > 0}
+              <a href="?module=post&amp;id={$post.id}#comments" class="underline{if !$post.comment_count} gray{/if}">{_w('%d comment','%d comments',$post.comment_count,true)}</a>
+              <strong class="highlighted">+{$post.comment_new_count}</strong>
+            {elseif $post.comment_count}
+              <a href="?module=post&amp;id={$post.id}#comments" class="underline{if !$post.comment_count} gray{/if}">{_w('%d comment','%d comments',$post.comment_count,true)}</a>
+            {else}<!-- no comments  -->
+              <a href="?module=post&amp;id={$post.id}#comments" class="underline{if !$post.comment_count} gray{/if}">[`No comments`]</a>
+            {/if}
+          {/if}
+
+        </div>
+
+      </div>
+    </div>
+
+    <div class="b-post-body">
+
+
+
+    {if isset($post.plugins) && isset($post.plugins.before) && $post.plugins.before}
+
+      {* @event prepare_posts_backend.%plugin_id%.before *}
+      <!-- plugin hook: "prepare_posts_backend.*.before" -->
+      {foreach $post.plugins.before as $plugin => $output}
+
+        <!-- begin "prepare_posts_backend.{$plugin}.before" -->
+        {$output}
+        <!-- end "prepare_posts_backend.{$plugin}.before" -->
+      {/foreach}
+      <!-- end plugin hook: "prepare_posts_backend.*.before" -->
+    {/if}
+
+    {$post.text}
+    {if $post.cutted}
+      {assign var=cut_link_label value=$post.cut_link_label|default:'[`Continue reading →`]'}
+      {if $post.blog_status eq blogBlogModel::STATUS_PUBLIC && count($post.link)}
+        <a href="{$post.link[0]}" target="_blank">{$cut_link_label}</a>
+        <i class="icon10 new-window"></i>
+      {else}
+        <a href="?module=post&amp;id={$post.id}">{$cut_link_label}</a>
+      {/if}
+    {/if}
+
+    {if $post.album_id && $post.album.id}
+        <div class="b-photo-album-attached">
+            {$photos_loaded = 1}
+            {if $post.album.photos}
+                <ul class="thumbs li100px">
+                    {foreach $post.album.photos as $p}
+                        <li><a href="{$post.album.backend_link}photo/{$p.id}/" title="{$p.name|escape}"><img src="{$p.thumb_crop.url}" class="retinify" width="96" height="96" alt="{$p.name|escape}"></a></li>
+                    {/foreach}
+                </ul>
+            {/if}
+            <p><i class="icon16 pictures"></i><em> [`Photo album`]: <a href="{$post.album.backend_link}" class="bold">{$post.album.name|escape}</a> ({count($post.album.photos)})</em></p>
+        </div>
+    {/if}
+
+    {if isset($post.plugins) && isset($post.plugins.after) && $post.plugins.after}
+
+      {* @event prepare_posts_backend.%plugin_id%.after *}
+      <!-- plugin hook: "prepare_posts_backend.*.after" -->
+      {foreach $post.plugins.after as $plugin => $output}
+
+        <!-- begin "prepare_posts_backend.{$plugin}.after" -->
+        {$output}
+        <!-- end "prepare_posts_backend.{$plugin}.after" -->
+      {/foreach}
+      <!-- end plugin hook: "prepare_posts_backend.*.after" -->
+    {/if}
+    </div>
+
+  </div>
+
+{/foreach}
+
+{if !empty($photos_loaded) && blogPhotosBridge::is2xEnabled()}
+    <script src="{$wa_url}wa-content/js/jquery-plugins/jquery.retina.min.js"></script>
+    <script>$(function() { "use strict";
+        $.Retina && $('img.retinify').retina();
+    });</script>
+{/if}
+
+{if $posts_count > 0}
+  <div class="block b-post b-number-of-posts {if $stream.blog}{$stream.blog.color}{else}b-white{/if} pageless-wrapper">
+    {sprintf(_w("%d post of %d", "%d posts of %d", $posts_count,false),$posts_count,$posts_total_count)}
+    {if $posts_count < $posts_total_count}
+      <br>
+      <br>
+      <a href="#next" class="pageless-link">[`Show older posts`]</a>
+      <span class="pageless-progress" style="display:none"><i class="icon16 loading"></i>[`Loading`]&nbsp;{_w("%d post", "%d posts", min($posts_total_count-$posts_count,$posts_per_page))}...</span>
+    {/if}
+  </div>
+{else}
+  <div class="block b-post b-empty-list {if $stream.blog}{$stream.blog.color}{else}b-white{/if}">
+    {if $stream.all_posts}
+
+        <div class="b-welcome">
+            <h1>[`Welcome to your new blog!`]</h1>
+            <p>
+                {if empty($import_link)}
+                    {sprintf('[`Start by <a href="%s">writing your first post</a>.`]','?module=post&amp;action=edit&amp;id=')}
+                {else}
+                    {sprintf('[`Start by <a href="%s">writing a post</a> or <a href="%s">importing posts</a><br> from your existing blog.`]', '?module=post&amp;action=edit&amp;id=', $import_link)}
+                {/if}
+            </p>
+        </div>
+
+    {else}
+      <p>[`There are no posts in this view.`]</p>
+    {/if}
+  </div>
+{/if}
+
+{if $page ge $pages}
+  <div class="b-torn-paper {if $stream.blog}{$stream.blog.color}{else}b-white{/if}">
+    <div>
+      <div class="b-torn-left"></div>
+      <div class="b-torn"></div>
+      <div class="b-torn-right"></div>
+    </div>
+  </div>
+{/if}
+
+{if $page eq 1}
+  </div>
+
+    {if isset($dialogs) && $dialogs}
+      <!-- dialog begin -->
+      {foreach $dialogs as $dialog}
+        {$dialog}
+      {/foreach}
+      <!-- dialog end -->
+    {/if}
+
+{/if}

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>{$info.title|escape}</title>
+    <link>{$info.link|escape}</link>
+    <description>{$info.description|escape}</description>
+    <language>{$info.language|escape}</language>
+    <pubDate>{$info.pubDate|escape}</pubDate>
+    <lastBuildDate>{$info.lastBuildDate|escape}</lastBuildDate>
+    <atom:link href="{$info.self}" rel="self" type="application/rss+xml" />
+{foreach $posts as $row}
+
+    <item>
+      <title>{if $row.title}{$row.title|strip_tags|escape}{else}{$row.text|strip_tags|truncate:60:'…'|escape}{/if}</title>
+      {if $rss_author_tag == 'author' && $row.user.email}
+          <author>{$row.user.email|escape} ({$row.user.name|escape})</author>
+      {/if}
+      <link>{$row.link}</link>
+      <description><![CDATA[{$row.text}{strip}
+
+      {if $row.album_id && $row.album.id}
+          {foreach $row.album.photos as $p}
+            {if $p.description}
+                {if $p.description|strstr:'<p>'}
+                    {$p.description}
+                {else}
+                    <p>{$p.description}</p>
+                {/if}
+            {/if}
+            <p><img src="{$p.thumb_big.url}" alt="{$p.name|escape}"></p>
+          {/foreach}
+      {/if}
+
+      {/strip}]]></description>
+      <pubDate>{$row.datetime|wa_datetime:DATE_RSS}</pubDate>
+      <guid isPermaLink="true">{$row.link}</guid>
+    </item>
+{/foreach}
+
+  </channel>
+</rss>

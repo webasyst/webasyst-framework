@@ -1,0 +1,15 @@
+{if $data}
+    <ul id="recipients-languages" class="menu-v compact with-icons m-checkbox-menu zebra" style="max-width:500px;">
+        {foreach $data as $o}
+            <li class="language{if !empty($o.checked)} checked{/if}">
+                {if empty($o.disabled) && !empty($o.list_id)}
+                    <input type="hidden" name="remove_ids[]" value="{$o.list_id}">
+                {/if}
+                <span class="count">{$o.num}</span>
+                <label{if !empty($o.checked)} class="highlighted"{/if}>
+                    <input type="checkbox" name="add_values[]" value="/contacts/search/locale={$o.value|escape}"{if !empty($o.checked)} checked="checked" disabled="disabled"{/if}{if !empty($o.disabled)} disabled="disabled"{/if}>{$o.label|escape}
+                </label>
+            </li>
+        {/foreach}
+    </ul>
+{/if}

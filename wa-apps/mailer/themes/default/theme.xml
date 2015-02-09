@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE theme PUBLIC "wa-app-theme" "http://www.webasyst.com/wa-content/xml/wa-app-theme.dtd">
+<theme id="default" system="1" vendor="webasyst" author="Webasyst" app="mailer" parent_theme_id="site:default" version="2.1.0">
+    <name locale="en_US">Default 2.0</name>
+    <name locale="ru_RU">Дефолт 2.0</name>
+    <files>
+        <file path="my.subscriptions.html">
+            <description locale="en_US">Subscriptions home page</description>
+            <description locale="ru_RU">Начальная страница подписок</description>
+        </file>
+
+        <file path="my.nav.html">
+            <description locale="en_US">Customer portal interface: сommon navigation elements</description>
+            <description locale="ru_RU">Личный кабинет клиента: общие элементы навигации</description>
+        </file>
+
+        <file path="index.html" custom="0" parent="1"></file>
+        <file path="error.html" custom="0" parent="1"></file>
+    </files>
+</theme>

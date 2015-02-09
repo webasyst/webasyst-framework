@@ -1,0 +1,172 @@
+<?php
+return array(
+    'mailer_draft_recipients' => array(
+        'message_id' => array('bigint', 20, 'unsigned' => 1, 'null' => 0),
+        'name' => array('varchar', 255, 'null' => 0),
+        'email' => array('varchar', 255, 'null' => 0),
+        'contact_id' => array('bigint', 20, 'unsigned' => 1, 'null' => 0, 'default' => '0'),
+        ':keys' => array(
+        ),
+    ),
+    'mailer_form' => array(
+        'id' => array('int', 11, 'null' => 0, 'autoincrement' => 1),
+        'name' => array('varchar', 255, 'null' => 0),
+        'create_datetime' => array('datetime', 'null' => 0),
+        'create_contact_id' => array('int', 11, 'null' => 0),
+        'locale' => array('varchar', 5),
+        'status' => array('tinyint', 1, 'unsigned' => 1, 'null' => 0, 'default' => '0'),
+        ':keys' => array(
+            'PRIMARY' => 'id',
+        ),
+    ),
+    'mailer_form_params' => array(
+        'form_id' => array('int', 11, 'null' => 0),
+        'name' => array('varchar', 255, 'null' => 0),
+        'value' => array('text', 'null' => 0),
+        ':keys' => array(
+            'PRIMARY' => array('form_id', 'name'),
+        ),
+    ),
+    'mailer_form_subscribe_lists' => array(
+        'form_id' => array('int', 11, 'null' => 0),
+        'list_id' => array('int', 11, 'null' => 0),
+        ':keys' => array(
+            'PRIMARY' => array('form_id', 'list_id'),
+            'list_id_idx' => 'list_id',
+        ),
+    ),
+    'mailer_message' => array(
+        'id' => array('int', 11, 'null' => 0, 'autoincrement' => 1),
+        'name' => array('varchar', 255, 'null' => 0, 'default' => ''),
+        'create_datetime' => array('datetime', 'null' => 0),
+        'create_contact_id' => array('int', 11, 'null' => 0),
+        'status' => array('smallint', 6, 'null' => 0, 'default' => '0'),
+        'send_datetime' => array('datetime'),
+        'finished_datetime' => array('datetime'),
+        'sender_id' => array('int', 11, 'null' => 0, 'default' => '0'),
+        'from_name' => array('varchar', 255, 'null' => 0, 'default' => ''),
+        'from_email' => array('varchar', 255, 'null' => 0, 'default' => ''),
+        'reply_to' => array('varchar', 255, 'null' => 0, 'default' => ''),
+        'return_path' => array('varchar', 255, 'null' => 0, 'default' => ''),
+        'priority' => array('smallint', 6, 'null' => 0, 'default' => '0'),
+        'subject' => array('varchar', 255, 'null' => 0),
+        'body' => array('mediumtext', 'null' => 0),
+        'attachments' => array('text'),
+        'list_id' => array('int', 11, 'null' => 0, 'default' => '0'),
+        'is_template' => array('tinyint', 1, 'null' => 0, 'default' => '0'),
+        ':keys' => array(
+            'PRIMARY' => 'id',
+        ),
+    ),
+    'mailer_message_log' => array(
+        'id' => array('bigint', 20, 'null' => 0, 'autoincrement' => 1),
+        'message_id' => array('int', 11, 'null' => 0),
+        'email' => array('varchar', 255, 'null' => 0),
+        'name' => array('varchar', 255, 'null' => 0),
+        'contact_id' => array('int', 11, 'null' => 0),
+        'datetime' => array('datetime'),
+        'status' => array('smallint', 6, 'null' => 0, 'default' => '0'),
+        'error' => array('text'),
+        'error_class' => array('varchar', 255),
+        ':keys' => array(
+            'PRIMARY' => 'id',
+            'message_id' => array('message_id', 'email', 'unique' => 1),
+            'error_class' => 'error_class',
+            'message_id_status' => array('message_id', 'status'),
+            'contact_id' => 'contact_id',
+        ),
+    ),
+    'mailer_message_params' => array(
+        'message_id' => array('int', 11, 'null' => 0),
+        'name' => array('varchar', 32, 'null' => 0),
+        'value' => array('varchar', 255, 'null' => 0),
+        ':keys' => array(
+            'PRIMARY' => array('message_id', 'name'),
+        ),
+    ),
+    'mailer_message_recipients' => array(
+        'id' => array('int', 11, 'null' => 0, 'autoincrement' => 1),
+        'message_id' => array('int', 11, 'null' => 0),
+        'group' => array('varchar', 255),
+        'name' => array('varchar', 255),
+        'value' => array('text', 'null' => 0),
+        'count' => array('int', 11, 'null' => 0, 'default' => '0'),
+        ':keys' => array(
+            'PRIMARY' => 'id',
+            'message_id' => 'message_id',
+        ),
+    ),
+    'mailer_return_path' => array(
+        'id' => array('int', 11, 'null' => 0, 'autoincrement' => 1),
+        'email' => array('varchar', 255, 'null' => 0),
+        'server' => array('varchar', 255, 'null' => 0),
+        'port' => array('mediumint', 9, 'null' => 0),
+        'login' => array('varchar', 255, 'null' => 0),
+        'password' => array('varchar', 255, 'null' => 0),
+        'ssl' => array('tinyint', 1, 'null' => 0),
+        'last_error' => array('text'),
+        'last_campaign_date' => array('date'),
+        ':keys' => array(
+            'PRIMARY' => 'id',
+            'email' => array('email', 'unique' => 1),
+            'last_campaign_date' => 'last_campaign_date',
+        ),
+    ),
+    'mailer_sender' => array(
+        'id' => array('int', 11, 'null' => 0, 'autoincrement' => 1),
+        'name' => array('varchar', 255, 'null' => 0),
+        'email' => array('varchar', 255, 'null' => 0),
+        ':keys' => array(
+            'PRIMARY' => 'id',
+            'email' => array('email', 'unique' => 1),
+        ),
+    ),
+    'mailer_sender_params' => array(
+        'sender_id' => array('int', 11, 'null' => 0),
+        'name' => array('varchar', 32, 'null' => 0),
+        'value' => array('varchar', 255, 'null' => 0),
+        ':keys' => array(
+            'PRIMARY' => array('sender_id', 'name'),
+        ),
+    ),
+    'mailer_subscribe_list' => array(
+        'id' => array('int', 11, 'null' => 0, 'autoincrement' => 1),
+        'name' => array('varchar', 255, 'null' => 0),
+        'description' => array('text', 'null' => 0),
+        'create_contact_id' => array('int', 11, 'null' => 0),
+        'create_datetime' => array('datetime', 'null' => 0),
+        ':keys' => array(
+            'PRIMARY' => 'id',
+        ),
+    ),
+    'mailer_subscriber' => array(
+        'contact_id' => array('int', 11, 'null' => 0),
+        'list_id' => array('int', 11, 'null' => 0),
+        'datetime' => array('datetime', 'null' => 0),
+        'contact_email_id' => array('int', 11, 'unsigned' => 1, 'null' => 0, 'default' => '0'),
+        ':keys' => array(
+            'PRIMARY' => array('list_id', 'contact_id', 'contact_email_id'),
+            'contact_id' => 'contact_id',
+            'contact_email_id' => 'contact_email_id',
+        ),
+    ),
+    'mailer_subscriber_temp' => array(
+        'id' => array('int', 11, 'null' => 0, 'autoincrement' => 1),
+        'hash' => array('varchar', 100, 'null' => 0, 'default' => ''),
+        'data' => array('text', 'null' => 0),
+        'create_datetime' => array('datetime', 'null' => 0),
+        ':keys' => array(
+            'PRIMARY' => 'id',
+            'hash' => 'hash',
+        ),
+    ),
+    'mailer_unsubscriber' => array(
+        'email' => array('varchar', 255, 'null' => 0),
+        'list_id' => array('int', 11, 'null' => 0),
+        'message_id' => array('int', 10, 'unsigned' => 1),
+        'datetime' => array('datetime', 'null' => 0),
+        ':keys' => array(
+            'PRIMARY' => array('email', 'list_id'),
+        ),
+    ),
+);

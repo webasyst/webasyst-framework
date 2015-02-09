@@ -1,0 +1,10 @@
+{$pages = $wa->blog->pages()}
+{if count($pages)}
+    <ul class="pages">
+        <!-- pages -->            
+        {foreach $pages as $page}
+            <li{if strlen($page.url)>1 && $wa->currentUrl()|strstr:$page.url} class="selected"{/if}><a href="{$page.url}">{$page.name}</a></li>
+        {/foreach}
+    </ul>
+{/if}
+

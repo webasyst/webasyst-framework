@@ -1,0 +1,42 @@
+<div class="dialog width500px height250px" id="blogdelete-dialog">
+  <div class="dialog-background"> </div>
+  <div class="dialog-window">
+    <div class="dialog-content">
+      <div class="dialog-content-indent">
+        <h1>[`Delete blog`]</h1>
+        <br>
+        {if $posts_total_count}
+        <p>{sprintf('[`The blog %s contains <strong>%d posts</strong>. What should be done with these posts?`]',$blogs[$blog_id].name|escape,$posts_total_count)}</p>
+        {$posts_movable=false}
+        {capture name=target}
+          {foreach $blogs as $blog_item_id => $blog_item}{if $blog_item.rights ge blogRightConfig::RIGHT_FULL}
+          <option value="{$blog_item_id}"{if $blog_id eq $blog_item_id} disabled="disabled"{else}{$posts_movable=true}{/if}>{$blog_item.name|escape}</option>
+          {/if}{/foreach}
+        {/capture}
+        </select>
+
+        <label>
+          <input type="radio" name="remove"{if $posts_movable} checked="checked"{else} disabled="disabled"{/if} value="move">
+          [`Move posts to another blog`]:
+        </label>
+        <select name="blog_id"{if !$posts_movable} disabled="disabled"{/if}>
+        {$smarty.capture.target}
+        </select>
+        <br>
+        <label>
+          <input type="radio" name="remove"{if !$posts_movable} checked="checked"{/if} value="all">
+          [`Delete permanently`]
+        </label>
+        {else}
+        <p>[`This blog does no contain posts, and thus can be safely deleted.`]</p>
+        {/if}
+      </div>
+    </div>
+    <div class="dialog-buttons">
+      <div class="dialog-buttons-gradient">
+        <input type="submit" name="delete" class="button red" value="[`Delete blog`]">
+        [`or`] <a href="#" class="cancel">[`cancel`]</a>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,376 @@
+<style>
+    /*
+* Form constructor
+*/
+    .form-constructor .placeholder-col input[type="text"], .placeholder-col textarea {
+        color: #888;
+    }
+    .form-constructor {
+        padding: 3px;
+        vertical-align: top;
+    }
+    .form-constructor .show-when-disabled {
+        display: block;
+    }
+    .form-constructor .show-when-enabled {
+        display: block;
+    }
+    /*
+    * ---Form constructor
+    */
+
+    /*
+    * Form constructor preview---
+    */
+    .form-constructor-preview {
+        padding: 15px 30px;
+        border: 1px solid #ccc;
+        background: #f7f7f7;
+        display: inline-block;
+        min-width: 300px;
+    }
+    .form-constructor-fields {
+        display: inline-block;
+        margin-right: 30px;
+        vertical-align: top;
+    }
+    .form-constructor-preview .icon16 {
+        cursor: pointer;
+        margin-top: 3px;
+        float: left;
+    }
+    .form-constructor-preview .field .caption {
+        /* overflow: hidden; */
+        padding-bottom: 2px;
+        width: 105px;
+    }
+    .form-constructor-preview .field .value { margin-left: 140px; }
+    .form-constructor-preview .field .value input { min-width: 100px; }
+    .form-constructor-preview .field .caption.none {
+        max-width: 10%;
+    }
+    .form-constructor-preview .field .caption.none label {
+        max-width: 80%;
+    }
+    .form-constructor-preview .field .caption.left {
+        max-width: 48%;
+    }
+    .form-constructor-preview .field .caption.above {
+        max-width: 100%;
+    }
+    .form-constructor-preview label {
+
+    }
+    .form-constructor-preview .checkbox label {
+        white-space: normal;
+        margin-bottom: 5px;
+    }
+    .form-constructor-preview .editable-wrapper{
+        position: relative;
+    }
+    .form-constructor-preview .edit {
+        margin: 0;
+        margin-top: 4px;
+        position: absolute;
+        left: -14px;
+        cursor:pointer;
+    }
+    .form-constructor-preview .editable_el {
+        display: inline-block;
+        margin-top: 0;
+        min-width: 0;
+        cursor: pointer;
+    }
+    .form-constructor-preview .editable_el.hidden {
+        display: none;
+    }
+    .form-constructor-preview .editable_text {
+        line-height: 18px;
+        white-space: normal;
+        border: 1px dashed #ccc;
+        width: 100%;
+        
+    }
+    .form-constructor-preview .editable_el:hover {
+        border: dashed #0000ff 1px;
+    }
+    .form-constructor-preview .editable_button {
+        line-height: normal;
+        border: 2px outset buttonface;
+    }
+    .form-constructor-preview .editable_button:hover {
+        border: dashed #0000ff 1px;
+        background: none;
+    }
+    .form-constructor-preview .fill {
+        min-width: 0 !important;
+        width: 100% !important;
+    }
+    .form-constructor-preview .placeholder_input {
+        color: #888;
+    }
+    .form-constructor-preview .placeholder_input:focus {
+        color: #000;
+    }
+    .form-constructor-preview .wa-captcha p {
+        margin-bottom: 0;
+    }
+    .form-constructor-preview .wa-captcha-refresh {
+        /*display: none;*/
+        margin-bottom: 10px;
+    }
+    .form-constructor-preview .wa-captcha .wa-captcha-refresh {
+        display: inline-block;
+        clear: left;
+        font-size: 0.8em;
+        text-decoration: underline;
+        color: #aaa;
+    }
+    .form-constructor-preview .wa-captcha .wa-captcha-input {
+        min-width: 58px !important;
+        width: 58px !important;
+        position: relative;
+        top: -17px;
+    }
+    .form-constructor-preview .wa-captcha strong {
+        position: relative;
+        top: -16px;
+    }
+    .constructor-width {
+        margin-top: 10px;
+        border-left: 2px solid #333;
+        border-right: 2px solid #333;
+        position: relative;
+    }
+    .constructor-width input {
+        width: 30px !important;
+        text-align: center;
+        min-width: 20px !important;
+        margin: 0 auto !important;
+        position: relative;
+        top: 10px;
+        z-index: 2;
+        display: block;
+    }
+    .constructor-width hr {
+        position: absolute;
+        width: 100%;
+        top: 50%;
+        z-index: 0;
+    }
+    .constructor-width div {
+        font-size: 0.8em;
+        display: block;
+        margin: 10px auto;
+        text-align: center;
+        position: relative;
+        top: 7px;
+    }
+    /*
+    * ---Form constructor preview
+    */
+</style>
+
+<p>
+    <input type="checkbox" id="confirmation-checkbox" name="params[confirm_email]" value="1"{if !empty($params.confirm_email)} checked{/if}>
+    <label for="confirmation-checkbox">[`Confirm email on sign up`]</label><br>
+    <span class="hint">[`A confirmation link will be sent to user after sign up`]</span>
+</p>
+            
+    {*<div class="{if empty($params.confirm_mail_body)} hidden{/if} value confirm_mail field">
+        <div class="fields email-template-editor narrow-vars">
+
+            <div class="field template-subfield">
+                <div class="name">[`Text`]</div>
+                <div class="value">
+                    <div class="variables-link-wrapper equal-width">
+                        <textarea class="body-textarea" name="params[confirm_mail_body]">{$params.confirm_mail_body|escape|default:'Dear {USER_NAME}! If you want to receive this subscriptions please confirm your email, by follow this link: <a href="{EMAIL_CONFIRM_URL}">{EMAIL_CONFIRM_URL}</a>. Thank you!'}</textarea>
+                        {if isset($confirmation_template_vars)}
+                        <a href="javascript:void(0)" class="variables-link inline-link" style="font-size:.8em;"><b><i>[`Variables`]</i></b></a>
+                        {/if}
+                    </div>
+                </div>
+            </div>
+
+            {if isset($confirmation_template_vars)}
+            <div class="field variables-wrapper">
+                <div class="fields shadowed equal-width">
+                    {foreach $confirmation_template_vars as $k => $v}
+                    <div class="field">
+                        <div class="name"><a href="javascript:void(0)" class="inline-link{if strlen($k) > 35} small{/if}"><b><i>{$k|escape}</i></b></a></div>
+                        {if $v}
+                        <div class="value hint">{$v|escape}</div>
+                        {/if}
+                    </div>
+                    {/foreach}
+                </div>
+                <div class="clear-left"></div>
+            </div>
+            {/if}
+        </div>
+    </div>*}
+    
+
+<h5 class="heading">[`Sign up form fields`]</h5>
+
+<div class="form-constructor" style="white-space:nowrap;">
+
+    <div class="form-constructor-fields s-personal-field-list" data-form-constructor="available-fields">
+        {foreach $available_fields as $a_field}
+            <label><input type="checkbox" data-fld-id="{$a_field.id|escape}" {if $a_field.checked}checked{/if} {if $a_field.disabled}disabled{/if}> {$a_field.name|escape}</label>
+        {/foreach}
+    </div>
+
+    <div class="form-constructor-preview shadowed" data-form-constructor="preview">
+        <div data-form-constructor="enabled-fields">
+            {foreach $enable_fields as $e_field}
+            <div data-fld-wrapper="{$e_field.id|escape}" class="field sortable hidden {if $e_field.checked}show-when-enabled{/if}" style="position: relative">
+                <i class="icon16 sort"></i>
+                <input type="checkbox" name="fields[{$e_field.id}][required]" {if isset($e_field.required) || $e_field.disabled}checked{/if} value="true" style="position: absolute;left: -20px;top: 7px;" {if !$e_field.checked || $e_field.disabled}disabled{/if}/>
+                <div class="name caption" data-form-constructor="caption">
+                <span class="editable-wrapper" title="[`Edit field label`]">
+                    <label class="editable_el editable_text" data-editable-element="true" data-form-constructor="label">{if isset($e_field.caption)}{$e_field.caption|escape}{else}{$e_field.name|escape}{/if}</label>
+                     <input type="text" class="hidden" name="fields[{$e_field.id}][caption]" value="{if isset($e_field.caption)}{$e_field.caption|escape}{else}{$e_field.name|escape}{/if}" {if !$e_field.checked}disabled{/if}/>
+                </span>
+                </div>
+                <div class="value placeholder" title="[`Edit hint for this field`]" data-form-constructor="placeholder">
+                    <input type="text" class="fill placeholder_input" name="fields[{$e_field.id}][placeholder]" value="{if isset($e_field.placeholder)}{$e_field.placeholder|escape}{/if}" {if !$e_field.checked}disabled{/if}/>
+                </div>
+            </div>
+            {/foreach}
+        </div>
+
+        <span class="editable-wrapper">
+            <input type="button" class="editable_el editable_button" data-editable-element="true" value="{$params.button_caption|escape|default:'[`Sign up`]'}" title="[`Edit button label`]"><input type="text" class="hidden" name="params[button_caption]" value="{$params.button_caption|escape|default:'[`Sign up`]'}"/>
+        </span>
+
+    </div>
+
+</div>
+
+
+
+<script>
+    (function(){
+        (function($) {
+            $.fn.toggleDisabled = function(){
+                return this.each(function(){
+                    this.disabled = !this.disabled;
+                });
+            };
+        })(jQuery);
+
+//    $form.on('click', '#confirmation-checkbox', function(e) {
+//        var $confirmation_inputs = $form.find('.email-template-editor :input');
+//        if ($(this).is(':checked')) {
+//            $form.find('.confirm_mail').removeClass('hidden');
+//            $confirmation_inputs.prop('disabled', false);
+//        } else {
+//            $form.find('.confirm_mail').addClass('hidden');
+//            $confirmation_inputs.prop('disabled', true);
+//        }
+//    })
+
+//    $form.find('.variables-link-wrapper').on('click', 'a', function(e){
+//        e.preventDefault();
+//        $form.find('.variables-wrapper').slideToggle(100);
+//    });
+
+        // Sort fields
+
+        function initSortable()
+        {
+            var context = $('[data-form-constructor="enabled-fields"]');
+            context.sortable({
+                distance: 5,
+                helper: 'clone',
+                items: '.field.sortable',
+                opacity: 0.75,
+                handle: '.sort',
+                tolerance: 'pointer',
+                containment: context,
+                update: function(event, ui) {
+
+                }
+            });
+        }
+
+        initSortable();
+
+        /*** Form constructor ***/
+
+        var editableForm = function($el, initial_position) {
+            var $preview                    = $el.find('[data-form-constructor="preview"]'),
+                    $form_width                 = $el.find('[data-form-constructor="form-width"]'),
+                    $available_fields           = $el.find('[data-form-constructor="available-fields"]'),
+                    $caption_place              = $el.find('[data-form-constructor="caption-place"]'),
+                    $editable_inputs            = $el.find('[data-editable-element="true"]'),
+                    delay                       = 100;
+
+
+            // Makes labels editable
+            var editableInput = function (el) {
+                var $el = $(el),
+                        $input = $el.next(),
+                        $icon = $el.prev();
+
+                var switchEls = function(){
+                    $el.addClass('hidden');
+                    $input.removeClass('hidden').focus();
+                    $el.parents('.caption.left').width('48%')
+                            .siblings('.placeholder').css('margin-left', '50%');
+                };
+
+                $el.on('click', function(e){
+                    switchEls();
+                });
+
+                $icon.on('click', function(){
+                    switchEls();
+                });
+
+                $input.on('blur', function(){
+                    $input.addClass('hidden');
+                    if ($el.hasClass('editable_button')) {
+                        $el.val($input.val()).removeClass('hidden');
+                    } else {
+                        $el.text($input.val()).removeClass('hidden');
+                    }
+                });
+
+                $input.on('keydown', function(e){
+                    var code = e.keyCode || e.which;
+
+                    switch (code) {
+                        case 13: //on enter, esc
+                        case 27:
+                            $(this).trigger('blur');
+                            return;
+                        default:
+                            break;
+                    }
+                });
+            };
+
+            // Switch fields in form constructor
+            $available_fields.on('change', 'input', function () {
+                var type = $(this).data('fld-id');
+                $('[data-fld-wrapper="'+type+'"]').toggleClass('show-when-enabled')
+                        .find(':input')
+                        .toggleDisabled();
+            });
+
+            // On first page load
+            var init = function() {
+                $editable_inputs.each(function(i,el) {
+                    new editableInput(el);
+                });
+            };
+
+            init();
+        }
+
+        new editableForm($('.form-constructor'));
+
+    }());
+</script>

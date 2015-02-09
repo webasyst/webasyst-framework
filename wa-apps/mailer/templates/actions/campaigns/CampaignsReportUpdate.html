@@ -1,0 +1,103 @@
+<div id="pie-legend-copy" class="hidden">
+    {include file="templates/actions/campaigns/pie_diagram_legend.html"}
+</div>
+
+<script>(function($) { "use strict";
+    // Update pie chart
+    $.wa.mailer.drawReportPie('{$wa_app_static_url}', [
+        parseInt('{$stats.opened_percent}'),
+        parseInt('{$stats.unsubscribed_percent}'),
+        parseInt('{$stats.bounced_percent}'),
+        parseInt('{$stats.unknown_percent}')
+    ]);
+
+    var campaign_id                 = parseInt('{$campaign.id}'),
+        $report_wrapper             = $('#report-wrapper'),
+        $recipient_lists_wrapper    = $('#recipient-lists-wrapper'),
+        $current_link_pie_legend    = $report_wrapper.find('.pie-graph-legend .show-recipients-link.disabled:first'),
+        $selected_quantum           = $('#quantum'),
+
+        disabled_rel_pie_legend     = $current_link_pie_legend.length ? $current_link_pie_legend.attr('rel') : "",
+        recipients_statuses         = (disabled_rel_pie_legend && disabled_rel_pie_legend.length) ? disabled_rel_pie_legend.replace('status=','') : "",
+
+        graph_ids_str               = $current_link_pie_legend.length ? $current_link_pie_legend.data('graph-id') : false,
+        graph_ids                   = graph_ids_str ? graph_ids_str.toString().split(",") : "",
+        graph_quantum               = $selected_quantum.length ? $selected_quantum.val() : 0,
+        graph_start                 = $('#intervalstart').val(),
+        graph_end                   = $('#intervalend').val();
+
+    // Update graph
+    if ($current_link_pie_legend.length && graph_ids) {
+        $.wa.mailer.getAndPlotData(campaign_id, graph_ids, graph_start, graph_end, false, 1);
+    }
+
+    // Update recipients list
+//    if (recipients_statuses) {
+//        $recipient_lists_wrapper.empty();
+//        $.wa.mailer.loadNext50Recipients(campaign_id, {
+//            status: recipients_statuses,
+//            startinterval: 0,
+//            endinterval: 0,
+//            quantum: graph_quantum
+//        });
+//    }
+
+    // Update chart legend
+    var old_pie_legend = $('#pie-legend table'),
+        new_pie_legend = $('#pie-legend-copy table');
+    if (old_pie_legend.find('.no-images-message:visible').length > 0) {
+        new_pie_legend.find('.no-images-message').show();
+    }
+    old_pie_legend.hide().find('.recipients-selection-criteria').insertBefore(new_pie_legend.find('.sub-lined'));
+    old_pie_legend.after(new_pie_legend).remove();
+    $('#pie-legend-copy').remove();
+
+    // Retain active link selection in chart legend
+    $report_wrapper
+            .find('.pie-graph-legend .show-recipients-link')
+            .filter('[rel="'+disabled_rel_pie_legend+'"]').addClass('disabled');
+
+    // Update title with recipients count
+    var new_recipients_count = $report_wrapper.find('.pie-graph-legend [data-count-for="'+disabled_rel_pie_legend+'"]').text();
+    var $title_count_wrapper = $('.recipients-count').find('div[data-rel="'+disabled_rel_pie_legend+'"] .cnt');
+    if ($title_count_wrapper.length) {
+        $title_count_wrapper.text(new_recipients_count);
+    }
+
+    {if $campaign.status != mailerMessageModel::STATUS_SENT && $campaign.status != mailerMessageModel::STATUS_DRAFT}
+    $.wa.mailer.updateCampaignReportProgress(
+        campaign_id,
+        {$stats.percent_complete_precise|replace:',':'.'},
+        {ifempty($campaign.estimated_finish_datetime, 0)},
+        {strtotime($campaign.send_datetime)},
+        {time()}
+        {if $campaign.status == mailerMessageModel::STATUS_SENDING_PAUSED || $campaign.status == mailerMessageModel::STATUS_SENDING_ERROR}
+, true// do not update page every several seconds
+        {/if}
+    );
+    {if $campaign.status == mailerMessageModel::STATUS_SENDING_PAUSED || $campaign.status == mailerMessageModel::STATUS_SENDING_ERROR}
+    if (!$.wa.mailer.report_redispatch_delayed) {
+        $.wa.mailer.redispatch();
+    }
+    {/if}
+{else}
+    $.wa.mailer.cleanupSentCampaign(campaign_id);
+{/if}
+{if !$is_sending && $campaign.status == mailerMessageModel::STATUS_SENDING}
+    // Make sure campaign is sending
+    $.ajax({
+        type: 'POST',
+        url: '?module=campaigns&action=send',
+        data: { id: campaign_id },
+        dataType: 'html',
+        success: function (r) {
+            // Nothing to do
+        },
+        global: false, // prevent ajaxError handlers to trigger
+        error: function() {
+            // Nothing to do
+        },
+        timeout: 300000
+    });
+{/if}
+})($);</script>

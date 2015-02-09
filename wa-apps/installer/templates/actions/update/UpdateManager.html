@@ -1,0 +1,175 @@
+
+{wa_js file="js/installer.min.js"}
+{$wa_url}wa-content/js/jquery-plugins/jquery.tmpl.min.js
+{$wa_app_static_url}js/installer.js
+{/wa_js}
+    <script type="text/javascript">
+$(document).ready( function() {
+    $( function() {
+        console.production = {if waSystemConfig::isDebug()}false{else}true{/if};
+        $.installer.init({
+            redirect_url: '{$return_url|escape:'js'}',
+            redirect_timeout: 1500,/*ms*/
+            updateStateInterval: 1000,/*ms*/
+            updateStateErrorInterval: 2000,/*ms*/
+            timestamp:{time()},
+            queue:[
+            {foreach $queue_apps as $target => $item}{
+                'subject':'{$item.subject|default:"app"}',
+                'slug':'{$target}',
+                'vendor':'{$item.vendor}',
+                'edition':'{$item.edition|default:''}'
+            }{if !$item@last}, {/if}
+            {/foreach}
+            ],
+            install:{if $install}true{else}false{/if},
+            logMode:'raw'
+        },'{$thread_id|escape:'js'}');
+    });
+
+
+
+    translate['prepare'] = '[`Preparing`]';
+    translate['copy'] = '[`Creating backup`]';
+    translate['download'] = '[`Downloading new version`]';
+    translate['extract'] = '[`Extracting downloaded files`]';
+    translate['replace'] = '[`Replacing files`]';
+    translate['cleanup'] = '[`Cleaning up`]';
+    translate['update'] = '[`Update`]';
+
+    translate['complete'] = '&nbsp;';
+    translate['heartbeat'] = '&nbsp;';
+    translate['resume'] = '[`Resuming`]';
+    translate['wait'] = '[`Standing by`]';
+    translate['error'] = '[`Error occurred`]';
+
+    {foreach $queue_apps as $slug => $item}{if !empty($item.name)}
+    translate['{$slug}']='{$item.name|escape}';
+    translate['{$item.slug}']='{$item.name|escape}';
+    {/if}{/foreach}
+
+});
+
+    </script>
+
+    <div class="i-app-update-screen">
+    <div id="update-content" class="block double-padded">
+        <div id="template-placeholder">
+{if $queue_apps}
+        <h3>
+        {_w('Installing the application','Installing applications',count($queue_apps))}
+        {foreach $queue_apps as $item}{$item.name|string_format:'[`"%s"`]'}{if !$item@last}, {/if}{/foreach}
+        <i class="icon16 loading"></i>
+        </h3>
+{/if}
+        </div>
+<!-- update log placeholder{capture name="application-update-result"}
+{* jquery template *}
+{literal} -->
+    <div id="update-result" class="i-app-update-result">
+        {{if result}}
+        {{if result.success}}<p><i class="icon10 yes"></i> <em class="success"><strong>${result.success}
+        {{if result.success_plural == 0}}{/literal}{_w('application successfully installed','applications successfully installed',1)}{literal}
+        {{/if}}{{if result.success_plural == 1}}{/literal}{_w('application successfully installed','applications successfully installed',2)}{literal}
+        {{/if}}{{if result.success_plural == 2}}{/literal}{_w('application successfully installed','applications successfully installed',5)}{literal}
+        {{/if}}
+        </strong></em></p>
+        <div id="update-result-apps">
+        <ul style="display:none;">
+            {{each sources}}
+            {{if ($value) && (!$value.skipped) && (!$value.update) && ($value.subject == 'app')}}
+            <li id="wa-app-${$value.slug}">
+                <a href="{/literal}{wa_backend_url()}{literal}${$value.slug}/">
+                    {{if $value.icon}}<img alt="" src="${$value.icon}">{{/if}}
+                    ${$value.name}
+                </a>
+            </li>
+            {{/if}}
+            {{/each}}
+        </ul>
+        </div>
+        {{/if}}
+        {{if result.fail}}<p><i class="icon10 no"></i> <em class="error"><strong>${result.fail}
+        {{if result.fail_plural == 0}}{/literal}{_w('application failed to install','applications failed to install',1)}{literal}
+        {{/if}}{{if result.fail_plural == 1}}{/literal}{_w('application failed to install','applications failed to install',2)}{literal}
+        {{/if}}{{if result.fail_plural == 2}}{/literal}{_w('application failed to install','applications failed to install',5)}{literal}
+        {{/if}}
+        </strong></em></p>{{/if}}
+        {{else}}
+        {{if current_state.stage_status == 'error'}}
+        <p>[`An error occurred during installation`]</p>
+        <p><i class="icon10 no"></i> <em class="error"><strong>{{html current_state.error}}</strong></em>
+        {{else}}
+        <p><i class="icon10 yes"></i> <em class="success"><strong>[`Finalizing the installation and redirecting back to the app...`]</strong></em><i class="icon16 loading"></i></p>
+        {{/if}}
+        {{/if}}
+        {/literal}{if !empty($return_url)}{literal}
+        {{if result && result.success}}
+            <p><i class="icon10 yes"></i> <em class="success"><strong>[`Finalizing the installation and redirecting back to the app...`]</strong></em><i class="icon16 loading"></i></p>
+        {{/if}}
+        {/literal}{/if}{literal}
+    </div>
+    <div id="installer-update-complete-log">
+        <i class="icon16 text"></i>
+        <a href="?module=update&amp;action=downloadlog">[`Download installation log`]</a>
+        <span class="hint">(.txt)</span>
+    </div>
+<!-- {/literal}{/capture} -->
+
+<!-- update log placeholder{capture name="application-update-apps"}
+{* jquery template *}
+{literal} -->
+        <div id="app-${slug}">
+            <p><span>${timestamp}</span> [`Current version`]: <strong>x.x.x.x</strong></p>
+            <p><span>${timestamp}</span> [`New version`]: <strong>x.x.x.x</strong></p>
+            {{each stages}}
+            <p><span>${$value.datetime}</span> ${$value.stage_name.translate()}
+            {{if $value.stage_status == 'heartbeat'}}
+                <i class="icon16 loading"></i><em class="in-progress">{{if $value.stage_progress}} ${$value.stage_progress}%{{/if}} ${$value.stage_status.translate()}</em>
+            {{else}}{{if $value.stage_status == 'error'}}
+                <i class="icon10 no"></i> <em class="error">{{html $value.error}}</em>
+            {{else}}
+                <i class="icon10 yes"></i> <em class="success">${$value.stage_status.translate()}</em>
+            {{/if}}
+            {{/if}}
+            </p>
+            {{/each}}
+        </div>
+<!-- {/literal}{/capture} -->
+
+<!-- update log placeholder{capture name="application-update-raw"}
+{* jquery template *}
+{literal} -->
+    <div id="update-raw">
+        <h3>
+        {{if apps.length>1}}
+        {/literal}{_w('Installing the application','Installing applications',2)}{literal}
+        {{else}}
+        [`Installing the application`]
+        {{/if}} {{each(app_index, app_slug) apps}}${'[`"%s"`]'.replace(/%s/,app_slug.slug.translate())}{{if app_index < apps.length - 1}}, {{/if}}{{/each}}
+        {{if (state_class!=null)}}<i id="update-raw-state-icon" class="icon16 ${state_class}"></i>{{/if}}
+        </h3>
+        {{each stages}}{{if ($value) && ($value.chunk_id)}}
+        <p><span>${$value.datetime}</span> <span class="i-app-name">${$value.chunk_id.translate()}</span> ${$value.stage_name.translate()}
+        {{if $value.stage_status == 'heartbeat'}}
+            <i class="icon16 loading"></i><em class="in-progress">{{if $value.stage_progress}} ${$value.stage_progress}%{{/if}} ${$value.stage_status.translate()}</em>
+        {{else}}{{if $value.stage_status == 'error'}}
+            <i class="icon10 no"></i> <em class="error">${$value.stage_status.translate()} {{html $value.error}}</em>
+        {{else}}
+            <i class="icon10 yes"></i> <em class="success">${$value.stage_status.translate()}</em>
+        {{/if}}
+        {{/if}}
+        </p>
+        {{/if}}{{/each}}
+    </div>
+<!-- {/literal}{/capture} -->
+    </div>
+    </div>
+
+{* prepare captured jquery templates *}
+<!-- {foreach $smarty.capture as $name => $template} -->
+<script type="text/x-jquery-tmpl" id="{$name}-template-js">
+<!-- begin {$name} template {$template|replace:'</':'<\/'} end {$name} template -->
+</script>
+<!-- {/foreach} -->
+

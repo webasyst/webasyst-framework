@@ -1,0 +1,95 @@
+<div class="shadowed">
+    {if $error}
+        <div class="ui-error"><i class="icon16 error"></i>{$error}</div>
+    {/if}
+    {if !empty($messages)}
+        {foreach $messages as $message}
+            <div class="block double-padded i-message-{$message.result}">
+                {if $message.result == 'success'}<i class="icon16 yes"></i>
+                {elseif $message.result == 'fail'}
+                <i class="icon16 no"></i>
+                {/if}
+                {$message.text|escape}
+            </div>
+        {/foreach}
+    {/if}
+    <form action="?module=update&amp;action=manager" method="POST">
+        <table class="zebra i-updates">
+            <thead>
+            {if $update_counter_applicable}
+                <tr class="i-top-extra-row">
+                    <td colspan="3"></td>
+                    <td class="i-update-button">
+                        <input type="submit" value="[`Install all updates`] ({$update_counter_applicable})"
+                               id="update_all" class="bold large">
+                    </td>
+                </tr>
+            {/if}
+
+            <tr>
+                <th class="min-width"></th>
+                <th>[`Application`]</th>
+                <th colspan="2" class="i-update-data">[`Version`]</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            {if !$update_counter }
+                <tr>
+                    <td colspan="4" class="align-center" style="background: #fff;">
+                        <div class="block triple-padded">[`All apps are up to date.`]</div>
+                    </td>
+                </tr>
+            {else}
+
+                <!-- list of available updates -->
+                {foreach $items as $app_id => $app}
+                    {if isset($app.applicable)}
+                        {include file="../update/Update.row.html" item=$app item_id=$app_id item_type='app' inline}
+                    {/if}
+
+                    {if !empty($app.plugins)}
+                        {foreach $app.plugins as $item_id => $plugin}
+                            {include file="../update/Update.row.html" item=$plugin item_id=$item_id item_type='plugin' inline}
+                        {/foreach}
+                    {/if}
+
+                    {if !empty($app.themes)}
+                        {foreach $app.themes as $item_id => $theme}
+                            {include file="../update/Update.row.html" item=$theme item_id=$item_id item_type='theme' inline}
+                        {/foreach}
+                    {/if}
+
+                {/foreach}
+
+            {/if}
+            </tbody>
+        </table>
+    </form>
+</div>
+
+<script type="text/javascript">
+    {literal}
+    $(document).ready(function () {
+        $('input:hidden[name^=app_id]').each(function (index) {
+            $(this).attr('disabled', true);
+        });
+        $(':submit[id^=update_]').click(function () {
+            var item_id = $(this).attr('id').match(/^update_([\w_\-\/]+)$/);
+            if (item_id && item_id[1]) {
+                if (item_id[1] == 'all') {
+                    $('input:hidden:disabled[name^=app_id]').removeAttr('disabled');
+                } else {
+                    $('#checkbox_' + item_id[1].replace(/(\/)/g, '\\/')).removeAttr('disabled');
+                }
+            }
+        });
+        $('a.js-changelog-more').click(function () {
+            $(this).parents('.js-changelog').find(':hidden').show();
+            $(this).hide();
+            return false;
+        });
+    });
+    {/literal}
+</script>
+

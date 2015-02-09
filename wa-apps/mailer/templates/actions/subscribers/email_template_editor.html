@@ -1,0 +1,223 @@
+{*
+ * This file gets included in various Smarty templates of source and action editors.
+ * Provides a common editor for email templates.
+ *
+ * Expects parameters:
+ * - template: required
+ * - input_name: required
+ * - variables: optional
+ * - to_name: optional
+ * - to_value: optional
+ * - sourcefrom_name: optional
+ * - sourcefrom_set: optional
+ *}
+
+{$input_name = ifset($input_name, '')}
+
+{* Split template into parts *}
+{$template = ifset($template, '')}
+{$parts = explode('{SEPARATOR}', $template, 3)}
+{$body = array_pop($parts)}
+{$subject = array_pop($parts)}
+{$from = array_pop($parts)}
+{$uniqid = uniqid('t')}
+
+<div id="{$uniqid}">
+    <input type="hidden" name="{$input_name|escape}" value="">
+    <input type="hidden" class="hidden-input disable-when-collapsed" name="{$input_name|escape}" value="{$template|escape}">
+
+    <div class="field template-subfield">
+        <div class="name">[`From`]</div>
+        <div class="value combined-selector">
+            <select class="from-select">
+                <option value="default">{sprintf_wp('System default (%s)', key(waMail::getDefaultFrom()))}</option>
+                <option value=""{if !empty($from)} selected{/if}>[`Specified`]</option>
+            </select><br>
+            <input type="text" value="{$from|escape}" class="hidden from-input" style="margin:10px 0 0 0;">
+            <div class="hint equal-width" style="margin-top:4px;">
+                [`It is recommended to specify an existing email address which you do not check for new mail as the sender's address for such notifications; e.g., noreply@yourdomain.com. This will help minimize the number of redundant requests.`]
+            </div>
+        </div>
+    </div>
+
+    {if !empty($sourcefrom_name)}
+        <div class="field">
+            <div class="value" style="font-size:11px;"><label>
+                <input type="checkbox" name="{$sourcefrom_name|escape}" value="1"{if !empty($sourcefrom_set)} checked{/if}>
+                [`Use source email address if request came by email`]
+            </label></div>
+        </div>
+    {/if}
+
+    <div class="field template-subfield">
+        <div class="name">[`Subject`]</div>
+        <div class="value">
+            <input type="text" value="{$subject|escape}" class="subject-input">
+        </div>
+    </div>
+
+    <div class="field template-subfield">
+        <div class="name">[`Text`]</div>
+        <div class="value">
+            <div class="variables-link-wrapper equal-width">
+                <textarea class="body-textarea">{$body|escape}</textarea>
+                {if !empty($variables)}
+                    <a href="javascript:void(0)" class="variables-link inline-link" style="font-size:.8em;"><b><i>[`Variables`]</i></b></a>
+                {/if}
+            </div>
+        </div>
+    </div>
+
+    {if !empty($variables)}
+        <div class="field variables-wrapper">
+            <div class="fields shadowed equal-width">
+                {foreach ifempty($variables, array()) as $k => $v}
+                    <div class="field">
+                        <div class="name"><a href="javascript:void(0)" class="inline-link{if strlen($k) > 35} small{/if}"><b><i>{$k|escape}</i></b></a></div>
+                        {if $v}
+                            <div class="value hint">{$v|escape}</div>
+                        {/if}
+                    </div>
+                {/foreach}
+            </div>
+            <div class="clear-left"></div>
+        </div>
+    {/if}
+</div>
+
+<script>setTimeout(function() { "use strict";
+
+    var wrapper = $('#{$uniqid}');
+    var from_input = wrapper.find('.from-input:first');
+    var from_select = wrapper.find('.from-select:first');
+    var hidden_input = wrapper.find('.hidden-input:first');
+    var subject_input = wrapper.find('.subject-input:first');
+    var body_textarea = wrapper.find('.body-textarea:first');
+    var variables_link = wrapper.find('.variables-link:first');
+    var variables_wrapper = wrapper.find('.variables-wrapper');
+
+    var delay = 0; // we want controls to show and hide with animation, but only after initialization is finished
+
+    // Controller for combined selectors (select + input)
+    wrapper.on('change', '.combined-selector select', function() {
+        var select = $(this);
+        var input = select.parent().find('input:text');
+        if (select.val() == '') {
+            input.hide().removeClass('hidden').slideDown(delay);
+            if (select.children('[value="'+input.val().replace(/"/g, '')+'"]').length) {
+                input.val('');
+            }
+        } else {
+            input.hide().val(select.val());
+        }
+    });
+
+    // Initial state for combined selectors
+    wrapper.find('.combined-selector select').change();
+
+    // Variables control
+    variables_link.click(function() {
+        variables_wrapper.slideToggle(delay);
+    });
+    (function() {
+        var last_focused = body_textarea[0];
+        body_textarea.add(subject_input).on('focus', function() {
+            last_focused = this;
+        });
+        variables_wrapper.on('click', 'a', function() {
+            $.wa.mailer.insertAtCursor(last_focused, $(this).text());
+            return false;
+        });
+    })();
+
+    // When something changes in form, update value in hidden input
+    wrapper.on('beforesubmit change', '.template-subfield input, .template-subfield select, .template-subfield textarea', function() {
+        var result = '';
+        if (from_select.val() != 'default') {
+            result += from_input.val();
+        }
+        result += '{literal}{SEPARATOR}{/literal}';
+        result += subject_input.val();
+        result += '{literal}{SEPARATOR}{/literal}';
+        result += body_textarea.val();
+        hidden_input.val(result);
+    });
+
+    {if !empty($to_name)}
+        // Checklist for To: selector
+        (function() {
+            var checklist = wrapper.find('.checklist');
+            var menu = checklist.find('.menu-v');
+            var search_field = checklist.find('input:text');
+
+            $.wa.controller.animateChecklist(checklist);
+
+            // Autocomplete for contact search
+            search_field.autocomplete({
+                source: '?action=contactAutocomplete',
+                minLength: 3,
+                delay: 300,
+                html: 1,
+                focus: function() {
+                    return false;
+                },
+                select: function(event, ui) {
+                    addLi(ui.item.id, ui.item.name);
+                    search_field.val('').autocomplete('close');
+                    return false;
+                }
+            });
+            search_field.autocomplete('widget').css('z-index', 100500);
+
+            // Enter in search field selects current value
+            search_field.keydown(function(e) {
+                if (e.which == 13 || e.which == 10) {
+                    var val = search_field.val();
+                    if (!val || val.indexOf('@') <= 0) {
+                        return false;
+                    }
+                    addLi(val, val);
+                    search_field.val('').autocomplete('close');
+                    return false;
+                }
+            });
+
+            // Close dropdown on click anywhere
+            var h;
+            $(document).on('click', h = function(e) {
+                if (!wrapper.closest('html').length) {
+                    $(document).off('click', h);
+                    return;
+                }
+                if (!$(e.target).closest(checklist.add(search_field.autocomplete('widget'))).length) {
+                    menu.hide();
+                }
+            });
+
+            updateState();
+
+            function addLi(id, name) {
+                var tmpl = menu.find('li.template');
+                var attr_name = tmpl.find(':checkbox').attr('name').replace('%VALUE%', id);
+
+                var cb2 = menu.find('[name="'+attr_name+'"]');
+                if (cb2.length) {
+                    cb2.prop('checked', true).change();
+                } else {
+                    var li = tmpl.clone().removeClass('hidden template').insertBefore(tmpl);
+                    li.find('.val').text(name);
+                    li.find(':checkbox').prop('disabled', false).attr('name', attr_name).change();
+                    updateState();
+                }
+            }
+
+            function updateState() {
+                if (menu.find(':checkbox:not(:disabled)').length > 2) {
+                    menu.find('.show-if-custom').slideDown();
+                }
+            }
+        })();
+    {/if}
+
+    delay = 200;
+}, 0);</script>

@@ -1,0 +1,516 @@
+{include file="templates/actions/campaigns/CampaignsSidebar.html"}
+
+<style>
+form#form-campaign { 1overflow: visible; }
+#send-main-wrapper.closed.shadowed, #send-test-wrapper.closed.shadowed {
+    border: 0 none transparent;
+    margin: 0;
+    box-shadow: none;
+    -moz-box-shadow: none;
+    -webkit-box-shadow: none;
+}
+#send-main-wrapper.opened, #send-test-wrapper.opened, #send-test-wrapper.sent {
+    background: #ffe;
+    padding: 10px 20px;
+    margin: 0 -21px 10px -21px;
+    position: relative;
+}
+#send-main-wrapper.closed .show-if-closed, #send-test-wrapper.closed .show-if-closed { display: block; }
+#send-main-wrapper.opened .show-if-opened, #send-test-wrapper.opened .show-if-opened { display: block; }
+#send-main-wrapper.sent .show-if-sent, #send-test-wrapper.sent .show-if-sent { display: block; }
+</style>
+
+<div class="content right200px"><div class="shadowed">
+<div class="m-envelope-stripes-1"><div class="m-envelope-stripes-2">
+<div class="block m-core-header"></div>
+
+<form id="form-campaign" action="?module=campaigns&action=save" method="post">
+    {if !empty($campaign.id)}
+    <ul class="m-compose-navigation tabs">
+        <li class="m-first-step"><a href="#/campaigns/letter/{$campaign.id}/">[`Compose letter`]</a></li>
+        <li class="m-second-step"><a href="#/campaigns/recipients/{$campaign.id}/">[`Choose recipients`]</a></li>
+        <li class="m-third-step selected"><a id="right-sidebar-send-link" href="#/campaigns/send/{$campaign.id}/">[`Check and send`]</a></li>
+    </ul>
+    {else}
+    <ul class="m-compose-navigation tabs">
+        <li class="m-first-step selected"><a href="javascript:void(0)">[`Compose letter`]</a></li>
+        <li class="m-second-step m-disabled"><a href="javascript:void(0)">[`Choose recipients`]</a></li>
+        <li class="m-third-step m-disabled"><a href="javascript:void(0)">[`Check and send`]</a></li>
+    </ul>
+    {/if}
+
+    <div class="block campaign-header tab-content">
+        <h1>{ifempty($campaign.subject, "[`<no subject>`]")|escape}</h1>
+
+        <input type="hidden" name="id" value="{$campaign.id}">
+    </div>
+
+    <div class="block double-padded">
+
+        <input type="hidden" name="id" value="{$campaign.id}">
+
+        <div class="fields">
+            <div class="field">
+                <div class="name">[`Sender`]:</div>
+                <div class="value">
+                    {if $senders}
+                        <select id="sender_id" name="data[sender_id]">
+                            {if count($senders) != 1}
+                                <option value="">&lt;[`select`]&gt;</option>
+                            {/if}
+                            {foreach $senders as $s}
+                                <option value="{$s.id}"{if $campaign.sender_id==$s.id} selected{/if}>{$s.name|escape} &lt;{$s.email|escape}&gt;</option>
+                            {/foreach}
+                        </select>
+                    {else}
+                        <span id="sender_id" class="red">[`not set yet`]</span>
+                    {/if}
+                    {if $wa->mailer->isAdmin()}
+                        <span id="sender-selected" class="hidden">
+                            <a href="javascript:void(0)" class="left-padded open-sender-dialog-edit">[`Edit`]</a>
+                            [`or`]
+                            <a href="javascript:void(0)" class="open-sender-dialog-new">[`add a new sender`]</a>
+                        </span>
+                        <span id="no-sender-selected" class="hidden">
+                            <a href="javascript:void(0)" class="left-padded open-sender-dialog-new">[`Add a new sender`]</a>
+                        </span>
+                    {/if}
+                </div>
+            </div>
+            <div class="top-padded field">
+                <div class="name">[`Return-path`]:</div>
+                <div class="value">
+                    {if $return_paths}
+                        <select id="return_path" name="data[return_path]">
+                            {if count($return_paths) != 1}
+                                <option value="">&lt;[`select`]&gt;</option>
+                            {/if}
+                            {foreach $return_paths as $rp}
+                                <option value="{$rp.email}"{if $campaign.return_path==$rp.email} selected{/if}>{$rp.email|escape}</option>
+                            {/foreach}
+                        </select>
+                    {else}
+                        <span id="return_path" class="red">[`not set yet`]</span>
+                    {/if}
+                    {if $wa->mailer->isAdmin()}
+                        <span id="returnpath-selected" class="hidden">
+                            <a href="javascript:void(0)" class="open-return-path-dialog-edit left-padded">[`Edit`]</a>
+                            [`or`]
+                            <a href="javascript:void(0)" class="open-return-path-dialog-new">[`add a new Return-path`]</a>
+                        </span>
+                        <span id="no-returnpath-selected" class="hidden">
+                            <a href="javascript:void(0)" class="open-return-path-dialog-new left-padded">[`Add a new Return-path`]</a>
+                        </span>
+                    {/if}
+                    <br>
+                    <span class="hint">[`Return-path address is used to automatically process bounced emails. We recommend to create a special email address to receive bounces as it allows to obtain a true statistics about your message delivering.`]</span>
+                </div>
+            </div>
+            <div class="top-padded field">
+                <div class="name">[`Sending speed:`]</div>
+                <div class="value">
+                    <select id="sending-speed-select" name="params[speed_limit]">
+                        {foreach $sending_speed_values as $s}
+                            <option value="{$s.num}"{if $s.disabled} disabled{elseif ifempty($params.speed_limit) == $s.num} selected{/if}>{$s.name}</option>
+                        {/foreach}
+                    </select>
+                    <br>
+                    <span class="hint">[`If many of your recipients addresses reside on popular mail services (e.g. @gmail.com, @yahoo.com, and etc.) then too high sending speed may cause banning of your sender server because of spam suspicion and these recipients will not receive your message.`]</span>
+                </div>
+            </div>
+
+            <div class="field">
+                <p>
+                    <label>
+                        <input type="hidden" name="params[google_analytics]" value="">
+                        <label><input id="ga-enable-checkbox" type="checkbox" name="params[google_analytics]" value="1"{if !empty($params.google_analytics)} checked="checked"{/if}>
+                        [`Enable Google Analytics for this campaign`]</label>
+                    </label>
+                    <br>
+                    <span class="hint">[`UTM tags will be added to all links (URLs) containing in the campaign message. It will allow to track these links visiting in your Google Analytics reports.`]</span>
+                </p>
+            </div>
+            <div class="hidden" id="ga-fields">
+                <div class="field">
+                    <div class="name">[`Source (utm_source):`]</div>
+                    <div class="value">
+                        <input type="text" name="params[google_analytics_utm_source]" value="{ifempty($params.google_analytics_utm_source)}">
+                        <br/>
+                        <span class="hint">[`The type of resource that is sending you traffic, e.g. newsletter.`]</span>
+                    </div>
+                </div>
+                <div class="field">
+                    <div class="name">[`Medium (utm_medium):`]</div>
+                    <div class="value">
+                        <input type="text" name="params[google_analytics_utm_medium]" value="{ifempty($params.google_analytics_utm_medium)}">
+                        <br/>
+                        <span class="hint">[`The type of marketing medium that the link is featured in, e.g. email.`]</span>
+                    </div>
+                </div>
+                <div class="field">
+                    <div class="name">[`Campaign (utm_campaign):`]</div>
+                    <div class="value">
+                        <input type="text" name="params[google_analytics_utm_campaign]" value="{ifempty($params.google_analytics_utm_campaign)}">
+                        <br/>
+                        <span class="hint">[`The name of your marketing campaign, e.g. your email subject.`]</span>
+                    </div>
+                </div>
+            </div>
+
+            <div id="send-test-wrapper" class="closed shadowed">
+                <div class="hidden field show-if-closed"><p>
+                    <a href="javascript:void(0)" class="inline-link"><b>[`Send test message`]</b></a>
+                </p></div>
+                <div class="hidden show-if-opened">
+                    <div class="field">
+                        <p><h3>[`Send test message`]</h3></p>
+                        {$user_email = $wa->user('email', 'default')|escape}
+                        <p><label>
+                            <input type="checkbox" {if $user_email}checked{else}disabled{/if}> [`Send to yourself:`] {$wa->user('name')} {if $user_email}&lt;{$user_email}&gt;{/if}
+                        </label>{if empty($user_email)}<br><span class="hint">[`Please specify your email in "Contacts" app`]</span>{/if}
+                        </p>
+                        <p>[`Additional emails:`]</p>
+                        <p><textarea style="min-width:400px;height:70px"></textarea></p>
+                        <p>
+                            <input type="text" style="min-width:400px" value="{ifempty($campaign.subject, "[`<no subject>`]")|escape}"><br>
+                            <span class="hint">[`You can edit subject to advise your recipients this is just a test.`]</span>
+                        </p>
+                        <p>
+                            <input type="submit" class="button blue" value="[`Send test message`]">
+                            [`or`]
+                            <a href="javascript:void(0)" class="inline-link"><b><i>[`cancel`]</i></b></a>
+                        </p>
+                    </div>
+                </div>
+                <div class="hidden show-if-sent">
+                    {* Replaced by result of mailerCampaignsSendTestAction *}
+                </div>
+            </div>
+
+            <div id="send-main-wrapper" class="closed shadowed">
+                <div class="hidden field show-if-closed">
+                    <p>
+                        {*if isset($unique_recipients)}<a href="javascript:void(0)" class="inline-link"><b>{sprintf_wp('Send to selected recipients (%d)', $unique_recipients)}</b></a>{/if*}
+                        <a href="javascript:void(0)" class="inline-link"><b>[`Send to selected recipients`]</b></a>
+                        <br><span class="hint">[`We will provide final checking and offer you to choose: send now or schedule sending for future date/time.`]</span>
+                    </p>
+                </div>
+                <div class="hidden show-if-opened">
+                    <div class="field validation-content">
+                        <i class="icon16 loading"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="clear-left"></div>
+    </div>
+</form>
+
+</div></div>{* div.m-envelope-stripes-1, div.m-envelope-stripes-2 *}
+</div></div>{* div.content.right200px, div.shadowed.m-editor *}
+
+<script>(function() { "use strict";
+    var form = $('#form-campaign');
+    var ga_checkbox = $('#ga-enable-checkbox');
+    var ga_fields = $('#ga-fields');
+
+    // Validation helper: remove previous errors, show new errors (if any),
+    // return true if no errors, false if validation failed.
+    var validateForm = function() {
+        var errors = false;
+        form.find('.errormsg').remove();
+        form.find('.error').removeClass('error');
+        var select = $('#sender_id');
+        if (!select.val()) {
+            select.addClass('error').parent().append('<span class="errormsg">[`This field is required.`]</span>');
+            errors = true;
+        }
+        if (ga_checkbox.is(':checked')) {
+            ga_fields.find('input').each(function() {
+                var input = $(this);
+                if (!input.val()) {
+                    input.addClass('error').after('<span class="errormsg">[`This field is required.`]</span>');
+                    errors = true;
+                }
+            });
+        } else if (!errors) {
+            ga_fields.find('input').val('');
+        }
+        if (errors) {
+            return false;
+        }
+        return true;
+    };
+
+    // Logic for sending tests
+    (function() {
+        var wrapper = $('#send-test-wrapper');
+        var submit = wrapper.find('input:submit');
+        var checkbox = wrapper.find('input:checkbox');
+        var result_div = wrapper.find('.show-if-sent');
+        var toggle_link = wrapper.find('a.inline-link'); // there are two of them
+        var textarea = wrapper.find('textarea');
+        var test_subject = wrapper.find('input:text');
+
+        toggle_link.click(function() {
+            $('#send-main-wrapper').removeClass('opened').addClass('closed');
+
+            wrapper.removeClass('sent');
+            if (wrapper.hasClass('opened')) {
+                wrapper.removeClass('opened');
+                wrapper.addClass('closed');
+            } else {
+                if (!validateForm()) {
+                    return;
+                }
+                wrapper.removeClass('closed');
+                wrapper.addClass('opened');
+            }
+        });
+
+        submit.click(function() {
+            if (!validateForm()) {
+                return false;
+            }
+
+            return $.wa.mailer.saveCampaign(form, submit, function() {
+                submit.attr('disabled', true).after('<i class="icon16 loading after-button"></i>');
+                var data = {
+                    id: '{$campaign.id}',
+                    addresses: textarea.val(),
+                    subject: test_subject.val() || "[`<no subject>`]",
+                    send_to_self: checkbox.is(':checked') ? 1 : 0
+                };
+                $('#send-main-wrapper').removeClass('opened').addClass('closed');
+                $.post('?module=campaigns&action=sendTest', data, function(r) {
+                    submit.attr('disabled', false).siblings('.loading').remove();
+                    result_div.html(r);
+                    wrapper.removeClass('opened');
+                    wrapper.removeClass('closed');
+                    wrapper.addClass('sent');
+                });
+            }, true);
+        });
+
+        wrapper.on('change keyup', updateButtonState);
+
+        function updateButtonState() {
+            if ((checkbox.prop('disabled') == true || !checkbox.is(':checked')) && textarea.val().indexOf('@') < 0) {
+                submit.prop('disabled', true);
+            } else {
+                submit.prop('disabled', false);
+            }
+        }
+        updateButtonState();
+    })();
+
+    // Toggle main sending block visibility when user clicks a link
+    (function() {
+        var wrapper = $('#send-main-wrapper');
+        var validation_content = wrapper.find('.validation-content');
+
+        wrapper.on('click', 'a.inline-link', function() {
+            wrapper.removeClass('sent');
+            if (wrapper.hasClass('opened')) {
+                wrapper.removeClass('opened');
+                wrapper.addClass('closed');
+            } else {
+                if (!validateForm()) {
+                    return;
+                }
+                validation_content.html('<i class="icon16 loading"></i> [`Checking campaign settings and preparing recipient list`]');
+                setTimeout(function () {
+                    validation_content.load('?module=campaigns&action=presend&campaign_id={$campaign.id}');
+                }, 2000);
+                wrapper.removeClass('closed');
+                wrapper.addClass('opened');
+            }
+        });
+    })();
+
+    {if $campaign.status == mailerMessageModel::STATUS_PENDING}
+    // if campaign scheduled - open yellow box
+    $('#send-main-wrapper').find('a.inline-link').trigger('click');
+    {/if}
+
+    // If user has just added a new sender or return path, then select them.
+    var sender_just_created = $.storage.get('mailer/settings/new_sender_id');
+    if (sender_just_created) {
+        $.storage.del('mailer/settings/new_sender_id');
+        $('#sender_id').val(sender_just_created);
+    }
+    var return_path_just_created = $.storage.get('mailer/settings/new_return_path_id');
+    if (return_path_just_created) {
+        $.storage.del('mailer/settings/new_return_path_id');
+        $('#return_path').val(return_path_just_created);
+    }
+    if (sender_just_created || return_path_just_created) {
+        $.wa.mailer.saveCampaign(form, form.find(':submit:last'), function() { }, true);
+    }
+
+    // Google Analytics checkbox controls visibility of other GA fields.
+    ga_checkbox.change(function() {
+        $.wa.mailer.saveCampaign(form, form.find(':submit:last'), function() { }, true);
+        if (ga_checkbox.is(':checked')) {
+            ga_fields.show();
+        } else {
+            ga_fields.hide();
+        }
+    }).change();
+
+    ga_fields.on('blur', 'input', function(){
+        $.wa.mailer.saveCampaign(form, form.find(':submit:last'), function() { }, true);
+    });
+
+    // Send button
+    form.on('click', '#message-send', function() {
+
+        // Validate
+        if (!validateForm()) {
+            return false;
+        }
+
+        // Validation passed: save the campaign (outer XHR), then start sending (inner XHR)
+        var button = form.find(':submit:last').hide();
+        $.storage.del('mailer/hash');
+        return $.wa.mailer.saveCampaign(form, button, function() {
+            button.parent().hide().after('<i class="icon16 loading"></i>');
+            $.ajax({
+                type: 'POST',
+                url: '?module=campaigns&action=presend&campaign_id={$campaign.id}',
+                data: { send: 1 },
+                dataType: 'html',
+                success: function (r) {
+                    $('#send-main-wrapper').html(r);
+                },
+                global: false, // prevent ajaxError handlers to trigger
+                error: function() {
+                    $.wa.mailer.redispatch();
+                },
+                timeout: 20000
+            });
+        }, true);
+    });
+
+    // Never allow direct form submit
+    form.submit(function() {
+        return false;
+    });
+
+    {if $wa->mailer->isAdmin()}
+        // When user changes sender, tweak dialog controls
+        $('#sender_id').change(function() {
+            $(this).removeClass('error').siblings('.errormsg').remove();
+            if ($(this).val()) {
+                $('#no-sender-selected').hide();
+                $('#sender-selected').show();
+            } else {
+                $('#no-sender-selected').show();
+                $('#sender-selected').hide();
+            }
+        }).change();
+
+        // Dialog to edit or create a sender
+        form.on('click', '.open-sender-dialog-edit', function() {
+            var select = $(this).parents('.field').find('select');
+            var url = '?module=senders&action=dialog';
+            if (select.length > 0) {
+                url += '&id='+select.val();
+            }
+            $('.dialog').remove();
+            $().waDialog({
+                url: url
+            });
+        });
+        form.on('click', '.open-sender-dialog-new', function() {
+            var url = '?module=senders&action=dialog';
+            $('.dialog').remove();
+            $().waDialog({
+                url: url
+            });
+        });
+
+        // When user changes Return-path, tweak dialog controls
+        $('#return_path').change(function() {
+            $(this).removeClass('error').siblings('.errormsg').remove();
+            if ($(this).val()) {
+                $('#no-returnpath-selected').hide();
+                $('#returnpath-selected').show();
+            } else {
+                $('#no-returnpath-selected').show();
+                $('#returnpath-selected').hide();
+            }
+        }).change();
+
+        // Dialog to edit or create a return-path
+        form.on('click', '.open-return-path-dialog-edit', function() {
+            var select = $(this).parents('.field').find('select');
+            var url = '?module=returnpath&action=dialog';
+            if (select.length > 0) {
+                url += '&email='+select.val();
+            }
+            $('.dialog').remove();
+            $().waDialog({
+                url: url
+            });
+        });
+        form.on('click', '.open-return-path-dialog-new', function() {
+            var url = '?module=returnpath&action=dialog';
+            $('.dialog').remove();
+            $().waDialog({
+                url: url
+            });
+        });
+
+        // schedule sending
+        form.on('click', '.open-schedule-dialog', function() {
+            var url = '?module=schedule&action=dialog',
+                id = form.find('[name=id]').val();
+            if (parseInt(id,10)) {
+                url += '&id='+id;
+                $('.dialog').remove();
+                $().waDialog({
+                    height: 200,
+                    width: 300,
+                    url: url
+                });
+            }
+        });
+        form.on('click', '.cancel-schedule', function() {
+            var url = '?module=schedule&action=delete';
+            var mess_id = form.find('[name=id]').val();
+            // it make sense if only we saved campaign
+            if (confirm("[`Cancel schedule`]?") === true && parseInt(mess_id,10)) {
+                $.post(url, { id: mess_id }, function(data){
+                    if (data.status === 'ok') {
+                        // reload yellow box
+                        $('#send-main-wrapper').find('.validation-content').html('<i class="icon16 loading"></i>').load('?module=campaigns&action=presend&campaign_id='+data.data);
+                        // renew sidebar
+                        $.wa.mailer.reloadSidebar();
+                    }
+                }, "json");
+            }
+        });
+        {/if}
+
+    // Save settings when user changes selects
+    form.find('select').change(function() {
+        var submit = form.find(':submit:last');
+        return $.wa.mailer.saveCampaign(form, submit, function() {
+            if (!validateForm()) {
+                $('#send-test-wrapper').removeClass('opened').addClass('closed');
+                $('#send-main-wrapper').removeClass('opened').addClass('closed');
+                return;
+            }
+
+            var validation_content = $('#send-main-wrapper .validation-content');
+            if (validation_content.is(':visible')) {
+                validation_content.html('<i class="icon16 loading"></i>');
+                validation_content.load('?module=campaigns&action=presend&campaign_id={$campaign.id}');
+            }
+        }, true);
+    });
+
+    $.wa.mailer.setTitle();
+})();</script>
+

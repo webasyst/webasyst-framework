@@ -1,0 +1,32 @@
+{if $data && (!$all_selected_id)}
+<ul id="recipients-subscriptions" class="menu-v compact with-icons m-checkbox-menu zebra" style="max-width:500px;">
+    {foreach $data as $o}
+    <li class="subscription{if !empty($o.checked)} checked{/if}">
+        {if empty($o.disabled) && !empty($o.list_id)}
+        <input type="hidden" name="remove_ids[]" value="{$o.list_id}">
+        {/if}
+        <span class="count">{$o.num}</span>
+        <label{if !empty($o.checked)} class="highlighted"{/if}>
+        <input type="checkbox" name="add_values[]" value="{$o.value}"{if !empty($o.checked)} checked="checked" disabled="disabled"{/if}{if !empty($o.disabled)} disabled="disabled"{/if}>{$o.label|escape}
+        </label>
+    </li>
+    {/foreach}
+</ul>
+<script>
+    (function(){
+        $('#recipients-subscriptions').find('input[value="0"]').on('change', function() {
+            var $list_wrapper = $(this).closest('.subscription'),
+                $other_list_wrappers = $list_wrapper.siblings();
+
+            $other_list_wrappers.find('input[type="checkbox"]').prop({
+                        checked: $(this).prop('checked'),
+                        disabled: $(this).prop('checked')
+                    }
+            );
+        });
+    })()
+</script>
+{else}
+<p class="mailerempty">[`No subscriber lists - create it in "Subscribers"`].</p>
+{/if}
+

@@ -1,0 +1,80 @@
+<link href="{$wa_url}wa-content/js/jquery-plugins/ibutton/jquery.ibutton.min.css" rel="stylesheet" type="text/css" >
+<script src="{$wa_url}wa-content/js/jquery-plugins/ibutton/jquery.ibutton.min.js"></script>
+
+<div class="sidebar left250px s-internal-sidebar"{if !$auth_enabled} style="overflow:hidden; width: 0"{/if}>
+    <div class="block not-padded">
+
+        {foreach $apps as $key => $key_apps}
+        <ul id="apps-{$key}" class="menu-v with-icons s-personal-structure stack">
+            {foreach $key_apps as $app_id => $app}
+            <li id="s-personal-app-{$app_id}" data-app="{$app_id}" {if !empty($app.link)}data-link="{$app.link}"{/if}{if $app_id == $auth_app} data-auth-app="1"{/if}>
+                <a href="#/personal/app/{$app_id}/"{if $key=='disabled'} class="s-disabled"{/if}>
+                    <span class="s-onoff">
+                        {if $key == 'enabled'}<i class="icon16 sort"></i>{/if}
+                        <i class="icon10 status {if $key=='enabled'}status-green{elseif $key=='disabled'}no{else}no-bw{/if}"></i>
+                    </span>
+
+                    <img src="{$wa_url}{$app.icon.16}">
+                    {implode('<br>', $app.items)}
+                </a>
+            </li>
+            {/foreach}
+        </ul>
+        {/foreach}
+        <ul class="menu-v with-icons s-personal-structure">
+            <li id="s-personal-profile-link">
+                <a href="#/personal/profile/"{if !empty($profile_disabled)} class="s-disabled"{/if}>
+                    <span class="s-onoff">
+                        <i class="icon10 status {if empty($profile_disabled)}status-green{else}no{/if}"></i>
+                    </span>
+                    <i class="icon16 user"></i>[`My profile`]
+                </a>
+            </li>
+        </ul>
+
+        <div class="block double-padded align-center">
+            <p class="hint">
+                [`Personal account structure is defined by the list of installed Webasyst apps linked in the current website frontend.`]
+            </p>
+            <p class="small">
+                <a id="s-personal-settings-link" {if $auth_enabled}data-enabled="1"{/if} href="#/personal/settings/" class="no-underline"><i class="icon10 settings"></i> <strong>[`Auth &amp; Sign Up settings`]</strong></a>
+            </p>
+        </div>
+    </div>
+</div>
+
+<div class="content left250px"{if !$auth_enabled} style="margin-left: 0"{/if}>
+    <div class="s-editor s-white bordered-left">
+        <div class="block double-padded s-personal" id="s-personal-content">
+            <i class="icon16 loading"></i>
+        </div>
+        <div class="clear-both"></div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $("#apps-enabled").sortable({
+        distance: 5,
+        helper: function(e, li) {
+            var $originals = li.children();
+            var $helper = li.clone();
+            $helper.children().each(function(index){
+                // Set helper cell sizes to match the original sizes
+                $(this).width($originals.eq(index).width())
+            });
+            return $helper;
+        },
+        items: 'li',
+        handle: "i.sort",
+        opacity: 0.75,
+        tolerance: 'pointer',
+        stop: function (event, ui) {
+            var apps = [];
+            $('#apps-enabled li').each(function () {
+                apps.push($(this).data('app'));
+            })
+            $.post("?module=personal&action=appMove&domain_id={$domain_id}" , { apps: apps}, function () {
+            }, "json");
+        }
+    });
+</script>

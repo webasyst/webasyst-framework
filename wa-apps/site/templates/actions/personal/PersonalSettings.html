@@ -1,0 +1,193 @@
+<h1>{sprintf('[`Authorization on %s`]', $domain)}</h1>
+
+{if $auth_apps}
+<form id="s-auth-enable-form" class="s-auth-form" method="post" action="?module=personal&action=authEnable&domain_id={$domain_id}">
+    <div class="s-ibutton-checkbox">
+        <ul class="menu-h s-ibutton-checkbox">
+            <li><span id="s-personal-app-disabled-label" class="gray">[`Disabled`]</span></li>
+            <li> 
+                <div style="">
+                <input id="s-auth-enabled" name="enabled" class="ibutton" type="checkbox" {if !$auth_apps}disabled="disabled"{/if} {if $auth_config['auth']}checked="checked"{/if} />
+                </div>
+            </li>
+            <li><span id="s-personal-app-enabled-label">[`Enabled`]</span></li>
+        </ul>
+        <br>
+        <p {if $auth_config['auth']} style="display:none"{/if} class="gray"><i class="icon10 no-bw top-padded"></i> {sprintf('[`User sign up, authorization and personal accounts are not enabled on %s.`]', $domain)}</p>
+    </div>
+    
+    <div class="s-auth-content" {if !$auth_config['auth']} style="display:none"{/if}>
+        <p><i class="icon10 yes top-padded"></i> {sprintf('[`User sign up, authorization and personal accounts are enabled on %s. <a id="configure-app" href="#" class="inline-link"><b><i>Configure URLs</i></b></a>`]', $domain)}</p>
+        <div id="configure-app-div" class="block s-configure-app-div" {if $wa->get('hash') != 'configure-app'}style="display: none;"{/if}>
+            <p>[`Select the app that will host authorization forms. The URLs of my profile, signup and authorization pages will be defined by the selected app routing:`]</p>
+            <ul class="menu-v s-auth-host-app">
+                {foreach $auth_apps as $app}
+                <li>
+                    <input id="s-auth-app-{$app.id}" type="radio" name="app_id" value="{$app.id}" {if $app.id == $auth_config['app']}checked="checked"{/if}>
+                    <label for="s-auth-app-{$app.id}">
+                        <img class="s-app16x16icon-menu-v" src="{$wa_url}{$app.icon.16}"></i> {$app.name|escape}
+                        <span class="hint">{$app.login_url}</span>
+                    </label>
+                </li>
+                {/foreach}
+            </ul>
+            <br>
+            <input type="submit" name="save" value="[`Save`]">
+            <em class="s-settings-form-status small" style="display:none">[`Saved`]</em>
+        </div>
+    </div>
+</form>
+
+<div class="s-auth-content"{if !$auth_config['auth']} style="display:none"{/if}>
+
+    {if $personal_sidebar}
+        <ul id="s-personal-settings-tabs" class="tabs s-auth-settings">
+            <li class="selected">
+                <a href="#/personal/settings/">[`Auth`]</a>
+            </li>
+            {foreach $personal_sidebar as $app_id => $items}
+            {foreach $items as $k => $item}
+            <li>
+                <a href="#/personal/settings/{$app_id}.{$k}/" data-url="{$item.url}">{$item.name}</a>
+            </li>
+            {/foreach}
+            {/foreach}
+        </ul>
+    {/if}
+    
+    <!-- misc auth settings form -->
+    <div id="s-personal-settings-auth" class="tab-content">
+        <div class="block not-padded top-padded">
+            <form class="s-auth-form" method="post" action="?module=personal&action=settingsSave&domain_id={$domain_id}">
+
+                <!-- captcha -->
+                <p>
+                    <input type="hidden" name="auth_captcha" value="0">
+                    <input id="s-auth-captcha" name="auth_captcha" type="checkbox" {if $auth_config['signup_captcha']}checked="checked"{/if} value="1">
+                    <label for="s-auth-captcha">[`Enable captcha for signup form`]</label><br>
+                </p>
+
+                <!-- third-party auth -->
+                <span>
+                    <input id="s-auth-adapters" name="auth_adapters" type="checkbox" {if !empty($auth_config['adapters'])}checked="checked"{/if}>
+                    <label for="s-auth-adapters">
+                        [`Third-party authorization`]
+                        <p class="hint">[`Enables your site visitors to quickly sign up or sign in via accounts on external popular platforms, e.g. Facebook and Twitter. <a href="http://www.webasyst.com/framework/docs/dev/auth-adapters/" target="_blank">Setup instructions</a> <i class="icon10 new-window"></i>`]</p>
+                    </label>
+                </span>
+
+                <div id="s-auth-adapters-list" class="block double-padded" style="background: #f7f7f7; margin-bottom: 20px;{if empty($auth_config['adapters'])}display:none{/if}">
+                    <ul class="menu-v">
+                        {foreach $auth_adapters as $adapter_id => $adapter}
+                        <li>
+                            <input class="adapter" id="s-auth-adapter-{$adapter_id}" name="adapter_ids[]" value="{$adapter_id}" type="checkbox" {if !empty($auth_config['adapters'][$adapter_id])}checked="checked"{/if}>
+                            <label for="s-auth-adapter-{$adapter_id}">
+                                <img style="vertical-align: middle; padding-bottom: 3px;" alt="{$adapter->getName()}" src="{$adapter->getIcon()}">
+                                {$adapter->getName()}
+                            </label>
+                            <div class="adapter-controls"{if empty($auth_config['adapters'][$adapter_id])} style="display:none"{/if}>
+                            {foreach $adapter->getControls() as $control_id => $control_name}
+                            <div class="field">
+                                <div class="name" style="width: 120px;">
+                                    <span class="small">{$control_name}</span>
+                                </div>
+                                <div class="value" style="margin-left: 130px;"><input type="text" name="adapters[{$adapter_id}][{$control_id}]" value="{if !empty($auth_config['adapters'][$adapter_id])}{$auth_config['adapters'][$adapter_id][$control_id]}{/if}" style="font-size: 0.9em;"></div>
+                            </div>
+                            {/foreach}
+                            </div>
+                            <div class="clear"></div>
+                        </li>
+                        {/foreach}
+                    </ul>
+                </div>
+
+                <div>
+                    {include file="templates/actions/personal/PersonalSettingsSignup.html"}
+                    <div class="clear"></div>
+                </div>
+
+                <div>
+                    <input type="submit" name="save" class="button green" value="[`Save`]">
+                    <em class="s-settings-form-status small" style="display:none">[`Saved`]</em>
+                </div>
+            </form>
+         </div>
+    </div>
+    <div id="s-personal-settings-content" class="tab-content" style="display: none">
+    </div>
+</div>
+<script type="text/javascript">
+    $(function () {
+
+        $('#configure-app').click(function() {
+            $('#configure-app-div').slideToggle(200);
+            return false;
+        });
+
+        $("#s-auth-enabled").iButton({
+            labelOn: "",
+            labelOff: "",
+            classContainer: 'ibutton-container mini'
+        });
+        var status_check = function(item) {
+            if ($(item).is(':checked')) {
+                $('#s-personal-app-disabled-label').addClass('gray');
+                $('#s-personal-app-enabled-label').removeClass('gray');
+            } else {
+                $('#s-personal-app-disabled-label').removeClass('gray');
+                $('#s-personal-app-enabled-label').addClass('gray');
+            }
+        };
+        status_check($('#s-auth-enabled'));
+        $('#s-auth-enabled').change(function(){
+            status_check(this);
+            var enabled = $(this).is(':checked') ? 1 : 0;
+            $.post('?module=personal&action=authEnable&domain_id={$domain_id}', $('#s-auth-enable-form').serialize(), function () {
+                if (enabled) {
+                    $('div.s-ibutton-checkbox p.gray').hide();
+                    $(".s-auth-content").show();
+                    $('#s-content > .sidebar').animate({ width: 250});
+                    $('#s-content > .content').animate({ marginLeft: 250});
+                } else {
+                    $('div.s-ibutton-checkbox p.gray').show();
+                    $('#s-content > .sidebar').css('overflow', 'hidden').animate({ width: 0});
+                    $('#s-content > .content').animate({ marginLeft: 0});
+                    $(".s-auth-content").hide();
+                }
+            }, "json");
+        });
+
+        $("input.adapter").click(function () {
+            var el = $(this).parent().find('div.adapter-controls');
+            if ($(this).is(':checked')) {
+                el.show();
+            } else {
+                el.hide();
+            }
+        });
+
+        $("#s-auth-adapters").click(function () {
+            $("#s-auth-adapters-list").slideToggle(200);
+        });
+
+        $(".s-auth-form").submit(function () {
+            var f = $(this);
+            $.post(f.attr('action'), f.serialize(), function (response) {
+                if (response.status == 'ok') {
+                    f.find(".s-settings-form-status").fadeIn(200, function () {
+                        f.find(".s-settings-form-status").delay(1000).fadeOut(500,function(){
+                            $('#configure-app-div').slideToggle(200);
+                        });
+                    });                    //location.reload();
+                } else {
+                    f.find(".s-settings-form-status").html(response.errors ? response.errors : response).css('color', 'red');
+                    f.find(".s-settings-form-status").fadeIn("slow");
+                }
+            }, "json");
+            return false;
+        });
+    });
+</script>
+{else}
+    <p>[`To enable authorization on this website, install and settle at least one app that supports authorization forms.`]</p>
+{/if}

@@ -1,0 +1,123 @@
+<script>
+(function () {
+    var $wrapper        = $('#{$uniqid}'),
+        $after          = $wrapper.find('.wa-after-submit'),
+        $form           = $wrapper.find('form'),
+        $inputsUser     = $form.find('[data-user="true"]'),
+        $inputsReq      = $form.find('[name="captcha"],[name="subscriber[email]"]'),
+        $inputsCheck    = $form.find('[type="checkbox"]'),
+        $loading        = $form.find('.loading'),
+        $error          = $form.find('.wa-errormsg'),
+        $captcha_refresh = $form.find('.wa-captcha-refresh'),
+        $submit         = $form.find(':submit');
+
+    $wrapper.css({
+       'min-height': $wrapper.height()
+    });
+    $after.height($wrapper.outerHeight());
+
+    $after.on('click', function(){
+        $form.show();
+        $after.hide();
+    });
+
+    var validateRequired = function($inputs) {
+        var error = 0;
+        $inputs.each(function(index, el){
+            var $el = $(el);
+            if ($el.val().length < 1){
+                $el.addClass('wa-error');
+                error++;
+            }
+        });
+        return error;
+    };
+
+    var validateCheckbox = function($checkboxes) {
+        var error = 0;
+        $checkboxes.each(function(index, el){
+            var $el = $(el);
+            if ($el.is(':checked')){
+                error++;
+            }
+        });
+        return error ? false : true;
+    };
+
+    $inputsReq.on('click', function(){
+        $(this).removeClass('wa-error');
+        $error.hide();
+    });
+
+    $inputsCheck.on('change', function(){
+        $error.hide();
+    });
+
+    $form.on('submit', function(e){
+        var error = false;
+
+        e.preventDefault();
+        $error.hide();
+
+        if ($inputsCheck.length &&  validateCheckbox($inputsCheck)){
+            $error.text('[`Select at least one subscription subject`]').show();
+            error = true;
+        }
+
+        var erros_cnt = validateRequired($inputsReq);
+        if (erros_cnt) {
+            if (erros_cnt > 1) {
+                $error.text('[`Required fields`]').show();
+            } else {
+                $error.text('[`Required field`]').show();
+            }
+            error = true;
+        }
+
+        if (error) {
+            return false;
+        } else {
+            $loading.show();
+            $submit.prop('disabled', true);
+
+            $.ajax({
+                url: $form.attr('action'),
+                type: 'post',
+                data: $form.serialize(),
+                dataType: 'json'
+            })
+                    .done(function(response) {
+                        if (response.status === 'ok') {
+                            if (response.data.hasOwnProperty('redirect')){
+                                window.location.replace(response.data.redirect);
+                            }
+                            else {
+                                $inputsCheck.prop('checked', true);
+                                $inputsUser.val("");
+                                $captcha_refresh.trigger('click');
+                                $form.hide();
+                                $after.css('display', 'table').find('span').html(response.data.html).show();
+                            }
+                        }
+                        else {
+                            $captcha_refresh.trigger('click');
+                            $.each(response.errors, function(i,e){
+                                $error.text(i).show();
+                                for (var k = 0; k < e.length; k++) {
+                                    $form.find('[name="'+e[k]+'"]').addClass('wa-error');
+                                }
+                            });
+                        }
+                    })
+                    .fail(function() {
+                        $error.text('[`Server error`]').show();
+                    })
+                    .always(function() {
+                        $loading.hide();
+                        $submit.prop('disabled', false);
+                    });
+            return false;
+        }
+    });
+})()
+</script>

@@ -1,0 +1,89 @@
+<table class="pie-graph-legend">
+    {*if $stats.exceptions_num != 0*}
+    <tr>
+        <td colspan="2"><a href="javascript:void(0)" rel="" class="inline-link show-recipients-link"><b><i>[`All recipients`]:</i></b></a></td>
+        <td class="min-width" colspan="2" data-count-for="">{$stats.recipients_num}</td>
+    </tr>
+    {*/if*}
+    {*if $stats.exceptions_num != 0*}
+    <tr>
+        <td colspan="2">
+            <a href="#" rel="status=-3,-4" class="show-recipients-link inline-link"><b>[`Exceptions`]:</b></a>
+        </td>
+        <td class="min-width" colspan="2" data-count-for="status=-3,-4">{$stats.exceptions_num}</td>
+    </tr>
+    {*/if*}
+    {*if $stats.not_sent_num}
+    <tr>
+        <td class="min-width"><b class="legend-dot" style="background-color:white"></b></td>
+        <td><a href="#" rel="status=0" class="show-recipients-link inline-link"><b>[`Not sent yet`]:</b></a></td>
+        <td class="min-width" colspan="2" data-count-for="status=0">{$stats.not_sent_num}</td>
+    </tr>
+    {/if*}
+    <tr>
+        <td colspan="2"><a href="#" rel="status=-2,-1,1,2,3,4,5" class="show-recipients-link inline-link"><b>[`Sent `]:</b></a></td>
+        <td class="min-width" colspan="2" data-count-for="status=-2,-1,1,2,3,4,5">{$stats.actualy_sent_num}</td>
+    </tr>
+    <tr><td colspan="4" class="hidden"></td></tr>
+
+    <tr class="sub-lined">
+        <td class="min-width"><b class="legend-dot" style="background-color:green"></b></td>
+        {if $campaign.opened_count_available}
+            <td><a href="#" rel="status=2,3,4" data-graph-id="2,3,4" data-graph-color="#008000" data-graph-label="[`Opened`]" class="show-recipients-link inline-link"><b>[`Read`]:</b></a></td>
+            <td class="min-width" data-count-for="status=2,3,4">{$stats.opened_num}</td>
+            <td class="min-width">({$stats.opened_percent_formatted}%)</td>
+        {else}
+            <td colspan="3"><a href="#" rel="status=2,3,4" data-graph-id="2,3,4" data-graph-color="#008000" data-graph-label="[`Opened`]" class="show-recipients-link inline-link"><b>[`Read`]:</b></a> *
+                <span class="inline-link nowrap float-right">[`not available`]</span>
+            </td>
+        {/if}
+    </tr>
+    <tr>
+        <td class="min-width"><b class="legend-dot" style="background:blue"></b></td>
+        <td class="nowrap">
+            <a href="#" rel="status=5" data-graph-id="5" data-graph-color="#0000ff" data-graph-label="[`Unsubscribed`]" class="show-recipients-link inline-link"><b>[`Unsubscribed`]:</b></a>
+            {if !$campaign.has_unsubscribe_link}
+                *
+            {/if}
+        </td>
+        <td class="min-width" data-count-for="status=5">{$stats.unsubscribed_num}</td>
+        <td class="min-width nowrap">
+            ({$stats.unsubscribed_percent_formatted}%)
+        </td>
+    </tr>
+    <tr>
+        <td class="min-width"><b class="legend-dot" style="background-color:red"></b></td>
+        <td class="nowrap">
+            <a href="#" rel="status=-1,-2" data-graph-id="-1,-2" data-graph-color="#ff0000" data-graph-label="[`Bounced`]" class="show-recipients-link inline-link"><b>[`Bounced`]:</b></a>
+            {if empty($campaign.return_path)}
+                *
+            {/if}
+        </td>
+        <td class="min-width" data-count-for="status=-1,-2">{$stats.bounced_num}</td>
+        <td class="min-width">
+            ({$stats.bounced_percent_formatted}%)
+        </td>
+    </tr>
+    <tr>
+        <td class="min-width"><b class="legend-dot" style="background-color:#ccc"></b></td>
+        <td class="nowrap">
+            <a href="#" rel="status=1" class="show-recipients-link inline-link"><b>[`Unknown`]:</b></a>
+        </td>
+        <td class="min-width" data-count-for="status=1">{$stats.unknown_num}</td>
+        <td class="min-width">
+            ({$stats.unknown_percent_formatted}%)
+        </td>
+    </tr>
+
+
+
+    <tr class="search-recipients">
+        <td>
+            <i class="icon16 search before-input"></i>
+        </td>
+        <td class="search-recipients" colspan="3">
+            <input id="search-recipients" type="search" placeholder="[`Search by name or email`]" style="width:180px;">
+            <i class="icon16 move before-input hidden search-submit" style="cursor:pointer"></i>
+        </td>
+    </tr>
+</table>

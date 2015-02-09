@@ -1,0 +1,172 @@
+<div class="shadowed">
+    <div class="i-white-core-content">
+    
+        {if !empty($messages)}
+            {foreach $messages as $message}
+                <div class="block double-padded i-message-{$message.result}">
+                    {if $message.result == 'success'}<i class="icon16 yes"></i>
+                    {elseif $message.result == 'fail'}
+                    <i class="icon16 no"></i>
+                    {/if}
+                    {$message.text|escape}
+                </div>
+            {/foreach}
+        {/if}    
+    
+        <div class="block double-padded">
+
+          <div class="fields form">
+
+            <form action="?module=settings" enctype="multipart/form-data" method="POST">
+
+              <div class="field-group">
+                <div class="field">
+                    <div class="name">
+                        <label for="config-name">[`Company name`]</label>
+                    </div>
+                    <div class="value">
+                        <input type="text" class="large" name="name" value="{$settings.name|escape}" id="config-name">
+                    </div>
+                </div>
+                <div class="field">
+                    <div class="name">
+                        <label for="config-url">[`Website address`]</label>
+                    </div>
+                    <div class="value">
+                        <input type="text" name="url" value="{$settings.url|escape}" id="config-url"><br>
+                        <span class="hint">[`Your website, blog or company URL (will be displayed as a link below the company name in the top left corner).`]</span>
+                    </div>
+                </div>
+
+                {if $locales}
+                <div class="field">
+                    <div class="name">
+                        <label for="config-locale">[`Default Webasyst interface language`]</label>
+                    </div>
+                    <div class="value no-shift">
+                        <select name="locale" id="config-locale">
+                            {foreach $locales as $locale => $locale_name}
+                            <option value="{$locale|escape}"{if $settings.locale == $locale} selected="selected"{/if}>{$locale_name|escape}</option>
+                            {/foreach}
+                        </select>
+                    </div>
+                </div>
+                {/if}
+
+                <div class="field">
+                    <div class="name">
+                        <label for="config-email">[`Email`]</label>
+                    </div>
+                    <div class="value">
+                        <input type="text" name="email" value="{$settings.email|escape}" id="config-email" placeholder="your@email"><br>
+                        <span class="hint">[`Main account administrative email where system notification will be sent.`]</span>
+                    </div>
+                </div>
+
+                  <div class="field">
+                      <div class="name">
+                          <label for="config-sender">[`Sender`]</label>
+                      </div>
+                      <div class="value">
+                          <input type="text" name="sender" value="{$settings.sender|escape}" id="config-sender" placeholder="noreply@email"><br>
+                          <span class="hint">[`Reply-To address for system email notifications sent by Webasyst.`]</span>
+                      </div>
+                  </div>
+              </div>
+
+              <div class="field-group">
+
+                <div class="field">
+                    <div class="name">
+                        [`User authentication`]
+                    </div>
+                    <div class="value no-shift">
+                        <input type="checkbox" name="rememberme" id="rememberme-auth-login" value="1" {if $settings.rememberme}checked="checked"{/if}>
+                        <label for="rememberme-auth-login">[`Allow "Remember me" option in Webasyst authorization form`]</label>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <div class="name">
+                        [`Authorization form background image`]
+                    </div>
+                    <div class="value">
+
+                    </div>
+                    <div class="value">
+                        <ul class="i-image-select">
+                            {foreach $backgrounds as $b}
+                                <li{if isset($image) && empty($image) && $settings.auth_form_background == "stock:`$b`"} class="selected"{/if} title="{$b|escape}"><a href="#" data-value="stock:{$b|escape}"><img src="{$wa_url}wa-content/img/backgrounds/thumbs/{$b}" alt="{$b}"></a></li>
+                            {/foreach}
+                        </ul>
+                        <input type="hidden" name="auth_form_background_thumb" value="">
+                    </div>
+                    <div class="value">
+                        <input type="file" name="auth_form_background"><br>
+                        {if $settings.auth_form_background}
+                            {if isset($image) && $image}
+                                <img src="{$wa_url}wa-data/public/webasyst/{$settings.auth_form_background}" style="max-width: 500px;" alt="{$settings.auth_form_background|escape}">
+                                <br>
+                                <span class="hint">{$image.width}&times;{$image.height}, {$image.file_size|wa_format_file_size:'%0.0f':'[`B,KB,MB`]'}</span>
+                                <a class="small" href="?module=settings&amp;action=remove&amp;setting[]=auth_form_background&amp;setting[]=auth_form_background_stretch" onClick="return confirm(this.title);" title="[`Delete authorization form background image?`]">[`Delete`]</a>
+                            {elseif $image === null}
+                                <span class="hint">[`File not found`] {$settings.auth_form_background|escape}</span>
+                            {/if}
+                        {/if}
+                    </div>
+                    {if $settings.auth_form_background}
+
+                    <div class="value">
+                        <input type="checkbox" value="1" name="auth_form_background_stretch" id="installer-auth-stretch-background" {if $settings.auth_form_background_stretch}checked="checked"{/if}> <label for="installer-auth-stretch-background">[`Stretch to fill entire screen`]</label>
+                    </div>
+                    {/if}
+                </div>
+              </div>
+
+              <div class="field-group">
+                <div class="field">
+                    <div class="name">
+                        [`Developer`]
+                    </div>
+                    <div class="value no-shift">
+                        <input type="checkbox" name="config[debug]" value="1" {if isset($config.debug) && $config.debug}checked="checked" {/if}id="config-debug-checkbox">
+                        <label for="config-debug-checkbox">[`Developer mode`]<br /><span class="hint">[`Recommended while development`]</span></label>
+                    </div>
+                    <div class="value">
+                        <input type="button" name="clear_cache" value="[`Clear cache`]">
+                        <span id="installer-cache-state" style="display: none;"><!-- state placeholder --></span>
+                    </div>
+                </div>
+                <div class="field">
+                    <div class="name">
+                        [`Webasyst version`]
+                    </div>
+                    <div class="value no-shift">{$version}</div>
+                </div>
+              </div>
+
+              <div class="field-group">
+                <div class="field">
+                    <div class="value submit">
+                        <input type="submit" class="button green" value="[`Save`]" >
+                    </div>
+                </div>
+
+              </div>
+
+            </form>
+
+         </div>
+        </div>
+        <div class="clear"></div>
+    </div>
+</div>
+
+
+<script src="{$wa_app_static_url}js/settings.js?v={$wa->version()}" type="text/javascript"></script>
+<script type="text/javascript">
+$(document).ready( function() {
+$.installer_settings.init();
+});
+
+</script>

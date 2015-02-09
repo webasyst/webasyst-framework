@@ -1,0 +1,40 @@
+<h1>[`My profile`]</h1>
+
+{if !empty($profile_disabled)}
+    <div id="s-app-disabled">
+        <p class="red"><em><i class="icon10 no top-padded"></i> {sprintf('[`My profile page is not available on this site, because user authorization on this site is hosted by <strong>%s</strong> app, while it’s personal account functionality is disabled. Either enable <a href="#/personal/app/%s/">%s app’s personal account</a> on this site, or change the app that hosts user authorization in <a href="%s">Auth &amp; Sign Up</a> settings.`]', $auth_app.name, $auth_app.id, $auth_app.name, '#/personal/settings/configure-app')}</em></p>
+    </div>
+{else}
+<h5 class="heading">[`My profile form fields`]</h5>
+<form id="s-personal-profile-save" method="post" action="?module=personal&action=profileSave">
+
+    <div class="s-personal-field-list">
+        {foreach $fields as $field}
+            <label for="id-{$field.id}">
+                <input type="checkbox" id="id-{$field.id}" name="personal_fields[]" value="{$field.id|escape}"{if $field.checked} checked{/if}/>
+                {$field.name|escape}
+            </label>
+        {/foreach}
+    </div>
+
+    <input type="hidden" name="domain" value="{$domain|default:''}"/>
+    <input class="button green" type="submit" value="[`Save`]">
+    <i class="icon16 loading" style="display: none;"></i>
+    <span class="save-msg-icon" style="display: none;"><i class="icon16 yes after-button"></i>[`Saved`]</span>
+
+</form>
+
+<script>
+    $('#s-personal-profile-save').submit(function () {
+        var f = $(this),
+                $saved_msg = f.find('.save-msg-icon'),
+                $loading = f.find('.loading');
+        $loading.show();
+        $.post(f.attr('action'), f.serialize(), function () {
+            $loading.hide();
+            $saved_msg.fadeIn( 500 ).delay( 500).fadeOut( 500 );
+        }, 'json');
+        return false;
+    });
+</script>
+{/if}

@@ -1,0 +1,89 @@
+
+{if !isset($page) || ($page < 2)}
+  <script type="text/javascript">
+    $.wa_blog.comments = $.extend(true,$.wa_blog.comments,{
+      'options':{
+        pageless:{
+          url: '?module=comments',
+          target: '.b-comments ul.menu-v:first',
+          count: {$pages|string_format:'%d'},
+        }
+      }
+    });
+  </script>
+  <div class="block">
+    <h1>[`Comments`]</h1>
+    {* @event backend_comments.%plugin_id%.toolbar *}
+    <!-- plugin hook: "backend_comments.toolbar" -->
+    {foreach $backend_comments as $plugin => $output}
+      {if is_array($output) && isset($output.toolbar)}
+
+        <!-- begin {$plugin} -->{$output.toolbar}<!-- end {$plugin} -->
+      {/if}
+    {/foreach}
+    <!-- end plugin hook: "backend_comments.%plugin_id%.toolbar" -->
+    
+    
+    {if count($blogs) > 1 || $yet_authors_exist}
+      <ul class="menu-h" id="b-comments-filter">
+          <li {if $filter == 'all'}class="selected"{/if}><a href="?module=comments&filter=all" data-filter="all">[`All blogs`]</a></li>
+          {if $yet_authors_exist}
+            <li {if $filter == 'myposts'}class="selected"{/if}><a href="?module=comments&filter=myposts" data-filter="myposts">[`My posts only`]</a></li>
+          {/if}
+          {foreach $blogs as $blog}
+            <li {if $filter == $blog.id}class="selected"{/if}><a href="?module=comments&filter={$blog.id}" data-filter="{$blog.id}">{$blog.name|escape}{if $blog.status == blogBlogModel::STATUS_PRIVATE} <i class="icon10 lock-bw no-overhnaing"></i>{/if}</a></li>
+          {/foreach}
+      </ul>
+    {/if}
+    
+    {if !count($comments)}
+        <p>
+            <br>
+            <span class="gray">[`There are no comments in this view.`]</span>
+        </p>
+    {/if}
+    
+    <div class="b-comments">
+      <ul class="menu-v with-icons ">
+{/if}
+        {foreach $comments as $comment}
+          <li>
+            {include file="../comments/include.comment.html" allow_reply=$comment.post.comments_allowed inline}
+          </li>
+        {/foreach}
+        
+        {if count($comments)}
+          <li class="pageless-wrapper">
+            <em>{sprintf(_w("%d comment of %d (including deleted)", "%d comments of %d (including deleted)", $comments_count,false),$comments_count,$comments_total_count)}</em>
+            {if $comments_count < $comments_total_count}
+              <br><br>
+              <a href="#next" class="pageless-link">[`Show older comments`]</a>
+              <em class="pageless-progress small" style="display:none"><i class="icon16 loading no-overhanging"></i> {_w("Loading next %d comment...", "Loading next %d comments...", min($comments_total_count-$comments_count,$comments_per_page))}</em>
+            {/if}
+          </li>
+        {/if}
+
+{if !isset($page) || ($page < 2)}
+      </ul>
+
+      <ul id="b-comment-add" class="menu-v with-icons" style="display: none;">
+        <li>
+          <!-- plugin hook: "comment-list-entry" -->
+          <i class="icon16 userpic20" style="background-image: url('{$current_contact.photo20}');"></i>{$current_contact.name|escape}
+          <form id="b-comment-add-form" action="?module=comments&amp;action=add" method="post">
+          <p>
+            <textarea name="text" cols="60" rows ="30"></textarea>
+          </p>
+          <p>
+            <input type="hidden" name="parent" value="0">
+            <input type="button" id="send" value="[`Done`]">
+            <span class="b-comment-add-form-status b-ajax-status" style="display: none;">
+              <i class="b-ajax-status-loading icon16 loading"><!--icon --></i>
+            </span>
+          </p>
+          </form>
+        </li>
+      </ul>
+    </div>
+  </div>
+{/if}

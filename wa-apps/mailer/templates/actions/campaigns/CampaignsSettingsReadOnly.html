@@ -1,0 +1,137 @@
+<div class="fields">
+    <div class="field">
+        <div class="name">[`Sender`]:</div>
+        <div class="value">{$campaign.from_name|escape} &lt;{$campaign.from_email|escape}&gt;</div>
+
+        <div class="small" style="margin-left: 20px;">
+            <div class="field">
+                <div class="name">[`Reply-To Email`]:</div>
+                <div class="value">
+                {if isset($sender_params.reply_to)}
+                    {$sender_params.reply_to|escape}
+                {else}
+                    {$campaign.from_email|escape}
+                {/if}
+                </div>
+            </div>
+            <div class="field">
+                <div class="name">[`Transport`]:</div>
+                <div class="value">
+                {if $sender_params.type == 'default'}
+                    [`System Default`]
+                {elseif $sender_params.type == 'mail'}
+                    [`php mail() function`] {if isset($sender_params.options)}({$sender_params.options}){/if}
+                {elseif $sender_params.type == 'smtp'}
+                    [`SMTP`]
+                {elseif $sender_params.type == 'sendmail'}
+                    [`Sendmail`] {if isset($sender_params.command)}({$sender_params.command}){/if}
+                {elseif $sender_params.type == 'test'}
+                    [`Debug mailer`]
+                {/if}
+                </div>
+            </div>
+            {if $sender_params.type == 'smtp'}
+            {if isset($sender_params.server)}
+            <div class="field">
+                <div class="name">[`Server`]:</div>
+                <div class="value">{$sender_params.server|escape}</div>
+            </div>
+            {/if}
+            {if isset($sender_params.port)}
+            <div class="field">
+                <div class="name">[`Port`]:</div>
+                <div class="value">{$sender_params.port|escape}</div>
+            </div>
+            {/if}
+            {if isset($sender_params.login)}
+            <div class="field">
+                <div class="name">[`Login`]:</div>
+                <div class="value">{$sender_params.login|escape}</div>
+            </div>
+            {/if}
+            {if isset($sender_params.encryption)}
+            <div class="field">
+                <div class="name">[`Encryption`]:</div>
+                <div class="value">
+                    {if $sender_params.encryption == 'ssl'}[`SSL/TLS`]{/if}
+                    {if $sender_params.encryption == 'tls'}[`STARTTLS`]{/if}
+                </div>
+            </div>
+            {/if}
+            {/if}
+        </div>
+    </div>
+
+    <div class="field">
+        <div class="name">[`Return-path`]:</div>
+        <div class="value">
+            {if $campaign.return_path}
+                {$campaign.return_path|escape}
+            {else}
+                [`Not specified`]
+            {/if}
+        </div>
+        <div class="small" style="margin-left: 20px;">
+            {if isset($return_path.server)}
+            <div class="field">
+                <div class="name">[`Server`]:</div>
+                <div class="value">{$return_path.server|escape}</div>
+            </div>
+            {/if}
+            {if isset($return_path.port)}
+            <div class="field">
+                <div class="name">[`Port`]:</div>
+                <div class="value">{$return_path.port|escape}</div>
+            </div>
+            {/if}
+            {if isset($return_path.login)}
+            <div class="field">
+                <div class="name">[`Login`]:</div>
+                <div class="value">{$return_path.login|escape}</div>
+            </div>
+            {/if}
+            {if isset($return_path.ssl)}
+            <div class="field">
+                <div class="name">[`SSL`]:</div>
+                <div class="value">{if $return_path.ssl > 0}[`Yes`]{else}[`No`]{/if}</div>
+            </div>
+            {/if}
+        </div>
+    </div>
+    <div class="field">
+        <div class="name">[`Sending speed:`]</div>
+        <div class="value">
+            {if empty($params.speed_limit)}
+                [`No limit`]
+            {else}
+                {$params.speed_limit} [`letters per hour`]
+            {/if}
+        </div>
+    </div>
+    {if empty($params.google_analytics)}
+        <div class="field">
+            <div class="name">[`Google Analytics`]</div>
+            <div class="value">[`Disabled`]</div>
+        </div>
+    {else}
+        <div class="field">
+            <div class="name">[`Google Analytics`]</div>
+            <div class="value">[`Enabled`]</div>
+        </div>
+        <div class="small" style="margin-left: 20px;">
+            <div class="field">
+                <div class="name">[`Source (utm_source):`]</div>
+                <div class="value">{ifempty($params.google_analytics_utm_source)|escape}</div>
+            </div>
+            <div class="field">
+                <div class="name">[`Medium (utm_medium):`]</div>
+                <div class="value">{ifempty($params.google_analytics_utm_medium)|escape}</div>
+            </div>
+            <div class="field">
+                <div class="name">[`Campaign (utm_campaign):`]</div>
+                <div class="value">{ifempty($params.google_analytics_utm_campaign)|escape}</div>
+            </div>
+        </div>
+    {/if}
+</div>
+<div class="clear-both"></div>

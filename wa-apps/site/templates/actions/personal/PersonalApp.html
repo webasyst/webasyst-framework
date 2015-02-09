@@ -1,0 +1,86 @@
+<h1>
+    {implode(', ', $items)}
+    <span class="hint">{$app.name}</span>
+</h1>
+
+{if !$settled}
+
+    <p><i class="icon10 no-bw top-padded"></i> [`This app cannot be enabled for personal accounts on this domain, because the app is not settled in this domain's routing settings. Add this app to the routing table first so it becomes published on this site, and then you’ll be able to link it in personal accounts navigation.`]</p>
+    <a class="button" href="#/routing/">[`Setup routing`]</a>
+
+{else}
+
+    <div class="s-ibutton-checkbox">
+        <ul class="menu-h">
+            <li><span id="s-personal-app-disabled-label" class="gray">[`Disabled`]</span></li>
+            <li>
+                <input type="checkbox" id="s-personal-app-status" class="ibutton" {if $enabled}checked{/if}>
+            </li>
+            <li><span id="s-personal-app-enabled-label">[`Enabled`]</span></li>
+        </ul>
+    </div>
+    
+    <br>
+    
+    <div id="s-app-enabled" {if !$enabled}style="display:none"{/if}>
+        <p><i class="icon10 status-green top-padded"></i> {sprintf('[`%s personal account URL: <a id="s-app-frontend-link" href="%s" target="_blank">%s</a> <i class="icon10 new-window top-padded"></i>`]', $app.name, '', '')}</p>
+        {ifset($personal_settings)}
+    </div>
+    
+    <div id="s-app-disabled" {if $enabled}style="display:none"{/if}>
+        <p class="red"><em><i class="icon10 no top-padded"></i> {sprintf('[`%s personal account is disabled on this site.`]', $app.name)}</em></p>
+    </div>
+    
+    <script type="text/javascript">
+        $(function () {
+            $("#s-personal-app-status").iButton({
+                labelOn: "",
+                labelOff: "",
+                classContainer: 'ibutton-container mini'
+            });
+            var status_check = function(item) {
+                if ($(item).is(':checked')) {
+                    $('#s-personal-app-disabled-label').addClass('gray');
+                    $('#s-personal-app-enabled-label').removeClass('gray');
+                } else {
+                    $('#s-personal-app-disabled-label').removeClass('gray');
+                    $('#s-personal-app-enabled-label').addClass('gray');
+                }
+            };
+            status_check($('#s-personal-app-status'));
+            $('#s-personal-app-status').change(function(){
+                status_check(this);
+                var enabled = $(this).is(':checked') ? 1 : 0;
+                var app_id = "{$app.id}";
+                $.post('?module=personal&action=appEnable', { app_id: app_id, enable: enabled}, function () {
+                    var li = $('#s-personal-app-' + app_id);
+                    if (enabled) {
+                        $('#s-app-disabled').hide();
+                        $('#s-app-enabled').show();
+    
+                        li.appendTo('#apps-enabled');
+                        li.find('a').removeClass('s-disabled');
+                        li.find('.s-onoff').find('.status').removeClass('no').addClass('status-green');
+                        li.find('.s-onoff').prepend('<i class="icon16 sort">');
+                        if (li.data('auth-app')) {
+                            $('#s-personal-profile-link a.s-disabled').removeClass("s-disabled");
+                            $('#s-personal-profile-link a i.no').removeClass('no').addClass('status-green');
+                        }
+                    } else {
+                        $('#s-app-enabled').hide();
+                        $('#s-app-disabled').show();
+                        li.appendTo('#apps-disabled');
+                        li.find('a').addClass('s-disabled');
+                        li.find('.s-onoff').find('.status').removeClass('status-green').addClass('no');
+                        li.find('.s-onoff .sort').remove();
+                        if (li.data('auth-app')) {
+                            $('#s-personal-profile-link a').addClass("s-disabled");
+                            $('#s-personal-profile-link a i.status-green').addClass('no').removeClass('status-green');
+                        }
+                    }
+                }, "json");
+            });
+        });
+    </script>
+
+{/if}

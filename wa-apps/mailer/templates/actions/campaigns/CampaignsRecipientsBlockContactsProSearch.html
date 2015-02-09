@@ -1,0 +1,14 @@
+{if $prosearch_data}
+<ul id="recipients-prosearch" class="menu-v compact with-icons m-checkbox-menu zebra" style="max-width:500px;">
+    {foreach $prosearch_data as $o}
+    <li class="prosearch checked" data-group="prosearch-{$o.list_id}">
+        <input type="hidden" name="remove_ids[]" value="{$o.list_id}">
+        <span class="count"><a href="#{$o.value}" target="_blank">{$o.num}</a> <a href="#" data-remove-group="prosearch-{$o.list_id}"><i class="icon10 no" style="margin: 2px 0;"></i></a></span>
+        <label{if !empty($o.checked)} class="highlighted"{/if}>
+            <input type="checkbox" name="add_values[]" value="{$o.value}"{if !empty($o.checked)} checked="checked" disabled="disabled"{/if}{if !empty($o.disabled)} disabled="disabled"{/if}>{$o.label|escape}
+        </label>
+
+    </li>
+    {/foreach}
+</ul>
+{/if}

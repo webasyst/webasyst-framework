@@ -1,0 +1,56 @@
+<div class="block not-padded">
+    <h1>[`Import template`]</h1>
+    <div>
+        <div id="m-ti-file-uploader"></div>
+
+        {if !empty($error_msg)}
+            <p class="bold red">{$error_msg}</p>
+        {/if}
+
+        <p>[`Archive (zip) file for template import must contain an html file in the root of archive, and all other files (e.g. images) referred from html file, in the root or in subfolders of your archive file.`]</p>
+    </div>
+</div>
+
+<script>(function() {
+
+    //
+    // File uploader setup
+    //
+    var file_uploader_div = $('#m-ti-file-uploader');
+    var upload_action = '?action=upload';
+    var file_id = 'template_import';
+    new qq.FileUploader({
+        element: file_uploader_div[0],
+        action: upload_action,
+        //debug: true,
+        template: '<div class="qq-uploader">' +
+                '<div class="qq-upload-drop-area remove-when-no-dnd"><span>'+"[`Drag and drop ZIP-archive file here`]"+'</span></div>' +
+                '<div class="qq-upload-button"><span class="remove-when-no-dnd">'+"[`or`] "+'</span><a>'+"[`choose a file to upload`]"+'</a></div>' +
+                '<ul class="qq-upload-list"></ul>' +
+             '</div>',
+        onComplete: function(id, fileName, responseJSON) {
+            file_uploader_div.find('.qq-upload-list').empty();
+            if (!responseJSON.error) {
+                // POST to controller that processes the archive.
+                // It returns HTML to show in the main content block.
+                $.get('?module=templates&action=import2', {}, function(html) {
+                    // Replace dialog content
+                    $('#import-dialog .dialog-content-indent').html(html);
+                });
+            }
+        },
+        onCancel: function(id, fileName){
+            file_uploader_div.find('.qq-upload-list').empty();
+        },
+        params: {
+            file_id: file_id,
+            action: 'upload'
+        }
+    });
+    // When drag-and-drop file upload is not supported then hide corresponding controls
+    if (!(window.File && window.FileReader && window.FileList)) {
+        $('.remove-when-no-dnd').remove();
+    }
+
+    $.wa.mailer.setTitle();
+})();</script>

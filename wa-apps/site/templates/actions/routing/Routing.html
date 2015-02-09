@@ -1,0 +1,119 @@
+<div class="content">
+    <div class="s-editor s-white">
+        <div class="block s-grey-toolbar">
+            <h4 style="margin-left: 4px; margin-top:2px;">[`Site structure`]</h4>
+        </div>
+        <div class="block s-routing-header">
+            <a href="#" class="inline-link" id="s-routing-addrule"><i class="icon16 add"></i><b><i>[`New rule`]</i></b></a>
+        </div>
+        <div>
+            <div class="sidebar" style="width:75%;">
+                <table id="s-rules" class="zebra s-routing">
+                    {foreach $routes as $route_id=>$route}
+                    <tr id="route-{$route_id}">
+                        <td class="s-url">
+                            <span><a style="display:inline" href="#"><i class="icon16 sort"></i></a></span> <span class="s-domain-url">{$url}/</span><span class="s-editable-url" {if !empty($route.private) || (!empty($route.app) && !is_array($route.app))} style="color: #aaa;"{/if}">{$route.url|escape|truncate:30:'...':false:true}</span>
+                        </td>
+                        <td class="s-app{if !empty($route.private) || (!empty($route.app) && !is_array($route.app))} gray{/if}">
+                            {if !empty($route.app)}
+                                {if is_array($route.app)}
+                                <img src="{$wa_url}{$route.app.icon.24}" class="s-app24x24icon-menu-v" alt="">{$route.app.name}
+                                {else}
+                                {$route.app|escape}
+                                {/if}
+                            {else}
+                            <img src="{$wa_app_static_url}img/arrow.png" class="s-app24x24icon-menu-v" alt="">
+                            <span class="redirect">{$route.redirect|escape}</span>
+                            {/if}
+                        </td>
+                        <td class="s-actions align-right">
+                            <a href="#" class="s-route-action s-route-settings" title="[`Settings`]"><i class="icon16 settings"></i></a>
+                        </td>
+                    </tr>
+                    {/foreach}
+                    <!-- /fields -->
+                </table>
+                <p class="block double-padded align-center hint" id="s-routing-disclaimer">
+                    [`Site structure is defined by routing rules. Each rule sets which app should run by which URL (web address). Similar to how folders are used to organize files on a computer, routing rules are used to create a website powered by multiple apps.`]
+               		[`Rules are processed one by one in the given order. The first rule matching current HTTP request (web address) will be processed. Use * symbol in the URL fields for wildcard.`]
+                	<span class="nowrap"><a href="[`http://www.webasyst.com/developers/docs/routing/site-app-routing/`]" target="_blank">[`Help`]</a> <i class="icon10 new-window"></i></span>
+                </p>
+            </div>
+            <div id="s-route-params" class="content bordered-left" style="margin-left:75%;">
+            	<div class="block double-padded align-center hint">
+            		<br />
+            		<img src="{$wa_url}wa-apps/site/img/gear.png"><br /><br />
+            		[`Select route to manage its settings`]
+            		<div class="clear"></div>
+            	</div>
+            </div>
+        </div>
+        <div class="clear-left"></div>
+    </div>
+</div>
+<script type="text/javascript">
+
+function site_routing_full()
+{
+    $("#s-route-params").html('<div class="block double-padded align-center hint"><br />' +
+            '<img src="{$wa_url}wa-apps/site/img/gear.png"><br /><br />[`Select route to manage its settings`]' +
+            '<div class="clear"></div></div>'
+    ).animate({ 'margin-left': '75%'}, 'slow');
+    $(".s-editor .sidebar").animate({ 'width':'75%'}, 'slow');
+    $("#s-rules").removeClass('s-routing-minimized');
+    $("#s-rules .s-domain-url").show();
+    $("#s-rules tr.selected").removeClass('selected');
+}
+
+
+$("a#s-routing-addrule").click(function () {
+    $("#s-rules tr.selected").removeClass('selected');
+    $(".s-editor .sidebar").animate({ 'width':'25%'}, 'slow');
+    $("#s-rules").addClass('s-routing-minimized');
+    $("#s-route-params").animate({ 'margin-left':'25%'}, 'slow');
+    $("#s-rules .s-domain-url").hide();
+    $("#s-route-params").load('?module=routing&action=edit', 'domain_id={$domain_id}&route=', function () {
+        $(".s-route-core input:first").focus();
+    });
+    return false;
+});
+
+$("#s-rules").on('click', "tr", function () {
+    $("#s-rules tr.selected").removeClass('selected');
+    $(this).addClass('selected');
+    var route = $(this).attr('id').replace(/^route-/, '');
+    $(".s-editor .sidebar").animate({ 'width':'25%'}, 'slow');
+    $("#s-rules").addClass('s-routing-minimized');
+    $("#s-route-params").animate({ 'margin-left':'25%'}, 'slow');
+    $("#s-rules .s-domain-url").hide();
+    $("#s-route-params").load('?module=routing&action=edit', 'domain_id={$domain_id}&route=' + route, function () {
+
+    });
+    return false;
+});
+
+
+$("#s-rules").sortable({
+    distance: 5,
+    helper: function(e, tr) {
+        var $originals = tr.children();
+        var $helper = tr.clone();
+        $helper.children().each(function(index){
+            // Set helper cell sizes to match the original sizes
+            $(this).width($originals.eq(index).width())
+        });
+        return $helper;
+    },
+    items: 'tr',
+    handle: "i.sort",
+    opacity: 0.75,
+    tolerance: 'pointer',
+    stop: function (event, ui) {
+        var tr = $(ui.item);
+        var id = tr.attr('id').replace(/route-/, '');
+        var pos = tr.prevAll('tr').size();
+        $.post("?module=routing&action=sort&domain_id={$domain_id}" , { route: id, pos: pos}, function () {
+        }, "json");
+    }
+});
+</script>

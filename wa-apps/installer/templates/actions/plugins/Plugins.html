@@ -1,0 +1,166 @@
+{if !empty($messages)}
+    {foreach $messages as $message}
+        <div class="block double-padded i-message-{$message.result}">
+            {if $message.result == 'success'}<i class="icon16 yes"></i>
+            {elseif $message.result == 'fail'}
+            <i class="icon16 no"></i>
+            {/if}
+            {$message.text|escape}
+        </div>
+    {/foreach}
+{/if}
+
+<!-- plugin filters -->
+<div class="i-filters">
+
+    <!-- price -->
+    <div class="float-right">
+        {*
+        <ul class="menu-h i-filter-price js-filter" data-filter="commercial">
+            <li class="selected"><a href="#/plugins/" data-href="#/plugins%s/%s/" class="inline-link"><b><i>[`Both`]</i></b></a></li>
+            <li><a href="#/plugins&commercial=true/" data-href="#/plugins&commercial=true%s/%s/" class="inline-link"><b><i>[`Paid`]</i></b></a></li>
+            <li><a href="#/plugins&commercial=false/" data-href="#/plugins&commercial=false%s/%s/" class="inline-link"><b><i>[`Free`]</i></b></a></li>
+        </ul>
+        *}
+
+        <ul class="menu-h i-sort js-filter" data-filter="sort">
+            <li class="selected"><a href="#/plugins/" data-href="#/plugins%s/%s/" class="inline-link"><b><i>[`Most popular`]</i></b></a></li>
+            <li><a href="#/plugins&sort=new/" data-href="#/plugins&sort=new%s/%s/" class="inline-link"><b><i>[`Newest`]</i></b></a></li>
+        </ul>
+{*
+        <div class="i-sort">
+            <select class="js-query" name="sort">
+                <option value="">[`Most popular`]</option>
+                <option value="new">[`Newest`]</option>
+            </select>
+        </div>
+*}
+    </div>
+
+    <!-- app -->
+    <div class="float-left">
+        <ul class="menu-h with-icons dropdown js-query">
+            <li>
+                <a href="#/plugins:top/" class="inline-link"><i class="icon16 star"></i><b><i><strong>[`Plugins`]</strong></i></b><span class="hint"></span> <i class="icon10 darr"></i></a>
+
+                <ul class="menu-v with-icons">
+                    {if !empty($apps)}
+                    {foreach $apps as $app_id => $app}
+                        {if !empty($app.installed)}
+                            {assign var=app_id value=$app.slug}
+                            <li {if !empty($slug)&&(in_array($app.slug,$slug)) && (!isset($vendor) || $vendor==$app.vendor)}class="selected"{/if}>
+                                <a href="#/plugins/{$app.slug}/" data-href="#/plugins%s/{$app.slug}/">
+                                    {if strpos($app.icons.16, '.')}<img src="{$app.icons.16|regex_replace:'@^/@':$wa_url}" alt="{$app.name|escape}"/>{else}<i class="icon16 {$app.icons.16}"></i>{/if}{$app.name|default:{$app.slug}|escape|truncate:27}
+                                    {if !empty($vendor_name)}<span class="hint"> {$vendor_name|string_format:'[`by %s`]'|escape}</span>{/if}
+                                </a>
+                            </li>
+                        {/if}
+                    {/foreach}
+                    {else}
+                        <li>
+                            <br /><br />
+                            <p class="hint align-center">[`No plugin enabled apps are installed.`]</p>
+                        </li>
+                    {/if}
+                </ul>
+
+            </li>
+        </ul>
+    </div>
+
+</div>
+
+
+
+    {if !empty($slug)}
+    {$sort = 1000}{$_plugins=[]}
+    {foreach $slug as $key}
+        {if !empty( $apps[$key]) && !empty($apps[$key]['plugins'])}
+        {foreach $apps[$key]['plugins'] as $plugin_id => $plugin}
+        {if !isset($plugin.sort)}{$sort = $sort+1}{$plugin.sort=$sort}{/if}
+        {$_sort=$plugin.sort}
+
+        {capture assign="_plugin"}
+        <li{if !empty($plugin.installed)} class="i-installed"{/if} data-sort="{$_sort}">
+            {$app = $apps[$key]}
+            <a href="#/plugins/{$app['slug']}/{$plugin_id}/" data-href="#/plugins%s/{$app['slug']}/{$plugin_id}/" class="js-item-link">
+                <div class="i-image-wrapper">
+                    <!-- cover -->
+                    <img src="{$plugin.icon|default:"`$wa_url`wa-apps/installer/img/dummy-plugin.png"}">
+
+                    <!-- name & author -->
+                    <h5>{$plugin.name|default:$plugin_id|escape|truncate:29}</h5>
+
+                    {if !empty($plugin.publish_datetime) && strtotime($plugin.publish_datetime) > $smarty.now - 86400*14}
+                        <!-- NEW -->
+                        <div class="i-badge new"><span>New</span></div>
+                    {elseif !empty($plugin.tags)}
+                        {if in_array('featured', $plugin.tags)} 
+                            <!-- FEATURED -->
+                            <div class="i-badge featured"><i class="thumb-up"></i></div>
+                        {elseif in_array('updated', $plugin.tags)} 
+                            <!-- UPDATED -->
+                            <div class="i-badge updated two-lines"><span>[`New version!`]</span></div>
+                        {/if}
+                    {/if}
+                    
+                </div>
+            </a>
+            
+            {if !empty($plugin.description)}
+                <p>{$plugin.description}</p>
+            {elseif !empty($plugin.installed) && !empty($plugin.installed.description)}
+                <p>{$plugin.installed.description}</p>
+            {/if}
+
+            <!-- plugin price and status -->
+            {if empty($plugin.installed)}
+                {if !empty($plugin.commercial)}
+                    {if $plugin.lease_price == 'free'}
+                        {* free to install on this particular installation (cloud) *}
+                        <span class="black bold">[`Free`]</span>
+                    {else}
+                        {if !empty($plugin.compare_price)}
+                            <strike class="gray">{$plugin.compare_price}</strike>&nbsp;
+                            <strong class="highlighted black">{$plugin.price}</strong>
+                        {else}
+                            <span class="black bold">
+                                {$plugin.price}
+                                {if $plugin.lease_price}
+                                    [`or`] {sprintf('[`%s/mo`]',$plugin.lease_price)}
+                                {/if}
+                            </span>
+                        {/if}
+                    {/if}
+                {else}
+                    <span class="black bold">[`Free`]</span>
+                {/if}
+            {else}
+                <em class="i-installed-label"><i class="icon10 yes"></i> [`Installed`]</em>
+            {/if}
+            
+        </li>
+            {/capture}
+            {$_plugins[$_sort]=$_plugin}
+      {/foreach}
+        {/if}
+    {/foreach}
+     {/if}
+    {if !empty($_plugins)}
+        <ul class="thumbs">
+
+            <!-- {ksort($_plugins)} -->
+
+            {implode("",$_plugins)}
+
+         </ul>
+    {else}
+        <p class="align-center gray"><br>[`No plugins were found.`]</p>
+    {/if}
+    <div class="clear"></div>
+
+<script type="text/javascript">
+<!--
+$.layout.window.setTitle('{"[`Plugins`]"|cat:" — ":{$wa->accountName(false)}|escape:'javascript'}');
+//-->
+</script>

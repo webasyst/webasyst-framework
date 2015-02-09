@@ -1,0 +1,19 @@
+{if $errors}
+    <p class="errormsg">
+        [`Unable to send test messages:`]<br>
+        {implode("<br>\n", $errors)}
+    </p>
+{else}
+    <p>[`Test message has been sent to:`]</p>
+
+    <p>{foreach $result as $email => $error}
+        {if $error}
+            <i class="icon10 no"></i> {$email|escape}: {$error|escape}<br>
+        {else}
+            <i class="icon10 yes"></i> {$email|escape}<br>
+        {/if}
+    {/foreach}</p>
+{/if}
+
+<p style="margin:0"><a href="javascript:void($('#send-test-wrapper').removeClass('sent').addClass('opened'))" class="inline-link"><b>[`Send one more test`]</b></a></p>
+

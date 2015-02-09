@@ -1,0 +1,320 @@
+
+<div class="shadowed">
+
+  {if isset($saved) && $saved}
+  <div class="block double-padded b-message-success">
+    <i class="icon16 yes"></i>[`Settings updated`]
+  </div>
+  {/if}
+
+  <form action="?blog=&amp;module=settings" method="post">
+
+    {$wa->csrf()}
+
+    <div class="block double-padded">
+      <div class="fields form">
+        <h6 class="heading"><i class="icon16 userpic20" style="background-image: url({$wa->user()->getPhoto(20)});"></i> [`My personal settings`]</h6>
+        <br>
+        <div class="field-group">
+          <div class="field">
+            <div class="name nowrap">
+              [`App icon counter`]
+              <span class="indicator red">1</span>
+            </div>
+            {$type=$user_settings.type_items_count}
+            <div class="value no-shift">
+              <label>
+                <input type="checkbox" name="type_items_count[overdue]" value="overdue" {if isset($type.overdue) && $type.overdue} checked="checked"{/if}>
+                [`My overdue post drafts`]
+                <span class="hint">[`posts with overdue publication deadline`]</span>
+              </label>
+            </div>
+            <div class="value">
+              <label>
+                <input type="checkbox" name="type_items_count[posts]" value="posts"  {if isset($type.posts) && $type.posts} checked="checked"{/if}>
+                [`New posts published by other users`]
+              </label>
+            </div>
+            <div class="value">
+              <label>
+                <input type="checkbox" name="type_items_count[comments]" value="comments" class="js-primary-checkbox" {if isset($type.comments) && $type.comments} checked="checked"{/if}>
+                [`New comments`]
+              </label>
+              <div class="block small">
+                <label>
+                  <input type="checkbox" style="margin-top: -0.4em;" disabled name="type_items_count[comments]" value="comments_to_my_post" {if isset($type.comments) && ($type.comments == 'comments_to_my_post')} checked="checked"{/if}>
+                  [`Count new comments on my posts only`]
+                </label>
+              </div>
+            </div>
+          </div>
+          <div class="field">
+            <div class="name">
+              [`Notifications`]
+            </div>
+            <div class="value no-shift">
+              <label>
+                <input type="checkbox" name="reminder" id="s-reminder" value="{$user_settings.reminder}" {if $user_settings.reminder || $user_settings.reminder == '0'}checked="checked"{/if}>
+                [`Remind me about my scheduled posts`]
+              </label>
+              <select id="s-reminder-day">
+                <option value="0" {if $user_settings.reminder && $user_settings.reminder == '0'}selected="selected"{/if}>[`When publication is overdue`]</option>
+                <option value="1" {if $user_settings.reminder == '1'}selected="selected"{/if}>[`1 day before publication deadline`]</option>
+                <option value="2" {if $user_settings.reminder == '2'}selected="selected"{/if}>[`2 days before publication deadline`]</option>
+                <option value="3" {if $user_settings.reminder == '3'}selected="selected"{/if}>[`3 days before publication deadline`]</option>
+                <option value="7" {if $user_settings.reminder == '7'}selected="selected"{/if}>[`A week before publication deadline`]</option>
+              </select>
+            </div>
+            <div class="value no-shift">
+                <p class="hint{if !$last_reminder_cron_time} b-cron-error{/if}"  id="s-reminder-hint" {if !$user_settings.reminder && $user_settings.reminder != '0'}style="display:none;"{/if}>
+                {if $last_reminder_cron_time}
+                    <i class="icon10 yes"></i>
+                    {sprintf('[`Reminders will be sent to your <strong class="cron-command">%s</strong> email address once a day. Cron for reminders is working properly. Latest execution time: %s`]',
+                        $wa->user()->get('email', 'default')|escape, $last_reminder_cron_time|wa_datetime:'humandatetime'
+                    )}
+                {else}
+                    <i class="icon10 no"></i>
+                    <span class="red">{$cron_command|string_format:'[`Reminders require CRON to be properly setup for the Blog app, which is not the case for this installation. Setup cron for the Blog app with the following command (<a href="http://www.webasyst.com/ru/framework/docs/server/cron/" target="_blank">cron setup instructions</a>):<br /><br /> <strong class="cron-command">%s</strong>`]'}</span>
+                {/if}
+                </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {if isset($backend_settings) && backend_settings}
+
+        <div class="block double-padded">
+          <div class="fields form">
+            <h6 class="heading">[`Frontend settings`]</h6>
+            <br>
+            <div class="field-group">
+
+              <div class="field">
+                <div class="name">
+                  <label>[`Comments`]</label>
+                </div>
+                <div class="value b-ibutton-checkbox">
+                  <ul class="menu-h">
+                    <li><span id="settings-comments-switcher-off-label" class="b-unselected">[`Off`]</span></li>
+                    <li><input type="checkbox" name="show_comments" id="settings-comments-switcher" {if $backend_settings['show_comments'] == '1'}checked="checked"{/if} value="1"></li>
+                    <li><span id="settings-comments-switcher-on-label">[`On`]</span></li>
+                  </ul>
+                </div>
+              </div>
+
+              <div class="field js-comments-field"{if !$backend_settings['show_comments']} style="display:none;"{/if} id="settings-captcha-field">
+
+                <div class="value">
+                  <input type="checkbox" name="request_captcha" id="settings-captcha-switcher" {if $backend_settings['request_captcha'] == '1'}checked="checked"{/if} value="1"></li>
+                  <label for="settings-captcha-switcher">[`Protect comment submit form with CAPTCHA`]</label>
+                </div>
+
+              </div>
+
+              <div class="field js-comments-field"{if !$backend_settings['show_comments']} style="display:none;"{/if} id="settings-authorization-field">
+
+                <div class="value">
+                  <input type="checkbox" name="require_authorization" id="settings-authorization-switcher" {if $backend_settings['require_authorization'] == '1'}checked="checked"{/if} value="1"></li>
+                  <label for="settings-authorization-switcher">[`Only registered users can add comments`]</label><br />
+                  <span class="hint">[`If enabled, all commentators will be authorized and synced with the Contacts app`]</span>
+                </div>
+
+              </div>
+
+            </div>
+
+
+            <div class="field-group">
+
+              <div class="field">
+
+                <div class="name">
+                  <label>[`RSS`]</label>
+                </div>
+
+                <div class="value no-shift">
+                  [`Number of posts in RSS file`]:<br>
+                  <input type="text" name="rss_posts_number" value="{$backend_settings['rss_posts_number']|escape}">
+                  <p class="hint">[`Recommended range is from 10 to 25`]</p>
+                </div>
+
+                <div class="value no-shift">
+                  [`&lt;author&gt; tag`]:
+                </div>
+
+                <div class="value no-shift">
+                    <label>
+                      <input type="radio" {if $backend_settings['rss_author_tag'] == 'author'}checked="checked"{/if} name="rss_author_tag" value="author">
+                      [`Author’s email address`]
+                      <span class="hint">{sprintf('[`%s for your blog posts`]',$user_email|escape)}</span>
+                    </label>
+                </div>
+                <div class="value">
+                    <label>
+                      <input type="radio" {if $backend_settings['rss_author_tag'] != 'author'}checked="checked"{/if} name="rss_author_tag" value="">
+                      [`No author tag`]
+                    </label>
+                </div>
+
+              </div>
+
+            </div>
+
+            {if $routing_settings_url}
+            <div class="field-group">
+
+              <div class="field">
+
+                <div class="name">
+                    <label>[`URLs & Titles`]</label>
+                </div>
+
+                <div class="value no-shift">
+                    {sprintf('[`Setup in the <a href="%s">Blog app settlement settings</a> within the Site app`]',$routing_settings_url|escape)}
+                </div>
+
+              </div>
+
+            </div>
+            {/if}
+
+            <div class="field-group">
+              <div class="field">
+                <div class="name">
+                    <label>[`Photo storage`]</label>
+                </div>
+                {if $photos_app_available}
+                    <div class="value no-shift">
+                        <label>
+                          <input type="radio" {if $backend_settings.image_storage != 'photo_app'}checked="checked"{/if} name="image_storage" value="blog_app">
+                          [`Folder`]
+                          <span class="hint">wa-data/public/blog/img/</span>
+                        </label>
+                    </div>
+                    <div class="value">
+                        <label>
+                          <input type="radio" {if $backend_settings.image_storage == 'photo_app'}checked="checked"{/if} name="image_storage" value="photo_app">
+                          [`Photos app`]
+                        </label>
+                    </div>
+                {else}
+                    <input type="hidden" name="image_storage" value="{$backend_settings.image_storage}">
+                    <div class="value no-shift">
+                        <label>
+                          <input type="radio" checked disabled>
+                          [`Folder`]
+                          <span class="hint">wa-data/public/blog/img/</span>
+                        </label>
+                    </div>
+                    <div class="value">
+                        <label>
+                          <input type="radio" disabled>
+                          [`Photos app`]
+                        </label>
+                    </div>
+                {/if}
+              </div>
+            </div>
+
+        </div>
+      {/if}
+
+      <div class="block double-padded">
+        <div class="field-group">
+
+          <div class="field">
+
+            <div class="value submit">
+              <input type="submit" name="save" class="button green" value="[`Save`]">
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+  </form>
+
+
+
+
+</div>
+
+<script type="text/javascript">
+  $(function() {
+
+    setupSwitcherWidget();
+
+    function setupSwitcherWidget()
+    {
+
+      var switcher = $('#settings-comments-switcher');
+
+      if (!switcher.length) {
+        return;
+      }
+
+      handler.call(switcher.get(0));
+
+      switcher.iButton({
+        labelOn : '&nbsp;',
+        labelOff : '&nbsp;'
+      }).change(handler);
+
+      function handler()
+      {
+        var onLabelSelector = '#' + this.id + '-on-label',
+        offLabelSelector = '#' + this.id + '-off-label';
+
+        if (!this.checked) {
+          $(onLabelSelector).addClass('b-unselected');
+          $(offLabelSelector).removeClass('b-unselected');
+          $('.js-comments-field').hide(200);
+        } else {
+          $(onLabelSelector).removeClass('b-unselected');
+          $(offLabelSelector).addClass('b-unselected');
+          $('.js-comments-field').show(200);
+        }
+      }
+    };
+
+    $('.js-primary-checkbox').change(function(){
+      var name = $(this).attr('name').replace(/([\]\[])/g,'\\$1');
+      var disabled = $(this).attr('checked')?false:true;
+      $('input[name='+name+']').each(function(){
+        if(!$(this).hasClass('js-primary-checkbox')){
+          $(this).attr('disabled',disabled);
+        }
+      });
+    });
+
+    $('.js-primary-checkbox').change();
+
+    $('#s-reminder-day').change(function() {
+        $('input[name=reminder]').val($(this).val());
+    });
+    $('input[name=reminder]').val($('#s-reminder-day').val());
+    $('#s-reminder').click(function() {
+        if (this.checked) {
+            $('#s-reminder-hint').show();
+        } else {
+            $('#s-reminder-hint').hide();
+        }
+    });
+
+    $('.cron-command').click(function() {
+        var el = $('<input style="font-weight: bold; margin-top:2px; border: 1px solid #ccc; color: red; padding: 1px; width:' + ($(this).width() + 2) + 'px" type="text" readonly="readonly" />').val($(this).text()).focus(function () {
+            $(this).select();
+        }).mouseup(function(e){
+            e.preventDefault();
+        });
+        $(this).replaceWith(el);
+        el.select();
+    });
+
+  });
+</script>

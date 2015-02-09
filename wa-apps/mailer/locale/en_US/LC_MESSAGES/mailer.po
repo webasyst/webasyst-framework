@@ -1,0 +1,1967 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: mailer\n"
+"POT-Creation-Date: 2012-01-27 11:52+0400\n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: mailer\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Language: en_US\n"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-Basepath: .\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPath-1: .\n"
+
+#: /wa-apps/mailer/lib/config/app.php:4
+msgid "No <tt>cron</tt> jobs, required for long or scheduled automated mailings, have been set up for your account."
+msgstr "No <tt>cron</tt> jobs, required for long mailings, have been set up for your account."
+
+msgid "Without <tt>cron</tt> jobs set up, do not close your browser window after clicking on the “Send” button to complete the email sending process."
+msgstr "<br>Important note: Without <tt>cron</tt> jobs set up, do not close your browser window after clicking on the “Send” button to complete the email sending process."
+
+msgid "You can edit subject to advise your recipients this is just a test."
+msgstr "Edit the subject to show the recipients that this is a test message."
+
+msgid "Delivering errors"
+msgstr "Delivery errors"
+
+msgid "not available"
+msgstr "no data"
+
+msgid "Options"
+msgstr "Parameters"
+
+msgid "No one unsubscribed yet."
+msgstr "No unsubscribed addresses yet."
+
+msgid "Email addresses in this list have a permanent error returned by recipient mail servers."
+msgstr "Previous attempts to send messages to these email addresses have resulted in a permanent error returned by the recipient server."
+
+msgid "These addresses either do not exist, or can not receive your message by any reason."
+msgstr "The corresponding mail boxes either do not exist, or cannot receive your message by any reason."
+
+msgid "Attempts to repeat sending messages to these addresses may cause banning of your sender server."
+msgstr "Further attempts to send messages to these addresses may result in blacklisting of your mail server."
+
+msgid "No one subscribed yet."
+msgstr "No subscribed addresses yet."
+
+msgid "http://www.webasyst.com/framework/docs/server/cron/"
+msgstr "http://www.webasyst.com/developers/docs/tips/cron/"
+#: /wa-apps/mailer/templates/layouts/Backend.html:71
+#: /wa-apps/mailer/lib/classes/mailerHelper.class.php:12
+#: /wa-apps/mailer/lib/models/mailerTemplate.model.php:55
+msgid "Unsubscribe"
+msgstr ""
+
+#: /wa-apps/mailer/templates/layouts/Backend.html:72
+#: /wa-apps/mailer/lib/classes/mailerHelper.class.php:12
+msgid "Unsubscribe URL"
+msgstr ""
+
+#: /wa-apps/mailer/templates/layouts/Backend.html:75
+msgid "In every outgoing message this variable will be replaced with a personal recipient link that can be used to unsubscribe from your future mailings."
+msgstr "In every outgoing message this variable will be replaced with a unique link pointing to recipient's personal subscription management page."
+
+#: /wa-apps/mailer/templates/layouts/Backend.html:80
+msgid "Following variables will be replaced with recipient's contact data:"
+msgstr ""
+
+#: /wa-apps/mailer/templates/forms/subscription_form_inner_script.html:62
+msgid "Select at least one subscription subject"
+msgstr ""
+
+#: /wa-apps/mailer/templates/forms/subscription_form_inner_script.html:67
+msgid "Required fields"
+msgstr ""
+
+#: /wa-apps/mailer/templates/forms/subscription_form_inner_script.html:106
+msgid "Server error"
+msgstr ""
+
+#: /wa-apps/mailer/templates/forms/subscription_form.html:35
+#: /wa-apps/mailer/templates/actions/subscribers/SubscribersFormeditor.html:103
+msgid "Reload image"
+msgstr ""
+
+#: /wa-apps/mailer/templates/handlers/PersonalSettings.html:9
+#: /wa-apps/mailer/templates/actions/unsubscribed/UnsubscribedInfo.html:50
+#: /wa-apps/mailer/templates/actions/returnpath/ReturnpathDialog.html:67
+#: /wa-apps/mailer/templates/actions/subscribers/SubscribersFormeditor.html:303
+#: /wa-apps/mailer/templates/actions/subscribers/SubscribersList.html:53
+#: /wa-apps/mailer/templates/actions/subscribers/SubscribersList.html:89
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsStep1.html:62
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsRecipients.html:149
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsRecipients.html:395
+#: /wa-apps/mailer/templates/actions/templates/TemplatesEdit.html:24
+#: /wa-apps/mailer/templates/actions/templates/TemplatesEdit.html:115
+#: /wa-apps/mailer/templates/actions/senders/SendersDialog.html:143
+#: /wa-apps/mailer/themes/default/my.subscriptions.html:56
+msgid "Save"
+msgstr ""
+
+#: /wa-apps/mailer/templates/handlers/PersonalSettings.html:11
+#: /wa-apps/mailer/templates/actions/subscribers/SubscribersFormeditor.html:595
+#: /wa-apps/mailer/templates/actions/subscribers/SubscribersList.html:536
+#: /wa-apps/mailer/templates/actions/templates/TemplatesEdit.html:173
+#: /wa-apps/mailer/js/mailer.js:414
+msgid "Saved"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/unsubscribed/UnsubscribedList.html:3
+msgid "search by email"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/unsubscribed/UnsubscribedList.html:5
+#: /wa-apps/mailer/templates/actions/backend/BackendSidebar.html:70
+msgid "Unsubscribed  "
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/unsubscribed/UnsubscribedList.html:8
+msgid "This list contains the email addresses of contacts who have clicked on the “unsubscribe” link in a received message. These addresses are automatically excluded from the recipient lists of all future mailings."
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/unsubscribed/UnsubscribedList.html:14
+msgid "No unsubscribers match search criteria."
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/unsubscribed/UnsubscribedList.html:26
+#: /wa-apps/mailer/templates/actions/unsubscribed/UnsubscribedList.html:28
+#: /wa-apps/mailer/templates/actions/unsubscribed/UnsubscribedList.html:30
+#: /wa-apps/mailer/templates/actions/unsubscribed/UnsubscribedList.html:90
+#: /wa-apps/mailer/templates/actions/unsubscribed/UnsubscribedInfo.html:3
+#: /wa-apps/mailer/templates/actions/returnpath/ReturnpathDialog.html:16
+#: /wa-apps/mailer/templates/actions/subscribers/SubscribersFormeditor.html:61
+#: /wa-apps/mailer/templates/actions/subscribers/SubscribersFormeditor.html:88
+#: /wa-apps/mailer/templates/actions/subscribers/SubscribersFormeditor.html:89
+#: /wa-apps/mailer/templates/actions/subscribers/basic_form.html:8
+#: /wa-apps/mailer/templates/actions/senders/SendersDialog.html:18
+#: /wa-apps/mailer/lib/actions/subscribers/mailerSubscribersList.action.php:62
+#: /wa-apps/mailer/lib/actions/subscribers/mailerSubscribersListold.action.php:37
+#: /wa-apps/mailer/lib/actions/undeliverable/mailerUndeliverableList.action.php:56
+msgid "Email"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/unsubscribed/UnsubscribedList.html:35
+#: /wa-apps/mailer/templates/actions/unsubscribed/UnsubscribedList.html:37
+#: /wa-apps/mailer/templates/actions/unsubscribed/UnsubscribedList.html:39
+#: /wa-apps/mailer/templates/actions/unsubscribed/UnsubscribedInfo.html:19
+msgid "Unsubscribe date"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/unsubscribed/UnsubscribedList.html:53
+#: /wa-apps/mailer/templates/actions/subscribers/SubscribersListold.html:78
+#: /wa-apps/mailer/templates/actions/subscribers/SubscribersList.html:136
+#: /wa-apps/mailer/templates/actions/undeliverable/UndeliverableList.html:57
+msgid "Total addresses:"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/unsubscribed/UnsubscribedList.html:73
+#: /wa-apps/mailer/templates/actions/subscribers/SubscribersList.html:156
+#: /wa-apps/mailer/templates/actions/undeliverable/UndeliverableList.html:77
+msgid "Show"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/unsubscribed/UnsubscribedList.html:79
+#: /wa-apps/mailer/templates/actions/subscribers/SubscribersList.html:162
+#: /wa-apps/mailer/templates/actions/undeliverable/UndeliverableList.html:82
+msgid "records"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/unsubscribed/UnsubscribedList.html:86
+msgid "Unsubscribe contact"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/unsubscribed/UnsubscribedList.html:96
+#: /wa-apps/mailer/templates/actions/unsubscribed/UnsubscribedInfo.html:7
+msgid "Linked to contact"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/unsubscribed/UnsubscribedList.html:103
+msgid "Unsubscribe "
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/unsubscribed/UnsubscribedList.html:105
+#: /wa-apps/mailer/templates/actions/unsubscribed/UnsubscribedInfo.html:58
+#: /wa-apps/mailer/templates/actions/returnpath/ReturnpathDialog.html:68
+#: /wa-apps/mailer/templates/actions/subscribers/SubscribersListold.html:170
+#: /wa-apps/mailer/templates/actions/subscribers/SubscribersList.html:262
+#: /wa-apps/mailer/templates/actions/subscribers/SubscribersList.html:482
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsPresend.html:70
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsSettings.html:71
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsSettings.html:98
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsSettings.html:178
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsRecipients.html:66
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsRecipients.html:149
+#: /wa-apps/mailer/templates/actions/templates/TemplatesImport1.html:28
+#: /wa-apps/mailer/templates/actions/undeliverable/UndeliverableList.html:156
+#: /wa-apps/mailer/templates/actions/senders/SendersDialog.html:144
+#: /wa-apps/mailer/templates/actions/schedule/ScheduleDialog.html:39
+msgid "or"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/unsubscribed/UnsubscribedList.html:105
+#: /wa-apps/mailer/templates/actions/unsubscribed/UnsubscribedInfo.html:60
+#: /wa-apps/mailer/templates/actions/returnpath/ReturnpathDialog.html:69
+#: /wa-apps/mailer/templates/actions/subscribers/SubscribersListold.html:172
+#: /wa-apps/mailer/templates/actions/subscribers/SubscribersList.html:54
+#: /wa-apps/mailer/templates/actions/subscribers/SubscribersList.html:264
+#: /wa-apps/mailer/templates/actions/subscribers/SubscribersList.html:484
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsPresend.html:65
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsPresend.html:71
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsSettings.html:179
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsRecipients.html:151
+#: /wa-apps/mailer/templates/actions/undeliverable/UndeliverableList.html:158
+#: /wa-apps/mailer/templates/actions/senders/SendersDialog.html:145
+#: /wa-apps/mailer/templates/actions/schedule/ScheduleDialog.html:40
+msgid "cancel"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/unsubscribed/UnsubscribedList.html:109
+#: /wa-apps/mailer/templates/actions/templates/Templates.html:86
+msgid "Cancel"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/unsubscribed/UnsubscribedList.html:243
+msgid "N/A"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/unsubscribed/UnsubscribedInfo.html:14
+msgid "not set "
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/unsubscribed/UnsubscribedInfo.html:26
+msgid "Unsubscribed by administrator."
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/unsubscribed/UnsubscribedInfo.html:30
+msgid "Resubscribe"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/unsubscribed/UnsubscribedInfo.html:33
+msgid "We believe that you act on behalf of and for the benefit of this client, or used to unsubscribe for testing purposes."
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/unsubscribed/UnsubscribedInfo.html:44
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsReport.html:455
+#: /wa-apps/mailer/js/redactor.vars.js:25
+msgid "Close"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/returnpath/ReturnpathDialog.html:2
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsSettings.html:102
+msgid "Add a new Return-path"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/returnpath/ReturnpathDialog.html:4
+msgid "Edit Return-path"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/returnpath/ReturnpathDialog.html:8
+msgid "Specify access parameters for an existing email account that will be used to receive auto notifications from recipients’ mail servers in case of campaign delivery errors."
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/returnpath/ReturnpathDialog.html:9
+msgid "We recommend that you create a dedicated email account for this purpose, and use it merely for receiving and processing these kinds of auto notification messages."
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/returnpath/ReturnpathDialog.html:22
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsSettingsReadOnly.html:36
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsSettingsReadOnly.html:77
+#: /wa-apps/mailer/templates/actions/senders/SendersDialog.html:70
+msgid "Server"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/returnpath/ReturnpathDialog.html:28
+msgid "POP3 Port"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/returnpath/ReturnpathDialog.html:34
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsSettingsReadOnly.html:48
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsSettingsReadOnly.html:89
+#: /wa-apps/mailer/templates/actions/senders/SendersDialog.html:82
+msgid "Login"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/returnpath/ReturnpathDialog.html:41
+#: /wa-apps/mailer/templates/actions/senders/SendersDialog.html:88
+msgid "Password"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/returnpath/ReturnpathDialog.html:46
+msgid "Leave blank to keep current password."
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/returnpath/ReturnpathDialog.html:51
+msgid "Secure (SSL)"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/returnpath/ReturnpathDialog.html:64
+msgid "Delete this Return-path"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/returnpath/ReturnpathDialog.html:67
+#: /wa-apps/mailer/templates/actions/senders/SendersDialog.html:143
+msgid "Add"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/returnpath/ReturnpathDialog.html:90
+#: /wa-apps/mailer/templates/actions/senders/SendersDialog.html:196
+#: /wa-apps/mailer/templates/actions/senders/SendersDialog.html:199
+#: /wa-apps/mailer/lib/actions/returnpath/mailerReturnpathSave.controller.php:41
+#: /wa-apps/mailer/lib/actions/campaigns/mailerCampaignsRecipientsReport.action.php:210
+#: /wa-apps/mailer/lib/actions/senders/mailerSendersSave.controller.php:67
+#: /wa-apps/mailer/lib/actions/senders/mailerSendersSave.controller.php:86
+msgid "Unknown error"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/returnpath/ReturnpathDialog.html:93
+msgid "Error checking mail:"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/returnpath/ReturnpathDialog.html:107
+msgid "Do you really want to delete this Return-path?"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/subscribers/SubscribersListold.html:4
+#: /wa-apps/mailer/templates/actions/subscribers/SubscribersList.html:4
+#: /wa-apps/mailer/templates/actions/undeliverable/UndeliverableList.html:3
+msgid "search by name or email"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/subscribers/SubscribersListold.html:7
+msgid "Subscribe form"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/subscribers/SubscribersListold.html:11
+#: /wa-apps/mailer/templates/actions/backend/BackendSidebar.html:66
+#: /wa-apps/mailer/lib/classes/mailerHelper.class.php:150
+#: /wa-apps/mailer/lib/updates/1363931415.php:27
+#: /wa-apps/mailer/lib/handlers/mailer.recipients.form.handler.php:43
+#: /wa-apps/mailer/lib/handlers/mailer.recipients.prepare.handler.php:48
+msgid "Subscribers"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/subscribers/SubscribersListold.html:15
+#: /wa-apps/mailer/templates/actions/subscribers/SubscribersList.html:171
+msgid "No subscribers match search criteria."
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/subscribers/SubscribersListold.html:17
+msgid "Subscribers are the persons who have expressly opted for receiving email messages from you by submitting their email addresses via a subscription form on your website. To collect subscribers' email addresses, publish the form displayed below on your website or blog."
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/subscribers/SubscribersListold.html:25
+#: /wa-apps/mailer/templates/actions/subscribers/SubscribersFormeditor.html:51
+msgid "Preview"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/subscribers/SubscribersListold.html:29
+msgid "Use this source code to embed in your website or blog where you want this signup form to appear."
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/subscribers/SubscribersListold.html:63
+#: /wa-apps/mailer/templates/actions/subscribers/SubscribersList.html:120
+msgid "contact deleted"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/subscribers/SubscribersListold.html:69
+#: /wa-apps/mailer/templates/actions/subscribers/SubscribersListold.html:171
+#: /wa-apps/mailer/templates/actions/subscribers/SubscribersList.html:126
+#: /wa-apps/mailer/templates/actions/subscribers/SubscribersList.html:483
+msgid "Eliminate from subscribers"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/subscribers/SubscribersListold.html:98
+#: /wa-apps/mailer/templates/actions/subscribers/SubscribersList.html:194
+msgid "NOTE: This contact will not be deleted. It will be only eliminated from the subscription list."
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/subscribers/SubscribersListold.html:99
+#: /wa-apps/mailer/templates/actions/subscribers/SubscribersList.html:195
+#: /wa-apps/mailer/templates/actions/undeliverable/UndeliverableList.html:91
+msgid "Do not show this question any more"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/subscribers/email_template_editor.html:30
+#: /wa-apps/mailer/templates/actions/subscribers/SubscribersFormeditor.html:234
+msgid "From"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/subscribers/email_template_editor.html:34
+#: /wa-apps/mailer/templates/actions/subscribers/SubscribersFormeditor.html:238
+msgid "Specified"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/subscribers/email_template_editor.html:38
+#: /wa-apps/mailer/templates/actions/subscribers/SubscribersFormeditor.html:241
+msgid "It is recommended to specify an existing email address which you do not check for new mail as the sender's address for such notifications; e.g., noreply@yourdomain.com. This will help minimize the number of redundant requests."
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/subscribers/email_template_editor.html:47
+msgid "Use source email address if request came by email"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/subscribers/email_template_editor.html:53
+#: /wa-apps/mailer/templates/actions/subscribers/SubscribersFormeditor.html:248
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsArchive.html:35
+msgid "Subject"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/subscribers/email_template_editor.html:60
+#: /wa-apps/mailer/templates/actions/subscribers/SubscribersFormeditor.html:255
+msgid "Text"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/subscribers/email_template_editor.html:65
+#: /wa-apps/mailer/templates/actions/subscribers/SubscribersFormeditor.html:265
+msgid "Variables"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/subscribers/SubscribersFormeditor.html:7
+#: /wa-apps/mailer/templates/actions/subscribers/Subscribers.html:55
+msgid "New form"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/subscribers/SubscribersFormeditor.html:12
+msgid "To publish the form on your site use this code:"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/subscribers/SubscribersFormeditor.html:13
+msgid "Publishing on external site"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/subscribers/SubscribersFormeditor.html:35
+msgid "form name"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/subscribers/SubscribersFormeditor.html:36
+msgid "This name appears only for your reference in the form list."
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/subscribers/SubscribersFormeditor.html:43
+msgid "Form setup"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/subscribers/SubscribersFormeditor.html:50
+msgid "Fields"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/subscribers/SubscribersFormeditor.html:57
+#: /wa-apps/mailer/templates/actions/subscribers/SubscribersFormeditor.html:77
+#: /wa-apps/mailer/templates/actions/subscribers/SubscribersFormeditor.html:78
+#: /wa-apps/mailer/templates/actions/subscribers/basic_form.html:4
+#: /wa-apps/mailer/templates/actions/senders/SendersDialog.html:12
+#: /wa-apps/mailer/lib/actions/subscribers/mailerSubscribersList.action.php:61
+#: /wa-apps/mailer/lib/actions/subscribers/mailerSubscribersListold.action.php:36
+#: /wa-apps/mailer/lib/actions/undeliverable/mailerUndeliverableList.action.php:55
+msgid "Name"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/subscribers/SubscribersFormeditor.html:65
+msgid "Captcha"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/subscribers/SubscribersFormeditor.html:68
+msgid "Button"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/subscribers/SubscribersFormeditor.html:76
+#: /wa-apps/mailer/templates/actions/subscribers/SubscribersFormeditor.html:87
+#: /wa-apps/mailer/templates/actions/subscribers/SubscribersFormeditor.html:97
+msgid "Edit field label"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/subscribers/SubscribersFormeditor.html:81
+#: /wa-apps/mailer/templates/actions/subscribers/SubscribersFormeditor.html:92
+msgid "Edit hint for this field"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/subscribers/SubscribersFormeditor.html:98
+#: /wa-apps/mailer/templates/actions/subscribers/SubscribersFormeditor.html:99
+msgid "Please enter symbols shown on the image:"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/subscribers/SubscribersFormeditor.html:116
+#: /wa-apps/mailer/templates/actions/subscribers/SubscribersFormeditor.html:116
+msgid "Send"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/subscribers/SubscribersFormeditor.html:116
+msgid "Edit button label"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/subscribers/SubscribersFormeditor.html:126
+msgid "Form width (200-600px)"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/subscribers/SubscribersFormeditor.html:154
+msgid "Add to lists"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/subscribers/SubscribersFormeditor.html:157
+msgid "Select lists to which new subscriber will be added:"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/subscribers/SubscribersFormeditor.html:173
+msgid "In case no lists selected, subscriber will be added to All subscribers."
+msgstr "If no list is selected, a subscriber will be added only to “All subscribers”."
+
+#: /wa-apps/mailer/templates/actions/subscribers/SubscribersFormeditor.html:181
+msgid "Show list selection in the form"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/subscribers/SubscribersFormeditor.html:182
+msgid "In this case subscribers will be able to select lists themselves."
+msgstr "Enable subscribers to select subscription lists in which they want to be included."
+
+#: /wa-apps/mailer/templates/actions/subscribers/SubscribersFormeditor.html:189
+msgid "After form submission"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/subscribers/SubscribersFormeditor.html:192
+msgid "This setting will redirect clients to any specified URL or display any text message after the form is submitted."
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/subscribers/SubscribersFormeditor.html:200
+msgid "After successfull submission:"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/subscribers/SubscribersFormeditor.html:204
+msgid "Redirect to URL"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/subscribers/SubscribersFormeditor.html:212
+msgid "Display text instead of the form"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/subscribers/SubscribersFormeditor.html:213
+msgid "Thanks for subscribing!"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/subscribers/SubscribersFormeditor.html:221
+msgid "Confirm subscription"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/subscribers/SubscribersFormeditor.html:226
+msgid "Every time you receive a message from an unknown email address which is not yet stored in your Contacts database, an automatic notification will be sent to the sender's address."
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/subscribers/SubscribersFormeditor.html:227
+msgid "This notification contains a special link which must be clicked to confirm the sending of the first request. You may also add extra instructions for your clients to the notification text."
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/subscribers/SubscribersFormeditor.html:249
+msgid "Please confirm your subscription"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/subscribers/SubscribersFormeditor.html:299
+msgid "Delete this form"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/subscribers/SubscribersFormeditor.html:568
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsSettingsReadOnly.html:119
+msgid "Enabled"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/subscribers/SubscribersFormeditor.html:571
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsSettingsReadOnly.html:114
+msgid "Disabled"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/subscribers/SubscribersFormeditor.html:644
+#: /wa-apps/mailer/templates/actions/subscribers/SubscribersFormeditor.html:662
+#: /wa-apps/mailer/templates/actions/subscribers/SubscribersList.html:591
+msgid "Are you sure?"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/subscribers/SubscribersFormeditor.html:660
+#: /wa-apps/mailer/templates/actions/subscribers/SubscribersList.html:591
+msgid "Unsaved changes will be lost if you leave this page now."
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/subscribers/Subscribers.html:8
+#: /wa-apps/mailer/templates/actions/subscribers/SubscribersList.html:9
+#: /wa-apps/mailer/lib/updates/1363931415.php:27
+#: /wa-apps/mailer/lib/handlers/mailer.recipients.prepare.handler.php:46
+#: /wa-apps/mailer/lib/actions/campaigns/mailerCampaignsRecipientsBlockSubscribers.action.php:19
+msgid "All subscribers"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/subscribers/Subscribers.html:13
+msgid "Lists"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/subscribers/Subscribers.html:27
+msgid "Subscriber lists are useful for a thematic grouping of your subscribers, e.g.: news, special offers, new product release, and etc."
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/subscribers/Subscribers.html:31
+#: /wa-apps/mailer/templates/actions/subscribers/SubscribersList.html:61
+msgid "New list"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/subscribers/Subscribers.html:38
+msgid "Forms"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/subscribers/Subscribers.html:51
+msgid "Forms are required to organize a subscription on your website. Create a form, publish it on your website, and visitor will be able to subscribe themselves."
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/subscribers/basic_form.html:15
+msgid "Subscribe"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/subscribers/basic_form.html:21
+msgid "Thank you for your subscription."
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/subscribers/basic_form.html:34
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsSettings.html:223
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsSettings.html:230
+msgid "This field is required."
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/subscribers/SubscribersList.html:15
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsSettings.html:70
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsSettings.html:97
+msgid "Edit"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/subscribers/SubscribersList.html:22
+msgid "This list is not associated with any subscription form."
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/subscribers/SubscribersList.html:24
+msgid "Subscription forms"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/subscribers/SubscribersList.html:39
+#: /wa-apps/mailer/templates/actions/subscribers/SubscribersList.html:67
+msgid "Choose forms that will add subscribers to this list"
+msgstr "Choose forms which will add subscribers to this list"
+
+#: /wa-apps/mailer/templates/actions/subscribers/SubscribersList.html:55
+#: /wa-apps/mailer/templates/actions/undeliverable/UndeliverableList.html:147
+msgid "Delete"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/subscribers/SubscribersList.html:55
+#: /wa-apps/mailer/templates/actions/subscribers/SubscribersList.html:263
+msgid "Delete list"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/subscribers/SubscribersList.html:174
+msgid "Subscribers are the persons who have expressly opted for receiving email messages from you by submitting their email addresses via a subscription form on your website. To collect subscribers' email addresses, <a href=\"javascript:void(0)\">create a form</a> and publish it on your website or blog."
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/subscribers/SubscribersList.html:177
+msgid "To collect subscribers' email addresses to this list, enable this list in your subscription form settings."
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/subscribers/SubscribersList.html:179
+msgid "No subscribers in this list."
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/subscribers/SubscribersList.html:188
+msgid "Do you really want to delete this list?"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/subscribers/SubscribersList.html:189
+msgid "Contacts will NOT be deleted."
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsStep1ReadOnly.html:6
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsArchive.html:5
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsSidebar.html:105
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsReport.html:15
+#: /wa-apps/mailer/templates/actions/backend/BackendSidebar.html:50
+msgid "Sent"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsStep1ReadOnly.html:10
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsSidebar.html:10
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsReport.html:19
+msgid "Letter"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsStep1ReadOnly.html:17
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsStep1ReadOnly.html:23
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsSidebar.html:21
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsSidebar.html:27
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsReport.html:26
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsReport.html:32
+msgid "Sending report"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsStep1ReadOnly.html:17
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsArchive.html:66
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsSidebar.html:21
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsReport.html:26
+msgid "Paused"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsStep1ReadOnly.html:19
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsArchive.html:68
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsSidebar.html:23
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsReport.html:28
+msgid "Now sending"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsStep1ReadOnly.html:37
+msgid "Design"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsStep1ReadOnly.html:40
+msgid "HTML"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsStep1ReadOnly.html:43
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsStep1.html:51
+msgid "Plain-text"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsPresend.html:13
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsPresend.html:22
+msgid "WARNING:"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsPresend.html:16
+msgid "Settings checking passed. Campaign is ready for sending."
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsPresend.html:44
+msgid "Return-path address specified above is not available."
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsPresend.html:48
+msgid "Return-path address is used to automatically process bounced emails."
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsPresend.html:55
+msgid "You have no routing rules defined for Mailer application."
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsPresend.html:56
+msgid "Unsubscribe links in your message will not work."
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsPresend.html:63
+msgid "Sending is scheduled for"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsPresend.html:75
+#: /wa-apps/mailer/templates/actions/schedule/ScheduleDialog.html:1
+msgid "Scheduled sending"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsRecipientsBlockFlatList.html:4
+msgid "Paste emails here, one email (or Name <email>) per line."
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsRecipientsStat.html:3
+msgid "reload"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsRecipientsStat.html:5
+#: /wa-apps/mailer/lib/classes/mailerHelper.class.php:365
+msgid "Recipient list preparation is in progress."
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsRecipientsStat.html:8
+msgid "Total"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsRecipientsStat.html:12
+msgid "Excepted from this list are:"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsRecipientsStat.html:18
+#: /wa-apps/mailer/lib/actions/campaigns/mailerCampaignsRecipientsReport.action.php:208
+msgid "Earlier unsubscribed"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsRecipientsStat.html:26
+msgid "Having delivering errors in previous campaign"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsRecipientsStat.html:33
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsRecipientsStat.html:44
+msgid "Send to contacts having delivering errors anyway"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsRecipientsStat.html:34
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsRecipientsStat.html:45
+msgid "Use this option only if the reason of delivering errors has been resolved; otherwise recipient mail servers can ban your sending server for spam."
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsRecipientsStat.html:40
+msgid "Excepted from this list are unsubscribed contacts and those having delivering errors in previous campaign."
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsRecipientsStat.html:41
+msgid "We could not count the number of excepted recipients at this point, because a total number of your campaign recipients is too high. However, we will count every exception in the process of sending, and all such contacts will be placed in &ldquo;Exceptions&rdquo; list in the Sending Report."
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsRecipientsStat.html:121
+msgid "0 recipients"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsRecipientsStat.html:109
+msgid "%s distinct recipient"
+msgid_plural "%s distinct recipients"
+msgstr[0] ""
+msgstr[1] ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsSettingsReadOnly.html:3
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsArchive.html:45
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsSettings.html:54
+msgid "Sender"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsSettingsReadOnly.html:8
+#: /wa-apps/mailer/templates/actions/senders/SendersDialog.html:25
+msgid "Reply-To Email"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsSettingsReadOnly.html:18
+#: /wa-apps/mailer/templates/actions/senders/SendersDialog.html:35
+msgid "Transport"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsSettingsReadOnly.html:21
+#: /wa-apps/mailer/lib/actions/senders/mailerSendersDialog.action.php:34
+msgid "System Default"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsSettingsReadOnly.html:23
+#: /wa-apps/mailer/lib/actions/senders/mailerSendersDialog.action.php:38
+msgid "php mail() function"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsSettingsReadOnly.html:25
+#: /wa-apps/mailer/lib/actions/senders/mailerSendersDialog.action.php:42
+msgid "SMTP"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsSettingsReadOnly.html:27
+#: /wa-apps/mailer/lib/actions/senders/mailerSendersDialog.action.php:48
+msgid "Sendmail"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsSettingsReadOnly.html:29
+#: /wa-apps/mailer/lib/actions/senders/mailerSendersDialog.action.php:54
+msgid "Debug mailer"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsSettingsReadOnly.html:42
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsSettingsReadOnly.html:83
+#: /wa-apps/mailer/templates/actions/senders/SendersDialog.html:76
+msgid "Port"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsSettingsReadOnly.html:54
+#: /wa-apps/mailer/templates/actions/senders/SendersDialog.html:94
+msgid "Encryption"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsSettingsReadOnly.html:56
+#: /wa-apps/mailer/templates/actions/senders/SendersDialog.html:98
+msgid "SSL/TLS"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsSettingsReadOnly.html:57
+#: /wa-apps/mailer/templates/actions/senders/SendersDialog.html:99
+msgid "STARTTLS"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsSettingsReadOnly.html:66
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsSettings.html:81
+msgid "Return-path"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsSettingsReadOnly.html:71
+msgid "Not specified"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsSettingsReadOnly.html:95
+msgid "SSL"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsSettingsReadOnly.html:96
+msgid "Yes"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsSettingsReadOnly.html:96
+msgid "No"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsSettingsReadOnly.html:102
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsSettings.html:110
+msgid "Sending speed:"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsSettingsReadOnly.html:105
+msgid "No limit"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsSettingsReadOnly.html:107
+#: /wa-apps/mailer/lib/config/mailerConfig.class.php:67
+msgid "letters per hour"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsSettingsReadOnly.html:113
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsSettingsReadOnly.html:118
+msgid "Google Analytics"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsSettingsReadOnly.html:123
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsSettings.html:135
+msgid "Source (utm_source):"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsSettingsReadOnly.html:127
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsSettings.html:143
+msgid "Medium (utm_medium):"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsSettingsReadOnly.html:131
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsSettings.html:151
+msgid "Campaign (utm_campaign):"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsArchive.html:3
+msgid "search by words in subject or text"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsArchive.html:14
+msgid "Sent:"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsArchive.html:28
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsArchive.html:30
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsArchive.html:32
+msgid "ID"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsArchive.html:38
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsArchive.html:40
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsArchive.html:42
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsReport.html:164
+#: /wa-apps/mailer/templates/actions/campaigns/pie_diagram_legend.html:24
+msgid "Sent "
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsArchive.html:46
+msgid "Recipients"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsArchive.html:47
+#: /wa-apps/mailer/templates/actions/campaigns/pie_diagram_legend.html:32
+#: /wa-apps/mailer/templates/actions/campaigns/pie_diagram_legend.html:36
+#: /wa-apps/mailer/lib/actions/campaigns/mailerCampaignsRecipientsReport.action.php:154
+msgid "Opened"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsArchive.html:48
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsReport.html:156
+#: /wa-apps/mailer/templates/actions/campaigns/pie_diagram_legend.html:57
+#: /wa-apps/mailer/templates/actions/campaigns/pie_diagram_legend.html:57
+msgid "Bounced"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsArchive.html:49
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsReport.html:155
+#: /wa-apps/mailer/templates/actions/campaigns/pie_diagram_legend.html:44
+#: /wa-apps/mailer/templates/actions/campaigns/pie_diagram_legend.html:44
+#: /wa-apps/mailer/lib/actions/campaigns/mailerCampaignsRecipientsReport.action.php:157
+msgid "Unsubscribed"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsArchive.html:83
+msgid "n/a"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsArchive.html:98
+msgid "Total campaigns:"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsArchive.html:112
+msgid "No campaigns match search criteria."
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsArchive.html:114
+msgid "Nothing has been sent yet."
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsStep0.html:3
+msgid "Please choose one of these templates to create a new email campaign. If none of the templates suits your needs, click on &ldquo;Blank&rdquo; to compose a new message."
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsStep0.html:5
+msgid "Manage templates"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsStep0.html:7
+msgid "To create new campaign as a copy of previously sent, navigate to the sent message and click “Create new from this”."
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsStep0.html:14
+#: /wa-apps/mailer/templates/actions/backend/BackendSidebar.html:6
+msgid "New campaign"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsStep0.html:23
+msgid "Blank"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsRecipientsPreview.html:12
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsRecipientsReport.html:48
+msgid "Load next 50"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsRecipientsPreview.html:15
+#: /wa-apps/mailer/lib/actions/campaigns/mailerCampaignsPresend.action.php:80
+msgid "No recipients selected."
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsSendTest.html:3
+msgid "Unable to send test messages:"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsSendTest.html:7
+msgid "Test message has been sent to:"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsSendTest.html:18
+msgid "Send one more test"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsStep1.html:6
+msgid "Be sure to enter your message subject and text to proceed to recipient selection and message sending steps."
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsStep1.html:20
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsStep1.html:26
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsSettings.html:30
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsSettings.html:36
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsRecipients.html:10
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsRecipients.html:16
+msgid "Compose letter"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsStep1.html:21
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsStep1.html:27
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsSettings.html:31
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsSettings.html:37
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsRecipients.html:11
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsRecipients.html:17
+msgid "Choose recipients"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsStep1.html:22
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsStep1.html:28
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsSettings.html:32
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsSettings.html:38
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsRecipients.html:12
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsRecipients.html:18
+msgid "Check and send"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsStep1.html:34
+msgid "type a subject of your message"
+msgstr "type the subject of your message"
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsStep1.html:44
+#: /wa-apps/mailer/templates/actions/templates/TemplatesEdit.html:102
+msgid "Design editor"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsStep1.html:63
+#: /wa-apps/mailer/templates/actions/templates/TemplatesEdit.html:116
+msgid "Ctrl+S"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsStep1.html:81
+msgid "This plain-text version of your message is automatically created from HTML version and displayed if recipients have disabled HTML view in their email programs."
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsStep1.html:194
+#: /wa-apps/mailer/templates/actions/templates/TemplatesEdit.html:231
+msgid "Unsaved changes will be lost if you leave this page now. Are you sure?"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsSettings.html:43
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsSettings.html:173
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsSettings.html:279
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsRecipients.html:23
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsSidebar.html:109
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsReport.html:54
+#: /wa-apps/mailer/templates/actions/templates/TemplatesEdit.html:278
+#: /wa-apps/mailer/templates/actions/backend/BackendSidebar.html:26
+#: /wa-apps/mailer/lib/actions/campaigns/mailerCampaignsStep0.action.php:27
+#: /wa-apps/mailer/lib/actions/templates/mailerTemplates.action.php:18
+msgid "<no subject>"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsSettings.html:59
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsSettings.html:86
+msgid "select"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsSettings.html:66
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsSettings.html:93
+msgid "not set yet"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsSettings.html:72
+msgid "add a new sender"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsSettings.html:75
+#: /wa-apps/mailer/templates/actions/senders/SendersDialog.html:4
+msgid "Add a new sender"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsSettings.html:99
+msgid "add a new Return-path"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsSettings.html:106
+msgid "Return-path address is used to automatically process bounced emails. We recommend to create a special email address to receive bounces as it allows to obtain a true statistics about your message delivering."
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsSettings.html:118
+msgid "If many of your recipients addresses reside on popular mail services (e.g. @gmail.com, @yahoo.com, and etc.) then too high sending speed may cause banning of your sender server because of spam suspicion and these recipients will not receive your message."
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsSettings.html:127
+msgid "Enable Google Analytics for this campaign"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsSettings.html:130
+msgid "UTM tags will be added to all links (URLs) containing in the campaign message. It will allow to track these links visiting in your Google Analytics reports."
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsSettings.html:139
+msgid "The type of resource that is sending you traffic, e.g. newsletter."
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsSettings.html:147
+msgid "The type of marketing medium that the link is featured in, e.g. email."
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsSettings.html:155
+msgid "The name of your marketing campaign, e.g. your email subject."
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsSettings.html:162
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsSettings.html:166
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsSettings.html:177
+msgid "Send test message"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsSettings.html:168
+msgid "Send to yourself:"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsSettings.html:170
+msgid "Additional emails:"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsSettings.html:192
+msgid "Send to selected recipients"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsSettings.html:193
+msgid "We will provide final checking and offer you to choose: send now or schedule sending for future date/time."
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsSettings.html:318
+msgid "Now we are checking campaing settings and preparing recipient list"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsSettings.html:494
+msgid "Cancel schedule"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsRecipients.html:32
+msgid "To specify recipients for your campaign, select the desired contact groups provided by the Contacts application or enter additional email addresses."
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsRecipients.html:47
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsRecipients.html:53
+#: /wa-apps/mailer/lib/updates/1363931415.php:55
+#: /wa-apps/mailer/lib/handlers/mailer.recipients.prepare.handler.php:127
+msgid "All contacts"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsRecipients.html:86
+msgid "(auto included in All contacts)"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsRecipients.html:115
+#: /wa-apps/mailer/lib/updates/1363931415.php:61
+#: /wa-apps/mailer/lib/handlers/mailer.recipients.form.handler.php:54
+#: /wa-apps/mailer/lib/handlers/mailer.recipients.prepare.handler.php:142
+msgid "Additional emails"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsRecipients.html:123
+msgid "more"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsRecipients.html:143
+msgid "Preparing recipient list"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsRecipients.html:158
+msgid "{$g.name}"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsRecipients.html:161
+msgid "{$g.comment}"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsRecipients.html:337
+msgid "Nothing found. Change search criteria"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsRecipients.html:400
+msgid "Search contacts"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsSidebar.html:11
+msgid "not written yet"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsSidebar.html:36
+#: /wa-apps/mailer/templates/actions/templates/TemplatesEdit.html:43
+msgid "Author"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsSidebar.html:50
+msgid "Create new from this"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsSidebar.html:53
+msgid "Save as a template"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsSidebar.html:60
+msgid "Delete this draft"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsSidebar.html:62
+msgid "Delete campaign"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsSidebar.html:83
+msgid "Do you really want to remove this campaign (you will not be able to undo this action)?"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsSidebar.html:85
+msgid "Images containing in your message will be unavailable to your recipients."
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsSidebar.html:112
+msgid "This draft has been deleted."
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsSidebar.html:114
+msgid "This campaign has been successfully deleted."
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsReport.html:41
+#: /wa-apps/mailer/lib/actions/campaigns/mailerCampaignsArchive.action.php:135
+msgid "Error checking Return-path mailbox"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsReport.html:44
+msgid "Edit settings"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsReport.html:50
+msgid "An error occured while sending the campaign."
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsReport.html:62
+msgid "Start"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsReport.html:65
+msgid "Finish"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsReport.html:68
+msgid "sending duration"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsReport.html:87
+msgid "Remaining:"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsReport.html:91
+msgid "Pause"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsReport.html:95
+msgid "Sending paused"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsReport.html:98
+msgid "Resume"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsReport.html:123
+#: /wa-apps/mailer/templates/actions/campaigns/pie_diagram_legend.html:4
+msgid "Selected recipients"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsReport.html:126
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsReport.html:167
+msgid "how were chosen"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsReport.html:147
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsReport.html:160
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsReport.html:192
+#: /wa-apps/mailer/templates/actions/campaigns/pie_diagram_legend.html:11
+msgid "Exceptions"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsReport.html:154
+#: /wa-apps/mailer/templates/actions/campaigns/pie_diagram_legend.html:32
+#: /wa-apps/mailer/templates/actions/campaigns/pie_diagram_legend.html:36
+msgid "Read"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsReport.html:157
+#: /wa-apps/mailer/templates/actions/campaigns/pie_diagram_legend.html:70
+#: /wa-apps/mailer/lib/actions/campaigns/mailerCampaignsRecipientsReport.action.php:150
+msgid "Unknown"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsReport.html:161
+msgid "Excluded were previously unsubscribed and also those email addresses that have resulted in a permanent error returned by the recipient server in your past mailing campaigns. Those mail boxes either do not exist, or cannot receive your message by any reason. Further attempts to send messages to these addresses may result in blacklisting of your mail server. This is the reason to exclude these addresses from the lists of your campaigns recipients."
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsReport.html:202
+msgid "Number of recipients"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsReport.html:203
+msgid "per minute"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsReport.html:205
+msgid "per hour"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsReport.html:211
+msgid "Shown"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsReport.html:212
+msgid "24h"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsReport.html:213
+msgid "48h"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsReport.html:214
+msgid "All history"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsReport.html:216
+msgid "or select a required period on the chart"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsReport.html:238
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsReport.html:244
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsReport.html:250
+msgid "* NOTE:"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsReport.html:238
+msgid "Unsubscribe URL is located only in your message headers. It does not guarantee an appearance of unsubscribe link in recipient mail program."
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsReport.html:244
+msgid "Return-path is not customized. This does not allow to track most of potential bounces from recipient mail servers. Only invalid messages bounced by your sender server have been counted."
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsReport.html:250
+msgid "Opens can not be counted as your message does not contain images."
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsReport.html:123
+msgid "%s recipient"
+msgid_plural "%s recipients"
+msgstr[0] ""
+msgstr[1] ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsReport.html:145
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsReport.html:190
+msgid "%s recipient have been selected for this campaign"
+msgid_plural "%s recipients have been selected for this campaign"
+msgstr[0] ""
+msgstr[1] ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsRecipientsReport.html:51
+msgid "No entries in this list"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/CampaignsRecipientsReport.html:68
+msgid "%s recipient appear in the period selected"
+msgid_plural "%s recipients appear in the period selected"
+msgstr[0] ""
+msgstr[1] ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/pie_diagram_legend.html:19
+#: /wa-apps/mailer/lib/actions/campaigns/mailerCampaignsRecipientsReport.action.php:146
+msgid "Not sent yet"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/campaigns/pie_diagram_legend.html:85
+msgid "Search by name or email"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/templates/TemplatesEdit.html:15
+#: /wa-apps/mailer/templates/actions/templates/TemplatesEdit.html:166
+#: /wa-apps/mailer/templates/actions/templates/TemplatesEdit.html:253
+msgid "Edit description"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/templates/TemplatesEdit.html:17
+#: /wa-apps/mailer/templates/actions/templates/TemplatesEdit.html:168
+#: /wa-apps/mailer/templates/actions/templates/TemplatesEdit.html:255
+msgid "Add a description"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/templates/TemplatesEdit.html:22
+msgid "Type here a description for your reference only. It will not be shown to your campaign recipients."
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/templates/TemplatesEdit.html:38
+msgid "Delete thumbnail"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/templates/TemplatesEdit.html:59
+msgid "Export to file (zip)"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/templates/TemplatesEdit.html:64
+msgid "Delete template"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/templates/TemplatesEdit.html:79
+#: /wa-apps/mailer/templates/actions/templates/Templates.html:17
+#: /wa-apps/mailer/templates/actions/backend/BackendSidebar.html:62
+msgid "Templates"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/templates/TemplatesEdit.html:93
+msgid "&lt;type a subject of your message&gt;"
+msgstr "&lt;type the subject of your message&gt;"
+
+#: /wa-apps/mailer/templates/actions/templates/TemplatesEdit.html:160
+#: /wa-apps/mailer/templates/actions/templates/TemplatesEdit.html:312
+#: /wa-apps/mailer/templates/actions/templates/TemplatesEdit.html:322
+msgid "Change thumbnail"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/templates/TemplatesEdit.html:264
+msgid "Do you really want to remove this template (you will not be able to undo this action)?"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/templates/TemplatesEdit.html:311
+msgid "Drag and drop an image file here (JPG, GIF, PNG)"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/templates/TemplatesEdit.html:312
+#: /wa-apps/mailer/templates/actions/templates/TemplatesEdit.html:356
+msgid "Upload thumbnail"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/templates/Templates.html:5
+msgid "New template"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/templates/Templates.html:6
+#: /wa-apps/mailer/templates/actions/templates/TemplatesImport1.html:2
+#: /wa-apps/mailer/templates/actions/templates/TemplatesImport2.html:2
+msgid "Import template"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/templates/Templates.html:11
+msgid "To change a template location in this list, simply drag it and drop."
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/templates/Templates.html:46
+msgid "You do not have any templates so far."
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/templates/TemplatesImport1.html:10
+msgid "Archive (zip) file for template import must contain an html file in the root of archive, and all other files (e.g. images) referred from html file, in the root or in subfolders of your archive file."
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/templates/TemplatesImport1.html:27
+msgid "Drag and drop ZIP-archive file here"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/templates/TemplatesImport1.html:28
+msgid "choose a file to upload"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/templates/TemplatesImport2.html:4
+msgid "Please select html file to import:"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/undeliverable/UndeliverableList.html:10
+msgid "This is the reason to exclude these addresses from the lists of your campaigns recipients."
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/undeliverable/UndeliverableList.html:15
+msgid "No addresses match search criteria."
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/undeliverable/UndeliverableList.html:17
+msgid "No delivering errors yet."
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/undeliverable/UndeliverableList.html:49
+#: /wa-apps/mailer/templates/actions/undeliverable/UndeliverableList.html:89
+msgid "Remove address from this list"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/undeliverable/UndeliverableList.html:90
+msgid "We recommend you to remove addresses from the list of &ldquo;undeliverable&rdquo; only in case you have resolved issues with delivering errors for these email addresses."
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/frontend/FrontendConfirm.html:9
+msgid "thanks for subscription!"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/senders/SendersDialog.html:2
+msgid "Edit sender"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/senders/SendersDialog.html:29
+msgid "If you leave this field empty, replies will come to the main sender address specified above."
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/senders/SendersDialog.html:97
+msgid "None"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/senders/SendersDialog.html:109
+msgid "Command"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/senders/SendersDialog.html:120
+msgid "Note: mail will be saved in wa-log/mailer/ and will NOT be sent to recipients."
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/senders/SendersDialog.html:140
+msgid "Delete this sender"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/senders/SendersDialog.html:215
+msgid "Do you really want to delete this sender?"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/schedule/ScheduleDialog.html:23
+msgid "Incorrect date/time"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/schedule/ScheduleDialog.html:25
+msgid "format"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/schedule/ScheduleDialog.html:25
+msgid "current time is"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/schedule/ScheduleDialog.html:32
+msgid "Cron is working properly. Latest execution time: %s"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/schedule/ScheduleDialog.html:38
+msgid "Schedule"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/backend/BackendSidebar.html:17
+msgid "Drafts"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/backend/BackendSidebar.html:33
+msgid "all drafts"
+msgstr ""
+
+#: /wa-apps/mailer/templates/actions/backend/Backend.html:2
+msgid "Loading..."
+msgstr ""
+
+#: /wa-apps/mailer/js/mailer.js:441
+msgid "Total selected:"
+msgstr ""
+
+#: /wa-apps/mailer/js/mailer.js:445
+msgid "not specified yet"
+msgstr ""
+
+#: /wa-apps/mailer/js/mailer.js:390
+msgid "Search results"
+msgstr ""
+
+#: /wa-apps/mailer/js/mailer.js:671
+#: /wa-apps/mailer/js/mailer.js:675
+#: /wa-apps/mailer/js/mailer.js:680
+msgid "%ds"
+msgstr ""
+
+#: /wa-apps/mailer/js/mailer.js:675
+#: /wa-apps/mailer/js/mailer.js:680
+msgid "%dm"
+msgstr ""
+
+#: /wa-apps/mailer/js/mailer.js:680
+msgid "%dh"
+msgstr ""
+
+#: /wa-apps/mailer/js/redactor.vars.js:28
+#: /wa-apps/mailer/js/redactor.vars.js:30
+msgid "Insert variable"
+msgstr ""
+
+#: /wa-apps/mailer/lib/classes/mailerHelper.class.php:167
+msgid "Category"
+msgstr ""
+
+#: /wa-apps/mailer/lib/classes/mailerHelper.class.php:170
+msgid "List"
+msgstr ""
+
+#: /wa-apps/mailer/lib/classes/mailerHelper.class.php:174
+msgid "Search"
+msgstr ""
+
+#: /wa-apps/mailer/lib/classes/mailerHelper.class.php:177
+msgid "Language"
+msgstr ""
+
+#: /wa-apps/mailer/lib/classes/mailerHelper.class.php:351
+msgid "Timeout error during recipient list preparation."
+msgstr ""
+
+#: /wa-apps/mailer/lib/classes/mailerUploadedFile.class.php:135
+msgid "Server error. Upload directory isn't writable."
+msgstr ""
+
+#: /wa-apps/mailer/lib/classes/mailerUploadedFile.class.php:139
+msgid "No files were uploaded."
+msgstr ""
+
+#: /wa-apps/mailer/lib/classes/mailerUploadedFile.class.php:165
+msgid "Could not save uploaded file."
+msgstr ""
+
+#: /wa-apps/mailer/lib/classes/mailerUploadedFile.class.php:172
+msgid "File is too large"
+msgstr ""
+
+#: /wa-apps/mailer/lib/classes/mailerUploadedFile.class.php:208
+msgid "The upload was cancelled, or server error encountered"
+msgstr ""
+
+#: /wa-apps/mailer/lib/classes/mailerMessage.class.php:361
+#: /wa-apps/mailer/lib/actions/campaigns/mailerCampaignsRecipientsReport.action.php:212
+msgid "Bounced by sender mail server"
+msgstr ""
+
+#: /wa-apps/mailer/lib/config/mailerRightConfig.class.php:7
+msgid "Author: can create their own campaigns and send them"
+msgstr ""
+
+#: /wa-apps/mailer/lib/config/mailerRightConfig.class.php:8
+msgid "Inspector: can only view all existing campaigns, but can not edit or send them"
+msgstr ""
+
+#: /wa-apps/mailer/lib/config/mailerRightConfig.class.php:21
+msgid "NOTE: Limited access does not allow to modify transport settings and manage subscribers."
+msgstr ""
+
+#: /wa-apps/mailer/lib/config/logs.php:5
+msgid "subscribed"
+msgstr ""
+
+#: /wa-apps/mailer/lib/config/logs.php:8
+msgid "unsubscribed"
+msgstr ""
+
+#: /wa-apps/mailer/lib/config/mailerConfig.class.php:67
+msgid "send not more than"
+msgstr ""
+
+#: /wa-apps/mailer/lib/updates/1363931415.php:41
+#: /wa-apps/mailer/lib/handlers/mailer.recipients.form.handler.php:31
+#: /wa-apps/mailer/lib/handlers/mailer.recipients.prepare.handler.php:100
+msgid "Categories"
+msgstr ""
+
+#: /wa-apps/mailer/lib/updates/1363931415.php:53
+#: /wa-apps/mailer/lib/handlers/mailer.recipients.form.handler.php:20
+#: /wa-apps/mailer/lib/handlers/mailer.recipients.prepare.handler.php:122
+msgid "Languages"
+msgstr ""
+
+#: /wa-apps/mailer/lib/handlers/mailer.recipients.form.handler.php:24
+msgid "Your contacts may be speaking different languages. You can limit the recipient list by selecting only the desired languages."
+msgstr ""
+
+#: /wa-apps/mailer/lib/handlers/mailer.recipients.form.handler.php:35
+msgid "Categories are groups of contacts which you can freely manage in the Contacts application. In addition to manually created categories, there are also system categories created by other Webasyst applications; e.g., Shop-Script or Blog. Those categories contain contacts added by the corresponding applications: customers of the online store or authors of comments posted in the blog."
+msgstr ""
+
+#: /wa-apps/mailer/lib/handlers/mailer.recipients.form.handler.php:47
+msgid "This option allows selecting contacts who have opted for receiving your email newsletters using a subscription form (see Subscribers section)."
+msgstr ""
+
+#: /wa-apps/mailer/lib/handlers/mailer.recipients.form.handler.php:57
+msgid "Use this field  to manually enter any additional email addresses. If such addresses are not yet contained in the Contacts application, they will be added there as new contacts once the sending of this message is completed."
+msgstr ""
+
+#: /wa-apps/mailer/lib/handlers/mailer.recipients.form.handler.php:67
+msgid "Contact lists"
+msgstr ""
+
+#: /wa-apps/mailer/lib/handlers/mailer.recipients.form.handler.php:71
+msgid "Contact list are contact lists."
+msgstr ""
+
+#: /wa-apps/mailer/lib/handlers/mailer.recipients.form.handler.php:79
+msgid "Contact search"
+msgstr ""
+
+#: /wa-apps/mailer/lib/handlers/contacts.search.config.handler.php:17
+msgid "Received campaigns"
+msgstr ""
+
+#: /wa-apps/mailer/lib/handlers/contacts.search.config.handler.php:25
+msgid "Campaign"
+msgstr ""
+
+#: /wa-apps/mailer/lib/handlers/contacts.search.config.handler.php:35
+msgid "Status"
+msgstr ""
+
+#: /wa-apps/mailer/lib/handlers/mailer.recipients.prepare.handler.php:109
+msgid "Contacts Lists"
+msgstr ""
+
+#: /wa-apps/mailer/lib/handlers/mailer.recipients.prepare.handler.php:112
+msgid "Prosearch"
+msgstr "Contacts PRO"
+
+#: /wa-apps/mailer/lib/actions/unsubscribed/mailerUnsubscribedInfo.action.php:24
+msgid "Unsubscriber does not exist."
+msgstr ""
+
+#: /wa-apps/mailer/lib/actions/returnpath/mailerReturnpathSave.controller.php:33
+#: /wa-apps/mailer/lib/actions/senders/mailerSendersSave.controller.php:57
+msgid "Encryption requires OpenSSL PHP module to be installed."
+msgstr ""
+
+#: /wa-apps/mailer/lib/actions/returnpath/mailerReturnpathSave.controller.php:43
+msgid "IMAP is not supported. Please use POP3."
+msgstr ""
+
+#: /wa-apps/mailer/lib/actions/subscribers/mailerSubscribersList.action.php:63
+#: /wa-apps/mailer/lib/actions/subscribers/mailerSubscribersListold.action.php:38
+msgid "Subscribe date"
+msgstr ""
+
+#: /wa-apps/mailer/lib/actions/subscribers/mailerSubscribersFormeditor.action.php:43
+msgid "Subscriber name, if it uses in form."
+msgstr ""
+
+#: /wa-apps/mailer/lib/actions/subscribers/mailerSubscribersFormeditor.action.php:44
+msgid "URL address for not registered clients to confirm their original email. Click on this link opens the request in the client's Customer Portal."
+msgstr ""
+
+#: /wa-apps/mailer/lib/actions/files/mailerFilesUploadimage.controller.php:58
+msgid "Files with extensions %s are allowed only."
+msgstr ""
+
+#: /wa-apps/mailer/lib/actions/campaigns/mailerCampaignsPresend.action.php:70
+msgid "No message body."
+msgstr ""
+
+#: /wa-apps/mailer/lib/actions/campaigns/mailerCampaignsPresend.action.php:73
+msgid "No message subject."
+msgstr ""
+
+#: /wa-apps/mailer/lib/actions/campaigns/mailerCampaignsPresend.action.php:86
+msgid "Maximum recipients limit has been exceeded:"
+msgstr ""
+
+#: /wa-apps/mailer/lib/actions/campaigns/mailerCampaignsPresend.action.php:104
+msgid "Maximum recipients daily limit has been exceeded:"
+msgstr ""
+
+#: /wa-apps/mailer/lib/actions/campaigns/mailerCampaignsReport.action.php:220
+msgid "%d second"
+msgid_plural "%d seconds"
+msgstr[0] ""
+msgstr[1] ""
+
+#: /wa-apps/mailer/lib/actions/campaigns/mailerCampaignsReport.action.php:222
+#: /wa-apps/mailer/lib/actions/campaigns/mailerCampaignsReport.action.php:229
+msgid "%d minute"
+msgid_plural "%d minutes"
+msgstr[0] ""
+msgstr[1] ""
+
+#: /wa-apps/mailer/lib/actions/campaigns/mailerCampaignsReport.action.php:227
+msgid "%d hour"
+msgid_plural "%d hours"
+msgstr[0] ""
+msgstr[1] ""
+
+#: /wa-apps/mailer/lib/actions/campaigns/mailerCampaignsRecipientsBlockLanguages.action.php:28
+msgid "not set"
+msgstr ""
+
+#: /wa-apps/mailer/lib/actions/campaigns/mailerCampaignsRecipientsReport.action.php:117
+msgid "All bounces"
+msgstr ""
+
+#: /wa-apps/mailer/lib/actions/campaigns/mailerCampaignsRecipientsReport.action.php:117
+msgid "All exceptions"
+msgstr ""
+
+#: /wa-apps/mailer/lib/actions/campaigns/mailerCampaignsRecipientsReport.action.php:206
+msgid "Delivering error in past campaigns"
+msgstr ""
+
+#: /wa-apps/mailer/lib/actions/templates/mailerTemplatesImport1.action.php:15
+#: /wa-apps/mailer/lib/actions/templates/mailerTemplatesImport2.action.php:15
+#: /wa-apps/mailer/lib/actions/templates/mailerTemplatesExport.controller.php:14
+msgid "ZipArchive class not found. Template import is not available on your server."
+msgstr ""
+
+#: /wa-apps/mailer/lib/actions/templates/mailerTemplatesImport2.action.php:28
+msgid "Unable to open archive file."
+msgstr ""
+
+#: /wa-apps/mailer/lib/actions/templates/mailerTemplatesImport2.action.php:32
+msgid "Archive (zip) file for template import must contain an html file in the root of archive."
+msgstr ""
+
+#: /wa-apps/mailer/lib/actions/templates/mailerTemplatesImport2.action.php:101
+msgid "Unable to extract template file."
+msgstr ""
+
+#: /wa-apps/mailer/lib/actions/templates/mailerTemplatesImport2.action.php:113
+msgid "Error importing template."
+msgstr ""
+
+#: /wa-apps/mailer/lib/actions/undeliverable/mailerUndeliverableList.action.php:57
+msgid "Campaign date"
+msgstr ""
+
+#: /wa-apps/mailer/lib/actions/undeliverable/mailerUndeliverableList.action.php:58
+msgid "Campaign subject"
+msgstr ""
+
+#: /wa-apps/mailer/lib/actions/frontend/mailerFrontendMySubscriptions.action.php:158
+#: /wa-apps/mailer/lib/actions/frontend/mailerFrontendUpdateSubscriptions.action.php:30
+#: /wa-apps/mailer/themes/default/my.nav.html:4
+msgid "My subscriptions"
+msgstr ""
+
+#: /wa-apps/mailer/lib/actions/frontend/mailerFrontendSubscribe.controller.php:56
+msgid "Invalid email format"
+msgstr ""
+
+#: /wa-apps/mailer/lib/actions/senders/mailerSendersDialog.action.php:35
+msgid "When this option is selected messages are sent by the default transport specified in the Webasyst framework configuration."
+msgstr ""
+
+#: /wa-apps/mailer/lib/actions/senders/mailerSendersDialog.action.php:39
+msgid "Some web-hosting companies allow sending email message by means of this transport only. If it is required to specify additional parameters for the mail() function you can enter them in the provided text field. The default parameters are -f%s."
+msgstr ""
+
+#: /wa-apps/mailer/lib/actions/senders/mailerSendersDialog.action.php:43
+msgid "Special server which is specifically used for sending email messages. You can send newsletters via any SMTP server for which you have connection credentials: host, port, user name, and password. It can be the SMTP server of your web-hosting company or that of a public mail service such as Gmail, Yahoo! Mail, Outlook.com, etc."
+msgstr ""
+
+#: /wa-apps/mailer/lib/actions/senders/mailerSendersDialog.action.php:49
+msgid "This is the web server's system command for sending email in UNIX-like operating systems. The \"Sendmail\" option will allow you to specify a non-standard system command for sending messages if you are an experienced server administrator."
+msgstr ""
+
+#: /wa-apps/mailer/lib/actions/senders/mailerSendersSave.controller.php:19
+msgid "Email is required"
+msgstr ""
+
+#: /wa-apps/mailer/lib/actions/senders/mailerSendersSave.controller.php:26
+msgid "Invalid Email address"
+msgstr ""
+
+#: /wa-apps/mailer/lib/actions/senders/mailerSendersSave.controller.php:69
+#: /wa-apps/mailer/lib/actions/senders/mailerSendersSave.controller.php:88
+msgid "Error checking mail transport:"
+msgstr ""
+
+#: /wa-apps/mailer/lib/actions/senders/mailerSendersSave.controller.php:103
+msgid "Sender Email must be unique"
+msgstr ""
+
+#: /wa-apps/mailer/lib/actions/backend/mailerBackendUpload.controller.php:36
+msgid "File is not an image or is broken."
+msgstr ""
+
+#: /wa-apps/mailer/themes/default/my.subscriptions.html:6
+msgid "Thanks for subscribe!"
+msgstr "Thanks for subscription!"
+
+#: /wa-apps/mailer/themes/default/my.subscriptions.html:31
+msgid "Subscribe again"
+msgstr ""
+
+#: /wa-apps/mailer/themes/default/my.subscriptions.html:62
+msgid "Unsubscribe from all"
+msgstr ""
+
+#: /wa-apps/mailer/themes/default/footer.html:6
+msgid "We are using <a href=\"http://www.webasyst.com/\">Webasyst</a>"
+msgstr ""
+
+msgid "Now you can recieve our awesome emails!"
+msgstr "Now you can receive our awesome emails!"
+
+msgid "Your subscriptions list have been updated!"
+msgstr "Your subscription list has been updated!"
+
+msgid "No contact lists - create it in \"Contacts\" app"
+msgstr "You have no contact lists, create them in Contacts app"
+
+msgid "No subscriber lists - create it in \"Subscribers\""
+msgstr "You have no subscriber lists, create them in Subscribers section"
+
+msgid "Please specify your email in \"Contacts\" app"
+msgstr "Please specify your email address in Contacts app"
+
+msgid "You unsubscribed from all subscriptions"
+msgstr "You have unsubscribed from all subscriptions"
+
+msgid "URL address to confirm subscription. Click on this link opens \"My subscriptions\" page in the client's Customer Portal."
+msgstr "URL to confirm subscription. Click on this link opens \"My subscriptions\" page in your personal account."
+
+msgid "Subscriber name, if it used in the form.."
+msgstr "Subscriber name, if used in the form."

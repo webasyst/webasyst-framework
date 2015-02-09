@@ -1,0 +1,111 @@
+{* Add contact button *}
+
+{if !empty($admin) || (!empty($show_create) && !empty($categories))}
+    <div class="block" id="add-new-contact-block">
+        <a href="#/contacts/add/" class="bold no-underline">
+            <i class="icon16 add"></i>[`New contact`]
+        </a>
+    </div>
+{/if}
+
+{*
+  * Recently added
+  *}
+<div class="block wrapper" style="display:none">
+    <span class="count"><a href="#" class="hint c-search-close" onclick="return $.wa.history.clear('creation')" title="[`clear`]"><i class="icon10 close"></i></a></span>
+    <h5 class="heading">[`Recently added`]</h5>
+    <ul class="menu-v with-icons compact" id="wa-creation-history">
+        {* Updated via JS *}
+    </ul>
+</div>
+
+{*
+  * Search and search history
+  *}
+<form id="search-form">
+    <div class="block">
+        <input id="search-text" type="search" class="search-input-only" value="" placeholder="[`search by name or email`]" />
+    </div>
+</form>
+
+<div class="block wrapper" style="display:none">
+    <span class="count"><a href="#" class="hint c-search-close" onclick="return $.wa.history.clear('search')" title="[`clear`]"><i class="icon10 close"></i></a></span>
+    <h5 class="heading">[`Recent searches`]</h5>
+    <ul class="menu-v with-icons compact" id="wa-search-history">
+        {* Updated via JS *}
+    </ul>
+</div>
+<script>
+    $('#search-form').submit(function() {
+        $.wa.controller.simpleSearch();    
+        return false;
+    });
+    {if !empty($history)}
+        $(function() {
+            $.wa.history.updateHistory({json_encode($history)});
+        });
+    {/if}
+</script>
+
+<div class="block">    
+    <ul class="menu-v with-icons compact">
+        <li id="sb-all-contacts-li">
+            <span class="count">{$totalContacts}</span>
+            <a class="bold" href="#/"><i class="icon16 contact"></i><b class="c-item-bold">[`All contacts`]</b></a>
+        </li>
+    </ul>
+
+    {*
+      * Categories
+      *}
+    {if !empty($categories) || !empty($superadmin)}
+        {if !empty($superadmin)}
+            <span class="count c-action-link"><a href="#/categories/create/" title="[`New category`]"><i class="icon16 add"></i></a></span>
+        {/if}
+        <h5 class="heading collapse-handler" id="c-sb-categories-header"><i class="icon16 darr"></i><b>[`Categories`]</b></h5>
+        <ul class="menu-v with-icons collapsible" id="list-category">
+            {if !empty($categories)}
+                {foreach from=$categories item=c}
+                     <li rel="category{$c.id}">
+                         <span class="count">{$c.cnt}</span>
+                         <a href="#/contacts/category/{$c.id}/">
+                            {if !empty($c.icon) && strpos($c.icon, '/') !== false}
+                                <img class="c-app16x16icon-menu-v" src="{if substr($c.icon, 0, 4) == 'http'}{$c.icon}{else}{$wa_url}{$c.icon}{/if}" />
+                            {else}
+                                <i class="icon16 {ifempty($c.icon, 'contact')}"></i>
+                            {/if}
+                            <b>{$c.name|escape}</b>
+                        </a>
+                     </li>
+                {/foreach}
+            {else}
+                <li class="hint" style="padding:0">
+                    [`Categories are for classifying contacts, e.g. customers, providers, partners, etc.`]
+                </li>
+            {/if}
+        </ul>
+    {/if}
+</div>
+
+{if !empty($superadmin)}
+    <div class="block">
+        {*
+          * All users link
+          *}
+        <ul class="menu-v with-icons compact">
+            <li id="sb-all-users-li">
+                <span class="count">{if !empty($totalUsers)}{$totalUsers}{else}0{/if}</span>
+                <a class="bold" href="#/users/all/"><i class="icon16 user"></i><b class="c-item-bold">[`Users`]</b></a>
+            </li>
+        </ul>
+    </div>
+{/if}
+
+{* @event backend_sidebar.%plugin_id% *}
+{foreach $backend_sidebar as $plugin_id => $item}
+    {if !empty($item)}
+        {$item}
+    {/if}
+{/foreach}
+
+<div class="block c-sidebar-indent"></div>

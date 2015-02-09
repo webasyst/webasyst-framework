@@ -1,0 +1,57 @@
+
+<div class="dialog width400px height300px" id="schedule-dialog">
+  <div class="dialog-background"> </div>
+  <div class="dialog-window">
+    <div class="dialog-content">
+      <div class="dialog-content-indent">
+
+        <h1>[`Schedule publication`]</h1>
+
+        <br>
+        <div class="datetime">
+          <i class="icon16 clock" style="margin-top: 0.3em;"></i>
+          {assign var="show_date" value = $post.datetime|wa_datetime:'U' >= time()|date_format:'Y-m-d'|wa_datetime:'U'}
+          <input class="datepicker" name="schedule_datetime[]" type="text" disabled="disabled" value="{if $post.datetime && $show_date}{$post.datetime|wa_date}{/if}" size="8">&nbsp;
+          <input type="text" name="schedule_datetime[]" class="time" disabled="disabled" value="{if $show_date && $post.datetime}{$post.datetime|wa_datetime:'H'}{else}10{/if}" size="2" maxlength="2" autocomplete="off">:<input type="text" data-role="datetime_minutes" disabled="disabled" name="schedule_datetime[]" class="time" value="{if $show_date && $post.datetime}{$post.datetime|wa_datetime:'i'}{else}00{/if}" size="2" maxlength="2" autocomplete="off">
+        </div>
+
+        <span class="hint">(<span class="user-date-format"><!-- format placeholder --></span> [`format`], [`current time is`] <span class="current-user-time">{time()|wa_date:'time'}</span>)</span>
+
+        <br><br>
+
+        <p class="hint{if !$cron_schedule_time && !$last_schedule_cron_time} b-cron-error{/if}">
+        {if $cron_schedule_time || $last_schedule_cron_time}
+          <i class="icon10 yes"></i>
+          {if $last_schedule_cron_time}
+              {$last_schedule_cron_time|wa_datetime:'humandatetime'|string_format:'[`Cron is working properly. Latest execution time: %s`]'}
+          {else}
+              {$cron_schedule_time|wa_datetime:'humandatetime'|string_format:'[`Cron is working properly. Latest execution time: %s`]'}
+          {/if}
+        {else}
+          <i class="icon10 no"></i>
+          <span class="red">{$cron_command|string_format:'[`Scheduled publication requires CRON to be properly setup for Webasyst Blog app, which is not the case for this installation. Setup cron for the Blog app with the following command (<a href="http://www.webasyst.com/ru/framework/docs/server/cron/" target="_blank">cron setup instructions</a>):<br /><br /> <strong class="cron-command">%s</strong>`]'}</span>
+        {/if}
+        </p>
+      </div>
+    </div>
+    <div class="dialog-buttons">
+      <div class="dialog-buttons-gradient">
+        <input type="button" name="scheduled" class="button green" value="[`Schedule`]">
+        [`or`] <a href="#" class="cancel">[`cancel`]</a>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+    $(function() {
+        $('.cron-command').click(function() {
+            var el = $('<input style="font-weight: bold; margin-top:2px; border: 1px solid #ccc; color: red; padding: 1px; width:' + ($(this).width() + 2) + 'px" type="text" readonly="readonly" />').val($(this).text()).focus(function () {
+                $(this).select();
+            }).mouseup(function(e){
+                e.preventDefault();
+            });
+            $(this).replaceWith(el);
+            el.select();
+        });
+    });
+</script>

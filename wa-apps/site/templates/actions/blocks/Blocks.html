@@ -1,0 +1,266 @@
+<script src="{$wa_url}wa-content/js/jquery-wa/wa.elrte.ace.js?v{$wa->version()}"></script>
+<script type="text/javascript">
+document.title = {if $block && $block.id}'[`Block`] ' + {json_encode($block.id)}{else}'[`New block`]'{/if} + ' — {$wa->appName()}';
+</script>
+<div class="sidebar left200px s-internal-sidebar">
+
+    <div class="block not-padded">
+            <ul id="ul-blocks" class="menu-v with-icons">
+                {foreach $blocks as $b}
+                <li data-block-id="{$b.id}" class="{if !isset($b.app)}sortable{/if}{if $block && $b.id == $block.id} selected{/if}">
+                    <a href="#/blocks/id={$b.id}">{strip}
+                        {if isset($b.app) || isset($b.app_icon)}
+                        <img style="margin-left: -20px; margin-right: 4px; vertical-align: middle;" src="{$wa_url}{if isset($b.app)}{$b.app.icon.16}{else}{$b.app_icon.16}{/if}" width="16" height="16">
+                        {else}
+                        <i class="icon16 zone"></i>
+                        {/if}
+                        {$b.id|escape}{/strip}
+                        <span class="hint">{$b.description|escape}</span>
+                    </a>
+                </li>
+                {/foreach}
+                <li class="top-padded{if !$block} selected{/if}">
+                    <a href="#/blocks/add/" class="small"><i class="icon10 add"></i>[`New block`]</a>
+                </li>
+                
+            </ul>
+    </div>
+
+</div>
+<div class="content left200px">
+    <div class="s-editor s-white bordered-left">
+    <form id="site-form" method="post" action="?module=blocks&action=save{if $block && !isset($block.app)}&id={$block.id|escape}{/if}">
+        <div class="block s-grey-toolbar">
+            {if $block}
+            <div class="float-right">
+            <ul class="menu-h">
+                {if isset($block.original)}
+                <li><a href="#" class="s-block-view-original"><i class="icon16 script-lock"></i>[`View original`]</a></li>
+                {/if}
+                <li><a href="#" class="inline-link" id="s-block-settings-toggle"><i class="icon16 settings"></i><b><i>[`Block settings`]</i></b></a></li>
+                {if !isset($block.app)}
+                <li><a id="s-block-delete" href="#">{if isset($block.original)}<i class="icon16 broom"></i>[`Revert to original`]{else}<i class="icon16 delete"></i>[`Delete`]{/if}</a></li>
+                {/if}
+            </ul>
+            </div>
+            <h4>{$block.id|escape}</h4>
+            <span class="hint">[`Embed block into a page or a template`]:<br>
+                <strong class="s-block-code">&#123;$wa-&gt;block("{$block.id|escape}")&#125;</strong>
+            </span>
+            {/if}
+            <div id="s-block-settings" style="{if $block}display: none;{/if}">
+                <div class="fields form">
+                    <div class="field">
+                        <div class="name bold">
+                            [`ID`]
+                        </div>
+                        <div class="value">
+                            <input name="info[id]" type="text" class="bold large" value="{if $block}{$block.id|escape}{/if}" />
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="name">
+                            [`Description`]
+                        </div>
+                        <div class="value">
+                            <textarea name="info[description]">{if $block}{$block.description|escape}{/if}</textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="clear"></div>
+            </div>        
+        </div>    
+        <div class="s-editor-core-wrapper">
+            <div class="ace">
+                <textarea id="content" name="info[content]" class="s-entire-core" style="width:99%">{if $block}{$block.content|escape}{/if}</textarea>
+            </div>
+        </div>            
+    </form>    
+    <div class="clear"></div>
+    </div>
+</div>
+
+{if isset($block.original)}
+<div id="s-block-view-original-dialog" class="dialog">
+    <div class="dialog-background"></div>
+    <div class="dialog-window">
+        <div class="dialog-content">
+            <div class="dialog-content-indent">
+                <h1>{$block.id}</h1>
+                <div id="s-block-original" style="width: 100%; height: 220px;">{$block.original|escape}</div>
+            </div>
+        </div>
+        <div class="dialog-buttons">
+            <div class="dialog-buttons-gradient"><input type="button" class="button cancel" value="Close"></div>
+        </div>
+    </div>
+</div>
+{/if}
+
+<script type="text/javascript">
+    $("#site-form").submit(function () {
+        waEditorUpdateSource({ 'id': 'content'});
+        var form = $(this);
+        $("#wa-editor-status").html("<i class='icon16 loading'></i> " + $_('Saving...')).fadeIn("slow");
+        $.post(form.attr('action'), form.serialize(), function (response) {
+            if (response.status == 'ok') {
+                $(".error").removeClass('error');
+                $("#wa-editor-status").html('<i class="icon16 yes"></i>' + $_('Saved')).fadeOut('slow');
+                $('#s-editor-save-button').removeClass('yellow').removeClass('red').addClass('green');
+                
+                var blockHtml = function(b) {
+                    var icon = '';
+                    if (b.app_icon) {
+                        icon = '<img style="margin-left: -20px; margin-right: 4px; vertical-align: middle;" src="{$wa_url}' + b.app_icon['16'] + '" width="16" height="16">';
+                    } else {
+                        icon = '<i class="icon16 zone"></i>';
+                    }
+                    return '<li data-block-id="' + b.id + '" class="selected sortable">' +
+                            '<a href="#/blocks/id=' + b.id + '">' + icon + b.id + 
+                            ' <span class="hint">' + b.description + '</span></a></li>';
+                }
+                
+                var blocks_ul = $("#ul-blocks");
+                {if !$block || isset($block.app)}
+                    form.attr('action', form.attr('action') + '&id=' + response.data.id);
+                    var b = response.data;
+                    {if $block}
+                        blocks_ul.find('li[data-block-id="' + b.id + '"]').remove();
+                    {/if}
+                    
+                    blocks_ul.find("li.selected").removeClass('selected');
+                    
+                    var insert_target = blocks_ul.find("li.sortable:last");
+                    if (insert_target.length) {
+                        insert_target.after(blockHtml(b));
+                    } else {
+                        insert_target = blocks_ul.find("li:first");
+                        if (insert_target.length) {
+                            insert_target.before(blockHtml(b));
+                        } else {
+                            blocks_ul.append(blockHtml(b));
+                        }
+                    }
+                    $.History.stop = true;
+                    location.hash = '#/blocks/id=' + b.id;
+                {else}
+                    form.attr('action', form.attr('action') + '&id=' + response.data.id);
+                    var b = response.data;
+                    var li = blocks_ul.find('li[data-block-id="' + (b.old_id || b.id) + '"]');
+                    if (b.old_id) {
+                        li.replaceWith(blockHtml(b));
+                    } else {
+                        li.find('.hint').text(b.description);
+                    }
+                    $.History.stop = true;
+                    location.hash = '#/blocks/id=' + b.id;
+                {/if}
+            } else if (response.status == 'fail') {
+                if ($.isArray(response.errors)) {
+                    var e = response.errors[0];
+                    $(response.errors[1]).addClass('error');
+                } else {
+                    var e = response.errors;
+                }
+                $("#wa-editor-status").html('<b style="color:red">' + (e ? e : $_('An error occurred while saving')) + '</b>');
+                $('#s-editor-save-button').removeClass('yellow').removeClass('green').addClass('red');
+            }
+        }, "json");
+        return false;
+    });
+$("#ul-blocks").sortable({
+    distance: 5,
+    helper: 'clone',    
+    items: 'li.sortable',
+    opacity: 0.75,
+    tolerance: 'pointer',
+    stop: function (event, ui) {
+        var li = $(ui.item);
+        var id = li.data('block-id');
+        var pos = li.prevAll('li.sortable').size() + 1;
+        $.post("?module=blocks&action=sort", { id: id, pos: pos}, function () {
+        }, "json");
+    }
+});
+
+$(".s-block-code").click(function () {
+    var el = $('<input style="font-weight: bold; margin-top:2px; border: 1px solid #ccc; padding: 1px; width:' + ($(this).width() + 2) + 'px" type="text" readonly="readonly" />').val($(this).text()).focus(function () {
+        $(this).select();
+    }).mouseup(function(e){
+        e.preventDefault();
+    });
+    $(this).replaceWith(el);
+    el.select();
+});
+
+{if isset($block.original)}
+    {$confirm_message = '[`This will reset all customizations you applied to this block. Are you sure?`]'}
+{else}
+    {$confirm_message = '[`This will permanently delete this snipper. Are you sure?`]'}
+{/if}
+
+$("#s-block-delete").click(function () {
+    if (confirm('{$confirm_message}')) {
+        $.post("?module=blocks&action=delete", { id: "{$block.id|escape}"}, function (response) {
+            if (response.status == 'ok') {
+                {if !isset($block.original)}
+                    var li = $("#ul-blocks li.selected");
+                    if (li.prev().length) {
+                        var hash = li.prev().addClass('selected').find('a').attr('href');
+                    } else {
+                        var hash = li.next().addClass('selected').find('a').attr('href');
+                    }
+                {/if}
+                $("div.s-editor").empty();
+                $('#ul-blocks li[data-block-id="{$block.id|escape}"]').remove();
+                {if !isset($block.original)}
+                    $.wa.setHash(hash);
+                {else}
+                    location.reload();
+                {/if}
+            }
+        }, "json");
+    }
+    return false;
+});
+
+$('.s-block-view-original').click(function() {
+    var d = $('#s-block-view-original-dialog');
+    if (d.length) {
+        d.waDialog({
+            onLoad: function() {
+                var editor = ace.edit('s-block-original');
+                ace.config.set("basePath", wa_url + 'wa-content/js/ace/');
+                editor.setTheme("ace/theme/eclipse");
+                var session = editor.getSession();
+                session.setMode("ace/mode/css");
+                session.setMode("ace/mode/javascript");
+                session.setMode("ace/mode/smarty");
+                session.setUseWrapMode(true);
+                editor.renderer.setShowGutter(false);
+                editor.setShowPrintMargin(false);
+                editor.setFontSize(13);
+                editor.setHighlightActiveLine(false);
+                editor.setReadOnly(true);
+
+                setTimeout(function () {
+                    var newHeight = editor.getSession().getScreenLength() * editor.renderer.lineHeight + editor.renderer.scrollBar.getWidth();
+                    if (newHeight < 220) {
+                        newHeight = 220;
+                    }
+                    $('#s-block-original').height(newHeight.toString() + "px");
+                    editor.resize();
+                }, 50);
+            }
+        });
+    }
+    return false;
+});
+
+$('#s-block-settings-toggle').click(function(){
+    $('#s-block-settings').toggle();
+    return false;
+});
+
+
+</script>

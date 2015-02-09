@@ -1,0 +1,107 @@
+
+<div class="b-comment {if $comment.status == blogCommentModel::STATUS_DELETED}b-deleted{/if}" id="b-comment-{$comment.id}" data-comment-id="{$comment.id}">
+  <span class="b-comment-auth-{$comment.auth_provider|default:blogCommentModel::AUTH_USER}">
+    {capture name=commentor_name}
+      <i class="icon16{if !$comment.auth_provider || $comment.auth_provider eq blogCommentModel::AUTH_GUEST || $comment.auth_provider eq blogCommentModel::AUTH_USER} userpic20{/if}" style="background-image: url('{$comment.user.photo_url_20}');"></i><span class="bold">{$comment.user.name|escape}</span>
+    {/capture}
+    {if $contact_rights && $comment.contact_id != 0}
+      <a href="{$wa_backend_url}contacts/#/contact/{$comment.contact_id}" class="bold">
+        {$smarty.capture.commentor_name}
+      </a>
+    {elseif $comment.site}
+      <a href="{$comment.site}">
+        {$smarty.capture.commentor_name}
+      </a>
+    {else}
+      {$smarty.capture.commentor_name}
+    {/if}
+    {if !$comment.contact_id && $comment.email}
+      <span class="hint">{$comment.email|escape}</span>
+    {/if}
+
+    {if isset($comment.plugins) && isset($comment.plugins.authorname_suffix) && $comment.plugins.authorname_suffix}
+
+      {* @event prepare_comments_backend.%plugin_id%.authorname_suffix *}
+      <!-- plugin hook: "prepare_comments_backend.*.authorname_suffix" -->
+      {foreach $comment.plugins.authorname_suffix as $plugin => $output}
+
+        <!-- begin "prepare_comments_backend.{$plugin}.authorname_suffix" -->
+        {$output}
+        <!-- end "prepare_comments_backend.{$plugin}.authorname_suffix" -->
+      {/foreach}
+      <!-- end plugin hook: "prepare_comments_backend.*.authorname_suffix" -->
+    {/if}
+  </span>
+
+  {if isset($comment.plugins) && isset($comment.plugins.before) && $comment.plugins.before}
+
+    {* @event prepare_comments_backend.%plugin_id%.before *}
+    <!-- plugin hook: "prepare_comments_backend.*.before" -->
+    {foreach $comment.plugins.before as $plugin => $output}
+
+      <!-- begin "prepare_comments_backend.{$plugin}.before" -->
+      {$output}
+      <!-- end "prepare_comments_backend.{$plugin}.before" -->
+    {/foreach}
+    <!-- end plugin hook: "prepare_comments_backend.*.before" -->
+  {/if}
+
+  <span class="hint">
+    {$comment.datetime|wa_datetime:"humandatetime"}, {$comment.ip}
+  </span>
+
+  {if $comment.editable}
+    <a href="#" class="small b-comment-delete" {if $comment.status eq blogCommentModel::STATUS_DELETED}style="display: none;"{/if} >[`delete`]</a>
+    <a href="#" class="small b-comment-restore" {if $comment.status eq blogCommentModel::STATUS_PUBLISHED}style="display: none;"{/if} >[`restore`]</a>
+  {/if}
+  {if $comment.status == blogCommentModel::STATUS_DELETED && !$comment.editable}
+    <p class="b-comment-text">[`Comment deleted`]</p>
+  {else}
+    {if isset($comment.post) && (!$comment.post || (!$comment.editable && ($comment.post && $comment.post.status neq blogPostModel::STATUS_PUBLISHED)))}
+        <p class="b-comment-text gray">
+            {$comment.text|escape|nl2br}</span>
+        </p>
+        <p class="b-comment-text hint italic">[`Comment to an unpublished post (not visible anymore)`]</p>
+      
+    {else}
+      {* COMMENT TEXT *} 
+      <p class="b-comment-text">
+          <span{if isset($comment['new'])} class="highlighted"{/if}>{$comment.text|escape|nl2br}</span>
+      </p>
+      {* post link *}      
+      {if isset($comment.post) && $comment.post && (!isset($single_view) || !$single_view)}
+          <p class="hint">
+            [`on`]
+            {if $comment.post.blog_status == blogBlogModel::STATUS_PRIVATE}
+                <i class="icon10 lock-bw no-overhanging"></i>
+            {/if}
+            {if isset($comment.post) && $comment.post && $comment.editable || (isset($comment.post) && $comment.post && $comment.post.status eq blogPostModel::STATUS_PUBLISHED)}
+              <a href="{if $comment.post.status eq blogPostModel::STATUS_PUBLISHED && $comment.post.blog_status eq blogBlogModel::STATUS_PUBLIC && $comment.post.link}{$comment.post.link[0]}{else}?module=post&amp;id={$comment.post_id}{if $comment.post.status eq blogPostModel::STATUS_PUBLISHED}#comments{else}&amp;action=edit{/if}{/if}"><span{if $comment.post.color && $comment.post.color != 'b-white'} class="b-{$comment.post.color|substr:2}"{/if}>{$comment.post.title|escape}</span></a>
+            {else}
+              [`unpublished post`]
+            {/if}
+          </p>
+      {/if}
+      {* in reply to *}
+      {if $comment.parent && isset($comment.parent_text)}
+        <p class="hint">[`in reply to`] <strong>{if $comment.parent_status == blogCommentModel::STATUS_DELETED && !$comment.editable}<strike>[`Comment deleted`]</strike>{else}{$comment.parent_text|escape}{/if}</strong></p>
+      {/if}
+      {if $allow_reply}
+        <a href="#" class="b-comment-reply small inline-link"><b><i>[`reply`]</i></b></a>
+      {/if}
+    {/if}
+  {/if}
+
+  {if isset($comment.plugins) && isset($comment.plugins.after) && $comment.plugins.after}
+
+    {* @event prepare_comments_backend.%plugin_id%.after *}
+    <!-- plugin hook: "prepare_comments_backend.*.after" -->
+    {foreach $comment.plugins.after as $plugin => $output}
+
+      <!-- begin "prepare_comments_backend.{$plugin}.after" -->
+      {$output}
+      <!-- end "prepare_comments_backend.{$plugin}.after" -->
+    {/foreach}
+    <!-- end plugin hook: "prepare_comments_backend.*.after" -->
+  {/if}
+</div>

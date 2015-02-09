@@ -1,0 +1,155 @@
+
+<!-- theme filters -->
+<div class="i-filters">
+    <!-- price -->
+    <div class="float-right">
+        {*
+        <ul class="menu-h i-filter-price js-filter" data-filter="commercial">
+            <li class="selected"><a href="#/themes/" data-href="#/themes%s%s/" class="inline-link"><b><i>[`Both`]</i></b></a></li>
+            <li><a href="#/themes&commercial=true/" data-href="#/themes&commercial=true%s%s/" class="inline-link"><b><i>[`Paid`]</i></b></a></li>
+            <li><a href="#/themes&commercial=false/" data-href="#/themes&commercial=false%s%s/" class="inline-link"><b><i>[`Free`]</i></b></a></li>
+        </ul>
+        *}
+        {*
+        <div class="i-sort">
+            <select>
+                <option>[`Most popular`]</option>
+                <option>[`Newest`]</option>
+            </select>
+        </div>
+*}
+
+        <ul class="menu-h i-sort js-filter" data-filter="sort">
+            <li class="selected"><a href="#/themes/" data-href="#/themes%s/%s/" class="inline-link"><b><i>[`Most popular`]</i></b></a></li>
+            <li><a href="#/themes&sort=new/" data-href="#/themes&sort=new%s/%s/" class="inline-link"><b><i>[`Newest`]</i></b></a></li>
+        </ul>
+    </div>
+
+
+    <!-- app filter -->
+
+    <div class="float-left">
+        <ul class="menu-h with-icons dropdown js-query">
+            <li>
+                <a href="#/themes/" data-href="#/themes%s%s/" class="inline-link">
+                    <i class="icon16 link"></i>
+                    <b><i><strong>[`Universal themes`]</strong></i></b><span class="hint"></span>
+                    <i class="icon10 darr"></i>
+                </a>
+
+                <ul class="menu-v with-icons">
+
+                    <li class="selected"><a href="#/themes/" data-href="#/themes%s/" class="bold"><i class="icon16 link"></i>[`Universal themes`]{if !empty($vendor_name)} <span class="hint">{$vendor_name|string_format:'[`by %s`]'|escape}</span>{/if}</a>
+                    </li>
+
+                    <!-- list all installed apps -->
+                    {if !empty($apps)}
+                    {foreach $apps as $app_id => $app}
+                        {if !empty($app.installed) && $app.enabled} {assign var=app_id value=$app.slug}
+                            <li {if isset($slug)&&$slug==$app.slug && (!isset($vendor) || $vendor==$app.vendor)}class="selected"{/if}>
+                                <a href="#/themes&slug={$app.slug}/" data-href="#/themes%s&slug={$app.slug}/">
+                                    {if strpos($app.icons.16, '.')}<img src="{$app.icons.16|regex_replace:'@^/@':$wa_url}" alt="{$app.name|escape}" />{else}<i class="icon16 {$app.icons.16}"></i>{/if}{$app.name|default:{$app.slug}|escape}
+                                     {if !empty($app.themes) && false}
+                                        <span class="count">{if is_array($app.themes)}{$app.themes|count}{else}{$app.themes}{/if}</span>
+                                     {/if}
+                                     {if !empty($vendor_name)}<span class="hint">{$vendor_name|string_format:'[`by %s`]'|escape}</span>{/if}
+                                </a>
+                            </li>
+                         {/if}
+                    {/foreach}
+                    {else}
+                        <li>
+                            <br /><br />
+                            <p class="align-center hint">[`No design theme enabled apps installed.`]</p>
+                        </li>
+                    {/if}
+                </ul>
+
+            </li>
+        </ul>
+    </div>
+
+</div>
+
+<!-- theme list -->
+<div class="block double-padded" id="themes-list">
+
+    {if !empty($extras)}
+        <ul class="thumbs">
+        {*foreach $slug as $key*}
+        {foreach $extras as $key => $app}
+
+        {foreach $app['themes'] as $theme_id => $theme}
+            <li{if $theme.installed} class="i-installed"{/if}>
+                <a href="#/themes/{$theme_id}/" data-href="#/themes%s%s/{$theme_id}/" class="js-item-link">
+                    <!-- cover -->
+                    <div class="i-paper">
+                        <div class="i-lifted-corners">
+                            <img src="{$theme.icon|default:'/wa-apps/installer/img/_theme_cover.png'}">
+                        </div>
+                        {if !empty($theme.publish_datetime) && strtotime($theme.publish_datetime) > $smarty.now - 86400*14}
+                            <!-- NEW -->
+                            <div class="i-badge new"><span>New</span></div>
+                        {elseif !empty($theme.tags)}
+                            {if in_array('featured', $theme.tags)}
+                                <!-- FEATURED -->
+                                <div class="i-badge featured"><i class="thumb-up"></i></div>
+                            {elseif in_array('updated', $theme.tags)} 
+                                <!-- UPDATED -->
+                                <div class="i-badge updated two-lines"><span>[`New version!`]</span></div>
+                            {/if}
+                        {/if}
+                    </div>
+
+                    <!-- name & author -->
+                    <h5>{$theme.name|default:$theme_id|escape}</h5>
+
+                    <!-- theme price and status -->
+                    {if !$theme.installed}
+                        {if $theme.commercial}
+                            {if $theme.lease_price == 'free'}
+                                {* free to install on this particular installation (cloud) *}
+                                <span class="black">[`Free`]</span>
+                            {else}
+                                {if !empty($theme.compare_price)}
+                                    <strike class="gray">{$theme.compare_price}</strike>&nbsp;
+                                    <strong class="highlighted">{$theme.price}</strong>
+                                {else}
+                                    <span class="gray">
+                                        {$theme.price}
+                                        {if $theme.lease_price}
+                                            [`or`] {sprintf('[`%s/mo`]',$theme.lease_price)}
+                                        {/if}
+                                    </span>
+                                {/if}
+                            {/if}
+                        {else}
+                            <span class="gray">[`Free`]</span>
+                        {/if}
+                    {else}
+                        <em class="i-installed-label"><i class="icon10 yes"></i> [`Installed`]</em>
+                    {/if}
+                </a>
+            </li>
+         {/foreach}
+         {foreachelse}
+            <p class="align-center gray">[`No design themes were found.`]</p>
+        {/foreach}
+         </ul>
+    {else}
+        <p class="align-center gray">[`No design themes were found.`]</p>
+    {/if}
+
+
+
+
+<!--
+     [`Design themes are downloaded from webasyst.com website and installed in a single click.`]
+-->
+</div>
+
+<script type="text/javascript">
+    <!--
+    $.layout.window.setTitle('{"[`Themes`]"|cat:" — ":{$wa->accountName(false)}|escape:'javascript'}');
+    //-->
+</script>

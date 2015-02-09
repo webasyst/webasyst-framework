@@ -1,0 +1,119 @@
+<script type="text/javascript" src="{$wa_url}wa-content/js/jquery-ui/jquery.ui.draggable.min.js"></script>
+<script type="text/javascript" src="{$wa_url}wa-content/js/jquery-ui/jquery.ui.droppable.min.js"></script>
+{wa_js file="js/blog-calendar.min.js"}
+{$wa_app_static_url}js/blogCalendar.js
+{/wa_js}
+<script type="text/javascript">
+    $.wa_blog_options.calendar = {
+        allow_add: {if $allow_add}true{else}false{/if},
+        td_title: '[`Click to create a post scheduled to be published on this day`]',
+        statuses: {
+            'deadline':  '{blogPostModel::STATUS_DEADLINE}',
+            'draft':     '{blogPostModel::STATUS_DRAFT}',
+            'scheduled': '{blogPostModel::STATUS_SCHEDULED}',
+            'public':    '{blogBlogModel::STATUS_PUBLIC}',
+            'private':   '{blogBlogModel::STATUS_PRIVATE}'
+        }
+    };
+</script>
+<div class="b-stream">
+  <div class="block triple-padded b-stream-title">
+    <div class="block half-padded float-left">
+      <a href="?action=calendar&amp;month={$prev_month}"><i class="icon16 larr"></i></a>
+      {if $prev_overdue}
+        <i class="icon16 exclamation" title="[`Overdue posts`]"></i>
+      {/if}      
+    </div>
+    <div class="block half-padded float-right">
+      {if $next_overdue}
+        <i class="icon16 exclamation" title="[`Overdue posts`]"></i>
+      {/if}    
+      <a href="?action=calendar&amp;month={$next_month}"><i class="icon16 rarr"></i></a>
+    </div>
+    <h1 class="align-center">
+      <select name="month" class="month">
+        {foreach $months as $key => $value}
+          <option value="{$key}" {if $current_month == $key}selected{/if}>{$value}</option>
+        {/foreach}
+      </select>
+      <select name="year" class="year">
+        {foreach $years as $year}
+          <option value="{$year}" {if $current_year == $year}selected{/if}>{$year}</option>
+        {/foreach}
+      </select>
+    </h1>
+  </div>
+
+  <div class="block double-padded b-post b-white">
+    <table class="b-calendar">
+      <thead>
+      <tr>
+        {if $week_first_sunday}<th>{_ws('Sun')}</th>{/if}
+        <th>{_ws('Mon')}</th>
+        <th>{_ws('Tue')}</th>
+        <th>{_ws('Wed')}</th>
+        <th>{_ws('Thu')}</th>
+        <th>{_ws('Fri')}</th>
+        <th>{_ws('Sat')}</th>
+        {if !$week_first_sunday}<th>{_ws('Sun')}</th>{/if}
+      </tr>
+      </thead>
+      <tbody>
+
+      {foreach $days as $week}
+        <tr>
+        {foreach $week as $day}
+          <td id="date-{$day.date.date}"{if $day.date.month != $current_month} class="b-not-this-month"{elseif $day.date.month == $today_month && $day.date.day == $today} class="b-today"{/if}>
+            <span class="b-date">{$day.date.day}</span>
+            {foreach $day.posts as $post}
+              <span title="{$post.blog_name|escape}" class="status-{$post.status}" data-post-id="{$post.id}">
+              {strip}
+                {if isset($post.alert)}
+                  <i class="icon10 exclamation" title="[`Overdue`]"></i>
+                {elseif $post.status == blogPostModel::STATUS_DEADLINE}
+                  <i class="icon10 exclamation" title="[`Overdue`]"></i>
+                {elseif $post.status == blogPostModel::STATUS_DRAFT}
+                  <i class="icon10 edit-bw" title="[`Draft`]"></i>
+                {elseif $post.status == blogPostModel::STATUS_SCHEDULED}
+                  <i class="icon10 clock" title="[`Scheduled for publication`]"></i><strong class="small italic">{$post.datetime|wa_datetime:'time'}</strong>&nbsp;
+                {elseif $post.blog_status == blogBlogModel::STATUS_PUBLIC}
+                  <i class="icon10 yes" title="[`Published`]"></i>
+                {elseif $post.blog_status == blogBlogModel::STATUS_PRIVATE}
+                  <i class="icon10 lock-bw" title="[`Private post`]"></i>
+                {/if}
+              {/strip}
+              {$target=''}
+              {if $post.editable}
+                {if $post.status neq blogPostModel::STATUS_PUBLISHED || $post.blog_status eq blogBlogModel::STATUS_PUBLIC}
+                  {$post_link="?module=post&amp;id=`$post.id`&amp;action=edit"}
+                {elseif $post.link && $post.status eq blogPostModel::STATUS_PUBLISHED}
+                  {$target='target="_blank"'}
+                  {$post_link=current($post.link)}
+                {else}
+                  {$post_link="?module=post&amp;id=`$post.id`"}
+                {/if}
+              {elseif $post.link && $post.status eq blogPostModel::STATUS_PUBLISHED}
+                {$target='target="_blank"'}
+                {$post_link="{current($post.link)}"}
+              {else}
+                {$post_link="?module=post&amp;id=`$post.id`"}
+              {/if}
+
+              <a href="{$post_link}"{$target}
+                class="small {if isset($post.overdue) && $post.overdue}b-draft-overdue{else if $post.status eq blogPostModel::STATUS_DEADLINE || $post.status eq blogPostModel::STATUS_DRAFT}b-draft{else}{$post.color}{/if} {if $post.status eq blogPostModel::STATUS_SCHEDULED}italic{/if}"
+              >{$post.title|escape}</a>
+              {if $post.status == blogPostModel::STATUS_PUBLISHED}
+                <span class="hint">{$post.datetime|wa_datetime:"time"}</span>
+              {/if}
+              </span>
+              <br><br>
+            {/foreach}
+          </td>
+        {/foreach}
+        </tr>
+      {/foreach}
+      </tbody>
+    </table>
+  </div>
+</div>
+<script>$.wa.locale['Overdue'] = '[`Overdue`]';</script>

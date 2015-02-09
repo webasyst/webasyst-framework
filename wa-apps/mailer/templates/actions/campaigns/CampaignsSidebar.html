@@ -1,0 +1,167 @@
+{*
+ * Common right sidebar included in several other campaign pages.
+ *}
+<div class="sidebar right200px"><div class="block m-editor-toolbar">
+
+    <div class="block">
+        <ul class="menu-v with-icons">
+            {*if $campaign.status != mailerMessageModel::STATUS_DRAFT && $campaign.status != mailerMessageModel::STATUS_PENDING}
+                <li><a href="#/campaigns/letter/{$campaign.id}/">
+                    [`Letter`]
+                    <span id="right-sidebar-letter-hint" class="red hint{if $message_written} hidden{/if}"><br>[`not written yet`]</span>
+                </a></li>
+            {/if*}
+
+            {*if $wa->mailer->writable($campaign)}
+                {if $campaign.status == mailerMessageModel::STATUS_DRAFT }
+                {elseif $campaign.status == mailerMessageModel::STATUS_PENDING }
+                {elseif $campaign.status != mailerMessageModel::STATUS_SENT && $campaign.status != mailerMessageModel::STATUS_SENDING_ERROR}
+                    <li><a href="#/campaigns/report/{$campaign.id}/">
+                        {if $campaign.status == mailerMessageModel::STATUS_SENDING_PAUSED}
+                            [`Sending report`] <span>([`Paused`] <i class="icon16 pause"></i>)</span>
+                        {else}
+                            [`Now sending`] <i class="icon16 loading"></i>
+                        {/if}
+                    </a></li>
+                {else}
+                    <li><a href="#/campaigns/report/{$campaign.id}/">[`Sending report`]</a></li>
+                {/if}
+            {/if*}
+
+            {*if $campaign.status != mailerMessageModel::STATUS_DRAFT && $campaign.status != mailerMessageModel::STATUS_PENDING}
+                <li><a href="#/campaigns/options/{$campaign.id}/">[`Options`]</a></li>
+            {/if*}
+
+            <li class="bottom-padded" style="padding-left: 4px;">
+                <h6>[`Author`]</h6>
+                <div class="profile image32px">
+                    <div class="image">
+                        <a href="/webasyst/contacts/#/contact/{$creator.id}"><img width="32" height="32" src="{$creator->getPhoto(32)}" alt=""></a>
+                    </div>
+                    <div class="details">
+                        <a href="/webasyst/contacts/#/contact/{$creator.id}" style="margin:0;padding:0">{$creator.name|escape}</a>
+                        {$campaign.create_datetime|wa_date:'humandatetime'}
+                    </div>
+                </div>
+            </li>
+
+            {if $campaign.status != mailerMessageModel::STATUS_DRAFT}
+                {if mailerHelper::isAuthor()}
+                    <li><a href="javascript:void(0)" class="new-from-this-link"><i class="icon16 add"></i> [`Create a clone`]</a></li>
+                {/if}
+                {if mailerHelper::isAdmin()}
+                    <li><a href="javascript:void(0)" class="save-template-link"><i class="icon16 script"></i> [`Save as a template`]</a></li>
+                {/if}
+            {/if}
+
+            {if $wa->mailer->writable($campaign)}
+                <li><a href="#" id="message-delete"><i class="icon16 delete"></i>
+                    {if $campaign.is_template || !$campaign.status || $campaign.status == mailerMessageModel::STATUS_DRAFT}
+                        [`Delete this draft`]
+                    {else}
+                        [`Delete campaign`]
+                    {/if}
+                </a></li>
+            {/if}
+        </ul>
+    </div>
+
+</div></div>{* div.sidebar.right200px, div.block.m-editor-toolbar *}
+
+<script>(function($) { "use strict";
+
+    $.wa.mailer.highlightSidebar($('.m-editor-toolbar'));
+
+    // Set up "with right sidebar" layout
+    $('#content').removeClass('shadowed').removeClass('blank');
+
+    {if $wa->mailer->writable($campaign)}
+        // Link to delete campaign
+        $("#message-delete").click(function () {
+
+            {if !$campaign.is_template}
+                var confirm_text = "[`Do you really want to remove this campaign (you will not be able to undo this action)?`]";
+                {if $campaign.status && $campaign.status != mailerMessageModel::STATUS_DRAFT && !empty($contains_files)}
+                    confirm_text += "\n\n"+"[`Images containing in your message will be unavailable to your recipients.`]";
+                {/if}
+                if (!confirm(confirm_text)) {
+                    return false;
+                }
+            {/if}
+
+
+            $(this).children('.icon16').removeClass('delete').addClass('loading');
+            $.wa.mailer.random = Math.random();
+            var rand = $.wa.mailer.random;
+            $.post("?module=campaigns&action=delete", { id: {$campaign.id} }, function (response) {
+                if (response.status == 'ok') {
+                    if ($.wa.mailer.random == rand) {
+                        $.storage.del('mailer/hash');
+                        $('#content .sidebar').remove();
+                        $('#content .m-envelope-stripes-2').html(
+                            {if $campaign.is_template || !$campaign.status || $campaign.status == mailerMessageModel::STATUS_DRAFT}
+                            {else}
+                            '<div class="block m-core-header">'+
+                            '<a href="#/campaigns/archive/" class="no-underline"><i class="icon10 larr"></i>[`Sent`]</a>'+
+                            '</div>' +
+                            {/if}
+                            '<div class="double-padded block"><h1>'+
+                                "{ifempty($campaign.subject, '[`<no subject>`]')|escape}"+
+                            '</h1><div class="info-block"><p>'+
+                                {if $campaign.is_template || !$campaign.status || $campaign.status == mailerMessageModel::STATUS_DRAFT}
+                                    "[`This draft has been deleted.`]"+
+                                {else}
+                                    "[`This campaign has been successfully deleted.`]"+
+                                {/if}
+                            '</p></div></div>'
+                        );
+                        $.wa.mailer.reloadSidebar();
+                    }
+                }
+            }, "json");
+            return false;
+        });
+    {/if}
+
+    {if mailerHelper::isAdmin()}
+        // 'Save as a template' link
+        $('.save-template-link').click(function() {
+            $.wa.mailer.showLoading();
+            $.post('?module=templates&action=copy&id={$campaign.id}', function(r) {
+                window.location.hash = '#/template/'+r.data+'/';
+            }, 'json');
+        });
+    {/if}
+
+    {if mailerHelper::isAuthor()}
+        // 'Create new from this' link
+        $('.new-from-this-link').click(function() {
+            $.wa.mailer.showLoading();
+            $.post('?module=templates&action=copy&create_draft=1&id={$campaign.id}', function(r) {
+                $.wa.mailer.reloadSidebar();
+                window.location.hash = '#/campaigns/letter/'+r.data+'/';
+            }, 'json');
+        });
+    {/if}
+
+    {if $campaign.status != {mailerMessageModel::STATUS_DRAFT} && $campaign.status != {mailerMessageModel::STATUS_PENDING}}
+        $('#right-sidebar-recipients-number').hide();
+    {elseif $wa->mailer->writable($campaign)}
+        setTimeout(function() {
+            // Get number of recipients from local storage, if cached
+            {if isset($recipients_selected)}
+                $.wa.mailer.showRecipientsInRightSidebar('{if $recipients_selected === true}1{else}{$recipients_selected}{/if}');
+            {else}
+                $.wa.mailer.showRecipientsInRightSidebar('');
+            {/if}
+
+            {if $wa->mailer->getConfigOption('max_recipients_count') && isset($recipients_selected)}
+                var max_recipients_count = {$wa->mailer->getConfigOption('max_recipients_count')};
+                var recipients_count = ('{$recipients_selected}' || '0').replace(/[^0-9]/g, '') - 0;
+                if (recipients_count > max_recipients_count) {
+                    $('#right-sidebar-recipients-number').append('<span class="red indicator" style="top:-1px;left:3px;">!</span>');
+                }
+            {/if}
+        }, 0);
+    {/if}
+})($);</script>

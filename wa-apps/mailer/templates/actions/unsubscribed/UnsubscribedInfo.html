@@ -1,0 +1,86 @@
+<div class="fields" id="unsibscriber-info-fields">
+    <div class="field">
+        <div class="name">[`Email`]</div>
+        <div class="email-field value">{$data.email|escape}</div>
+    </div>
+    <div class="field">
+        <div class="name">[`Linked to contact`]</div>
+        <div class="name-field value">
+            {if $data.linked_contacts}
+                {foreach $data.linked_contacts as $contact_id => $contact_name}
+                    <a href="{mailerHelper::getContactsAppUrl()}#/contact/{$contact_id}/">{$contact_name|escape}</a>{if !$contact_name@last},{/if}
+                {/foreach}
+            {else}
+                [`not set `]
+            {/if}
+        </div>
+    </div>
+    <div class="field">
+        <div class="name">[`Unsubscribe date`]</div>
+        <div class="date-field value">{$data.datetime_formatted}</div>
+    </div>
+    <div class="field">
+        {if $data.message_id}
+            {sprintf_wp('Self unsubscribed from %s.', "<a href='#/campaigns/report/{$data.message_id}/'>{$data.campaign_name|escape} ({$data.message_id})</a>")}
+        {else}
+            [`Unsubscribed by administrator.`]
+        {/if}
+    </div>
+    <div class="top-padded field">
+        <label><input type="checkbox"> [`Resubscribe`]</label>
+    </div>
+    <div class="hidden red warning-message top-padded field">
+        [`We believe that you act on behalf of and for the benefit of this client, or used to unsubscribe for testing purposes.`]
+    </div>
+</div>
+
+<script>(function() { "use strict";
+
+    var fields = $('#unsibscriber-info-fields');
+    var dialog = fields.parents('.dialog');
+
+    // Dialog buttons
+    var buttons_div = dialog.find('.dialog-buttons-gradient');
+    var close_button = $('<input type="submit" class="button" value="{_w("Close")}">').appendTo(buttons_div).click(function() {
+        dialog.trigger('close');
+        return false;
+    });
+    var save_button = $('<div></div>');
+    save_button.append(
+        $('<input type="submit" class="button green" value="'+$_('Save')+'">').click(function() {
+            $(this).parent().append('<i class="icon16 loading"></i>');
+            $.post('?module=unsubscribed&action=delete', { email: '{$data.email}', list_id: '{$data.list_id}' }, function() {
+                dialog.trigger('close');
+                $.wa.mailer.redispatch();
+            });
+        })
+    );
+    save_button.append('<span> '+$_('or')+' </span>');
+    save_button.append(
+        $('<a href="#">'+$_('cancel')+'</a>').click(function() {
+            dialog.trigger('close');
+            return false;
+        })
+    );
+    buttons_div.append(save_button.hide());
+
+    // Close the dialog when user clicks any link
+    fields.find('a').click(function() {
+        dialog.trigger('close');
+    });
+
+    // Change buttons and show warning when checkbox is checked
+    fields.find('input:checkbox').change(function() {
+        if ($(this).is(':checked')) {
+            close_button.hide();
+            save_button.show();
+            fields.find('.warning-message').show();
+        } else {
+            close_button.show();
+            save_button.hide();
+            fields.find('.warning-message').hide();
+        }
+    });
+
+})();</script>
+

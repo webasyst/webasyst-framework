@@ -1,0 +1,268 @@
+<script type="text/javascript">
+    document.title = {if $app}{json_encode($app.name)} + ' [`settings`]'{else}'[`Redirect`]'{/if} + ' — ' + {json_encode($domain)};
+</script>
+{if !$wa->get('details')}
+<div class="s-editor s-white s-app-settings">
+	<form id="s-settings-form" method="post" action="{$wa_backend_url}site/?module=routing&action=save&domain_id={$domain_id}&route={$route_id}">
+    {if $wa->get('reload_on_change')}<input type="hidden" name="correct_url" value="1">{/if}
+	<div class="float-left s-route">
+		<div class="block s-route-core">
+   				
+   	        <a href="#" class="cancel back s-route-block">&larr; [`Back`]</a>
+
+            {if strlen($route_id)}
+
+                <!-- existing route -->
+                {if empty($route.redirect)}
+       	            <div class="s-route-block" id="s-route-what">
+                        {if $app}
+                            <img src="{$wa_url}{$app.icon.24}" />
+                            <h3>{$app.name}</h3>
+                        {else}
+                            {$route.app|escape}
+                        {/if}
+                    </div>
+                {/if}
+                
+                <div class="s-route-block" id="s-route-where">
+        		    <span class="gray">
+        		        {$domain}/
+        		    </span><input type="text" name="params[url]" value="{if strlen($route_id)}{$route.url|escape}{/if}" class="bold large" placeholder="*" />
+                </div>
+
+                {if empty($route.redirect) && !$app}
+                <div class="block half-padded float-right">
+                    <ul class="menu-h">
+                        <li><a href="#" class="s-route-action s-route-delete" title="[`Delete rule`]"><i class="icon16 delete"></i>[`Delete rule`]</a></li>
+                    </ul>
+                </div>
+                {/if}
+          
+            {else}
+
+                <!-- new route -->
+                <div class="s-route-block" id="s-route-where">
+        		    <span class="gray">
+        		        {$domain}/
+        		    </span><input type="text" name="params[url]" value="{if strlen($route_id)}{$route.url|escape}{/if}" class="bold large" placeholder="*" />
+                </div>
+                
+                {if empty($route.redirect)}
+           	        <div class="s-route-block" id="s-route-what">
+            		    <span class="gray">&rarr;</span>
+        			    <img src="{$wa_url}{$app.icon.24}" />
+        				<select class="s-select-app" name="params[app]">
+                            {foreach $apps as $app}
+                            <option value="{$app.id}" data-img="{$app.icon.24}">{$app.name}</option>
+                            {/foreach}
+                            <option value="" data-img="wa-apps/site/img/arrow.png">[`Redirect`]...</option>
+                        </select>
+                    </div>
+                {/if}
+
+
+            {/if}
+
+            
+            <div class="s-route-block" style="{if empty($route.redirect)}display: none;{/if}" id="s-route-to">
+                &rarr;
+    		    <input type="text" name="params[redirect]" {if !isset($route.redirect)}disabled{/if} value="{if !empty($route.redirect)}{$route.redirect|escape}{/if}" class="bold large" placeholder="http://" />
+            </div>
+
+		</div>
+{/if}
+		<div class="block padded s-route-details">
+			<div class="fields form">
+				{$themes=siteHelper::getThemes($app_id, true)}
+                {if $app}
+				<div class="field-group">
+    				<div class="field">
+    					<div class="name">[`Settlement name`]</div>
+    					<div class="value">
+    						<input type="text" name="params[_name]" value="{$route_name|escape}" class="bold" /><br />
+    						<span class="hint">[`Name is used in the <em>$wa->apps</em> navigation menu of this website`]</span>
+    					</div>
+    				</div>
+                    {if $themes}
+    				<div class="field">
+    					<div class="name">[`Design theme`]</div>
+    					<div class="value">
+    						{html_options name="params[theme]" options=$themes selected=ifempty($route['theme'], 'default')}
+    					</div>
+    				</div>
+    				<div class="field">
+    					<div class="name">[`Mobile design theme`]</div>
+    					<div class="value">
+    						{html_options name="params[theme_mobile]" options=$themes selected=ifempty($route.theme_mobile, 'default')}
+    						<br />
+    						<span class="hint">[`Design theme for mobile multi-touch devices such as iPhone and Android`]</span>
+    					</div>
+    				</div>
+                    <div class="field">
+                        <div class="name">[`Locale`]</div>
+                        <div class="value">
+                            {if !strlen($route_id)}{$_l=$wa->locale()}{else}{$_l=ifset($route.locale, '')}{/if}
+                            {html_options name="params[locale]" options=$locales selected=$_l}
+                        </div>
+                    </div>
+                    {/if}
+                    <div class="field">
+                        <div class="name">[`Privacy`]</div>
+                        <div class="value">
+                        	<label>
+                        	<input type="checkbox" value="1" name="params[private]"{if !empty($route.private)} checked{/if}> [`Private settlement`]<br />
+                            <span class="hint">[`When this option is enabled, the settlement is treated as hidden (not published), i.e. accessible by the direct URL but not included either in the $wa->apps array or in the main Sitemaps file. The private setting is useful for temporary settlements, such as “Under Construction” pages, and for other settlements which should not be included in the core website navigation menu or indexed by search engines.`]</span>
+                            </label>
+                        </div>
+                    </div>
+				</div>
+				{if !empty($params)}
+					{foreach $params item=p}
+					<div class="field">
+						<div class="name">{$p.name|escape}</div>
+						<div class="value">{$p.value}</div>
+					</div>
+					{/foreach}
+				{/if}				
+				<div class="field">
+					<div class="name">[`Custom parameters`]</div>
+					<div class="value">
+						<textarea name="other_params">{foreach $route as $key=>$value}{if !in_array($key, array('app', 'url', 'theme', 'theme_mobile', 'locale', 'private')) && substr($key, 0, 1) != '_' && !isset($params[$key])}{$key|escape}={if $value===false}0{else}{$value|escape}{/if}
+
+{/if}{/foreach}</textarea>
+						<br />
+						<span class="hint">[`Optional set of custom <em>key=value</em> parameters which can be used within design templates and pages of this settlement as <em>&#123;$wa->globals("key")&#125;</em>. Each key=value pair should be on a separate line.`] <a href="[`http://www.webasyst.com/framework/docs/site/design/`]" target="_blank">[`Help`]</a> <i class="icon10 new-window"></i></span>
+					</div>
+				</div>
+                {/if}
+                {if !empty($route.redirect) || $app}
+				<div class="field">
+					<div class="value">
+
+                        {if strlen($route_id)}
+                        <div class="block half-padded float-right">
+                			<ul class="menu-h">
+                				<li><a href="#" class="s-route-action s-route-delete" title="[`Delete rule`]"><i class="icon16 delete"></i>[`Delete rule`]</a></li>
+                			</ul>
+                		</div>
+                        {/if}
+					
+						<input type="submit" name="save" class="button green" value="[`Save`]" />
+						<span id="s-settings-form-status"></span>
+					</div>
+				</div>
+                {/if}
+			</div>
+		</div>
+{if !$wa->get('details')}
+    </div>
+	</form>
+<div class="clear"></div>
+</div>
+
+<script type="text/javascript">
+$(function () {
+    $("select.s-select-app").on('change', function () {
+        if ($(this).val()) {
+            $('.s-route-details').html('<i class="icon16 loading"></i>').load('?module=routing&action=edit', 'domain_id={$domain_id}&app=' + $(this).val() + '&details=1', function () {
+            });
+            if ($(this).next('.redirect').length) {
+                $(this).next('.redirect').remove();
+            }
+            $('#s-route-what').show();
+            $('#s-route-to').hide().find('input').attr('disabled', 'disabled');
+        } else {
+            $('.s-route-details').find('div.field,div.field-group').not('div.field:last').remove();
+            if ($(this).next('.redirect').length) {
+                $(this).next().find('input').val('');
+            } else {
+                $('<span class="redirect"> <input name="params[redirect]" class="long" type="text" /></span>').insertAfter(this);
+                $(this).hide();
+            }
+            $('#s-route-where input').focus();
+            $('#s-route-what').hide();
+            $('#s-route-to').show().find('input').removeAttr('disabled');
+        }
+        $(this).prev().attr('src', "{$wa_url}" + $(this).find(':selected').attr('data-img')).show();
+    });
+
+    $("a.s-route-delete").click(function () {
+        if (confirm('[`This will delete the rule from website structure. Are you sure?`]')) {
+            $.post("?module=routing&action=delete&domain_id={$domain_id}", { "route": "{$route_id}"}, function (response) {
+                if (response.status == 'ok') {
+                    $("#route-{$route_id}").remove();
+                    $("#s-route-params").html('<div class="block double-padded align-center hint"><br />' +
+                        '<img src="{$wa_url}wa-apps/site/img/gear.png"><br /><br />[`Select route to manage its settings`]' +
+                        '<div class="clear"></div></div>'
+                    ).animate({ 'margin-left': '75%'}, 'slow');
+                    $(".s-editor .sidebar").animate({ 'width':'75%'}, 'slow');
+                    $("#s-rules").removeClass('s-routing-minimized');
+                    $("#s-rules .s-domain-url").show();
+                } else {
+                    alert(response.errors);
+                }
+            }, "json");
+        }
+        return false;
+    });
+	$("#s-settings-form").submit(function () {
+		var f = $(this);
+		$("#s-settings-form-status").html('<i style="vertical-align:middle" class="icon16 loading"></i> [`Saving...`]').fadeIn("slow");
+        var callback = function (response) {
+            if (response.status == 'ok') {
+                {if strlen($route_id)}
+                    {if $wa->get('reload_on_change')}
+                        if (response.data.change) {
+                            location.reload();
+                        }
+                    {/if}
+                    if (response.data.delete) {
+                        $('#route-{$route_id}').insertAfter($('#route-' + response.data.delete));
+                        $('#route-' + response.data.delete).remove();
+                    }
+                    $('#route-{$route_id} .s-editable-url').text(response.data.url);
+                    if (response.data.redirect) {
+                        $('#route-{$route_id} .redirect').text(response.data.redirect);
+                    } else {
+                        if (response.data.private) {
+                            $('#route-{$route_id} .s-app').addClass('gray');
+                        } else {
+                            $('#route-{$route_id} .s-app').removeClass('gray');
+                        }
+                    }
+                {/if}
+                    if (response.data.add) {
+                        if (response.data.add == 'top') {
+                            $('#s-rules').prepend(response.data.html);
+                        } else {
+                            $('#s-rules').append(response.data.html);
+                        }
+                    }
+                    $("#s-settings-form-status").html('<i style="vertical-align:middle" class="icon16 yes"></i>[`Saved`]').fadeOut('slow', function () {
+                        site_routing_full();
+                    });
+            } else if (response.status == 'fail') {
+                $("#s-settings-form-status").html('<span class="small" style="color: #f00;">' + response.errors + '</span>');
+                f.find('input.button:submit').removeClass('green').addClass('red');
+            }
+        }
+		$.post(f.attr('action'), f.serialize(), function (response) {
+            if (response.status == 'ok' && response.data.confirm) {
+                if (confirm(response.data.confirm)) {
+                    $.post(f.attr('action') + '&replace=' + response.data.replace, f.serialize(), callback, 'json')
+                } else {
+                    $("#s-settings-form-status").empty();
+                }
+            } else {
+                callback(response);
+            }
+        }, "json");
+		return false;
+	});
+    $("#s-settings-form .cancel").click(function () {
+        site_routing_full();
+        return false;
+    });
+ });
+</script>
+{/if}
