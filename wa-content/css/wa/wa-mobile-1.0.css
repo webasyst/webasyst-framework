@@ -1,0 +1,75 @@
+/*
+ * This file is part of Webasyst framework.
+ *
+ * Licensed under the terms of the GNU Lesser General Public License (LGPL).
+ * http://www.webasyst.com/framework/license/
+ *
+ * @link http://www.webasyst.com/
+ * @author Webasyst LLC
+ * @copyright 2011 Webasyst LLC
+ * @package Webasyst
+ */
+  
+/*
+ * Webasyst & jQuery Mobile 
+ * ------------------------
+ * Linking jQuery Mobile, and some overrides.
+ * jQuery Mobile (http://jquerymobile.com/) is the default and recommended CSS/JS framework for building mobile versions of Webasyst apps.
+*/
+@import "../jquery-mobile/jquery.mobile-1.1.1.min.css";
+@import "../jquery-mobile/jquery.mobile.custom.css"; 
+
+
+
+
+html { -webkit-text-size-adjust: none; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; }
+.ui-li::-moz-focus-inner {
+border: 0;
+}
+#wa.wa-app-list { background: #fff; }
+#wa.wa-app-list .ui-content { padding: 15px 10px; }
+#wa.wa-mobile-login { background:url('../../img/cloth-background-light.jpg'); }
+@media all and (-webkit-min-device-pixel-ratio: 2) {
+	#wa.wa-mobile-login { background:url('../../img/cloth-background-light.jpg'); background-size:200px 200px; }
+}
+#wa.wa-mobile-login .ui-grid-a > * { width: 100%; }
+#wa.wa-mobile-login .ui-grid-a .ui-btn { margin-left: 2px; margin-right: 2px; }
+#wa.wa-mobile-login div.ui-body-r { background: transparent; }
+#wa.wa-mobile-login .wa-api-allow .ui-btn { color: green; }
+#wa.wa-mobile-login .wa-api-deny .ui-btn { color: #a00; }
+#wa.wa-mobile-login h2,
+#wa.wa-mobile-login p { text-align: center; }
+#wa.wa-mobile-login ul { text-align: center; padding: 0; margin: 0; }
+#wa.wa-mobile-login ul li { list-style: none; text-align: center; margin: 0 15px 25px; }
+
+#wa ul.wa-mobile-list-icon i { display: inline-block; vertical-align: top; width: 12px; height: 12px; margin: 0 0.75em 0 0 }
+#wa .ui-content ul.wa-mobile-list-thumb.ui-listview { margin: 0; text-align: center; }
+#wa .ui-content ul.wa-mobile-list-thumb li { display: inline-block; width:84px; -webkit-border-radius:8px; -moz-border-radius:8px; margin:0.3em; border-width:0; vertical-align: text-top; overflow: hidden; }
+#wa .ui-content ul.wa-mobile-list-thumb li img { width: 48px; height: 48px; }
+#wa ul.wa-mobile-list-thumb .ui-li-desc { margin: 0.5em 0 0.6em; }
+#wa ul.wa-mobile-list-thumb .ui-btn-inner { height: 84px; line-height: 14px; max-height: none; padding: 6px 4px 0; text-align: center; background: #fff; }
+#wa ul.wa-mobile-list-thumb .ui-li-heading { font-size: 12px; margin: 0; text-align: center; white-space: normal; overflow: visible; }
+#wa ul.wa-mobile-list-thumb .ui-li-heading.wa-only-desktop { color: #bbb; overflow: visible; }
+#wa ul.wa-mobile-list-thumb .ui-li-thumb { display: block; float: none; margin: 0 auto 4px; position: static; }
+#wa ul.wa-mobile-list-thumb .ui-icon { display: none; }
+#wa ul.wa-mobile-list-thumb .ui-li-count { background: red; border: medium none; color: #FFFFFF; line-height: 1; margin: 0; padding: 2px 4px; right: 8px; text-shadow: none; top: 8px; }
+#wa ul.wa-mobile-list-thumb .ui-li .ui-btn-inner a.ui-link-inherit { display: inline; min-height: 84px; padding-left: 0; color: #333333!important; text-shadow: none!important; }
+#wa .ui-icon-mobile-desktop-only  { background-image: url(../../img/mobile-switch-to-desktop.png); }
+#wa .ui-icon-mobile-apps { background-image:  url(../../img/mobile-apps.png);}
+#apps { background: #fff; }
+#apps .ui-btn-hover-d { background: #fafafa; }
+#apps .ui-btn-down-d a.ui-link-inherit { border: none; background: none; color: red; outline: none; }
+.icon10 { display: inline-block; vertical-align: middle; height: 10px; width: 10px; }
+.icon10.desktop { background-image:url(../../img/mobile-desktop-only.png); }
+.wa-mobie-btn-link { position: relative; top:18px; left: 10px; color: #aaa!important; font-size: .84em; text-shadow: none!important; text-decoration: none; }
+.wa-mobie-btn-link:hover { text-decoration: underline; }
+.wa-mobile-fields .ui-br { border: none; padding: 0!important;}
+.wa-mobile-error { color:red;}
+#wa .ui-content.ui-body-r { border:none;}
+#wa .ui-controlgroup-controls { width: auto;}
+#wa .ui-controlgroup .ui-checkbox label {font-size: 0.84em; border: none!important; text-shadow: none!important; color: #555!important; background: transparent; }
+#wa .ui-controlgroup .ui-checkbox .ui-checkbox-off .ui-icon {background: #9aa; }
+#wa .ui-controlgroup .ui-checkbox .ui-btn-inner { border: none;}
+#wa fieldset.ui-controlgroup { margin: 0;}
+
+.userpic { border-radius: 50%; }

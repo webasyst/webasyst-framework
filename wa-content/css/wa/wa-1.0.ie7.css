@@ -1,0 +1,60 @@
+/*
+ * This file is part of Webasyst framework.
+ *
+ * Licensed under the terms of the GNU Lesser General Public License (LGPL).
+ * http://www.webasyst.com/framework/license/
+ *
+ * @link http://www.webasyst.com/
+ * @author Webasyst LLC
+ * @copyright 2011 Webasyst LLC
+ * @package Webasyst
+ */
+ 
+/*
+ * wa-1.0.ie7.css
+ * --------------
+ * IE7 specific styles
+ *
+ * IMPORTANT: IE7 is not officially supported by Webasyst. We strive to support overall functioning of Webasyst and its apps in IE7, but only while it does not force us to apply "hacks" unwanted for modern browsers. Encourage your app users to use modern browsers!
+*/
+
+html, body { width: 100%; }
+#wa-launchpad { zoom:1; }
+#wa-applist { height: 78px; overflow: hidden; }
+#wa-header.minimized #wa-applist { height: 18px; }
+#wa-applist ul li { display: inline; }
+.sidebar, .sidebar.left200px { zoom: 1; }
+* i.icon16 { display: inline; }
+* i.icon10 { display: inline; }
+.count i.icon10, .count i.icon16 { display: block; }
+.rating-small i.icon16 { display: block; float: left; }
+.rating i.icon16 { display: block; float: left; }
+a#wa-launchpad-add .icon10.plus-gray { display: block; }
+ul.tabs li { display: block; float: left; }
+ul.menu-v li i.icon16 { float: left; }
+ul.menu-v li a { display: block; }
+ul.menu-v.compact li a { display: block; }
+ul.menu-h .inline-link * i.icon10 { display: block; }
+ul.menu-h li { display: block; float: left; }
+
+ul.menu-h.float-right { display: inline; zoom:1; }
+ul.menu-h.float-right li { position: relative; height: 20px; display: inline;}
+ul.menu-h.float-right li a { zoom:1; height: 20px;}
+ul.menu-h.float-right li a i.icon16 { display: block; float: left;}
+
+ul.thumbs li { display: inline; zoom:1; overflow: hidden; }
+ul.thumbs li div { float: left; clear: left; width: 100%; }
+ul.thumbs li.highlighted img { border: solid 2px #FFEE22; }
+ul.thumbs li.highlighted { background: none; }
+ul.thumbs li.selected img { margin: 0; }
+ul.thumbs li ul.thumbs input { float: left; }
+ul.thumbs.li100px li { width: 104px; }
+#footer .wa-poweredby span { display: block; float: left; }
+.field .value.submit { margin-left:180px;}
+#wa-login .field .value input.button { margin-left:2px;}
+.heading { overflow: hidden;}
+.heading i.icon16 { display:block;float: left; margin-left: 0; }
+.heading b { float: left; display: block;}
+.content { zoom:1;}
+a.inline-link b { display: block; float: left; top:0;}
+a.inline-link b i { top:0; cursor: pointer;}

@@ -1,0 +1,9 @@
+
+<ifModule mod_rewrite.c>
+    RewriteEngine On
+
+    RewriteCond %{REQUEST_URI} \.jpg$
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^(.*)$ thumb.php [L,QSA]
+</ifModule>
+

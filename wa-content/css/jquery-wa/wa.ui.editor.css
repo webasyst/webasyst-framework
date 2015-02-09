@@ -1,0 +1,157 @@
+.ui-buttonset {
+	float:left;
+}
+.ui-editor-toolbar {
+	padding: 4px;
+	margin:-1px -1px 0 -1px;
+}
+.ui-editor-editablefield { padding:1em;}
+.ui-editor-editablefield, .ui-editor-textarea {
+	outline-color:-moz-use-text-color;
+	outline-style:none;
+	font-size: 10pt;
+	outline-width:0;
+	overflow:auto;
+	background: white;
+	border-width:0;
+	border-style: solid;
+	color: black;
+}
+.wbs-editor .ui-editor-editablefield, .ui-editor-textarea {
+	border-width: 1px;
+	border-style: solid;
+	border-color:#C0C7CC #bbc9d5 #C0C7CC;
+}
+.ui-editor-textarea {
+	font-family: monospace;
+	padding: 0 !important;
+}
+div.wbs-editor blockquote {
+	margin-left: 20px;
+	padding-left: 10px;
+	border-left: 1px solid #ccc;
+}
+.ui-editor-editablefield .ticket-toolbar {
+	height:40px;
+}
+.ui-editor-toolbar .ui-buttonset, .ui-editor-toolbar .ui-button { //display:inline!important; width:auto; zoom:0;}
+.ui-editor-toolbar .ui-button-icon-only .ui-button-text {
+	padding:0.4em;
+}
+.ui-editor-toolbar button.ui-button-icon-only {
+	width:25px;
+	height:25px;
+	margin-right:1px;
+	-moz-box-shadow:none;
+	-webkit-box-shadow:none;
+	box-shadow:none;
+	-moz-border-radius:4px;
+	-webkit-border-radius:4px;
+	border-radius:4px;
+}
+.ui-editor-toolbar .ui-state-default .ui-icon {
+	width:23px;
+	height:23px;
+	margin-top:-11px;
+	margin-left:-12px;
+}
+.ui-editor-toolbar .ui-corner-all {
+	-moz-border-radius:3px;
+	-webkit-border-radius:3px;
+	border-radius:3px;
+}
+.wbs-editor {
+	margin-bottom:0.5em;
+}
+.wbs-editor .ui-editor-editablefield {
+	margin:5px;
+	padding:2px;
+	line-height: 1.5em;
+}
+
+.ui-editor-toolbar .ui-state-default .ui-icon {
+background-image:url("images/icons.gif");
+}
+.ui-editor-toolbar .ui-state-default.ui-state-hover .ui-icon {
+background-image:url("images/icons.gif");
+}
+.ui-editor-toolbar .ui-state-default .ui-state-disabled .ui-icon {
+background-image:url("images/icons_disabled.gif");
+}
+.ui-editor-toolbar.ui-widget-header {
+background:none repeat scroll 0 0 #D3DBE0;
+}
+.wbs-editor.ui-widget-content {
+background:none repeat scroll 0 0 #D3DBE0;
+border-color:#C0C7CC;
+}
+.ui-editor-toolbar .ui-state-default {
+background:none repeat scroll 0 0 #F5F9FA;
+border:1px solid #C0C7CC;
+}
+.ui-editor-toolbar .ui-state-default.ui-state-hover {
+background-color:#C2CED3;
+border-color:#A4AFB6;
+}
+.ui-editor-toolbar .ui-state-default .ui-state-disabled {
+background-color:#F2F6F7;
+border-color:#B8CED9;
+}
+
+.ui-icon-editor-bold { background-position:-128px -80px ;} 
+.ui-icon-editor-italic { background-position:-144px -80px ;} 
+.ui-icon-editor-underline {background-position:-160px -80px ;} 
+.ui-icon-editor-strikethrough {background-position:-176px -80px ;} 
+.ui-icon-editor-undo {background-position:0px -64px ;} 
+.ui-icon-editor-redo {background-position:-32px -64px ;} 
+.ui-icon-editor-createlink { background-position:-240px -112px ;} 
+.ui-icon-editor-unlink { background-position:-240px -144px ;} 
+.ui-icon-editor-indent {background-position:-160px -144px ;}
+.ui-icon-editor-outdent  {background-position:-176px -144px ;} 
+.ui-icon-editor-justifyleft {background-position:-208px -80px ;}  
+.ui-icon-editor-justifycenter {background-position:-240px -80px ;}  
+.ui-icon-editor-justifyright {background-position:-224px -80px ;} 
+.ui-icon-editor-ol {background-position:-208px -144px ;}
+.ui-icon-editor-ul  {background-position:-192px -144px ;}
+.ui-icon-editor-insertimage {background-position:-208px -128px ;} 
+.ui-icon-editor-removeFormat  {background-position:-224px -144px ;}
+.ui-icon-editor-showHTML  {background-position:-144px 0px ;}  
+.ui-icon-editor-hello { background-position:-128px -128px ;}
+.ui-icon-editor-fonts { background:-575px 0;}
+.ui-icon-editor-styles { background:-598px 0; }
+.ui-icon-editor-fontcolor { background:-276px 0;}
+.ui-icon-editor-bgcolor { background:-299px 0; }
+.ui-icon-editor-fontname { background:-575px 0;}
+.ui-icon-editor-fontsize { background:-598px 0; }
+.ui-icon-editor-forecolor { background:-276px 0;}
+.ui-icon-editor-backcolor { background:-299px 0; }
+.ui-icon-editor-bold { background-position:0 0 ;} 
+.ui-icon-editor-italic { background-position:-23px 0px ;} 
+.ui-icon-editor-underline {background-position:-46px 0px ;} 
+.ui-icon-editor-strikethrough { background-position:-69px 0 ;}
+.ui-icon-editor-undo {background-position:-99px 0 ;} 
+.ui-icon-editor-redo {background-position:-32px -64px ;}
+.ui-icon-editor-link { background-position:-322px 0 ;} 
+.ui-icon-editor-unlink { background-position:-345px 0 ;} 
+.ui-icon-editor-indent { background-position:-230px 0 ;}
+.ui-icon-editor-outdent  { background-position:-253px 0 ;} 
+.ui-icon-editor-justifyleft { background-position:-92px 0 ;}  
+.ui-icon-editor-justifycenter { background-position:-115px 0 ;}  
+.ui-icon-editor-justifyright { background-position:-138px 0 ;} 
+.ui-icon-editor-ol  { background-position:-207px 0 ;}
+.ui-icon-editor-ul  { background-position:-184px 0 ;}
+.ui-icon-editor-insertimage  { background-position:-368px 0 ;} 
+.ui-icon-editor-removeFormat  { background-position:-460px 0 ;}
+.ui-icon-editor-showHTML  { background-position:-529px 0px ;}  
+.ui-icon-editor-hello { background-position:-414px 0 ;}
+.ui-icon-editor-inserthorizontalrule { background-position:-437px 0 ; }
+.ui-colorpicker-item{
+    width:16px;
+    height:14px;
+    margin:0;
+    float:left;
+    cursor:pointer;
+}
+.ui-colorpicker-item-hover{
+    border-color: #555;
+}

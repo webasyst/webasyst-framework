@@ -1,0 +1,35 @@
+<!-- linked within Login.html layout -->
+
+<h1>{$client_name|truncate:25}</h1>
+
+<div class="block">
+    {if !empty($code)}
+        Code<br>
+        <textarea readonly>{$code}</textarea>
+    {else}
+        <p class="large align-center">
+            <i class="icon16 lock-unlocked-bw"></i>{sprintf('[s`<strong>%s</strong> requests access to your apps data:`]',$client_name)}
+        </p>
+        <ul class="thumbs align-center">
+            {foreach $scope as $app}
+            <li>
+                <img src="{$wa_url}{$app.icon.48}" /><br>
+                {$app.name}
+            </li>
+            {/foreach}
+        </ul> 
+        <form method="post" action="">
+                <div class="large align-center">
+                    <input type="submit" name="approve" value="[s`Allow`]" class="button green wa-login-submit" id="wa-login-submit">
+                    &nbsp;[s`or`]&nbsp;
+                    <a href="#" id="deny" name="deny">[s`deny`]</a>
+                </div>
+        </form>
+        <script type="text/javascript">
+            $("#deny").click(function () {
+                $(this).closest('form').submit();
+                return false;
+            })
+        </script>
+    {/if}
+</div>

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!ELEMENT theme (name+,description*,files*,about*, settings?, thumbs?, locales?)>
+<!ATTLIST theme
+    id CDATA #REQUIRED
+    system (1|0) "0"
+    vendor CDATA #IMPLIED
+    author CDATA #IMPLIED
+    app CDATA #REQUIRED
+    parent_theme_id CDATA #IMPLIED
+    version CDATA #IMPLIED
+>
+<!ELEMENT name (#PCDATA)>
+<!ATTLIST name
+    locale CDATA #REQUIRED
+>
+<!ELEMENT description (#PCDATA)>
+<!ATTLIST description
+    locale CDATA #REQUIRED
+>
+<!-- Theme's files list available for editing -->
+<!ELEMENT files (file+)>
+<!ELEMENT file (description*)>
+<!ATTLIST file
+    path CDATA #REQUIRED
+    custom (1|0) "0"
+    parent (1|0) "0"
+    modified (1|0) "0"
+>
+<!-- THeme usage hints and instructions -->
+<!ELEMENT about (#PCDATA)>
+<!ATTLIST about
+    locale CDATA #REQUIRED
+>
+<!--Theme settings-->
+<!ELEMENT settings (setting+)>
+<!ELEMENT setting (value+,filename?,name+,description*,options?)>
+
+<!ATTLIST setting
+    var CDATA #REQUIRED
+    control_type (text|select|checkbox|radio|color|image|image_select) "text"
+>
+<!ELEMENT value (#PCDATA)>
+<!ATTLIST value
+    locale CDATA #IMPLIED
+>
+
+<!ELEMENT filename (#PCDATA)>
+<!ELEMENT options (option+)>
+<!ELEMENT option (name*,description*)>
+<!ATTLIST option
+    value CDATA #IMPLIED
+>
+<!--List of allowed thumb sizes-->
+<!ELEMENT thumbs (thumb*)>
+<!ELEMENT thumb (#PCDATA)>
+
+<!--Theme strings-->
+<!ELEMENT locales (locale+)>
+<!ELEMENT locale (msgid,msgstr+)>
+<!ELEMENT msgid (#PCDATA)>
+<!ELEMENT msgstr (#PCDATA)>
+<!ATTLIST msgstr
+    locale CDATA #REQUIRED
+>
+
+

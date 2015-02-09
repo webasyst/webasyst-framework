@@ -1,0 +1,356 @@
+<div class="wa-page-editor">
+<form id="wa-page-form" method="post" action="?module=pages&action=save{if $page}&id={$page.id}{/if}">
+    {foreach $options.data as $k => $v}
+    <input type="hidden" name="{$k}" value="{$v|escape}">
+    {/foreach}
+    <div class="block wa-page-gray-toolbar">
+        {if $page}
+        <div class="float-right ie-menu-h-fix">
+            <ul class="menu-h">
+                <li><h2><span class="hint">id: {$page.id}</span></h2></li>
+                <li><a href="#" class="inline-link" id="wa-page-settings-toggle"><i class="icon16 edit"></i><b><i>[s`Page settings`]</i></b></a></li>
+                <li><a class="wa-page-delete" href="?module=pages&action=delete"><i class="icon16 delete"></i>[s`Delete`]</a></li>
+            </ul>
+        </div>
+        <script type="text/javascript">
+            $(".wa-page-delete").click(function () {
+                if (confirm('[s`This will delete entire page. Are you sure?`]')) {
+                    $.post($(this).attr('href'), { id:{$page.id}}, function () {
+                        
+                        var li = $("#page-{$page.id}");
+                        var prev = li.prevAll('.dr:first');
+                        if (prev.length > 0) {
+                            location.href = prev.addClass('selected').find('a').attr('href');
+                            li.remove();
+                        } else {
+                            next = li.nextAll('.dr:first');
+                            if (next.length > 0) {
+                                location.href = next.addClass('selected').find('a').attr('href');
+                                li.remove();
+                            } else {
+                                location.reload(true);
+                            }
+                        }
+                    }, "json");
+                }
+                return false;
+            });
+        </script>
+        {/if}
+        <div>
+            <h2 class="wa-page-name">{if $page}{$page.name|escape}{if !$page.status} <span class="wa-page-draft">[s`draft`]</span>{/if}{else}[s`New page`]{/if}</h2>
+            <div class="wa-page-urls small">
+                {if $page}
+                    {if !empty($url)}
+                        <a href="{$url}{$page.url}?preview={$preview_hash}" title="[s`Preview`]" target="_blank">{$url|escape}{$page.url}</a>
+                        <a href="{$url}{$page.url}?preview={$preview_hash}" target="_blank"><i class="icon10 new-window"></i></a>
+                    {elseif $page.domain and $page.route !== null}
+                        {$page_route=waRouting::clearUrl($page.route)}
+                        <a style="text-decoration: line-through;" href="http://{$page.domain}/{$page_route}{$page.full_url}?preview={$preview_hash}" title="[s`Preview`]" target="_blank">http://{$page.domain}{$page_route}/{$page.full_url}</a>
+                        <a href="http://{$page.domain}/{$page_route}{$page.full_url}?preview={$preview_hash}"><i class="icon10 new-window"></i></a>
+                    {else}
+                    [s`This page is unsettled (unpublished), i.e. not connected to any of your site’s routing rules. Drag this page out of the Unpublished section in the left sidebar to connect it to any of your existing site’s routes.`]
+                    {/if}
+                {/if}
+                <br />
+            </div>
+        </div>
+        <div id="wa-page-settings" style="{if $page}display: none;{/if}">
+            <div class="fields form">
+                <div class="field-group">
+                    <div class="field">
+                        <div class="name bold">[s`Page name`]</div>
+                        <div class="value">
+                            <input type="text" class="bold large long" name="info[name]" value="{if $page}{$page.name|escape}{/if}" />
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="value wa-ibutton-checkbox">
+                            <ul class="menu-h">
+                                <li><span id="wa-page-v-open-label" class="wa-page-gray">[s`Draft`]</span></li>
+                                <li><input type="checkbox" id="wa-page-v" name="info[status]" {if !$page || $page.status}checked="checked"{/if} /></li>
+                                <li><span id="wa-page-v-private-label">[s`Published`]</span></li>
+                            </ul>
+
+                        </div>
+                    </div>
+
+                    <div class="field wa-page-url">
+                        <div class="name bold">[s`Page URL`]</div>
+                        <div class="value wa-page-app-url no-shift">
+                            {if !empty($url)}{$url|escape}{/if}<input type="text" name="info[url]" class="bold" value="{if $page}{$page.url|escape}{/if}" />
+                        </div>
+                        {if empty($url)}
+                        <div class="value small wa-page-app-url no-shift">
+                            <span style="color: red;">[s`This page is unsettled (unpublished), i.e. not connected to any of your site’s routing rules. Drag this page out of the Unpublished section in the left sidebar to connect it to any of your existing site’s routes.`]</span>
+                        </div>
+                        {/if}
+                    </div>
+
+                </div>
+
+                {if !$page || !$page.id}
+                <a id="wa-page-advanced-params-link" href="#" class="hint inline-link"><b><i>[s`more`]</i></b><i class="icon10 darr"></i></a>
+                <div id="wa-page-advanced-params" style="display:none">
+                    {/if}
+                    <div class="field-group">
+                        <div class="field">
+                            <div class="name">[s`<strong class="title">Title</strong>`] <span class="hint">&lt;title&gt;</span></div>
+                            <div class="value"><input type="text" name="info[title]" value="{if $page}{$page.title|escape}{/if}" class="bold long" /></div>
+                        </div>
+                        {foreach $params as $n => $p}
+                        <div class="field">
+                            <div class="name">{$vars[$n]}</div>
+                            {if $n == 'description'}
+                            <div class="value"><textarea name="params[{$n}]">{$p|escape}</textarea></div>
+                            {else}
+                            <div class="value"><input type="text" name="params[{$n}]" value="{$p|escape}" /></div>
+                            {/if}
+                        </div>
+                        {/foreach}
+
+                        {if !empty($page_edit)}{foreach $page_edit as $_}{$_}{/foreach}{/if}
+                    </div>
+
+                    <div class="field">
+                        <div class="name">[s`Page custom parameters`]</div>
+                        <div class="value">
+                            <textarea name="other_params">{if $page}{foreach from=$other_params item=v key=k}{$k}={$v|escape}
+{/foreach}{/if}</textarea><br />
+                            <span class="hint">[s`Optional set of custom <em>key=value</em> parameters which can be used within page.html template or this page content as <em>&#123;$page.key&#125;</em>. Each key=value pair should be on a separate line.`] <a href="[`http://www.webasyst.com/framework/docs/site/pages/`]" target="_blank">[s`Help`]</a> <i class="icon10 new-window"></i></span>
+                        </div>
+                    </div>
+                    {if !$page || !$page.id}
+                </div>
+                <script type="text/javascript">
+                    $("#wa-page-advanced-params-link").click(function () {
+                        $("#wa-page-advanced-params").show();
+                        $(this).remove();
+                        return false;
+                    });
+                </script>
+                {/if}
+            </div>
+            <br clear="left" />
+        </div>
+    </div>
+    <div class="wa-editor-core-wrapper">
+        <ul class="wa-editor-wysiwyg-html-toggle">
+            <li class="selected"><a class="wysiwyg" href="#">[s`WYSIWYG`]</a></li>
+            <li><a class="html" href="#">HTML</a></li>
+        </ul>
+        <div style="clear:both">
+            <textarea style="display:none" id="wa-page-content" name="info[content]">{if $page}{$page.content|escape}{/if}</textarea>
+        </div>
+    </div>
+    {if $options.save_panel}
+    <div class="wa-page-save-panel block bordered-top">
+        <div class="wa-dropdown">
+            <div class="wa-drop-link">
+                <a class="inline-link" id="wa-editor-help-link" href="#">
+                    <i class="icon16 cheatsheet"></i><b><i>[s`Cheat sheet`]</i></b>
+                    <i class="icon10 uarr no-overhanging"></i>
+                </a>
+                <div id="wa-editor-help" class="wa-dropdown-block"></div>
+                <script type="text/javascript">
+                    $("#wa-editor-help-link").click(function () {
+                        if ($("#wa-editor-help").is(":visible")) {
+                            $("#wa-editor-help").hide();
+                            return false;
+                        }
+                        $("#wa-editor-help").load('?module=pages&action=help', "app={$wa->app()}&id={if $page}{$page.id}{/if}", function () {
+                            $(this).show();
+                            var f = function (e) {
+                                if ($(e.target).attr('id') == 'wa-editor-help' || $(e.target).parents('#wa-editor-help').length) {
+                                    $(document).one('click', f);
+                                } else {
+                                    $("#wa-editor-help").hide();
+                                }
+                            };
+                            $(document).one('click', f);
+                        });
+                        return false;
+                    });
+
+                    $("#wa-editor-help").on('click', "div.fields a.inline-link", function () {
+                        var el = $(this).find('i');
+                        if (el.children('b').length) {
+                            el = el.children('b');
+                        }
+                        $('#wa-page-content').waEditor('insert.html', el.text());
+                        return false;
+                    });
+                </script>
+            </div>
+        </div>
+        
+        <input id="wa-page-button" type="submit" class="button green" value="[s`Save`]" />
+        <em class="hint">Ctrl + S</em>
+        <span id="wa-editor-status" style="margin-left: 25px; display: none"></span>
+
+    </div>
+    {/if}
+{$wa->csrf()}
+</form>
+<div class="clear"></div>
+</div>
+
+<script type="text/javascript">
+    var wa_url = "{$wa_url}";
+    var wa_app = "{$wa->app()}";
+
+    $(function () {
+        {if $options.is_ajax}
+            {if $page}
+            document.title = "{$page.name|escape} — {$wa->appName()}";
+            {else}
+            document.title = "[`New page`] — {$wa->appName()}";
+            {/if}
+        {/if}
+
+        $('#wa-page-content').waEditor({
+            lang: "{$lang}",
+            saveButton: '#wa-page-button',
+            uploadFields: {
+                '_csrf': "{waRequest::cookie('_csrf', '')}"
+            }
+        });
+
+
+        var iButtonInit = function () {
+            $("#wa-page-v").iButton({
+                labelOn: "",
+                labelOff: "",
+                classContainer: 'ibutton-container mini'
+            });
+        };
+        if ($("#wa-page-settings").is(":visible")) {
+            setTimeout(iButtonInit, 200);
+        } else {
+            $("#wa-page-settings-toggle").one('click', function () {
+                setTimeout(iButtonInit, 100);
+            });
+        }
+        var status_check = function(item) {
+            if ($(item).is(':checked')) {
+                $('#wa-page-v-open-label').addClass('wa-page-gray');
+                $('#wa-page-v-private-label').removeClass('wa-page-gray');
+            } else {
+                $('#wa-page-v-open-label').removeClass('wa-page-gray');
+                $('#wa-page-v-private-label').addClass('wa-page-gray');
+            }
+        };
+        status_check($('#wa-page-v'));
+        $('#wa-page-v').change(function(){
+            $('#wa-page-button').removeClass('green').addClass('yellow');
+            status_check(this);
+        });
+
+        $('#wa-page-settings-toggle').click(function(){
+            $('#wa-page-settings').toggle();
+            return false;
+        });
+
+        {if (!$page || !$page.id) && empty($options.disable_auto_url) }
+            $.fn.onKeyFinish = function (defer, callback) {
+                return this.each(function () {
+                    var that = $(this);
+                    that.currentValue = that.val();
+                    that.interval = null;
+                    $(this).off('keyup.wapages');
+                    $(this).on('keyup.wapages', function (e) {
+                        clearInterval(that.interval);
+                        if (that.currentValue != that.val()) {
+                            that.interval = setInterval(function () {
+                                clearInterval(that.interval);
+                                callback.call(that);
+                                that.currentValue = that.val();
+                            }, defer);
+                        }
+                    });
+                });
+            };
+            $("#wa-page-settings input:first").focus();
+            $('#wa-page-settings input[name="info[name]"]').onKeyFinish(300, function () {
+                if (!$("#wa-page-form-translit").length) {
+                    $("#wa-page-form").append('<input id="wa-page-form-translit" type="hidden" name="translit" value="1">');
+                }
+                var url = $('#wa-page-settings input[name="info[url]"]');
+                if ($(this).val() && (!url.val() || !url.data('changed'))) {
+                    $.post("?module=pages&action=translit", { str: $(this).val()}, function (response) {
+                        $("#wa-page-form-translit").remove();
+                        if (response.status == 'ok') {
+                            if (!url.val() || !url.data('changed')) {
+                                url.val(response.data.str);
+                            }
+                        }
+                    }, "json");
+                }
+            });
+            $('#wa-page-settings input[name="info[url]"]').on('keyup', function () {
+               $(this).data('changed', 1);
+            });
+        {/if}
+
+        $("#wa-page-form").submit(function () {
+            if ($('#wa-page-settings input[name="info[name]"]').is(":focus")) {
+                if (!$("#wa-page-form-translit").length) {
+                    $("#wa-page-form").append('<input id="wa-page-form-translit" type="hidden" name="translit" value="1">');
+                }
+            }
+            $('#wa-page-content').waEditor('sync');
+            var form = $(this);
+            var li = $(".block-pages ul li.selected");
+            $("#wa-editor-status").html("<i class='icon16 loading'></i> [s`Saving...`]").fadeIn("slow");
+            $.post(form.attr('action'), form.serialize(), function (response) {
+            if (response.status == 'ok') {
+                $(".error").removeClass('error');
+                $("#wa-editor-status").html('<i class="icon16 yes"></i> [s`Saved`]').fadeOut('slow');
+                $('#wa-page-button').removeClass('yellow').removeClass('red').addClass('green');
+                var p = response.data;
+                if (!p.status) {
+                    p.name += ' <span class="wa-page-draft">[s`draft`]</span>';
+                }
+                var html = $('<li id="page-' + p.id + '" class="dr selected">' +
+                '<a class="wa-page-link" href="{$page_url}' + p.id + '">' +
+                '<span class="count"><i class="icon10 add wa-page-add"></i></span>' +
+                '<i class="icon16 notebook"></i>' + p.name + ' <span class="hint">/' + p.full_url +'</span>' + '</a></li>');
+                if (p.add) {
+                    li.replaceWith(html);
+                } else {
+                    $("#page-" + p.id).children('a.wa-page-link').replaceWith($(html).find('a.wa-page-link'));
+                    $("#page-" + p.id + ' > ul li span.hint').each(function () {
+                        $(this).text('/' + p.full_url + (p.full_url.length > 0 && p.full_url.substr(-1) != '/' ? '/' : '') + $(this).text().substr(p.old_full_url.length + 1));
+                    });
+                }
+                if (response.data.add) {
+                    waLoadPage(p.id);
+                } else {
+                    $(".wa-page-editor h2.wa-page-name").html(p.name);
+                }
+                {if !empty($url)}
+                var page_url = '{$url|escape}' + p.url;
+                {elseif isset($page_route)}
+                var page_url = 'http://{$page.domain}/{$page_route}' + p.full_url;
+                {/if}
+
+                if ($(".wa-page-urls a").length) {
+                    $(".wa-page-urls a").attr('href', page_url + '?preview={$preview_hash}');
+                    $(".wa-page-urls a:first").html(page_url);
+                }
+            } else if (response.status == 'fail') {
+                if ($.isArray(response.errors)) {
+                    var e = response.errors[0];
+                    $(response.errors[1]).addClass('error');
+                } else {
+                    var e = response.errors;
+                }
+                $("#wa-editor-status").html('<b style="color:red">' + (e ? e : $_('An error occurred while saving')) + '</b>');
+                $('#wa-page-button').removeClass('yellow').removeClass('green').addClass('red');
+            }
+            }, "json");
+            return false;
+        });
+    });
+</script>
+

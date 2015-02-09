@@ -1,0 +1,1772 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: WebAsyst\n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: 2013-12-20 11:18+0400\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-Basepath: .\n"
+"Language: en\n"
+"X-Generator: Poedit 1.5.5\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPath-1: .\n"
+
+msgid "0"
+msgstr "zero"
+
+msgid "1"
+msgstr "one"
+
+msgid "2"
+msgstr "two"
+
+msgid "3"
+msgstr "three"
+
+msgid "4"
+msgstr "four"
+
+msgid "5"
+msgstr "five"
+
+msgid "6"
+msgstr "six"
+
+msgid "7"
+msgstr "seven"
+
+msgid "8"
+msgstr "eight"
+
+msgid "9"
+msgstr "nine"
+
+msgid "10"
+msgstr "ten"
+
+msgid "11"
+msgstr "eleven"
+
+msgid "12"
+msgstr "twelve"
+
+msgid "13"
+msgstr "thirteen"
+
+msgid "14"
+msgstr "fourteen"
+
+msgid "15"
+msgstr "fifteen"
+
+msgid "16"
+msgstr "sixteen"
+
+msgid "17"
+msgstr "seventeen"
+
+msgid "18"
+msgstr "eighteen"
+
+msgid "19"
+msgstr "nineteen"
+
+msgid "20"
+msgstr "twenty"
+
+msgid "30"
+msgstr "thirty"
+
+msgid "40"
+msgstr "forty"
+
+msgid "50"
+msgstr "fifty"
+
+msgid "60"
+msgstr "sixty"
+
+msgid "70"
+msgstr "seventy"
+
+msgid "80"
+msgstr "eighty"
+
+msgid "90"
+msgstr "ninety"
+
+msgid "100"
+msgstr "one hundred"
+
+msgid "200"
+msgstr "two hundred"
+
+msgid "300"
+msgstr "three hundred"
+
+msgid "400"
+msgstr "four hundred"
+
+msgid "500"
+msgstr "five hundred"
+
+msgid "600"
+msgstr "six hundred"
+
+msgid "700"
+msgstr "seven hundred"
+
+msgid "800"
+msgstr "eight hundred"
+
+msgid "900"
+msgstr "nine hundred"
+
+msgid "1000"
+msgid_plural "1000"
+msgstr[0] "thousand"
+msgstr[1] "thousand"
+
+msgid "1000000"
+msgid_plural "1000000"
+msgstr[0] "million"
+msgstr[1] "million"
+
+msgid "1000000000"
+msgid_plural "1000000000"
+msgstr[0] "billion"
+msgstr[1] "billion"
+
+msgid "1000000000000"
+msgid_plural "1000000000000"
+msgstr[0] "trillion"
+msgstr[1] "trillion"
+
+#: /wa-system/webasyst/templates/actions/backend/BackendDefault.html:4
+msgid "Welcome"
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/backend/BackendDefault.html:11
+msgid "Hi %s!"
+msgstr "Hi, %s!"
+
+#: /wa-system/webasyst/templates/actions/backend/BackendDefault.html:13
+msgid "This is your Dashboard."
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/backend/BackendDefault.html:15
+msgid "So far it is empty, but soon it will have useful content."
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/backend/BackendDefault.html:16
+msgid ""
+"Until then use icons on the top of this page to work with available "
+"applications."
+msgstr ""
+"Until then use icons at the top of this page to work with available "
+"applications."
+
+#: /wa-system/webasyst/templates/actions/backend/BackendDefault.html:18
+msgid "Thank you for using Webasyst!"
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/backend/BackendDefaultMobile.html:30
+msgid "Logout"
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/login/LoginFirst.html:22
+msgid "Login Webasyst"
+msgstr "Log in to Webasyst"
+
+#: /wa-system/webasyst/templates/actions/login/LoginFirst.html:24
+msgid "Create the first user in your Webasyst installation."
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/login/LoginFirst.html:25
+msgid ""
+"The information provided in this form will be stored in your local Webasyst "
+"installation only, and will not be sent anywhere outside your server."
+msgstr ""
+"The information provided in this form will be stored in your local Webasyst "
+"installation only and will not be sent anywhere outside your server."
+
+#: /wa-system/webasyst/templates/actions/login/LoginFirst.html:34
+msgid "Login name"
+msgstr ""
+
+#: /wa-system/view/waViewHelper.class.php:588
+msgid "Password"
+msgstr ""
+
+#: /wa-system/view/waViewHelper.class.php:590
+msgid "Confirm password"
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/login/LoginFirst.html:63
+msgid "First name"
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/login/LoginFirst.html:71
+msgid "Last name"
+msgstr ""
+
+#: /wa-system/view/waViewHelper.class.php:508
+msgid "Email"
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/login/LoginFirst.html:88
+msgid "Company name"
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/login/LoginFirst.html:103
+msgid "Enter"
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/login/LoginConfig.html:6
+msgid "Webasyst"
+msgstr ""
+
+#: /wa-system/view/waViewHelper.class.php:586
+msgid "Login"
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/login/LoginMobile.html:38
+msgid "Remember me"
+msgstr ""
+
+#: /wa-system/view/waViewHelper.class.php:496
+msgid "Sign In"
+msgstr "Sign in"
+
+#: /wa-system/view/waViewHelper.class.php:496
+msgid "Forgot password?"
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/login/LoginConfig.html:19
+msgid "MySQL database"
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/login/LoginConfig.html:20
+msgid ""
+"Enter connection credentials for the MySQL database which will be used by "
+"Webasyst to store system and application data."
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/login/LoginConfig.html:28
+msgid "Host"
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/login/LoginConfig.html:36
+msgid "User"
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/login/LoginConfig.html:52
+msgid "Database Name"
+msgstr "Database name"
+
+#: /wa-system/webasyst/templates/actions/login/LoginConfig.html:60
+msgid ""
+"If you do not know what should be entered here, please contact your hosting "
+"provider technical support."
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/login/LoginConfig.html:66
+msgid "Continue"
+msgstr ""
+
+#: /wa-system/helper/view.php:90
+msgid "[close]"
+msgstr ""
+
+#: /wa-system/contact/waContactCompositeField.class.php:78
+msgid "%s subfield is required."
+msgstr "%s is a required subfield."
+
+#: /wa-system/contact/waContactField.class.php:424
+msgid "This field is required"
+msgstr "This is a required field"
+
+#: /wa-system/contact/waContactField.class.php:348
+msgid "Duplicates are not allowed for this field."
+msgstr ""
+
+#: /wa-system/contact/waContactField.class.php:349
+msgid ""
+"This field must be unique. The value entered is already set for %NAME_LINK%."
+msgstr ""
+
+#: /wa-system/contact/waContactField.class.php:350
+msgid ""
+"This field must be unique. The value entered is already set for another "
+"contact."
+msgstr ""
+
+#: /wa-system/contact/waContactNameField.class.php:24
+msgid "At least one of these fields must be filled"
+msgstr "At least one of these fields must be filled in."
+
+#: /wa-system/contact/waContactsCollection.class.php:285
+msgid "All contacts"
+msgstr ""
+
+#: /wa-system/contact/waContactsCollection.class.php:449
+msgid "All users"
+msgstr ""
+
+#: /wa-system/page/actions/waPage.actions.php:478
+msgid "Files with extensions %s are allowed only."
+msgstr "Only files with name extensions %s are allowed."
+
+#: /wa-system/page/actions/waPage.actions.php:174
+msgid "draft"
+msgstr ""
+
+#: /wa-system/page/actions/waPage.actions.php:218
+msgid "META Keywords"
+msgstr ""
+
+#: /wa-system/page/actions/waPage.actions.php:219
+msgid "META Description"
+msgstr ""
+
+#: /wa-system/page/actions/waPage.actions.php:265
+msgid "no-title"
+msgstr "no title"
+
+#: /wa-system/page/actions/waPage.actions.php:311
+msgid "Error saving web page"
+msgstr ""
+
+#: /wa-system/controller/waLoginAction.class.php:48
+msgid "Page not found"
+msgstr ""
+
+#: /wa-system/page/templates/PageEdit.html:121
+msgid "http://www.webasyst.com/framework/docs/site/pages/"
+msgstr ""
+
+#: /wa-system/design/templates/DesignEdit.html:285
+msgid "An error occurred while saving"
+msgstr ""
+
+#: /wa-system/config/waRightConfig.class.php:139
+msgid "Effective<br/>rights"
+msgstr ""
+
+#: /wa-system/config/waRightConfig.class.php:140
+msgid "Granted<br/>personally"
+msgstr ""
+
+#: /wa-system/config/waRightConfig.class.php:141
+msgid "Inherited<br/>from groups"
+msgstr ""
+
+#: /wa-system/config/waRightConfig.class.php:144
+msgid "Group"
+msgstr ""
+
+#: /wa-system/config/waRightConfig.class.php:284
+msgid "all"
+msgstr ""
+
+#: /wa-system/datetime/waDateTime.class.php:178
+msgid "Yesterday"
+msgstr ""
+
+#: /wa-system/datetime/waDateTime.class.php:182
+msgid "Today"
+msgstr ""
+
+#: /wa-system/datetime/waDateTime.class.php:186
+msgid "Tomorrow"
+msgstr ""
+
+#: /wa-system/controller/waForgotPasswordAction.class.php:127
+msgid "Password recovery"
+msgstr ""
+
+#: /wa-system/controller/waSignupAction.class.php:65
+msgid "Password can not be empty."
+msgstr "Password cannot be empty."
+
+#: /wa-system/controller/waSignupAction.class.php:60
+msgid "Passwords do not match"
+msgstr "Passwords do not match."
+
+#: /wa-system/controller/waForgotPasswordAction.class.php:101
+msgid "Password recovery for this email has been banned."
+msgstr "Password recovery for this email address has been disabled."
+
+#: /wa-system/controller/waForgotPasswordAction.class.php:111
+msgid ""
+"Sorry, we can not recover password for this login name or email. Please "
+"refer to your system administrator."
+msgstr ""
+"Sorry, we cannot recover password for this login name or email address. "
+"Please contact your system administrator."
+
+#: /wa-system/controller/waForgotPasswordAction.class.php:116
+msgid "No user with this email has been found."
+msgstr "No user with this email address has been found."
+
+#: /wa-system/controller/waForgotPasswordAction.class.php:118
+msgid "No user with this login name or email has been found."
+msgstr "No user with this login name or email address has been found."
+
+#: /wa-system/controller/waSignupAction.class.php:71
+msgid "%s is required"
+msgstr ""
+
+#: /wa-system/controller/waSignupAction.class.php:30
+msgid "Sign up"
+msgstr ""
+
+#: /wa-system/controller/waSignupAction.class.php:78
+msgid "User with the same %s is already registered"
+msgstr "User with the same %s is already registered."
+
+#: /wa-system/view/waViewHelper.class.php:402
+msgid "Invalid captcha"
+msgstr ""
+
+#: /wa-system/controller/waFrontController.class.php:85
+msgid "Access denied."
+msgstr "Access denied"
+
+#: /wa-system/controller/waFrontController.class.php:100
+msgid "Access denied"
+msgstr ""
+
+#: /wa-system/controller/waLoginAction.class.php:40
+msgid "Log in"
+msgstr ""
+
+#: /wa-system/controller/waLoginAction.class.php:92
+msgid "Session has expired. Please reload current page and log in again."
+msgstr "Session has expired. Please reload this page and log in again."
+
+#: /wa-system/helper/view.php:98
+msgid "logout"
+msgstr "log out"
+
+#: /wa-system/helper/view.php:108
+msgid "more"
+msgstr ""
+
+#: /wa-system/captcha/waCaptcha.class.php:31
+msgid "Refresh CAPTCHA"
+msgstr ""
+
+#: /wa-system/design/actions/waDesign.actions.php:98
+msgid "Theme %s for “%s” app not found."
+msgstr "Theme %s for the “%s” app not found"
+
+#: /wa-system/design/actions/waDesign.actions.php:254
+msgid "Insufficient file access permissions to save theme settings"
+msgstr ""
+
+#: /wa-system/design/actions/waDesign.actions.php:293
+msgid "Insufficient access permissions to save the file"
+msgstr ""
+
+#: /wa-system/design/actions/waDesign.actions.php:320
+msgid "Please enter a filename"
+msgstr ""
+
+#: /wa-system/design/actions/waDesign.actions.php:327
+msgid ""
+"Only latin characters (a—z, A—Z), numbers (0—9) and underline character (_) "
+"are allowed."
+msgstr ""
+"Only Latin characters (a—z, A—Z), numbers (0—9), and the underline character "
+"(_) are allowed."
+
+#: /wa-system/design/actions/waDesign.actions.php:334
+msgid "File should have one of the allowed extensions:"
+msgstr "File name should have one of the allowed extensions:"
+
+#: /wa-system/auth/waAuth.class.php:118
+msgid "You are banned!"
+msgstr ""
+
+#: /wa-system/auth/waDemoAuth.class.php:39
+msgid "Login is required"
+msgstr "Login name is required"
+
+#: /wa-system/auth/waAuth.class.php:161
+msgid "Invalid email or password"
+msgstr "Invalid email address or password"
+
+#: /wa-system/auth/waDemoAuth.class.php:81
+msgid "Invalid login or password"
+msgstr "Invalid login name or password"
+
+#: /wa-system/api/waAPIController.class.php:20
+msgid "Application \"%s\" not exists"
+msgstr "Application ”%s” does not exist."
+
+#: /wa-system/api/waAPIController.class.php:29
+msgid "Unknown response format"
+msgstr ""
+
+#: /wa-system/request/waRequestFile.class.php:190
+msgid "The uploaded file exceeds the upload_max_filesize directive in php.ini."
+msgstr ""
+"The size of the uploaded file exceeds the upload_max_filesize value in php."
+"ini."
+
+#: /wa-system/request/waRequestFile.class.php:192
+msgid ""
+"The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in "
+"the HTML form."
+msgstr ""
+"The size of the uploaded file exceeds the max_file_size value specified in "
+"the HTML form."
+
+#: /wa-system/request/waRequestFile.class.php:194
+msgid "The uploaded file was only partially uploaded."
+msgstr "Only a part of the selected file has been uploaded."
+
+#: /wa-system/request/waRequestFile.class.php:196
+msgid "No file was uploaded."
+msgstr "No files have been uploaded."
+
+#: /wa-system/request/waRequestFile.class.php:198
+msgid "Missing a temporary folder."
+msgstr "Missing temporary folder"
+
+#: /wa-system/request/waRequestFile.class.php:200
+msgid "Failed to write file to disk."
+msgstr ""
+
+#: /wa-system/request/waRequestFile.class.php:202
+msgid "A PHP extension stopped the file upload."
+msgstr ""
+
+#: /wa-system/request/waRequestFile.class.php:204
+msgid "Unknown upload error"
+msgstr ""
+
+#: /wa-system/file/waTheme.class.php:536
+msgid "Theme %s already exists"
+msgstr "Theme %s already exists."
+
+#: /wa-system/file/waTheme.class.php:988
+msgid "Invalid theme id %s"
+msgstr "Invalid theme id “%s”"
+
+#: /wa-system/database/waModel.class.php:653
+msgid "Unknown field %s"
+msgstr "Unknown field “%s”"
+
+#: /wa-system/image/waImage.class.php:64
+msgid "Not an image or invalid image: "
+msgstr ""
+
+#: /wa-system/image/waImage.class.php:110
+msgid "Not %s image adapter"
+msgstr "Not a %s image adapter"
+
+#: /wa-system/image/waImage.class.php:303
+msgid "File must be writable: "
+msgstr ""
+
+#: /wa-system/image/waImageGd.class.php:348
+msgid "Can't read font file $font_file"
+msgstr ""
+
+#: /wa-system/image/waImageGd.class.php:252
+msgid "GD does not support %s images"
+msgstr "GD does not support %s images."
+
+#: /wa-system/image/waImageGd.class.php:62
+msgid "GD is not installed"
+msgstr "GD is not installed."
+
+#: /wa-system/image/waImageGd.class.php:69
+msgid "Need GD version of the above 2.0.1"
+msgstr "Need GD version above 2.0.1"
+
+#: /wa-system/image/waImageImagick.class.php:31
+msgid "ImageMagick is not installed."
+msgstr ""
+
+#: /wa-system/view/waViewHelper.class.php:695
+msgid ""
+"Authorize either by entering your contact information, or through one of the "
+"websites listed above."
+msgstr ""
+"Authorize either by entering your contact information or using one of the "
+"services listed above."
+
+#: /wa-system/view/waViewHelper.class.php:378
+msgid "Syntax error at block"
+msgstr ""
+
+#: /wa-system/view/waViewHelper.class.php:516
+msgid "Reset password"
+msgstr ""
+
+#: /wa-system/view/waViewHelper.class.php:516
+msgid "I remember it now!"
+msgstr ""
+
+#: /wa-system/view/waViewHelper.class.php:529
+msgid "Enter a new password"
+msgstr ""
+
+#: /wa-system/view/waViewHelper.class.php:535
+msgid "Re-enter password"
+msgstr ""
+
+#: /wa-system/view/waViewHelper.class.php:543
+msgid "Save and log in"
+msgstr ""
+
+#: /wa-system/view/waViewHelper.class.php:639
+msgid "\"Sign up\""
+msgstr "“Sign up”"
+
+#: /wa-system/view/waViewHelper.class.php:639
+msgid "or <a href=\"%s\">login</a> if you already have an account"
+msgstr "or <a href=\"%s\">log in</a> if you already have an account"
+
+#: /wa-system/validator/waValidator.class.php:38
+msgid "Required"
+msgstr ""
+
+#: /wa-system/validator/waValidator.class.php:99
+msgid "Invalid"
+msgstr ""
+
+#: /wa-system/validator/waRegexValidator.class.php:25
+msgid "Not match."
+msgstr "No match."
+
+#: /wa-system/validator/waEmailValidator.class.php:30
+msgid "Invalid Email"
+msgstr "Invalid email address"
+
+#: /wa-system/exception/data/error.php:27
+msgid "Error"
+msgstr ""
+
+#: /wa-system/design/templates/Theme.html:110
+msgid "or"
+msgstr ""
+
+#: /wa-system/design/templates/Theme.html:110
+msgid "cancel"
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/forgot/ForgotPassword.html:3
+msgid "Recover password for"
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/forgot/ForgotPassword.html:31
+msgid "Password recovery instructions have been sent to your email address."
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/forgot/ForgotPassword.html:33
+msgid "Back to login page"
+msgstr "Back to the login page"
+
+#: /wa-system/webasyst/templates/actions/forgot/ForgotPassword.html:36
+msgid "Please enter your email:"
+msgstr "Please enter your email address:"
+
+#: /wa-system/webasyst/templates/actions/forgot/ForgotPassword.html:38
+msgid "Please enter your login name or email:"
+msgstr "Please enter your login name or email address:"
+
+#: /wa-system/webasyst/templates/actions/forgot/ForgotPassword.html:47
+msgid "Send"
+msgstr ""
+
+#: /wa-system/webasyst/templates/mail/RecoveringPassword.html:1
+msgid "To recover your password please follow this link:"
+msgstr "To recover your password, please follow this link:"
+
+#: /wa-system/webasyst/templates/mail/RecoveringPassword.html:4
+msgid ""
+"IMPORTANT NOTE: If you did not request your password recovery, someone else "
+"might be trying to log in using your email address. For security purposes we "
+"recommend you to log in to your account and to change your password."
+msgstr ""
+
+#: /wa-system/page/templates/PageEdit.html:10
+msgid "Page settings"
+msgstr ""
+
+#: /wa-system/design/templates/DesignEdit.html:31
+msgid "Delete"
+msgstr ""
+
+#: /wa-system/page/templates/PageEdit.html:16
+msgid "This will delete entire page. Are you sure?"
+msgstr "This will delete the entire page. Are you sure?"
+
+#: /wa-system/page/templates/Page.html:217
+msgid "New page"
+msgstr ""
+
+#: /wa-system/design/templates/Sidebar.html:12
+msgid "Preview"
+msgstr ""
+
+#: /wa-system/page/templates/PageEdit.html:88
+msgid ""
+"This page is unsettled (unpublished), i.e. not connected to any of your "
+"site’s routing rules. Drag this page out of the Unpublished section in the "
+"left sidebar to connect it to any of your existing site’s routes."
+msgstr ""
+"This page is not settled (not published), i.e. not connected to any of your "
+"site’s routing rules. Drag this page from the Unpublished section in the "
+"left sidebar to connect it to any of your existing site’s routes."
+
+#: /wa-system/page/templates/PageEdit.html:61
+msgid "Page name"
+msgstr ""
+
+#: /wa-system/page/templates/PageEdit.html:69
+msgid "Draft"
+msgstr ""
+
+#: /wa-system/page/templates/PageEdit.html:71
+msgid "Published"
+msgstr ""
+
+#: /wa-system/page/templates/PageEdit.html:78
+msgid "Page URL"
+msgstr ""
+
+#: /wa-system/page/templates/PageEdit.html:101
+msgid "<strong class=\"title\">Title</strong>"
+msgstr ""
+
+#: /wa-system/page/templates/PageEdit.html:117
+msgid "Page custom parameters"
+msgstr "Custom page parameters"
+
+#: /wa-system/page/templates/PageEdit.html:121
+msgid ""
+"Optional set of custom <em>key=value</em> parameters which can be used "
+"within page.html template or this page content as <em>&#123;$page.key&#125;</"
+"em>. Each key=value pair should be on a separate line."
+msgstr ""
+"Optional set of custom <em>key=value</em> parameters, which can be used in "
+"page.html template or in this page content as <em>&#123;$page.key&#125;</"
+"em>. Each key=value pair must be on a separate line."
+
+#: /wa-system/page/templates/PageEdit.html:121
+msgid "Help"
+msgstr ""
+
+#: /wa-system/page/templates/PageEdit.html:140
+msgid "WYSIWYG"
+msgstr ""
+
+#: /wa-system/design/templates/DesignEdit.html:153
+msgid "Cheat sheet"
+msgstr ""
+
+#: /wa-system/design/templates/Theme.html:109
+msgid "Save"
+msgstr ""
+
+#: /wa-system/design/templates/DesignEdit.html:254
+msgid "Saving..."
+msgstr ""
+
+#: /wa-system/design/templates/DesignEdit.html:257
+msgid "Saved"
+msgstr ""
+
+#: /wa-system/page/templates/Page.html:87
+msgid "Unpublished"
+msgstr ""
+
+#: /wa-system/page/templates/Page.html:94
+msgid ""
+"There are <strong><span>%d</span> unsettled page(s)</strong>, i.e. pages "
+"which are not connected to any of the site’s routing rules. These pages are "
+"not displayed on your site. To publish these pages now, select the new route "
+"for them:"
+msgstr ""
+"There are <strong><span>%d</span> unsettled page(s)</strong>, i.e. pages "
+"which are not connected to any of the site’s routing rules. These pages are "
+"not displayed on your site. To publish these pages now, select a new route "
+"for them:"
+
+#: /wa-system/page/templates/Page.html:112
+msgid "Unpublished pages"
+msgstr ""
+
+#: /wa-system/design/templates/Design.html:105
+msgid "Loading"
+msgstr ""
+
+#: /wa-system/design/templates/Design.html:113
+msgid "Unsaved changes will be lost if you leave this page now. Are you sure?"
+msgstr ""
+"Non-saved changes will be lost if you leave this page now. Are you sure?"
+
+#: /wa-system/design/templates/DesignEdit.html:9
+msgid "View original"
+msgstr ""
+
+#: /wa-system/design/templates/DesignEdit.html:19
+msgid "Close"
+msgstr ""
+
+#: /wa-system/design/templates/DesignEdit.html:29
+msgid "Template settings"
+msgstr ""
+
+#: /wa-system/design/templates/DesignEdit.html:34
+msgid "File will be deleted without the ability to recover. Are you sure?"
+msgstr ""
+
+#: /wa-system/design/templates/DesignEdit.html:66
+msgid "Create new file"
+msgstr ""
+
+#: /wa-system/design/templates/DesignEdit.html:67
+msgid "Link from parent theme"
+msgstr ""
+
+#: /wa-system/design/templates/DesignEdit.html:74
+msgid "File name"
+msgstr "Filename"
+
+#: /wa-system/design/templates/DesignEdit.html:78
+msgid "File should have one of the allowed extensions: .html, .css, .js"
+msgstr "Filename should have one of the allowed extensions: .html, .css, .js."
+
+#: /wa-system/design/templates/DesignEdit.html:83
+msgid "Description"
+msgstr ""
+
+#: /wa-system/design/templates/DesignEdit.html:87
+msgid "Optional template description"
+msgstr ""
+
+#: /wa-system/design/templates/DesignEdit.html:95
+msgid "Select file"
+msgstr ""
+
+#: /wa-system/design/templates/DesignEdit.html:107
+msgid "all available parent theme files are already linked"
+msgstr ""
+
+#: /wa-system/design/templates/DesignEdit.html:112
+msgid "Select a file and click Save button below."
+msgstr ""
+
+#: /wa-system/design/templates/DesignEdit.html:210
+msgid "Theme preview"
+msgstr ""
+
+#: /wa-system/design/templates/DesignEdit.html:211
+msgid ""
+"Design theme “<strong id=\"wa-current-theme\"></strong>” is temporary "
+"enabled for you to see how it looks with your frontend. You can navigate "
+"through your website as you normally do. Other users don't see that you are "
+"previewing this design theme."
+msgstr ""
+"Design theme “<strong id=\"wa-current-theme\"></strong>” is temporary "
+"enabled for you to see how it looks in your frontend. You can navigate "
+"through your website as you normally do. Other users cannot see that you are "
+"previewing this design theme."
+
+#: /wa-system/design/templates/DesignEdit.html:216
+msgid "Finish preview session"
+msgstr ""
+
+#: /wa-system/design/templates/Themes.html:5
+msgid "All"
+msgstr ""
+
+#: /wa-system/design/templates/Themes.html:6
+msgid "Paid"
+msgstr ""
+
+#: /wa-system/design/templates/Themes.html:7
+msgid "Free"
+msgstr ""
+
+#: /wa-system/design/templates/Themes.html:13
+msgid "All categories"
+msgstr ""
+
+#: /wa-system/design/templates/Themes.html:14
+msgid "Installed themes only"
+msgstr ""
+
+#: /wa-system/design/templates/Themes.html:29
+msgid "All colors"
+msgstr ""
+
+#: /wa-system/design/templates/Themes.html:41
+msgid "Design themes for %s"
+msgstr ""
+
+#: /wa-system/design/templates/Themes.html:42
+msgid "Theme list is downloaded from webasyst.com website."
+msgstr ""
+
+#: /wa-system/design/templates/Sidebar.html:20
+msgid "not in use"
+msgstr ""
+
+#: /wa-system/design/templates/Sidebar.html:31
+msgid "New file"
+msgstr ""
+
+#: /wa-system/design/templates/Sidebar.html:32
+msgid "Theme settings"
+msgstr ""
+
+#: /wa-system/design/templates/Sidebar.html:34
+msgid "About"
+msgstr ""
+
+#: /wa-system/design/templates/Sidebar.html:44
+msgid "Design themes"
+msgstr ""
+
+#: /wa-system/design/templates/Sidebar.html:56
+msgid "Upload theme"
+msgstr ""
+
+#: /wa-system/design/templates/Sidebar.html:58
+msgid ""
+"Theme must be uploaded as a valid Webasyst design theme archive (.tar.gz "
+"archive with theme files and theme.xml manifest file)."
+msgstr ""
+"A theme must be uploaded as a valid Webasyst design theme archive (.tar.gz "
+"archive with theme files and a theme.xml manifest file)."
+
+#: /wa-system/design/templates/Sidebar.html:61
+msgid "Uploading..."
+msgstr ""
+
+#: /wa-system/design/templates/Sidebar.html:67
+msgid "Upload"
+msgstr ""
+
+#: /wa-system/design/templates/Theme.html:5
+msgid "Last modified"
+msgstr ""
+
+#: /wa-system/design/templates/Theme.html:5
+msgid "not modified"
+msgstr ""
+
+#: /wa-system/design/templates/Theme.html:8
+msgid "This design theme is in use on"
+msgstr "This design theme is in use at"
+
+#: /wa-system/design/templates/Theme.html:15
+msgid ""
+"This design theme is not in use. Apply this theme in your website <span "
+"class=\"js-theme-routing-url\">Routing settings</span>."
+msgstr ""
+"This design theme is not in use. Apply this theme in your website’s <span "
+"class=\"js-theme-routing-url\">Routing settings</span>."
+
+#: /wa-system/design/templates/Theme.html:21
+msgid "Download"
+msgstr ""
+
+#: /wa-system/design/templates/Theme.html:22
+msgid "Duplicate"
+msgstr ""
+
+#: /wa-system/design/templates/Theme.html:23
+msgid ""
+"This will reset all customizations you applied to this design theme. Are you "
+"sure?"
+msgstr ""
+"This will reset all changes you have applied to this design theme. Are you "
+"sure?"
+
+#: /wa-system/design/templates/Theme.html:23
+msgid "Revert theme to original"
+msgstr ""
+
+#: /wa-system/design/templates/Theme.html:38
+msgid "Rename"
+msgstr ""
+
+#: /wa-system/design/templates/Theme.html:84
+msgid "Parent theme"
+msgstr ""
+
+#: /wa-system/design/templates/Theme.html:25
+msgid "not set"
+msgstr ""
+
+#: /wa-system/design/templates/Theme.html:25
+msgid "Change"
+msgstr ""
+
+#: /wa-system/design/templates/Theme.html:26
+msgid ""
+"This will permanently delete theme without the ability to recover. Are you "
+"sure?"
+msgstr ""
+"This will permanently delete the theme without the ability to recover. Are "
+"you sure?"
+
+#: /wa-system/design/templates/Theme.html:26
+msgid "Delete theme"
+msgstr ""
+
+#: /wa-system/design/templates/Theme.html:43
+msgid "Theme name"
+msgstr ""
+
+#: /wa-system/design/templates/Theme.html:51
+msgid "Theme ID"
+msgstr ""
+
+#: /wa-system/design/templates/Theme.html:55
+msgid ""
+"IMPORTANT: Change Theme ID only if you are sure what you are doing. If this "
+"theme is in use by any of your websites, you will have to manually update "
+"these websites’ app settings to use this or another theme after altering the "
+"Theme ID parameter. Otherwise websites may stop working with the “Unable to "
+"load template file” error."
+msgstr ""
+"IMPORTANT: Change the Theme ID only if you are sure what you are doing. If "
+"this theme is used on any of your websites, you will have to manually update "
+"those websites’ settings to use this or another theme after the Theme ID "
+"parameter is changed. Otherwise websites may become inaccessible and will "
+"return the “Unable to load template file” error."
+
+#: /wa-system/design/templates/Theme.html:89
+msgid "Not set"
+msgstr ""
+
+#: /wa-system/design/templates/Theme.html:100
+msgid ""
+"IMPORTANT: Theme parenting allows linking HTML templates, CSS files and "
+"images from other design themes. If you are about to change parent for a "
+"design theme which already has a parent, be aware that existing file links "
+"and connections may become corrupted. A design theme can have not more than "
+"one parent theme."
+msgstr ""
+"IMPORTANT: Theme inheritance allows use of HTML templates, CSS files, and "
+"images of other design themes. If you are about to change the parent for a "
+"design theme which already has a parent, be aware that existing file links "
+"and connections may become corrupted. A design theme can have only one "
+"parent theme."
+
+msgid "Subscribe"
+msgstr ""
+
+msgid "Shopping cart"
+msgstr ""
+
+msgid "Powered by Webasyst"
+msgstr ""
+
+#: /wa-system/contact/waContactCheckboxField.class.php:36
+msgid "Yes"
+msgstr ""
+
+#: /wa-system/contact/waContactCheckboxField.class.php:36
+msgid "No"
+msgstr ""
+
+#: /wa-system/contact/waContactRegionField.class.php:134
+msgid "select region"
+msgstr ""
+
+#: /wa-system/contact/waContactsCollection.class.php:378
+msgid "Category"
+msgstr ""
+
+#: /wa-system/design/templates/Design.html:129
+msgid ""
+"Design theme “<strong id=\"wa-current-theme\"></strong>” is temporary "
+"enabled for you to see how it looks with your frontend. You can navigate "
+"through your website as you do it usually. Other users don't see that you "
+"are previewing this design theme."
+msgstr ""
+"Design theme “<strong id=\"wa-current-theme\"></strong>” is temporary "
+"enabled for you to see how it looks in your frontend. You can navigate "
+"through your website as you usually do. Other users cannot see that you are "
+"previewing this design theme."
+
+#: /wa-system/webasyst/templates/actions/api/ApiAuthMobile.html:30
+msgid "<strong>%s</strong> requests access to your apps data:"
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/api/ApiAuthMobile.html:42
+msgid "Allow"
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/api/ApiAuth.html:25
+msgid "deny"
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/api/ApiAuthMobile.html:45
+msgid "Deny"
+msgstr ""
+
+#: /wa-system/view/waViewHelper.class.php:425
+msgid "Recipient (administrator) email is not valid"
+msgstr ""
+
+#: /wa-system/view/waViewHelper.class.php:436
+msgid "Please define your request"
+msgstr ""
+
+#: /wa-system/view/waViewHelper.class.php:439
+msgid "Email is required"
+msgstr ""
+
+#: /wa-system/view/waViewHelper.class.php:448
+msgid ""
+"An error occurred while attempting to send your request. Please try again in "
+"a minute."
+msgstr ""
+
+#: /wa-system/contact/waContactSelectField.class.php:93
+msgid "Select value"
+msgstr ""
+
+#: /wa-system/controller/waSignupAction.class.php:140
+msgid "Thank you for signing up!"
+msgstr ""
+
+#: /wa-system/design/templates/DesignEdit.html:59
+msgid "parent theme file"
+msgstr ""
+
+#: /wa-system/design/templates/Sidebar.html:30
+msgid "This theme is in use on"
+msgstr ""
+
+#: /wa-system/design/templates/Sidebar.html:36
+msgid ""
+"This theme is currently not in use. Connect this theme in your site <a href="
+"\"%s\">Routing settings</a>."
+msgstr ""
+
+#: /wa-system/design/templates/Theme.html:15
+msgid "Display settings"
+msgstr ""
+
+#: /wa-system/design/templates/Theme.html:72
+msgid "Manage theme"
+msgstr ""
+
+#: /wa-system/design/templates/Theme.html:74
+msgid "Download theme"
+msgstr ""
+
+#: /wa-system/design/templates/Theme.html:81
+msgid ""
+"You are using the original version of this design theme. No customizations "
+"have been applied to theme files yet, and thus there is nothing to revert for now."
+msgstr ""
+
+#: /wa-system/design/templates/Theme.html:83
+msgid ""
+"This will erase all customizations you’ve made to this theme’s template "
+"files using the design editor, and reset this theme to original"
+msgstr ""
+
+#: /wa-system/design/templates/Theme.html:88
+msgid "Default theme cannot be deleted"
+msgstr ""
+
+#: /wa-system/design/templates/Theme.html:94
+msgid "Thumbnails"
+msgstr ""
+
+#: /wa-system/design/templates/Theme.html:95
+msgid ""
+"This design theme links image thumbnails of sizes listed below. If custom-"
+"sized on-fly thumbnail generation is not allowed by the app settings, please "
+"make sure that at least listed thumbnail sizes are allowed. If on-fly "
+"thumbnail generation is allowed, thumbnails will be generated automatically."
+msgstr ""
+
+#: /wa-system/design/templates/Themes.html:43
+msgid "Cancel"
+msgstr ""
+
+#: /wa-system/design/templates/Themes.html:47
+msgid "Design themes for %s app"
+msgstr ""
+
+#: /wa-system/design/templates/Themes.html:48
+msgid ""
+"Click on a design theme to download and install it from the Webasyst Store"
+msgstr ""
+
+#: /wa-system/page/actions/waPage.actions.php:506
+msgid "URL of this Webasyst installation (relative)"
+msgstr ""
+
+#: /wa-system/page/actions/waPage.actions.php:507
+msgid "URL of the current app settlement (relative)"
+msgstr ""
+
+#: /wa-system/page/actions/waPage.actions.php:508
+msgid "URL to access Webasyst backend (relative)"
+msgstr ""
+
+#: /wa-system/page/actions/waPage.actions.php:509
+msgid "URL of the current app design theme folder (relative)"
+msgstr ""
+
+#: /wa-system/page/actions/waPage.actions.php:511
+msgid "Title"
+msgstr ""
+
+#: /wa-system/page/actions/waPage.actions.php:512
+msgid "Assigns a new title"
+msgstr ""
+
+#: /wa-system/page/actions/waPage.actions.php:513
+msgid ""
+"Returns name of this Webasyst installation (name is specified in “Installer” "
+"app settings)"
+msgstr ""
+
+#: /wa-system/page/actions/waPage.actions.php:514
+msgid ""
+"Returns this site’s core navigation menu which is either set automatically "
+"or manually in the “Site settings” screen"
+msgstr ""
+
+#: /wa-system/page/actions/waPage.actions.php:515
+msgid "Returns current page URL (either absolute or relative)"
+msgstr ""
+
+#: /wa-system/page/actions/waPage.actions.php:516
+msgid "Returns this domain’s root URL (absolute)"
+msgstr ""
+
+#: /wa-system/page/actions/waPage.actions.php:517
+msgid ""
+"Returns value of the global var by <em>key</em>. Global var array is "
+"initially empty, and can be used arbitrarily."
+msgstr ""
+
+#: /wa-system/page/actions/waPage.actions.php:518
+msgid "Assigns global var a new value"
+msgstr ""
+
+#: /wa-system/page/actions/waPage.actions.php:519
+msgid "Returns GET parameter value (same as PHP $_GET[\"<em>key</em>\"])"
+msgstr ""
+
+#: /wa-system/page/actions/waPage.actions.php:520
+msgid ""
+"Based on current session data returns <em>true</em> or <em>false</em> if "
+"user is using a multi-touch mobile device; if no session var reflecting "
+"current website version (mobile or desktop) is available, User Agent "
+"information is used"
+msgstr ""
+
+#: /wa-system/page/actions/waPage.actions.php:521
+msgid ""
+"Returns user locale, e.g. \"en_US\", \"ru_RU\". In case user is authorized, "
+"locale is retrieved from “Contacts” app user record, or detected "
+"automatically otherwise"
+msgstr ""
+
+#: /wa-system/page/actions/waPage.actions.php:522
+msgid "Returns POST parameter value (same as PHP $_POST[\"<em>key</em>\"])"
+msgstr ""
+
+#: /wa-system/page/actions/waPage.actions.php:523
+msgid "Returns SERVER parameter value (same as PHP $_SERVER[\"KEY\"])"
+msgstr ""
+
+#: /wa-system/page/actions/waPage.actions.php:524
+msgid "Returns SESSION var value (same as PHP $_SESSION[\"<em>key</em>\"])"
+msgstr ""
+
+#: /wa-system/page/actions/waPage.actions.php:525
+msgid "Embeds HTML snippet by ID"
+msgstr ""
+
+#: /wa-system/page/actions/waPage.actions.php:526
+msgid ""
+"Returns authorized user data from associated record in “Contacts” app. "
+"\"<em>field</em>\" (string) is optional and indicates the field id to be "
+"returned. If not  Returns <em>false</em> if user is not authorized"
+msgstr "Returns authorized user data from associated record in Contacts app. <code>'field'</code> parameter is optional and indicates the field id whose value must be returned. This function accepts any parameters acceptable for method <code><a href="http://www.webasyst.com/developers/docs/basics/classes/waContact#method-get" target="_blank">get()</a></code> of system class <code>waContact</code>. Returns <code>false</code>, if user is not authorized."
+
+#: /wa-system/page/actions/waPage.actions.php:527
+msgid "Returns User Agent info by specified “<em>key</em>” parameter:"
+msgstr ""
+
+#: /wa-system/page/actions/waPage.actions.php:528
+msgid ""
+"— <em>\"platform\"</em>: current visitor device platform name, e.g. "
+"<em>windows, mac, linux, ios, android, blackberry</em>;"
+msgstr ""
+
+#: /wa-system/page/actions/waPage.actions.php:529
+msgid ""
+"— <em>\"isMobile\"</em>: returns <em>true</em> or <em>false</em> if user is "
+"using a multi-touch mobile device (iOS, Android and similar), based solely "
+"on User Agent string;"
+msgstr ""
+
+#: /wa-system/page/actions/waPage.actions.php:530
+msgid "— not specified: returns entire User Agent string;"
+msgstr ""
+
+#: /wa-system/page/actions/waPage.actions.php:531
+msgid "Returns path to theme folder by <em>theme_id</em> and <em>APP_ID</em>"
+msgstr ""
+
+#: /wa-system/page/actions/waPage.actions.php:576
+msgid "Displays a simple variable (non array/object)"
+msgstr ""
+
+#: /wa-system/page/actions/waPage.actions.php:577
+msgid "Displays the 5th element of a zero-indexed array"
+msgstr ""
+
+#: /wa-system/page/actions/waPage.actions.php:578
+msgid ""
+"Displays the \"<em>bar</em>\" key value of an array. Similar to PHP $foo"
+"[\"bar\"]"
+msgstr ""
+
+#: /wa-system/page/actions/waPage.actions.php:579
+msgid "Displays variable key value of an array. Similar to PHP $foo[$bar]"
+msgstr ""
+
+#: /wa-system/page/actions/waPage.actions.php:580
+msgid "Displays the object property named <em>bar</em>"
+msgstr ""
+
+#: /wa-system/page/actions/waPage.actions.php:581
+msgid "Displays the return value of object method named <em>bar()</em>"
+msgstr ""
+
+#: /wa-system/page/actions/waPage.actions.php:582
+msgid ""
+"Displays structured information about variable. Arrays and objects are "
+"explored recursively with values indented to show structure. Similar to PHP "
+"var_dump($foo)"
+msgstr ""
+
+#: /wa-system/page/actions/waPage.actions.php:583
+msgid "Escapes a variable for safe display in HTML"
+msgstr ""
+
+#: /wa-system/page/actions/waPage.actions.php:584
+msgid ""
+"Outputs <em>$var</em> datetime in a user-friendly form. Supported <em>"
+"$format</em> values: <em>monthdate, date, dtime, datetime, fulldatetime, "
+"time, fulltime, humandate, humandatetime</em>"
+msgstr ""
+
+#: /wa-system/page/actions/waPage.actions.php:585
+msgid "Outputs the sum of <em>$x</em> and <em>$y</em>"
+msgstr ""
+
+#: /wa-system/page/actions/waPage.actions.php:587
+msgid "Assigns variable a value"
+msgstr ""
+
+#: /wa-system/page/actions/waPage.actions.php:587
+msgid ""
+"Direct PHP function access. E.g. <em>{time()}</em> displays the current "
+"timestamp"
+msgstr ""
+
+#: /wa-system/page/actions/waPage.actions.php:588
+msgid "Content between {literal} tags will not be parsed by Smarty"
+msgstr ""
+
+#: /wa-system/page/actions/waPage.actions.php:589
+msgid ""
+"Embeds a Smarty template into the current content. <em>file</em> attribute "
+"specifies a template filename within the current design theme folder"
+msgstr ""
+
+#: /wa-system/page/actions/waPage.actions.php:590
+msgid "Similar to PHP if statements"
+msgstr ""
+
+#: /wa-system/page/actions/waPage.actions.php:591
+msgid "{foreach} is for looping over arrays of data"
+msgstr ""
+
+#: /wa-system/validator/waStringValidator.class.php:21
+msgid "No more than %d character please"
+msgid_plural "No more than %d characters please"
+msgstr[0] ""
+msgstr[1] ""
+
+#: /wa-system/validator/waStringValidator.class.php:22
+msgid "No less than %d character please"
+msgid_plural "No less than %d characters please"
+msgstr[0] ""
+msgstr[1] ""
+
+#: /wa-system/view/waViewHelper.class.php:763
+msgid "Sign Up"
+msgstr ""
+
+#: /wa-system/webasyst/templates/mail/Signup.html:1
+msgid "Thank you for registering on %s!"
+msgstr ""
+
+#: /wa-system/webasyst/templates/mail/Signup.html:3
+msgid "Login to your account"
+msgstr ""
+
+#: /wa-system/design/templates/Theme.html:115
+msgid "Revert to original"
+msgstr ""
+
+#: /wa-system/design/templates/Theme.html:118
+msgid ""
+"Drop all customizations and revert parent theme <strong>%s</strong> to the "
+"original version too"
+msgstr ""
+
+#: /wa-system/design/templates/Theme.html:126
+msgid "Revert"
+msgstr ""
+
+#: /wa-system/view/waViewHelper.class.php:531
+msgid "Website request"
+msgstr ""
+
+#: /wa-system/contact/waContactCompositeField.class.php:84
+#: /wa-system/contact/waContactField.class.php:339
+#: /wa-system/contact/waContactField.class.php:457
+msgid "Data must be an array."
+msgstr ""
+
+#: /wa-system/contact/waContactAddressField.class.php:207
+msgid "show on map"
+msgstr ""
+
+#: /wa-system/image/waImage.class.php:64
+msgid "Not an image or invalid image:"
+msgstr ""
+
+#: /wa-system/image/waImage.class.php:322
+msgid "File must be writable:"
+msgstr ""
+
+#: /wa-system/config/waAppConfig.class.php:66
+msgid "added a new template"
+msgstr ""
+
+#: /wa-system/config/waAppConfig.class.php:69
+msgid "edited template"
+msgstr ""
+
+#: /wa-system/config/waAppConfig.class.php:72
+msgid "deleted template"
+msgstr ""
+
+#: /wa-system/config/waAppConfig.class.php:75
+msgid "uploaded a new theme"
+msgstr ""
+
+#: /wa-system/config/waAppConfig.class.php:78
+msgid "downloaded theme"
+msgstr ""
+
+#: /wa-system/config/waAppConfig.class.php:81
+msgid "deleted theme"
+msgstr ""
+
+#: /wa-system/config/waAppConfig.class.php:84
+msgid "reset theme settings"
+msgstr ""
+
+#: /wa-system/config/waAppConfig.class.php:87
+msgid "create theme duplicate"
+msgstr ""
+
+#: /wa-system/config/waAppConfig.class.php:90
+msgid "renamed theme"
+msgstr ""
+
+#: /wa-system/config/waAppConfig.class.php:102
+msgid "added a new page"
+msgstr ""
+
+#: /wa-system/config/waAppConfig.class.php:105
+msgid "edited a website page"
+msgstr ""
+
+#: /wa-system/config/waAppConfig.class.php:108
+msgid "deleted page"
+msgstr ""
+
+#: /wa-system/config/waAppConfig.class.php:111
+msgid "moved page"
+msgstr ""
+
+#: /wa-system/config/waAppConfig.class.php:121
+msgid "logged in"
+msgstr ""
+
+#: /wa-system/config/waAppConfig.class.php:124
+msgid "logged out"
+msgstr ""
+
+#: /wa-system/config/waAppConfig.class.php:127
+msgid "signed up"
+msgstr ""
+
+#: /wa-system/config/waAppConfig.class.php:130
+msgid "edited profile in customer portal"
+msgstr ""
+
+#: /wa-system/config/waAppConfig.class.php:133
+msgid "enabled access for contact"
+msgstr ""
+
+#: /wa-system/config/waAppConfig.class.php:136
+msgid "disabled access for contact"
+msgstr ""
+
+#: /wa-system/validator/waStringValidator.class.php:21
+msgid "No more than %d character please"
+msgid_plural "No more than %d characters please"
+msgstr[0] ""
+msgstr[1] ""
+
+#: /wa-system/validator/waStringValidator.class.php:22
+msgid "No less than %d character please"
+msgid_plural "No less than %d characters please"
+msgstr[0] ""
+msgstr[1] ""
+
+#: /wa-system/validator/waDateValidator.class.php:21
+msgid "Incorrect date"
+msgstr ""
+
+#: /wa-system/validator/waNumberValidator.class.php:21
+msgid "Incorrect numerical value"
+msgstr ""
+
+#: /wa-system/validator/waStringValidator.class.php:21
+msgid "No more than %d character please"
+msgid_plural "No more than %d characters please"
+msgstr[0] ""
+msgstr[1] ""
+
+#: /wa-system/validator/waStringValidator.class.php:22
+msgid "No less than %d character please"
+msgid_plural "No less than %d characters please"
+msgstr[0] ""
+msgstr[1] ""
+
+#: /wa-system/contact/waContactBirthdayField.class.php:157
+msgid "January"
+msgstr ""
+
+#: /wa-system/contact/waContactBirthdayField.class.php:158
+msgid "February"
+msgstr ""
+
+#: /wa-system/contact/waContactBirthdayField.class.php:159
+msgid "March"
+msgstr ""
+
+#: /wa-system/contact/waContactBirthdayField.class.php:160
+msgid "April"
+msgstr ""
+
+#: /wa-system/contact/waContactBirthdayField.class.php:161
+msgid "May"
+msgstr ""
+
+#: /wa-system/contact/waContactBirthdayField.class.php:162
+msgid "June"
+msgstr ""
+
+#: /wa-system/contact/waContactBirthdayField.class.php:163
+msgid "July"
+msgstr ""
+
+#: /wa-system/contact/waContactBirthdayField.class.php:164
+msgid "August"
+msgstr ""
+
+#: /wa-system/contact/waContactBirthdayField.class.php:165
+msgid "September"
+msgstr ""
+
+#: /wa-system/contact/waContactBirthdayField.class.php:166
+msgid "October"
+msgstr ""
+
+#: /wa-system/contact/waContactBirthdayField.class.php:167
+msgid "November"
+msgstr ""
+
+#: /wa-system/contact/waContactBirthdayField.class.php:168
+msgid "December"
+msgstr ""
+
+#: /wa-system/contact/waContactForm.class.php:344
+msgid "New password"
+msgstr ""
+
+#: /wa-system/contact/waContactForm.class.php:364
+#: /wa-system/controller/waMyProfileAction.class.php:145
+msgid "Photo"
+msgstr ""
+
+#: /wa-system/contact/waContactsCollection.class.php:417
+msgid "Name"
+msgstr ""
+
+#: /wa-system/design/templates/Design.html:58
+#: /wa-system/design/templates/Design.html:58
+msgid "Site"
+msgstr ""
+
+#: /wa-system/design/templates/Design.html:62
+msgid "Appearance"
+msgstr ""
+
+#: /wa-system/design/templates/Design.html:64
+msgid "Pages"
+msgstr ""
+
+#: /wa-system/design/templates/Design.html:66
+msgid "Templates"
+msgstr ""
+
+#: /wa-system/design/templates/Design.html:67
+msgid "Themes"
+msgstr ""
+
+#: /wa-system/design/templates/Design.html:68
+msgid "Settings"
+msgstr ""
+
+#: /wa-system/design/templates/DesignEdit.html:130
+msgid "This list represent all parent theme (<strong>%s</strong>) templates which are currently not linked in this design theme."
+msgstr ""
+
+#: /wa-system/design/templates/Theme.html:9
+msgid "Download theme backup"
+msgstr ""
+
+#: /wa-system/design/templates/Theme.html:10
+msgid "Clone theme"
+msgstr ""
+
+#: /wa-system/design/templates/Theme.html:11
+#: /wa-system/design/templates/Theme.html:296
+msgid "Rename theme"
+msgstr ""
+
+#: /wa-system/design/templates/Theme.html:14
+msgid "You did not apply customizations to this theme yet, and thus there is nothing to revert."
+msgstr ""
+
+#: /wa-system/design/templates/Theme.html:47
+#: /wa-system/design/templates/Theme.html:281
+msgid "Start using %s theme"
+msgstr ""
+
+#: /wa-system/design/templates/Theme.html:50
+msgid "preview this theme"
+msgstr ""
+
+#: /wa-system/design/templates/Theme.html:59
+msgid "Theme path"
+msgstr ""
+
+#: /wa-system/design/templates/Theme.html:73
+msgid "Theme usage"
+msgstr ""
+
+#: /wa-system/design/templates/Theme.html:84
+msgid "All listed routes are linking %s design theme right now."
+msgstr ""
+
+#: /wa-system/design/templates/Theme.html:178
+msgid "%s design theme does not offer customizable display settings. Please use template editor for customizing the theme."
+msgstr ""
+
+#: /wa-system/design/templates/Theme.html:185
+msgid "About this theme"
+msgstr ""
+
+#: /wa-system/design/templates/Theme.html:240
+msgid "Start using this theme on one of your existing %s app routes, or create a new route:"
+msgstr ""
+
+#: /wa-system/design/templates/Theme.html:244
+msgid "Existing route"
+msgstr ""
+
+#: /wa-system/design/templates/Theme.html:256
+msgid "New route"
+msgstr ""
+
+#: /wa-system/design/templates/Theme.html:344
+msgid "Change parent theme"
+msgstr ""
+
+#: /wa-system/design/templates/Theme.html:36
+msgid "%s design theme has been successfully installed. Start using this theme by clicking the button below."
+msgstr ""
+
+#: /wa-system/design/templates/Theme.html:39
+msgid "%s design theme is currently not in use on your websites."
+msgstr ""
+
+#: /wa-system/design/templates/Themes.html:43
+msgid "Upload theme archive"
+msgstr ""
+
+#: /wa-system/page/templates/Help.html:8
+msgid "Blocks"
+msgstr ""
+
+#: /wa-system/webasyst/templates/mail/Signup.html:7
+msgid "Confirm your email by clicking this link"
+msgstr ""
+
+#: /wa-system/design/templates/DesignEdit.html:36
+msgid "Roll back my file to the original version"
+msgstr ""
+
+#: /wa-system/design/templates/DesignEdit.html:41
+msgid "This will reset all your changes. Are you sure?"
+msgstr ""
+
+#: /wa-system/response/waResponse.class.php:405
+msgid "<strong>%s</strong> theme preview in action."
+msgstr ""
+
+#: /wa-system/response/waResponse.class.php:408
+msgid "Stop preview session"
+msgstr ""
+
+#: /wa-system/response/waResponse.class.php:407
+msgid "<strong>%s</strong> theme preview in action"
+msgstr ""

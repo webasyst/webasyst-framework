@@ -1,0 +1,3965 @@
+2015-02-09T16:32:47+04:0000001	8EF	DEBUG	1.09Mb	1.09Mb	
+waInstaller::mkdir
+{------------------------------------------------------------
+array (
+  'pathname' => 'wa-log/wa-installer',
+  'mode' => 511,
+)
+}------------------------------------------------------------
+2015-02-09T16:32:47+04:0000002	8EF	DEBUG	1.09Mb	1.09Mb	
+waInstaller::protect
+{------------------------------------------------------------
+array (
+  'path' => 'wa-log/wa-installer',
+  'htaccess' => 'wa-log/.htaccess',
+)
+}------------------------------------------------------------
+2015-02-09T16:32:47+04:0000003	8EF	DEBUG	1.09Mb	1.10Mb	
+waInstaller::formatUpdateList tree
+{------------------------------------------------------------
+array (
+  'targets' => 
+  array (
+    0 => 'wa-content/',
+    1 => 'wa-system/',
+    2 => 'wa-apps/contacts/',
+    3 => 'wa-apps/installer/',
+    4 => 'wa-apps/site/',
+    5 => 'wa-apps/stickies/',
+  ),
+  'update_list' => 
+  array (
+    0 => 
+    array (
+      'source' => '/var/www/admin/data/www/pchelkinazabava.ru/wa-installer/../wa-sources/wa-content.tar.gz',
+      'target' => 'wa-content/',
+      'slug' => 'wa-content',
+      'extract_path' => 'wa-data/protected/wa-installer/8EF/update/wa-content/',
+      'pass' => false,
+      'skipped' => false,
+      'dependent' => false,
+    ),
+    1 => 
+    array (
+      'source' => '/var/www/admin/data/www/pchelkinazabava.ru/wa-installer/../wa-sources/wa-system.tar.gz',
+      'target' => 'wa-system/',
+      'slug' => 'wa-system',
+      'extract_path' => 'wa-data/protected/wa-installer/8EF/update/wa-system/',
+      'pass' => false,
+      'skipped' => false,
+      'dependent' => false,
+    ),
+    2 => 
+    array (
+      'source' => '/var/www/admin/data/www/pchelkinazabava.ru/wa-installer/../wa-sources/wa-apps/contacts.tar.gz',
+      'target' => 'wa-apps/contacts/',
+      'slug' => 'wa-apps/contacts',
+      'extract_path' => 'wa-data/protected/wa-installer/8EF/update/wa-apps/contacts/',
+      'pass' => false,
+      'skipped' => false,
+      'dependent' => false,
+    ),
+    3 => 
+    array (
+      'source' => '/var/www/admin/data/www/pchelkinazabava.ru/wa-installer/../wa-sources/wa-apps/installer.tar.gz',
+      'target' => 'wa-apps/installer/',
+      'slug' => 'wa-apps/installer',
+      'extract_path' => 'wa-data/protected/wa-installer/8EF/update/wa-apps/installer/',
+      'pass' => false,
+      'skipped' => false,
+      'dependent' => false,
+    ),
+    4 => 
+    array (
+      'source' => '/var/www/admin/data/www/pchelkinazabava.ru/wa-installer/../wa-sources/wa-apps/site.tar.gz',
+      'target' => 'wa-apps/site/',
+      'slug' => 'wa-apps/site',
+      'extract_path' => 'wa-data/protected/wa-installer/8EF/update/wa-apps/site/',
+      'pass' => false,
+      'skipped' => false,
+      'dependent' => false,
+    ),
+    5 => 
+    array (
+      'source' => '/var/www/admin/data/www/pchelkinazabava.ru/wa-installer/../wa-sources/wa-apps/stickies.tar.gz',
+      'target' => 'wa-apps/stickies/',
+      'slug' => 'wa-apps/stickies',
+      'extract_path' => 'wa-data/protected/wa-installer/8EF/update/wa-apps/stickies/',
+      'pass' => false,
+      'skipped' => false,
+      'dependent' => false,
+    ),
+  ),
+)
+}------------------------------------------------------------
+2015-02-09T16:32:47+04:0000004	8EF	DEBUG	1.09Mb	1.10Mb	
+callback
+{------------------------------------------------------------
+array (
+  0 => 
+  array (
+    'file' => '/wa-installer/lib/classes/wainstaller.class.php:154',
+    'function' => 'waInstaller->envSet()',
+  ),
+  1 => 
+  array (
+    'file' => '/wa-installer/install.php:383',
+    'function' => 'waInstaller->update(Array(6))',
+  ),
+  2 => 
+  array (
+    'file' => '/install.php:4',
+    'function' => 'require_once',
+  ),
+)
+}------------------------------------------------------------
+2015-02-09T16:32:47+04:0000005	8EF	TRACE	1.10Mb	1.12Mb	
+Register ob error handler
+{------------------------------------------------------------
+true
+}------------------------------------------------------------
+2015-02-09T16:32:47+04:0000006	8EF	TRACE	1.12Mb	1.13Mb	prepare_heartbeat
+waInstaller::setState
+{------------------------------------------------------------
+array (
+  'start_time' => 1423485167,
+  'start_time_float' => 1423485167.3211,
+  'elapsed_time' => 0,
+  'stage' => 1,
+  'stage_name' => 'prepare',
+  'state_heartbeat' => false,
+  'thread_id' => '8EF',
+  'chunk_id' => 'wa-content',
+  'stage_current_value' => 0,
+  'stage_status' => 'heartbeat',
+  'timestamp' => 1423485167,
+  'timestamp_float' => 1423485167.3211,
+  'stage_start_time' => 1423485167.3211,
+  'datetime' => 'Mon, 09 Feb 2015 16:32:47 +0400',
+  'stage_value' => 0,
+)
+}------------------------------------------------------------
+2015-02-09T16:32:47+04:0000007	8EF	DEBUG	1.12Mb	1.15Mb	prepare_heartbeat
+waInstaller::mkdir
+{------------------------------------------------------------
+array (
+  'pathname' => 'wa-data/protected/wa-installer/8EF/update/wa-content/',
+  'mode' => 511,
+)
+}------------------------------------------------------------
+2015-02-09T16:32:47+04:0000008	8EF	DEBUG	1.12Mb	1.15Mb	prepare_heartbeat
+waInstaller::protect
+{------------------------------------------------------------
+array (
+  'path' => 'wa-data/protected/wa-installer/8EF/update/wa-content/',
+  'htaccess' => 'wa-data/protected/.htaccess',
+)
+}------------------------------------------------------------
+2015-02-09T16:32:47+04:0000009	8EF	TRACE	1.12Mb	1.15Mb	prepare_complete
+waInstaller::setState
+{------------------------------------------------------------
+array (
+  'start_time' => 1423485167,
+  'start_time_float' => 1423485167.3211,
+  'elapsed_time' => 0,
+  'stage' => 1,
+  'stage_name' => 'prepare',
+  'state_heartbeat' => 0.0020620822906494,
+  'thread_id' => '8EF',
+  'chunk_id' => 'wa-content',
+  'stage_current_value' => 0,
+  'stage_status' => 'complete',
+  'timestamp' => 1423485167,
+  'timestamp_float' => 1423485167.3231,
+  'stage_start_time' => 1423485167.3211,
+  'datetime' => 'Mon, 09 Feb 2015 16:32:47 +0400',
+  'stage_value' => 0,
+  'stage_performance' => 0,
+)
+}------------------------------------------------------------
+2015-02-09T16:32:47+04:0000010	8EF	TRACE	1.12Mb	1.16Mb	prepare_heartbeat
+waInstaller::setState
+{------------------------------------------------------------
+array (
+  'start_time' => 1423485167,
+  'start_time_float' => 1423485167.3211,
+  'elapsed_time' => 0,
+  'stage' => 1,
+  'stage_name' => 'prepare',
+  'state_heartbeat' => 0.0011210441589355,
+  'thread_id' => '8EF',
+  'chunk_id' => 'wa-system',
+  'stage_current_value' => 0,
+  'stage_status' => 'heartbeat',
+  'timestamp' => 1423485167,
+  'timestamp_float' => 1423485167.3242,
+  'stage_start_time' => 1423485167.3242,
+  'datetime' => 'Mon, 09 Feb 2015 16:32:47 +0400',
+  'stage_value' => 0,
+  'stage_performance' => 0,
+)
+}------------------------------------------------------------
+2015-02-09T16:32:47+04:0000011	8EF	DEBUG	1.12Mb	1.16Mb	prepare_heartbeat
+waInstaller::mkdir
+{------------------------------------------------------------
+array (
+  'pathname' => 'wa-data/protected/wa-installer/8EF/update/wa-system/',
+  'mode' => 511,
+)
+}------------------------------------------------------------
+2015-02-09T16:32:47+04:0000012	8EF	TRACE	1.12Mb	1.16Mb	prepare_complete
+waInstaller::setState
+{------------------------------------------------------------
+array (
+  'start_time' => 1423485167,
+  'start_time_float' => 1423485167.3211,
+  'elapsed_time' => 0,
+  'stage' => 1,
+  'stage_name' => 'prepare',
+  'state_heartbeat' => 0.0015361309051514,
+  'thread_id' => '8EF',
+  'chunk_id' => 'wa-system',
+  'stage_current_value' => 0,
+  'stage_status' => 'complete',
+  'timestamp' => 1423485167,
+  'timestamp_float' => 1423485167.3257,
+  'stage_start_time' => 1423485167.3242,
+  'datetime' => 'Mon, 09 Feb 2015 16:32:47 +0400',
+  'stage_value' => 0,
+  'stage_performance' => 0,
+)
+}------------------------------------------------------------
+2015-02-09T16:32:47+04:0000013	8EF	TRACE	1.12Mb	1.17Mb	prepare_heartbeat
+waInstaller::setState
+{------------------------------------------------------------
+array (
+  'start_time' => 1423485167,
+  'start_time_float' => 1423485167.3211,
+  'elapsed_time' => 0,
+  'stage' => 1,
+  'stage_name' => 'prepare',
+  'state_heartbeat' => 0.00093507766723633,
+  'thread_id' => '8EF',
+  'chunk_id' => 'wa-apps/stickies',
+  'stage_current_value' => 0,
+  'stage_status' => 'heartbeat',
+  'timestamp' => 1423485167,
+  'timestamp_float' => 1423485167.3266,
+  'stage_start_time' => 1423485167.3266,
+  'datetime' => 'Mon, 09 Feb 2015 16:32:47 +0400',
+  'stage_value' => 0,
+  'stage_performance' => 0,
+)
+}------------------------------------------------------------
+2015-02-09T16:32:47+04:0000014	8EF	DEBUG	1.12Mb	1.17Mb	prepare_heartbeat
+waInstaller::mkdir
+{------------------------------------------------------------
+array (
+  'pathname' => 'wa-data/protected/wa-installer/8EF/update/wa-apps/stickies/',
+  'mode' => 511,
+)
+}------------------------------------------------------------
+2015-02-09T16:32:47+04:0000015	8EF	TRACE	1.12Mb	1.17Mb	prepare_complete
+waInstaller::setState
+{------------------------------------------------------------
+array (
+  'start_time' => 1423485167,
+  'start_time_float' => 1423485167.3211,
+  'elapsed_time' => 0,
+  'stage' => 1,
+  'stage_name' => 'prepare',
+  'state_heartbeat' => 0.0016050338745117,
+  'thread_id' => '8EF',
+  'chunk_id' => 'wa-apps/stickies',
+  'stage_current_value' => 0,
+  'stage_status' => 'complete',
+  'timestamp' => 1423485167,
+  'timestamp_float' => 1423485167.3282,
+  'stage_start_time' => 1423485167.3266,
+  'datetime' => 'Mon, 09 Feb 2015 16:32:47 +0400',
+  'stage_value' => 0,
+  'stage_performance' => 0,
+)
+}------------------------------------------------------------
+2015-02-09T16:32:47+04:0000016	8EF	TRACE	1.13Mb	1.18Mb	prepare_heartbeat
+waInstaller::setState
+{------------------------------------------------------------
+array (
+  'start_time' => 1423485167,
+  'start_time_float' => 1423485167.3211,
+  'elapsed_time' => 0,
+  'stage' => 1,
+  'stage_name' => 'prepare',
+  'state_heartbeat' => 0.025123834609985,
+  'thread_id' => '8EF',
+  'chunk_id' => 'wa-apps/site',
+  'stage_current_value' => 0,
+  'stage_status' => 'heartbeat',
+  'timestamp' => 1423485167,
+  'timestamp_float' => 1423485167.3533,
+  'stage_start_time' => 1423485167.3533,
+  'datetime' => 'Mon, 09 Feb 2015 16:32:47 +0400',
+  'stage_value' => 0,
+  'stage_performance' => 0,
+)
+}------------------------------------------------------------
+2015-02-09T16:32:47+04:0000017	8EF	DEBUG	1.13Mb	1.18Mb	prepare_heartbeat
+waInstaller::mkdir
+{------------------------------------------------------------
+array (
+  'pathname' => 'wa-data/protected/wa-installer/8EF/update/wa-apps/site/',
+  'mode' => 511,
+)
+}------------------------------------------------------------
+2015-02-09T16:32:47+04:0000018	8EF	TRACE	1.13Mb	1.18Mb	prepare_complete
+waInstaller::setState
+{------------------------------------------------------------
+array (
+  'start_time' => 1423485167,
+  'start_time_float' => 1423485167.3211,
+  'elapsed_time' => 0,
+  'stage' => 1,
+  'stage_name' => 'prepare',
+  'state_heartbeat' => 0.002504825592041,
+  'thread_id' => '8EF',
+  'chunk_id' => 'wa-apps/site',
+  'stage_current_value' => 0,
+  'stage_status' => 'complete',
+  'timestamp' => 1423485167,
+  'timestamp_float' => 1423485167.3558,
+  'stage_start_time' => 1423485167.3533,
+  'datetime' => 'Mon, 09 Feb 2015 16:32:47 +0400',
+  'stage_value' => 0,
+  'stage_performance' => 0,
+)
+}------------------------------------------------------------
+2015-02-09T16:32:47+04:0000019	8EF	TRACE	1.13Mb	1.19Mb	prepare_heartbeat
+waInstaller::setState
+{------------------------------------------------------------
+array (
+  'start_time' => 1423485167,
+  'start_time_float' => 1423485167.3211,
+  'elapsed_time' => 0,
+  'stage' => 1,
+  'stage_name' => 'prepare',
+  'state_heartbeat' => 0.001662015914917,
+  'thread_id' => '8EF',
+  'chunk_id' => 'wa-apps/contacts',
+  'stage_current_value' => 0,
+  'stage_status' => 'heartbeat',
+  'timestamp' => 1423485167,
+  'timestamp_float' => 1423485167.3575,
+  'stage_start_time' => 1423485167.3575,
+  'datetime' => 'Mon, 09 Feb 2015 16:32:47 +0400',
+  'stage_value' => 0,
+  'stage_performance' => 0,
+)
+}------------------------------------------------------------
+2015-02-09T16:32:47+04:0000020	8EF	DEBUG	1.13Mb	1.19Mb	prepare_heartbeat
+waInstaller::mkdir
+{------------------------------------------------------------
+array (
+  'pathname' => 'wa-data/protected/wa-installer/8EF/update/wa-apps/contacts/',
+  'mode' => 511,
+)
+}------------------------------------------------------------
+2015-02-09T16:32:47+04:0000021	8EF	TRACE	1.13Mb	1.19Mb	prepare_complete
+waInstaller::setState
+{------------------------------------------------------------
+array (
+  'start_time' => 1423485167,
+  'start_time_float' => 1423485167.3211,
+  'elapsed_time' => 0,
+  'stage' => 1,
+  'stage_name' => 'prepare',
+  'state_heartbeat' => 0.02703595161438,
+  'thread_id' => '8EF',
+  'chunk_id' => 'wa-apps/contacts',
+  'stage_current_value' => 0,
+  'stage_status' => 'complete',
+  'timestamp' => 1423485167,
+  'timestamp_float' => 1423485167.3845,
+  'stage_start_time' => 1423485167.3575,
+  'datetime' => 'Mon, 09 Feb 2015 16:32:47 +0400',
+  'stage_value' => 0,
+  'stage_performance' => 0,
+)
+}------------------------------------------------------------
+2015-02-09T16:32:47+04:0000022	8EF	TRACE	1.13Mb	1.20Mb	prepare_heartbeat
+waInstaller::setState
+{------------------------------------------------------------
+array (
+  'start_time' => 1423485167,
+  'start_time_float' => 1423485167.3211,
+  'elapsed_time' => 0,
+  'stage' => 1,
+  'stage_name' => 'prepare',
+  'state_heartbeat' => 0.0010941028594971,
+  'thread_id' => '8EF',
+  'chunk_id' => 'wa-apps/installer',
+  'stage_current_value' => 0,
+  'stage_status' => 'heartbeat',
+  'timestamp' => 1423485167,
+  'timestamp_float' => 1423485167.3856,
+  'stage_start_time' => 1423485167.3856,
+  'datetime' => 'Mon, 09 Feb 2015 16:32:47 +0400',
+  'stage_value' => 0,
+  'stage_performance' => 0,
+)
+}------------------------------------------------------------
+2015-02-09T16:32:47+04:0000023	8EF	DEBUG	1.13Mb	1.20Mb	prepare_heartbeat
+waInstaller::mkdir
+{------------------------------------------------------------
+array (
+  'pathname' => 'wa-data/protected/wa-installer/8EF/update/wa-apps/installer/',
+  'mode' => 511,
+)
+}------------------------------------------------------------
+2015-02-09T16:32:47+04:0000024	8EF	TRACE	1.13Mb	1.20Mb	prepare_complete
+waInstaller::setState
+{------------------------------------------------------------
+array (
+  'start_time' => 1423485167,
+  'start_time_float' => 1423485167.3211,
+  'elapsed_time' => 0,
+  'stage' => 1,
+  'stage_name' => 'prepare',
+  'state_heartbeat' => 0.001629114151001,
+  'thread_id' => '8EF',
+  'chunk_id' => 'wa-apps/installer',
+  'stage_current_value' => 0,
+  'stage_status' => 'complete',
+  'timestamp' => 1423485167,
+  'timestamp_float' => 1423485167.3872,
+  'stage_start_time' => 1423485167.3856,
+  'datetime' => 'Mon, 09 Feb 2015 16:32:47 +0400',
+  'stage_value' => 0,
+  'stage_performance' => 0,
+)
+}------------------------------------------------------------
+2015-02-09T16:32:47+04:0000025	8EF	TRACE	1.13Mb	1.21Mb	download_heartbeat
+waInstaller::setState
+{------------------------------------------------------------
+array (
+  'start_time' => 1423485167,
+  'start_time_float' => 1423485167.3211,
+  'elapsed_time' => 0,
+  'stage' => 2,
+  'stage_name' => 'download',
+  'state_heartbeat' => 0.0014119148254395,
+  'thread_id' => '8EF',
+  'chunk_id' => 'wa-content',
+  'stage_current_value' => 0,
+  'stage_status' => 'heartbeat',
+  'timestamp' => 1423485167,
+  'timestamp_float' => 1423485167.3886,
+  'stage_start_time' => 1423485167.3886,
+  'datetime' => 'Mon, 09 Feb 2015 16:32:47 +0400',
+  'stage_value' => 0,
+  'stage_performance' => 0,
+)
+}------------------------------------------------------------
+2015-02-09T16:32:47+04:0000026	8EF	TRACE	1.13Mb	1.21Mb	download_heartbeat
+waInstaller::downloadStandard :download via fopen
+2015-02-09T16:32:47+04:0000027	8EF	DEBUG	1.14Mb	1.21Mb	download_heartbeat
+waInstaller::setState
+{------------------------------------------------------------
+array (
+  'start_time' => 1423485167,
+  'start_time_float' => 1423485167.3211,
+  'elapsed_time' => 0,
+  'stage' => 2,
+  'stage_name' => 'download',
+  'state_heartbeat' => 0.0014901161193848,
+  'thread_id' => '8EF',
+  'chunk_id' => 'wa-content',
+  'stage_current_value' => 0,
+  'stage_status' => 'heartbeat',
+  'timestamp' => 1423485167,
+  'timestamp_float' => 1423485167.3901,
+  'stage_start_time' => 1423485167.3886,
+  'datetime' => 'Mon, 09 Feb 2015 16:32:47 +0400',
+  'stage_value' => 0,
+  'stage_performance' => 0,
+)
+}------------------------------------------------------------
+2015-02-09T16:32:47+04:0000028	8EF	TRACE	1.13Mb	1.22Mb	download_heartbeat
+waInstaller::downloadStandard :Source file is local
+{------------------------------------------------------------
+'/var/www/admin/data/www/pchelkinazabava.ru/wa-installer/../wa-sources/wa-content.tar.gz'
+}------------------------------------------------------------
+2015-02-09T16:32:47+04:0000029	8EF	WARNING	1.13Mb	1.22Mb	download_heartbeat
+MD5 hash missing for file /var/www/admin/data/www/pchelkinazabava.ru/wa-installer/../wa-sources/wa-content.tar.gz
+2015-02-09T16:32:47+04:0000030	8EF	TRACE	1.14Mb	1.22Mb	download_complete
+waInstaller::setState
+{------------------------------------------------------------
+array (
+  'start_time' => 1423485167,
+  'start_time_float' => 1423485167.3211,
+  'elapsed_time' => 0,
+  'stage' => 2,
+  'stage_name' => 'download',
+  'state_heartbeat' => 0.0016970634460449,
+  'thread_id' => '8EF',
+  'chunk_id' => 'wa-content',
+  'stage_current_value' => 0,
+  'stage_status' => 'complete',
+  'timestamp' => 1423485167,
+  'timestamp_float' => 1423485167.3917,
+  'stage_start_time' => 1423485167.3886,
+  'datetime' => 'Mon, 09 Feb 2015 16:32:47 +0400',
+  'stage_value' => 0,
+  'stage_performance' => 0,
+)
+}------------------------------------------------------------
+2015-02-09T16:32:47+04:0000031	8EF	TRACE	1.14Mb	1.23Mb	download_heartbeat
+waInstaller::setState
+{------------------------------------------------------------
+array (
+  'start_time' => 1423485167,
+  'start_time_float' => 1423485167.3211,
+  'elapsed_time' => 0,
+  'stage' => 2,
+  'stage_name' => 'download',
+  'state_heartbeat' => 0.0012619495391846,
+  'thread_id' => '8EF',
+  'chunk_id' => 'wa-system',
+  'stage_current_value' => 0,
+  'stage_status' => 'heartbeat',
+  'timestamp' => 1423485167,
+  'timestamp_float' => 1423485167.393,
+  'stage_start_time' => 1423485167.393,
+  'datetime' => 'Mon, 09 Feb 2015 16:32:47 +0400',
+  'stage_value' => 0,
+  'stage_performance' => 0,
+)
+}------------------------------------------------------------
+2015-02-09T16:32:47+04:0000032	8EF	TRACE	1.14Mb	1.23Mb	download_heartbeat
+waInstaller::downloadStandard :download via fopen
+2015-02-09T16:32:47+04:0000033	8EF	DEBUG	1.14Mb	1.23Mb	download_heartbeat
+waInstaller::setState
+{------------------------------------------------------------
+array (
+  'start_time' => 1423485167,
+  'start_time_float' => 1423485167.3211,
+  'elapsed_time' => 0,
+  'stage' => 2,
+  'stage_name' => 'download',
+  'state_heartbeat' => 0.0015058517456055,
+  'thread_id' => '8EF',
+  'chunk_id' => 'wa-system',
+  'stage_current_value' => 0,
+  'stage_status' => 'heartbeat',
+  'timestamp' => 1423485167,
+  'timestamp_float' => 1423485167.3945,
+  'stage_start_time' => 1423485167.393,
+  'datetime' => 'Mon, 09 Feb 2015 16:32:47 +0400',
+  'stage_value' => 0,
+  'stage_performance' => 0,
+)
+}------------------------------------------------------------
+2015-02-09T16:32:47+04:0000034	8EF	TRACE	1.14Mb	1.24Mb	download_heartbeat
+waInstaller::downloadStandard :Source file is local
+{------------------------------------------------------------
+'/var/www/admin/data/www/pchelkinazabava.ru/wa-installer/../wa-sources/wa-system.tar.gz'
+}------------------------------------------------------------
+2015-02-09T16:32:47+04:0000035	8EF	WARNING	1.14Mb	1.24Mb	download_heartbeat
+MD5 hash missing for file /var/www/admin/data/www/pchelkinazabava.ru/wa-installer/../wa-sources/wa-system.tar.gz
+2015-02-09T16:32:47+04:0000036	8EF	TRACE	1.14Mb	1.24Mb	download_complete
+waInstaller::setState
+{------------------------------------------------------------
+array (
+  'start_time' => 1423485167,
+  'start_time_float' => 1423485167.3211,
+  'elapsed_time' => 0,
+  'stage' => 2,
+  'stage_name' => 'download',
+  'state_heartbeat' => 0.0015919208526611,
+  'thread_id' => '8EF',
+  'chunk_id' => 'wa-system',
+  'stage_current_value' => 0,
+  'stage_status' => 'complete',
+  'timestamp' => 1423485167,
+  'timestamp_float' => 1423485167.3961,
+  'stage_start_time' => 1423485167.393,
+  'datetime' => 'Mon, 09 Feb 2015 16:32:47 +0400',
+  'stage_value' => 0,
+  'stage_performance' => 0,
+)
+}------------------------------------------------------------
+2015-02-09T16:32:47+04:0000037	8EF	TRACE	1.14Mb	1.24Mb	download_heartbeat
+waInstaller::setState
+{------------------------------------------------------------
+array (
+  'start_time' => 1423485167,
+  'start_time_float' => 1423485167.3211,
+  'elapsed_time' => 0,
+  'stage' => 2,
+  'stage_name' => 'download',
+  'state_heartbeat' => 0.0012760162353516,
+  'thread_id' => '8EF',
+  'chunk_id' => 'wa-apps/stickies',
+  'stage_current_value' => 0,
+  'stage_status' => 'heartbeat',
+  'timestamp' => 1423485167,
+  'timestamp_float' => 1423485167.3973,
+  'stage_start_time' => 1423485167.3973,
+  'datetime' => 'Mon, 09 Feb 2015 16:32:47 +0400',
+  'stage_value' => 0,
+  'stage_performance' => 0,
+)
+}------------------------------------------------------------
+2015-02-09T16:32:47+04:0000038	8EF	TRACE	1.14Mb	1.24Mb	download_heartbeat
+waInstaller::downloadStandard :download via fopen
+2015-02-09T16:32:47+04:0000039	8EF	DEBUG	1.14Mb	1.24Mb	download_heartbeat
+waInstaller::setState
+{------------------------------------------------------------
+array (
+  'start_time' => 1423485167,
+  'start_time_float' => 1423485167.3211,
+  'elapsed_time' => 0,
+  'stage' => 2,
+  'stage_name' => 'download',
+  'state_heartbeat' => 0.0015029907226562,
+  'thread_id' => '8EF',
+  'chunk_id' => 'wa-apps/stickies',
+  'stage_current_value' => 0,
+  'stage_status' => 'heartbeat',
+  'timestamp' => 1423485167,
+  'timestamp_float' => 1423485167.3988,
+  'stage_start_time' => 1423485167.3973,
+  'datetime' => 'Mon, 09 Feb 2015 16:32:47 +0400',
+  'stage_value' => 0,
+  'stage_performance' => 0,
+)
+}------------------------------------------------------------
+2015-02-09T16:32:47+04:0000040	8EF	TRACE	1.14Mb	1.25Mb	download_heartbeat
+waInstaller::downloadStandard :Source file is local
+{------------------------------------------------------------
+'/var/www/admin/data/www/pchelkinazabava.ru/wa-installer/../wa-sources/wa-apps/stickies.tar.gz'
+}------------------------------------------------------------
+2015-02-09T16:32:47+04:0000041	8EF	WARNING	1.14Mb	1.25Mb	download_heartbeat
+MD5 hash missing for file /var/www/admin/data/www/pchelkinazabava.ru/wa-installer/../wa-sources/wa-apps/stickies.tar.gz
+2015-02-09T16:32:47+04:0000042	8EF	TRACE	1.14Mb	1.25Mb	download_complete
+waInstaller::setState
+{------------------------------------------------------------
+array (
+  'start_time' => 1423485167,
+  'start_time_float' => 1423485167.3211,
+  'elapsed_time' => 0,
+  'stage' => 2,
+  'stage_name' => 'download',
+  'state_heartbeat' => 0.0016410350799561,
+  'thread_id' => '8EF',
+  'chunk_id' => 'wa-apps/stickies',
+  'stage_current_value' => 0,
+  'stage_status' => 'complete',
+  'timestamp' => 1423485167,
+  'timestamp_float' => 1423485167.4005,
+  'stage_start_time' => 1423485167.3973,
+  'datetime' => 'Mon, 09 Feb 2015 16:32:47 +0400',
+  'stage_value' => 0,
+  'stage_performance' => 0,
+)
+}------------------------------------------------------------
+2015-02-09T16:32:47+04:0000043	8EF	TRACE	1.14Mb	1.25Mb	download_heartbeat
+waInstaller::setState
+{------------------------------------------------------------
+array (
+  'start_time' => 1423485167,
+  'start_time_float' => 1423485167.3211,
+  'elapsed_time' => 0,
+  'stage' => 2,
+  'stage_name' => 'download',
+  'state_heartbeat' => 0.0014228820800781,
+  'thread_id' => '8EF',
+  'chunk_id' => 'wa-apps/site',
+  'stage_current_value' => 0,
+  'stage_status' => 'heartbeat',
+  'timestamp' => 1423485167,
+  'timestamp_float' => 1423485167.4019,
+  'stage_start_time' => 1423485167.4019,
+  'datetime' => 'Mon, 09 Feb 2015 16:32:47 +0400',
+  'stage_value' => 0,
+  'stage_performance' => 0,
+)
+}------------------------------------------------------------
+2015-02-09T16:32:47+04:0000044	8EF	TRACE	1.14Mb	1.25Mb	download_heartbeat
+waInstaller::downloadStandard :download via fopen
+2015-02-09T16:32:47+04:0000045	8EF	DEBUG	1.15Mb	1.25Mb	download_heartbeat
+waInstaller::setState
+{------------------------------------------------------------
+array (
+  'start_time' => 1423485167,
+  'start_time_float' => 1423485167.3211,
+  'elapsed_time' => 0,
+  'stage' => 2,
+  'stage_name' => 'download',
+  'state_heartbeat' => 0.00189208984375,
+  'thread_id' => '8EF',
+  'chunk_id' => 'wa-apps/site',
+  'stage_current_value' => 0,
+  'stage_status' => 'heartbeat',
+  'timestamp' => 1423485167,
+  'timestamp_float' => 1423485167.4037,
+  'stage_start_time' => 1423485167.4019,
+  'datetime' => 'Mon, 09 Feb 2015 16:32:47 +0400',
+  'stage_value' => 0,
+  'stage_performance' => 0,
+)
+}------------------------------------------------------------
+2015-02-09T16:32:47+04:0000046	8EF	TRACE	1.14Mb	1.26Mb	download_heartbeat
+waInstaller::downloadStandard :Source file is local
+{------------------------------------------------------------
+'/var/www/admin/data/www/pchelkinazabava.ru/wa-installer/../wa-sources/wa-apps/site.tar.gz'
+}------------------------------------------------------------
+2015-02-09T16:32:47+04:0000047	8EF	WARNING	1.14Mb	1.26Mb	download_heartbeat
+MD5 hash missing for file /var/www/admin/data/www/pchelkinazabava.ru/wa-installer/../wa-sources/wa-apps/site.tar.gz
+2015-02-09T16:32:47+04:0000048	8EF	TRACE	1.15Mb	1.26Mb	download_complete
+waInstaller::setState
+{------------------------------------------------------------
+array (
+  'start_time' => 1423485167,
+  'start_time_float' => 1423485167.3211,
+  'elapsed_time' => 0,
+  'stage' => 2,
+  'stage_name' => 'download',
+  'state_heartbeat' => 0.0017349720001221,
+  'thread_id' => '8EF',
+  'chunk_id' => 'wa-apps/site',
+  'stage_current_value' => 0,
+  'stage_status' => 'complete',
+  'timestamp' => 1423485167,
+  'timestamp_float' => 1423485167.4055,
+  'stage_start_time' => 1423485167.4019,
+  'datetime' => 'Mon, 09 Feb 2015 16:32:47 +0400',
+  'stage_value' => 0,
+  'stage_performance' => 0,
+)
+}------------------------------------------------------------
+2015-02-09T16:32:47+04:0000049	8EF	TRACE	1.15Mb	1.26Mb	download_heartbeat
+waInstaller::setState
+{------------------------------------------------------------
+array (
+  'start_time' => 1423485167,
+  'start_time_float' => 1423485167.3211,
+  'elapsed_time' => 0,
+  'stage' => 2,
+  'stage_name' => 'download',
+  'state_heartbeat' => 0.0014560222625732,
+  'thread_id' => '8EF',
+  'chunk_id' => 'wa-apps/contacts',
+  'stage_current_value' => 0,
+  'stage_status' => 'heartbeat',
+  'timestamp' => 1423485167,
+  'timestamp_float' => 1423485167.4069,
+  'stage_start_time' => 1423485167.4069,
+  'datetime' => 'Mon, 09 Feb 2015 16:32:47 +0400',
+  'stage_value' => 0,
+  'stage_performance' => 0,
+)
+}------------------------------------------------------------
+2015-02-09T16:32:47+04:0000050	8EF	TRACE	1.15Mb	1.26Mb	download_heartbeat
+waInstaller::downloadStandard :download via fopen
+2015-02-09T16:32:47+04:0000051	8EF	DEBUG	1.15Mb	1.26Mb	download_heartbeat
+waInstaller::setState
+{------------------------------------------------------------
+array (
+  'start_time' => 1423485167,
+  'start_time_float' => 1423485167.3211,
+  'elapsed_time' => 0,
+  'stage' => 2,
+  'stage_name' => 'download',
+  'state_heartbeat' => 0.0016481876373291,
+  'thread_id' => '8EF',
+  'chunk_id' => 'wa-apps/contacts',
+  'stage_current_value' => 0,
+  'stage_status' => 'heartbeat',
+  'timestamp' => 1423485167,
+  'timestamp_float' => 1423485167.4086,
+  'stage_start_time' => 1423485167.4069,
+  'datetime' => 'Mon, 09 Feb 2015 16:32:47 +0400',
+  'stage_value' => 0,
+  'stage_performance' => 0,
+)
+}------------------------------------------------------------
+2015-02-09T16:32:47+04:0000052	8EF	TRACE	1.15Mb	1.27Mb	download_heartbeat
+waInstaller::downloadStandard :Source file is local
+{------------------------------------------------------------
+'/var/www/admin/data/www/pchelkinazabava.ru/wa-installer/../wa-sources/wa-apps/contacts.tar.gz'
+}------------------------------------------------------------
+2015-02-09T16:32:47+04:0000053	8EF	WARNING	1.15Mb	1.27Mb	download_heartbeat
+MD5 hash missing for file /var/www/admin/data/www/pchelkinazabava.ru/wa-installer/../wa-sources/wa-apps/contacts.tar.gz
+2015-02-09T16:32:47+04:0000054	8EF	TRACE	1.15Mb	1.27Mb	download_complete
+waInstaller::setState
+{------------------------------------------------------------
+array (
+  'start_time' => 1423485167,
+  'start_time_float' => 1423485167.3211,
+  'elapsed_time' => 0,
+  'stage' => 2,
+  'stage_name' => 'download',
+  'state_heartbeat' => 0.0017750263214111,
+  'thread_id' => '8EF',
+  'chunk_id' => 'wa-apps/contacts',
+  'stage_current_value' => 0,
+  'stage_status' => 'complete',
+  'timestamp' => 1423485167,
+  'timestamp_float' => 1423485167.4103,
+  'stage_start_time' => 1423485167.4069,
+  'datetime' => 'Mon, 09 Feb 2015 16:32:47 +0400',
+  'stage_value' => 0,
+  'stage_performance' => 0,
+)
+}------------------------------------------------------------
+2015-02-09T16:32:47+04:0000055	8EF	TRACE	1.15Mb	1.28Mb	download_heartbeat
+waInstaller::setState
+{------------------------------------------------------------
+array (
+  'start_time' => 1423485167,
+  'start_time_float' => 1423485167.3211,
+  'elapsed_time' => 0,
+  'stage' => 2,
+  'stage_name' => 'download',
+  'state_heartbeat' => 0.0015420913696289,
+  'thread_id' => '8EF',
+  'chunk_id' => 'wa-apps/installer',
+  'stage_current_value' => 0,
+  'stage_status' => 'heartbeat',
+  'timestamp' => 1423485167,
+  'timestamp_float' => 1423485167.4119,
+  'stage_start_time' => 1423485167.4119,
+  'datetime' => 'Mon, 09 Feb 2015 16:32:47 +0400',
+  'stage_value' => 0,
+  'stage_performance' => 0,
+)
+}------------------------------------------------------------
+2015-02-09T16:32:47+04:0000056	8EF	TRACE	1.15Mb	1.28Mb	download_heartbeat
+waInstaller::downloadStandard :download via fopen
+2015-02-09T16:32:47+04:0000057	8EF	DEBUG	1.15Mb	1.28Mb	download_heartbeat
+waInstaller::setState
+{------------------------------------------------------------
+array (
+  'start_time' => 1423485167,
+  'start_time_float' => 1423485167.3211,
+  'elapsed_time' => 0,
+  'stage' => 2,
+  'stage_name' => 'download',
+  'state_heartbeat' => 0.0016801357269287,
+  'thread_id' => '8EF',
+  'chunk_id' => 'wa-apps/installer',
+  'stage_current_value' => 0,
+  'stage_status' => 'heartbeat',
+  'timestamp' => 1423485167,
+  'timestamp_float' => 1423485167.4135,
+  'stage_start_time' => 1423485167.4119,
+  'datetime' => 'Mon, 09 Feb 2015 16:32:47 +0400',
+  'stage_value' => 0,
+  'stage_performance' => 0,
+)
+}------------------------------------------------------------
+2015-02-09T16:32:47+04:0000058	8EF	TRACE	1.15Mb	1.28Mb	download_heartbeat
+waInstaller::downloadStandard :Source file is local
+{------------------------------------------------------------
+'/var/www/admin/data/www/pchelkinazabava.ru/wa-installer/../wa-sources/wa-apps/installer.tar.gz'
+}------------------------------------------------------------
+2015-02-09T16:32:47+04:0000059	8EF	WARNING	1.15Mb	1.28Mb	download_heartbeat
+MD5 hash missing for file /var/www/admin/data/www/pchelkinazabava.ru/wa-installer/../wa-sources/wa-apps/installer.tar.gz
+2015-02-09T16:32:47+04:0000060	8EF	TRACE	1.15Mb	1.28Mb	download_complete
+waInstaller::setState
+{------------------------------------------------------------
+array (
+  'start_time' => 1423485167,
+  'start_time_float' => 1423485167.3211,
+  'elapsed_time' => 0,
+  'stage' => 2,
+  'stage_name' => 'download',
+  'state_heartbeat' => 0.0018508434295654,
+  'thread_id' => '8EF',
+  'chunk_id' => 'wa-apps/installer',
+  'stage_current_value' => 0,
+  'stage_status' => 'complete',
+  'timestamp' => 1423485167,
+  'timestamp_float' => 1423485167.4154,
+  'stage_start_time' => 1423485167.4119,
+  'datetime' => 'Mon, 09 Feb 2015 16:32:47 +0400',
+  'stage_value' => 0,
+  'stage_performance' => 0,
+)
+}------------------------------------------------------------
+2015-02-09T16:32:47+04:0000061	8EF	TRACE	1.15Mb	1.29Mb	extract_heartbeat
+waInstaller::setState
+{------------------------------------------------------------
+array (
+  'start_time' => 1423485167,
+  'start_time_float' => 1423485167.3211,
+  'elapsed_time' => 0,
+  'stage' => 3,
+  'stage_name' => 'extract',
+  'state_heartbeat' => 0.0015699863433838,
+  'thread_id' => '8EF',
+  'chunk_id' => 'wa-content',
+  'stage_current_value' => 0,
+  'stage_status' => 'heartbeat',
+  'timestamp' => 1423485167,
+  'timestamp_float' => 1423485167.4169,
+  'stage_start_time' => 1423485167.4169,
+  'datetime' => 'Mon, 09 Feb 2015 16:32:47 +0400',
+  'stage_value' => 0,
+  'stage_performance' => 0,
+)
+}------------------------------------------------------------
+2015-02-09T16:32:47+04:0000062	8EF	TRACE	1.15Mb	1.29Mb	extract_heartbeat
+waInstaller::stageExtract
+{------------------------------------------------------------
+array (
+  'compressed_file' => '/var/www/admin/data/www/pchelkinazabava.ru/wa-installer/../wa-sources/wa-content.tar.gz',
+  'target_path' => 'wa-data/protected/wa-installer/8EF/update/wa-content/',
+  'base_path' => 'wa-content/',
+)
+}------------------------------------------------------------
+2015-02-09T16:32:47+04:0000063	8EF	DEBUG	1.62Mb	1.71Mb	extract_heartbeat
+waInstaller::setState
+{------------------------------------------------------------
+array (
+  'start_time' => 1423485167,
+  'start_time_float' => 1423485167.3211,
+  'elapsed_time' => 0,
+  'stage' => 3,
+  'stage_name' => 'extract',
+  'state_heartbeat' => 0.041336059570312,
+  'thread_id' => '8EF',
+  'chunk_id' => 'wa-content',
+  'stage_current_value' => 0,
+  'stage_status' => 'heartbeat',
+  'timestamp' => 1423485167,
+  'timestamp_float' => 1423485167.4582,
+  'stage_start_time' => 1423485167.4169,
+  'datetime' => 'Mon, 09 Feb 2015 16:32:47 +0400',
+  'stage_value' => 6822400,
+  'stage_performance' => 0,
+  'resume' => 
+  array (
+    'offset' => NULL,
+    'tar_size' => 13325,
+  ),
+  'debug' => 
+  array (
+    'block_performance' => 32,
+    'additional' => NULL,
+  ),
+)
+}------------------------------------------------------------
+2015-02-09T16:32:47+04:0000064	8EF	DEBUG	1.62Mb	1.75Mb	extract_heartbeat
+waInstaller::setState
+{------------------------------------------------------------
+array (
+  'start_time' => 1423485167,
+  'start_time_float' => 1423485167.3211,
+  'elapsed_time' => 0,
+  'stage' => 3,
+  'stage_name' => 'extract',
+  'state_heartbeat' => 0.00211501121521,
+  'thread_id' => '8EF',
+  'chunk_id' => 'wa-content',
+  'stage_current_value' => 0,
+  'stage_status' => 'heartbeat',
+  'timestamp' => 1423485167,
+  'timestamp_float' => 1423485167.4603,
+  'stage_start_time' => 1423485167.4169,
+  'datetime' => 'Mon, 09 Feb 2015 16:32:47 +0400',
+  'stage_value' => 6822400,
+  'stage_performance' => 0,
+  'resume' => 
+  array (
+    'offset' => 0,
+    'tar_size' => 13325,
+  ),
+  'debug' => 
+  array (
+    'block_performance' => 32,
+    'additional' => NULL,
+  ),
+)
+}------------------------------------------------------------
+2015-02-09T16:32:47+04:0000065	8EF	DEBUG	1.63Mb	1.76Mb	extract_heartbeat
+waInstaller::setState
+{------------------------------------------------------------
+array (
+  'start_time' => 1423485167,
+  'start_time_float' => 1423485167.3211,
+  'elapsed_time' => 0,
+  'stage' => 3,
+  'stage_name' => 'extract',
+  'state_heartbeat' => 0.03114914894104,
+  'thread_id' => '8EF',
+  'chunk_id' => 'wa-content',
+  'stage_current_value' => 159232,
+  'stage_status' => 'heartbeat',
+  'timestamp' => 1423485167,
+  'timestamp_float' => 1423485167.4915,
+  'stage_start_time' => 1423485167.4169,
+  'datetime' => 'Mon, 09 Feb 2015 16:32:47 +0400',
+  'stage_value' => 6822400,
+  'stage_performance' => 5113721.8481046,
+  'resume' => 
+  array (
+    'offset' => 311,
+    'tar_size' => 13325,
+  ),
+  'debug' => 
+  array (
+    'block_performance' => 32,
+    'additional' => NULL,
+  ),
+)
+}------------------------------------------------------------
+2015-02-09T16:32:47+04:0000066	8EF	DEBUG	1.63Mb	1.77Mb	extract_heartbeat
+waInstaller::setState
+{------------------------------------------------------------
+array (
+  'start_time' => 1423485167,
+  'start_time_float' => 1423485167.3211,
+  'elapsed_time' => 0,
+  'stage' => 3,
+  'stage_name' => 'extract',
+  'state_heartbeat' => 0.036267995834351,
+  'thread_id' => '8EF',
+  'chunk_id' => 'wa-content',
+  'stage_current_value' => 274432,
+  'stage_status' => 'heartbeat',
+  'timestamp' => 1423485167,
+  'timestamp_float' => 1423485167.5277,
+  'stage_start_time' => 1423485167.4169,
+  'datetime' => 'Mon, 09 Feb 2015 16:32:47 +0400',
+  'stage_value' => 6822400,
+  'stage_performance' => 3177670.2057137,
+  'resume' => 
+  array (
+    'offset' => 536,
+    'tar_size' => 13325,
+  ),
+  'debug' => 
+  array (
+    'block_performance' => 32,
+    'additional' => NULL,
+  ),
+)
+}------------------------------------------------------------
+2015-02-09T16:32:47+04:0000067	8EF	DEBUG	1.63Mb	1.77Mb	extract_heartbeat
+waInstaller::setState
+{------------------------------------------------------------
+array (
+  'start_time' => 1423485167,
+  'start_time_float' => 1423485167.3211,
+  'elapsed_time' => 0,
+  'stage' => 3,
+  'stage_name' => 'extract',
+  'state_heartbeat' => 0.041229963302612,
+  'thread_id' => '8EF',
+  'chunk_id' => 'wa-content',
+  'stage_current_value' => 413184,
+  'stage_status' => 'heartbeat',
+  'timestamp' => 1423485167,
+  'timestamp_float' => 1423485167.569,
+  'stage_start_time' => 1423485167.4169,
+  'datetime' => 'Mon, 09 Feb 2015 16:32:47 +0400',
+  'stage_value' => 6822400,
+  'stage_performance' => 3366137.0509865,
+  'resume' => 
+  array (
+    'offset' => 807,
+    'tar_size' => 13325,
+  ),
+  'debug' => 
+  array (
+    'block_performance' => 32,
+    'additional' => NULL,
+  ),
+)
+}------------------------------------------------------------
+2015-02-09T16:32:47+04:0000068	8EF	DEBUG	1.63Mb	1.77Mb	extract_heartbeat
+waInstaller::setState
+{------------------------------------------------------------
+array (
+  'start_time' => 1423485167,
+  'start_time_float' => 1423485167.3211,
+  'elapsed_time' => 0,
+  'stage' => 3,
+  'stage_name' => 'extract',
+  'state_heartbeat' => 0.034899950027466,
+  'thread_id' => '8EF',
+  'chunk_id' => 'wa-content',
+  'stage_current_value' => 666624,
+  'stage_status' => 'heartbeat',
+  'timestamp' => 1423485167,
+  'timestamp_float' => 1423485167.6038,
+  'stage_start_time' => 1423485167.4169,
+  'datetime' => 'Mon, 09 Feb 2015 16:32:47 +0400',
+  'stage_value' => 6822400,
+  'stage_performance' => 7264581.4221572,
+  'resume' => 
+  array (
+    'offset' => 1302,
+    'tar_size' => 13325,
+  ),
+  'debug' => 
+  array (
+    'block_performance' => 32,
+    'additional' => NULL,
+  ),
+)
+}------------------------------------------------------------
+2015-02-09T16:32:47+04:0000069	8EF	DEBUG	1.63Mb	1.77Mb	extract_heartbeat
+waInstaller::adjustStageChunk
+{------------------------------------------------------------
+array (
+  'current_chunk' => 32,
+  'calculated_chunk' => 924.05,
+  'performance_data' => 
+  array (
+    'extract' => 
+    array (
+      0 => 0,
+      1 => 1248.5,
+      2 => 776,
+      3 => 822,
+      4 => 1773.75,
+    ),
+  ),
+  'stack_length' => 5,
+)
+}------------------------------------------------------------
+2015-02-09T16:32:47+04:0000070	8EF	DEBUG	1.63Mb	1.77Mb	extract_heartbeat
+waInstaller::setState
+{------------------------------------------------------------
+array (
+  'start_time' => 1423485167,
+  'start_time_float' => 1423485167.3211,
+  'elapsed_time' => 0,
+  'stage' => 3,
+  'stage_name' => 'extract',
+  'state_heartbeat' => 0.064682006835938,
+  'thread_id' => '8EF',
+  'chunk_id' => 'wa-content',
+  'stage_current_value' => 850432,
+  'stage_status' => 'heartbeat',
+  'timestamp' => 1423485167,
+  'timestamp_float' => 1423485167.6685,
+  'stage_start_time' => 1423485167.4169,
+  'datetime' => 'Mon, 09 Feb 2015 16:32:47 +0400',
+  'stage_value' => 6822400,
+  'stage_performance' => 2842335.7787912,
+  'resume' => 
+  array (
+    'offset' => 1661,
+    'tar_size' => 13325,
+  ),
+  'debug' => 
+  array (
+    'block_performance' => 64,
+    'additional' => NULL,
+  ),
+)
+}------------------------------------------------------------
+2015-02-09T16:32:47+04:0000071	8EF	DEBUG	1.63Mb	1.78Mb	extract_heartbeat
+waInstaller::adjustStageChunk
+{------------------------------------------------------------
+array (
+  'current_chunk' => 64,
+  'calculated_chunk' => 1062.85,
+  'performance_data' => 
+  array (
+    'extract' => 
+    array (
+      0 => 1248.5,
+      1 => 776,
+      2 => 822,
+      3 => 1773.75,
+      4 => 694,
+    ),
+  ),
+  'stack_length' => 5,
+)
+}------------------------------------------------------------
+2015-02-09T16:32:47+04:0000072	8EF	DEBUG	1.63Mb	1.78Mb	extract_heartbeat
+waInstaller::setState
+{------------------------------------------------------------
+array (
+  'start_time' => 1423485167,
+  'start_time_float' => 1423485167.3211,
+  'elapsed_time' => 0,
+  'stage' => 3,
+  'stage_name' => 'extract',
+  'state_heartbeat' => 0.10921907424927,
+  'thread_id' => '8EF',
+  'chunk_id' => 'wa-content',
+  'stage_current_value' => 1802752,
+  'stage_status' => 'heartbeat',
+  'timestamp' => 1423485167,
+  'timestamp_float' => 1423485167.7777,
+  'stage_start_time' => 1423485167.4169,
+  'datetime' => 'Mon, 09 Feb 2015 16:32:47 +0400',
+  'stage_value' => 6822400,
+  'stage_performance' => 8720555.3839335,
+  'resume' => 
+  array (
+    'offset' => 3521,
+    'tar_size' => 13325,
+  ),
+  'debug' => 
+  array (
+    'block_performance' => 128,
+    'additional' => NULL,
+  ),
+)
+}------------------------------------------------------------
+2015-02-09T16:32:47+04:0000073	8EF	DEBUG	1.63Mb	1.78Mb	extract_heartbeat
+waInstaller::adjustStageChunk
+{------------------------------------------------------------
+array (
+  'current_chunk' => 128,
+  'calculated_chunk' => 1239,
+  'performance_data' => 
+  array (
+    'extract' => 
+    array (
+      0 => 776,
+      1 => 822,
+      2 => 1773.75,
+      3 => 694,
+      4 => 2129.25,
+    ),
+  ),
+  'stack_length' => 5,
+)
+}------------------------------------------------------------
+2015-02-09T16:32:47+04:0000074	8EF	DEBUG	1.63Mb	1.78Mb	extract_heartbeat
+waInstaller::setState
+{------------------------------------------------------------
+array (
+  'start_time' => 1423485167,
+  'start_time_float' => 1423485167.3211,
+  'elapsed_time' => 0,
+  'stage' => 3,
+  'stage_name' => 'extract',
+  'state_heartbeat' => 0.089839935302734,
+  'thread_id' => '8EF',
+  'chunk_id' => 'wa-content',
+  'stage_current_value' => 1934848,
+  'stage_status' => 'heartbeat',
+  'timestamp' => 1423485167,
+  'timestamp_float' => 1423485167.8675,
+  'stage_start_time' => 1423485167.4169,
+  'datetime' => 'Mon, 09 Feb 2015 16:32:47 +0400',
+  'stage_value' => 6822400,
+  'stage_performance' => 1470543.4704405,
+  'resume' => 
+  array (
+    'offset' => 3779,
+    'tar_size' => 13325,
+  ),
+  'debug' => 
+  array (
+    'block_performance' => 128,
+    'additional' => NULL,
+  ),
+)
+}------------------------------------------------------------
+2015-02-09T16:32:47+04:0000075	8EF	DEBUG	1.63Mb	1.78Mb	extract_heartbeat
+waInstaller::adjustStageChunk
+{------------------------------------------------------------
+array (
+  'current_chunk' => 128,
+  'calculated_chunk' => 1155.65,
+  'performance_data' => 
+  array (
+    'extract' => 
+    array (
+      0 => 822,
+      1 => 1773.75,
+      2 => 694,
+      3 => 2129.25,
+      4 => 359.25,
+    ),
+  ),
+  'stack_length' => 5,
+)
+}------------------------------------------------------------
+2015-02-09T16:32:47+04:0000076	8EF	DEBUG	1.63Mb	1.78Mb	extract_heartbeat
+waInstaller::setState
+{------------------------------------------------------------
+array (
+  'start_time' => 1423485167,
+  'start_time_float' => 1423485167.3211,
+  'elapsed_time' => 0,
+  'stage' => 3,
+  'stage_name' => 'extract',
+  'state_heartbeat' => 0.12718391418457,
+  'thread_id' => '8EF',
+  'chunk_id' => 'wa-content',
+  'stage_current_value' => 3943936,
+  'stage_status' => 'heartbeat',
+  'timestamp' => 1423485167,
+  'timestamp_float' => 1423485167.9947,
+  'stage_start_time' => 1423485167.4169,
+  'datetime' => 'Mon, 09 Feb 2015 16:32:47 +0400',
+  'stage_value' => 6822400,
+  'stage_performance' => 15798076.937754,
+  'resume' => 
+  array (
+    'offset' => 7703,
+    'tar_size' => 13325,
+  ),
+  'debug' => 
+  array (
+    'block_performance' => 128,
+    'additional' => NULL,
+  ),
+)
+}------------------------------------------------------------
+2015-02-09T16:32:47+04:0000077	8EF	DEBUG	1.63Mb	1.78Mb	extract_heartbeat
+waInstaller::adjustStageChunk
+{------------------------------------------------------------
+array (
+  'current_chunk' => 128,
+  'calculated_chunk' => 1762.65,
+  'performance_data' => 
+  array (
+    'extract' => 
+    array (
+      0 => 1773.75,
+      1 => 694,
+      2 => 2129.25,
+      3 => 359.25,
+      4 => 3857,
+    ),
+  ),
+  'stack_length' => 5,
+)
+}------------------------------------------------------------
+2015-02-09T16:32:48+04:0000078	8EF	DEBUG	1.64Mb	1.78Mb	extract_heartbeat
+waInstaller::setState
+{------------------------------------------------------------
+array (
+  'start_time' => 1423485167,
+  'start_time_float' => 1423485167.3211,
+  'elapsed_time' => 0,
+  'stage' => 3,
+  'stage_name' => 'extract',
+  'state_heartbeat' => 0.13445806503296,
+  'thread_id' => '8EF',
+  'chunk_id' => 'wa-content',
+  'stage_current_value' => 4981760,
+  'stage_status' => 'heartbeat',
+  'timestamp' => 1423485168,
+  'timestamp_float' => 1423485168.1292,
+  'stage_start_time' => 1423485167.4169,
+  'datetime' => 'Mon, 09 Feb 2015 16:32:47 +0400',
+  'stage_value' => 6822400,
+  'stage_performance' => 7719377.6802158,
+  'resume' => 
+  array (
+    'offset' => 9730,
+    'tar_size' => 13325,
+  ),
+  'debug' => 
+  array (
+    'block_performance' => 128,
+    'additional' => NULL,
+  ),
+)
+}------------------------------------------------------------
+2015-02-09T16:32:48+04:0000079	8EF	DEBUG	1.64Mb	1.79Mb	extract_heartbeat
+waInstaller::adjustStageChunk
+{------------------------------------------------------------
+array (
+  'current_chunk' => 128,
+  'calculated_chunk' => 1784.85,
+  'performance_data' => 
+  array (
+    'extract' => 
+    array (
+      0 => 694,
+      1 => 2129.25,
+      2 => 359.25,
+      3 => 3857,
+      4 => 1884.75,
+    ),
+  ),
+  'stack_length' => 5,
+)
+}------------------------------------------------------------
+2015-02-09T16:32:48+04:0000080	8EF	TRACE	1.61Mb	1.79Mb	extract_complete
+waInstaller::setState
+{------------------------------------------------------------
+array (
+  'start_time' => 1423485167,
+  'start_time_float' => 1423485167.3211,
+  'elapsed_time' => 0,
+  'stage' => 3,
+  'stage_name' => 'extract',
+  'state_heartbeat' => 0.085898876190186,
+  'thread_id' => '8EF',
+  'chunk_id' => 'wa-content',
+  'stage_current_value' => 4981760,
+  'stage_status' => 'complete',
+  'timestamp' => 1423485168,
+  'timestamp_float' => 1423485168.215,
+  'stage_start_time' => 1423485167.4169,
+  'datetime' => 'Mon, 09 Feb 2015 16:32:47 +0400',
+  'stage_value' => 6822400,
+  'stage_performance' => 0,
+  'resume' => 
+  array (
+    'offset' => 9730,
+    'tar_size' => 13325,
+  ),
+  'debug' => 
+  array (
+    'block_performance' => 128,
+    'additional' => NULL,
+  ),
+)
+}------------------------------------------------------------
+2015-02-09T16:32:48+04:0000081	8EF	TRACE	1.61Mb	1.79Mb	extract_heartbeat
+waInstaller::setState
+{------------------------------------------------------------
+array (
+  'start_time' => 1423485167,
+  'start_time_float' => 1423485167.3211,
+  'elapsed_time' => 0,
+  'stage' => 3,
+  'stage_name' => 'extract',
+  'state_heartbeat' => 0.0017039775848389,
+  'thread_id' => '8EF',
+  'chunk_id' => 'wa-system',
+  'stage_current_value' => 0,
+  'stage_status' => 'heartbeat',
+  'timestamp' => 1423485168,
+  'timestamp_float' => 1423485168.2167,
+  'stage_start_time' => 1423485168.2167,
+  'datetime' => 'Mon, 09 Feb 2015 16:32:48 +0400',
+  'stage_value' => 0,
+  'stage_performance' => 0,
+  'resume' => 
+  array (
+    'offset' => 9730,
+    'tar_size' => 13325,
+  ),
+  'debug' => 
+  array (
+    'block_performance' => 128,
+    'additional' => NULL,
+  ),
+)
+}------------------------------------------------------------
+2015-02-09T16:32:48+04:0000082	8EF	TRACE	1.61Mb	1.79Mb	extract_heartbeat
+waInstaller::stageExtract
+{------------------------------------------------------------
+array (
+  'compressed_file' => '/var/www/admin/data/www/pchelkinazabava.ru/wa-installer/../wa-sources/wa-system.tar.gz',
+  'target_path' => 'wa-data/protected/wa-installer/8EF/update/wa-system/',
+  'base_path' => 'wa-system/',
+)
+}------------------------------------------------------------
+2015-02-09T16:32:48+04:0000083	8EF	DEBUG	1.64Mb	1.79Mb	extract_heartbeat
+waInstaller::setState
+{------------------------------------------------------------
+array (
+  'start_time' => 1423485167,
+  'start_time_float' => 1423485167.3211,
+  'elapsed_time' => 0,
+  'stage' => 3,
+  'stage_name' => 'extract',
+  'state_heartbeat' => 0.048376083374023,
+  'thread_id' => '8EF',
+  'chunk_id' => 'wa-system',
+  'stage_current_value' => 0,
+  'stage_status' => 'heartbeat',
+  'timestamp' => 1423485168,
+  'timestamp_float' => 1423485168.2651,
+  'stage_start_time' => 1423485168.2167,
+  'datetime' => 'Mon, 09 Feb 2015 16:32:48 +0400',
+  'stage_value' => 4723200,
+  'stage_performance' => 0,
+  'resume' => 
+  array (
+    'offset' => NULL,
+    'tar_size' => 9225,
+  ),
+  'debug' => 
+  array (
+    'block_performance' => 128,
+    'additional' => NULL,
+  ),
+)
+}------------------------------------------------------------
+2015-02-09T16:32:48+04:0000084	8EF	DEBUG	1.63Mb	1.80Mb	extract_heartbeat
+waInstaller::adjustStageChunk
+{------------------------------------------------------------
+array (
+  'current_chunk' => 128,
+  'calculated_chunk' => 1646.05,
+  'performance_data' => 
+  array (
+    'extract' => 
+    array (
+      0 => 2129.25,
+      1 => 359.25,
+      2 => 3857,
+      3 => 1884.75,
+      4 => 0,
+    ),
+  ),
+  'stack_length' => 5,
+)
+}------------------------------------------------------------
+2015-02-09T16:32:48+04:0000085	8EF	DEBUG	1.64Mb	1.80Mb	extract_heartbeat
+waInstaller::setState
+{------------------------------------------------------------
+array (
+  'start_time' => 1423485167,
+  'start_time_float' => 1423485167.3211,
+  'elapsed_time' => 0,
+  'stage' => 3,
+  'stage_name' => 'extract',
+  'state_heartbeat' => 0.04593300819397,
+  'thread_id' => '8EF',
+  'chunk_id' => 'wa-system',
+  'stage_current_value' => 468480,
+  'stage_status' => 'heartbeat',
+  'timestamp' => 1423485168,
+  'timestamp_float' => 1423485168.311,
+  'stage_start_time' => 1423485168.2167,
+  'datetime' => 'Mon, 09 Feb 2015 16:32:48 +0400',
+  'stage_value' => 4723200,
+  'stage_performance' => 10200948.6768,
+  'resume' => 
+  array (
+    'offset' => 915,
+    'tar_size' => 9225,
+  ),
+  'debug' => 
+  array (
+    'block_performance' => 128,
+    'additional' => NULL,
+  ),
+)
+}------------------------------------------------------------
+2015-02-09T16:32:48+04:0000086	8EF	DEBUG	1.64Mb	1.80Mb	extract_heartbeat
+waInstaller::adjustStageChunk
+{------------------------------------------------------------
+array (
+  'current_chunk' => 128,
+  'calculated_chunk' => 1718.3,
+  'performance_data' => 
+  array (
+    'extract' => 
+    array (
+      0 => 359.25,
+      1 => 3857,
+      2 => 1884.75,
+      3 => 0,
+      4 => 2490.5,
+    ),
+  ),
+  'stack_length' => 5,
+)
+}------------------------------------------------------------
+2015-02-09T16:32:48+04:0000087	8EF	DEBUG	1.64Mb	1.80Mb	extract_heartbeat
+waInstaller::setState
+{------------------------------------------------------------
+array (
+  'start_time' => 1423485167,
+  'start_time_float' => 1423485167.3211,
+  'elapsed_time' => 0,
+  'stage' => 3,
+  'stage_name' => 'extract',
+  'state_heartbeat' => 0.094445943832397,
+  'thread_id' => '8EF',
+  'chunk_id' => 'wa-system',
+  'stage_current_value' => 888832,
+  'stage_status' => 'heartbeat',
+  'timestamp' => 1423485168,
+  'timestamp_float' => 1423485168.4055,
+  'stage_start_time' => 1423485168.2167,
+  'datetime' => 'Mon, 09 Feb 2015 16:32:48 +0400',
+  'stage_value' => 4723200,
+  'stage_performance' => 4451378.2077379,
+  'resume' => 
+  array (
+    'offset' => 1736,
+    'tar_size' => 9225,
+  ),
+  'debug' => 
+  array (
+    'block_performance' => 128,
+    'additional' => NULL,
+  ),
+)
+}------------------------------------------------------------
+2015-02-09T16:32:48+04:0000088	8EF	DEBUG	1.64Mb	1.80Mb	extract_heartbeat
+waInstaller::adjustStageChunk
+{------------------------------------------------------------
+array (
+  'current_chunk' => 128,
+  'calculated_chunk' => 1863.85,
+  'performance_data' => 
+  array (
+    'extract' => 
+    array (
+      0 => 3857,
+      1 => 1884.75,
+      2 => 0,
+      3 => 2490.5,
+      4 => 1087,
+    ),
+  ),
+  'stack_length' => 5,
+)
+}------------------------------------------------------------
+2015-02-09T16:32:48+04:0000089	8EF	DEBUG	1.64Mb	1.80Mb	extract_heartbeat
+waInstaller::setState
+{------------------------------------------------------------
+array (
+  'start_time' => 1423485167,
+  'start_time_float' => 1423485167.3211,
+  'elapsed_time' => 0,
+  'stage' => 3,
+  'stage_name' => 'extract',
+  'state_heartbeat' => 0.10881590843201,
+  'thread_id' => '8EF',
+  'chunk_id' => 'wa-system',
+  'stage_current_value' => 1861632,
+  'stage_status' => 'heartbeat',
+  'timestamp' => 1423485168,
+  'timestamp_float' => 1423485168.5143,
+  'stage_start_time' => 1423485168.2167,
+  'datetime' => 'Mon, 09 Feb 2015 16:32:48 +0400',
+  'stage_value' => 4723200,
+  'stage_performance' => 8940770.4234148,
+  'resume' => 
+  array (
+    'offset' => 3636,
+    'tar_size' => 9225,
+  ),
+  'debug' => 
+  array (
+    'block_performance' => 128,
+    'additional' => NULL,
+  ),
+)
+}------------------------------------------------------------
+2015-02-09T16:32:48+04:0000090	8EF	DEBUG	1.64Mb	1.81Mb	extract_heartbeat
+waInstaller::adjustStageChunk
+{------------------------------------------------------------
+array (
+  'current_chunk' => 128,
+  'calculated_chunk' => 1529.05,
+  'performance_data' => 
+  array (
+    'extract' => 
+    array (
+      0 => 1884.75,
+      1 => 0,
+      2 => 2490.5,
+      3 => 1087,
+      4 => 2183,
+    ),
+  ),
+  'stack_length' => 5,
+)
+}------------------------------------------------------------
+2015-02-09T16:32:48+04:0000091	8EF	DEBUG	1.64Mb	1.81Mb	extract_heartbeat
+waInstaller::setState
+{------------------------------------------------------------
+array (
+  'start_time' => 1423485167,
+  'start_time_float' => 1423485167.3211,
+  'elapsed_time' => 0,
+  'stage' => 3,
+  'stage_name' => 'extract',
+  'state_heartbeat' => 0.10680913925171,
+  'thread_id' => '8EF',
+  'chunk_id' => 'wa-system',
+  'stage_current_value' => 2621952,
+  'stage_status' => 'heartbeat',
+  'timestamp' => 1423485168,
+  'timestamp_float' => 1423485168.6211,
+  'stage_start_time' => 1423485168.2167,
+  'datetime' => 'Mon, 09 Feb 2015 16:32:48 +0400',
+  'stage_value' => 4723200,
+  'stage_performance' => 7119302.4435916,
+  'resume' => 
+  array (
+    'offset' => 5121,
+    'tar_size' => 9225,
+  ),
+  'debug' => 
+  array (
+    'block_performance' => 128,
+    'additional' => NULL,
+  ),
+)
+}------------------------------------------------------------
+2015-02-09T16:32:48+04:0000092	8EF	DEBUG	1.64Mb	1.81Mb	extract_heartbeat
+waInstaller::adjustStageChunk
+{------------------------------------------------------------
+array (
+  'current_chunk' => 128,
+  'calculated_chunk' => 1499.75,
+  'performance_data' => 
+  array (
+    'extract' => 
+    array (
+      0 => 0,
+      1 => 2490.5,
+      2 => 1087,
+      3 => 2183,
+      4 => 1738.25,
+    ),
+  ),
+  'stack_length' => 5,
+)
+}------------------------------------------------------------
+2015-02-09T16:32:48+04:0000093	8EF	DEBUG	1.65Mb	1.81Mb	extract_heartbeat
+waInstaller::setState
+{------------------------------------------------------------
+array (
+  'start_time' => 1423485167,
+  'start_time_float' => 1423485167.3211,
+  'elapsed_time' => 0,
+  'stage' => 3,
+  'stage_name' => 'extract',
+  'state_heartbeat' => 0.12323021888733,
+  'thread_id' => '8EF',
+  'chunk_id' => 'wa-system',
+  'stage_current_value' => 3484160,
+  'stage_status' => 'heartbeat',
+  'timestamp' => 1423485168,
+  'timestamp_float' => 1423485168.7443,
+  'stage_start_time' => 1423485168.2167,
+  'datetime' => 'Mon, 09 Feb 2015 16:32:48 +0400',
+  'stage_value' => 4723200,
+  'stage_performance' => 6997524.1449054,
+  'resume' => 
+  array (
+    'offset' => 6805,
+    'tar_size' => 9225,
+  ),
+  'debug' => 
+  array (
+    'block_performance' => 128,
+    'additional' => NULL,
+  ),
+)
+}------------------------------------------------------------
+2015-02-09T16:32:48+04:0000094	8EF	DEBUG	1.65Mb	1.81Mb	extract_heartbeat
+waInstaller::adjustStageChunk
+{------------------------------------------------------------
+array (
+  'current_chunk' => 128,
+  'calculated_chunk' => 1841.45,
+  'performance_data' => 
+  array (
+    'extract' => 
+    array (
+      0 => 2490.5,
+      1 => 1087,
+      2 => 2183,
+      3 => 1738.25,
+      4 => 1708.5,
+    ),
+  ),
+  'stack_length' => 5,
+)
+}------------------------------------------------------------
+2015-02-09T16:32:48+04:0000095	8EF	DEBUG	1.65Mb	1.81Mb	extract_heartbeat
+waInstaller::setState
+{------------------------------------------------------------
+array (
+  'start_time' => 1423485167,
+  'start_time_float' => 1423485167.3211,
+  'elapsed_time' => 0,
+  'stage' => 3,
+  'stage_name' => 'extract',
+  'state_heartbeat' => 0.11624598503113,
+  'thread_id' => '8EF',
+  'chunk_id' => 'wa-system',
+  'stage_current_value' => 4112896,
+  'stage_status' => 'heartbeat',
+  'timestamp' => 1423485168,
+  'timestamp_float' => 1423485168.8605,
+  'stage_start_time' => 1423485168.2167,
+  'datetime' => 'Mon, 09 Feb 2015 16:32:48 +0400',
+  'stage_value' => 4723200,
+  'stage_performance' => 5409367.4765214,
+  'resume' => 
+  array (
+    'offset' => 8033,
+    'tar_size' => 9225,
+  ),
+  'debug' => 
+  array (
+    'block_performance' => 128,
+    'additional' => NULL,
+  ),
+)
+}------------------------------------------------------------
+2015-02-09T16:32:48+04:0000096	8EF	DEBUG	1.65Mb	1.81Mb	extract_heartbeat
+waInstaller::adjustStageChunk
+{------------------------------------------------------------
+array (
+  'current_chunk' => 128,
+  'calculated_chunk' => 1607.5,
+  'performance_data' => 
+  array (
+    'extract' => 
+    array (
+      0 => 1087,
+      1 => 2183,
+      2 => 1738.25,
+      3 => 1708.5,
+      4 => 1320.75,
+    ),
+  ),
+  'stack_length' => 5,
+)
+}------------------------------------------------------------
+2015-02-09T16:32:48+04:0000097	8EF	TRACE	1.62Mb	1.81Mb	extract_complete
+waInstaller::setState
+{------------------------------------------------------------
+array (
+  'start_time' => 1423485167,
+  'start_time_float' => 1423485167.3211,
+  'elapsed_time' => 0,
+  'stage' => 3,
+  'stage_name' => 'extract',
+  'state_heartbeat' => 0.071295976638794,
+  'thread_id' => '8EF',
+  'chunk_id' => 'wa-system',
+  'stage_current_value' => 4112896,
+  'stage_status' => 'complete',
+  'timestamp' => 1423485168,
+  'timestamp_float' => 1423485168.9318,
+  'stage_start_time' => 1423485168.2167,
+  'datetime' => 'Mon, 09 Feb 2015 16:32:48 +0400',
+  'stage_value' => 4723200,
+  'stage_performance' => 0,
+  'resume' => 
+  array (
+    'offset' => 8033,
+    'tar_size' => 9225,
+  ),
+  'debug' => 
+  array (
+    'block_performance' => 128,
+    'additional' => NULL,
+  ),
+)
+}------------------------------------------------------------
+2015-02-09T16:32:48+04:0000098	8EF	TRACE	1.62Mb	1.81Mb	extract_heartbeat
+waInstaller::setState
+{------------------------------------------------------------
+array (
+  'start_time' => 1423485167,
+  'start_time_float' => 1423485167.3211,
+  'elapsed_time' => 0,
+  'stage' => 3,
+  'stage_name' => 'extract',
+  'state_heartbeat' => 0.0016729831695557,
+  'thread_id' => '8EF',
+  'chunk_id' => 'wa-apps/stickies',
+  'stage_current_value' => 0,
+  'stage_status' => 'heartbeat',
+  'timestamp' => 1423485168,
+  'timestamp_float' => 1423485168.9335,
+  'stage_start_time' => 1423485168.9335,
+  'datetime' => 'Mon, 09 Feb 2015 16:32:48 +0400',
+  'stage_value' => 0,
+  'stage_performance' => 0,
+  'resume' => 
+  array (
+    'offset' => 8033,
+    'tar_size' => 9225,
+  ),
+  'debug' => 
+  array (
+    'block_performance' => 128,
+    'additional' => NULL,
+  ),
+)
+}------------------------------------------------------------
+2015-02-09T16:32:48+04:0000099	8EF	TRACE	1.62Mb	1.81Mb	extract_heartbeat
+waInstaller::stageExtract
+{------------------------------------------------------------
+array (
+  'compressed_file' => '/var/www/admin/data/www/pchelkinazabava.ru/wa-installer/../wa-sources/wa-apps/stickies.tar.gz',
+  'target_path' => 'wa-data/protected/wa-installer/8EF/update/wa-apps/stickies/',
+  'base_path' => 'wa-apps/stickies/',
+)
+}------------------------------------------------------------
+2015-02-09T16:32:48+04:0000100	8EF	DEBUG	1.65Mb	1.81Mb	extract_heartbeat
+waInstaller::setState
+{------------------------------------------------------------
+array (
+  'start_time' => 1423485167,
+  'start_time_float' => 1423485167.3211,
+  'elapsed_time' => 0,
+  'stage' => 3,
+  'stage_name' => 'extract',
+  'state_heartbeat' => 0.0049440860748291,
+  'thread_id' => '8EF',
+  'chunk_id' => 'wa-apps/stickies',
+  'stage_current_value' => 0,
+  'stage_status' => 'heartbeat',
+  'timestamp' => 1423485168,
+  'timestamp_float' => 1423485168.9384,
+  'stage_start_time' => 1423485168.9335,
+  'datetime' => 'Mon, 09 Feb 2015 16:32:48 +0400',
+  'stage_value' => 524800,
+  'stage_performance' => 0,
+  'resume' => 
+  array (
+    'offset' => NULL,
+    'tar_size' => 1025,
+  ),
+  'debug' => 
+  array (
+    'block_performance' => 128,
+    'additional' => NULL,
+  ),
+)
+}------------------------------------------------------------
+2015-02-09T16:32:48+04:0000101	8EF	DEBUG	1.65Mb	1.82Mb	extract_heartbeat
+waInstaller::adjustStageChunk
+{------------------------------------------------------------
+array (
+  'current_chunk' => 128,
+  'calculated_chunk' => 1390.1,
+  'performance_data' => 
+  array (
+    'extract' => 
+    array (
+      0 => 2183,
+      1 => 1738.25,
+      2 => 1708.5,
+      3 => 1320.75,
+      4 => 0,
+    ),
+  ),
+  'stack_length' => 5,
+)
+}------------------------------------------------------------
+2015-02-09T16:32:48+04:0000102	8EF	DEBUG	1.65Mb	1.82Mb	extract_heartbeat
+waInstaller::setState
+{------------------------------------------------------------
+array (
+  'start_time' => 1423485167,
+  'start_time_float' => 1423485167.3211,
+  'elapsed_time' => 0,
+  'stage' => 3,
+  'stage_name' => 'extract',
+  'state_heartbeat' => 0.048829078674316,
+  'thread_id' => '8EF',
+  'chunk_id' => 'wa-apps/stickies',
+  'stage_current_value' => 466944,
+  'stage_status' => 'heartbeat',
+  'timestamp' => 1423485168,
+  'timestamp_float' => 1423485168.9872,
+  'stage_start_time' => 1423485168.9335,
+  'datetime' => 'Mon, 09 Feb 2015 16:32:48 +0400',
+  'stage_value' => 524800,
+  'stage_performance' => 9564414.1572301,
+  'resume' => 
+  array (
+    'offset' => 912,
+    'tar_size' => 1025,
+  ),
+  'debug' => 
+  array (
+    'block_performance' => 128,
+    'additional' => NULL,
+  ),
+)
+}------------------------------------------------------------
+2015-02-09T16:32:48+04:0000103	8EF	DEBUG	1.65Mb	1.83Mb	extract_heartbeat
+waInstaller::adjustStageChunk
+{------------------------------------------------------------
+array (
+  'current_chunk' => 128,
+  'calculated_chunk' => 1420.55,
+  'performance_data' => 
+  array (
+    'extract' => 
+    array (
+      0 => 1738.25,
+      1 => 1708.5,
+      2 => 1320.75,
+      3 => 0,
+      4 => 2335.25,
+    ),
+  ),
+  'stack_length' => 5,
+)
+}------------------------------------------------------------
+2015-02-09T16:32:48+04:0000104	8EF	TRACE	1.63Mb	1.83Mb	extract_complete
+waInstaller::setState
+{------------------------------------------------------------
+array (
+  'start_time' => 1423485167,
+  'start_time_float' => 1423485167.3211,
+  'elapsed_time' => 0,
+  'stage' => 3,
+  'stage_name' => 'extract',
+  'state_heartbeat' => 0.0096950531005859,
+  'thread_id' => '8EF',
+  'chunk_id' => 'wa-apps/stickies',
+  'stage_current_value' => 466944,
+  'stage_status' => 'complete',
+  'timestamp' => 1423485168,
+  'timestamp_float' => 1423485168.9969,
+  'stage_start_time' => 1423485168.9335,
+  'datetime' => 'Mon, 09 Feb 2015 16:32:48 +0400',
+  'stage_value' => 524800,
+  'stage_performance' => 0,
+  'resume' => 
+  array (
+    'offset' => 912,
+    'tar_size' => 1025,
+  ),
+  'debug' => 
+  array (
+    'block_performance' => 128,
+    'additional' => NULL,
+  ),
+)
+}------------------------------------------------------------
+2015-02-09T16:32:48+04:0000105	8EF	TRACE	1.63Mb	1.83Mb	extract_heartbeat
+waInstaller::setState
+{------------------------------------------------------------
+array (
+  'start_time' => 1423485167,
+  'start_time_float' => 1423485167.3211,
+  'elapsed_time' => 0,
+  'stage' => 3,
+  'stage_name' => 'extract',
+  'state_heartbeat' => 0.0017821788787842,
+  'thread_id' => '8EF',
+  'chunk_id' => 'wa-apps/site',
+  'stage_current_value' => 0,
+  'stage_status' => 'heartbeat',
+  'timestamp' => 1423485168,
+  'timestamp_float' => 1423485168.9987,
+  'stage_start_time' => 1423485168.9987,
+  'datetime' => 'Mon, 09 Feb 2015 16:32:48 +0400',
+  'stage_value' => 0,
+  'stage_performance' => 0,
+  'resume' => 
+  array (
+    'offset' => 912,
+    'tar_size' => 1025,
+  ),
+  'debug' => 
+  array (
+    'block_performance' => 128,
+    'additional' => NULL,
+  ),
+)
+}------------------------------------------------------------
+2015-02-09T16:32:49+04:0000106	8EF	TRACE	1.63Mb	1.83Mb	extract_heartbeat
+waInstaller::stageExtract
+{------------------------------------------------------------
+array (
+  'compressed_file' => '/var/www/admin/data/www/pchelkinazabava.ru/wa-installer/../wa-sources/wa-apps/site.tar.gz',
+  'target_path' => 'wa-data/protected/wa-installer/8EF/update/wa-apps/site/',
+  'base_path' => 'wa-apps/site/',
+)
+}------------------------------------------------------------
+2015-02-09T16:32:49+04:0000107	8EF	DEBUG	1.65Mb	1.83Mb	extract_heartbeat
+waInstaller::setState
+{------------------------------------------------------------
+array (
+  'start_time' => 1423485167,
+  'start_time_float' => 1423485167.3211,
+  'elapsed_time' => 0,
+  'stage' => 3,
+  'stage_name' => 'extract',
+  'state_heartbeat' => 0.052666902542114,
+  'thread_id' => '8EF',
+  'chunk_id' => 'wa-apps/site',
+  'stage_current_value' => 0,
+  'stage_status' => 'heartbeat',
+  'timestamp' => 1423485169,
+  'timestamp_float' => 1423485169.0513,
+  'stage_start_time' => 1423485168.9987,
+  'datetime' => 'Mon, 09 Feb 2015 16:32:48 +0400',
+  'stage_value' => 3673600,
+  'stage_performance' => 0,
+  'resume' => 
+  array (
+    'offset' => NULL,
+    'tar_size' => 7175,
+  ),
+  'debug' => 
+  array (
+    'block_performance' => 128,
+    'additional' => NULL,
+  ),
+)
+}------------------------------------------------------------
+2015-02-09T16:32:49+04:0000108	8EF	DEBUG	1.65Mb	1.84Mb	extract_heartbeat
+waInstaller::adjustStageChunk
+{------------------------------------------------------------
+array (
+  'current_chunk' => 128,
+  'calculated_chunk' => 1072.9,
+  'performance_data' => 
+  array (
+    'extract' => 
+    array (
+      0 => 1708.5,
+      1 => 1320.75,
+      2 => 0,
+      3 => 2335.25,
+      4 => 0,
+    ),
+  ),
+  'stack_length' => 5,
+)
+}------------------------------------------------------------
+2015-02-09T16:32:49+04:0000109	8EF	DEBUG	1.66Mb	1.84Mb	extract_heartbeat
+waInstaller::setState
+{------------------------------------------------------------
+array (
+  'start_time' => 1423485167,
+  'start_time_float' => 1423485167.3211,
+  'elapsed_time' => 0,
+  'stage' => 3,
+  'stage_name' => 'extract',
+  'state_heartbeat' => 0.11285901069641,
+  'thread_id' => '8EF',
+  'chunk_id' => 'wa-apps/site',
+  'stage_current_value' => 876032,
+  'stage_status' => 'heartbeat',
+  'timestamp' => 1423485169,
+  'timestamp_float' => 1423485169.1642,
+  'stage_start_time' => 1423485168.9987,
+  'datetime' => 'Mon, 09 Feb 2015 16:32:48 +0400',
+  'stage_value' => 3673600,
+  'stage_performance' => 7763000.3733835,
+  'resume' => 
+  array (
+    'offset' => 1711,
+    'tar_size' => 7175,
+  ),
+  'debug' => 
+  array (
+    'block_performance' => 128,
+    'additional' => NULL,
+  ),
+)
+}------------------------------------------------------------
+2015-02-09T16:32:49+04:0000110	8EF	DEBUG	1.66Mb	1.84Mb	extract_heartbeat
+waInstaller::adjustStageChunk
+{------------------------------------------------------------
+array (
+  'current_chunk' => 128,
+  'calculated_chunk' => 1110.3,
+  'performance_data' => 
+  array (
+    'extract' => 
+    array (
+      0 => 1320.75,
+      1 => 0,
+      2 => 2335.25,
+      3 => 0,
+      4 => 1895.5,
+    ),
+  ),
+  'stack_length' => 5,
+)
+}------------------------------------------------------------
+2015-02-09T16:32:49+04:0000111	8EF	TRACE	1.63Mb	1.84Mb	extract_complete
+waInstaller::setState
+{------------------------------------------------------------
+array (
+  'start_time' => 1423485167,
+  'start_time_float' => 1423485167.3211,
+  'elapsed_time' => 0,
+  'stage' => 3,
+  'stage_name' => 'extract',
+  'state_heartbeat' => 0.11250185966492,
+  'thread_id' => '8EF',
+  'chunk_id' => 'wa-apps/site',
+  'stage_current_value' => 876032,
+  'stage_status' => 'complete',
+  'timestamp' => 1423485169,
+  'timestamp_float' => 1423485169.2767,
+  'stage_start_time' => 1423485168.9987,
+  'datetime' => 'Mon, 09 Feb 2015 16:32:48 +0400',
+  'stage_value' => 3673600,
+  'stage_performance' => 0,
+  'resume' => 
+  array (
+    'offset' => 1711,
+    'tar_size' => 7175,
+  ),
+  'debug' => 
+  array (
+    'block_performance' => 128,
+    'additional' => NULL,
+  ),
+)
+}------------------------------------------------------------
+2015-02-09T16:32:49+04:0000112	8EF	TRACE	1.64Mb	1.84Mb	extract_heartbeat
+waInstaller::setState
+{------------------------------------------------------------
+array (
+  'start_time' => 1423485167,
+  'start_time_float' => 1423485167.3211,
+  'elapsed_time' => 0,
+  'stage' => 3,
+  'stage_name' => 'extract',
+  'state_heartbeat' => 0.0020930767059326,
+  'thread_id' => '8EF',
+  'chunk_id' => 'wa-apps/contacts',
+  'stage_current_value' => 0,
+  'stage_status' => 'heartbeat',
+  'timestamp' => 1423485169,
+  'timestamp_float' => 1423485169.2787,
+  'stage_start_time' => 1423485169.2787,
+  'datetime' => 'Mon, 09 Feb 2015 16:32:49 +0400',
+  'stage_value' => 0,
+  'stage_performance' => 0,
+  'resume' => 
+  array (
+    'offset' => 1711,
+    'tar_size' => 7175,
+  ),
+  'debug' => 
+  array (
+    'block_performance' => 128,
+    'additional' => NULL,
+  ),
+)
+}------------------------------------------------------------
+2015-02-09T16:32:49+04:0000113	8EF	TRACE	1.64Mb	1.84Mb	extract_heartbeat
+waInstaller::stageExtract
+{------------------------------------------------------------
+array (
+  'compressed_file' => '/var/www/admin/data/www/pchelkinazabava.ru/wa-installer/../wa-sources/wa-apps/contacts.tar.gz',
+  'target_path' => 'wa-data/protected/wa-installer/8EF/update/wa-apps/contacts/',
+  'base_path' => 'wa-apps/contacts/',
+)
+}------------------------------------------------------------
+2015-02-09T16:32:49+04:0000114	8EF	DEBUG	1.66Mb	1.84Mb	extract_heartbeat
+waInstaller::setState
+{------------------------------------------------------------
+array (
+  'start_time' => 1423485167,
+  'start_time_float' => 1423485167.3211,
+  'elapsed_time' => 0,
+  'stage' => 3,
+  'stage_name' => 'extract',
+  'state_heartbeat' => 0.0081870555877686,
+  'thread_id' => '8EF',
+  'chunk_id' => 'wa-apps/contacts',
+  'stage_current_value' => 0,
+  'stage_status' => 'heartbeat',
+  'timestamp' => 1423485169,
+  'timestamp_float' => 1423485169.2869,
+  'stage_start_time' => 1423485169.2787,
+  'datetime' => 'Mon, 09 Feb 2015 16:32:49 +0400',
+  'stage_value' => 1574400,
+  'stage_performance' => 0,
+  'resume' => 
+  array (
+    'offset' => NULL,
+    'tar_size' => 3075,
+  ),
+  'debug' => 
+  array (
+    'block_performance' => 128,
+    'additional' => NULL,
+  ),
+)
+}------------------------------------------------------------
+2015-02-09T16:32:49+04:0000115	8EF	DEBUG	1.66Mb	1.86Mb	extract_heartbeat
+waInstaller::adjustStageChunk
+{------------------------------------------------------------
+array (
+  'current_chunk' => 128,
+  'calculated_chunk' => 846.15,
+  'performance_data' => 
+  array (
+    'extract' => 
+    array (
+      0 => 0,
+      1 => 2335.25,
+      2 => 0,
+      3 => 1895.5,
+      4 => 0,
+    ),
+  ),
+  'stack_length' => 5,
+)
+}------------------------------------------------------------
+2015-02-09T16:32:49+04:0000116	8EF	DEBUG	1.67Mb	1.86Mb	extract_heartbeat
+waInstaller::setState
+{------------------------------------------------------------
+array (
+  'start_time' => 1423485167,
+  'start_time_float' => 1423485167.3211,
+  'elapsed_time' => 0,
+  'stage' => 3,
+  'stage_name' => 'extract',
+  'state_heartbeat' => 0.045486927032471,
+  'thread_id' => '8EF',
+  'chunk_id' => 'wa-apps/contacts',
+  'stage_current_value' => 713216,
+  'stage_status' => 'heartbeat',
+  'timestamp' => 1423485169,
+  'timestamp_float' => 1423485169.3324,
+  'stage_start_time' => 1423485169.2787,
+  'datetime' => 'Mon, 09 Feb 2015 16:32:49 +0400',
+  'stage_value' => 1574400,
+  'stage_performance' => 15684761.259334,
+  'resume' => 
+  array (
+    'offset' => 1393,
+    'tar_size' => 3075,
+  ),
+  'debug' => 
+  array (
+    'block_performance' => 128,
+    'additional' => NULL,
+  ),
+)
+}------------------------------------------------------------
+2015-02-09T16:32:49+04:0000117	8EF	DEBUG	1.66Mb	1.86Mb	extract_heartbeat
+waInstaller::adjustStageChunk
+{------------------------------------------------------------
+array (
+  'current_chunk' => 128,
+  'calculated_chunk' => 1612.05,
+  'performance_data' => 
+  array (
+    'extract' => 
+    array (
+      0 => 2335.25,
+      1 => 0,
+      2 => 1895.5,
+      3 => 0,
+      4 => 3829.5,
+    ),
+  ),
+  'stack_length' => 5,
+)
+}------------------------------------------------------------
+2015-02-09T16:32:49+04:0000118	8EF	TRACE	1.64Mb	1.86Mb	extract_complete
+waInstaller::setState
+{------------------------------------------------------------
+array (
+  'start_time' => 1423485167,
+  'start_time_float' => 1423485167.3211,
+  'elapsed_time' => 0,
+  'stage' => 3,
+  'stage_name' => 'extract',
+  'state_heartbeat' => 0.073364973068237,
+  'thread_id' => '8EF',
+  'chunk_id' => 'wa-apps/contacts',
+  'stage_current_value' => 713216,
+  'stage_status' => 'complete',
+  'timestamp' => 1423485169,
+  'timestamp_float' => 1423485169.4057,
+  'stage_start_time' => 1423485169.2787,
+  'datetime' => 'Mon, 09 Feb 2015 16:32:49 +0400',
+  'stage_value' => 1574400,
+  'stage_performance' => 0,
+  'resume' => 
+  array (
+    'offset' => 1393,
+    'tar_size' => 3075,
+  ),
+  'debug' => 
+  array (
+    'block_performance' => 128,
+    'additional' => NULL,
+  ),
+)
+}------------------------------------------------------------
+2015-02-09T16:32:49+04:0000119	8EF	TRACE	1.64Mb	1.86Mb	extract_heartbeat
+waInstaller::setState
+{------------------------------------------------------------
+array (
+  'start_time' => 1423485167,
+  'start_time_float' => 1423485167.3211,
+  'elapsed_time' => 0,
+  'stage' => 3,
+  'stage_name' => 'extract',
+  'state_heartbeat' => 0.0021219253540039,
+  'thread_id' => '8EF',
+  'chunk_id' => 'wa-apps/installer',
+  'stage_current_value' => 0,
+  'stage_status' => 'heartbeat',
+  'timestamp' => 1423485169,
+  'timestamp_float' => 1423485169.4078,
+  'stage_start_time' => 1423485169.4078,
+  'datetime' => 'Mon, 09 Feb 2015 16:32:49 +0400',
+  'stage_value' => 0,
+  'stage_performance' => 0,
+  'resume' => 
+  array (
+    'offset' => 1393,
+    'tar_size' => 3075,
+  ),
+  'debug' => 
+  array (
+    'block_performance' => 128,
+    'additional' => NULL,
+  ),
+)
+}------------------------------------------------------------
+2015-02-09T16:32:49+04:0000120	8EF	TRACE	1.64Mb	1.86Mb	extract_heartbeat
+waInstaller::stageExtract
+{------------------------------------------------------------
+array (
+  'compressed_file' => '/var/www/admin/data/www/pchelkinazabava.ru/wa-installer/../wa-sources/wa-apps/installer.tar.gz',
+  'target_path' => 'wa-data/protected/wa-installer/8EF/update/wa-apps/installer/',
+  'base_path' => 'wa-apps/installer/',
+)
+}------------------------------------------------------------
+2015-02-09T16:32:49+04:0000121	8EF	DEBUG	1.66Mb	1.86Mb	extract_heartbeat
+waInstaller::setState
+{------------------------------------------------------------
+array (
+  'start_time' => 1423485167,
+  'start_time_float' => 1423485167.3211,
+  'elapsed_time' => 0,
+  'stage' => 3,
+  'stage_name' => 'extract',
+  'state_heartbeat' => 0.0052769184112549,
+  'thread_id' => '8EF',
+  'chunk_id' => 'wa-apps/installer',
+  'stage_current_value' => 0,
+  'stage_status' => 'heartbeat',
+  'timestamp' => 1423485169,
+  'timestamp_float' => 1423485169.4131,
+  'stage_start_time' => 1423485169.4078,
+  'datetime' => 'Mon, 09 Feb 2015 16:32:49 +0400',
+  'stage_value' => 1049600,
+  'stage_performance' => 0,
+  'resume' => 
+  array (
+    'offset' => NULL,
+    'tar_size' => 2050,
+  ),
+  'debug' => 
+  array (
+    'block_performance' => 128,
+    'additional' => NULL,
+  ),
+)
+}------------------------------------------------------------
+2015-02-09T16:32:49+04:0000122	8EF	DEBUG	1.66Mb	1.87Mb	extract_heartbeat
+waInstaller::adjustStageChunk
+{------------------------------------------------------------
+array (
+  'current_chunk' => 128,
+  'calculated_chunk' => 1145,
+  'performance_data' => 
+  array (
+    'extract' => 
+    array (
+      0 => 0,
+      1 => 1895.5,
+      2 => 0,
+      3 => 3829.5,
+      4 => 0,
+    ),
+  ),
+  'stack_length' => 5,
+)
+}------------------------------------------------------------
+2015-02-09T16:32:49+04:0000123	8EF	DEBUG	1.67Mb	1.87Mb	extract_heartbeat
+waInstaller::setState
+{------------------------------------------------------------
+array (
+  'start_time' => 1423485167,
+  'start_time_float' => 1423485167.3211,
+  'elapsed_time' => 0,
+  'stage' => 3,
+  'stage_name' => 'extract',
+  'state_heartbeat' => 0.049004793167114,
+  'thread_id' => '8EF',
+  'chunk_id' => 'wa-apps/installer',
+  'stage_current_value' => 364544,
+  'stage_status' => 'heartbeat',
+  'timestamp' => 1423485169,
+  'timestamp_float' => 1423485169.4621,
+  'stage_start_time' => 1423485169.4078,
+  'datetime' => 'Mon, 09 Feb 2015 16:32:49 +0400',
+  'stage_value' => 1049600,
+  'stage_performance' => 7441190.3765154,
+  'resume' => 
+  array (
+    'offset' => 712,
+    'tar_size' => 2050,
+  ),
+  'debug' => 
+  array (
+    'block_performance' => 128,
+    'additional' => NULL,
+  ),
+)
+}------------------------------------------------------------
+2015-02-09T16:32:49+04:0000124	8EF	DEBUG	1.67Mb	1.88Mb	extract_heartbeat
+waInstaller::adjustStageChunk
+{------------------------------------------------------------
+array (
+  'current_chunk' => 128,
+  'calculated_chunk' => 1508.35,
+  'performance_data' => 
+  array (
+    'extract' => 
+    array (
+      0 => 1895.5,
+      1 => 0,
+      2 => 3829.5,
+      3 => 0,
+      4 => 1816.75,
+    ),
+  ),
+  'stack_length' => 5,
+)
+}------------------------------------------------------------
+2015-02-09T16:32:49+04:0000125	8EF	TRACE	1.65Mb	1.88Mb	extract_complete
+waInstaller::setState
+{------------------------------------------------------------
+array (
+  'start_time' => 1423485167,
+  'start_time_float' => 1423485167.3211,
+  'elapsed_time' => 0,
+  'stage' => 3,
+  'stage_name' => 'extract',
+  'state_heartbeat' => 0.028708934783936,
+  'thread_id' => '8EF',
+  'chunk_id' => 'wa-apps/installer',
+  'stage_current_value' => 364544,
+  'stage_status' => 'complete',
+  'timestamp' => 1423485169,
+  'timestamp_float' => 1423485169.4908,
+  'stage_start_time' => 1423485169.4078,
+  'datetime' => 'Mon, 09 Feb 2015 16:32:49 +0400',
+  'stage_value' => 1049600,
+  'stage_performance' => 0,
+  'resume' => 
+  array (
+    'offset' => 712,
+    'tar_size' => 2050,
+  ),
+  'debug' => 
+  array (
+    'block_performance' => 128,
+    'additional' => NULL,
+  ),
+)
+}------------------------------------------------------------
+2015-02-09T16:32:49+04:0000126	8EF	TRACE	1.65Mb	1.88Mb	replace_heartbeat
+waInstaller::setState
+{------------------------------------------------------------
+array (
+  'start_time' => 1423485167,
+  'start_time_float' => 1423485167.3211,
+  'elapsed_time' => 0,
+  'stage' => 4,
+  'stage_name' => 'replace',
+  'state_heartbeat' => 0.034250020980835,
+  'thread_id' => '8EF',
+  'chunk_id' => 'wa-content',
+  'stage_current_value' => 0,
+  'stage_status' => 'heartbeat',
+  'timestamp' => 1423485169,
+  'timestamp_float' => 1423485169.525,
+  'stage_start_time' => 1423485169.525,
+  'datetime' => 'Mon, 09 Feb 2015 16:32:49 +0400',
+  'stage_value' => 0,
+  'stage_performance' => 0,
+  'resume' => 
+  array (
+    'offset' => 712,
+    'tar_size' => 2050,
+  ),
+  'debug' => 
+  array (
+    'block_performance' => 128,
+    'additional' => NULL,
+  ),
+)
+}------------------------------------------------------------
+2015-02-09T16:32:49+04:0000127	8EF	TRACE	1.65Mb	1.88Mb	replace_heartbeat
+waInstaller::stageReplace
+{------------------------------------------------------------
+array (
+  'source_path' => 'wa-data/protected/wa-installer/8EF/update/wa-content',
+  'target_path' => 'wa-content',
+  'store_prev' => false,
+)
+}------------------------------------------------------------
+2015-02-09T16:32:49+04:0000128	8EF	TRACE	1.65Mb	1.88Mb	replace_heartbeat
+waInstaller::rename replace current version code
+{------------------------------------------------------------
+array (
+  'oldname' => 'wa-data/protected/wa-installer/8EF/update/wa-content',
+  'newname' => 'wa-content',
+)
+}------------------------------------------------------------
+2015-02-09T16:32:49+04:0000129	8EF	TRACE	1.65Mb	1.88Mb	replace_heartbeat
+waInstaller::stageReplace replace current version code
+{------------------------------------------------------------
+array (
+  'target_path' => 'wa-content',
+)
+}------------------------------------------------------------
+2015-02-09T16:32:49+04:0000130	8EF	TRACE	1.65Mb	1.88Mb	replace_complete
+waInstaller::setState
+{------------------------------------------------------------
+array (
+  'start_time' => 1423485167,
+  'start_time_float' => 1423485167.3211,
+  'elapsed_time' => 0,
+  'stage' => 4,
+  'stage_name' => 'replace',
+  'state_heartbeat' => 0.0027918815612793,
+  'thread_id' => '8EF',
+  'chunk_id' => 'wa-content',
+  'stage_current_value' => 0,
+  'stage_status' => 'complete',
+  'timestamp' => 1423485169,
+  'timestamp_float' => 1423485169.5278,
+  'stage_start_time' => 1423485169.525,
+  'datetime' => 'Mon, 09 Feb 2015 16:32:49 +0400',
+  'stage_value' => 0,
+  'stage_performance' => 0,
+  'resume' => 
+  array (
+    'offset' => 712,
+    'tar_size' => 2050,
+  ),
+  'debug' => 
+  array (
+    'block_performance' => 128,
+    'additional' => NULL,
+  ),
+)
+}------------------------------------------------------------
+2015-02-09T16:32:49+04:0000131	8EF	TRACE	1.65Mb	1.88Mb	replace_heartbeat
+waInstaller::setState
+{------------------------------------------------------------
+array (
+  'start_time' => 1423485167,
+  'start_time_float' => 1423485167.3211,
+  'elapsed_time' => 0,
+  'stage' => 4,
+  'stage_name' => 'replace',
+  'state_heartbeat' => 0.0020599365234375,
+  'thread_id' => '8EF',
+  'chunk_id' => 'wa-system',
+  'stage_current_value' => 0,
+  'stage_status' => 'heartbeat',
+  'timestamp' => 1423485169,
+  'timestamp_float' => 1423485169.5298,
+  'stage_start_time' => 1423485169.5298,
+  'datetime' => 'Mon, 09 Feb 2015 16:32:49 +0400',
+  'stage_value' => 0,
+  'stage_performance' => 0,
+  'resume' => 
+  array (
+    'offset' => 712,
+    'tar_size' => 2050,
+  ),
+  'debug' => 
+  array (
+    'block_performance' => 128,
+    'additional' => NULL,
+  ),
+)
+}------------------------------------------------------------
+2015-02-09T16:32:49+04:0000132	8EF	TRACE	1.65Mb	1.89Mb	replace_heartbeat
+waInstaller::stageReplace
+{------------------------------------------------------------
+array (
+  'source_path' => 'wa-data/protected/wa-installer/8EF/update/wa-system',
+  'target_path' => 'wa-system',
+  'store_prev' => false,
+)
+}------------------------------------------------------------
+2015-02-09T16:32:49+04:0000133	8EF	TRACE	1.65Mb	1.89Mb	replace_heartbeat
+waInstaller::rename replace current version code
+{------------------------------------------------------------
+array (
+  'oldname' => 'wa-data/protected/wa-installer/8EF/update/wa-system',
+  'newname' => 'wa-system',
+)
+}------------------------------------------------------------
+2015-02-09T16:32:49+04:0000134	8EF	TRACE	1.65Mb	1.89Mb	replace_heartbeat
+waInstaller::stageReplace replace current version code
+{------------------------------------------------------------
+array (
+  'target_path' => 'wa-system',
+)
+}------------------------------------------------------------
+2015-02-09T16:32:49+04:0000135	8EF	TRACE	1.65Mb	1.89Mb	replace_complete
+waInstaller::setState
+{------------------------------------------------------------
+array (
+  'start_time' => 1423485167,
+  'start_time_float' => 1423485167.3211,
+  'elapsed_time' => 0,
+  'stage' => 4,
+  'stage_name' => 'replace',
+  'state_heartbeat' => 0.0026059150695801,
+  'thread_id' => '8EF',
+  'chunk_id' => 'wa-system',
+  'stage_current_value' => 0,
+  'stage_status' => 'complete',
+  'timestamp' => 1423485169,
+  'timestamp_float' => 1423485169.5324,
+  'stage_start_time' => 1423485169.5298,
+  'datetime' => 'Mon, 09 Feb 2015 16:32:49 +0400',
+  'stage_value' => 0,
+  'stage_performance' => 0,
+  'resume' => 
+  array (
+    'offset' => 712,
+    'tar_size' => 2050,
+  ),
+  'debug' => 
+  array (
+    'block_performance' => 128,
+    'additional' => NULL,
+  ),
+)
+}------------------------------------------------------------
+2015-02-09T16:32:49+04:0000136	8EF	TRACE	1.65Mb	1.89Mb	replace_heartbeat
+waInstaller::setState
+{------------------------------------------------------------
+array (
+  'start_time' => 1423485167,
+  'start_time_float' => 1423485167.3211,
+  'elapsed_time' => 0,
+  'stage' => 4,
+  'stage_name' => 'replace',
+  'state_heartbeat' => 0.00211501121521,
+  'thread_id' => '8EF',
+  'chunk_id' => 'wa-apps/stickies',
+  'stage_current_value' => 0,
+  'stage_status' => 'heartbeat',
+  'timestamp' => 1423485169,
+  'timestamp_float' => 1423485169.5345,
+  'stage_start_time' => 1423485169.5345,
+  'datetime' => 'Mon, 09 Feb 2015 16:32:49 +0400',
+  'stage_value' => 0,
+  'stage_performance' => 0,
+  'resume' => 
+  array (
+    'offset' => 712,
+    'tar_size' => 2050,
+  ),
+  'debug' => 
+  array (
+    'block_performance' => 128,
+    'additional' => NULL,
+  ),
+)
+}------------------------------------------------------------
+2015-02-09T16:32:49+04:0000137	8EF	TRACE	1.65Mb	1.89Mb	replace_heartbeat
+waInstaller::stageReplace
+{------------------------------------------------------------
+array (
+  'source_path' => 'wa-data/protected/wa-installer/8EF/update/wa-apps/stickies',
+  'target_path' => 'wa-apps/stickies',
+  'store_prev' => false,
+)
+}------------------------------------------------------------
+2015-02-09T16:32:49+04:0000138	8EF	DEBUG	1.65Mb	1.89Mb	replace_heartbeat
+waInstaller::mkdir
+{------------------------------------------------------------
+array (
+  'pathname' => 'wa-apps/',
+  'mode' => 511,
+)
+}------------------------------------------------------------
+2015-02-09T16:32:49+04:0000139	8EF	TRACE	1.65Mb	1.89Mb	replace_heartbeat
+waInstaller::rename replace current version code
+{------------------------------------------------------------
+array (
+  'oldname' => 'wa-data/protected/wa-installer/8EF/update/wa-apps/stickies',
+  'newname' => 'wa-apps/stickies',
+)
+}------------------------------------------------------------
+2015-02-09T16:32:49+04:0000140	8EF	TRACE	1.65Mb	1.89Mb	replace_heartbeat
+waInstaller::stageReplace replace current version code
+{------------------------------------------------------------
+array (
+  'target_path' => 'wa-apps/stickies',
+)
+}------------------------------------------------------------
+2015-02-09T16:32:49+04:0000141	8EF	TRACE	1.65Mb	1.89Mb	replace_complete
+waInstaller::setState
+{------------------------------------------------------------
+array (
+  'start_time' => 1423485167,
+  'start_time_float' => 1423485167.3211,
+  'elapsed_time' => 0,
+  'stage' => 4,
+  'stage_name' => 'replace',
+  'state_heartbeat' => 0.0029170513153076,
+  'thread_id' => '8EF',
+  'chunk_id' => 'wa-apps/stickies',
+  'stage_current_value' => 0,
+  'stage_status' => 'complete',
+  'timestamp' => 1423485169,
+  'timestamp_float' => 1423485169.5375,
+  'stage_start_time' => 1423485169.5345,
+  'datetime' => 'Mon, 09 Feb 2015 16:32:49 +0400',
+  'stage_value' => 0,
+  'stage_performance' => 0,
+  'resume' => 
+  array (
+    'offset' => 712,
+    'tar_size' => 2050,
+  ),
+  'debug' => 
+  array (
+    'block_performance' => 128,
+    'additional' => NULL,
+  ),
+)
+}------------------------------------------------------------
+2015-02-09T16:32:49+04:0000142	8EF	TRACE	1.65Mb	1.90Mb	replace_heartbeat
+waInstaller::setState
+{------------------------------------------------------------
+array (
+  'start_time' => 1423485167,
+  'start_time_float' => 1423485167.3211,
+  'elapsed_time' => 0,
+  'stage' => 4,
+  'stage_name' => 'replace',
+  'state_heartbeat' => 0.0023009777069092,
+  'thread_id' => '8EF',
+  'chunk_id' => 'wa-apps/site',
+  'stage_current_value' => 0,
+  'stage_status' => 'heartbeat',
+  'timestamp' => 1423485169,
+  'timestamp_float' => 1423485169.5397,
+  'stage_start_time' => 1423485169.5397,
+  'datetime' => 'Mon, 09 Feb 2015 16:32:49 +0400',
+  'stage_value' => 0,
+  'stage_performance' => 0,
+  'resume' => 
+  array (
+    'offset' => 712,
+    'tar_size' => 2050,
+  ),
+  'debug' => 
+  array (
+    'block_performance' => 128,
+    'additional' => NULL,
+  ),
+)
+}------------------------------------------------------------
+2015-02-09T16:32:49+04:0000143	8EF	TRACE	1.65Mb	1.90Mb	replace_heartbeat
+waInstaller::stageReplace
+{------------------------------------------------------------
+array (
+  'source_path' => 'wa-data/protected/wa-installer/8EF/update/wa-apps/site',
+  'target_path' => 'wa-apps/site',
+  'store_prev' => false,
+)
+}------------------------------------------------------------
+2015-02-09T16:32:49+04:0000144	8EF	TRACE	1.65Mb	1.90Mb	replace_heartbeat
+waInstaller::rename replace current version code
+{------------------------------------------------------------
+array (
+  'oldname' => 'wa-data/protected/wa-installer/8EF/update/wa-apps/site',
+  'newname' => 'wa-apps/site',
+)
+}------------------------------------------------------------
+2015-02-09T16:32:49+04:0000145	8EF	TRACE	1.65Mb	1.90Mb	replace_heartbeat
+waInstaller::stageReplace replace current version code
+{------------------------------------------------------------
+array (
+  'target_path' => 'wa-apps/site',
+)
+}------------------------------------------------------------
+2015-02-09T16:32:49+04:0000146	8EF	TRACE	1.66Mb	1.90Mb	replace_complete
+waInstaller::setState
+{------------------------------------------------------------
+array (
+  'start_time' => 1423485167,
+  'start_time_float' => 1423485167.3211,
+  'elapsed_time' => 0,
+  'stage' => 4,
+  'stage_name' => 'replace',
+  'state_heartbeat' => 0.0029060840606689,
+  'thread_id' => '8EF',
+  'chunk_id' => 'wa-apps/site',
+  'stage_current_value' => 0,
+  'stage_status' => 'complete',
+  'timestamp' => 1423485169,
+  'timestamp_float' => 1423485169.5426,
+  'stage_start_time' => 1423485169.5397,
+  'datetime' => 'Mon, 09 Feb 2015 16:32:49 +0400',
+  'stage_value' => 0,
+  'stage_performance' => 0,
+  'resume' => 
+  array (
+    'offset' => 712,
+    'tar_size' => 2050,
+  ),
+  'debug' => 
+  array (
+    'block_performance' => 128,
+    'additional' => NULL,
+  ),
+)
+}------------------------------------------------------------
+2015-02-09T16:32:49+04:0000147	8EF	TRACE	1.66Mb	1.91Mb	replace_heartbeat
+waInstaller::setState
+{------------------------------------------------------------
+array (
+  'start_time' => 1423485167,
+  'start_time_float' => 1423485167.3211,
+  'elapsed_time' => 0,
+  'stage' => 4,
+  'stage_name' => 'replace',
+  'state_heartbeat' => 0.0022921562194824,
+  'thread_id' => '8EF',
+  'chunk_id' => 'wa-apps/contacts',
+  'stage_current_value' => 0,
+  'stage_status' => 'heartbeat',
+  'timestamp' => 1423485169,
+  'timestamp_float' => 1423485169.5449,
+  'stage_start_time' => 1423485169.5449,
+  'datetime' => 'Mon, 09 Feb 2015 16:32:49 +0400',
+  'stage_value' => 0,
+  'stage_performance' => 0,
+  'resume' => 
+  array (
+    'offset' => 712,
+    'tar_size' => 2050,
+  ),
+  'debug' => 
+  array (
+    'block_performance' => 128,
+    'additional' => NULL,
+  ),
+)
+}------------------------------------------------------------
+2015-02-09T16:32:49+04:0000148	8EF	TRACE	1.66Mb	1.92Mb	replace_heartbeat
+waInstaller::stageReplace
+{------------------------------------------------------------
+array (
+  'source_path' => 'wa-data/protected/wa-installer/8EF/update/wa-apps/contacts',
+  'target_path' => 'wa-apps/contacts',
+  'store_prev' => false,
+)
+}------------------------------------------------------------
+2015-02-09T16:32:49+04:0000149	8EF	TRACE	1.66Mb	1.92Mb	replace_heartbeat
+waInstaller::rename replace current version code
+{------------------------------------------------------------
+array (
+  'oldname' => 'wa-data/protected/wa-installer/8EF/update/wa-apps/contacts',
+  'newname' => 'wa-apps/contacts',
+)
+}------------------------------------------------------------
+2015-02-09T16:32:49+04:0000150	8EF	TRACE	1.66Mb	1.92Mb	replace_heartbeat
+waInstaller::stageReplace replace current version code
+{------------------------------------------------------------
+array (
+  'target_path' => 'wa-apps/contacts',
+)
+}------------------------------------------------------------
+2015-02-09T16:32:49+04:0000151	8EF	TRACE	1.66Mb	1.92Mb	replace_complete
+waInstaller::setState
+{------------------------------------------------------------
+array (
+  'start_time' => 1423485167,
+  'start_time_float' => 1423485167.3211,
+  'elapsed_time' => 0,
+  'stage' => 4,
+  'stage_name' => 'replace',
+  'state_heartbeat' => 0.0029079914093018,
+  'thread_id' => '8EF',
+  'chunk_id' => 'wa-apps/contacts',
+  'stage_current_value' => 0,
+  'stage_status' => 'complete',
+  'timestamp' => 1423485169,
+  'timestamp_float' => 1423485169.5478,
+  'stage_start_time' => 1423485169.5449,
+  'datetime' => 'Mon, 09 Feb 2015 16:32:49 +0400',
+  'stage_value' => 0,
+  'stage_performance' => 0,
+  'resume' => 
+  array (
+    'offset' => 712,
+    'tar_size' => 2050,
+  ),
+  'debug' => 
+  array (
+    'block_performance' => 128,
+    'additional' => NULL,
+  ),
+)
+}------------------------------------------------------------
+2015-02-09T16:32:49+04:0000152	8EF	TRACE	1.66Mb	1.92Mb	replace_heartbeat
+waInstaller::setState
+{------------------------------------------------------------
+array (
+  'start_time' => 1423485167,
+  'start_time_float' => 1423485167.3211,
+  'elapsed_time' => 0,
+  'stage' => 4,
+  'stage_name' => 'replace',
+  'state_heartbeat' => 0.03601598739624,
+  'thread_id' => '8EF',
+  'chunk_id' => 'wa-apps/installer',
+  'stage_current_value' => 0,
+  'stage_status' => 'heartbeat',
+  'timestamp' => 1423485169,
+  'timestamp_float' => 1423485169.5838,
+  'stage_start_time' => 1423485169.5838,
+  'datetime' => 'Mon, 09 Feb 2015 16:32:49 +0400',
+  'stage_value' => 0,
+  'stage_performance' => 0,
+  'resume' => 
+  array (
+    'offset' => 712,
+    'tar_size' => 2050,
+  ),
+  'debug' => 
+  array (
+    'block_performance' => 128,
+    'additional' => NULL,
+  ),
+)
+}------------------------------------------------------------
+2015-02-09T16:32:49+04:0000153	8EF	TRACE	1.66Mb	1.93Mb	replace_heartbeat
+waInstaller::stageReplace
+{------------------------------------------------------------
+array (
+  'source_path' => 'wa-data/protected/wa-installer/8EF/update/wa-apps/installer',
+  'target_path' => 'wa-apps/installer',
+  'store_prev' => false,
+)
+}------------------------------------------------------------
+2015-02-09T16:32:49+04:0000154	8EF	TRACE	1.66Mb	1.93Mb	replace_heartbeat
+waInstaller::rename replace current version code
+{------------------------------------------------------------
+array (
+  'oldname' => 'wa-data/protected/wa-installer/8EF/update/wa-apps/installer',
+  'newname' => 'wa-apps/installer',
+)
+}------------------------------------------------------------
+2015-02-09T16:32:49+04:0000155	8EF	TRACE	1.66Mb	1.93Mb	replace_heartbeat
+waInstaller::stageReplace replace current version code
+{------------------------------------------------------------
+array (
+  'target_path' => 'wa-apps/installer',
+)
+}------------------------------------------------------------
+2015-02-09T16:32:49+04:0000156	8EF	TRACE	1.66Mb	1.93Mb	replace_complete
+waInstaller::setState
+{------------------------------------------------------------
+array (
+  'start_time' => 1423485167,
+  'start_time_float' => 1423485167.3211,
+  'elapsed_time' => 0,
+  'stage' => 4,
+  'stage_name' => 'replace',
+  'state_heartbeat' => 0.030760049819946,
+  'thread_id' => '8EF',
+  'chunk_id' => 'wa-apps/installer',
+  'stage_current_value' => 0,
+  'stage_status' => 'complete',
+  'timestamp' => 1423485169,
+  'timestamp_float' => 1423485169.6145,
+  'stage_start_time' => 1423485169.5838,
+  'datetime' => 'Mon, 09 Feb 2015 16:32:49 +0400',
+  'stage_value' => 0,
+  'stage_performance' => 0,
+  'resume' => 
+  array (
+    'offset' => 712,
+    'tar_size' => 2050,
+  ),
+  'debug' => 
+  array (
+    'block_performance' => 128,
+    'additional' => NULL,
+  ),
+)
+}------------------------------------------------------------
+2015-02-09T16:32:49+04:0000157	8EF	TRACE	1.66Mb	1.94Mb	cleanup_heartbeat
+waInstaller::setState
+{------------------------------------------------------------
+array (
+  'start_time' => 1423485167,
+  'start_time_float' => 1423485167.3211,
+  'elapsed_time' => 0,
+  'stage' => 5,
+  'stage_name' => 'cleanup',
+  'state_heartbeat' => 0.0024662017822266,
+  'thread_id' => '8EF',
+  'chunk_id' => 'wa-content',
+  'stage_current_value' => 0,
+  'stage_status' => 'heartbeat',
+  'timestamp' => 1423485169,
+  'timestamp_float' => 1423485169.617,
+  'stage_start_time' => 1423485169.617,
+  'datetime' => 'Mon, 09 Feb 2015 16:32:49 +0400',
+  'stage_value' => 0,
+  'stage_performance' => 0,
+  'resume' => 
+  array (
+    'offset' => 712,
+    'tar_size' => 2050,
+  ),
+  'debug' => 
+  array (
+    'block_performance' => 128,
+    'additional' => NULL,
+  ),
+)
+}------------------------------------------------------------
+2015-02-09T16:32:49+04:0000158	8EF	TRACE	1.66Mb	1.94Mb	cleanup_complete
+waInstaller::setState
+{------------------------------------------------------------
+array (
+  'start_time' => 1423485167,
+  'start_time_float' => 1423485167.3211,
+  'elapsed_time' => 0,
+  'stage' => 5,
+  'stage_name' => 'cleanup',
+  'state_heartbeat' => 0.029403209686279,
+  'thread_id' => '8EF',
+  'chunk_id' => 'wa-content',
+  'stage_current_value' => 0,
+  'stage_status' => 'complete',
+  'timestamp' => 1423485169,
+  'timestamp_float' => 1423485169.6464,
+  'stage_start_time' => 1423485169.617,
+  'datetime' => 'Mon, 09 Feb 2015 16:32:49 +0400',
+  'stage_value' => 0,
+  'stage_performance' => 0,
+  'resume' => 
+  array (
+    'offset' => 712,
+    'tar_size' => 2050,
+  ),
+  'debug' => 
+  array (
+    'block_performance' => 128,
+    'additional' => NULL,
+  ),
+)
+}------------------------------------------------------------
+2015-02-09T16:32:49+04:0000159	8EF	TRACE	1.66Mb	1.95Mb	cleanup_heartbeat
+waInstaller::setState
+{------------------------------------------------------------
+array (
+  'start_time' => 1423485167,
+  'start_time_float' => 1423485167.3211,
+  'elapsed_time' => 0,
+  'stage' => 5,
+  'stage_name' => 'cleanup',
+  'state_heartbeat' => 0.0032060146331787,
+  'thread_id' => '8EF',
+  'chunk_id' => 'wa-system',
+  'stage_current_value' => 0,
+  'stage_status' => 'heartbeat',
+  'timestamp' => 1423485169,
+  'timestamp_float' => 1423485169.6496,
+  'stage_start_time' => 1423485169.6496,
+  'datetime' => 'Mon, 09 Feb 2015 16:32:49 +0400',
+  'stage_value' => 0,
+  'stage_performance' => 0,
+  'resume' => 
+  array (
+    'offset' => 712,
+    'tar_size' => 2050,
+  ),
+  'debug' => 
+  array (
+    'block_performance' => 128,
+    'additional' => NULL,
+  ),
+)
+}------------------------------------------------------------
+2015-02-09T16:32:49+04:0000160	8EF	TRACE	1.66Mb	1.96Mb	cleanup_complete
+waInstaller::setState
+{------------------------------------------------------------
+array (
+  'start_time' => 1423485167,
+  'start_time_float' => 1423485167.3211,
+  'elapsed_time' => 0,
+  'stage' => 5,
+  'stage_name' => 'cleanup',
+  'state_heartbeat' => 0.0028738975524902,
+  'thread_id' => '8EF',
+  'chunk_id' => 'wa-system',
+  'stage_current_value' => 0,
+  'stage_status' => 'complete',
+  'timestamp' => 1423485169,
+  'timestamp_float' => 1423485169.6524,
+  'stage_start_time' => 1423485169.6496,
+  'datetime' => 'Mon, 09 Feb 2015 16:32:49 +0400',
+  'stage_value' => 0,
+  'stage_performance' => 0,
+  'resume' => 
+  array (
+    'offset' => 712,
+    'tar_size' => 2050,
+  ),
+  'debug' => 
+  array (
+    'block_performance' => 128,
+    'additional' => NULL,
+  ),
+)
+}------------------------------------------------------------
+2015-02-09T16:32:49+04:0000161	8EF	TRACE	1.67Mb	1.96Mb	cleanup_heartbeat
+waInstaller::setState
+{------------------------------------------------------------
+array (
+  'start_time' => 1423485167,
+  'start_time_float' => 1423485167.3211,
+  'elapsed_time' => 0,
+  'stage' => 5,
+  'stage_name' => 'cleanup',
+  'state_heartbeat' => 0.0026750564575195,
+  'thread_id' => '8EF',
+  'chunk_id' => 'wa-apps/stickies',
+  'stage_current_value' => 0,
+  'stage_status' => 'heartbeat',
+  'timestamp' => 1423485169,
+  'timestamp_float' => 1423485169.6551,
+  'stage_start_time' => 1423485169.6551,
+  'datetime' => 'Mon, 09 Feb 2015 16:32:49 +0400',
+  'stage_value' => 0,
+  'stage_performance' => 0,
+  'resume' => 
+  array (
+    'offset' => 712,
+    'tar_size' => 2050,
+  ),
+  'debug' => 
+  array (
+    'block_performance' => 128,
+    'additional' => NULL,
+  ),
+)
+}------------------------------------------------------------
+2015-02-09T16:32:49+04:0000162	8EF	TRACE	1.67Mb	1.97Mb	cleanup_complete
+waInstaller::setState
+{------------------------------------------------------------
+array (
+  'start_time' => 1423485167,
+  'start_time_float' => 1423485167.3211,
+  'elapsed_time' => 0,
+  'stage' => 5,
+  'stage_name' => 'cleanup',
+  'state_heartbeat' => 0.0027580261230469,
+  'thread_id' => '8EF',
+  'chunk_id' => 'wa-apps/stickies',
+  'stage_current_value' => 0,
+  'stage_status' => 'complete',
+  'timestamp' => 1423485169,
+  'timestamp_float' => 1423485169.6578,
+  'stage_start_time' => 1423485169.6551,
+  'datetime' => 'Mon, 09 Feb 2015 16:32:49 +0400',
+  'stage_value' => 0,
+  'stage_performance' => 0,
+  'resume' => 
+  array (
+    'offset' => 712,
+    'tar_size' => 2050,
+  ),
+  'debug' => 
+  array (
+    'block_performance' => 128,
+    'additional' => NULL,
+  ),
+)
+}------------------------------------------------------------
+2015-02-09T16:32:49+04:0000163	8EF	TRACE	1.67Mb	1.98Mb	cleanup_heartbeat
+waInstaller::setState
+{------------------------------------------------------------
+array (
+  'start_time' => 1423485167,
+  'start_time_float' => 1423485167.3211,
+  'elapsed_time' => 0,
+  'stage' => 5,
+  'stage_name' => 'cleanup',
+  'state_heartbeat' => 0.0027358531951904,
+  'thread_id' => '8EF',
+  'chunk_id' => 'wa-apps/site',
+  'stage_current_value' => 0,
+  'stage_status' => 'heartbeat',
+  'timestamp' => 1423485169,
+  'timestamp_float' => 1423485169.6605,
+  'stage_start_time' => 1423485169.6605,
+  'datetime' => 'Mon, 09 Feb 2015 16:32:49 +0400',
+  'stage_value' => 0,
+  'stage_performance' => 0,
+  'resume' => 
+  array (
+    'offset' => 712,
+    'tar_size' => 2050,
+  ),
+  'debug' => 
+  array (
+    'block_performance' => 128,
+    'additional' => NULL,
+  ),
+)
+}------------------------------------------------------------
+2015-02-09T16:32:49+04:0000164	8EF	TRACE	1.67Mb	1.99Mb	cleanup_complete
+waInstaller::setState
+{------------------------------------------------------------
+array (
+  'start_time' => 1423485167,
+  'start_time_float' => 1423485167.3211,
+  'elapsed_time' => 0,
+  'stage' => 5,
+  'stage_name' => 'cleanup',
+  'state_heartbeat' => 0.0028109550476074,
+  'thread_id' => '8EF',
+  'chunk_id' => 'wa-apps/site',
+  'stage_current_value' => 0,
+  'stage_status' => 'complete',
+  'timestamp' => 1423485169,
+  'timestamp_float' => 1423485169.6634,
+  'stage_start_time' => 1423485169.6605,
+  'datetime' => 'Mon, 09 Feb 2015 16:32:49 +0400',
+  'stage_value' => 0,
+  'stage_performance' => 0,
+  'resume' => 
+  array (
+    'offset' => 712,
+    'tar_size' => 2050,
+  ),
+  'debug' => 
+  array (
+    'block_performance' => 128,
+    'additional' => NULL,
+  ),
+)
+}------------------------------------------------------------
+2015-02-09T16:32:49+04:0000165	8EF	TRACE	1.67Mb	1.99Mb	cleanup_heartbeat
+waInstaller::setState
+{------------------------------------------------------------
+array (
+  'start_time' => 1423485167,
+  'start_time_float' => 1423485167.3211,
+  'elapsed_time' => 0,
+  'stage' => 5,
+  'stage_name' => 'cleanup',
+  'state_heartbeat' => 0.0027549266815186,
+  'thread_id' => '8EF',
+  'chunk_id' => 'wa-apps/contacts',
+  'stage_current_value' => 0,
+  'stage_status' => 'heartbeat',
+  'timestamp' => 1423485169,
+  'timestamp_float' => 1423485169.6661,
+  'stage_start_time' => 1423485169.6661,
+  'datetime' => 'Mon, 09 Feb 2015 16:32:49 +0400',
+  'stage_value' => 0,
+  'stage_performance' => 0,
+  'resume' => 
+  array (
+    'offset' => 712,
+    'tar_size' => 2050,
+  ),
+  'debug' => 
+  array (
+    'block_performance' => 128,
+    'additional' => NULL,
+  ),
+)
+}------------------------------------------------------------
+2015-02-09T16:32:49+04:0000166	8EF	TRACE	1.67Mb	2.00Mb	cleanup_complete
+waInstaller::setState
+{------------------------------------------------------------
+array (
+  'start_time' => 1423485167,
+  'start_time_float' => 1423485167.3211,
+  'elapsed_time' => 0,
+  'stage' => 5,
+  'stage_name' => 'cleanup',
+  'state_heartbeat' => 0.0028679370880127,
+  'thread_id' => '8EF',
+  'chunk_id' => 'wa-apps/contacts',
+  'stage_current_value' => 0,
+  'stage_status' => 'complete',
+  'timestamp' => 1423485169,
+  'timestamp_float' => 1423485169.6689,
+  'stage_start_time' => 1423485169.6661,
+  'datetime' => 'Mon, 09 Feb 2015 16:32:49 +0400',
+  'stage_value' => 0,
+  'stage_performance' => 0,
+  'resume' => 
+  array (
+    'offset' => 712,
+    'tar_size' => 2050,
+  ),
+  'debug' => 
+  array (
+    'block_performance' => 128,
+    'additional' => NULL,
+  ),
+)
+}------------------------------------------------------------
+2015-02-09T16:32:49+04:0000167	8EF	TRACE	1.67Mb	2.00Mb	cleanup_heartbeat
+waInstaller::setState
+{------------------------------------------------------------
+array (
+  'start_time' => 1423485167,
+  'start_time_float' => 1423485167.3211,
+  'elapsed_time' => 0,
+  'stage' => 5,
+  'stage_name' => 'cleanup',
+  'state_heartbeat' => 0.0029740333557129,
+  'thread_id' => '8EF',
+  'chunk_id' => 'wa-apps/installer',
+  'stage_current_value' => 0,
+  'stage_status' => 'heartbeat',
+  'timestamp' => 1423485169,
+  'timestamp_float' => 1423485169.6719,
+  'stage_start_time' => 1423485169.6719,
+  'datetime' => 'Mon, 09 Feb 2015 16:32:49 +0400',
+  'stage_value' => 0,
+  'stage_performance' => 0,
+  'resume' => 
+  array (
+    'offset' => 712,
+    'tar_size' => 2050,
+  ),
+  'debug' => 
+  array (
+    'block_performance' => 128,
+    'additional' => NULL,
+  ),
+)
+}------------------------------------------------------------
+2015-02-09T16:32:49+04:0000168	8EF	TRACE	1.67Mb	2.01Mb	cleanup_complete
+waInstaller::setState
+{------------------------------------------------------------
+array (
+  'start_time' => 1423485167,
+  'start_time_float' => 1423485167.3211,
+  'elapsed_time' => 0,
+  'stage' => 5,
+  'stage_name' => 'cleanup',
+  'state_heartbeat' => 0.0030429363250732,
+  'thread_id' => '8EF',
+  'chunk_id' => 'wa-apps/installer',
+  'stage_current_value' => 0,
+  'stage_status' => 'complete',
+  'timestamp' => 1423485169,
+  'timestamp_float' => 1423485169.6749,
+  'stage_start_time' => 1423485169.6719,
+  'datetime' => 'Mon, 09 Feb 2015 16:32:49 +0400',
+  'stage_value' => 0,
+  'stage_performance' => 0,
+  'resume' => 
+  array (
+    'offset' => 712,
+    'tar_size' => 2050,
+  ),
+  'debug' => 
+  array (
+    'block_performance' => 128,
+    'additional' => NULL,
+  ),
+)
+}------------------------------------------------------------
+2015-02-09T16:32:49+04:0000169	8EF	TRACE	1.67Mb	2.01Mb	update_heartbeat
+waInstaller::setState
+{------------------------------------------------------------
+array (
+  'start_time' => 1423485167,
+  'start_time_float' => 1423485167.3211,
+  'elapsed_time' => 0,
+  'stage' => 6,
+  'stage_name' => 'update',
+  'state_heartbeat' => 0.0029621124267578,
+  'thread_id' => '8EF',
+  'chunk_id' => 'wa-content',
+  'stage_current_value' => 0,
+  'stage_status' => 'heartbeat',
+  'timestamp' => 1423485169,
+  'timestamp_float' => 1423485169.6779,
+  'stage_start_time' => 1423485169.6779,
+  'datetime' => 'Mon, 09 Feb 2015 16:32:49 +0400',
+  'stage_value' => 0,
+  'stage_performance' => 0,
+  'resume' => 
+  array (
+    'offset' => 712,
+    'tar_size' => 2050,
+  ),
+  'debug' => 
+  array (
+    'block_performance' => 128,
+    'additional' => NULL,
+  ),
+)
+}------------------------------------------------------------
+2015-02-09T16:32:49+04:0000170	8EF	TRACE	1.67Mb	2.02Mb	update_complete
+waInstaller::setState
+{------------------------------------------------------------
+array (
+  'start_time' => 1423485167,
+  'start_time_float' => 1423485167.3211,
+  'elapsed_time' => 0,
+  'stage' => 6,
+  'stage_name' => 'update',
+  'state_heartbeat' => 0.0029230117797852,
+  'thread_id' => '8EF',
+  'chunk_id' => 'wa-content',
+  'stage_current_value' => 0,
+  'stage_status' => 'complete',
+  'timestamp' => 1423485169,
+  'timestamp_float' => 1423485169.6808,
+  'stage_start_time' => 1423485169.6779,
+  'datetime' => 'Mon, 09 Feb 2015 16:32:49 +0400',
+  'stage_value' => 0,
+  'stage_performance' => 0,
+  'resume' => 
+  array (
+    'offset' => 712,
+    'tar_size' => 2050,
+  ),
+  'debug' => 
+  array (
+    'block_performance' => 128,
+    'additional' => NULL,
+  ),
+)
+}------------------------------------------------------------
+2015-02-09T16:32:49+04:0000171	8EF	TRACE	1.68Mb	2.03Mb	update_heartbeat
+waInstaller::setState
+{------------------------------------------------------------
+array (
+  'start_time' => 1423485167,
+  'start_time_float' => 1423485167.3211,
+  'elapsed_time' => 0,
+  'stage' => 6,
+  'stage_name' => 'update',
+  'state_heartbeat' => 0.0030128955841064,
+  'thread_id' => '8EF',
+  'chunk_id' => 'wa-system',
+  'stage_current_value' => 0,
+  'stage_status' => 'heartbeat',
+  'timestamp' => 1423485169,
+  'timestamp_float' => 1423485169.6838,
+  'stage_start_time' => 1423485169.6838,
+  'datetime' => 'Mon, 09 Feb 2015 16:32:49 +0400',
+  'stage_value' => 0,
+  'stage_performance' => 0,
+  'resume' => 
+  array (
+    'offset' => 712,
+    'tar_size' => 2050,
+  ),
+  'debug' => 
+  array (
+    'block_performance' => 128,
+    'additional' => NULL,
+  ),
+)
+}------------------------------------------------------------
+2015-02-09T16:32:49+04:0000172	8EF	TRACE	1.68Mb	2.03Mb	update_complete
+waInstaller::setState
+{------------------------------------------------------------
+array (
+  'start_time' => 1423485167,
+  'start_time_float' => 1423485167.3211,
+  'elapsed_time' => 0,
+  'stage' => 6,
+  'stage_name' => 'update',
+  'state_heartbeat' => 0.0030350685119629,
+  'thread_id' => '8EF',
+  'chunk_id' => 'wa-system',
+  'stage_current_value' => 0,
+  'stage_status' => 'complete',
+  'timestamp' => 1423485169,
+  'timestamp_float' => 1423485169.6868,
+  'stage_start_time' => 1423485169.6838,
+  'datetime' => 'Mon, 09 Feb 2015 16:32:49 +0400',
+  'stage_value' => 0,
+  'stage_performance' => 0,
+  'resume' => 
+  array (
+    'offset' => 712,
+    'tar_size' => 2050,
+  ),
+  'debug' => 
+  array (
+    'block_performance' => 128,
+    'additional' => NULL,
+  ),
+)
+}------------------------------------------------------------
+2015-02-09T16:32:49+04:0000173	8EF	TRACE	1.68Mb	2.04Mb	update_heartbeat
+waInstaller::setState
+{------------------------------------------------------------
+array (
+  'start_time' => 1423485167,
+  'start_time_float' => 1423485167.3211,
+  'elapsed_time' => 0,
+  'stage' => 6,
+  'stage_name' => 'update',
+  'state_heartbeat' => 0.0029380321502686,
+  'thread_id' => '8EF',
+  'chunk_id' => 'wa-apps/stickies',
+  'stage_current_value' => 0,
+  'stage_status' => 'heartbeat',
+  'timestamp' => 1423485169,
+  'timestamp_float' => 1423485169.6897,
+  'stage_start_time' => 1423485169.6897,
+  'datetime' => 'Mon, 09 Feb 2015 16:32:49 +0400',
+  'stage_value' => 0,
+  'stage_performance' => 0,
+  'resume' => 
+  array (
+    'offset' => 712,
+    'tar_size' => 2050,
+  ),
+  'debug' => 
+  array (
+    'block_performance' => 128,
+    'additional' => NULL,
+  ),
+)
+}------------------------------------------------------------
+2015-02-09T16:32:49+04:0000174	8EF	TRACE	1.68Mb	2.05Mb	update_complete
+waInstaller::setState
+{------------------------------------------------------------
+array (
+  'start_time' => 1423485167,
+  'start_time_float' => 1423485167.3211,
+  'elapsed_time' => 0,
+  'stage' => 6,
+  'stage_name' => 'update',
+  'state_heartbeat' => 0.0029668807983398,
+  'thread_id' => '8EF',
+  'chunk_id' => 'wa-apps/stickies',
+  'stage_current_value' => 0,
+  'stage_status' => 'complete',
+  'timestamp' => 1423485169,
+  'timestamp_float' => 1423485169.6927,
+  'stage_start_time' => 1423485169.6897,
+  'datetime' => 'Mon, 09 Feb 2015 16:32:49 +0400',
+  'stage_value' => 0,
+  'stage_performance' => 0,
+  'resume' => 
+  array (
+    'offset' => 712,
+    'tar_size' => 2050,
+  ),
+  'debug' => 
+  array (
+    'block_performance' => 128,
+    'additional' => NULL,
+  ),
+)
+}------------------------------------------------------------
+2015-02-09T16:32:49+04:0000175	8EF	TRACE	1.68Mb	2.05Mb	update_heartbeat
+waInstaller::setState
+{------------------------------------------------------------
+array (
+  'start_time' => 1423485167,
+  'start_time_float' => 1423485167.3211,
+  'elapsed_time' => 0,
+  'stage' => 6,
+  'stage_name' => 'update',
+  'state_heartbeat' => 0.0031380653381348,
+  'thread_id' => '8EF',
+  'chunk_id' => 'wa-apps/site',
+  'stage_current_value' => 0,
+  'stage_status' => 'heartbeat',
+  'timestamp' => 1423485169,
+  'timestamp_float' => 1423485169.6958,
+  'stage_start_time' => 1423485169.6958,
+  'datetime' => 'Mon, 09 Feb 2015 16:32:49 +0400',
+  'stage_value' => 0,
+  'stage_performance' => 0,
+  'resume' => 
+  array (
+    'offset' => 712,
+    'tar_size' => 2050,
+  ),
+  'debug' => 
+  array (
+    'block_performance' => 128,
+    'additional' => NULL,
+  ),
+)
+}------------------------------------------------------------
+2015-02-09T16:32:49+04:0000176	8EF	TRACE	1.68Mb	2.06Mb	update_complete
+waInstaller::setState
+{------------------------------------------------------------
+array (
+  'start_time' => 1423485167,
+  'start_time_float' => 1423485167.3211,
+  'elapsed_time' => 0,
+  'stage' => 6,
+  'stage_name' => 'update',
+  'state_heartbeat' => 0.0030989646911621,
+  'thread_id' => '8EF',
+  'chunk_id' => 'wa-apps/site',
+  'stage_current_value' => 0,
+  'stage_status' => 'complete',
+  'timestamp' => 1423485169,
+  'timestamp_float' => 1423485169.6989,
+  'stage_start_time' => 1423485169.6958,
+  'datetime' => 'Mon, 09 Feb 2015 16:32:49 +0400',
+  'stage_value' => 0,
+  'stage_performance' => 0,
+  'resume' => 
+  array (
+    'offset' => 712,
+    'tar_size' => 2050,
+  ),
+  'debug' => 
+  array (
+    'block_performance' => 128,
+    'additional' => NULL,
+  ),
+)
+}------------------------------------------------------------
+2015-02-09T16:32:49+04:0000177	8EF	TRACE	1.68Mb	2.06Mb	update_heartbeat
+waInstaller::setState
+{------------------------------------------------------------
+array (
+  'start_time' => 1423485167,
+  'start_time_float' => 1423485167.3211,
+  'elapsed_time' => 0,
+  'stage' => 6,
+  'stage_name' => 'update',
+  'state_heartbeat' => 0.00319504737854,
+  'thread_id' => '8EF',
+  'chunk_id' => 'wa-apps/contacts',
+  'stage_current_value' => 0,
+  'stage_status' => 'heartbeat',
+  'timestamp' => 1423485169,
+  'timestamp_float' => 1423485169.7021,
+  'stage_start_time' => 1423485169.7021,
+  'datetime' => 'Mon, 09 Feb 2015 16:32:49 +0400',
+  'stage_value' => 0,
+  'stage_performance' => 0,
+  'resume' => 
+  array (
+    'offset' => 712,
+    'tar_size' => 2050,
+  ),
+  'debug' => 
+  array (
+    'block_performance' => 128,
+    'additional' => NULL,
+  ),
+)
+}------------------------------------------------------------
+2015-02-09T16:32:49+04:0000178	8EF	TRACE	1.68Mb	2.07Mb	update_complete
+waInstaller::setState
+{------------------------------------------------------------
+array (
+  'start_time' => 1423485167,
+  'start_time_float' => 1423485167.3211,
+  'elapsed_time' => 0,
+  'stage' => 6,
+  'stage_name' => 'update',
+  'state_heartbeat' => 0.003242015838623,
+  'thread_id' => '8EF',
+  'chunk_id' => 'wa-apps/contacts',
+  'stage_current_value' => 0,
+  'stage_status' => 'complete',
+  'timestamp' => 1423485169,
+  'timestamp_float' => 1423485169.7053,
+  'stage_start_time' => 1423485169.7021,
+  'datetime' => 'Mon, 09 Feb 2015 16:32:49 +0400',
+  'stage_value' => 0,
+  'stage_performance' => 0,
+  'resume' => 
+  array (
+    'offset' => 712,
+    'tar_size' => 2050,
+  ),
+  'debug' => 
+  array (
+    'block_performance' => 128,
+    'additional' => NULL,
+  ),
+)
+}------------------------------------------------------------
+2015-02-09T16:32:49+04:0000179	8EF	TRACE	1.68Mb	2.07Mb	update_heartbeat
+waInstaller::setState
+{------------------------------------------------------------
+array (
+  'start_time' => 1423485167,
+  'start_time_float' => 1423485167.3211,
+  'elapsed_time' => 0,
+  'stage' => 6,
+  'stage_name' => 'update',
+  'state_heartbeat' => 0.0033669471740723,
+  'thread_id' => '8EF',
+  'chunk_id' => 'wa-apps/installer',
+  'stage_current_value' => 0,
+  'stage_status' => 'heartbeat',
+  'timestamp' => 1423485169,
+  'timestamp_float' => 1423485169.7086,
+  'stage_start_time' => 1423485169.7086,
+  'datetime' => 'Mon, 09 Feb 2015 16:32:49 +0400',
+  'stage_value' => 0,
+  'stage_performance' => 0,
+  'resume' => 
+  array (
+    'offset' => 712,
+    'tar_size' => 2050,
+  ),
+  'debug' => 
+  array (
+    'block_performance' => 128,
+    'additional' => NULL,
+  ),
+)
+}------------------------------------------------------------
+2015-02-09T16:32:49+04:0000180	8EF	TRACE	1.68Mb	2.08Mb	update_complete
+waInstaller::setState
+{------------------------------------------------------------
+array (
+  'start_time' => 1423485167,
+  'start_time_float' => 1423485167.3211,
+  'elapsed_time' => 0,
+  'stage' => 6,
+  'stage_name' => 'update',
+  'state_heartbeat' => 0.003554105758667,
+  'thread_id' => '8EF',
+  'chunk_id' => 'wa-apps/installer',
+  'stage_current_value' => 0,
+  'stage_status' => 'complete',
+  'timestamp' => 1423485169,
+  'timestamp_float' => 1423485169.7122,
+  'stage_start_time' => 1423485169.7086,
+  'datetime' => 'Mon, 09 Feb 2015 16:32:49 +0400',
+  'stage_value' => 0,
+  'stage_performance' => 0,
+  'resume' => 
+  array (
+    'offset' => 712,
+    'tar_size' => 2050,
+  ),
+  'debug' => 
+  array (
+    'block_performance' => 128,
+    'additional' => NULL,
+  ),
+)
+}------------------------------------------------------------
+2015-02-09T16:32:49+04:0000181	8EF	DEBUG	1.68Mb	2.09Mb	update_complete
+waInstaller::update
+{------------------------------------------------------------
+array (
+  'update_list' => 
+  array (
+    0 => 
+    array (
+      'source' => '/var/www/admin/data/www/pchelkinazabava.ru/wa-installer/../wa-sources/wa-content.tar.gz',
+      'target' => 'wa-content/',
+      'slug' => 'wa-content',
+      'extract_path' => 'wa-data/protected/wa-installer/8EF/update/wa-content/',
+      'pass' => false,
+      'skipped' => false,
+      'dependent' => false,
+      'current_size' => 0,
+      'archive' => '/var/www/admin/data/www/pchelkinazabava.ru/wa-installer/../wa-sources/wa-content.tar.gz',
+      'backup' => false,
+    ),
+    1 => 
+    array (
+      'source' => '/var/www/admin/data/www/pchelkinazabava.ru/wa-installer/../wa-sources/wa-system.tar.gz',
+      'target' => 'wa-system/',
+      'slug' => 'wa-system',
+      'extract_path' => 'wa-data/protected/wa-installer/8EF/update/wa-system/',
+      'pass' => false,
+      'skipped' => false,
+      'dependent' => false,
+      'current_size' => 0,
+      'archive' => '/var/www/admin/data/www/pchelkinazabava.ru/wa-installer/../wa-sources/wa-system.tar.gz',
+      'backup' => false,
+    ),
+    5 => 
+    array (
+      'source' => '/var/www/admin/data/www/pchelkinazabava.ru/wa-installer/../wa-sources/wa-apps/stickies.tar.gz',
+      'target' => 'wa-apps/stickies/',
+      'slug' => 'wa-apps/stickies',
+      'extract_path' => 'wa-data/protected/wa-installer/8EF/update/wa-apps/stickies/',
+      'pass' => false,
+      'skipped' => false,
+      'dependent' => false,
+      'current_size' => 0,
+      'archive' => '/var/www/admin/data/www/pchelkinazabava.ru/wa-installer/../wa-sources/wa-apps/stickies.tar.gz',
+      'backup' => false,
+    ),
+    4 => 
+    array (
+      'source' => '/var/www/admin/data/www/pchelkinazabava.ru/wa-installer/../wa-sources/wa-apps/site.tar.gz',
+      'target' => 'wa-apps/site/',
+      'slug' => 'wa-apps/site',
+      'extract_path' => 'wa-data/protected/wa-installer/8EF/update/wa-apps/site/',
+      'pass' => false,
+      'skipped' => false,
+      'dependent' => false,
+      'current_size' => 0,
+      'archive' => '/var/www/admin/data/www/pchelkinazabava.ru/wa-installer/../wa-sources/wa-apps/site.tar.gz',
+      'backup' => false,
+    ),
+    2 => 
+    array (
+      'source' => '/var/www/admin/data/www/pchelkinazabava.ru/wa-installer/../wa-sources/wa-apps/contacts.tar.gz',
+      'target' => 'wa-apps/contacts/',
+      'slug' => 'wa-apps/contacts',
+      'extract_path' => 'wa-data/protected/wa-installer/8EF/update/wa-apps/contacts/',
+      'pass' => false,
+      'skipped' => false,
+      'dependent' => false,
+      'current_size' => 0,
+      'archive' => '/var/www/admin/data/www/pchelkinazabava.ru/wa-installer/../wa-sources/wa-apps/contacts.tar.gz',
+      'backup' => false,
+    ),
+    3 => 
+    array (
+      'source' => '/var/www/admin/data/www/pchelkinazabava.ru/wa-installer/../wa-sources/wa-apps/installer.tar.gz',
+      'target' => 'wa-apps/installer/',
+      'slug' => 'wa-apps/installer',
+      'extract_path' => 'wa-data/protected/wa-installer/8EF/update/wa-apps/installer/',
+      'pass' => false,
+      'skipped' => false,
+      'dependent' => false,
+      'current_size' => 0,
+      'archive' => '/var/www/admin/data/www/pchelkinazabava.ru/wa-installer/../wa-sources/wa-apps/installer.tar.gz',
+      'backup' => false,
+    ),
+  ),
+)
+}------------------------------------------------------------
+2015-02-09T16:32:49+04:0000182	8EF	TRACE	1.76Mb	2.15Mb	update_complete
+waInstaller::__destruct called
+
+
+
