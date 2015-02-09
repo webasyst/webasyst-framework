@@ -1,0 +1,44 @@
+{if waRequest::isXMLHttpRequest() && waRequest::get('page', 1) == 1}
+<script type="text/javascript" src="{$wa_active_theme_url}lazyloading.js?v{$wa_theme_version}"></script>
+{/if}
+
+<h1 class="category-name">
+    {$category.name|escape}
+</h1>
+
+<!-- plugin hook: 'frontend_category' -->
+{* @event frontend_category.%plugin_id% *}
+{foreach $frontend_category as $_}{$_}{/foreach}
+
+
+<!-- description -->
+{if $category.description}
+    <p>{$category.description}</p>
+{/if}
+
+<!-- subcategories -->
+<!--{if $category.subcategories}-->
+<!--    <ul class="sub-categories">-->
+<!--        {foreach $category.subcategories as $sc}-->
+<!--            <li><a href="{$sc.url}">{$sc.name|escape}</a></li>-->
+<!--        {/foreach}-->
+<!--    </ul>-->
+<!--{/if}-->
+
+<div id="product-list">
+{if !$products}
+    {if !empty($filters)}
+        [`No products were found.`]
+    {else}
+        [`This category does not contain any products.`]
+    {/if}
+{else}
+    {include file='list-thumbs.html' sorting=!empty($category.params.enable_sorting)}
+    {*
+    or use the line below to change product list view
+    {include file='list-table.html' sorting=!empty($category.params.enable_sorting)}
+    *}
+{/if}
+</div>
+
+<div class="clear-both"></div>

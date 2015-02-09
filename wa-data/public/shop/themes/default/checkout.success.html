@@ -1,0 +1,28 @@
+<style>
+    .checkout-header { display: none; }
+</style>
+
+<div class="checkout-result success">
+    <p style="font-size:30px;" align="center">[`Thank you!`]</p>
+    <p>[`We successfully accepted your order, and will contact you asap.`]<br />
+    [`Your order number is `] <strong>{$order.id}</strong>.</p>
+    
+    {if !empty($payment)}
+        <div class="plugin">
+            {$payment}
+        </div>
+    {/if}
+
+    {if !empty($payment_success)}
+        <span class="highlighted">[`Your payment has been successfully accepted. We will process your order and contact you shortly.`]</span>
+    {/if}
+    
+    <p class="back">
+        &larr; <a href="{$wa_app_url}">[`Back to the store`]</a>
+    </p>
+    
+    <!-- plugin hook: 'frontend_checkout' -->
+    {* @event frontend_checkout.%plugin_id% *}
+    {foreach $frontend_checkout as $_}{$_}{/foreach}
+        
+</div>

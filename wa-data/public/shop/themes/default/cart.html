@@ -1,0 +1,131 @@
+<script type="text/javascript" src="{$wa_theme_url}cart.js"></script>
+
+{if !$cart.count}
+
+    <h1>[`Shopping cart`]</h1>
+    <p>[`Your shopping cart is empty.`]</p>
+
+{else}
+
+    <form method="post">
+        
+        <h1>[`Shopping cart`]</h1>
+    
+        <!-- sixteen-column cart layout -->
+        <div class="cart cart-summary-page">
+            
+            {foreach $cart.items as $item}
+            
+                <!-- cart item -->
+                <div class="row" data-id="{$item.id}">                  
+                    <div class="col w1 item-thumb"><a href="{$wa->shop->productUrl($item.product)}" title="{$item.product.name|escape}">{$wa->shop->productImgHtml($item.product, '96x96', ['default' => "`$wa_theme_url`img/dummy48.png"])}</a>&nbsp;</div>
+                    <div class="col w9 item-name">
+                        <a href="{$wa->shop->productUrl($item.product)}" class="bold">{$item.product.name|escape}</a>
+                        {if $item.sku_name && $item.sku_name != $item.product.name}{$item.sku_name|escape}{/if}
+                    </div>
+                    <div class="col w2 item-qty align-center nowrap"><span class="gray">&times;</span> <input type="text" name="quantity[{$item.id}]" value="{$item.quantity}" class="qty{if !empty($item.error)} error{/if}"></div>
+                    <div class="col w1 item-remove"><a class="delete" href="#" title="[`Remove from cart`]"><i class="icon16 remove"></i></a></div>                        
+                    <div class="col w3 align-center item-total nowrap">{shop_currency_html($item.full_price, true)}</div>
+
+                    {if !empty($item.services)}
+                    <!-- services -->
+                    <div class="clear-both">
+                        <div class="col w1 item-thumb">&nbsp;</div>
+                        <div class="col w15 services">
+                            {foreach $item.services as $service_id => $s}
+                            <!-- one option -->
+                            <div {if !empty($s.id)}data-id="{$s.id}"{/if}>
+                            <label>
+                                <input {if !empty($s.id)}checked{/if} type="checkbox" name="services[{$item.id}][]" value="{$service_id}"> {$s.name|escape} {if $s.price && !isset($s.variants)}(<span>+{shop_currency_html($s.price, $s.currency)}</span>){/if}
+                            </label>
+                            {if isset($s.variants)}
+                            <select name="service_variant[{$item.id}][{$service_id}]" {if empty($s.id)}disabled{/if}>
+                                {foreach $s.variants as $variant_id => $v}
+                                <option {if $s.variant_id == $variant_id}selected{/if} value="{$variant_id}">{$v.name|escape} (+{shop_currency($v.price, $s.currency)})</option>
+                                {/foreach}
+                            </select>
+                            {/if}
+                            </div>
+                            {/foreach}
+                        </div>
+                    </div>
+                    {/if}
+
+                    {if $item@index < 3}
+                    {$related = $wa->shop->crossSelling($item.product.id)}
+                    {if $related}
+                    <!-- cross-selling -->
+                    <div class="clear-both" data-id="{$item.id}">
+                        <div class="col w1 item-thumb">&nbsp;</div>
+                        <div class="col w15 small related">
+                            <h4>{sprintf('[`Customers who bought %s also bought`]', $item.product.name|escape)}:</h4>
+                            {include file="list-thumbs-mini.html" products=$related without_form=true}
+                        </div>
+                    </div>
+                    {/if}
+                    {/if}
+                </div>
+                {if !empty($item.error)}<script>alert({json_encode($item.error)});</script>{/if}
+            {/foreach}
+            
+            <!-- discount coupon -->
+            <div class="row no-border" {if !shopDiscounts::isEnabled('coupons') && !$discount}style="display:none"{/if}>
+                <div class="col w10 cart-coupon no-border">
+                    {if shopDiscounts::isEnabled('coupons')}
+                    [`Discount coupon (if you have one)`]:
+                    <input type="text" name="coupon_code" value="{$coupon_code|escape}"> <input type="submit"  value="[`Apply`]">
+                    {/if}
+                </div>
+                <div class="col w2 align-center">[`Discount`]</div>
+                <div class="col w3 align-center cart-discount nowrap">&minus; {shop_currency_html($discount, true)}</div>
+                <div class="col w1"></div>
+            </div>
+
+            {if shopAffiliate::isEnabled() && $affiliate_bonus > 0}
+            <!-- affiliate bonus -->
+            <div class="row no-border">
+                <div class="col w12 no-border">
+                    {sprintf('[`Your current affiliate bonus of %s points allows you to get an additonal discount of up to %s`]', $affiliate_bonus, shop_currency_html(shopAffiliate::convertBonus($affiliate_bonus)))}
+                    {if $use_affiliate}
+                    <a id="cancel-affiliate" href="#">[`Cancel`]</a>
+                    {else}
+                    <input type="submit" name="use_affiliate" value="[`Use bonus`]">
+                    {/if}
+                </div>
+                <div class="col w3 align-center affiliate-discount">&minus; {if $use_affiliate}{shop_currency_html(shopAffiliate::convertBonus($used_affiliate_bonus))}{else}0{/if}</div>
+                <div class="col w1">&nbsp;</div>
+            </div>
+            {/if}
+            
+            <!-- TOTAL -->
+            <div class="row large no-border">
+                <div class="col w12 no-border non-mobile-only">[`Total`]</div>
+                <div class="col w3 cart-total align-center total bold nowrap">{shop_currency_html($cart.total, true)}</div>
+                <div class="col w1">&nbsp;</div>
+            </div>
+            
+            <!-- checkout -->
+            <div class="row no-border">
+                <div class="col w12 no-border non-mobile-only">
+                    <span class="gray">&larr;</span> <a href="{$wa_app_url}" class="gray">[`Back to the store`]</a>
+                    {if shopAffiliate::isEnabled() && !empty($add_affiliate_bonus)}
+                    <em class="float-right affiliate">{sprintf("[`This order will add +%s points to your affiliate bonus.`]", $add_affiliate_bonus)}</em>
+                    {/if}
+                </div>
+                <div class="col w3 align-center bold cart-checkout">
+                    <input name="checkout" type="submit" value="[`Proceed to checkout`] &rarr;" class="button large">
+                </div>
+                <div class="col w1">&nbsp;</div>
+            </div>
+            
+            
+            
+        </div>
+
+        <!-- plugin hook: 'frontend_cart' -->
+        {* @event frontend_cart.%plugin_id% *}
+        {foreach $frontend_cart as $_}{$_}{/foreach}                    
+
+    </form>
+
+{/if}

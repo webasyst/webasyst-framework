@@ -1,0 +1,23 @@
+<li class="shop {if $my_nav_selected == 'orders'}selected{/if}">
+    <a href="{$wa->getUrl('/frontend/myOrders')}">[`My orders`]</a>
+</li>
+
+{if shopAffiliate::isEnabled()}
+    <li class="shop {if $my_nav_selected == 'affiliate'}selected{/if}">
+        <a href="{$wa->getUrl('/frontend/myAffiliate')}">[`Affiliate program`]</a>
+    </li>
+{/if}
+
+{if $my_app == $wa->app()}
+    <li class="shop {if $my_nav_selected == 'profile'}selected{/if}">
+        <a href="{$wa->getUrl('/frontend/myProfile')}">[`My profile`]</a>
+    </li>
+{/if}
+
+<!-- plugin hook: 'frontend_my_nav' -->
+{* @event frontend_my_nav.%plugin_id% *}
+{foreach $frontend_my_nav as $_plugin => $_}
+<li class="shop {if waRequest::param('plugin') == str_replace('-plugin', '', $_plugin)}selected{/if}">{$_}</li>
+{/foreach}
+
+{$wa->globals('isMyAccount', true)}

@@ -1,0 +1,44 @@
+{* one review output *}
+
+{if !empty($ajax_append)}<li data-id={$review.id} data-parent-id="{$review.parent_id}">{/if}
+
+<figure class="review" itemprop="review" itemscope itemtype="http://schema.org/Review">
+    <div class="summary">
+        <h6>
+            {if !$review.parent_id && !empty($review.rate)}
+            <span itemprop="reviewRating" itemscope itemtype="http://schema.org/Rating">
+                {$rate = round($review.rate)}
+                <meta itemprop="worstRating" content = "1">
+                <meta itemprop="ratingValue" content="{$rate}">
+                <meta itemprop="bestRating" content = "5">
+                {$wa->shop->ratingHtml($rate)}
+            </span>
+            {/if}
+            <span itemprop="name">{if $review.title}{$review.title}{/if}</span>
+        </h6>
+        [`By`]
+        {if empty($review.site)}
+            <span class="username" itemprop="author">{$review.author.name}</span>
+        {else}
+            <a href="{$review.site}" class="username" itemprop="author">{$review.author.name}</a>
+        {/if}
+        
+        {if !empty($review.author.is_user)}
+            <span class="staff">{$wa->shop->settings('name')}</span>
+        {/if}
+        
+        <meta itemprop="datePublished" content="{$review.datetime|date_format:'Y-m-d'}">
+        <span class="date" title="{$review.datetime|wa_datetime}">{$review.datetime|wa_datetime:"humandatetime"}</span>
+    </div>
+    {if $review.text}
+        <p itemprop="description">{$review.text}</p>
+    {/if}
+    
+    {if $reply_allowed}
+        <div class="actions">
+            <a href="{if isset($reply_link)}{$reply_link}{else}#{/if}" class="review-reply inline-link"><b><i>[`reply`]</i></b></a>
+        </div>
+    {/if}
+</figure>
+
+{if !empty($ajax_append)}<ul class="reviews-branch"></ul></li>{/if}

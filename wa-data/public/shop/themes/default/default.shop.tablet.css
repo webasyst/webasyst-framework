@@ -1,0 +1,17 @@
+/*
+ * Webasyst Default theme family
+ *
+ * Shop-Script app CSS for tablets
+ * (requires linking base default.css and default.tablet.css files from the Site app)
+ *
+ * @link http://www.webasyst.com/
+ * @author Webasyst LLC
+ * @copyright 2014 Webasyst LLC
+ * @package Webasyst
+ */
+
+ul.thumbs li { width: 250px; }
+
+.product-sidebar { width: 30%; }
+.product-sidebar .cart { padding: 15px; }
+.product-info { margin-right: 30%; }

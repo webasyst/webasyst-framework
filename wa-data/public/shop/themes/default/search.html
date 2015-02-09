@@ -1,0 +1,14 @@
+<h1 class="category-name">
+    {$title}
+</h1>
+
+<!-- plugin hook: 'frontend_search' -->
+{* @event frontend_search.%plugin_id% *}
+{foreach $frontend_search as $_}{$_}{/foreach}
+{if !$products}
+    [`No products were found.`]
+{else}
+    <div id="product-list">
+    {include file='list-thumbs.html'}
+    </div>
+{/if}

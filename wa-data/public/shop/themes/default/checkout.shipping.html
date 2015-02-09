@@ -1,0 +1,207 @@
+<div class="checkout-content" data-step-id="shipping">
+<ul class="checkout-options">
+    {$external_methods = []}
+    {foreach $checkout_shipping_methods as $m}
+        <li class="shipping-{$m.id}">
+            {if empty($m.error)}
+            <div class="rate">
+                <span class="price nowrap">
+                    {if $m.rate !== null}
+                    {shop_currency_html($m.rate, $m.currency)}
+                    {elseif $m.external}
+                    {$external_methods[] = $m.id}
+                    [`Loading...`] <i class="icon16 loading"></i>
+                    {/if}
+                </span>
+                <em class="hint error comment" {if empty($m.comment)}style="display:none"{/if}>
+                    <br>{if !empty($m.comment)}{$m.comment}{/if}
+                </em>
+                <span class="hint" {if empty($m.est_delivery)}style="display:none"{/if}>
+                <br>
+                [`Estimated delivery`]:<br>
+                <strong class="est_delivery">{if !empty($m.est_delivery)}{$m.est_delivery}{/if}</strong>
+                </span>
+            </div>
+            {else}
+            <div class="rate error">
+                <span class="price nowrap" style="display:none"></span>
+                <em class="hint error comment" style="display:none"></em>
+                <span class="hint" style="display:none">
+                    <br>
+                    [`Estimated delivery`]:<br>
+                    <strong class="est_delivery"></strong>
+                </span>
+                <em class="shipping-error">{$m.error}</em>
+            </div>
+            {/if}
+            <h3>
+                <label>
+                    {if !empty($m.logo)}<img src="{$m.logo}" class="method-logo">{/if}
+                    <input type="radio" name="shipping_id" value="{$m.id}" {if $m.external || !empty($m.error)}disabled{/if} {if $m.id == $shipping.id}checked{/if}>
+                    {$m.name|escape}
+                </label> 
+                    
+                {if empty($m.error) && !empty($m.rates)}
+                    {if count($m.rates) > 1}
+                        <select class="shipping-rates" name="rate_id[{$m.id}]">
+                            {foreach $m.rates as $rate_id => $r}
+                                <option data-rate="{shop_currency($r.rate, $r.currency)}" {if !empty($r.est_delivery)}data-est_delivery="{$r.est_delivery}"{/if} {if !empty($r.comment)}data-comment="{$r.comment}"{/if} value="{$rate_id}"{if $rate_id == $shipping.rate_id} selected{/if}>{$r.name} ({shop_currency($r.rate, $r.currency)})</option>
+                            {/foreach}
+                        </select>
+                    {else}
+                        <input type="hidden" name="rate_id[{$m.id}]" value="{key($m.rates)}">
+                    {/if}
+                {/if}
+            </h3>
+            {if $m.description}<p>{$m.description}</p>{/if}
+            {if !empty($m.form)}<div class="wa-form wa-address" {if $m.id != $shipping.id}style="display:none"{/if}>{$m.form->html()}</div>{/if}
+            {if !empty($m.custom_html)}
+                <div class="clear-both"></div>
+                <div class="wa-form" {if $m.id != $shipping.id}style="display:none"{/if}>{$m.custom_html}</div>
+            {/if}
+        </li>
+    {foreachelse}
+        <li>
+            <em class="error">[`Oops! We are sorry, but <strong>we can not ship this order to your selected destination</strong>. Checkout can not be completed.`]</em>
+        </li>
+    {/foreach}
+</ul>
+<script type="text/javascript">
+    $(function () {
+        {if $external_methods}
+            $.get("{$wa->getUrl('/frontend/shipping')}", { shipping_id: [{implode(',', $external_methods)}]}, function (response) {
+                for (var shipping_id in response.data) {
+                    responseCallback(shipping_id, response.data[shipping_id]);
+                }
+            }, "json");
+        {/if}
+
+                function responseCallback(shipping_id, data) {
+                    var name = 'rate_id[' + shipping_id + ']';
+                    if (typeof(data) != 'string') {
+                        $(".shipping-" + shipping_id + ' input:radio').removeAttr('disabled');
+                    }
+                    if (typeof(data) == 'string') {
+                        $(".shipping-" + shipping_id + ' input[name="' + name + '"]').remove();
+                        $(".shipping-" + shipping_id + ' select[name="' + name + '"]').remove();
+                        var el = $(".shipping-" + shipping_id).find('.rate');
+                        if (el.hasClass('error')) {
+                            el.find('em').html(data);
+                        } else {
+                            el.find('.price, .hint').hide();
+                            el.addClass('error').append($('<em class="shipping-error"></em>').html(data));
+                        }
+                    } else if (data.length > 1) {
+                        $(".shipping-" + shipping_id + ' input[name="' + name + '"]').remove();
+                        var select = $(".shipping-" + shipping_id + ' select[name="' + name + '"]');
+                        var html = '<select class="shipping-rates" name="' + name + '">';
+                        for (var i = 0; i < data.length; i++) {
+                            var r = data[i];
+                            html += '<option data-rate="' + r.rate + '" data-comment="' + (r.comment || '') + '" data-est_delivery="' + (r.est_delivery || '') + '" value="' + r.id + '">' + r.name + ' (' + r.rate + ')</option>';
+                        }
+                        html += '</select>';
+                        if (select.length) {
+                            var selected = select.val();
+                            select.remove();
+                        } else {
+                            var selected = false;
+                        }
+                        select = $(html);
+                        $(".shipping-" + shipping_id + " h3").append(select);
+                        if (selected) {
+                            select.val(selected);
+                        }
+                        select.trigger('change', 1);
+                        $(".shipping-" + shipping_id).find('.rate').removeClass('error').find('.price').show();
+                        $(".shipping-" + shipping_id).find('.rate em.shipping-error').remove();
+                    } else {
+                        $(".shipping-" + shipping_id + ' select[name="' + name + '"]').remove();
+                        var input = $(".shipping-" + shipping_id + ' input[name="' + name + '"]');
+                        if (input.length) {
+                            input.val(data[0].id);
+                        } else {
+                            $(".shipping-" + shipping_id + " h3").append('<input type="hidden" name="' + name + '" value="' + data[0].id + '">');
+                        }
+                        $(".shipping-" + shipping_id + " .price").html(data[0].rate);
+                        $(".shipping-" + shipping_id + " .est_delivery").html(data[0].est_delivery);
+                        $(".shipping-" + shipping_id).find('.rate').removeClass('error').find('.price').show();
+                        if (data[0].est_delivery) {
+                            $(".shipping-" + shipping_id + " .est_delivery").parent().show();
+                        } else {
+                            $(".shipping-" + shipping_id + " .est_delivery").parent().hide();
+                        }
+                        if (data[0].comment) {
+                            $(".shipping-" + shipping_id + " .comment").html('<br>' + data[0].comment).show();
+                        } else {
+                            $(".shipping-" + shipping_id + " .comment").hide();
+                        }
+                        $(".shipping-" + shipping_id).find('.rate em.shipping-error').remove();
+                    }
+                }
+
+                $(".checkout-options").on('change', "select.shipping-rates", function (e, not_check) {
+                    var opt = $(this).children('option:selected');
+                    var li = $(this).closest('li');
+                    li.find('.price').html(opt.data('rate'));
+                    if (!not_check) {
+                        li.find('input:radio').attr('checked', 'checked');
+                    }
+                    li.find('.est_delivery').html(opt.data('est_delivery'));
+                    if (opt.data('est_delivery')) {
+                        li.find('.est_delivery').parent().show();
+                    } else {
+                        li.find('.est_delivery').parent().hide();
+                    }
+                    if (opt.data('comment')) {
+                        li.find('.comment').html('<br>' + opt.data('comment')).show();
+                    } else {
+                        li.find('.comment').empty().hide();
+                    }
+                });
+                $(".checkout-options input:radio").change(function () {
+                    if ($(this).is(':checked') && !$(this).data('ignore')) {
+                        $(".checkout-options .wa-form").hide();
+                        $(this).closest('li').find('.wa-form').show();
+                        if ($(this).data('changed')) {
+                            $(this).closest('li').find('.wa-form').find('input,select').data('ignore', 1).change().removeData('ignore');
+                            $(this).removeData('changed');
+                        }
+                    }
+                });
+                $(".wa-address").find('input,select').change(function () {
+                    if ($(this).data('ignore')) {
+                        return true;
+                    }
+                    var shipping_id = $("input[name=shipping_id]:checked").val();
+                    var loaded_flag = false;
+                    setTimeout(function () {
+                        if (!loaded_flag && !$(".shipping-" + shipping_id + " .price .loading").length) {
+                            $(".shipping-" + shipping_id + " .price").append(' <i class="icon16 loading"></i>');
+                        }
+                    }, 300);
+                    var v = $(this).val();
+                    var name = $(this).attr('name').replace(/customer_\d+/, '');
+                    $(".checkout-options input:radio").each(function () {
+                        if ($(this).val() != shipping_id) {
+                            var el = $(this).closest('li').find('[name="customer_' + $(this).val() + name + '"]');
+                            if (el.attr('type') != 'hidden') {
+                                el.val(v);
+                                $(this).data('changed', 1);
+                            }
+                        }
+                    });
+
+                    $.post("{$wa->getUrl('/frontend/shipping')}", $("form").serialize(), function (response) {
+                        loaded_flag = true;
+                        responseCallback(shipping_id, response.data);
+                    }, "json");
+                });
+            });
+
+</script>
+
+<!-- plugin hook: 'frontend_checkout' -->
+{* @event frontend_checkout.%plugin_id% *}
+{foreach $frontend_checkout as $_}{$_}{/foreach}
+
+</div>

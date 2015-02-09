@@ -1,0 +1,188 @@
+<script type="text/javascript" src="{$wa_app_static_url}js/rate.widget.js"></script>
+<script type="text/javascript" src="{$wa_theme_url}reviews.js"></script>
+
+<article>
+    
+    {$wa->title(sprintf('[`%s reviews`]', $product.name))}
+    <h1>{sprintf('[`%s reviews`]', $product.name|escape)}</h1>
+    
+    <!-- product page navigation -->
+    <ul class="product-nav">
+        <li><a href="{$wa->shop->productUrl($product)}">[`Overview`]</a></li>
+        <li class="selected">
+            <a href="{$wa->shop->productUrl($product, 'reviews')}">[`Reviews`]</a>
+            <span class="hint reviews-count" itemprop="reviewCount">{$reviews_count}</span>
+        </li>
+        {foreach $product.pages as $page}
+        <li><a href="{$wa->shop->productUrl($product, 'page', ['page_url' => $page.url])}">{$page.name|escape}</a></li>
+        {/foreach}
+    </ul>
+    
+    <!-- reviews begin -->
+    {function review_reviews}
+        {$depth=-1}
+        {foreach $reviews as $review}
+          {if $review.depth < $depth}
+          
+            {$loop=($depth-$review.depth)}
+            {section name="end-review" loop=$loop}
+                <ul class="reviews-branch"></ul>
+                </li>
+              </ul>
+            {/section}
+            
+            {$depth=$review.depth}
+          {/if}
+          
+          {if $review.depth == $depth}
+            </li>
+            <li data-id="{$review.id}" data-parent-id="{$review.parent_id}">
+          {/if}
+          
+          {if $review.depth > $depth}
+            <ul class="reviews-branch">
+              <li data-id={$review.id} data-parent-id="{$review.parent_id}">
+              {$depth=$review.depth}
+          {/if}
+            {include file="review.html" inline reply_allowed=$reply_allowed single_view=true review=$review}
+            <!-- sub review placeholder -->
+        {/foreach}
+        
+        {section name="end-review" loop=$depth}
+              <ul class="reviews-branch"></ul>
+              </li>
+            </ul>
+        {/section}
+    {/function}
+    
+    <section class="reviews">
+    
+        <a name="reviewheader"></a>
+        <h3 class="reviews-count-text" {if $reviews_count == 0}style="display: none;"{/if}>
+            {_w('%d review for ','%d reviews for ', $reviews_count)|cat:$product.name|escape}
+        </h3>
+       
+        <!-- add review form -->
+        <h4 class="write-review">
+            <a href="#" class="inline-link"><b><i>[`Write a review`]</i></b></a>
+        </h4>
+        
+        <div class="review-form" id="product-review-form" {if $reviews_count > 0}style="display:none;"{/if}>
+            
+            {$current_user_id = $wa->userId()}
+            
+            <form method="post">
+                <div class="review-form-fields">
+                
+                    {if empty($current_user_id) && $require_authorization}
+                        <p class="review-field">{sprintf(
+                            '[`To add a review please <a href="%s">sign up</a> or <a href="%s">login</a>`]', 
+                            $wa->signupUrl(), 
+                            $wa->loginUrl())
+                        }</p>
+                    {else}
+                
+                        {if !empty($current_user_id)}
+                            <p class="review-field"><label>[`Your name`]</label>
+                                <strong><img src="{$wa->user()->getPhoto(20)}" class="userpic" alt="">{$wa->user('name')}</strong>
+                                <a href="?logout">[`log out`]</a>
+                            </p>
+                        {else}
+                            {if $auth_adapters}
+                                <ul id="user-auth-provider" class="menu-h auth-type">
+                                    <li data-provider="guest"  {if $current_auth_source == shopProductReviewsModel::AUTH_GUEST}class="selected"{/if}><a href="#">[`Guest`]</a></li>
+                                    {foreach $auth_adapters as $adapter}
+                                        {$adapter_id = $adapter->getId()}
+                                        <li data-provider="{$adapter_id}" {if $current_auth_source == $adapter_id}class="selected"{/if}>
+                                            <a href="{$adapter->getCallbackUrl(0)}&app=shop{if !$require_authorization}&guest=1{/if}">
+                                            <img src="{$adapter->getIcon()}" alt="">{$adapter->getName()}</a>
+                                        </li>
+                                    {/foreach}
+                                </ul>
+                            {/if}
+                            
+                            <div class="provider-fields" data-provider="{shopProductReviewsModel::AUTH_GUEST}" {if $current_auth_source != shopProductReviewsModel::AUTH_GUEST}style="display:none"{/if}>
+                                <p class="review-field">
+                                    <label>[`Your name`]</label>
+                                    <input type="text" name="name" id="review-name" value="">
+                                </p>
+                                <p class="review-field">
+                                    <label>[`Email`]</label>
+                                    <input type="text" name="email" id="review-email">
+                                </p>
+                                <p class="review-field">
+                                    <label>[`Website`]</label>
+                                    <input type="text" name="site" id="review-site">
+                                </p>
+                            </div>
+                            
+                            {if !empty($auth_adapters[$current_auth_source])}
+                                {$adapter = $auth_adapters[$current_auth_source]}
+                                <div class="provider-fields" data-provider="{$adapter->getId()}">
+                                    <p class="review-field"><label>[`Your name`]</label>
+                                        <strong><img src="{$adapter->getIcon()}" class="userpic" />{$current_auth.name|escape}</strong>
+                                        <a href="?logout">[`log out`]</a>
+                                    </p>
+                                </div>
+                            {/if}
+                        {/if}
+                        
+                    <br>
+                    <p class="review-field">
+                        <label for="review-title">[`Title`]</label>
+                        <input type="text" name="title" id="review-title" class="bold">
+                    </p>
+                    <p class="review-field">
+                        <label>[`Rate product`]</label>
+                        <a href="#" class="no-underline rate" data-rate="0" id="review-rate">
+                            {for $i = 1 to 5}<i class="icon16 star-empty"></i>{/for}
+                        </a>
+                        <a href="javascript:void(0);" class="inline-link rate-clear" id="clear-review-rate" style="display: none;">
+                            <b><i>[`clear`]</i></b>
+                        </a>
+                        <input name="rate" type="hidden" value="0">
+                    </p>
+                    <p class="review-field">
+                        <label for="review-text">[`Review`]</label>
+                        <textarea id="review-text" name="text" rows="10" cols="45"></textarea>
+                    </p>
+                
+                    <div class="review-submit">
+                        {if $request_captcha && empty($current_user_id)}
+                            {$wa->captcha()}
+                        {/if}
+                        <input type="submit" class="save" value="[`Add review`]">
+                        <span class="review-add-form-status ajax-status" style="display: none;">
+                            <i class="ajax-statuloading icon16 loading"><!--icon --></i>
+                        </span>
+                        
+                        <em class="hint">Ctrl+Enter</em>
+                        <input type="hidden" name="parent_id" value="0">
+                        <input type="hidden" name="product_id" value="{if isset($product.id)}{$product.id}{else}0{/if}">
+                        <input type="hidden" name="auth_provider" value="{$current_auth_source|default:shopProductReviewsModel::AUTH_GUEST}">
+                        <input type="hidden" name="count" value="{$reviews_count}">
+                    </div>
+                {/if}
+                
+                </div>
+            </form>
+        </div>
+        
+        <!-- existing reviews list -->
+        <ul class="reviews-branch">
+        {foreach $reviews as $review}
+            <li data-id={$review.id} data-parent-id="0">
+                {include file="review.html" reply_allowed=$reply_allowed inline}
+                {if !empty($review.comments)}
+                    {review_reviews reviews=$review.comments}
+                {else}
+                    <ul class="reviews-branch"></ul>
+                {/if}
+            </li>
+        {/foreach}
+        </ul>
+        
+    </section>
+    <!-- reviews end -->
+
+</article>

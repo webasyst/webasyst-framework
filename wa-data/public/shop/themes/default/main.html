@@ -1,0 +1,50 @@
+<!-- plugin hook: 'frontend_header' -->
+{* @event frontend_header.%plugin_id% *}
+{foreach $frontend_header as $_}{$_}{/foreach}            
+
+{if $action == 'product' || $action == 'productReviews' || $action == 'cart'}
+    {* in the Default theme, we make sidebar a dropdown element for product and cart pages *}
+    {$_DROPDOWN_SIDEBAR = 1}
+{/if}
+
+
+    
+        
+        
+   
+    
+    <div class="page-content" id="page-content">
+    
+        <!-- internal navigation breadcrumbs -->
+        {if !empty($breadcrumbs)}
+            <nav class="breadcrumbs">
+                {foreach $breadcrumbs as $breadcrumb}
+                    <a href="{$breadcrumb.url}">{$breadcrumb.name|escape}</a> <span class="rarr">&rarr;</span>
+                {/foreach}
+            </nav>
+        {/if}
+    
+        {$content}
+        
+        <div class="clear-both"></div>
+        
+    </div>
+
+{if !empty($_DROPDOWN_SIDEBAR)}
+</div>
+{/if}
+
+
+<div class="clear-both"></div>
+
+<div id="dialog" class="dialog">
+    <div class="dialog-background"></div>
+    <div class="dialog-window">
+        <!-- common part -->
+        <div class="cart">
+
+        </div>
+        <!-- /common part -->
+
+    </div>
+</div>

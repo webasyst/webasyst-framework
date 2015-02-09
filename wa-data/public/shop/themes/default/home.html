@@ -1,0 +1,66 @@
+<!-- get products from predefined product lists 'promo' and 'bestsellers' -->
+{$promos = $wa->shop->productSet('promo')}
+{$bestsellers = $wa->shop->productSet('bestsellers')}
+
+{if (empty($promos) && empty($bestsellers))}
+
+    <article class="welcome">
+        <h1>[`Welcome to your new online store!`]</h1>
+        <p>{sprintf('[`Start by creating a product in your <a href="%s">store backend</a>.`]', $wa_backend_url|cat:'shop/?action=products#/welcome/')}</p>
+    </article>
+
+{else}
+
+    <!-- BESTSELLERS SLIDER -->
+    <article class="bestsellers">
+        {if $bestsellers && count($bestsellers)}
+            <ul class="homepage-bxslider">
+            {foreach $bestsellers as $b}
+            <li itemscope itemtype ="http://schema.org/Product">
+                <a href="{$b.frontend_url}" title="{$b.name}{if $b.summary} &ndash; {strip_tags($b.summary)|escape}{/if}">
+                    <div class="info">
+                        <h2 itemprop="name">
+                            <span class="name">{$b.name}</span>
+                        </h2>
+                        {if $b.compare_price > 0}<span class="compare-at-price nowrap"> {shop_currency_html($b.compare_price)} </span>{/if}
+                        <p class="purchase"><span class="price nowrap">{shop_currency_html($b.price)}</span></p>
+                        {if $b.summary}<p itemprop="description">{strip_tags($b.summary)|truncate:255}</p>{/if}
+                    </div>
+                    <div class="image">
+                            {$badge_html = $wa->shop->badgeHtml($b.badge)}
+                            {if $badge_html}
+                                <div class="corner top right">{$badge_html}</div>
+                            {/if}
+                            {$wa->shop->productImgHtml($b, '0x320', ['itemprop' => 'image', 'alt' => $b.name, 'default' => "`$wa_theme_url`img/dummy200.png"])}
+                    </div>
+                </a>
+            </li>
+            {/foreach}
+            </ul>
+        {else}
+            <p class="hint align-center"><br><em>{sprintf('[`Product set with the ID <strong>%s</strong> either does not exist or does not contain any product. Add some products into a product set with the specified ID to make these products featured here.`]','promo')}</em><br><br></p>
+        {/if}
+    </article>
+    
+    <!-- plugin hook: 'frontend_homepage' -->
+    {* @event frontend_homepage.%plugin_id% *}
+    {foreach $frontend_homepage as $_}{$_}{/foreach}
+    
+    <!-- BULLETS -->
+    <!--<section class="bullets">
+    
+    
+        <figure class="bullet">
+            <h4><span class="b-glyph b-shipping"></span> Lorem Ipsum 1</h4>
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed pharetra orci a lacus convallis pellentesque. Pellentesque quis dui sem. Proin nec tempus risus.</p>
+        </figure>
+    </section> -->
+    
+    <!-- PROMOS product list -->
+    {if $promos}
+        {include file="list-thumbs.html" products=$promos}
+    {else}
+      <!--  <p class="hint align-center"><em>{sprintf('[`Product set with the ID <strong>%s</strong> either does not exist or does not contain any product. Add some products into a product set with the specified ID to make these products featured here.`]','bestsellers')}</em></p> -->
+    {/if}
+    
+{/if}

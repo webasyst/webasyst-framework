@@ -1,0 +1,83 @@
+<div class="checkout-content" data-step-id="contactinfo">
+    <div id="checkout-contact-form">
+        {if $wa->isAuthEnabled() && !$wa->user()->isAuth()}
+            {$wa->authAdapters()}
+        {/if}
+        <div class="wa-form">
+            {$checkout_contact_form->html()}
+            {if $wa->isAuthEnabled() && !$wa->user()->isAuth()}
+            <div class="wa-field">
+                <div class="wa-value">
+                    <label><input type="checkbox" {if $wa->post('create_user')}checked{/if} id="create-user" name="create_user" value="1"> [`Create permanent user account`]</label>
+                    {if shopAffiliate::isEnabled()}
+                        <p class="hint">
+                            [`Registered customers apply for affiliate bonuses and discounts on future orders.`]                    
+                            {$add_affiliate_bonus = round(shopAffiliate::calculateBonus(['items' => $wa->shop->cart->items(), 'total' => $wa->shop->cart->total()]), 2)}
+                            {if !empty($add_affiliate_bonus)}
+                                {sprintf("[`This order will add +%s points to your affiliate bonus.`]", $add_affiliate_bonus)}
+                            {/if}
+                        </p>
+                    {/if}
+                </div>
+            </div>
+            <div id="create-user-div" style="display:none">
+                <div class="wa-field">
+                    <div class="wa-name">
+                        [`Email`]
+                    </div>
+                    <div class="wa-value">
+                        {if !empty($errors.email)}<p>{/if}
+                        <input {if !empty($errors.email)}class="error"{/if} name="login" type="text" value="{$wa->post('login', $customer->get('email', 'default'))|escape}">
+                        {if !empty($errors.email)}</p>
+                        <em class="errormsg">{$errors.email}</em>
+                        {/if}
+                    </div>
+                </div>
+                <div class="wa-field">
+                    <div class="wa-name">
+                        [`Password`]
+                    </div>
+                    <div class="wa-value">
+                        <input {if !empty($errors.password)}class="error"{/if} name="password" type="password" value="{$wa->post('password')|escape}">
+                        {if !empty($errors.password)}<br><em class="errormsg">{$errors.password}</em>{/if}
+                    </div>
+                </div>
+            </div>
+            <script type="text/javascript">
+                $(function () {
+                    var e = $('input[name="customer[email]"]');
+                    if (e.length) {
+                        e.on('keyup', function () {
+                           if ($("#create-user-div").is(':visible')) {
+                               $('#create-user-div input[name="login"]').val($(this).val());
+                           }
+                        });
+                        $('#create-user-div input[name="login"]').on('keyup', function () {
+                            e.val($(this).val());
+                        })
+                    }
+                    $("#create-user").change(function () {
+                        if ($(this).is(':checked')) {
+                            $("#create-user-div").show().find('input').removeAttr('disabled');
+                            var l = $(this).closest('form').find('input[name="customer[email]"]');
+                            if (l.length && l.val()) {
+                                $('#create-user-div input[name="login"]').val(l.val());
+                            }
+                        } else {
+                            $("#create-user-div").hide().find('input').attr('disabled', 'disabled').val('');
+                        }
+                    }).change();
+                });
+            </script>
+            {/if}
+            {if !empty($errors.all)}
+            <p class="error">{$errors.all}</p>
+            {/if}
+        </div>
+    </div>
+    
+    <!-- plugin hook: 'frontend_checkout' -->
+    {* @event frontend_checkout.%plugin_id% *}
+    {foreach $frontend_checkout as $_}{$_}{/foreach}
+        
+</div>

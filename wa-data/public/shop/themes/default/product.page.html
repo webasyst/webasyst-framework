@@ -1,0 +1,23 @@
+<article>
+
+    <h1>{$page.title|escape}</h1>
+    
+    <!-- product page navigation -->
+    <nav>
+        <ul class="product-nav">
+            <li><a href="{$wa->shop->productUrl($product)}">[`Overview`]</a></li>
+            <li>
+                <a href="{$wa->shop->productUrl($product, 'reviews')}">[`Reviews`]</a>
+                <span class="hint" itemprop="reviewCount">{$reviews_total_count}</span>
+            </li>
+            {foreach $product.pages as $p}
+            <li{if $page.id == $p.id} class="selected"{/if}><a href="{$wa->shop->productUrl($product, 'page', ['page_url' => $p.url])}">{$p.name|escape}</a></li>
+            {/foreach}
+        </ul>
+    </nav>
+    
+    <div class="product-info">
+        {$page.content}
+    </div>
+
+</article>

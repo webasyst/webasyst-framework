@@ -1,0 +1,38 @@
+<!-- shop app css -->
+<link href="{$wa_active_theme_url}default.shop.css?v{$wa_theme_version}" rel="stylesheet" type="text/css">
+<link href="{$wa_active_theme_url}jquery.bxslider.css?v{$wa_theme_version}" rel="stylesheet" />
+<link href="{$wa_active_theme_url}default.shop.tablet.css?v{$wa_theme_version}" media="screen and (min-width: 760px) and (max-width: 1024px)" rel="stylesheet" type="text/css"/>
+<link href="{$wa_active_theme_url}default.shop.mobile.css?v{$wa_theme_version}"{if !$wa->isMobile()} media="screen and (max-width: 760px)"{/if} rel="stylesheet" type="text/css">
+
+<!-- js -->
+<script type="text/javascript" src="{$wa_url}wa-content/js/jquery-wa/wa.core.js?v{$wa->version(true)}"></script>
+<script type="text/javascript" src="{$wa_app_static_url}js/lazy.load.js?v{$wa->version()}"></script>
+<script type="text/javascript" src="{$wa_active_theme_url}lazyloading.js?v{$wa_theme_version}"></script>
+<script src="{$wa_active_theme_url}jquery.bxslider.min.js?v{$wa_theme_version}"></script>
+<script type="text/javascript" src="{$wa_active_theme_url}default.shop.js?v{$wa_theme_version}"></script>
+{if $wa->shop->config('enable_2x')}
+<script type="text/javascript" src="{$wa_url}wa-content/js/jquery-plugins/jquery.retina.js?v{$wa->version(true)}"></script>
+<script type="text/javascript">$(window).load(function() { 
+    $('.promo img').retina({ force_original_dimensions: false });
+    $('.product-list img,.product-info img,.cart img').retina();;
+    $('.bestsellers img').retina();
+});
+</script>
+{/if}
+
+{if !empty($filters)}
+<link href="{$wa_url}wa-content/css/jquery-ui/base/jquery.ui.slider.css" rel="stylesheet" type="text/css">
+<script type="text/javascript" src="{$wa_url}wa-content/js/jquery-ui/jquery.ui.core.min.js?v{$wa->version(true)}"></script>
+<script type="text/javascript" src="{$wa_url}wa-content/js/jquery-ui/jquery.ui.widget.min.js?v{$wa->version(true)}"></script>
+<script type="text/javascript" src="{$wa_url}wa-content/js/jquery-ui/jquery.ui.mouse.min.js?v{$wa->version(true)}"></script>
+<script type="text/javascript" src="{$wa_url}wa-content/js/jquery-ui/jquery.ui.slider.min.js?v{$wa->version(true)}"></script>
+{/if}
+
+{if !empty($nofollow)}
+    <!-- "nofollow" for pages not to be indexed, e.g. customer account -->
+    <meta name="robots" content="noindex,nofollow" />
+{/if}
+
+<!-- plugin hook: 'frontend_head' -->
+{* @event frontend_head.%plugin_id% *}
+{foreach $frontend_head as $_}{$_}{/foreach}
