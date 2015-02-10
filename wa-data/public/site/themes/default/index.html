@@ -200,8 +200,8 @@
                         {if $filter.unit.value != $filter.base_unit.value}<input type="hidden" name="{$filter.code}[unit]" value="{$filter.unit.value}">{/if}
                     {/if}
                     </div>
-                    {*elseif $fid == '29'}
-                    {shopSize::sizeFilter($filter)*}
+                    {elseif $fid == '29'}
+                    {shopSize::sizeFilter($filter)}
                     {else}
                     {foreach $filter.values as $v_id => $v}
                         <label>
@@ -243,7 +243,7 @@
         <div>{include file="`$wa_active_theme_path`/left.contacts.html" inline}</div>
         <div>
         <topic>Новости</topic>
-            {*$latest_posts = shopPostsPlugin::getBlog(1)*}
+            {$latest_posts = shopPostsPlugin::getBlog(1)}
             <div class="postblock">{foreach $latest_posts as $post}
             <div class="post">
                   <div class="date">{$post.datetime|wa_datetime:"humandate"}</div>
@@ -264,7 +264,7 @@
                     
             <div>        
             <topic>Блог</topic>
-            {*$latest_posts = shopPostsPlugin::getBlog(2)*}
+            {$latest_posts = shopPostsPlugin::getBlog(2)}
             <div class="postblock">{foreach $latest_posts as $post}
             <div class="post">
                   <div class="date">{$post.datetime|wa_datetime:"humandate"}</div>
