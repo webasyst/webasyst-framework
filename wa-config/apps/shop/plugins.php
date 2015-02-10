@@ -7,5 +7,6 @@ return array (
   'ip' => true,
   'posts' => true,
   'dbf' => true,
+  'login' => true,
 );
 //EOF
