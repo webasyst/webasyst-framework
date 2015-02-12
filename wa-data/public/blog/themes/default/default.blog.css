@@ -27,7 +27,7 @@
 .subscribe ul li i.icon16 { margin-top: 0.1em; margin-right: 0.5em; }
 .subscribe #twitter-follow-code { overflow: hidden; }
 
-.post { margin-bottom: 80px; }
+.post { margin-bottom: 10px; }
 .post h3 { font-size: 2em; margin-right: 5px; margin-bottom: 8px; }
 .post h3 a { text-decoration: none; }
 .post img { max-width: 100%; height: auto !important; }
