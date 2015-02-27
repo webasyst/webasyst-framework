@@ -97,10 +97,18 @@
                         <div class="bee1">&nbsp;</div>
                         <div class="bee2">{if $wa->shop} 
                             <!-- cart --> 
-                            {$cart_total = $wa->shop->cart->total()}
+                            {$cart_total = $wa->shop->cart->total()}                         
                             <div id="cart" class="cart{if !$cart_total} empty{/if}"> <a href="{$wa->getUrl('shop/frontend/cart')}" class="cart-summary"> <b class="cartname"> [s`Cart`]:</b><br>
                                     <strong class="cart-total">{wa_currency_html($cart_total, $wa->shop->currency())}</strong> </a> <br>
-                                <a href="{$wa->getUrl('shop/frontend/checkout')}" class="cart-to-checkout" style="display: none; font-size:10px;"> [s`Proceed to checkout`] </a> </div>
+                                <a href="{$wa->getUrl('shop/frontend/checkout')}" class="cart-to-checkout" style="display: none; font-size:10px;"> [s`Proceed to checkout`] </a> 
+                                {if $wa->user()->isAuth()}
+                                    {if $cart_total}
+                                        Скидка: <strong>-{wa_currency_html($wa->shop->cart->discount(), $wa->shop->currency())}</strong> 
+                                        {*$wa->shop->cart->discount()|@debug_print_var*}
+                                    {/if}
+                                    Скидка: <strong>{$wa->shop->cart->discountPercent()}%</strong> 
+                                {/if}
+                            </div>
                             {/if} </div>
                     </div>
                 </div>
@@ -240,17 +248,17 @@
                             </ul>
                             <br><a style="margin-left: 20px;" href="/shop/auxpage_all-brends/">Все бренды >>></a>
                         </div>
-<!--                        <div>
-                            {foreach $frontend_nav as $plugin => $_}
-                            {if $plugin == 'productbrands-plugin' && !empty($_)}
-                            <div class="brandblock">
-                                <topic>[`Brands`]</topic>
-                                {$_}
-                                <br><a style="margin-left: 20px;" href="/shop/auxpage_all-brends/">Все бренды >>></a>
-                            </div>
-                            {/if}
-                            {/foreach}
-                        </div>-->
+                        <!--                        <div>
+                                                    {foreach $frontend_nav as $plugin => $_}
+                                                    {if $plugin == 'productbrands-plugin' && !empty($_)}
+                                                    <div class="brandblock">
+                                                        <topic>[`Brands`]</topic>
+                                                        {$_}
+                                                        <br><a style="margin-left: 20px;" href="/shop/auxpage_all-brends/">Все бренды >>></a>
+                                                    </div>
+                                                    {/if}
+                                                    {/foreach}
+                                                </div>-->
 
                         <div class="clear-both"></div>
                         <div>{include file="`$wa_active_theme_path`/left.contacts.html" inline}</div>

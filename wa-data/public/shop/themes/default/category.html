@@ -11,10 +11,7 @@
 {foreach $frontend_category as $_}{$_}{/foreach}
 
 
-<!-- description -->
-{if $category.description}
-    <p>{$category.description}</p>
-{/if}
+
 
 <!-- subcategories -->
 <!--{if $category.subcategories}-->
@@ -40,5 +37,9 @@
     *}
 {/if}
 </div>
+<!-- description -->
+{if $category.description}
+    <p>{$category.description}</p>
+{/if}
 
 <div class="clear-both"></div>

@@ -108,8 +108,8 @@
         {/if}
 
         <!-- product features -->
-        {if $product.features}
-            <table class="features" id="product-features">
+        {*if $product.features}
+        <!--   <table class="features" id="product-features">
                 {foreach $product.features as $f_code => $f_value}
                     <tr{if $features[$f_code].type == 'divider'} class="divider"{/if}>
                         <td class="name">
@@ -128,8 +128,8 @@
                         </td>
                     </tr>
                 {/foreach}
-            </table>
-        {/if}
+            </table> -->
+        {/if*}
 
         <!-- categories -->
         {if $product.categories}
