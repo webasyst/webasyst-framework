@@ -98,14 +98,14 @@
                         <div class="bee2">{if $wa->shop} 
                             <!-- cart --> 
                             {$cart_total = $wa->shop->cart->total()}                         
-                            <div id="cart" class="cart{if !$cart_total} empty{/if}"> <a href="{$wa->getUrl('shop/frontend/cart')}" class="cart-summary"> <b class="cartname"> [s`Cart`]:</b><br>
+                            <div id="cart" style="{if $wa->user()->isAuth()}top:20px;{/if}" class="cart{if !$cart_total} empty{/if}"> <a href="{$wa->getUrl('shop/frontend/cart')}" class="cart-summary"> <b class="cartname"> [s`Cart`]:</b><br>
                                     <strong class="cart-total">{wa_currency_html($cart_total, $wa->shop->currency())}</strong> </a> <br>
                                 <a href="{$wa->getUrl('shop/frontend/checkout')}" class="cart-to-checkout" style="display: none; font-size:10px;"> [s`Proceed to checkout`] </a> 
                                 {if $wa->user()->isAuth()}
-                                    {if $cart_total}
-                                        Скидка: <strong>-{wa_currency_html($wa->shop->cart->discount(), $wa->shop->currency())}</strong> 
+                                    <!--{if $cart_total}
+                                        Скидка: <strong>-{wa_currency_html($wa->shop->cart->discount(), $wa->shop->currency())}</strong>  
                                         {*$wa->shop->cart->discount()|@debug_print_var*}
-                                    {/if}
+                                    {/if} -->
                                     Скидка: <strong>{$wa->shop->cart->discountPercent()}%</strong> 
                                 {/if}
                             </div>

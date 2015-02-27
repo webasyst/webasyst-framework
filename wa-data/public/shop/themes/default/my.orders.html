@@ -9,6 +9,8 @@
             <a href="{$o.url}" class="bold">
                 {$o.id_str}
             </a>
+            <br>
+            {$o.create_datetime|wa_date:'humandate'}
         </td>
         <td class="nowrap">
             <span class="nowrap order-status" style="{$o.state->getStyle(1)}">
@@ -23,21 +25,7 @@
             {/if}
         </td>
         <td>
-            {if $o.shipping_name}
-                {$o.shipping_name|escape}
-            {else}
-                &nbsp;
-            {/if}
-        </td>
-        <td>
-            {if $o.payment_name}
-                {$o.payment_name|escape}
-            {else}
-                &nbsp;
-            {/if}
-        </td>
-        <td>
-            <span class="gray">{$o.create_datetime|wa_date:'humandate'}</span>
+            <span class="gray">{$o.total|string_format:"%.0f"} р.</span>
         </td>
     </tr>
 {foreachelse}
