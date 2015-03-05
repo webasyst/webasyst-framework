@@ -17,7 +17,7 @@ class blogBackendUploadController extends waController
     {
         // When Photos app is not used to store images,
         // use the default system uploader to do all the work
-        $actions = blogPagesActions();
+        $actions = new blogPagesActions();
         $actions->run('uploadimage');
     }
 
