@@ -1,4 +1,5 @@
 <?php
+
 /**
  *
  * @property-read array $rate_zone
@@ -12,18 +13,21 @@
 class courierShipping extends waShipping
 {
     /**
-     * Example of direct usage HTML templates instead waHtmlControl
-     * (non-PHPdoc)
      * @see waShipping::getSettingsHTML()
+     * @param array $params
+     * @return string HTML
      */
     public function getSettingsHTML($params = array())
     {
+        $params += array(
+            'translate' => array(&$this, '_w'),
+        );
         $values = $this->getSettings();
-        
+
         if (!empty($params['value'])) {
             $values = array_merge($values, $params['value']);
         }
-        
+
         if (!$values['rate_zone']['country']) {
             $l = substr(wa()->getUser()->getLocale(), 0, 2);
             if ($l == 'ru') {
@@ -38,7 +42,7 @@ class courierShipping extends waShipping
         $view = wa()->getView();
 
         $cm = new waCountryModel();
-        $view->assign('countires', $cm->all());
+        $view->assign('countries', $cm->all());
 
         if (!empty($values['rate_zone']['country'])) {
             $rm = new waRegionModel();
@@ -67,8 +71,8 @@ class courierShipping extends waShipping
         if (!empty($params['namespace'])) {
             if (is_array($params['namespace'])) {
                 $namespace = array_shift($params['namespace']);
-                while (($namspace_chunk = array_shift($params['namespace'])) !== null) {
-                    $namespace .= "[{$namspace_chunk}]";
+                while (($namespace_chunk = array_shift($params['namespace'])) !== null) {
+                    $namespace .= "[{$namespace_chunk}]";
                 }
             } else {
                 $namespace = $params['namespace'];
@@ -80,6 +84,8 @@ class courierShipping extends waShipping
         $html = '';
 
         $view->assign('xhr_url', wa()->getAppUrl('webasyst').'?module=backend&action=regions');
+
+        $view->assign('map_adapters', wa()->getMapAdapters());
 
         $html .= $view->fetch($this->path.'/templates/settings.html');
         $html .= parent::getSettingsHTML($params);
@@ -93,16 +99,20 @@ class courierShipping extends waShipping
      */
     private static function sortRates(&$rates)
     {
-        uasort($rates, create_function('$a,$b', '
-            $a=isset($a["limit"])?$a["limit"]:0;
-            $b=isset($b["limit"])?$b["limit"]:0;
-            return ($a>$b)?1:($a<$b?-1:0);
-        '));
+        uasort($rates, array(__CLASS__, 'sortRatesHandler'));
     }
 
-    public function calculate()
+    private static function sortRatesHandler($a, $b)
     {
+        $a = array_map("floatval", $a);
+        $b = array_map("floatval", $b);
+        $a = isset($a["limit"]) ? $a["limit"] : 0;
+        $b = isset($b["limit"]) ? $b["limit"] : 0;
+        return ($a > $b) ? 1 : ($a < $b ? -1 : 0);
+    }
 
+    protected function calculate()
+    {
         $prices = array();
         $price = null;
         $limit = $this->getPackageProperty($this->rate_by);
@@ -113,11 +123,10 @@ class courierShipping extends waShipping
         self::sortRates($rates);
         $rates = array_reverse($rates);
         foreach ($rates as $rate) {
-            $rate = array_map('floatval', $rate);
-            if ($limit !== null && $rate['limit'] < $limit && $price === null) {
-                $price = $rate['cost'];
+            if ($limit !== null && floatval($rate['limit']) < $limit && $price === null) {
+                $price = $this->parseCost($rate['cost']);
             }
-            $prices[] = $rate['cost'];
+            $prices[] = $this->parseCost($rate['cost']);
         }
         if ($this->delivery_time) {
             $delivery_date = array_map('strtotime', explode(',', $this->delivery_time, 2));
@@ -129,6 +138,7 @@ class courierShipping extends waShipping
         } else {
             $delivery_date = null;
         }
+
         return array(
             'delivery' => array(
                 'est_delivery' => $delivery_date,
@@ -182,7 +192,7 @@ class courierShipping extends waShipping
         if ($id = 'delivery_list') {
             $view = wa()->getView();
             $main_contact_info = array();
-            foreach (array('email', 'phone', ) as $f) {
+            foreach (array('email', 'phone',) as $f) {
                 if (($v = $order->contact->get($f, 'top,html'))) {
                     $main_contact_info[] = array(
                         'id'    => $f,
@@ -202,23 +212,50 @@ class courierShipping extends waShipping
 
             $shipping_address_text = array();
             foreach (array('country_name', 'region_name', 'zip', 'city', 'street') as $k) {
-                if (isset($order->shipping_address[$k])) {
+                if (!empty($order->shipping_address[$k])) {
                     $shipping_address_text[] = $order->shipping_address[$k];
                 }
             }
+
             $shipping_address_text = implode(', ', $shipping_address_text);
-            $view->assign('shipping_address_text', $shipping_address_text);
+            $map = '';
+            if ($shipping_address_text) {
+                $map_adapter = $this->getSettings('map');
+                if (!$map_adapter) {
+                    $map_adapter = 'google';
+                }
+                try {
+                    $map = wa()->getMap($map_adapter)->getHTML($shipping_address_text, array(
+                        'width' => '100%', 'height' => '350pt', 'zoom' => 16
+                    ));
+                } catch (waException $e) {
+                    $map = '';
+                }
+            }
+            $view->assign('map', $map);
+
             $shipping_address = $formatter->format(array('data' => $shipping_address));
             $shipping_address = $shipping_address['value'];
 
-            $view->assign('shipping_address', $shipping_address);
-            $view->assign('main_contact_info', $main_contact_info);
-            $view->assign('order', $order);
-            $view->assign('params', $params);
+            $view->assign(compact('shipping_address_text', 'shipping_address', 'main_contact_info', 'order', 'params'));
             $view->assign('p', $this);
             return $view->fetch($this->path.'/templates/form.html');
         } else {
             throw new waException('Print form not found');
         }
+    }
+
+    private function parseCost($string)
+    {
+        $cost = 0.0;
+        foreach (explode('+', $string, 2) as $chunk) {
+            $chunk = str_replace(',', '.', trim($chunk));
+            if (strpos($chunk, '%')) {
+                $cost += round($this->getTotalPrice() * floatval($chunk) / 100.0, 2);
+            } else {
+                $cost += floatval($chunk);
+            }
+        }
+        return $cost;
     }
 }
