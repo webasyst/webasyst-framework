@@ -81,20 +81,18 @@ div.ibutton-label-off span{padding-right:5px;}
 @media 
 (-webkit-min-device-pixel-ratio: 2), 
 (min-resolution: 192dpi) {
-
-    .ibutton-handle{ background:transparent url(images/ibutton-slider-default@2x.png) no-repeat scroll 0 -54px; background-size: 800px 135px; }
-    .ibutton-container.mini .ibutton-handle { background:transparent url(images/ibutton-slider-mini@2x.png) no-repeat scroll 0 -16px; background-size: 800px 80px; }
+    .ibutton-handle { background-image: url("images/ibutton-slider-default@2x.png?v=2"); background-size: 800px 135px; }
+    .ibutton-container.mini .ibutton-handle { background-image: url("images/ibutton-slider-mini@2x.png?v=2"); background-size: 800px 80px; }
     
-    .ibutton-handle-right{background:transparent url(images/ibutton-slider-default@2x.png) no-repeat scroll 100% -54px;background-size: 800px 135px;}
-    .ibutton-container.mini .ibutton-handle-right { background:transparent url(images/ibutton-slider-mini@2x.png) no-repeat scroll 100% -16px;background-size: 800px 80px;}
+    .ibutton-handle-right { background-image: url("images/ibutton-slider-default@2x.png?v=2"); background-size: 800px 135px; }
+    .ibutton-container.mini .ibutton-handle-right { background-image: url("images/ibutton-slider-mini@2x.png?v=2"); background-size: 800px 80px; }
     
-    .ibutton-handle-middle{background:transparent url(images/ibutton-slider-default@2x.png) no-repeat scroll 50% -54px;background-size: 800px 135px;}
-    .ibutton-container.mini .ibutton-handle-middle {background:transparent url(images/ibutton-slider-mini@2x.png) no-repeat scroll 50% -16px;background-size: 800px 80px;}
+    .ibutton-handle-middle { background-image: url("images/ibutton-slider-default@2x.png?v=2"); background-size: 800px 135px; }
+    .ibutton-container.mini .ibutton-handle-middle { background-image: url("images/ibutton-slider-mini@2x.png?v=2"); background-size: 800px 80px; }
     
-    div.ibutton-label-on,div.ibutton-label-off{background:transparent url(images/ibutton-slider-default@2x.png) no-repeat scroll 0 0;background-size: 800px 135px;}
-    .ibutton-container.mini div.ibutton-label-on,.ibutton-container.mini div.ibutton-label-off {background:transparent url(images/ibutton-slider-mini@2x.png) no-repeat scroll 0 0;background-size: 800px 80px;}
+    div.ibutton-label-on,div.ibutton-label-off { background-image: url("images/ibutton-slider-default@2x.png?v=2"); background-size: 800px 135px; }
+    .ibutton-container.mini div.ibutton-label-on,.ibutton-container.mini div.ibutton-label-off { background-image: url("images/ibutton-slider-mini@2x.png?v=2"); background-size: 800px 80px; }
         
-    .ibutton-padding-left,.ibutton-padding-right{background:transparent url(images/ibutton-slider-default@2x.png) no-repeat scroll 0 -4px;background-size: 800px 135px;}
-    .ibutton-container.mini .ibutton-padding-left,.ibutton-container.mini .ibutton-padding-right {background:transparent url(images/ibutton-slider-mini@2x.png) no-repeat scroll 0 -4px;background-size: 800px 80px;}
-
+    .ibutton-padding-left,.ibutton-padding-right { background-image: url("images/ibutton-slider-default@2x.png?v=2"); background-size: 800px 135px; }
+    .ibutton-container.mini .ibutton-padding-left,.ibutton-container.mini .ibutton-padding-right { background-image: url("images/ibutton-slider-mini@2x.png?v=2"); background-size: 800px 80px; }
 }

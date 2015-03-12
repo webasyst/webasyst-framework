@@ -44,7 +44,7 @@ class waRegionModel extends waModel
         $fav = array();
         foreach($all as $r) {
             if ($r['fav_sort']) {
-                $fav[] = array('fav_sort' => $r['fav_sort']) + $r;
+                $fav[] = array('fav_sort' => $r['fav_sort'], 'name' => $r['name']) + $r;
             }
         }
         if ($fav) {

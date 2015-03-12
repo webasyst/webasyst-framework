@@ -29,7 +29,7 @@ class waContactSocialNetworkJSFormatter extends waContactFieldFormatter
             $data['value'] = '';
             return $data;
         }
-        
+
         $icon = '';
         if (isset($data['ext']) && $data['ext'] && ( $f = waContactFields::get('socialnetwork'))) {
             $exts = $f->getParameter('ext');
@@ -37,8 +37,9 @@ class waContactSocialNetworkJSFormatter extends waContactFieldFormatter
                 $icon = '<i class="icon16 '.$data['ext'].'"></i>';
             }
         }
-        
-        $data['value'] = $icon.$data['value'];
+
+        $data['value'] = $icon.waContactSocialNetworkTopFormatter::formatLink($data);
+
         return $data;
     }
 }

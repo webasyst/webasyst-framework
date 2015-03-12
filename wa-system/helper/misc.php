@@ -30,7 +30,7 @@ function wa_dumpc()
     if(function_exists('debug_backtrace')) {
         echo "dumped from ";
         foreach(debug_backtrace() as $row) {
-            if (ifset($row['file']) == __FILE__ || ifset($row['function']) == 'wa_dumpc') {
+            if (ifset($row['file']) == __FILE__ || (empty($row['file']) && ifset($row['function']) == 'wa_dumpc')) {
                 continue;
             }
             echo ifset($row['file'], '???'), ' line #', ifset($row['line'], '???'), ":\n";

@@ -6,14 +6,14 @@
  * @subpackage Security
  * @author Uwe Tews
  */
- 
+
 /*
  * FIXME: Smarty_Security API
  *      - getter and setter instead of public properties would allow cultivating an internal cache properly
  *      - current implementation of isTrustedResourceDir() assumes that Smarty::$template_dir and Smarty::$config_dir are immutable
  *        the cache is killed every time either of the variables change. That means that two distinct Smarty objects with differing
- *        $template_dir or $config_dir should NOT share the same Smarty_Security instance, 
- *        as this would lead to (severe) performance penalty! how should this be handled? 
+ *        $template_dir or $config_dir should NOT share the same Smarty_Security instance,
+ *        as this would lead to (severe) performance penalty! how should this be handled?
  */
 
 /**
@@ -62,6 +62,7 @@ class Smarty_Security {
      * @var array
      */
     protected $static_classes = array(
+        'waAppConfig',
         'waFiles',
         'waSystem',
         'waContactFields',
@@ -69,7 +70,7 @@ class Smarty_Security {
         'waUtils',
         'waHtmlControl',
         'waLog',
-        'waRequest::file'
+        'waRequest::file',
     );
     /**
      * This is an array of disabled PHP functions.
@@ -83,7 +84,7 @@ class Smarty_Security {
         'file_put_contents', 'file_get_contents', 'fopen', 'file', 'fwrite', 'fputs', 'copy', 'rename', 'move_uploaded_file',
         'link', 'symlink', 'unlink',
         'call_user_func', 'call_user_func_array', 'create_function', 'call_user_method', 'call_user_method_array',
-        'preg_replace_callback', 'wa', 'wa_lambda', 'preg_replace', 'unserialize', 'serialize',
+        'preg_replace_callback', 'wa', 'wa_lambda', 'preg_replace', 'unserialize', 'serialize', 'debug_backtrace',
         'get_defined_vars', 'get_defined_constants',
         'array_map', 'array_walk', 'array_reduce', 'array_filter', 'usort', 'uksort', 'uasort', 'array_diff_uassoc', 'array_diff_ukey',
         'array_udiff_assoc', 'array_udiff_uassoc', 'array_udiff', 'array_uintersect_assoc', 'array_uintersect_uassoc',
@@ -92,7 +93,8 @@ class Smarty_Security {
         'func_get_args', 'func_get_arg', 'class_alias', 'iterator_apply',
         'mysql_fetch_object', 'mysqli_fetch_object',
         'dom_import_simplexml', 'simplexml_load_string', 'simplexml_load_file',
-        'spl_autoload_register', 'spl_autoload_call', 'sscanf', 'curl_init'
+        'spl_autoload_register', 'spl_autoload_call', 'sscanf', 'curl_init',
+        'debug_backtrace',
     );
     /**
      * This is an array of trusted PHP modifiers.
@@ -181,8 +183,8 @@ class Smarty_Security {
      * @var array
      */
     protected $_trusted_dir = null;
-    
-    
+
+
     /**
      * @param Smarty $smarty
      */
@@ -190,7 +192,7 @@ class Smarty_Security {
     {
         $this->smarty = $smarty;
     }
-    
+
     /**
      * Check if PHP function is trusted.
      *
@@ -363,7 +365,7 @@ class Smarty_Security {
      * To simplify things, isTrustedUri() resolves all input to "{$PROTOCOL}://{$HOSTNAME}".
      * So "http://username:password@hello.world.example.org:8080/some-path?some=query-string"
      * is reduced to "http://hello.world.example.org" prior to applying the patters from {@link $trusted_uri}.
-     * @param string $uri 
+     * @param string $uri
      * @return boolean true if URI is trusted
      * @throws SmartyException if URI is not trusted
      * @uses $trusted_uri for list of patterns to match against $uri
@@ -379,10 +381,10 @@ class Smarty_Security {
                 }
             }
         }
-        
+
         throw new SmartyException("URI '{$uri}' not allowed by security setting");
     }
-    
+
     /**
      * Check if directory of file resource is trusted.
      *

@@ -49,7 +49,14 @@ class waMailPOP3
     public function connect()
     {
         // try open socket
-        $this->handler = @fsockopen($this->server, $this->port, $errno, $errstr, $this->getOption('timeout', 10));
+        if ($this->getOption('tls')) {
+            $this->handler = @stream_socket_client('tcp://'.$this->server.':'.$this->port, $errno, $errstr, $this->getOption('timeout', 10));
+            if ($this->handler) {
+                stream_socket_enable_crypto($this->handler, true, STREAM_CRYPTO_METHOD_TLS_CLIENT);
+            }
+        } else {
+            $this->handler = @fsockopen($this->server, $this->port, $errno, $errstr, $this->getOption('timeout', 10));
+        }
         if ($this->handler) {
             // read welcome
             $this->read();

@@ -308,7 +308,7 @@ msgstr ""
 
 #: /wa-system/contact/waContactNameField.class.php:24
 msgid "At least one of these fields must be filled"
-msgstr "At least one of these fields must be filled in."
+msgstr ""
 
 #: /wa-system/contact/waContactsCollection.class.php:285
 msgid "All contacts"
@@ -1769,4 +1769,37 @@ msgstr ""
 
 #: /wa-system/response/waResponse.class.php:407
 msgid "<strong>%s</strong> theme preview in action"
+msgstr ""
+
+#: /wa-system/auth/waAuth.class.php:180
+msgid "A confirmation link has been sent to your email address provided during the signup. Please click this link to confirm your email and to sign in. <a class=\"send-email-confirmation\" href=\"%s\">Resend the link</a>"
+msgstr ""
+
+#: /wa-system/controller/waLoginAction.class.php:58
+msgid "Confirmation link has been resent"
+msgstr ""
+
+#: /wa-system/controller/waLoginAction.class.php:63
+msgid "Invalid login"
+msgstr ""
+
+#: /wa-system/design/templates/DesignEdit.html:6
+msgid "This design theme is also used on <strong>%s</strong>. Editing theme template files will affect both %s and other listed routes."
+msgstr ""
+
+#: /wa-system/design/templates/Theme.html:3
+msgid "%s design theme"
+msgstr ""
+
+#: /wa-system/design/templates/Theme.html:182
+msgid "Customizing %s theme settings below will affect all listed routes. If you want to keep individual designs, use separate theme copies (clones) for each route."
+msgstr ""
+
+#: /wa-system/design/templates/Theme.html:263
+#: /wa-system/design/templates/Themes.html:114
+msgid "There are no routes for %s app on this site yet."
+msgstr ""
+
+#: /wa-system/file/waFiles.class.php:111
+msgid "Error copying file from %s to %s"
 msgstr ""

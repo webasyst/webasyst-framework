@@ -198,11 +198,29 @@ class waViewHelper
                 $html .= $domain_config['head_js'];
             }
             $response = wa()->getResponse();
-            if (!empty($domain_config['google_analytics'])) {
-                $html .= <<<HTML
+            if (isset($domain_config['google_analytics']) && !is_array($domain_config['google_analytics'])) {
+                $domain_config['google_analytics'] = array(
+                    'code' => $domain_config['google_analytics']
+                );
+            }
+            if (!empty($domain_config['google_analytics']['code'])) {
+                if (!empty($domain_config['google_analytics']['universal'])) {
+                    $html .= <<<HTML
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', '{$domain_config['google_analytics']['code']}', 'auto');
+ga('send', 'pageview');
+{$response->getGoogleAnalytics()}
+</script>
+HTML;
+                } else {
+                    $html .= <<<HTML
 <script type="text/javascript">
   var _gaq = _gaq || [];
-  _gaq.push(['_setAccount', '{$domain_config['google_analytics']}']);
+  _gaq.push(['_setAccount', '{$domain_config['google_analytics']['code']}']);
   _gaq.push(['_trackPageview']);
  {$response->getGoogleAnalytics()}
   (function() {
@@ -212,6 +230,7 @@ class waViewHelper
   })();
 </script>
 HTML;
+                }
             }
             return $html;
         }
@@ -294,7 +313,7 @@ HTML;
 <!--[if IE 7]><link type="text/css" href="'.wa()->getRootUrl().'wa-content/css/wa/wa-1.0.ie7.css" rel="stylesheet"><![endif]-->
 <link type="text/css" rel="stylesheet" href="'.wa()->getRootUrl().'wa-content/font/ruble/arial/fontface.css">'."\n";
             
-            if ( !waRequest::isMobile() )
+            if ( !waRequest::isMobile(false) )
                 $css .= '<meta name="viewport" content="width=device-width, initial-scale=1" />'."\n"; //for handling iPad and tablet computer default view properly
             
         } else {
@@ -561,10 +580,16 @@ HTML;
     }
 
 
+    /**
+     * @param string $to
+     * @param array $errors
+     * @return bool
+     */
     public function sendEmail($to, &$errors)
     {
         if (!$to) {
-            $to = waMail::getDefaultFrom();
+            $app_settings_model = new waAppSettingsModel();
+            $to = $app_settings_model->get('webasyst', 'email');
         }
         if (!$to) {
             $errors['all'] = _ws('Recipient (administrator) email is not valid');

@@ -12,6 +12,7 @@
  * @package wa-system
  * @subpackage config
  */
+
 class waAppConfig extends SystemConfig
 {
     protected $application = null;
@@ -58,7 +59,7 @@ class waAppConfig extends SystemConfig
                 if (isset($cache_config[$type])) {
                     $options = $cache_config[$type];
                     $cache_type = $options['type'];
-                    $cache_class = 'wa' . ucfirst($cache_type) . 'CacheAdapter';
+                    $cache_class = 'wa'.ucfirst($cache_type).'CacheAdapter';
                     try {
                         $cache_adapter = new $cache_class($options);
                         $this->cache = new waCache($cache_adapter, $this->application);
@@ -106,47 +107,47 @@ class waAppConfig extends SystemConfig
             // add system actions for design and pages
             if (!empty($this->info['themes'])) {
                 $actions = array_merge($actions, array(
-                    'template_add' => array(
+                    'template_add'    => array(
                         'name' => _ws('added a new template')
                     ),
-                    'template_edit' => array(
+                    'template_edit'   => array(
                         'name' => _ws('edited template')
                     ),
                     'template_delete' => array(
                         'name' => _ws('deleted template')
                     ),
-                    'theme_upload' => array(
+                    'theme_upload'    => array(
                         'name' => _ws('uploaded a new theme')
                     ),
-                    'theme_download' => array(
+                    'theme_download'  => array(
                         'name' => _ws('downloaded theme')
                     ),
-                    'theme_delete' => array(
+                    'theme_delete'    => array(
                         'name' => _ws('deleted theme')
                     ),
-                    'theme_reset' => array(
+                    'theme_reset'     => array(
                         'name' => _ws('reset theme settings')
                     ),
                     'theme_duplicate' => array(
                         'name' => _ws('create theme duplicate')
                     ),
-                    'theme_rename' => array(
+                    'theme_rename'    => array(
                         'name' => _ws('renamed theme')
                     ),
                 ));
             }
             if (!empty($this->info['pages'])) {
                 $actions = array_merge($actions, array(
-                    'page_add' => array(
+                    'page_add'    => array(
                         'name' => _ws('added a new page')
                     ),
-                    'page_edit' => array(
+                    'page_edit'   => array(
                         'name' => _ws('edited a website page')
                     ),
                     'page_delete' => array(
                         'name' => _ws('deleted page')
                     ),
-                    'page_move' => array(
+                    'page_move'   => array(
                         'name' => _ws('moved page')
                     )
                 ));
@@ -198,7 +199,7 @@ class waAppConfig extends SystemConfig
         $files = array(
             $this->getAppPath().'/lib/config/config.php', // defaults
             $this->getPath('config').'/apps/'.$this->application.'/config.php' // custom
-            );
+        );
         foreach ($files as $file_path) {
             if (file_exists($file_path)) {
                 $config = include($file_path);
@@ -316,10 +317,6 @@ class waAppConfig extends SystemConfig
                 $app_settings_model = new waAppSettingsModel();
             }
             if (!$app_settings_model->get($this->application, 'edition')) {
-                $file_sql = $this->getAppPath('lib/config/app.'.$this->info['edition'].'.sql');
-                if (file_exists($file_sql)) {
-                    self::executeSQL($file_sql, 1);
-                }
                 $app_settings_model->set($this->application, 'edition', $this->info['edition']);
             }
         }
@@ -338,48 +335,11 @@ class waAppConfig extends SystemConfig
             $schema = include($file_db);
             $model = new waModel();
             $model->createSchema($schema);
-        } else {
-            // check app.sql
-            $file_sql = $this->getAppPath('lib/config/app.sql');
-            if (file_exists($file_sql)) {
-                self::executeSQL($file_sql, 1);
-            }
         }
         $file = $this->getAppConfigPath('install');
         if (file_exists($file)) {
             $app_id = $this->application;
             include($file);
-        }
-    }
-
-    /**
-     * Execute sql from file
-     *
-     * @static
-     * @param string $file_sql
-     * @param int $type
-     *          0 - execute all queries,
-     *          1 - ignore drop table,
-     *          2 - execute only drop table
-     * @return void
-     */
-    public static function executeSQL($file_sql, $type = 0)
-    {
-        $sqls = file_get_contents($file_sql);
-        $sqls = preg_split("/;\r?\n/", $sqls);
-        $model = new waModel();
-        foreach ($sqls as $sql) {
-            if (trim($sql)) {
-                // ignore drop table
-                if ($type == 1 && preg_match('/drop[\s\t\r\n]+table/is', $sql)) {
-                    continue;
-                }
-                // execute only drop table
-                elseif ($type == 2 && !preg_match('/drop[\s\t\r\n]+table/is', $sql)) {
-                    continue;
-                }
-                $model->exec($sql);
-            }
         }
     }
 
@@ -398,12 +358,6 @@ class waAppConfig extends SystemConfig
             foreach ($schema as $table => $fields) {
                 $sql = "DROP TABLE IF EXISTS ".$table;
                 $model->exec($sql);
-            }
-        } else {
-            // check app.sql
-            $file_sql = $this->getAppPath('lib/config/app.sql');
-            if (file_exists($file_sql)) {
-                self::executeSQL($file_sql, 2);
             }
         }
         // Remove all app settings
@@ -439,15 +393,22 @@ class waAppConfig extends SystemConfig
         if (self::isDebug() || !file_exists($cache_file)) {
             waFiles::create(waConfig::get('wa_path_cache').'/apps/'.$this->application.'/config');
             $paths = array($this->getAppPath().'/lib/');
-            if (file_exists($this->getAppPath().'/plugins')) {
-                $paths[] = $this->getAppPath().'/plugins/';
+
+            $all_plugins = waFiles::listdir($this->getAppPath().'/plugins');
+            foreach ($all_plugins as $plugin_id) {
+                $path = $this->getPluginPath($plugin_id).'/lib/';
+                if (file_exists($path)) {
+                    $paths[] = $path;
+                }
             }
+
             if (file_exists($this->getAppPath().'/api')) {
                 $v = waRequest::request('v', 1, 'int');
                 if (file_exists($this->getAppPath().'/api/v'.$v)) {
                     $paths[] = $this->getAppPath().'/api/v'.$v.'/';
                 }
             }
+
             $result = array();
             $length = strlen($this->getRootPath());
             foreach ($paths as $path) {
@@ -459,8 +420,11 @@ class waAppConfig extends SystemConfig
                     }
                 }
             }
-            if (!file_exists($cache_file)) {
+
+            if (!self::isDebug()) {
                 waUtils::varExportToFile($result, $cache_file);
+            } else {
+                waFiles::delete($cache_file);
             }
             return $result;
         }
@@ -477,6 +441,9 @@ class waAppConfig extends SystemConfig
             if ($this->isIgnoreFile($f)) {
                 continue;
             } elseif (is_dir($path.$f)) {
+                if (substr($path.$f, -12) == '/lib/updates') {
+                    continue;
+                }
                 $result = array_merge($result, $this->getPHPFiles($path.$f.'/'));
             } elseif (substr($f, -4) == '.php') {
                 $result[] = $path.$f;
@@ -488,7 +455,7 @@ class waAppConfig extends SystemConfig
 
     protected function isIgnoreFile($f)
     {
-        return $f === '.' || $f === '..' || $f === '.svn';
+        return $f === '.' || $f === '..' || $f === '.svn' || $f === '.git';
     }
 
     protected function getClassByFilename($filename)
@@ -684,7 +651,12 @@ class waAppConfig extends SystemConfig
                         $this->plugins[$plugin_id] = $plugin_info;
                     }
                 }
-                waUtils::varExportToFile($this->plugins, $file);
+                if (!SystemConfig::isDebug()) {
+                    waUtils::varExportToFile($this->plugins, $file);
+                } else {
+                    waFiles::delete($file);
+                }
+
             } else {
                 $this->plugins = include($file);
             }

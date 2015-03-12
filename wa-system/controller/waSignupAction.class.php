@@ -25,7 +25,7 @@ class waSignupAction extends waViewAction
                 // assign new contact to view
                 $this->view->assign('contact', $contact);
             }
-        } elseif($confirm_hash) {
+        } elseif ($confirm_hash) {
             if ($contact = $this->confirmEmail($confirm_hash, $errors)) { // if we successfully confirmed email
                 // assign contact with confirmed email to view
                 $this->view->assign('contact', $contact);
@@ -93,13 +93,19 @@ class waSignupAction extends waViewAction
             }
         }
 
-        // set unconfirmed status for email
+        $auth_config = wa()->getAuthConfig();
+
+        // set unknown or unconfirmed status for email
         if (isset($data['email']) && $data['email']) {
-            $data['email'] = array('value' => $data['email'], 'status' => 'unconfirmed');
+            if (!empty($auth_config['params']['confirm_email'])) {
+                $email_status = 'unconfirmed';
+            } else {
+                $email_status = 'unknown';
+            }
+            $data['email'] = array('value' => $data['email'], 'status' => $email_status);
         }
 
         // check captcha
-        $auth_config = wa()->getAuthConfig();
         if (isset($auth_config['signup_captcha']) && $auth_config['signup_captcha']) {
             if (!wa()->getCaptcha()->isValid()) {
                 $errors['captcha'] = _ws('Invalid captcha');
@@ -161,8 +167,10 @@ class waSignupAction extends waViewAction
 
             // try auth new contact
             try {
-                if (wa()->getAuth()->auth($contact)) {
-                    $this->logAction('signup', wa()->getEnv());
+                if (empty($data['email']) || empty($auth_config['params']['confirm_email'])) {
+                    if (wa()->getAuth()->auth($contact)) {
+                        $this->logAction('signup', wa()->getEnv());
+                    }
                 }
             } catch (waException $e) {
                 $errors = array('auth' => $e->getMessage());
@@ -226,24 +234,28 @@ class waSignupAction extends waViewAction
     private function sendConfirmationLink(waContact $contact)
     {
         $config = wa()->getAuthConfig();
-
-        $confirmation_hash = md5(time().'rfb2:zfbdbawrsddswr4$h5t3/.`w'.mt_rand().mt_rand().mt_rand());
-        $contact->setSettings(wa()->getApp(), "email_confirmation_hash", $confirmation_hash);
-        $ce = new waContactEmailsModel();
-        $unconfirmed_email = $ce->getByField(array(
-            'contact_id' => $contact->getId(),
-            'email' => $contact->get('email', 'default'),
-            'status' => 'unconfirmed'
-        ));
-        $hash = substr($confirmation_hash, 0, 16).$unconfirmed_email['id'].substr($confirmation_hash, -16);
-        if (isset($config['params']['confirm_email'])) {
+        if (!empty($config['params']['confirm_email'])) {
+            $confirmation_hash = md5(time().'rfb2:zfbdbawrsddswr4$h5t3/.`w'.mt_rand().mt_rand().mt_rand());
+            $contact->setSettings(wa()->getApp(), "email_confirmation_hash", $confirmation_hash);
+            $ce = new waContactEmailsModel();
+            $unconfirmed_email = $ce->getByField(array(
+                'contact_id' => $contact->getId(),
+                'email' => $contact->get('email', 'default'),
+                'status' => 'unconfirmed'
+            ));
+            $hash = substr($confirmation_hash, 0, 16).$unconfirmed_email['id'].substr($confirmation_hash, -16);
             $this->view->assign('email_confirmation_hash', $hash);
             return true;
         }
         return false;
     }
 
-    private function confirmEmail($confirmation_hash, &$errors = array())
+    /**
+     * @param $confirmation_hash
+     * @param array $errors
+     * @return bool|waContact
+     */
+    protected function confirmEmail($confirmation_hash, &$errors = array())
     {
         $email_id = substr(substr($confirmation_hash, 16), 0, -16);
         $confirmation_hash = substr($confirmation_hash, 0, 16).substr($confirmation_hash, -16);

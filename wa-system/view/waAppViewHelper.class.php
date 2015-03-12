@@ -12,11 +12,26 @@ class waAppViewHelper
         $this->wa = $system;
     }
 
+    /**
+     * @param string $theme_id
+     * @return string
+     */
     public function themePath($theme_id)
     {
         $app_id = $this->wa->getConfig()->getApplication();
         $theme = new waTheme($theme_id, $app_id);
         return $theme->path ? $theme->path.'/' : null;
+    }
+
+    /**
+     * @param string $theme_id
+     * @return string
+     */
+    public function themeUrl($theme_id)
+    {
+        $app_id = $this->wa->getConfig()->getApplication();
+        $theme = new waTheme($theme_id, $app_id);
+        return $theme->path ? $theme->getUrl() : null;
     }
 
     public function pages($parent_id = 0, $with_params = true)

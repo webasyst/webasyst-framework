@@ -18,10 +18,10 @@ class waContactDataStorage extends waContactStorage
      * @var waContactDataModel
      */
     protected $model;
-    
+
     /**
-     * Returns model 
-     * 
+     * Returns model
+     *
      * @return waContactDataModel
      */
     public function getModel()
@@ -29,9 +29,9 @@ class waContactDataStorage extends waContactStorage
         if (!$this->model) {
             $this->model = new waContactDataModel();
         }
-        return $this->model;        
+        return $this->model;
     }
-    
+
     public function load(waContact $contact, $fields = null)
     {
         foreach ($fields as $k => $field_id) {
@@ -42,12 +42,12 @@ class waContactDataStorage extends waContactStorage
             }
         }
         return $this->getModel()->getData($contact->getId(), $fields);
-    }    
-    
+    }
+
     public function save(waContact $contact, $fields)
     {
         $contact_id = $contact->getId();
-        $data = array(); 
+        $data = array();
         foreach ($fields as $field => $value) {
             $f = waContactFields::get($field);
             if (!$f || !$f->isMulti()) {
@@ -72,7 +72,7 @@ class waContactDataStorage extends waContactStorage
                         }
                     }
                     if ($delete) {
-                        $sql = "DELETE FROM ".$this->getModel()->getTableName()." 
+                        $sql = "DELETE FROM ".$this->getModel()->getTableName()."
                                 WHERE contact_id = ".(int)$contact_id." AND field IN ('".implode("', '", $this->getModel()->escape($delete))."')";
                         $this->getModel()->exec($sql);
                     }
@@ -96,47 +96,47 @@ class waContactDataStorage extends waContactStorage
                 $delete_flag = false;
                 foreach ($value as $value_info) {
                     if ($value_info === null) {
-                        $sql = "DELETE FROM ".$this->getModel()->getTableName()." 
-                                WHERE contact_id = i:id AND ". 
-                                ($f instanceof waContactCompositeField ? "field LIKE s:field" : "field = s:field")." 
+                        $sql = "DELETE FROM ".$this->getModel()->getTableName()."
+                                WHERE contact_id = i:id AND ".
+                                ($f instanceof waContactCompositeField ? "field LIKE s:field" : "field = s:field")."
                                 AND sort >= i:sort";
-                        $this->getModel()->exec($sql, array('id' => $contact_id, 
+                        $this->getModel()->exec($sql, array('id' => $contact_id,
                         'field' => $field.($f instanceof waContactCompositeField ? ':%' : ''), 'sort' => $sort));
                         continue;
                     } elseif (!is_array($value_info) && !strlen($value_info)) {
-                        $sql = "DELETE FROM ".$this->getModel()->getTableName()." 
+                        $sql = "DELETE FROM ".$this->getModel()->getTableName()."
                                 WHERE contact_id = i:id AND field = s:field AND sort = i:sort";
                         $this->getModel()->exec($sql, array('id' => $contact_id, 'field' => $field, 'sort' => $sort));
                         continue;
                     }
                     if (is_array($value_info) && (isset($value_info['data']) || $f instanceof waContactCompositeField)) {
-                        $v = isset($value_info['data']) ? $value_info['data'] : $value_info['value']; 
-                        $ext = isset($value_info['ext']) ? $value_info['ext'] : ''; 
+                        $v = isset($value_info['data']) ? $value_info['data'] : (isset($value_info['value']) ? $value_info['value'] : array());
+                        $ext = isset($value_info['ext']) ? $value_info['ext'] : '';
                         foreach ($v as $subfield => $subvalue) {
                             if (!strlen($subvalue)) {
-                                    $sql = "DELETE FROM ".$this->getModel()->getTableName()." 
+                                    $sql = "DELETE FROM ".$this->getModel()->getTableName()."
                                             WHERE contact_id = i:id AND field = s:field AND sort = i:sort";
-                                    $this->getModel()->exec($sql, array('id' => $contact_id, 'field' => $field.":".$subfield, 'sort' => $sort));                                    
+                                    $this->getModel()->exec($sql, array('id' => $contact_id, 'field' => $field.":".$subfield, 'sort' => $sort));
                             } else {
                                 $data[$field.":".$subfield][$sort] = array(
                                     'value' => $subvalue,
                                     'ext' => $ext
                                 );
                             }
-                        }    
+                        }
                     } else {
                         if (is_array($value_info)) {
                             $v = $value_info['value'];
-                            $ext = isset($value_info['ext']) ? $value_info['ext'] : ''; 
+                            $ext = isset($value_info['ext']) ? $value_info['ext'] : '';
                         } else {
                             $v = $value_info;
                             $ext = '';
                         }
                         if (!strlen($v)) {
-                            $sql = "DELETE FROM ".$this->getModel()->getTableName()." 
+                            $sql = "DELETE FROM ".$this->getModel()->getTableName()."
                                     WHERE contact_id = i:id AND field = s:field AND sort = i:sort";
                             $this->getModel()->exec($sql, array('id' => $contact_id, 'field' => $field, 'sort' => $sort));
-                            $delete_flag = true;                                    
+                            $delete_flag = true;
                             continue;
                         }
                         $data[$field][$sort] = array(
@@ -147,17 +147,17 @@ class waContactDataStorage extends waContactStorage
                     $sort++;
                 }
                 if ($delete_flag) {
-                    $sql = "DELETE FROM ".$this->getModel()->getTableName()." 
+                    $sql = "DELETE FROM ".$this->getModel()->getTableName()."
                             WHERE contact_id = i:id AND field = s:field AND sort >= i:sort";
-                    $this->getModel()->exec($sql, array('id' => $contact_id, 'field' => $field, 'sort' => $sort));                                    
+                    $this->getModel()->exec($sql, array('id' => $contact_id, 'field' => $field, 'sort' => $sort));
                 }
             }
         }
-        
+
         if ($data) {
-            
+
             // float with ',' convert to string with '.'
-            
+
             foreach ($data as $f => &$f_rows) {
                 foreach ($f_rows as $s => &$row) {
                     if (isset($row['value']) && is_float($row['value'])) {
@@ -167,7 +167,7 @@ class waContactDataStorage extends waContactStorage
                 unset($row);
             }
             unset($f_rows);
-            
+
             // find records to update
             $rows = $this->getModel()->getByField(array(
                 'contact_id' => $contact->getId(),
@@ -197,7 +197,7 @@ class waContactDataStorage extends waContactStorage
         }
         return true;
     }
-    
+
     public function deleteAll($fields, $type=null) {
         if (!$fields) {
             return;
@@ -205,7 +205,7 @@ class waContactDataStorage extends waContactStorage
         if (!is_array($fields)) {
             $fields = array($fields);
         }
-        
+
         $where = array();
         foreach($fields as $id) {
             $f = waContactFields::get($id);
@@ -215,7 +215,7 @@ class waContactDataStorage extends waContactStorage
                 $where[] = "cd.field='".$this->getModel()->escape($id)."'";
             }
         }
-        
+
         switch($type) {
             case 'person':
             case 'company':
@@ -230,7 +230,7 @@ class waContactDataStorage extends waContactStorage
                 $join = '';
                 $cwhere = '';
         }
-        
+
         // Hope they know what they're doing :)
         $sql = "DELETE cd FROM ".$this->getModel()->getTableName()." AS cd $join
                 WHERE $cwhere(".implode(' OR ', $where).")";
@@ -252,7 +252,7 @@ class waContactDataStorage extends waContactStorage
                     FROM wa_contact_data
                     WHERE field=:field
                     GROUP BY value
-                    HAVING num > 1 
+                    HAVING num > 1
                 ) AS t";
         $r = $this->getModel()->query($sql, array('field' => $field))->fetchField();
         return $r ? $r : 0;
@@ -272,14 +272,14 @@ class waContactDataStorage extends waContactStorage
         if (!$values) {
             return array();
         }
-        
+
         $sql = "SELECT value, contact_id
                 FROM wa_contact_data
                 WHERE field=:field
                     AND value IN (:values)".
                     ($excludeIds ? " AND contact_id NOT IN (:excludeIds) " : '').
                 "GROUP BY value";
-                
+
         $r = $this->getModel()->query($sql, array('field' => $field, 'values' => $values, 'excludeIds' => $excludeIds));
         return $r->fetchAll('value', true);
     }

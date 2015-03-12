@@ -26,7 +26,7 @@ class waContactPhoneField extends waContactStringField
 
     protected function setValue($value)
     {
-        if (is_array($value) && isset($value['value'])) {
+        if (is_array($value) && array_key_exists('value', $value)) {
             $v = $value['value'];
         } else {
             $v = $value;
@@ -100,8 +100,8 @@ class waContactPhoneFormatter extends waContactFieldFormatter
 
         $formats_str  = array(
             // 10 digits
-            '0 800 ##-##-##',
-            '0 (###) ##-##-##',
+            '0 800 ###-###',
+            '0 (5##) ##-##-##',
             wa()->getLocale() == 'ru_RU' ? '(###) ###-##-##' : '(###) ###-####',
             // 11 digits
             '(0##) ####-####',
@@ -109,7 +109,7 @@ class waContactPhoneFormatter extends waContactFieldFormatter
             '+7 (###) ###-##-##',
             '8 800 ###-####',
             // 12 digits
-            '+380 (##) ###-##-##',
+            '+38 (0##) ###-##-##',
             '+375 (##) ###-##-##',
             '+44 ## ####-####',
         );
@@ -131,6 +131,7 @@ class waContactPhoneFormatter extends waContactFieldFormatter
                             $c = $v[0][$i++];
                         }
                     }
+                    unset($c);
                     $v[0] = implode('', $f);
                     return implode(' ', $v);
                 }
@@ -185,7 +186,7 @@ class waContactPhoneJsFormatter extends waContactPhoneFormatter
         if (is_array($data)) {
             $data['value'] = parent::format($data);
             // No htmlspecialchars, because isn't needed here
-            // This formatted data means to be used in js code, 
+            // This formatted data means to be used in js code,
             // make escape there by yourself
             return $data;
         } else {

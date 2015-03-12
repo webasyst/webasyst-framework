@@ -97,6 +97,7 @@ abstract class waView
 		// Add global variables
 		$this->assign(array(
 			'wa_url'            => $wa->getRootUrl(),
+            'wa_static_url'     => $wa->getRootUrl(),
 			'wa_backend_url'    => waSystem::getInstance()->getConfig()->getBackendUrl(true),
 			'wa_app'            => $wa->getApp(),
 			'wa_app_url'        => $wa->getAppUrl(null, true),

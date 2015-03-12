@@ -16,7 +16,12 @@ class webasystLoginAction extends waLoginAction
             } else {
                 $this->template = 'Login.html';
             }
-            $this->template = wa()->getAppPath('templates/actions/login/', 'webasyst').$this->template;
+            $template_file = wa()->getDataPath('templates/'.$this->template, false, 'webasyst');
+            if (file_exists($template_file)) {
+                $this->template = 'file:'.$template_file;
+            } else {
+                $this->template = wa()->getAppPath('templates/actions/login/', 'webasyst') . $this->template;
+            }
         }
         $this->view->assign('login', waRequest::post('login', $this->getStorage()->read('auth_login')));
         parent::execute();

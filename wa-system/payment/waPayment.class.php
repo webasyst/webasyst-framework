@@ -266,17 +266,25 @@ abstract class waPayment extends waSystemPlugin
         return '';
     }
 
-    //Callback
-
     final public static function callback($module_id, $request = array())
     {
-        self::log($module_id, $request);
+        $log = array(
+            'method'  => __METHOD__,
+            'request' => $request,
+            'ip'      => waRequest::getIp(),
+            'agent'   => waRequest::getUserAgent(),
+        );
+        self::log($module_id, $log);
         $module = null;
         try {
             $module = self::factory($module_id);
             return $module->callbackInit($request)->init()->callbackHandler($request);
         } catch (Exception $ex) {
-            self::log($module ? $module_id : 'general', $ex->getMessage());
+            $log = array(
+                'method'    => __METHOD__,
+                'exception' => $ex->getMessage(),
+            );
+            self::log($module ? $module->getId() : 'general', $log);
             if ($module) {
                 return $module->callbackExceptionHandler($ex);
             } else {
@@ -292,6 +300,7 @@ abstract class waPayment extends waSystemPlugin
     {
         return array(
             'error' => $ex->getMessage(),
+            'code'  => $ex->getCode(),
         );
     }
 
@@ -299,15 +308,16 @@ abstract class waPayment extends waSystemPlugin
      *
      * Determine target application and merchant key
      * @param array $request
-     * @return waPayment
+     * @return self
      */
     protected function callbackInit($request)
     {
-        self::log($this->id, array(
+        $log = array(
             'method'      => __METHOD__,
             'app_id'      => $this->app_id,
             'merchant_id' => $this->merchant_id,
-        ));
+        );
+        self::log($this->id, $log);
         return $this;
     }
 
@@ -323,7 +333,6 @@ abstract class waPayment extends waSystemPlugin
 
     /**
      *
-     * Enter description here ...
      * @param string $method
      * @param array $transaction_data
      * @return array[string]mixed
@@ -335,17 +344,18 @@ abstract class waPayment extends waSystemPlugin
     protected function execAppCallback($method, $transaction_data)
     {
         try {
-            $result = $this->getAdapter()->execCallbackHandler($method, $transaction_data);
+            $result = $this->getAdapter()->execCallbackHandler($method, $transaction_data + array('payment_plugin_instance' => &$this));
         } catch (Exception $e) {
             $result = array('error' => $e->getMessage());
         }
-        self::log($this->id, array(
+        $log = array(
             'method'           => __METHOD__,
             'app_id'           => $this->app_id,
             'callback_method'  => $method,
-            'transaction_data' => var_export($transaction_data, true),
-            'result'           => var_export($result, true),
-        ));
+            'transaction_data' => $transaction_data,
+            'result'           => $result,
+        );
+        self::log($this->id, $log);
 
         if ($result) {
             $transaction_model = new waTransactionModel();
@@ -445,7 +455,7 @@ abstract class waPayment extends waSystemPlugin
 
     function __call($method, $params)
     {
-        //XXX back compatibilty
+        //XXX back compatibility
         if (preg_match('/^([a-z]+)Transaction$/', $method, $matches)) {
             $method = $matches[1];
         }
@@ -469,16 +479,22 @@ abstract class waPayment extends waSystemPlugin
 
     protected static function log($module_id, $data)
     {
-        $module_id = strtolower($module_id);
-        $filename = 'payment/'.$module_id.'Payment.log';
-        $rec = "data:\n";
-        if (is_array($data)) {
-            foreach ($data as $key => $val) {
-                $rec .= "$key=$val&\n";
-            }
-        } else {
-            $rec .= "$data\n";
+        static $id;
+        if(empty($id)){
+            $id = uniqid();
         }
+        $rec = '#'.$id."\n";
+        $module_id = strtolower($module_id);
+        if (!preg_match('@^[a-z][a-z0-9]+$@', $module_id)) {
+            $rec .= 'Invalid module_id: '.$module_id."\n";
+            $module_id = 'general';
+        }
+        $filename = 'payment/'.$module_id.'Payment.log';
+        $rec .= "data:\n";
+        if (!is_string($data)) {
+            $data = var_export($data, true);
+        }
+        $rec .= "$data\n";
         waLog::log($rec, $filename);
     }
 
@@ -514,10 +530,11 @@ abstract class waPayment extends waSystemPlugin
         $wa_transaction_data['id'] = $transaction_model->insert($wa_transaction_data);
 
         if (!empty($wa_transaction_data['parent_id']) && !empty($wa_transaction_data['parent_state'])) {
-            $transaction_model->updateById($wa_transaction_data['parent_id'], array(
+            $data = array(
                 'state'           => $wa_transaction_data['parent_state'],
                 'update_datetime' => date('Y-m-d H:i:s')
-            ));
+            );
+            $transaction_model->updateById($wa_transaction_data['parent_id'], $data);
         }
         if ($transaction_raw_data && is_array($transaction_raw_data)) {
             $transaction_data_model = new waTransactionDataModel();
@@ -653,7 +670,7 @@ abstract class waPayment extends waSystemPlugin
      */
     public final function getRelayUrl($force_https = null)
     {
-        $url = wa()->getRootUrl(true).'payments.php/'.$this->id.'/';
+        $url = wa()->getRootUrl(true, true).'payments.php/'.$this->id.'/';
         //TODO detect - is allowed https
         if ($force_https) {
             $url = preg_replace('@^http://@', 'https://', $url);

@@ -659,6 +659,9 @@ HTACCESS;
      */
     protected function saveThemeSettings(waTheme $theme, $settings, $files)
     {
+        if($theme->type == waTheme::ORIGINAL){
+            $theme->copy();
+        }
         $old_settings = $theme['settings'];
         foreach ($files as $k => $f) {
             /**

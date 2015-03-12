@@ -109,6 +109,7 @@ class waMailDecode
                     $this->read();
                 }
                 $part = $this->parse();
+
                 if ($part && is_array($part)) {
                     $this->decodePart($part);
                 }
@@ -214,17 +215,20 @@ class waMailDecode
         $html = preg_replace("/href=(['\"]).*?javascript:(.*)?\\1/i", "onclick=' $2 '", $html);
 
         //remove javascript from tags
-        $pattern = "/<(.*)?javascript.*?\(.*?((?>[^()]+)|(?R)).*?\)?\)(.*)?>/i";
-        while (preg_match($pattern, $html)) {
-            $html = preg_replace($pattern, "<$1$3$4$5>", $html);
+        if (preg_match('/javascript/i', $html)) {
+            $pattern = "/<(.*)?javascript.*?\(.*?((?>[^()]+)|(?R)).*?\)?\)(.*)?>/i";
+            while (preg_match($pattern, $html, $m)) {
+                $html = preg_replace($pattern, "<$1$3$4$5>", $html);
+            }
         }
+        if (preg_match('/:expr/i', $html)) {
+            // dump expressions from contibuted content
+            $html = preg_replace("/:expression\(.*?((?>[^(.*?)]+)|(?R)).*?\)\)/i", "", $html);
 
-        // dump expressions from contibuted content
-        $html = preg_replace("/:expression\(.*?((?>[^(.*?)]+)|(?R)).*?\)\)/i", "", $html);
-
-        $pattern = "/<(.*)?:expr.*?\(.*?((?>[^()]+)|(?R)).*?\)?\)(.*)?>/i";
-        while (preg_match($pattern, $html)) {
-            $html = preg_replace($pattern, "<$1$3$4$5>", $html);
+            $pattern = "/<(.*)?:expr.*?\(.*?((?>[^()]+)|(?R)).*?\)?\)(.*)?>/i";
+            while (preg_match($pattern, $html)) {
+                $html = preg_replace($pattern, "<$1$3$4$5>", $html);
+            }
         }
         // remove all on* events
         $pattern = "/<([^>]*)?[\s\r\n\t]on.+?=?\s?.+?(['\"]).*?\\2\s?(.*)?>/i";
