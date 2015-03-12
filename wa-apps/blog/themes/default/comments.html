@@ -16,6 +16,8 @@ $(document).ready(function() {
 });
 </script>
 
+{$post.comments|print_r}
+
 <section class="comments" itemscope itemtype="http://schema.org/UserComments">
     <a name="comments"></a>
         <h3 class="comment-count" {if $post.comment_count == 0}style="display: none;"{/if}>{_w('%d comment','%d comments',$post.comment_count)}</h3>
@@ -134,7 +136,7 @@ $(document).ready(function() {
             <input type="hidden" name="auth_provider" value="{$current_auth_source|default:blogCommentModel::AUTH_GUEST}">
             <input type="hidden" name="parent" value="0">
             <input type="submit" value="[`Add comment`]">
-            <img src="{$wa_url}wa-content/img/loading16.gif" style="display: none;" alt="">
+            <img src="{$wa_static_url}wa-content/img/loading16.gif" style="display: none;" alt="">
         </div>
     </form>
 </section>
