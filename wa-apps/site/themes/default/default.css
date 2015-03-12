@@ -17,8 +17,8 @@ article, aside, credentials, figcaption, figure, footer, header, hgroup, menu, n
 /* Common HTML elements, fonts, and colors
 ------------------------------------------ */
 html,
-body { width: 100%; min-height: 100%; font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 14px; background: #888 /* below-the-footer color */; line-height: 1.42em; }
-a { color: #006bd8; outline:0 none; }
+body { width: 100%; min-height: 100%; font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 14px; background: #888 /* below-the-footer color */; line-height: 1.4em; }
+a { color: #006bd8; outline:0 none; text-decoration: none; }
 a:focus { outline:none; outline-offset:-4px; }
 a:visited { color: #85c; }
 a.not-visited:visited { color: #006bd8; }
@@ -47,7 +47,8 @@ fieldset p select { width:99%; }
 blockquote { color: #555; font-size:0.9em; padding:20px; background: #f3f3f3; }
 blockquote cite { font-size: 0.9em; }
 hr { background-color: rgba(0,0,0,0.15); height: 1px; border: 0; }
-p { font-family: 'Lucida Grande', 'Lucida Sans Unicode', 'Helvetica Neue', Arial, sans-serif; }
+p { font-family: 'Lucida Grande', 'Lucida Sans Unicode', 'Helvetica Neue', Arial, sans-serif; line-height: 1.4em; }
+p a { text-decoration: underline; }
 input::-webkit-input-placeholder { color: #bbb; }
 input:-moz-placeholder,
 input::-moz-placeholder { color: #bbb; }
@@ -100,7 +101,7 @@ input:-ms-input-placeholder { color: #bbb; }
 .welcome { text-align: center; background: url('img/welcome.png') no-repeat; background-position: top center; padding-top: 300px; background-size: 256px 256px; margin-bottom: 30px; }
 .welcome h1 { font-weight: normal; font-size: 2em; }
 
-.staff { background: #eeb; padding: 1px 4px 2px !important; color: #345; font-size: 0.9em; border: 1px solid rgba(0,0,0,0.1); border-radius: 3px; }
+.staff { background: #eeb; padding: 1px 4px !important; color: #345; font-size: 0.9em; border: 1px solid rgba(0,0,0,0.1); border-radius: 3px; }
 
 /* Buttons
 ---------- */
@@ -201,6 +202,10 @@ ul.tree li.selected a { background: transparent; }
 ul.tree ul { padding-left: 20px; list-style: none; }
 ul.tree ul a { padding: 3px 6px; font-size: 90%; }
 
+.paging-nav { text-align: center; }
+.paging-nav ul li a { padding: 8px 10px; }
+.paging-nav ul li.selected a { background: #eee; border-radius: 4px; }
+
 /* Sign up & Login forms
 ------------------------ */
 
@@ -238,6 +243,10 @@ ul.tree ul a { padding: 3px 6px; font-size: 90%; }
 .wa-form .wa-field .wa-value p input[type="checkbox"] { display: inline; }
 .wa-form .wa-field .wa-value p .field.wa-required span:after { content: " *"; color: #faa; }
 .wa-form .wa-field.wa-required .wa-name:after { content: " *"; color: #faa; }
+.wa-signup-form .wa-form .wa-field.wa-field-email { margin-top: 20px; }
+.wa-signup-form .wa-form .wa-field.wa-field-email .wa-value input { min-width: 300px; }
+.wa-signup-form .wa-form .wa-field.wa-field-password .wa-value input,
+.wa-signup-form .wa-form .wa-field.wa-field-password_confirm .wa-value input { min-width: 200px; width: 200px; }
 
 .wa-captcha { padding: 7px 0 10px; }
 .wa-captcha p { margin: 0; }
@@ -326,7 +335,7 @@ table.lined tr.service td { padding-top: 5px; padding-bottom: 5px; padding-left:
 .nav-negative.auth li { background: #666; }
 .nav-negative.search { padding: 0 20px 20px; background: #fff; height: 32px; }
 
-header.globalheader { background: #fff; }
+header.globalheader { background: #fff; position: relative; }
 header a { text-decoration: none; }
 
 header #globalnav { }
@@ -347,10 +356,35 @@ header .apps li.selected a { font-weight: bold; color: #000; background: transpa
 header .dimmed .apps li.selected a { background: #fff; }
 header .dimmed .apps { margin-left: 0; }
 
-header .pages { padding: 0; margin: 20px 0 20px 20px; }
-header .pages li { float: left; list-style: none; margin-right: 10px; }
+header .pages { padding: 0; margin: 20px 0 20px 20px; text-align: center; }
+header .pages li { display: inline-block; list-style: none; margin-right: 10px; margin-left: 10px; }
 header .pages li a { display: block; padding: 5px 7px; margin-right: 0px; font-size: 1.1em; }
 header .pages li.selected a { font-weight: bold; color: #000; background: rgba(0,0,0,0.07); border-radius: 3px; }
+
+header ul.pages.flyout-nav li.collapsible { background: url('img/darr.png') no-repeat; background-position: right center; background-size: 16px 16px; }
+header ul.pages.flyout-nav li.collapsible a { padding-right: 20px; }
+header ul.pages.flyout-nav li .flyout { visibility: hidden; overflow: hidden; opacity: 0; height: 0; position: absolute; top: 100%; left: 0; right: 0; box-shadow: 0 15px 20px -20px rgba(0,0,0,0.4); z-index: 10; min-height: 150px; padding: 15px 30px; text-align: left;  -webkit-transition: all 0.3s ease-in-out; transition: all 0.3s ease-in-out; border-bottom: 1px solid #ccc;
+background: #ffffff; /* Old browsers */
+background: -moz-linear-gradient(top,  #ffffff 0%, #eeeeee 100%); /* FF3.6+ */
+background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#ffffff), color-stop(100%,#eeeeee)); /* Chrome,Safari4+ */
+background: -webkit-linear-gradient(top,  #ffffff 0%,#eeeeee 100%); /* Chrome10+,Safari5.1+ */
+background: -o-linear-gradient(top,  #ffffff 0%,#eeeeee 100%); /* Opera 11.10+ */
+background: -ms-linear-gradient(top,  #ffffff 0%,#eeeeee 100%); /* IE10+ */
+background: linear-gradient(to bottom,  #ffffff 0%,#eeeeee 100%); /* W3C */
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#eeeeee',GradientType=0 ); /* IE6-9 */
+}
+header ul.pages.flyout-nav li.submenu-is-shown .flyout { visibility: visible; height: auto; opacity: 1; }
+
+header ul.pages.flyout-nav li .flyout ul.menu-v li { border: none; vertical-align: top; text-align: left; margin: 0 20px 20px 0; }
+header ul.pages.flyout-nav li .flyout ul.menu-v li.collapsible { background: none; }
+header ul.pages.flyout-nav li .flyout ul.menu-v li a { font-weight: bold; padding-left: 0; font-size: 1em; }
+/* header ul.pages.flyout-nav li .flyout ul.menu-v li ul.menu-v { display: block; } */
+header ul.pages.flyout-nav li .flyout ul.menu-v li ul.menu-v li { display: block; margin: 0; font-size: 0.9em; }
+header ul.pages.flyout-nav li .flyout ul.menu-v li ul.menu-v li a { font-weight: normal; }
+header ul.pages.flyout-nav li .flyout ul.menu-v li ul.menu-v li ul { display: none; }
+header ul.pages.flyout-nav li .flyout .tags { font-size: 120%; }
+header ul.pages.flyout-nav li .flyout ul.menu-v.brands { text-align: center; }
+header ul.pages.flyout-nav li .flyout ul.menu-v.brands a { font-size: 1.2em; font-weight: normal; }
 
 header #mobile-nav-toggle { /* mobile only */ display: none; background: url('img/mobile-nav-toggle.png') no-repeat center center; border: none; padding: 5px; background-size: 37px 31px; width: 37px; height: 31px; }
 
@@ -370,8 +404,8 @@ header .cart a.cart-to-checkout { display: none !important; text-align: center; 
 header .cart a.cart-to-checkout:hover { background: #fff !important; }
 header .cart i.cart-icon { background-repeat:no-repeat; height:24px; width:24px; display: block; float: left; text-indent:-9999px; text-decoration:none!important; background-image: url('img/icons.png'); background-size: 260px 160px; background-position: -216px -50px; margin: -3px 10px 0 0; }
 
-header .cart.empty a { background: transparent !important; color: #006bd8; }
-header .cart.empty a:hover { background: #eee !important; }
+header .cart.empty a { background: #eee !important; color: #006bd8; }
+header .cart.empty a:hover { background: #ffc !important; }
 header .cart.empty a:visited,
 header .cart.empty a strong { color: #aaa; }
 header .cart.empty i.cart-icon { background-position: -192px -50px; }
@@ -385,7 +419,7 @@ header .cart.fixed a.cart-to-checkout:hover { color: red !important; }
 /* Main
 ------- */
 
-main.maincontent { clear: both; margin: 0; background: #fff; border: 1px solid transparent /* this seems odd, but it fixes FF 1px black border issue for resized backgrounds */; }
+main.maincontent { display: block; clear: both; margin: 0; background: #fff; border: 1px solid transparent /* this seems odd, but it fixes FF 1px black border issue for resized backgrounds */; }
 main.custom-background .banner { background-size: auto; }
 main.custom-background.stretched .banner { background-size: cover; }
 
@@ -397,6 +431,8 @@ main.custom-background.stretched .banner { background-size: cover; }
 .banner .search .search-wrapper:hover { box-shadow: 0 5px 13px -8px rgba(0,0,0,0.4); transition: 0.1s; }
 .banner .search input { height: 1.3em; font-size: 1.1em; margin-top: 7px; padding-right: 58px; padding-top: 1px; }
 .banner .search button { width: 52px; height: 36px; background-color: green; background-image: url(img/search20.png); background-repeat: no-repeat; background-position: 16px 8px; background-size: 20px 20px; }
+.banner .search .search-sample { display: inline-block; margin-top: 12px; font-size: 0.8em; color: #dec; }
+.banner .search .search-sample a { color: #efd; text-decoration: underline; }
 
 .banner ul.menu-h li a { color: #ff9; text-shadow: 0 1px 1px rgba(0,0,0,0.7); font-size: 100%; font-weight: bold; font-size: 1.2em; padding-top: 5px; padding-right: 20px; }
 .banner ul.menu-h li.selected a { color: #ff0; text-shadow: 0 1px 3px rgba(0,0,0,0.7); }
@@ -413,11 +449,6 @@ main.custom-background.stretched .banner { background-size: cover; }
 .nav-sidebar-header { DISPLAY: NONE; padding: 13px 16px; line-height: 1.3em; background: #fff url('img/darr.png') no-repeat; background-position: right 10px center; background-size: 16px 16px; border-bottom: 1px solid rgba(0,0,0,0.15); text-decoration: none; box-shadow: 0 2px 8px -8px rgba(0, 0, 0, 0.7); white-space: nowrap; }
 .nav-sidebar-body { }
 .nav-sidebar.right { float: right; }
-
-.nav-hotties { padding: 0px; background: #fafaf1; border-bottom: 1px solid rgba(0,0,0,0.15); }
-.nav-hotties ul.menu-h li { padding: 0; }
-.nav-hotties .dummy { padding: 14px; }
-#hoax-hotties { display: none; z-index: 1; /* container element for tablet-only navigation elements */}
 
 .waSlideMenu-back { background: url('img/larr.png') no-repeat; background-position: left center; background-size: 32px 16px; padding-left: 13px !important; }
 .waSlideMenu-back a { color: #aaa; }
@@ -531,7 +562,6 @@ html.my ul.menu-h li a { padding: 5px 7px; }
 html.my ul.menu-h li.selected a { color: #fff; }
 
 html.my .nav-sidebar { display: none; }
-html.my .nav-hotties { display: none !important; }
 html.my .page-content { margin-left: 0; }
 
 /* Legacy stuff
@@ -559,7 +589,6 @@ html.my .page-content { margin-left: 0; }
 .color_scheme_blue .bullets,
 .color_scheme_blue .filters,
 .color_scheme_blue .product-sidebar { background-color: #effaff; }
-.color_scheme_blue .nav-hotties,
 .color_scheme_blue .nav-sidebar-header { background-color: #e4f2fc; }
 .color_scheme_blue header .cart a { background-color: #f70; }
 .color_scheme_blue .banner .search button { background-color: #f80; }
@@ -581,7 +610,6 @@ html.my .page-content { margin-left: 0; }
 .color_scheme_red .page,
 .color_scheme_red .nav-sidebar,
 .color_scheme_red .nav-sidebar-body { background-color: #fff9f9; }
-.color_scheme_red .nav-hotties,
 .color_scheme_red .nav-sidebar-header { background-color: #fee; }
 .color_scheme_red .bullets,
 .color_scheme_red .filters,
@@ -634,7 +662,6 @@ html.my .page-content { margin-left: 0; }
 .color_scheme_purple .filters,
 .color_scheme_purple .product-sidebar { background: #f1eef3; }
 .color_scheme_purple .subscribe { background: #e3dee6; }
-.color_scheme_purple .nav-hotties,
 .color_scheme_purple .nav-sidebar-header { background-color: #f3f1f6; }
 .color_scheme_purple .banner .search button { background-color: #63356e; }
 .color_scheme_purple .banner .search button:hover { background-color: #79348a; }
@@ -653,7 +680,6 @@ html.my .page-content { margin-left: 0; }
 .color_scheme_gray .banner ul.menu-h li.selected a { color: #000; text-shadow: 0 1px 3px #fff; }
 .color_scheme_gray .banner ul.menu-h li a:hover { color: red !important; }
 .color_scheme_gray .subscribe { background: #ddd; }
-.color_scheme_gray .nav-hotties,
 .color_scheme_gray .nav-sidebar-header { background-color: #f3f3f3; }
 .color_scheme_gray .banner .search button { background-color: #777; }
 .color_scheme_gray .banner .search button:hover { background-color: #555; }
@@ -725,7 +751,7 @@ html.my .page-content { margin-left: 0; }
     
     body { -webkit-text-size-adjust: 100%; }
     .container { padding: 0 10px; }
-    .page-content { overflow-x: hidden; }
+/*     .page-content { overflow-x: hidden; } */
     header .offline span.hint { display: none; }
 
 }
@@ -751,8 +777,6 @@ html.my .page-content { margin-left: 0; }
     .page-nav .nav-sidebar { float: none !important; width: auto !important; padding: 0 !important; }
     .page-content { margin-left: 0 !important; margin-right: 0 !important; padding: 20px 15px; overflow-x: hidden; }
     
-    .nav-hotties { margin-left: 0; padding-left: 0; margin-bottom: 15px; border-bottom: none; max-height: none; }
-    .nav-hotties ul.menu-h li { display: block; border-bottom: 1px solid rgba(0, 0, 0, 0.1); }
     .nav-sidebar-header,
     .dropdown-sidebar .nav-sidebar-header { background-color: transparent; box-shadow: none; border-bottom: none; }
     .nav-sidebar-header { display: none; }
@@ -786,9 +810,9 @@ html.my .page-content { margin-left: 0; }
     .banner { padding-bottom: 25px; }
     .banner h3 { font-size: 1.2em; }
     .banner .search { width: 100%; }    
-    .banner .search .search-wrapper { margin-left: 0; padding-right: 0; }    
+    .banner .search .search-wrapper { margin-left: 0; padding-right: 0; }
 
-    footer { top: 0; padding-top: 10px; }
+    footer.globalfooter { top: 0; padding-top: 10px; }
     .footer-block { width: 120px; margin: 10px 15px !important; }
     .footer-block#copyright { width: auto; display: block; }
     .footer-block a { margin-bottom: 3px; }
@@ -812,6 +836,10 @@ html.my .page-content { margin-left: 0; }
     html.my ul.menu-h li a { padding: 10px; }
     .comment-form-fields label { float: left; }
     .sub-links li { font-size: 110%; margin-bottom: 5px; }
+    
+    .wa-signup-form .wa-form .wa-field.wa-field-email .wa-value input { min-width: 240px; }
+    .wa-signup-form .wa-form .wa-field.wa-field-password .wa-value input,
+    .wa-signup-form .wa-form .wa-field.wa-field-password_confirm .wa-value input { min-width: 160px; width: 160px; }
 
 }
 
