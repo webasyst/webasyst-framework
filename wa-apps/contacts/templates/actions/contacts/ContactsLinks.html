@@ -63,7 +63,7 @@
         {/if}
 
         buttons.empty().append($('<input type="submit" class="button red" value="'+button_text+'">').click(function() {
-            var url = '?module=contacts&action=delete';
+            var url = '{$wa_app_url}?module=contacts&action=delete';
             var self = $(this).attr('disabled', true).after('<i class="icon16 loading"></i>');
             var ids = {json_encode($ids)};
             $.post(url, { 'id[]': ids }, function (response) {

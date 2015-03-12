@@ -9,9 +9,9 @@
   * its .initialize() method.
   */
 $.wa.fieldTypesFactory = function(contactEditor, fieldType) {
-    
+
     contactEditor = contactEditor || $.wa.contactEditorFactory();
-    
+
     contactEditor.baseFieldType = {
 
         //
@@ -19,7 +19,7 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) {
         //
 
         contactType: 'person',
-                
+
         options: {},
 
         /** For multifields, return a new (empty) editor for this field. */
@@ -321,7 +321,7 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) {
             }
             return result;
         },
-        
+
         setMode: function(mode, replaceEditor) {
             if (typeof replaceEditor == 'undefined') {
                 replaceEditor = true;
@@ -344,7 +344,7 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) {
             return this.domElement;
         }
 
-        
+
     });
     contactEditor.factoryTypes.Text = $.extend({}, contactEditor.factoryTypes.String);
     contactEditor.factoryTypes.Phone = $.extend({}, contactEditor.baseFieldType);
@@ -510,7 +510,7 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) {
         },
 
         getRegionsControllerUrl: function(country) {
-            return (contactEditor.regionsUrl || '?module=backend&action=regions&country=')+country;
+            return contactEditor.getRegionsUrl() + country;
         },
 
         newInlineFieldElement: function(mode) {
@@ -544,7 +544,7 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) {
                             } else {
                                 prev_val = prev_val_el.find(':selected').text().trim();
                             }
-                            
+
                             var lookup = function(select, val) {
                                 var v = val.toLocaleLowerCase();
                                 select.find('option').each(function() {
@@ -554,7 +554,7 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) {
                                     }
                                 });
                             };
-                            
+
                             region_field.domElement.empty().append(region_field.newInlineFieldElement(mode).children());
 
                             var val_el = region_field.domElement.find('.val');
@@ -602,9 +602,9 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) {
                 } else {
                     // show as input
                     var result = $('<div></div>').append(contactEditor.baseFieldType.newInlineFieldElement.call(this, mode));
-                    
+
                     result.find('.val').val('');
-                    
+
                     //$.wa.defaultInputValue(result.find('.val'), this.fieldData.name+(this.fieldData.required ? ' ('+$_('required')+')' : ''), 'empty');
                     result.find('.val').attr('placeholder', this.fieldData.name+(this.fieldData.required ? ' ('+$_('required')+')' : ''));
                     return result;
@@ -693,11 +693,11 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) {
                 if (this.fieldData.disabled && this.fieldData.disabled[id]) {
                     options += ' disabled="disabled"';
                 }
-                
+
                 if ((this.fieldValue || []).indexOf(id) !== -1) {
                     options += ' checked="checked"';
                 }
-                
+
                 options += ' />'+((this.fieldData.options[id] && contactEditor.htmlentities(this.fieldData.options[id])) || $_('&lt;no name&gt;'))+'</label></li>';
             }
             return contactEditor.initCheckboxList('<div class="c-checkbox-menu-container val"><div><ul class="menu-v compact with-icons c-checkbox-menu">'+options+'</ul></div></div>');
@@ -775,7 +775,7 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) {
                 }
             }
         },
-                
+
         setMode: function(mode, replaceEditor) {
             if (typeof replaceEditor == 'undefined') {
                 replaceEditor = true;
@@ -799,7 +799,7 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) {
             if (contactEditor.fieldEditors.title) {
                 title = contactEditor.fieldEditors.title.getValue()+' ';
             }
-            
+
             if (mode === 'view' && !contactEditor.not_update_name) {
 
                 var contact_fullname = $('#contact-fullname');
@@ -878,7 +878,7 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) {
 
             return this.domElement;
         }
-                
+
     });
 
     contactEditor.factoryTypes.NameSubfield = $.extend({}, contactEditor.baseFieldType, {});
@@ -1203,8 +1203,8 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) {
         newFieldElement: function(mode) {
             if(this.fieldData.read_only) {
                 mode = 'view';
-            } 
-           
+            }
+
             var childWrapper = $('<div class="multifield-subfields"></div>');
             var inlineMode = typeof this.subfieldFactory.newInlineFieldElement == 'function';
 
@@ -1453,7 +1453,7 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) {
             }
 
             var wrapper = $('<div class="composite '+mode+' field" data-field-id="'+this.fieldData.id+'"></div>').append(contactEditor.wrapper('<span style="display:none" class="replace-with-ext"></span>', this.fieldData.name, 'hdr'));
-            
+
             // For each field call its newFieldElement and add to wrapper
             for(var sfid in this.subfieldEditors) {
                 var sf = this.subfieldEditors[sfid];
@@ -1577,7 +1577,7 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) {
                 if (sf.fieldData.type !== 'Hidden') {
                     //$.wa.defaultInputValue(element.find('input.val'), sf.fieldData.name+(sf.fieldData.required ? ' ('+$_('required')+')' : ''), 'empty');
                     element.find('input.val').attr(
-                        'placeholder', 
+                        'placeholder',
                         sf.fieldData.name+(sf.fieldData.required ? ' ('+$_('required')+')' : '')
                     );
                 }
@@ -1587,7 +1587,7 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) {
     });
 
     contactEditor.factoryTypes.Birthday = contactEditor.factoryTypes.Date = $.extend({}, contactEditor.baseFieldType, {
-        
+
         newInlineFieldElement: function(mode) {
             // Do not show anything in view mode if field is empty
             if(mode == 'view' && !this.fieldValue.value) {
@@ -1605,7 +1605,7 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) {
                     }
                     day_html.append(o);
                 }
-                
+
                 var month_html = $('<select class="val" data-part="month"><option data=""></option></select>');
                 var months = [
                     'January',
@@ -1629,7 +1629,7 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) {
                     }
                     month_html.append(o);
                 }
-                
+
                 var year_html = $('<input type="text" data-part="year" class="val" style="min-width: 32px; width: 32px;" placeholder="' + $_('year') + '">');
                 if (data['year']) {
                     year_html.val(data['year']);
@@ -1645,7 +1645,7 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) {
             }
             return result;
         },
-                
+
         getValue: function() {
             var result = this.fieldValue;
             if (this.currentMode == 'edit' && this.domElement !== null) {
@@ -1667,7 +1667,7 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) {
             }
             return result;
         },
-                
+
         setValue: function(data) {
             this.fieldValue = data;
             if (this.currentMode == 'null' || this.domElement === null) {
@@ -1683,7 +1683,7 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) {
                 this.domElement.find('.val').html(this.fieldValue);
             }
         }
-                
+
     });
 
     contactEditor.factoryTypes.IM = $.extend({}, contactEditor.baseFieldType, {
@@ -1858,7 +1858,7 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) {
             return null;
         }
     });
-    
+
     if (fieldType) {
         return contactEditor.factoryTypes[fieldType];
     } else {

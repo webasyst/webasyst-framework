@@ -219,7 +219,7 @@ class contactsContactsMergeController extends waJsonController
         
         // Merge event
         $params = array('contacts' => $contact_ids, 'id' => $master_data['id']);
-        wa()->event('merge', $params);
+        wa()->event(array('contacts', 'merge'), $params);
         
         // Delete all merged contacts
         $contact_model = new waContactModel();

@@ -1,10 +1,16 @@
 {if $wa->request('standalone')}
+
     {* this js and css are dependencies and this action could be used by other apps *}
-    <script type="text/javascript" src="{$static_url}js/fieldTypes.js"></script>
-    <script type="text/javascript" src="{$static_url}js/wa.contactEditor.js"></script>
+
+    {wa_js file="js/compiled/contact-info-standalone.js"}
+        {$static_url}js/fieldTypes.js
+        {$static_url}js/wa.contactEditor.js
+    {/wa_js}
+
     <link rel="stylesheet" type="text/css" href="{$static_url}css/contacts.css" />
     <link rel="stylesheet" type="text/css" href="{$static_url}css/contacts.ie7.css" />
     <link rel="stylesheet" type="text/css" href="{$static_url}css/contacts.ie8.css" />
+    <script type="text/javascript" src="{$wa_app_url}?action=loc&v={$wa->version()}"></script>
 
     {$wa->js(false)}
 
@@ -46,7 +52,6 @@
         <!-- content -->
         <div class="block not-padded c-core-content">
             <div class="block">
-
                 {* This block is used to confirm deletion *}
                 <div id="contact-top-block" class="wa-box" style="display:none"></div>
 
@@ -57,26 +62,26 @@
                         {if empty($readonly) && !$wa->request('readonly')}
                             <div class="wa-contact-photo-buttons">
                                 <div class="photo-change-link">
-                                    <a href="{ifset($photo_editor_url, "#/contact/photo/{$contact->getId()}")}">[`Change photo`]</a>
+                                    <a href="{ifset($photo_editor_url, $wa_app_url|cat:"#/contact/photo/{$contact->getId()}")}">[`Change photo`]</a>
                                 </div>
                             </div>
                         {/if}
-                        
+
                         <!-- plugin hook: 'backend_contact_info.photo' -->
                         {* @event backend_customer.%plugin_id%.photo *}
                         {if !empty($backend_contact_info)}
                             {foreach $backend_contact_info as $_}{ifset($_.photo)}{/foreach}
                         {/if}
-                        
+
                     </div>
                     <div class="details">
-                        
+
                         <!-- plugin hook: 'backend_contact_info.before_header' -->
                         {* @event backend_customer.%plugin_id%.before_header *}
                         {if !empty($backend_contact_info)}
                             {foreach $backend_contact_info as $_}{ifset($_.before_header)}{/foreach}
                         {/if}
-                        
+
                         <div class="details-header" id="contact-fullname">
                             <h1 class="name"><span class="title">{$contact.title|escape}</span> {$contact.firstname|escape} {$contact.middlename|escape} {$contact.lastname|escape}</h1>
                             {if !$contact.is_company}
@@ -92,29 +97,29 @@
                                     {/if}
                                 </h1>
                             {/if}
-                            
+
                             <!-- plugin hook: 'backend_contact_info.header' -->
                             {* @event backend_customer.%plugin_id%.header *}
                             {if !empty($backend_contact_info)}
                                 {foreach $backend_contact_info as $_}{ifset($_.header)}{/foreach}
                             {/if}
-                            
+
                         </div>
-                        
+
                         <!-- plugin hook: 'backend_contact_info.after_header' -->
                         {* @event backend_customer.%plugin_id%.after_header *}
                         {if !empty($backend_contact_info)}
                             {foreach $backend_contact_info as $_}{ifset($_.after_header)}{/foreach}
                         {/if}
-                        
+
                         <p class="status"></p>
-                        
+
                         <!-- plugin hook: 'backend_contact_info.before_top' -->
                         {* @event backend_customer.%plugin_id%.before_top *}
                         {if !empty($backend_contact_info)}
                             {foreach $backend_contact_info as $_}{ifset($_.before_top)}{/foreach}
                         {/if}
-                        
+
                         <ul id="contact-info-top" class="menu-v compact">
                             {if $top}
                                 {foreach $top as $top_field}
@@ -122,7 +127,7 @@
                                 {/foreach}
                             {/if}
                         </ul>
-                        
+
                         <!-- plugin hook: 'backend_contact_info.after_top' -->
                         {* @event backend_customer.%plugin_id%.after_top *}
                         {if !empty($backend_contact_info)}
@@ -151,7 +156,7 @@
             <div class="block not-padded tab-contents-wrapper">
                 <div id="tc-contact" class="tab-content">
                     <div class="block double-padded">
-                        {if empty($readonly) && !$wa->request('readonly')}
+                        {if ($own_profile || empty($readonly)) && !$wa->request('readonly')}
                             <a class="float-right no-underline c-edit-contact" href="javascript:void(0);" id="edit-contact-double">
                                 <i class="icon16 edit"></i>[`Edit`]
                             </a>
@@ -170,7 +175,7 @@
                                 </ul>
                             {/if}
                         </div>
-                        {if empty($readonly) && !$wa->request('readonly') && empty($own_profile)}
+                        {if empty($readonly) && !$wa->request('readonly') && empty($own_profile) && !$wa->request('no_delete')}
                             <div style="width: 100%; float: left;" id="c-delete-contact-wrapper">
                                 <a href="javascript:void(0);" class="float-right no-underline small delete" id="delete-contact">[`Delete contact`]</a>
                             </div>
@@ -212,6 +217,10 @@
 {if $exists}
 
     <script type="text/javascript">
+
+        if (!$.storage) {
+            $.storage = new $.store();
+        }
 
         // 'Back to' link
         {if !$wa->request('no_backlink')}
@@ -303,6 +312,7 @@
 
         })();
 
+        $.wa.contactEditor.wa_app_url = '{$wa_app_url}';
         $.wa.contactEditor.update_title = {if !$wa->request('no_update_title')}true{else}false{/if};
         $.wa.contactEditor.wa_backend_url = '{$wa_backend_url}';
         $.wa.contactEditor.contact_id = {$contact.id};
@@ -313,17 +323,19 @@
         {if !empty($save_url)}
             $.wa.contactEditor.saveUrl = "{$save_url}";
         {/if}
+        {if !empty($save_geocoords_url)}
+            $.wa.contactEditor.saveGeocoordsUrl = "{$save_geocoords_url}";
+        {/if}
         {if !empty($password_save_url)}
             $.wa.contactEditor.passwdSaveUrl = "{$password_save_url}";
         {/if}
-
 
         $.wa.contactEditor.initFactories({json_encode($contactFields)}, {json_encode($contactFieldsOrder)});
         $.wa.contactEditor.initAllEditors();
         $.wa.contactEditor.initFieldEditors({json_encode($fieldValues)});
         $.wa.contactEditor.initContactInfoBlock('view');
 
-        {if empty($readonly) && !$wa->request('readonly')}
+        {if ($own_profile || empty($readonly)) && !$wa->request('readonly')}
             // Edit button onclick
             $('.c-edit-contact').click(function() {
                 $.wa.contactEditor.switchToTab('contact');
@@ -347,7 +359,7 @@
 
         {/if}
 
-        {if isset($history) && $history}
+        {if !$wa->request('standalone') && !empty($history)}
             // Update history
             $.wa.history.updateHistory({json_encode($history)});
         {/if}
@@ -368,7 +380,7 @@
             }
         });
 
-        {if empty($readonly) && !$wa->request('readonly') && empty($own_profile)}
+        {if empty($readonly) && !$wa->request('readonly') && empty($own_profile) && !$wa->request('no_delete')}
             var info_block = $('#contact-info-block');
             var bottom_offset = info_block.offset().top + info_block.height();
             var wrapper = $('#c-delete-contact-wrapper');
