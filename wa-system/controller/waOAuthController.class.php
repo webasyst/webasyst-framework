@@ -163,6 +163,11 @@ class waOAuthController extends waViewController
                 $contact->setPhoto($path);
             }
         }
+        /**
+         * @event signup
+         * @param waContact $contact
+         */
+        wa()->event('signup', $contact);
         return $contact;
     }
 }
