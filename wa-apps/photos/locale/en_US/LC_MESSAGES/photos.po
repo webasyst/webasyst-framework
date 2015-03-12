@@ -1671,3 +1671,7 @@ msgstr ""
 #: /wa-apps/photos/lib/config/site.php:126
 msgid "Returns sub albums by <em>parent_album_id</em>. If <em>parent_album_id</em> is empty, root albums will be returned."
 msgstr ""
+
+#: /wa-apps/photos/templates/actions/dialog/DeleteAlbum.html:20
+msgid "Delete sub albums too"
+msgstr ""

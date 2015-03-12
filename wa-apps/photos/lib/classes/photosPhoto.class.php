@@ -618,7 +618,7 @@ class photosPhoto
             }
         }
         $str = preg_replace('/[^a-zA-Z0-9_-]+/', '', $str);
-        if (!$str) {
+        if (!strlen($str)) {
             $str = date('Ymd');
         }
         return strtolower($str);
