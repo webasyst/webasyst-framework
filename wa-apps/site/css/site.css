@@ -33,6 +33,10 @@ a.s-settings-link.selected { background: #eee; }
 
 ul.menu-v.with-icons li a { word-break: break-all; }
 
+.dialog-background { z-index: 1054; }
+.dialog-window { z-index: 1055 /* redactor editor z-index */; }
+.dialog .ace { padding: 15px 12px; }
+
 /* content part */
 .s-content { margin-bottom: 70px !important; }
 .s-content .s-editor { background: #eee; zoom:1; }

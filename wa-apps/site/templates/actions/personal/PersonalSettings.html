@@ -61,20 +61,20 @@
             <form class="s-auth-form" method="post" action="?module=personal&action=settingsSave&domain_id={$domain_id}">
 
                 <!-- captcha -->
-                <p>
+                <div class="block not-padded bottom-padded">
                     <input type="hidden" name="auth_captcha" value="0">
                     <input id="s-auth-captcha" name="auth_captcha" type="checkbox" {if $auth_config['signup_captcha']}checked="checked"{/if} value="1">
                     <label for="s-auth-captcha">[`Enable captcha for signup form`]</label><br>
-                </p>
+                </div>
 
                 <!-- third-party auth -->
-                <span>
+                <div>
                     <input id="s-auth-adapters" name="auth_adapters" type="checkbox" {if !empty($auth_config['adapters'])}checked="checked"{/if}>
                     <label for="s-auth-adapters">
                         [`Third-party authorization`]
                         <p class="hint">[`Enables your site visitors to quickly sign up or sign in via accounts on external popular platforms, e.g. Facebook and Twitter. <a href="http://www.webasyst.com/framework/docs/dev/auth-adapters/" target="_blank">Setup instructions</a> <i class="icon10 new-window"></i>`]</p>
                     </label>
-                </span>
+                </div>
 
                 <div id="s-auth-adapters-list" class="block double-padded" style="background: #f7f7f7; margin-bottom: 20px;{if empty($auth_config['adapters'])}display:none{/if}">
                     <ul class="menu-v">

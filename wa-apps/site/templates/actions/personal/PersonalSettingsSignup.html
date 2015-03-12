@@ -171,11 +171,11 @@
     */
 </style>
 
-<p>
+<div>
     <input type="checkbox" id="confirmation-checkbox" name="params[confirm_email]" value="1"{if !empty($params.confirm_email)} checked{/if}>
-    <label for="confirmation-checkbox">[`Confirm email on sign up`]</label><br>
-    <span class="hint">[`A confirmation link will be sent to user after sign up`]</span>
-</p>
+    <label for="confirmation-checkbox">[`Confirm email on sign up`]</label>
+    <p class="hint">[`A unique email confirmation link will be sent to user after the signup. User will be able to sign in only after this confirmation link has been clicked.`]</p>
+</div>
             
     {*<div class="{if empty($params.confirm_mail_body)} hidden{/if} value confirm_mail field">
         <div class="fields email-template-editor narrow-vars">

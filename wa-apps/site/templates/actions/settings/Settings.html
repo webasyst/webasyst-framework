@@ -128,7 +128,11 @@
                     <div class="name">[`Custom head JS`]</div>
                     <div class="value">
                     	[`Google Analytics Property ID`]: 
-                        <input type="text" name="google_analytics" value="{$google_analytics|escape}">
+                        <input type="text" name="google_analytics[code]" value="{$google_analytics.code|escape}">
+                        &nbsp;
+                        <label class="small">
+                            <input type="checkbox" name="google_analytics[universal]" value="1" {if !empty($google_analytics.universal)}checked{/if}> [`Universal Analytics`]
+                        </label>
                         <br />
                         <span class="hint">[`E.g. <strong>UA-123456-1</strong><br />If you are using <a href="https://www.google.com/analytics/">Google Analytics</a> to track your website visits and conversions, instead of embedding Google Analytics JS code manually, enter your Google Analytics Property ID here. A valid Google Analytics code will be automatically embedded into every app and every design theme before the closing &lt;/head&gt; tag.`]</span>
                         <br /><br />

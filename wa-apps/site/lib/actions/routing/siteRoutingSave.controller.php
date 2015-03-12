@@ -99,7 +99,7 @@ class siteRoutingSaveController extends waJsonController
                 }
             }
 
-            if (($new['url'] != $old['url']) || ($new['theme'] != $old['theme']) || ($new['theme_mobile'] != $old['theme_mobile'])) {
+            if (($new['url'] != $old['url']) || (ifset($new['theme']) != ifset($old['theme'])) || (ifset($new['theme_mobile']) != ifset($old['theme_mobile']))) {
                 $this->response['change'] = 1;
             }
 
