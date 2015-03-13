@@ -124,7 +124,7 @@ return array(
     'mailer_sender_params' => array(
         'sender_id' => array('int', 11, 'null' => 0),
         'name' => array('varchar', 32, 'null' => 0),
-        'value' => array('varchar', 255, 'null' => 0),
+        'value' => array('text', 'null' => 0),
         ':keys' => array(
             'PRIMARY' => array('sender_id', 'name'),
         ),

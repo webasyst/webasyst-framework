@@ -131,8 +131,8 @@ class mailerTemplatesImport2Action extends waViewAction
         $url_prefix = wa()->getDataUrl('files/'.$template_id.'/', true, 'mailer', true);
         $url_prefix = str_replace('https://', 'http://', $url_prefix);
         $files_to_extract = array();
-        $preview_image = null;
-        for($i = 0; $i < $archive->numFiles; $i++) {
+
+        for ($i = 0; $i < $archive->numFiles; $i++) {
             if ($i == $import_index) {
                 continue;
             }
@@ -141,15 +141,17 @@ class mailerTemplatesImport2Action extends waViewAction
                 continue;
             }
             if (false !== strpos($html, $archive_path)) {
-                $html = str_replace(array('./'.$archive_path, $archive_path), '{REPLACE_WITH_PATH}', $html);
-                $html = str_replace('{REPLACE_WITH_PATH}', $url_prefix.$archive_path, $html);
                 $files_to_extract[$archive_path] = $archive->statName($archive_path);
             }
-            // Look for a template preview named <template_file_name>_preview
-            if (!$preview_image && self::stripExt(basename($archive_path)) == $data['subject'].'_preview') {
-                $preview_image = $data_path.$archive_path;
-                $files_to_extract[$archive_path] = $archive->statName($archive_path);
-            }
+        }
+        uksort($files_to_extract, array('mailerTemplatesImport2Action', 'sortFiles'));
+
+        foreach ($files_to_extract as $archive_path => $file_info) {
+            $html = str_replace(array('./'.$archive_path, $archive_path), md5($archive_path), $html);
+        }
+
+        foreach ($files_to_extract as $archive_path => $file_info) {
+            $html = str_replace(md5($archive_path), $url_prefix.$archive_path, $html);
         }
 
         // Extract assets and save modified template text.
@@ -158,43 +160,9 @@ class mailerTemplatesImport2Action extends waViewAction
                 waFiles::delete($data_path);
             }
             waFiles::create($data_path);
+
             $archive->extractTo($data_path, array_keys($files_to_extract));
-
-            // Use the largest image as a template preview, when not found otherwise.
-            if (!$preview_image) {
-                $size = 0;
-                foreach($files_to_extract as $file_data) {
-                    $ext = strtolower(pathinfo($file_data['name'], PATHINFO_EXTENSION));
-                    if (in_array($ext, array('jpg', 'jpeg', 'png', 'gif'))) {
-                        if ($file_data['size'] > $size) {
-                            $size = $file_data['size'];
-                            $preview_image = $data_path.$file_data['name'];
-                        }
-                    }
-                }
-            }
-
-            // Save template preview when found.
-            // !!! Preview functionality is (temporarily?..) disabled.
-            if (false && $preview_image) {
-                $full_path = mailerHelper::getTemplatePreviewFile($template_id, true);
-                waFiles::create(dirname($full_path));
-                try {
-                    // Resize and save image
-                    $image = waImage::factory($preview_image);
-                    if ($image->width > 213) {
-                        $image->resize(213);
-                    }
-                    if ($image->height > 128) {
-                        $image->crop(213, 128, 0, 0);
-                    }
-                    $image->save($full_path);
-                } catch(Exception $e) { }
-            }
         }
-
-        // Remove title
-        //$html = preg_replace('~<title>[^<]+</title>~iusm', '<title></title>', $html);
 
         // Replace <style> blocks with inline styles
         $emo = new mailerEmogrifier($html);
@@ -231,6 +199,11 @@ class mailerTemplatesImport2Action extends waViewAction
         $archive->close();
 
         return $result;
+    }
+
+    private static function sortFiles($a, $b)
+    {
+        return mb_strlen($a) < mb_strlen($b);
     }
 }
 

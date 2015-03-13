@@ -41,7 +41,7 @@
     <script src="{$wa_app_static_url}js/vendor/g.pie.modified.js?v{$wa->version()}"></script>
     <script src="{$wa_app_static_url}js/mailer.js?v{$wa->version()}"></script>
     <script src="?action=loc&v={{$wa->version()}}"></script>
-    
+
     <script type="text/javascript" src="{$wa_url}wa-content/js/jquery-ui/jquery.ui.datepicker.min.js"></script>
     {if $wa->locale() !== 'en_US'}
         <script type="text/javascript" src="{$wa_url}wa-content/js/jquery-ui/i18n/jquery.ui.datepicker-{$wa->locale()}.js"></script>
@@ -70,7 +70,7 @@
     </div>
 
     <div class="hidden block" id="available-smarty-variables">
-        <div class="fields width100px variables-wrapper" style="max-width:600px;">
+        <div class="fields variables-wrapper" style="max-width:600px;">
             <div class="field one-var" style="margin: 10px 0;">
                 <div class="name">
                     <span class="hidden var-code">&lt;a href=&quot;{sprintf('{$unsubscribe_link}')}&quot;&gt;[`Unsubscribe`]&lt;/a&gt;</span>
@@ -78,6 +78,16 @@
                 </div>
                 <div class="value hint">
                     [`In every outgoing message this variable will be replaced with a personal recipient link that can be used to unsubscribe from your future mailings.`]
+                </div>
+            </div>
+
+            <div class="field one-var" style="margin-bottom: 20px">
+                <div class="name">
+                    <span class="hidden var-code">&lt;a href=&quot;{sprintf('{$mailview_link}')}&quot;&gt;[`Open in browser`]&lt;/a&gt;</span>
+                    <a href="javascript:void(0)" class="strong inline-link"><b><i>[`Open in browser link`]</i></b></a>
+                </div>
+                <div class="value hint">
+                    [`This variable will be replaced with a personal recipient link that can be used to view message on browser.`]
                 </div>
             </div>
 
@@ -93,6 +103,7 @@
                     <div class="value hint">{$var_name|escape}</div>
                 </div>
             {/foreach}
+
         </div>
     </div>
 

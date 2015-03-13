@@ -64,14 +64,14 @@ jQuery.fn.waEditor = function (options) {
             },
             syncBeforeCallback: function(html) {
                 html = html.replace(/{[a-z$][^}]*}/gi, function (match, offset, full) {
-                    var i = full.indexOf("</script", offset + match.length);
-                    var j = full.indexOf('<script', offset + match.length);
-                    if (i == -1 || (j != -1 && j < i)) {
-                        match = match.replace(/&gt;/g, '>');
-                        match = match.replace(/&lt;/g, '<');
-                        match = match.replace(/&amp;/g, '&');
-                        match = match.replace(/&quot;/g, '"');
-                    }
+                    match = match.replace(/&lt;/g, '<');
+                    match = match.replace(/&gt;/g, '>');
+                    match = match.replace(/&amp;/g, '&');
+                    match = match.replace(/&quot;/g, '"');
+
+                    match = match.replace(/(empty-cells:\s?show;\s*)?outline:\s?rgba\(0,\s?0,\s?0,\s?0\.6\)\sdashed\s1px;?/gi, '');
+                    match = match.replace(/style="\s*"/gi, '');
+
                     return match;
                 });
                 return syncCallback ? syncCallback(html) : html;

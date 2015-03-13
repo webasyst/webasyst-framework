@@ -13,5 +13,5 @@
     {/foreach}
 </ul>
 {else}
-<p class="mailerempty">[`No contact lists - create it in "Contacts" app`].</p>
+<p class="mailerempty">{sprintf_wp('To select contact lists, first create them in <a href="%s">"Contacts"</a> app.', "`$wa_backend_url`contacts")}</p>
 {/if}

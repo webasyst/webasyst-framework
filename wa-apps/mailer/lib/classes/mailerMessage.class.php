@@ -229,6 +229,7 @@ class mailerMessage extends mailerSimpleMessage
     {
         $this->prepareBody();
         $message = $this->getMessage();
+
         $user = wa()->getUser();
         $row_id = '000';
         $message->setTo($user->get('email', 'default'), $user->getName());
@@ -245,6 +246,7 @@ class mailerMessage extends mailerSimpleMessage
         $view = wa()->getView();
         $view->assign('log_id', $row_id);
         $view->assign('unsubscribe_link', $unsubscribe_link);
+        $view->assign('mailview_link', $this->getMailviewLink());
         if ($this->contact_fields) {
             $this->assignContactData($view, $user->load('value'));
         }
@@ -323,6 +325,7 @@ class mailerMessage extends mailerSimpleMessage
                 $view->clearAllAssign();
                 $view->assign('log_id', $row_id);
                 $view->assign('unsubscribe_link', $unsubscribe_link);
+                $view->assign('mailview_link', $this->getMailviewLink($row));
                 if ($this->contact_fields) {
                     $this->assignContactData($view, ifset($contacts[$row['contact_id']], array()));
                 }
@@ -484,6 +487,7 @@ class mailerMessage extends mailerSimpleMessage
                     $view->clearAllAssign();
                     $view->assign('log_id', $row_id);
                     $view->assign('unsubscribe_link', $unsubscribe_link);
+                    $view->assign('mailview_link', $this->getMailviewLink($row));
                     if ($this->contact_fields) {
                         $view = $this->assignContactData($view, $contacts[$row['contact_id']]);
                     }
@@ -613,7 +617,7 @@ class mailerMessage extends mailerSimpleMessage
         wa()->event('campaign.sending', $evt_params);
     }
 
-    protected function assignContactData($view, $contact_data)
+    public function assignContactData($view, $contact_data)
     {
         foreach ($contact_data as $field => $value) {
             if (!$value) {
@@ -660,6 +664,17 @@ class mailerMessage extends mailerSimpleMessage
         return wa()->getRouteUrl('mailer/frontend/unsubscribe', $params, true);
     }
 
+    protected function getMailviewLink($row=null)
+    {
+        $params = array(
+            'hash' => self::getUnsubscribeHash($row),
+        );
+        if ($row && empty($row['id']) && !empty($row['email'])) {
+            $params['email'] = $row['email'];
+        }
+        return wa()->getRouteUrl('mailer/frontend/mailview', $params, true);
+    }
+
     public static function getUnsubscribeHash($row=null)
     {
         if (!$row) {
@@ -702,5 +717,37 @@ class mailerMessage extends mailerSimpleMessage
             $message->attachSigner($signer);
         }
     }
+
+    public function loadMailview($view, $log)
+    {
+        if (empty($this->data)) {
+            return false;
+        }
+        $this->prepareBody();
+
+        $message = $this->data;
+
+        $message['body'] = preg_replace('!<a[^/]+\{\$mailview_link\}[^/]+/a>!i', '', $message['body']);
+
+        // set List-Unsubscribe
+        $unsubscribe_link = $this->getUnsubscribeLink($log);
+
+        // set body
+        $view->clearAllAssign();
+        $view->assign('log_id', $log['id']);
+        $view->assign('unsubscribe_link', $unsubscribe_link);
+
+        if ($this->contact_fields) {
+            $cc = new waContactsCollection(array($log['contact_id']));
+            $contacts = $cc->getContacts(implode(',', $this->contact_fields), 0, 1);
+            $view = $this->assignContactData($view, ifset($contacts[$log['contact_id']], array()));
+        }
+        $message['subject'] = $view->fetch('string:'.$message['subject']);
+        $message['body'] = $view->fetch('string:'.$message['body']);
+
+        $view->assign('message', $message);
+        return true;
+    }
+
 }
 

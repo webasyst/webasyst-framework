@@ -18,7 +18,7 @@ if ($tmpls_dir && is_readable($tmpls_dir) && is_dir($tmpls_dir) && class_exists(
     $locale = wa()->getLocale();
     foreach(waFiles::listdir($tmpls_dir) as $tmpl_name) {
         $tmpl_dir = $tmpls_dir.'/'.$tmpl_name;
-        if (is_readable($tmpl_dir) && is_dir($tmpl_dir)) {
+        if (is_readable($tmpl_dir) && is_dir($tmpl_dir) && strpos($tmpl_name, '.') !== 0) {
             $files = array_fill_keys(waFiles::listdir($tmpl_dir), 1);
             $file = null;
             foreach(array("{$tmpl_name}.{$locale}.zip", "{$tmpl_name}.zip") as $f) {

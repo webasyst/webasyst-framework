@@ -8,18 +8,29 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Poedit-Language: en_US\n"
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Language: en_US\n"
+"X-Generator: Poedit 1.6.10\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
 
 #: /wa-apps/mailer/lib/config/app.php:4
-msgid "No <tt>cron</tt> jobs, required for long or scheduled automated mailings, have been set up for your account."
-msgstr "No <tt>cron</tt> jobs, required for long mailings, have been set up for your account."
+msgid ""
+"No <tt>cron</tt> jobs, required for long or scheduled automated mailings, "
+"have been set up for your account."
+msgstr ""
+"No <tt>cron</tt> jobs, required for long mailings, have been set up for your "
+"account."
 
-msgid "Without <tt>cron</tt> jobs set up, do not close your browser window after clicking on the “Send” button to complete the email sending process."
-msgstr "<br>Important note: Without <tt>cron</tt> jobs set up, do not close your browser window after clicking on the “Send” button to complete the email sending process."
+msgid ""
+"Without <tt>cron</tt> jobs set up, do not close your browser window after "
+"clicking on the “Send” button to complete the email sending process."
+msgstr ""
+"<br>Important note: Without <tt>cron</tt> jobs set up, do not close your "
+"browser window after clicking on the “Send” button to complete the email "
+"sending process."
 
 msgid "You can edit subject to advise your recipients this is just a test."
 msgstr "Edit the subject to show the recipients that this is a test message."
@@ -36,20 +47,33 @@ msgstr "Parameters"
 msgid "No one unsubscribed yet."
 msgstr "No unsubscribed addresses yet."
 
-msgid "Email addresses in this list have a permanent error returned by recipient mail servers."
-msgstr "Previous attempts to send messages to these email addresses have resulted in a permanent error returned by the recipient server."
+msgid ""
+"Email addresses in this list have a permanent error returned by recipient "
+"mail servers."
+msgstr ""
+"Previous attempts to send messages to these email addresses have resulted in "
+"a permanent error returned by the recipient server."
 
-msgid "These addresses either do not exist, or can not receive your message by any reason."
-msgstr "The corresponding mail boxes either do not exist, or cannot receive your message by any reason."
+msgid ""
+"These addresses either do not exist, or can not receive your message by any "
+"reason."
+msgstr ""
+"The corresponding mail boxes either do not exist, or cannot receive your "
+"message by any reason."
 
-msgid "Attempts to repeat sending messages to these addresses may cause banning of your sender server."
-msgstr "Further attempts to send messages to these addresses may result in blacklisting of your mail server."
+msgid ""
+"Attempts to repeat sending messages to these addresses may cause banning of "
+"your sender server."
+msgstr ""
+"Further attempts to send messages to these addresses may result in "
+"blacklisting of your mail server."
 
 msgid "No one subscribed yet."
 msgstr "No subscribed addresses yet."
 
 msgid "http://www.webasyst.com/framework/docs/server/cron/"
 msgstr "http://www.webasyst.com/developers/docs/tips/cron/"
+
 #: /wa-apps/mailer/templates/layouts/Backend.html:71
 #: /wa-apps/mailer/lib/classes/mailerHelper.class.php:12
 #: /wa-apps/mailer/lib/models/mailerTemplate.model.php:55
@@ -62,8 +86,12 @@ msgid "Unsubscribe URL"
 msgstr ""
 
 #: /wa-apps/mailer/templates/layouts/Backend.html:75
-msgid "In every outgoing message this variable will be replaced with a personal recipient link that can be used to unsubscribe from your future mailings."
-msgstr "In every outgoing message this variable will be replaced with a unique link pointing to recipient's personal subscription management page."
+msgid ""
+"In every outgoing message this variable will be replaced with a personal "
+"recipient link that can be used to unsubscribe from your future mailings."
+msgstr ""
+"In every outgoing message this variable will be replaced with a unique link "
+"pointing to recipient's personal subscription management page."
 
 #: /wa-apps/mailer/templates/layouts/Backend.html:80
 msgid "Following variables will be replaced with recipient's contact data:"
@@ -120,7 +148,10 @@ msgid "Unsubscribed  "
 msgstr ""
 
 #: /wa-apps/mailer/templates/actions/unsubscribed/UnsubscribedList.html:8
-msgid "This list contains the email addresses of contacts who have clicked on the “unsubscribe” link in a received message. These addresses are automatically excluded from the recipient lists of all future mailings."
+msgid ""
+"This list contains the email addresses of contacts who have clicked on the "
+"“unsubscribe” link in a received message. These addresses are automatically "
+"excluded from the recipient lists of all future mailings."
 msgstr ""
 
 #: /wa-apps/mailer/templates/actions/unsubscribed/UnsubscribedList.html:14
@@ -241,7 +272,9 @@ msgid "Resubscribe"
 msgstr ""
 
 #: /wa-apps/mailer/templates/actions/unsubscribed/UnsubscribedInfo.html:33
-msgid "We believe that you act on behalf of and for the benefit of this client, or used to unsubscribe for testing purposes."
+msgid ""
+"We believe that you act on behalf of and for the benefit of this client, or "
+"used to unsubscribe for testing purposes."
 msgstr ""
 
 #: /wa-apps/mailer/templates/actions/unsubscribed/UnsubscribedInfo.html:44
@@ -260,11 +293,17 @@ msgid "Edit Return-path"
 msgstr ""
 
 #: /wa-apps/mailer/templates/actions/returnpath/ReturnpathDialog.html:8
-msgid "Specify access parameters for an existing email account that will be used to receive auto notifications from recipients’ mail servers in case of campaign delivery errors."
+msgid ""
+"Specify access parameters for an existing email account that will be used to "
+"receive auto notifications from recipients’ mail servers in case of campaign "
+"delivery errors."
 msgstr ""
 
 #: /wa-apps/mailer/templates/actions/returnpath/ReturnpathDialog.html:9
-msgid "We recommend that you create a dedicated email account for this purpose, and use it merely for receiving and processing these kinds of auto notification messages."
+msgid ""
+"We recommend that you create a dedicated email account for this purpose, and "
+"use it merely for receiving and processing these kinds of auto notification "
+"messages."
 msgstr ""
 
 #: /wa-apps/mailer/templates/actions/returnpath/ReturnpathDialog.html:22
@@ -350,7 +389,11 @@ msgid "No subscribers match search criteria."
 msgstr ""
 
 #: /wa-apps/mailer/templates/actions/subscribers/SubscribersListold.html:17
-msgid "Subscribers are the persons who have expressly opted for receiving email messages from you by submitting their email addresses via a subscription form on your website. To collect subscribers' email addresses, publish the form displayed below on your website or blog."
+msgid ""
+"Subscribers are the persons who have expressly opted for receiving email "
+"messages from you by submitting their email addresses via a subscription "
+"form on your website. To collect subscribers' email addresses, publish the "
+"form displayed below on your website or blog."
 msgstr ""
 
 #: /wa-apps/mailer/templates/actions/subscribers/SubscribersListold.html:25
@@ -359,7 +402,9 @@ msgid "Preview"
 msgstr ""
 
 #: /wa-apps/mailer/templates/actions/subscribers/SubscribersListold.html:29
-msgid "Use this source code to embed in your website or blog where you want this signup form to appear."
+msgid ""
+"Use this source code to embed in your website or blog where you want this "
+"signup form to appear."
 msgstr ""
 
 #: /wa-apps/mailer/templates/actions/subscribers/SubscribersListold.html:63
@@ -376,7 +421,9 @@ msgstr ""
 
 #: /wa-apps/mailer/templates/actions/subscribers/SubscribersListold.html:98
 #: /wa-apps/mailer/templates/actions/subscribers/SubscribersList.html:194
-msgid "NOTE: This contact will not be deleted. It will be only eliminated from the subscription list."
+msgid ""
+"NOTE: This contact will not be deleted. It will be only eliminated from the "
+"subscription list."
 msgstr ""
 
 #: /wa-apps/mailer/templates/actions/subscribers/SubscribersListold.html:99
@@ -397,7 +444,11 @@ msgstr ""
 
 #: /wa-apps/mailer/templates/actions/subscribers/email_template_editor.html:38
 #: /wa-apps/mailer/templates/actions/subscribers/SubscribersFormeditor.html:241
-msgid "It is recommended to specify an existing email address which you do not check for new mail as the sender's address for such notifications; e.g., noreply@yourdomain.com. This will help minimize the number of redundant requests."
+msgid ""
+"It is recommended to specify an existing email address which you do not "
+"check for new mail as the sender's address for such notifications; e.g., "
+"noreply@yourdomain.com. This will help minimize the number of redundant "
+"requests."
 msgstr ""
 
 #: /wa-apps/mailer/templates/actions/subscribers/email_template_editor.html:47
@@ -485,7 +536,6 @@ msgid "Please enter symbols shown on the image:"
 msgstr ""
 
 #: /wa-apps/mailer/templates/actions/subscribers/SubscribersFormeditor.html:116
-#: /wa-apps/mailer/templates/actions/subscribers/SubscribersFormeditor.html:116
 msgid "Send"
 msgstr ""
 
@@ -507,7 +557,8 @@ msgstr ""
 
 #: /wa-apps/mailer/templates/actions/subscribers/SubscribersFormeditor.html:173
 msgid "In case no lists selected, subscriber will be added to All subscribers."
-msgstr "If no list is selected, a subscriber will be added only to “All subscribers”."
+msgstr ""
+"If no list is selected, a subscriber will be added only to “All subscribers”."
 
 #: /wa-apps/mailer/templates/actions/subscribers/SubscribersFormeditor.html:181
 msgid "Show list selection in the form"
@@ -515,14 +566,18 @@ msgstr ""
 
 #: /wa-apps/mailer/templates/actions/subscribers/SubscribersFormeditor.html:182
 msgid "In this case subscribers will be able to select lists themselves."
-msgstr "Enable subscribers to select subscription lists in which they want to be included."
+msgstr ""
+"Enable subscribers to select subscription lists in which they want to be "
+"included."
 
 #: /wa-apps/mailer/templates/actions/subscribers/SubscribersFormeditor.html:189
 msgid "After form submission"
 msgstr ""
 
 #: /wa-apps/mailer/templates/actions/subscribers/SubscribersFormeditor.html:192
-msgid "This setting will redirect clients to any specified URL or display any text message after the form is submitted."
+msgid ""
+"This setting will redirect clients to any specified URL or display any text "
+"message after the form is submitted."
 msgstr ""
 
 #: /wa-apps/mailer/templates/actions/subscribers/SubscribersFormeditor.html:200
@@ -546,11 +601,17 @@ msgid "Confirm subscription"
 msgstr ""
 
 #: /wa-apps/mailer/templates/actions/subscribers/SubscribersFormeditor.html:226
-msgid "Every time you receive a message from an unknown email address which is not yet stored in your Contacts database, an automatic notification will be sent to the sender's address."
+msgid ""
+"Every time you receive a message from an unknown email address which is not "
+"yet stored in your Contacts database, an automatic notification will be sent "
+"to the sender's address."
 msgstr ""
 
 #: /wa-apps/mailer/templates/actions/subscribers/SubscribersFormeditor.html:227
-msgid "This notification contains a special link which must be clicked to confirm the sending of the first request. You may also add extra instructions for your clients to the notification text."
+msgid ""
+"This notification contains a special link which must be clicked to confirm "
+"the sending of the first request. You may also add extra instructions for "
+"your clients to the notification text."
 msgstr ""
 
 #: /wa-apps/mailer/templates/actions/subscribers/SubscribersFormeditor.html:249
@@ -595,7 +656,9 @@ msgid "Lists"
 msgstr ""
 
 #: /wa-apps/mailer/templates/actions/subscribers/Subscribers.html:27
-msgid "Subscriber lists are useful for a thematic grouping of your subscribers, e.g.: news, special offers, new product release, and etc."
+msgid ""
+"Subscriber lists are useful for a thematic grouping of your subscribers, e."
+"g.: news, special offers, new product release, and etc."
 msgstr ""
 
 #: /wa-apps/mailer/templates/actions/subscribers/Subscribers.html:31
@@ -608,7 +671,10 @@ msgid "Forms"
 msgstr ""
 
 #: /wa-apps/mailer/templates/actions/subscribers/Subscribers.html:51
-msgid "Forms are required to organize a subscription on your website. Create a form, publish it on your website, and visitor will be able to subscribe themselves."
+msgid ""
+"Forms are required to organize a subscription on your website. Create a "
+"form, publish it on your website, and visitor will be able to subscribe "
+"themselves."
 msgstr ""
 
 #: /wa-apps/mailer/templates/actions/subscribers/basic_form.html:15
@@ -655,11 +721,18 @@ msgid "Delete list"
 msgstr ""
 
 #: /wa-apps/mailer/templates/actions/subscribers/SubscribersList.html:174
-msgid "Subscribers are the persons who have expressly opted for receiving email messages from you by submitting their email addresses via a subscription form on your website. To collect subscribers' email addresses, <a href=\"javascript:void(0)\">create a form</a> and publish it on your website or blog."
+msgid ""
+"Subscribers are the persons who have expressly opted for receiving email "
+"messages from you by submitting their email addresses via a subscription "
+"form on your website. To collect subscribers' email addresses, <a href="
+"\"javascript:void(0)\">create a form</a> and publish it on your website or "
+"blog."
 msgstr ""
 
 #: /wa-apps/mailer/templates/actions/subscribers/SubscribersList.html:177
-msgid "To collect subscribers' email addresses to this list, enable this list in your subscription form settings."
+msgid ""
+"To collect subscribers' email addresses to this list, enable this list in "
+"your subscription form settings."
 msgstr ""
 
 #: /wa-apps/mailer/templates/actions/subscribers/SubscribersList.html:179
@@ -795,15 +868,23 @@ msgstr ""
 
 #: /wa-apps/mailer/templates/actions/campaigns/CampaignsRecipientsStat.html:34
 #: /wa-apps/mailer/templates/actions/campaigns/CampaignsRecipientsStat.html:45
-msgid "Use this option only if the reason of delivering errors has been resolved; otherwise recipient mail servers can ban your sending server for spam."
+msgid ""
+"Use this option only if the reason of delivering errors has been resolved; "
+"otherwise recipient mail servers can ban your sending server for spam."
 msgstr ""
 
 #: /wa-apps/mailer/templates/actions/campaigns/CampaignsRecipientsStat.html:40
-msgid "Excepted from this list are unsubscribed contacts and those having delivering errors in previous campaign."
+msgid ""
+"Excepted from this list are unsubscribed contacts and those having "
+"delivering errors in previous campaign."
 msgstr ""
 
 #: /wa-apps/mailer/templates/actions/campaigns/CampaignsRecipientsStat.html:41
-msgid "We could not count the number of excepted recipients at this point, because a total number of your campaign recipients is too high. However, we will count every exception in the process of sending, and all such contacts will be placed in &ldquo;Exceptions&rdquo; list in the Sending Report."
+msgid ""
+"We could not count the number of excepted recipients at this point, because "
+"a total number of your campaign recipients is too high. However, we will "
+"count every exception in the process of sending, and all such contacts will "
+"be placed in &ldquo;Exceptions&rdquo; list in the Sending Report."
 msgstr ""
 
 #: /wa-apps/mailer/templates/actions/campaigns/CampaignsRecipientsStat.html:121
@@ -969,13 +1050,11 @@ msgstr ""
 #: /wa-apps/mailer/templates/actions/campaigns/CampaignsArchive.html:48
 #: /wa-apps/mailer/templates/actions/campaigns/CampaignsReport.html:156
 #: /wa-apps/mailer/templates/actions/campaigns/pie_diagram_legend.html:57
-#: /wa-apps/mailer/templates/actions/campaigns/pie_diagram_legend.html:57
 msgid "Bounced"
 msgstr ""
 
 #: /wa-apps/mailer/templates/actions/campaigns/CampaignsArchive.html:49
 #: /wa-apps/mailer/templates/actions/campaigns/CampaignsReport.html:155
-#: /wa-apps/mailer/templates/actions/campaigns/pie_diagram_legend.html:44
 #: /wa-apps/mailer/templates/actions/campaigns/pie_diagram_legend.html:44
 #: /wa-apps/mailer/lib/actions/campaigns/mailerCampaignsRecipientsReport.action.php:157
 msgid "Unsubscribed"
@@ -998,7 +1077,10 @@ msgid "Nothing has been sent yet."
 msgstr ""
 
 #: /wa-apps/mailer/templates/actions/campaigns/CampaignsStep0.html:3
-msgid "Please choose one of these templates to create a new email campaign. If none of the templates suits your needs, click on &ldquo;Blank&rdquo; to compose a new message."
+msgid ""
+"Please choose one of these templates to create a new email campaign. If none "
+"of the templates suits your needs, click on &ldquo;Blank&rdquo; to compose a "
+"new message."
 msgstr ""
 
 #: /wa-apps/mailer/templates/actions/campaigns/CampaignsStep0.html:5
@@ -1006,7 +1088,9 @@ msgid "Manage templates"
 msgstr ""
 
 #: /wa-apps/mailer/templates/actions/campaigns/CampaignsStep0.html:7
-msgid "To create new campaign as a copy of previously sent, navigate to the sent message and click “Create new from this”."
+msgid ""
+"To create new campaign as a copy of previously sent, navigate to the sent "
+"message and click “Create new from this”."
 msgstr ""
 
 #: /wa-apps/mailer/templates/actions/campaigns/CampaignsStep0.html:14
@@ -1041,7 +1125,9 @@ msgid "Send one more test"
 msgstr ""
 
 #: /wa-apps/mailer/templates/actions/campaigns/CampaignsStep1.html:6
-msgid "Be sure to enter your message subject and text to proceed to recipient selection and message sending steps."
+msgid ""
+"Be sure to enter your message subject and text to proceed to recipient "
+"selection and message sending steps."
 msgstr ""
 
 #: /wa-apps/mailer/templates/actions/campaigns/CampaignsStep1.html:20
@@ -1086,7 +1172,10 @@ msgid "Ctrl+S"
 msgstr ""
 
 #: /wa-apps/mailer/templates/actions/campaigns/CampaignsStep1.html:81
-msgid "This plain-text version of your message is automatically created from HTML version and displayed if recipients have disabled HTML view in their email programs."
+msgid ""
+"This plain-text version of your message is automatically created from HTML "
+"version and displayed if recipients have disabled HTML view in their email "
+"programs."
 msgstr ""
 
 #: /wa-apps/mailer/templates/actions/campaigns/CampaignsStep1.html:194
@@ -1131,11 +1220,18 @@ msgid "add a new Return-path"
 msgstr ""
 
 #: /wa-apps/mailer/templates/actions/campaigns/CampaignsSettings.html:106
-msgid "Return-path address is used to automatically process bounced emails. We recommend to create a special email address to receive bounces as it allows to obtain a true statistics about your message delivering."
+msgid ""
+"Return-path address is used to automatically process bounced emails. We "
+"recommend to create a special email address to receive bounces as it allows "
+"to obtain a true statistics about your message delivering."
 msgstr ""
 
 #: /wa-apps/mailer/templates/actions/campaigns/CampaignsSettings.html:118
-msgid "If many of your recipients addresses reside on popular mail services (e.g. @gmail.com, @yahoo.com, and etc.) then too high sending speed may cause banning of your sender server because of spam suspicion and these recipients will not receive your message."
+msgid ""
+"If many of your recipients addresses reside on popular mail services (e.g. "
+"@gmail.com, @yahoo.com, and etc.) then too high sending speed may cause "
+"banning of your sender server because of spam suspicion and these recipients "
+"will not receive your message."
 msgstr ""
 
 #: /wa-apps/mailer/templates/actions/campaigns/CampaignsSettings.html:127
@@ -1143,7 +1239,10 @@ msgid "Enable Google Analytics for this campaign"
 msgstr ""
 
 #: /wa-apps/mailer/templates/actions/campaigns/CampaignsSettings.html:130
-msgid "UTM tags will be added to all links (URLs) containing in the campaign message. It will allow to track these links visiting in your Google Analytics reports."
+msgid ""
+"UTM tags will be added to all links (URLs) containing in the campaign "
+"message. It will allow to track these links visiting in your Google "
+"Analytics reports."
 msgstr ""
 
 #: /wa-apps/mailer/templates/actions/campaigns/CampaignsSettings.html:139
@@ -1177,7 +1276,9 @@ msgid "Send to selected recipients"
 msgstr ""
 
 #: /wa-apps/mailer/templates/actions/campaigns/CampaignsSettings.html:193
-msgid "We will provide final checking and offer you to choose: send now or schedule sending for future date/time."
+msgid ""
+"We will provide final checking and offer you to choose: send now or schedule "
+"sending for future date/time."
 msgstr ""
 
 #: /wa-apps/mailer/templates/actions/campaigns/CampaignsSettings.html:318
@@ -1189,7 +1290,9 @@ msgid "Cancel schedule"
 msgstr ""
 
 #: /wa-apps/mailer/templates/actions/campaigns/CampaignsRecipients.html:32
-msgid "To specify recipients for your campaign, select the desired contact groups provided by the Contacts application or enter additional email addresses."
+msgid ""
+"To specify recipients for your campaign, select the desired contact groups "
+"provided by the Contacts application or enter additional email addresses."
 msgstr ""
 
 #: /wa-apps/mailer/templates/actions/campaigns/CampaignsRecipients.html:47
@@ -1260,11 +1363,14 @@ msgid "Delete campaign"
 msgstr ""
 
 #: /wa-apps/mailer/templates/actions/campaigns/CampaignsSidebar.html:83
-msgid "Do you really want to remove this campaign (you will not be able to undo this action)?"
+msgid ""
+"Do you really want to remove this campaign (you will not be able to undo "
+"this action)?"
 msgstr ""
 
 #: /wa-apps/mailer/templates/actions/campaigns/CampaignsSidebar.html:85
-msgid "Images containing in your message will be unavailable to your recipients."
+msgid ""
+"Images containing in your message will be unavailable to your recipients."
 msgstr ""
 
 #: /wa-apps/mailer/templates/actions/campaigns/CampaignsSidebar.html:112
@@ -1346,7 +1452,14 @@ msgid "Unknown"
 msgstr ""
 
 #: /wa-apps/mailer/templates/actions/campaigns/CampaignsReport.html:161
-msgid "Excluded were previously unsubscribed and also those email addresses that have resulted in a permanent error returned by the recipient server in your past mailing campaigns. Those mail boxes either do not exist, or cannot receive your message by any reason. Further attempts to send messages to these addresses may result in blacklisting of your mail server. This is the reason to exclude these addresses from the lists of your campaigns recipients."
+msgid ""
+"Excluded were previously unsubscribed and also those email addresses that "
+"have resulted in a permanent error returned by the recipient server in your "
+"past mailing campaigns. Those mail boxes either do not exist, or cannot "
+"receive your message by any reason. Further attempts to send messages to "
+"these addresses may result in blacklisting of your mail server. This is the "
+"reason to exclude these addresses from the lists of your campaigns "
+"recipients."
 msgstr ""
 
 #: /wa-apps/mailer/templates/actions/campaigns/CampaignsReport.html:202
@@ -1388,11 +1501,16 @@ msgid "* NOTE:"
 msgstr ""
 
 #: /wa-apps/mailer/templates/actions/campaigns/CampaignsReport.html:238
-msgid "Unsubscribe URL is located only in your message headers. It does not guarantee an appearance of unsubscribe link in recipient mail program."
+msgid ""
+"Unsubscribe URL is located only in your message headers. It does not "
+"guarantee an appearance of unsubscribe link in recipient mail program."
 msgstr ""
 
 #: /wa-apps/mailer/templates/actions/campaigns/CampaignsReport.html:244
-msgid "Return-path is not customized. This does not allow to track most of potential bounces from recipient mail servers. Only invalid messages bounced by your sender server have been counted."
+msgid ""
+"Return-path is not customized. This does not allow to track most of "
+"potential bounces from recipient mail servers. Only invalid messages bounced "
+"by your sender server have been counted."
 msgstr ""
 
 #: /wa-apps/mailer/templates/actions/campaigns/CampaignsReport.html:250
@@ -1444,7 +1562,9 @@ msgid "Add a description"
 msgstr ""
 
 #: /wa-apps/mailer/templates/actions/templates/TemplatesEdit.html:22
-msgid "Type here a description for your reference only. It will not be shown to your campaign recipients."
+msgid ""
+"Type here a description for your reference only. It will not be shown to "
+"your campaign recipients."
 msgstr ""
 
 #: /wa-apps/mailer/templates/actions/templates/TemplatesEdit.html:38
@@ -1476,7 +1596,9 @@ msgid "Change thumbnail"
 msgstr ""
 
 #: /wa-apps/mailer/templates/actions/templates/TemplatesEdit.html:264
-msgid "Do you really want to remove this template (you will not be able to undo this action)?"
+msgid ""
+"Do you really want to remove this template (you will not be able to undo "
+"this action)?"
 msgstr ""
 
 #: /wa-apps/mailer/templates/actions/templates/TemplatesEdit.html:311
@@ -1507,7 +1629,10 @@ msgid "You do not have any templates so far."
 msgstr ""
 
 #: /wa-apps/mailer/templates/actions/templates/TemplatesImport1.html:10
-msgid "Archive (zip) file for template import must contain an html file in the root of archive, and all other files (e.g. images) referred from html file, in the root or in subfolders of your archive file."
+msgid ""
+"Archive (zip) file for template import must contain an html file in the root "
+"of archive, and all other files (e.g. images) referred from html file, in "
+"the root or in subfolders of your archive file."
 msgstr ""
 
 #: /wa-apps/mailer/templates/actions/templates/TemplatesImport1.html:27
@@ -1523,7 +1648,9 @@ msgid "Please select html file to import:"
 msgstr ""
 
 #: /wa-apps/mailer/templates/actions/undeliverable/UndeliverableList.html:10
-msgid "This is the reason to exclude these addresses from the lists of your campaigns recipients."
+msgid ""
+"This is the reason to exclude these addresses from the lists of your "
+"campaigns recipients."
 msgstr ""
 
 #: /wa-apps/mailer/templates/actions/undeliverable/UndeliverableList.html:15
@@ -1540,7 +1667,10 @@ msgid "Remove address from this list"
 msgstr ""
 
 #: /wa-apps/mailer/templates/actions/undeliverable/UndeliverableList.html:90
-msgid "We recommend you to remove addresses from the list of &ldquo;undeliverable&rdquo; only in case you have resolved issues with delivering errors for these email addresses."
+msgid ""
+"We recommend you to remove addresses from the list of &ldquo;"
+"undeliverable&rdquo; only in case you have resolved issues with delivering "
+"errors for these email addresses."
 msgstr ""
 
 #: /wa-apps/mailer/templates/actions/frontend/FrontendConfirm.html:9
@@ -1552,7 +1682,9 @@ msgid "Edit sender"
 msgstr ""
 
 #: /wa-apps/mailer/templates/actions/senders/SendersDialog.html:29
-msgid "If you leave this field empty, replies will come to the main sender address specified above."
+msgid ""
+"If you leave this field empty, replies will come to the main sender address "
+"specified above."
 msgstr ""
 
 #: /wa-apps/mailer/templates/actions/senders/SendersDialog.html:97
@@ -1564,7 +1696,9 @@ msgid "Command"
 msgstr ""
 
 #: /wa-apps/mailer/templates/actions/senders/SendersDialog.html:120
-msgid "Note: mail will be saved in wa-log/mailer/ and will NOT be sent to recipients."
+msgid ""
+"Note: mail will be saved in wa-log/mailer/ and will NOT be sent to "
+"recipients."
 msgstr ""
 
 #: /wa-apps/mailer/templates/actions/senders/SendersDialog.html:140
@@ -1619,14 +1753,12 @@ msgstr ""
 msgid "Search results"
 msgstr ""
 
-#: /wa-apps/mailer/js/mailer.js:671
-#: /wa-apps/mailer/js/mailer.js:675
+#: /wa-apps/mailer/js/mailer.js:671 /wa-apps/mailer/js/mailer.js:675
 #: /wa-apps/mailer/js/mailer.js:680
 msgid "%ds"
 msgstr ""
 
-#: /wa-apps/mailer/js/mailer.js:675
-#: /wa-apps/mailer/js/mailer.js:680
+#: /wa-apps/mailer/js/mailer.js:675 /wa-apps/mailer/js/mailer.js:680
 msgid "%dm"
 msgstr ""
 
@@ -1689,11 +1821,15 @@ msgid "Author: can create their own campaigns and send them"
 msgstr ""
 
 #: /wa-apps/mailer/lib/config/mailerRightConfig.class.php:8
-msgid "Inspector: can only view all existing campaigns, but can not edit or send them"
+msgid ""
+"Inspector: can only view all existing campaigns, but can not edit or send "
+"them"
 msgstr ""
 
 #: /wa-apps/mailer/lib/config/mailerRightConfig.class.php:21
-msgid "NOTE: Limited access does not allow to modify transport settings and manage subscribers."
+msgid ""
+"NOTE: Limited access does not allow to modify transport settings and manage "
+"subscribers."
 msgstr ""
 
 #: /wa-apps/mailer/lib/config/logs.php:5
@@ -1721,19 +1857,32 @@ msgid "Languages"
 msgstr ""
 
 #: /wa-apps/mailer/lib/handlers/mailer.recipients.form.handler.php:24
-msgid "Your contacts may be speaking different languages. You can limit the recipient list by selecting only the desired languages."
+msgid ""
+"Your contacts may be speaking different languages. You can limit the "
+"recipient list by selecting only the desired languages."
 msgstr ""
 
 #: /wa-apps/mailer/lib/handlers/mailer.recipients.form.handler.php:35
-msgid "Categories are groups of contacts which you can freely manage in the Contacts application. In addition to manually created categories, there are also system categories created by other Webasyst applications; e.g., Shop-Script or Blog. Those categories contain contacts added by the corresponding applications: customers of the online store or authors of comments posted in the blog."
+msgid ""
+"Categories are groups of contacts which you can freely manage in the "
+"Contacts application. In addition to manually created categories, there are "
+"also system categories created by other Webasyst applications; e.g., Shop-"
+"Script or Blog. Those categories contain contacts added by the corresponding "
+"applications: customers of the online store or authors of comments posted in "
+"the blog."
 msgstr ""
 
 #: /wa-apps/mailer/lib/handlers/mailer.recipients.form.handler.php:47
-msgid "This option allows selecting contacts who have opted for receiving your email newsletters using a subscription form (see Subscribers section)."
+msgid ""
+"This option allows selecting contacts who have opted for receiving your "
+"email newsletters using a subscription form (see Subscribers section)."
 msgstr ""
 
 #: /wa-apps/mailer/lib/handlers/mailer.recipients.form.handler.php:57
-msgid "Use this field  to manually enter any additional email addresses. If such addresses are not yet contained in the Contacts application, they will be added there as new contacts once the sending of this message is completed."
+msgid ""
+"Use this field  to manually enter any additional email addresses. If such "
+"addresses are not yet contained in the Contacts application, they will be "
+"added there as new contacts once the sending of this message is completed."
 msgstr ""
 
 #: /wa-apps/mailer/lib/handlers/mailer.recipients.form.handler.php:67
@@ -1791,7 +1940,9 @@ msgid "Subscriber name, if it uses in form."
 msgstr ""
 
 #: /wa-apps/mailer/lib/actions/subscribers/mailerSubscribersFormeditor.action.php:44
-msgid "URL address for not registered clients to confirm their original email. Click on this link opens the request in the client's Customer Portal."
+msgid ""
+"URL address for not registered clients to confirm their original email. "
+"Click on this link opens the request in the client's Customer Portal."
 msgstr ""
 
 #: /wa-apps/mailer/lib/actions/files/mailerFilesUploadimage.controller.php:58
@@ -1852,7 +2003,8 @@ msgstr ""
 #: /wa-apps/mailer/lib/actions/templates/mailerTemplatesImport1.action.php:15
 #: /wa-apps/mailer/lib/actions/templates/mailerTemplatesImport2.action.php:15
 #: /wa-apps/mailer/lib/actions/templates/mailerTemplatesExport.controller.php:14
-msgid "ZipArchive class not found. Template import is not available on your server."
+msgid ""
+"ZipArchive class not found. Template import is not available on your server."
 msgstr ""
 
 #: /wa-apps/mailer/lib/actions/templates/mailerTemplatesImport2.action.php:28
@@ -1860,7 +2012,9 @@ msgid "Unable to open archive file."
 msgstr ""
 
 #: /wa-apps/mailer/lib/actions/templates/mailerTemplatesImport2.action.php:32
-msgid "Archive (zip) file for template import must contain an html file in the root of archive."
+msgid ""
+"Archive (zip) file for template import must contain an html file in the root "
+"of archive."
 msgstr ""
 
 #: /wa-apps/mailer/lib/actions/templates/mailerTemplatesImport2.action.php:101
@@ -1890,19 +2044,34 @@ msgid "Invalid email format"
 msgstr ""
 
 #: /wa-apps/mailer/lib/actions/senders/mailerSendersDialog.action.php:35
-msgid "When this option is selected messages are sent by the default transport specified in the Webasyst framework configuration."
+msgid ""
+"When this option is selected messages are sent by the default transport "
+"specified in the Webasyst framework configuration."
 msgstr ""
 
 #: /wa-apps/mailer/lib/actions/senders/mailerSendersDialog.action.php:39
-msgid "Some web-hosting companies allow sending email message by means of this transport only. If it is required to specify additional parameters for the mail() function you can enter them in the provided text field. The default parameters are -f%s."
+msgid ""
+"Some web-hosting companies allow sending email message by means of this "
+"transport only. If it is required to specify additional parameters for the "
+"mail() function you can enter them in the provided text field. The default "
+"parameters are -f%s."
 msgstr ""
 
 #: /wa-apps/mailer/lib/actions/senders/mailerSendersDialog.action.php:43
-msgid "Special server which is specifically used for sending email messages. You can send newsletters via any SMTP server for which you have connection credentials: host, port, user name, and password. It can be the SMTP server of your web-hosting company or that of a public mail service such as Gmail, Yahoo! Mail, Outlook.com, etc."
+msgid ""
+"Special server which is specifically used for sending email messages. You "
+"can send newsletters via any SMTP server for which you have connection "
+"credentials: host, port, user name, and password. It can be the SMTP server "
+"of your web-hosting company or that of a public mail service such as Gmail, "
+"Yahoo! Mail, Outlook.com, etc."
 msgstr ""
 
 #: /wa-apps/mailer/lib/actions/senders/mailerSendersDialog.action.php:49
-msgid "This is the web server's system command for sending email in UNIX-like operating systems. The \"Sendmail\" option will allow you to specify a non-standard system command for sending messages if you are an experienced server administrator."
+msgid ""
+"This is the web server's system command for sending email in UNIX-like "
+"operating systems. The \"Sendmail\" option will allow you to specify a non-"
+"standard system command for sending messages if you are an experienced "
+"server administrator."
 msgstr ""
 
 #: /wa-apps/mailer/lib/actions/senders/mailerSendersSave.controller.php:19
@@ -1948,9 +2117,6 @@ msgstr "Now you can receive our awesome emails!"
 msgid "Your subscriptions list have been updated!"
 msgstr "Your subscription list has been updated!"
 
-msgid "No contact lists - create it in \"Contacts\" app"
-msgstr "You have no contact lists, create them in Contacts app"
-
 msgid "No subscriber lists - create it in \"Subscribers\""
 msgstr "You have no subscriber lists, create them in Subscribers section"
 
@@ -1960,8 +2126,12 @@ msgstr "Please specify your email address in Contacts app"
 msgid "You unsubscribed from all subscriptions"
 msgstr "You have unsubscribed from all subscriptions"
 
-msgid "URL address to confirm subscription. Click on this link opens \"My subscriptions\" page in the client's Customer Portal."
-msgstr "URL to confirm subscription. Click on this link opens \"My subscriptions\" page in your personal account."
+msgid ""
+"URL address to confirm subscription. Click on this link opens \"My "
+"subscriptions\" page in the client's Customer Portal."
+msgstr ""
+"URL to confirm subscription. Click on this link opens \"My subscriptions\" "
+"page in your personal account."
 
 msgid "Subscriber name, if it used in the form.."
 msgstr "Subscriber name, if used in the form."

@@ -493,11 +493,6 @@
                 minHeight: height,
                 plugins: ['fontcolor', 'fontsize', 'fontfamily', 'vars'],
                 imageUpload: '?module=files&action=uploadimage&filelink=1',
-                syncBeforeCallback: function (html) {
-                    html = html.replace(/(empty-cells:\s?show;\s*)?outline:\s?rgba\(0,\s?0,\s?0,\s?0\.6\)\sdashed\s1px;?/gi, '');
-                    html = html.replace(/style="\s*"/gi, '');
-                    return html;
-                },
                 uploadFields: {
                     '_csrf': csrf
                 }

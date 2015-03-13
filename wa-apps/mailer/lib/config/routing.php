@@ -23,6 +23,13 @@ return array(
         'secure' => false,
     ),
 
+    'mailview/<hash>/' => array(
+        'url' => 'mailview/<hash>/?',
+        'module' => 'frontend',
+        'action' => 'mailview',
+        'secure' => false,
+    ),
+
     'subscribeform/<id>/' => array(
         'url' => 'subscribeform/<id>/?',
         'module' => 'frontend',
