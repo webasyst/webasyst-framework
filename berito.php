@@ -34,7 +34,7 @@ class Api {
 
 }
 
-$result = Api::request('GET', 'http://www.berito.ru/api/v1/orders/?status=2');
+$result = Api::request('GET', 'http://www.berito.ru/api/v1/orders/?status=1');
 
 //$order = array();
 //$order['buyer']['name'] = 'Валера';
@@ -47,10 +47,10 @@ $result = Api::request('GET', 'http://www.berito.ru/api/v1/orders/?status=2');
 //  } 
 foreach ($result["result"] as $order)
 {
-//    Api::request('PUT', 'http://www.berito.ru/api/v1/orders/'.$order['id'].'/', array('status' => 2));
-//    $new_order = Api::request('GET', 'http://www.berito.ru/api/v1/orders/'.$order['id'].'/');
-//    $order = $new_order['result'];
-//
+    Api::request('PUT', 'http://www.berito.ru/api/v1/orders/'.$order['id'].'/', array('status' => 2));
+    $new_order = Api::request('GET', 'http://www.berito.ru/api/v1/orders/'.$order['id'].'/');
+    $order = $new_order['result'];
+
     $price = 0;
     foreach ($order['products'] as $product)
     {
@@ -287,75 +287,4 @@ foreach ($result["result"] as $order)
     exit;
 //----------------------------END CUSTOMER UPDATE-----------------------------//      
 }
-//
-//
-//
-//
-//
-//foreach ($result["result"] as $order)
-//{
 
-//    foreach ($order['products'] as $product)
-//    {
-//        $sql = mysql_query("SELECT * FROM  `SC_product_options_set` WHERE `productID` ='".$product['import']['id']."'");
-//        while ($row = mysql_fetch_array($sql))
-//        {
-//            $sql_var = mysql_query("SELECT * FROM  `SC_products_opt_val_variants` WHERE  `variantID` ='".$row['variantID']."'");
-//            while ($row_var = mysql_fetch_array($sql_var))
-//            {
-//                if ($row_var['option_value_ru'] == $product['import']['size'])
-//                {
-//                    $product['variantID'] = $row['variantID'];
-//                    $product['name_size'] = $row_var['option_value_ru'];
-//                }
-//            }
-//        }
-//
-//        $sql_product = mysql_query("SELECT * FROM  `SC_products` WHERE `productID` ='".$product['import']['id']."'");
-//        while ($row_product = mysql_fetch_array($sql_product))
-//        {
-//            $product['name'] = $row_product['name_ru'];
-//        }
-//
-//        //print_r ($product);
-//        //echo '<br><br>';
-//
-//        $sql_id = mysql_query("SELECT MAX(`itemID`) FROM `SC_ordered_carts`");
-//        $row_id = mysql_fetch_array($sql_id);
-//        $itemID = $row_id[0] + 1;
-//
-//        $sql = mysql_query("INSERT INTO `SC_ordered_carts`(`itemID`,
-//		                                                   `orderID`, 
-//		                                                   `name`, 
-//                                                                   `Price`,
-//                                                                   `Quantity`,
-//                                                                   `tax`,
-//                                                                   `variantID`, 
-//                                                                   `productID`) VALUES ('".$itemID."',
-//                                                                                        '".$order['orderID']."',
-//                                                                                        '".$product['name']." (".$product['name_size'].")',
-//                                                                                                                '".(float) $product['price']."',
-//                                                                                                                '1',
-//                                                                                                                '0',
-//                                                                                                                '".$product['variantID']."',
-//                                                                                                                '".$product['import']['id']."')");
-//
-//        $sql = mysql_query("INSERT INTO `SC_shopping_carts` (`customerID`,
-//		                                                     `itemID`,		                                                    
-//														     `Quantity`) VALUES ('".$user['customerID']."',
-//															                     '".$itemID."',
-//																				 '1')");
-//
-//        $sql = mysql_query("INSERT INTO `SC_shopping_cart_items` (`itemID`,		                                                    
-//														          `productID`) VALUES ('".$itemID."',
-//																				       '".$product['import']['id']."')");
-//
-//        $sql = mysql_query("INSERT INTO `SC_shopping_cart_items_content` (`itemID`,		                                                    
-//														                  `variantID`) VALUES ('".$itemID."',
-//																				               '".$product['variantID']."')");
-//
-//        mysql_query("UPDATE `SC_product_options_set` SET in_stock = (in_stock-1) WHERE   `productID` = ".$product['import']['id']." AND `variantID` = ".$product['variantID']);
-//        mysql_query("UPDATE `SC_products` SET in_stock = (in_stock-1) WHERE   `productID` = ".$product['import']['id']);
-//        //var_dump ($sql);
-//    }
-//} 
