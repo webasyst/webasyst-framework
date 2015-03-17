@@ -1,0 +1,77 @@
+
+<div class="block" id="c-ce-header">
+	{if $category}
+		<h1>{sprintf(_w('Edit category &ldquo;%s&rdquo;'), htmlspecialchars($category.name))}</h1>
+	{else}
+		<h1>[`New category`]</h1>
+	{/if}
+</div>
+
+<div id="tc-ge-members" class="tab-content">
+	<div class="block double-padded">
+		<form action="?module=categories&action=save" id="category-editor-form">
+			<div class="fields" style="width:100%">
+				{if $category}
+					<input name="id" type="hidden" value="{$category.id}">
+				{/if}
+				<input name="user_operation" type="hidden" value="set">
+				<div class="field c-header-edit">
+					<div class="name large">[`Name:`]</div>
+					<div class="value"><span><input name="name" type="text" class="large" value="{$category.name|escape}" style="width:55%"></span></div>
+				</div>
+				<div class="field buttons">
+					<div class="value submit">
+						<em class="validation-notice errormsg"></em>
+
+						<input type="submit" value="[`Save`]" class="button green"> [`or`] <a href="#" onclick="$.wa.back(); return false;">[`cancel`]</a>
+
+						<i class="icon16 loading" style="margin-left: 16px; display: none;"></i>
+					</div>
+				</div>
+			</div>
+		</form>
+		<div class="clear-left"></div>
+	</div>
+</div>
+
+<div class="clear-left"></div>
+
+<script type="text/javascript">
+(function() {
+	var form = $('#category-editor-form');
+
+	// validate on submission and send data via ajax
+	form.submit(function() {
+		if (!$.trim(form[0].name.value)) {
+			form[0].name.value = "[`<no name>`]";
+		}
+
+		// ajax request
+		form.find('.loading').show();
+		$.post(form.attr('action'), form.serialize(), function (response) {
+			form.find('.loading').hide();
+			if (response.status == 'ok') {
+				$.wa.controller.reloadSidebar();
+				$.wa.setHash('#/contacts/category/'+response.data.id+'/');
+
+				{if empty($category)}
+					$.wa.controller.collapseSidebarSection('#c-sb-categories-header', 'uncollapse');
+				{/if}
+			} else if (response.status == 'fail') {
+				form.find('.validation-notice').html(response.errors.join('<br />'));
+			}
+		}, 'json');
+		return false;
+	});
+
+	var input = $('#category-editor-form input[name="name"]')[0];
+	if (input) {
+		// voodoo magic... doesn't work without timeout in some browsers
+		setTimeout(function() {
+			input.focus();
+			input.select();
+		}, 1);
+	}
+	$.wa.controller.setTitle($('#c-ce-header h1').text());
+}).call({});
+</script>

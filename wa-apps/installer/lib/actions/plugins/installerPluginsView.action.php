@@ -39,4 +39,3 @@ class installerPluginsViewAction extends installerItemsAction
         $this->view->assign('return_url', $return_url);
     }
 }
-//EOF

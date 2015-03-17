@@ -145,7 +145,7 @@
                                 <input type="hidden" name="app_id[{$app.slug}]" value="{$app.vendor}">
                                 <input type="submit" class="button green" value="[`Install`]"{if !$app.applicable} disabled="disabled"{/if}>
                             </form>
-                            {if empty($app.commercial)||empty($app.lease_price)||($app.lease_price == 'free')}
+                            {if empty($app.commercial)||empty($app.lease_price)||(ifset($app.lease_price) == 'free')}
                                 <p>{sprintf('[`%s will be downloaded from Webasyst Store and installed automatically.`]', $app.name|escape)}</p>
                             {else}
                                 <p>{sprintf('[`%s will be downloaded from Webasyst Store and installed for free. Once installed, you will be able either to pay for the app on a monthly basis or to buy a permanent license.`]', $app.name|escape)}</p>
@@ -169,7 +169,7 @@
                             <div class="name">
                                 [`Price`]
                             </div>
-                            {if $app.lease_price == 'free'}
+                            {if ifset($app.lease_price) == 'free'}
                                 {* free to install on this particular installation (cloud) *}
                                 <div class="value">
                                     <strong>[`Free`]</strong>
@@ -179,7 +179,7 @@
                                     {if !empty($app.compare_price)}<strike class="gray">{$app.compare_price}</strike>&nbsp; {/if}
                                     <strong{if !empty($app.compare_price)} class="highlighted"{/if}>{$app.price}</strong>
                                 </div>
-                                {if $app.lease_price}
+                                {if !empty($app.lease_price)}
                                     <div class="value">
                                         [`or`]
                                     </div>
@@ -260,7 +260,7 @@
                         {/if}
                     </div>
                 </div>
-                {if $app.demo_url}
+                {if !empty($app.demo_url)}
                     <div class="field">
                         <div class="name">
                             [`Demo`]
@@ -278,7 +278,7 @@
                         {$app.update_datetime|wa_datetime:'humandate'}
                     </div>
                 </div>
-                {if $app.url}
+                {if !empty($app.url)}
                     <div class="field">
                         <div class="name">
                             [`Website`]
@@ -333,9 +333,11 @@
                     <nav>
                         <ul class="menu-h">
                             <li class="selected"><a href="{$current_url}">[`Overview`]</a></li>
+                            {if !empty($app.pages)}
                             {foreach $app.pages as $page}
                             <li title="{$page.title|escape}"><a href="{$current_url}{$page.url|escape}/">{$page.name|escape}</a></li>
                             {/foreach}
+                            {/if}
                             {if !empty($app.reviews.url)}
                             <li><a href="{$app.reviews.url}" target="_blank">[`Reviews`] <span class="hint">{$app.reviews.count|escape}</span> <i class="icon10 new-window"></i></a></li>
                             {/if}
@@ -344,7 +346,7 @@
 
                 </div>
             </div>
-            {if $app.screenshots}
+            {if !empty($app.screenshots)}
             <div class="i-screenshots">
                 {$screenshot = reset($app.screenshots)}
                 {if $screenshot}
@@ -368,12 +370,13 @@
         <section class="i-page i-description" id="tab-{$app.slug|escape}-info">
             <p>{$app.description}</p>
         </section>
-
+        {if !empty($app.pages)}
         {foreach $app.pages as $page}
             <section class="i-page" id="tab-{$app.slug|escape}-{$page.url|escape}" style="display:none;">
                 {$page.content}
             </section>
         {/foreach}
+        {/if}
         {if !empty($app.changelog)}
             <section class="i-page" id="tab-{$app.slug|escape}-changelog" style="display:none;">
                 {foreach $app.changelog as $changelog}

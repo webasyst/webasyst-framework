@@ -52,7 +52,6 @@
         <!-- content -->
         <div class="block not-padded c-core-content">
             <div class="block">
-
                 {* This block is used to confirm deletion *}
                 <div id="contact-top-block" class="wa-box" style="display:none"></div>
 
@@ -63,7 +62,7 @@
                         {if empty($readonly) && !$wa->request('readonly')}
                             <div class="wa-contact-photo-buttons">
                                 <div class="photo-change-link">
-                                    <a href="{ifset($photo_editor_url, "#/contact/photo/{$contact->getId()}")}">[`Change photo`]</a>
+                                    <a href="{ifset($photo_editor_url, $wa_app_url|cat:"#/contact/photo/{$contact->getId()}")}">[`Change photo`]</a>
                                 </div>
                             </div>
                         {/if}
@@ -157,7 +156,7 @@
             <div class="block not-padded tab-contents-wrapper">
                 <div id="tc-contact" class="tab-content">
                     <div class="block double-padded">
-                        {if empty($readonly) && !$wa->request('readonly')}
+                        {if ($own_profile || empty($readonly)) && !$wa->request('readonly')}
                             <a class="float-right no-underline c-edit-contact" href="javascript:void(0);" id="edit-contact-double">
                                 <i class="icon16 edit"></i>[`Edit`]
                             </a>
@@ -336,7 +335,7 @@
         $.wa.contactEditor.initFieldEditors({json_encode($fieldValues)});
         $.wa.contactEditor.initContactInfoBlock('view');
 
-        {if empty($readonly) && !$wa->request('readonly')}
+        {if ($own_profile || empty($readonly)) && !$wa->request('readonly')}
             // Edit button onclick
             $('.c-edit-contact').click(function() {
                 $.wa.contactEditor.switchToTab('contact');

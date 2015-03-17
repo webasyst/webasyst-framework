@@ -1,0 +1,107 @@
+{if $wa->mailer->isAuthor()}
+    <div class="block">
+        <ul class="menu-v with-icons ">
+            <li class="bottom-padded">
+                <a href="#/campaigns/new/" class="bold">
+                    <i class="icon16 envelope"></i> [`New campaign`]
+                </a>
+            </li>
+        </ul>
+    </div>
+{/if}
+
+{if $drafts}
+    <div class="block">
+        <h5 class="heading collapse-handler" id="m-sb-drafts-header">
+            <i class="icon16 darr"></i>
+            <span class="title b-all-drafts">[`Drafts`]</span>
+            <span class="count">{count($drafts)}</span>
+        </h5>
+
+        <div class="collapsible">
+            <ul class="menu-v with-icons">
+                {foreach $drafts as $d}
+                    <li {if $d@iteration > 10 && count($drafts) > 10}style="display:none" data-list="hidden"{/if}><a href="#/campaigns/letter/{$d.id}">
+                        {if $d.status == mailerMessageModel::STATUS_PENDING}<span class="count"><i class="icon16 clock"></i></span>{/if}
+                        <i class="icon16 userpic20" style="background-image: url('{if $d.pic_src}{$d.pic_src}{else}{$wa_url}wa-content/img/userpic20.jpg{/if}');"></i>{if $d.status == mailerMessageModel::STATUS_PENDING}<i>{/if}{ifempty($d.subject, "[`<no subject>`]")|escape}{if $d.status == mailerMessageModel::STATUS_PENDING}</i>{/if}
+                        <br><span class="hint">{if $d.status == mailerMessageModel::STATUS_PENDING}{waDateTime::format('datetime', $d.send_datetime)}{else}{waDateTime::format('date', $d.create_datetime)}{/if}</span>
+                    </a></li>
+                {/foreach}
+            </ul>
+            {if count($drafts) > 10}
+            <span id="b-all-drafts" class="count b-drafts-toggle" data-list="shown">
+                <a href="javascript:void(0);" class="inline-link all-drafts"><b><i>[`all drafts`]</i></b></a>
+            </span>
+            {/if}
+        </div>
+    </div>
+{/if}
+
+<div class="block">
+    <ul class="menu-v with-icons ">
+        <li id="sending-list-item"{if $sending_count} class="bold"{/if}>
+            <span class="count">
+                {if $sending_count}
+                    {$sending_count}/{$total_sent}
+                {else}
+                    {$total_sent}
+                {/if}
+            </span>
+            <a href="#/campaigns/archive/"><i class="icon16 campaigns"></i>[`Sent`]</a>
+        </li>
+    </ul>
+</div>
+
+{if $wa->mailer->isAdmin()}
+    <div class="hr"></div>
+
+    <div class="block">
+        <ul class="menu-v with-icons ">
+            <li id="templates-list-item">
+                <span class="count">{$templates_count}</span>
+                <a href="#/templates/"><i class="icon16 script"></i>[`Templates`]</a>
+            </li>
+            <li id="subscribers-sb-link">
+                <span class="count">{$subscribers_count}</span>
+                <a href="#/subscribers/"><i class="icon16 contact"></i>[`Subscribers`]</a>
+            </li>
+            <li id="unsubscribers-sb-link">
+                <span class="count">{$unsubscribers_count}</span>
+                <a href="#/unsubscribed/"><i class="icon16 no-bw"></i>[`Unsubscribed  `]</a>
+            </li>
+            <li id="undeliverable-sb-link">
+                <span class="count">{$undeliverable_count}</span>
+                <a href="#/undeliverable/"><i class="icon16 delete-bw"></i>[`Delivering errors`]</a>
+            </li>
+            {if $wa->user()->getRights($wa->app(), 'design')}
+            <!-- uncomment this to show "Design" link
+                <li class="sidebar-design-link">
+                    <a href="#/design/">
+                        <i class="icon16 palette"></i>[`Design`]
+                    </a>
+                </li>
+            -->
+            {/if}
+        </ul>
+    </div>
+{/if}
+
+<script>$(function() {
+    $.wa.mailer.sending_count = {ifempty($sending_count, 0)};
+
+    $('#b-all-drafts').on('click', 'a', function(e){
+        e.preventDefault();
+        var $this = $(this);
+        $('#b-all-drafts').hide();
+        $this.closest('.collapsible').find('li').show();
+    })
+
+});</script>
+
+{*
+ * Plugin blocks
+ *}
+{foreach $plugin_blocks as $block}
+    {$block.html}
+{/foreach}
+

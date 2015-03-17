@@ -1,0 +1,173 @@
+<div class="block double-padded">
+    <div class="block half-padded float-right">
+        <i class="icon16 search before-input"></i><input id="search-undeliverable" type="search" placeholder="[`search by name or email`]" value="{$search|escape}" style="min-width:280px;">
+    </div>
+    <h1>[`Delivering errors`]</h1>
+    <p>
+        [`Email addresses in this list have a permanent error returned by recipient mail servers.`]
+        [`These addresses either do not exist, or can not receive your message by any reason.`]
+        [`Attempts to repeat sending messages to these addresses may cause banning of your sender server.`]
+        [`This is the reason to exclude these addresses from the lists of your campaigns recipients.`]
+    </p>
+
+    {if empty($list)}
+        {if $search}
+            <p>[`No addresses match search criteria.`]</p>
+        {else}
+            <p>[`No delivering errors yet.`]</p>
+        {/if}
+    {/if}
+</div>
+
+{if $list}
+    <table class="zebra single-lined" id="undeliverable-list-table">
+        <thead><tr>
+            {foreach $columns as $cid => $cname}
+                <th{if $cname@first} class="m-first"{/if}>
+                    {if $cid == 'subject'}
+                        {$cname|escape}
+                    {else}
+                        {if $order == $cid}
+                            <a href="#/undeliverable/{$start}/{$records}/!{$cid}/{$search_url_append}">{$cname|escape} <i class="icon16 uarr"></i></a>
+                        {elseif $order == "!{$cid}"}
+                            <a href="#/undeliverable/{$start}/{$records}/{$cid}/{$search_url_append}">{$cname|escape} <i class="icon16 darr"></i></a>
+                        {else}
+                            <a href="#/undeliverable/{$start}/{$records}/{$cid}/{$search_url_append}">{$cname|escape}</a>
+                        {/if}
+                    {/if}
+                </th>
+            {/foreach}
+            <th class="m-last"></th>
+        </tr></thead><tbody>
+        {foreach $list as $row}
+            <tr>
+                <td class="m-first">{$row.name|escape}</td>
+                <td class="email-field">{$row.email|escape}</td>
+                <td>{$row.datetime_formatted|escape}</td>
+                <td>{$row.subject|escape}</td>
+                <td class="m-last">
+                    <i class="icon16 delete" style="cursor:pointer;" title="[`Remove address from this list`]"></i>
+                </td>
+            </tr>
+        {/foreach}
+    </tbody></table>
+
+    <div class="block paging">
+        <div class="c-page-list">
+            <span style="margin-right:20px;">[`Total addresses:`] {$total_rows}</span>
+            {if count($pagination) > 1}
+                <span>
+                {foreach $pagination as $page => $offset}
+                {if $offset !== false}
+                    <a{if $current_page == $page} class="selected"{/if} href="#/undeliverable/{$offset}/{$records}/{$order}/{$search_url_append}">{$page}</a>
+                    {else}
+                    ...
+                {/if}
+                {/foreach}
+                {if $current_page != 1}
+                    <a href="#/undeliverable/{$start-$records}/{$records}/{$order}/{$search_url_append}" class="prevnext"><i class="icon10 larr"></i> пред</a>
+                {/if}
+                {if $current_page != $page}
+                    <a href="#/undeliverable/{$start+$records}/{$records}/{$order}/{$search_url_append}" class="prevnext">след <i class="icon10 rarr"></i></a>
+                {/if}
+                </span>
+            {/if}
+        </div>
+        <div class="c-page-num">[`Show`]
+            {$records_on_page = [30, 50, 100, 200, 500]}
+            <select id="records-per-page">
+                {foreach $records_on_page as $onpage}
+                <option value="{$onpage}"{if $records==$onpage} selected="selected"{/if}>{$onpage}</option>
+                {/foreach}
+            </select> [`records`]
+        </div>
+        <div class="clear"></div>
+    </div>
+{/if}
+
+<div id="undeliverable-confirm-dialog" class="hidden">
+    <h3>[`Remove address from this list`]</h3>
+    <p>[`We recommend you to remove addresses from the list of &ldquo;undeliverable&rdquo; only in case you have resolved issues with delivering errors for these email addresses.`]</p>
+    <p><label><input type="checkbox"> [`Do not show this question any more`]</label></p>
+</div>
+
+<script>(function() { "use strict";
+    $('#records-per-page').on('change', function(e){
+        var records = $(this).val();
+        $.storage.set('mailer/undeliverable_records', records);
+        window.location.hash = '#/undeliverable/0/'+records+'/{$order}/{$search_url_append}';
+    });
+
+    // Search field
+    var submitSearch = function() {
+        var input = $(this);
+        var search_string = input.val();
+        var new_hash = $.wa.mailer.cleanHash('#/undeliverable/0/{$records}/{$order}/' + encodeURIComponent(search_string));
+        if ($.wa.mailer.getHash() != new_hash) {
+            input.prev('.icon16').removeClass('search').addClass('loading');
+            window.location.hash = new_hash;
+        }
+        return false;
+    };
+    $('#search-undeliverable').keyup(function(e) {
+        if (e.which != 13 && e.which != 10) {
+            return false;
+        }
+        return submitSearch.apply(this);
+    });
+    $('#search-undeliverable').bind('search', submitSearch);
+
+    {if !$search}
+        $('#undeliverable-sb-link .count').html('{$total_rows}');
+    {/if}
+
+    $('#undeliverable-list-table').on('click', '.delete', function() {
+        var i = $(this);
+        var deleteSelected = function() {
+            i.removeClass('delete').addClass('loading');
+            $.post('?module=undeliverable&action=list', {
+                order: '{$order}',
+                records: '{$records}',
+                start: '{$start}',
+                search: '{$search}',
+                mark_email: i.closest('tr').children('.email-field').text()
+            }, function(r) {
+                $('#content').html(r);
+            });
+        };
+
+        // If user previously checked "never ask me again", then remove without confirmation
+        if ($.storage.get('mailer/unavailable/skip_deletion_confirm')) {
+            deleteSelected();
+            return;
+        }
+
+        var dialog, buttons = $('<div></div>');
+        buttons.append(
+            $('<input type="submit" class="button green" value="[`Delete`]">').click(function() {
+                deleteSelected();
+                if (dialog.find('input:checkbox:checked')) {
+                    $.storage.set('mailer/unavailable/skip_deletion_confirm', 1);
+                }
+                dialog.trigger('close');
+                return false;
+            })
+        );
+        buttons.append('<span> [`or`] </span>');
+        buttons.append(
+            $('<a href="javascript:void(0)">[`cancel`]</a>').click(function() {
+                dialog.trigger('close');
+                return false;
+            })
+        );
+
+        dialog = $('#undeliverable-confirm-dialog').waDialog({
+            buttons: buttons,
+            width: '400px',
+            height: '180px'
+        });
+    });
+
+    $.wa.mailer.setTitle();
+})();</script>
+

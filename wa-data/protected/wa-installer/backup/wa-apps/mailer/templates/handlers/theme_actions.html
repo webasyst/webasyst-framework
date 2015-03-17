@@ -1,0 +1,13 @@
+<!-- THEME ACTIONS -->
+<div class="block double-padded wa-theme-actions">
+    <ul class="menu-v with-icons">
+        <li class="top-padded">
+            <a class="theme-reset{if $theme.type neq waTheme::OVERRIDDEN} disabled{/if}" href="#" title="[s`This will reset all customizations you applied to this design theme. Are you sure?`]"{if $theme.type neq waTheme::OVERRIDDEN} onClick="window.alert('[s`You did not apply customizations to this theme yet, and thus there is nothing to revert.`]');"{/if}><i class="icon16 broom"></i>[s`Revert theme to original`]</a>
+            {if $theme.type neq waTheme::OVERRIDDEN}
+                <span class="hint">[s`You are using the original version of this design theme. No customizations have been applied to theme files yet, and thus there is nothing to revert for now.`]</span>
+            {else}
+                <span class="hint">[s`This will erase all customizations you’ve made to this theme’s template files using the design editor, and reset this theme to original`]</span>
+            {/if}
+        </li>
+    </ul>
+</div>

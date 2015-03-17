@@ -1,0 +1,101 @@
+
+<div class="block" id="list-apps">
+
+    {if !empty($messages)}
+        {foreach $messages as $message}
+            <div class="block double-padded i-message-{$message.result}">
+                {if $message.result == 'success'}<i class="icon16 yes"></i>
+                {elseif $message.result == 'fail'}
+                <i class="icon16 no"></i>
+                {/if}
+                {$message.text|escape}
+            </div>
+        {/foreach}
+    {/if}
+    {if !empty($vendor_name)}<h1>{$vendor_name|string_format:'[`Apps by %s`]'|escape}</h1><br>{/if}
+
+    {if !empty($apps)}
+        <ul class="thumbs">
+
+            {foreach $apps as $app}
+                <li>
+                    <div class="profile image96px">
+                        <div class="image">
+                            <a href="#/apps/{$app.slug}{if !empty($app.edition)}.{$app.edition}{/if}/">
+                                <div class="i-image-wrapper">
+                                    <img src="{$app.icons.96}" alt="{$app.name|truncate:15|escape}">
+                                    {if !empty($app.publish_datetime) && strtotime($app.publish_datetime) > $smarty.now - 86400*14}
+                                        <!-- NEW -->
+                                        <div class="i-badge new"><span>New</span></div>
+                                    {elseif !empty($app.tags)}
+                                        {if in_array('featured', $app.tags)} 
+                                            <!-- FEATURED -->
+                                            <div class="i-badge featured"><i class="thumb-up"></i></div>
+                                        {elseif in_array('updated', $app.tags)} 
+                                            <!-- UPDATED -->
+                                            <div class="i-badge updated two-lines"><span>[`New version!`]</span></div>
+                                        {/if}
+                                    {/if}
+                                </div>
+                            </a>
+                        </div>
+                        <div class="details">
+                            <h5><a href="#/apps/{$app.slug}{if !empty($app.edition)}.{$app.edition}{/if}/" data-href="#/apps%s/{$app.slug}{if !empty($app.edition)}.{$app.edition}{/if}/" class="js-item-link">{$app.name|truncate:15|escape}</a></h5>
+                            {if $app.description}<p>{$app.description}</p>{/if}
+                            {if empty($app.installed)}
+                            
+                                {* NOT INSTALLED *}
+                            
+                                {if empty($app.price)}
+                                    <strong>[`Free`]</strong>
+                                {else}
+                                    {if $app.lease_price == 'free'}
+                                        {* free to install on this particular installation (cloud) *}
+                                        <strong>[`Free`]</strong>
+                                    {else}
+                                        {if !empty($app.compare_price)}<strike class="bold gray">{$app.compare_price}</strike>&nbsp; {/if}
+                                        <strong{if !empty($app.compare_price)} class="highlighted"{/if}>{$app.price}</strong>
+                                        {if $app.lease_price}
+                                            [`or`] <strong>{sprintf('[`%s/mo`]',$app.lease_price)}</strong>
+                                        {/if}
+                                    {/if}
+                                {/if}
+                                
+                            {else}
+                            
+                                {* INSTALLED *}
+                            
+                                {if $app.commercial}
+                                    {* PAID *}
+                                    {if empty($app.purchased)}
+                                        {* NOT LICENSED *}
+                                        <em class="i-installed-label not-licensed{if installerHelper::overdue()} overdue{/if}"><i class="icon10 {if installerHelper::overdue()}no{else}no-bw{/if}"></i> [`Not licensed`]</em>
+                                    {else}
+                                        {* VALID LICENSE *}
+                                        {if !empty($app.license_expire)}
+                                            {if (strtotime($app.license_expire) < $smarty.now)}{$_overdue = 1}{else}{$_overdue = 0}{/if}
+                                            <em class="i-installed-label{if $_overdue} overdue{/if}"><i class="icon10 {if $_overdue}no{else}yes{/if}"></i> {sprintf('[`Paid until %s`]', $app.license_expire|wa_datetime:'humandate')}</em>
+                                        {else}
+                                            <em class="i-installed-label licensed"><i class="icon10 yes"></i> [`Licensed`]</em>
+                                        {/if}
+                                    {/if}
+                                {else}
+                                    {* FREE *}
+                                    <em class="i-installed-label"><i class="icon10 yes"></i> [`Installed`]</em> 
+                                {/if}
+                                
+                            {/if}
+                        </div>
+                    </div>
+                </li>
+            {/foreach}
+
+        </ul>
+    {/if}
+
+</div>
+<script type="text/javascript">
+<!--
+$.layout.window.setTitle('{"[`Apps`]"|cat:" — ":{$wa->accountName(false)}|escape:'javascript'}');
+//-->
+</script>

@@ -1,0 +1,144 @@
+<link type="text/css" href="{$wa_url}wa-content/js/codemirror/lib/codemirror.css" rel="stylesheet" />
+<link type="text/css" href="{$wa_url}wa-content/js/codemirror/mode/xml/xml.css" rel="stylesheet" />
+<link type="text/css" href="{$wa_url}wa-content/js/codemirror/mode/javascript/javascript.css" rel="stylesheet" />
+<link type="text/css" href="{$wa_url}wa-content/js/codemirror/mode/css/css.css" rel="stylesheet" />
+<style>
+    .design-link { float: right; margin-top: -30px; text-decoration: none; }
+    .CodeMirror-wrap { padding: 10px 0 !important; }
+    .CodeMirror-scroll { border: 1px solid silver; overflow-y: hidden; overflow-x: auto; height: auto; }
+    .wa-design-save-panel {
+        background: none repeat scroll 0 0 #eee;
+        bottom: 0;
+        left: 0;
+        padding-left: 420px;
+        position: fixed;
+        right: 0;
+        z-index: 1;
+    }
+</style>
+<script src="{$wa_url}wa-content/js/codemirror/lib/codemirror.js"></script>
+<script src="{$wa_url}wa-content/js/codemirror/mode/xml/xml.js"></script>
+<script src="{$wa_url}wa-content/js/codemirror/mode/javascript/javascript.js"></script>
+<script src="{$wa_url}wa-content/js/codemirror/mode/css/css.js"></script>
+<script src="{$wa_url}wa-content/js/codemirror/mode/htmlmixed/htmlmixed.js"></script>
+
+<a href="#" class="design-link" onclick="$('#design-actions').toggle('fast'); return false;">
+    <i class="icon16 design"></i>
+    [`Design`]
+</a>
+
+<div id="design-actions" style="display:none;">
+    <div class="sidebar right250px">
+        {include file="./theme_actions.html" inline}
+    </div>
+</div>
+
+<form id="mailer-personal-settings" method="post" action="{$wa_backend_url}mailer/?module=personal&action=settingsSave&theme_id={$theme_id}">
+{foreach $files as $f}
+    <div>
+        <b>{$f.id}</b><br>
+        <textarea name="files[{$f.id}]" id="ta{$f@iteration}" style="width:90%; height:200px;">{$f.content|escape}</textarea>
+    </div>
+    <br>
+{/foreach}
+    <div class="wa-design-save-panel block bordered-top">
+        <input type="submit" value="[`Save`]" class="button green">
+        <i class="icon16 loading" style="margin-top: 0.5em; display: none;"></i>
+        <span class="save-msg-icon" style="display: none;"><i class="icon16 yes after-button" style="margin-top: 0.5em;"></i>[`Saved`]</span>
+    </div>
+</form>
+
+<div class="dialog width600px height250px" id="wa-theme-parent-dialog">
+    <div class="dialog-background"> </div>
+    <div class="dialog-window">
+        <form>
+            <div class="dialog-content">
+                <div class="dialog-content-indent">
+                    <h1>[s`Parent theme`]</h1>
+                    <span class="wa-theme-dialog-error" style="color: red;font-weight: bold;"></span>
+                    <div class="fields form">
+                        <div class="field">
+                            <div class="name">
+                                [s`Change parent theme`]
+                            </div>
+                            <div class="value">
+                                <input type="hidden" name="id" value="{$theme.app_id}:{$theme.id}">
+                                <select name="parent_theme_id">
+                                    <option value=""{if !$theme.parent_theme_id} selected="selected"{/if}>[s`Not set`]</option>
+                                {foreach $parent_themes as $app_id => $info}
+                                    <optgroup label="{$info.name|escape}" title="{$app_id}">
+                                        {foreach $info.themes as $parent_theme_id => $theme_name}
+                                            {$parent_theme_id = "`$app_id`:`$parent_theme_id`"}
+                                            <option value="{$parent_theme_id}" title="{$parent_theme_id}"{if $parent_theme_id eq $theme.parent_theme_id} selected="selected"{else if ($parent_theme_id eq "`$theme.app_id`:`$theme.id`") || ($parent_theme_id eq $theme.id)} disabled="disabled"{/if}>{$theme_name|escape} ({$parent_theme_id})</option>
+                                        {/foreach}
+                                    </optgroup>
+                                {/foreach}
+                                </select>
+                            </div>
+                            <div class="value">
+                                <p class="small"><i class="icon10 exclamation"></i>[s`IMPORTANT: Theme parenting allows linking HTML templates, CSS files and images from other design themes. If you are about to change parent for a design theme which already has a parent, be aware that existing file links and connections may become corrupted. A design theme can have not more than one parent theme.`]</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="clear"></div>
+            </div>
+            <div class="dialog-buttons">
+                <div class="dialog-buttons-gradient">
+                    <input type="submit" class="button green" value="[s`Save`]">
+                    [s`or`] <a href="#/design/themes/" class="cancel">[s`cancel`]</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="dialog width500px height150px" id="wa-theme-reset-dialog">
+    <div class="dialog-background"> </div>
+    <div class="dialog-window">
+        <form>
+            <div class="dialog-content">
+                <div class="dialog-content-indent">
+                    <h1>[s`Revert to original`]</h1>
+                    <p><i class="icon10 exclamation"></i> [s`This will reset all customizations you applied to this design theme. Are you sure?`]</p>
+                    {if $theme.parent_theme && $theme.parent_theme.type == waTheme::OVERRIDDEN}
+                    <label>
+                        <input type="checkbox" name="parent" value="1"> {sprintf("[s`Drop all customizations and revert parent theme <strong>%s</strong> to the original version too`]", $theme.parent_theme_id)}
+                    </label>
+                    {/if}
+                </div>
+                <div class="clear"></div>
+            </div>
+            <div class="dialog-buttons">
+                <div class="dialog-buttons-gradient">
+                    <input type="hidden" name="theme" value="{$theme.app_id}:{$theme.id}">
+                    <input type="submit" class="button red" value="[s`Revert to original`]">
+                    [s`or`] <a href="#/design/themes/" class="cancel">[s`cancel`]</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+var editor, editor_options = {
+    lineNumbers: false,
+    lineWrapping: true
+};
+$(function() {
+    editor = CodeMirror.fromTextArea(document.getElementById('ta1'), editor_options);
+});
+$('#mailer-personal-settings').submit(function () {
+    var f = $(this),
+        $saved_msg = f.find('.save-msg-icon'),
+        $loading = f.find('.loading');
+    $loading.show();
+    $.post(f.attr('action'), f.serialize(), function () {
+        $loading.hide();
+        $saved_msg.fadeIn( 500 ).delay( 500).fadeOut( 500 );
+    }, 'json');
+    return false;
+});
+</script>
+
+{include file="./theme_dialogs.html" inline}

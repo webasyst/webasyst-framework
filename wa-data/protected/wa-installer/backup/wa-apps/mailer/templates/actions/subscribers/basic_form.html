@@ -1,0 +1,49 @@
+<form id="mailer-frontend-subscribe-form" action="{$wa->getUrl('mailer/frontend/subscribe', true)}" method="post" target="mailer-frontend-subscribe-form-target">
+    <table class="fields">
+        <tr>
+            <td>[`Name`]</td>
+            <td><input type="text" name="name"></td>
+        </tr>
+        <tr>
+            <td>[`Email`]</td>
+            <td><input type="text" name="email"></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>
+                <input type="hidden" name="charset" class="charset" value="">
+                <input type="submit" value="[`Subscribe`]">
+                <i class="icon16 loading" style="display:none"></i>
+            </td>
+        </tr>
+    </table>
+    <div class="hidden block" style="display:none">
+        <b>[`Thank you for your subscription.`]</b>
+    </div>
+</form><iframe name="mailer-frontend-subscribe-form-target" src="javascript:true" style="width:0;height:0;border:0px solid #fff;"></iframe>
+
+<script>(function() { "use strict";
+    $('#mailer-frontend-subscribe-form input.charset').val(document.charset || document.characterSet);
+    $('#mailer-frontend-subscribe-form').submit(function() {
+        var form = $(this);
+
+        // Validate email
+        var email_input = form.find('input[name="email"]');
+        email_input.siblings('.errormsg').remove();
+        if (!email_input.val()) {
+            email_input.addClass('error').after('<em class="errormsg">[`This field is required.`]</em>');
+            return false;
+        } else {
+            email_input.removeClass('error');
+        }
+
+        // catch iframe load event when uploading finishes
+        form.find('.loading').show();
+        $('iframe[name="mailer-frontend-subscribe-form-target"]').load(function() {
+            form.trigger('wa.submitted').children('.fields').hide().siblings('.hidden').show();
+        });
+
+        // allow form to submit via its target iframe
+        return true;
+    });
+})();</script>

@@ -1,0 +1,4 @@
+.c-list-toolbar { z-index: 1; position: relative;}
+.c-list-toolbar i.icon16 { display: block;}
+.contacts-data ul.thumbs a { display:block; width:80px;float:left; margin-top:-0.5em;}
+.contacts-data ul.thumbs input { float:left;}

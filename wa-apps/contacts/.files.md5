@@ -1,4 +1,4 @@
-14529d0d532c3c9bb999d2f4a3a66e37 *css/contacts.css
+34e10cf631fee5bc6eaf941ff2d2df9a *css/contacts.css
 9fb69a0b31755c9c3b8ab9c28bb31fdd *css/contacts.ie7.css
 9685ec33d2c44d6e1db758ab2c33b6ae *css/contacts.ie8.css
 9631d166f1a35b24ef49e978c8aec25d *img/arrow-right32.png
@@ -35,13 +35,13 @@ b9fbe8a4a7ad0f20bad0b8e4bcc82ef3 *lib/actions/categories/contactsCategoriesEdito
 7c166252339a6a30d43eeb8d08a4e4ba *lib/actions/contacts/contactsContactsAdd.action.php
 c7598ebfd7ed2b080310bf8b3f546b32 *lib/actions/contacts/contactsContactsDelete.controller.php
 3f801f795ed9ac3d11bc3dbfafe1cbea *lib/actions/contacts/contactsContactsHistory.controller.php
-045d1e68e1dbfbc195775ecea81b36e2 *lib/actions/contacts/contactsContactsInfo.action.php
+d0257dd80615e73c2cbfcd5f7847d241 *lib/actions/contacts/contactsContactsInfo.action.php
 cdad72494e524c2330accaba1a7be40d *lib/actions/contacts/contactsContactsInfo.controller.php
 57142f04938ff91ca3ad1a9e47f6e6fc *lib/actions/contacts/contactsContactsLinks.action.php
 bbc06d601496457b3e4f11168629c1cf *lib/actions/contacts/contactsContactsList.controller.php
 06819fd34b5138012fda26a4556c1430 *lib/actions/contacts/contactsContactsMerge.controller.php
 c5650b2eb026e62d04b0c25a0de03e77 *lib/actions/contacts/contactsContactsMergeSelectMaster.action.php
-de7d7954a351c593c842f330e7afa1d9 *lib/actions/contacts/contactsContactsSave.controller.php
+3abb882ad61df22aa45df04eb592feec *lib/actions/contacts/contactsContactsSave.controller.php
 d86b0848c32b5059159628dcf2dae0b9 *lib/actions/contacts/contactsContactsSaveGeocoords.controller.php
 54e12e7ba2c931a3cb817c1c6901f2c4 *lib/actions/contacts/contactsContactsUser.controller.php
 9e4297050800dc4b267a22ee189ad8f1 *lib/actions/groups/contactsGroupsAdd.action.php
@@ -51,7 +51,7 @@ c83a09268d82a2799a8258331482273d *lib/actions/groups/contactsGroupsDelete.contro
 dabf50c62efd0d5ef209b4916b78ce01 *lib/actions/groups/contactsGroupsEditor.action.php
 eef77962747c032873611fbfefe51a8a *lib/actions/groups/contactsGroupsSave.controller.php
 38e985d52c8ff52f5d5269defd025ccc *lib/actions/photo/contactsPhotoCrop.controller.php
-57951b14427bcb23b90a66c8af288234 *lib/actions/photo/contactsPhotoDelete.controller.php
+e7a3e86902d1139ac3ce7cf1b05b1a64 *lib/actions/photo/contactsPhotoDelete.controller.php
 147b8a6af81d7abc4e2cf5dd2f06e160 *lib/actions/photo/contactsPhotoEditor.action.php
 70e2dd3b084e5f4e13cd15501adf78f5 *lib/actions/photo/contactsPhotoTmpimage.controller.php
 32a61e1321c31f2f5cead4479b1b2801 *lib/actions/rights/contactsRights.action.php
@@ -59,9 +59,9 @@ ca8ae4f66cae4b92c5a7375f7c421733 *lib/actions/rights/contactsRightsSave.controll
 4a17b9aeb9e8c885cf920d15eb9d6555 *lib/classes/contactsCollection.class.php
 5a3898caad188dd4607c5ab2bc82ac47 *lib/classes/contactsHelper.class.php
 0ac2830b8f245d4b26ef0e30be644dbf *lib/classes/contactsViewHelper.class.php
-cfe4e056a23666c9897e3a8af0a59c19 *lib/config/app.php
+8ef01214728ce43c23d420373c8f9594 *lib/config/app.php
 c3d3b386df4d3a35b836218577bee1a4 *lib/config/app.sql
-f1190b7a747ec32467e8c7b2180db9e9 *lib/config/build.php
+e7615219b84d7212de52e7e9105be61b *lib/config/build.php
 fd1c4b45a6a361a9903b88bed918f32d *lib/config/config.php
 8854cd6f6c92d233510f8589090d26ab *lib/config/contactsAnalyticsConfig.class.php
 aa4dcbe549b5507ca4b6f413aab6465f *lib/config/contactsConfig.class.php
@@ -97,10 +97,10 @@ a285da79a1cf95556e4eb1fd40059097 *templates/.htaccess
 27fe19d136d5552b33a323329f447514 *templates/actions/backend/BackendBlank.html
 22c9bcfc59a008d24b3b9c4d86cd1967 *templates/actions/backend/BackendLoc.html
 e95f5d0a659c587cb430fc7783a33c54 *templates/actions/backend/BackendSidebar.html
-ec74756acaa34c93ad6893c7ae31d422 *templates/actions/categories/CategoriesAddSelected.html
+9f460971e602d05bdf7c7c7061cdccb2 *templates/actions/categories/CategoriesAddSelected.html
 520de33ce1c89b19a1ad29fed82db325 *templates/actions/categories/CategoriesEditor.html
 c3d00083081f5e911d09b2ae12e14004 *templates/actions/contacts/ContactsAdd.html
-c864cfc05d635680240008840d05b06d *templates/actions/contacts/ContactsInfo.html
+b018e88de975f07bbcfe9f85032fca6f *templates/actions/contacts/ContactsInfo.html
 1e5492d1e81b714de80a973120e37d1e *templates/actions/contacts/ContactsInfoTabs.html
 51d8eee4c465ce172ce750d0bb77a9c8 *templates/actions/contacts/ContactsLinks.html
 f9bbfc07dda4023f1c2593bdbc88467b *templates/actions/contacts/ContactsMergeSelectMaster.html
@@ -109,7 +109,7 @@ f9bbfc07dda4023f1c2593bdbc88467b *templates/actions/contacts/ContactsMergeSelect
 f6c2fe75864932aac00343999850d9c9 *templates/actions/groups/GroupsEditor.html
 c7e5b021505ba87d442a706f1f3e5e60 *templates/actions/groups/GroupsRights.html
 239d1d5347b3b06ec6ab9a45ef57e4b7 *templates/actions/groups/includeGroupsRights.html
-898d56f8b5a26aaf55a9688228627dc8 *templates/actions/photo/PhotoEditor.html
+e116ae3daf165d60fad7a8a042d02f40 *templates/actions/photo/PhotoEditor.html
 266200f7d3af81f1feb77fa5978294b1 *templates/actions/rights/Rights.html
 5b6f00d07a999908cd5348cf563e3ab1 *templates/layouts/Default.html
 acfcda18c7209e481c2a66f5c6bfbdc5 *templates/layouts/include.templates.html

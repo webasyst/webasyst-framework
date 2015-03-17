@@ -49,13 +49,13 @@
                                 {if empty($app.price)}
                                     <strong>[`Free`]</strong>
                                 {else}
-                                    {if $app.lease_price == 'free'}
+                                    {if ifempty($app.lease_price) == 'free'}
                                         {* free to install on this particular installation (cloud) *}
                                         <strong>[`Free`]</strong>
                                     {else}
                                         {if !empty($app.compare_price)}<strike class="bold gray">{$app.compare_price}</strike>&nbsp; {/if}
                                         <strong{if !empty($app.compare_price)} class="highlighted"{/if}>{$app.price}</strong>
-                                        {if $app.lease_price}
+                                        {if !empty($app.lease_price)}
                                             [`or`] <strong>{sprintf('[`%s/mo`]',$app.lease_price)}</strong>
                                         {/if}
                                     {/if}

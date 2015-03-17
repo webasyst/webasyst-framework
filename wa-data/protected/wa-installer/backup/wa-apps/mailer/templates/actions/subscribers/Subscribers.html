@@ -1,0 +1,157 @@
+<div class="sidebar left200px" id="c-subscribers-sidebar">
+    <div class="s-inner-sidebar">
+        <ul class="menu-v stack with-icons lists-subscribers-group">
+            <li class="{if !$list_id}selected{/if}" >
+                <span class="count" id="total-addresses">{$subscribers_count}</span>
+                <a class="all-subscibers-item" href="#/subscribers/list/0" data-listid="0">
+                    <i class="icon16 contact"></i>
+                    [`All subscribers`]
+               </a>
+            </li>
+        </ul>
+
+        <h5 class="heading" style="text-transform: uppercase"><span>[`Lists`]</span></h5>
+
+        <ul class="menu-v stack with-icons lists-subscribers-group">
+        {if !empty($all_lists_list)}
+            {foreach $all_lists_list as $lists_list}
+            <li class="{if $lists_list.list_id == $list_id}selected{/if}">
+                <span class="count">{$lists_list.subscribers}</span>
+                <a href="#/subscribers/list/{$lists_list.list_id}" data-listid="{$lists_list.list_id}">
+                    <i class="icon16 blue-document"></i>{$lists_list.list_name}
+                </a>
+            </li>
+            {/foreach}
+        {else}
+            <div class="subscribers-sidebar-hint">
+                <p class="align-center hint">[`Subscriber lists are useful for a thematic grouping of your subscribers, e.g.: news, special offers, new product release, and etc.`]</p>
+            </div>
+        {/if}
+            <li class="small">
+                <a href="#/subscribers/list/new" data-listid="-1"><i class="icon10 add"></i>[`New list`]</a>
+            </li>
+        </ul>
+
+        <div class="hr"></div>
+        <br>
+
+        <h5 class="heading" style="text-transform: uppercase"><span>[`Forms`]</span></h5>
+
+        <ul class="menu-v stack with-icons forms-subscribers-group">
+        {if !empty($forms_list)}
+            {foreach $forms_list as $form}
+            <li class="{if $form.id == $form_id}selected{/if}">
+                <a href="#/subscribers/form/{$form.id}" data-formid="{$form.id}">
+                    <i class="icon16 cheque-pen"></i>{$form.name}
+                </a>
+            </li>
+            {/foreach}
+        {else}
+            <div class="subscribers-sidebar-hint">
+                <p class="align-center hint">[`Forms are required to organize a subscription on your website. Create a form, publish it on your website, and visitor will be able to subscribe themselves.`]</p>
+            </div>
+        {/if}
+            <li class="small">
+                <a href="#/subscribers/form/new" data-formid="-1"><i class="icon10 add"></i>[`New form`]</a>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<div class="content left200px bordered-left blank">
+    <div class="block double-padded" id="c-subscribers-content" style="padding: 0;">
+        <!-- content here -->
+    </div>
+</div>
+<div class="clear"></div>
+
+<script>(function($) { "use strict";
+    var $all_container_sidebar = $('#c-subscribers-sidebar'),
+        $lists_form_content = $('#c-subscribers-content'),
+        $forms = $('.forms-subscribers-group'),
+        $lists = $('.lists-subscribers-group');
+
+    $lists.on('click', 'a', function(e){
+        e.preventDefault();
+        var $this = $(this),
+            _id = $this.data('listid'),
+            hash = $this.attr('href');
+
+        $('#c-subscribers-content').find('.loading').first().show();
+        $.get('?module=subscribers&action=list',
+                {
+                    start: 0,
+                    order: '{$order|default:'name'}',
+                    search: '',
+                    id: _id,
+                    records: {$records|default:30}
+                })
+                .done(function(data){
+                    $lists_form_content.html(data);
+                    $.wa.mailer.stopDispatch(1);
+                    window.location.hash = hash;
+                    $all_container_sidebar.find('.selected').removeClass('selected');
+                    $this.closest('li').addClass('selected');
+                })
+                .fail(function(data){})
+                .always(function(data){
+                    $lists_form_content.find('.loading').first().hide();
+                });
+    });
+
+    $forms.on('click', 'a', function(e){
+        e.preventDefault();
+        var $this = $(this),
+            _id = $this.data('formid'),
+            hash = $this.attr('href');
+
+        $('#c-subscribers-content').find('.loading').first().show();
+        $.get('?module=subscribers&action=formeditor&id='+_id)
+                .done(function(data){
+                    $lists_form_content.html(data);
+                    $.wa.mailer.stopDispatch(1);
+                    window.location.hash = hash;
+                    $all_container_sidebar.find('li.selected').removeClass('selected');
+                    $this.closest('li').addClass('selected');
+                })
+                .fail(function(data){})
+                .always(function(data){
+                    $lists_form_content.find('.loading').first().hide();
+                });
+    });
+
+    {if $form_id < 0}
+    $forms.find('[data-formid="-1"]').trigger('click');
+    {else if $form_id > 0}
+    $.get('?module=subscribers&action=formeditor&id={$form_id}')
+            .done(function(data){
+                $lists_form_content.html(data);
+                $.wa.mailer.stopDispatch(1);
+                window.location.hash = '#/subscribers/form/{$form_id}';
+            })
+            .fail(function(data){})
+            .always(function(data){
+                $lists_form_content.find('.loading').first().hide();
+            });
+    {else if $list_id < 0}
+    $lists.find('a').trigger('click');
+    {else}
+    $.get('?module=subscribers&action=list',
+            {
+                start: {$start|default:0},
+                order: '{$order|default:'name'}',
+                search: '{$search|escape|default:''}',
+                id: {$list_id|default:0},
+                records: {$records|default:30}
+            })
+            .done(function(data){
+                $lists_form_content.html(data);
+            })
+            .fail(function(data){})
+            .always(function(data){
+                $lists_form_content.find('.loading').first().hide();
+            });
+    {/if}
+
+    $.wa.mailer.setTitle();
+})($);</script>

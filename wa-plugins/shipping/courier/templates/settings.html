@@ -1,0 +1,271 @@
+<div id="courier-pickup-settings">
+    <div class="field">
+        <div class="name">{$p->_w('Shipping region')}</div>
+        <div class="value">
+            <select name="{$namespace|escape}[rate_zone][country]">
+                <option value=""></option>
+                {foreach $countires as $country}
+                <option value="{$country.iso3letter|escape}"{if !empty($values.rate_zone.country) && ($values.rate_zone.country == $country.iso3letter)} selected="selected"{/if}>{$country.name|escape}</option>
+                {/foreach}
+            </select>
+        </div>
+    </div>
+    <div class="field">
+        <div class="value region">
+            <i class="icon16 loading" style="display:none; margin-left: -23px;"></i>
+            {if empty($regions)}
+                <p class="small">
+                    [`Shipping will be restricted to the selected country. Rates defined below will be applied to the entire country.`]
+                </p>
+                <input name="{$namespace|escape}[rate_zone][region]" value="" type="hidden">
+            {else}
+                <select name="{$namespace|escape}[rate_zone][region]">
+                    <option value=""></option>
+                    {foreach $regions as $region}
+                    <option value="{$region.code|escape}"{if $values.rate_zone.region == $region.code} selected="selected"{/if}>{$region.name|escape}</option>
+                    {/foreach}
+                </select>
+                <br><br>
+                <p class="small">{$p->_w('Shipping will be restricted to the selected region.')}</p>
+            {/if}
+        </div>
+    </div>
+    
+    <div class="field">
+        <div class="name">
+            
+        </div>
+        <div class="value">
+            {$p->_w('City name')}: <input name="{$namespace|escape}[rate_zone][city]" value="{ifset($values.rate_zone.city)}" type="text">
+            <p class="hint">{$p->_w('If courier shipping is provided within a specific city, enter the city name so customer will not be prompted to enter city name when this shipping option is selected — city name will be automatically fetched as you specified. In case city name left blank, customer will be prompted to enter city name.')}</p>
+        </div>
+    </div>
+    
+    <div class="field">
+        <div class="name">
+            {$p->_w('Shipping rate calculation')}
+        </div>
+        <div class="value">
+            <label>
+                <input name="{$namespace|escape}[rate_by]" 
+                    value="weight"{if $values.rate_by == 'weight'} checked="checked"{/if} 
+                    type="radio"> {$p->_w('By weight')}
+            </label>
+        </div>
+        <div class="value">
+            <label>
+                <input name="{$namespace|escape}[rate_by]" 
+                    value="price"{if $values.rate_by == 'price'} checked="checked" {/if}
+                    type="radio"> {$p->_w('By price')}
+            </label>
+        </div>
+    </div>
+    
+
+    <div class="field">
+        <div class="value">
+            <select name="{$namespace|escape}[currency]">
+                {foreach $currencies as $currency}
+                    <option value="{$currency.code|escape}"
+                        {if $values.currency == $currency.code} selected="selected"{/if}>
+                            {"`$currency.title` (`$currency.code`)"|escape}
+                    </option>
+                {/foreach}
+            </select>
+        </div>
+    </div>
+    
+    <div class="field">
+        <div class="value">
+            <table class="zebra">
+                <thead>
+                    <tr>
+                        <th colspan="2" class="rate-by">
+                            <span class="weight" {if $values.rate_by != 'weight'}style="display:none;"{/if}>
+                                {$p->_w('Shipment weight')}
+                            </span>
+                            <span class="price"  {if $values.rate_by != 'price'}style="display:none;"{/if}>
+                                {$p->_w('Shipment amount')}
+                            </span>
+                        </th>
+                        <th>&nbsp;</th>
+                        <th>{$p->_w('Shipping rate')}</th>
+                        <th>&nbsp;</th>
+                    </tr>
+                </thead>
+                <tfoot>
+                    <tr class="white">
+                        <td colspan="5">
+                            <a class="add-rate inline-link small" href="#">
+                                <i class="icon10 add"></i> <b><i>{$p->_w('Add rate')}</i></b>
+                            </a>
+                        </td>
+                    </tr>
+                </tfoot>
+                <tbody>
+                    {foreach $values.rate as $rate}
+                    <tr class="rate">
+                        <td class="min-width">&gt;</td>
+                        <td title="{$p->_w('Shipment amount')}">
+                            <input type="text" 
+                                value="{$rate.limit|escape}" 
+                                class="refreshable input" 
+                                name="{$namespace|escape}[rate][{$rate@index}][limit]"
+                            >
+                            <span class="rate-by">
+                                <span class="weight dimension" {if $values.rate_by != 'weight'}style="display:none;"{/if}>
+                                    {if $values.weight_dimension == 'kg'}
+                                        {$p->_w('kg')}
+                                    {else}
+                                        {$p->_w('lbs')}
+                                    {/if}
+                                </span>
+                                <span class="price currency" {if $values.rate_by != 'price'}style="display:none;"{/if}>
+                                    {$values.currency}
+                                </span>
+                            </span>
+                        </td>
+                        <td>→</td>
+                        <td title="{$p->_w('Shipping rate')}">
+                            <input type="text" 
+                                value="{$rate.cost|escape}" 
+                                name="{$namespace|escape}[rate][{$rate@index}][cost]"
+                            >
+                            <span class="currency">{$values.currency}</span>
+                        </td>
+                        <td>
+                            <a class="delete-rate" href="#">
+                                <i class="icon16 delete"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {/foreach}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <div class="field">
+        <div class="name">
+            {$p->_w('Weight dimension unit')}
+        </div>
+        <div class="value">
+            <select name="{$namespace|escape}[weight_dimension]">
+                <option value="kg" data-value="{$p->_w('kg')}"
+                    {if $values.weight_dimension == 'kg'} selected="selected"{/if}>
+                        {$p->_w('kg')}
+                </option>
+                <option value="lbs" data-value="{$p->_w('lbs')}"
+                    {if $values.weight_dimension == 'lbs'} selected="selected"{/if}>
+                        {$p->_w('lbs')}
+                </option>
+            </select>
+        </div>
+    </div>
+    
+</div>
+<script type="text/javascript">
+    $(function() { 'use strict'
+    
+        var container = $('#courier-pickup-settings'); 
+
+        container.on('click', '.add-rate', function() {
+            var el = $(this);
+            var table = el.parents('table:first');
+            var last  = table.find('tr.rate:last');
+            var clone = last.clone();
+            
+            clone.find('input').each(function() {
+                var input = $(this);
+                
+                // increase index inside input name
+                var name = input.attr('name');
+                input.attr('name', name.replace(/\[rate\]\[(\d+)\]/, function(str, p1) {
+                    return '[rate][' + (parseInt(p1, 10) + 1) + ']';
+                }));
+                
+                input.val(0);
+            });
+            
+            last.after(clone);
+            
+            return false;
+        });
+        
+        container.on('click', '.delete-rate', function() {
+            var el = $(this);
+            var table = el.parents('table:first');
+            if (table.find('tr.rate').length > 1) {
+                el.parents('tr:first').remove();
+            } else {
+                el.parents('tr:first').find('input').val(0);
+            }
+            return false;
+        });
+        
+        container.find('input[name$="[rate_by]"]').change(function() {
+            container.
+                find('.rate-by').
+                children().
+                hide().
+                filter('.' + this.value).
+                show();
+        });
+        
+        container.find('select[name$="[currency]"]').change(function() {
+            container.find('span.currency').text(this.value);
+        });
+        
+        container.find('select[name$="[weight_dimension]"]').change(function() {
+            container.find('.rate-by .weight.dimension').text(
+                $('option:selected', this).attr('data-value')
+            );
+        });
+        
+        (function() {
+            
+            var name    = '{$namespace|escape}[rate_zone][region]';
+            var target  = container.find('div.region');
+            var loader  = container.find('.region .loading');
+            var old_val = target.find('select, input').val();
+            
+            container.find('select[name$="[country]"]').change(function() {
+                loader.show();
+                $.post('{$xhr_url}', { country: this.value }, function(r) {
+                    if (r.data && r.data.options 
+                            && r.data.oOrder && r.data.oOrder.length) 
+                    {
+                        var select = $(
+                            "<select name='" + name + "'>" + 
+                                "<option value=''></option>" + 
+                            "</select>"
+                        );
+                        var o, selected = false;
+                        for (var i = 0; i < r.data.oOrder.length; i++) {
+                            o = $('<option></option>').attr(
+                                'value', r.data.oOrder[i]
+                            ).text(
+                                r.data.options[r.data.oOrder[i]]
+                            ).attr(
+                                'disabled', r.data.oOrder[i] === ''
+                            );
+                            if (!selected && old_val === r.data.oOrder[i]) {
+                                o.attr('selected', true);
+                                selected = true;
+                            }
+                            select.append(o);
+                        }
+                        target.html(select);
+                    } else {
+                        target.html("<input name='" + name + "' value='0' type='hidden'>");
+                    }
+                    loader.hide();
+                }, 'json');
+            });
+            
+            container.on('change', 'select[name="' + name + '"]', function() {
+                old_val = this.value;
+            });
+        })();
+    });
+</script>

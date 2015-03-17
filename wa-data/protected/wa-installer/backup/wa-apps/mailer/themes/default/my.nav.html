@@ -1,0 +1,7 @@
+{* Integration into customer portal menus of other applications. *}
+
+<li class="mailer {if $my_nav_selected == 'subscriptions'}selected{/if}">
+    <a href="{$wa->getUrl('/frontend/mySubscriptions')}">[`My subscriptions`]</a>
+</li>
+
+{$wa->globals('isMyAccount', true)}

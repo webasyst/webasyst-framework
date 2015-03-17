@@ -1,0 +1,23 @@
+@font-face {
+  font-family: 'ALSRubl-Tahoma';
+  src: url('alsrubl-tahoma-regular.eot');
+  src: url('alsrubl-tahoma-regular.eot?#iefix') format('embedded-opentype'),url('alsrubl-tahoma-regular.woff') format('woff'), url('alsrubl-tahoma-regular.ttf') format('truetype'), url('alsrubl-tahoma-regular.svg#ALSRublTahomaItalic') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'ALSRubl-Tahoma';
+  src: url('alsrubl-tahoma-bold.eot');
+  src: url('alsrubl-tahoma-bold.eot?#iefix') format('embedded-opentype'), url('alsrubl-tahoma-bold.woff') format('woff'), url('alsrubl-tahoma-bold.ttf') format('truetype'), url('alsrubl-tahoma-bold.svg#ALSRublTahomaItalic') format('svg');
+  font-weight: bold;
+  font-style: normal;
+}
+
+/*
+  <span class="ruble">Р</span>
+*/
+.ruble {
+  font-family: 'ALSRubl-Tahoma', Tahoma, sans-serif;
+  line-height: normal;
+}

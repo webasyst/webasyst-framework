@@ -12,12 +12,12 @@ return array (
     ),
     'rights' => true,
     'analytics' => true,
-    'version' => '1.1.0',
+    'version' => '1.1.1',
     'critical' => '1.1.0',
     'vendor' => 'webasyst',
     'system' => true,
     'plugins' => true,
-    'build' => 35958,
+    'build' => 36970,
     'id' => 'contacts',
     'img' => 'wa-apps/contacts/img/contacts.png',
   ),
@@ -25,7 +25,6 @@ return array (
   array (
     'name' => 'Инсталлер',
     'description' => 'Install new apps from the Webasyst Store',
-    'prefix' => 'installer',
     'icon' => 
     array (
       48 => 'wa-apps/installer/img/installer.png',
@@ -38,7 +37,7 @@ return array (
     'critical' => '1.2.0',
     'system' => true,
     'vendor' => 'webasyst',
-    'build' => 35681,
+    'build' => 37301,
     'id' => 'installer',
     'img' => 'wa-apps/installer/img/installer.png',
   ),
@@ -122,7 +121,7 @@ return array (
     'themes' => true,
     'rights' => true,
     'my_account' => true,
-    'build' => 36316,
+    'build' => 37142,
     'id' => 'mailer',
     'img' => 'wa-apps/mailer/img/mailer.png',
   ),
@@ -164,7 +163,7 @@ return array (
     'version' => '1.3.0',
     'critical' => '1.3.0',
     'vendor' => 'webasyst',
-    'build' => 35681,
+    'build' => 37301,
     'id' => 'webasyst',
     'icon' => 
     array (

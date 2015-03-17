@@ -3,6 +3,6 @@ return array (
   'pchelkinazabava.ru' => 
   array (
     'auth' => true,
-    'app' => 'site',
+    'app' => 'shop',
   ),
 );

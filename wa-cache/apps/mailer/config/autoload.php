@@ -82,6 +82,7 @@ return array (
   'mailerFrontendUpdateSubscriptionsAction' => 'wa-apps/mailer/lib/actions/frontend/mailerFrontendUpdateSubscriptions.action.php',
   'mailerFrontendConfirmAction' => 'wa-apps/mailer/lib/actions/frontend/mailerFrontendConfirm.action.php',
   'mailerFrontendFormAction' => 'wa-apps/mailer/lib/actions/frontend/mailerFrontendForm.action.php',
+  'mailerFrontendMailviewAction' => 'wa-apps/mailer/lib/actions/frontend/mailerFrontendMailview.action.php',
   'mailerFrontendUnsubscribeAction' => 'wa-apps/mailer/lib/actions/frontend/mailerFrontendUnsubscribe.action.php',
   'mailerTemplatesEditAction' => 'wa-apps/mailer/lib/actions/templates/mailerTemplatesEdit.action.php',
   'mailerTemplatesImport1Action' => 'wa-apps/mailer/lib/actions/templates/mailerTemplatesImport1.action.php',

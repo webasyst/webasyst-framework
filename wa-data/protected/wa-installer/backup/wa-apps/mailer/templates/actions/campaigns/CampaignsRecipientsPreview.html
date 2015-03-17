@@ -1,0 +1,17 @@
+{if $recipients}
+    <table class="zebra recipients-report">
+        {foreach $recipients as $r}
+            <tr>
+                <td class="min-width">{$start + $r@iteration}</td>
+                <td>{$r.name|escape}</td>
+                <td>{$r.email|escape}</td>
+            </tr>
+        {/foreach}
+    </table>
+    {if $has_more}
+        <a class="inline-link load-more-recipients" rel="{$parameters}" href="javascript:void(0)"><b>[`Load next 50`]</b></a>
+    {/if}
+{else}
+    <p>[`No recipients selected.`]</p>
+{/if}
+

@@ -7,6 +7,88 @@ if (!class_exists('Archive_Tar')) {
     throw new Exception('Class Archive_Tar required');
 }
 
+if (!extension_loaded('zlib')) {
+    throw new Exception('PHP extension zlib required');
+}
+
+if (!function_exists('gzopen') && function_exists('gzopen64')) {
+    /**
+     * https://bugs.php.net/bug.php?id=53829
+     */
+
+    /**
+     * @alias gzclose64
+     */
+    function gzclose()
+    {
+        $args = func_get_args();
+        return call_user_func_array('gzclose64', $args);
+    }
+
+    /**
+     * @alias gzeof64
+     */
+    function gzeof()
+    {
+        $args = func_get_args();
+        return call_user_func_array('gzeof64', $args);
+    }
+
+    /**
+     * @alias gzread64
+     */
+    function gzread()
+    {
+        $args = func_get_args();
+        return call_user_func_array('gzread64', $args);
+    }
+
+    /**
+     * @alias gzopen64
+     */
+    function gzopen()
+    {
+        $args = func_get_args();
+        return call_user_func_array('gzopen64', $args);
+    }
+
+    /**
+     * @alias gzseek64
+     */
+    function gzseek()
+    {
+        $args = func_get_args();
+        return call_user_func_array('gzseek64', $args);
+    }
+
+    /**
+     * @alias gztell64
+     */
+    function gztell()
+    {
+        $args = func_get_args();
+        return call_user_func_array('gztell64', $args);
+    }
+
+    /**
+     * @alias gzwrite64
+     */
+    function gzwrite()
+    {
+        $args = func_get_args();
+        return call_user_func_array('gzwrite64', $args);
+    }
+
+    /**
+     * @alias gzputs64
+     */
+    function gzputs()
+    {
+        $args = func_get_args();
+        return call_user_func_array('gzputs64', $args);
+    }
+}
+
 class DurableTar extends Archive_Tar implements Serializable
 {
     private $tarSize;
@@ -18,7 +100,7 @@ class DurableTar extends Archive_Tar implements Serializable
     private $target_path;
 
     /**
-     * @param    string $p_tarname  The name of the tar archive to create
+     * @param    string $p_tarname The name of the tar archive to create
      * @param    string $p_compress can be null, 'gz' or 'bz2'. This
      *                   parameter indicates if gzip or bz2 compression
      *                   is required.  For compatibility reason the
@@ -29,6 +111,7 @@ class DurableTar extends Archive_Tar implements Serializable
      */
     function __construct($p_tarname, $p_compress = null, $resumeOffset = 0, $tarSize)
     {
+
         $this->tarSize = $tarSize;
         $this->resumeOffset = $resumeOffset;
         return parent::Archive_Tar($p_tarname, $p_compress);
@@ -69,25 +152,29 @@ class DurableTar extends Archive_Tar implements Serializable
         }
         return parent::_extractList($p_path, $p_list_detail, $p_mode, $p_file_list, $p_remove_path);
     }
+
     function _getOffset($p_len = null)
     {
         $ofset = null;
         if (is_resource($this->_file)) {
-            if ($p_len === null)
+            if ($p_len === null) {
                 $p_len = 512;
+            }
 
             if ($this->_compress_type == 'gz') {
                 $ofset = @gztell($this->_file) / $p_len;
-            } else
+            } else {
                 if ($this->_compress_type == 'bz2') {
                     //Replace missing bztell() and bzseek()
                     $ofset = 0;
-                } else
+                } else {
                     if ($this->_compress_type == 'none') {
                         $ofset = @ftell($this->_file) / $p_len;
                     } else {
                         $this->_error('Unknown or missing compression type ('.$this->_compress_type.')');
                     }
+                }
+            }
         }
         return floor($ofset);
     }
@@ -95,8 +182,9 @@ class DurableTar extends Archive_Tar implements Serializable
     function _getSize($p_len = null)
     {
         static $count = 0;
-        if ($this->tarSize)
+        if ($this->tarSize) {
             return;
+        }
         $currentBlock = $this->_getOffset($p_len);
         while (strlen(parent::_readBlock($p_len))) {
             $this->_jumpBlock(1024 /*4096*/);
@@ -115,20 +203,23 @@ class DurableTar extends Archive_Tar implements Serializable
         $this->_jumpBlock($currentBlock);
 
     }
+
     function _rewind()
     {
         if (is_resource($this->_file)) {
             if ($this->_compress_type == 'gz') {
                 @gzrewind($this->_file);
-            } else
+            } else {
                 if ($this->_compress_type == 'bz2') {
                     //Replace missing bztell() and bzseek()
-                } else
+                } else {
                     if ($this->_compress_type == 'none') {
                         @rewind($this->_file);
                     } else {
                         $this->_error('Unknown or missing compression type ('.$this->_compress_type.')');
                     }
+                }
+            }
         }
         return true;
     }

@@ -1,0 +1,117 @@
+{if empty($data.id)}
+    <h2>[`Add a new Return-path`]</h2>
+{else}
+    <h2>[`Edit Return-path`]</h2>
+{/if}
+
+<p>
+    [`Specify access parameters for an existing email account that will be used to receive auto notifications from recipients’ mail servers in case of campaign delivery errors.`]
+    [`We recommend that you create a dedicated email account for this purpose, and use it merely for receiving and processing these kinds of auto notification messages.`]
+</p>
+
+<form id="form-return-path" action="?module=returnpath&action=save" method="post">
+{if !empty($data.id)}<input type="hidden" name="id" value="{$data.id}" />{/if}
+<div class="block fields form">
+        <div class="field">
+            <div class="name">[`Email`]</div>
+            <div class="value">
+                <input type="text" name="data[email]" value="{$data.email|escape}"{if !empty($data.id)} disabled{/if}>
+            </div>
+        </div>
+        <div class="field">
+            <div class="name">[`Server`]</div>
+            <div class="value">
+                <input type="text" name="data[server]" value="{$data.server|escape}">
+            </div>
+        </div>
+        <div class="field">
+            <div class="name">[`POP3 Port`]</div>
+            <div class="value">
+                <input type="text" name="data[port]" value="{$data.port|escape}">
+            </div>
+        </div>
+        <div class="field">
+            <div class="name">[`Login`]</div>
+            <div class="value">
+                <input type="text" name="data[login]" value="{$data.login|escape}">
+            </div>
+        </div>
+        <div class="field">
+            <div class="name">
+                [`Password`]
+            </div>
+            <div class="value">
+                <input type="password" name="data[password]">
+                {if isset($data.id)}
+                <br><span class="hint">[`Leave blank to keep current password.`]</span>
+                {/if}
+            </div>
+        </div>
+        <div class="field">
+            <div class="name">[`Secure (SSL)`]</div>
+            <div class="value">
+                <input type="hidden" name="data[ssl]" value="0">
+                <input type="checkbox" name="data[ssl]" value="1"{if $data.ssl} checked="checked"{/if}>
+            </div>
+        </div>
+        <div class="hidden field">
+            <em class="errormsg"></em>
+        </div>
+    </div>
+</div>
+<div class="hidden buttons">
+    {if $show_delete_link}
+        <a href="javascript:void(0)" class="red hint delete-link float-right">[`Delete this Return-path`]</a>
+    {/if}
+
+    <input type="submit" class="button green" value="{if isset($data.id)}[`Save`]{else}[`Add`]{/if}" />
+    <span> [`or`] </span>
+    <a class="cancel-link" href="#/senders/">[`cancel`]</a>
+</div>
+</form>
+
+<div class="clear-left"></div>
+
+<script>(function() { "use strict";
+    var form = $('#form-return-path');
+
+    // Set up dialog buttons
+    var buttons = form.find('.buttons').children();
+    form.parents('.dialog').find('.dialog-buttons-gradient').empty().append(buttons);
+    buttons.filter('.cancel-link').click(function() {
+        form.parents('.dialog').trigger('close').empty().remove();
+        return false;
+    });
+    buttons.filter('input').click(function() {
+        var loading = $('<i class="icon16 loading"></i>');
+        form.parents('.dialog').find('.dialog-buttons-gradient').append(loading);
+        form.find('.errormsg').parent().hide();
+        $.post(form.attr('action'), form.serialize(), function(r) {
+            r = r || { errors: "[`Unknown error`]" };
+            if (r.errors) {
+                loading.remove();
+                form.find('.errormsg').text("[`Error checking mail:`] "+r.errors).parent().show();
+            } else {
+                form.parents('.dialog').trigger('close').empty().remove();
+                {if empty($data.id)}
+                    $.storage.set('mailer/settings/new_return_path_id', form.find('[name="data[email]"]').val());
+                {/if}
+                $.wa.mailer.redispatch();
+            }
+        }, 'json');
+    });
+
+    {if $show_delete_link}
+        // Delete button
+        buttons.filter('.delete-link').click(function() {
+            if (!confirm("[`Do you really want to delete this Return-path?`]")) {
+                return;
+            }
+            $(this).attr('disabled', true).html('<i class="icon16 loading"></i>');
+            $.post('?module=returnpath&action=delete', { id: "{$data.id}" }, function() {
+                form.parents('.dialog').trigger('close').empty().remove();
+                $.wa.mailer.redispatch();
+            });
+        });
+    {/if}
+})();</script>

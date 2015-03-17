@@ -107,7 +107,7 @@
                     <!-- theme price and status -->
                     {if !$theme.installed}
                         {if $theme.commercial}
-                            {if $theme.lease_price == 'free'}
+                            {if ifset($theme.lease_price) == 'free'}
                                 {* free to install on this particular installation (cloud) *}
                                 <span class="black">[`Free`]</span>
                             {else}
@@ -117,7 +117,7 @@
                                 {else}
                                     <span class="gray">
                                         {$theme.price}
-                                        {if $theme.lease_price}
+                                        {if !empty($theme.lease_price)}
                                             [`or`] {sprintf('[`%s/mo`]',$theme.lease_price)}
                                         {/if}
                                     </span>

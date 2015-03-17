@@ -1,0 +1,4179 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: WebAsyst\n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: 2014-10-08 19:34+0400\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=((((n%10)==1)&&((n%100)!=11))?(0):(((((n"
+"%10)>=2)&&((n%10)<=4))&&(((n%100)<10)||((n%100)>=20)))?(1):2));\n"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-Basepath: .\n"
+"Language: ru_RU\n"
+"X-Generator: Poedit 1.6.9\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPath-1: .\n"
+
+msgid "0"
+msgstr "ноль"
+
+msgid "1"
+msgid_plural "1"
+msgstr[0] "один"
+msgstr[1] "одна"
+msgstr[2] "один"
+
+msgid "2"
+msgid_plural "2"
+msgstr[0] "два"
+msgstr[1] "две"
+msgstr[2] "два"
+
+msgid "3"
+msgstr "три"
+
+msgid "4"
+msgstr "четыре"
+
+msgid "5"
+msgstr "пять"
+
+msgid "6"
+msgstr "шесть"
+
+msgid "7"
+msgstr "семь"
+
+msgid "8"
+msgstr "восемь"
+
+msgid "9"
+msgstr "девять"
+
+msgid "10"
+msgstr "десять"
+
+msgid "11"
+msgstr "одиннадцать"
+
+msgid "12"
+msgstr "двенадцать"
+
+msgid "13"
+msgstr "тринадцать"
+
+msgid "14"
+msgstr "четырнадцать"
+
+msgid "15"
+msgstr "пятнадцать"
+
+msgid "16"
+msgstr "шестнадцать"
+
+msgid "17"
+msgstr "семнадцать"
+
+msgid "18"
+msgstr "восемнадцать"
+
+msgid "19"
+msgstr "девятнадцать"
+
+msgid "20"
+msgstr "двадцать"
+
+msgid "30"
+msgstr "тридцать"
+
+msgid "40"
+msgstr "сорок"
+
+msgid "50"
+msgstr "пятьдесят"
+
+msgid "60"
+msgstr "шестьдесят"
+
+msgid "70"
+msgstr "семьдесят"
+
+msgid "80"
+msgstr "восемьдесят"
+
+msgid "90"
+msgstr "девяносто"
+
+msgid "100"
+msgstr "сто"
+
+msgid "200"
+msgstr "двести"
+
+msgid "300"
+msgstr "триста"
+
+msgid "400"
+msgstr "четыреста"
+
+msgid "500"
+msgstr "пятьсот"
+
+msgid "600"
+msgstr "шестьсот"
+
+msgid "700"
+msgstr "семьсот"
+
+msgid "800"
+msgstr "восемьсот"
+
+msgid "900"
+msgstr "девятьсот"
+
+msgid "1000"
+msgid_plural "1000"
+msgstr[0] "тысяча"
+msgstr[1] "тысячи"
+msgstr[2] "тысяч"
+
+msgid "1000000"
+msgid_plural "1000000"
+msgstr[0] "миллион"
+msgstr[1] "миллиона"
+msgstr[2] "миллионов"
+
+msgid "1000000000"
+msgid_plural "1000000000"
+msgstr[0] "миллиард"
+msgstr[1] "миллиарда"
+msgstr[2] "миллиардов"
+
+msgid "1000000000000"
+msgid_plural "1000000000000"
+msgstr[0] "триллион"
+msgstr[1] "триллиона"
+msgstr[2] "триллионов"
+
+msgid "rouble"
+msgid_plural "roubles"
+msgstr[0] "рубль"
+msgstr[1] "рубля"
+msgstr[2] "рублей"
+
+msgid "hryvnia"
+msgid_plural "hryvnias"
+msgstr[0] "гривна"
+msgstr[1] "гривны"
+msgstr[2] "гривен"
+
+msgid "kopeck"
+msgid_plural "kopeks"
+msgstr[0] "копейка"
+msgstr[1] "копейки"
+msgstr[2] "копеек"
+
+msgid "dollar"
+msgid_plural "dollars"
+msgstr[0] "доллар"
+msgstr[1] "доллара"
+msgstr[2] "долларов"
+
+msgid "cent"
+msgid_plural "cents"
+msgstr[0] "цент"
+msgstr[1] "цента"
+msgstr[2] "центов"
+
+# waDate
+msgid "January"
+msgid_plural "January"
+msgstr[0] "Январь"
+msgstr[1] "Января"
+msgstr[2] "Январь"
+
+msgid "February"
+msgid_plural "February"
+msgstr[0] "Февраль"
+msgstr[1] "Февраля"
+msgstr[2] "Января"
+
+msgid "March"
+msgid_plural "March"
+msgstr[0] "Март"
+msgstr[1] "Марта"
+msgstr[2] "Март"
+
+msgid "April"
+msgid_plural "April"
+msgstr[0] "Апрель"
+msgstr[1] "Апреля"
+msgstr[2] "Апрель"
+
+msgid "May"
+msgid_plural "May"
+msgstr[0] "Май"
+msgstr[1] "Мая"
+msgstr[2] "Май"
+
+msgid "June"
+msgid_plural "June"
+msgstr[0] "Июнь"
+msgstr[1] "Июня"
+msgstr[2] "Июнь"
+
+msgid "July"
+msgid_plural "July"
+msgstr[0] "Июль"
+msgstr[1] "Июля"
+msgstr[2] "Июль"
+
+msgid "August"
+msgid_plural "August"
+msgstr[0] "Август"
+msgstr[1] "Августа"
+msgstr[2] "Август"
+
+msgid "September"
+msgid_plural "September"
+msgstr[0] "Сентябрь"
+msgstr[1] "Сентября"
+msgstr[2] "Сентябрь"
+
+msgid "October"
+msgid_plural "October"
+msgstr[0] "Октябрь"
+msgstr[1] "Октября"
+msgstr[2] "Октябрь"
+
+msgid "November"
+msgid_plural "November"
+msgstr[0] "Ноябрь"
+msgstr[1] "Ноября"
+msgstr[2] "Ноябрь"
+
+msgid "December"
+msgid_plural "December"
+msgstr[0] "Декабрь"
+msgstr[1] "Декабря"
+msgstr[2] "Декабрь"
+
+msgid "Jan"
+msgstr "Янв"
+
+msgid "Feb"
+msgstr "Фев"
+
+msgid "Mar"
+msgstr "Мар"
+
+msgid "Apr"
+msgstr "Апр"
+
+msgid "Jun"
+msgstr "Июн"
+
+msgid "Jul"
+msgstr "Июл"
+
+msgid "Aug"
+msgstr "Авг"
+
+msgid "Sep"
+msgstr "Сен"
+
+msgid "Oct"
+msgstr "Окт"
+
+msgid "Nov"
+msgstr "Ноя"
+
+msgid "Dec"
+msgstr "Дек"
+
+msgid "Mon"
+msgstr "Пн"
+
+msgid "Tue"
+msgstr "Вт"
+
+msgid "Wed"
+msgstr "Ср"
+
+msgid "Thu"
+msgstr "Чт"
+
+msgid "Fri"
+msgstr "Пт"
+
+msgid "Sat"
+msgstr "Сб"
+
+msgid "Sun"
+msgstr "Вс"
+
+msgid "Monday"
+msgstr "Понедельник"
+
+msgid "Tuesday"
+msgstr "Вторник"
+
+msgid "Wednesday"
+msgstr "Среда"
+
+msgid "Thursday"
+msgstr "Четверг"
+
+msgid "Friday"
+msgstr "Пятница"
+
+msgid "Saturday"
+msgstr "Суббота"
+
+msgid "Sunday"
+msgstr "Воскресенье"
+
+msgid "year"
+msgid_plural "years"
+msgstr[0] "год"
+msgstr[1] "года"
+msgstr[2] "лет"
+
+msgid "month"
+msgid_plural "months"
+msgstr[0] "месяц"
+msgstr[1] "месяца"
+msgstr[2] "месяцев"
+
+msgid "day"
+msgid_plural "days"
+msgstr[0] "день"
+msgstr[1] "дня"
+msgstr[2] "дней"
+
+msgid "hour"
+msgid_plural "hours"
+msgstr[0] "час"
+msgstr[1] "часа"
+msgstr[2] "часов"
+
+msgid "minute"
+msgid_plural "minutes"
+msgstr[0] "минута"
+msgstr[1] "минуты"
+msgstr[2] "минут"
+
+# webasyst-templates
+msgid "Login name"
+msgstr "Логин"
+
+msgid "Password"
+msgstr "Пароль"
+
+msgid "Remember me"
+msgstr "Запомнить меня"
+
+msgid "Sign in Webasyst"
+msgstr "Вход в Вебасист"
+
+msgid "Forgot password?"
+msgstr "Забыли пароль?"
+
+msgid "Login"
+msgstr "Логин"
+
+msgid "Log in"
+msgstr "Вход"
+
+msgid "Log out"
+msgstr "Выйти"
+
+msgid "Sign In"
+msgstr "Войти"
+
+msgid "Sign Up"
+msgstr "Зарегистрироваться"
+
+msgid "Save and log in"
+msgstr "Сохранить и войти"
+
+# countries
+msgid "Aruba"
+msgstr "Аруба"
+
+msgid "Afghanistan"
+msgstr "Афганистан"
+
+msgid "Angola"
+msgstr "Ангола"
+
+msgid "Anguilla"
+msgstr "Ангилья"
+
+msgid "Åland Islands"
+msgstr "Аландские Острова"
+
+msgid "Albania"
+msgstr "Албания"
+
+msgid "Andorra"
+msgstr "Андорра"
+
+msgid "Netherlands Antilles"
+msgstr "Антильские Острова (Нидерландские)"
+
+msgid "United Arab Emirates"
+msgstr "Объединенные Арабские Эмираты"
+
+msgid "Argentina"
+msgstr "Аргентина"
+
+msgid "Armenia"
+msgstr "Армения"
+
+msgid "American Samoa"
+msgstr "Восточное Самоа"
+
+msgid "Antarctica"
+msgstr "Антарктика"
+
+msgid "French Southern Territories"
+msgstr "Французские Южные территории"
+
+msgid "Antigua and Barbuda"
+msgstr "Антигуа и Барбуда"
+
+msgid "Australia"
+msgstr "Австралия"
+
+msgid "Austria"
+msgstr "Австрия"
+
+msgid "Azerbaijan"
+msgstr "Азербайджан"
+
+msgid "Burundi"
+msgstr "Бурунди"
+
+msgid "Belgium"
+msgstr "Бельгия"
+
+msgid "Benin"
+msgstr "Бенин"
+
+msgid "Burkina Faso"
+msgstr "Буркина Фасо"
+
+msgid "Bangladesh"
+msgstr "Бангладеш"
+
+msgid "Bulgaria"
+msgstr "Болгария"
+
+msgid "Bahrain"
+msgstr "Бахрейн"
+
+msgid "Bahamas"
+msgstr "Багамские Острова"
+
+msgid "Bosnia and Herzegovina"
+msgstr "Босния и Герцеговина"
+
+msgid "Saint Barthélemy"
+msgstr "Сент-Бартельми"
+
+msgid "Belarus"
+msgstr "Беларусь"
+
+msgid "Belize"
+msgstr "Белиз"
+
+msgid "Bermuda"
+msgstr "Бермудские Острова"
+
+msgid "Bolivia, Plurinational State of"
+msgstr "Боливия"
+
+msgid "Brazil"
+msgstr "Бразилия"
+
+msgid "Barbados"
+msgstr "Барбадос"
+
+msgid "Brunei Darussalam"
+msgstr "Бруней"
+
+msgid "Bhutan"
+msgstr "Бутан"
+
+msgid "Bouvet Island"
+msgstr "Буве, остров"
+
+msgid "Botswana"
+msgstr "Ботсвана"
+
+msgid "Central African Republic"
+msgstr "Центральноафриканская Республика"
+
+msgid "Canada"
+msgstr "Канада"
+
+msgid "Cocos (Keeling) Islands"
+msgstr "Кокосовые (Килинг) острова"
+
+msgid "Switzerland"
+msgstr "Швейцария"
+
+msgid "Chile"
+msgstr "Чили"
+
+msgid "China"
+msgstr "Китай"
+
+msgid "Côte d'Ivoire"
+msgstr "Кот-д'Ивуар"
+
+msgid "Cameroon"
+msgstr "Камерун"
+
+msgid "Congo, the Democratic Republic of the"
+msgstr "Конго, Демократическая Республика"
+
+msgid "Congo"
+msgstr "Конго"
+
+msgid "Cook Islands"
+msgstr "Кука, Острова"
+
+msgid "Colombia"
+msgstr "Колумбия"
+
+msgid "Comoros"
+msgstr "Коморские Острова"
+
+msgid "Cape Verde"
+msgstr "Кабо-Верде"
+
+msgid "Costa Rica"
+msgstr "Коста-Рика"
+
+msgid "Cuba"
+msgstr "Куба"
+
+msgid "Christmas Island"
+msgstr "Рождества (Кристмас), Остров"
+
+msgid "Cayman Islands"
+msgstr "Каймановы острова"
+
+msgid "Cyprus"
+msgstr "Кипр"
+
+msgid "Czech Republic"
+msgstr "Чешская Республика"
+
+msgid "Germany"
+msgstr "Германия"
+
+msgid "Djibouti"
+msgstr "Джибути"
+
+msgid "Dominica"
+msgstr "Доминика"
+
+msgid "Denmark"
+msgstr "Дания"
+
+msgid "Dominican Republic"
+msgstr "Доминиканская Республика"
+
+msgid "Algeria"
+msgstr "Алжир"
+
+msgid "Ecuador"
+msgstr "Эквадор"
+
+msgid "Egypt"
+msgstr "Египет"
+
+msgid "Eritrea"
+msgstr "Эритрея"
+
+msgid "Western Sahara"
+msgstr "Западная Сахара"
+
+msgid "Spain"
+msgstr "Испания"
+
+msgid "Estonia"
+msgstr "Эстония"
+
+msgid "Ethiopia"
+msgstr "Эфиопия"
+
+msgid "Finland"
+msgstr "Финляндия"
+
+msgid "Fiji"
+msgstr "Фиджи"
+
+msgid "Falkland Islands (Malvinas)"
+msgstr "Фолклендские (Мальвинские) Острова"
+
+msgid "France"
+msgstr "Франция"
+
+msgid "Faroe Islands"
+msgstr "Фарерские острова"
+
+msgid "Micronesia, Federated States of"
+msgstr "Микронезия (Федеративные Штаты Микронезии)"
+
+msgid "Gabon"
+msgstr "Габон"
+
+msgid "United Kingdom"
+msgstr "Великобритания"
+
+msgid "Georgia"
+msgstr "Грузия"
+
+msgid "Guernsey"
+msgstr "Гернси"
+
+msgid "Ghana"
+msgstr "Гана"
+
+msgid "Gibraltar"
+msgstr "Гибралтар"
+
+msgid "Guinea"
+msgstr "Гвинея"
+
+msgid "Guadeloupe"
+msgstr "Гваделупа"
+
+msgid "Gambia"
+msgstr "Гамбия"
+
+msgid "Guinea-Bissau"
+msgstr "Гвинея-Бисау"
+
+msgid "Equatorial Guinea"
+msgstr "Экваториальная Гвинея"
+
+msgid "Greece"
+msgstr "Греция"
+
+msgid "Grenada"
+msgstr "Гренада"
+
+msgid "Greenland"
+msgstr "Гренландия"
+
+msgid "Guatemala"
+msgstr "Гватемала"
+
+msgid "French Guiana"
+msgstr "Гвиана Французская"
+
+msgid "Guam"
+msgstr "Гуам"
+
+msgid "Guyana"
+msgstr "Гайана"
+
+msgid "Hong Kong"
+msgstr "Гонконг"
+
+msgid "Heard Island and McDonald Islands"
+msgstr "Херд и Макдональд, острова"
+
+msgid "Honduras"
+msgstr "Гондурас"
+
+msgid "Croatia"
+msgstr "Хорватия"
+
+msgid "Haiti"
+msgstr "Гаити"
+
+msgid "Hungary"
+msgstr "Венгрия"
+
+msgid "Indonesia"
+msgstr "Индонезия"
+
+msgid "Isle of Man"
+msgstr "Мэн, Остров"
+
+msgid "India"
+msgstr "Индия"
+
+msgid "British Indian Ocean Territory"
+msgstr "Британская территория в Индийском океане"
+
+msgid "Ireland"
+msgstr "Ирландия"
+
+msgid "Iran, Islamic Republic of"
+msgstr "Иран"
+
+msgid "Iraq"
+msgstr "Ирак"
+
+msgid "Iceland"
+msgstr "Исландия"
+
+msgid "Israel"
+msgstr "Израиль"
+
+msgid "Italy"
+msgstr "Италия"
+
+msgid "Jamaica"
+msgstr "Ямайка"
+
+msgid "Jersey"
+msgstr "Джерси"
+
+msgid "Jordan"
+msgstr "Иордания"
+
+msgid "Japan"
+msgstr "Япония"
+
+msgid "Kazakhstan"
+msgstr "Казахстан"
+
+msgid "Kenya"
+msgstr "Кения"
+
+msgid "Kyrgyzstan"
+msgstr "Киргизия (Кыргызстан)"
+
+msgid "Cambodia"
+msgstr "Камбоджа"
+
+msgid "Kiribati"
+msgstr "Кирибати"
+
+msgid "Saint Kitts and Nevis"
+msgstr "Сент-Китс и Невис"
+
+msgid "Korea, Republic of"
+msgstr "Корея, Республика"
+
+msgid "Kuwait"
+msgstr "Кувейт"
+
+msgid "Lao People's Democratic Republic"
+msgstr "Лаос"
+
+msgid "Lebanon"
+msgstr "Ливан"
+
+msgid "Liberia"
+msgstr "Либерия"
+
+msgid "Libyan Arab Jamahiriya"
+msgstr "Ливия"
+
+msgid "Saint Lucia"
+msgstr "Сент-Люсия"
+
+msgid "Liechtenstein"
+msgstr "Лихтенштейн"
+
+msgid "Sri Lanka"
+msgstr "Шри-Ланка"
+
+msgid "Lesotho"
+msgstr "Лесото"
+
+msgid "Lithuania"
+msgstr "Литва"
+
+msgid "Luxembourg"
+msgstr "Люксембург"
+
+msgid "Latvia"
+msgstr "Латвия"
+
+msgid "Macao"
+msgstr "Аомынь (Макао)"
+
+msgid "Saint Martin (French part)"
+msgstr "Святого Мартина, Остров (Франция)"
+
+msgid "Morocco"
+msgstr "Марокко"
+
+msgid "Monaco"
+msgstr "Монако"
+
+msgid "Moldova, Republic of"
+msgstr "Молдова"
+
+msgid "Madagascar"
+msgstr "Мадагаскар"
+
+msgid "Maldives"
+msgstr "Мальдивы"
+
+msgid "Mexico"
+msgstr "Мексика"
+
+msgid "Marshall Islands"
+msgstr "Маршалловы Острова"
+
+msgid "Macedonia, the former Yugoslav Republic of"
+msgstr "Македония"
+
+msgid "Mali"
+msgstr "Мали"
+
+msgid "Malta"
+msgstr "Мальта"
+
+msgid "Myanmar"
+msgstr "Мьянма (Бирма)"
+
+msgid "Montenegro"
+msgstr "Черногория"
+
+msgid "Mongolia"
+msgstr "Монголия"
+
+msgid "Northern Mariana Islands"
+msgstr "Северные Марианские Острова"
+
+msgid "Mozambique"
+msgstr "Мозамбик"
+
+msgid "Mauritania"
+msgstr "Мавритания"
+
+msgid "Montserrat"
+msgstr "Монтсеррат"
+
+msgid "Martinique"
+msgstr "Мартиника"
+
+msgid "Mauritius"
+msgstr "Маврикий"
+
+msgid "Malawi"
+msgstr "Малави"
+
+msgid "Malaysia"
+msgstr "Малайзия"
+
+msgid "Mayotte"
+msgstr "Маоре (Майотта)"
+
+msgid "Namibia"
+msgstr "Намибия"
+
+msgid "New Caledonia"
+msgstr "Новая Каледония"
+
+msgid "Niger"
+msgstr "Нигер"
+
+msgid "Norfolk Island"
+msgstr "Норфолк"
+
+msgid "Nigeria"
+msgstr "Нигерия"
+
+msgid "Nicaragua"
+msgstr "Никарагуа"
+
+msgid "Niue"
+msgstr "Ниуэ"
+
+msgid "Netherlands"
+msgstr "Нидерланды"
+
+msgid "Norway"
+msgstr "Норвегия"
+
+msgid "Nepal"
+msgstr "Непал"
+
+msgid "Nauru"
+msgstr "Науру"
+
+msgid "New Zealand"
+msgstr "Новая Зеландия"
+
+msgid "Oman"
+msgstr "Оман"
+
+msgid "Pakistan"
+msgstr "Пакистан"
+
+msgid "Panama"
+msgstr "Панама"
+
+msgid "Pitcairn"
+msgstr "Питкэрн"
+
+msgid "Peru"
+msgstr "Перу"
+
+msgid "Philippines"
+msgstr "Филиппины"
+
+msgid "Palau"
+msgstr "Палау"
+
+msgid "Papua New Guinea"
+msgstr "Папуа &mdash; Новая Гвинея"
+
+msgid "Poland"
+msgstr "Польша"
+
+msgid "Puerto Rico"
+msgstr "Пуэрто-Рико"
+
+msgid "Korea, Democratic People's Republic of"
+msgstr "Корейская Народно-Демократическая Республика"
+
+msgid "Portugal"
+msgstr "Португалия"
+
+msgid "Paraguay"
+msgstr "Парагвай"
+
+msgid "Palestinian Territory, Occupied"
+msgstr "Палестина"
+
+msgid "French Polynesia"
+msgstr "Французская Полинезия"
+
+msgid "Qatar"
+msgstr "Катар"
+
+msgid "Réunion"
+msgstr "Реюньон"
+
+msgid "Romania"
+msgstr "Румыния"
+
+msgid "Russian Federation"
+msgstr "Российская Федерация"
+
+msgid "Rwanda"
+msgstr "Руанда"
+
+msgid "Saudi Arabia"
+msgstr "Саудовская Аравия"
+
+msgid "Sudan"
+msgstr "Судан"
+
+msgid "Senegal"
+msgstr "Сенегал"
+
+msgid "Singapore"
+msgstr "Сингапур"
+
+msgid "South Georgia and the South Sandwich Islands"
+msgstr "Южная Георгия и Южные Сандвичевы острова"
+
+msgid "Saint Helena, Ascension and Tristan da Cunha"
+msgstr "Святой Елены, Остров"
+
+msgid "Svalbard and Jan Mayen"
+msgstr "Свальбард (Шпицберген) и Ян-Майен"
+
+msgid "Solomon Islands"
+msgstr "Соломоновы Острова"
+
+msgid "Sierra Leone"
+msgstr "Сьерра-Леоне"
+
+msgid "El Salvador"
+msgstr "Сальвадор"
+
+msgid "San Marino"
+msgstr "Сан-Марино"
+
+msgid "Somalia"
+msgstr "Сомали"
+
+msgid "Saint Pierre and Miquelon"
+msgstr "Сен-Пьер и Микелон"
+
+msgid "Serbia"
+msgstr "Сербия"
+
+msgid "Sao Tome and Principe"
+msgstr "Сан-Томе и Принсипи"
+
+msgid "Suriname"
+msgstr "Суринам"
+
+msgid "Slovakia"
+msgstr "Словакия"
+
+msgid "Slovenia"
+msgstr "Словения"
+
+msgid "Sweden"
+msgstr "Швеция"
+
+msgid "Swaziland"
+msgstr "Свазиленд"
+
+msgid "Seychelles"
+msgstr "Сейшельские Острова"
+
+msgid "Syrian Arab Republic"
+msgstr "Сирия"
+
+msgid "Turks and Caicos Islands"
+msgstr "Теркс и Кайкос"
+
+msgid "Chad"
+msgstr "Чад"
+
+msgid "Togo"
+msgstr "Того"
+
+msgid "Thailand"
+msgstr "Таиланд"
+
+msgid "Tajikistan"
+msgstr "Таджикистан"
+
+msgid "Tokelau"
+msgstr "Токелау"
+
+msgid "Turkmenistan"
+msgstr "Туркменистан"
+
+msgid "Timor-Leste"
+msgstr "Восточный Тимор"
+
+msgid "Tonga"
+msgstr "Тонга"
+
+msgid "Trinidad and Tobago"
+msgstr "Тринидад и Тобаго"
+
+msgid "Tunisia"
+msgstr "Тунис"
+
+msgid "Turkey"
+msgstr "Турция"
+
+msgid "Tuvalu"
+msgstr "Тувалу"
+
+msgid "Taiwan, Province of China"
+msgstr "Тайвань (провинция Китая)"
+
+msgid "Tanzania, United Republic of"
+msgstr "Танзания"
+
+msgid "Uganda"
+msgstr "Уганда"
+
+msgid "Ukraine"
+msgstr "Украина"
+
+msgid "United States Minor Outlying Islands"
+msgstr "Мелкие отдаленные острова США"
+
+msgid "Uruguay"
+msgstr "Уругвай"
+
+msgid "United States"
+msgstr "Соединенные Штаты Америки (США)"
+
+msgid "Uzbekistan"
+msgstr "Узбекистан"
+
+msgid "Holy See (Vatican City State)"
+msgstr "Ватикан"
+
+msgid "Saint Vincent and the Grenadines"
+msgstr "Сент-Винсент и Гренадины"
+
+msgid "Venezuela, Bolivarian Republic of"
+msgstr "Венесуэла"
+
+msgid "Virgin Islands, British"
+msgstr "Виргинские Острова (Британские)"
+
+msgid "Virgin Islands, U.S."
+msgstr "Виргинские Острова (США)"
+
+msgid "Viet Nam"
+msgstr "Вьетнам"
+
+msgid "Vanuatu"
+msgstr "Вануату"
+
+msgid "Wallis and Futuna"
+msgstr "Уоллис и Футуна"
+
+msgid "Samoa"
+msgstr "Западное Самоа"
+
+msgid "Yemen"
+msgstr "Йемен"
+
+msgid "South Africa"
+msgstr "Южно-Африканская Республика"
+
+msgid "Zambia"
+msgstr "Замбия"
+
+msgid "Zimbabwe"
+msgstr "Зимбабве"
+
+msgid "Moscow"
+msgstr "Москва"
+
+msgid "Samara"
+msgstr "Самара"
+
+msgid "Volgograd"
+msgstr "Волгоград"
+
+msgid "Yekaterinburg"
+msgstr "Екатеринбург"
+
+msgid "Novosibirsk"
+msgstr "Новосибирск"
+
+msgid "Omsk"
+msgstr "Омск"
+
+msgid "Krasnoyarsk"
+msgstr "Красноярск"
+
+msgid "Sakhalin"
+msgstr "Сахалин"
+
+msgid "Vladivostok"
+msgstr "Владивосток"
+
+msgid "Novokuznetsk"
+msgstr "Новокузнецк"
+
+msgid "Paris"
+msgstr "Париж"
+
+msgid "Tunis"
+msgstr "Тунис"
+
+msgid "Dublin"
+msgstr "Дублин"
+
+msgid "London"
+msgstr "Лондон"
+
+msgid "Johannesburg"
+msgstr "Йоханнесбург"
+
+msgid "Tripoli"
+msgstr "Триполи"
+
+msgid "Amsterdam"
+msgstr "Амстердам"
+
+msgid "Belgrade"
+msgstr "Белград"
+
+msgid "Bratislava"
+msgstr "Братислава"
+
+msgid "Brussels"
+msgstr "Брюссель"
+
+msgid "Budapest"
+msgstr "Будапешт"
+
+msgid "Copenhagen"
+msgstr "Копенгаген"
+
+msgid "Madrid"
+msgstr "Мадрид"
+
+msgid "Oslo"
+msgstr "Осло"
+
+msgid "Prague"
+msgstr "Прага"
+
+msgid "Rome"
+msgstr "Рим"
+
+msgid "Stockholm"
+msgstr "Стокгольм"
+
+msgid "Berlin"
+msgstr "Берлин"
+
+msgid "Helsinki"
+msgstr "Хельсинки"
+
+msgid "Kaliningrad"
+msgstr "Калининград"
+
+msgid "Kiev"
+msgstr "Киев"
+
+msgid "Minsk"
+msgstr "Минск"
+
+msgid "Riga"
+msgstr "Рига"
+
+msgid "Vilnius"
+msgstr "Вильнюс"
+
+msgid "Sofia"
+msgstr "София"
+
+msgid "Tallinn"
+msgstr "Таллин"
+
+msgid "Simferopol"
+msgstr "Симферополь"
+
+msgid "Tbilisi"
+msgstr "Тбилиси"
+
+msgid "Dushanbe"
+msgstr "Душанбе"
+
+msgid "Tashkent"
+msgstr "Ташкент"
+
+msgid "Yerevan"
+msgstr "Ереван"
+
+msgid "Vostok"
+msgstr "Станция Восток (Антарктика)"
+
+msgid "Thimphu"
+msgstr "Тхимпху"
+
+msgid "UTC"
+msgstr "Всемирное время (UTC)"
+
+msgid "New York"
+msgstr "Нью-Йорк"
+
+msgid "Toronto"
+msgstr "Торонто"
+
+msgid "Dawson"
+msgstr "Доусон"
+
+msgid "Phoenix"
+msgstr "Финикс"
+
+msgid "Los Angeles"
+msgstr "Лос-Анджелес"
+
+msgid "Chicago"
+msgstr "Чикаго"
+
+msgid "Street"
+msgstr "Улица"
+
+msgid "Street address"
+msgstr "Улица, дом, квартира"
+
+msgid "State"
+msgstr "Регион"
+
+msgid "City"
+msgstr "Город"
+
+msgid "Country"
+msgstr "Страна"
+
+msgid "ZIP"
+msgstr "Индекс"
+
+msgid "home"
+msgstr "домашний"
+
+msgid "work"
+msgstr "рабочий"
+
+msgid "personal"
+msgstr "личный"
+
+# Contact fields
+msgid "Title"
+msgstr "Обращение"
+
+msgid "First name"
+msgstr "Имя"
+
+msgid "Middle name"
+msgstr "Отчество"
+
+msgid "Last name"
+msgstr "Фамилия"
+
+msgid "Company"
+msgstr "Компания"
+
+msgid "Email"
+msgstr "Email"
+
+msgid "Description"
+msgstr "Описание"
+
+msgid "Phone"
+msgstr "Телефон"
+
+msgid "Address"
+msgstr "Адрес"
+
+msgid "Website"
+msgstr "Веб-сайт"
+
+msgid "Birthday"
+msgstr "День рождения"
+
+msgid "Language"
+msgstr "Язык"
+
+msgid "Time zone"
+msgstr "Часовой пояс"
+
+msgid "Categories"
+msgstr "Категории"
+
+msgid "Select country"
+msgstr "Выберите страну"
+
+msgid "Select time zone"
+msgstr "Выберите часовой пояс"
+
+msgid "Select language"
+msgstr "Выберите язык"
+
+msgid "Select value"
+msgstr "Выберите значение"
+
+msgid "Name"
+msgstr "Имя"
+
+msgid "mobile"
+msgstr "мобильный"
+
+msgid "Instant messenger"
+msgstr "Мгновенные сообщения"
+
+msgid "Social network"
+msgstr "Социальная сеть"
+
+msgid "Invalid login or password"
+msgstr "Неправильный логин или пароль"
+
+msgid "Invalid email or password"
+msgstr "Неправильный email или пароль"
+
+msgid "Login is required"
+msgstr "Логин обязателен"
+
+msgid "Incorrect numerical value"
+msgstr "Некорректное числовое значение"
+
+# Dashboard text
+msgid "Hi %s!"
+msgstr "Привет, %s!"
+
+msgid "This is your Dashboard."
+msgstr "Это ваша Панель управления."
+
+msgid "So far it is empty, but soon it will have useful content."
+msgstr "Сейчас она пустая, но скоро на ней появится полезный контент."
+
+msgid ""
+"Until then use icons on the top of this page to work with available "
+"applications."
+msgstr ""
+"А пока используйте значки наверху этой страницы для работы с доступными "
+"приложениями."
+
+msgid "Thank you for using Webasyst!"
+msgstr "Спасибо за использование Вебасист!"
+
+msgid "Login Webasyst"
+msgstr "Вход в Вебасист"
+
+msgid "Create the first user in your Webasyst installation."
+msgstr "Создайте первого пользователя-администратора."
+
+msgid "Enter"
+msgstr "Войти"
+
+#: /wa-system/webasyst/templates/actions/backend/BackendDefault.html:5
+msgid "Welcome"
+msgstr "Добро пожаловать"
+
+#: /wa-system/webasyst/templates/actions/backend/BackendDefaultMobile.html:21
+msgid "Logout"
+msgstr "Выйти"
+
+#: /wa-system/webasyst/templates/actions/login/LoginForgot.html:50
+msgid "Send"
+msgstr "Отправить"
+
+msgid "Please enter your login name or email:"
+msgstr "Пожалуйста, введите ваш логин или email:"
+
+msgid "Please enter your email:"
+msgstr "Пожалуйста, введите ваш email:"
+
+#: /wa-system/webasyst/templates/actions/login/LoginForgot.html:51
+msgid "or"
+msgstr "или"
+
+#: /wa-system/webasyst/templates/actions/login/LoginForgot.html:52
+msgid "cancel"
+msgstr "отмена"
+
+msgid "Cancel"
+msgstr "Отмена"
+
+#: /wa-system/contact/waContactAddressField.class.php:77
+msgid "show on map"
+msgstr "показать на карте"
+
+#: /wa-system/helper/view.php:78
+msgid "logout"
+msgstr "выйти"
+
+#: /wa-system/webasyst/templates/mail/RecoveringPassword.html:1
+msgid "To recover your password please follow this link:"
+msgstr "Для восстановления пароля перейдите по ссылке:"
+
+#: /wa-system/webasyst/templates/mail/RecoveringPassword.html:4
+msgid ""
+"IMPORTANT NOTE: If you did not request your password recovery, someone else "
+"might be trying to log in using your email address. For security purposes we "
+"recommend you to log in to your account and to change your password."
+msgstr ""
+"ВАЖНО: Если вы не просили восстановить пароль, то значит кто-то другой "
+"пытался подключиться используя ваш логин или email. В целях безопасности мы "
+"рекомендуем вам зайти сейчас в ваш аккаунт и изменить пароль."
+
+#: /wa-system/webasyst/templates/actions/login/LoginPassword.html:57
+msgid "Enter a new password"
+msgstr "Новый пароль"
+
+#: /wa-system/webasyst/templates/actions/login/LoginPassword.html:65
+msgid "Re-enter password"
+msgstr "Подтвердите пароль"
+
+#: /wa-system/webasyst/templates/actions/login/LoginFirst.html:49
+msgid "Confirm password"
+msgstr "Подтвердите пароль"
+
+#: /wa-system/webasyst/lib/actions/login/webasystLoginPassword.action.php:29
+msgid "Passwords do not match"
+msgstr "Пароли не совпадают"
+
+msgid "No more than %d character please"
+msgid_plural "No more than %d characters please"
+msgstr[0] "Пожалуйста, не более %d символа"
+msgstr[1] "Пожалуйста, не более %d символов"
+msgstr[2] "Пожалуйста, не более %d символов"
+
+msgid "No less than %d character please"
+msgid_plural "No less than %d characters please"
+msgstr[0] "Пожалуйста, не менее %d символа"
+msgstr[1] "Пожалуйста, не менее %d символов"
+msgstr[2] "Пожалуйста, не менее %d символов"
+
+msgid "Password recovery"
+msgstr "Восстановление пароля"
+
+msgid "Back to login page"
+msgstr "Вернуться на страницу входа"
+
+msgid "Duplicates are not allowed for this field."
+msgstr "Дубликаты недопустимы для этого поля."
+
+msgid "This field is required."
+msgstr "Это поле обязательное."
+
+msgid "At least one of these fields must be filled"
+msgstr "Хотя бы одно из этих полей должно быть заполнено"
+
+msgid "Password recovery instructions have been sent to your email address."
+msgstr ""
+"Инструкции по восстановлению пароля были отправлены на ваш электронный адрес."
+
+msgid "No user with this login name or email has been found."
+msgstr "Пользователь с таким логином или email адресом не найден."
+
+msgid "No user with this email has been found."
+msgstr "Пользователь с таким email адресом не найден."
+
+msgid "Effective<br/>rights"
+msgstr "Результирующие<br/>права"
+
+msgid "Granted<br/>personally"
+msgstr "Установлено<br/>персонально"
+
+msgid "Inherited<br/>from groups"
+msgstr "Унаследовано<br/>от групп"
+
+msgid "more"
+msgstr "еще"
+
+msgid "all"
+msgstr "все"
+
+msgid "Error"
+msgstr "Ошибка"
+
+msgid ""
+"Enter any login and password so<br> we can create a user account for you"
+msgstr "Введите любые логин и пароль,<br> чтобы мы создали вам аккаунт"
+
+msgid "All contacts"
+msgstr "Все контакты"
+
+msgid "All users"
+msgstr "Все пользователи"
+
+#: /wa-system/config/waRightConfig.class.php:143
+msgid "Group"
+msgstr "Группа"
+
+#: /wa-system/contact/waContactCompositeField.class.php:71
+msgid "%s subfield is required."
+msgstr "Поле %s обязательное."
+
+#: /wa-system/contact/waContactField.class.php:308
+msgid "This field is required"
+msgstr "Это поле обязательное"
+
+#: /wa-system/image/waImage.class.php:51
+msgid "Not an image or invalid image: "
+msgstr "Неправильный формат изображения: "
+
+#: /wa-system/image/waImage.class.php:97
+msgid "Not %s image adapter"
+msgstr "Not %s image adapter"
+
+#: /wa-system/image/waImage.class.php:276
+msgid "File must be writable: "
+msgstr "Нужны права на запись в файл: "
+
+#: /wa-system/image/waImageGd.class.php:44
+msgid "GD does not support %s images"
+msgstr "GD не поддерживает работу с изображениями в формате %s"
+
+#: /wa-system/image/waImageGd.class.php:56
+msgid "GD is not installed"
+msgstr "GD не установлен"
+
+#: /wa-system/image/waImageGd.class.php:63
+msgid "Need GD version of the above 2.0.1"
+msgstr "Необходима версия GD не ниже 2.0.1"
+
+#: /wa-system/image/waImageImagick.class.php:29
+msgid "ImageMagick is not installed."
+msgstr "ImageMagick не установлен."
+
+#: /wa-system/validator/waRegexValidator.class.php:25
+msgid "Not match."
+msgstr "Не удовлетворяет условиям."
+
+#: /wa-system/validator/waValidator.class.php:36
+msgid "Required"
+msgstr "Нужно заполнить"
+
+#: /wa-system/validator/waValidator.class.php:97
+msgid "Invalid"
+msgstr "Неверно"
+
+msgid "Today"
+msgstr "Сегодня"
+
+msgid "Yesterday"
+msgstr "Вчера"
+
+msgid "Tomorrow"
+msgstr "Завтра"
+
+# Link to hide announcements above apps list
+msgid "[close]"
+msgstr "[закрыть]"
+
+msgid "Recover password for"
+msgstr "Восстановление пароля для"
+
+msgid "Session has expired. Please reload current page and log in again."
+msgstr "Сессия истекла. Обновите пожалуйста страницу и войдите снова."
+
+msgid "Theme %s already exists"
+msgstr "Тема дизайна «%s» уже существует"
+
+msgid "Invalid theme id %s"
+msgstr "Неверный идентификатор темы «%s»"
+
+msgid "Company name"
+msgstr "Название компании"
+
+msgid "Webasyst"
+msgstr "Вебасист"
+
+msgid "Access denied"
+msgstr "Доступ запрещен"
+
+msgid "Password recovery for this email has been banned."
+msgstr "Восстановление пароля для данного адреса невозможно."
+
+msgid "Pages"
+msgstr "Страницы"
+
+msgid "When done editing, click “Save” to apply changes."
+msgstr ""
+"После завершения редактирования не забудьте нажать на кнопку «Сохранить»"
+
+msgid "Enable this URL"
+msgstr "Включить показ страницы по этому адресу"
+
+msgid "Disable this URL"
+msgstr "Отключить показ страницы по этому адресу"
+
+msgid "Page settings"
+msgstr "Настройки страницы"
+
+msgid "Delete"
+msgstr "Удалить"
+
+msgid "This will delete entire page. Are you sure?"
+msgstr "Будет удалена вся страница. Продолжить?"
+
+msgid "Draft"
+msgstr "Черновик"
+
+msgid "draft"
+msgstr "черновик"
+
+msgid "Published"
+msgstr "Опубликовано"
+
+msgid "Page URL"
+msgstr "URL страницы"
+
+msgid "Page name"
+msgstr "Название страницы"
+
+msgid ""
+"Optional set of custom <em>key=value</em> parameters which can be used "
+"within page.html template or this page content as <em>&#123;$page.key&#125;</"
+"em>. Each key=value pair should be on a separate line."
+msgstr ""
+"Необязательный набор параметров вида <em>key=value</em>, к значениям которых "
+"можно обращаться в шаблоне page.html или в содержимом текущей страницы как "
+"<em>&#123;$page.key&#125;</em>. Каждая пара key=value должна быть указана на "
+"отдельной строке."
+
+msgid "http://www.webasyst.com/framework/docs/site/pages/"
+msgstr "http://www.webasyst.com/ru/framework/docs/site/pages/"
+
+msgid "WYSIWYG"
+msgstr "Визуальный редактор"
+
+msgid "New page"
+msgstr "Новая страница"
+
+msgid "Save"
+msgstr "Сохранить"
+
+msgid "enable"
+msgstr "включить"
+
+msgid "disable"
+msgstr "выключить"
+
+msgid "<strong class=\"title\">Title</strong>"
+msgstr "<strong class=\"title\">Заголовок</strong>"
+
+msgid "Page custom parameters"
+msgstr "Дополнительные параметры страницы"
+
+msgid "META Keywords"
+msgstr "META Keywords"
+
+msgid "META Description"
+msgstr "META Description"
+
+msgid "Help"
+msgstr "Помощь"
+
+msgid "Saving..."
+msgstr "Сохранение..."
+
+msgid "Saved"
+msgstr "Сохранено"
+
+msgid "Refresh CAPTCHA"
+msgstr "Обновить капчу (CAPTCHA)"
+
+msgid "You have no permission to access this page."
+msgstr "У вас нет разрешения на доступ к данной странице."
+
+msgid "Please refer to your system administrator."
+msgstr "Пожалуйста, обратитесь к вашему системному администратору."
+
+msgid "Host"
+msgstr "Сервер"
+
+msgid "User"
+msgstr "Пользователь"
+
+msgid "Database Name"
+msgstr "Имя базы данных"
+
+msgid "Continue"
+msgstr "Продолжить"
+
+msgid "MySQL database"
+msgstr "База данных MySQL"
+
+msgid ""
+"Enter connection credentials for the MySQL database which will be used by "
+"Webasyst to store system and application data."
+msgstr ""
+"Введите настройки подключения к базе данных MySQL, в которой Вебасист "
+"создаст таблицы для хранения своих данных и данных приложений."
+
+msgid ""
+"If you do not know what should be entered here, please contact your hosting "
+"provider technical support."
+msgstr ""
+"Если вы не знаете, что здесь ввести, обратитесь в службу поддержки вашего "
+"хостинг-провайдера."
+
+msgid "Failed to connect to the “%s” database."
+msgstr "Ошибка подключения к базе данных “%s”."
+
+msgid "Failed to connect to specified MySQL database server."
+msgstr "Ошибка подключения к серверу базы данных."
+
+msgid "Error creating file %s"
+msgstr "Ошибка при создании файла %s"
+
+msgid "Not enough access permissions to write in the folder %s"
+msgstr "Недостаточно прав для записи в папку %s"
+
+msgid "Theme %s for “%s” app not found."
+msgstr "Тема %s для приложения “%s” не найдена."
+
+msgid "Sex"
+msgstr "Пол"
+
+msgid "Gender"
+msgstr "Пол"
+
+msgid "Job title"
+msgstr "Должность"
+
+msgid "Male"
+msgstr "Мужской"
+
+msgid "Female"
+msgstr "Женский"
+
+msgid "kB"
+msgstr "кБ"
+
+msgid "MB"
+msgstr "МБ"
+
+msgid "GB"
+msgstr "ГБ"
+
+msgid "TB"
+msgstr "ТБ"
+
+msgid "PB"
+msgstr "ПБ"
+
+msgid "EB"
+msgstr "ЭБ"
+
+#: /wa-system/page/actions/waPage.action.php:27
+msgid "Page not found"
+msgstr "Страница не найдена"
+
+#: /wa-system/page/actions/waPageSave.controller.php:21
+msgid "Error saving web page"
+msgstr "Произошла ошибка при попытке сохранения страницы"
+
+#: /wa-system/page/actions/waPageUploadimage.controller.php:25
+msgid "Files with extensions %s are allowed only."
+msgstr "Допускаются только файлы с расширениями %s"
+
+#: /wa-system/page/templates/PageEdit.html:188
+msgid ""
+"This page will not be visible in the public frontend, because this app is "
+"not connected in the website structure."
+msgstr ""
+"Страница будет недоступна на сайте, потому что приложение не подключено в "
+"правилах маршрутизации этого сайта."
+
+#: /wa-system/page/templates/PageEdit.html:317
+msgid "An error occurred while saving"
+msgstr "Во время сохранения произошла ошибка"
+
+#: /wa-system/controller/waSignupAction.class.php:45
+msgid "User with the same %s is already registered"
+msgstr "Пользователь с таким %s уже зарегистрирован"
+
+#: /wa-system/controller/waFrontController.class.php:85
+msgid "Access denied."
+msgstr "Доступ запрещен."
+
+#: /wa-system/auth/waAuth.class.php:114
+msgid "You are banned!"
+msgstr "Вам отказано в доступе!"
+
+#: /wa-system/api/waAPIController.class.php:20
+msgid "Application \"%s\" not exists"
+msgstr "Приложение «%s» не установлено"
+
+#: /wa-system/api/waAPIController.class.php:29
+msgid "Unknown response format"
+msgstr "Неизвестный формат ответа"
+
+#: /wa-system/request/waRequestFile.class.php:189
+msgid "The uploaded file exceeds the upload_max_filesize directive in php.ini."
+msgstr ""
+"Размер файла превышает максимально допустимый для загрузки (настройка "
+"upload_max_filesize в файле php.ini)."
+
+#: /wa-system/request/waRequestFile.class.php:191
+msgid ""
+"The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in "
+"the HTML form."
+msgstr ""
+"Размер файла превышает максимально допустимый для данной HTML-формы "
+"(настройка формы MAX_FILE_SIZE)."
+
+#: /wa-system/request/waRequestFile.class.php:193
+msgid "The uploaded file was only partially uploaded."
+msgstr "Файл был загружен частично."
+
+#: /wa-system/request/waRequestFile.class.php:195
+msgid "No file was uploaded."
+msgstr "Не было загружено ни одного файла."
+
+#: /wa-system/request/waRequestFile.class.php:197
+msgid "Missing a temporary folder."
+msgstr "Ошибка доступа ко временной папке."
+
+#: /wa-system/request/waRequestFile.class.php:199
+msgid "Failed to write file to disk."
+msgstr "Произошла ошибка при записе файла."
+
+#: /wa-system/request/waRequestFile.class.php:201
+msgid "A PHP extension stopped the file upload."
+msgstr "Расшрение PHP прервало загрузку файла."
+
+#: /wa-system/request/waRequestFile.class.php:203
+msgid "Unknown upload error"
+msgstr "Неопознанная ошибка загрузки файла"
+
+#: /wa-system/database/waModel.class.php:642
+msgid "Unknown field %s"
+msgstr "Неизвестное поле %s"
+
+#: /wa-system/image/waImageGd.class.php:331
+msgid "Can't read font file $font_file"
+msgstr "Ошибка загрузки файла $font_file"
+
+#: /wa-system/view/waViewHelper.class.php:392
+msgid "Reset password"
+msgstr "Сбросить пароль"
+
+#: /wa-system/view/waViewHelper.class.php:392
+msgid "I remember it now!"
+msgstr "Я вспомнил пароль!"
+
+msgid "Sign up"
+msgstr "Регистрация"
+
+msgid "Password can not be empty."
+msgstr "Пароль не может быть пустым"
+
+#: /wa-system/controller/waSignupAction.class.php:57
+msgid "%s is required"
+msgstr "Поле «%s» является обязательным"
+
+#: /wa-system/view/waViewHelper.class.php:476
+msgid "or <a href=\"%s\">login</a> if you already have an account"
+msgstr "или <a href=\"%s\">войдите</a>, если у вас уже есть аккаунт"
+
+#: /wa-system/validator/waEmailValidator.class.php:30
+msgid "Invalid Email"
+msgstr "Email-адрес введен неправильно"
+
+#: /wa-system/controller/waSignupAction.class.php:87
+msgid "Invalid captcha"
+msgstr "Капча введена неверно"
+
+msgid "Template settings"
+msgstr "Настройки шаблона"
+
+msgid "Design"
+msgstr "Дизайн"
+
+msgid "Can edit pages"
+msgstr "Редактирование страниц"
+
+msgid "Can edit design"
+msgstr "Редактирование дизайна"
+
+#: /wa-system/webasyst/templates/actions/login/LoginFirst.html:25
+msgid ""
+"The information provided in this form will be stored in your local Webasyst "
+"installation only, and will not be sent anywhere outside your server."
+msgstr ""
+"Информация, введенная в этой форме, будет сохранена только внутри этой "
+"установки Webasyst и не будет отправлена за пределы вашего сервера."
+
+#: /wa-system/view/waViewHelper.class.php:675
+msgid ""
+"Authorize either by entering your contact information, or through one of the "
+"websites listed above."
+msgstr ""
+"Авторизуйтесь, указав свои контактные данные, или воспользовавшись "
+"перечисленными выше сервисами."
+
+#: /wa-system/contact/waContactField.class.php:349
+msgid ""
+"This field must be unique. The value entered is already set for %NAME_LINK%."
+msgstr ""
+"Значение этого поля должно быть уникальным. Введенное значение уже "
+"используется для %NAME_LINK%."
+
+#: /wa-system/contact/waContactField.class.php:350
+msgid ""
+"This field must be unique. The value entered is already set for another "
+"contact."
+msgstr ""
+"Значение этого поля должно быть уникальным. Введенное значение уже "
+"используется для другого контакта."
+
+#: /wa-system/design/templates/Theme.html:23
+msgid "Rename"
+msgstr "Переименовать"
+
+msgid ""
+"You are using the original version of this design theme. No customizations "
+"have been applied to theme files yet, and thus there is nothing to revert "
+"for now."
+msgstr ""
+"Вы используете исходную версию темы дизайна. Изменения в шаблоны темы "
+"дизайна еще не вносились, поэтому пока еще нет изменений, которые можно было "
+"бы сбросить."
+
+msgid ""
+"This will erase all customizations you’ve made to this theme’s template "
+"files using the design editor, and reset this theme to original"
+msgstr ""
+"Очистить все изменения, которые вы вносили в тему дизайна с помощью "
+"редактора дизайна, и вернуть тему дизайна к исходному состоянию"
+
+#: /wa-system/design/templates/Theme.html:28
+msgid "Theme name"
+msgstr "Название темы"
+
+#: /wa-system/design/templates/Theme.html:36
+msgid "Theme ID"
+msgstr "ID темы"
+
+#: /wa-system/design/templates/Theme.html:40
+msgid ""
+"IMPORTANT: Change Theme ID only if you are sure what you are doing. If this "
+"theme is in use by any of your websites, you will have to manually update "
+"these websites’ app settings to use this or another theme after altering the "
+"Theme ID parameter. Otherwise websites may stop working with the “Unable to "
+"load template file” error."
+msgstr ""
+"ВАЖНО: изменяйте ID темы, только если вы полностью уверены в своих "
+"действиях. Если эта тема используется в ваших сайтах, вам придется вручную "
+"обновить настройки этих сайтов для использования этой или другой темы после "
+"изменения ID темы. В противном случае ваши сайты могут оказаться нерабочими "
+"из-за ошибки «Невозможно загрузить файл шаблона»."
+
+#: /wa-system/design/templates/Sidebar.html:20
+msgid "not in use"
+msgstr "не используется"
+
+#: /wa-system/design/templates/Sidebar.html:32
+msgid "Theme settings"
+msgstr "Настройки темы"
+
+#: /wa-system/design/templates/Sidebar.html:40
+msgid "Design themes"
+msgstr "Темы дизайна"
+
+#: /wa-system/design/templates/Sidebar.html:51
+msgid "Upload theme"
+msgstr "Загрузить тему"
+
+#: /wa-system/design/templates/Sidebar.html:53
+msgid ""
+"Theme must be uploaded as a valid Webasyst design theme archive (.tar.gz "
+"archive with theme files and theme.xml manifest file)."
+msgstr ""
+"Загружаемая тема должна представлять собой правильный архив темы Webasyst "
+"(архив в формате .tar.gz с файлами темы и файлом-манифестом theme.xml)."
+
+#: /wa-system/design/templates/Sidebar.html:56
+msgid "Uploading..."
+msgstr "Загрузка..."
+
+#: /wa-system/design/templates/Sidebar.html:62
+msgid "Upload"
+msgstr "Загрузить"
+
+#: /wa-system/design/templates/ThemesRow.html:10
+msgid "Used on"
+msgstr "Используется на"
+
+#: /wa-system/design/templates/ThemesRow.html:18
+msgid "Theme updated"
+msgstr "Тема обновлена"
+
+#: /wa-system/design/templates/ThemesRow.html:49
+msgid ""
+"All themes files will be deleted permanently without the ability to recover. "
+"Are you sure?"
+msgstr "Все файлы темы будут удалены без возможности восстановления. Удалить?"
+
+#: /wa-system/design/templates/ThemesRow.html:52
+msgid "rollback to the original theme"
+msgstr "восстановить оригинальную тему"
+
+#: /wa-system/design/templates/ThemesRow.html:57
+msgid ""
+"This will permanently delete theme without the ability to recover. Are you "
+"sure?"
+msgstr "Тема будет удалена без возможности восстановления. Удалить?"
+
+#: /wa-system/design/templates/ThemesRow.html:58
+msgid "Delete theme"
+msgstr "Удалить тему"
+
+#: /wa-system/page/templates/PageEdit.html:147
+msgid "Cheat sheet"
+msgstr "Шпаргалка"
+
+#: /wa-system/design/templates/DesignEdit.html:150
+msgid "Theme preview"
+msgstr "Предварительный просмотр"
+
+msgid "Preview theme"
+msgstr "Предпросмотр темы"
+
+msgid "parent theme file"
+msgstr "файл родительской темы"
+
+#: /wa-system/design/templates/DesignEdit.html:151
+msgid ""
+"Design theme “<strong id=\"wa-current-theme\"></strong>” is temporary "
+"enabled for you to see how it looks with your frontend. You can navigate "
+"through your website as you do it usually. Other users don't see that you "
+"are previewing this design theme."
+msgstr ""
+"Тема дизайна «<strong id=\"wa-current-theme\"></strong>» временно "
+"активирована для вашего пользователя. Вы можете полноценно просматривать "
+"сайт в выбранной теме дизайна, и другие посетители сайта этого не увидят."
+
+#: /wa-system/design/templates/DesignEdit.html:156
+msgid "Finish preview session"
+msgstr "Завершить предварительный просмотр"
+
+#: /wa-system/design/templates/Themes.html:5
+msgid "All"
+msgstr "Все"
+
+#: /wa-system/design/templates/Themes.html:6
+msgid "Paid"
+msgstr "Платная"
+
+#: /wa-system/design/templates/Themes.html:7
+msgid "Free"
+msgstr "Бесплатная"
+
+#: /wa-system/design/templates/Themes.html:13
+msgid "All categories"
+msgstr "Все категории"
+
+#: /wa-system/design/templates/Themes.html:14
+msgid "Installed themes only"
+msgstr "Только установленные темы"
+
+#: /wa-system/design/templates/Themes.html:29
+msgid "All colors"
+msgstr "Все цвета"
+
+#: /wa-system/design/templates/Themes.html:41
+msgid "Design themes for %s"
+msgstr "Темы дизайна для %s"
+
+#: /wa-system/design/templates/Themes.html:41
+msgid "Design themes for %s app"
+msgstr "Темы дизайна для приложения «%s»"
+
+#: /wa-system/design/templates/Themes.html:42
+msgid ""
+"Click on a design theme to download and install it from the Webasyst Store"
+msgstr ""
+"Щелкните по теме дизайна, чтобы скачать и установить ее из магазина Webasyst"
+
+#: /wa-system/design/actions/waDesign.actions.php:240
+msgid "Insufficient file access permissions to save theme settings"
+msgstr "Недостаточные права доступа для сохранения настроек темы."
+
+#: /wa-system/design/actions/waDesign.actions.php:267
+msgid "Insufficient access permissions to save the file"
+msgstr "Недостаточные права доступа для сохранения файла."
+
+#: /wa-system/design/actions/waDesign.actions.php:291
+msgid ""
+"Only latin characters (a—z, A—Z), numbers (0—9) and underline character (_) "
+"are allowed."
+msgstr ""
+"Допускается использовать только латинские буквы (a—z, A—Z), цифры (0—9) и "
+"символ подчеркивания (_)."
+
+#: /wa-system/design/actions/waDesign.actions.php:298
+msgid "File should have one of the allowed extensions:"
+msgstr "Имя файла должно иметь одно из следующих расширений:"
+
+#: /wa-system/page/templates/Page.html:103
+msgid "Unsettled"
+msgstr "Исключено из списка поселений"
+
+#: /wa-system/page/templates/Page.html:110
+msgid "Select route"
+msgstr "Выберите адрес поселения"
+
+#: /wa-system/page/actions/waPage.actions.php:262
+msgid "no-title"
+msgstr "без названия"
+
+#: /wa-system/controller/waForgotPasswordAction.class.php:111
+msgid ""
+"Sorry, we can not recover password for this login name or email. Please "
+"refer to your system administrator."
+msgstr ""
+"Извините, восстановить пароль для указанного имени пользователя или email-"
+"адреса не удалось. Обратитесь к системному администратору."
+
+#: /wa-system/design/actions/waDesign.actions.php:312
+msgid "Please enter a filename"
+msgstr "Введите имя файла"
+
+#: /wa-system/view/waViewHelper.class.php:378
+msgid "Syntax error at block"
+msgstr "Синтаксическая ошибка в блоке"
+
+#: /wa-system/design/templates/Sidebar.html:12
+msgid "Preview"
+msgstr "Предпросмотр"
+
+#: /wa-system/page/templates/PageEdit.html:88
+msgid ""
+"This page is unsettled (unpublished), i.e. not connected to any of your "
+"site’s routing rules. Drag this page out of the Unpublished section in the "
+"left sidebar to connect it to any of your existing site’s routes."
+msgstr ""
+"Страница не опубликована, потому что не прикреплена ни к одному поселению "
+"приложения (правилу маршрутизации). Перетащите страницу из секции "
+"«Неопубликованные», чтобы подключить ее к существующему правилу "
+"маршрутизации."
+
+#: /wa-system/page/templates/Page.html:87
+msgid "Unpublished"
+msgstr "Неопубликованные"
+
+#: /wa-system/page/templates/Page.html:94
+msgid ""
+"There are <strong><span>%d</span> unsettled page(s)</strong>, i.e. pages "
+"which are not connected to any of the site’s routing rules. These pages are "
+"not displayed on your site. To publish these pages now, select the new route "
+"for them:"
+msgstr ""
+"<strong><span>%d</span> страниц</strong> не прикреплены ни к одному "
+"поселению (правилу маршрутизации), и поэтому не показываются на сайте. Чтобы "
+"опубликовать все эти страницы сейчас, укажите правило маршрутизации, к "
+"которому их нужно прикрепить:"
+
+#: /wa-system/page/templates/Page.html:112
+msgid "Unpublished pages"
+msgstr "Неопубликованные страницы"
+
+#: /wa-system/design/templates/Design.html:105
+msgid "Loading"
+msgstr "Загрузка"
+
+#: /wa-system/design/templates/Design.html:113
+msgid "Unsaved changes will be lost if you leave this page now. Are you sure?"
+msgstr "Несохраненные изменения будут потеряны. Продолжить?"
+
+#: /wa-system/design/templates/DesignEdit.html:9
+msgid "View original"
+msgstr "Посмотреть оригинал"
+
+#: /wa-system/design/templates/DesignEdit.html:19
+msgid "Close"
+msgstr "Закрыть"
+
+#: /wa-system/design/templates/DesignEdit.html:34
+msgid "File will be deleted without the ability to recover. Are you sure?"
+msgstr "Файл будет удален без возможности восстановления. Удалить?"
+
+#: /wa-system/design/templates/DesignEdit.html:66
+msgid "Create new file"
+msgstr "Создать новый файл"
+
+#: /wa-system/design/templates/DesignEdit.html:67
+msgid "Link from parent theme"
+msgstr "Файл из родительской темы"
+
+#: /wa-system/design/templates/DesignEdit.html:74
+msgid "File name"
+msgstr "Имя файла"
+
+#: /wa-system/design/templates/DesignEdit.html:78
+msgid "File should have one of the allowed extensions: .html, .css, .js"
+msgstr "Допустимые расширения файла: .html, .css, .js"
+
+#: /wa-system/design/templates/DesignEdit.html:87
+msgid "Optional template description"
+msgstr "Опциональное описание шаблона"
+
+#: /wa-system/design/templates/DesignEdit.html:95
+msgid "Select file"
+msgstr "Выберите файл"
+
+#: /wa-system/design/templates/DesignEdit.html:107
+msgid "all available parent theme files are already linked"
+msgstr "все файлы родительской темы уже подключены"
+
+#: /wa-system/design/templates/DesignEdit.html:112
+msgid "Select a file and click Save button below."
+msgstr "Выберите файл и нажмите кнопку «Сохранить» ниже."
+
+#: /wa-system/design/templates/Sidebar.html:31
+msgid "New file"
+msgstr "Новый файл"
+
+#: /wa-system/design/templates/Sidebar.html:34
+msgid "About"
+msgstr "О теме"
+
+#: /wa-system/design/templates/Theme.html:5
+msgid "Last modified"
+msgstr "Последнее изменение"
+
+#: /wa-system/design/templates/Theme.html:5
+msgid "not modified"
+msgstr "не изменялась"
+
+#: /wa-system/design/templates/Theme.html:8
+msgid "This design theme is in use on"
+msgstr "Эта тема дизайна используется по адресу"
+
+msgid "This theme is in use on"
+msgstr "Эта тема используется по адресу"
+
+msgid ""
+"This theme is currently not in use. Connect this theme in your site <a href="
+"\"%s\">Routing settings</a>."
+msgstr ""
+"Эта тема в данный момент не используется. Подключите тему в <a href=\"%s"
+"\">настройках маршрутизации</a>."
+
+#: /wa-system/design/templates/Theme.html:15
+msgid ""
+"This design theme is not in use. Apply this theme in your website <span "
+"class=\"js-theme-routing-url\">Routing settings</span>."
+msgstr ""
+"Эта тема дизайна не используется. Чтобы подключить данную тему на сайте, "
+"выберите ее в <span class=\"js-theme-routing-url\">настройках маршрутизации</"
+"span> вашего сайта."
+
+#: /wa-system/design/templates/Theme.html:21
+msgid "Download"
+msgstr "Скачать"
+
+#: /wa-system/design/templates/Theme.html:22
+msgid "Duplicate"
+msgstr "Создать дубликат"
+
+#: /wa-system/design/templates/Theme.html:23
+msgid ""
+"This will reset all customizations you applied to this design theme. Are you "
+"sure?"
+msgstr ""
+"Все изменения, которые вы вносили в тему дизайна, будут потеряны. Сбросить "
+"все изменения?"
+
+#: /wa-system/design/templates/Theme.html:23
+msgid "Revert theme to original"
+msgstr "Сбросить все изменения"
+
+#: /wa-system/design/templates/Theme.html:84
+msgid "Parent theme"
+msgstr "Родительская тема дизайна"
+
+#: /wa-system/design/templates/Theme.html:25
+msgid "not set"
+msgstr "не задана"
+
+#: /wa-system/design/templates/Theme.html:25
+msgid "Change"
+msgstr "Сменить"
+
+#: /wa-system/design/templates/Theme.html:89
+msgid "Not set"
+msgstr "Не задана"
+
+#: /wa-system/design/templates/Theme.html:100
+msgid ""
+"IMPORTANT: Theme parenting allows linking HTML templates, CSS files and "
+"images from other design themes. If you are about to change parent for a "
+"design theme which already has a parent, be aware that existing file links "
+"and connections may become corrupted. A design theme can have not more than "
+"one parent theme."
+msgstr ""
+"ВАЖНО: Подключение родительской темы позволит использовать в данной теме "
+"дизайна HTML-шаблоны, CSS-стили и изображения из родительской темы. Если "
+"родительская тема уже задана, то имейте ввиду, что ее смена может привести к "
+"ошибкам доступа к уже используемым файлам родительской темы. Для любой темы "
+"дизайна можно задать не более одной родительской темы."
+
+msgid "Subscribe"
+msgstr "Подписаться"
+
+msgid "Shopping cart"
+msgstr "Корзина"
+
+msgid "Order by phone"
+msgstr "Заказ по телефону"
+
+msgid "Design theme"
+msgstr "Тема дизайна"
+
+msgid "Find"
+msgstr "Найти"
+
+msgid "Search"
+msgstr "Поиск"
+
+msgid "Find products"
+msgstr "Найти товары"
+
+msgid "Cart"
+msgstr "Корзина"
+
+msgid "My account"
+msgstr "Личный кабинет"
+
+msgid "Powered by Webasyst"
+msgstr "Мы используем Webasyst"
+
+msgid "Abidjan"
+msgstr "Абиджан"
+
+msgid "Accra"
+msgstr "Аккра"
+
+msgid "Addis Ababa"
+msgstr "Аддис-Абеба"
+
+msgid "Algiers"
+msgstr "Алжир"
+
+msgid "Asmara"
+msgstr "Асмэра"
+
+msgid "Asmera"
+msgstr "Асмера"
+
+msgid "Bamako"
+msgstr "Бамако"
+
+msgid "Bangui"
+msgstr "Банги"
+
+msgid "Banjul"
+msgstr "Банжул"
+
+msgid "Bissau"
+msgstr "Бисау"
+
+msgid "Blantyre"
+msgstr "Блантайр"
+
+msgid "Brazzaville"
+msgstr "Браззавиль"
+
+msgid "Bujumbura"
+msgstr "Бужумбура"
+
+msgid "Cairo"
+msgstr "Каир"
+
+msgid "Casablanca"
+msgstr "Касабланка"
+
+msgid "Ceuta"
+msgstr "Сеута"
+
+msgid "Conakry"
+msgstr "Конакри"
+
+msgid "Dakar"
+msgstr "Дакар"
+
+msgid "Dar es Salaam"
+msgstr "Дар-эс-Салам"
+
+msgid "Douala"
+msgstr "Дуала"
+
+msgid "El Aaiun"
+msgstr "Эль-Аюн"
+
+msgid "Freetown"
+msgstr "Фритаун"
+
+msgid "Gaborone"
+msgstr "Габороне"
+
+msgid "Harare"
+msgstr "Хараре"
+
+msgid "Kampala"
+msgstr "Кампала"
+
+msgid "Khartoum"
+msgstr "Хартум"
+
+msgid "Kigali"
+msgstr "Кигали"
+
+msgid "Kinshasa"
+msgstr "Киншаса"
+
+msgid "Lagos"
+msgstr "Лагос"
+
+msgid "Libreville"
+msgstr "Либревиль"
+
+msgid "Lome"
+msgstr "Ломе"
+
+msgid "Luanda"
+msgstr "Луанда"
+
+msgid "Lubumbashi"
+msgstr "Лубумбаши"
+
+msgid "Lusaka"
+msgstr "Лусака"
+
+msgid "Malabo"
+msgstr "Малабо"
+
+msgid "Maputo"
+msgstr "Мапуту"
+
+msgid "Maseru"
+msgstr "Масеру"
+
+msgid "Mbabane"
+msgstr "Мбабане"
+
+msgid "Mogadishu"
+msgstr "Могадишо"
+
+msgid "Monrovia"
+msgstr "Монровия"
+
+msgid "Nairobi"
+msgstr "Найроби"
+
+msgid "Ndjamena"
+msgstr "Нджамена"
+
+msgid "Niamey"
+msgstr "Ниамэй"
+
+msgid "Nouakchott"
+msgstr "Нуакшот"
+
+msgid "Ouagadougou"
+msgstr "Уагадугу"
+
+msgid "Porto-Novo"
+msgstr "Порто-Ново"
+
+msgid "Sao Tome"
+msgstr "Сан-Томе"
+
+msgid "Timbuktu"
+msgstr "Тимбукту"
+
+msgid "Windhoek"
+msgstr "Виндхук"
+
+msgid "Adak"
+msgstr "Адак"
+
+msgid "Anchorage"
+msgstr "Анкоридж"
+
+msgid "Antigua"
+msgstr "Антигуа"
+
+msgid "Araguaina"
+msgstr "Арагуйана"
+
+msgid "Buenos Aires"
+msgstr "Буэнос-Айрес"
+
+msgid "Catamarca"
+msgstr "Катамарка"
+
+msgid "ComodRivadavia"
+msgstr "Комодоро-Ривадавия"
+
+msgid "Cordoba"
+msgstr "Кордова"
+
+msgid "Jujuy"
+msgstr "Жужуй"
+
+msgid "La Rioja"
+msgstr "Ла-Риоха"
+
+msgid "Mendoza"
+msgstr "Мендоса"
+
+msgid "Rio Gallegos"
+msgstr "Рио-Гальегос"
+
+msgid "San Juan"
+msgstr "Сан-Хуан"
+
+msgid "San Luis"
+msgstr "Сан-Луис"
+
+msgid "Tucuman"
+msgstr "Тукумане"
+
+msgid "Ushuaia"
+msgstr "Ушуайя"
+
+msgid "Asuncion"
+msgstr "Асунсьон"
+
+msgid "Atikokan"
+msgstr "Атикокан"
+
+msgid "Atka"
+msgstr "Атка"
+
+msgid "Bahia"
+msgstr "Баия"
+
+msgid "Belem"
+msgstr "Белем"
+
+msgid "Blanc-Sablon"
+msgstr "Бланк-Саблон"
+
+msgid "Boa Vista"
+msgstr "Боа-Виста"
+
+msgid "Bogota"
+msgstr "Богота"
+
+msgid "Boise"
+msgstr "Бойсе"
+
+msgid "Cambridge Bay"
+msgstr "Кеймбридж-Бей"
+
+msgid "Campo Grande"
+msgstr "Кампо Гранде"
+
+msgid "Cancun"
+msgstr "Канкун"
+
+msgid "Caracas"
+msgstr "Каракас"
+
+msgid "Cayenne"
+msgstr "Кайенна"
+
+msgid "Cayman"
+msgstr "Кайман"
+
+msgid "Chihuahua"
+msgstr "Чиуауа"
+
+msgid "Coral Harbour"
+msgstr "Корал-Харбор"
+
+msgid "Cuiaba"
+msgstr "Куяба"
+
+msgid "Curacao"
+msgstr "Кюрасао"
+
+msgid "Danmarkshavn"
+msgstr "Данмаркшавн"
+
+msgid "Dawson Creek"
+msgstr "Бухта Доусона"
+
+msgid "Denver"
+msgstr "Денвер"
+
+msgid "Detroit"
+msgstr "Детройт"
+
+msgid "Edmonton"
+msgstr "Эдмонтон"
+
+msgid "Eirunepe"
+msgstr "Эйрунепе"
+
+msgid "Ensenada"
+msgstr "Энсенада"
+
+msgid "Fort Wayne"
+msgstr "Форт Уэйн"
+
+msgid "Fortaleza"
+msgstr "Форталеза"
+
+msgid "Glace Bay"
+msgstr "Глейс Бэй"
+
+msgid "Godthab"
+msgstr "Готхоб"
+
+msgid "Goose Bay"
+msgstr "Гус-Бей"
+
+msgid "Grand Turk"
+msgstr "Гранд-Терк"
+
+msgid "Guayaquil"
+msgstr "Гуаякиль"
+
+msgid "Halifax"
+msgstr "Галифакс"
+
+msgid "Havana"
+msgstr "Гавана"
+
+msgid "Hermosillo"
+msgstr "Эрмосильо"
+
+msgid "Indiana"
+msgstr "Индиана"
+
+msgid "Indianapolis"
+msgstr "Индианаполис"
+
+msgid "Knox"
+msgstr "Нокс"
+
+msgid "Marengo"
+msgstr "Маренго"
+
+msgid "Petersburg"
+msgstr "Петербург"
+
+msgid "Tell City"
+msgstr "Телл Сити"
+
+msgid "Vevay"
+msgstr "Вевей"
+
+msgid "Vincennes"
+msgstr "Венсен"
+
+msgid "Winamac"
+msgstr "Винамак"
+
+msgid "Inuvik"
+msgstr "Инувик"
+
+msgid "Iqaluit"
+msgstr "Икаилут"
+
+msgid "Juneau"
+msgstr "Джуно"
+
+msgid "Kentucky"
+msgstr "Кентукки"
+
+msgid "Louisville"
+msgstr "Луисвилл"
+
+msgid "Monticello"
+msgstr "Монтичелло"
+
+msgid "Knox IN"
+msgstr "Нокс (Индиана)"
+
+msgid "La Paz"
+msgstr "Ла-Пас"
+
+msgid "Lima"
+msgstr "Лима"
+
+msgid "Maceio"
+msgstr "Масейо"
+
+msgid "Managua"
+msgstr "Манагуа"
+
+msgid "Manaus"
+msgstr "Манаус"
+
+msgid "Marigot"
+msgstr "Маригот"
+
+msgid "Mazatlan"
+msgstr "Масатлан"
+
+msgid "Menominee"
+msgstr "Меномине"
+
+msgid "Merida"
+msgstr "Мерида"
+
+msgid "Mexico City"
+msgstr "Мехико"
+
+msgid "Miquelon"
+msgstr "Микелон"
+
+msgid "Moncton"
+msgstr "Монктон"
+
+msgid "Monterrey"
+msgstr "Монтеррей"
+
+msgid "Montevideo"
+msgstr "Монтевидео"
+
+msgid "Montreal"
+msgstr "Монреаль"
+
+msgid "Nassau"
+msgstr "Нассау"
+
+msgid "Nipigon"
+msgstr "Нипигон"
+
+msgid "Nome"
+msgstr "Ном"
+
+msgid "Noronha"
+msgstr "Норонха"
+
+msgid "North Dakota"
+msgstr "Северная Дакота"
+
+msgid "New Salem"
+msgstr "Нью-Салем"
+
+msgid "Pangnirtung"
+msgstr "Пангниртунг"
+
+msgid "Paramaribo"
+msgstr "Парамарибо"
+
+msgid "Port-au-Prince"
+msgstr "Порт-о-Пренс"
+
+msgid "Port of Spain"
+msgstr "Порт-оф-Спейн"
+
+msgid "Porto Acre"
+msgstr "Порту-Акри"
+
+msgid "Porto Velho"
+msgstr "Порту-Велью"
+
+msgid "Rainy River"
+msgstr "Рейни-Ривер"
+
+msgid "Rankin Inlet"
+msgstr "Ранкин-Инлет"
+
+msgid "Recife"
+msgstr "Ресифи"
+
+msgid "Regina"
+msgstr "Риджайна"
+
+msgid "Resolute"
+msgstr "Резольют"
+
+msgid "Rio Branco"
+msgstr "Рио-Бранко"
+
+msgid "Rosario"
+msgstr "Росарио"
+
+msgid "Santiago"
+msgstr "Сантьяго"
+
+msgid "Santo Domingo"
+msgstr "Санто Доминго"
+
+msgid "Sao Paulo"
+msgstr "Сан-Паулу"
+
+msgid "Scoresbysund"
+msgstr "Скорсби"
+
+msgid "Shiprock"
+msgstr "Шипрок"
+
+msgid "St Barthelemy"
+msgstr "Сент-Бартелеми"
+
+msgid "St Johns"
+msgstr "Сент-Джонс"
+
+msgid "St Kitts"
+msgstr "Сент-Китс"
+
+msgid "St Lucia"
+msgstr "Сент-Люсия"
+
+msgid "St Thomas"
+msgstr "Санкт-Томас"
+
+msgid "St Vincent"
+msgstr "Сент-Винсент"
+
+msgid "Swift Current"
+msgstr "Свифт-Каррент"
+
+msgid "Tegucigalpa"
+msgstr "Тегусигальпа"
+
+msgid "Thule"
+msgstr "Тула"
+
+msgid "Thunder Bay"
+msgstr "Тандер-Бей"
+
+msgid "Tijuana"
+msgstr "Тихуана"
+
+msgid "Tortola"
+msgstr "Тортола"
+
+msgid "Vancouver"
+msgstr "Ванкувер"
+
+msgid "Virgin"
+msgstr "Вирджин"
+
+msgid "Whitehorse"
+msgstr "Уайтхорс"
+
+msgid "Winnipeg"
+msgstr "Виннипег"
+
+msgid "Yakutat"
+msgstr "Якутат"
+
+msgid "Yellowknife"
+msgstr "Йеллоунайф"
+
+msgid "Casey"
+msgstr "Кейси"
+
+msgid "Davis"
+msgstr "Дэвис"
+
+msgid "DumontDUrville"
+msgstr "Дюмон-Дюрвиль"
+
+msgid "Mawson"
+msgstr "Моусон"
+
+msgid "McMurdo"
+msgstr "Мак-Мердо"
+
+msgid "Palmer"
+msgstr "Палмер"
+
+msgid "Rothera"
+msgstr "Ротера"
+
+msgid "South Pole"
+msgstr "Южный полюс"
+
+msgid "Syowa"
+msgstr "Сиова"
+
+msgid "Arctic"
+msgstr "Арктика"
+
+msgid "Longyearbyen"
+msgstr "Лонгйир"
+
+msgid "Asia"
+msgstr "Азия"
+
+msgid "Aden"
+msgstr "Аден"
+
+msgid "Almaty"
+msgstr "Алматы"
+
+msgid "Amman"
+msgstr "Амман"
+
+msgid "Anadyr"
+msgstr "Анадырь"
+
+msgid "Aqtau"
+msgstr "Актау"
+
+msgid "Aqtobe"
+msgstr "Актобе"
+
+msgid "Ashgabat"
+msgstr "Ашхабат"
+
+msgid "Ashkhabad"
+msgstr "Ашхабат"
+
+msgid "Baghdad"
+msgstr "Багдад"
+
+msgid "Baku"
+msgstr "Баку"
+
+msgid "Bangkok"
+msgstr "Бангкок"
+
+msgid "Beirut"
+msgstr "Бейрут"
+
+msgid "Bishkek"
+msgstr "Бишкек"
+
+msgid "Brunei"
+msgstr "Бруней"
+
+msgid "Calcutta"
+msgstr "Калькутта"
+
+msgid "Choibalsan"
+msgstr "Чойбалсан"
+
+msgid "Chongqing"
+msgstr "Чунцин"
+
+msgid "Chungking"
+msgstr "Чунцин"
+
+msgid "Colombo"
+msgstr "Коломбо"
+
+msgid "Dacca"
+msgstr "Дакка"
+
+msgid "Damascus"
+msgstr "Дамаск"
+
+msgid "Dhaka"
+msgstr "Дакка"
+
+msgid "Dili"
+msgstr "Дили"
+
+msgid "Dubai"
+msgstr "Дубай"
+
+msgid "Gaza"
+msgstr "Газа"
+
+msgid "Harbin"
+msgstr "Харбин"
+
+msgid "Ho Chi Minh"
+msgstr "Хошимин"
+
+msgid "Hovd"
+msgstr "Ховд"
+
+msgid "Irkutsk"
+msgstr "Иркутск"
+
+msgid "Istanbul"
+msgstr "Стамбул"
+
+msgid "Jakarta"
+msgstr "Джакарта"
+
+msgid "Jayapura"
+msgstr "Джаяпура"
+
+msgid "Jerusalem"
+msgstr "Иерусалим"
+
+msgid "Kabul"
+msgstr "Кабул"
+
+msgid "Kamchatka"
+msgstr "Камчатка"
+
+msgid "Karachi"
+msgstr "Карачи"
+
+msgid "Kashgar"
+msgstr "Кашгар"
+
+msgid "Katmandu"
+msgstr "Катманду"
+
+msgid "Kolkata"
+msgstr "Калькутта"
+
+msgid "Kuala Lumpur"
+msgstr "Куала-Лумпур"
+
+msgid "Kuching"
+msgstr "Кучинг"
+
+msgid "Macau"
+msgstr "Макао"
+
+msgid "Magadan"
+msgstr "Магадан"
+
+msgid "Makassar"
+msgstr "Макассар"
+
+msgid "Manila"
+msgstr "Манила"
+
+msgid "Muscat"
+msgstr "Маскат"
+
+msgid "Nicosia"
+msgstr "Никосия"
+
+msgid "Oral"
+msgstr "Орал"
+
+msgid "Phnom Penh"
+msgstr "Пномпень"
+
+msgid "Pontianak"
+msgstr "Понтианаке"
+
+msgid "Pyongyang"
+msgstr "Пхеньян"
+
+msgid "Qyzylorda"
+msgstr "Кызылорда"
+
+msgid "Rangoon"
+msgstr "Янгон"
+
+msgid "Riyadh"
+msgstr "Эр-Рияд"
+
+msgid "Saigon"
+msgstr "Сайгон"
+
+msgid "Samarkand"
+msgstr "Самарканд"
+
+msgid "Seoul"
+msgstr "Сеул"
+
+msgid "Shanghai"
+msgstr "Шанхай"
+
+msgid "Taipei"
+msgstr "Тайбэй"
+
+msgid "Tehran"
+msgstr "Тегеран"
+
+msgid "Tel Aviv"
+msgstr "Тель-Авив"
+
+msgid "Thimbu"
+msgstr "Тхимпху"
+
+msgid "Tokyo"
+msgstr "Токио"
+
+msgid "Ujung Pandang"
+msgstr "Уджунг Панданга"
+
+msgid "Ulaanbaatar"
+msgstr "Улан-Батор"
+
+msgid "Ulan Bator"
+msgstr "Улан-Батор"
+
+msgid "Urumqi"
+msgstr "Урумчи"
+
+msgid "Vientiane"
+msgstr "Вьентьян"
+
+msgid "Yakutsk"
+msgstr "Якутск"
+
+msgid "Atlantic"
+msgstr "Атлантика"
+
+msgid "Azores"
+msgstr "Азорские острова"
+
+msgid "Canary"
+msgstr "Канары"
+
+msgid "Faeroe"
+msgstr "Фарерские острова"
+
+msgid "Faroe"
+msgstr "Фарер"
+
+msgid "Jan Mayen"
+msgstr "Ян-Марен"
+
+msgid "Madeira"
+msgstr "Мадейра"
+
+msgid "Reykjavik"
+msgstr "Рейкьявик"
+
+msgid "South Georgia"
+msgstr "Южная Георгия"
+
+msgid "St Helena"
+msgstr "Св. Елены"
+
+msgid "Stanley"
+msgstr "Стэнли"
+
+msgid "Adelaide"
+msgstr "Аделаида"
+
+msgid "Brisbane"
+msgstr "Брисбен"
+
+msgid "Broken Hill"
+msgstr "Броукен-Хил"
+
+msgid "Canberra"
+msgstr "Канберра"
+
+msgid "Currie"
+msgstr "Карри"
+
+msgid "Darwin"
+msgstr "Дарвин"
+
+msgid "Eucla"
+msgstr "Эукла"
+
+msgid "Hobart"
+msgstr "Хобарт"
+
+msgid "Lindeman"
+msgstr "Линдеман"
+
+msgid "Lord Howe"
+msgstr "Лорд-Хау"
+
+msgid "Melbourne"
+msgstr "Мельбурн"
+
+msgid "North"
+msgstr "Север"
+
+msgid "NSW"
+msgstr "NSW"
+
+msgid "Perth"
+msgstr "Перт"
+
+msgid "Queensland"
+msgstr "Квинсленд"
+
+msgid "Sydney"
+msgstr "Сидней"
+
+msgid "Tasmania"
+msgstr "Тасмания"
+
+msgid "Victoria"
+msgstr "Виктория"
+
+msgid "Yancowinna"
+msgstr "Янковинна"
+
+msgid "Greenwich"
+msgstr "Гринвич"
+
+msgid "Zulu"
+msgstr "Зулу"
+
+msgid "Athens"
+msgstr "Афины"
+
+msgid "Belfast"
+msgstr "Белфаст"
+
+msgid "Bucharest"
+msgstr "Бухарест"
+
+msgid "Chisinau"
+msgstr "Кишинев"
+
+msgid "Lisbon"
+msgstr "Лиссабон"
+
+msgid "Ljubljana"
+msgstr "Любляна"
+
+msgid "Mariehamn"
+msgstr "Мариехамн"
+
+msgid "Podgorica"
+msgstr "Подгорица"
+
+msgid "Sarajevo"
+msgstr "Сараево"
+
+msgid "Skopje"
+msgstr "Скопье"
+
+msgid "Tirane"
+msgstr "Тирана"
+
+msgid "Tiraspol"
+msgstr "Тирасполь"
+
+msgid "Uzhgorod"
+msgstr "Ужгород"
+
+msgid "Vaduz"
+msgstr "Вадуц"
+
+msgid "Vatican"
+msgstr "Ватикан"
+
+msgid "Vienna"
+msgstr "Вена"
+
+msgid "Warsaw"
+msgstr "Варшава"
+
+msgid "Zagreb"
+msgstr "загреб"
+
+msgid "Zaporozhye"
+msgstr "Запорожье"
+
+msgid "Zurich"
+msgstr "Цурих"
+
+msgid "Indian"
+msgstr "Индиан"
+
+msgid "Antananarivo"
+msgstr "Антананариву"
+
+msgid "Chagos"
+msgstr "Чагос"
+
+msgid "Christmas"
+msgstr "Остров Рождества"
+
+msgid "Cocos"
+msgstr "Кокосовые острова"
+
+msgid "Comoro"
+msgstr "Коморские острова"
+
+msgid "Kerguelen"
+msgstr "Кергелен"
+
+msgid "Mahe"
+msgstr "Маэ"
+
+msgid "Reunion"
+msgstr "Реюньон"
+
+msgid "Pacific"
+msgstr "Тихоокеанский регион"
+
+msgid "Apia"
+msgstr "Апия"
+
+msgid "Auckland"
+msgstr "Окленд"
+
+msgid "Chatham"
+msgstr "Чатэм"
+
+msgid "Easter"
+msgstr "Пасха"
+
+msgid "Efate"
+msgstr "Эфате"
+
+msgid "Enderbury"
+msgstr "Эндербери"
+
+msgid "Fakaofo"
+msgstr "Факаофо"
+
+msgid "Funafuti"
+msgstr "Фунафути"
+
+msgid "Galapagos"
+msgstr "Галапагос"
+
+msgid "Gambier"
+msgstr "Остров Гамбье"
+
+msgid "Guadalcanal"
+msgstr "Гуадалканал"
+
+msgid "Honolulu"
+msgstr "Гонолулу"
+
+msgid "Johnston"
+msgstr "Джонсон"
+
+msgid "Kiritimati"
+msgstr "Киритимати"
+
+msgid "Kosrae"
+msgstr "Кусаие"
+
+msgid "Kwajalein"
+msgstr "Кваджалейн"
+
+msgid "Majuro"
+msgstr "Маджуро"
+
+msgid "Marquesas"
+msgstr "Маркизы"
+
+msgid "Midway"
+msgstr "Миндуэй"
+
+msgid "Norfolk"
+msgstr "Норфолк"
+
+msgid "Noumea"
+msgstr "Нумеа"
+
+msgid "Pago Pago"
+msgstr "Паго-Паго"
+
+msgid "Ponape"
+msgstr "Понапе"
+
+msgid "Port Moresby"
+msgstr "Порт-Морсби"
+
+msgid "Rarotonga"
+msgstr "Раротонга"
+
+msgid "Saipan"
+msgstr "Сайпан"
+
+msgid "Tahiti"
+msgstr "Таити"
+
+msgid "Tarawa"
+msgstr "Тарава"
+
+msgid "Tongatapu"
+msgstr "Тонгатапу"
+
+msgid "Truk"
+msgstr "Трук"
+
+msgid "Wake"
+msgstr "Уэйк"
+
+msgid "Wallis"
+msgstr "Уоллис"
+
+msgid "Yap"
+msgstr "Яп"
+
+msgid "Russian Rouble"
+msgstr "Российский рубль"
+
+msgid "rub."
+msgstr "руб."
+
+msgid "r."
+msgstr "р."
+
+msgid "United States Dollar"
+msgstr "Доллар США"
+
+msgid "Euro"
+msgstr "Евро"
+
+msgid "select region"
+msgstr "выберите регион"
+
+msgid "Yes"
+msgstr "Да"
+
+msgid "No"
+msgstr "Нет"
+
+msgid "Ukrainian hryvnia"
+msgstr "Украинская гривна"
+
+msgid "Belarusian ruble"
+msgstr "Белорусский рубль"
+
+msgid "Canadian dollar"
+msgstr "Канадский доллар"
+
+msgid "Pound sterling"
+msgstr "Фунт стерлингов"
+
+msgid "Israeli new shekel"
+msgstr "Израильский шекель"
+
+msgid "Armenian dram"
+msgstr "Армянский драм"
+
+msgid "Azerbaijani manat"
+msgstr "Азербайджанский манат"
+
+msgid "Kazakhstani tenge"
+msgstr "Казахстанский тенге"
+
+msgid "Moldovan leu"
+msgstr "Молдавский лей"
+
+msgid "Kyrgyzstani som"
+msgstr "Кыргызский сом"
+
+msgid "Message"
+msgstr "Сообщение"
+
+#: /wa-system/contact/waContactsCollection.class.php:378
+msgid "Category"
+msgstr "Категория"
+
+#: /wa-system/webasyst/templates/actions/api/ApiAuthMobile.html:30
+msgid "<strong>%s</strong> requests access to your apps data:"
+msgstr "<strong>%s</strong> запрашивает доступ к данным приложений:"
+
+#: /wa-system/webasyst/templates/actions/api/ApiAuthMobile.html:42
+msgid "Allow"
+msgstr "Разрешить"
+
+#: /wa-system/webasyst/templates/actions/api/ApiAuth.html:25
+msgid "deny"
+msgstr "запретить"
+
+#: /wa-system/webasyst/templates/actions/api/ApiAuthMobile.html:45
+msgid "Deny"
+msgstr "Запретить"
+
+#: /wa-system/view/waViewHelper.class.php:425
+msgid "Recipient (administrator) email is not valid"
+msgstr "Указан неправильный email получателя (администратора)"
+
+#: /wa-system/view/waViewHelper.class.php:436
+msgid "Please define your request"
+msgstr "Укажите текст сообщения"
+
+#: /wa-system/view/waViewHelper.class.php:439
+msgid "Email is required"
+msgstr "Укажите email"
+
+#: /wa-system/view/waViewHelper.class.php:448
+msgid ""
+"An error occurred while attempting to send your request. Please try again in "
+"a minute."
+msgstr "Во время отправки произошла ошибка. Попробуйте позже."
+
+msgid "URL of this Webasyst installation (relative)"
+msgstr "URL установки Webasyst (относительный)"
+
+msgid "URL of the current app settlement (relative)"
+msgstr "URL текущего поселения приложения (относительный)"
+
+msgid "URL to access Webasyst backend (relative)"
+msgstr "URL доступа к бекенду Webasyst (относительный)"
+
+msgid "URL of the current app design theme folder (relative)"
+msgstr "URL папки с файлами текущей темы оформления (относительный)"
+
+msgid "Returns current page URL (either absolute or relative)"
+msgstr "Возвращает URL текущей страницы (абсолютный либо относительный)"
+
+msgid "Returns this domain’s root URL (absolute)"
+msgstr "Возвращает корневой URL этого домена (абсолютный)"
+
+msgid ""
+"Returns value of the global var by <em>key</em>. Global var array is "
+"initially empty, and can be used arbitrarily."
+msgstr ""
+"Возвращает значение глобальной переменной по ключу <em>key</em>. Массив "
+"глобальных переменных изначально пуст и может использоваться произвольным "
+"образом"
+
+msgid "Assigns global var a new value"
+msgstr "Присваивает новое значение глобальной пемеренной"
+
+msgid "Assigns a new title"
+msgstr "Устанавливает новый заголовок"
+
+msgid "Returns GET parameter value (same as PHP $_GET[\"<em>key</em>\"])"
+msgstr ""
+"Возаращает значение GET-параметра (аналогично $_GET[\"<em>key</em>\"] в PHP)"
+
+msgid ""
+"Based on current session data returns <em>true</em> or <em>false</em> if "
+"user is using a multi-touch mobile device; if no session var reflecting "
+"current website version (mobile or desktop) is available, User Agent "
+"information is used"
+msgstr ""
+"Возвращает <em>true</em> или <em>false</em> в зависимости от того, "
+"использует ли пользователь в данный момент мобильное multi-touch устройство "
+"(iPhone, Android и пр.) или нет; если переменная сессии, содержащая тип "
+"версии сайта (мобильный или стандартный), отсутствует, то используется "
+"информация из заголовков User Agent"
+
+msgid "Returns POST parameter value (same as PHP $_POST[\"<em>key</em>\"])"
+msgstr ""
+"Возвращает значение POST-параметра (аналогично $_POST[\"<em>key</em>\"] в "
+"PHP)"
+
+msgid "Returns SERVER parameter value (same as PHP $_SERVER[\"KEY\"])"
+msgstr ""
+"Возвращает значение параметра массива SERVER (аналогично $_SERVER[\"<em>key</"
+"em>\"] в PHP)"
+
+msgid "Returns SESSION var value (same as PHP $_SESSION[\"<em>key</em>\"])"
+msgstr ""
+"Возвращает значение переменной сессии SESSION (аналогично "
+"$_SESSION[\"<em>key</em>\"] в PHP)"
+
+msgid "Embeds HTML block by ID"
+msgstr "Отображает содержимое блока по его идентификатору"
+
+msgid ""
+"Returns authorized user data from associated record in “Contacts” app. "
+"\"<em>field</em>\" (string) is optional and indicates the field id to be "
+"returned. If not  Returns <em>false</em> if user is not authorized"
+msgstr ""
+"Возвращает массив с данными авторизованного пользователя из соответствующей "
+"записи приложения «Контакты». Если указан необязательный параметр "
+"<code>'field'</code> , то возвращается содержимое конкретного поля записи о "
+"контакте. Функция принимает любые параметры, подходящие для метода <code><a "
+"href=\"http://www.webasyst.ru/developers/docs/basics/classes/"
+"waContact#method-get\" target=\"_blank\">get()</a></code> системного класса "
+"<code>waContact</code>. Если пользователь не авторизован, функция возвращает "
+"<code>false</code>"
+
+msgid "Returns User Agent info by specified “<em>key</em>” parameter:"
+msgstr "Возвращает информацию User Agent по указанному параметру <em>key</em>:"
+
+msgid ""
+"— <em>\"isMobile\"</em>: returns <em>true</em> or <em>false</em> if user is "
+"using a multi-touch mobile device (iOS, Android and similar), based solely "
+"on User Agent string;"
+msgstr ""
+"— <em>\"isMobile\"</em>: основываясь на содержимом заголовков User Agent, "
+"возвращает <em>true</em> или <em>false</em> в зависимости от того, "
+"использует ли пользователь в данный момент мобильное multi-touch устройство "
+"(iPhone, Android и пр.) или нет;"
+
+msgid "— not specified: returns entire User Agent string;"
+msgstr "— не указано: возвращает всю строку User Agent"
+
+msgid "Displays a simple variable (non array/object)"
+msgstr "Отображает переменную (не подходит для массивов и объектов)"
+
+msgid "Displays the 5th element of a zero-indexed array"
+msgstr "Отображает 5-й элемент массива, считая с нулевого индекса"
+
+msgid "Displays variable key value of an array. Similar to PHP $foo[$bar]"
+msgstr ""
+"Отображает значение элемента массива с переменным ключом. Аналогично "
+"использованию $foo[$bar] в PHP"
+
+msgid "Displays the object property named <em>bar</em>"
+msgstr "Отображает свойство объекта с именем <em>bar</em>"
+
+msgid "Displays the return value of object method named <em>bar()</em>"
+msgstr ""
+"Отображает значение, возвращаемое методом объекта с именем <em>bar()</em>"
+
+msgid "Escapes a variable for safe display in HTML"
+msgstr "Экранирует переменную для безопасного отображения в HTML-коде"
+
+msgid "Outputs the sum of <em>$x</em> and <em>$y</em>"
+msgstr "Отображает сумму <em>$x</em> и <em>$y</em>"
+
+msgid "Assigns variable a value"
+msgstr "Присваивает значение переменной"
+
+msgid "Content between {literal} tags will not be parsed by Smarty"
+msgstr "Текст между тегами {literal} не обрабатывается Smarty"
+
+msgid "Similar to PHP if statements"
+msgstr "Аналогично конструкции if в PHP"
+
+msgid "{foreach} is for looping over arrays of data"
+msgstr "Используется для перебора элементов в массивах данных"
+
+msgid ""
+"Returns name of this Webasyst installation (name is specified in “Installer” "
+"app settings)"
+msgstr ""
+"Возвращает название данной установки Webasyst, указанное в настройках "
+"приложения «Инсталлер»"
+
+msgid ""
+"Returns this site’s core navigation menu which is either set automatically "
+"or manually in the “Site settings” screen"
+msgstr ""
+"Возвращает основное меню навигации этого сайта, сформированное автоматически "
+"или настроенное вручную в настройках сайта"
+
+msgid ""
+"Returns user locale, e.g. \"en_US\", \"ru_RU\". In case user is authorized, "
+"locale is retrieved from “Contacts” app user record, or detected "
+"automatically otherwise"
+msgstr ""
+"Возвращает языковую локаль пользователя, например, en_US, ru_RU. Если "
+"пользователь авторизован, информация о локали извлекается из приложения "
+"«Контакты»; в противном случае определяется автоматически."
+
+msgid ""
+"— <em>\"platform\"</em>: current visitor device platform name, e.g. "
+"<em>windows, mac, linux, ios, android, blackberry</em>;"
+msgstr ""
+"— <em>platform</em>: название системной платформы устройства пользователя, "
+"например, <em>windows, mac, linux, ios, android, blackberry</em>;"
+
+msgid ""
+"Displays the \"<em>bar</em>\" key value of an array. Similar to PHP "
+"$foo[\"bar\"]"
+msgstr ""
+"Отображает значение ключа массива «<em>bar</em>» аналогично $foo[\"bar\"] в "
+"PHP."
+
+msgid ""
+"Outputs <em>$var</em> datetime in a user-friendly form. Supported <em>"
+"$format</em> values: <em>monthdate, date, dtime, datetime, fulldatetime, "
+"time, fulltime, humandate, humandatetime</em>"
+msgstr ""
+"Отображает время <em>$var</em> в удобном для чтения виде. Доступные значения "
+"<em>$format</em>: <em>monthdate, date, dtime, datetime, fulldatetime, time, "
+"fulltime, humandate, humandatetime</em>."
+
+msgid ""
+"Direct PHP function access. E.g. <em>{time()}</em> displays the current "
+"timestamp"
+msgstr ""
+"Прямой доступ к функциям PHP. Например, <em>{time()}</em> отображает текущую "
+"метку времени UNIX."
+
+msgid ""
+"Embeds a Smarty template into the current content. <em>file</em> attribute "
+"specifies a template filename within the current design theme folder"
+msgstr ""
+"Внедряет шаблон Smarty в текущее содержимое. Атрибут <em>file</em> указывает "
+"на имя файла шаблона в папке используемой темы оформления."
+
+msgid ""
+"Displays structured information about variable. Arrays and objects are "
+"explored recursively with values indented to show structure. Similar to PHP "
+"var_dump($foo)"
+msgstr ""
+"Отображает подробную информацию о структуре переменной, массива или объекта. "
+"Работает аналогично функции PHP var_dump($foo)"
+
+#: /wa-system/controller/waSignupAction.class.php:140
+msgid "Thank you for signing up!"
+msgstr "Вы успешно зарегистрировались!"
+
+#: /wa-system/design/templates/Theme.html:15
+msgid "Display settings"
+msgstr "Настройки отображения"
+
+#: /wa-system/design/templates/Theme.html:72
+msgid "Manage theme"
+msgstr "Управление темой дизайна"
+
+#: /wa-system/design/templates/Theme.html:74
+msgid "Download theme"
+msgstr "Скачать тему дизайна"
+
+#: /wa-system/design/templates/Theme.html:88
+msgid "Default theme cannot be deleted"
+msgstr "Эта тема дизайна не может быть удалена"
+
+#: /wa-system/design/templates/Theme.html:94
+msgid "Thumbnails"
+msgstr "Эскизы"
+
+#: /wa-system/design/templates/Theme.html:95
+msgid ""
+"This design theme links image thumbnails of sizes listed below. If custom-"
+"sized on-fly thumbnail generation is not allowed by the app settings, please "
+"make sure that at least listed thumbnail sizes are allowed. If on-fly "
+"thumbnail generation is allowed, thumbnails will be generated automatically."
+msgstr ""
+"Эта тема дизайна использует эскизы изображений перечисленных ниже размеров. "
+"Если в настройках вашего приложения возможность автоматического создания "
+"эскизов «на лету» отключена, убедитесь, что все указанные размеры добавлены "
+"в список разрешенных. Если создание эскизов «на лету» разрешено, изображения "
+"указанных ниже размеров будут создаваться автоматически."
+
+#: /wa-system/page/actions/waPage.actions.php:525
+msgid "Embeds HTML snippet by ID"
+msgstr "Добавляет HTML-блок по ID"
+
+#: /wa-system/page/actions/waPage.actions.php:531
+msgid "Returns path to theme folder by <em>theme_id</em> and <em>APP_ID</em>"
+msgstr ""
+"Возвращает путь к папке темы дизайна по <em>theme_id</em> и <em>APP_ID</em>"
+
+#: /wa-system/webasyst/templates/mail/Signup.html:1
+msgid "Thank you for registering on %s!"
+msgstr "Вы успешно зарегистрировались на сайте «%s»!"
+
+#: /wa-system/webasyst/templates/mail/Signup.html:3
+msgid "Login to your account"
+msgstr "Вход в личный кабинет"
+
+#: /wa-system/design/templates/Theme.html:115
+msgid "Revert to original"
+msgstr "Восстановить из исходной версии"
+
+#: /wa-system/design/templates/Theme.html:118
+msgid ""
+"Drop all customizations and revert parent theme <strong>%s</strong> to the "
+"original version too"
+msgstr ""
+"Также сбросить все изменения, которые вносились в родительскую тему дизайна "
+"<strong>%s</strong>"
+
+#: /wa-system/design/templates/Theme.html:126
+msgid "Revert"
+msgstr "Восстановить"
+
+msgid "Website request"
+msgstr "Запрос с сайта"
+
+msgid "Thank you!"
+msgstr "Спасибо!"
+
+msgid "Proceed to checkout"
+msgstr "Оформить заказ"
+
+msgid "Checkout"
+msgstr "Оформить заказ"
+
+msgid "Shop"
+msgstr "Магазин"
+
+msgid "Blog"
+msgstr "Блог"
+
+msgid "Photos"
+msgstr "Фото"
+
+msgid "Photostream"
+msgstr "Фотопоток"
+
+msgid "Favorites"
+msgstr "Избранное"
+
+msgid "Your message has been sent."
+msgstr "Ваше сообщение было отправлено."
+
+#: /wa-system/image/waImage.class.php:64
+msgid "Not an image or invalid image:"
+msgstr "Не является файлом изображения:"
+
+#: /wa-system/image/waImage.class.php:322
+msgid "File must be writable:"
+msgstr "Файл должен быть доступен для записи:"
+
+#: /wa-system/config/waAppConfig.class.php:66
+msgid "added a new template"
+msgstr "добавил новый шаблон"
+
+#: /wa-system/config/waAppConfig.class.php:69
+msgid "edited template"
+msgstr "отредактировал шаблон"
+
+#: /wa-system/config/waAppConfig.class.php:72
+msgid "deleted template"
+msgstr "удалил шаблон"
+
+#: /wa-system/config/waAppConfig.class.php:75
+msgid "uploaded a new theme"
+msgstr "загрузил новую тему"
+
+#: /wa-system/config/waAppConfig.class.php:78
+msgid "downloaded theme"
+msgstr "скачал тему"
+
+#: /wa-system/config/waAppConfig.class.php:81
+msgid "deleted theme"
+msgstr "удалил тему"
+
+#: /wa-system/config/waAppConfig.class.php:84
+msgid "reset theme settings"
+msgstr "восстановил дефолт-настройки темы"
+
+#: /wa-system/config/waAppConfig.class.php:87
+msgid "create theme duplicate"
+msgstr "создал дубликат темы"
+
+#: /wa-system/config/waAppConfig.class.php:90
+msgid "renamed theme"
+msgstr "переименовал тему"
+
+#: /wa-system/config/waAppConfig.class.php:102
+msgid "added a new page"
+msgstr "добавил новую страницу"
+
+#: /wa-system/config/waAppConfig.class.php:105
+msgid "edited a website page"
+msgstr "отредактировал страницу"
+
+#: /wa-system/config/waAppConfig.class.php:108
+msgid "deleted page"
+msgstr "удалил страницу"
+
+#: /wa-system/config/waAppConfig.class.php:111
+msgid "moved page"
+msgstr "переместил страницу"
+
+#: /wa-system/config/waAppConfig.class.php:121
+msgid "logged in"
+msgstr "вошел в аккаунт"
+
+#: /wa-system/config/waAppConfig.class.php:124
+msgid "logged out"
+msgstr "вышел из аккаунта"
+
+#: /wa-system/config/waAppConfig.class.php:127
+msgid "signed up"
+msgstr "зарегистрировался"
+
+#: /wa-system/config/waAppConfig.class.php:130
+msgid "edited profile in customer portal"
+msgstr "отредактировал профиль в личном кабинете"
+
+#: /wa-system/config/waAppConfig.class.php:133
+msgid "enabled access for contact"
+msgstr "разрешил доступ для контакта"
+
+#: /wa-system/config/waAppConfig.class.php:136
+msgid "disabled access for contact"
+msgstr "запретил доступ для контакта"
+
+#: /wa-system/contact/waContactCompositeField.class.php:84
+#: /wa-system/contact/waContactField.class.php:339
+#: /wa-system/contact/waContactField.class.php:457
+msgid "Data must be an array."
+msgstr "Данные должны быть массивом"
+
+#: /wa-system/validator/waDateValidator.class.php:21
+msgid "Incorrect date"
+msgstr "Направильная дата"
+
+msgid "Facebook"
+msgstr "Фейсбук"
+
+msgid "Twitter"
+msgstr "Твиттер"
+
+msgid "VK"
+msgstr "ВКонтакте"
+
+msgid "Instagram"
+msgstr "Инстаграм"
+
+msgid "Social"
+msgstr "Соцсети"
+
+msgid "Contact us"
+msgstr "Обратная связь"
+
+msgid "Submit"
+msgstr "Отправить"
+
+msgid "Back"
+msgstr "Назад"
+
+msgid "Subscribe to our email newsletter"
+msgstr "Подписаться на новости"
+
+msgid "Follow us"
+msgstr "Подписаться"
+
+msgid "Thank you! We’ll keep you posted."
+msgstr "Спасибо! Будем держать вас в курсе."
+
+msgid "View cart"
+msgstr "Посмотреть корзину"
+
+msgid "My profile"
+msgstr "Мой профиль"
+
+#: /wa-system/contact/waContactForm.class.php:344
+msgid "New password"
+msgstr "Новый пароль"
+
+#: /wa-system/contact/waContactForm.class.php:364
+#: /wa-system/controller/waMyProfileAction.class.php:145
+msgid "Photo"
+msgstr "Фото"
+
+#: /wa-system/design/templates/Design.html:58
+msgid "Site"
+msgstr "Сайт"
+
+#: /wa-system/design/templates/Design.html:62
+msgid "Appearance"
+msgstr "Внешний вид"
+
+#: /wa-system/design/templates/Design.html:66
+msgid "Templates"
+msgstr "Шаблоны"
+
+#: /wa-system/design/templates/Design.html:67
+msgid "Themes"
+msgstr "Темы дизайна"
+
+#: /wa-system/design/templates/Design.html:68
+msgid "Settings"
+msgstr "Настройки"
+
+#: /wa-system/design/templates/DesignEdit.html:130
+msgid ""
+"This list represent all parent theme (<strong>%s</strong>) templates which "
+"are currently not linked in this design theme."
+msgstr ""
+"Этот список отображает все шаблоны дизайна родительской темы (<strong>%s</"
+"strong>), которые еще не подключены в текущей теме дизайна."
+
+#: /wa-system/design/templates/Theme.html:9
+msgid "Download theme backup"
+msgstr "Скачать архив с темой дизайна"
+
+#: /wa-system/design/templates/Theme.html:10
+msgid "Clone theme"
+msgstr "Создать клон темы"
+
+#: /wa-system/design/templates/Theme.html:11
+#: /wa-system/design/templates/Theme.html:296
+msgid "Rename theme"
+msgstr "Переименовать тему"
+
+#: /wa-system/design/templates/Theme.html:14
+msgid ""
+"You did not apply customizations to this theme yet, and thus there is "
+"nothing to revert."
+msgstr ""
+"Вы еще не вносили изменения в эту тему дизайна, поэтому сбрасывать пока "
+"нечего."
+
+#: /wa-system/design/templates/Theme.html:47
+#: /wa-system/design/templates/Theme.html:281
+msgid "Start using %s theme"
+msgstr "Начать использовать тему «%s»"
+
+#: /wa-system/design/templates/Theme.html:50
+msgid "preview this theme"
+msgstr "открыть предпросмотр"
+
+#: /wa-system/design/templates/Theme.html:59
+msgid "Theme path"
+msgstr "Путь к папке темы"
+
+#: /wa-system/design/templates/Theme.html:73
+msgid "Theme usage"
+msgstr "Использование темы"
+
+#: /wa-system/design/templates/Theme.html:84
+msgid "All listed routes are linking %s design theme right now."
+msgstr ""
+"Тема дизайна «%s» в данный момент используется по всем перечисленным адресам."
+
+#: /wa-system/design/templates/Theme.html:178
+msgid ""
+"%s design theme does not offer customizable display settings. Please use "
+"template editor for customizing the theme."
+msgstr ""
+"Тема дизайна «%s» не предоставляет опций для настройки внешнего вида. "
+"Используйте редактор шаблонов дизайна для настройки оформления."
+
+#: /wa-system/design/templates/Theme.html:185
+msgid "About this theme"
+msgstr "Информация о теме"
+
+#: /wa-system/design/templates/Theme.html:240
+msgid ""
+"Start using this theme on one of your existing %s app routes, or create a "
+"new route:"
+msgstr ""
+"Подключите тему дизайна к одному из существующих поселений приложения «%s» "
+"или создайте новое правило маршрутизации:"
+
+#: /wa-system/design/templates/Theme.html:244
+msgid "Existing route"
+msgstr "Выберите правило"
+
+#: /wa-system/design/templates/Theme.html:256
+msgid "New route"
+msgstr "Новое правило"
+
+#: /wa-system/design/templates/Theme.html:344
+msgid "Change parent theme"
+msgstr "Сменить родительскую тему"
+
+#: /wa-system/design/templates/Theme.html:36
+msgid ""
+"%s design theme has been successfully installed. Start using this theme by "
+"clicking the button below."
+msgstr ""
+"Тема дизайна «%s» была успешно установлена. Начните использование темы, "
+"подключив ее с помощью кнопки ниже."
+
+#: /wa-system/design/templates/Theme.html:39
+msgid "%s design theme is currently not in use on your websites."
+msgstr "Тема дизайна «%s» в данный момент не используется на ваших сайтах."
+
+#: /wa-system/design/templates/Themes.html:43
+msgid "Upload theme archive"
+msgstr "Загрузить архив с темой"
+
+#: /wa-system/page/templates/Help.html:8
+msgid "Blocks"
+msgstr "Блоки"
+
+#: /wa-system/webasyst/templates/mail/Signup.html:7
+msgid "Confirm your email by clicking this link"
+msgstr "Подтвердите ваш аккаунт, щелкнув по ссылке"
+
+#: /wa-system/design/templates/DesignEdit.html:36
+msgid "Roll back my file to the original version"
+msgstr "Сбросить мои изменения к оригинальной версии файла"
+
+#: /wa-system/design/templates/DesignEdit.html:41
+msgid "This will reset all your changes. Are you sure?"
+msgstr "Это сбросит все выполненные вами изменения. Вы уверены?"
+
+#: /wa-system/response/waResponse.class.php:405
+msgid "<strong>%s</strong> theme preview in action"
+msgstr "Предпросмотр темы дизайна <strong>%s</strong>"
+
+#: /wa-system/response/waResponse.class.php:408
+msgid "Stop preview session"
+msgstr "Завершить предпросмотр"
+
+msgid "Edit"
+msgstr "Редактировать"
+
+msgid "Contact information successfully updated!"
+msgstr "Контактная информация успешно обновлена!"
+
+msgid "Change password"
+msgstr "Сменить пароль"
+
+msgid "Delete photo"
+msgstr "Удалить фото"
+
+msgid "There are no routes for %s app on this site yet."
+msgstr "На этом сайте нет поселений приложения «%s»."
+
+msgid ""
+"Customizing %s theme settings below will affect all listed routes. If you "
+"want to keep individual designs, use separate theme copies (clones) for each "
+"route."
+msgstr ""
+"Изменение настроек темы дизайна «%s» затронет все перечисленные поселения "
+"приложения. Если вы хотите сохранить индивидуальный дизайн для каждого "
+"поселения, используйте отдельные копии (дубликаты) темы дизайна."
+
+msgid ""
+"This design theme is also used on <strong>%s</strong>. Editing theme "
+"template files will affect both %s and other listed routes."
+msgstr ""
+"Эта тема дизайна также используется по адресу <strong>%s</strong>. "
+"Редактирование шаблонов дизайна этой темы приведет к изменению внешнего вида "
+"как %s, так и всех других перечисленных поселений."
+
+msgid "Connected accounts"
+msgstr "Связанные аккаунты"
+
+msgid ""
+"Connect this account to your social network accounts so next time you can "
+"log in without entering your password:"
+msgstr ""
+"Подключите этот аккаунт к вашим аккаунтам в соцсетях, чтобы в следующий раз "
+"входить на сайт без ввода пароля:"
+
+msgid "%s design theme"
+msgstr "Тема дизайна «%s»"

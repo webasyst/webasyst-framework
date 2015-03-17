@@ -1,5 +1,8 @@
 
 User-agent: *
+# wa mailer mailer/*
+Disallow: /mailer/unsubscribe/
+# wa mailer
 # wa shop *
 Disallow: /my/
 Disallow: /checkout/
@@ -7,7 +10,4 @@ Disallow: /checkout/
 
 
 User-agent: *
-# wa mailer mailer/*
-Disallow: /mailer/unsubscribe/
-# wa mailer
 

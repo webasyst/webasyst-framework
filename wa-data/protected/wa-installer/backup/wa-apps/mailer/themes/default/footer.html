@@ -1,0 +1,11 @@
+{* required when parenting default Mailer design theme from Clear, Sidebar, Nifty and some other design themes of the Site app; this file woun't be used when parented from the Default theme of the Site app (!) *}
+
+<!-- see index.html of the parent theme for base (wrap) footer layout -->
+
+<div id="poweredby" class="float-right gray">
+    [`We are using <a href="http://www.webasyst.com/">Webasyst</a>`] <span class="dots" title="Webasyst"></span>
+</div>
+<div id="copyright" class="float-left">
+    &copy; {time()|wa_datetime:"Y"}
+    <a href="{$wa_url}">{$wa->accountName()}</a>
+</div>

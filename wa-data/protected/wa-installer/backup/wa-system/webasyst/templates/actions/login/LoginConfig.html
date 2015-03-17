@@ -1,0 +1,73 @@
+<!DOCTYPE html><html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>[`Webasyst`]</title>
+    {$wa->css()}
+    <script src="{$wa_url}wa-content/js/jquery/jquery-1.7.1.min.js"></script>
+</head>
+
+<body>
+    <div id="wa-installer">
+        <div class="dialog height400px ignore-esc" id="wa-install-dialog">
+            <div class="dialog-background"></div>
+			<div class="dialog-window">
+				<form method="post" action="">
+				<div class="dialog-content">
+					<div class="dialog-content-indent">
+						<h1>[`MySQL database`]</h1>
+						<p>[`Enter connection credentials for the MySQL database which will be used by Webasyst to store system and application data.`]</p>
+						{if !empty($error)}
+						<p class="i-error">{$error}</p>
+						{/if}
+						<div class="fields form">
+                            <div class="field-group">
+                                <div class="field">
+                                    <div class="name">
+                                      [`Host`]:
+                                    </div>
+                                    <div class="value">
+                                      <input type="text" class="large" name="host" value="{$wa->post('host', 'localhost')}" />
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <div class="name">
+                                        [`User`]:
+                                    </div>
+                                    <div class="value">
+                                        <input type="text" class="large" name="user" value="{$wa->post('user', 'root')}" />
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <div class="name">
+                                        [`Password`]:
+                                    </div>
+                                    <div class="value">
+                                        <input type="password" name="password" class="large" value="{$wa->post('password')}" />
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <div class="name">
+                                        [`Database Name`]:
+                                    </div>
+                                    <div class="value">
+                                        <input type="text" class="large" name="database" value="{$wa->post('database', 'webasyst')}" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="clear-left i-hint">[`If you do not know what should be entered here, please contact your hosting provider technical support.`]</p>
+                    </div>
+                </div>
+
+                <div class="dialog-buttons">
+                    <div class="dialog-buttons-gradient">
+                        <input type="submit" value="[`Continue`]" class="button green" />
+                    </div>
+                </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

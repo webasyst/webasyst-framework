@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="apple-mobile-web-app-capable" content="yes" />
+	<meta name="viewport" content="width=device-width; initial-scale=1; maximum-scale=1; user-scalable=0;" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+	<title>{$wa->accountName()}</title>
+	<script type="text/javascript" src="{$wa_url}wa-content/js/jquery/jquery-1.8.1.min.js"></script>
+	<script type="text/javascript" src="{$wa_url}wa-content/js/jquery-mobile/jquery.mobile-1.1.1.min.js"></script>
+	<link rel="stylesheet" href="{$wa_url}wa-content/css/wa/wa-mobile-1.0.css" />
+    <script>
+    {if $wa->isMobile() == 'iphone'}
+    $(document).on("click", "a", function(e) {
+        e.preventDefault();
+        location.href = $(this).attr("href");
+    });
+    {/if}
+    var pixelRatio = !!window.devicePixelRatio ? window.devicePixelRatio : 1;
+    $(window).on("load", function() {
+        if (pixelRatio > 1) {
+            $('#apps .wa-mobile-list-thumb img').each(function() {
+                if ($(this).data('src2')) {
+                    $(this).attr('src', $(this).data('src2'));
+                }
+            });
+        }
+    });
+    </script>
+</head>
+<body>
+<div id="wa" class="wa-app-list" data-role="page">
+	<div id="apps">
+		<div data-role="header" data-position="inline">
+		 	<a href="{$backend_url}?nomobile=1"  rel="external" data-role="button" data-iconpos="notext"  data-icon="mobile-desktop-only"></a>
+			<a href="{$backend_url}?action=logout" rel="external" data-icon="arrow-r" class="ui-btn-right">[`Logout`]</a>
+			<h1>{$wa->accountName()}</h1>
+		</div>
+		<div data-role="content" data-theme="d">
+			<ul data-role="listview" class="wa-mobile-list-thumb" data-theme="d">
+				{foreach from=$apps key=app_id item=app}
+					<li><a href="{$backend_url}{$app_id}" rel="external">
+						{if $app.img}<img {if !empty($app.icon.96)}data-src2="{$wa_url}{$app.icon.96}"{/if} src="{$wa_url}{$app.img}" />{/if}
+						<h3{if empty($app.mobile)} class="wa-only-desktop"{/if}>{$app.name}</h3>
+					</a></li>
+				{/foreach}
+			</ul>
+		</div>
+	</div>
+</div>
+</body>
+</html>

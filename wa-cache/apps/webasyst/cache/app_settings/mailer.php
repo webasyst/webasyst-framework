@@ -4,6 +4,6 @@ return array (
   array (
     'app_id' => 'mailer',
     'name' => 'update_time',
-    'value' => '1412928275',
+    'value' => '1425028708',
   ),
 );

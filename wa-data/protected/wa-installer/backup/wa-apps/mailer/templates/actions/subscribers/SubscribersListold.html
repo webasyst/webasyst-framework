@@ -1,0 +1,223 @@
+<div class="block double-padded">
+    {if $list}
+    <div class="block half-padded float-right">
+        <i class="icon16 search before-input"></i><input id="search-subscribers" type="search" placeholder="[`search by name or email`]" value="{$search|escape}">
+    </div>
+    <div class="block half-padded float-right" style="margin:6px 6px 0 0;">
+        <a id="show-subscription-form-link" class="inline-link" href="javascript:void(0)"><i class="icon16 script" style="position:relative;top:-1px;"></i><b>[`Subscribe form`]</b></a>
+    </div>
+    {/if}
+
+    <h1>[`Subscribers`]</h1>
+
+    {if !$list}
+    {if $search}
+    <p>[`No subscribers match search criteria.`]</p>
+    {else}
+    <p>[`Subscribers are the persons who have expressly opted for receiving email messages from you by submitting their email addresses via a subscription form on your website. To collect subscribers' email addresses, publish the form displayed below on your website or blog.`]</p>
+    {/if}
+    {/if}
+</div>
+
+<div>
+    <div class="hidden block float-right" id="subscription-form-wrapper">
+        <div style="width:220px;float:left;">
+            <h3 class="heading" style="margin-bottom:15px;">[`Preview`]</h3>
+            {$form_html}
+        </div>
+        <div style="margin-left:230px;">
+            <p style="margin-bottom:19px;">[`Use this source code to embed in your website or blog where you want this signup form to appear.`]</p>
+            <textarea style="width:98%;height:104px;font-size:80%; margin-bottom: 20px;" readonly="readonly">{$form_html|escape}</textarea>
+        </div>
+        <div class="clear-both"></div>
+    </div>
+    <div class="clear-right"></div>
+</div>
+
+<div class="subscribers-body">
+    {if $list}
+    <table class="zebra" id="subsctibers-list-table">
+        <thead>
+        <tr>
+            {foreach $cols as $id => $name}
+            <th{if $name@first} class="m-first"{/if}>
+            {if $order == $id}
+            <a href="#/subscribersold/{$start}/!{$id}/{$search_url_append}">{$name}<i class="icon16 uarr"></i></a>
+            {elseif $order == "!`$id`"}
+            <a href="#/subscribersold/{$start}/{$id}/{$search_url_append}">{$name}<i class="icon16 darr"></i></a>
+            {else}
+            <a href="#/subscribersold/{$start}/{$id}/{$search_url_append}">{$name}</a>
+            {/if}
+            </th>
+            {/foreach}
+            <th class="min-width m-last"></th>
+        </tr>
+        </thead>
+        <tbody>
+        {foreach $list as $row}
+        <tr rel="{$row.contact_id},{$row.email|escape}">
+            <td class="m-first">
+                {if $row.contact_id > 0}
+                {$row.name|escape}
+                {else}
+                &lt;[`contact deleted`]&gt;
+                {/if}
+            </td>
+            <td class="email-field">{$row.email|escape}</td>
+            <td>{$row.datetime|wa_datetime}</td>
+            <td class="min-width m-last">
+                <a href="javascript:void(0)" title="[`Eliminate from subscribers`]"><i class="icon16 delete"></i></a>
+                <span class="hidden name-field">{$row.name|escape}</span>
+            </td>
+        </tr>
+        {/foreach}
+        </tbody>
+    </table>
+
+    <div class="paging block">
+        <span style="margin-right:20px;">[`Total addresses:`] <span id="total-addresses">{$total_rows}</span></span>
+        {if count($pagination) > 1}
+        {foreach $pagination as $page => $start}
+        {if $start !== false}
+        <a{if $current_page == $page} class="selected"{/if} href="#/subscribersold/{$start}/{$order}/{$search_url_append}">{$page}</a>
+        {else}
+        ...
+        {/if}
+        {/foreach}
+        {/if}
+    </div>
+    {else}
+    <div class="block double-padded">
+        <p>[`No one subscribed yet.`]</p>
+    </div>
+    {/if}
+</div>
+
+<div id="confirm-deletion-dialog" class="hidden"><div>
+    <p>{sprintf_wp('Do you really want to eliminate contact %s from subscribers?', '<span id="delete-contact-name-email"></span>')}</p>
+    <p>[`NOTE: This contact will not be deleted. It will be only eliminated from the subscription list.`]</p>
+    <p><label><input type="checkbox"> [`Do not show this question any more`]</label></p>
+</div></div>
+
+<script>(function($) { "use strict";
+
+    // Subscription form
+    $('#show-subscription-form-link').click(function() {
+        $('#subscription-form-wrapper').toggle();
+    });
+    $('#subscription-form-wrapper textarea').click(function() {
+        $(this).select();
+        return false;
+    });
+    {if !$list && !$search}
+        $('#subscription-form-wrapper').show();
+        {/if}
+
+            // Initialize <td>s of a table to be clickable (middle-click friendly)
+            var makeClickable = function() {
+                $('#subsctibers-list-table td').each(function() {
+                    var td = $(this);
+                    if (td.children('a').length > 0) {
+                        return;
+                    }
+                    var contact_id = td.parent().attr('rel').split(',')[0];
+                    if (contact_id > 0) {
+                        var a = $('<a style="color:inherit!important"></a>').attr('href', '{mailerHelper::getContactsAppUrl()}#/contact/'+contact_id+'/no-bc/').html(td.html());
+                        td.empty().append(a);
+                    }
+                });
+            };
+            makeClickable();
+
+            // Click on a .delete icon opens dialog for deletion
+            var dialog = null;
+            var deletion_contact_id = null;
+            var removeSelectedSubscriber = function() {
+                if (dialog) {
+                    if (dialog.find(':checkbox:checked').length > 0) {
+                        $.storage.set('mailer/subscribers/skip_deletion_confirm', true);
+                    }
+                    dialog.trigger('close');
+                }
+
+                $('#subsctibers-list-table tr[rel="'+deletion_contact_id+'"]').remove();
+                $.post('?module=subscribers&action=delete', { contact_id: deletion_contact_id }, function() {
+                    if ($('#subsctibers-list-table tbody tr:first').length <= 0) {
+                        $.wa.mailer.redispatch();
+                    }
+                });
+                deletion_contact_id = null;
+
+                var total = $('#total-addresses').text() - 1;
+                $('#total-addresses').text(total);
+                $('#subscribers-sb-link .count').html(total);
+            };
+            $('.subscribers-body').on('click', '#subsctibers-list-table i.delete', function() {
+                var tr = $(this).parents('tr');
+                deletion_contact_id = tr.attr('rel');
+                if (!deletion_contact_id) {
+                    return;
+                }
+
+                // If user previously checked "never ask me again", then remove without confirmation
+                if ($.storage.get('mailer/subscribers/skip_deletion_confirm')) {
+                    removeSelectedSubscriber();
+                    return;
+                }
+
+                // Show confirmation dialog
+                if (!dialog) {
+                    var buttons = $('<div> [`or`] </div>');
+                    $('<input type="submit" class="button red" value="[`Eliminate from subscribers`]">').prependTo(buttons).click(removeSelectedSubscriber);
+                    $('<a href="javascript:void(0)">[`cancel`]</a>').appendTo(buttons).click(function() {
+                        dialog.trigger('close');
+                    });
+                    dialog = $('#confirm-deletion-dialog').removeClass('hidden').waDialog({
+                        buttons: buttons,
+                        width: '420px',
+                        height: '200px'
+                    });
+                } else {
+                    dialog.show();
+                }
+                $('#delete-contact-name-email').text(tr.find('.name-field').text() + ' <' + tr.find('.email-field').text() + '>');
+            });
+
+            // Search field
+            var submitSearch = function() {
+                var input = $(this);
+                var search_string = input.val();
+                var new_hash = $.wa.mailer.cleanHash('#/subscribersold/0/{$order}/' + encodeURIComponent(search_string));
+                if ($.wa.mailer.getHash() != new_hash) {
+                    input.prev('.icon16').removeClass('search').addClass('loading');
+                    window.location.hash = new_hash;
+                }
+                return false;
+            };
+            $('#search-subscribers').keyup(function(e) {
+                if (e.which != 13 && e.which != 10) {
+                    return false;
+                }
+                return submitSearch.apply(this);
+            }).bind('search', submitSearch);
+
+            {if !$search}
+                // Update count in sidebar
+                $('#subscribers-sb-link .count').html('{$total_rows}');
+                {/if}
+
+                    // Hack for subscribe form: make it so the subscriber instantly appears in the table after form submit.
+                    $('#mailer-frontend-subscribe-form').bind('wa.submitted', function() {
+                        // Update sidebar count
+                        var sb_count = $('#total-addresses').text() - 0 + 1;
+                        $('#subscribers-sb-link .count').html(sb_count);
+                        $('#total-addresses').text(sb_count);
+
+                        // Update table
+                        $.get("?module=subscribers&action=list{if $start}&start={$start}{/if}{if $order}&order={$order}{/if}{if $search}&search={$search|escape}{/if}", { }, function(r) {
+                            var content = $('<div></div>').html(r.replace(/<script>[\s\S]+?<[\/]script>/ig, '')).find('.subscribers-body');
+                            $('.subscribers-body').empty().append(content.children());
+                            makeClickable();
+                        });
+                    });
+                })($);</script>

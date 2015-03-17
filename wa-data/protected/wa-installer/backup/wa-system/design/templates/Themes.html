@@ -1,0 +1,222 @@
+<div class="block wa-design-gray-toolbar">
+    {*
+    <div class="block half-padded float-right">
+        <ul class="menu-h wa-theme-filter-price">
+            <li class="selected"><a href="#" class="inline-link"><b><i>[s`All`]</i></b></a></li>
+            <li><a href="#" class="inline-link"><b><i>[s`Paid`]</i></b></a></li>
+            <li><a href="#" class="inline-link"><b><i>[s`Free`]</i></b></a></li>
+        </ul>
+    </div>
+
+    <div class="block float-left">
+        <select>
+            <option>[s`All categories`]</option>
+            <option>[s`Installed themes only`]</option>
+            <option>--</option>
+            <option>Apparel</option>
+            <option>Automobile</option>
+            <option>Computers & Mobile</option>
+            <option>Hardware</option>
+            <option>Music</option>
+            <option>Photo equipment</option>
+            <option>Software</option>
+        </select>
+    </div>
+
+    <div class="block half-padded float-left">
+        <ul class="menu-h wa-theme-filter-colors">
+            <li class="wa-themes-all"><input type="radio" checked="checked" name="wa-theme-color">
+            [s`All colors`]</li>
+            <li class="wa-themes-white"><input type="radio" name="wa-theme-color"></li>
+            <li class="wa-themes-black"><input type="radio" name="wa-theme-color"></li>
+            <li class="wa-themes-red"><input type="radio" name="wa-theme-color"></li>
+            <li class="wa-themes-green"><input type="radio" name="wa-theme-color"></li>
+            <li class="wa-themes-blue"><input type="radio" name="wa-theme-color"></li>
+            <li class="wa-themes-yellow"><input type="radio" name="wa-theme-color"></li>
+            <li class="wa-themes-purple"><input type="radio" name="wa-theme-color"></li>
+        </ul>
+    </div>
+    *}
+
+    <div class="float-right">
+        <ul class="menu-h">
+            <li><a id="wa-theme-upload-link" href="#"><i class="icon16 upload"></i>[s`Upload theme archive`] <span class="hint">.tar.gz</span></a></li>
+            <li id="themes-close" style="display: none"><a href="#" class="cancel gray inline-link" title="[s`Close`]"><i class="icon10 no-bw"></i> <b><i>[s`Close`]</i></b></a></li>
+        </ul>
+    </div>
+
+    <h4>{$app.name|string_format:'[s`Design themes for %s app`]'|escape} <i class="icon16 loading"></i></h4>
+
+</div>
+<div class="wa-themes">
+    <script type="text/javascript">
+    $('div.wa-themes:first').load('{$wa_backend_url}installer/?module=themes&action=view&slug={$app_id}&return_hash={"`$design_url`theme=%theme_id%"|escape:'url'}',function(){
+        $('.wa-design-gray-toolbar h4 i').hide();
+    });
+    $('#themes-close a').click(function () {
+        $('#wa-design-container').addClass('left200px').css('margin-left', '');
+        $('#wa-design-sidebar').show();
+        $("#wa-theme-list li a:first").click();
+        return false;
+    });
+    </script>
+    <div class="clear"></div>
+</div>
+
+<div class="dialog" id="wa-theme-upload-dialog">
+    <div class="dialog-background"> </div>
+    <div class="dialog-window" style="height: 200px; min-height: 200px; width: 400px; min-width: 350px">
+        <form target="wa-theme-upload-iframe" id="wa-theme-upload-form" method="post" action="?module=design&amp;action=themeUpload" enctype="multipart/form-data">
+            <div class="dialog-content">
+                <div class="dialog-content-indent">
+                    <h1>[s`Upload theme`]</h1>
+                    <span class="wa-theme-dialog-error bold" style="color: red;"></span>
+                    <p>[s`Theme must be uploaded as a valid Webasyst design theme archive (.tar.gz archive with theme files and theme.xml manifest file).`]</p>
+                    <input id="wa-input-file" type="file" name="theme_files[]" >
+                    {$wa->csrf()}
+                    <div class="loading" style="display:none; margin-top: 10px">
+                        <i class="icon16 loading"></i> [s`Uploading...`]
+                    </div>
+                </div>
+            </div>
+            <div class="dialog-buttons">
+                <div class="dialog-buttons-gradient">
+                    <input type="submit" class="button green" value="[s`Upload`]">
+                    [s`or`] <a href="{$themes_url}" class="inline-link cancel"><b><i>[s`cancel`]</i></b></a> </div>
+            </div>
+        </form>
+        <iframe style="display:none" name="wa-theme-upload-iframe" id="wa-theme-upload-iframe"></iframe>
+    </div>
+</div>
+
+<div class="dialog width600px height300px" id="wa-theme-start-using-dialog" data-url="{$design_url}">
+    <div class="dialog-background"> </div>
+    <div class="dialog-window">
+        <form>
+            <div class="dialog-content">
+                <div class="dialog-content-indent">
+                    <h1></h1>
+                    <p>{sprintf("[s`Start using this theme on one of your existing %s app routes, or create a new route:`]", $app.name)}</p>
+
+                    <div class="fields width100px form">
+                        <div class="field">
+                            <div class="name">[s`Existing route`]</div>
+                            {foreach $routes as $r}
+                            <div class="value no-shift">
+                                <label>
+                                    <input name="route" value="{$r._domain}|{$r._id}" type="radio" {if $r@first}checked{/if}>
+                                    {$r._domain}/{$r.url}
+                                    <span class="hint">{if isset($r.theme)}{$r.theme}{else}default{/if}</span>
+                                </label>
+                            </div>
+                            {foreachelse}
+                            <div class="value gray">
+                                {sprintf('[s`There are no routes for %s app on this site yet.`]', $app.name)}
+                            </div>
+                            {/foreach}
+                        </div>
+                        <div class="field">
+                            <div class="name">[s`New route`]</div>
+                            <div class="value">
+                                <input name="route" id="create-new-route-choice" value="new" type="radio"{if !count($routes)} checked{/if}>
+
+                                {if count($domains) == 1}
+                                <input name="domain" type="hidden" value="{current($domains)}">
+                                {current($domains)}/{else}
+                                <select name="domain" class="create-new-route-control">
+                                    {foreach $domains as $d}
+                                    <option value="{$d}">{str_replace('www.','',$d)|truncate:23:'...':false:true}</option>
+                                    {/foreach}
+                                </select>/
+                                {/if}
+                                <input type="text" name="url" value="" placeholder="*" class="short create-new-route-control">
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+                <div class="clear"></div>
+            </div>
+            <div class="dialog-buttons">
+                <div class="dialog-buttons-gradient">
+                    <input type="hidden" name="theme" value="">
+                    <input type="submit" class="button green" data-value="{sprintf("[s`Start using %s theme`]", '%THEME%')}">
+                    [s`or`] <a href="#" class="cancel">[s`cancel`]</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(function () {
+        function handleError(data) {
+            var error = '';
+            if (typeof data.errors == 'string') {
+                error += (error ? '\n' : '') + data.errors;
+            } else {
+                for (error_item in data.errors) {
+                    error += (error ? '\n' : '') + data.errors[error_item][0];
+                }
+            }
+            if ($(".dialog:visible").length) {
+                $(".dialog:visible .wa-theme-dialog-error").html(error + '<br><br>');
+            } else if ($(".wa-theme-dialog-error:first:visible").length) {
+                $(".wa-theme-dialog-error:first:visible").html('<br><br>' + error + '<br><br>');
+            } else {
+                alert('Error:' + error);
+            }
+            $("#wa-theme-name-dialog input[type=submit]").removeAttr('disabled');
+            $("#wa-theme-upload-dialog input[type=submit]").removeAttr('disabled');
+        };
+        $("#wa-theme-upload-link").click(function () {
+            if (!waDesignConfirm()) return false;
+            $(".wa-theme-dialog-error").text('');
+            $("#wa-theme-upload-dialog div.loading").hide();
+            $("#wa-theme-upload-dialog").waDialog({
+                disableButtonsOnSubmit: true,
+                onSubmit: function () {
+                    $("#wa-theme-upload-dialog div.loading").show();
+                    $("#wa-theme-upload-iframe").one('load', function () {
+                        $("#wa-input-file").replaceWith('<input id="wa-input-file" type="file" name="theme_files[]" multiple="" >');
+                        $("#wa-input-file").bind('change', function () {
+                            $("#wa-theme-upload-form").submit();
+                        });
+                        var response;
+                        try {
+                            response = $.parseJSON($(this).contents().text());
+                            if (response.status == 'fail') {
+                                $("#wa-theme-upload-dialog div.loading").hide();
+                                $("#wa-input-file").replaceWith('<input id="wa-input-file" type="file" name="theme_files[]" multiple="" >');
+                                handleError(response);
+                            } else if (response.status == 'ok') {
+                                $("#wa-theme-upload-dialog").hide();
+                                $(".wa-theme-dialog-error").text('');
+                                location.reload();
+                            }
+                        } catch (e) {
+                            response = {
+                                'errors': []
+                            };
+                            var message = $(this).contents().find('h1:first, h2:first');
+                            if (message.length) {
+                                response.errors.push([message.text()]);
+                            } else {
+                                response.errors.push(['JavaScript error: ' + e.message]);
+                            }
+                            $("#wa-theme-upload-dialog div.loading").hide();
+                            $("#wa-input-file").replaceWith('<input id="wa-input-file" type="file" name="theme_files[]" multiple="" >');
+                            handleError(response);
+                        }
+                    });
+
+                },
+                onLoad: function () {
+
+                }
+            });
+            return false;
+        });
+    });
+</script>

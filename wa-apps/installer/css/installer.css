@@ -186,7 +186,7 @@ transform:skew(3deg, -1deg) translate(5px,-3px) scale(1,0.99) rotate(-1deg); tra
 .i-breadcrumbs span { margin: 0 5px; }
 
 .i-product-page { padding: 15px; }
-.i-product-page .profile .image img { width: 96px; height: 96px; } 
+.i-product-page .profile .image img { width: 96px; height: 96px; }
 .i-product-page .sidebar { float:right; width: 340px; }
 .i-product-page .content { margin-right: 350px; }
 @media screen and (min-width:1366px){ /* large screens */
@@ -321,8 +321,8 @@ table.zebra.i-updates .js-changelog { margin-top: 10px; font-size: 0.9em; }
 /* @2x
 ------ */
 
-@media 
-(-webkit-min-device-pixel-ratio: 2), 
+@media
+(-webkit-min-device-pixel-ratio: 2),
 (min-resolution: 192dpi) {
     .i-badge i.thumb-up { background-image: url('../img/thumb-up@2x.png'); background-size: 100%; }
 }

@@ -1,0 +1,348 @@
+{if isset($sender.id)}
+    <h2>[`Edit sender`]</h2>
+{else}
+    <h2>[`Add a new sender`]</h2>
+{/if}
+
+<form id="form-senders" action="?module=senders&action=save" method="post">
+{if isset($sender.id)}<input type="hidden" name="id" value="{$sender.id}" />{/if}
+<div class="block fields form">
+    <div class="field-group">
+        <div class="field">
+            <div class="name">[`Name`]</div>
+            <div class="value">
+                <input type="text" name="data[name]" value="{if isset($sender.name)}{$sender.name|escape}{/if}" />
+            </div>
+        </div>
+        <div class="field">
+            <div class="name">[`Email`]</div>
+            <div class="value">
+                <input type="text" name="data[email]" value="{if isset($sender.email)}{$sender.email}{/if}" />
+            </div>
+        </div>
+        <div class="field">
+            <div class="name">
+                [`Reply-To Email`]<br>
+            </div>
+            <div class="value">
+                <input type="text" name="params[reply_to]" value="{ifset($params.reply_to)}" />
+                <br><span class="hint">[`If you leave this field empty, replies will come to the main sender address specified above.`]</span>
+            </div>
+        </div>
+    </div>
+    <div class="field-group">
+        <div class="field">
+            <div class="name">[`Transport`]</div>
+            <div class="value">
+                <select id="transport-type" name="params[type]">
+                    {foreach $sender_types as $id => $s}
+                        <option value="{$id}"{if $params.type==$id} selected{/if}>
+                            {if is_string($s)}
+                                {$s}
+                            {else}
+                                {ifset($s.name)}
+                            {/if}
+                        </option>
+                    {/foreach}
+                </select>
+                <br/>
+                {foreach $sender_types as $id => $s}
+                <span class="hint" data-sender="{$id}" style="display: none;">{$s.description}</span>
+                {/foreach}
+            </div>
+        </div>
+    </div>
+
+    {if isset($sender_types.mail)}
+        <div id="mail-params"{if $params.type != 'mail'} style="display:none"{/if} class="field-group transport-params">
+            <div class="field">
+                <div class="name">[`Options`]</div>
+                <div class="value">
+                    <input type="text" placeholder="-f%s" name="params[options]" />
+                </div>
+            </div>
+        </div>
+    {/if}
+
+    {if isset($sender_types.smtp)}
+        <div id="smtp-params"{if $params.type != 'smtp'} style="display:none"{/if} class="field-group transport-params">
+            <div class="field">
+                <div class="name">[`Server`]</div>
+                <div class="value">
+                    <input type="text" name="params[server]" value="{if isset($params.server)}{$params.server}{/if}" />
+                </div>
+            </div>
+            <div class="field">
+                <div class="name">[`Port`]</div>
+                <div class="value">
+                    <input type="text" placeholder="25" name="params[port]" value="{if isset($params.port)}{$params.port}{/if}" />
+                </div>
+            </div>
+            <div class="field">
+                <div class="name">[`Login`]</div>
+                <div class="value">
+                    <input type="text" name="params[login]" value="{if isset($params.login)}{$params.login}{/if}" />
+                </div>
+            </div>
+            <div class="field">
+                <div class="name">[`Password`]</div>
+                <div class="value">
+                    <input type="password" name="params[password]" value="{if isset($params.password)}{$params.password}{/if}" />
+                </div>
+            </div>
+            <div class="field">
+                <div class="name">[`Encryption`]</div>
+                <div class="value">
+                    <select name="params[encryption]">
+                         <option value="">[`None`]</option>
+                         <option {if isset($params.encryption) && $params.encryption == 'ssl'}selected{/if} value="ssl">[`SSL/TLS`]</option>
+                         <option {if isset($params.encryption) && $params.encryption == 'tls'}selected{/if} value="tls">[`STARTTLS`]</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    {/if}
+
+    {if isset($sender_types.sendmail)}
+        <div id="sendmail-params"{if $params.type != 'sendmail'} style="display:none"{/if} class="field-group transport-params">
+            <div class="field">
+                <div class="name">[`Command`]</div>
+                <div class="value">
+                    <input type="text" placeholder="/usr/sbin/sendmail -bs" name="params[command]" value="{ifset($params.command)}" />
+                </div>
+            </div>
+        </div>
+    {/if}
+
+    {if isset($sender_types.test)}
+        <div id="test-params"{if $params.type != 'test'} style="display:none"{/if} class="field-group transport-params">
+            <div class="field">
+                <div class="bold red value">[`Note: mail will be saved in wa-log/mailer/ and will NOT be sent to recipients.`]</div>
+            </div>
+        </div>
+    {/if}
+
+    {foreach $sender_types as $id => $s}
+        {if !is_string($s) && isset($s.content)}
+            <div id="{$id}-params"{if $params.type != $id} style="display:none"{/if} class="field-group transport-params">
+                {$s.content}
+            </div>
+        {/if}
+    {/foreach}
+
+    <div class="field-group">
+        <div class="field">
+            <div class="name">
+                <label for="is-dkim">DKIM</label>
+            </div>
+            <div class="value">
+                <div class="small float-right">[`<a target="_blank" href="http://www.webasyst.com/help/2024/mailer-dkim/">What is DKIM</a>`]</div>
+              	<div id="dkim-needs-email" class="small float-right" style="margin-right: 50px; display: none;">[`Please enter sender's email address to use DKIM.`]</div>
+
+                <label><input type="checkbox" name="params[dkim]" id="is-dkim" value="1"{if !empty($params.dkim)} checked{/if}{if empty($params.ssl_is_set) || empty($params.php_version_ok)} disabled{/if} /></label>
+                <input type="hidden" name="params[dkim_pvt_key]" value="{ifset($params.dkim_pvt_key)}" />
+                <input type="hidden" name="params[dkim_pub_key]" value="{ifset($params.dkim_pub_key)}" />
+            </div>
+            {if empty($params.ssl_is_set)}
+            <div class="value">
+                [`You need to install openssl php extention to use DKIM`]
+            </div>
+            {/if}
+            {if empty($params.php_version_ok)}
+            <div class="value">
+                [`You need PHP version 5.3 or higher to use DKIM. Your current version is:`] <b>{$params.php_version}</b>
+            </div>
+            {/if}
+        </div>
+        <div id="dkim-info"{if empty($params.dkim)} style="display:none;"{/if}>
+
+			<div class="field">
+				<p>
+					[`Add a new TXT record with this public DKIM key to the DNS zone of domain name`]
+					<span id="sender-domain-0">{ifset($sender.domain)}</span>
+				</p>
+            </div>
+			<div class="field">
+				<div class="name">[`Host`]</div>
+				<div class="value">
+					<code>
+						<span id="sender-dkim-selector">{ifempty($params.dkim_selector, 'key1')}</span>._domainkey.<span id="sender-domain">{ifset($sender.domain)}</span>
+                    </code>
+				</div>
+			</div>
+			<div class="field">
+				<div class="name">[`Record type`]</div>
+				<div class="value">
+					<code>TXT</code>
+				</div>
+			</div>
+			<div class="field">
+				<div class="name">[`Value`]</div>
+                <div class="value" style="word-wrap:break-word; width:500px;">
+					<code>
+						v=DKIM1; k=rsa; t=s; p=<span id="one-string-key">{ifset($sender.one_string_key)}</span>
+                    </code>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="hidden field">
+        <span class="errormsg"></span>
+    </div>
+</div>
+
+<div class="hidden buttons">
+    {if $show_delete_button}
+        <a href="javascript:void(0)" class="red hint delete-link float-right">[`Delete this sender`]</a>
+    {/if}
+
+    <input type="submit" class="button green" value="{if isset($sender.id)}[`Save`]{else}[`Add`]{/if}" />
+    <span> [`or`] </span>
+    <a href="#/senders/" class="cancel-link">[`cancel`]</a>
+</div>
+
+</form>
+
+<script>
+(function() { "use strict";
+    var form = $('#form-senders');
+
+    $("#transport-type").change(function () {
+        form.find('em.errormsg').remove();
+        form.find('.errormsg').parent().hide();
+        form.find('.error').removeClass('error');
+        $(".transport-params").hide();
+        $(".transport-params").find('input').attr('disabled', 'disabled');
+        $("#" + $(this).val() + "-params").show().find('input').removeAttr('disabled');
+        $('[data-sender="'+$(this).val()+'"]').show().siblings('.hint').hide();
+    }).trigger('change');
+
+    // Set up dialog buttons
+    var buttons = form.find('.buttons').children();
+    form.parents('.dialog').find('.dialog-buttons-gradient').empty().append(buttons);
+
+    // Cancel link closes dialog
+    buttons.filter('.cancel-link').click(function() {
+        form.parents('.dialog').trigger('close').empty().remove();
+        return false;
+    });
+
+    // Save button
+    buttons.filter('input').click(function() {
+        var loading = $('<i class="icon16 loading"></i>');
+        form.parents('.dialog').find('.dialog-buttons-gradient').append(loading);
+        form.find('em.errormsg').remove();
+        form.find('.errormsg').parent().hide();
+        form.find('.error').removeClass('error');
+
+        var port_input = form.find('[name="params[port]"]');
+        if (!$.trim(port_input.val())) {
+            port_input.val(port_input.attr('placeholder'));
+        }
+
+        $.post(form.attr('action'), form.serialize(), function(r) {
+            if (r.errors) {
+                loading.remove();
+                var other_errors = form.find('.errormsg:not(em)').empty().parent().show(), input;
+                for (var fld in r.errors) {
+                    if (r.errors.hasOwnProperty(fld)) {
+                        // Note: r.errors[fld] being null means that json_encode() failed to process a message
+                        // in other than UTF8 encoding. Most probably this is an error checking SMTP mailbox.
+                        input = $('[name="'+fld+'"]');
+                        if (input.length <= 0) {
+                            other_errors.append($('<em class="errormsg"></em>').text(r.errors[fld]||"[`Unknown error`]"));
+                            continue;
+                        }
+                        input.addClass('error').parent().append($('<em class="errormsg"></em>').text(r.errors[fld]||"[`Unknown error`]"));
+                    }
+                }
+            } else {
+                form.parents('.dialog').trigger('close').empty().remove();
+                {if empty($sender.id)}
+                    $.storage.set('mailer/settings/new_sender_id', ''+r.data);
+                {/if}
+                $.wa.mailer.redispatch();
+            }
+        }, 'json');
+    });
+
+    {if isset($sender.id)}
+        // Delete button
+        buttons.filter('.delete-link').click(function() {
+            if (!confirm("[`Do you really want to delete this sender?`]")) {
+                return;
+            }
+            $(this).attr('disabled', true).html('<i class="icon16 loading"></i>');
+            $.post('?module=senders&action=delete', { id: "{$sender.id}" }, function() {
+                form.parents('.dialog').trigger('close').empty().remove();
+                $.wa.mailer.redispatch();
+            });
+        });
+    {/if}
+
+    $('input[name="params[dkim]"]').change(function() {
+        var is_on = $(this).is(':checked');
+        if (is_on) {
+            if ($('input[name="params[dkim_pvt_key]"]').val()) {
+                $('#dkim-info').slideDown();
+            } else {
+                generateDkim();
+            }
+        } else {
+            $('#dkim-info').slideUp();
+        }
+    });
+    $('input[name="params[dkim_selector]"]').keyup(function() {
+        $('#sender-dkim-selector').text($(this).val());
+    });
+    var email_obj = $('input[name="data[email]"]'), email = $.trim(email_obj.val()), re = /[^@]+@[^@]+/;
+    if (!email || !re.test(email)) {
+        hideDkim();
+    }
+    email_obj.change(function() {
+        email = $.trim($(this).val());
+        if (re.test(email)) {
+            $('input[name="params[dkim]"]').removeAttr('disabled');
+			$('#dkim-needs-email').hide();
+            var e = email.split('@');
+            $('#sender-domain-0').text(e[1]);
+            $('#sender-domain').text(e[1]);
+            $('#sender-dkim-selector').text(getDkimSelector(email));
+        } else {
+            hideDkim();
+        }
+    });
+})();
+
+function hideDkim() {
+    $('input[name="params[dkim]"]').attr('checked', false).attr('disabled', true);
+	$('#dkim-needs-email').show();
+    $('#dkim-info').slideUp();
+}
+
+function generateDkim() {
+    var email = $.trim($('input[name="data[email]"]').val());
+
+//var e = getDkimSelector(' sefs ftghdfh 1231 ~~~ --- aaaaaaaaaa ');
+
+    $('input[name="params[dkim]"]').parent().after(' <i class="icon16 loading"></i>');
+    $.post('?module=senders&action=generateDkim', { email:email }, function(r) {
+        if (r.status == 'ok') {
+            $('input[name="params[dkim_pvt_key]"]').val(r.data.dkim_pvt_key);
+            $('input[name="params[dkim_pub_key]"]').val(r.data.dkim_pub_key);
+            $('#one-string-key').text(r.data.one_string_key);
+            $('#sender-domain-0').text(r.data.sender_domain);
+            $('#sender-domain').text(r.data.sender_domain);
+            $('#regenerate').show();
+            $('#dkim-info').slideDown();
+        }
+        $('input[name="params[dkim]"]').parent().parent().find('i.icon16').remove();
+    }, 'json');
+}
+
+function getDkimSelector(email) {
+    var e = email.split('@');
+    return e[0].replace(/[^a-zA-Z0-9]/g, '') + 'wamail';
+}
+</script>

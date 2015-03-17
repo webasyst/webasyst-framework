@@ -22,6 +22,7 @@ class waInstallerApps
     private static $cache_ttl;
     private $license;
     private $identity_hash;
+    private $beta;
     private $promo_id;
     private static $force;
 
@@ -216,6 +217,10 @@ class waInstallerApps
         $this->license = $license;
         /* identity hash */
         $this->identity_hash = self::getGenericConfig('identity_hash');
+        $this->beta = self::getGenericConfig('beta');
+        if (in_array($this->beta, array(true, '1', 1), true)) {
+            $this->beta = 'beta';
+        }
         $this->promo_id = self::getGenericConfig('promo_id');
         if (!$this->identity_hash) {
             $this->updateGenericConfig();
@@ -1206,6 +1211,7 @@ class waInstallerApps
 
     private function buildUrl(&$path)
     {
+        $original = $path;
         if (is_array($path)) {
             $is_url = true;
             foreach ($path as &$chunk) {
@@ -1214,7 +1220,7 @@ class waInstallerApps
             }
         } else {
             $is_url = preg_match('@^https?://@', $path);
-            if (($this->license || $this->identity_hash) && $is_url && $this->originalUrl($path)) {
+            if (($this->license || $this->identity_hash || $this->beta) && $is_url && $this->originalUrl($path)) {
                 $query = parse_url($path, PHP_URL_QUERY);
                 if ($this->license) {
                     $query = $query.($query ? '&' : '').'license='.$this->license;
@@ -1228,10 +1234,24 @@ class waInstallerApps
                 if ($domain = $this->getDomain()) {
                     $query = $query.($query ? '&' : '').'domain='.urlencode(base64_encode($domain));
                 }
-                if (preg_match('@/download/@', $path)) {
+                if (preg_match('@/(download|archive)/@', $path)) {
                     $query = $query.($query ? '&' : '').'signature='.urlencode(self::getServerSignature());
+
+                    if ($this->beta && preg_match('@/archive/@', $path)) {
+                        $path = preg_replace('@/(archive)/@', "/\$1/{$this->beta}/", $path, 1);
+                    }
                 }
+
+                if (preg_match('@/versions/\?@', $path)) {
+                    if ($this->beta) {
+                        $path = preg_replace('@/versions/\?@', "/versions/{$this->beta}/?", $path, 1);
+                    }
+                }
+
                 if (preg_match('@/updates/\?@', $path)) {
+                    if ($this->beta) {
+                        $path = preg_replace('@/updates/\?@', "/updates/{$this->beta}/?", $path, 1);
+                    }
                     parse_str($path, $raw);
                     if (!empty($raw['v']) && ($raw['v'] = array_filter($raw['v']))) {
                         $stack = debug_backtrace();

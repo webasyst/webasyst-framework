@@ -158,7 +158,7 @@
                             <div class="name">
                                 [`Price`]
                             </div>
-                            {if $theme.lease_price == 'free'}
+                            {if ifset($theme.lease_price) == 'free'}
                                 {* free to install on this particular installation (cloud) *}
                                 <div class="value">
                                     <strong>[`Free`]</strong>
@@ -168,7 +168,7 @@
                                     {if !empty($theme.compare_price)}<strike class="gray">{$theme.compare_price}</strike>&nbsp; {/if}
                                     <strong{if !empty($theme.compare_price)} class="highlighted"{/if}>{$theme.price}</strong>
                                 </div>
-                                {if $theme.lease_price}
+                                {if !empty($theme.lease_price)}
                                     <div class="value">
                                         [`or`]
                                     </div>
@@ -317,7 +317,7 @@
 
                 </div>
             </div>
-            {if $theme.screenshots}
+            {if !empty($theme.screenshots)}
                 <div class="i-screenshots">
                     {$screenshot = reset($theme.screenshots)}
                     {if $screenshot}

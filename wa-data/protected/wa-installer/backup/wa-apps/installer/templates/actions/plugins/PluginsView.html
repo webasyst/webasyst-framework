@@ -1,0 +1,103 @@
+{if !empty($messages)}
+    {foreach $messages as $message}
+        <div class="block double-padded i-message-{$message.result}">
+            {if $message.result == 'success'}<i class="icon16 yes"></i>
+            {elseif $message.result == 'fail'}
+            <i class="icon16 no"></i>
+            {/if}
+            {$message.text|escape}
+        </div>
+    {/foreach}
+{/if}
+
+{if !empty($top)}<h1>[`Popular plugins`]</h1>{/if}
+<p>
+    [`The following list of plugins is automatically updated from the Webasyst Store. Click on a plugin to install.`]
+    <br>
+    {sprintf('[`Or browse for all plugins in <a href="%s">Installer</a> app.`]', $wa_backend_url|cat:'installer/#/plugins/')}
+</p>
+
+<style>
+    .wa-plugins li { width: 220px; }
+    .wa-plugins li img { border: 1px solid #ccc; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); height: 110px; width: 200px; margin-bottom: 5px; }
+    .wa-plugins li p { font-size: 0.9em; margin-bottom: 10px; }
+    .wa-installed-label { color: #008000; display: inline-block; margin-left: -4px; padding: 2px 7px; }
+</style>
+
+<ul class="thumbs wa-plugins">
+{$installer = "`$wa_backend_url`installer/"}
+{$sort = -1000}{$_plugins=[]}
+{foreach $slug as $key}
+    {if !empty($apps[$key]['plugins'])}
+    {foreach $apps[$key]['plugins'] as $plugin_id => $plugin}
+    {if !isset($plugin.sort)}{$sort = $sort+1}{$plugin.sort=$sort}{/if}
+    {$_sort=$plugin.sort}
+
+    {capture assign="_plugin"}
+    <li{if !empty($plugin.installed)} class="i-installed"{/if}>
+        {$app = $apps[$key]}
+        <a href="{$installer}#/plugins/{$app['slug']}/{$plugin_id}/" data-href="{$installer}#/plugins%s/{$app['slug']}/{$plugin_id}/" class="js-item-link">
+            <!-- cover -->
+            <img src="{$plugin.icon}">
+
+            <!-- name & author -->
+            <h5>{$plugin.name|default:$plugin_id|escape|truncate:30}</h5>
+        </a>
+        {if $plugin.description}<p>{$plugin.description|escape}</p>{/if}
+
+        <!-- plugin price and status -->
+        {if empty($plugin.installed)}
+            {if $plugin.commercial}
+                {if $plugin.lease_price == 'free'}
+                    {* free to install on this particular installation (cloud) *}
+                    <strong class="black">[`Free`]</strong>
+                {else}
+                    {if !empty($plugin.compare_price)}
+                        <s class="gray">{$plugin.compare_price}</s>&nbsp;
+                        <strong class="highlighted black">{$plugin.price}</strong>
+                    {else}
+                        <strong class="black">
+                            {$plugin.price}
+                            {if $plugin.lease_price}
+                                [`or`] {sprintf('[`%s/mo`]',$plugin.lease_price)}
+                            {/if}
+                        </strong>
+                    {/if}
+                    {if !empty($plugin.purchased) && false}
+                        <form action="{$installer}?module=update&action=manager" method="post" class="js-installer js-confirm" data-confirm-text="{sprintf('[`Install "%s" plugin?`]',$plugin.name)|escape}" style="display: inline-block;">
+                            <input type="hidden" name="return_url" value="{$return_url|replace:'%plugin_id%':$plugin_id|escape}">
+                            <input type="hidden" name="install" value="1">
+                            <input type="hidden" name="app_id[{$plugin.slug}]" value="{$plugin.vendor}{if !empty($plugin.edition)}:{$plugin.edition}{/if}">
+                            <input type="submit" value="[`Install`]"{if empty($plugin.applicable)&&false} disabled="disabled"{/if}>
+                        </form>
+                    {/if}
+                {/if}
+            {else}
+                <strong class="black">[`Free`]</strong>
+                <form action="{$installer}?module=update&action=manager" method="post" class="js-installer js-confirm" data-confirm-text="{sprintf('[`Install "%s" plugin?`]',$plugin.name)|escape}" style="display: inline-block;">
+                    <input type="hidden" name="return_url" value="{$return_url|replace:'%plugin_id%':$plugin_id|escape}">
+                    <input type="hidden" name="install" value="1">
+                    <input type="hidden" name="app_id[{$plugin.slug}]" value="{$plugin.vendor}{if !empty($plugin.edition)}:{$plugin.edition}{/if}">
+                    <input type="submit" value="[`Install`]"{if empty($plugin.applicable)&&false} disabled="disabled"{/if}>
+                </form>
+            {/if}
+        {else}
+            <em class="wa-installed-label"><i class="icon10 yes"></i> [`Installed`]</em>
+        {/if}
+
+    </li>
+    {/capture}
+    {$_plugins[$_sort]=$_plugin}
+
+  {/foreach}
+  {/if}
+ {foreachelse}
+ {/foreach}
+    {if empty($_plugins)}
+        <p class="align-center gray">[`No plugins were found.`]</p>
+    {else}
+    <!-- {ksort($_plugins)} -->
+    {implode("",$_plugins)}
+    {/if}
+ </ul>
+<div class="clear"></div>

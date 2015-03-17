@@ -24,7 +24,7 @@ class contactsPhotoDeleteController extends waJsonController
             $history->save('/contact/'.$id, null, null, '--');
         }
 
-        $this->response = array('done' => 1);
+        $this->response = array('done' => 1, 'url' => $contact->getPhoto());
     }
 
     protected function getId()

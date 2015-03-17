@@ -20,7 +20,7 @@ class installerAppsRemoveAction extends waViewAction
     private $apps;
     private $options = array(
         'log'    => false,
-        'config' => false,
+        'config' => true,
     );
 
     public function execute()
@@ -134,4 +134,3 @@ class installerAppsRemoveAction extends waViewAction
         return $name;
     }
 }
-//EOF

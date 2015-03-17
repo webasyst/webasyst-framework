@@ -96,7 +96,10 @@
                     <div class="value">
                         <ul class="i-image-select">
                             {foreach $backgrounds as $b}
-                                <li{if isset($image) && empty($image) && $settings.auth_form_background == "stock:`$b`"} class="selected"{/if} title="{$b|escape}"><a href="#" data-value="stock:{$b|escape}"><img src="{$wa_url}wa-content/img/backgrounds/thumbs/{$b}" alt="{$b}"></a></li>
+                                <li{if $settings.auth_form_background == "stock:`$b`"} class="selected"{/if} title="{$b|escape}"><a href="#" data-value="stock:{$b|escape}"><img src="{$wa_url}wa-content/img/backgrounds/thumbs/{$b}" alt="{$b}"></a></li>
+                            {/foreach}
+                            {foreach $images as $i}
+                                <li {if $settings.auth_form_background == $i} class="selected"{/if} title="{$i|escape}"><a href="#" data-value="{$i|escape}"><img src="{$images_url}/{$i}?t={filemtime("`$images_path`/`$i`")}" alt="{$i}"></a></li>
                             {/foreach}
                         </ul>
                         <input type="hidden" name="auth_form_background_thumb" value="">
@@ -105,7 +108,7 @@
                         <input type="file" name="auth_form_background"><br>
                         {if $settings.auth_form_background}
                             {if isset($image) && $image}
-                                <img src="{$wa_url}wa-data/public/webasyst/{$settings.auth_form_background}" style="max-width: 500px;" alt="{$settings.auth_form_background|escape}">
+                                <img src="{$wa_url}wa-data/public/webasyst/{$image.file_name}?t={$image.file_mtime}" style="max-width: 500px;" alt="{$image.file_name|escape}">
                                 <br>
                                 <span class="hint">{$image.width}&times;{$image.height}, {$image.file_size|wa_format_file_size:'%0.0f':'[`B,KB,MB`]'}</span>
                                 <a class="small" href="?module=settings&amp;action=remove&amp;setting[]=auth_form_background&amp;setting[]=auth_form_background_stretch" onClick="return confirm(this.title);" title="[`Delete authorization form background image?`]">[`Delete`]</a>
@@ -116,7 +119,7 @@
                     </div>
                     {if $settings.auth_form_background}
 
-                    <div class="value">
+                    <div class="value" {if empty($image)} style="display: none;" {/if}>
                         <input type="checkbox" value="1" name="auth_form_background_stretch" id="installer-auth-stretch-background" {if $settings.auth_form_background_stretch}checked="checked"{/if}> <label for="installer-auth-stretch-background">[`Stretch to fill entire screen`]</label>
                     </div>
                     {/if}

@@ -1,0 +1,65 @@
+<h1>[`My subscriptions`]</h1>
+
+{if $just_confirmed}
+<p>[`Thanks for subscription!`]</p>
+{/if}
+
+{if $just_subscribed_again}
+<p>[`Thanks for subscription!`]</p>
+{/if}
+
+{if $just_updated}
+<p>[`Your subscription list successfully updated.`]</p>
+{/if}
+
+{if $just_unsubscribed || $unsubscriber}
+<p>[`You are unsubscribed from all mailing campaigns.`]</p>
+{/if}
+
+<form action="{$wa->getUrl('mailer/frontend/mySubscriptions')}" method="post">
+
+{if $unsubscriber}
+    <div class="block fields">
+        <div class="field-group">
+            <div class="field">
+                <div class="value">
+                    <div class="value"><input class="button" value="[`Subscribe again`]" type="submit" name="subscribe_again"/></div>
+                </div>
+            </div>
+        </div>
+    </div>
+{else}
+    {if $subscriptions}
+    <div class="block fields">
+        <p>[`Select emailing campaigns you would like to participate in:`]</p>
+        <div class="field-group" style="padding-bottom: 10px;">
+            {foreach $subscriptions as $subscription}
+            <div class="field">
+                <div class="value">
+                    <input type="checkbox" name="list[]" value="{$subscription.subscription_info.list_id}" id="subscription-{$subscription.subscription_info.list_id}" {if $subscription.subscribed}checked{/if}/>
+                    <label for="subscription-{$subscription.subscription_info.list_id}">{$subscription.subscription_info.list_name}</label>
+                </div>
+            </div>
+            {/foreach}
+        </div>
+        <div class="field-group">
+            <div class="field">
+                <div class="value"><input class="button" value="[`Save`]" type="submit" name="update_subscriptions"/></div>
+            </div>
+        </div>
+    </div>
+    {/if}
+
+    <div class="block fields">
+        <div class="field-group">
+            <div class="field">
+                <div class="value"><input class="button" value="[`Unsubscribe from all mailings`]" type="submit" name="unsubscribe_from_all"/></div>
+            </div>
+        </div>
+    </div>
+{/if}
+
+{$wa->csrf()}
+</form>
+
+{$wa->globals('isMyAccount', true)}

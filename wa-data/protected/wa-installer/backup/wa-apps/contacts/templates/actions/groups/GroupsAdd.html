@@ -1,0 +1,60 @@
+<h2>[`Add users to groups`]</h2>
+<div style="margin:2em 0 0 0">
+    {if $groups}
+        [`Select groups:`]
+        <ul class="menu-v compact with-icons c-checkbox-menu">
+            {foreach $groups as $g}
+                <li>
+                    <label>
+                        <input type="checkbox" value="{$g.id}" />
+                        {$g.name|escape}
+                    </label>
+                </li>
+            {/foreach}
+        </ul>
+    {else}
+        <p>[`No user groups.`]</p>
+    {/if}
+    <br/><a href="#/groups/create/" class="no-underline c-add-group-link"><i class="icon16 add"></i> [`New group`]</a>
+</div>
+<script type="text/javascript">
+$(function() {
+
+    // init checklist
+    $.wa.contactEditor.initCheckboxList('#c-d-add-to-group .c-checkbox-menu');
+
+    $('#c-d-add-to-group').children().wrapAll('<form id="c-add-contacts-group">');
+
+    // disable submit when there's no lists selected and no name entered
+    btnControl = function() {
+        if ($('#c-d-add-to-group .c-checkbox-menu input:checkbox:checked:not(:disabled)').size() > 0) {
+            $('#c-d-add-to-group .dialog-buttons-gradient input.button').attr('disabled', false);
+        } else {
+            $('#c-d-add-to-group .dialog-buttons-gradient input.button').attr('disabled', true);
+        }
+    };
+    $('.c-checkbox-menu li input:checkbox', $('#c-d-add-to-group')).die('change').live('change', btnControl);
+
+    $('#c-d-add-to-group .dialog-buttons-gradient').empty().append(
+        $('<input type="submit" class="button blue" value="[`Add`]" disabled="disabled">')
+    ).append(' [`or`] ').append(
+        $('<a href="#" class="inline-link"><b><i>[`cancel`]</i></b></a>').click($.wa.dialogHide)
+    );
+    $('#c-add-contacts-group').submit(function() {
+        var ids = [];
+        $('#c-d-add-to-group .c-checkbox-menu input[type="checkbox"]:checked').each(function(i, cb) {
+            var v = $(cb).val();
+            if (v) {
+                ids.push(v);
+            }
+        });
+        if (ids.length <= 0) {
+            alert('Error: no groups selected.');
+            return false;
+        }
+        $.wa.controller.addToGroup(ids);
+        $.wa.dialogHide();
+        return false;
+    });
+});
+</script>

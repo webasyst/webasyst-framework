@@ -256,10 +256,12 @@
 
                     <nav>
                         <ul class="menu-h">
-                            <li class="selected" {if !count($app.pages)} style="display:none;"{/if}><a href="{$current_url}">[`Overview`]</a></li>
+                            <li class="selected" {if empty($app.pages)} style="display:none;"{/if}><a href="{$current_url}">[`Overview`]</a></li>
+                            {if !empty($app.pages)}
                             {foreach $app.pages as $page}
                             <li title="{$page.title|escape}"><a href="{$current_url}{$page.url|escape}/">{$page.name|escape}</a></li>
                             {/foreach}
+                            {/if}
                             {if !empty($app.reviews.url)}
                                 <li><a href="{$app.reviews.url}" target="_blank">[`Reviews`] <span class="hint">{$app.reviews.count|escape}</span> <i class="icon10 new-window"></i></a></li>
                             {/if}
@@ -268,7 +270,7 @@
 
                 </div>
             </div>
-            {if $app.screenshots}
+            {if !empty($app.screenshots)}
             <div class="i-screenshots">
                 {$screenshot = reset($app.screenshots)}
                 {if $screenshot}
@@ -292,13 +294,14 @@
         <section class="i-description" id="tab-{$app.slug|escape}-info">
             <p>{$app.description}</p>
         </section>
-
+        {if !empty($app.pages)}
         {foreach $app.pages as $page}
             <section id="tab-{$app.slug|escape}-{$page.url|escape}" style="display:none;">
                 <h2>{$page.title|escape}</h2>
                 {$page.content}
             </section>
         {/foreach}
+        {/if}
 
 
         {*

@@ -61,4 +61,3 @@ class installerConfig extends waAppConfig
         parent::setCount($n);
     }
 }
-//EOF

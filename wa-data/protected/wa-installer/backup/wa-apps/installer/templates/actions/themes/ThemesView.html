@@ -1,0 +1,213 @@
+{capture assign="installed_format"}[`Theme “%s” is installed, but not used by any apps. To start using this theme, apply it in your Site app's Routing settings.`]{/capture}
+{capture assign="used_format"}[`Theme %s is now in use on`]{/capture}
+{$dialogs = array()}
+<div class="wa-themes-installed" style="background: rgba(0,0,0,0.15);">
+
+    <h5 class="wa-themes-group">[`Installed design themes`]</h5>
+    
+    <ul class="thumbs li250px">
+
+        {foreach $themes as $theme}
+            {if $theme.path}
+            <li>
+                <a href="#/themes/{$theme.id}" class="js-theme-info">
+                    <div class="wa-theme-cover">
+                        {if !empty($theme.cover)}
+                            <img src="{$theme.cover}" />
+                        {else}
+                            <span class="hint">[`No thumbnail available`]</span>
+                        {/if}
+                        {if !empty($theme.used)}
+                            <div class="wa-in-use-badge">
+                                {* remove duplicate route URLs which could be due to desktop and mobile theme settings *}
+                                {$_routes = array()}
+                                {foreach $theme.used as $_url}{$_routes[ $_url.domain|cat:'/'|cat:str_replace('*','',$_url.url) ] = 1}{/foreach}
+                                {* display the list of URLs where this theme is in use *}
+                                {foreach $_routes as $_url => $_dummy}
+                                    {$_url|truncate:23:'...':false:true}<br>
+                                {/foreach}
+                            </div>
+                        {/if}
+                    </div>
+                    <h5 class="wa-theme-name">{$theme.name|escape}</h5>
+                </a>
+                {if !empty($theme.used)}
+                    <em class="wa-theme-installed"><i class="icon10 yes"></i> <b>[`In use`]</b></em>
+                {else}
+                    <span class="wa-theme-not-in-use">[`Not in use`]</span>
+                {/if}
+                
+                {if !empty($theme.used)}
+                    
+                    {capture append="dialogs"}
+                        <div class="dialog width400px" id="wa-theme-use-dialog-{$theme.id}">
+                            <div class="dialog-background"> </div>
+                            <div class="dialog-window">
+                                <form>
+                                    <div class="dialog-content">
+                                        <div class="dialog-content-indent">
+                                            <h1 id="wa-dialog-title">{$theme.name|escape}</h1>
+                                            {capture name="format"}[`Theme %s is now in use on`]{/capture}
+                                            {sprintf($used_format,$theme.name)|escape}
+                                            <ul class="menu-v">
+                                            {foreach $theme.used as $url}
+                                                {if !$url.met}
+                                                    <li><a href="{$url.preview}" class="inline" target="_blank">{$url.preview|truncate:50:'...':false:true}</a><i class="icon10 new-window"></i></li>
+                                                {/if}
+                                            {/foreach}
+                                            </ul>
+                                        </div>
+                                        <div class="clear"></div>
+                                    </div>
+                                    <div class="dialog-buttons">
+                                        <div class="dialog-buttons-gradient">
+                                            <input type="submit" value="[s`Close`]" class="button close">
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    {/capture}
+                {else}
+                    <i class="icon10 settings"></i>
+                {/if}
+                
+            </li>
+            {/if}
+        {/foreach}
+    </ul>
+
+</div>
+
+<div class="wa-themes-from-the-store">
+
+    <h5 class="wa-themes-group">[`Get new themes from Webasyst Store`]</h5>
+    
+    <ul class="thumbs li250px">
+        {foreach $themes as $theme}
+            {if !$theme.path}
+            <li>
+                <a href="#/themes/{$theme.id}" class="js-theme-info">
+                    <div class="wa-theme-cover">
+                        {if !empty($theme.cover)}
+                            <img src="{$theme.cover}" />
+                        {else}
+                            <span class="hint">[`No thumbnail available`]</span>
+                        {/if}
+                    </div>
+                    <h5 class="wa-theme-name">{$theme.name|escape}</h5>
+                </a>
+                
+                {if !empty($theme.commercial)}
+                    {if true}
+                        {if !empty($theme.compare_price)}
+                            <strike class="wa-price">{$theme.compare_price}</strike>&nbsp;
+                            <strong class="highlighted">{$theme.price}</strong>
+                        {else}
+                            <span class="wa-price">
+                                {$theme.price}
+                            </span>
+                        {/if}
+                        <form id="js-theme-info-{$theme.id}" action="{$wa_backend_url}installer/#/themes/{$theme.id|escape}/" method="GET">
+                        </form>
+                    {elseif !empty($theme.purchase_link)}
+                        <form action="{$theme.purchase_link|default:''}" method="post" id="js-theme-buy-{$theme.id}">
+                            <strong>{$theme.payware.price.config|escape}</strong>
+                            {foreach $theme.inherited as $inherited}
+                                <input type="hidden" name="app_id[]" value="{$inherited.slug}{if !empty($theme.edition)}:{$theme.edition}{/if}">
+                            {/foreach}
+                            <input type="hidden" name="hash" value="{$identity_hash}">
+                            {if !empty($promo_id)}
+                                <input type="hidden" name="promo_id" value="{$promo_id|escape}">
+                            {/if}
+                        </form>
+                    {/if}
+                {else}
+                    <span class="wa-price free">
+                        [`Free`]
+                    </span>
+                    <form id="js-theme-install-{$theme.id}" action="{$wa_backend_url}installer/?module=update&action=manager" method="POST" title="{sprintf('[`Install theme "%s" for the %s app?`]',$theme.name,$app['name'])|escape}">
+                        <input type="hidden" name="return_url" value="{$return_url|replace:'%theme_id%':$theme.id|escape}">
+                        {foreach $theme.inherited as $inherited}
+                            <input type="hidden" name="app_id[{$inherited.slug}]" value="{$theme.vendor}{if !empty($theme.edition)}:{$theme.edition}{/if}">
+                        {/foreach}
+                        <input type="hidden" name="install" value="1">
+                    </form>
+                {/if}
+            </li>
+            {/if}
+        {/foreach}
+    </ul>
+    
+</div>
+
+{foreach $dialogs as $dialog_id => $dialog}
+    {$dialog}
+{/foreach}
+<div class="clear"></div>
+<script type="text/javascript">
+$("div.wa-themes ul li").on('click', 'a.js-theme-info', function () {
+    try {
+        var li = $(this).closest('li');
+        var theme_id = $(this).attr('href').replace(/^#\/themes\//,'');
+        var dialog = $('#wa-theme-use-dialog-' + theme_id);
+        var install = $('#js-theme-install-' + theme_id);
+        var buy = $('#js-theme-buy-' + theme_id);
+        var info = $('#js-theme-info-' + theme_id);
+        if(dialog.length) {
+            dialog.waDialog({
+                height: '100px',
+                onLoad: function () {
+                    if ($(this).hasClass('js-setup')) {
+                        var url = $('#wa-theme-routing-url');
+                        if (url.length) {
+                            var href = url.attr('href');
+                            $(this).find('form').attr('action', href);
+                        } else {
+//                            $(this).find(':submit').hide().next().hide();
+                        }
+                    }
+                    $(this).find('div.dialog-window').css('height', $(this).find('.dialog-content-indent').height() + 50 + 'px');
+                },
+                onSubmit: function (d) {
+                    if (!d.hasClass('js-setup')) {
+                        d.trigger('close');
+                        return false;
+                    }
+                }
+            });
+        } else if (li.find('.wa-theme-not-in-use').length) {
+            $('#wa-theme-start-using-dialog input[name="theme"]').val(theme_id);
+            $('#wa-theme-start-using-dialog input:submit').val($('#wa-theme-start-using-dialog input:submit').data('value').replace(/%THEME%/, li.find('h5.wa-theme-name').text()));
+            $('#wa-theme-start-using-dialog h1').html(li.find('h5.wa-theme-name').text());
+            $('#wa-theme-start-using-dialog').waDialog({
+                disableButtonsOnSubmit: true,
+                onSubmit: function () {
+                    $.post("?module=design&action=themeUse", $(this).serialize(), function (response) {
+                        if (response.status == 'ok') {
+                            location.hash = $('#wa-theme-start-using-dialog').data('url') + 'theme=' + theme_id;
+                            location.reload();
+                        } else {
+                            alert(response.errors);
+                        }
+                    }, "json");
+                    return false;
+                }
+            });
+        } else if (install.length){
+            var question = install.attr('title');
+            if(!question || confirm(question)) {
+                install.submit();
+            }
+        } else if (buy.length) {
+            buy.submit();
+        }else if (info.length) {
+            info.submit();
+        }
+        return false;
+    }catch(e){
+        console.log(e);
+    }
+    return false;
+});
+</script>

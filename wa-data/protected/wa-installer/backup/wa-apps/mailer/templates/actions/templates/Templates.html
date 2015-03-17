@@ -1,0 +1,128 @@
+<div class="sidebar right200px">
+    <div class="block m-editor-toolbar">
+        <div class="block">
+            <ul class="menu-v">
+                <li><a href="#/templates/add/"><i class="icon16 add"></i>[`New template`]</a></li>
+                <li><a id="import-template-link" href="#/templates/import/"><i class="icon16 import"></i>[`Import template`]</a></li>
+            </ul>
+        </div>
+
+        {if $templates && count($templates) >= 2}
+            <p class="hint">[`To change a template location in this list, simply drag it and drop.`]</p>
+        {/if}
+    </div>
+</div>
+<div class="content right200px"><div class="shadowed m-editor">
+    <div class="block double-padded">
+        <h1>[`Templates`]</h1>
+    </div>
+
+    {if $templates}
+        <ul id="template-list" class="templates-tiles">
+            {foreach from=$templates item=t}
+                <li rel="{$t.id}"><div class="wrapper">
+                    <div class="preview">
+                        {if $t.image}
+                            <img src="{$t.image}" alt="">
+                        {else}
+                            <div class="hidden iframe-preview-content">{$t.preview_content|escape}</div>
+                            <div class="no-image">
+                                <iframe scrolling="no"></iframe>
+                                <div class="catch-clicks"></div>
+                            </div>
+                        {/if}
+                    </div>
+                    <h3>{$t.subject|escape}</h3>
+                    {if $t.description}
+                        <div class="description">
+                            {$t.description|escape}
+                        </div>
+                    {/if}
+                </div></li>
+            {/foreach}
+        </ul>
+    {else}
+        <div class="block double-padded">
+            <p>[`You do not have any templates so far.`]</p>
+        </div>
+    {/if}
+    <div class="clear"></div>
+</div></div>
+
+<div id="import-dialog"></div>
+
+<script>(function() { "use strict";
+
+    var template_list = $('#template-list');
+
+    // Set up "with right sidebar" layout
+    $('#content').removeClass('shadowed').removeClass('blank');
+
+    // Set up preview iframes
+    var loadIframeContent = function(ifrm, content) {
+        ifrm = (ifrm.contentWindow) ? ifrm.contentWindow : (ifrm.contentDocument.document) ? ifrm.contentDocument.document : ifrm.contentDocument;
+        ifrm.document.open();
+        ifrm.document.write(content);
+        ifrm.document.close();
+    };
+    template_list.find('.iframe-preview-content').each(function() {
+        var content = $(this);
+        var iframe = content.parent().find('iframe');
+        loadIframeContent(iframe[0], content.text());
+    });
+
+    // Click on a template opens editor
+    template_list.on('click', 'li', function() {
+        if (just_dragged) {
+            return false;
+        }
+        window.location.hash = '#/template/'+$(this).attr('rel')+'/';
+    });
+
+    // Import dialog
+    $('#import-template-link').click(function() {
+        $('#import-dialog').waDialog({
+            buttons: $('<div></div>').append(
+                            $('<input type="submit" class="button" value="[`Cancel`]">').click(function() {
+                                $(this).parents('.dialog').trigger('close');
+                                return false;
+                            })
+                        ),
+            url: '?module=templates&action=import1'
+        });
+        return false;
+    });
+
+    // Make templates draggable
+    var just_dragged = false;
+    template_list.sortable({
+        tolerance: 'pointer',
+        update: function(evt, ui) {
+            var data = [], i = 1;
+            template_list.children('li').each(function() {
+                data.push('values['+$(this).attr('rel')+']='+i);
+                i++;
+            });
+            $.post('?module=templates&action=sort', data.join('&'));
+        },
+        stop: function(evt, ui) {
+            // Iframes cannot be moved across DOM without losing their content.
+            // So we have to fill the content in again after every update.
+            var iframe = ui.item.find('iframe');
+            if (iframe.length > 0) {
+                loadIframeContent(iframe[0], ui.item.find('.iframe-preview-content').text());
+            }
+
+            // Flat to prevent click events in Firefox
+            just_dragged = true;
+            window.setTimeout(function() {
+                just_dragged = false;
+            }, 100);
+        }
+    }).disableSelection();
+
+    // Number of templates in sidebar
+    $('#templates-list-item .count').text({count($templates)});
+
+    $.wa.mailer.setTitle();
+})();</script>

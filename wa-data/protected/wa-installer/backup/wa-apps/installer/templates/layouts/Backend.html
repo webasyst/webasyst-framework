@@ -1,0 +1,134 @@
+<!DOCTYPE html><html>
+{block name='init'}{/block}
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>{$title|default:$wa->appName()} — {$wa->accountName()}</title>
+    
+    {$wa->css()}
+    <link href="{$wa_app_static_url}css/installer.css?v={$wa->version()}" rel="stylesheet" type="text/css">
+    <link href='//fonts.googleapis.com/css?family=PT+Sans+Caption:400,700' rel='stylesheet' type='text/css'>
+
+    <script src="{$wa_url}wa-content/js/jquery/jquery-1.7.1.min.js" type="text/javascript"></script>
+    {wa_js file="js/installer-jquery.min.js"}
+    
+        {$wa_url}wa-content/js/jquery-wa/wa.core.js
+        {$wa_url}wa-content/js/jquery-wa/wa.dialog.js
+    
+        {$wa_url}wa-content/js/jquery-plugins/jquery.history.js
+        {$wa_url}wa-content/js/jquery-plugins/jquery.store.js
+        {$wa_url}wa-content/js/jquery-ui/jquery.ui.core.min.js
+        {$wa_url}wa-content/js/jquery-ui/jquery.ui.widget.min.js
+        {$wa_url}wa-content/js/jquery-ui/jquery.ui.mouse.min.js
+        {$wa_url}wa-content/js/jquery-ui/jquery.ui.sortable.min.js
+        {$wa_url}wa-content/js/jquery-ui/jquery.ui.position.min.js
+    {/wa_js}
+    {if empty($no_ajax)}
+    <script src="{$wa_app_static_url}js/layout.js?v={$wa->version()}" type="text/javascript"></script>
+    {/if}
+    {$wa->js()}
+    {block name='head-js'}{/block}
+    {if empty($no_ajax)}
+    <script type="text/javascript">
+        $.layout.init({
+            default_query:{
+                plugins:'{$default_query.plugins|default:''}'
+            }
+        });
+    </script>
+    {/if}
+</head>
+
+<body>
+    <div id="wa">
+        {$wa->header()}
+
+        <div id="wa-app">
+
+            <!-- NAV SIDEBAR -->
+            {if 1}
+                <div class="sidebar left200px">
+                  <div class="i-sidebar">
+                    <div class="block">
+                      <ul class="menu-v with-icons">
+{*
+                        <li{if $module eq 'backend'} class="selected"{/if}>
+                            <a href="./#/:page=default/" class="bold">
+                                <i class="icon16 star"></i>[`Editor’s choice`]
+                            </a>
+                        </li>
+*}
+                        <li>
+                            <a href="./#/apps/">
+                                <i class="icon16 apps"></i>[`Applications`]
+                            </a>
+                        </li>
+                        <li>
+                            <a href="./#/plugins/{$default_query.plugins}/">
+                                <i class="icon16 plugins"></i>[`Plugins`]
+                            </a>
+                        </li>
+                        <li>
+                            <a href="./#/themes/">
+                                <i class="icon16 palette"></i>[`Themes`]
+                            </a>
+                        </li>
+                      </ul>
+                    </div>
+
+
+                    {block name='sidebar'}
+
+                    {/block}
+
+                    <div class="hr"></div>
+
+                    <div class="block">
+                      <ul class="menu-v with-icons">
+                        <li{if $module eq 'update'} class="selected"{/if}>
+                            {if isset($update_counter) && $update_counter}<span class="count indicator red">{$update_counter}</span>{/if}
+                            <a href="?module=update">
+                                <i class="icon16 update"></i>[`Updates`]
+                            {if $module == 'update'}
+                                <i id="menu-item-selected-state-icon" style="margin-left: 0;"></i>
+                            {/if}
+                            </a>
+                        </li>
+                        <li{if $module eq 'settings'} class="selected"{/if}>
+                            <a href="?module=settings">
+                                <i class="icon16 settings"></i>[`Settings`]
+                            </a>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+            {/if}
+
+            <!-- CONTENT -->
+            <div class="content{if 1} left200px{/if}" id="i-list">
+                {if !empty($messages)}
+                {foreach $messages as $message}
+                <div class="block double-padded i-message-{$message.result}">
+                    {if $message.result == 'success'}<i class="icon16 yes"></i>
+                    {elseif $message.result == 'fail'}
+                    <i class="icon16 no"></i>
+                    {/if}
+                    {$message.text|escape}
+                </div>
+                {/foreach}
+                {/if}
+                
+                {block name='content'}
+                    {$content}
+                {/block}
+
+            </div>
+
+        </div><!-- #wa-app -->
+
+    </div><!-- #wa -->
+
+</body>
+
+</html>

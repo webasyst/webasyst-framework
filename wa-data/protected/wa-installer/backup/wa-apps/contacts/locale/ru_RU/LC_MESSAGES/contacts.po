@@ -1,0 +1,1311 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: WebAsyst\n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: 2014-08-28 15:28+0400\n"
+"Last-Translator: VNT <vntuporshin@arhost.ru>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=((((n%10)==1)&&((n%100)!=11))?(0):(((((n%10)>=2)&&((n%10)<=4))&&(((n%100)<10)||((n%100)>=20)))?(1):2));\n"
+"X-Poedit-Language: Russian\n"
+"X-Poedit-Country: Russian Federation\n"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-Basepath: .\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPath-1: .\n"
+
+msgid "Contacts"
+msgstr "Контакты"
+
+msgid "Users"
+msgstr "Пользователи"
+
+msgid "Reports"
+msgstr "Отчёты"
+
+msgid "View"
+msgstr "Вид"
+
+msgid "Settings"
+msgstr "Настройки"
+
+msgid "Actions"
+msgstr "Действия"
+
+msgid "Add to group"
+msgstr "Добавить в группу"
+
+msgid "No contacts were merged"
+msgstr "Контакты не были объединены"
+
+msgid "All contacts"
+msgstr "Все контакты"
+
+msgid "%s of %s contacts have been merged"
+msgstr "%s из %s контактов были объединены"
+
+msgid "contact"
+msgid_plural "contacts"
+msgstr[0] "контакт"
+msgstr[1] "контакта"
+msgstr[2] "контактов"
+
+msgid "Delete selected"
+msgstr "Удалить выбранные"
+
+msgid "Merge selected"
+msgstr "Объединить выбранные"
+
+msgid "Contacts:"
+msgstr "Контактов:"
+
+msgid "Pages:"
+msgstr "Страниц:"
+
+msgid "Import"
+msgstr "Импорт"
+
+msgid "Loading..."
+msgstr "Загрузка..."
+
+msgid "Back"
+msgstr "Назад"
+
+msgid "Save"
+msgstr "Сохранить"
+
+msgid "Cancel"
+msgstr "Отменить"
+
+msgid "cancel"
+msgstr "отменить"
+
+msgid "Online"
+msgstr "Онлайн"
+
+msgid "Offline"
+msgstr "Офлайн"
+
+msgid "Status"
+msgstr "Статус"
+
+msgid "Import results"
+msgstr "Результаты импорта"
+
+msgid "Search results"
+msgstr "Результаты поиска"
+
+msgid "Advanced search"
+msgstr "Расширенный поиск"
+
+msgid "Groups"
+msgstr "Группы"
+
+msgid "search by name or email"
+msgstr "поиск по имени или email"
+
+msgid "no name"
+msgstr "без имени"
+
+msgid "At least one of these fields must be filled"
+msgstr "Хотя бы одно из этих полей должно быть заполнено"
+
+msgid "Forms"
+msgstr "Формы"
+
+msgid "Duplicates"
+msgstr "Дубликаты"
+
+msgid "Plugins"
+msgstr "Плагины"
+
+msgid "Delete contacts"
+msgstr "Удалить контакты"
+
+msgid "Delete anyway"
+msgstr "Удалить всё равно"
+
+msgid "Contact deletion cannot be undone."
+msgstr "Контакты будут удалены без возможности восстановления."
+
+msgid "or"
+msgstr "или"
+
+msgid "OR"
+msgstr "ИЛИ"
+
+msgid "Added"
+msgstr "Добавил"
+
+msgid "Author"
+msgstr "Автор"
+
+msgid "Method"
+msgstr "Метод"
+
+msgid "Application"
+msgstr "Приложение"
+
+msgid "Select users you want to add to this group:"
+msgstr "Выберите пользователей, которых вы хотите включить в группу:"
+
+msgid "Included"
+msgstr "Включены"
+
+msgid "Not included"
+msgstr "Не включены"
+
+msgid "New user group"
+msgstr "Новая группа пользователей"
+
+msgid "<no name>"
+msgstr "<без названия>"
+
+msgid "All users"
+msgstr "Все пользователи"
+
+msgid "no access"
+msgstr "нет доступа"
+
+msgid "No access"
+msgstr "Нет доступа"
+
+msgid "custom"
+msgstr "настроенный"
+
+msgid "Limited"
+msgstr "Ограниченный"
+
+msgid "Customize"
+msgstr "Настроить"
+
+msgid "full access"
+msgstr "полный доступ"
+
+msgid "Full access"
+msgstr "Полный доступ"
+
+msgid "Selected"
+msgstr "Выбранные"
+
+msgid "Not selected"
+msgstr "Не выбранные"
+
+msgid "Select categories for this contact:"
+msgstr "Выберите категории для данного контакта:"
+
+msgid "none"
+msgstr "нет"
+
+msgid "Delete this contact"
+msgstr "Удалить этот контакт"
+
+msgid "Access rights for group &ldquo;%s&rdquo;"
+msgstr "Права доступа для группы &laquo;%s&raquo;"
+
+msgid "Saved"
+msgstr "Сохранено"
+
+msgid "Yes"
+msgstr "Да"
+
+msgid "No"
+msgstr "Нет"
+
+msgid "Can add contacts"
+msgstr "Может добавлять контакты"
+
+msgid "no categories"
+msgstr "нет категорий"
+
+msgid "Delete user account"
+msgstr "Удалить аккаунт пользователя"
+
+msgid "Or upload file (JPG, GIF or PNG):"
+msgstr "Или загрузить файл (JPG, GIF или PNG):"
+
+msgid "Can not set &ldquo;No access&rdquo; because some access rights are inherited from groups. To revoke access rights, customize group settings or group membership for this user."
+msgstr "Нельзя установить &laquo;Нет доступа&raquo;, потому что некоторые права доступа унаследованы от групп. Для лишения прав доступа, измените настройки групп или вхождение данного пользователя в группы."
+
+msgid "This access level is inherited from groups. To change you must customize these group settings or group membership for this user."
+msgstr "Этот уровень доступа унаследован от групп. Для изменения необходимо изменить настройки этих групп или вхождение данного пользователя в группы."
+
+msgid "Select access level"
+msgstr "Выберите уровень доступа"
+
+msgid "Delete"
+msgstr "Удалить"
+
+msgid "delete"
+msgstr "удалить"
+
+msgid "Send"
+msgstr "Отправить"
+
+msgid "Export"
+msgstr "Экспорт"
+
+msgid "Merge"
+msgstr "Объединить"
+
+msgid "Add to list"
+msgstr "Добавить в список"
+
+msgid "Add contacts to categories"
+msgstr "Добавить контакты в категории"
+
+msgid "Actions with selected"
+msgstr "Действия с выбранными"
+
+msgid "prev"
+msgstr "пред"
+
+msgid "next"
+msgstr "след"
+
+msgid "&lt;no name&gt;"
+msgstr "&lt;без названия&gt;"
+
+msgid "&lt;none&gt;"
+msgstr "&lt;нет&gt;"
+
+msgid "Access"
+msgstr "Доступ"
+
+msgid "Administrator"
+msgstr "Администратор"
+
+msgid "All customers"
+msgstr "Все покупатели"
+
+msgid "Are you sure you want to delete this form?"
+msgstr "Вы уверены, что хотите удалить эту форму?"
+
+msgid "Checking links to other applications..."
+msgstr "Поиск связей с другими приложениями..."
+
+msgid "Contacts will not be deleted."
+msgstr "Сами контакты не будут удалены."
+
+msgid "Customize access"
+msgstr "Настроить доступ"
+
+msgid "Delete category"
+msgstr "Удалить категорию"
+
+msgid "Delete group"
+msgstr "Удалить группу"
+
+msgid "Edit"
+msgstr "Редактировать"
+
+msgid "edit search"
+msgstr "изменить параметры поиска"
+
+msgid "Facebook"
+msgstr "Facebook"
+
+msgid "Flickr"
+msgstr "Flickr"
+
+msgid "Internet"
+msgstr "Интернет"
+
+msgid "Limited access"
+msgstr "Ограниченный доступ"
+
+msgid "Must be a number."
+msgstr "Должно быть числом."
+
+msgid "Incorrect Email address format."
+msgstr "Неправильный формат Email адреса."
+
+msgid "Incorrect URL format."
+msgstr "Неправильный формат URL."
+
+# Person name
+msgid "Name"
+msgstr "Имя"
+
+msgid "No contacts will be deleted."
+msgstr "Контакты не будут удалены."
+
+msgid "other"
+msgstr "другой"
+
+msgid "Page not found"
+msgstr "Страница не найдена"
+
+msgid "Pages"
+msgstr "Страницы"
+
+msgid "Photo"
+msgstr "Фото"
+
+msgid "Picasa"
+msgstr "Picasa"
+
+msgid "Remove selected"
+msgstr "Удалить выбранные"
+
+msgid "required"
+msgstr "обязательное"
+
+msgid "Sort by"
+msgstr "Сортировка"
+
+msgid "This field is required."
+msgstr "Это поле обязательное."
+
+msgid "WebAsyst Contacts"
+msgstr "WebAsyst Контакты"
+
+msgid "which?"
+msgstr "какой?"
+
+msgid "contact deleted"
+msgid_plural "contacts deleted"
+msgstr[0] "контакт удалён"
+msgstr[1] "контакта удалено"
+msgstr[2] "контактов удалено"
+
+msgid "Recently added"
+msgstr "Недавно добавлены"
+
+msgid "Recent searches"
+msgstr "Недавние поиски"
+
+msgid "clear"
+msgstr "очистить"
+
+msgid "logout"
+msgstr "выход"
+
+msgid "Change photo"
+msgstr "Изменить фото"
+
+msgid "not set"
+msgstr "не установлено"
+
+# Contact import
+msgid "Enable validation control (required and unique fields and data format)"
+msgstr "Включить проверку данных (обязательные и уникальные поля, а также формат данных)"
+
+msgid "Error description"
+msgstr "Описание ошибки"
+
+msgid "This line was not imported"
+msgstr "Эта строка не была импортирована"
+
+msgid "Error details shown in columns"
+msgstr "Описание ошибок приведено в колонках"
+
+msgid "Invalid format"
+msgstr "Недопустимый формат"
+
+msgid "This field does not allow duplicates"
+msgstr "Дубликаты недопустимы для этого поля"
+
+msgid "This field is required"
+msgstr "Это поле обязательное"
+
+msgid "One of these fields must have a value"
+msgstr "Одно из этих полей должно иметь значение"
+
+# error message when layout is not found
+msgid "No view selected."
+msgstr "Вид не установлен."
+
+# Sidebar button
+msgid "New contact"
+msgstr "Новый контакт"
+
+# Sidebar header
+msgid "User groups"
+msgstr "Группы пользователей"
+
+# Sidebar stub
+msgid "no groups"
+msgstr "нет групп"
+
+# Alt text for photo on contact page
+msgid "No photo"
+msgstr "Нет фотографии"
+
+# Tab header on a contact page
+msgid "Create user account"
+msgstr "Создать аккаунт пользователя"
+
+# Tab header on a contact page
+msgid "Contact"
+msgstr "Контакт"
+
+# Tab header on a contact page
+msgid "User"
+msgstr "Пользователь"
+
+# Link on a contact page
+msgid "Field constructor"
+msgstr "Конструктор полей"
+
+# Used in access control interfaces on user tab and group rights page
+msgid "NOTE:"
+msgstr "Внимание:"
+
+# Used in a delete confirmation dialog
+msgid "IMPORTANT NOTE:"
+msgstr "ВНИМАНИЕ:"
+
+# Field on user tab on a contact page
+msgid "Login"
+msgstr "Логин"
+
+# Field on user tab on a contact page
+msgid "Password"
+msgstr "Пароль"
+
+# Field on user tab on a contact page
+msgid "Confirm password"
+msgstr "Подтверждение пароля"
+
+# Link on user tab on a contact page
+msgid "change password"
+msgstr "изменить пароль"
+
+# Personal profile menu item
+msgid "Change password"
+msgstr "Изменить пароль"
+
+# Field on user tab on a contact page
+msgid "New password"
+msgstr "Новый пароль"
+
+# user tab
+msgid "never logged in"
+msgstr "никогда не входил в систему"
+
+# user tab
+msgid "last login"
+msgstr "последний вход"
+
+# user tab
+msgid "Belongs to groups"
+msgstr "Принадлежит к группам"
+
+# user tab
+msgid "customize groups"
+msgstr "настроить группы"
+
+# Shown instead of select box in access rights control on user tab
+msgid "Full access is inherited from groups."
+msgstr "Полный доступ унаследован от групп."
+
+# Validation error on user tab
+msgid "Login is required."
+msgstr "Логин обязателен."
+
+# Delete user confirmation dialog header
+msgid "Are you sure?"
+msgstr "Вы уверены?"
+
+# Delete user confirmation dialog explanation
+msgid "Contact will not be deleted, but the user won't be able to log in anymore."
+msgstr "Контакт не будет удален, но пользователь больше не сможет входить в систему."
+
+# Validation error on user tab
+msgid "Passwords do not match."
+msgstr "Пароли не совпадают."
+
+# Add selected contacts to category error, when there are no categories
+msgid "No categories available"
+msgstr "Нет ни одной доступной категории"
+
+# Group or category name; colon is included into string to distinguish from person name
+msgid "Name:"
+msgstr "Название:"
+
+# Category editor header (followed by a category name)
+msgid "Edit category &ldquo;%s&rdquo;"
+msgstr "Редактирование категории &laquo;%s&raquo;"
+
+# Category editor header
+msgid "New category"
+msgstr "Новая категория"
+
+# Contact photo dialog button
+msgid "Delete photo"
+msgstr "Удалить фото"
+
+# Group editor header (followed by a group name)
+msgid "Edit group &ldquo;%s&rdquo;"
+msgstr "Редактирование группы &laquo;%s&raquo;"
+
+# User tab validation error
+msgid "This login is already in use."
+msgstr "Такой логин уже используется."
+
+msgid "contact selected"
+msgid_plural "contacts selected"
+msgstr[0] "контакт выбран"
+msgstr[1] "контакта выбрано"
+msgstr[2] "контактов выбрано"
+
+# Delete selected contacts
+msgid "%d contact has been deleted"
+msgid_plural "%d contacts have been deleted"
+msgstr[0] "%d контакт удалён"
+msgstr[1] "%d контакта удалено"
+msgstr[2] "%d контактов удалено"
+
+# Remove selected contacts from a group/category success message
+msgid "%d contact has been removed"
+msgid_plural "%d contacts have been removed"
+msgstr[0] "%d контакт исключён"
+msgstr[1] "%d контакта исключено"
+msgstr[2] "%d контактов исключено"
+
+# Remove selected contacts from a category success message
+msgid "from %d category"
+msgid_plural "from %d categories"
+msgstr[0] "из %d категории"
+msgstr[1] "из %d категорий"
+msgstr[2] "из %d категорий"
+
+# Remove selected contacts from a group/category success message
+msgid "%d contact has been added"
+msgid_plural "%d contacts have been added"
+msgstr[0] "%d контакт добавлен"
+msgstr[1] "%d контакта добавлено"
+msgstr[2] "%d контактов добавлено"
+
+# Add selected contacts to a category success message
+msgid "to %d category"
+msgid_plural "to %d categories"
+msgstr[0] "в %d категорию"
+msgstr[1] "в %d категории"
+msgstr[2] "в %d категорий"
+
+# Group deletion success message
+msgid "Group has been deleted"
+msgstr "Группа удалена"
+
+# Contacts access rights customization dialog
+msgid "Available categories"
+msgstr "Доступные категории"
+
+# Category deletion success message
+msgid "Category has been deleted"
+msgstr "Категория удалена"
+
+msgid "Filters"
+msgstr "Фильтры"
+
+msgid "My filters"
+msgstr "Мои фильтры"
+
+msgid "Lists"
+msgstr "Списки"
+
+msgid "Categories"
+msgstr "Категории"
+
+msgid "select country"
+msgstr "выберите страну"
+
+msgid "Company"
+msgstr "Компания"
+
+msgid "Add"
+msgstr "Добавить"
+
+msgid "Exclude contacts from category &ldquo;%s&rdquo;?"
+msgstr "Исключить контакты из категории &laquo;%s&raquo;?"
+
+msgid "Exclude"
+msgstr "Исключить"
+
+msgid "Exclude from this category"
+msgstr "Исключить из этой категории"
+
+msgid "Exclude from this list"
+msgstr "Исключить из этого списка"
+
+msgid "Exclude contacts from list &ldquo;%s&rdquo;?"
+msgstr "Исключить контакты из списка &laquo;%s&raquo;?"
+
+msgid "Add another"
+msgstr "Добавить ещё"
+
+msgid "Add to category"
+msgstr "Добавить в категорию"
+
+msgid "Delete this category?"
+msgstr "Удалить эту категорию?"
+
+msgid "Delete this group?"
+msgstr "Удалить эту группу?"
+
+# Group access control and user tab. Shows when global access is changed to 'limited'
+msgid "Set up access rights for each application"
+msgstr "Настройте права доступа для каждого приложения"
+
+# Group access control. Comment for admin access level.
+msgid "Full access to all applications and user management."
+msgstr "Полный доступ ко всем приложениям и управлению пользователями."
+
+msgid "Edit contact"
+msgstr "Редактировать контакт"
+
+# Link to edit current category
+msgid "Edit category"
+msgstr "Редактировать категорию"
+
+# Link to edit current group
+msgid "Edit group"
+msgstr "Редактировать группу"
+
+msgid "Close"
+msgstr "Закрыть"
+
+msgid "You can not revoke administrative access level for yourself. Only another Administrator can do this."
+msgstr "Вы не можете аннулировать административный уровень доступа для самого себя. Только другой Администратор может это сделать."
+
+# A note on user access control page
+msgid "Limited and Full access levels in Contacts application DO NOT allow managing user accounts and categories. These access rights are granted to Administrator only."
+msgstr "Уровни доступа &laquo;Ограниченный&raquo; и &laquo;Полный&raquo; в приложении &laquo;Контакты&raquo; НЕ дают прав управления аккаунтами пользователей и категориями. Такие права имеет только Администратор."
+
+msgid "Show %s records on a page"
+msgstr "Показывать %s записей на странице"
+
+# Confirm deletion dialog
+msgid "You can not delete yourself."
+msgstr "Вы не можете удалить себя."
+
+msgid "Please eliminate yourself from deletion list."
+msgstr "Пожалуйста, исключите себя из списка удаляемых."
+
+msgid "%d of %d selected contacts shown below have links to other applications."
+msgstr "%d из %d выбранных контактов, показанные ниже, имеют связи с другими приложениями."
+
+msgid "All selected contacts have links to other applications."
+msgstr "Все выбранные контакты имеют связи с другими приложениями."
+
+msgid "After deletion of these contacts other applications will refer to not existing contacts."
+msgstr "После удаления этих контактов другие приложения будут ссылаться на несуществующие контакты."
+
+msgid "Deletion of these contacts is allowed to Administrator only."
+msgstr "Удаление таких контактов разрешено только администратору."
+
+msgid "Delete %d of %d selected"
+msgstr "Удалить %d из %d выбранных"
+
+msgid "%d link"
+msgid_plural "%d links"
+msgstr[0] "%d ссылка"
+msgstr[1] "%d ссылки"
+msgstr[2] "%d ссылок"
+
+msgid "Categories are for classifying contacts, e.g. customers, providers, partners, etc."
+msgstr "Категории служат для классификации контактов, например: клиенты, поставщики, партнеры и т.д."
+
+msgid "User groups are for organizing Webasyst users and setting common access rights for groups."
+msgstr "Группы служат для объединения пользователей Вебасиста и предоставления им общих прав доступа."
+
+msgid "This login is already set for user %NAME_LINK%"
+msgstr "Этот логин уже установлен для пользователя %NAME_LINK%"
+
+msgid "Add contacts to lists"
+msgstr "Добавить контакты в списки"
+
+msgid "Select lists:"
+msgstr "Выберите списки:"
+
+msgid "to %d list"
+msgid_plural "to %d lists"
+msgstr[0] "в %d список"
+msgstr[1] "в %d списка"
+msgstr[2] "в %d списков"
+
+msgid "from %d list"
+msgid_plural "from %d lists"
+msgstr[0] "из %d списка"
+msgstr[1] "из %d списков"
+msgstr[2] "из %d списков"
+
+msgid "from a list"
+msgstr "из списка"
+
+msgid "Save as a filter"
+msgstr "Сохранить как фильтр"
+
+msgid "View has been deleted"
+msgstr "Представление удалено"
+
+msgid "Delete this filter?"
+msgstr "Удалить этот фильтр?"
+
+msgid "Delete filter"
+msgstr "Удалить фильтр"
+
+msgid "Delete this list?"
+msgstr "Удалить этот список?"
+
+msgid "Delete list"
+msgstr "Удалить список"
+
+msgid "Edit list"
+msgstr "Редактировать список"
+
+msgid "Edit filter"
+msgstr "Редактировать фильтр"
+
+msgid "Edit list &ldquo;%s&rdquo;"
+msgstr "Редактирование списка &laquo;%s&raquo;"
+
+msgid "Edit filter &ldquo;%s&rdquo;"
+msgstr "Редактирование фильтра &laquo;%s&raquo;"
+
+msgid "Filter name:"
+msgstr "Название фильтра:"
+
+msgid "Full name"
+msgstr "Полное имя"
+
+msgid "Change photo for contact"
+msgstr "Изменить фото для контакта"
+
+msgid "Are you sure you want to delete this photo?"
+msgstr "Вы действительно хотите удалить фото?"
+
+msgid "This email address is in use."
+msgstr "Этот электронный адрес занят."
+
+msgid "(unconfirmed)"
+msgstr "(не подтверждён)"
+
+msgid "Maximum allowed number of emails is %s"
+msgstr "Максимально допустимое количество адресов - %s"
+
+msgid "Unable to change list of emails: no main email exists."
+msgstr "Невозможно изменить список адресов, если нет главного адреса."
+
+msgid "Main email %s cannot be removed"
+msgstr "Нельзя удалить главный адрес %s"
+
+msgid "Error sending confirmation email."
+msgstr "Ошибка при отправке письма с подтверждением."
+
+msgid "A message with confirmation link has been sent to this address."
+msgstr "На данный адрес было отправлено сообщение, которое содержит ссылку для подтверждения."
+
+msgid "Password updated successfully."
+msgstr "Пароль успешно изменён."
+
+msgid "Password cannot be empty."
+msgstr "Пароль не может быть пустым."
+
+msgid "Current password"
+msgstr "Действующий пароль"
+
+msgid "Incorrect current password"
+msgstr "Неправильный действующий пароль"
+
+msgid "Users can not be merged into other contacts."
+msgstr "Пользователи не могут быть объединены с другим контактом."
+
+msgid "Email %s is successfully confirmed."
+msgstr "Адрес %s успешно подтверждён."
+
+msgid "Merge with another account"
+msgstr "Объединить с другим аккаунтом"
+
+msgid "Incorrect email or password."
+msgstr "Неправильный пароль или Email."
+
+msgid "Unable to merge with themselves."
+msgstr "Нельзя объединять с самим собой."
+
+msgid "Session has expired."
+msgstr "Сессия истекла."
+
+msgid "Unable to merge:"
+msgstr "Невозможно объединить:"
+
+msgid "Continue"
+msgstr "Продолжить"
+
+msgid "select region"
+msgstr "выберите регион"
+
+msgid "Person"
+msgstr "Персона"
+
+msgid "Import..."
+msgstr "Импорт..."
+
+msgid "Exclude contacts from category \"%s\"?"
+msgstr "Исключить контакты из категории \"%s\"?"
+
+msgid "Leave blank to keep existing password."
+msgstr "Оставьте поле пустым, чтобы сохранить существующий пароль."
+
+msgid "Fields visible on %sown profile%s page"
+msgstr "Поля, видимые на %sстранице своего профиля%s"
+
+msgid "Merge contacts"
+msgstr "Объединение контактов"
+
+msgid "Choose a master contact that will be retained after merging."
+msgstr "Выберите главный контакт, который останется после объединения."
+
+msgid "Other contacts will be deleted during this merging operation."
+msgstr "Остальные контакты в результате выполнения процедуры объединения будут удалены."
+
+msgid "Contact info from the contacts to be deleted, except unique fields, will be added to master contact."
+msgstr "Контактная информация из удаляемых контактов, за исключением уникальных полей, будет добавлена в главный контакт."
+
+msgid "Links to deleted contacts from other applications will be updated to link to master contact."
+msgstr "Ссылки на удаляемые контакты, которые есть в других приложениях, будут изменены на главный контакт."
+
+msgid "selected as a master contact"
+msgstr "выбран как главный контакт"
+
+msgid "%s has been selected as a master contact."
+msgstr "%s выбран как главный контакт."
+
+msgid "However, there are no contacts to be merged with %s, by the reasons designated above."
+msgstr "Однако, нет ни одного контакта, который мог бы быть объединен с %s, по причинам указанным выше."
+
+msgid "%d other contact will be merged with %%s."
+msgid_plural "%d other contacts will be merged with %%s."
+msgstr[0] "%d контакт будет объединен с %%s."
+msgstr[1] "Остальные %d контакта будут объединены с %%s."
+msgstr[2] "Остальные %d контактов будут объединены с %%s."
+
+msgid "%d contact will not be merged by the reasons designated above."
+msgid_plural "%d contacts will not be merged by the reasons designated above."
+msgstr[0] "%d контакт не будет объединен по причинам указанным выше."
+msgstr[1] "%d контакта не будут объединены по причинам указанным выше."
+msgstr[2] "%d контактов не будут объединены по причинам указанным выше."
+
+#: /wa-apps/contacts/templates/actions/contacts/ContactsInfo.html:43
+msgid "Edit contact info"
+msgstr "Редактировать контакт"
+
+#: /wa-apps/contacts/templates/actions/contacts/ContactsInfo.html:48
+msgid "Delete contact"
+msgstr "Удалить контакт"
+
+#: /wa-apps/contacts/lib/actions/contacts/contactsContactsMerge.controller.php:39
+msgid "were skipped because they have user accounts"
+msgstr "были пропущены, потому что они являются пользователями"
+
+#: /wa-apps/contacts/templates/actions/contacts/ContactsInfo.html:12
+msgid "of"
+msgstr "из"
+
+#: /wa-apps/contacts/templates/actions/contacts/ContactsInfo.html:86
+msgid "@"
+msgstr "в"
+
+#: /wa-apps/contacts/templates/actions/contacts/ContactsUser2.html:47
+msgid "Deny"
+msgstr "Отказать"
+
+#: /wa-apps/contacts/templates/actions/contacts/ContactsUser2.html:49
+msgid "Allow"
+msgstr "Разрешить"
+
+#: /wa-apps/contacts/templates/actions/contacts/ContactsInfo.html:110
+msgid "Account"
+msgstr "Аккаунт"
+
+#: /wa-apps/contacts/templates/actions/contacts/ContactsUser.html:13
+#: /wa-apps/contacts/templates/actions/contacts/ContactsUser.html:18
+msgid "Disabled"
+msgstr "Выключен"
+
+#: /wa-apps/contacts/templates/actions/contacts/ContactsUser.html:15
+#: /wa-apps/contacts/templates/actions/contacts/ContactsUser.html:18
+msgid "Enabled"
+msgstr "Включен"
+
+#: /wa-apps/contacts/templates/actions/contacts/ContactsUser.html:32
+msgid "Email address is not specified"
+msgstr "Email-адрес не указан"
+
+#: /wa-apps/contacts/templates/actions/contacts/ContactsUser.html:86
+msgid "Available resources"
+msgstr "Доступные ресурсы"
+
+#: /wa-apps/contacts/templates/actions/contacts/ContactsUser.html:96
+msgid "Customer portal only"
+msgstr "Только личный кабинет"
+
+#: /wa-apps/contacts/templates/actions/contacts/ContactsUser.html:97
+msgid "Customer portal + backend"
+msgstr "Личный кабинет и бекенд"
+
+#: /wa-apps/contacts/js/fieldTypes.js:297
+msgid "Choose company"
+msgstr "Выберите компанию"
+
+#: /wa-apps/contacts/lib/classes/contactsHelper.class.php:57
+msgid "Access disabled by"
+msgstr "Доступ выключил"
+
+#: /wa-apps/contacts/js/fieldTypes.js:1537
+msgid "day"
+msgstr "день"
+
+#: /wa-apps/contacts/js/fieldTypes.js:1547
+msgid "month"
+msgstr "месяц"
+
+#: /wa-apps/contacts/js/fieldTypes.js:1575
+#: /wa-apps/contacts/js/fieldTypes.js:1577
+msgid "year"
+msgstr "год"
+
+#: /wa-apps/contacts/lib/config/logs.php:5
+msgid "added a new contact"
+msgstr "добавил новый контакт"
+
+#: /wa-apps/contacts/lib/config/logs.php:8
+msgid "deleted contact"
+msgstr "удалил контакт"
+
+#: /wa-apps/contacts/lib/config/logs.php:11
+msgid "edited contact"
+msgstr "отредактировал контакт"
+
+#: /wa-apps/contacts/lib/config/logs.php:12
+msgid "added contact photo"
+msgstr "добавил фото контакта"
+
+#: /wa-apps/contacts/lib/config/logs.php:17
+msgid "added a new contact category"
+msgstr "добавил новую категорию контактов"
+
+#: /wa-apps/contacts/lib/config/logs.php:20
+msgid "added a new user group"
+msgstr "добавил новую группу пользователей"
+
+#: /wa-apps/contacts/lib/config/logs.php:23
+msgid "created user account"
+msgstr "создал аккаунт пользователя"
+
+#: /wa-apps/contacts/lib/config/logs.php:26
+msgid "performed contact search"
+msgstr "выполнил поиск контактов"
+
+#: /wa-apps/contacts/lib/config/logs.php:29
+msgid "merged contacts"
+msgstr "объединил контакты"
+
+#: /wa-apps/contacts/lib/config/logs.php:32
+msgid "added note about contact"
+msgstr "добавил заметку про контакт"
+
+#: /wa-apps/contacts/templates/actions/contacts/ContactsUser.html:97
+msgid "Customer portal"
+msgstr "Личный кабинет"
+
+#: /wa-apps/contacts/templates/actions/contacts/ContactsUser.html:101
+msgid "Customer Portal is a part of your site available for registered clients and containing their personal data. To access their customer portals your clients must log in with email and password."
+msgstr "Личный кабинет — это часть вашего сайта, доступная каждому зарегистрированному клиенту и содержащая персональнные данные клиента. Для доступа в личный кабинет клиентам потребуется авторизация с помощью email-адреса и пароля."
+
+#: /wa-apps/contacts/templates/actions/contacts/ContactsUser.html:104
+msgid "Personal portal settings"
+msgstr "Настройка личного кабинета"
+
+#: /wa-apps/contacts/templates/actions/contacts/ContactsUser.html:110
+msgid "Backend"
+msgstr "Бекенд"
+
+#: /wa-apps/contacts/templates/actions/contacts/ContactsUser.html:139
+msgid "Backend — this is where you are now. By adding backend users you create a team for collaboration. Every user can have their own access rights."
+msgstr "Бекенд — это то, где вы сейчас находитесь. Добавляя пользователей бекенда, вы создаете команду для коллективной работы. Каждому пользователя можно настроить права доступа."
+
+#: /wa-apps/contacts/templates/actions/contacts/ContactsUser.html:141
+msgid "Link for backend sign in"
+msgstr "Адрес входа в беккенда"
+
+#: /wa-apps/contacts/templates/actions/contacts/ContactsUser.html:146
+msgid "Login ID"
+msgstr "Логин ID"
+
+#: /wa-apps/contacts/templates/actions/contacts/ContactsUser.html:151
+msgid "create Login ID"
+msgstr "создать Логин ID"
+
+#: /wa-apps/contacts/templates/actions/contacts/ContactsUser.html:155
+msgid "Login ID is an alternative (optional) login for your backend users convenience. It can be used instead of email login specified above."
+msgstr "Логин ID является альтернативным (необязательным) логином для удобства авторизации пользователям бекенда. Его можно использовать вместо емейл-адреса, указанного выше."
+
+#: /wa-apps/contacts/templates/actions/contacts/ContactsUser.html:196
+msgid "Backend access rights are customized for every app separately and appear to be a combination of personal and group access rights."
+msgstr "Права доступа в бекенде настраиваются для каждого приложения отдельно и складываются из прав персональных и унаследованных от групп."
+
+#: /wa-apps/contacts/js/fieldTypes.js:1465
+msgid "map"
+msgstr "карта"
+
+#: /wa-apps/contacts/lib/config/logs.php:35
+msgid "granted backend access rights"
+msgstr "предоставил права доступа в бекенд"
+
+#: /wa-apps/contacts/lib/config/logs.php:38
+msgid "revoked backend access rights"
+msgstr "отменил права доступа в бекенд"
+
+#: /wa-apps/contacts//js/wa.grid.js:204
+msgid "<no-name>"
+msgstr "<без имени>"
+
+#: /wa-apps/contacts//js/wa.controller.js:820
+msgid "New group"
+msgstr "Новая группа"
+
+#: /wa-apps/contacts//lib/config/contactsRightConfig.class.php:15
+msgid "Can edit or delete contacts added by other users"
+msgstr "Может редактировать или удалять контакты, добавленные другими пользователями"
+
+#: /wa-apps/contacts/templates/actions/groups/GroupsEditor.html:12
+msgid "Name of group"
+msgstr "Навзание группы"
+
+#: /wa-apps/contacts/templates/actions/groups/GroupsEditor.html:27
+msgid "Icon"
+msgstr "Значок"
+
+#: /wa-apps/contacts/templates/actions/groups/GroupsEditor.html:39
+msgid "Group members"
+msgstr "Участники группы"
+
+#: /wa-apps/contacts/templates/actions/groups/GroupsEditor.html:41
+#: /wa-apps/contacts/js/wa.controller.js:406
+msgid "To add users to group, go to <a href=\"#/users/all/\">All users</a>, select them, and click <strong>Actions with selected / Add to group</strong>."
+msgstr "Для добавления пользователей в группу перейдите во <a href=\"#/users/all/\">Все пользователи</a>, выберите нужных и воспользуйтесь командой <strong>Действия с выбранными / Добавить в группу</strong>."
+
+#: /wa-apps/contacts/templates/actions/groups/GroupsAdd.html:1
+msgid "Add contacts to groups"
+msgstr "Добавить пользователей в группы"
+
+#: /wa-apps/contacts/templates/actions/groups/GroupsAdd.html:4
+msgid "Select groups:"
+msgstr "Выбрать группы:"
+
+#: /wa-apps/contacts/templates/actions/groups/GroupsAdd.html:16
+msgid "No user groups."
+msgstr "Нет групп."
+
+#: /wa-apps/contacts/templates/actions/groups/includeGroupsRights.html:5
+msgid "Access level"
+msgstr "Уровень доступа"
+
+#: /wa-apps/contacts/js/wa.controller.js:296
+msgid "Edit user group"
+msgstr "Редактировать группу"
+
+#: /wa-apps/contacts/js/wa.controller.js:405
+msgid "No users in this group."
+msgstr "Нет пользователей в этой группе."
+
+#: /wa-apps/contacts/lib/actions/groups/contactsGroupsContactSave.controller.php:38
+msgid "to %d group"
+msgid_plural "to %d groups"
+msgstr[0] "в %d группу"
+msgstr[1] "в %d группы"
+msgstr[2] "в %d групп"
+
+#: /wa-apps/contacts/js/wa.grid.js:310
+msgid "There is no geographic location info for these contacts."
+msgstr "Для данных контактов нет географических координат."
+
+#: /wa-apps/contacts/js/wa.controller.js:1045
+msgid "on the map"
+msgstr "на карте"
+
+#: /wa-apps/contacts/templates/actions/photo/PhotoEditor.html:19
+msgid "Drop photo here"
+msgstr "Перетащите фото сюда"
+
+#: /wa-apps/contacts/templates/actions/photo/PhotoEditor.html:44
+msgid "To change drop another photo or upload file (JPG, GIF или PNG):"
+msgstr "Для замены перетащите другое фото или загрузите файл (JPG, GIF или PNG):"
+
+#: /wa-apps/contacts/lib/config/logs.php:35
+msgid "deleted note about contact"
+msgstr "удалил заметку про контакт"
+
+#: /wa-apps/contacts/templates/actions/contacts/ContactsUser.html:103
+msgid "First email address is used as a login"
+msgstr "В качестве логина используется главный email-адрес контакта"
+
+#: /wa-apps/contacts/js/wa.controller.js:319
+msgid "Close settings panel"
+msgstr "Закрыть панель настроек"
+
+#: /wa-apps/contacts/lib/config/logs.php:35
+msgid "edited note about contact"
+msgstr "отредактировал заметку про контакт"
+
+#: /wa-apps/contacts/lib/config/logs.php:47
+msgid "added event"
+msgstr "добавил событие"
+
+#: /wa-apps/contacts/lib/config/logs.php:50
+msgid "edited event"
+msgstr "отредактировал событие"
+
+#: /wa-apps/contacts/js/jquery.combobox.js:549
+msgid "Apply"
+msgstr "Применить"
+
+#: /wa-apps/contacts/templates/actions/contacts/ContactsUser.html:56
+msgid "The same password is used to access personal account and backend."
+msgstr "Для доступа в личный кабинет и в бекенд используется единый пароль."
+
+#: /wa-apps/contacts/templates/actions/contacts/ContactsUser.html:124
+msgid "in Site app"
+msgstr "в приложении \"Сайт\""
+
+#: /wa-apps/contacts/templates/actions/contacts/ContactsUser.html:210
+msgid "change login"
+msgstr "изменить логин"
+
+#: /wa-apps/contacts/js/wa.controller.js:768
+msgid "Exclude contacts from group \"%s\"?"
+msgstr "Исключить контакты из группы \"%s\"?"
+
+#: /wa-apps/contacts/js/wa.controller.js:1058
+msgid "Exclude from this group"
+msgstr "Исключить из этой группы"
+
+#: /wa-apps/contacts/lib/actions/groups/contactsGroupsDeleteFrom.controller.php:37
+msgid "from %d group"
+msgid_plural "from %d groups"
+msgstr[0] "из %d группы"
+msgstr[1] "из %d групп"
+msgstr[2] "из %d групп"
+
+#: /wa-apps/contacts/templates/actions/contacts/ContactsUser.html:253
+msgid "Access rights"
+msgstr "Права доступа"
+
+#: /wa-apps/contacts/js/wa.controller.js:634
+#: /wa-apps/contacts/js/wa.controller.js:924
+msgid "New user"
+msgstr "Новый пользователь"
+
+#: /wa-apps/contacts/templates/actions/contacts/ContactsInfo.html:174
+msgid "Contact not found"
+msgstr "Контакт не найден"
+
+#: /wa-apps/contacts/templates/actions/contacts/ContactsUser.html:99
+msgid "Available"
+msgstr "Доступен"
+
+#: /wa-apps/contacts/templates/actions/contacts/ContactsUser.html:101
+msgid "Not available"
+msgstr "Недоступен"
+
+#: /wa-apps/contacts/js/wa.controller.js:631
+msgid "You can grant access to your account backend to any existing contact."
+msgstr "Вы можете предоставить доступ в бекенд любому существующему контакту."
+
+#: /wa-apps/contacts/js/wa.controller.js:632
+msgid "Find a contact, or <a href=\"#/contacts/add/\">create a new contact</a>, and then customize their access rights on Access tab."
+msgstr "Для этого найдите контакт, либо <a href=\"#/contacts/add/\">создайте новый контакт</a>, а затем настройте ему права доступа на вкладке Доступ."
+
+#: /wa-apps/contacts/js/wa.grid.js:544
+msgid "No contacts."
+msgstr "Нет контактов."
+
+#: /wa-apps/contacts/templates/actions/contacts/ContactsUser.html:158
+msgid "Login name is required to access your account backend."
+msgstr "Логин обязателен для доступа в бекенд."
+
+#: /wa-apps/contacts/templates/actions/contacts/ContactsUser.html:159
+msgid "Ex.: john, agent07, and etc."
+msgstr "Пример: john, agent07, и т.д."
+
+#: /wa-apps/contacts/lib/actions/groups/contactsGroupsContactSave.controller.php:40
+msgid "%d user has been added"
+msgid_plural "%d users have been added"
+msgstr[0] "%d пользователь добавлен"
+msgstr[1] "%d пользователя добавлено"
+msgstr[2] "%d пользователей добавлено"
+#: /wa-apps/contacts/lib/actions/groups/contactsGroupsDeleteFrom.controller.php:35
+msgid "%d user excluded"
+msgid_plural "%d users excluded"
+msgstr[0] "%d пользователь исключён"
+msgstr[1] "%d пользователя исключено"
+msgstr[2] "%d пользователей исключено"
+
+#: /wa-apps/contacts/templates/actions/groups/GroupsAdd.html:1
+msgid "Add users to groups"
+msgstr "Добавить пользователей в группы"
+
+#: /wa-apps/contacts/js/wa.controller.js:807
+msgid "Exclude users from group \"%s\"?"
+msgstr "Исключить контакты из группы \"%s\"?"
+
+#: /wa-apps/contacts/templates/actions/contacts/ContactsInfo.html:127
+msgid "ID"
+msgstr ""
+#: /wa-apps/contacts/js/wa.controller.js:1121
+msgid "List"
+msgstr "Список"
+
+#: /wa-apps/contacts/js/wa.controller.js:1122
+msgid "Details"
+msgstr "Подробно"
+
+#: /wa-apps/contacts/js/wa.controller.js:1123
+msgid "Userpics"
+msgstr "Юзерпики"
+
+#: /wa-apps/contacts/templates/actions/contacts/ContactsUser.html:45
+msgid "last login:"
+msgstr ""
+
+#: /wa-apps/contacts/lib/actions/groups/contactsGroupsAdd.action.php:9
+#: /wa-apps/contacts/lib/actions/groups/contactsGroupsContactSave.controller.php:15
+#: /wa-apps/contacts/lib/actions/groups/contactsGroupsSave.controller.php:9
+#: /wa-apps/contacts/lib/actions/groups/contactsGroupsDelete.controller.php:10
+#: /wa-apps/contacts/lib/actions/groups/contactsGroupsEditor.action.php:9
+#: /wa-apps/contacts/lib/actions/groups/contactsGroupsDeleteFrom.controller.php:9
+#: /wa-apps/contacts/lib/actions/rights/contactsRights.action.php:10
+#: /wa-apps/contacts/lib/actions/rights/contactsRightsSave.controller.php:10
+#: /wa-apps/contacts/lib/actions/categories/contactsCategoriesDelete.controller.php:10
+#: /wa-apps/contacts/lib/actions/categories/contactsCategoriesSave.controller.php:9
+#: /wa-apps/contacts/lib/actions/categories/contactsCategoriesDeleteFrom.controller.php:10
+#: /wa-apps/contacts/lib/actions/categories/contactsCategoriesEditor.action.php:9
+#: /wa-apps/contacts/lib/actions/categories/contactsCategoriesContactSave.controller.php:9
+#: /wa-apps/contacts/lib/actions/contacts/contactsContactsList.controller.php:68
+#: /wa-apps/contacts/lib/actions/contacts/contactsContactsUser.controller.php:13
+#: /wa-apps/contacts/lib/actions/contacts/contactsContactsUser.controller.php:26
+#: /wa-apps/contacts/lib/actions/contacts/contactsContactsMergeSelectMaster.action.php:15
+#: /wa-apps/contacts/lib/actions/contacts/contactsContactsMerge.controller.php:10
+#: /wa-apps/contacts/lib/actions/contacts/contactsContactsSave.controller.php:24
+#: /wa-apps/contacts/lib/actions/contacts/contactsContactsSave.controller.php:29
+#: /wa-apps/contacts/lib/actions/contacts/contactsContactsAdd.action.php:8
+#: /wa-apps/contacts/lib/actions/contacts/contactsContactsInfo.action.php:41
+#: /wa-apps/contacts/lib/actions/contacts/contactsContactsLinks.action.php:24
+msgid "Access denied"
+msgstr "Доступ запрещен"
+
+#: /wa-apps/contacts//lib/actions/contacts/contactsContactsMerge.controller.php:39
+msgid "%d contact was skipped because they have user accounts"
+msgid_plural "%d contacts were skipped because they have user accounts"
+msgstr[0] "%d контакт был пропущен, потому что он является пользователем"
+msgstr[1] "%d контакты были пропущены, потому что они являются пользователями"
+msgstr[2] "%d контактов были пропущены, потому что они являются пользователями"
+
+#: /wa-apps/contacts/lib/config/logs.php:62
+msgid "created a new signup form"
+msgstr "создал новую форму регистрации"

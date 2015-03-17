@@ -1,0 +1,78 @@
+<div class="sidebar right200px"><div class="block m-editor-toolbar">
+    <div class="block">
+        <p>[`Please choose one of these templates to create a new email campaign. If none of the templates suits your needs, click on &ldquo;Blank&rdquo; to compose a new message.`]</p>
+
+        {if $wa->mailer->isAdmin()}
+        <p><a href="#/templates/">[`Manage templates`]</a></p>
+        {/if}
+
+        <p style="font-size:85%;color:#777;">[`To create new campaign as a copy of previously sent, navigate to the sent message and click “Create new from this”.`]</p>
+    </div>
+</div></div>{* div.sidebar.right200px, div.block.m-editor-toolbar *}
+
+<div class="content right200px"><div class="shadowed m-editor" style="margin-bottom:0">
+<div class="m-envelope-stripes-1"><div class="m-envelope-stripes-2" style="overflow:hidden">
+    <div class="block m-core-header">
+        <h1>[`New campaign`]</h1>
+    </div>
+
+    <div class="block">
+
+        <ul id="template-list" class="templates-tiles">
+            <li rel=""><div class="wrapper">
+                <div class="preview">
+                    <div class="no-image" style="background:white;font-size:150%;font-weight:bold;color:#999;">
+                        [`Blank`]
+                    </div>
+                </div>
+            </li>
+
+            {foreach from=$templates item=t}
+                <li rel="{$t.id}"><div class="wrapper">
+                    <div class="preview">
+                        {if $t.image}
+                            <img src="{$t.image}" alt="">
+                        {else}
+                            <div class="hidden iframe-preview-content" id="iframe-preview-{$t.id}-content">{$t.preview_content|escape}</div>
+                            <div class="no-image">
+                                <iframe id="iframe-preview-{$t.id}" scrolling="no"></iframe>
+                                <div class="catch-clicks"></div>
+                            </div>
+                            <script>(function() {
+                                var ifrm = $('#iframe-preview-{$t.id}')[0];
+                                ifrm = (ifrm.contentWindow) ? ifrm.contentWindow : (ifrm.contentDocument.document) ? ifrm.contentDocument.document : ifrm.contentDocument;
+                                ifrm.document.open();
+                                ifrm.document.write($('#iframe-preview-{$t.id}-content').text());
+                                ifrm.document.close();
+                                $('#iframe-preview-{$t.id}-content').contents().find('a[href]').attr('target',"_blank");
+                            })();</script>
+                        {/if}
+                    </div>
+                    <h3>{$t.subject|escape}</h3>
+                    {if $t.description}
+                        <div class="description">
+                            {$t.description|escape}
+                        </div>
+                    {/if}
+                </div></li>
+            {/foreach}
+        </ul>
+        <div class="clear" style="margin-bottom:30px;"></div>
+    </div>
+
+</div></div>{* div.m-envelope-stripes-1, div.m-envelope-stripes-2 *}
+</div></div>{* div.content.right200px, div.shadowed.m-editor *}
+
+<script>(function() { "use strict";
+
+    // Prepare three-column layout
+    $('#content').removeClass('shadowed').removeClass('blank');
+
+    // Click on a template creates campaign from that template
+    $('#template-list').on('click', 'li', function() {
+        var template_id = $(this).attr('rel');
+        window.location.hash = '#/campaigns/letter/new/'+(template_id ? template_id+'/' : '');
+    });
+
+    $.wa.mailer.setTitle();
+})();</script>

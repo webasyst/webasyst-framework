@@ -1,0 +1,120 @@
+{include file="templates/actions/campaigns/CampaignsSidebar.html"}
+
+<div class="content right200px"><div class="shadowed m-editor" style="margin-bottom:0">
+<div class="m-envelope-stripes-1"><div class="m-envelope-stripes-2">
+    <div class="block m-core-header">
+        <a href="#/campaigns/archive/" class="no-underline"><i class="icon10 larr"></i>[`Sent`]</a>
+    </div>
+
+    <ul class="m-compose-navigation tabs">
+        <li class="m-first-step selected"><a href="#/campaigns/letter/{$campaign.id}/">[`Letter`]</a></li>
+        {if $wa->mailer->isInspector() || $wa->mailer->isAuthor()}
+        {if $campaign.status == mailerMessageModel::STATUS_DRAFT }
+        {elseif $campaign.status == mailerMessageModel::STATUS_PENDING }
+        {elseif $campaign.status != mailerMessageModel::STATUS_SENT && $campaign.status != mailerMessageModel::STATUS_SENDING_ERROR}
+        <li class="m-second-step">
+            {if $wa->mailer->isAuthor()}
+            <a href="#/campaigns/report/{$campaign.id}/">
+            {/if}
+            {if $campaign.status == mailerMessageModel::STATUS_SENDING_PAUSED}
+                [`Sending report`] <span>([`Paused`] <i class="icon16 pause"></i>)</span>
+            {else}
+                [`Now sending`] <i class="icon16 loading"></i>
+            {/if}
+            {if $wa->mailer->isAuthor()}
+            </a>
+            {/if}
+        </li>
+        {else}
+        <li class="m-second-step">
+            <a href="#/campaigns/report/{$campaign.id}/" class="no-underline">[`Sending report`]</a>
+        </li>
+        {/if}
+        {/if}
+    </ul>
+
+    <div class="block double-padded tab-content">
+        <h1>
+            {$campaign.subject|escape}
+        </h1>
+    </div>
+
+    <div class="m-editor wysiwyg-html">
+        <ul class="mode-toggle">
+            <li class="selected wysiwyg">
+                <a href="javascript:void(0)">[`Design`]</a>
+            </li>
+            <li>
+                <a href="javascript:void(0)">[`HTML`]</a>
+            </li>
+            <li class="plain-text">
+                <a href="javascript:void(0)">[`Plain-text`]</a>
+            </li>
+        </ul>
+
+        <div class="plain-text-preview">
+            <div id="improvised-workzone" class="workzone">
+                <iframe id="wysiwyg-tab" frameborder="0" style="width:100%;min-height: 100%;"></iframe>
+                <textarea id="message-body" class="padded preview" name="data[body]" style="display:none;" disabled>{$campaign.body|escape}</textarea>
+                <div id="plain-text-preview" style="display:none;"><textarea class="padded preview" disabled></textarea></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="clear-both" style="padding-bottom:30px;"></div>
+
+</div></div>{* div.m-envelope-stripes-1, div.m-envelope-stripes-2 *}
+</div></div>{* div.content.right200px, div.shadowed.m-editor *}
+
+<script>(function($) {
+    $.wa.mailer.showLastSearchBreadcrumb({$campaign.id});
+//    $.wa.mailer.autoresizeWYSIWYG($('#improvised-workzone'), 30);
+    var textarea = $('#message-body');
+    var content = textarea.val();
+    var $ifrm = textarea.siblings('iframe')
+    var ifrm = $ifrm[0];
+
+    $ifrm.on('load', function(){
+        this.style.height = this.contentWindow.document.body.scrollHeight + 'px'
+    });
+
+    ifrm = (ifrm.contentWindow) ? ifrm.contentWindow : (ifrm.contentDocument.document) ? ifrm.contentDocument.document : ifrm.contentDocument;
+    ifrm.document.open();
+    ifrm.document.write(content);
+    ifrm.document.close();
+
+    textarea.siblings('iframe').contents().find('a[href]').attr('target',"_blank");
+
+    var h = $(ifrm).height();
+    $('#plain-text-preview textarea').height(h);
+    textarea.height(h);
+
+    // Switching betweeb tabs
+    $('li:not(.selected) a', $('.mode-toggle')[0]).live('click', function() {
+        var li = $(this).parent();
+        if (li.hasClass('wysiwyg')) {
+            textarea.hide();
+            $('#plain-text-preview').hide();
+            $('#wysiwyg-tab').show();
+        } else if (li.hasClass('plain-text')) {
+            textarea.hide();
+            $('#wysiwyg-tab').hide();
+            var plain_text_preview = $('#plain-text-preview').show();
+            plain_text_preview.find('textarea').hide();
+
+            // Fetch plain-text version from server
+            $('<i class="icon16 loading after-button"></i>').appendTo(plain_text_preview);
+            $.post('?module=campaigns&action=getPlainText', { html: textarea.val() }, function(r) {
+                plain_text_preview.find('textarea').val(r.data).show().siblings('.loading').remove();
+            }, 'json');
+        } else {
+            $('#wysiwyg-tab').hide();
+            $('#plain-text-preview').hide();
+            textarea.show();
+        }
+        li.addClass('selected').siblings().removeClass('selected');
+    });
+
+    $.wa.mailer.setTitle();
+})($);
+</script>

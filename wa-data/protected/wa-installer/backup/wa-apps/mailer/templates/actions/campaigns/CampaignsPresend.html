@@ -1,0 +1,80 @@
+{if $errormsg}
+    <p style="margin-bottom: 0">
+        {foreach $errormsg as $e}
+            <em class="errormsg">{$e}</em>
+        {/foreach}
+    </p>
+{else}
+
+    {$warnings = ((int) empty($cron_ok)) + ((int) empty($return_path_ok['status'])) + ((int) empty($routing_ok))}
+
+    {if $warnings}
+        {if !empty($cron_ok) || $warnings > 1}
+            <p><h3>[`WARNING:`]</h3></p>
+        {/if}
+    {else}
+        <p>[`Settings checking passed. Campaign is ready for sending.`]</p>
+    {/if}
+
+    {if empty($cron_ok)}
+        <div id="m-cron-notice">
+            {if $warnings <= 1}
+                <p><h3>[`WARNING:`]</h3></p>
+            {/if}
+
+            <p>
+                {if $warnings > 1}<i class="icon16 exclamation"></i>{/if}
+                [`No <tt>cron</tt> jobs, required for long or scheduled automated mailings, have been set up for your account.`]
+                <strong>[`Without <tt>cron</tt> jobs set up, do not close your browser window after clicking on the "Send to selected recipients" button to complete the email sending process.`]</strong>
+            </p>
+
+            <p>{sprintf_wp(
+                'To ensure that sending is completed without your input, please set up <tt>cron</tt> jobs (<a href="%s" target="_blank">view instructions</a>), with the commands specified below, in your web-hosting control panel:',
+                _w('http://www.webasyst.com/framework/docs/server/cron/')
+            )}</p>
+
+            <p class="bold">{$cron_command}</p>
+        </div>
+    {/if}
+
+    {if $return_path_ok['status'] == false}
+        <p style="font-size:85%">
+            <i class="icon16 exclamation"></i>
+            {if $return_path_ok['reason'] == 1 || $return_path_ok['reason'] == 2 || $return_path_ok['reason'] == 3}
+            [`Return-path address specified above is not available.`]
+            {elseif $return_path_ok['reason'] == 4}
+            {sprintf_wp('Return-path "%s" forbidden by sending server.', $return_path_ok['return-path'])}
+            {/if}
+            [`Return-path address is used to automatically process bounced emails.`]
+        </p>
+    {/if}
+
+    {if empty($routing_ok)}
+        <p style="font-size:85%">
+            {if $warnings > 1}<i class="icon16 exclamation"></i>{/if}
+            [`You have no routing rules defined for Mailer application.`]
+            [`Unsubscribe links in your message will not work.`]
+            {sprintf_wp('To set up routing rules use %sSite application%s.', '<a href="../site/#/routing/" target="_blank">', '</a>')}
+        </p>
+    {/if}
+
+    {if $scheduled}
+    <p>
+        <i class="icon16 clock"></i> [`Sending is scheduled for`] <strong>{$scheduled_time|wa_datetime:'humandatetime'}</strong>
+
+        <a href="javascript:void(0)" class="cancel-schedule"><b><i>[`cancel`]</i></b></a>
+    </p>
+    {else}
+    <p>
+        <input id="message-send" type="submit" class="button green" value="{sprintf_wp('Send to selected recipients (%d)', $unique_recipients)}">
+        [`or`]
+        <a href="javascript:void(0)" class="inline-link"><b><i>[`cancel`]</i></b></a>
+
+        <span class="b-schedule">
+            <i class="icon16 clock" style="margin: 0 0.2em 0 0;"></i>
+            <a href="javascript:void(0);" class="no-underline open-schedule-dialog">[`Scheduled sending`]</a>
+        </span>
+    </p>
+    {/if}
+
+{/if}

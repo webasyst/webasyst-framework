@@ -671,7 +671,7 @@ d240437040d448a0629cae8d4de8231c *webasyst/lib/cli/webasystCreatePlugin.cli.php
 893ef744416c00eaa8badfd47549b3d6 *webasyst/lib/cli/webasystGenerateDb.cli.php
 286b0c4b96898acc8b777fd2b75ba519 *webasyst/lib/cli/webasystHelp.cli.php
 85d0d2a2c29aa438a668e1fab1fc4e6c *webasyst/lib/config/app.php
-8fda12f07619a8e3b5029147d5c1e919 *webasyst/lib/config/build.php
+a362dc0e12ec1f65832cfc334695e48f *webasyst/lib/config/build.php
 ba58f0957a4475b5af08f29c72d3e59a *webasyst/lib/config/db.php
 d2f41e6c5bd5ac9d009247198af3a938 *webasyst/lib/config/install.php
 c366a90fb6af4250e37f8b6c5e876904 *webasyst/lib/config/wa_country.sql
@@ -745,8 +745,8 @@ e6cae8076435d94a39a4552603c1383a *webasyst/lib/updates/1.2/1409305264.php
 6d39fb0ed4a0ca19fe3b8e1ad0acc65e *webasyst/locale/en_US/LC_MESSAGES/webasyst.po
 c4dd924a4fd5e01ceb06f8c23d54403f *webasyst/locale/it_IT/LC_MESSAGES/webasyst.mo
 227b1511827b90c91564cb28945178d6 *webasyst/locale/it_IT/LC_MESSAGES/webasyst.po
-bfcc50fc9dbb792e680e0401fc010e86 *webasyst/locale/ru_RU/LC_MESSAGES/webasyst.mo
-97997ecdcbe0fe880621b2cacf9999ac *webasyst/locale/ru_RU/LC_MESSAGES/webasyst.po
+c101cac130ec2bd2d02fc5c80d76c191 *webasyst/locale/ru_RU/LC_MESSAGES/webasyst.mo
+71aebea2fc5f90761b5183d8d1407b2e *webasyst/locale/ru_RU/LC_MESSAGES/webasyst.po
 a32ce6ce1f0dc7501ec7d9a339b0a338 *webasyst/templates/actions/api/ApiAuth.html
 bb18ee56c53eecb62ea4f97543e369ee *webasyst/templates/actions/api/ApiAuthMobile.html
 879502333378f7eeca8956c47e618ffb *webasyst/templates/actions/api/ApiError.html
@@ -754,7 +754,7 @@ bb18ee56c53eecb62ea4f97543e369ee *webasyst/templates/actions/api/ApiAuthMobile.h
 575ebdea45230c3f8feb945cd5877e4f *webasyst/templates/actions/backend/BackendDefault.html
 d8ef9a9c046463dfbf015d369f9b0ede *webasyst/templates/actions/backend/BackendDefaultMobile.html
 c379d34a96e997f8b4e6ef591af336c2 *webasyst/templates/actions/forgot/ForgotPassword.html
-54622a1dfdc1776e123a3f5ab4466b3b *webasyst/templates/actions/login/Login.html
+04674f9b3e7eb99187dc7152b4e99220 *webasyst/templates/actions/login/Login.html
 10fffd417a671fd3aa532cbb18706174 *webasyst/templates/actions/login/LoginConfig.html
 90a4a7bb92479b8900e965480ab5668c *webasyst/templates/actions/login/LoginFirst.html
 e37405ba0f0785b284569df8cf08dff4 *webasyst/templates/actions/login/LoginMobile.html

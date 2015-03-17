@@ -1,0 +1,314 @@
+
+2015-02-10 12:24:38: Event handling error in shopSizePlugin->backend_menu(): Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+2015-02-10 12:26:40: Event handling error in shopSizePlugin->backend_menu(): Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+2015-02-10 12:28:45: Event handling error in shopSizePlugin->backend_menu(): Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+2015-02-10 12:29:46: Event handling error in shopSizePlugin->backend_menu(): Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+2015-02-10 12:30:04: Event handling error in shopSizePlugin->backend_menu(): Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+2015-02-10 12:30:55: Event handling error in shopSizePlugin->backend_menu(): Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+2015-02-10 12:33:02: Event handling error in shopSizePlugin->backend_menu(): Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+2015-02-10 12:34:14: Event handling error in shopSizePlugin->backend_menu(): Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+2015-02-10 12:34:56: Event handling error in shopSizePlugin->backend_menu(): Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+2015-02-10 12:42:16: Event handling error in shopSizePlugin->backend_menu(): Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+2015-02-10 12:44:08: Event handling error in shopSizePlugin->backend_menu(): Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+2015-02-10 13:29:58: Event handling error in shopSizePlugin->backend_menu(): Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+2015-02-10 13:30:38: Event handling error in shopSizePlugin->backend_menu(): Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+2015-02-10 13:31:16: Event handling error in shopSizePlugin->backend_menu(): Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+2015-02-10 13:32:29: Event handling error in shopSizePlugin->backend_products(): Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+2015-02-10 13:32:29: Event handling error in shopSizePlugin->backend_menu(): Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+2015-02-10 13:32:32: Event handling error in shopSizePlugin->backend_products(): Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+2015-02-10 13:33:34: Event handling error in shopSizePlugin->backend_menu(): Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+2015-02-10 13:38:57: Event handling error in shopSizePlugin->backend_menu(): Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+2015-02-12 12:38:19: Event handling error in shopSizePlugin->backend_menu(): Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+2015-02-12 12:39:12: Event handling error in shopSizePlugin->backend_menu(): Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+2015-02-12 12:43:13: Event handling error in shopSizePlugin->backend_menu(): Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+2015-02-12 12:45:27: Event handling error in shopSizePlugin->backend_menu(): Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+2015-02-12 12:45:39: Event handling error in shopSizePlugin->backend_menu(): Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+2015-02-12 12:45:40: Event handling error in shopSizePlugin->backend_products(): Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+2015-02-12 12:45:40: Event handling error in shopSizePlugin->backend_menu(): Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+2015-02-12 12:45:43: Event handling error in shopSizePlugin->backend_products(): Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+2015-02-12 12:45:52: Event handling error in shopSizePlugin->backend_menu(): Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+2015-02-12 12:45:58: Event handling error in shopSizePlugin->backend_products(): Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+2015-02-12 12:45:58: Event handling error in shopSizePlugin->backend_menu(): Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+2015-02-12 12:45:59: Event handling error in shopSizePlugin->backend_products(): Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+2015-02-12 12:46:00: Event handling error in shopSizePlugin->backend_menu(): Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+2015-02-12 12:46:02: Event handling error in shopSizePlugin->backend_menu(): Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+2015-02-12 13:07:04: Event handling error in shopSizePlugin->backend_menu(): Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+2015-02-12 13:07:09: Event handling error in shopSizePlugin->backend_products(): Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+2015-02-12 13:07:09: Event handling error in shopSizePlugin->backend_menu(): Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+2015-02-12 13:07:10: Event handling error in shopSizePlugin->backend_products(): Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+2015-02-12 13:07:13: Event handling error in shopSizePlugin->backend_menu(): Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+2015-02-12 13:08:01: Event handling error in shopSizePlugin->backend_menu(): Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+2015-02-12 13:09:47: Event handling error in shopSizePlugin->backend_menu(): Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+2015-02-13 12:53:45: Event handling error in shopSizePlugin->backend_menu(): Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+2015-02-13 12:53:55: Event handling error in shopSizePlugin->backend_menu(): Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+2015-02-13 14:00:47: Event handling error in shopSizePlugin->backend_products(): Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+2015-02-13 14:00:47: Event handling error in shopSizePlugin->backend_menu(): Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+2015-02-13 14:01:04: Event handling error in shopSizePlugin->backend_products(): Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+2015-02-13 14:55:39: Event handling error in shopSizePlugin->backend_menu(): Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+2015-02-16 09:42:16: Event handling error in shopSizePlugin->backend_menu(): Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+2015-02-16 09:42:21: Event handling error in shopSizePlugin->backend_products(): Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+2015-02-16 09:42:21: Event handling error in shopSizePlugin->backend_menu(): Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+2015-02-16 09:42:22: Event handling error in shopSizePlugin->backend_products(): Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+2015-02-16 10:29:55: Event handling error in shopSizePlugin->backend_menu(): Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+2015-02-16 10:34:29: Event handling error in shopSizePlugin->backend_menu(): Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+2015-02-16 10:34:33: Event handling error in shopSizePlugin->backend_products(): Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+2015-02-16 10:34:34: Event handling error in shopSizePlugin->backend_menu(): Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+2015-02-16 10:34:34: Event handling error in shopSizePlugin->backend_products(): Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+2015-02-16 10:34:37: Event handling error in shopSizePlugin->backend_menu(): Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+2015-02-16 10:34:47: Event handling error in shopSizePlugin->backend_menu(): Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+2015-02-16 10:34:56: Event handling error in shopSizePlugin->backend_menu(): Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+2015-02-16 10:35:12: Event handling error in shopSizePlugin->backend_menu(): Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+2015-02-16 10:38:10: Event handling error in shopSizePlugin->backend_menu(): Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+2015-02-16 11:30:09: Event handling error in shopSizePlugin->backend_menu(): Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+2015-02-16 11:30:12: Event handling error in shopSizePlugin->backend_menu(): Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+2015-02-16 11:30:23: Event handling error in shopSizePlugin->backend_products(): Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+2015-02-16 11:30:23: Event handling error in shopSizePlugin->backend_menu(): Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+2015-02-16 11:30:24: Event handling error in shopSizePlugin->backend_products(): Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+2015-02-16 11:30:25: Event handling error in shopSizePlugin->backend_menu(): Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+2015-02-16 11:30:27: Event handling error in shopSizePlugin->backend_menu(): Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+2015-02-16 21:00:08: Event handling error in shopSizePlugin->backend_menu(): Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+2015-02-16 21:00:14: Event handling error in shopSizePlugin->backend_products(): Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+2015-02-16 21:00:14: Event handling error in shopSizePlugin->backend_menu(): Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+2015-02-16 21:00:15: Event handling error in shopSizePlugin->backend_products(): Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+2015-02-16 21:00:16: Event handling error in shopSizePlugin->backend_menu(): Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+2015-02-16 21:03:21: Event handling error in shopSizePlugin->backend_products(): Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+2015-02-16 21:03:21: Event handling error in shopSizePlugin->backend_menu(): Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+2015-02-16 21:03:22: Event handling error in shopSizePlugin->backend_products(): Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+2015-02-16 21:03:31: Event handling error in shopSizePlugin->backend_products(): Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+2015-02-16 21:03:41: Event handling error in shopSizePlugin->backend_menu(): Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+2015-03-10 04:35:27: Got error 28 from storage engine
+2015-03-10 04:38:54: Got error 28 from storage engine
+2015-03-12 04:20:36: Got error 28 from storage engine
+2015-03-12 04:26:55: Got error 28 from storage engine
+2015-03-14 04:25:22: Got error 28 from storage engine

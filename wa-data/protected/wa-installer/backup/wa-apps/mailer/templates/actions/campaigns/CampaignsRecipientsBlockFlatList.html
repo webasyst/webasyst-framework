@@ -1,0 +1,5 @@
+{foreach $remove_ids as $id}
+    <input type="hidden" name="remove_ids[]" value="{$id}">
+{/foreach}
+<textarea id="flat-list-textarea" disabled placeholder="[`Paste emails here, one email (or Name <email>) per line.`]"
+    style="min-height:100px; min-width:400px;" name="add_values">{$data|trim|escape}</textarea>

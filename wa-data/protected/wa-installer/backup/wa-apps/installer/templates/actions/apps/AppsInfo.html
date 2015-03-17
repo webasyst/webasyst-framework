@@ -1,0 +1,404 @@
+<div class="block i-product-page">
+{if empty($app)}
+    <div class="content">
+        <div class="i-breadcrumbs">
+            <a href="#/apps/">[`All apps`]</a>
+        </div>
+        <h1>[`Application not found`]</h1>
+        {if !empty($error)}
+            <p class="error">{$error|escape}</p>
+        {/if}
+    </div>
+{else}
+    {$current_url = "#/apps/`$app.slug`/"}
+
+    <div class="sidebar">
+        <div class="i-get-started">
+
+            <!-- action block -->
+            {if $app.installed}
+
+                <!-- already installed -->
+                <div class="align-center">
+                    {if $app.commercial && !$app.purchased}
+                        {* PAID APP, LICENSE IS NOT VALID *}                        
+                        {if $app.license_expire}
+                        
+                            {* EXPIRED LICENSE: renew ... *}
+                            <p class="red"><i class="icon16 no"></i>{sprintf("[`License for using %s on <strong>%s</strong> has expired on %s`]",$app.name|escape,installerHelper::getDomain()|escape,waDatetime::format('humandate',$app.license_expire))}</p>
+                            <a class="button green" href="{$app.renew_url|escape}">[`Renew license`]</a>
+                            
+                            {* ...or buy a permanent license *}
+                            <form action="{$app.purchase_url|escape}" method="post" id="buy-instead-of-renew-license-form">
+                                <p>
+                                    <input type="hidden" name="app_id[]" value="{$app.slug}">
+                                    <input type="hidden" name="domain" value="{$domain}">
+                                    <input type="hidden" name="hash" value="{$identity_hash}">
+                                    {if !empty($promo_id)}
+                                    <input type="hidden" name="promo_id" value="{$promo_id|escape}">
+                                    {/if}
+                                    <input type="hidden" name="installer_url" value="{$wa->currentUrl(true,true)}">
+                                    [`or `] <a href="javascript:void();" onClick="$('#buy-instead-of-renew-license-form').submit();return false;">[`buy permanent license`]</a>
+                                </p>
+                                <p>{sprintf("[`Permanent license saves you money on your monthly bills (your monthly payment will be reduced by %s).`]", $app.lease_price)}</p>
+                            </form>
+                            
+                        {else}
+                            {* NEVER LICENSED *}
+                            <form action="{$app.purchase_url|escape}" method="post">
+                                <input type="hidden" name="app_id[]" value="{$app.slug}">
+                                <input type="hidden" name="domain" value="{$domain}">
+                                <input type="hidden" name="hash" value="{$identity_hash}">
+                                {if !empty($promo_id)}
+                                <input type="hidden" name="promo_id" value="{$promo_id|escape}">
+                                {/if}
+                                <input type="hidden" name="installer_url" value="{$wa->currentUrl(true,true)}">
+                                <input type="submit" class="button green" value="[`Get license`]">
+                                <p class="red"><i class="icon16 no"></i>{sprintf("[`Installation and usage of %s app on <strong>%s</strong> is not licensed. Updates are disabled. Buy a new license or link your existing %s license to this Webasyst installation.`]",$app.name|escape,installerHelper::getDomain()|escape,$app.name|escape)}</p>
+                            </form>
+                        {/if}
+                    {else}
+                        {* LICENSED INSTALLATION: EITHER FREE OR PAID *}
+                        {if $app.action == waInstallerApps::ACTION_UPDATE}
+                            {* UPDATES ARE AVAILABLE *}
+                                <form action="?module=update&action=manager" method="post">
+                                    <input type="hidden" name="app_id[{$app.slug}]" value="{$app.vendor}{if !empty($app.edition)}:{$app.edition}{/if}">
+                                    <input type="submit" class="button blue" value="[`Install update`]"{if !$app.applicable} disabled="disabled"{/if}>
+                                    <p>
+                                        {sprintf("[`A newer version of %s <strong>%s</strong> is available for installation (your current version is %s).`]",$app.name|escape,$app.version,$app.installed.version)}
+                                        {if !empty($app.changelog)}
+                                            <a href="{$current_url}changelog/">[`View release notes`]</a>
+                                        {/if}
+                                    </p>
+                                    {if !$app.applicable}
+                                        <div style="display: none">
+                                            <p class="hint">[`This application cannot be updated`]</p>
+                                            {include file="templates/includes/requirements.html" item=$app inline}
+                                        </div>
+                                    {/if}
+
+                                </form>
+                        {elseif $app.commercial}
+
+                            {if $app.license_expire}
+                                {* COMMERCIAL LICENSE WITH AN EXPIRE DATE *}
+                                <p><em class="i-installed-label"><i class="icon16 yes"></i>{sprintf("[`This is a licensed installation of %s on %s. License is valid through <strong>%s</strong>.`]",$app.name|escape, installerHelper::getDomain()|escape, $app.license_expire)}</em></p>
+                                <a class="button green" href="{$app.renew_url|escape}" style="display: inline-block;">[`Extend license`]</a>
+                                {* ...or buy a permanent license *}
+                                <form action="{$app.purchase_url|escape}" method="post" id="buy-instead-of-renew-license-form">
+                                    <p>
+                                        <input type="hidden" name="app_id[]" value="{$app.slug}">
+                                        <input type="hidden" name="domain" value="{$domain}">
+                                        <input type="hidden" name="hash" value="{$identity_hash}">
+                                        {if !empty($promo_id)}
+                                        <input type="hidden" name="promo_id" value="{$promo_id|escape}">
+                                        {/if}
+                                        <input type="hidden" name="installer_url" value="{$wa->currentUrl(true,true)}">
+                                        [`or `] <a href="javascript:void();" onClick="$('#buy-instead-of-renew-license-form').submit();return false;">[`buy permanent license`]</a>
+                                    </p>
+                                    <p>{sprintf("[`Permanent license saves you money on your monthly bills (your monthly payment will be reduced by %s).`]", $app.lease_price)}</p>
+                                </form>
+                                
+                            {else}
+                                {* VALID LICENSE *}
+                                <p><em class="i-installed-label"><i class="icon16 yes"></i>{sprintf("[`This is a valid licensed installation of %s on <strong>%s</strong>.`]",$app.name|escape, installerHelper::getDomain()|escape)}</em></p>
+
+                                <a class="button green" href="{* $app.buymore_url|escape *}https://www.webasyst.com/buy/store/{$app.slug}{if $wa->locale() == 'ru_RU'}?locale=ru_RU{/if}">[`Buy more licenses`]</a>
+                                
+                                <p>{sprintf("[`Additional licenses are required if you are using %s on more than one domain name (<a href='%s' target='_blank'>one license per domain</a>).`]",$app.name|escape, '[`http://www.webasyst.com/help/1200/paid-app-licensing/`]')}</p>
+                            {/if}
+                        {else}
+                            {* FREE APP *}
+                            {if !empty($app.reviews.url)}
+                            <p>
+                                <a href="{$app.reviews.url}" class="large bold">[`Write a review`]</a>
+                                <i class="icon16 new-window"></i>
+                            </p>
+                            {/if}
+                            <p><em class="i-installed-label"><i class="icon16 yes"></i>{sprintf("[`You have the latest version of %s installed: <strong>%s</strong>`]",$app.name,$app.installed.version)}</em></p>
+                        {/if}
+                    {/if}
+                </div>
+
+            {else}
+
+                <!-- not installed -->
+
+                <div class="align-center">
+                        {if $app.commercial && empty($app.purchased)}
+                            {* PAID APP *}
+                            <form action="{$app.purchase_url|escape}" method="post">
+                                <input type="hidden" name="app_id[]" value="{$app.slug}">
+                                <input type="hidden" name="hash" value="{$identity_hash}">
+                                {if !empty($promo_id)}
+                                    <input type="hidden" name="promo_id" value="{$promo_id|escape}">
+                                {/if}
+                                <input type="hidden" name="domain" value="{$domain}">
+                                <input type="hidden" name="installer_url" value="{$wa->currentUrl(true,true)}">
+                                <input type="submit" class="button green" value="[`Buy & Install`]"{if !$app.applicable} disabled="disabled"{/if}>
+                            </form>
+                            <p>{sprintf('[`%s will be automatically downloaded from Webasyst Store and installed immediately after you make payment.`]', $app.name|escape)} [`If you already have a license, click the button above to link it to this Webasyst installation.`]</p>
+                        {else}
+                            {* FREE APP *}
+                            <form action="?module=update&action=manager" method="post">
+                                <input type="hidden" name="install" value="1">
+                                <input type="hidden" name="app_id[{$app.slug}]" value="{$app.vendor}">
+                                <input type="submit" class="button green" value="[`Install`]"{if !$app.applicable} disabled="disabled"{/if}>
+                            </form>
+                            {if empty($app.commercial)||empty($app.lease_price)||($app.lease_price == 'free')}
+                                <p>{sprintf('[`%s will be downloaded from Webasyst Store and installed automatically.`]', $app.name|escape)}</p>
+                            {else}
+                                <p>{sprintf('[`%s will be downloaded from Webasyst Store and installed for free. Once installed, you will be able either to pay for the app on a monthly basis or to buy a permanent license.`]', $app.name|escape)}</p>
+                            {/if}
+                        {/if}
+                        {if !$app.applicable}
+                            {* DEPENDENCIES *}
+                            <p class="hint">[`This application cannot be installed`]</p>
+                            {include file="templates/includes/requirements.html" item=$app inline}
+                        {/if}
+
+                </div>
+
+            {/if}
+
+            <!-- pricing -->
+            <div class="fields width100px">
+                {if $app.commercial}
+                    <div class="field-group">
+                        <div class="field">
+                            <div class="name">
+                                [`Price`]
+                            </div>
+                            {if $app.lease_price == 'free'}
+                                {* free to install on this particular installation (cloud) *}
+                                <div class="value">
+                                    <strong>[`Free`]</strong>
+                                </div>
+                            {else}
+                                <div class="value">
+                                    {if !empty($app.compare_price)}<strike class="gray">{$app.compare_price}</strike>&nbsp; {/if}
+                                    <strong{if !empty($app.compare_price)} class="highlighted"{/if}>{$app.price}</strong>
+                                </div>
+                                {if $app.lease_price}
+                                    <div class="value">
+                                        [`or`]
+                                    </div>
+                                    <div class="value">
+                                        <strong>{sprintf('[`%s/mo`]',$app.lease_price)}</strong>
+                                    </div>
+                                {/if}
+                            {/if}
+                        </div>
+                    </div>
+                {else}
+                    <div class="field">
+                        <div class="name">
+                            [`Price`]
+                        </div>
+                        <div class="value">
+                            <strong>[`Free`]</strong>
+                        </div>
+                    </div>
+                {/if}
+                <div class="field">
+                    <div class="name">
+                        [`License`]
+                    </div>
+                    <div class="value">
+                        {if !empty($app.license_text)}
+                            [`Commercial`]
+                            <a href="#/show/license/" class="js-action">[`View`]</a>
+                            <div class="dialog">
+                                <div class="dialog-background"></div>
+                                <div class="dialog-window" style="left: 29%; top: 25%;">
+                                    <div class="dialog-content">
+                                        <div class="dialog-content-indent">
+                                            <h2>{$app.name|string_format:'[`%s end user license agreement`]'|escape}</h2>
+                                            <p>{$app.license_text|escape|nl2br}</p>
+                                        </div>
+                                    </div>
+                                    <div class="dialog-buttons">
+                                        <div class="block double-padded">
+                                            <a href="#/hide/license" class="js-action">[`Close`]</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {else}
+                            {$app.license|default:'[`No license`]'|escape}
+                            {if !empty($app.license_url)}<a href="{$app.license_url|escape}" target="_blank">[`View`]</a> <i class="icon10 new-window"></i>{/if}
+                        {/if}
+
+                    </div>
+                </div>
+                <div class="field">
+                    <div class="name">
+                        [`Developer`]
+                    </div>
+                    <div class="value">
+                        {$app.vendor_name|default:$app.vendor|escape}
+                    </div>
+                </div>
+            </div>
+
+            <div class="clear-both"></div>
+
+        </div>
+
+        <!-- product misc details -->
+        <div class="block double-padded">
+            <div class="fields width100px">
+
+                <div class="field">
+                    <div class="name">
+                        [`Version`]
+                    </div>
+                    <div class="value">
+                        {$app.version}
+                        {if !empty($app.changelog)}
+                            <a href="{$current_url}changelog/" style="font-size: 0.9em;">[`View release notes`]</a>
+                        {/if}
+                    </div>
+                </div>
+                {if $app.demo_url}
+                    <div class="field">
+                        <div class="name">
+                            [`Demo`]
+                        </div>
+                        <div class="value">
+                            <a href="{$app.demo_url}" target="_blank">{str_replace('http://','',str_replace('https://','',$app.demo_url))|truncate:25}</a> <i class="icon10 new-window"></i>
+                        </div>
+                    </div>
+                {/if}
+                <div class="field">
+                    <div class="name">
+                        [`Updated`]
+                    </div>
+                    <div class="value">
+                        {$app.update_datetime|wa_datetime:'humandate'}
+                    </div>
+                </div>
+                {if $app.url}
+                    <div class="field">
+                        <div class="name">
+                            [`Website`]
+                        </div>
+                        <div class="value">
+                            <a href="{$app.url}">{str_replace('http://','',str_replace('https://','',$app.url))|truncate:25}</a> <i class="icon10 new-window"></i>
+                        </div>
+                    </div>
+                {/if}
+                {*
+                <div class="field">
+                    <div class="name">
+                        [`Size`]
+                    </div>
+                    <div class="value">
+                        <strong>{10241024|wa_format_file_size:'%0.2f':'[`B,KB,MB`]'}</strong>
+                    </div>
+                </div>
+                *}
+            </div>
+
+            {if $app.installed}
+                {if !$app.system}
+                <div class="block top-padded align-center clear-both">
+                    <a class="no-underline" href="?module=apps&amp;action=remove&amp;app_id[{$app.slug}]={$app.installed.vendor}{if !empty($app.installed.edition)}:{$app.installed.edition}{/if}" onClick="return confirm(this.title);" title="[`This will delete application source code and data without the ability to recover. Are you sure?`]">
+                        <i class="icon16 delete"></i>[`Delete this app`]
+                    </a>
+                </div>
+                {/if}
+            {/if}
+        </div>
+    </div>
+
+    <div class="content">
+
+        <div class="i-breadcrumbs">
+            <a href="#/apps/">[`All apps`]</a>
+            {if !empty($app.vendor)} &raquo; <a href="#/apps&vendor={$app.vendor}/">{$app.vendor_name|default:$app.vendor|escape}</a>{/if}
+        </div>
+
+        <article class="i-summary">
+
+            <div class="profile">
+                <div class="image">
+                    <img src="{$app.icons.96}" alt="">
+                </div>
+                <div class="details">
+                    <h1>{$app.name}{if isset($app.status_label) && $app.status_label} <span class="highlighted i-app-label">{$app.status_label}</span>{/if}</h1>
+                    <p>{$app.summary}</p>
+
+
+                    <nav>
+                        <ul class="menu-h">
+                            <li class="selected"><a href="{$current_url}">[`Overview`]</a></li>
+                            {foreach $app.pages as $page}
+                            <li title="{$page.title|escape}"><a href="{$current_url}{$page.url|escape}/">{$page.name|escape}</a></li>
+                            {/foreach}
+                            {if !empty($app.reviews.url)}
+                            <li><a href="{$app.reviews.url}" target="_blank">[`Reviews`] <span class="hint">{$app.reviews.count|escape}</span> <i class="icon10 new-window"></i></a></li>
+                            {/if}
+                        </ul>
+                    </nav>
+
+                </div>
+            </div>
+            {if $app.screenshots}
+            <div class="i-screenshots">
+                {$screenshot = reset($app.screenshots)}
+                {if $screenshot}
+                <div id="current">
+                    <img src="{$screenshot.img}" alt="" title="{$screenshot.description|escape}"/>
+                    <!-- or YouTube / Vimeo video here -->
+                </div>
+                {/if}
+                {if count($app.screenshots)>1}
+                <ul class="thumbs">
+                    {foreach $app.screenshots as $screenshot}
+                        <li{if $screenshot@first} class="selected"{/if}><a href="#/show/screenshot/" class="js-action"><img data-src="{$screenshot.img}" src="{$screenshot.thumb}" alt="" title="{$screenshot.description|escape}"/></a></li>
+                    {/foreach}
+                </ul>
+                {/if}
+            </div>
+            {/if}
+
+        </article>
+        
+        <section class="i-page i-description" id="tab-{$app.slug|escape}-info">
+            <p>{$app.description}</p>
+        </section>
+
+        {foreach $app.pages as $page}
+            <section class="i-page" id="tab-{$app.slug|escape}-{$page.url|escape}" style="display:none;">
+                {$page.content}
+            </section>
+        {/foreach}
+        {if !empty($app.changelog)}
+            <section class="i-page" id="tab-{$app.slug|escape}-changelog" style="display:none;">
+                {foreach $app.changelog as $changelog}
+                    <h5>{$changelog.version}{if !empty($changelog.datetime)} <span class="hint">{$changelog.datetime|wa_date:'humandate'|escape}</span>{/if}</h5>
+                    {if version_compare($changelog.version,$app.installed.version,'>')}{/if}
+                    <div class="i-changelog">{$changelog.content|nl2br}</div>
+                {/foreach}
+            </section>
+        {/if}
+
+        {*
+            <section class="reviews">
+                <h3>Reviews</h3>
+            </section>
+        *}
+    </div>
+{/if}
+</div>
+<script type="text/javascript">
+<!--
+$.layout.window.setTitle('{$app.name|cat:" — ":{$wa->accountName(false)}|escape:'javascript'}');
+{if !empty($app['is_premium'])}
+$.layout.premium.setClass('apps:{$app.slug}','premium-layout-{$app.slug}');
+{/if}
+//-->
+</script>
+{block name=footer}
+{/block}

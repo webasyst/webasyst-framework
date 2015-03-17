@@ -1,0 +1,144 @@
+<div class="block padded c-core-header" style="display:none">
+    <a href="javascript:void(0)" id="c-e-last-view" class="no-underline"></a>
+</div>
+
+<div class="block">
+    <h1>[`Merge contacts`]</h1>
+</div>
+
+<div id="contacts-container" class="tab-content">
+    <div class="block double-padded">
+        [`Choose a master contact that will be retained after merging.`]
+        [`Other contacts will be deleted during this merging operation.`]
+        [`Contact info from the contacts to be deleted, except unique fields, will be added to master contact.`]
+        [`Links to deleted contacts from other applications will be updated to link to master contact.`]
+    </div>
+    <div class="block not-padded contacts-data">
+        <ul class="v-list">
+            {foreach $contacts as $c}
+                <li class="contact-row">
+                    <div class="profile image96px">
+                        <div class="image"><a href="#/contact/{$c.id}">
+                            <img src="{$c.photo_url_96}" class="userpic" alt="">
+                        </a></div>
+                        <div class="details">
+                            <input name="c_list_selector" value="{$c.id}" type="radio">
+                            <p class="contact-name">
+                                {if $c.master_only}
+                                    <i class="icon16 exclamation"></i>
+                                {/if}
+                                <a href="#/contact/{$c.id}" class="no-underline">{$c.name}</a>
+                                <span class="hide-when-not-selected bold" style="color:#109010;">&mdash; [`selected as a master contact`]</span>
+                            </p>
+                            {if $c.master_only}
+                                <p class="errormsg">{$c.master_only}</p>
+                            {/if}
+                            {foreach $fields as $field_id => $field_name}
+                                {if !empty($c[$field_id])}
+                                    <p>
+                                        <span class="c-details-label">{$field_name|escape}:</span> {$c[$field_id]}
+                                    </p>
+                                {/if}
+                            {/foreach}
+                            
+                            <div class="hint">
+                                <span>[`ID`]: {$c.id}</span>
+                                <span style="margin-left: 25px;">[`Added`]: {if !empty($c.author.name)}{$c.author.name|escape} {/if}{$c.create_datetime|wa_datetime:'datetime'}</span>
+                                <span style="margin-left: 25px;">[`Method`]: {if $c.create_method}{$c.create_method} ({$c.create_app_id}){else}{$c.create_app_id}{/if}</span>
+                            </div>
+                            
+                        </div>
+                    </div>
+
+                    <div class="hidden merge-description-when-selected" style="margin:25px 0 20px 8px;">
+                        {sprintf_wp("%s has been selected as a master contact.", sprintf('<strong>%s</strong>', $c.name))}
+                        {$slaves_num = count($slave_ids)}
+                        {if !$c.master_only}
+                            {$slaves_num = $slaves_num - 1}
+                        {/if}
+
+                        {if $slaves_num > 0}
+                            {sprintf(_w('%d other contact will be merged with %%s.', '%d other contacts will be merged with %%s.', $slaves_num), $c.name)}
+                            {$unable_to_merge_num = count($contacts) - $slaves_num - 1}
+                            {if $unable_to_merge_num > 0}
+                                {_w('%d contact will not be merged by the reasons designated above.', '%d contacts will not be merged by the reasons designated above.', $unable_to_merge_num)}
+                            {/if}
+                        {else}
+                            {sprintf_wp("However, there are no contacts to be merged with %s, by the reasons designated above.", $c.name)}
+                            <span class="not-allowed-as-master"></span>
+                        {/if}
+                    </div>
+                </li>
+            {/foreach}
+        </ul>
+    </div>
+</div>
+
+<div class="block">
+    <input type="button" class="button green" value="[`Merge`]" id="merge-submit" disabled>
+    [`or`] <a id="merge-cancel" href="javascript:void(0)">[`cancel`]</a>
+</div>
+
+<script>(function() {
+    var slave_ids = {json_encode($slave_ids)};
+    var grid_place = $('#contacts-container');
+    var button = $('#merge-submit');
+
+    // Submit button
+    button.click(function() {
+        var master_id = grid_place.find("input:radio:checked").val();
+        if (!master_id) {
+            alert("[`Choose a master contact that will be retained after merging.`]");
+            return false;
+        }
+
+        if (slave_ids.indexOf(master_id) >= 0 && slave_ids.length === 1) {
+            alert("[`Choose a master contact that will be retained after merging.`]");
+            return false;
+        }
+
+        // Send AXAJ request to merge contacts
+        $(this).after('<i class="icon16 loading"></i>');
+        $.post("?module=contacts&action=merge", { master_id: master_id, slave_ids: slave_ids }, function (response) {
+            $(window).trigger('wa_after_merge_contacts', [response]);
+        }, "json");
+    });
+
+    $("#contacts-container").on('change', ':radio', function () {
+        var input = $(this);
+        var contact_row = input.closest('.contact-row');
+        contact_row.parent().children().removeClass('selected shadowed');
+        if (input.is(":checked")) {
+            contact_row.addClass('selected shadowed');
+        }
+
+        button.siblings('.merge-description-when-selected').remove();
+        var merge_description = contact_row.find('.merge-description-when-selected').clone().removeClass('hidden').prependTo(button.parent());
+        if (merge_description.find('.not-allowed-as-master').length) {
+            button.prop('disabled', true);
+        } else {
+            button.prop('disabled', false);
+        }
+    });
+    $("#contacts-container").on('click', '.contact-row', function() {
+        $(this).find(':radio').prop('checked', true).change();
+    });
+
+    // cancel link
+    $('#merge-cancel').click(function() {
+        $(window).trigger('wa_cancel_merge_contacts');
+    });
+
+    // 'Back to' link
+    if($.wa.controller.lastView && $.wa.controller.lastView.title) {
+        $('#c-e-last-view')
+            .text($.wa.controller.lastView.title)
+            .prepend('<i class="icon10 larr"></i>')
+            .attr('href', $.wa.controller.lastView.hash || '#/')
+            .click(function() {
+                $.wa.controller.redispatch();
+            })
+            .parent()
+            .show();
+    }
+})();</script>

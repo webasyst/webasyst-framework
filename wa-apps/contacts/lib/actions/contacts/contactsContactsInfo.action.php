@@ -141,6 +141,7 @@ class contactsContactsInfoAction extends waViewAction
             $this->view->assign('own_profile', true);
         } else {
             $this->contact = new waContact($this->id);
+            $this->view->assign('own_profile', false);
         }
 
         $exists = $this->contact->exists();

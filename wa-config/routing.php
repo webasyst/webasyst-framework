@@ -2,6 +2,22 @@
 return array (
   'pchelkinazabava.ru' => 
   array (
+    9 => 
+    array (
+      'url' => 'post/*',
+      'app' => 'blog',
+      'blog_url_type' => 2,
+      'theme' => 'default',
+      'theme_mobile' => 'default',
+    ),
+    8 => 
+    array (
+      'url' => 'blog/*',
+      'app' => 'blog',
+      'blog_url_type' => 1,
+      'theme' => 'default',
+      'theme_mobile' => 'default',
+    ),
     4 => 
     array (
       'url' => 'mailer/*',
@@ -9,13 +25,6 @@ return array (
       'theme' => 'default',
       'theme_mobile' => 'default',
       'locale' => 'ru_RU',
-    ),
-    0 => 
-    array (
-      'url' => 'blog/*',
-      'app' => 'blog',
-      'locale' => 'ru_RU',
-      'blog_url_type' => 1,
     ),
     2 => 
     array (

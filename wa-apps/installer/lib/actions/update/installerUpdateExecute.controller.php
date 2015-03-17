@@ -90,7 +90,7 @@ class installerUpdateExecuteController extends waJsonController
             //TODO workaround exceptions
             if (empty($url['skipped']) && preg_match('@^wa-apps/@', $target)) {
                 try {
-                    $apps->installWebAsystItem($s = preg_replace('@^wa-apps/@', '', $target), null, isset($url['edition']) ? $url['edition'] : true);
+                    $apps->installWebAsystItem(preg_replace('@^wa-apps/@', '', $target), null, isset($url['edition']) ? $url['edition'] : true);
                 } catch (Exception $e) {
                     waLog::log($e->getMessage());
                     $url['skipped'] = true;

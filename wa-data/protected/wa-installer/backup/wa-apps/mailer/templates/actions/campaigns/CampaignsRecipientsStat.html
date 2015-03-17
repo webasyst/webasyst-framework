@@ -1,0 +1,128 @@
+{if $errormsg}
+    <p><em class="errormsg">{$errormsg}</em></p>
+    <a href="javascript:$.wa.mailer.redispatch()">[`reload`]</a>
+{elseif $form_disabled}
+    <p><em>[`Recipient list preparation is in progress.`] <i class="icon16 loading"></i></em></p>
+{else}
+    <div id="total-recipients-block">
+        <p>[`Total`] <span class="total_count"></span></p>
+
+        {if $recipients_stats}
+            {if $recipients_stats.unavailable || $recipients_stats.unsubscribed}
+                [`Excepted from this list are:`]
+                <ul class="zebra" style="margin:10px 0">
+                    {if $recipients_stats.unsubscribed}
+                        <li>
+                            <span class="count">{$recipients_stats.unsubscribed}</span>
+                            <a href="javascript:void(0)" class="recipients-list-preview-link inline-link" rel="unsubscribed"><b>
+                                [`Earlier unsubscribed`]
+                            </b></a>
+                        </li>
+                    {/if}
+                    {if $recipients_stats.unavailable}
+                        <li>
+                            <span class="count">{$recipients_stats.unavailable}</span>
+                            <a href="javascript:void(0)" class="recipients-list-preview-link inline-link" rel="unavailable"><b>
+                                [`Having delivering errors in previous campaign`]
+                            </b></a>
+                        </li>
+                    {/if}
+                </ul>
+                {if $recipients_stats.unavailable}
+                    <p>
+                        <label><input type="checkbox" name="send_to_unavailable" value="1"{if !empty($params.send_to_unavailable)} checked{/if}> [`Send to contacts having delivering errors anyway`]</label>
+                        <br><span class="hint">[`Use this option only if the reason of delivering errors has been resolved; otherwise recipient mail servers can ban your sending server for spam.`]</span>
+                    </p>
+                {/if}
+            {/if}
+        {else}
+            <p>
+                [`Excepted from this list are unsubscribed contacts and those having delivering errors in previous campaign.`]
+                [`We could not count the number of excepted recipients at this point, because a total number of your campaign recipients is too high. However, we will count every exception in the process of sending, and all such contacts will be placed in &ldquo;Exceptions&rdquo; list in the Sending Report.`]
+            </p>
+            <p>
+                <label><input type="checkbox" name="send_to_unavailable" value="1"{if !empty($params.send_to_unavailable)} checked{/if}> [`Send to contacts having delivering errors anyway`]</label>
+                <br><span class="hint">[`Use this option only if the reason of delivering errors has been resolved; otherwise recipient mail servers can ban your sending server for spam.`]</span>
+            </p>
+        {/if}
+
+        <div id="recipient-lists-wrapper"></div>
+    </div>
+{/if}
+<script>
+    // Recipients list preview logic
+    (function() {
+        var recipient_lists_wrapper = $('#recipient-lists-wrapper');
+        var total_recipients_block = $('#total-recipients-block');
+
+        // "send to unavailable" checkbox is saved on-the-fly via XHR
+        $('[name="send_to_unavailable"]').change(function() {
+            $.post('?module=campaigns&action=save', { id: '{$campaign.id}', 'params[send_to_unavailable]': $(this).is(':checked') ? 1 : '' });
+        });
+
+        // Helper to load next 50 recipients
+        var loadNext50 = function(params, callback_before, callback_after) {
+            recipient_lists_wrapper.append('<i class="icon16 loading" style="margin:0 0 0 27px;"></i>');
+            $.get('?module=campaigns&action=recipientsPreview&campaign_id={$campaign.id}', params, function(r) {
+                recipient_lists_wrapper.children('.loading').remove();
+                if (typeof callback_before == 'function') {
+                    callback_before();
+                }
+                var existing_table = recipient_lists_wrapper.find('table.recipients-report:first');
+                var container = $('<div></div>').appendTo(recipient_lists_wrapper);
+                container.html(r);
+                if (existing_table.length > 0) {
+                    existing_table.find('tr:last').after(container.find('tr'));
+                    container.find('table').remove();
+                }
+                if (typeof callback_after == 'function') {
+                    callback_after();
+                }
+            });
+        };
+
+        // Load first 50 when user clicks on a link near "Total:" label.
+        total_recipients_block.on('click', '.recipients-list-preview-link:not(.disabled)', function() {
+            var a = $(this);
+            recipient_lists_wrapper.empty();
+            var type = a.attr('rel');
+            loadNext50('start=0'+(type ? ('&type='+type) : ''), null, function() {
+                recipient_lists_wrapper.prepend($('<h3></h3>').text(a.text()));
+            });
+            total_recipients_block.find('.recipients-list-preview-link').removeClass('disabled');
+            a.addClass('disabled');
+        });
+
+        // Links to load more recipients under already-loaded list
+        recipient_lists_wrapper.on('click', '.load-more-recipients', function() {
+            var self = $(this);
+            loadNext50(self.attr('rel'));
+            self.remove();
+        });
+
+        var total_recipients_block = $('#total-recipients-block');
+
+        // Helper to update contents of #total-recipients-block and number of recipients in sidebar.
+        // No fancy AJAX, simple DOM manipulation only.
+        var showTotalRecipients = (function () {
+            var total_recipients = "{$total_recipients}";
+            var total_recipients_formatted = "{_w('%s distinct recipient', '%s distinct recipients', $total_recipients)}";
+            return function (int, str) {
+                total_recipients = int || total_recipients;
+                total_recipients_formatted = str || total_recipients_formatted;
+                $.wa.mailer.showRecipientsInRightSidebar(total_recipients);
+                if (total_recipients > 0) {
+                    total_recipients_block.find('.total_count').html(
+                            '<a href="javascript:void(0)" class="recipients-list-preview-link inline-link"><b style="top: 0;">' +
+                            total_recipients_formatted +
+                            '</b></a>'
+                    ).find('a').trigger('click');
+                } else {
+                    total_recipients_block.find('span').text("[`0 recipients`]");
+                }
+                total_recipients_block.show();
+            };
+        })();
+        showTotalRecipients();
+    })();
+</script>

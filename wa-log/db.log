@@ -1,0 +1,2493 @@
+
+2015-02-10 12:24:38: Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+Stack:
+0. n/a:n/a
+waModel->run()
+1. n/a:n/a
+waModel->query()
+2. n/a:n/a
+shopSizeModel->getCountClearSizes()
+3. n/a:n/a
+shopSizePlugin->backendMenu()
+4. n/a:n/a
+waSystem->event()
+5. n/a:n/a
+shopBackendLayout->execute()
+6. n/a:n/a
+waLayout->display()
+7. n/a:n/a
+waViewController->display()
+8. n/a:n/a
+waViewController->run()
+9. n/a:n/a
+waFrontController->execute()
+10. n/a:n/a
+waFrontController->dispatch()
+11. n/a:n/a
+waSystem->dispatch()
+
+2015-02-10 12:26:40: Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+Stack:
+0. n/a:n/a
+waModel->run()
+1. n/a:n/a
+waModel->query()
+2. n/a:n/a
+shopSizeModel->getCountClearSizes()
+3. n/a:n/a
+shopSizePlugin->backendMenu()
+4. n/a:n/a
+waSystem->event()
+5. n/a:n/a
+shopBackendLayout->execute()
+6. n/a:n/a
+waLayout->display()
+7. n/a:n/a
+waViewController->display()
+8. n/a:n/a
+waViewController->run()
+9. n/a:n/a
+waFrontController->execute()
+10. n/a:n/a
+waFrontController->dispatch()
+11. n/a:n/a
+waSystem->dispatch()
+
+2015-02-10 12:28:45: Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+Stack:
+0. n/a:n/a
+waModel->run()
+1. n/a:n/a
+waModel->query()
+2. n/a:n/a
+shopSizeModel->getCountClearSizes()
+3. n/a:n/a
+shopSizePlugin->backendMenu()
+4. n/a:n/a
+waSystem->event()
+5. n/a:n/a
+shopBackendLayout->execute()
+6. n/a:n/a
+waLayout->display()
+7. n/a:n/a
+waViewController->display()
+8. n/a:n/a
+waViewController->run()
+9. n/a:n/a
+waFrontController->execute()
+10. n/a:n/a
+waFrontController->dispatch()
+11. n/a:n/a
+waSystem->dispatch()
+
+2015-02-10 12:29:46: Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+Stack:
+0. n/a:n/a
+waModel->run()
+1. n/a:n/a
+waModel->query()
+2. n/a:n/a
+shopSizeModel->getCountClearSizes()
+3. n/a:n/a
+shopSizePlugin->backendMenu()
+4. n/a:n/a
+waSystem->event()
+5. n/a:n/a
+shopBackendLayout->execute()
+6. n/a:n/a
+waLayout->display()
+7. n/a:n/a
+waViewController->display()
+8. n/a:n/a
+waViewController->run()
+9. n/a:n/a
+waFrontController->execute()
+10. n/a:n/a
+waFrontController->dispatch()
+11. n/a:n/a
+waSystem->dispatch()
+
+2015-02-10 12:30:04: Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+Stack:
+0. n/a:n/a
+waModel->run()
+1. n/a:n/a
+waModel->query()
+2. n/a:n/a
+shopSizeModel->getCountClearSizes()
+3. n/a:n/a
+shopSizePlugin->backendMenu()
+4. n/a:n/a
+waSystem->event()
+5. n/a:n/a
+shopBackendLayout->execute()
+6. n/a:n/a
+waLayout->display()
+7. n/a:n/a
+waViewController->display()
+8. n/a:n/a
+waViewController->run()
+9. n/a:n/a
+waFrontController->execute()
+10. n/a:n/a
+waFrontController->dispatch()
+11. n/a:n/a
+waSystem->dispatch()
+
+2015-02-10 12:30:55: Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+Stack:
+0. n/a:n/a
+waModel->run()
+1. n/a:n/a
+waModel->query()
+2. n/a:n/a
+shopSizeModel->getCountClearSizes()
+3. n/a:n/a
+shopSizePlugin->backendMenu()
+4. n/a:n/a
+waSystem->event()
+5. n/a:n/a
+shopBackendLayout->execute()
+6. n/a:n/a
+waLayout->display()
+7. n/a:n/a
+waViewController->display()
+8. n/a:n/a
+waViewController->run()
+9. n/a:n/a
+waFrontController->execute()
+10. n/a:n/a
+waFrontController->dispatch()
+11. n/a:n/a
+waSystem->dispatch()
+
+2015-02-10 12:33:02: Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+Stack:
+0. n/a:n/a
+waModel->run()
+1. n/a:n/a
+waModel->query()
+2. n/a:n/a
+shopSizeModel->getCountClearSizes()
+3. n/a:n/a
+shopSizePlugin->backendMenu()
+4. n/a:n/a
+waSystem->event()
+5. n/a:n/a
+shopBackendLayout->execute()
+6. n/a:n/a
+waLayout->display()
+7. n/a:n/a
+waViewController->display()
+8. n/a:n/a
+waViewController->run()
+9. n/a:n/a
+waFrontController->execute()
+10. n/a:n/a
+waFrontController->dispatch()
+11. n/a:n/a
+waSystem->dispatch()
+
+2015-02-10 12:34:14: Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+Stack:
+0. n/a:n/a
+waModel->run()
+1. n/a:n/a
+waModel->query()
+2. n/a:n/a
+shopSizeModel->getCountClearSizes()
+3. n/a:n/a
+shopSizePlugin->backendMenu()
+4. n/a:n/a
+waSystem->event()
+5. n/a:n/a
+shopBackendLayout->execute()
+6. n/a:n/a
+waLayout->display()
+7. n/a:n/a
+waViewController->display()
+8. n/a:n/a
+waViewController->run()
+9. n/a:n/a
+waFrontController->execute()
+10. n/a:n/a
+waFrontController->dispatch()
+11. n/a:n/a
+waSystem->dispatch()
+
+2015-02-10 12:34:56: Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+Stack:
+0. n/a:n/a
+waModel->run()
+1. n/a:n/a
+waModel->query()
+2. n/a:n/a
+shopSizeModel->getCountClearSizes()
+3. n/a:n/a
+shopSizePlugin->backendMenu()
+4. n/a:n/a
+waSystem->event()
+5. n/a:n/a
+shopBackendLayout->execute()
+6. n/a:n/a
+waLayout->display()
+7. n/a:n/a
+waViewController->display()
+8. n/a:n/a
+waViewController->run()
+9. n/a:n/a
+waFrontController->execute()
+10. n/a:n/a
+waFrontController->dispatch()
+11. n/a:n/a
+waSystem->dispatch()
+
+2015-02-10 12:42:16: Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+Stack:
+0. n/a:n/a
+waModel->run()
+1. n/a:n/a
+waModel->query()
+2. n/a:n/a
+shopSizeModel->getCountClearSizes()
+3. n/a:n/a
+shopSizePlugin->backendMenu()
+4. n/a:n/a
+waSystem->event()
+5. n/a:n/a
+shopBackendLayout->execute()
+6. n/a:n/a
+waLayout->display()
+7. n/a:n/a
+waViewController->display()
+8. n/a:n/a
+waViewController->run()
+9. n/a:n/a
+waFrontController->execute()
+10. n/a:n/a
+waFrontController->dispatch()
+11. n/a:n/a
+waSystem->dispatch()
+
+2015-02-10 12:44:08: Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+Stack:
+0. n/a:n/a
+waModel->run()
+1. n/a:n/a
+waModel->query()
+2. n/a:n/a
+shopSizeModel->getCountClearSizes()
+3. n/a:n/a
+shopSizePlugin->backendMenu()
+4. n/a:n/a
+waSystem->event()
+5. n/a:n/a
+shopBackendLayout->execute()
+6. n/a:n/a
+waLayout->display()
+7. n/a:n/a
+waViewController->display()
+8. n/a:n/a
+waViewController->run()
+9. n/a:n/a
+waFrontController->execute()
+10. n/a:n/a
+waFrontController->dispatch()
+11. n/a:n/a
+waSystem->dispatch()
+
+2015-02-10 13:29:58: Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+Stack:
+0. n/a:n/a
+waModel->run()
+1. n/a:n/a
+waModel->query()
+2. n/a:n/a
+shopSizeModel->getCountClearSizes()
+3. n/a:n/a
+shopSizePlugin->backendMenu()
+4. n/a:n/a
+waSystem->event()
+5. n/a:n/a
+shopBackendLayout->execute()
+6. n/a:n/a
+waLayout->display()
+7. n/a:n/a
+waViewController->display()
+8. n/a:n/a
+waViewController->run()
+9. n/a:n/a
+waFrontController->execute()
+10. n/a:n/a
+waFrontController->dispatch()
+11. n/a:n/a
+waSystem->dispatch()
+
+2015-02-10 13:30:38: Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+Stack:
+0. n/a:n/a
+waModel->run()
+1. n/a:n/a
+waModel->query()
+2. n/a:n/a
+shopSizeModel->getCountClearSizes()
+3. n/a:n/a
+shopSizePlugin->backendMenu()
+4. n/a:n/a
+waSystem->event()
+5. n/a:n/a
+shopBackendLayout->execute()
+6. n/a:n/a
+waLayout->display()
+7. n/a:n/a
+waViewController->display()
+8. n/a:n/a
+waViewController->run()
+9. n/a:n/a
+waFrontController->execute()
+10. n/a:n/a
+waFrontController->dispatch()
+11. n/a:n/a
+waSystem->dispatch()
+
+2015-02-10 13:31:16: Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+Stack:
+0. n/a:n/a
+waModel->run()
+1. n/a:n/a
+waModel->query()
+2. n/a:n/a
+shopSizeModel->getCountClearSizes()
+3. n/a:n/a
+shopSizePlugin->backendMenu()
+4. n/a:n/a
+waSystem->event()
+5. n/a:n/a
+shopBackendLayout->execute()
+6. n/a:n/a
+waLayout->display()
+7. n/a:n/a
+waViewController->display()
+8. n/a:n/a
+waViewController->run()
+9. n/a:n/a
+waFrontController->execute()
+10. n/a:n/a
+waFrontController->dispatch()
+11. n/a:n/a
+waSystem->dispatch()
+
+2015-02-10 13:32:29: Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+Stack:
+0. n/a:n/a
+waModel->run()
+1. n/a:n/a
+waModel->query()
+2. n/a:n/a
+shopSizeModel->getCountClearSizes()
+3. n/a:n/a
+shopSizePlugin->backendProducts()
+4. n/a:n/a
+waSystem->event()
+5. n/a:n/a
+shopBackendProductsAction->execute()
+6. n/a:n/a
+waViewAction->display()
+7. n/a:n/a
+waViewController->executeAction()
+8. n/a:n/a
+waDefaultViewController->execute()
+9. n/a:n/a
+waController->run()
+10. n/a:n/a
+waViewController->run()
+11. n/a:n/a
+waFrontController->execute()
+12. n/a:n/a
+waFrontController->dispatch()
+13. n/a:n/a
+waSystem->dispatch()
+
+2015-02-10 13:32:29: Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+Stack:
+0. n/a:n/a
+waModel->run()
+1. n/a:n/a
+waModel->query()
+2. n/a:n/a
+shopSizeModel->getCountClearSizes()
+3. n/a:n/a
+shopSizePlugin->backendMenu()
+4. n/a:n/a
+waSystem->event()
+5. n/a:n/a
+shopBackendLayout->execute()
+6. n/a:n/a
+waLayout->display()
+7. n/a:n/a
+waViewController->display()
+8. n/a:n/a
+waViewController->run()
+9. n/a:n/a
+waFrontController->execute()
+10. n/a:n/a
+waFrontController->dispatch()
+11. n/a:n/a
+waSystem->dispatch()
+
+2015-02-10 13:32:32: Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+Stack:
+0. n/a:n/a
+waModel->run()
+1. n/a:n/a
+waModel->query()
+2. n/a:n/a
+shopSizeModel->getCountClearSizes()
+3. n/a:n/a
+shopSizePlugin->backendProducts()
+4. n/a:n/a
+waSystem->event()
+5. n/a:n/a
+shopProductsAction->execute()
+6. n/a:n/a
+waViewAction->display()
+7. n/a:n/a
+waViewController->executeAction()
+8. n/a:n/a
+waDefaultViewController->execute()
+9. n/a:n/a
+waController->run()
+10. n/a:n/a
+waViewController->run()
+11. n/a:n/a
+waFrontController->execute()
+12. n/a:n/a
+waFrontController->dispatch()
+13. n/a:n/a
+waSystem->dispatch()
+
+2015-02-10 13:33:34: Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+Stack:
+0. n/a:n/a
+waModel->run()
+1. n/a:n/a
+waModel->query()
+2. n/a:n/a
+shopSizeModel->getCountClearSizes()
+3. n/a:n/a
+shopSizePlugin->backendMenu()
+4. n/a:n/a
+waSystem->event()
+5. n/a:n/a
+shopBackendLayout->execute()
+6. n/a:n/a
+waLayout->display()
+7. n/a:n/a
+waViewController->display()
+8. n/a:n/a
+waViewController->run()
+9. n/a:n/a
+waFrontController->execute()
+10. n/a:n/a
+waFrontController->dispatch()
+11. n/a:n/a
+waSystem->dispatch()
+
+2015-02-10 13:38:57: Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+Stack:
+0. n/a:n/a
+waModel->run()
+1. n/a:n/a
+waModel->query()
+2. n/a:n/a
+shopSizeModel->getCountClearSizes()
+3. n/a:n/a
+shopSizePlugin->backendMenu()
+4. n/a:n/a
+waSystem->event()
+5. n/a:n/a
+shopBackendLayout->execute()
+6. n/a:n/a
+waLayout->display()
+7. n/a:n/a
+waViewController->display()
+8. n/a:n/a
+waViewController->run()
+9. n/a:n/a
+waFrontController->execute()
+10. n/a:n/a
+waFrontController->dispatch()
+11. n/a:n/a
+waSystem->dispatch()
+
+2015-02-12 12:38:19: Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+Stack:
+0. n/a:n/a
+waModel->run()
+1. n/a:n/a
+waModel->query()
+2. n/a:n/a
+shopSizeModel->getCountClearSizes()
+3. n/a:n/a
+shopSizePlugin->backendMenu()
+4. n/a:n/a
+waSystem->event()
+5. n/a:n/a
+shopBackendLayout->execute()
+6. n/a:n/a
+waLayout->display()
+7. n/a:n/a
+waViewController->display()
+8. n/a:n/a
+waViewController->run()
+9. n/a:n/a
+waFrontController->execute()
+10. n/a:n/a
+waFrontController->dispatch()
+11. n/a:n/a
+waSystem->dispatch()
+
+2015-02-12 12:39:12: Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+Stack:
+0. n/a:n/a
+waModel->run()
+1. n/a:n/a
+waModel->query()
+2. n/a:n/a
+shopSizeModel->getCountClearSizes()
+3. n/a:n/a
+shopSizePlugin->backendMenu()
+4. n/a:n/a
+waSystem->event()
+5. n/a:n/a
+shopBackendLayout->execute()
+6. n/a:n/a
+waLayout->display()
+7. n/a:n/a
+waViewController->display()
+8. n/a:n/a
+waViewController->run()
+9. n/a:n/a
+waFrontController->execute()
+10. n/a:n/a
+waFrontController->dispatch()
+11. n/a:n/a
+waSystem->dispatch()
+
+2015-02-12 12:43:13: Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+Stack:
+0. n/a:n/a
+waModel->run()
+1. n/a:n/a
+waModel->query()
+2. n/a:n/a
+shopSizeModel->getCountClearSizes()
+3. n/a:n/a
+shopSizePlugin->backendMenu()
+4. n/a:n/a
+waSystem->event()
+5. n/a:n/a
+shopBackendLayout->execute()
+6. n/a:n/a
+waLayout->display()
+7. n/a:n/a
+waViewController->display()
+8. n/a:n/a
+waViewController->run()
+9. n/a:n/a
+waFrontController->execute()
+10. n/a:n/a
+waFrontController->dispatch()
+11. n/a:n/a
+waSystem->dispatch()
+
+2015-02-12 12:45:27: Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+Stack:
+0. n/a:n/a
+waModel->run()
+1. n/a:n/a
+waModel->query()
+2. n/a:n/a
+shopSizeModel->getCountClearSizes()
+3. n/a:n/a
+shopSizePlugin->backendMenu()
+4. n/a:n/a
+waSystem->event()
+5. n/a:n/a
+shopBackendLayout->execute()
+6. n/a:n/a
+waLayout->display()
+7. n/a:n/a
+waViewController->display()
+8. n/a:n/a
+waViewController->run()
+9. n/a:n/a
+waFrontController->execute()
+10. n/a:n/a
+waFrontController->dispatch()
+11. n/a:n/a
+waSystem->dispatch()
+
+2015-02-12 12:45:39: Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+Stack:
+0. n/a:n/a
+waModel->run()
+1. n/a:n/a
+waModel->query()
+2. n/a:n/a
+shopSizeModel->getCountClearSizes()
+3. n/a:n/a
+shopSizePlugin->backendMenu()
+4. n/a:n/a
+waSystem->event()
+5. n/a:n/a
+shopBackendLayout->execute()
+6. n/a:n/a
+waLayout->display()
+7. n/a:n/a
+waViewController->display()
+8. n/a:n/a
+waViewController->run()
+9. n/a:n/a
+waFrontController->execute()
+10. n/a:n/a
+waFrontController->dispatch()
+11. n/a:n/a
+waSystem->dispatch()
+
+2015-02-12 12:45:40: Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+Stack:
+0. n/a:n/a
+waModel->run()
+1. n/a:n/a
+waModel->query()
+2. n/a:n/a
+shopSizeModel->getCountClearSizes()
+3. n/a:n/a
+shopSizePlugin->backendProducts()
+4. n/a:n/a
+waSystem->event()
+5. n/a:n/a
+shopBackendProductsAction->execute()
+6. n/a:n/a
+waViewAction->display()
+7. n/a:n/a
+waViewController->executeAction()
+8. n/a:n/a
+waDefaultViewController->execute()
+9. n/a:n/a
+waController->run()
+10. n/a:n/a
+waViewController->run()
+11. n/a:n/a
+waFrontController->execute()
+12. n/a:n/a
+waFrontController->dispatch()
+13. n/a:n/a
+waSystem->dispatch()
+
+2015-02-12 12:45:40: Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+Stack:
+0. n/a:n/a
+waModel->run()
+1. n/a:n/a
+waModel->query()
+2. n/a:n/a
+shopSizeModel->getCountClearSizes()
+3. n/a:n/a
+shopSizePlugin->backendMenu()
+4. n/a:n/a
+waSystem->event()
+5. n/a:n/a
+shopBackendLayout->execute()
+6. n/a:n/a
+waLayout->display()
+7. n/a:n/a
+waViewController->display()
+8. n/a:n/a
+waViewController->run()
+9. n/a:n/a
+waFrontController->execute()
+10. n/a:n/a
+waFrontController->dispatch()
+11. n/a:n/a
+waSystem->dispatch()
+
+2015-02-12 12:45:43: Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+Stack:
+0. n/a:n/a
+waModel->run()
+1. n/a:n/a
+waModel->query()
+2. n/a:n/a
+shopSizeModel->getCountClearSizes()
+3. n/a:n/a
+shopSizePlugin->backendProducts()
+4. n/a:n/a
+waSystem->event()
+5. n/a:n/a
+shopProductsAction->execute()
+6. n/a:n/a
+waViewAction->display()
+7. n/a:n/a
+waViewController->executeAction()
+8. n/a:n/a
+waDefaultViewController->execute()
+9. n/a:n/a
+waController->run()
+10. n/a:n/a
+waViewController->run()
+11. n/a:n/a
+waFrontController->execute()
+12. n/a:n/a
+waFrontController->dispatch()
+13. n/a:n/a
+waSystem->dispatch()
+
+2015-02-12 12:45:52: Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+Stack:
+0. n/a:n/a
+waModel->run()
+1. n/a:n/a
+waModel->query()
+2. n/a:n/a
+shopSizeModel->getCountClearSizes()
+3. n/a:n/a
+shopSizePlugin->backendMenu()
+4. n/a:n/a
+waSystem->event()
+5. n/a:n/a
+shopBackendLayout->execute()
+6. n/a:n/a
+waLayout->display()
+7. n/a:n/a
+waViewController->display()
+8. n/a:n/a
+waViewController->run()
+9. n/a:n/a
+waFrontController->execute()
+10. n/a:n/a
+waFrontController->dispatch()
+11. n/a:n/a
+waSystem->dispatch()
+
+2015-02-12 12:45:58: Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+Stack:
+0. n/a:n/a
+waModel->run()
+1. n/a:n/a
+waModel->query()
+2. n/a:n/a
+shopSizeModel->getCountClearSizes()
+3. n/a:n/a
+shopSizePlugin->backendProducts()
+4. n/a:n/a
+waSystem->event()
+5. n/a:n/a
+shopBackendProductsAction->execute()
+6. n/a:n/a
+waViewAction->display()
+7. n/a:n/a
+waViewController->executeAction()
+8. n/a:n/a
+waDefaultViewController->execute()
+9. n/a:n/a
+waController->run()
+10. n/a:n/a
+waViewController->run()
+11. n/a:n/a
+waFrontController->execute()
+12. n/a:n/a
+waFrontController->dispatch()
+13. n/a:n/a
+waSystem->dispatch()
+
+2015-02-12 12:45:58: Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+Stack:
+0. n/a:n/a
+waModel->run()
+1. n/a:n/a
+waModel->query()
+2. n/a:n/a
+shopSizeModel->getCountClearSizes()
+3. n/a:n/a
+shopSizePlugin->backendMenu()
+4. n/a:n/a
+waSystem->event()
+5. n/a:n/a
+shopBackendLayout->execute()
+6. n/a:n/a
+waLayout->display()
+7. n/a:n/a
+waViewController->display()
+8. n/a:n/a
+waViewController->run()
+9. n/a:n/a
+waFrontController->execute()
+10. n/a:n/a
+waFrontController->dispatch()
+11. n/a:n/a
+waSystem->dispatch()
+
+2015-02-12 12:45:59: Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+Stack:
+0. n/a:n/a
+waModel->run()
+1. n/a:n/a
+waModel->query()
+2. n/a:n/a
+shopSizeModel->getCountClearSizes()
+3. n/a:n/a
+shopSizePlugin->backendProducts()
+4. n/a:n/a
+waSystem->event()
+5. n/a:n/a
+shopProductsAction->execute()
+6. n/a:n/a
+waViewAction->display()
+7. n/a:n/a
+waViewController->executeAction()
+8. n/a:n/a
+waDefaultViewController->execute()
+9. n/a:n/a
+waController->run()
+10. n/a:n/a
+waViewController->run()
+11. n/a:n/a
+waFrontController->execute()
+12. n/a:n/a
+waFrontController->dispatch()
+13. n/a:n/a
+waSystem->dispatch()
+
+2015-02-12 12:46:00: Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+Stack:
+0. n/a:n/a
+waModel->run()
+1. n/a:n/a
+waModel->query()
+2. n/a:n/a
+shopSizeModel->getCountClearSizes()
+3. n/a:n/a
+shopSizePlugin->backendMenu()
+4. n/a:n/a
+waSystem->event()
+5. n/a:n/a
+shopBackendLayout->execute()
+6. n/a:n/a
+waLayout->display()
+7. n/a:n/a
+waViewController->display()
+8. n/a:n/a
+waViewController->run()
+9. n/a:n/a
+waFrontController->execute()
+10. n/a:n/a
+waFrontController->dispatch()
+11. n/a:n/a
+waSystem->dispatch()
+
+2015-02-12 12:46:02: Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+Stack:
+0. n/a:n/a
+waModel->run()
+1. n/a:n/a
+waModel->query()
+2. n/a:n/a
+shopSizeModel->getCountClearSizes()
+3. n/a:n/a
+shopSizePlugin->backendMenu()
+4. n/a:n/a
+waSystem->event()
+5. n/a:n/a
+shopBackendLayout->execute()
+6. n/a:n/a
+waLayout->display()
+7. n/a:n/a
+waViewController->display()
+8. n/a:n/a
+waViewController->run()
+9. n/a:n/a
+waFrontController->execute()
+10. n/a:n/a
+waFrontController->dispatch()
+11. n/a:n/a
+waSystem->dispatch()
+
+2015-02-12 13:07:04: Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+Stack:
+0. n/a:n/a
+waModel->run()
+1. n/a:n/a
+waModel->query()
+2. n/a:n/a
+shopSizeModel->getCountClearSizes()
+3. n/a:n/a
+shopSizePlugin->backendMenu()
+4. n/a:n/a
+waSystem->event()
+5. n/a:n/a
+shopBackendLayout->execute()
+6. n/a:n/a
+waLayout->display()
+7. n/a:n/a
+waViewController->display()
+8. n/a:n/a
+waViewController->run()
+9. n/a:n/a
+waFrontController->execute()
+10. n/a:n/a
+waFrontController->dispatch()
+11. n/a:n/a
+waSystem->dispatch()
+
+2015-02-12 13:07:09: Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+Stack:
+0. n/a:n/a
+waModel->run()
+1. n/a:n/a
+waModel->query()
+2. n/a:n/a
+shopSizeModel->getCountClearSizes()
+3. n/a:n/a
+shopSizePlugin->backendProducts()
+4. n/a:n/a
+waSystem->event()
+5. n/a:n/a
+shopBackendProductsAction->execute()
+6. n/a:n/a
+waViewAction->display()
+7. n/a:n/a
+waViewController->executeAction()
+8. n/a:n/a
+waDefaultViewController->execute()
+9. n/a:n/a
+waController->run()
+10. n/a:n/a
+waViewController->run()
+11. n/a:n/a
+waFrontController->execute()
+12. n/a:n/a
+waFrontController->dispatch()
+13. n/a:n/a
+waSystem->dispatch()
+
+2015-02-12 13:07:09: Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+Stack:
+0. n/a:n/a
+waModel->run()
+1. n/a:n/a
+waModel->query()
+2. n/a:n/a
+shopSizeModel->getCountClearSizes()
+3. n/a:n/a
+shopSizePlugin->backendMenu()
+4. n/a:n/a
+waSystem->event()
+5. n/a:n/a
+shopBackendLayout->execute()
+6. n/a:n/a
+waLayout->display()
+7. n/a:n/a
+waViewController->display()
+8. n/a:n/a
+waViewController->run()
+9. n/a:n/a
+waFrontController->execute()
+10. n/a:n/a
+waFrontController->dispatch()
+11. n/a:n/a
+waSystem->dispatch()
+
+2015-02-12 13:07:10: Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+Stack:
+0. n/a:n/a
+waModel->run()
+1. n/a:n/a
+waModel->query()
+2. n/a:n/a
+shopSizeModel->getCountClearSizes()
+3. n/a:n/a
+shopSizePlugin->backendProducts()
+4. n/a:n/a
+waSystem->event()
+5. n/a:n/a
+shopProductsAction->execute()
+6. n/a:n/a
+waViewAction->display()
+7. n/a:n/a
+waViewController->executeAction()
+8. n/a:n/a
+waDefaultViewController->execute()
+9. n/a:n/a
+waController->run()
+10. n/a:n/a
+waViewController->run()
+11. n/a:n/a
+waFrontController->execute()
+12. n/a:n/a
+waFrontController->dispatch()
+13. n/a:n/a
+waSystem->dispatch()
+
+2015-02-12 13:07:13: Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+Stack:
+0. n/a:n/a
+waModel->run()
+1. n/a:n/a
+waModel->query()
+2. n/a:n/a
+shopSizeModel->getCountClearSizes()
+3. n/a:n/a
+shopSizePlugin->backendMenu()
+4. n/a:n/a
+waSystem->event()
+5. n/a:n/a
+shopBackendLayout->execute()
+6. n/a:n/a
+waLayout->display()
+7. n/a:n/a
+waViewController->display()
+8. n/a:n/a
+waViewController->run()
+9. n/a:n/a
+waFrontController->execute()
+10. n/a:n/a
+waFrontController->dispatch()
+11. n/a:n/a
+waSystem->dispatch()
+
+2015-02-12 13:08:01: Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+Stack:
+0. n/a:n/a
+waModel->run()
+1. n/a:n/a
+waModel->query()
+2. n/a:n/a
+shopSizeModel->getCountClearSizes()
+3. n/a:n/a
+shopSizePlugin->backendMenu()
+4. n/a:n/a
+waSystem->event()
+5. n/a:n/a
+shopBackendLayout->execute()
+6. n/a:n/a
+waLayout->display()
+7. n/a:n/a
+waViewController->display()
+8. n/a:n/a
+waViewController->run()
+9. n/a:n/a
+waFrontController->execute()
+10. n/a:n/a
+waFrontController->dispatch()
+11. n/a:n/a
+waSystem->dispatch()
+
+2015-02-12 13:09:47: Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+Stack:
+0. n/a:n/a
+waModel->run()
+1. n/a:n/a
+waModel->query()
+2. n/a:n/a
+shopSizeModel->getCountClearSizes()
+3. n/a:n/a
+shopSizePlugin->backendMenu()
+4. n/a:n/a
+waSystem->event()
+5. n/a:n/a
+shopBackendLayout->execute()
+6. n/a:n/a
+waLayout->display()
+7. n/a:n/a
+waViewController->display()
+8. n/a:n/a
+waViewController->run()
+9. n/a:n/a
+waFrontController->execute()
+10. n/a:n/a
+waFrontController->dispatch()
+11. n/a:n/a
+waSystem->dispatch()
+
+2015-02-13 12:53:45: Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+Stack:
+0. n/a:n/a
+waModel->run()
+1. n/a:n/a
+waModel->query()
+2. n/a:n/a
+shopSizeModel->getCountClearSizes()
+3. n/a:n/a
+shopSizePlugin->backendMenu()
+4. n/a:n/a
+waSystem->event()
+5. n/a:n/a
+shopBackendLayout->execute()
+6. n/a:n/a
+waLayout->display()
+7. n/a:n/a
+waViewController->display()
+8. n/a:n/a
+waViewController->run()
+9. n/a:n/a
+waFrontController->execute()
+10. n/a:n/a
+waFrontController->dispatch()
+11. n/a:n/a
+waSystem->dispatch()
+
+2015-02-13 12:53:55: Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+Stack:
+0. n/a:n/a
+waModel->run()
+1. n/a:n/a
+waModel->query()
+2. n/a:n/a
+shopSizeModel->getCountClearSizes()
+3. n/a:n/a
+shopSizePlugin->backendMenu()
+4. n/a:n/a
+waSystem->event()
+5. n/a:n/a
+shopBackendLayout->execute()
+6. n/a:n/a
+waLayout->display()
+7. n/a:n/a
+waViewController->display()
+8. n/a:n/a
+waViewController->run()
+9. n/a:n/a
+waFrontController->execute()
+10. n/a:n/a
+waFrontController->dispatch()
+11. n/a:n/a
+waSystem->dispatch()
+
+2015-02-13 14:00:47: Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+Stack:
+0. n/a:n/a
+waModel->run()
+1. n/a:n/a
+waModel->query()
+2. n/a:n/a
+shopSizeModel->getCountClearSizes()
+3. n/a:n/a
+shopSizePlugin->backendProducts()
+4. n/a:n/a
+waSystem->event()
+5. n/a:n/a
+shopBackendProductsAction->execute()
+6. n/a:n/a
+waViewAction->display()
+7. n/a:n/a
+waViewController->executeAction()
+8. n/a:n/a
+waDefaultViewController->execute()
+9. n/a:n/a
+waController->run()
+10. n/a:n/a
+waViewController->run()
+11. n/a:n/a
+waFrontController->execute()
+12. n/a:n/a
+waFrontController->dispatch()
+13. n/a:n/a
+waSystem->dispatch()
+
+2015-02-13 14:00:47: Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+Stack:
+0. n/a:n/a
+waModel->run()
+1. n/a:n/a
+waModel->query()
+2. n/a:n/a
+shopSizeModel->getCountClearSizes()
+3. n/a:n/a
+shopSizePlugin->backendMenu()
+4. n/a:n/a
+waSystem->event()
+5. n/a:n/a
+shopBackendLayout->execute()
+6. n/a:n/a
+waLayout->display()
+7. n/a:n/a
+waViewController->display()
+8. n/a:n/a
+waViewController->run()
+9. n/a:n/a
+waFrontController->execute()
+10. n/a:n/a
+waFrontController->dispatch()
+11. n/a:n/a
+waSystem->dispatch()
+
+2015-02-13 14:01:04: Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+Stack:
+0. n/a:n/a
+waModel->run()
+1. n/a:n/a
+waModel->query()
+2. n/a:n/a
+shopSizeModel->getCountClearSizes()
+3. n/a:n/a
+shopSizePlugin->backendProducts()
+4. n/a:n/a
+waSystem->event()
+5. n/a:n/a
+shopProductsAction->execute()
+6. n/a:n/a
+waViewAction->display()
+7. n/a:n/a
+waViewController->executeAction()
+8. n/a:n/a
+waDefaultViewController->execute()
+9. n/a:n/a
+waController->run()
+10. n/a:n/a
+waViewController->run()
+11. n/a:n/a
+waFrontController->execute()
+12. n/a:n/a
+waFrontController->dispatch()
+13. n/a:n/a
+waSystem->dispatch()
+
+2015-02-13 14:55:39: Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+Stack:
+0. n/a:n/a
+waModel->run()
+1. n/a:n/a
+waModel->query()
+2. n/a:n/a
+shopSizeModel->getCountClearSizes()
+3. n/a:n/a
+shopSizePlugin->backendMenu()
+4. n/a:n/a
+waSystem->event()
+5. n/a:n/a
+shopBackendLayout->execute()
+6. n/a:n/a
+waLayout->display()
+7. n/a:n/a
+waViewController->display()
+8. n/a:n/a
+waViewController->run()
+9. n/a:n/a
+waFrontController->execute()
+10. n/a:n/a
+waFrontController->dispatch()
+11. n/a:n/a
+waSystem->dispatch()
+
+2015-02-16 09:42:16: Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+Stack:
+0. n/a:n/a
+waModel->run()
+1. n/a:n/a
+waModel->query()
+2. n/a:n/a
+shopSizeModel->getCountClearSizes()
+3. n/a:n/a
+shopSizePlugin->backendMenu()
+4. n/a:n/a
+waSystem->event()
+5. n/a:n/a
+shopBackendLayout->execute()
+6. n/a:n/a
+waLayout->display()
+7. n/a:n/a
+waViewController->display()
+8. n/a:n/a
+waViewController->run()
+9. n/a:n/a
+waFrontController->execute()
+10. n/a:n/a
+waFrontController->dispatch()
+11. n/a:n/a
+waSystem->dispatch()
+
+2015-02-16 09:42:21: Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+Stack:
+0. n/a:n/a
+waModel->run()
+1. n/a:n/a
+waModel->query()
+2. n/a:n/a
+shopSizeModel->getCountClearSizes()
+3. n/a:n/a
+shopSizePlugin->backendProducts()
+4. n/a:n/a
+waSystem->event()
+5. n/a:n/a
+shopBackendProductsAction->execute()
+6. n/a:n/a
+waViewAction->display()
+7. n/a:n/a
+waViewController->executeAction()
+8. n/a:n/a
+waDefaultViewController->execute()
+9. n/a:n/a
+waController->run()
+10. n/a:n/a
+waViewController->run()
+11. n/a:n/a
+waFrontController->execute()
+12. n/a:n/a
+waFrontController->dispatch()
+13. n/a:n/a
+waSystem->dispatch()
+
+2015-02-16 09:42:21: Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+Stack:
+0. n/a:n/a
+waModel->run()
+1. n/a:n/a
+waModel->query()
+2. n/a:n/a
+shopSizeModel->getCountClearSizes()
+3. n/a:n/a
+shopSizePlugin->backendMenu()
+4. n/a:n/a
+waSystem->event()
+5. n/a:n/a
+shopBackendLayout->execute()
+6. n/a:n/a
+waLayout->display()
+7. n/a:n/a
+waViewController->display()
+8. n/a:n/a
+waViewController->run()
+9. n/a:n/a
+waFrontController->execute()
+10. n/a:n/a
+waFrontController->dispatch()
+11. n/a:n/a
+waSystem->dispatch()
+
+2015-02-16 09:42:22: Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+Stack:
+0. n/a:n/a
+waModel->run()
+1. n/a:n/a
+waModel->query()
+2. n/a:n/a
+shopSizeModel->getCountClearSizes()
+3. n/a:n/a
+shopSizePlugin->backendProducts()
+4. n/a:n/a
+waSystem->event()
+5. n/a:n/a
+shopProductsAction->execute()
+6. n/a:n/a
+waViewAction->display()
+7. n/a:n/a
+waViewController->executeAction()
+8. n/a:n/a
+waDefaultViewController->execute()
+9. n/a:n/a
+waController->run()
+10. n/a:n/a
+waViewController->run()
+11. n/a:n/a
+waFrontController->execute()
+12. n/a:n/a
+waFrontController->dispatch()
+13. n/a:n/a
+waSystem->dispatch()
+
+2015-02-16 10:29:55: Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+Stack:
+0. n/a:n/a
+waModel->run()
+1. n/a:n/a
+waModel->query()
+2. n/a:n/a
+shopSizeModel->getCountClearSizes()
+3. n/a:n/a
+shopSizePlugin->backendMenu()
+4. n/a:n/a
+waSystem->event()
+5. n/a:n/a
+shopBackendLayout->execute()
+6. n/a:n/a
+waLayout->display()
+7. n/a:n/a
+waViewController->display()
+8. n/a:n/a
+waViewController->run()
+9. n/a:n/a
+waFrontController->execute()
+10. n/a:n/a
+waFrontController->dispatch()
+11. n/a:n/a
+waSystem->dispatch()
+
+2015-02-16 10:34:29: Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+Stack:
+0. n/a:n/a
+waModel->run()
+1. n/a:n/a
+waModel->query()
+2. n/a:n/a
+shopSizeModel->getCountClearSizes()
+3. n/a:n/a
+shopSizePlugin->backendMenu()
+4. n/a:n/a
+waSystem->event()
+5. n/a:n/a
+shopBackendLayout->execute()
+6. n/a:n/a
+waLayout->display()
+7. n/a:n/a
+waViewController->display()
+8. n/a:n/a
+waViewController->run()
+9. n/a:n/a
+waFrontController->execute()
+10. n/a:n/a
+waFrontController->dispatch()
+11. n/a:n/a
+waSystem->dispatch()
+
+2015-02-16 10:34:33: Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+Stack:
+0. n/a:n/a
+waModel->run()
+1. n/a:n/a
+waModel->query()
+2. n/a:n/a
+shopSizeModel->getCountClearSizes()
+3. n/a:n/a
+shopSizePlugin->backendProducts()
+4. n/a:n/a
+waSystem->event()
+5. n/a:n/a
+shopBackendProductsAction->execute()
+6. n/a:n/a
+waViewAction->display()
+7. n/a:n/a
+waViewController->executeAction()
+8. n/a:n/a
+waDefaultViewController->execute()
+9. n/a:n/a
+waController->run()
+10. n/a:n/a
+waViewController->run()
+11. n/a:n/a
+waFrontController->execute()
+12. n/a:n/a
+waFrontController->dispatch()
+13. n/a:n/a
+waSystem->dispatch()
+
+2015-02-16 10:34:34: Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+Stack:
+0. n/a:n/a
+waModel->run()
+1. n/a:n/a
+waModel->query()
+2. n/a:n/a
+shopSizeModel->getCountClearSizes()
+3. n/a:n/a
+shopSizePlugin->backendMenu()
+4. n/a:n/a
+waSystem->event()
+5. n/a:n/a
+shopBackendLayout->execute()
+6. n/a:n/a
+waLayout->display()
+7. n/a:n/a
+waViewController->display()
+8. n/a:n/a
+waViewController->run()
+9. n/a:n/a
+waFrontController->execute()
+10. n/a:n/a
+waFrontController->dispatch()
+11. n/a:n/a
+waSystem->dispatch()
+
+2015-02-16 10:34:34: Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+Stack:
+0. n/a:n/a
+waModel->run()
+1. n/a:n/a
+waModel->query()
+2. n/a:n/a
+shopSizeModel->getCountClearSizes()
+3. n/a:n/a
+shopSizePlugin->backendProducts()
+4. n/a:n/a
+waSystem->event()
+5. n/a:n/a
+shopProductsAction->execute()
+6. n/a:n/a
+waViewAction->display()
+7. n/a:n/a
+waViewController->executeAction()
+8. n/a:n/a
+waDefaultViewController->execute()
+9. n/a:n/a
+waController->run()
+10. n/a:n/a
+waViewController->run()
+11. n/a:n/a
+waFrontController->execute()
+12. n/a:n/a
+waFrontController->dispatch()
+13. n/a:n/a
+waSystem->dispatch()
+
+2015-02-16 10:34:37: Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+Stack:
+0. n/a:n/a
+waModel->run()
+1. n/a:n/a
+waModel->query()
+2. n/a:n/a
+shopSizeModel->getCountClearSizes()
+3. n/a:n/a
+shopSizePlugin->backendMenu()
+4. n/a:n/a
+waSystem->event()
+5. n/a:n/a
+shopBackendLayout->execute()
+6. n/a:n/a
+waLayout->display()
+7. n/a:n/a
+waViewController->display()
+8. n/a:n/a
+waViewController->run()
+9. n/a:n/a
+waFrontController->execute()
+10. n/a:n/a
+waFrontController->dispatch()
+11. n/a:n/a
+waSystem->dispatch()
+
+2015-02-16 10:34:47: Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+Stack:
+0. n/a:n/a
+waModel->run()
+1. n/a:n/a
+waModel->query()
+2. n/a:n/a
+shopSizeModel->getCountClearSizes()
+3. n/a:n/a
+shopSizePlugin->backendMenu()
+4. n/a:n/a
+waSystem->event()
+5. n/a:n/a
+shopBackendLayout->execute()
+6. n/a:n/a
+waLayout->display()
+7. n/a:n/a
+waViewController->display()
+8. n/a:n/a
+waViewController->run()
+9. n/a:n/a
+waFrontController->execute()
+10. n/a:n/a
+waFrontController->dispatch()
+11. n/a:n/a
+waSystem->dispatch()
+
+2015-02-16 10:34:56: Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+Stack:
+0. n/a:n/a
+waModel->run()
+1. n/a:n/a
+waModel->query()
+2. n/a:n/a
+shopSizeModel->getCountClearSizes()
+3. n/a:n/a
+shopSizePlugin->backendMenu()
+4. n/a:n/a
+waSystem->event()
+5. n/a:n/a
+shopBackendLayout->execute()
+6. n/a:n/a
+waLayout->display()
+7. n/a:n/a
+waViewController->display()
+8. n/a:n/a
+waViewController->run()
+9. n/a:n/a
+waFrontController->execute()
+10. n/a:n/a
+waFrontController->dispatch()
+11. n/a:n/a
+waSystem->dispatch()
+
+2015-02-16 10:35:12: Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+Stack:
+0. n/a:n/a
+waModel->run()
+1. n/a:n/a
+waModel->query()
+2. n/a:n/a
+shopSizeModel->getCountClearSizes()
+3. n/a:n/a
+shopSizePlugin->backendMenu()
+4. n/a:n/a
+waSystem->event()
+5. n/a:n/a
+shopBackendLayout->execute()
+6. n/a:n/a
+waLayout->display()
+7. n/a:n/a
+waViewController->display()
+8. n/a:n/a
+waViewController->run()
+9. n/a:n/a
+waFrontController->execute()
+10. n/a:n/a
+waFrontController->dispatch()
+11. n/a:n/a
+waSystem->dispatch()
+
+2015-02-16 10:38:10: Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+Stack:
+0. n/a:n/a
+waModel->run()
+1. n/a:n/a
+waModel->query()
+2. n/a:n/a
+shopSizeModel->getCountClearSizes()
+3. n/a:n/a
+shopSizePlugin->backendMenu()
+4. n/a:n/a
+waSystem->event()
+5. n/a:n/a
+shopBackendLayout->execute()
+6. n/a:n/a
+waLayout->display()
+7. n/a:n/a
+waViewController->display()
+8. n/a:n/a
+waViewController->run()
+9. n/a:n/a
+waFrontController->execute()
+10. n/a:n/a
+waFrontController->dispatch()
+11. n/a:n/a
+waSystem->dispatch()
+
+2015-02-16 11:30:09: Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+Stack:
+0. n/a:n/a
+waModel->run()
+1. n/a:n/a
+waModel->query()
+2. n/a:n/a
+shopSizeModel->getCountClearSizes()
+3. n/a:n/a
+shopSizePlugin->backendMenu()
+4. n/a:n/a
+waSystem->event()
+5. n/a:n/a
+shopBackendLayout->execute()
+6. n/a:n/a
+waLayout->display()
+7. n/a:n/a
+waViewController->display()
+8. n/a:n/a
+waViewController->run()
+9. n/a:n/a
+waFrontController->execute()
+10. n/a:n/a
+waFrontController->dispatch()
+11. n/a:n/a
+waSystem->dispatch()
+
+2015-02-16 11:30:12: Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+Stack:
+0. n/a:n/a
+waModel->run()
+1. n/a:n/a
+waModel->query()
+2. n/a:n/a
+shopSizeModel->getCountClearSizes()
+3. n/a:n/a
+shopSizePlugin->backendMenu()
+4. n/a:n/a
+waSystem->event()
+5. n/a:n/a
+shopBackendLayout->execute()
+6. n/a:n/a
+waLayout->display()
+7. n/a:n/a
+waViewController->display()
+8. n/a:n/a
+waViewController->run()
+9. n/a:n/a
+waFrontController->execute()
+10. n/a:n/a
+waFrontController->dispatch()
+11. n/a:n/a
+waSystem->dispatch()
+
+2015-02-16 11:30:23: Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+Stack:
+0. n/a:n/a
+waModel->run()
+1. n/a:n/a
+waModel->query()
+2. n/a:n/a
+shopSizeModel->getCountClearSizes()
+3. n/a:n/a
+shopSizePlugin->backendProducts()
+4. n/a:n/a
+waSystem->event()
+5. n/a:n/a
+shopBackendProductsAction->execute()
+6. n/a:n/a
+waViewAction->display()
+7. n/a:n/a
+waViewController->executeAction()
+8. n/a:n/a
+waDefaultViewController->execute()
+9. n/a:n/a
+waController->run()
+10. n/a:n/a
+waViewController->run()
+11. n/a:n/a
+waFrontController->execute()
+12. n/a:n/a
+waFrontController->dispatch()
+13. n/a:n/a
+waSystem->dispatch()
+
+2015-02-16 11:30:23: Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+Stack:
+0. n/a:n/a
+waModel->run()
+1. n/a:n/a
+waModel->query()
+2. n/a:n/a
+shopSizeModel->getCountClearSizes()
+3. n/a:n/a
+shopSizePlugin->backendMenu()
+4. n/a:n/a
+waSystem->event()
+5. n/a:n/a
+shopBackendLayout->execute()
+6. n/a:n/a
+waLayout->display()
+7. n/a:n/a
+waViewController->display()
+8. n/a:n/a
+waViewController->run()
+9. n/a:n/a
+waFrontController->execute()
+10. n/a:n/a
+waFrontController->dispatch()
+11. n/a:n/a
+waSystem->dispatch()
+
+2015-02-16 11:30:24: Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+Stack:
+0. n/a:n/a
+waModel->run()
+1. n/a:n/a
+waModel->query()
+2. n/a:n/a
+shopSizeModel->getCountClearSizes()
+3. n/a:n/a
+shopSizePlugin->backendProducts()
+4. n/a:n/a
+waSystem->event()
+5. n/a:n/a
+shopProductsAction->execute()
+6. n/a:n/a
+waViewAction->display()
+7. n/a:n/a
+waViewController->executeAction()
+8. n/a:n/a
+waDefaultViewController->execute()
+9. n/a:n/a
+waController->run()
+10. n/a:n/a
+waViewController->run()
+11. n/a:n/a
+waFrontController->execute()
+12. n/a:n/a
+waFrontController->dispatch()
+13. n/a:n/a
+waSystem->dispatch()
+
+2015-02-16 11:30:25: Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+Stack:
+0. n/a:n/a
+waModel->run()
+1. n/a:n/a
+waModel->query()
+2. n/a:n/a
+shopSizeModel->getCountClearSizes()
+3. n/a:n/a
+shopSizePlugin->backendMenu()
+4. n/a:n/a
+waSystem->event()
+5. n/a:n/a
+shopBackendLayout->execute()
+6. n/a:n/a
+waLayout->display()
+7. n/a:n/a
+waViewController->display()
+8. n/a:n/a
+waViewController->run()
+9. n/a:n/a
+waFrontController->execute()
+10. n/a:n/a
+waFrontController->dispatch()
+11. n/a:n/a
+waSystem->dispatch()
+
+2015-02-16 11:30:27: Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+Stack:
+0. n/a:n/a
+waModel->run()
+1. n/a:n/a
+waModel->query()
+2. n/a:n/a
+shopSizeModel->getCountClearSizes()
+3. n/a:n/a
+shopSizePlugin->backendMenu()
+4. n/a:n/a
+waSystem->event()
+5. n/a:n/a
+shopBackendLayout->execute()
+6. n/a:n/a
+waLayout->display()
+7. n/a:n/a
+waViewController->display()
+8. n/a:n/a
+waViewController->run()
+9. n/a:n/a
+waFrontController->execute()
+10. n/a:n/a
+waFrontController->dispatch()
+11. n/a:n/a
+waSystem->dispatch()
+
+2015-02-16 21:00:08: Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+Stack:
+0. n/a:n/a
+waModel->run()
+1. n/a:n/a
+waModel->query()
+2. n/a:n/a
+shopSizeModel->getCountClearSizes()
+3. n/a:n/a
+shopSizePlugin->backendMenu()
+4. n/a:n/a
+waSystem->event()
+5. n/a:n/a
+shopBackendLayout->execute()
+6. n/a:n/a
+waLayout->display()
+7. n/a:n/a
+waViewController->display()
+8. n/a:n/a
+waViewController->run()
+9. n/a:n/a
+waFrontController->execute()
+10. n/a:n/a
+waFrontController->dispatch()
+11. n/a:n/a
+waSystem->dispatch()
+
+2015-02-16 21:00:14: Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+Stack:
+0. n/a:n/a
+waModel->run()
+1. n/a:n/a
+waModel->query()
+2. n/a:n/a
+shopSizeModel->getCountClearSizes()
+3. n/a:n/a
+shopSizePlugin->backendProducts()
+4. n/a:n/a
+waSystem->event()
+5. n/a:n/a
+shopBackendProductsAction->execute()
+6. n/a:n/a
+waViewAction->display()
+7. n/a:n/a
+waViewController->executeAction()
+8. n/a:n/a
+waDefaultViewController->execute()
+9. n/a:n/a
+waController->run()
+10. n/a:n/a
+waViewController->run()
+11. n/a:n/a
+waFrontController->execute()
+12. n/a:n/a
+waFrontController->dispatch()
+13. n/a:n/a
+waSystem->dispatch()
+
+2015-02-16 21:00:14: Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+Stack:
+0. n/a:n/a
+waModel->run()
+1. n/a:n/a
+waModel->query()
+2. n/a:n/a
+shopSizeModel->getCountClearSizes()
+3. n/a:n/a
+shopSizePlugin->backendMenu()
+4. n/a:n/a
+waSystem->event()
+5. n/a:n/a
+shopBackendLayout->execute()
+6. n/a:n/a
+waLayout->display()
+7. n/a:n/a
+waViewController->display()
+8. n/a:n/a
+waViewController->run()
+9. n/a:n/a
+waFrontController->execute()
+10. n/a:n/a
+waFrontController->dispatch()
+11. n/a:n/a
+waSystem->dispatch()
+
+2015-02-16 21:00:15: Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+Stack:
+0. n/a:n/a
+waModel->run()
+1. n/a:n/a
+waModel->query()
+2. n/a:n/a
+shopSizeModel->getCountClearSizes()
+3. n/a:n/a
+shopSizePlugin->backendProducts()
+4. n/a:n/a
+waSystem->event()
+5. n/a:n/a
+shopProductsAction->execute()
+6. n/a:n/a
+waViewAction->display()
+7. n/a:n/a
+waViewController->executeAction()
+8. n/a:n/a
+waDefaultViewController->execute()
+9. n/a:n/a
+waController->run()
+10. n/a:n/a
+waViewController->run()
+11. n/a:n/a
+waFrontController->execute()
+12. n/a:n/a
+waFrontController->dispatch()
+13. n/a:n/a
+waSystem->dispatch()
+
+2015-02-16 21:00:16: Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+Stack:
+0. n/a:n/a
+waModel->run()
+1. n/a:n/a
+waModel->query()
+2. n/a:n/a
+shopSizeModel->getCountClearSizes()
+3. n/a:n/a
+shopSizePlugin->backendMenu()
+4. n/a:n/a
+waSystem->event()
+5. n/a:n/a
+shopBackendLayout->execute()
+6. n/a:n/a
+waLayout->display()
+7. n/a:n/a
+waViewController->display()
+8. n/a:n/a
+waViewController->run()
+9. n/a:n/a
+waFrontController->execute()
+10. n/a:n/a
+waFrontController->dispatch()
+11. n/a:n/a
+waSystem->dispatch()
+
+2015-02-16 21:03:21: Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+Stack:
+0. n/a:n/a
+waModel->run()
+1. n/a:n/a
+waModel->query()
+2. n/a:n/a
+shopSizeModel->getCountClearSizes()
+3. n/a:n/a
+shopSizePlugin->backendProducts()
+4. n/a:n/a
+waSystem->event()
+5. n/a:n/a
+shopBackendProductsAction->execute()
+6. n/a:n/a
+waViewAction->display()
+7. n/a:n/a
+waViewController->executeAction()
+8. n/a:n/a
+waDefaultViewController->execute()
+9. n/a:n/a
+waController->run()
+10. n/a:n/a
+waViewController->run()
+11. n/a:n/a
+waFrontController->execute()
+12. n/a:n/a
+waFrontController->dispatch()
+13. n/a:n/a
+waSystem->dispatch()
+
+2015-02-16 21:03:21: Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+Stack:
+0. n/a:n/a
+waModel->run()
+1. n/a:n/a
+waModel->query()
+2. n/a:n/a
+shopSizeModel->getCountClearSizes()
+3. n/a:n/a
+shopSizePlugin->backendMenu()
+4. n/a:n/a
+waSystem->event()
+5. n/a:n/a
+shopBackendLayout->execute()
+6. n/a:n/a
+waLayout->display()
+7. n/a:n/a
+waViewController->display()
+8. n/a:n/a
+waViewController->run()
+9. n/a:n/a
+waFrontController->execute()
+10. n/a:n/a
+waFrontController->dispatch()
+11. n/a:n/a
+waSystem->dispatch()
+
+2015-02-16 21:03:22: Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+Stack:
+0. n/a:n/a
+waModel->run()
+1. n/a:n/a
+waModel->query()
+2. n/a:n/a
+shopSizeModel->getCountClearSizes()
+3. n/a:n/a
+shopSizePlugin->backendProducts()
+4. n/a:n/a
+waSystem->event()
+5. n/a:n/a
+shopProductsAction->execute()
+6. n/a:n/a
+waViewAction->display()
+7. n/a:n/a
+waViewController->executeAction()
+8. n/a:n/a
+waDefaultViewController->execute()
+9. n/a:n/a
+waController->run()
+10. n/a:n/a
+waViewController->run()
+11. n/a:n/a
+waFrontController->execute()
+12. n/a:n/a
+waFrontController->dispatch()
+13. n/a:n/a
+waSystem->dispatch()
+
+2015-02-16 21:03:31: Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+Stack:
+0. n/a:n/a
+waModel->run()
+1. n/a:n/a
+waModel->query()
+2. n/a:n/a
+shopSizeModel->getCountClearSizes()
+3. n/a:n/a
+shopSizePlugin->backendProducts()
+4. n/a:n/a
+waSystem->event()
+5. n/a:n/a
+shopProductsAction->execute()
+6. n/a:n/a
+waViewAction->display()
+7. n/a:n/a
+waViewController->executeAction()
+8. n/a:n/a
+waDefaultViewController->execute()
+9. n/a:n/a
+waController->run()
+10. n/a:n/a
+waViewController->run()
+11. n/a:n/a
+waFrontController->execute()
+12. n/a:n/a
+waFrontController->dispatch()
+13. n/a:n/a
+waSystem->dispatch()
+
+2015-02-16 21:03:41: Query Error
+Query: SELECT A.id, A.value FROM shop_feature_values_varchar A LEFT JOIN shop_size B ON A.value = B.size_shop WHERE B.size_shop IS NULL AND A.feature_id =
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+Stack:
+0. n/a:n/a
+waModel->run()
+1. n/a:n/a
+waModel->query()
+2. n/a:n/a
+shopSizeModel->getCountClearSizes()
+3. n/a:n/a
+shopSizePlugin->backendMenu()
+4. n/a:n/a
+waSystem->event()
+5. n/a:n/a
+shopBackendLayout->execute()
+6. n/a:n/a
+waLayout->display()
+7. n/a:n/a
+waViewController->display()
+8. n/a:n/a
+waViewController->run()
+9. n/a:n/a
+waFrontController->execute()
+10. n/a:n/a
+waFrontController->dispatch()
+11. n/a:n/a
+waSystem->dispatch()
+
+2015-02-19 16:22:44: Query Error
+Query: SELECT * FROM shop_size WHERE feature_id=
+Error: 1064
+Message: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+Stack:
+0. n/a:n/a
+waModel->run()
+1. n/a:n/a
+waModel->query()
+2. n/a:n/a
+shopSizeModel->getConnectedSizeByID()
+3. n/a:n/a
+shopSizePluginBackendEditAction->execute()
+4. n/a:n/a
+waViewAction->display()
+5. n/a:n/a
+waViewController->executeAction()
+6. n/a:n/a
+waDefaultViewController->execute()
+7. n/a:n/a
+waController->run()
+8. n/a:n/a
+waViewController->run()
+9. n/a:n/a
+waFrontController->execute()
+10. n/a:n/a
+waFrontController->dispatch()
+11. n/a:n/a
+waSystem->dispatch()
+
+2015-02-19 21:11:10: Query Error
+Query: INSERT  INTO shop_size
+                   (`id`, `feature_id`, `size_shop`, `category`, `size_user`) VALUES (560, 0, '26/98', 'Брюки, бриджы, шорты;Костюмы;Джемпера, кофты, водолазки;Жакеты, жилеты, пиджаки;Юбки;Нижнее белье;ДРЛ827820 Лосины \"Зимний сад\";Костюмы;Сарафаны, платья;Рубашки;Комплекты;Халаты, пижамы;Ветровки;ДПД238210 Платье \"Морячка\";Футболки, туники,майки, блузки;Пальто;ДББ382258 Брюки \"Россия, вперед\";ДББ940067 Брюки \"Морячка\";Плащи;ПНГ434001 Комплект;Джинсовая одежда;ЮХД493641 Халат;ПНГ173001 Комплект;Куртки;Распашонки, кофточки;ДРЛ824820 Лосины \"Зимний сад\";ДДД398820 Джемпер \"Зимний сад\";Перчатки, варежки;Купальники, плавки;ПДД177067 Джемпер \"Федерация гольфа\";ДПД260210 Платье \"Круиз\";ДДД396820 Джемпер \"Зимний сад\";Костюмы, пиджаки  праздничные д/м;ДПД397820 Платье \"Зимний сад\";ПДД182090 Джемпер \"Федерация гольфа\";ПДД995258 Джемпер \"Гран-при\";Жилеты;ПББ175258 Брюки \"Федерация гольфа\";Комплекты;ДРЛ228800 Лосины \"Морячка\";ДРЛ824820н Лосины \"Зимний сад\";ДДД241210 Джемпер \"Морячка\";Брюки, полукомбинезоны;', '98')
+Error: 1062
+Message: Duplicate entry '560' for key 'PRIMARY'
+Stack:
+0. n/a:n/a
+waModel->run()
+1. n/a:n/a
+waModel->query()
+2. n/a:n/a
+waModel->insert()
+3. n/a:n/a
+shopSizePluginBackendSaveController->execute()
+4. n/a:n/a
+waJsonController->run()
+5. n/a:n/a
+waFrontController->execute()
+6. n/a:n/a
+waFrontController->dispatch()
+7. n/a:n/a
+waSystem->dispatch()
+
+2015-02-19 21:14:32: Query Error
+Query: INSERT  INTO shop_size
+                   (`id`, `feature_id`, `size_shop`, `category`, `size_user`) VALUES (560, 0, '26/98', 'Брюки, бриджы, шорты;Костюмы;Джемпера, кофты, водолазки;Жакеты, жилеты, пиджаки;Юбки;Нижнее белье;ДРЛ827820 Лосины \"Зимний сад\";Костюмы;Сарафаны, платья;Рубашки;Комплекты;Халаты, пижамы;Ветровки;ДПД238210 Платье \"Морячка\";Футболки, туники,майки, блузки;Пальто;ДББ382258 Брюки \"Россия, вперед\";ДББ940067 Брюки \"Морячка\";Плащи;ПНГ434001 Комплект;Джинсовая одежда;ЮХД493641 Халат;ПНГ173001 Комплект;Куртки;Распашонки, кофточки;ДРЛ824820 Лосины \"Зимний сад\";ДДД398820 Джемпер \"Зимний сад\";Перчатки, варежки;Купальники, плавки;ПДД177067 Джемпер \"Федерация гольфа\";ДПД260210 Платье \"Круиз\";ДДД396820 Джемпер \"Зимний сад\";Костюмы, пиджаки  праздничные д/м;ДПД397820 Платье \"Зимний сад\";ПДД182090 Джемпер \"Федерация гольфа\";ПДД995258 Джемпер \"Гран-при\";Жилеты;ПББ175258 Брюки \"Федерация гольфа\";Комплекты;ДРЛ228800 Лосины \"Морячка\";ДРЛ824820н Лосины \"Зимний сад\";ДДД241210 Джемпер \"Морячка\";Брюки, полукомбинезоны;', '98')
+Error: 1062
+Message: Duplicate entry '560' for key 'PRIMARY'
+Stack:
+0. n/a:n/a
+waModel->run()
+1. n/a:n/a
+waModel->query()
+2. n/a:n/a
+waModel->insert()
+3. n/a:n/a
+shopSizePluginBackendSaveController->execute()
+4. n/a:n/a
+waJsonController->run()
+5. n/a:n/a
+waFrontController->execute()
+6. n/a:n/a
+waFrontController->dispatch()
+7. n/a:n/a
+waSystem->dispatch()
+
+2015-02-19 22:10:36: Query Error
+Query: INSERT  INTO shop_size
+                   (`id`, `feature_id`, `size_shop`, `category`, `size_user`) VALUES (1, 560, '26/98', '', '98')
+Error: 1062
+Message: Duplicate entry '1' for key 'PRIMARY'
+Stack:
+0. n/a:n/a
+waModel->run()
+1. n/a:n/a
+waModel->query()
+2. n/a:n/a
+waModel->insert()
+3. n/a:n/a
+shopSizePluginBackendSaveController->execute()
+4. n/a:n/a
+waJsonController->run()
+5. n/a:n/a
+waFrontController->execute()
+6. n/a:n/a
+waFrontController->dispatch()
+7. n/a:n/a
+waSystem->dispatch()

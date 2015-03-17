@@ -21,11 +21,11 @@ class installerSettingsAction extends waViewAction
             'name'                         => 'Webasyst',
             'url'                          => wa()->getRootUrl(true),
             //'auth_type'                    => 'login',
-            'auth_form_background'         => 'stock:bokeh_orange.jpg',
+            'auth_form_background'         => 'stock:bokeh_vivid.jpg',
             'auth_form_background_stretch' => 1,
             'locale'                       => 'ru_RU',
             'email'                        => '',
-            'sender'                        => '',
+            'sender'                       => '',
             'rememberme'                   => 1,
         );
 
@@ -36,10 +36,14 @@ class installerSettingsAction extends waViewAction
         $flush_settings = array('debug');
 
         $config_path = waSystem::getInstance()->getConfigPath().'/config.php';
+        $images_path = wa()->getDataPath(null, true, 'webasyst');
+
         $config = file_exists($config_path) ? include($config_path) : array();
         if (!is_array($config)) {
             $config = array();
         }
+
+        $images = array();
 
         $changed = false;
         $flush = false;
@@ -100,9 +104,13 @@ class installerSettingsAction extends waViewAction
             $name = preg_replace('/\?.*$/', '', $settings['auth_form_background']);
             $path = wa()->getDataPath($name, true, 'webasyst');
             $file = waRequest::file('auth_form_background');
+
+            $images = $this->getImages($images_path);
+
             if ($file->uploaded()) {
+
                 if ($name) {
-                    waFiles::delete(wa()->getDataPath($name, true, 'webasyst'));
+                    //waFiles::delete(wa()->getDataPath($name, true, 'webasyst'));
                     $model->set('webasyst', 'auth_form_background', false);
                     $settings['auth_form_background'] = false;
                 }
@@ -125,7 +133,12 @@ class installerSettingsAction extends waViewAction
                     }
                     throw $ex;
                 }
+                foreach ($images as $i) {
+                    waFiles::delete($images_path.'/'.$i);
+                }
                 $file->copyTo($path);
+                clearstatcache();
+                $images = $this->getImages($images_path);
                 //$image->save($path);
                 $name .= '?'.time();
                 $model->set('webasyst', 'auth_form_background', $name);
@@ -133,12 +146,10 @@ class installerSettingsAction extends waViewAction
                 $message[] = '[`Image uploaded`]';
                 $image_info = get_object_vars($image);
                 $image_info['file_size'] = filesize($path);
+                $image_info['file_mtime'] = filemtime($path);
                 $image_info['file_name'] = basename($path);
                 $this->view->assign('image', $image_info);
-            } elseif (($thumb = waRequest::post('auth_form_background_thumb')) && (strpos($thumb, 'stock:') === 0)) {
-                if (($value = $model->get('webasyst', 'auth_form_background')) && (strpos($thumb, 'stock:') === false)) {
-                    waFiles::delete(wa()->getDataPath($value, true, 'webasyst'));
-                }
+            } elseif ($thumb = waRequest::post('auth_form_background_thumb')) {
                 $settings['auth_form_background'] = $thumb;
                 $model->set('webasyst', 'auth_form_background', $settings['auth_form_background']);
             }
@@ -146,14 +157,26 @@ class installerSettingsAction extends waViewAction
             if (strpos($settings['auth_form_background'], 'stock:') === 0) {
                 $this->view->assign('image', false);
             } elseif ($settings['auth_form_background'] && file_exists($path)) {
+                $settings['auth_form_background'] = preg_replace('@\?\d+$@', '', $settings['auth_form_background']);
                 $image = new waImage($path);
                 $image_info = get_object_vars($image);
                 $image_info['file_size'] = filesize($path);
+                $image_info['file_mtime'] = filemtime($path);
                 $image_info['file_name'] = basename($path);
                 $this->view->assign('image', $image_info);
                 unset($image);
             } elseif ($settings['auth_form_background']) {
                 $this->view->assign('image', null);
+            }
+            if (empty($image) && $images && file_exists($images_path.'/'.reset($images))) {
+
+                $image = new waImage($path = $images_path.'/'.reset($images));
+
+                $image_info = get_object_vars($image);
+                $image_info['file_size'] = filesize($path);
+                $image_info['file_mtime'] = filemtime($path);
+                $image_info['file_name'] = basename($path);
+                $this->view->assign('image', $image_info);
             }
 
             if ($message) {
@@ -187,8 +210,14 @@ class installerSettingsAction extends waViewAction
         }
 
         $this->view->assign('version', wa()->getVersion('webasyst'));
+        $backgrounds_path = wa()->getConfig()->getPath('content').'/img/backgrounds/thumbs';
+        $this->view->assign('backgrounds', $this->getImages($backgrounds_path));
 
-        $this->view->assign('backgrounds', waFiles::listdir('wa-content/img/backgrounds/thumbs/'));
+        $images_url = wa()->getDataUrl(null, true, 'webasyst');
+        $this->view->assign('images_url', $images_url);
+        $this->view->assign('images_path', $images_path);
+        $this->view->assign('images', $images);
+        //auth_form_background
 
         $this->view->assign('settings', $settings);
         $this->view->assign('config', $config);
@@ -196,6 +225,17 @@ class installerSettingsAction extends waViewAction
         $locales = waSystem::getInstance()->getConfig()->getLocales('name');
         $this->view->assign('locales', $locales);
         $this->view->assign('title', _w('Settings'));
+    }
+
+    private function getImages($path)
+    {
+        $files = waFiles::listdir($path);
+        foreach ($files as $id => $file) {
+            if (!is_file($path.'/'.$file) || !preg_match('@\.(jpe?g|png|gif|bmp)$@', $file)) {
+                unset($files[$id]);
+            }
+        }
+        return array_values($files);
     }
 }
 //EOF

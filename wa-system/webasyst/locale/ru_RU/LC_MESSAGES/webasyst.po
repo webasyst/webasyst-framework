@@ -370,6 +370,9 @@ msgstr[2] "минут"
 msgid "Login name"
 msgstr "Логин"
 
+msgid "Login name or email"
+msgstr "Логин или email"
+
 msgid "Password"
 msgstr "Пароль"
 
