@@ -480,7 +480,7 @@ class waAppConfig extends SystemConfig
     /**
      * Returns path to app's source files directory.
      *
-     * @param unknown_type $path Optional path to a subdirectory inside app's lib/ directory
+     * @param string $path Optional path to a subdirectory inside app's lib/ directory
      * @return string
      */
     public function getAppPath($path = null)
