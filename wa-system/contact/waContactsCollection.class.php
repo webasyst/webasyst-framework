@@ -7,6 +7,7 @@ class waContactsCollection
     protected $fields = array();
     protected $order_by = '';
     protected $group_by;
+    protected $having = array();
     protected $where;
     protected $where_fields = array();
     protected $joins;
@@ -103,7 +104,13 @@ class waContactsCollection
     {
         if ($this->count === null) {
             $sql = $this->getSQL();
-            $sql = "SELECT COUNT(".($this->joins ? 'DISTINCT ' : '')."c.id) ".$sql;
+            if ($this->getHaving()) {
+                $sql .= $this->getGroupBy();
+                $sql .= $this->getHaving();
+                $sql = "SELECT COUNT(t.id) FROM (SELECT c.id {$sql}) t";
+            } else {
+                $sql = "SELECT COUNT(".($this->joins ? 'DISTINCT ' : '')."c.id) ".$sql;
+            }
             //header("X-SQL-COUNT:". $sql);
             $this->count = (int)$this->getModel()->query($sql)->fetchField();
 
@@ -215,6 +222,7 @@ class waContactsCollection
     {
         $sql = "SELECT ".$this->getFields($fields)." ".$this->getSQL();
         $sql .= $this->getGroupBy();
+        $sql .= $this->getHaving();
         $sql .= $this->getOrderBy();
         $sql .= " LIMIT ".($offset ? $offset.',' : '').(int)$limit;
         //header("X-SQL-". mt_rand() . ": ". str_replace("\n", " ", $sql));
@@ -666,6 +674,17 @@ class waContactsCollection
         }
     }
 
+    protected function getHaving()
+    {
+        if ($this->having) {
+            return " HAVING " . implode(', ', $this->having);
+        } else {
+            return "";
+        }
+    }
+
+
+
     /**
      * Returns contacts model
      *
@@ -970,6 +989,11 @@ class waContactsCollection
             $where[] = $condition;
         }
         return $this;
+    }
+
+    public function addHaving($condition)
+    {
+        $this->having[] = $condition;
     }
 
     public function getJoinedAlias($table)
