@@ -17,11 +17,11 @@
     
 	<!-- css -->
 	<link href="{$wa_theme_url}custom.css?v{$wa_theme_version}" rel="stylesheet" type="text/css"/>
-    {if $wa->shop && $wa->shop->currency() == 'RUB'} <link href="{$wa_url}wa-content/font/ruble/arial/fontface.css" rel="stylesheet" type="text/css">{/if}
+    {if $wa->shop && $wa->shop->currency() == 'RUB'} <link href="{$wa_static_url}wa-content/font/ruble/arial/fontface.css" rel="stylesheet" type="text/css">{/if}
 	{$wa->css()} {* links active plugins CSS *}
 	
 	<!-- js -->
-    <script type="text/javascript" src="{$wa_url}wa-content/js/jquery/jquery-1.8.2.min.js"></script>
+    <script type="text/javascript" src="{$wa_static_url}wa-content/js/jquery/jquery-1.8.2.min.js"></script>
     <script type="text/javascript" src="{$wa_theme_url}custom.js?v{$wa_theme_version}"></script>    
     {$wa->js()} {* links active plugins JS *}
     
@@ -70,9 +70,10 @@
         		{if $wa->shop}
         			<!-- shopping cart info -->
         			{$cart_total = $wa->shop->cart->total()}
-   		     		<div id="cart" class="float-right{if !$cart_total} empty{/if}">
+					{$cart_count = $wa->shop->cart->count()}
+   		     		<div id="cart" class="float-right{if !$cart_count} empty{/if}">
    		     			<a href="{$wa->getUrl('shop/frontend/cart')}">
-   		     				<i class="icon16 cart{if !$cart_total} empty{/if}"></i>
+   		     				<i class="icon16 cart{if !$cart_count} empty{/if}"></i>
    		     				[s`Shopping cart`]:
    		     				<strong class="cart-total">{wa_currency_html($cart_total, $wa->shop->currency())}</strong>
    		     			</a>
