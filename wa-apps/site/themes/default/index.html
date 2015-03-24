@@ -115,7 +115,7 @@
             <h2>
                 <a href="{$wa_url}">
                     {if $theme_settings.logo}
-                        <img src="{$wa_theme_url}{$theme_settings.logo}" alt="{$wa->accountName()}" id="logo" />
+                        <img src="{$wa_theme_url}{$theme_settings.logo}?v{$wa_theme_version}" alt="{$wa->accountName()}" id="logo" />
                         <span>{$wa->accountName()}</span>
                     {else}
                         {$wa->accountName()}
