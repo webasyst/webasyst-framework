@@ -76,7 +76,7 @@ class photosPublicgalleryPlugin extends photosPlugin
     
     public function backendAssets() {
         $this->addJs('js/backend.js?'.wa()->getVersion());
-        return "<style>#sidebar-publicgallery-plugin-awaiting { margin-top: 10px; } </style>";
+        return "<style>#sidebar-publicgallery-plugin-awaiting { margin-top: 15px; } </style>";
     }
     
     public function frontendAssets() {

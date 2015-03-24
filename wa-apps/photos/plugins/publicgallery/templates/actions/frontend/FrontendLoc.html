@@ -1,4 +1,39 @@
 <script>
     $.wa = $.wa || {};
     $.wa.locale = $.extend($.wa.locale || {}, {{json_encode($strings)}});
+    window.$_ = window.$_ || function(p1, p2) {
+        // Two parameters: number and string
+        if (p2) {
+            if (!$.wa.locale[p2]) {
+                if (console){
+                    console.log('Localization failed: '+p2); // !!!
+                }
+                return p2;
+            }
+            if (typeof $.wa.locale[p2] == 'string') {
+                return $.wa.locale[p2];
+            }
+
+            var d = Math.floor(p1 / 10) % 10,
+                e = p1 % 10;
+            if (d == 1 || e > 4 || e == 0) {
+                return $.wa.locale[p2][2];
+            }
+            if (e == 1) {
+                return $.wa.locale[p2][0];
+            }
+            return $.wa.locale[p2][1];
+        }
+
+        // Just one parameter: a string
+        if ($.wa.locale[p1]) {
+            return typeof $.wa.locale[p1] == 'string' ? $.wa.locale[p1] : $.wa.locale[p1][0];
+        }
+
+        if (console){
+            console.log('Localization failed: '+p1); // !!!
+        }
+        return p1;
+    };
+
 </script>
