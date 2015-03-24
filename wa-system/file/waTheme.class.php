@@ -19,6 +19,7 @@
  * @property string $description
  * @property string $about
  * @property string $version
+ * @property int $edition Incremental counter of theme changes
  * @property-read string $id
  * @property-read string $slug
  * @property-read string $vendor
@@ -190,6 +191,7 @@ class waTheme implements ArrayAccess
                         'settings'        => array(),
                         'parent_theme_id' => '',
                         'version'         => '',
+                        'edition'         => 0,
                     );
                     if (!$xml = $this->getXML()) {
                         trigger_error("Invalid theme description {$path}", E_USER_WARNING);
@@ -207,6 +209,7 @@ class waTheme implements ArrayAccess
                         $this->info[(string)$field] = (string)$value;
                     }
 
+                    $this->info['edition'] = (int)$this->info['edition'];
                     $this->info['system'] = isset($this->info['system']) ? (bool)$this->info['system'] : false;
 
                     foreach ($ml_fields as $field) {
@@ -1052,6 +1055,17 @@ HTACCESS;
         }
     }
 
+    private function setEdition($value)
+    {
+        if ($value === true) {
+            ++$this->info['edition'];
+            $this->changed['edition'] = true;
+        } else {
+            $this->changed['edition'] = !empty($this->changed['edition']) || ($this->info['edition'] != $value);
+            $this->info['edition'] = $value;
+        }
+    }
+
     /**
      * @param mixed $offset
      * @return bool
@@ -1433,11 +1447,25 @@ HTACCESS;
     public static function extract($source_path)
     {
         static $white_list = array(
-            'js', 'css', 'html', 'txt',
-            'png', 'jpg', 'jpeg', 'jpe', 'tiff', 'bmp', 'gif', 'svg',
+            'js',
+            'css',
+            'html',
+            'txt',
+            'png',
+            'jpg',
+            'jpeg',
+            'jpe',
+            'tiff',
+            'bmp',
+            'gif',
+            'svg',
             'htc',
             'cur',
-            'ttf', 'eot', 'otf', 'woff', '',
+            'ttf',
+            'eot',
+            'otf',
+            'woff',
+            '',
         );
 
         $autoload = waAutoload::getInstance();
@@ -1651,18 +1679,34 @@ HTACCESS;
         return $relative ? self::preparePath($path) : $path;
     }
 
-    public function version()
+    public function version($edition = false)
     {
+        static $build;
         $this->init();
-        if ($this->_version === null) {
+        if ($this->_version === null || $edition) {
             $this->_version = !empty($this->info['version']) ? $this->info['version'] : '0.0.1';
             if (SystemConfig::isDebug()) {
                 $this->_version .= ".".time();
             } else {
-                $file = $this->path.'/build.php';
-                if (file_exists($file)) {
-                    $build = include($file);
+                if ($edition === true) {
+                    $edition = $this->edition;
+                }
+                if ($build === null) {
+                    $file = $this->path.'/build.php';
+                    if (file_exists($file)) {
+                        $build = include($file);
+                    } else {
+                        $build = 0;
+                    }
+                }
+                if ($build) {
+                    if ($edition) {
+                        $build += $edition;
+                        return $this->_version.'.'.$build;
+                    }
                     $this->_version .= '.'.$build;
+                } elseif ($edition) {
+                    return $this->_version.'.'.$edition;
                 }
             }
         }
