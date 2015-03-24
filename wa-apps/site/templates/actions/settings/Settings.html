@@ -173,6 +173,13 @@
                         {if isset($robots_message)}<span class="small" style="color: #f00;">{$robots_message}</span>{else}<span class="hint">[`Contents of this site's robots.txt file.`]</span>{/if}
                     </div>
                 </div>
+                <div class="field">
+                    <div class="name">[`CDN`]</div>
+                    <div class="value">
+                        <input type="text" name="cdn" value="{$cdn}">
+                        <p class="hint">[`Enable CDN (Content Delivery Network) support for this site by entering CDN URL prefix.`]</p>
+                    </div>
+                </div>
             </div>
     
             <div class="field-group">

@@ -1245,3 +1245,11 @@ msgstr ""
 #: /wa-apps/site/templates/actions/settings/Settings.html:134
 msgid "Universal Analytics"
 msgstr ""
+
+#: /wa-apps/site/templates/actions/settings/Settings.html:177
+msgid "CDN"
+msgstr ""
+
+#: /wa-apps/site/templates/actions/settings/Settings.html:180
+msgid "Enable CDN (Content Delivery Network) support for this site by entering CDN URL prefix."
+msgstr ""

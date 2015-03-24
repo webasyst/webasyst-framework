@@ -67,6 +67,7 @@ class siteSettingsAction extends waViewAction
             $this->view->assign('domain_apps_type', 1);            
         }
         $this->view->assign('domain_apps', $domain_config['apps']);
+        $this->view->assign('cdn', ifset($domain_config['cdn'], ''));
         foreach (array('head_js') as $key) {
             $this->view->assign($key, isset($domain_config[$key]) ? $domain_config[$key] : '');
         }
