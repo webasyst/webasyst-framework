@@ -1,36 +1,48 @@
 <?php
-
-/** Ad hoc logging to /wa-log/$file */
+/**
+ * Add hoc logging to "/wa-log/$file".
+ *
+ */
 class waLog
 {
-    public static function log($message, $file = 'error.log') {
+    /**
+     * @var string Path to log folder
+     */
+    protected static $path;
 
-        $path = waConfig::get('wa_path_log');
-        if (!$path) {
-            $path = dirname(dirname(dirname(__FILE__)));
+    /**
+     * Write message into log file.
+     *
+     * @return bool
+     */
+    public static function log($message, $file = 'error.log')
+    {
+        if (!self::$path) {
+            self::$path = waConfig::get('wa_path_log');
+            if (!self::$path) {
+                self::$path = wa()->getConfig()->getRootPath().DIRECTORY_SEPARATOR.'wa-log';
+            }
+            self::$path .= DIRECTORY_SEPARATOR;
         }
-        $path .= '/'.$file;
 
-        if (!file_exists($path)) {
-            waFiles::create(dirname($path));
-            touch($path);
-            chmod($path, 0666);
-        } elseif (!is_writable($path)) {
+        $file = self::$path.$file;
+
+        if (!file_exists($file)) {
+            waFiles::create($file);
+            touch($file);
+            chmod($file, 0666);
+        } elseif (!is_writable($file)) {
             return false;
         }
 
-        $fd = fopen($path, 'a');
-        if (!flock($fd, LOCK_EX)) {
-            throw new waException('Unable to lock '.$path);
+        $fd = fopen($file, 'a');
+        if (flock($fd, LOCK_EX)) {
+            fwrite($fd, PHP_EOL.date('Y-m-d H:i:s:').PHP_EOL.$message);
+            fflush($fd);
+            flock($fd, LOCK_UN);
         }
-        fwrite($fd, "\n");
-        fwrite($fd, date('Y-m-d H:i:s: '));
-        fwrite($fd, $message);
-        fflush($fd);
-        flock($fd, LOCK_UN);
         fclose($fd);
+
         return true;
     }
 }
-
-// EOF
