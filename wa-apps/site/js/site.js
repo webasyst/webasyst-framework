@@ -269,6 +269,7 @@ $.wa.site = {
         if (!page) {
             page = this.filesPage();
         }
+        var url = 'http://' + this.options.domain_url + '/wa-data/public/site/' + $.wa.site.filesPath();
 		$.post("?module=files&action=list&page=" + page, {path: path}, function (response) {
 			$("#s-files-grid tr.s-file").remove();
             $("div.s-pagination").empty();
@@ -276,7 +277,7 @@ $.wa.site = {
                 var r = response.data.files[i];
 				var html = '<tr class="s-file"><td class="min-width"><input type="checkbox" value="' + r.file + '" /></td>' +
 				'<td><ul class="menu-h dropdown clickable"><li>' + 
-				'<a href="#"><i class="icon16 ' + r.type + '"></i> ' +
+				'<a href="'+url+r.file+'"><i class="icon16 ' + r.type + '"></i> ' +
 					r.file + ' <i class="icon10 darr no-overhanging s-file-actions"></i></a>' +
 				'</li></ul></td>' + 
 				'<td>' + r.datetime + '</td>' +
