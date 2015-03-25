@@ -25,7 +25,7 @@ abstract class waJsonController extends waController
     
     public function run($params = null)
     {
-        $this->execute();
+        parent::run($params);
         $this->display();
     }
 
