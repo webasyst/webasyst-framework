@@ -53,6 +53,29 @@ class waContactCategoryModel extends waModel
     }
 
     /**
+     * Recalculate counters of categories
+     * @param int|array|null $id
+     */
+    public function recalcCounters($id = null)
+    {
+        $where = '';
+        if ($id) {
+            $ids = array_map('intval', (array) $id);
+            if ($ids) {
+                return;
+            }
+            $where = "cc.id IN (".implode(',', $ids).")";
+        }
+        $sql = "UPDATE `wa_contact_category` cc JOIN (
+                SELECT cc.id, COUNT(*) AS count FROM `wa_contact_category` cc
+                JOIN `wa_contact_categories` ccs ON cc.id = ccs.category_id
+                {$where}
+                GROUP BY cc.id) t ON t.id = cc.id
+            SET cc.cnt = t.count";
+        $this->exec($sql);
+    }
+
+    /**
      * @param null|string $key
      * @param bool $normalize
      * @return array id => array(id=>..,name=>..,cnt=>..)

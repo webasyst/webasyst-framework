@@ -1154,6 +1154,7 @@ class waSystem
      * Returns waPlugin object by plugin id.
      *
      * @param  string  $plugin_id
+     * @param bool $set_active
      * @throws  waException
      * @return  waPlugin
      */
@@ -1163,6 +1164,9 @@ class waSystem
         $path = $this->getConfig()->getPluginPath($plugin_id).'/lib/config/plugin.php';
         if (file_exists($path)) {
             $class = $app_id.ucfirst($plugin_id).'Plugin';
+            if (!class_exists($class)) {
+                throw new waException('Plugin class '.$class.' '.$plugin_id.' not found');
+            }
             $plugin_info = include($path);
             $plugin_info['id'] = $plugin_id;
             if (isset($plugin_info['img'])) {
