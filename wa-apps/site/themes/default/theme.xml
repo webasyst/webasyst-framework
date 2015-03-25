@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE theme PUBLIC "wa-app-theme" "http://www.webasyst.com/wa-content/xml/wa-app-theme.dtd">
-<theme id="default" system="0" vendor="webasyst" author="Webasyst" app="site" version="2.2.0">
+<theme id="default" system="0" vendor="webasyst" author="Webasyst" app="site" version="2.2.2">
     <name locale="en_US">Default 2.0</name>
     <name locale="ru_RU">Дефолт 2.0</name>
     <description locale="en_US">Adaptive design theme for all base Webasyst apps</description>
@@ -92,7 +92,7 @@
         </setting>
         <setting var="color_scheme" control_type="image_select">
             <value>img/backgrounds/themesettings/green.png</value>
-            <name locale="ru_RU">Цветовая гамма</name>
+            <name locale="ru_RU">Баннер</name>
             <name locale="en_US">Color scheme</name>
             <options>
                 <option value="img/backgrounds/themesettings/green.png"></option>
@@ -125,8 +125,8 @@
         <setting var="custom_background" control_type="image">
             <value></value>
             <filename>img/custom_background.*</filename>
-            <name locale="en_US">Custom background</name>
-            <name locale="ru_RU">Свое фоновое изображение</name>
+            <name locale="en_US">Custom banner background</name>
+            <name locale="ru_RU">Свое фоновое изображение для баннера</name>
         </setting>
         <setting var="custom_background_stretch" control_type="checkbox">
             <value>0</value>
@@ -202,6 +202,21 @@
             <value>http://</value>
             <name locale="en_US">Google+ URL</name>
             <name locale="ru_RU">Адрес страницы в Google+</name>
+        </setting>
+        <setting var="pagination" control_type="select">
+            <value>lazyloading</value>
+            <name locale="en_US">Long lists</name>
+            <name locale="ru_RU">Длинные списки</name>
+            <options>
+                <option value="lazyloading">
+                    <name locale="ru_RU">Автоматическая подгрузка при скролле (lazy loading)</name>
+                    <name locale="en_US">Auto load on scroll (lazy loading)</name>
+                </option>
+                <option value="paging">
+                    <name locale="ru_RU">Постраничная навигация (1 2 3 4 ...)</name>
+                    <name locale="en_US">Paginated lists (1 2 3 4 ...)</name>
+                </option>
+            </options>
         </setting>
     </settings>
     <locales>

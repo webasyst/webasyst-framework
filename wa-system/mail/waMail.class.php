@@ -81,7 +81,7 @@ class waMail extends Swift_Mailer
         }
     }
 
-    public static function getDefaultFrom()
+    public static function getDefaultFrom($sender = true)
     {
         if (!isset(self::$wa_config['from'])) {
             $app_settings_model = new waAppSettingsModel();

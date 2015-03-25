@@ -100,7 +100,6 @@ class waHtmlControl
             $options = trim($matches[2]);
             switch ($type) {
                 case self::CUSTOM:
-                {
                     if (preg_match('/^([\w:]+)(.*)$/', $options, $matches)) {
                         $params['callback'] = $matches[1];
                         if (preg_match('/^[\w]+::[\w]+$/', $params['callback'])) {
@@ -109,7 +108,6 @@ class waHtmlControl
                         $options = trim($matches[2]);
                     }
                     break;
-                }
             }
 
             #transform raw options data into array
@@ -148,6 +146,7 @@ class waHtmlControl
                     //TODO check format usage
                     $data = array('title' => $data, 'value' => $key);
                 }
+                unset($data);
             }
         }
 
@@ -524,7 +523,14 @@ HTML;
             }
             if (!empty($option['group']) && ($option['group'] != $group)) {
                 $group = (string)$option['group'];
-                $control .= "\n<optgroup label=\"".htmlentities($group, ENT_QUOTES, self::$default_charset)."\"".self::addCustomParams(array('class' => 'group_class', 'group_style' => 'style'), $option).">\n";
+                $custom_params = self::addCustomParams(
+                    array(
+                        'class'       => 'group_class',
+                        'group_style' => 'style'
+                    ),
+                    $option
+                );
+                $control .= "\n<optgroup label=\"".htmlentities($group, ENT_QUOTES, self::$default_charset)."\"".$custom_params.">\n";
             }
 
             ++$id;
@@ -559,15 +565,15 @@ HTML;
             $params['value'] = array();
         }
         self::addNamespace($params, $name);
+        $wrappers = ifempty($params['options_wrapper'], array()) + array(
+                'title_wrapper'       => '&nbsp;%s',
+                'description_wrapper' => '<span class="hint">%s</span>',
+                'control_wrapper'     => '%2$s'."\n".'%1$s'."\n".'%3$s'."\n",
+                'control_separator'   => "<br>",
 
-        $wrappers = array(
-            'title_wrapper'       => '&nbsp;%s',
-            'description_wrapper' => '<span class="hint">%s</span>',
-            'control_wrapper'     => '%2$s'."\n".'%1$s'."\n".'%3$s'."\n",
-            'control_separator'   => "<br>",
-
-        );
-        $params = array_merge($params, ifempty($params['options_wrapper'], $wrappers));
+            );
+        unset($params['options_wrapper']);
+        $params = array_merge($params, $wrappers);
         $checkbox_params = $params;
         if (isset($params['options'])) {
             unset($checkbox_params['options']);

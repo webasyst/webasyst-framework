@@ -5,6 +5,7 @@ return array(
         'max_length' => 150, 'storage' => 'info',
         'fconstructor' => 'hidden',
         'required' => true,
+        'subfields_order' => array('firstname', 'middlename', 'lastname'),
     )),
     new waContactStringField('title', 'Title', array(
         'max_length' => 50, 'storage' => 'info', 'type' => 'NameSubfield',

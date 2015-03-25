@@ -32,7 +32,7 @@
                                 <input name="url" class="p-full-width-input" value="{$contexts[$size]['url']}">
                             </div>
                         </div>
-                        {if $photo.status != 1}
+                        {if $photo.status != 1 && $photo.hash}
                         <div class="field">
                             <div class="value small no-shift">
                                 <i class="icon10 exclamation"></i> [`Image URLs of private photos are temporary. Permanent linking (embedding) is not recommended.`]

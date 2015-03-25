@@ -18,6 +18,9 @@ return array(
     'weight_dimension' => array(
         'value' => 'kg'
     ),
+    'map' => array(
+        'value' => 'google',
+    ),
     'delivery_time'    => array(
         'value' => '+1 day',
         'title' => /*_wp*/('Estimated delivery time'),
@@ -32,4 +35,3 @@ return array(
         ),
     ),
 );
-//EOF

@@ -265,6 +265,59 @@ class waSystem
         return $this->getCommonFactory('auth_user', 'waAuthUser', array(), null);
     }
 
+
+    /**
+     * @param string $adapter
+     * @return waMap
+     * @throws waException
+     */
+    public function getMap($adapter = 'google')
+    {
+        $file = $this->config->getPath('system').'/map/adapters/'.$adapter.'Map.class.php';
+        if (!file_exists($file)) {
+            $file = $this->config->getPath('plugins').'/map/adapters/'.$adapter.'Map.class.php';
+        }
+        if (file_exists($file)) {
+            require_once($file);
+            $class = $adapter.'Map';
+            if (class_exists($class)) {
+                return new $class();
+            }
+        }
+        throw new waException("Map adapter not found.");
+    }
+
+    public function getMapAdapters()
+    {
+        $locale = $this->getLocale();
+        $result = array();
+        $paths = array(
+            $this->config->getPath('system').'/map/adapters/',
+            $this->config->getPath('plugins').'/map/adapters/',
+        );
+        foreach ($paths as $path) {
+            foreach (waFiles::listdir($path) as $f) {
+                try {
+                    if (substr($f, -13) == 'Map.class.php') {
+                        $adapter = substr($f, 0, -13);
+                        $class = $adapter.'Map';
+                        require_once($path.$f);
+                        if (class_exists($class)) {
+                            $obj = new $class();
+                            if ($obj->getLocale() && !in_array($locale, $obj->getLocale())) {
+                                continue;
+                            }
+                            $result[$adapter] = $obj;
+                        }
+                    }
+                } catch (Exception $e) {
+                }
+            }
+        }
+        return $result;
+    }
+
+
     /**
      * Returns auth adapter.
      *

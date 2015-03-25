@@ -795,14 +795,24 @@
                     url: '?module=dialog&action=confirmDeleteAlbum&id=' + album_id,
                     onSubmit: function(d) {
                         var del_photos = parseInt($('input[name=delete-photos]:checked', d).val());
+                        var album_ids;
+                        var del_sub_album_ids = $('input[name=delete-offspring]:checked', d).val();
+                        if (del_sub_album_ids) {
+                            album_ids = del_sub_album_ids.split(',').reverse();
+                            album_ids.push(album_id);
+                        } else {
+                            album_ids = [album_id];
+                        }
+
                         d.trigger('close');
                         $.photos.setCover();
-                        $.photos.deleteAlbum(album_id, del_photos, function() {
+                        $.photos.deleteAllAlbums(album_ids, del_photos, function() {
                             $.photos.unsetCover();
                         });
                         return false;
                     }
                 });
+
                 return false;
             });
 
@@ -2259,6 +2269,18 @@
                     }
                 },
             'json');
+        },
+
+        deleteAllAlbums: function(album_ids, del_photos, fn) {
+            if (!album_ids.length) {
+                return fn && fn();
+            }
+
+            // Delete first album from the list, then delete the rest of albums
+            var a_id = album_ids.shift();
+            $.photos.deleteAlbum(a_id, del_photos, function() {
+                $.photos.deleteAllAlbums(album_ids, del_photos, fn);
+            });
         },
 
         deleteAlbum: function(album_id, del_photos, fn) {

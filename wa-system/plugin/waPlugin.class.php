@@ -129,12 +129,6 @@ class waPlugin
             $schema = include($file_db);
             $model = new waModel();
             $model->createSchema($schema);
-        } else {
-            // check plugin.sql
-            $file_sql = $this->path.'/lib/config/plugin.sql';
-            if (file_exists($file_sql)) {
-                waAppConfig::executeSQL($file_sql, 1);
-            }
         }
         // check install.php
         $file = $this->path.'/lib/config/install.php';
@@ -170,13 +164,7 @@ class waPlugin
                 $sql = "DROP TABLE IF EXISTS ".$table;
                 $model->exec($sql);
             }
-        } else {
-            // check plugin.sql
-            $file_sql = $this->path.'/lib/config/plugin.sql';
-            if (file_exists($file_sql)) {
-                waAppConfig::executeSQL($file_sql, 2);
-            }
-        }
+        } 
         // Remove plugin settings
         $app_settings_model = new waAppSettingsModel();
         $app_settings_model->del($this->app_id.".".$this->id);

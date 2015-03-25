@@ -1,5 +1,16 @@
 {if !$categories}
     <h2>[`No categories available`]</h2>
+    <script>
+        $(function() {
+            $('#add-to-category-dialog .dialog-buttons-gradient').empty().append(
+                $('<div></div>').append(
+                    $('<input type="button" class="button gray" value="'+"[`Close`]"+'">').click(function() {
+                        $.wa.dialogHide();
+                    })
+                )
+            );
+        });
+    </script>
 {else}
     <h2>[`Add contacts to categories`]</h2>
     <div style="margin:2em 0 0 0">

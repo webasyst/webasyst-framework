@@ -1677,3 +1677,7 @@ msgstr ""
 "Возвращает массив дочерних альбомов по <em>parent_album_id</em>. Если "
 "параметр <em>parent_album_id</em> не указан, будут возвращены корневые "
 "альбомы."
+
+#: /wa-apps/photos/templates/actions/dialog/DeleteAlbum.html:20
+msgid "Delete sub albums too"
+msgstr "Удалить все дочерние альбомы"

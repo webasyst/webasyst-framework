@@ -91,7 +91,7 @@
     }
 
     function defaultGetClone($e, o) {
-        return $e.clone().addClass(o.fixed_class || 'sticky-fixed').css($.extend(
+        return $e.clone().empty().addClass(o.fixed_class || 'sticky-fixed').css($.extend(
             { position: 'fixed', display: 'none' },
             o.fixed_css || {}
         )).removeAttr('id').insertAfter($e);

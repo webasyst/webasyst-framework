@@ -14,10 +14,9 @@
  */
 class waContactSocialNetworkTopFormatter extends waContactFieldFormatter
 {
-    public function format($data)
+    public static function formatLink($data)
     {
-        $value = htmlspecialchars(trim($data['value']));
-        
+        $value = $data['value'];
         if (!preg_match("/^(http|https):/", $value)) {
             $f = waContactFields::get('socialnetwork');
             if ($f) {
@@ -32,9 +31,16 @@ class waContactSocialNetworkTopFormatter extends waContactFieldFormatter
         } else {
             $value = "<a href='{$value}' target='_blank'>{$value}</a>";
         }
+        return $value;
+    }
+
+    public function format($data)
+    {
+        $data['value'] = htmlspecialchars(trim($data['value']));
+        $value = self::formatLink($data);
 
         $icon = '';
-        $ext = '';        
+        $ext = '';
         if (isset($data['ext']) && $data['ext'] && ( $f = waContactFields::get('socialnetwork'))) {
             $exts = $f->getParameter('ext');
             if (isset($exts[$data['ext']])) {
@@ -44,7 +50,7 @@ class waContactSocialNetworkTopFormatter extends waContactFieldFormatter
                 $ext = ' <em class="hint">'.htmlspecialchars($data['ext']).'</em>';
             }
         }
-        
+
         return $icon.$value.$ext;
     }
 }

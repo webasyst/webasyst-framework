@@ -32,7 +32,7 @@ class contactsContactsInfoController extends waController
         echo json_encode(array(
             'fields' => $fields,
             'values' => $values,
-            'top' => contactsHelper::getTop($contact)
+            'top' => $contact->getTopFields()
         ));
         
     }    

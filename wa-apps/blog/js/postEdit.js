@@ -1301,7 +1301,7 @@
                             //italicTag: 'i',
                             deniedTags: false,
                             minHeight: Math.max(300, sidebar_height - 229),
-                            buttonSource: false,
+                            source: false,
                             paragraphy: true,
                             convertDivs: true,
                             toolbarFixedBox: true,

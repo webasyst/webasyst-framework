@@ -133,15 +133,19 @@ class waFiles
      *
      * @param string $path Path for saving a file. An existing file will be overwritten.
      * @param string $content Data to be written to the file.
+     * @return int|false
      */
     public static function write($path, $content)
     {
         self::create(dirname($path));
-        $h = fopen($path, "w+");
+        $h = @fopen($path, "w+");
         if ($h) {
-            fwrite($h, $content);
+            $length = fwrite($h, $content);
             fclose($h);
+        } else {
+            $length = false;
         }
+        return $length;
     }
 
     /**
@@ -472,7 +476,7 @@ class waFiles
                 }
                 fclose($fp);
             } else {
-                throw new waException('Error while open source file');
+                throw new waException("Error while open source file {$url}");
             }
         } elseif ($ch = self::curlInit($url)) {
             if (self::$fp = @fopen($path, 'wb')) {

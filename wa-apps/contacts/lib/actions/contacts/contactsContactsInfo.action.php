@@ -20,13 +20,14 @@ class contactsContactsInfoAction extends waViewAction
         $datetime = $system->getDateTime();
         $user = $this->getUser()->getRights('contacts', 'backend');
         $admin = $user >= 2;
-        
+
         $cr = new contactsRightsModel();
         if (!empty($this->params['limited_own_profile'])) {
             $this->id = wa()->getUser()->getId();
             $this->view->assign('limited_own_profile', true);
             $this->view->assign('save_url', '?module=profile&action=save');
             $this->view->assign('password_save_url', '?module=profile&action=password');
+            $this->view->assign('save_geocoords_url', '?module=profile&action=saveGeocoords');
             $this->view->assign('photo_upload_url', '?module=profile&action=tmpimage');
             $this->view->assign('photo_editor_url', '?module=profile&action=photo');
             $this->view->assign('photo_editor_uploaded_url', '?module=profile&action=photo&uploaded=1');
@@ -45,10 +46,10 @@ class contactsContactsInfoAction extends waViewAction
         }
 
         $exists = $this->getContactInfo();
-        
+
         if ($exists) {
             $this->getUserInfo();
-            
+
             $this->view->assign('last_view_context', $this->getLastViewContext());
 
             // collect data from other applications to show in tabs
@@ -97,9 +98,9 @@ class contactsContactsInfoAction extends waViewAction
             $this->view->assign('backend_url', wa()->getRootUrl(true).wa()->getConfig()->getBackendUrl(false) . '/');
             $this->view->assign('static_url', wa()->getAppStaticUrl('contacts'));
         }
-        
+
         $this->view->assign('exists', $exists);
-        
+
         if ($this->getRequest()->request('standalone')) {
             /**
              * Include plugins js and css
@@ -108,10 +109,10 @@ class contactsContactsInfoAction extends waViewAction
              */
             $this->view->assign('backend_assets', wa()->event('backend_assets'));
         }
-        
+
         $auth = wa()->getAuthConfig();
         $this->view->assign('personal_portal_available', !empty($auth['app']));
-        
+
         /*
          * @event backend_contact_info
          * @return array[string]array $return[%plugin_id%] array of html output
@@ -127,7 +128,7 @@ class contactsContactsInfoAction extends waViewAction
             'contact_id' => $this->id
         );
         $this->view->assign('backend_contact_info', wa()->event('backend_contact_info', $backend_contact_info_params));
-        
+
     }
 
     /** Using $this->id get waContact and save it in $this->contact;
@@ -140,14 +141,15 @@ class contactsContactsInfoAction extends waViewAction
             $this->view->assign('own_profile', true);
         } else {
             $this->contact = new waContact($this->id);
+            $this->view->assign('own_profile', false);
         }
-        
+
         $exists = $this->contact->exists();
-        
+
         if ($exists) {
-            
+
             $this->view->assign('contact', $this->contact);
-            
+
             // who created this contact and when
             $this->view->assign('contact_create_time', waDateTime::format('datetime', $this->contact['create_datetime'], $system->getUser()->getTimezone()));
             if ($this->contact['create_contact_id']) {
@@ -161,7 +163,7 @@ class contactsContactsInfoAction extends waViewAction
                 }
             }
 
-            $this->view->assign('top', contactsHelper::getTop($this->contact));
+            $this->view->assign('top', $this->contact->getTopFields());
 
             // Main contact editor data
             $fieldValues = $this->contact->load('js', true);
@@ -195,14 +197,14 @@ class contactsContactsInfoAction extends waViewAction
 
             // Contact categories
             $cm = new waContactCategoriesModel();
-            $this->view->assign('contact_categories', array_values($cm->getContactCategories($this->id)));        
-            
+            $this->view->assign('contact_categories', array_values($cm->getContactCategories($this->id)));
+
         } else {
             $this->view->assign('contact', array('id' => $this->id));
         }
-        
+
         return $exists;
-        
+
     }
 
     /** Using $this->id and $this->contact, if contact is a user,
@@ -244,7 +246,7 @@ class contactsContactsInfoAction extends waViewAction
             $gNoAccess = $gNoAccess && !$app['gaccess'];
         }
         unset($app);
-        
+
         $this->view->assign('apps', $apps);
         $this->view->assign('groups', $groups);
         $this->view->assign('noAccess', $noAccess ? 1 : 0);
@@ -254,20 +256,20 @@ class contactsContactsInfoAction extends waViewAction
         $this->view->assign('gFullAccess', $groupAccess['webasyst']);
         $this->view->assign('access_to_contacts', $this->getUser()->getRights('contacts', 'backend'));
     }
-    
+
     public function getLastViewContext()
     {
         if ($this->getRequest()->get('last_hash') === null) {
             return null;
         }
-        
+
         $params = array(
             'hash' => $this->getRequest()->get('last_hash', ''),
             'sort' => $this->getRequest()->get('sort', ''),
             'order' => $this->getRequest()->get('order', 1, 'int') ? ' ASC' : ' DESC',
             'offset' => $this->getRequest()->get('offset', 0)
         );
-        
+
         $context = null;
         $plugins_context = wa()->event('backend_last_view_context', $params);
         foreach ($plugins_context as $cntx) {
@@ -276,20 +278,20 @@ class contactsContactsInfoAction extends waViewAction
                 break;
             }
         }
-        
+
         if (!$context) {
-            
+
             $hash = $params['hash'];
             $sort = $params['sort'];
             $order = $params['order'];
             $offset = $params['offset'];
-            
+
             $collection = new contactsCollection($hash);
             if ($sort) {
                 $collection->orderBy($sort, $order);
             }
-            
-            $total_count = $collection->count();        
+
+            $total_count = $collection->count();
             $ids = array_keys($collection->getContacts('id', max($offset - 1, 0), 3));
 
             $prev = null;
@@ -314,7 +316,7 @@ class contactsContactsInfoAction extends waViewAction
         }
         return $context;
     }
-    
+
 }
 
 // EOF

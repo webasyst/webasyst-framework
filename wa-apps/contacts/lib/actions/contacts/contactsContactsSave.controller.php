@@ -23,7 +23,7 @@ class contactsContactsSaveController extends waJsonController
             if (!$this->getRights('create')) {
                 throw new waRightsException(_w('Access denied'));
             }
-        } else {
+        } else if ($this->id != wa()->getUser()->getId()) {
             $cr = new contactsRightsModel();
             if ($cr->getRight(null, $this->id) != 'write') {
                 throw new waRightsException(_w('Access denied'));
@@ -51,7 +51,7 @@ class contactsContactsSaveController extends waJsonController
                 $old_data[$field_id] = $this->contact->get($field_id);
             }
         }
-        
+
         $response = array();
         if (!$errors = $this->contact->save($data, true)) {
             if ($this->id) {
@@ -65,9 +65,9 @@ class contactsContactsSaveController extends waJsonController
                 if (empty($errors)) {
                     $this->logContactEdit($old_data, $new_data);
                 }
-                
+
                 $response['name'] = $this->contact->get('name', 'js');
-                $response['top'] = contactsHelper::getTop($this->contact);
+                $response['top'] = $this->contact->getTopFields();
                 $response['id'] = $this->contact->getId();
             } else {
                 $response = array('id' => $this->contact->getId());
@@ -97,7 +97,7 @@ class contactsContactsSaveController extends waJsonController
             $this->response['history'] = $history;
         }
     }
-    
+
     public function logContactEdit($old_data, $new_data)
     {
         $diff = array();

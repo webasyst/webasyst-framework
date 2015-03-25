@@ -361,6 +361,10 @@ class waDesignActions extends waActions
                         $r = @file_put_contents($file_path, $content);
                         if ($r !== false) {
                             $r = true;
+                            if (in_array($ext, array('css', 'js'))) {
+                                $theme['edition'] = true;
+                                $theme->save();
+                            }
                         }
                     } else {
                         $r = @touch($file_path);
@@ -659,7 +663,11 @@ HTACCESS;
      */
     protected function saveThemeSettings(waTheme $theme, $settings, $files)
     {
+        if($theme->type == waTheme::ORIGINAL){
+            $theme->copy();
+        }
         $old_settings = $theme['settings'];
+        $edition = false;
         foreach ($files as $k => $f) {
             /**
              * @var waRequestFile $f
@@ -669,10 +677,14 @@ HTACCESS;
                 $filename = str_replace('*', $f->extension, $old_settings[$k]['filename']);
                 if ($this->uploadImage($f, $theme->path.'/'.$filename, $error)) {
                     $settings[$k] = $filename;
+                    $edition = true;
                 } elseif ($error) {
                     throw new waException($error);
                 }
             }
+        }
+        if ($edition) {
+            $theme['edition'] = true;
         }
         $theme['settings'] = $settings;
         $theme->save();

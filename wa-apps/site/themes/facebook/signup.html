@@ -1,12 +1,27 @@
 <div class="content">
     <div id="page" role="main">
-        {if !empty($contact)}
-            <h1>[`Thank you!`]</h1>
-            <p>[`You have successfully signed up.`]</p>
+
+        {if !empty($confirmed_email)}
+        
+            <h1>[s`Thank you!`]</h1>
+            <p>[s`You have successfully confirmed your email.`]</p>
+            
+        {else if !empty($contact)}
+        
+            <h1>[s`Thank you!`]</h1>
+            <p>[s`You have successfully signed up.`]</p>
+    
+            {if !empty($email_confirmation_hash)}
+                <p><em>[s`A confirmation link has been sent to you by email. Please click this link to confirm your signup and to sign in.`]</em></p>
+            {/if}
+            
         {else}
-            <h1>[`Sign up`]</h1>
+        
+            <h1>[s`Sign up`]</h1>
             {$wa->authAdapters()}
             {$wa->signupForm($errors)}
+            
         {/if}
+        
     </div>
 </div>

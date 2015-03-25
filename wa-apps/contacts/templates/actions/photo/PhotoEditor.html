@@ -22,7 +22,7 @@
                     <div class="imgareaselect-border3" style="position: absolute; font-size: 0px; left: 0px; top: 0px; width: 200px; height: 200px;"></div>
                     <div class="imgareaselect-border4" style="position: absolute; font-size: 0px; left: 0px; top: 0px; width: 200px; height: 200px;"></div>
                 </div>
-            {/if}            
+            {/if}
         </div>
         <form id="save-selection-form" action="{$crop_url}" method="post">
             <div style="text-align: center;">
@@ -84,10 +84,10 @@
                                     function(data) {
                                         {if $logged_user_id == $contact['id']}
                                             // If user removed their own photo, then update it in top right corner too
-                                            $('#wa-usercorner .profile.image32px img').attr('src', '{$wa_url}wa-content/img/userpic32.jpg');
+                                            $('#wa-usercorner .profile.image32px img').attr('src', data.data.url);
                                         {/if}
                                         window.location = "{$back_url}";
-                                    }
+                                    }, 'json'
                                 );
                                 return false;
                             }
@@ -182,7 +182,7 @@
             $('#y2').val(selection.y2);
             $('#w').val(selection.width);
             $('#h').val(selection.height);
-            $('#ww').val(image.width());            
+            $('#ww').val(image.width());
         };
 
         // Function to initialize image area selection plugin when image is ready
@@ -260,10 +260,10 @@
 
         $('#imageform').submit();
     });
-    
+
     $(window).unbind('wa_before_dispatched.photo_editor').bind('wa_before_dispatched.photo_editor', function() {
         $('#c-pe-photo-big').imgAreaSelect({ remove: true}).remove();
     });
-    
+
 </script>
 

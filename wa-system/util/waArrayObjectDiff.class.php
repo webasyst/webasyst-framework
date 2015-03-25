@@ -217,7 +217,11 @@ class waArrayObjectDiff extends waArrayObject
 
     public function toArray()
     {
-        return array_diff_key(parent::toArray() + $this->persistent->toArray(), $this->removed);
+        $result = $this->persistent->toArray();
+        foreach(parent::toArray() as $k => $v) {
+            $result[$k] = $v;
+        }
+        return array_diff_key($result, $this->removed);
     }
 
     public function clear()
@@ -282,7 +286,11 @@ class waArrayObjectDiff extends waArrayObject
 
     public function getIterator()
     {
-        return new ArrayIterator(array_diff_key($this->rec_data + $this->persistent->rec_data, $this->removed));
+        $result = $this->persistent->rec_data;
+        foreach($this->rec_data as $k => $v) {
+            $result[$k] = $v;
+        }
+        return new ArrayIterator(array_diff_key($result, $this->removed));
     }
 }
 

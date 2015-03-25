@@ -222,7 +222,7 @@ class waContactForm
                 $this->post = $post;
             }
         }
-        if (!$this->post || !is_array($this->post)) {
+        if ($this->post === null || !is_array($this->post)) {
             return null;
         }
         if ($field_id) {
@@ -321,7 +321,7 @@ class waContactForm
             if (empty($this->contact)) {
                 $this->contact = new waContact();
             }
-            if ($this->post()) {
+            if ($this->post() !== null) {
                 $opts['value'] = $this->fields[$field_id]->set($this->contact, $this->post($field_id), array());
             } else if (isset($this->values[$field_id]) &&
                 ((is_array($this->values[$field_id]) && count($this->values[$field_id]) > 0) ||
@@ -422,7 +422,7 @@ class waContactForm
         }
         $this->contact = $contact ? $contact : new waContact();
         $this->fields_validated = true;
-        if (!$this->post()) {
+        if ($this->post() === null) {
             return;
         }
         foreach($this->fields as $fid => $f) {

@@ -1,26 +1,32 @@
 $.wa.contactEditorFactory = function(options) {
-    
+
     // OPTIONS
-    
+
     options = $.extend({
         contact_id: null,
         current_user_id: null,
         contactType: 'person', // person|company
         baseFieldType: null, // defined in fieldTypes.js
         saveUrl: '?module=contacts&action=save', // URL to send data when saving contact
+        saveGeocoordsUrl: '?module=contacts&action=saveGeocoords',  // URL to send data when saving geocoords
+        regionsUrl: '?module=backend&action=regions&country=',      // URL get load regions by country
         el: '#contact-info-block',
         with_inplace_buttons: true,
         update_title: true
     }, options);
-    
-    
+
+
     // INSTANCE OF EDITOR
-    
+
     var contactEditor = $.extend({
 
+        wa_app_url: '',
+
         fields: {},
-        
+
         fieldsOrder: [],
+
+        fieldsValues: {},
 
         /** Editor factory templates, filled below */
         factoryTypes: {},
@@ -87,14 +93,13 @@ $.wa.contactEditorFactory = function(options) {
                 // must be an empty array that came from json
                 return;
             }
+            this.fieldsValues = newData;
             for (var i = 0; i < this.fieldsOrder.length; i += 1) {
                 var f = this.fieldsOrder[i];
                 if (typeof this.editorFactories[f] == 'undefined') {
                     // This can happen when a new field type is added since user opened the page.
                     // Need to reload. (This should not happen often though.)
                     $.wa.controller.contactAction([this.contact_id]);
-                    //console.log(this.editorFactories);
-                    //console.log(newData);
                     //throw new Error('Unknown field type: '+f);
                     return;
                 }
@@ -113,6 +118,32 @@ $.wa.contactEditorFactory = function(options) {
             this.switchMode(mode, true);
         },
 
+        _getUrl: function(url_name) {
+            if (typeof this[url_name] === 'string') {
+                if (this.saveUrl.slice(0, this.wa_app_url.length) !== this.wa_app_url) {
+                    return this.wa_app_url + this[url_name];
+                }
+                return this.saveUrl;
+            } else {
+                return '';
+            }
+        },
+
+        getSaveUrl: function() {
+            return this._getUrl('saveUrl');
+        },
+
+        getSaveGeocoordsUrl: function() {
+            return this._getUrl('saveGeocoordsUrl');
+        },
+
+        getPasswdSaveUrl: function() {
+            return this._getUrl('passwdSaveUrl');
+        },
+
+        getRegionsUrl: function() {
+            return this._getUrl('regionsUrl');
+        },
 
         /** Switch mode for all editors */
         switchMode: function (mode, init) {
@@ -161,10 +192,10 @@ $.wa.contactEditorFactory = function(options) {
             var that = this;
             // Editor buttons
             if(mode == 'edit') {
-                
+
                 el.find('.subname').wrapAll('<div class="subname-wrapper"></div>');
                 el.find('.jobtitle-company').wrapAll('<div class="jobtitle-company-wrapper"></div>');
-                
+
                 if (this.with_inplace_buttons) {
                     var buttons = this.inplaceEditorButtons(fieldsToUpdate, function(noValidationErrors) {
                         if (typeof noValidationErrors != 'undefined' && !noValidationErrors) {
@@ -175,7 +206,7 @@ $.wa.contactEditorFactory = function(options) {
                             // new contact created
                             var c = $('#sb-all-contacts-li .count');
                             c.text(1+parseInt(c.text()));
-                            
+
                             // Redirect to profile just created
                             $.wa.setHash('/contact/' + that.contact_id);
                             return false;
@@ -272,11 +303,36 @@ $.wa.contactEditorFactory = function(options) {
                 return;
             }
 
+            var isEqual = function(o1, o2, keys) {
+                if (!keys) {
+                    for (var k in o1) {
+                        if (o1.hasOwnProperty(k)) {
+                            if (o1[k] && o2[k] && o1[k] != o2[k]) {
+                                return false;
+                            }
+                        }
+                    }
+                    for (var k in o2) {
+                        if (o2.hasOwnProperty(k)) {
+                            if (o1[k] && o2[k] && o1[k] != o2[k]) {
+                                return false;
+                            }
+                        }
+                    }
+                } else {
+                    for (var i = 0; i < keys.length; i += 1) {
+                        if (o1[keys[i]] && o2[keys[i]] && o1[keys[i]] != o2[keys[i]]) {
+                            return false;
+                        }
+                    }
+                }
+                return true;
+            };
 
             var that = this;
             var save = function(with_gecoding) {
                 with_gecoding = with_gecoding === undefined ? true : with_gecoding;
-                $.post(that.saveUrl, {
+                $.post(that.getSaveUrl(), {
                     'data': $.JSON.encode(data),
                     'type': that.contactType,
                     'id': that.contact_id != null ? that.contact_id : 0
@@ -299,6 +355,8 @@ $.wa.contactEditorFactory = function(options) {
                         $("#contact-info-top").html(html);
                         delete newData.data.top;
                     }
+
+                    var oldData = that.fieldsValues || {};
 
                     if(that.contact_id != null) {
                         that.initFieldEditors(newData.data);
@@ -330,11 +388,11 @@ $.wa.contactEditorFactory = function(options) {
                     }
 
                     if (!validationErrors) {
-                        
+
                         if (that.contact_id === null) {
                             that.justCreated = true;
                         }
-                        
+
                         that.contact_id = newData.data.id;
                         if (with_gecoding) {
                             // geocoding
@@ -343,34 +401,50 @@ $.wa.contactEditorFactory = function(options) {
                                 $.storage.del('contacts/last_geocoding');
                                 var address = newData.data.address;
                                 if (!$.isEmptyObject(address)) {
+
                                     var requests = [];
                                     var indexes = [];
+                                    // iterate throughout addresses but test if changed
                                     for (var i = 0; i < address.length; i += 1) {
-                                        requests.push(that.sendGeocodeRequest(address[i].for_map));
-                                        indexes.push(i);
-                                    }
-                                    var fn = function(response, i) {
-                                        if (response.status === "OK") {
-                                            var lat = response.results[0].geometry.location.lat || '';
-                                            var lng = response.results[0].geometry.location.lng || '';
-                                            data['address'][i]['value'].lat = lat;
-                                            data['address'][i]['value'].lng = lng;
-                                        } else if (response.status === "OVER_QUERY_LIMIT") {
-                                            $.storage.set('contacts/last_geocoding', (new Date()).getTime() / 1000);
+                                        var is_diff = true;
+                                        if (data.address[i]) {
+                                            is_diff = !isEqual(
+                                                address[i].data,
+                                                (oldData.address[i] || {}).data || {},
+                                                ['city', 'country', 'region', 'street', 'zip']
+                                            );
                                         }
-                                    };
-                                    $.when.apply($, requests).then(function() {
-                                        if (requests.length <= 1 && arguments[1] === 'success') {
-                                            fn(arguments[0], indexes[0]);
-                                        } else {
-                                            for (var i = 0; i < arguments.length; i += 1) {
-                                                if (arguments[i][1] === 'success') {
-                                                    fn(arguments[i][0], indexes[i]);
+                                        if (is_diff) {
+                                            requests.push(that.sendGeocodeRequest(address[i].for_map));
+                                            indexes.push(i);
+                                        }
+                                    }
+                                    if (requests.length) {
+                                        var fn = function(response, i) {
+                                            if (response.status === "OK") {
+                                                var lat = response.results[0].geometry.location.lat || '';
+                                                var lng = response.results[0].geometry.location.lng || '';
+                                                data['address'][i]['value'].lat = lat;
+                                                data['address'][i]['value'].lng = lng;
+                                            } else if (response.status === "OVER_QUERY_LIMIT") {
+                                                $.storage.set('contacts/last_geocoding', (new Date()).getTime() / 1000);
+                                            }
+                                        };
+                                        $.when.apply($, requests).then(function() {
+                                            if (requests.length <= 1 && arguments[1] === 'success') {
+                                                fn(arguments[0], indexes[0]);
+                                            } else {
+                                                for (var i = 0; i < arguments.length; i += 1) {
+                                                    if (arguments[i][1] === 'success') {
+                                                        fn(arguments[i][0], indexes[i]);
+                                                    }
                                                 }
                                             }
-                                        }
-                                        save.call(that, false);
-                                    });
+                                            save.call(that, false);
+                                        });
+                                    } else {
+                                        callback(!validationErrors);
+                                    }
                                 } else {
                                     callback(!validationErrors);
                                 }
@@ -380,15 +454,15 @@ $.wa.contactEditorFactory = function(options) {
                         } else {
                             callback(!validationErrors);
                         }
-                         
+
                     } else {
                         callback(!validationErrors);
                     }
                 }, 'json');
             };
-            
+
             save();
-            
+
         },
 
         /** Return jQuery object representing ext selector with given options and currently selected value. */
@@ -521,11 +595,11 @@ $.wa.contactEditorFactory = function(options) {
 
             return buttons;
         },
-                
+
         destroy: function() {
             $(this.el).html('');
         },
-                
+
         // UTILITIES
 
         /** Utility function for common name => value wrapper.
@@ -534,7 +608,7 @@ $.wa.contactEditorFactory = function(options) {
           * @param cssClass string optional CSS class to add to wrapper (defaults to none)
           * @return resulting HTML
           */
-                
+
         wrapper: function(value, name, cssClass) {
             cssClass = (typeof cssClass != 'undefined') && cssClass ? ' '+cssClass : '';
             var result = $('<div class="field'+cssClass+'"></div>');
@@ -549,7 +623,7 @@ $.wa.contactEditorFactory = function(options) {
             result.append(value);
             return result;
         },
-                
+
         setOptions: function(opts) {
             this.options = $.extend(options, this.options || {}, opts);
         },
@@ -561,7 +635,7 @@ $.wa.contactEditorFactory = function(options) {
             div.appendChild(text);
             return div.innerHTML;
         },
-                
+
         addressToString: function(address) {
             var value = [];
             var order = [ 'street', 'city', 'country', 'region', 'zip' ];
@@ -577,14 +651,14 @@ $.wa.contactEditorFactory = function(options) {
             }
             return value.join(',');
         },
-                
+
         geocodeAddress: function(fieldValue, i) {
             var self = this;
             if (!fieldValue[i].data.lat || !fieldValue[i].data.lng) {
                 this.sendGeocodeRequest(fieldValue[i].for_map || fieldValue[i].value, function(r) {
                     fieldValue[i].data.lat = r.lat;
                     fieldValue[i].data.lng = r.lng;
-                    $.post('?module=contacts&action=saveGeocoords', {
+                    $.post(self.getSaveGeocoordsUrl(), {
                         id: self.contact_id,
                         lat: r.lat,
                         lng: r.lng,
@@ -593,7 +667,7 @@ $.wa.contactEditorFactory = function(options) {
                 });
             }
         },
-                
+
         sendGeocodeRequest: function(value, fn, force) {
             var address = [];
             if (typeof value === 'string') {
@@ -605,17 +679,18 @@ $.wa.contactEditorFactory = function(options) {
                     if (value.with_street) {
                         address.push(value.with_street);
                     }
-//                    if (value.without_street) {
-//                        address.push(value.without_street);
-//                    }
+                    if (value.without_street) {
+                        address.push(value.without_street);
+                    }
                 }
             }
-            if (address.length <= 1 && force === undefined) {
-                force = true;
-            }
-            
+//            if (address.length <= 1 && force === undefined) {
+//                force = true;
+//            }
+            force = true;
+
             var df = $.Deferred();
-            
+
 
       //Uncomment for test
 //            console.log('//maps.googleapis.com/maps/api/geocode/json');
@@ -633,8 +708,8 @@ $.wa.contactEditorFactory = function(options) {
 //                    ]
 //            }, 'success']);
 //            return df;
-            
-            
+
+
             var self = this;
             $.ajax({
                 url: '//maps.googleapis.com/maps/api/geocode/json',
@@ -660,15 +735,16 @@ $.wa.contactEditorFactory = function(options) {
                                     break;
                                 }
                             }
-                            if (!r) {
-                                if (force) {
+                            if (!r) {   // partial match results
+
+                                if (force) {    // force: just return results
                                     lat = response.results[0].geometry.location.lat || '';
                                     lng = response.results[0].geometry.location.lng || '';
                                     if (fn instanceof Function) {
                                         fn({ lat: lat, lng: lng });
                                     }
                                     df.resolve([response, 'success']);
-                                } else if (address[1]) {
+                                } else if (address[1]) {    // try another address (maybe this is it)
                                     self.sendGeocodeRequest(address[1], fn, true).always(function(r) {
                                         df.resolve(r);
                                     });
@@ -691,7 +767,7 @@ $.wa.contactEditorFactory = function(options) {
             });
             return df;
         },
-        
+
         /** Helper to switch to particular tab in a tab set. */
         switchToTab: function(tab, onto, onfrom, tabContent) {
             if (typeof(tab) == 'string') {
@@ -748,9 +824,9 @@ $.wa.contactEditorFactory = function(options) {
                 doSwitch();
             }
         },
-                
-        /** 
-        * Helper to append appropriate events to a checkbox list. 
+
+        /**
+        * Helper to append appropriate events to a checkbox list.
         * */
         initCheckboxList: function(ul) {
             ul = $(ul);
@@ -769,7 +845,7 @@ $.wa.contactEditorFactory = function(options) {
                 .each(updateStatus);
             return ul;
         },
-                
+
         /** Load content from url and put it into elem. Params are passed to url as get parameters. */
         load: function (elem, url, params, beforeLoadCallback, afterLoadCallback) {
             var r = Math.random();
@@ -789,7 +865,7 @@ $.wa.contactEditorFactory = function(options) {
                 }
             });
         }
-                
+
     }, options);
     $.wa.fieldTypesFactory(contactEditor);
     return contactEditor;

@@ -2,7 +2,7 @@
 
 require_once(dirname(__FILE__).'/../../wa-config/SystemConfig.class.php');
 
-waSystem::getInstance(null, new SystemConfig('backend'));
+waSystem::getInstance(null, new SystemConfig('api'));
 
 // Init Webasyst application (system application)
 waSystem::getInstance('webasyst');

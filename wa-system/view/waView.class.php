@@ -36,6 +36,18 @@ abstract class waView
     public function __construct(waSystem $system, $options = array())
     {
         $this->setOptions($options);
+
+        if (wa()->getEnv() == 'frontend') {
+            $domain = wa()->getRouting()->getDomain(null, true);
+            $domain_config_path = wa()->getConfig()->getConfigPath('domains/' . $domain . '.php', true, 'site');
+            if (file_exists($domain_config_path)) {
+                $domain_config = include($domain_config_path);
+                if (!empty($domain_config['cdn'])) {
+                    $this->options['cdn'] = $domain_config['cdn'];
+                }
+            }
+        }
+
     }
 
     /**
@@ -97,15 +109,24 @@ abstract class waView
 		// Add global variables
 		$this->assign(array(
 			'wa_url'            => $wa->getRootUrl(),
+            'wa_static_url'     => $this->getStaticUrl($wa->getRootUrl()),
 			'wa_backend_url'    => waSystem::getInstance()->getConfig()->getBackendUrl(true),
 			'wa_app'            => $wa->getApp(),
 			'wa_app_url'        => $wa->getAppUrl(null, true),
-			'wa_app_static_url' => $wa->getAppStaticUrl(),
+			'wa_app_static_url' => $this->getStaticUrl($wa->getAppStaticUrl()),
 			'wa'                => $this->getHelper()
 		));
 
 		// "Chainable" method
 		return $this;
+    }
+
+    protected function getStaticUrl($url)
+    {
+        if (!empty($this->options['cdn'])) {
+            return trim($this->options['cdn'], '/').$url;
+        }
+        return $url;
     }
 
     abstract public function fetch($template, $cache_id = null);
@@ -164,22 +185,25 @@ abstract class waView
     public function setThemeTemplate($theme, $template)
     {
         $this->assign('wa_active_theme_path', $theme->path);
-        $this->assign('wa_active_theme_url', $theme->url);
+        $this->assign('wa_active_theme_url', $this->getStaticUrl($theme->url));
         $theme_settings = $theme->getSettings(true);
 
         $locales = $theme->getLocales();
 
-        $version = $theme->version();
+        $version = $theme->version(true);
 
         $file = $theme->getFile($template);
         if ($parent_theme = $theme->parent_theme) {
+            $edition = $theme->edition + $parent_theme->edition;
             if (!empty($file['parent'])) {
+                if ($parent_theme->version($edition) > $version) {
+                    $version = $parent_theme->version($edition);
+                } else {
+                    $version = $theme->version($edition);
+                }
                 $theme = $parent_theme;
             }
-            if ($theme->version() > $version) {
-                $version = $theme->version();
-            }
-            $this->assign('wa_parent_theme_url', $parent_theme->url);
+            $this->assign('wa_parent_theme_url', $this->getStaticUrl($parent_theme->url));
             $this->assign('wa_parent_theme_path', $parent_theme->path);
             if ($parent_settings = $parent_theme->getSettings(true)) {
                 $theme_settings = $theme_settings + $parent_settings;
@@ -191,7 +215,7 @@ abstract class waView
         $this->assign('wa_theme_version', $version);
         waLocale::setStrings($locales);
         $this->assign('theme_settings', $theme_settings);
-        $this->assign('wa_theme_url', $theme->url);
+        $this->assign('wa_theme_url', $this->getStaticUrl($theme->url));
         $this->setTemplateDir($theme->path);
         return file_exists($theme->path.'/'.$template);
     }

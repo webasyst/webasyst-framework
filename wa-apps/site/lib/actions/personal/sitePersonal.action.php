@@ -112,6 +112,7 @@ class sitePersonalAction extends waViewAction
                         if (!$link && preg_match('/href="(.*?)"/uis', $m, $link_m)) {
                             $link = $link_m[1];
                         }
+                        $m = preg_replace('#<(script|style).*?>.*?</\\1>#uis', '', $m);
                         $result[] = trim(strip_tags($m));
                     }
                 }

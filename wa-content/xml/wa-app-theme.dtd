@@ -8,6 +8,7 @@
     app CDATA #REQUIRED
     parent_theme_id CDATA #IMPLIED
     version CDATA #IMPLIED
+    edition CDATA #IMPLIED
 >
 <!ELEMENT name (#PCDATA)>
 <!ATTLIST name

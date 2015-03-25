@@ -24,14 +24,14 @@
 .count.c-action-link  { top:0.15em;}
 #c-edit-contact { background: #eee; border-bottom: 1px solid #ccc; }
 
-/* override few colors */
+/* menus */
 
 ul.menu-v li .count  { top:0.3em}
-
 ul.menu-v li.selected a { background:#e7e7e7; }
 ul.menu-v li.draginto a { background:#eeb; }
-
 ul.menu-v li.disabled a { cursor: default; }
+ul.menu-v.with-icons li a { word-wrap: break-word; }
+ul.menu-v.with-icons li .count { margin-left: 5px; }
 
 .c-user-status-online { font-style: italic; color: green; }
 .c-user-status-not-online { font-style: italic; color: gray; }
@@ -122,6 +122,7 @@ a.c-user-group-setup { margin-left: 10px; }
 .contacts-data table.zebra th a { color:#555;}
 .c-access-app-limited .c-access-app-group .c-access-subcontrol-item td:first-child { width: 350px;}
 .c-access-cb-all { display: inline; margin: 0 0 0 1.5em;}
+.c-access-cb-all.nm {margin-left: 0}
 .c-access-cb-all input { margin: 0 0.5em!important;vertical-align: middle;}
 .c-list-toolbar ul.menu-h.dropdown li:first-child { width: 250px;}
 .c-list-toolbar ul.menu-h.dropdown li:first-child ul li:first-child { width:auto;}
@@ -211,18 +212,8 @@ ul.menu-h.dropdown.disabled ul { display: none !important; }
 .contact-paginator .pages a.prevnext { font-weight: bold; margin-left: 0; }
 
 /* Photo editor */
-.wa-contact-photo-buttons .photo-change-link {
-    visibility: hidden;
-    text-align: center;
-    width: 100px;
-    padding-top: 5px;
-
-}
-.wa-contact-photo-buttons .photo-upload-form {
-    display: none;
-    padding:0 0 10px 0;
-
-}
+.wa-contact-photo-buttons .photo-change-link { font-size: 0.8em; visibility: hidden; text-align: center; width: 100px; padding-top: 5px; }
+.wa-contact-photo-buttons .photo-upload-form { display: none;padding:0 0 10px 0; }
 .wa-contact-photo-buttons {
     position: relative;
 }
@@ -342,7 +333,7 @@ ul.v-list li { list-style: none; background: white; padding: 8px; border-top: 1p
 #c-core a.details-header { text-decoration: none; }
 #c-core a.details-header h1 { display:inline; font-weight: normal; }
 
-.c-list-top-line .first-td { height: /*20px;*/ 6px; } 
+.c-list-top-line .first-td { height: /*20px;*/ 6px; }
 .c-list-top-line .custom-field-th.first { border-left: 1px solid #ccc;}
 .c-list-top-line .custom-field-th { border-right: 1px solid #ccc; text-align: center; width: 2px; }
 .c-list-top-line .custom-field-th .wrapper { padding: 0 10px; position: relative; }
@@ -354,6 +345,7 @@ ul.v-list li { list-style: none; background: white; padding: 8px; border-top: 1p
 #c-core .view-list td.custom-field-td { border-right: 1px solid #ccc; text-align: center; vertical-align: top; padding-top: 15px;}
 #c-core .view-list td.custom-field-td.last { border-right: none; }
 
+#c-core .view-list.table { line-height: 1.5em; }
 #c-core .view-list.table .contact-row a { text-decoration: none; }
 #c-core .view-list.table .contact-row .jobtitle-company .company { font-weight: bold; }
 #c-core .view-list.table .contact-row td { padding: 5px 10px 5px 0; }
@@ -410,7 +402,7 @@ ul.v-list li { list-style: none; background: white; padding: 8px; border-top: 1p
 
 #contact-info-block.edit-mode .field.subname { display: inline-block; margin-right: 8px; font-size: 1.2em; }
 #contact-info-block.edit-mode .field.subname .name { display: none; }
-#contact-info-block.edit-mode .field.subname .value { margin-left: 0px; } 
+#contact-info-block.edit-mode .field.subname .value { margin-left: 0px; }
 #contact-info-block.edit-mode .field.subname .value input { min-width: 20px; width: 100%; }
 #contact-info-block.edit-mode .field.subname.title { width: 90px; }
 #contact-info-block.edit-mode .field.subname.title .value input { font-size: 0.8em; }
@@ -430,11 +422,11 @@ ul.v-list li { list-style: none; background: white; padding: 8px; border-top: 1p
 ========= */
 
 @media screen and (max-width: 1024px) {
-    
+
     .sidebar,
     .sidebar.left200px { width: 200px !important; }
     .sidebar.right200px { width: 200px !important; }
     .content.left200px { margin-left: 200px !important; }
     .content.right200px { margin-right: 200px !important; }
-        
+
 }

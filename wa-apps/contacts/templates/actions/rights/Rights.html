@@ -22,7 +22,7 @@
 	</div>
 </div>
 <div class="clear"></div>
-<form action="?module=rights&action=save&id={if !empty($user)}{$user.id}{else}-{$group.id}{/if}">
+<form action="{$wa_app_url}?module=rights&action=save&id={if !empty($user)}{$user.id}{else}-{$group.id}{/if}">
 	<div class="c-access-app-limited">
 		<input type="hidden" name="app_id" value="{$app.id}">
 		{$html}

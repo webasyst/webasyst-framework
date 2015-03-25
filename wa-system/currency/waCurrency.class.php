@@ -233,6 +233,10 @@ class waCurrency
             $currency['sign_delim'] = ' ';
         }
 
+        if (!isset($currency['sign'])) {
+            $currency['sign'] = '';
+        }
+
 
         // $desc: add currency name, or sign, or code, etc.
         if ($desc) {

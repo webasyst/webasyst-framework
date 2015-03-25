@@ -238,7 +238,7 @@
         };
         base.changeTitle = function () {
             if (base.o.setTitle) {
-                $('title').text(base.$currentMenuElement.children('a').text());
+                $('title').text(base.$currentMenuElement.children('a:first').data('title') || base.$currentMenuElement.children('a').text());
             }
         };
         base.changeUri = function (url) {

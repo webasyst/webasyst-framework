@@ -45,7 +45,7 @@
 </div>
 
 {if isset($pages_count) && $pages_count > 1}
-<div class="block lazyloading-paging" data-times="2" data-link-text="[`Load more`]">
+<div class="block {if $theme_settings.pagination == 'lazyloading'}lazyloading-paging{else}paging-nav{/if}" data-times="2" data-link-text="[`Load more`]">
     {wa_pagination total=$pages_count attrs=['class' => "menu-h"]}
 </div>
 {/if}

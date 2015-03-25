@@ -191,3 +191,11 @@ msgid "%d vote"
 msgid_plural "%d votes"
 msgstr[0] ""
 msgstr[1] ""
+
+#: /wa-apps/photos/plugins/publicgallery/templates/actions/frontend/FrontendImageUpload.html:18
+msgid "Photos have been successfully uploaded"
+msgstr ""
+
+#: /wa-apps/photos/plugins/publicgallery/lib/photosPublicgallery.plugin.php:230
+msgid "My vote:"
+msgstr ""

@@ -29,7 +29,7 @@ class waWorkflowState extends waWorkflowEntity
         $args = func_get_args();
         $name_only = isset($args[1]) ? $args[1] : false;
         $actions = array();
-        $actions_ids = $this->getAvailableActionIds();
+        $actions_ids = $this->getAvailableActionIds($params);
         if ($actions_ids === null) {
             // Use deprecated getAvailableActions() since getAvailableActionIds() returned null
             $actions_classes = $this->getAvailableActions($params);

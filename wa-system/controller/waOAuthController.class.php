@@ -39,7 +39,6 @@ class waOAuthController extends waViewController
      */
     protected function afterAuth($data)
     {
-        $app_id = $this->getStorage()->get('auth_app');
         $contact_id = 0;
         // find contact by auth adapter id, i.e. facebook_id
         $contact_data_model = new waContactDataModel();
@@ -94,48 +93,9 @@ class waOAuthController extends waViewController
         }
         // create new contact
         if (!$contact_id) {
-            $contact = new waContact();
-            $data[$data['source'].'_id'] = $data['source_id'];
-            $data['create_method'] = $data['source'];
-            $data['create_app_id'] = $app_id;
-            // set random password (length = default hash length - 1, to disable ability auth using login and password)
-            $contact->setPassword(substr(waContact::getPasswordHash(uniqid(time(), true)), 0, -1), true);
-            unset($data['source']);
-            unset($data['source_id']);
-            if (isset($data['photo_url'])) {
-                $photo_url = $data['photo_url'];
-                unset($data['photo_url']);
-            } else {
-                $photo_url = false;
-            }
-            $contact->save($data);
-            $contact_id = $contact->getId();
-
-            if ($contact_id && $photo_url) {
-                $photo_url_parts = explode('/', $photo_url);
-                // copy photo to tmp dir
-                $path = wa()->getTempPath('auth_photo/'.$contact_id.'.'.md5(end($photo_url_parts)), $app_id);
-                $s = parse_url($photo_url, PHP_URL_SCHEME);
-                $w = stream_get_wrappers();
-                if (in_array($s, $w) && ini_get('allow_url_fopen')) {
-                    $photo = file_get_contents($photo_url);
-                } elseif (function_exists('curl_init')) {
-                    $ch = curl_init($photo_url);
-                    curl_setopt($ch, CURLOPT_HEADER, 0);
-                    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
-                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-                    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-                    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-                    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 25);
-                    $photo = curl_exec($ch);
-                    curl_close($ch);
-                } else {
-                    $photo = null;
-                }
-                if ($photo) {
-                    file_put_contents($path, $photo);
-                    $contact->setPhoto($path);
-                }
+            $contact = $this->createContact($data);
+            if ($contact) {
+                $contact_id = $contact->getId();
             }
         } elseif (empty($contact)) {
             $contact = new waContact($contact_id);
@@ -149,5 +109,65 @@ class waOAuthController extends waViewController
             return $contact;
         }
         return false;
+    }
+
+    /**
+     * @param array $data
+     * @return waContact
+     * @throws waException
+     */
+    protected function createContact($data)
+    {
+        $app_id = $this->getStorage()->get('auth_app');
+
+        $contact = new waContact();
+        $data[$data['source'].'_id'] = $data['source_id'];
+        $data['create_method'] = $data['source'];
+        $data['create_app_id'] = $app_id;
+        // set random password (length = default hash length - 1, to disable ability auth using login and password)
+        $contact->setPassword(substr(waContact::getPasswordHash(uniqid(time(), true)), 0, -1), true);
+        unset($data['source']);
+        unset($data['source_id']);
+        if (isset($data['photo_url'])) {
+            $photo_url = $data['photo_url'];
+            unset($data['photo_url']);
+        } else {
+            $photo_url = false;
+        }
+        $contact->save($data);
+        $contact_id = $contact->getId();
+
+        if ($contact_id && $photo_url) {
+            $photo_url_parts = explode('/', $photo_url);
+            // copy photo to tmp dir
+            $path = wa()->getTempPath('auth_photo/'.$contact_id.'.'.md5(end($photo_url_parts)), $app_id);
+            $s = parse_url($photo_url, PHP_URL_SCHEME);
+            $w = stream_get_wrappers();
+            if (in_array($s, $w) && ini_get('allow_url_fopen')) {
+                $photo = file_get_contents($photo_url);
+            } elseif (function_exists('curl_init')) {
+                $ch = curl_init($photo_url);
+                curl_setopt($ch, CURLOPT_HEADER, 0);
+                curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+                curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+                curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+                curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 25);
+                $photo = curl_exec($ch);
+                curl_close($ch);
+            } else {
+                $photo = null;
+            }
+            if ($photo) {
+                file_put_contents($path, $photo);
+                $contact->setPhoto($path);
+            }
+        }
+        /**
+         * @event signup
+         * @param waContact $contact
+         */
+        wa()->event('signup', $contact);
+        return $contact;
     }
 }

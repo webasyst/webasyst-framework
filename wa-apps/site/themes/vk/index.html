@@ -62,11 +62,11 @@
     
     <!-- css -->
     <link href="{$wa_theme_url}vk.css?v{$wa_theme_version}" rel="stylesheet" type="text/css"/>
-    {if $wa->shop && $wa->shop->currency() == 'RUB'} <link href="{$wa_url}wa-content/font/ruble/arial/fontface.css" rel="stylesheet" type="text/css">{/if}
+    {if $wa->shop && $wa->shop->currency() == 'RUB'} <link href="{$wa_static_url}wa-content/font/ruble/arial/fontface.css" rel="stylesheet" type="text/css">{/if}
     {$wa->css()} {* links active plugins CSS *}
     
     <!-- js -->
-    <script type="text/javascript" src="{$wa_url}wa-content/js/jquery/jquery-1.8.2.min.js"></script>
+    <script type="text/javascript" src="{$wa_static_url}wa-content/js/jquery/jquery-1.8.2.min.js"></script>
     <!-- vk iframe apps js -->
     <script src="//vk.com/js/api/xd_connection.js?2"  type="text/javascript"></script>
     <!-- internal shop-script js for vk iframe app integration -->
@@ -101,7 +101,7 @@
                 
             <div id="vk_like" class="float-left" style="clear: none !important;"></div>
             <script type="text/javascript">
-             VK.Widgets.Like('vk_like', { width: 201, pageUrl: '{$wa->domainUrl()}' } );
+             VK.Widgets && VK.Widgets.Like('vk_like', { width: 201, pageUrl: '{$wa->domainUrl()}' } );
             </script>
 
             <div class="clear-both"></div>               

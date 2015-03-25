@@ -86,5 +86,15 @@ class waContactEmailsModel extends waModel
                 LIMIT 1";
         return $this->query($sql)->fetchField();
     }
+
+    public function getMainContactMyEmail($email)
+    {
+        // find oldest contact or with password
+        $sql = "SELECT c.id FROM ".$this->table." e JOIN wa_contact c ON e.contact_id = c.id
+                WHERE e.email LIKE '".$this->escape($email, 'like')."' AND e.sort = 0
+                ORDER BY c.password DESC, c.id
+                LIMIT 1";
+        return $this->query($sql)->fetchField();
+    }
 }
 

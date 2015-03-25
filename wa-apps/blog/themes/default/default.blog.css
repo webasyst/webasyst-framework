@@ -16,8 +16,6 @@
 .page-nav .nav-sidebar .search { margin: 16px 26px 16px 16px; }
 .page-nav .nav-sidebar .search .search-wrapper { background: #fff; }
 .page-nav .nav-sidebar .search input { margin-bottom: 0; }
-.page-nav .nav-hotties { margin-left: 0; border-left: none; }
-.page-nav .nav-hotties ul.menu-h li { padding-right: 0; }
 .page-content { margin-right: 220px; margin-left: 0; border-left: none; box-shadow: 3px 0 8px -8px rgba(0, 0, 0, 0.7); }
 
 .subscribe { padding: 6px 16px; background: #eed; margin-bottom: 0; }
@@ -31,6 +29,7 @@
 .post h3 { font-size: 2em; margin-right: 5px; margin-bottom: 8px; }
 .post h3 a { text-decoration: none; }
 .post img { max-width: 100%; height: auto !important; }
+.post iframe { max-width: 100%; }
 .post .text { margin-top: 5px; margin-right: 10px; }
 .post textarea { width: 100%; min-height: 300px; margin-top: 10px; height: 250px; }
 .post.search-match { margin-top: 20px; margin-bottom: 50px; }

@@ -151,6 +151,10 @@ abstract class waRightConfig
                 $addScriptForCB = TRUE;
             }
 
+            if ($item['type'] == 'selectlist' && isset($item['params']['hint1']) && $item['params']['hint1'] == 'all_select') {
+                $addScriptForCB = TRUE;
+            }
+
             if ($inherited !== null && ($item['type'] == 'select' || $item['type'] == 'selectlist')) {
                 $addScriptForSelect = TRUE;
             }
@@ -178,13 +182,14 @@ abstract class waRightConfig
         if ($addScriptForSelect) {
             $html .= '
                 // Change resulting column for selects
-                $("table.c-access-app select").change(function() {
+                var updateIndicator = function() {
                     var self = $(this);
-                    var tr = self.parents("table.c-access-app tr");
+                    var tr = self.closest("table.c-access-app tr");
                     var result = Math.max(self.val()-0, tr.find("input.g-value").val()-0);
                     var name = self.find("option[value=\""+result+"\"]").text();
                     tr.find("strong").text(name);
-                });';
+                };
+                $("table.c-access-app select").change(updateIndicator);';
         }
 
         if ($addScriptForCB) {
@@ -206,11 +211,20 @@ abstract class waRightConfig
                                 updateIndicator.call(cb2[0]);
                             }
                         });
-                    cb.attr("disabled", false);
+                    cb.parents("table.c-access-app")
+                        .find("select[name^=\""+cb.attr("name").replace(/\.all]/,"")+"\"]").each(function (k,cb2) {
+                            cb2 = $(cb2);
+                            cb2.val(cb.val());
+                            updateIndicator.call(cb2[0]);
+                        });
                 };
                 /* For each enabled "all" checkbox in a table.c-access-app:
                    - Add an onclick handler
                    - Call the handler initially, if `all` is checked. */
+                $("table.c-access-app .c-access-cb-all select").each(function(k,cb) {
+                    cb = $(cb).change(handler);
+                    handler.call(cb[0]);
+                });
                 $("table.c-access-app .c-access-cb-all input:enabled").each(function(k,cb) {
                     cb = $(cb).click(handler);
                     if (cb.is(":checked")) {
@@ -290,7 +304,6 @@ abstract class waRightConfig
                         //$indicator = '<span class="float-right"><i class="icon10 '.($own || $group ? 'yes' : 'no').'"></i></span>';
                     }
                 }
-
                 $html = '<tr class="c-access-subcontrol-header'.($params['cssclass'] ? ' '.$params['cssclass'] : '').'">'.
                                 '<td><div>'.$indicator.$label.'</div></td>'.
                                 ($inherited !== null ? '<td></td>' : '').
@@ -311,6 +324,18 @@ abstract class waRightConfig
             case 'selectlist':
                 if (!isset($params['options']) || !$params['options']) {
                     return '';
+                }
+                if (isset($params['hint1']) && $params['hint1'] == 'all_select') {
+                    $own = isset($rights[$name.'.all']) ? $rights[$name.'.all'] : '';
+                    $group = $inherited && isset($inherited[$name.'.all']) ? $inherited[$name.'.all'] : null;
+                    $params['hint1'] = '<span class="c-access-cb-all nm"><label><select name="app['.$name.'.all]"><option value=""></option>';
+                    foreach ($params['options'] as $v => $n) {
+                        $params['hint1'].= '<option '.($own == $v ? 'selected':'').' value="'.$v.'">'.$n.'</option>';
+                    }
+                    $params['hint1'].= '</select></label></span>';
+                    if($inherited !== null) {
+                        $params['hint2'] = '<span class="c-access-cb-all">' . ($group && isset($params['options'][$group]) ? $params['options'][$group] : '') . '</span>';
+                    }
                 }
                 $html = '<tr class="c-access-subcontrol-header'.($params['cssclass'] ? ' '.$params['cssclass'] : '').'">'.
                                 '<td><div>'.$label.'</div></td>'.

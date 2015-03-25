@@ -19,6 +19,8 @@ class waContactCompositeField extends waContactField
         if (!isset($this->options['required'])) {
             $this->options['required'] = array();
         }
+
+        $this->prepareSubfields();
     }
 
     public function getInfo()
@@ -101,9 +103,9 @@ class waContactCompositeField extends waContactField
             }
             $data['value'] = implode("<br>\n", $value);
         }
-        
+
         $found = true;
-        
+
         if (strpos($format, ',')) {
             // when formats are delimeted by comma, use the first one that exists
             $found = false;
@@ -117,7 +119,7 @@ class waContactCompositeField extends waContactField
                 return $data;
             }
         }
-        
+
         if ($format == 'html') {
             // Override logic for this format to avoid double htmlspecialchars()
             $result = $data['value'];
@@ -285,7 +287,29 @@ class waContactCompositeField extends waContactField
                 $value = array();
             }
         }
+
         parent::setParameter($p, $value);
+
+        if ($p === 'fields') {
+            $this->prepareSubfields();
+        }
+    }
+
+    protected function prepareSubfields()
+    {
+        // Being paranoid: ensure options[fields] does not contain any garbage
+        if (empty($this->options['fields']) || !is_array($this->options['fields'])) {
+            $this->options['fields'] = array();
+        }
+        foreach($this->options['fields'] as $subfield_id => $subfield) {
+            if (!$subfield instanceof waContactField) {
+                waLog::log('Bad configuration for '.$this->getId().'.'.$subfield_id.' contact field: not an instance of waContactField. Subfield is ignored.');
+                unset($this->options['fields'][$subfield_id]);
+            } else if ($subfield_id != $subfield->getId()) {
+                unset($this->options['fields'][$subfield_id]);
+                $this->options['fields'][$subfield->getId()] = $subfield;
+            }
+        }
     }
 
     public function getHtmlOne($params = array(), $attrs = '')
@@ -333,7 +357,11 @@ class waContactCompositeField extends waContactField
             if ($field instanceof waContactHiddenField) {
                 $result[] = $field->getHTML($params_subfield, $attrs_one);
             } else {
-                $result[] = '<span class="'.($field->isRequired() ? $required_class : '').'field"><span>'.$field->getName().'</span>'.$field->getHTML($params_subfield, $attrs_one).$errors_html.'</span>';
+                $field_class = 'field-'.$this->getId().'-'.$field->getId();
+                if (wa()->getEnv() == 'frontend') {
+                    $field_class = 'wa-'.$field_class;
+                }
+                $result[] = '<span class="'.($field->isRequired() ? $required_class : '').'field '.$field_class.'"><span>'.$field->getName().'</span>'.$field->getHTML($params_subfield, $attrs_one).$errors_html.'</span>';
             }
         }
         return implode($result);

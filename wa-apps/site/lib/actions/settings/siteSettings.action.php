@@ -67,9 +67,18 @@ class siteSettingsAction extends waViewAction
             $this->view->assign('domain_apps_type', 1);            
         }
         $this->view->assign('domain_apps', $domain_config['apps']);
-        foreach (array('head_js', 'google_analytics') as $key) {
+        $this->view->assign('cdn', ifset($domain_config['cdn'], ''));
+        foreach (array('head_js') as $key) {
             $this->view->assign($key, isset($domain_config[$key]) ? $domain_config[$key] : '');
         }
+        if (isset($domain_config['google_analytics'])) {
+            if (!is_array($domain_config['google_analytics'])) {
+                $domain_config['google_analytics'] = array('code' => $domain_config['google_analytics']);
+            }
+        } else {
+            $domain_config['google_analytics'] = array('code' => '');
+        }
+        $this->view->assign('google_analytics', $domain_config['google_analytics']);
         $this->getStaticFiles($domain);
         $this->view->assign('url', $this->getDomainUrl($domain));
         $this->view->assign('title', siteHelper::getDomain('title'));

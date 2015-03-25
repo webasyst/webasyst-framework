@@ -24,7 +24,7 @@ class waLayout extends waController
     * @var waTheme
     */
     protected $theme;
-    
+
 
     public function __construct()
     {
@@ -48,6 +48,10 @@ class waLayout extends waController
                 if ($ref_host != waRequest::server('HTTP_HOST')) {
                     wa()->getResponse()->setCookie('referer', waRequest::server('HTTP_REFERER'), time() + 30 * 86400, null, '', false, true);
                 }
+            }
+            // save landing page
+            if (!waRequest::cookie('landing')) {
+                wa()->getResponse()->setCookie('landing', waRequest::server('REQUEST_URI'), 0, null, '', false, true);
             }
         }
     }
@@ -94,7 +98,7 @@ class waLayout extends waController
             return 'templates/layouts/' . $this->template . $this->view->getPostfix();
         }
     }
-    
+
     protected function setThemeTemplate($template)
     {
         $this->template = 'file:'.$template;
@@ -105,10 +109,10 @@ class waLayout extends waController
     {
         return $this->getTheme()->getUrl();
     }
-    
+
     /**
-     * Return current theme 
-     * 
+     * Return current theme
+     *
      * @return waTheme
      */
     public function getTheme()
@@ -118,7 +122,7 @@ class waLayout extends waController
         }
         return $this->theme;
     }
-        
+
     public function assign($name, $value)
     {
         $this->blocks[$name] = $value;
@@ -128,7 +132,7 @@ class waLayout extends waController
     {
 
     }
-    
+
     public function display()
     {
         $this->execute();

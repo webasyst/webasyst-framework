@@ -7,9 +7,9 @@
 {$email = ''}
 {$emails = $contact->get('email', 'value')}
 {if is_array($emails) && $emails}
-    {$email = reset($emails)}    
+    {$email = reset($emails)}
 {/if}
-  
+
 <div class="block not-padded" style="width: 100%; float: left; display: block;">
     <div class="fields">
         <div class="field">
@@ -27,7 +27,7 @@
                     {/if}
                 </div>
                 <div class="right" style="width: 53%;">
-                    
+
                     <div class="field c-shown-on-enabled" id="tc-user-status-field" style="{if $contact.is_user === '-1'}display:none;{/if}">
                         <div class="name" style="width: 100%;">[`Status`]:
                             {$status = $contact->getStatus()}
@@ -52,7 +52,7 @@
                     <div id="tc-user-access-disabled" class="c-shown-on-disabled" style="{if $contact.is_user != '-1'}display:none;{/if}">
                         {if $contact.is_user == '-1'}{$access_disable_msg}{/if}
                     </div>
-                    
+
                 </div>
             </div>
         </div>
@@ -74,13 +74,13 @@
                     </span>
                 </p>
             </div>
-        </div>        
-        
+        </div>
+
     </div>
 </div>
 
 {if $access_to_contacts}
-    
+
 <div class="block not-padded c-shown-on-enabled" style="width: 100%; float:left; {if $contact.is_user === '-1'}display:none;{/if}" id="c-available-resourses">
     <div class="fields">
         {if $superadmin}
@@ -115,7 +115,7 @@
             </div>
 
             <div id="c-credentials-block" style="display:none;">
-                <form id="c-credentials-form" method="post" action="?module=contacts&action=user&id={$contact.id}&a=create_credentials">
+                <form id="c-credentials-form" method="post" action="{$wa_app_url}?module=contacts&action=user&id={$contact.id}&a=create_credentials">
                     <div class="field">
                         <div class="name">[`Login`]</div>
                         <div class="value">
@@ -148,9 +148,9 @@
                     </div>
                 </form>
             </div>
-                            
+
             <div id="c-login-block" style="display:none;">
-                <form id="c-login-form" method="post" action="?module=contacts&action=user&id={$contact.id}&a=create_login">
+                <form id="c-login-form" method="post" action="{$wa_app_url}?module=contacts&action=user&id={$contact.id}&a=create_login">
                     <div class="field">
                         <div class="name">[`Login`]</div>
                         <div class="value">
@@ -163,7 +163,7 @@
                                 <span class="hint">
                                     [`Login name is required to access your account backend.`]<br>
                                     [`Ex.: john, agent07, and etc.`]
-                                </span><br><br>                            
+                                </span><br><br>
                                 <input type="submit" class="button green" value="[`Save`]"> [`or`]
                                 <a class="inline-link cancel c-tab-toggle" href="javascirt:void(0);"><b><i>[`cancel`]</i></b></a>
                             </div>
@@ -171,9 +171,9 @@
                     </div>
                 </form>
             </div>
-                                
+
             <div id="c-password-block" style="display:none;">
-                <form id="c-password-form" method="post" action="?module=contacts&action=user&id={$contact.id}&a=passwd">
+                <form id="c-password-form" method="post" action="{$wa_app_url}?module=contacts&action=user&id={$contact.id}&a=passwd">
                     <div class="c-one-tab">
                         <div class="field">
                             <div class="name">[`Password`]</div>
@@ -198,7 +198,7 @@
                         </div>
                         <div class="field">
                             <div class="value">
-                                <input type="submit" class="button green" value="[`Save`]"> [`or`] 
+                                <input type="submit" class="button green" value="[`Save`]"> [`or`]
                                 <a class="inline-link cancel c-tab-toggle" href="javascript:void(0)"><b><i>[`cancel`]</i></b></a>
                                 <i class="icon16 loading" style="margin-left: 16px; display: none;"></i>
                             </div>
@@ -206,7 +206,7 @@
                     </div>
                 </form>
             </div>
-            
+
             <div class="c-shown-on-access">
                 <div class="field">
                     <div class="name">[`Belongs to groups`]</div>
@@ -224,7 +224,7 @@
                     </div>
                 </div>
                 {if $all_groups}
-                    <form id="form-customize-groups" style="display:none;clear:left" method="post" action="?module=groups&action=contactSave&id={$contact.id}">
+                    <form id="form-customize-groups" style="display:none;clear:left" method="post" action="{$wa_app_url}?module=groups&action=contactSave&id={$contact.id}">
                         <div class="field">
                             <div class="value">
                                 <div class="c-checkbox-menu-container"><div>
@@ -303,9 +303,9 @@
         {/if}
     </div>
 </div>
-    
+
 {/if}
-    
+
 <div class="clear-left"></div>
 
 <script type="text/javascript" src="{$wa_url}wa-content/js/jquery-plugins/jquery-tooltip/jquery.tooltip.patched.min.js"></script>
@@ -338,7 +338,9 @@
         form.find('.loading').show();
         $.post(form.attr('action'), form.serialize(), function(response) {
             if (response.status == 'ok') {
-                $.wa.controller.contactAction([{$contact.id}, 'user']);
+                {if !$wa->request('standalone')}
+                    $.wa.controller.contactAction([{$contact.id}, 'user']);
+                {/if}
             } else if (response.status == 'fail') {
                 form.find('.c-checkbox-menu-container').after($('<em class="errormsg">'+response.errors.join('<br />')+'</em>'));
             }
@@ -349,7 +351,7 @@
 
     var login = {if $contact.login}'{$contact.login|escape:javascript}'{else}null{/if};
     var password = {if $contact.password}true{else}false{/if};
-    
+
     // create credentials form
     $("#c-credentials-form").submit(function () {
         var form = $(this);
@@ -363,7 +365,9 @@
 
         $.post(form.attr('action'), form.serialize(), function (r) {
             if (r.status === 'ok') {
-                $.wa.controller.reloadSidebar();
+                {if !$wa->request('standalone')}
+                    $.wa.controller.reloadSidebar();
+                {/if}
                 login = r.data.login.trim();
                 form.hide();
                 $('#c-login-block').show()
@@ -379,7 +383,7 @@
         $('#c-credentials-block').hide();
         return false;
     });
-    
+
     // change login form
     $("#c-login-form").submit(function () {
         var form = $(this);
@@ -394,10 +398,12 @@
             login_input.addClass('error').after('<em class="errormsg">'+"[`Login is required.`]"+'</em>');
             return false;
         }
-        
+
         $.post(form.attr('action'), form.serialize(), function (r) {
             if (r.status === 'ok') {
-                $.wa.controller.reloadSidebar();
+                {if !$wa->request('standalone')}
+                    $.wa.controller.reloadSidebar();
+                {/if}
                 var new_login = r.data.login.trim()
                 $('#c-login-block').show()
                     .find('.c-login-input').val(new_login).end()
@@ -442,7 +448,7 @@
         }
 
         form.find('.loading').show();
-        $.post($.wa.contactEditor.passwdSaveUrl || form.attr('action'), form.serialize(), function(response) {
+        $.post($.wa.contactEditor.getPasswdSaveUrl() || form.attr('action'), form.serialize(), function(response) {
             if (response.status === 'ok') {
                 form.find('.errormsg').remove();
                 form.find('.loading').hide();
@@ -474,7 +480,7 @@
 $(function() {
 
     var arToggle = $('#c-access-rights-toggle');
-    
+
     {if empty($own_profile)}
         var accessCheckbox = $('#c-access');
 
@@ -495,13 +501,13 @@ $(function() {
                         icon.addClass('key');
                     }
                     $('.available-resources').show();
-                    
+
                     var  isUser = {if $contact.login}1{else}0{/if};
-                    $.post('?module=rights&action=save&id='+$.wa.contactEditor.contact_id, {
+                    $.post('{$wa_app_url}?module=rights&action=save&id='+$.wa.contactEditor.contact_id, {
                         is_user: isUser,
                         only_is_user: 1
                     });
-                    
+
                     fields.removeClass('gray');
                     $('.c-shown-on-enabled').show();
                     $('.c-shown-on-disabled').hide();
@@ -509,8 +515,8 @@ $(function() {
                     status.eq("1").addClass('off');
                     $('#t-user').find('i.c-access-icon').removeClass('key key-bw delete').addClass('delete');
                     $('.available-resources').hide();
-                    
-                    $.post('?module=rights&action=save&id='+$.wa.contactEditor.contact_id, {
+
+                    $.post('{$wa_app_url}?module=rights&action=save&id='+$.wa.contactEditor.contact_id, {
                         is_user: -1,
                         only_is_user: 1
                     }, function(r) {
@@ -519,7 +525,7 @@ $(function() {
                             $('#tc-user-access-disabled').html(r.data.access_disable_msg);
                         }
                     }, 'json');
-                    
+
                     fields.addClass('gray');
                     $('.c-shown-on-enabled').hide();
                     $('.c-shown-on-disabled').show();
@@ -544,7 +550,7 @@ $(function() {
             }
         }
     });
-    
+
     // apps data, including personal and group rights
     var apps = {json_encode($apps)};
 
@@ -560,7 +566,7 @@ $(function() {
         var app = apps[tr.find('select').attr('name')];
 
         $.wa.dialogCreate('c-ar-dialog', {
-            url: '?module=rights&app='+app.id+'&id='+$.wa.contactEditor.contact_id,
+            url: '{$wa_app_url}?module=rights&app='+app.id+'&id='+$.wa.contactEditor.contact_id,
             small: false,
             onload: function() {
                 var dialog = $(this);
@@ -640,7 +646,7 @@ $(function() {
         if (!nosave) {
             tr.find('.loading').show();
             $('#c-access-rights-wrapper select').attr('disabled', true);
-            $.post('?module=rights&action=save&id='+$.wa.contactEditor.contact_id, {
+            $.post('{$wa_app_url}?module=rights&action=save&id='+$.wa.contactEditor.contact_id, {
                 app_id: app.id,
                 name: 'backend',
                 value: app.access
@@ -666,7 +672,7 @@ $(function() {
 
     // Global admin status control logic
     var lastToggleValue = arToggle.val();
-    var arToggleOnchange = function(nosave){
+    var arToggleOnchange = function(nosave) {
         $('#c-access-rights-hint-warning').hide();
         $('#c-access-rights-hint-customize').hide();
         var fullAccess;
@@ -753,7 +759,7 @@ $(function() {
                 icon.addClass('key');
                 break;
         }
-        
+
         {if empty($own_profile)}
             if (!accessCheckbox.is(':checked')) {
                 fullAccess = 0;
@@ -780,7 +786,7 @@ $(function() {
             wr.children('.loading').show();
             $('#c-access-rights-wrapper select').attr('disabled', true);
 
-            $.post('?module=rights&action=save&id='+$.wa.contactEditor.contact_id, {
+            $.post('{$wa_app_url}?module=rights&action=save&id='+$.wa.contactEditor.contact_id, {
                 app_id: 'webasyst',
                 name: 'backend',
                 value: fullAccess ? 1 : 0,
@@ -802,7 +808,7 @@ $(function() {
         }
     };
     arToggleOnchange(true);
-    arToggle.change(function() {    
+    arToggle.change(function() {
         arToggleOnchange();
     });
 

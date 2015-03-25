@@ -37,6 +37,8 @@ class waContactAddressField extends waContactCompositeField
         if (!isset($this->options['formats']['forMap'])) {
             $this->options['formats']['forMap'] = new waContactAddressForMapFormatter();
         }
+
+        parent::init();
     }
 
     public function format($data, $format = null, $ignore_hidden = true)
@@ -180,10 +182,10 @@ class waContactAddressForMapFormatter extends waContactFieldFormatter
             }
             if (isset($parts['city']))
             {
-                if (!isset($parts['region']) || 
+                if (!isset($parts['region']) ||
                         mb_strtolower($parts['region']) != mb_strtolower($parts['city']))
                 {
-                    $value[] = $p['city'];  
+                    $value[] = $p['city'];
                 }
                 unset($p['city']);
             }
@@ -213,11 +215,11 @@ class waContactAddressForMapFormatter extends waContactFieldFormatter
             $r = implode(',', $value);
         }
         unset($r);
-        
+
         if (!empty($data['data']['lat']) && !empty($data['data']['lng'])) {
             $res['coords'] = str_replace(',', '.', $data['data']['lat']) . ", " . str_replace(',', '.', $data['data']['lng']);
         }
-        
+
         return $res;
     }
 }
@@ -302,9 +304,12 @@ class waContactAddressOneLineFormatter extends waContactFieldFormatter
                 }
                 $result['parts'][$id] = htmlspecialchars($result['parts'][$id]);
                 if (!in_array($id, array('country', 'region', 'zip', 'street', 'city'))) {
-                    $result['parts'][$id] = $field->getName().' '.$result['parts'][$id];
+                    $result['parts'][$id] = '<span>'.$field->getName().'</span>' . ' ' . $result['parts'][$id];
                 }
             }
+        }
+        if ((ifset($data['data']['country']) != 'usa') && (ifset($result['parts']['region']) == ifset($result['parts']['city']))) {
+            unset($result['parts']['region']);
         }
 
         $result['marker'] = ''; // marker is disabled, but may be needed in future
@@ -319,6 +324,7 @@ class waContactAddressSeveralLinesFormatter extends waContactAddressOneLineForma
     public function format($data)
     {
         $parts = $this->getParts($data);
+
         $i = 0;
         $data['value'] = array();
 

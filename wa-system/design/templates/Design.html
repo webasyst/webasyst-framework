@@ -60,8 +60,8 @@
             {/if}    
             
             <li data-action="theme" class="info selected"><a class="wa-themes-link" href="{$design_url}theme={$theme.id}&action=theme"><i class="icon48 appearance"></i>[s`Appearance`]</a></li>
-            {if !empty($options.pages)}
-            <li><a class="wa-themes-link" href="{$design_url}pages/"><i class="icon48 pages"></i>[s`Pages`]</a></li>
+            {if !empty($options.pages) && $wa->userRights('pages')}
+            <li class="pages"><a data-action="pages" href="{$design_url}pages/"><i class="icon48 pages"></i>[s`Pages`]</a></li>
             {/if}
             <li data-action="edit" class="templates"><a href="{$design_url}theme={$theme.id}&action=edit"><i class="icon48 templates"></i>[s`Templates`]</a></li>
             <li class="themes"><a class="wa-themes-link" href="{$themes_url}"><i class="icon48 store"></i>[s`Themes`]</a></li>
@@ -275,7 +275,23 @@
                         }
                     });
                 } else if (hash.substr(0, 5) == 'pages') {
-
+                    $('#wa-design-menu > .selected').removeClass('selected');
+                    $('#wa-design-menu .pages ').addClass('selected');
+                    $("#wa-design-container").load("?module=pages", function (responseText, textStatus, XMLHttpRequest) {
+                        if ($(".s-scrollable-part").length) {
+                            $(".s-scrollable-part").scrollTop(0);
+                        } else {
+                            $(document).scrollTop(0);
+                        }
+                        try{
+                            if (response = $.parseJSON(responseText)) {
+                                if(response.data && response.data.redirect) {
+                                    var href = location.href.replace(/#.*$/,'') + response.data.redirect;
+                                    location.replace(href);
+                                }
+                            }
+                        }catch(e) {}
+                    });
                 } else if (hash.indexOf('action=settings') != -1) {
                     $('#wa-design-menu > .selected').removeClass('selected');
                     $('#wa-design-menu .settings ').addClass('selected');

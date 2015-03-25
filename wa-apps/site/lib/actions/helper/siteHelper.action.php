@@ -89,10 +89,12 @@ class siteHelperAction extends waViewAction
         $model = new siteBlockModel();
         $blocks = $model->order('sort')->fetchAll('id');
 
+        $active_app = wa()->getApp();
         $apps = wa()->getApps();
         foreach ($apps as $app_id => $app) {
             $path = $this->getConfig()->getAppsPath($app_id, 'lib/config/site.php');
             if (file_exists($path)) {
+                waLocale::load(wa()->getLocale(), $this->getConfig()->getAppsPath($app_id, 'locale'), $app_id, true);
                 $site_config = include($path);
                 if (!empty($site_config['blocks'])) {
                     foreach ($site_config['blocks'] as $block_id => $block) {
@@ -109,6 +111,7 @@ class siteHelperAction extends waViewAction
                 }
             }
         }
+        wa()->setActive($active_app);
         $this->view->assign('blocks', $blocks);
     }
 }

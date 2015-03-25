@@ -39,7 +39,7 @@ $(function() {
                             function init() {
                                 if (!$('#blog-markdown-editor').length) {
                                     that.container = $('<div id="blog-markdown-editor"></div>').appendTo("#post_text_wrapper");
-                                    that.container.wrap('<div class="ace"></dvi>');
+                                    that.container.wrap('<div class="ace mrkdn"></dvi>');
                                 } else {
                                     that.container = $('#blog-markdown-editor').show();
                                 }
@@ -101,7 +101,7 @@ $(function() {
 
                                     newHeight *= 1.02; //slightly extend editor height
 
-                                    var sidebarHeight = $('#post-form .sidebar:first .b-edit-options').height();
+                                    var sidebarHeight = $('#post-form .sidebar .b-edit-options').height();
                                     var minHeight = sidebarHeight - 163;
 
                                     if (newHeight < minHeight) {
@@ -139,7 +139,14 @@ $(function() {
                         }
                         return true;
                     },
-                    update: function(textarea) {},
+                    update: function(textarea) {
+                        if(this.inited && textarea) {
+                            var markdown_text = this.getValue();
+                            if (markdown_text) {
+                                textarea.val(markdown.toHTML(markdown_text));
+                            }
+                        }
+                    },
                     onHide: function() {
                         if (this.getValue()) {
                             post_content.val(markdown.toHTML(this.getValue()));
@@ -175,7 +182,7 @@ $(function() {
                         if (!markdown_text && html_text) {
 
                             if (!$('#post-no-markdown-markup-yet').length) {
-                                var div = $('<div class="block triple-padded" id="post-no-markdown-markup-yet"><p class="align-center">' + $('#markdown_plugin_text_no_markup_yet').html() +
+                                var div = $('<div class="block triple-padded mrkdn" id="post-no-markdown-markup-yet"><p class="align-center">' + $('#markdown_plugin_text_no_markup_yet').html() +
                                         '<br><br><input type="button" value="'+$('#markdown_plugin_text_generate').text()+'" /></p></div>').appendTo("#post_text_wrapper");
                                 div.find('input[type=button]').click(function() {
                                     div.hide();

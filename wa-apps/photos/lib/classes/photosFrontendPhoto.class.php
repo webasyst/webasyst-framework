@@ -4,6 +4,10 @@ class photosFrontendPhoto
 {
     public static function getLink($photo, $album = null)
     {
+        if (isset($photo['status']) && $photo['status'] <= 0 && empty($photo['hash'])) {
+            return null;
+        }
+
         static $wa = null;
         $wa = $wa ? $wa : wa();
 

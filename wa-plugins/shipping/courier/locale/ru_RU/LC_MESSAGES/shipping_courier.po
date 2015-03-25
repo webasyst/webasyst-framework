@@ -8,8 +8,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=((((n%10)==1)&&((n%100)!=11))?(0):(((((n%10)"
-">=2)&&((n%10)<=4))&&(((n%100)<10)||((n%100)>=20)))?(1):2));\n"
+"Plural-Forms: nplurals=3; plural=((((n%10)==1)&&((n%100)!=11))?(0):(((((n%10)>=2)&&((n%10)<=4))&&(((n%100)<10)||((n%100)>=20)))?(1):2));\n"
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
 "X-Generator: Poedit 1.5.5\n"
@@ -21,25 +20,16 @@ msgid "Courier"
 msgstr "Курьер"
 
 #: //wa-plugins/shipping/courier/lib/config/plugin.php:4
-msgid ""
-"Shipping is restricted to the specific country and region only. Shipping "
-"rate is calculated based on either total amount or weight of the shipment."
-msgstr ""
-"Доставка ограничивается только определенной страной и регионом. Стоимость "
-"доставки рассчитывается на основании итоговой стоимости заказа либо веса "
-"отправления."
+msgid "Shipping is restricted to the specific country and region only. Shipping rate is calculated based on either total amount or weight of the shipment."
+msgstr "Доставка ограничивается только определенной страной и регионом. Стоимость доставки рассчитывается на основании итоговой стоимости заказа либо веса отправления."
 
 #: //wa-plugins/shipping/courier/lib/config/settings.php:20
 msgid "Estimated delivery time"
 msgstr "Приблизительное время доставки"
 
 #: //wa-plugins/shipping/courier/lib/config/settings.php:21
-msgid ""
-"Average order transit time. Estimated delivery date will be calculated "
-"automatically and shown to customer."
-msgstr ""
-"Средний срок доставки. Приблизительная дата доставки будет рассчитана "
-"автоматически и показана покупателю."
+msgid "Average order transit time. Estimated delivery date will be calculated automatically and shown to customer."
+msgstr "Средний срок доставки. Приблизительная дата доставки будет рассчитана автоматически и показана покупателю."
 
 #: //wa-plugins/shipping/courier/lib/config/settings.php:24
 msgid "Same day"
@@ -94,12 +84,8 @@ msgid "Shipping address"
 msgstr "Адрес доставки"
 
 #: //wa-plugins/shipping/courier/templates/settings.html:16
-msgid ""
-"Shipping will be restricted to the selected country. Rates defined below "
-"will be applied to the entire country."
-msgstr ""
-"Доставка будет ограничена только выбранной страной. Указанные ниже расценки "
-"распространяются на всю страну."
+msgid "Shipping will be restricted to the selected country. Rates defined below will be applied to the entire country."
+msgstr "Доставка будет ограничена только выбранной страной. Указанные ниже расценки распространяются на всю страну."
 
 #: //wa-plugins/shipping/courier/templates/settings.html:2
 msgid "Shipping region"
@@ -114,17 +100,8 @@ msgid "City name"
 msgstr "Название города"
 
 #: //wa-plugins/shipping/courier/templates/settings.html:36
-msgid ""
-"If courier shipping is provided within a specific city, enter the city name "
-"so customer will not be prompted to enter city name when this shipping "
-"option is selected — city name will be automatically fetched as you "
-"specified. In case city name left blank, customer will be prompted to enter "
-"city name."
-msgstr ""
-"Если доставка курьером доступна только в определенном городе, введите его "
-"название, чтобы покупателю не нужно было указывать его при выборе данного "
-"способа оплаты — название города будет показано автоматически. Если оставить "
-"это поле пустым, покупателю будет предложено ввести название города."
+msgid "If courier shipping is provided within a specific city, enter the city name so customer will not be prompted to enter city name when this shipping option is selected — city name will be automatically fetched as you specified. In case city name left blank, customer will be prompted to enter city name."
+msgstr "Если доставка курьером доступна только в определенном городе, введите его название, чтобы покупателю не нужно было указывать его при выборе данного способа оплаты. Если оставить это поле пустым, покупателю будет предложено ввести название города."
 
 #: //wa-plugins/shipping/courier/templates/settings.html:42
 msgid "Shipping rate calculation"
@@ -177,3 +154,8 @@ msgstr "фунт"
 #: //wa-plugins/shipping/courier/templates/settings.html:150
 msgid "Weight dimension unit"
 msgstr "Единица измерения веса"
+
+
+#: //wa-plugins/shipping/courier/templates/settings.html:104
+msgid "Enter shipping rate as a flat rate, as a percent of cart total, or as a sum of both. Example: <b>20+10%%</b> will calculate shipping rate as 20 %s + 10%% of cart total."
+msgstr "Введите стоимость доставки в виде числа, процента от общей стоимости корзины покупок или в виде суммы этих слагаемых. Пример: <b>20+10%%</b> рассчитает стоимость доставки как 20 %s + 10%% от общей стоимости корзины покупок."

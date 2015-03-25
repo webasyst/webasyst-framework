@@ -35,6 +35,11 @@ class photosAlbumSaveController extends waJsonController
             }
         }
 
+        $name = waRequest::post('name', '', waRequest::TYPE_STRING_TRIM);
+        if ($name === '0') {
+            $name = '0 ';
+        }
+
         if (!$this->id) {
             if (!$this->getRights('upload')) {
                 throw new waException(_w("You don't have sufficient access rights"));
@@ -48,7 +53,6 @@ class photosAlbumSaveController extends waJsonController
                 throw new waException(_w("Parent album is smart"));
             }
 
-            $name = waRequest::post('name', '', waRequest::TYPE_STRING_TRIM);
             $data = array(
                 'name' => $name,
                 'status' => $status,
@@ -58,7 +62,7 @@ class photosAlbumSaveController extends waJsonController
             if ($status <= 0) {
                 $data['hash'] = md5(uniqid(time(), true));
             } else {
-                $data['url'] = $this->album_model->suggestUniqueUrl(photosPhoto::suggestUrl(ifempty($url, $name)));
+                $data['url'] = $this->album_model->suggestUniqueUrl(photosPhoto::suggestUrl(strlen($url) ? $url : $name));
             }
             if ($type == photosAlbumModel::TYPE_DYNAMIC) {
                 $data['conditions'] = $this->getPrepareConditions();
@@ -95,7 +99,6 @@ class photosAlbumSaveController extends waJsonController
             $params = $params ? $params : null;
 
             $description = waRequest::post('description', null, waRequest::TYPE_STRING_TRIM);
-            $name = waRequest::post('name', '', waRequest::TYPE_STRING_TRIM);
 
             $data = array(
                 'status' => $status,
@@ -178,7 +181,7 @@ class photosAlbumSaveController extends waJsonController
                     unset($data['url']);
                 }
             } else {
-                if (empty($data['url'])) {
+                if (!isset($data['url']) || !strlen($data['url'])) {
                     $data['url'] = photosPhoto::suggestUrl($data['name']);
                 }
             }

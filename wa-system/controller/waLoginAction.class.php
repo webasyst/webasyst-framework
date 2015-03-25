@@ -4,6 +4,9 @@ abstract class waLoginAction extends waViewAction
 {
     public function execute()
     {
+        if (waRequest::get('send_confirmation')) {
+            $this->sendConfirmation();
+        }
 
         // check remember enabled
         if (waRequest::method() == 'get') {
@@ -39,6 +42,27 @@ abstract class waLoginAction extends waViewAction
         // assign auth options
         $this->view->assign('options', $auth->getOptions());
         wa()->getResponse()->setTitle(_ws('Log in'));
+    }
+
+    protected function sendConfirmation()
+    {
+        $auth = wa()->getAuth();
+        $user_info = $auth->getByLogin(waRequest::post('login'));
+        if ($user_info) {
+            $signup_class = wa()->getApp().'SignupAction';
+            /**
+             * @var waSignupAction $signup
+             */
+            $signup = new $signup_class();
+            if ($signup->send(new waContact($user_info))) {
+                echo _ws('Confirmation link has been resent');
+            } else {
+                echo _ws('Error');
+            }
+        } else {
+            echo _ws('Invalid login');
+        }
+        exit;
     }
 
     protected function checkAuthConfig()

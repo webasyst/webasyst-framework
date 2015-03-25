@@ -31,7 +31,7 @@ return array(
         'is_company' => array('tinyint', 1, 'null' => 0, 'default' => '0'),
         'is_user' => array('tinyint', 1, 'null' => 0, 'default' => '0'),
         'login' => array('varchar', 32),
-        'password' => array('varchar', 32, 'null' => 0, 'default' => ''),
+        'password' => array('varchar', 128, 'null' => 0, 'default' => ''),
         'last_datetime' => array('datetime'),
         'sex' => array('enum', "'m','f'"),
         'birth_day' => array('tinyint', 2, 'unsigned' => 1),

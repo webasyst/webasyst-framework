@@ -41,7 +41,7 @@ jQuery.fn.waEditor = function (options) {
             editorOnLoadFocus: true,
             deniedTags: false,
             minHeight: 300,
-            buttonSource: false,
+            source: false,
             paragraphy: false,
             replaceDivs: false,
             toolbarFixed: true,

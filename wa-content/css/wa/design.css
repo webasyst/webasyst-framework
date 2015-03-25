@@ -69,7 +69,7 @@ h5.wa-themes-group { padding-top: 20px; margin-left: 20px; text-transform: upper
 .wa-theme-about pre { background: none repeat scroll 0 0 #EEEEEE; border-left: 3px solid #CCCCCC; color: #777777; font-size: 0.9em; padding: 20px; }
 
 .wa-theme-actions { background: #eee; }
-.wa-theme-actions ul.menu-v.with-icons li a { word-break: break-word; }
+.wa-theme-actions ul.menu-v.with-icons li a { word-break: keep-all; }
 
 ul.menu-h.wa-theme-filter-colors li { border-radius: 20px; padding: 8px; margin-right: 5px; box-shadow: 0 1px 2px #777; }
 ul.menu-h.wa-theme-filter-colors li.wa-themes-all { border-color: transparent; box-shadow: none; }
@@ -89,7 +89,7 @@ ul.menu-h.wa-theme-filter-price li.selected a { background: #ddd; }
 ul.with-icons.wa-theme { padding: 0 5px 0 3px; margin-top: 0px; overflow: hidden; }
 ul.with-icons.wa-theme li a { padding-left: 33px; }
 
-.wa-theme-globalnav { border-bottom: 1px solid #aaa; position: relative; box-shadow: 0 4px 3px -2px rgba(0,0,0,0.1); background: -moz-linear-gradient(center top , rgba(255, 255, 255, 0.1) 0%, rgba(0, 0, 0, 0.07) 100%); background:-webkit-gradient(linear, left top, left bottom, color-stop(0, rgba(255, 255, 255, 0.1)), color-stop(1, rgba(0, 0, 0, 0.07))); }
+.wa-theme-globalnav { border-bottom: 1px solid #ccc; position: relative; box-shadow: 0 4px 3px -2px rgba(0,0,0,0.1); background: -moz-linear-gradient(center top , rgba(255, 255, 255, 0.1) 0%, rgba(0, 0, 0, 0.05) 100%); background:-webkit-gradient(linear, left top, left bottom, color-stop(0, rgba(255, 255, 255, 0.1)), color-stop(1, rgba(0, 0, 0, 0.05))); }
 .wa-theme-globalnav li { min-width: 75px; padding: 0 !important; margin: 0 !important; }
 .wa-theme-globalnav li a { padding: 3px 10px 8px; font-size: 0.8em; white-space: nowrap; overflow: hidden; line-height: 1em; margin: 0; border: 0px solid red; display: block; text-align: center; color: #aaa; }
 .wa-theme-globalnav li:hover { background: transparent !important; }

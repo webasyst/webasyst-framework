@@ -128,7 +128,11 @@
                     <div class="name">[`Custom head JS`]</div>
                     <div class="value">
                     	[`Google Analytics Property ID`]: 
-                        <input type="text" name="google_analytics" value="{$google_analytics|escape}">
+                        <input type="text" name="google_analytics[code]" value="{$google_analytics.code|escape}">
+                        &nbsp;
+                        <label class="small">
+                            <input type="checkbox" name="google_analytics[universal]" value="1" {if !empty($google_analytics.universal)}checked{/if}> [`Universal Analytics`]
+                        </label>
                         <br />
                         <span class="hint">[`E.g. <strong>UA-123456-1</strong><br />If you are using <a href="https://www.google.com/analytics/">Google Analytics</a> to track your website visits and conversions, instead of embedding Google Analytics JS code manually, enter your Google Analytics Property ID here. A valid Google Analytics code will be automatically embedded into every app and every design theme before the closing &lt;/head&gt; tag.`]</span>
                         <br /><br />
@@ -167,6 +171,13 @@
                         <textarea name="robots">{$robots|escape}</textarea>
                         <br />
                         {if isset($robots_message)}<span class="small" style="color: #f00;">{$robots_message}</span>{else}<span class="hint">[`Contents of this site's robots.txt file.`]</span>{/if}
+                    </div>
+                </div>
+                <div class="field">
+                    <div class="name">[`CDN`]</div>
+                    <div class="value">
+                        <input type="text" name="cdn" value="{$cdn}">
+                        <p class="hint">[`Enable CDN (Content Delivery Network) support for this site by entering CDN URL prefix.`]</p>
                     </div>
                 </div>
             </div>

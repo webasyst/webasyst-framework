@@ -2,7 +2,7 @@
     $.wa.controller = {
         /** Remains true for free (not premium) version of Contacts app. */
         free: true,
-        
+
         // last 10 hashes
         hashes: [],
 
@@ -10,6 +10,7 @@
         init: function (options) {
             this.frontend_url = (options && options.url) || '/';
             this.backend_url = (options && options.backend_url) || '/webasyst/';
+            this.wa_app_url = options.wa_app_url || '';
 
             // Initialize "persistent" storage
             $.storage = new $.store();
@@ -153,15 +154,15 @@
                     offset: $(this).data('offset') || 0
                 });
             });
-            
+
         }, // end of init()
 
         // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
         // *   Dispatch-related
         // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-        /** 
-         * Cancel the next n automatic dispatches when window.location.hash changes 
+        /**
+         * Cancel the next n automatic dispatches when window.location.hash changes
          * {Number} n
          * */
         stopDispatch: function (n, push_hash) {
@@ -323,8 +324,8 @@
             }
             this.setTitle(title);
             this.load(
-                '#c-core .c-core-content', "?module=groups&action=editor"+(params && params[0] ? '&id='+params[0] : ''), 
-                null, 
+                '#c-core .c-core-content', "?module=groups&action=editor"+(params && params[0] ? '&id='+params[0] : ''),
+                null,
                 null,
                 function() {
                     this.setTitle(title);
@@ -412,7 +413,7 @@
                 }
             }
         },
-        
+
         contactsGroupAction: function (params) {
             if (!params || !params[0]) {
                 return;
@@ -430,12 +431,12 @@
                         this.setBlock('contacts-users', null, ['group-settings', 'group-actions']);
                     } else {
                         this.setBlock('contacts-users', null, 'group-settings');
-                        
+
                         $('#contacts-container').html(
-                            '<div class="block double-padded" style="margin-top: 35px;">' + 
-                                '<p>' + $_('No users in this group.') + '</p> <p>' + 
+                            '<div class="block double-padded" style="margin-top: 35px;">' +
+                                '<p>' + $_('No users in this group.') + '</p> <p>' +
                                     $_('To add users to group, go to <a href="#/users/all/">All users</a>, select them, and click <strong>Actions with selected / Add to group</strong>.') +
-                                '</p>' + 
+                                '</p>' +
                             '</div>'
                         );
                         return false;
@@ -614,18 +615,18 @@
                 }
             });
         },
-        
+
         usersAddAction: function(params) {
             this.checkAdminRights(function() {
                 this.setBlock('contacts-users', $_('New user'), false);
                 this.setTitle($_('New user'));
                 $('.wa-page-heading').find('.loading').hide();
                 $('.contacts-data').html(
-                    '<div class="block double-padded">' + 
-                        '<p>' + 
+                    '<div class="block double-padded">' +
+                        '<p>' +
                             $_('You can grant access to your account backend to any existing contact.') + '<br><br>' +
-                            $_('Find a contact, or <a href="#/contacts/add/">create a new contact</a>, and then customize their access rights on Access tab.') + 
-                        '</p>' + 
+                            $_('Find a contact, or <a href="#/contacts/add/">create a new contact</a>, and then customize their access rights on Access tab.') +
+                        '</p>' +
                     '</div>');
             });
         },
@@ -639,7 +640,7 @@
                 url: "?module=groups&action=add"
             });
         },
-                
+
         addToGroup: function(ids) {
             $.post('?module=groups&action=contactSave', {
                     'id[]': $.wa.grid.getSelected(),
@@ -659,7 +660,7 @@
                     }
             }, "json");
         },
-        
+
         updateGroupCounters: function(counters) {
             if (!$.isEmptyObject(counters)) {
                 for (var id in counters) {
@@ -791,7 +792,7 @@
                     $('<input type="submit" class="button red" value="'+$_('Exclude')+'">').click(function() {
                         $('<i style="margin: 8px 0 0 10px" class="icon16 loading"></i>').insertAfter(this);
                         $.post('?module=categories&action=deleteFrom', {
-                                categories: [$.wa.controller.current_category_id], 
+                                categories: [$.wa.controller.current_category_id],
                                 contacts: ids
                             },
                             function(response) {
@@ -809,7 +810,7 @@
                 .append($('<a href="javascript:void(0)">'+$_('cancel')+'</a>').click($.wa.dialogHide))
             });
         },
-        
+
         /** Confirm to remove selected contacts from current category. */
         dialogRemoveSelectedFromGroup: function(ids) {
             ids = ids || $.wa.grid.getSelected();
@@ -823,9 +824,9 @@
                     $('<input type="submit" class="button red" value="'+$_('Exclude')+'">').click(function() {
                         $('<i style="margin: 8px 0 0 10px" class="icon16 loading"></i>').insertAfter(this);
                         $.post('?module=groups&action=deleteFrom', {
-                                groups: [$.wa.controller.current_group_id], 
+                                groups: [$.wa.controller.current_group_id],
                                 contacts: ids
-                            }, 
+                            },
                             function(response) {
                                 $.wa.dialogHide();
                                 if (response.status === 'ok') {
@@ -835,7 +836,7 @@
                                     };
                                     $.wa.controller.redispatch();
                                 }
-                            }, 
+                            },
                         'json');
                     })
                 )
@@ -853,7 +854,7 @@
             }
             $.wa.dialogCreate('delete-dialog', {
                 content: '<h2>'+$_('Checking links to other applications...')+' <i class="icon16 loading"></i></h2>',
-                url: '?module=contacts&action=links',
+                url: (this.wa_app_url || '') + '?module=contacts&action=links',
                 small: true,
                 post: {
                     'id[]': ids
@@ -869,21 +870,21 @@
         addListTab: function(showCallback) {
             this.listTabs.push(showCallback);
         },
-                
+
         addGroup: function(group) {
             if (!$.isEmptyObject(group)) {
                 $.wa.controller.groups[group.id] = group;
                 $('#list-group').replaceWith(this.renderGroups($.wa.controller.groups));
             }
         },
-                
+
         renderGroups: function(groups) {
             var groups_html = '<ul class="menu-v with-icons collapsible" id="list-group">';
-            groups_html 
+            groups_html
                 += '<li class="hint c-shown-on-no-groups" style="padding:0 20px; ' + (!$.isEmptyObject(groups) ? 'display: none;' : '') + '">'
                     + $_('User groups are for organizing Webasyst users and setting common access rights for groups.')
                 + '</li>';
-            
+
             if (!$.isEmptyObject(groups)) {
                 var grps = [];
                 for (var i in groups) {
@@ -905,12 +906,12 @@
             groups_html += '</ul>';
             return groups_html;
         },
-                
+
         updateGroup: function(id, group) {
             this.groups[id] = group;
             var item = $('#list-group').find('li[rel=group' + id + ']');
             item.html(
-                '<span class="count">' + group.cnt + '</span>' + 
+                '<span class="count">' + group.cnt + '</span>' +
                 '<a href="#/contacts/group/' + group.id + '"><img src="../../wa-content/img/users/' + group.icon + '.png"> <b>' + group.name + '</b></a>'
             );
         },
@@ -937,43 +938,43 @@
 
             options = options || {};
             menus = typeof menus === 'undefined' ? [] : menus;
-            
+
             var el = '';
-            
+
             if (name === 'contacts-users') {
-                
-                el = $('#c-core .c-core-content');                
+
+                el = $('#c-core .c-core-content');
 
                 var groups_html = '';
                 if (options.groups !== false) {
                     groups_html += $.wa.controller.renderGroups(options.groups || $.wa.controller.groups);
                 }
                 $('#c-core').html(
-                    '<div class="shadowed" id="c-users-page">' + 
-                        '<div class="sidebar left200px" style="min-height: 300px;">' + 
-                            '<ul class="menu-v with-icons stack" id="c-users-sidebar-menu">' + 
-                                '<li class="selected" style="margin-left: 17px;"><a class="" href="#/users/all/"><i class="icon16 user"></i>' + $_('All users') + '</a></li>' + 
-                                '<li style="margin-left: 15px;"><a class="small" href="#/users/add/"><i class="icon10 add"></i>' + $_('New user') + '</a></li>' + 
-                                '<li class="" style="text-transform: uppercase;"><h5 class="heading">' + $_('Groups') + '</h5></li>' + 
-                                    groups_html +  
-                                '<li class="small" id="c-create-group-toggle" style="margin-left: 14px;">' + 
-                                    '<a href="#/groups/create/"><i class="icon10 add"></i>' + $_('New group') + '</a>' + 
-                                '</li>' + 
-                            '</ul>' + 
-                        '</div>' + 
+                    '<div class="shadowed" id="c-users-page">' +
+                        '<div class="sidebar left200px" style="min-height: 300px;">' +
+                            '<ul class="menu-v with-icons stack" id="c-users-sidebar-menu">' +
+                                '<li class="selected" style="margin-left: 17px;"><a class="" href="#/users/all/"><i class="icon16 user"></i>' + $_('All users') + '</a></li>' +
+                                '<li style="margin-left: 15px;"><a class="small" href="#/users/add/"><i class="icon10 add"></i>' + $_('New user') + '</a></li>' +
+                                '<li class="" style="text-transform: uppercase;"><h5 class="heading">' + $_('Groups') + '</h5></li>' +
+                                    groups_html +
+                                '<li class="small" id="c-create-group-toggle" style="margin-left: 14px;">' +
+                                    '<a href="#/groups/create/"><i class="icon10 add"></i>' + $_('New group') + '</a>' +
+                                '</li>' +
+                            '</ul>' +
+                        '</div>' +
                         '<div class="content left200px bordered-left blank">' +
-                            '<div class="block not-padded c-core-content">' + 
-                                '<div class="block" style="overflow:hidden;">' + 
-                                    '<div class="c-actions-wrapper float-right" style="margin: 8px;"></div>' + 
-                                    '<h1 class="wa-page-heading">' + (title || $_('All users')) + ' <i class="icon16 loading"></i></h1>' +  
-                                '</div>' + 
-                                '<div class="block not-padded tab-content float-left" style="width: 100%;" id="contacts-container">'  + 
-                                    '<div class="block not-padded contacts-data"></div>' + 
-                                '</div>' + 
-                            '</div>' + 
-                            '<div class="clear"></div>' + 
-                        '</div>' + 
-                        '<div class="clear"></div>' + 
+                            '<div class="block not-padded c-core-content">' +
+                                '<div class="block" style="overflow:hidden;">' +
+                                    '<div class="c-actions-wrapper float-right" style="margin: 8px;"></div>' +
+                                    '<h1 class="wa-page-heading">' + (title || $_('All users')) + ' <i class="icon16 loading"></i></h1>' +
+                                '</div>' +
+                                '<div class="block not-padded tab-content float-left" style="width: 100%;" id="contacts-container">'  +
+                                    '<div class="block not-padded contacts-data"></div>' +
+                                '</div>' +
+                            '</div>' +
+                            '<div class="clear"></div>' +
+                        '</div>' +
+                        '<div class="clear"></div>' +
                     '</div>');
                 el = $('#c-core .c-core-content');
                 $('#c-create-group-toggle').click(function() {
@@ -988,8 +989,8 @@
                 el = $('#c-core').empty().
                     append(
                         $(
-                            '<div class="contacts-background">' + 
-                                '<div class="block not-padded c-core-content"></div>' + 
+                            '<div class="contacts-background">' +
+                                '<div class="block not-padded c-core-content"></div>' +
                             '</div>'
                         )
                     ).find(
@@ -1128,7 +1129,7 @@
                             ((show.indexOf('merge') >= 0 && $.wa.controller.merge && $.wa.controller.admin) ?
                                 '<li class="two-or-more disabled">' +
                                     '<a href="#" onClick="$.wa.controller.merge(); return false"><i class="icon16 merge"></i>'+$_('Merge contacts')+'</a>' +
-                                '</li>' : '') + 
+                                '</li>' : '') +
                             (show.indexOf('delete') >= 0 ?
                                 '<li>' +
                                     '<a href="#" onclick="$.wa.controller.contactsDelete(); return false" class="red" id="show-dialog-delete"><i class="icon16 delete"></i>'+$_('Delete')+'</a>' +
@@ -1143,16 +1144,16 @@
                     '<li rel="list"><a href="#" title="' + $_('Details') + '"><i class="icon16 only view-thumb-list"></i></a></li>' +
                     '<li rel="thumbs"><a href="#" title="' + $_('Userpics') + '"><i class="icon16 only view-thumbs"></i></a></li>' +
                 '</ul>' +
-                '<div id="c-list-toolbar-menu-wrapper">' + 
-                    '<input id="c-select-all-items" onclick="$.wa.grid.selectItems(this)" type="checkbox">' + 
-                    '<ul id="c-list-toolbar-menu" class="menu-h dropdown disabled" style="display:inline-block;">' + toolbar + '</ul>' + 
+                '<div id="c-list-toolbar-menu-wrapper">' +
+                    '<input id="c-select-all-items" onclick="$.wa.grid.selectItems(this)" type="checkbox">' +
+                    '<ul id="c-list-toolbar-menu" class="menu-h dropdown disabled" style="display:inline-block;">' + toolbar + '</ul>' +
                 '</div>';
             var el = $('#contacts-container').find('.c-list-toolbar');
             if (el.size() <= 0) {
                 el = $('<div class="block c-list-toolbar"></div>').prependTo($('#contacts-container'));
             }
             el.html(toolbar);
-            
+
             $('#contacts-container').off('click.contacts_view', '#list-views > li').on('click.contacts_view', '#list-views > li', function() {
                 $.wa.grid.setView($(this).closest('li').attr('rel'));
                 return false;
@@ -1259,15 +1260,15 @@
                 $("#c-core h1.wa-page-heading").text(typeof page_header === 'string' ? page_header : title);
             }
         },
-                
+
         getTitle: function() {
             return this.title || '';
         },
-                
+
         setLastView: function(options) {
             this.lastView = $.extend(this.lastView, options);
         },
-                
+
         clearLastView: function() {
             this.lastView = {
                 title: null,

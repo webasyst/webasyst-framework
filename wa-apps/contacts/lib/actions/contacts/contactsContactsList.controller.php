@@ -43,9 +43,9 @@ class contactsContactsListController extends waJsonController
         }
 
         $h_parts = explode('/', $h, 2);
-        
+
         $collection = new contactsCollection($h);
-        
+
         $this->response['fields'] = array();
         $fields = '*,photo_url_32,photo_url_96';
         if ($h_parts[0] === 'users' || $h_parts[0] === 'group') {
@@ -60,10 +60,10 @@ class contactsContactsListController extends waJsonController
                 'vertical' => true
             );
         }
-        
+
         $collection->orderBy($this->sort, $this->order);
         $this->response['count'] = $collection->count();
-        
+
         $view = waRequest::post('view');
 
         if ($view == 'list') {
@@ -95,7 +95,7 @@ class contactsContactsListController extends waJsonController
                 $c->removeCache(array_keys($cdata));
                 $cdata = $data;
             }
-            
+
             $this->response['fields'] = array_merge($this->response['fields'], contactsHelper::getFieldsDescription(array(
                 'title',
                 'name',
@@ -110,7 +110,15 @@ class contactsContactsListController extends waJsonController
                 'sex',
                 'company_contact_id'
             ), true));
-            
+
+            unset($cdata);
+        } else {
+            foreach ($this->response['contacts'] as &$cdata) {
+                $cdata['name'] = waContactNameField::formatName($cdata);
+                if ($cdata['name'] == $cdata['id']) {
+                    $cdata['name'] = false;
+                }
+            }
             unset($cdata);
         }
 
@@ -134,7 +142,7 @@ class contactsContactsListController extends waJsonController
         $title = $collection->getTitle();
 
         $hm = new contactsHistoryModel();
-        
+
         if ($hash) {
             $type = explode('/', $hash);
             $hash = substr($hash, 0, 1) == '/' ? $hash : '/contacts/'.$hash;
@@ -166,7 +174,7 @@ class contactsContactsListController extends waJsonController
         $this->response['history'] = $hm->get();
         $this->response['title'] = $title;
     }
-    
+
     public function workupContacts(&$contacts)
     {
         if (!$contacts) {
@@ -187,19 +195,20 @@ class contactsContactsListController extends waJsonController
                     unset($c[$fld_id]);
                 }
             }
-            $c = array_merge($data, $c);            
+            $c = array_merge($data, $c);
         }
         unset($c);
-        
+
         // load that fields, that are top
         if ($this->getRequest()->request('top')) {
             foreach ($contacts as &$c) {
-                $c['top'] = contactsHelper::getTop(new waContact($c['id']));
+                $contact = new waContact($c['id']);
+                $c['top'] = $contact->getTopFields();
             }
             unset($c);
         }
     }
-    
+
 }
 
 // EOF

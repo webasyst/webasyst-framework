@@ -131,10 +131,10 @@
     {% var photo = o.photo, frontend_link_template = o.frontend_link_template; %}
     <li class="p-inline-mixed-string">
         {% if (o.frontend_link_template) { %}
-            {% if (photo.status <= 0) { %}
+            {% if (photo.status <= 0 && photo.hash) { %}
                 <i class="icon10 lock-bw"></i>
                 <span class="hink">[`Private link`]: <a id="photo-frontend-link" target="_blank" href="{%#frontend_link_template.replace('%url%', photo.private_url)%}" class="gray">{%#frontend_link_template.replace('%url%', photo.private_url)%}</a></span>
-            {% } else { %}
+            {% } else if (photo.status > 0) { %}
                 [`Public link`]:
                 <a id="photo-frontend-link" target="_blank" href="{%#frontend_link_template.replace('%url%', photo.url)%}">{%#frontend_link_template.replace('%url%/', '<span id="photo-frontend-url">%url%</span>').replace('%url%', photo.url+'/')%}</a><input type="text" id="photo-frontend-url-input" style="display:none;"><span class="slash" style="display:none;">/<em class="errormsg" style="display:none;"></em></span>
                 <i class="icon10 new-window"></i>

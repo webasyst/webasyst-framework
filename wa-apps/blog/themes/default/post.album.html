@@ -24,7 +24,7 @@
             } else {
                 $.ajax({ // Load JS script, making sure it WILL get cached in non-debug mode
                       dataType: "script",
-                      url: "{$wa_url}wa-content/js/jquery-plugins/jquery.retina.min.js?{$wa->version(true)}",
+                      url: "{$wa_static_url}wa-content/js/jquery-plugins/jquery.retina.min.js?{$wa->version(true)}",
                       cache: true
                 }).done(retinify);
             }

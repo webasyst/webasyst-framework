@@ -23,6 +23,7 @@
 .post h3 { font-size: 2em; margin-right: 5px; margin-bottom: 3px; }
 .post h3 a { text-decoration: none; }
 .post img { max-width: 100%; height: auto !important; }
+.post iframe { max-width: 100%; }
 .post .text { margin-top: 5px; }
 .post h3,
 .post .text p { max-width: 80%; }

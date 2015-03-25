@@ -171,6 +171,33 @@ class waAuth implements waiAuth
             $user_info = $this->getByLogin($login);
             if ($user_info && ($user_info['is_user'] || !$this->options['is_user']) &&
                 waContact::getPasswordHash($password) === $user_info['password']) {
+                $auth_config = wa()->getAuthConfig();
+                if (wa()->getEnv() == 'frontend' && !empty($auth_config['params']['confirm_email'])) {
+                    $contact_emails_model = new waContactEmailsModel();
+                    $email_row = $contact_emails_model->getByField(array('contact_id' => $user_info['id'], 'sort' => 0));
+                    if ($email_row && $email_row['status'] == 'unconfirmed') {
+                        $login_url = wa()->getRouteUrl((isset($auth_config['app']) ? $auth_config['app'] : '').'/login', array());
+                        $html = sprintf(_ws('A confirmation link has been sent to your email address provided during the signup. Please click this link to confirm your email and to sign in. <a class="send-email-confirmation" href="%s">Resend the link</a>'), $login_url.'?send_confirmation=1');
+                        $html = '<div class="block-confirmation-email">'.$html.'</div>';
+                        $html .= <<<HTML
+<script type="text/javascript">
+    $(function () {
+        $('a.send-email-confirmation').click(function () {
+            $.post($(this).attr('href'), {
+                    login: $(this).closest('form').find("input[name='login']").val()
+                }, function (response) {
+                $('.block-confirmation-email').html(response);
+            });
+            return false;
+        });
+    });
+</script>
+HTML;
+
+                        throw new waException($html);
+                    }
+                }
+
                 $response = waSystem::getInstance()->getResponse();
                 // if remember
                 if (waRequest::post('remember')) {

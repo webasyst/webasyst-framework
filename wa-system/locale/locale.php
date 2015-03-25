@@ -21,6 +21,10 @@ class waGettextParser
 
     protected $words = array();
 
+    /**
+     * @param array $config
+     * @param string[] $config['path']
+     */
     public function __construct($config)
     {
         foreach ($config as $name => $value) {
@@ -78,12 +82,13 @@ class waGettextParser
             $function_pattern[] = '_wp';
         } else {
             $function_pattern[] = '_w';
+            $function_pattern[] = 'sprintf_wp';
         }
         $commas = array('"', "'");
-        $word_pattern = '\\s*%1$s\\s*((?:\\\\%s|[^%1$s\\r\\n])+?)\\s*%1$s\\s*';
+        $word_pattern = '[\\r\\n\\s]*%1$s\\s*((?:\\\\%s|[^%1$s\\r\\n])+?)\\s*%1$s\\s*';
         foreach ($commas as $comma) {
 
-            $plural_pattern = '@(?:'.implode('|', $function_pattern).')(?:\\s*\\*/)?\\s*\\('.sprintf($word_pattern, $comma).','.sprintf($word_pattern, $comma).',\\s*@mus';
+            $plural_pattern = '@(?:'.implode('|', $function_pattern).')(?:\\s*\\*/[\\r\\n]*)?\\s*\\('.sprintf($word_pattern, $comma).','.sprintf($word_pattern, $comma).'(,\\s*|[\\r\\n\\s]*\))@mus';
             if ($this->config['debug'] && !$debug) {
                 print "Plural forms pattern:\n".$plural_pattern."\n";
             }
@@ -98,7 +103,7 @@ class waGettextParser
             }
         }
         foreach ($commas as $comma) {
-            $pattern = '@(?:'.implode('|', $function_pattern).')(?:\\s*\\*/)?\\s*\\('.sprintf($word_pattern, $comma).'\\)@mus';
+            $pattern = '@(?:'.implode('|', $function_pattern).')(?:\\s*\\*/[\\r\\n]*)?\\s*\\('.sprintf($word_pattern, $comma).'\\)@mus';
             if (preg_match_all($pattern, $text, $matches, PREG_OFFSET_CAPTURE)) {
                 foreach ($matches[1] as $match) {
                     $word = preg_replace("@\\\\{$comma}@", $comma, $match[0]);

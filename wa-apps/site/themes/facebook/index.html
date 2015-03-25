@@ -61,11 +61,11 @@
     
     <!-- css -->
     <link href="{$wa_theme_url}facebook.css?v{$wa_theme_version}" rel="stylesheet" type="text/css"/>
-    {if $wa->shop && $wa->shop->currency() == 'RUB'} <link href="{$wa_url}wa-content/font/ruble/arial/fontface.css" rel="stylesheet" type="text/css">{/if}
+    {if $wa->shop && $wa->shop->currency() == 'RUB'} <link href="{$wa_static_url}wa-content/font/ruble/arial/fontface.css" rel="stylesheet" type="text/css">{/if}
     {$wa->css()} {* links active plugins CSS *}
     
     <!-- js -->
-    <script type="text/javascript" src="{$wa_url}wa-content/js/jquery/jquery-1.8.2.min.js"></script>
+    <script type="text/javascript" src="{$wa_static_url}wa-content/js/jquery/jquery-1.8.2.min.js"></script>
     <!-- internal shop-script js for facebook iframe app integration -->
     <script type="text/javascript" src="{$wa_theme_url}facebook.js?v{$wa_theme_version}"></script>
     <script type="text/javascript" src="//connect.facebook.net/{$wa->locale()}/all.js"></script>

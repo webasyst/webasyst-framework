@@ -97,6 +97,14 @@ class siteSettingsSaveController extends waJsonController
             }
         }
 
+        if (waRequest::post('cdn')) {
+            $domain_config['cdn'] = waRequest::post('cdn');
+            $save_config = true;
+        } elseif (!empty($domain_config['cdn'])) {
+            unset($domain_config['cdn']);
+            $save_config = true;
+        }
+
         // save other settings
         foreach (array('head_js', 'google_analytics') as $key) {
             if (!empty($domain_config[$key]) || waRequest::post($key)) {
