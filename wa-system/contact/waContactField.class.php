@@ -199,10 +199,25 @@ abstract class waContactField
     }
 
     /**
-     * Prepare value to be stored in DB.
-     * Data returned will be validated and later passed to $this->getStorage()->set().
-     * For non-multi fields return string or array(value=>string, ext=>string).
-     * For multi fields return list of arrays(value=>string, ext=>string); ext is optional, see $this->isExt()
+     * Part of waContact saving process.
+     * Prepares value for validation and eventually DB storage.
+     *
+     * FYI. waContact assignment code
+     *
+     *      $contact['field_id'] = $something;
+     *
+     * roughly translates to:
+     *
+     *      $f = waContactFields::get('field_id'); // $f is an object of this class
+     *      $something_else = $f->set($contact, $something);
+     *      $errors = $f->validate($something_else, $contact->id);
+     *      if (!$errors) {
+     *          $something_else_2 = $f->prepareSave($something_else, $contact);
+     *          waContactStorage->set($contact, ['field_id' => $something_else_2]);
+     *      }
+     *
+     * For non-multi fields ->set() returns string or array(value=>string, ext=>string).
+     * For multi fields ->set() returns list of arrays(value=>string, ext=>string); ext is optional, see $this->isExt()
      *
      * @param waContact $contact
      * @param mixed $value can be a string, an array(value=>..., ext=>...) or list of these.
@@ -639,7 +654,7 @@ abstract class waContactField
         $options['localized_names'] = $this->name;
         return $options;
     }
-    
+
     /**
      * Set array of parameters
      * @param array $param parameter => value
@@ -701,12 +716,12 @@ abstract class waContactField
         if ($this->isMulti() && $ext) {
             $name_input .= '[value]';
         }
-        
+
         $disabled = '';
         if (wa()->getEnv() === 'frontend' && isset($params['my_profile']) && $params['my_profile'] == '1') {
             $disabled = 'disabled="disabled"';
         }
-        
+
         $result = '<input '.$attrs.' '.$disabled.' type="text" name="'.htmlspecialchars($name_input).'" value="'.htmlspecialchars($value).'">';
         if ($ext) {
             // !!! add a proper <select>?
@@ -788,7 +803,7 @@ abstract class waContactField
     {
          return new $state['_type']($state['id'], $state['name'], $state['options']);
     }
-    
+
     public function prepareSave($value, waContact $contact = null)
     {
         return $value;

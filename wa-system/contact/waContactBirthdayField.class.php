@@ -19,14 +19,14 @@ class waContactBirthdayField extends waContactField
         if (!isset($this->options['formats']['list'])) {
             $this->options['formats']['list'] = $this->options['formats']['html'];
         }
-        
+
         if (empty($this->options['validators'])) {
             $this->options['validators'] = new waDateValidator($this->options, array('required' => _ws('This field is required')));
         }
-        
+
         parent::init();
     }
-    
+
     public function getParts($with_prefix = false)
     {
         $parts = array(
@@ -41,27 +41,63 @@ class waContactBirthdayField extends waContactField
         }
         return $parts;
     }
-    
+
     public function getPrefix()
     {
         return $this->options['prefix'];
     }
-    
+
     public function get(waContact $contact, $format = null) {
         $prefix = $this->options['prefix'];
         $data = array(
             'data' => array(
                 'year' => $contact[$prefix.'_year'],
                 'month' => $contact[$prefix.'_month'],
-                'day' => $contact[$prefix.'_day']
-            )
+                'day' => $contact[$prefix.'_day'],
+            ),
         );
         if (isset($this->options['formats']['html']) && $this->options['formats']['html'] instanceof waContactFieldFormatter) {
             $data['value'] = $this->options['formats']['html']->format($data);
         }
         return $this->format($data, $format);
     }
-    
+
+    public function set(waContact $contact, $value, $params = array(), $add = false)
+    {
+        if (is_array($value) && !isset($value['value'])) {
+            /*
+             * This code allows to assign
+             *    $contact['birthday'] = array(
+             *        'year' => ...
+             *        'month' => ...
+             *        'day' => ...
+             *    );
+             * whereas without it an extra 'value' => array(...) level would be required.
+             */
+            $value = array(
+                'value' => $value,
+            );
+        } else if (is_string($value)) {
+            $value = array(
+                'value' => self::parse($value),
+            );
+        }
+
+        // This allows to read $contact['birthday'] right after assignment
+        if (!empty($value['value'])) {
+            $prefix = $this->options['prefix'];
+            foreach(array('year', 'month', 'day') as $part) {
+                if (!empty($value['value'][$part])) {
+                    $contact[$prefix.'_'.$part] = $value['value'][$part];
+                } else {
+                    $contact[$prefix.'_'.$part] = null;
+                }
+            }
+        }
+
+        return $value;
+    }
+
     public function prepareSave($value, waContact $contact = null)
     {
         $prefix = $this->options['prefix'];
@@ -89,7 +125,7 @@ class waContactBirthdayField extends waContactField
         }
         return $value;
     }
-    
+
     public static function parse($value)
     {
         $d = null;
@@ -129,7 +165,6 @@ class waContactBirthdayField extends waContactField
     public function getHtmlOne($params = array(), $attrs = '')
     {
         $value = isset($params['value']['data']) ? $params['value']['data'] : '';
-        $prefix = $this->options['prefix'];
         if (!is_array($value)) {
             $value = isset($params['value']['value']) ? $params['value']['value'] : '';
         }
@@ -144,7 +179,7 @@ class waContactBirthdayField extends waContactField
 
         $result = "";
 
-        $result .= '<select '.$attrs.' '.$disabled.' name="'.htmlspecialchars($name_input).'[value][day]">';
+        $result .= '<select '.$attrs.' '.$disabled.' name="'.htmlspecialchars($name_input).'[day]">';
         $selected_day = !empty($value['day']) ? " selected" : "";
         $result .= '<option value=""'.$selected_day.'>-</option>';
         for($day = 1; $day <= 31; $day++) {
@@ -167,7 +202,7 @@ class waContactBirthdayField extends waContactField
             11 => _ws('November'),
             12 => _ws('December')
         );
-        $result .= '<select '.$attrs.' '.$disabled.' name="'.htmlspecialchars($name_input).'[value][month]">';
+        $result .= '<select '.$attrs.' '.$disabled.' name="'.htmlspecialchars($name_input).'[month]">';
         $selected_month = !empty($value['month']) ? " selected" : "";
         $result .= '<option value=""'.$selected_month.'>-</option>';
         foreach($months as $month_id => $month) {
@@ -176,7 +211,7 @@ class waContactBirthdayField extends waContactField
         }
         $result .= '</select>';
 
-        $result .= '<input '.$attrs.' '.$disabled.' type="text" name="'.htmlspecialchars($name_input).'[value][year]" value="'.htmlspecialchars(!empty($value['year'])?$value['year']:"").'" style="width: 4em; min-width: 4em;">';
+        $result .= '<input '.$attrs.' '.$disabled.' type="text" name="'.htmlspecialchars($name_input).'[year]" value="'.htmlspecialchars(!empty($value['year'])?$value['year']:"").'" style="width: 4em; min-width: 4em;">';
 
         return $result;
     }
@@ -186,13 +221,12 @@ class waContactBirthdayLocalFormatter extends waContactFieldFormatter
 {
     public function format($data)
     {
-        $prefix = $this->options['prefix'];
         $date = array();
         if ($data['data']['year']) {
             $value = $data['data']['year'];
             $date["y"] = $data['data']['year'];
         } else {
-            // use leap year, for correct formating 29 Febrary 
+            // use leap year, for correct formating 29 Febrary
             $value = date("Y");
             while (!date("L", strtotime("{$value}-01-01"))) {
                 $value += 1;
@@ -210,7 +244,7 @@ class waContactBirthdayLocalFormatter extends waContactFieldFormatter
         } else {
             $value .= "-01";
         }
-        
+
         $format = array();
         foreach (explode(" ", waDateTime::getFormat('humandate')) as $p) {
             $f = strtolower(substr($p, 0, 1));
@@ -220,9 +254,9 @@ class waContactBirthdayLocalFormatter extends waContactFieldFormatter
         }
         $format = implode(" ", $format);
         $format = preg_replace("/[^yfj]$/i", "", $format);
-        
+
         $date_time = new DateTime($value);
-        
+
         // hack to insert month name in lower case
         if (strpos($format, 'f') !== false) {
             $format = str_replace('f', '@F@', $format);
