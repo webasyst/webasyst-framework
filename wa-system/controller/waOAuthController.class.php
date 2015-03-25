@@ -97,6 +97,12 @@ class waOAuthController extends waViewController
             if ($contact) {
                 $contact_id = $contact->getId();
             }
+
+            /**
+             * @event signup
+             * @param waContact $contact
+             */
+            wa()->event('signup', $contact);
         } elseif (empty($contact)) {
             $contact = new waContact($contact_id);
         }
