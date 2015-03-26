@@ -193,7 +193,7 @@ abstract class waRightConfig
         }
 
         if ($addScriptForCB) {
-            $html .= '
+            $html .= <<<HTML
                 // Logic for "all" checkboxes
                 /** if $(this) is checked, then check and disable all checkboxes starting with the same name (minus `.all`)
                   * if not checked, then enable all those checkboxes. */
@@ -211,26 +211,36 @@ abstract class waRightConfig
                                 updateIndicator.call(cb2[0]);
                             }
                         });
+                    if (cb.val() !== "") {
                     cb.parents("table.c-access-app")
                         .find("select[name^=\""+cb.attr("name").replace(/\.all]/,"")+"\"]").each(function (k,cb2) {
                             cb2 = $(cb2);
                             cb2.val(cb.val());
                             updateIndicator.call(cb2[0]);
                         });
+                    }
                 };
                 /* For each enabled "all" checkbox in a table.c-access-app:
                    - Add an onclick handler
                    - Call the handler initially, if `all` is checked. */
                 $("table.c-access-app .c-access-cb-all select").each(function(k,cb) {
                     cb = $(cb).change(handler);
-                    handler.call(cb[0]);
+                    //handler.call(cb[0]);
+                });
+                $("table.c-access-app .c-access-subcontrol-item select").change(function () {
+                    var el = $(this);
+                    var all = el.closest("table.c-access-app").find(".c-access-cb-all select");
+                    if (all.val() !== $(this).val()) {
+                        all.val('');
+                    }
                 });
                 $("table.c-access-app .c-access-cb-all input:enabled").each(function(k,cb) {
                     cb = $(cb).click(handler);
                     if (cb.is(":checked")) {
                         handler.call(cb[0]);
                     }
-                });';
+                });
+HTML;
         }
 
         $html .= '
@@ -274,7 +284,7 @@ abstract class waRightConfig
                 $o = $params['options'];
                 $oHTML = array();
                 foreach($o as $val => $opt) {
-                    $oHTML[] = '<option value="'.$val.'"'.($own==$val ? ' selected="selected"' : '').'>'.htmlspecialchars($opt).'</option>';
+                    $oHTML[] = '<option value="'.$val.'"'.($own==$val ? ' selected' : '').'>'.htmlspecialchars($opt).'</option>';
                 }
                 $oHTML = implode('', $oHTML);
                 return '<tr'.($params['cssclass'] ? ' class="'.$params['cssclass'].'"' : '').'>'.
@@ -327,10 +337,25 @@ abstract class waRightConfig
                 }
                 if (isset($params['hint1']) && $params['hint1'] == 'all_select') {
                     $own = isset($rights[$name.'.all']) ? $rights[$name.'.all'] : '';
+                    if ($own === '') {
+                        reset($params['items']);
+                        $k = key($params['items']);
+                        $own = isset($rights[$name.'.'.$k]) ? $rights[$name.'.'.$k] : '';
+                        foreach ($params['items'] as $id => $item_name) {
+                            $item_v = isset($rights[$name.'.'.$id]) ? $rights[$name.'.'.$id] : key($params['options']);
+                            if ($item_v != $own) {
+                                $own = '';
+                                break;
+                            } else {
+                                $own = $item_v;
+                            }
+                        }
+                        $own = (string)$own;
+                    }
                     $group = $inherited && isset($inherited[$name.'.all']) ? $inherited[$name.'.all'] : null;
                     $params['hint1'] = '<span class="c-access-cb-all nm"><label><select name="app['.$name.'.all]"><option value=""></option>';
                     foreach ($params['options'] as $v => $n) {
-                        $params['hint1'].= '<option '.($own == $v ? 'selected':'').' value="'.$v.'">'.$n.'</option>';
+                        $params['hint1'].= '<option '.($own === (string)$v ? 'selected':'').' value="'.$v.'">'.$n.'</option>';
                     }
                     $params['hint1'].= '</select></label></span>';
                     if($inherited !== null) {
@@ -344,6 +369,9 @@ abstract class waRightConfig
                                 ($inherited !== null ? '<td><div class="hint">'.(isset($params['hint2']) ? $params['hint2'] : '').'</td>' : '').
                         '</tr>';
                 foreach ($params['items'] as $id => $item_name) {
+                    if (isset($params['hint1']) && !isset($rights[$name.'.'.$id]) && !empty($rights[$name.'.all'])) {
+                        $rights[$name.'.'.$id] = $rights[$name.'.all'];
+                    }
                     $html .= $this->getItemHtml($name.'.'.$id, htmlspecialchars($item_name), 'select', array('cssclass' => 'c-access-subcontrol-item', 'options' => $params['options']), $rights, $inherited);
                 }
                 return $html;
