@@ -224,27 +224,34 @@ class waImageImagick extends waImage
      */
     protected function _watermark($options)
     {
-        // export options to php-vars
-        foreach ($options as $name => $value) {
-            $$name = $value;
-        }
-
+        $opacity = 0.5;
+        $watermark = false;
+        $align = self::ALIGN_BOTTOM_RIGHT;
+        $font_file = null;
+        $font_size = 12;
+        $font_color = '888888';
+        $text_orientation = self::ORIENTATION_HORIZONTAL;
+        extract($options, EXTR_IF_EXISTS);
         $opacity = min(max($opacity, 0), 1);
+
         /**
          * @var waImage $watermark
          */
         if ($watermark instanceof waImage) {
-            $offset = $this->calcWatermarkOffset($watermark->width, $watermark->height, $align);
-            $watermark = new Imagick($watermark->file);
-            $watermark->evaluateImage(Imagick::EVALUATE_MULTIPLY, $opacity, Imagick::CHANNEL_ALPHA);
-            $this->im->compositeImage(
-                    $watermark,
-                    Imagick::COMPOSITE_DEFAULT,
-                    $offset[0],
-                    $offset[1]);
-
-            $watermark->clear();
-            $watermark->destroy();
+            $width = ifset($options['width'], $watermark->width);
+            $height = ifset($options['height'], $watermark->height);
+            $offset = $this->calcWatermarkOffset($width, $height, $align);
+            $iwatermark = new Imagick($watermark->file);
+            if ($width != $watermark->width || $height != $watermark->height) {
+                $iwatermark->resizeImage($width, $height, Imagick::FILTER_CUBIC, 0.5);
+            }
+            if (method_exists($iwatermark, 'setImageAlphaChannel')) {
+                $iwatermark->setImageAlphaChannel(Imagick::ALPHACHANNEL_ACTIVATE);
+            }
+            $iwatermark->evaluateImage(Imagick::EVALUATE_MULTIPLY, $opacity, Imagick::CHANNEL_ALPHA);
+            $this->im->compositeImage($iwatermark, Imagick::COMPOSITE_DISSOLVE, $offset[0], $offset[1]);
+            $iwatermark->clear();
+            $iwatermark->destroy();
         } else {
             $text = (string) $watermark;
             if (!$text) {
@@ -269,19 +276,29 @@ class waImageImagick extends waImage
                 list ($width, $height) = array($height, $width);
             }
 
-            $offset = $this->calcWatermarkTextOffset($width, $height, $align, $text_orientation);
-
-            $this->im->annotateImage($watermark, $offset[0], $offset[1], $text_orientation == self::ORIENTATION_VERTICAL ? -90: 0, $text);
+            list($offset, $rotation) = $this->calcWatermarkTextOffset($width, $height, $align, $text_orientation, ifset($options['rotation']));
+            $this->im->annotateImage($watermark, $offset[0], $offset[1], $rotation, $text);
             $watermark->clear();
             $watermark->destroy();
         }
     }
 
-    private function calcWatermarkTextOffset($width, $height, $align, $text_orientation)
+    private function calcWatermarkTextOffset($width, $height, $align, $text_orientation, $opt_rotation)
     {
+        $rotation = $text_orientation == self::ORIENTATION_VERTICAL ? -90: 0;
         $offset = '';
         $margin = 10;
         switch ($align) {
+            case self::ALIGN_CENTER:
+                $rotation = -$opt_rotation;
+                $x = ($this->width - $width) / 2;
+                $y = $this->height / 2;
+                $sin = sin(deg2rad($rotation));
+                $cos = cos(deg2rad($rotation));
+                $x -= (($width*$cos - $height*$sin) - $width)/2;
+                $y -= (($width*$sin + $height*$cos) - $height)/2;
+                $offset = array($x, $y);
+                break;
             case self::ALIGN_TOP_LEFT:
                 if ($text_orientation == self::ORIENTATION_HORIZONTAL) {
                     $offset = array($margin, 2*$margin + round($height/2));
@@ -304,6 +321,7 @@ class waImageImagick extends waImage
                 }
                 break;
             case self::ALIGN_BOTTOM_RIGHT:
+            default:
                 if ($text_orientation == self::ORIENTATION_HORIZONTAL) {
                     $offset = array($this->width - $width - $margin, $this->height - round($height/2) - $margin);
                 } else {
@@ -314,14 +332,21 @@ class waImageImagick extends waImage
 
         $offset[0] = round($offset[0]);
         $offset[1] = round($offset[1]);
-        return $offset;
+        return array($offset, $rotation);
     }
 
     private function calcWatermarkOffset($width, $height, $align)
     {
+        if (is_array($align)) {
+            return $align;
+        }
+
         $offset = '';
         $margin = 10;
         switch ($align) {
+            case self::ALIGN_CENTER:
+                $offset = array(($this->width - $width) / 2, ($this->height - $height) / 2);
+                break;
             case self::ALIGN_TOP_LEFT:
                 $offset = array($margin, $margin);
                 break;
@@ -332,6 +357,7 @@ class waImageImagick extends waImage
                 $offset = array($margin, $this->height - $height - $margin);
                 break;
             case self::ALIGN_BOTTOM_RIGHT:
+            default:
                 $offset = array($this->width - $width - $margin, $this->height - $height - $margin);
                 break;
         }
@@ -339,4 +365,15 @@ class waImageImagick extends waImage
         $offset[1] = round($offset[1]);
         return $offset;
     }
+
+    protected function _getPixel($x, $y)
+    {
+        $pixel = $this->im->getImagePixelColor($x, $y);
+        $result = array_values($pixel->getColor(true));
+        if (!isset($result[3])) {
+            $result[3] = 1;
+        }
+        return $result;
+    }
 }
+

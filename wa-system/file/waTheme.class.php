@@ -34,6 +34,7 @@
  * @property-read string $type
  * @property-read string $url Theme directory URL
  * @property-read string $parent_theme_id Parent theme ID
+ * @property-read string $source_theme_id Source theme ID for duplicated one
  * @property-read waTheme $parent_theme Parent theme instance or false
  * @property-read array $used theme settlement URLs
  * @property-read bool $system
@@ -54,7 +55,7 @@ class waTheme implements ArrayAccess
     const CUSTOM = 'custom';
 
     /**
-     * Overriden theme
+     * Overridden theme
      * @var string
      */
     const OVERRIDDEN = 'overridden';
@@ -96,7 +97,7 @@ class waTheme implements ArrayAccess
      * Get theme instance
      * @param $id
      * @param bool|string $app_id
-     * @param bool $force
+     * @param bool|string $force true to create new custom theme or self::ORIGINAL to get original theme instance
      * @param bool $readonly
      */
     public function __construct($id, $app_id = true, $force = false, $readonly = false)
@@ -105,7 +106,8 @@ class waTheme implements ArrayAccess
         if (strpos($id, ':') !== false) {
             list($app_id, $id) = explode(':', $id, 2);
         }
-        //TODO validate theme id
+
+        self::verify($id);
         $this->id = $id;
         $this->app = ($app_id === true || !$app_id) ? wa()->getApp() : $app_id;
         $this->initPath($force);
@@ -156,6 +158,11 @@ class waTheme implements ArrayAccess
             $this->path_original = false;
         }
 
+        if ($force === self::ORIGINAL) {
+            $this->readonly = true;
+            $this->path_custom = false;
+        }
+
         if ($this->path_custom && $this->path_original) {
             $this->type = self::OVERRIDDEN;
             $this->path = $this->path_custom;
@@ -171,7 +178,7 @@ class waTheme implements ArrayAccess
             //theme not found
         }
 
-        if (!$force) {
+        if (!$force && !in_array($force, array(self::ORIGINAL), true)) {
             $this->check();
         }
     }
@@ -192,6 +199,7 @@ class waTheme implements ArrayAccess
                         'parent_theme_id' => '',
                         'version'         => '',
                         'edition'         => 0,
+                        'source_theme_id' => '',
                     );
                     if (!$xml = $this->getXML()) {
                         trigger_error("Invalid theme description {$path}", E_USER_WARNING);
@@ -281,11 +289,23 @@ class waTheme implements ArrayAccess
                                     $s['value'][$locale] = (string)$value;
                                 }
                             }
+
+                            if ($setting->{'filename'}) {
+                                $s['filename'] = (string)$setting->{'filename'};
+                            }
+
                             foreach ($setting->{'name'} as $value) {
                                 if ($value && ($locale = (string)$value['locale'])) {
                                     $s['name'][$locale] = (string)$value;
                                 }
                             }
+
+                            foreach ($setting->{'description'} as $value) {
+                                if ($value && ($locale = (string)$value['locale'])) {
+                                    $s['description'][$locale] = (string)$value;
+                                }
+                            }
+
                             if ($setting->{'options'}) {
                                 $this->info['settings'][$var]['options'] = array();
                                 foreach ($setting->{'options'}->children() as $option) {
@@ -303,9 +323,6 @@ class waTheme implements ArrayAccess
                                         }
                                     }
                                 }
-                            }
-                            if ($setting->{'filename'}) {
-                                $s['filename'] = (string)$setting->{'filename'};
                             }
                             unset($s);
                         }
@@ -350,6 +367,7 @@ class waTheme implements ArrayAccess
         }
         return ($param === null) ? true : isset($this->info[$param]);
 
+
         //TODO check info and construct params
     }
 
@@ -362,7 +380,7 @@ class waTheme implements ArrayAccess
      * @throws waException
      * @return waTheme
      */
-    public function addFile($path, $description, $options = array())
+    public function addFile($path, $description = null, $options = array())
     {
         if ($description) {
             $options['description'] = $description;
@@ -438,9 +456,11 @@ class waTheme implements ArrayAccess
         if (file_exists($path) && filesize($path)) {
             if ($as_dom) {
                 $xml = new DOMDocument(1.0, 'UTF-8');
-                $xml->preserveWhiteSpace = true;
+                $xml->preserveWhiteSpace = false;
                 $xml->formatOutput = true;
                 $xml->load($path);
+                $xml->preserveWhiteSpace = false;
+                $xml->formatOutput = true;
             } else {
                 $xml = @simplexml_load_file($path, null, LIBXML_NOCDATA);
             }
@@ -451,16 +471,17 @@ class waTheme implements ArrayAccess
 <theme id="{$this->id}" system="0" vendor="unknown" author="unknown" app="{$this->app}" version="1.0.0" parent_theme_id="">
     <name locale="en_US">{$this->id}</name>
     <description locale="en_US">There's no description</description>
-    <files>
-    </files>
+    <files></files>
     <about locale="en_US">There's no about</about>
 </theme>
 XML;
             if ($as_dom) {
                 $xml = new DOMDocument(1.0, 'UTF-8');
-                $xml->preserveWhiteSpace = true;
+                $xml->preserveWhiteSpace = false;
                 $xml->formatOutput = true;
                 $xml->loadXML($data);
+                $xml->preserveWhiteSpace = false;
+                $xml->formatOutput = true;
             } else {
                 $xml = @simplexml_load_string($data, null, LIBXML_NOCDATA);
             }
@@ -469,9 +490,172 @@ XML;
     }
 
     /**
-     * @todo complete code - it's not work properly (DTD fields order)
+     * @param DOMDocument $dom
+     * @param DOMXPath $xpath
+     * @param DOMNode $parent
+     * @param string $name
+     * @param string $value
+     * @return DOMElement
      */
-    public function save()
+    private function &addNode($dom, $xpath, $parent, $name, $value = '')
+    {
+        $path = explode('/', rtrim($name, '/'));
+        $name = end($path);
+
+        $ref_node = null;
+        $context = $parent->getNodePath();
+        switch ($context) {
+            case '/theme':
+                $before = array(
+                    'name',
+                    'description',
+                    'files',
+                    'about',
+                    //'requirements',
+                    'settings',
+                    'thumbs',
+                    'locales',
+                );
+                break;
+            case '/theme/settings/setting':
+                $before = array(
+                    'value',
+                    'filename',
+                    'name',
+                    'description',
+                    'options',
+                );
+                break;
+            case '/theme/settings/setting/options/option':
+                $before = array(
+                    'name',
+                    'description',
+                );
+                break;
+            default:
+                $before = array();
+                break;
+        }
+
+        if (!empty($before)) {
+            do {
+                ;
+            } while ($before && ($name != array_shift($before)));
+            #find next element
+            do {
+                if ($query = array_shift($before)) {
+
+                    if (empty($xpath)) {
+                        $xpath = new DOMXPath($dom);
+                    }
+                    $query = $context.'/'.$query;
+
+                    if (($result = $xpath->query($query)) && $result->length) {
+                        $ref_node = $result->item(0);
+                    }
+                }
+            } while (!$ref_node && $before);
+        }
+
+        $element = $dom->createElement($name, $value);
+        if ($ref_node) {
+            $element = $parent->insertBefore($element, $ref_node);
+        } else {
+            $element = $parent->appendChild($element);
+        }
+        return $element;
+    }
+
+    /**
+     * @param DOMDocument $dom
+     * @param DOMXPath $xpath
+     * @param DOMElement $context
+     * @param string $field
+     * @param string|string[string] $value
+     */
+    private function addLocalizedField($dom, $xpath, $context, $field, $value)
+    {
+
+        if (is_array($value)) {
+            foreach ($value as $locale => $_value) {
+                $query = "{$field}[@locale='{$locale}']";
+                if ($node = $xpath->query($query, $context)->item(0)) {
+                    if ($_value === null) {
+                        $context->removeChild($node);
+                    } else {
+                        $node->nodeValue = $_value;
+                    }
+
+                } else {
+                    $node = $this->addNode($dom, $xpath, $context, $field, $_value);
+                    $node->setAttribute('locale', $locale);
+                }
+
+            }
+        } else {
+            if ($field !== 'value') {
+                $value = array(self::getLocale() => $value);
+                $this->addLocalizedField($dom, $xpath, $context, $field, $value);
+            } else {
+                $query = "{$field}";
+                if ($node = $xpath->query($query, $context)->item(0)) {
+                    $node->nodeValue = $value;
+                } else {
+                    $this->addNode($dom, $xpath, $context, $field, $value);
+                }
+            }
+        }
+    }
+
+    /**
+     * @param DOMDocument $dom
+     * @param DOMXPath $xpath
+     * @param DOMElement $setting
+     * @param array $info
+     */
+    private function updateSetting($dom, $xpath, $setting, $info)
+    {
+        $setting->setAttribute('control_type', ifset($info['control_type'], 'text'));
+
+        if (!empty($info['filename'])) {
+            $this->addNode($dom, $xpath, $setting, 'filename', $info['filename']);
+        }
+
+        $this->addLocalizedField($dom, $xpath, $setting, 'name', ifempty($info['name'], ''));
+        if (!empty($info['description'])) {
+            $this->addLocalizedField($dom, $xpath, $setting, 'description', $info['description']);
+        }
+
+        if (!empty($info['options'])) {
+            if ($options = $xpath->query('options', $setting)) {
+                for ($i = 0; $i < $options->length; $i++) {
+                    $option = $options->item($i);
+                    $option->parentNode->removeChild($option);
+                }
+            }
+            $options = $this->addNode($dom, $xpath, $setting, 'options');
+
+
+            foreach ($info['options'] as $value => $o) {
+                $option = $this->addNode($dom, $xpath, $options, 'option');
+                $option->setAttribute('value', $value);
+                foreach (array('name', 'description') as $field) {
+                    if (isset($o[$field])) {
+                        $this->addLocalizedField($dom, $xpath, $option, $field, $o[$field]);
+                    }
+                }
+            }
+            unset($o);
+
+        }
+
+    }
+
+    /**
+     * @param bool $validate
+     * @return bool|array
+     */
+    public function save($validate = false)
     {
         $res = null;
         if (!$this->readonly && $this->changed && $this->path) {
@@ -483,36 +667,29 @@ XML;
             switch ($extension) {
                 case 'xml':
                     $dom = $this->getXML(true);
+                    /**
+                     * @var DOMDocument $dom
+                     */
                     $xpath = new DOMXPath($dom);
                     $theme = $xpath->query('/theme')->item(0);
                     /**
-                     * @var DOMNode $theme
+                     * @var DOMElement $theme
                      */
 
                     $ml_fields = array('name', 'description', 'about');
                     foreach ($ml_fields as $field) {
                         if (isset($this->changed[$field]) && $this->info[$field]) {
-                            foreach ($this->info[$field] as $locale => $value) {
-                                $query = "/theme/{$field}[@locale='{$locale}']";
-                                if (!($node = $xpath->query($query)->item(0))) {
-                                    $node = new DOMElement($field, $value);
-                                    $theme->appendChild($node);
-                                    $node->setAttribute('locale', $locale);
-                                } else {
-                                    $node->nodeValue = $value;
-                                }
-                            }
+                            $this->addLocalizedField($dom, $xpath, $theme, $field, $this->info[$field]);
                         }
                         unset($this->changed[$field]);
                     }
 
-
                     if (isset($this->changed['files'])) {
+
                         //files workaround
                         $query = "/theme/files";
                         if (!($files = $xpath->query($query)->item(0))) {
-                            $files = new DOMElement('files');
-                            $dom->appendChild($files);
+                            $files = $this->addNode($dom, $xpath, $theme, 'files');
                         }
                         foreach ($this->changed['files'] as $file_path => $changed) {
 
@@ -520,11 +697,11 @@ XML;
                                 $info = $this->info['files'][$file_path];
                                 $query = "/theme/files/file[@path='{$file_path}']";
                                 if (!($file = $xpath->query($query)->item(0))) {
-                                    $file = new DOMElement('file');
-                                    $files->appendChild($file);
+                                    $file = $this->addNode($dom, $xpath, $files, 'file');
                                     $file->setAttribute('path', $file_path);
                                 }
-                                $file->setAttribute('custom', $info['custom'] ? '1' : '0');
+
+                                $file->setAttribute('custom', !empty($info['custom']) ? '1' : '0');
 
                                 if (!empty($info['modified']) || (string)$file->getAttribute('modified')) {
                                     $file->setAttribute('modified', $info['modified'] ? '1' : '0');
@@ -533,21 +710,8 @@ XML;
                                     $file->setAttribute('parent', $info['parent'] ? '1' : '0');
                                 }
 
-                                foreach ($info['description'] as $locale => $value) {
-                                    $query_description = "{$query}/description[@locale='{$locale}']";
-                                    if (!($description = $xpath->query($query_description)->item(0))) {
-                                        if ($value) {
-                                            $description = new DOMElement('description', $value);
-                                            $file->appendChild($description);
-                                            $description->setAttribute('locale', $locale);
-                                        }
-                                    } else {
-                                        if ($value === null) {
-                                            $file->removeChild($description);
-                                        } else {
-                                            $description->nodeValue = $value;
-                                        }
-                                    }
+                                if (!empty($info['description'])) {
+                                    $this->addLocalizedField($dom, $xpath, $file, 'description', $info['description']);
                                 }
 
 
@@ -561,45 +725,78 @@ XML;
                         unset($this->changed['files']);
                     }
 
-                    if (isset($this->changed['settings'])) {
+                    if (!empty($this->changed['settings'])) {
                         //settings workaround
                         $query = "/theme/settings";
-                        if ($settings = $xpath->query($query)->item(0)) {
-                            foreach ($this->changed['settings'] as $var => $changed) {
-                                $query = "/theme/settings/setting[@var='{$var}']/value";
+                        $settings = $xpath->query($query)->item(0);
+                        if (!$settings) {
+                            $settings = $this->addNode($dom, $xpath, $theme, 'settings');
+                        }
+                        foreach ($this->changed['settings'] as $var => $changed) {
+                            $query = "/theme/settings/setting[@var='{$var}']/value";
+
+                            $value_items = $xpath->query($query);
+                            if (!$value_items->length) {
+                                $setting = $this->addNode($dom, $xpath, $settings, 'setting');
+                                $setting->setAttribute('var', $var);
+                                $this->addNode($dom, $xpath, $setting, 'value');
+                                if (!empty($this->info['settings'][$var])) {
+                                    $this->updateSetting($dom, $xpath, $setting, $this->info['settings'][$var]);
+                                }
                                 $value_items = $xpath->query($query);
-                                $length = $value_items->length;
+                            } elseif (!empty($this->info['settings'][$var]['changed'])) {
+                                $setting = $value_items->item(0)->parentNode;
+                                /**
+                                 * @var DOMElement $setting
+                                 */
+                                $this->updateSetting($dom, $xpath, $setting, $this->info['settings'][$var]);
+                                unset($this->info['settings'][$var]['changed']);
+                            }
+                            $length = $value_items->length;
 
-                                if ($length && ($value = $value_items->item(0))) {
-                                    if (ifset($this->settings[$var]['control_type']) == 'text') {
-                                        $value->nodeValue = '';
-                                        $value->appendChild(new DOMCdataSection(ifempty($this->settings[$var]['value'], '')));
-                                    } else {
-                                        $value->nodeValue = ifempty($this->settings[$var]['value'], '');
-                                    }
+                            if ($length && ($value = $value_items->item(0))) {
+                                /**
+                                 * @var DOMElement $value
+                                 */
+                                if (ifset($this->settings[$var]['control_type']) == 'text') {
+                                    $value->nodeValue = '';
+                                    $value->appendChild(new DOMCdataSection(self::prepareField(ifempty($this->settings[$var]['value'], ''))));
+                                } else {
+                                    $value->nodeValue = self::prepareField(ifempty($this->settings[$var]['value'], ''));
+                                }
 
-                                    if ($value->hasAttribute('locale')) {
-                                        $value->removeAttribute('locale');
-                                    }
-                                    $parent = $value->parentNode;
-                                    for ($index = 1; $index < $length; $index++) {
-                                        $parent->removeChild($value_items->item($index));
-                                    }
+                                if ($value->hasAttribute('locale')) {
+                                    $value->removeAttribute('locale');
+                                }
+                                $parent = $value->parentNode;
+                                for ($index = 1; $index < $length; $index++) {
+                                    $parent->removeChild($value_items->item($index));
                                 }
                             }
                         }
                         unset($this->changed['settings']);
                     }
 
+                    //todo add save locales support
                     if ($this->changed) {
                         foreach ($this->changed as $field => $changed) {
                             if ($changed) {
-                                $theme->setAttribute($field, $this->info[$field]);
+                                $value = ifset($this->info[$field], '');
+                                if (in_array($field, array('system'))) {
+                                    $value = sprintf('%d', $value);
+                                }
+                                $theme->setAttribute($field, $value);
                             }
                             unset($this->changed[$field]);
                         }
                     }
-                    $res = $dom->save($path, LIBXML_COMPACT);
+
+                    $dom->preserveWhiteSpace = false;
+                    $dom->formatOutput = true;
+
+                    if (($res = $dom->save($path, LIBXML_COMPACT)) && $validate) {
+                        $res = $this->validate($dom, true);
+                    }
                     break;
                 case 'php':
                     $res = waUtils::varExportToFile($this->info, $path);
@@ -614,6 +811,83 @@ XML;
         }
 
         return $res;
+    }
+
+
+    /**
+     * @param DOMDocument $dom
+     * @param bool $strict
+     * @return array
+     */
+    private function validate($dom, $strict = false)
+    {
+        libxml_use_internal_errors(true);
+        $valid = @$dom->validate();
+        $report = array();
+        if ((!$valid || $strict) && ($r = libxml_get_errors())) {
+            $report = array();
+            if ($valid) {
+                $report[] = array(
+                    'level'   => 'info',
+                    'message' => 'theme XML is valid',
+                );
+            } else {
+
+                $report[] = array(
+                    'level'   => 'error',
+                    'message' => 'theme XML contains errors',
+                );
+            }
+            foreach ($r as $er) {
+                /**
+                 * @var libXMLError $er
+                 */
+
+                $level_name = '';
+                switch ($er->level) {
+                    case LIBXML_ERR_WARNING:
+                        $level_name = 'LIBXML_ERR_WARNING';
+                        break;
+                    case LIBXML_ERR_ERROR:
+                        $level_name = 'LIBXML_ERR_ERROR';
+                        break;
+                    case LIBXML_ERR_FATAL:
+                        $level_name = 'LIBXML_ERR_FATAL';
+                        break;
+
+                }
+                if ($er->code != 505) {
+                    $report[] = array(
+                        'level'   => $valid ? 'warning' : 'error',
+                        'message' => "{$level_name} #{$er->code} [{$er->line}:{$er->column}]: {$er->message}",
+                    );
+                }
+
+            }
+            if ($valid && (count($report) == 1)) {
+                $report = array();
+            }
+
+        }
+        if (!empty($this->info['files'])) {
+
+            $files = array();
+
+            foreach ($this->info['files'] as $path => $file) {
+                if (empty($file['parent'])) {
+                    if (!file_exists($this->path.'/'.$path)) {
+                        $files[] = $path;
+                    }
+                }
+            }
+            if (!empty($files)) {
+                $report[] = array(
+                    'level'   => 'warning',
+                    'message' => sprintf(_w('Missed theme file(s): %s'), implode(', ', $files)),
+                );
+            }
+        }
+        return $report;
     }
 
     public function __destruct()
@@ -668,6 +942,88 @@ XML;
             }
             return $this;
         }
+    }
+
+    public function update($only_if_not_modified = true)
+    {
+        if (!$this->path_custom || ($this->type != self::OVERRIDDEN)) {
+            return true;
+        }
+        $files = $this->getFiles();
+        $modified = array();
+        foreach ($files as $f_id => $f) {
+            if (!empty($f['modified'])) {
+                $modified[] = $f_id;
+                break;
+            }
+        }
+
+        if ($only_if_not_modified && $modified) {
+            return false;
+        }
+
+        $img_files = array();
+        foreach ($this->getSettings() as $s) {
+            if (ifset($s['control_type']) == 'image' && !empty($s['value'])) {
+                $img_files[] = $s['value'];
+            }
+        }
+
+        $source_path = $this->path_original;
+        $target_path = $this->path_custom;
+
+        $list_files = waFiles::listdir($source_path);
+        $skip_pattern = '/\.(files\.md5|cvs|svn|git|php\d*)$/';
+
+        foreach ($list_files as $f) {
+            // ignore files
+            if ($f !== 'build.php') {
+                foreach ((array)$skip_pattern as $pattern) {
+                    if (preg_match($pattern, $f)) {
+                        continue 2;
+                    }
+                }
+            }
+            // ignore image settings and modified
+            if ($f == 'theme.xml' || in_array($f, $img_files) || in_array($f, $modified)) {
+                continue;
+            }
+            try {
+                waFiles::copy($source_path.'/'.$f, $target_path.'/'.$f);
+            } catch (waException $e) {
+            }
+        }
+
+        if ($this->type == self::OVERRIDDEN) {
+            $theme_original = new waTheme($this->id, $this->app_id, self::ORIGINAL);
+            $this->version = $theme_original->version;
+
+            foreach ($theme_original->getFiles(true) as $f_id => $f) {
+                if (empty($files[$f_id])) {
+                    $this->setFiles(array($f_id => $f));
+                }
+            }
+
+            foreach ($theme_original->getSettings('full') as $var => $s) {
+                if (!isset($this->info['settings'][$var])) {
+                    $this->info['settings'][$var] = $s;
+                    $this->settings[$var]['value'] = ifset($s['value'], '');
+                    $this->changed['settings'][$var] = true;
+                } else {
+                    $old_s = $this->info['settings'][$var];
+                    if ((ifset($old_s['control_type']) != ifset($s['control_type'])) ||
+                        (ifset($old_s['options']) != ifset($s['options']))
+                    ) {
+                        $s['value'] = ifset($old_s['value'], '');
+                        $this->info['settings'][$var] = $s;
+                        $this->settings[$var]['value'] = $s['value'];
+                        $this->changed['settings'][$var] = true;
+                    }
+                }
+            }
+            $this->save();
+        }
+        return true;
     }
 
     public function revertFile($file)
@@ -1047,7 +1403,7 @@ HTACCESS;
         $this->getSettings();
         foreach ($settings as $var => $value) {
             if (isset($this->settings[$var])) {
-                if ($this->settings[$var]['value'] != $value) {
+                if (ifset($this->settings[$var]['value']) != $value) {
                     $this->settings[$var]['value'] = $value;
                     $this->changed['settings'][$var] = true;
                 }
@@ -1198,6 +1554,9 @@ HTACCESS;
     public function getSettings($values_only = false)
     {
         $this->init();
+        if ($values_only === 'full') {
+            return $this->info['settings'];
+        }
         if (!isset($this->settings)) {
             $this->settings = $this->info['settings'];
             foreach ($this->settings as $var => &$s) {
@@ -1247,6 +1606,10 @@ HTACCESS;
         return $result;
     }
 
+    /**
+     * @param array $data
+     * @return string
+     */
     private static function getLocale($data = array())
     {
         $locale = wa()->getLocale();
@@ -1381,7 +1744,6 @@ HTACCESS;
         if (!file_exists($this->path) || !file_exists($this->path.'/'.self::PATH)) {
             self::throwThemeException('MISSING_THEME_XML', $this->id);
         }
-        //TODO check files of theme
     }
 
 
@@ -1391,8 +1753,13 @@ HTACCESS;
      */
     public function brush()
     {
-        //TODO check theme type
-        waFiles::delete($this->path_custom, false);
+        if ($this->type == self::OVERRIDDEN) {
+            if (empty($this->path_original)) {
+                self::throwThemeException('ORIGINAL_THEME_NOT_FOUND', _w('Brush custom theme not available'));
+            }
+
+            waFiles::delete($this->path_custom, false);
+        }
         $this->flush();
         $instance = new self($this->id, $this->app);
         return $instance;
@@ -1400,7 +1767,6 @@ HTACCESS;
 
     public function purge()
     {
-        //TODO check theme type
         $this->init();
         waFiles::delete($this->path_custom);
         if (!$this->system) {
@@ -1433,7 +1799,12 @@ HTACCESS;
             $name .= ' '.$numerator;
         }
         unset($name);
-        return $this->copy($this->id.$numerator, array('name' => $names, 'system' => false));
+        $params = array(
+            'name'            => $names,
+            'system'          => false,
+            'source_theme_id' => $this->id,
+        );
+        return $this->copy($this->id.$numerator, $params);
     }
 
     /**
@@ -1505,7 +1876,6 @@ HTACCESS;
                 } else {
                     if ($app_info = wa()->getAppInfo($app_id)) {
                         //TODO check theme support
-                        //TODO check parent_theme exists
                         if ($parent_theme = (string)$xml['parent_theme_id']) {
                             $parent_theme = explode(':', $parent_theme, 2);
                             try {

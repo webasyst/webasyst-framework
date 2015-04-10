@@ -669,7 +669,7 @@ HTML;
      * 2 - with <form action="LOGIN_URL">
      * @return string
      */
-    public function loginForm($error = '', $form = 1)
+    public function loginForm($error = '', $form = 1, $placeholders = false)
     {
         $auth = wa($this->app_id)->getAuth();
         $field_id = $auth->getOption('login');
@@ -688,14 +688,14 @@ HTML;
                 <div class="wa-field wa-field-'.$field_id.'">
                     <div class="wa-name">'.$field_name.'</div>
                     <div class="wa-value">
-                        <input'.($error ? ' class="wa-error"' : '').' type="text" name="login" value="'.htmlspecialchars(waRequest::post('login')).'">
+                        <input'.($error ? ' class="wa-error"' : '').' type="text" name="login" value="'.htmlspecialchars(waRequest::post('login')).'"'.($placeholders ? ' placeholder="'.$field_name.'"' : '').'>
                     </div>
                 </div>
                 <div class="wa-field wa-field-password">
                     <div class="wa-name">'._ws('Password').'</div>
                     <div class="wa-value">
-                        <input'.($error ? ' class="wa-error"' : '').' type="password" name="password">
-                        '.($error ? '<em class="wa-error-msg">'.$error.'</em>' : '').'
+                        <input'.($error ? ' class="wa-error"' : '').' type="password" name="password"'.($placeholders ? ' placeholder="'._ws('Password').'"' : '').'>'.
+                        ($error ? '<em class="wa-error-msg">'.$error.'</em>' : '').'
                     </div>
                 </div>
                 <div class="wa-field">
@@ -712,14 +712,14 @@ HTML;
         </div>';
     }
 
-    public function forgotPasswordForm($error = '')
+    public function forgotPasswordForm($error = '', $placeholders = false)
     {
         return '<div class="wa-form">
     <form action="" method="post">
         <div class="wa-field">
             <div class="wa-name wa-field-email">'._ws('Email').'</div>
             <div class="wa-value">
-                <input'.($error ? ' class="wa-error"' : '').' type="text" name="login" value="'.htmlspecialchars(waRequest::request('login', '', waRequest::TYPE_STRING)).'" autocomplete="off">
+                <input'.($error ? ' class="wa-error"' : '').' type="text" name="login" value="'.htmlspecialchars(waRequest::request('login', '', waRequest::TYPE_STRING)).'" autocomplete="off" '.($placeholders ? ' placeholder="'._ws('Email').'"' : '').'>
                 '.($error ? '<em class="wa-error-msg">'.$error.'</em>' : '').'
             </div>
         </div>
@@ -810,7 +810,7 @@ HTML;
         return $fields;
     }
 
-    public function signupForm($errors = array())
+    public function signupForm($errors = array(), $placeholders = false)
     {
         $fields = $this->signupFields($errors);
         $html = '<div class="wa-form"><form action="'.$this->signupUrl().'" method="post">';
@@ -831,9 +831,16 @@ HTML;
                         /**
                          * @var waContactField $sf
                          */
-                        $html .= $this->signupFieldHTML($sf, array('parent' => $field_id, 'id' => $sf->getId()), $field_error);
+                        $params = array('parent' => $field_id, 'id' => $sf->getId());
+                        if ($placeholders) {
+                            $params['placeholder'] = $sf->getName();
+                        }
+                        $html .= $this->signupFieldHTML($sf, $params, $field_error);
                     }
                 } else {
+                    if ($placeholders) {
+                        $field[1]['placeholder'] = $f->getName();
+                    }
                     $html .= $this->signupFieldHTML($f, $field[1], $field_error);
                 }
             } else {
@@ -895,6 +902,8 @@ HTML;
         $attrs = $error !== false ? 'class="wa-error"' : '';
         if (!empty($config['fields'][$f->getId()]['placeholder'])) {
             $attrs .= ' placeholder="'.htmlspecialchars($config['fields'][$f->getId()]['placeholder']).'"';
+        } elseif (!empty($params['placeholder'])) {
+            $attrs .= ' placeholder="'.htmlspecialchars($params['placeholder']).'"';
         }
 		
 		if ($f instanceof waContactHiddenField) {

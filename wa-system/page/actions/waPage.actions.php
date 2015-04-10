@@ -52,6 +52,16 @@ class waPageActions extends waActions
 
         $data['routes'] = $routes;
 
+        /**
+         * Backend sidebar pages
+         * UI hook allow extends backend settings page
+         * @event backend_page_edit
+         * @param array $page
+         * @return array[string][string]string $return[%plugin_id%] html output
+         */
+        $event_params = array();
+        $data['backend_pages_sidebar'] = wa()->event('backend_pages_sidebar', $event_params);
+
         $template = $this->getConfig()->getRootPath().'/wa-system/page/templates/Page.html';
         $this->display($this->prepareData($data), $template);
     }
@@ -141,6 +151,21 @@ class waPageActions extends waActions
         ) + $this->getPageParams($id);
 
         $data['page_edit'] = wa()->event('page_edit', $data);
+
+        /**
+         * Backend settings page
+         * UI hook allow extends backend settings page
+         * @event backend_page_edit
+         * @param array $page
+         * @return array[string][string]string $return[%plugin_id%]['action_button_li'] html output
+         * @return array[string][string]string $return[%plugin_id%]['settings_section'] html output
+         * @return array[string][string]string $return[%plugin_id%]['section'] html output
+         */
+        $data['backend_page_edit'] = wa()->event('backend_page_edit', $page, array(
+            'action_button_li',
+            'section',
+            'settings_section'
+        ));
 
         $template = $this->getConfig()->getRootPath().'/wa-system/page/templates/PageEdit.html';
         $this->display($data, $template);

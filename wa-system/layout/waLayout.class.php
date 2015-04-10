@@ -137,7 +137,12 @@ class waLayout extends waController
     {
         $this->execute();
         $this->view->assign($this->blocks);
-        waSystem::getInstance()->getResponse()->sendHeaders();
+
+        if ((wa()->getEnv() == 'frontend') && waRequest::param('theme_mobile') &&
+            (waRequest::param('theme') != waRequest::param('theme_mobile'))) {
+            wa()->getResponse()->addHeader('Vary', 'User-Agent');
+        }
+        wa()->getResponse()->sendHeaders();
         $this->view->cache(false);
         if ($this->view->autoescape() && $this->view instanceof waSmarty3View) {
             $this->view->smarty->loadFilter('pre', 'content_nofilter');

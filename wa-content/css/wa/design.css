@@ -68,8 +68,14 @@ h5.wa-themes-group { padding-top: 20px; margin-left: 20px; text-transform: upper
 .wa-theme-about p { line-height: 1.5em; }
 .wa-theme-about pre { background: none repeat scroll 0 0 #EEEEEE; border-left: 3px solid #CCCCCC; color: #777777; font-size: 0.9em; padding: 20px; }
 
-.wa-theme-actions { background: #eee; }
+.wa-theme-cover { border: 1px solid #ddd; }
+
+.wa-theme-actions { }
+.wa-theme-actions.wa-theme-latest { background: #dfc; }
+.wa-theme-actions.wa-theme-update-available { background: #ffc; }
+.wa-theme-actions.wa-theme-orphan { background: #eee; }
 .wa-theme-actions ul.menu-v.with-icons li a { word-break: keep-all; }
+.wa-theme-actions ul.menu-v.with-icons li b { display: block; }
 
 ul.menu-h.wa-theme-filter-colors li { border-radius: 20px; padding: 8px; margin-right: 5px; box-shadow: 0 1px 2px #777; }
 ul.menu-h.wa-theme-filter-colors li.wa-themes-all { border-color: transparent; box-shadow: none; }

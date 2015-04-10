@@ -66,7 +66,7 @@ class webasystApiTokenController extends waController
     protected function checkRequest()
     {
         foreach ($this->required_fields as $field => $values) {
-            $v = waRequest::get($field);
+            $v = waRequest::post($field);
             if (!$v) {
                 $this->response(array(
                     'error' => 'invalid_request',

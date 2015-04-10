@@ -677,7 +677,7 @@ class waContactsCollection
     protected function getHaving()
     {
         if ($this->having) {
-            return " HAVING " . implode(', ', $this->having);
+            return " HAVING " . implode(' AND ', $this->having);
         } else {
             return "";
         }

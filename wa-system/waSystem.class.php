@@ -611,6 +611,10 @@ class waSystem
         waRequest::setParam($params);
         // Load system
         waSystem::getInstance('webasyst');
+
+        if (!wa()->appExists($app)) {
+            throw new waException("App ".$app." not found", 404);
+        }
         // Load app
         waSystem::getInstance($app, null, true);
         if (class_exists($class)) {

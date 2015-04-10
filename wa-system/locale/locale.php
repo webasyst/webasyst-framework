@@ -23,7 +23,7 @@ class waGettextParser
 
     /**
      * @param array $config
-     * @param string[] $config['path']
+     * @param string[] $config ['path']
      */
     public function __construct($config)
     {
@@ -364,7 +364,7 @@ if ($app_id == 'webasyst') {
         $path.$app_id."/templates",
         $path.$app_id."/js",
         $path.$app_id."/lib",
-        $path.$app_id."/themes",
+        $path.$app_id."/themes/default",
     );
 }
 
