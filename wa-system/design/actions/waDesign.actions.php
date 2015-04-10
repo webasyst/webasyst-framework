@@ -444,7 +444,7 @@ HTACCESS;
         $theme = new waTheme($theme_id);
 
         if (waRequest::method() == 'post') {
-            if (empty(waRequest::post("parent_only"))) {
+            if (!waRequest::post("parent_only")) {
                 if (waRequest::post('reset')) {
                     foreach (waRequest::post('reset') as $f) {
                         $theme->revertFile($f);

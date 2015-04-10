@@ -1,0 +1,90 @@
+{* post stream (list): default view mode *}
+
+{* @event prepare_posts_frontend.%plugin_id%.post_title *}
+{if !empty($post.plugins.post_title)}
+    {foreach $post.plugins.post_title as $plugin => $output}{$output}{/foreach}
+{/if}
+
+{foreach $posts as $post}
+    <article class="article-wrapper" id="post-{$post.id}" {if $wa->param('blog_url')}itemprop="blogPosts" {/if}itemscope itemtype="http://schema.org/BlogPosting">
+        <header class="article-header">
+            <h2>
+                <a href="{$post.link}" itemprop="url">{$post.title}</a>
+            </h2>
+            <div class="date-block">{$post.datetime|wa_datetime:"humandate"}</div>
+        </header>
+
+        {* @event prepare_posts_frontend.%plugin_id%.before *}
+
+        {if !empty($post.plugins.before)}
+            <div class="text_before">
+                {foreach $post.plugins.before as $plugin => $output}{$output}{/foreach}
+            </div>
+        {/if}
+
+        <div class="article-content">
+            {$post.text}
+            {if $post.cutted}
+                <a href="{$post.link}">{$post.cut_link_label|default:'[`Continue reading →`]'}</a>
+            {/if}
+        </div>
+
+        {* attached album photo thumbs *}
+        {if $post.album_id && $post.album.id && $post.album.photos}
+            {$photos_loaded = 1} {* required for proper photo thumbs retinification *}
+            {include file="post.album.html" inline}
+        {/if}
+
+        <footer class="credentials-wrapper">
+            <div class="author-block">
+                {if isset($post.user.photo_url_20)}
+                    <div class="userpic-block">
+                        {if $post.user.posts_link}
+                            <a href="{$post.user.posts_link}">
+                                <img src="{$post.user.photo_url_20}" class="userpic" alt="">
+                            </a>
+                        {else}
+                            <img src="{$post.user.photo_url_20}" class="userpic" alt="">
+                        {/if}
+                    </div>
+                {/if}
+
+                <div class="author-name">
+                    {if $post.user.posts_link}
+                        <a href="{$post.user.posts_link}" class="username">{$post.user.firstname}</a>
+                    {else }
+                        <span class="username">{$post.user.name}</span>
+                    {/if}
+                </div>
+            </div>
+            {if $show_comments && $post.comments_allowed}
+            <div class="comment-block">
+                <a href="{$post.link}#comments">
+                     {*_w('%d comment','%d comments',$post.comment_count)*}
+                </a>
+            </div>
+            {/if}
+        </footer>
+
+    </article>
+
+{* @event prepare_posts_frontend.%plugin_id%.after *}
+{if !empty($post.plugins.after)}
+    {foreach $post.plugins.after as $plugin => $output}{$output}{/foreach}
+{/if}
+
+{foreachelse}
+    {if $page lt 2}
+        {_w('%d post','%d posts',0)}
+    {/if}
+{/foreach}
+
+{if !empty($photos_loaded) && blogPhotosBridge::is2xEnabled()}
+    <script src="{$wa_static_url}wa-content/js/jquery-plugins/jquery.retina.min.js"></script>
+    <script>
+        $(function() {
+            "use strict";
+            $.Retina && $('img.retinify').retina();
+        });
+    </script>
+{/if}

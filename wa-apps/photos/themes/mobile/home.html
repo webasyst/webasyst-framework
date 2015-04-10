@@ -1,0 +1,40 @@
+{* homepage template *}
+
+{$albums = $wa->photos->childAlbums()}
+{if !empty($photos) || !empty($albums)}
+
+    <!-- albums -->
+    {if !empty($albums)}
+        <div class="albums-wrapper">
+            <h1 class="albums-header">[`Albums`]</h1>
+            {foreach $albums as $a}
+                <div class="album-item {if $a.status <= 0}private-album-item{/if}">
+                    <a href="{$a.full_url}" class="album-link">
+                        <span class="image-block" style="background-image: url('{if $a.key_photo}{photosPhoto::getPhotoUrl($a.key_photo)}{else}{$wa_app_static_url}img/album-dummy.png{/if}')">
+                            {* FOR SEARCH BOTS *}
+                            {if $a.key_photo}
+                                {$wa->photos->getImgHtml($a.key_photo, '750', ['itemprop' => 'image'])}
+                            {/if}
+                        </span>
+                        <span class="text-block">
+                            <strong class="album-name">{$a.name|default:'[`(no name)`]'}</strong>
+                            <span class="album-count">{sprintf( _w('%d photo','%d photos',$a.count), $a.count)}</span>
+                        </span>
+                    </a>
+                </div>
+            {/foreach}
+        </div>
+    {/if}
+
+    {if !empty($photos)}
+        {include file='photos-thumbs.html'}
+    {/if}
+
+{else}
+    <article class="wa-welcome">
+        <i class="wa-smiley"></i>
+        <h1>[`Welcome to your new photo gallery!`]</h1>
+        <p>{sprintf('[`Start by <a href="%s">uploading photos</a> in your gallery backend.`]', $wa_backend_url|cat:'photos/')}</p>
+    </article>
+{/if}
+

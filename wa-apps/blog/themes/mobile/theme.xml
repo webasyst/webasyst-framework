@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE theme PUBLIC "wa-app-theme" "http://www.webasyst.com/wa-content/xml/wa-app-theme.dtd">
+<theme id="mobile" system="0" vendor="webasyst" author="Webasyst" app="blog" parent_theme_id="site:mobile" version="1.0.0">
+    <name locale="en_US">Mobile</name>
+    <name locale="ru_RU">Mobile</name>
+    <files>
+        <file path="head.html" custom="0">
+            <description locale="en_US">Blog app's &lt;head&gt; instructions</description>
+            <description locale="en_US">Блок &lt;head&gt; приложения «Блог»</description>
+        </file>
+        <file path="layout-comment.html" custom="0">
+        </file>
+        <file path="layout-comment-form.html" custom="0">
+        </file>
+        <file path="layout-comment-list.html" custom="0">
+        </file>
+        <file path="layout-nav.html" parent="0">
+        </file>
+        <file path="main.html" custom="0">
+            <description locale="en_US">Main layout and navigation for the Blog app content</description>
+            <description locale="ru_RU">Основное макет вывода содержимого и навигации в приложении «Блог»</description>
+        </file>
+        <file path="my.nav.html">
+            <description locale="en_US">Customer account navigation menu</description>
+            <description locale="ru_RU">Меню навигации в личном кабинете покупателя</description>
+        </file>
+        <file path="page.html" custom="0">
+            <description locale="en_US">Static info page</description>
+            <description locale="ru_RU">Информационная страница</description>
+        </file>
+        <file path="post.html" custom="0">
+            <description locale="en_US">Dedicated post page</description>
+            <description locale="ru_RU">Страница одной записи блога</description>
+        </file>
+        <file path="post.album.html" custom="0">
+            <description locale="en_US">Photo album attached to the blog post</description>
+            <description locale="ru_RU">Фотоальбом, прикрепленный к записи в блоге</description>
+        </file>
+        <file path="stream.html" custom="0">
+            <description locale="en_US">Post stream wrapper</description>
+            <description locale="ru_RU">Обертка для страницы вывода списка записей</description>
+        </file>
+        <file path="stream_posts.html" custom="0">
+            <description locale="en_US">Default post list view mode</description>
+            <description locale="ru_RU">Основной вид списка записей блога</description>
+        </file>
+        <file path="stream_search.html" custom="0">
+            <description locale="en_US">Post search (filtering) results, e.g. custom search, by tag, by author</description>
+            <description locale="ru_RU">Результат поиска (фильтрации) записей, например, по тегу или автору</description>
+        </file>
+
+        <file path="mobile.blog.css" custom="0">
+        </file>
+        <file path="mobile.blog.js" custom="0">
+        </file>
+
+        <file path="error.html" parent="1">
+        </file>
+        <file path="forgotpassword.html" parent="1">
+        </file>
+        <file path="index.html" parent="1">
+        </file>
+        <file path="layout-head.html" parent="1">
+        </file>
+        <file path="layout-header.html" parent="1">
+        </file>
+        <file path="layout-menu.html" parent="1">
+        </file>
+        <file path="login.html" parent="1">
+        </file>
+        <file path="signup.html" parent="1">
+        </file>
+        <file path="my.profile.html" parent="1">
+        </file>
+        <file path="mobile.css" parent="1">
+        </file>
+        <file path="mobile.js" parent="1">
+        </file>
+    </files>
+    <about locale="en_US">
+<![CDATA[
+<p><b>Default</b> is a universal adaptive design theme family for all basic Webasyst apps: Site, Blog, Photos, Shop-Script, and others. The parent (main) theme of the family, which includes the basic set of CSS rules and the common layout template index.html, is the Default theme for the Site application. All Default design themes used in other applications (e.g., Blog or Photos) link common CSS and index.html layout file from the main theme.</p>
+<p>Default design themes automatically link CSS depending on a visitor's device. Supported devices and platforms: iOS or Android based mobile devices, tablet computers such as iPad, common desktop computers and laptops.</p>
+]]>
+    </about>
+    <about locale="ru_RU">
+<![CDATA[
+<p><b>Default</b> — это универсальное семейство адаптивных тем дизайна для всех базовых приложений фреймворка Вебасист: Сайт, Блог, Фото, Shop-Script и других. Родительской (основной) темой семейства, включающей в себя базовый набор CSS-стилей и общий макет дизайна index.html, является тема Default для приложения «Сайт» (данная тема). Все темы дизайна Default для других приложений (Блог, Фото и других) используют базовый CSS и index.html из родительской (основной) темы.</p>
+<p>Темы дизайна семейства Default оптимизированы для всех современных браузеров, планшетных компьютеров и мобильных устройств на основе iOS и Android. CSS-стили подключаются в зависимости от разрешения и типа устройства, которым пользуется посетитель сайта.</p>
+]]>
+    </about>    
+</theme>

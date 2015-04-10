@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE theme PUBLIC "wa-app-theme" "http://www.webasyst.com/wa-content/xml/wa-app-theme.dtd">
+<theme id="mobile" system="0" vendor="webasyst" author="Webasyst" app="site" version="1.0.0">
+    <name locale="en_US">Mobile</name>
+    <name locale="ru_RU">Mobile</name>
+    <description locale="en_US">Theme for mobile devices</description>
+    <description locale="ru_RU">Тема для мобильных устройств</description>
+    <files>
+        <file path="error.html" custom="0">
+            <description locale="en_US">404 and other errors</description>
+            <description locale="ru_RU">404 и другие ошибки</description>
+        </file>
+        <file path="forgotpassword.html" custom="0">
+            <description locale="en_US">Forgot password page</description>
+            <description locale="ru_RU">Страница сброса пароля</description>
+        </file>
+        <file path="index.html" custom="0">
+    		<description locale="en_US">Core layout of theme</description>
+    		<description locale="ru_RU">Индексный шаблон темы</description>
+        </file>
+        <file path="layout-head.html" custom="0">
+            <description locale="en_US">Site app's &lt;head&gt; instructions</description>
+            <description locale="ru_RU">Блок &lt;head&gt; приложения «Сайт»</description>
+        </file>
+    	<file path="layout-header.html" custom="0">
+    		<description locale="en_US">App specific header content</description>
+    		<description locale="ru_RU">Содержимое «шапки» приложения</description>
+    	</file>
+    	<file path="layout-menu.html" custom="0">
+    		<description locale="en_US">App hidden menu content</description>
+    		<description locale="ru_RU">Содержимое «скрытого меню» приложения</description>
+    	</file>
+        <file path="login.html" custom="0">
+            <description locale="en_US">Login page</description>
+            <description locale="ru_RU">Страница входа для пользователей</description>
+        </file>
+    	<file path="main.html" custom="0">
+    		<description locale="en_US">Main layout for Site app content</description>
+    		<description locale="ru_RU">Основной вывод приложения «Сайт»</description>
+    	</file>
+        <file path="my.profile.html">
+            <description locale="en_US">My profile: contact info editing form</description>
+            <description locale="ru_RU">Личный кабинет: редактирование контактной информации</description>
+        </file>
+        <file path="page.html" custom="0">
+    		<description locale="en_US">Static page content and navigation</description>
+    		<description locale="ru_RU">Содержимое открытой страницы и навигация по страницам</description>
+        </file>
+        <file path="signup.html" custom="0">
+            <description locale="en_US">Sign up page</description>
+            <description locale="ru_RU">Страница регистрации пользователей</description>
+        </file>
+        <file path="mobile.css" custom="0">
+            <description locale="en_US">General CSS for Site Application</description>
+            <description locale="ru_RU">Основные стили для приложения "Сайт"</description>
+        </file>
+        <file path="mobile.js" custom="0">
+            <description locale="en_US">General JavaScript for Site Application</description>
+            <description locale="ru_RU">Основные скрипты для приложения "Сайт"</description>
+        </file>
+    </files>
+    <about locale="en_US">
+        <![CDATA[
+]]>
+    </about>
+    <about locale="ru_RU">
+        <![CDATA[
+]]>
+    </about>
+    <settings>
+        <setting var="logo" control_type="image">
+            <value></value>
+            <filename>img/logo.*</filename>
+            <name locale="en_US">Off-screen menu logo</name>
+            <name locale="ru_RU">Логотип в боковой панели</name>
+            <description locale="en_US">PNG with alpha channel. Logo is displayed in the slide-out menu.</description>
+            <description locale="ru_RU">PNG с прозрачностью. Логотип отображается в боковой панели.</description>
+        </setting>
+        <setting var="pagination" control_type="select">
+            <value>lazyloading</value>
+            <name locale="en_US">Long lists</name>
+            <name locale="ru_RU">Длинные списки</name>
+            <options>
+                <option value="lazyloading">
+                    <name locale="ru_RU">Автоматическая подгрузка при скролле (lazy loading)</name>
+                    <name locale="en_US">Auto load on scroll (lazy loading)</name>
+                </option>
+                <option value="paging">
+                    <name locale="ru_RU">Постраничная навигация (1 2 3 4 ...)</name>
+                    <name locale="en_US">Paginated lists (1 2 3 4 ...)</name>
+                </option>
+            </options>
+        </setting>
+    </settings>
+    <locales>
+        <locale>
+            <msgid>Follow us</msgid>
+            <msgstr locale="ru_RU">Подписаться на новости</msgstr>
+        </locale>
+        <locale>
+            <msgid>Subscribe to our email newsletter</msgid>
+            <msgstr locale="ru_RU">Подписаться на рассылку</msgstr>
+        </locale>
+        <locale>
+            <msgid>Or follow us on Facebook and Twitter</msgid>
+            <msgstr locale="ru_RU">Или подписывайтесь в соцсетях</msgstr>
+        </locale>
+        <locale>
+            <msgid>Editors’ choice</msgid>
+            <msgstr locale="ru_RU">Избранное</msgstr>
+        </locale>
+        <locale>
+            <msgid>All photos</msgid>
+            <msgstr locale="ru_RU">Все фотографии</msgstr>
+        </locale>
+        <locale>
+            <msgid>Information</msgid>
+            <msgstr locale="ru_RU">Информация</msgstr>
+        </locale>
+    </locales>
+</theme>

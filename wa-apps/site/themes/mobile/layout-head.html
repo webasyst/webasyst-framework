@@ -1,0 +1,51 @@
+<title>{$wa->title()|escape}</title>
+
+{* META *}
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="keywords" content="{$wa->meta('keywords')|escape}">
+    <meta name="description" content="{$wa->meta('description')|escape}">
+{* END META *}
+
+{if !empty($canonical)}
+<link rel="canonical" href="{$canonical}">
+{/if}
+<link rel="shortcut icon" href="/favicon.ico">
+
+{* RSS *}
+    {if $wa->blog}
+        {$rss=$wa->blog->rssUrl()}
+        {if $rss}
+            <link rel="alternate" type="application/rss+xml" title="{$wa->accountName()}" href="{$rss}">
+        {/if}
+    {/if}
+{* END RSS *}
+
+{* CSS *}
+    <link rel="stylesheet" href="{$wa_theme_url}mobile.css?v{$wa_theme_version}">
+    {if $wa->shop && $wa->shop->currency() == 'RUB'}
+        <link href="{$wa_static_url}wa-content/font/ruble/arial/fontface.css" rel="stylesheet" type="text/css">
+    {/if}
+
+    {* links active plugins CSS *}
+    {$wa->css()}
+{* END CSS *}
+
+{* JAVASCRIPT *}
+    {* when optimizing your production environment, consider loading jQuery 1.11.1 from CDN instead of local load, e.g. <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script> *}
+    <script src="{$wa_static_url}wa-content/js/jquery/jquery-1.11.1.min.js" ></script>
+    <script src="{$wa_static_url}wa-content/js/jquery/jquery-migrate-1.2.1.min.js"></script>
+    <script src="{$wa_theme_url}mobile.js?v{$wa_theme_version}"></script>
+
+    {* links active plugins JS *}
+    {$wa->js()}
+
+    {* links Google Analytics tracking code and site's custom JS (defined in Site app settings) *}
+    {$wa->headJs()}
+{* END JAVASCRIPT *}
+
+{* Сonnecting additional scripts and styles of applications *}
+{include file="`$wa_active_theme_path`/head.html" inline}

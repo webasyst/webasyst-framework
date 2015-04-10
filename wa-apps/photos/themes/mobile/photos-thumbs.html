@@ -1,0 +1,33 @@
+<!-- TILED PHOTO LIST -->
+
+{* @event frontend_collection.%plugin_id%.thumbs_list *}
+{if !empty($frontend_collection)}{foreach $frontend_collection as $item}{if !empty($item.thumbs_list)}{$item.thumbs_list}{/if}{/foreach}{/if}
+
+<div class="photo-list-wrapper view-thumbs" id="photo-list">
+    {foreach from=$photos item=photo}
+    <figure class="photo-item" itemscope itemtype="http://schema.org/Photograph">
+
+        {* @event prepare_photos_frontend.top_left.%plugin_id% *}
+        {foreach $photo.hooks.top_left as $plugin => $output}{$output}{/foreach}
+
+        <div class="image-wrapper">
+            <a href="{$photo.frontend_link}" class="image">
+                {if $photo.stack_count > 0}<span class="indicator">{$photo.stack_count}</span>{/if}
+                {$wa->photos->getImgHtml($photo, '750', ['itemprop' => 'image'])}
+            </a>
+        </div>
+
+        {* @event prepare_photos_frontend.top_right.%plugin_id% *}
+        {foreach $photo.hooks.top_right as $plugin => $output}{$output}{/foreach}
+
+    </figure>
+    {/foreach}
+</div>
+
+{if isset($pages_count) && $pages_count > 1}
+<div class="photo-thumbs-lazyloading">
+    <div class="block lazyloading-paging" data-times="2" data-link-text="[`Load more`]">
+        {wa_pagination total=$pages_count}
+    </div>
+</div>
+{/if}

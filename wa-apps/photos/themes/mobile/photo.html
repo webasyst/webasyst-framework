@@ -1,0 +1,71 @@
+<section class="photo-page-wrapper">
+
+    {* @event frontend_photo.%plugin_id%.top_left *}
+    {foreach $frontend_photo as $plugin_id => $item}{if !empty($item.top_left)}{$item.top_left}{/if}{/foreach}
+
+    {* @event frontend_photo.%plugin_id%.top_right *}
+    {foreach $frontend_photo as $plugin_id => $item}{if !empty($item.top_right)}{$item.top_right}{/if}{/foreach}
+
+    <div class="photo-wrapper">
+
+        <div class="stream-wrapper" style="display: none">{$photo_stream}</div>
+
+        <div class="image-wrapper">
+            <a class="image-link" href="{$photo.next_photo_url}" title="">
+                {$wa->photos->getImgHtml($photo, '750', ['id' => 'photo','itemprop' => 'image'])}
+            </a>
+        </div>
+
+        <div class="photo-desc-wrapper">
+
+            {if !empty($stack_nav)}
+            <div class="stack">
+                <div id="stack-nav">{$stack_nav}</div>
+            </div>
+            {/if}
+
+            <h4 id="photo-name" itemprop="name">{$photo.name}</h4>
+
+            {if $photo.description && !empty($photo.description)}
+                <div class="line" id="photo-description" itemprop="description">{$photo.description}</div>
+            {/if}
+
+            {if $exif}
+                <div class="line" id="photo-exif">{$exif}</div>
+            {/if}
+
+            {if $author}
+                <div class="line" id="photo-author">
+                    [`Uploaded by`] <span class="photo-info">{$author}</span>
+                </div>
+            {/if}
+
+            {if $albums}
+                <div class="line" id="photo-albums">
+                    [`Albums`]: <span class="photo-info">{$albums}</span>
+                </div>
+            {/if}
+
+            {if $tags}
+                <div class="line tags" id="photo-tags">
+                    [`Tags`]: <span class="photo-info">{$tags}</span>
+                </div>
+            {/if}
+
+        </div>
+    </div>
+
+    <div class="plugin-wrapper">
+        {* @event frontend_photo.%plugin_id%.sidebar *}
+        {foreach $frontend_photo as $plugin_id => $item}{if !empty($item.sidebar)}{$item.sidebar}{/if}{/foreach}
+
+        {* @event frontend_photo.%plugin_id%.content *}
+        {foreach $frontend_photo as $plugin_id => $item}{if !empty($item.content)}{$item.content}{/if}{/foreach}
+
+        {* @event frontend_photo.%plugin_id%.bottom *}
+        {foreach $frontend_photo as $plugin_id => $item}{if !empty($item.bottom)}{$item.bottom}{/if}{/foreach}
+    </div>
+
+</section>
+
+<script>renderBreadCrumbs();</script>

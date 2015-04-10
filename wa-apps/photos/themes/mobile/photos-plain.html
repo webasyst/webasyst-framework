@@ -1,0 +1,51 @@
+<!-- PLAIN PHOTO LIST -->
+
+<div class="photo-list-wrapper" id="photo-list">
+
+    {* @event frontend_collection.%plugin_id%.plain_list *}
+    {if !empty($frontend_collection)}{foreach $frontend_collection as $item}{if !empty($item.plain_list)}{$item.plain_list}{/if}{/foreach}{/if}
+
+    {foreach $photos as $photo}
+        <a name="photo{$photo.id}"></a>
+        <figure class="photo-item" itemscope itemtype ="http://schema.org/Photograph">
+
+            {* @event prepare_photos_frontend.top_left.%plugin_id% *}
+            {foreach $photo.hooks.top_left as $plugin => $output}{$output}{/foreach}
+
+            {if $photo.description}
+                {if $photo.description|strstr:'<p>'}
+                    <div class="photo-desc" itemprop="description">{$photo.description}</div>
+                {else}
+                    <p class="photo-desc" itemprop="description">{$photo.description}</p>
+                {/if}
+            {/if}
+            
+            <div class="image-wrapper">
+                <div class="image">
+                    {if !empty($photo.stack_nav)}
+                        <div class="stack">
+                            {$photo.stack_nav}
+                        </div>
+                    {/if}
+                    <a href="{$photo.frontend_link}">
+                        {$wa->photos->getImgHtml($photo, '750', ['itemprop' => 'image'])}
+                    </a>
+                </div>
+            </div>
+
+            {* @event prepare_photos_frontend.plain.%plugin_id% *}
+            {foreach $photo.hooks.plain as $plugin => $output}{$output}{/foreach}
+
+            {* @event prepare_photos_frontend.top_right.%plugin_id% *}
+            {foreach $photo.hooks.top_right as $plugin => $output}{$output}{/foreach}
+
+        </figure>
+    {/foreach}
+
+</div>
+
+{if isset($pages_count) && $pages_count > 1}
+<div class="block lazyloading-paging paging-nav" data-times="2" data-link-text="[`Load more`]">
+    {wa_pagination total=$pages_count attrs=['class' => "menu-h"]}
+</div>
+{/if}

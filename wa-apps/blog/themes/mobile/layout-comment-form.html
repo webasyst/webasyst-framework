@@ -1,0 +1,37 @@
+<section class="comment-form-wrapper">
+    <a name="comment0"></a>
+
+    <form action="{$post.comment_link}" method="post">
+        <h3>[`Add comment`]</h3>
+        {$current_user_id=$wa->userId()}
+
+        <div class="comment-form-fields">
+            {if empty($current_user_id)}
+                <div class="field-line">
+                    {sprintf('[`To add a comment please <a href="%s">sign up</a> or <a href="%s">login</a>`]',$wa->signupUrl(),$wa->loginUrl())}
+                </div>
+                <div class="field-line">
+                    <a class="general-button" href="{$wa->loginUrl()}">[`Login`]</a>
+                </div>
+                <div class="field-line">
+                    <a class="general-button" href="{$wa->signupUrl()}">[`Sign up`]</a>
+                </div>
+            {else}
+                <div class="field-line">
+                    <textarea id="comment_text" name="text" rows="10" cols="45" placeholder="[`Comment`]"></textarea>
+                </div>
+                {if $request_captcha && empty($current_user_id)}
+                    <div class="field-line">
+                        {$wa->captcha()}
+                    </div>
+                {/if}
+                <div class="field-line comment-submit">
+                    <input type="submit" value="[`Add comment`]">
+                </div>
+            {/if}
+        </div>
+
+        <input type="hidden" name="auth_provider" value="{$current_auth_source|default:blogCommentModel::AUTH_GUEST}">
+        <input type="hidden" name="parent" value="0">
+    </form>
+</section>

@@ -1,0 +1,25 @@
+<div class="signup-page-wrapper">
+
+    {if !empty($confirmed_email)}
+    
+        <h2>[s`Thank you!`]</h2>
+        <p>[s`You have successfully confirmed your email.`]</p>
+        
+    {else if !empty($contact)}
+    
+        <h2>[s`Thank you!`]</h2>
+        <p>[s`You have successfully signed up.`]</p>
+
+        {if !empty($email_confirmation_hash)}
+            <p><em>[s`A confirmation link has been sent to you by email. Please click this link to confirm your signup and to sign in.`]</em></p>
+        {/if}
+        
+    {else}
+    
+        <h2>[s`Sign up`]</h2>
+        {$wa->authAdapters()}
+        {$wa->signupForm($errors, true)}
+        
+    {/if}
+    
+</div>

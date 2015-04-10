@@ -1,0 +1,14 @@
+{if $post.album}
+    {$photo_id = $post.album.key_photo_id}
+    {$thumb = $post.album.photos.$photo_id.thumb.url}
+    <div class="photo-album-attachment">
+        <div class="description">
+            [`Album`]: {$post.album.name}
+        </div>
+        <div class="photo-image">
+            <a href="{$post.album.frontend_link}">
+                <img src="{$thumb}" alt="{$post.album.name}">
+            </a>
+        </div>
+    </div>
+{/if}

@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE theme PUBLIC "wa-app-theme" "http://www.webasyst.com/wa-content/xml/wa-app-theme.dtd">
+<theme id="mobile" system="0" vendor="webasyst" author="Webasyst" app="photos" parent_theme_id="site:mobile" version="1.0.0">
+    <name locale="en_US">Mobile</name>
+    <name locale="ru_RU">Mobile</name>
+    <description locale="ru_RU">Семейство адаптивных тем дизайна.</description>
+    <files>
+        <file path="album.html" custom="0">
+            <description locale="en_US">Wrapper for photo album</description>
+            <description locale="ru_RU">Обертка для альбома фотографий</description>
+        </file>
+        <file path="head.html" custom="0">
+            <description locale="en_US">Photos app's &lt;head&gt; instructions</description>
+            <description locale="ru_RU">Блок &lt;head&gt; приложения «Фото»</description>
+        </file>
+        <file path="home.html" custom="0">
+            <description locale="en_US">Wrapper for the main photo gallery homepage</description>
+            <description locale="ru_RU">Обертка для главной страницы фотогалереи</description>
+        </file>
+        <file path="main.html" custom="0">
+            <description locale="en_US">Main layout and navigation for the Photos app content</description>
+            <description locale="ru_RU">Основное макет вывода содержимого и навигации в приложении «Фото»</description>
+        </file>
+        <file path="my.nav.html">
+            <description locale="en_US">Customer account navigation menu</description>
+            <description locale="ru_RU">Меню навигации в личном кабинете покупателя</description>
+        </file>
+        <file path="page.html" custom="0">
+            <description locale="en_US">Static page content</description>
+            <description locale="ru_RU">Содержимое информационной страницы</description>
+        </file>
+        <file path="photo.html" custom="0">
+            <description locale="en_US">One photo and its details</description>
+            <description locale="ru_RU">Просмотр фотографий по одной</description>
+        </file>
+        <file path="photos-thumbs.html" custom="0">
+            <description locale="en_US">Photo list thumbnails view</description>
+            <description locale="ru_RU">Список фотографий эскизами</description>
+        </file>
+        <file path="photos-plain.html" custom="0">
+            <description locale="en_US">Photo list plain view</description>
+            <description locale="ru_RU">Список фотографий «простыней»</description>
+        </file>
+        <file path="search.html" custom="0">
+            <description locale="en_US">Wrapper for photo search (filtering) results, e.g. by tag or by rating</description>
+            <description locale="ru_RU">Обертка для страницы поиска (фильтрации) фотографий, например, по тегу или автору</description>
+        </file>
+
+        <file path="mobile.photos.css" custom="0">
+        </file>
+        <file path="mobile.photos.js" custom="0">
+        </file>
+
+        <file path="error.html" parent="1">
+        </file>
+        <file path="forgotpassword.html" parent="1">
+        </file>
+        <file path="index.html" parent="1">
+        </file>
+        <file path="layout-head.html" parent="1">
+        </file>
+        <file path="layout-header.html" parent="1">
+        </file>
+        <file path="layout-menu.html" parent="1">
+        </file>
+        <file path="login.html" parent="1">
+        </file>
+        <file path="signup.html" parent="1">
+        </file>
+        <file path="my.profile.html" parent="1">
+        </file>
+        <file path="mobile.css" parent="1">
+        </file>
+        <file path="mobile.js" parent="1">
+        </file>
+    </files>
+    <about locale="en_US">
+<![CDATA[
+]]>
+    </about>
+    <about locale="ru_RU">
+<![CDATA[
+]]>
+    </about>
+</theme>

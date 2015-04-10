@@ -1,0 +1,44 @@
+{* post stream (list): minimalistic view mode; used for post filtering by tags, author, search, etc. *}
+
+{foreach $posts as $post}
+    <article class="article-wrapper" id="post-{$post.id}" {if $wa->param('blog_url')}itemprop="blogPosts"{/if} itemscope itemtype="http://schema.org/BlogPosting">
+        <header class="article-header">
+            <h2>
+                <a href="{$post.link}" itemprop="url">{$post.title}</a>
+            </h2>
+            <div class="date-block">{$post.datetime|wa_datetime:"humandate"}</div>
+        </header>
+
+        <div class="article-content">
+            {$post.text|strip_tags|truncate:400}
+        </div>
+
+        <footer class="credentials-wrapper">
+            <div class="author-block">
+                {if isset($post.user.photo_url_20)}
+                    <div class="userpic-block">
+                        {if $post.user.posts_link}
+                        <a href="{$post.user.posts_link}">
+                            <img src="{$post.user.photo_url_20}" class="userpic" alt="">
+                        </a>
+                        {else}
+                        <img src="{$post.user.photo_url_20}" class="userpic" alt="">
+                        {/if}
+                    </div>
+                {/if}
+
+                <div class="author-name">
+                    {if $post.user.posts_link}
+                        <a href="{$post.user.posts_link}" class="username">{$post.user.name}</a>
+                    {else }
+                        <span class="username">{$post.user.name}</span>
+                    {/if}
+                </div>
+            </div>
+        </footer>
+    </article>
+{foreachelse}
+    {if !isset($page) || $page lt 2}
+        {_w('%d post','%d posts',0)}
+    {/if}
+{/foreach}

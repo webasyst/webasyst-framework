@@ -1,0 +1,5 @@
+{if $my_app == $wa->app()}
+    <li class="nav-item {if $my_nav_selected == 'profile'}active-nav-item{/if}">
+        <a href="{$wa->getUrl('/frontend/my')}">[s`My profile`]</a>
+    </li>
+{/if}
