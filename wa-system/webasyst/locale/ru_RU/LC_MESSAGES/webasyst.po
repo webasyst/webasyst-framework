@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WebAsyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2015-04-10 09:57+0300\n"
+"PO-Revision-Date: 2015-04-10 12:27+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -4015,3 +4015,7 @@ msgstr "Использовать только для мобильных устр
 #: /wa-system/design/templates/Theme.html:635
 msgid "All selected files will be overwritten with their newest versions from the original theme. In case of incompatibility between your customizations and newer theme templates, CSS, and images, your site looks may change unexpectedly. There will be no way to automatically rollback this update. Update?"
 msgstr "Все выбранные файлы будут перезаписаны оригинальными версиями из обновленной темы дизайна. В случае несовместимости изменений, которые вы вносили в тему дизайна, с шаблонами, CSS и другими ресурсами из новой версии темы внешний вид сайта может потребовать доработки вручную. Обновить тему?"
+
+#: /wa-system/design/templates/Theme.html:48
+msgid "Update is available"
+msgstr "Доступно обновление"

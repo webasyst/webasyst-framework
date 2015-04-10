@@ -1892,3 +1892,7 @@ msgstr ""
 #: /wa-system/design/templates/Theme.html:635
 msgid "All selected files will be overwritten with their newest versions from the original theme. In case of incompatibility between your customizations and newer theme templates, CSS, and images, your site looks may change unexpectedly. There will be no way to automatically rollback this update. Update?"
 msgstr ""
+
+#: /wa-system/design/templates/Theme.html:48
+msgid "Update is available"
+msgstr ""
