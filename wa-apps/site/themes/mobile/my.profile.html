@@ -1,0 +1,155 @@
+<div class="profile-page-wrapper">
+    <h1>[s`My profile`]</h1>
+
+    {if $saved}
+        <p class="text-success">[s`Contact information successfully updated!`]</p>
+    {/if}
+
+    {if isset($smarty.get.emailconfirmed) && $smarty.get.emailconfirmed == 1}
+        <p class="text-success">[s`Contact information successfully updated!`]</p>
+    {/if}
+
+    <div id="wa-my-info-wrapper">
+
+        <div class="wa-form" id="wa-my-info-read-wrapper" {if !empty($form->errors)}style="display: none;"{/if} >
+            {foreach $user_info as $id => $info}
+                <div class="wa-field">
+                    <div class="wa-name">{$info.name}</div>
+                    <div class="wa-value">{$info.value}</div>
+                </div>
+            {/foreach}
+            <div class="wa-field">
+                <div class="wa-value">
+                    <input type="button" class="button" id="wa-my-info-edit" value="[s`Edit`]"/>
+                </div>
+            </div>
+        </div>
+
+        <form id="wa-my-info-edit-wrapper" {if empty($form->errors)}style="display: none;"{/if} action="" method="post" enctype="multipart/form-data">
+            <div class="wa-form">
+                {$form->html()}
+                <div class="wa-field">
+                    <div class="wa-value">
+                        <input type="submit" value="[s`Save`]">
+                    </div>
+                </div>
+                <div class="wa-field">
+                    <div class="wa-value">
+                        <a href="#" id="wa-my-info-cancel">[s`cancel`]</a>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+    </div>
+
+    {$auth_adapters = $wa->authAdapters(true)}
+    {if $auth_adapters}
+        <div class="wa-auth-adapters wa-connect">
+            <h3>[s`Connected accounts`]</h3>
+
+            {$linked_adapters = []}
+            {$other_adapters = []}
+            {foreach $auth_adapters as $a}
+                {if $wa->user("{$a->getId()}_id")}
+                    {$linked_adapters[] = $a}
+                {else}
+                    {$other_adapters[] = $a}
+                {/if}
+            {/foreach}
+
+            {if $linked_adapters}
+                <ul>
+                {foreach $linked_adapters as $a}
+                    <li><span><img alt="{$a->getName()}" src="{$a->getIcon()}"/>{$a->getName()}</span></li>
+                {/foreach}
+                </ul>
+            {/if}
+
+            {if $other_adapters}
+                <p>[s`Connect this account to your social network accounts so next time you can log in without entering your password:`]</p>
+                <div class="wa-auth-adapters">
+                    <ul>
+                        {foreach $other_adapters as $a}
+                        <li><a href="{$a->getUrl()}"><img alt="{$a->getName()}" src="{$a->getIcon()}"/>{$a->getName()}</a></li>
+                        {/foreach}
+                    </ul>
+                </div>
+                <script type="text/javascript">
+                    $("div.wa-auth-adapters a").click(function () {
+                        window.open($(this).attr('href'),'oauth', "status=no,toolbar=no,menubar=no");
+                        return false;
+                    });
+                </script>
+            {/if}
+
+        </div>
+    {/if}
+</div>
+{$wa->globals('isMyAccount', true)}
+
+<script>
+(function ($) {
+    var $wrapper = $('#wa-my-info-wrapper'),
+        $form = $wrapper.find('#wa-my-info-edit-wrapper'),
+        $info = $wrapper.find('#wa-my-info-read-wrapper'),
+        $password = $form.find('.wa-field-password'),
+        $photo = $form.find('.wa-field-photo');
+
+    if ($password.length) {
+        var $change_link = $('<a id="change-pass-link" href="javascript:void(0);">[s`Change password`]</a>'),
+            $password_inputs = $password.find('p');
+
+        $password.find('.wa-value').prepend($change_link);
+
+        $change_link.on( "click", function() {
+            $change_link.hide();
+            $password_inputs.show();
+        });
+    }
+
+    if ($photo.length) {
+        var $delete_photo = $('<a id="delete-photo-link" href="javascript:void(0);">[s`Delete photo`]</a>'),
+            $photo_input = $photo.find('[name="profile[photo]"]'),
+            $user_photo = $photo.find('img:first'),
+            $default_photo = $photo.find('img:last');
+
+        if ($user_photo[0] != $default_photo[0]) {
+            $default_photo
+                .hide()
+                .after($delete_photo);
+
+            $delete_photo.on( "click", function() {
+                $default_photo.show();
+                $user_photo.hide();
+                $delete_photo.hide();
+                $photo_input.val('');
+            });
+        } else {
+            $default_photo.show();
+        }
+    }
+
+    $wrapper
+        .on('click', '#wa-my-info-edit', function (e) {
+            e.preventDefault();
+            if ($password.length) {
+                $change_link.show();
+                $password_inputs.hide();
+            }
+            if ($photo.length) {
+                if ($user_photo[0] != $default_photo[0]) {
+                    $delete_photo.show();
+                    $default_photo.hide();
+                }
+            }
+            $form.show();
+            $info.hide();
+        })
+        .on('click', '#wa-my-info-cancel', function(e){
+            e.preventDefault();
+            $form.hide();
+            $info.show();
+        });
+})(jQuery);
+</script>

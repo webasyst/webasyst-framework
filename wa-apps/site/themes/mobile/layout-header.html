@@ -1,0 +1,28 @@
+<header class="header-wrapper">
+    <div class="settings-wrapper">
+        <a class="show-hidden-menu" href="javascript:void(0);"></a>
+    </div>
+
+    <div class="logo-wrapper">
+        <a href="{$wa_url}">
+            {if ($wa->shop)}
+                {$wa->shop->settings('name')}
+            {else}
+                {$wa->accountName()}
+            {/if}
+        </a>
+    </div>
+
+    <div class="basket-wrapper">
+        {if $wa->shop}
+            {$cart_total = $wa->shop->cart->total()}
+            {$cart_count = $wa->shop->cart->count()}
+            <a class="{if $cart_total}is-active{/if}" href="{$wa->getUrl('shop/frontend/cart')}">
+                {if $cart_total && $cart_count}
+                    <span class="basket-count">{$cart_count}</span>
+                {/if}
+            </a>
+        {/if}
+    </div>
+
+</header>
