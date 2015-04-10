@@ -9,6 +9,7 @@
     parent_theme_id CDATA #IMPLIED
     version CDATA #IMPLIED
     edition CDATA #IMPLIED
+    source_theme_id CDATA #IMPLIED
 >
 <!ELEMENT name (#PCDATA)>
 <!ATTLIST name

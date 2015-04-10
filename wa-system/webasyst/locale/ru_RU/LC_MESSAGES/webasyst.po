@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WebAsyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2015-03-06 19:29+0300\n"
+"PO-Revision-Date: 2015-04-10 09:57+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -1464,9 +1464,7 @@ msgid "To recover your password please follow this link:"
 msgstr "Для восстановления пароля перейдите по ссылке:"
 
 #: /wa-system/webasyst/templates/mail/RecoveringPassword.html:4
-msgid ""
-"IMPORTANT NOTE: If you did not request your password recovery, someone else might be trying to log in using your email address. For security purposes we recommend you to log in to your account and to change your "
-"password."
+msgid "IMPORTANT NOTE: If you did not request your password recovery, someone else might be trying to log in using your email address. For security purposes we recommend you to log in to your account and to change your password."
 msgstr "ВАЖНО: Если вы не просили восстановить пароль, то значит кто-то другой пытался подключиться используя ваш логин или email. В целях безопасности мы рекомендуем вам зайти сейчас в ваш аккаунт и изменить пароль."
 
 #: /wa-system/webasyst/templates/actions/login/LoginPassword.html:57
@@ -1674,9 +1672,7 @@ msgid "Page name"
 msgstr "Название страницы"
 
 msgid "Optional set of custom <em>key=value</em> parameters which can be used within page.html template or this page content as <em>&#123;$page.key&#125;</em>. Each key=value pair should be on a separate line."
-msgstr ""
-"Необязательный набор параметров вида <em>key=value</em>, к значениям которых можно обращаться в шаблоне page.html или в содержимом текущей страницы как <em>&#123;$page.key&#125;</em>. Каждая пара key=value должна быть "
-"указана на отдельной строке."
+msgstr "Необязательный набор параметров вида <em>key=value</em>, к значениям которых можно обращаться в шаблоне page.html или в содержимом текущей страницы как <em>&#123;$page.key&#125;</em>. Каждая пара key=value должна быть указана на отдельной строке."
 
 msgid "http://www.webasyst.com/framework/docs/site/pages/"
 msgstr "http://www.webasyst.com/ru/framework/docs/site/pages/"
@@ -1952,12 +1948,8 @@ msgid "Theme ID"
 msgstr "ID темы"
 
 #: /wa-system/design/templates/Theme.html:40
-msgid ""
-"IMPORTANT: Change Theme ID only if you are sure what you are doing. If this theme is in use by any of your websites, you will have to manually update these websites’ app settings to use this or another theme after "
-"altering the Theme ID parameter. Otherwise websites may stop working with the “Unable to load template file” error."
-msgstr ""
-"ВАЖНО: изменяйте ID темы, только если вы полностью уверены в своих действиях. Если эта тема используется в ваших сайтах, вам придется вручную обновить настройки этих сайтов для использования этой или другой темы после "
-"изменения ID темы. В противном случае ваши сайты могут оказаться нерабочими из-за ошибки «Невозможно загрузить файл шаблона»."
+msgid "IMPORTANT: Change Theme ID only if you are sure what you are doing. If this theme is in use by any of your websites, you will have to manually update these websites’ app settings to use this or another theme after altering the Theme ID parameter. Otherwise websites may stop working with the “Unable to load template file” error."
+msgstr "ВАЖНО: изменяйте ID темы, только если вы полностью уверены в своих действиях. Если эта тема используется в ваших сайтах, вам придется вручную обновить настройки этих сайтов для использования этой или другой темы после изменения ID темы. В противном случае ваши сайты могут оказаться нерабочими из-за ошибки «Невозможно загрузить файл шаблона»."
 
 #: /wa-system/design/templates/Sidebar.html:20
 msgid "not in use"
@@ -2026,9 +2018,7 @@ msgid "parent theme file"
 msgstr "файл родительской темы"
 
 #: /wa-system/design/templates/DesignEdit.html:151
-msgid ""
-"Design theme “<strong id=\"wa-current-theme\"></strong>” is temporary enabled for you to see how it looks with your frontend. You can navigate through your website as you do it usually. Other users don't see that you "
-"are previewing this design theme."
+msgid "Design theme “<strong id=\"wa-current-theme\"></strong>” is temporary enabled for you to see how it looks with your frontend. You can navigate through your website as you do it usually. Other users don't see that you are previewing this design theme."
 msgstr "Тема дизайна «<strong id=\"wa-current-theme\"></strong>» временно активирована для вашего пользователя. Вы можете полноценно просматривать сайт в выбранной теме дизайна, и другие посетители сайта этого не увидят."
 
 #: /wa-system/design/templates/DesignEdit.html:156
@@ -2117,20 +2107,15 @@ msgstr "Предпросмотр"
 
 #: /wa-system/page/templates/PageEdit.html:88
 msgid "This page is unsettled (unpublished), i.e. not connected to any of your site’s routing rules. Drag this page out of the Unpublished section in the left sidebar to connect it to any of your existing site’s routes."
-msgstr ""
-"Страница не опубликована, потому что не прикреплена ни к одному поселению приложения (правилу маршрутизации). Перетащите страницу из секции «Неопубликованные», чтобы подключить ее к существующему правилу маршрутизации."
+msgstr "Страница не опубликована, потому что не прикреплена ни к одному поселению приложения (правилу маршрутизации). Перетащите страницу из секции «Неопубликованные», чтобы подключить ее к существующему правилу маршрутизации."
 
 #: /wa-system/page/templates/Page.html:87
 msgid "Unpublished"
 msgstr "Неопубликованные"
 
 #: /wa-system/page/templates/Page.html:94
-msgid ""
-"There are <strong><span>%d</span> unsettled page(s)</strong>, i.e. pages which are not connected to any of the site’s routing rules. These pages are not displayed on your site. To publish these pages now, select the "
-"new route for them:"
-msgstr ""
-"<strong><span>%d</span> страниц</strong> не прикреплены ни к одному поселению (правилу маршрутизации), и поэтому не показываются на сайте. Чтобы опубликовать все эти страницы сейчас, укажите правило маршрутизации, к "
-"которому их нужно прикрепить:"
+msgid "There are <strong><span>%d</span> unsettled page(s)</strong>, i.e. pages which are not connected to any of the site’s routing rules. These pages are not displayed on your site. To publish these pages now, select the new route for them:"
+msgstr "<strong><span>%d</span> страниц</strong> не прикреплены ни к одному поселению (правилу маршрутизации), и поэтому не показываются на сайте. Чтобы опубликовать все эти страницы сейчас, укажите правило маршрутизации, к которому их нужно прикрепить:"
 
 #: /wa-system/page/templates/Page.html:112
 msgid "Unpublished pages"
@@ -2251,12 +2236,8 @@ msgid "Not set"
 msgstr "Не задана"
 
 #: /wa-system/design/templates/Theme.html:100
-msgid ""
-"IMPORTANT: Theme parenting allows linking HTML templates, CSS files and images from other design themes. If you are about to change parent for a design theme which already has a parent, be aware that existing file "
-"links and connections may become corrupted. A design theme can have not more than one parent theme."
-msgstr ""
-"ВАЖНО: Подключение родительской темы позволит использовать в данной теме дизайна HTML-шаблоны, CSS-стили и изображения из родительской темы. Если родительская тема уже задана, то имейте ввиду, что ее смена может "
-"привести к ошибкам доступа к уже используемым файлам родительской темы. Для любой темы дизайна можно задать не более одной родительской темы."
+msgid "IMPORTANT: Theme parenting allows linking HTML templates, CSS files and images from other design themes. If you are about to change parent for a design theme which already has a parent, be aware that existing file links and connections may become corrupted. A design theme can have not more than one parent theme."
+msgstr "ВАЖНО: Подключение родительской темы позволит использовать в данной теме дизайна HTML-шаблоны, CSS-стили и изображения из родительской темы. Если родительская тема уже задана, то имейте ввиду, что ее смена может привести к ошибкам доступа к уже используемым файлам родительской темы. Для любой темы дизайна можно задать не более одной родительской темы."
 
 msgid "Subscribe"
 msgstr "Подписаться"
@@ -3461,12 +3442,8 @@ msgstr "Устанавливает новый заголовок"
 msgid "Returns GET parameter value (same as PHP $_GET[\"<em>key</em>\"])"
 msgstr "Возаращает значение GET-параметра (аналогично $_GET[\"<em>key</em>\"] в PHP)"
 
-msgid ""
-"Based on current session data returns <em>true</em> or <em>false</em> if user is using a multi-touch mobile device; if no session var reflecting current website version (mobile or desktop) is available, User Agent "
-"information is used"
-msgstr ""
-"Возвращает <em>true</em> или <em>false</em> в зависимости от того, использует ли пользователь в данный момент мобильное multi-touch устройство (iPhone, Android и пр.) или нет; если переменная сессии, содержащая тип "
-"версии сайта (мобильный или стандартный), отсутствует, то используется информация из заголовков User Agent"
+msgid "Based on current session data returns <em>true</em> or <em>false</em> if user is using a multi-touch mobile device; if no session var reflecting current website version (mobile or desktop) is available, User Agent information is used"
+msgstr "Возвращает <em>true</em> или <em>false</em> в зависимости от того, использует ли пользователь в данный момент мобильное multi-touch устройство (iPhone, Android и пр.) или нет; если переменная сессии, содержащая тип версии сайта (мобильный или стандартный), отсутствует, то используется информация из заголовков User Agent"
 
 msgid "Returns POST parameter value (same as PHP $_POST[\"<em>key</em>\"])"
 msgstr "Возвращает значение POST-параметра (аналогично $_POST[\"<em>key</em>\"] в PHP)"
@@ -3482,17 +3459,14 @@ msgstr "Отображает содержимое блока по его иде�
 
 msgid "Returns authorized user data from associated record in “Contacts” app. \"<em>field</em>\" (string) is optional and indicates the field id to be returned. If not  Returns <em>false</em> if user is not authorized"
 msgstr ""
-"Возвращает массив с данными авторизованного пользователя из соответствующей записи приложения «Контакты». Если указан необязательный параметр <code>'field'</code> , то возвращается содержимое конкретного поля записи о "
-"контакте. Функция принимает любые параметры, подходящие для метода <code><a href=\"http://www.webasyst.ru/developers/docs/basics/classes/waContact#method-get\" target=\"_blank\">get()</a></code> системного класса "
-"<code>waContact</code>. Если пользователь не авторизован, функция возвращает <code>false</code>"
+"Возвращает массив с данными авторизованного пользователя из соответствующей записи приложения «Контакты». Если указан необязательный параметр <code>'field'</code> , то возвращается содержимое конкретного поля записи о контакте. Функция принимает любые параметры, подходящие для метода <code><a href=\"http://www.webasyst.ru/developers/docs/basics/classes/waContact#method-get\" target=\"_blank\">get()</a></code> системного класса <code>waContact</"
+"code>. Если пользователь не авторизован, функция возвращает <code>false</code>"
 
 msgid "Returns User Agent info by specified “<em>key</em>” parameter:"
 msgstr "Возвращает информацию User Agent по указанному параметру <em>key</em>:"
 
 msgid "— <em>\"isMobile\"</em>: returns <em>true</em> or <em>false</em> if user is using a multi-touch mobile device (iOS, Android and similar), based solely on User Agent string;"
-msgstr ""
-"— <em>\"isMobile\"</em>: основываясь на содержимом заголовков User Agent, возвращает <em>true</em> или <em>false</em> в зависимости от того, использует ли пользователь в данный момент мобильное multi-touch устройство "
-"(iPhone, Android и пр.) или нет;"
+msgstr "— <em>\"isMobile\"</em>: основываясь на содержимом заголовков User Agent, возвращает <em>true</em> или <em>false</em> в зависимости от того, использует ли пользователь в данный момент мобильное multi-touch устройство (iPhone, Android и пр.) или нет;"
 
 msgid "— not specified: returns entire User Agent string;"
 msgstr "— не указано: возвращает всю строку User Agent"
@@ -3582,12 +3556,8 @@ msgid "Thumbnails"
 msgstr "Эскизы"
 
 #: /wa-system/design/templates/Theme.html:95
-msgid ""
-"This design theme links image thumbnails of sizes listed below. If custom-sized on-fly thumbnail generation is not allowed by the app settings, please make sure that at least listed thumbnail sizes are allowed. If on-"
-"fly thumbnail generation is allowed, thumbnails will be generated automatically."
-msgstr ""
-"Эта тема дизайна использует эскизы изображений перечисленных ниже размеров. Если в настройках вашего приложения возможность автоматического создания эскизов «на лету» отключена, убедитесь, что все указанные размеры "
-"добавлены в список разрешенных. Если создание эскизов «на лету» разрешено, изображения указанных ниже размеров будут создаваться автоматически."
+msgid "This design theme links image thumbnails of sizes listed below. If custom-sized on-fly thumbnail generation is not allowed by the app settings, please make sure that at least listed thumbnail sizes are allowed. If on-fly thumbnail generation is allowed, thumbnails will be generated automatically."
+msgstr "Эта тема дизайна использует эскизы изображений перечисленных ниже размеров. Если в настройках вашего приложения возможность автоматического создания эскизов «на лету» отключена, убедитесь, что все указанные размеры добавлены в список разрешенных. Если создание эскизов «на лету» разрешено, изображения указанных ниже размеров будут создаваться автоматически."
 
 #: /wa-system/page/actions/waPage.actions.php:525
 msgid "Embeds HTML snippet by ID"
@@ -3937,9 +3907,7 @@ msgid "%s design theme"
 msgstr "Тема дизайна «%s»"
 
 msgid "A confirmation link has been sent to your email address provided during the signup. Please click this link to confirm your email and to sign in. <a class=\"send-email-confirmation\" href=\"%s\">Resend the link</a>"
-msgstr ""
-"Вам была отправлена ссылка на подтверждение email-адреса. Пожалуйста, щелкните по этой ссылке, чтобы подтвердить ваш email и авторизоваться на сайте. <a class=\"send-email-confirmation\" href=\"%s\">Отправить ссылку "
-"еще раз</a>"
+msgstr "Вам была отправлена ссылка на подтверждение email-адреса. Пожалуйста, щелкните по этой ссылке, чтобы подтвердить ваш email и авторизоваться на сайте. <a class=\"send-email-confirmation\" href=\"%s\">Отправить ссылку еще раз</a>"
 
 msgid "Confirmation link has been resent."
 msgstr "Ссылка на подтверждение была отправлена."
@@ -3967,3 +3935,83 @@ msgstr "Вы успешно зарегистрировались."
 
 msgid "A confirmation link has been sent to you by email. Please click this link to confirm your signup and to sign in."
 msgstr "Ссылка на подтверждение регистрации была отправлена вам по электронной почте. Пожалуйста, щелкните по этой ссылке, чтобы подтвердить регистрацию и авторизоваться на сайте."
+
+#: /wa-system/design/templates/Theme.html:20
+msgid "Original version <strong>%s</strong>"
+msgstr "Оригинальная версия <strong>%s</strong>"
+
+#: /wa-system/design/templates/Theme.html:21
+msgid "No customizations have been made to theme settings and template files."
+msgstr "Вы не вносили изменения в шаблоны дизайна и настройки этой темы дизайна."
+
+#: /wa-system/design/templates/Theme.html:34
+msgid "Latest version <strong>%s</strong>"
+msgstr "Последняя версия <strong>%s</strong>"
+
+#: /wa-system/design/templates/Theme.html:35
+msgid "Your customized version of %s theme is up to date."
+msgstr "Установлена последняя версия темы дизайна %s."
+
+#: /wa-system/design/templates/Theme.html:48
+msgid "Update to version %s is available"
+msgstr "Доступно обновление до версии %s"
+
+#: /wa-system/design/templates/Theme.html:49
+msgid "Theme update requires your commitment because it may affect changes that you previously applied to template files and thus alter your site layout. Click to review the list of files and update."
+msgstr "Обновление темы дизайна требует вашего подтверждения, так как при обновлении шаблоны дизайна и настройки темы будут перезаписаны их новыми версиями, и это может повлиять на внешний вид и работоспособность вашего сайта. Щелкните, чтобы посмотреть список файлов, которые будут обновлены."
+
+#: /wa-system/design/templates/Theme.html:63
+msgid "This theme was either cloned from some of the original themes, or manually uploaded as archive. It can not be updated via Installer app or reverted to the original version because there is no original theme with same ID installed (<strong>%s</strong>)."
+msgstr "Эта тема дизайна была загружена в виде архива или создана как дубликат другой темы. Обновление для данной темы недоступно, так как оригинальной темы дизайна с таким же идентификатором (<strong>%s</strong>) не существует."
+
+#: /wa-system/design/templates/Theme.html:219
+msgid "Theme version"
+msgstr "Версия темы"
+
+#: /wa-system/design/templates/Theme.html:303
+msgid "This will erase all customizations you’ve made to this theme’s template files using the design editor, and reset this theme to original. Are you sure?"
+msgstr "Очистить все изменения, которые вы вносили в тему дизайна с помощью редактора дизайна, и вернуть тему дизайна к исходному состоянию?"
+
+#: /wa-system/design/templates/ThemeUpdate.html:4
+msgid "Update theme"
+msgstr "Обновить тему"
+
+#: /wa-system/design/templates/ThemeUpdate.html:5
+msgid "Confirm the list of files which will be replaced with their newest versions from theme version %s."
+msgstr "Подтвердите обновление всех выбранных шаблонов дизайна их новыми версиями из %s."
+
+#: /wa-system/design/templates/ThemeUpdate.html:6
+msgid "Files marked with <strong>bold</strong> were previously modified by you — select them only if you’d like to completely drop changes you’ve made to these files. All selected files will be overwritten with their newest versions from the original theme, and there will be no way to automatically rollback this update. (If you feel non-confident, don’t select modified templates by now. You will be able to update them manually file-by-file later on.)"
+msgstr "Файлы, которые вы ранее редактировали, выделены <strong>жирным</strong>. Выберите только те файлы, которые хотите полностью сбросить до их оригинальных версий из обновленной темы дизайна, тем самым удалив все внесенные вами ранее изменения. (Если вы не уверены, нужно ли обновлять тот или иной файл, не выбирайте его. Позже вы сможете обновить все эти файлы по одному.)"
+
+#: /wa-system/design/templates/ThemeUpdate.html:8 /wa-system/design/templates/ThemeUpdate.html:31
+msgid "Theme appearance settings will be updated automatically"
+msgstr "Настройки темы дизайна будут обновлены автоматически"
+
+#: /wa-system/design/templates/ThemeUpdate.html:8 /wa-system/design/templates/ThemeUpdate.html:31
+msgid "Theme appearance settings (theme.xml)"
+msgstr "Настройки оформления (theme.xml)"
+
+#: /wa-system/design/templates/ThemeUpdate.html:17 /wa-system/design/templates/ThemeUpdate.html:40
+msgid "You did not modify this file"
+msgstr "Вы не вносили изменения в этот файл"
+
+#: /wa-system/design/templates/ThemeUpdate.html:17 /wa-system/design/templates/ThemeUpdate.html:40
+msgid "%s and %d more unmodified files"
+msgstr "%s и еще %d неизмененных файлов"
+
+#: /wa-system/design/templates/ThemeUpdate.html:21 /wa-system/design/templates/ThemeUpdate.html:44
+msgid "You modified this file"
+msgstr "Вы вносили изменения в этот файл"
+
+#: /wa-system/design/templates/ThemeUpdate.html:54
+msgid "Update all to %s"
+msgstr "Обновить до %s"
+
+#: /wa-system/design/templates/Theme.html:373
+msgid "Apply this theme for mobile devices only"
+msgstr "Использовать только для мобильных устройств"
+
+#: /wa-system/design/templates/Theme.html:635
+msgid "All selected files will be overwritten with their newest versions from the original theme. In case of incompatibility between your customizations and newer theme templates, CSS, and images, your site looks may change unexpectedly. There will be no way to automatically rollback this update. Update?"
+msgstr "Все выбранные файлы будут перезаписаны оригинальными версиями из обновленной темы дизайна. В случае несовместимости изменений, которые вы вносили в тему дизайна, с шаблонами, CSS и другими ресурсами из новой версии темы внешний вид сайта может потребовать доработки вручную. Обновить тему?"

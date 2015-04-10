@@ -1803,3 +1803,92 @@ msgstr ""
 #: /wa-system/file/waFiles.class.php:111
 msgid "Error copying file from %s to %s"
 msgstr ""
+
+#: /wa-system/design/templates/Theme.html:20
+msgid "Original version <strong>%s</strong>"
+msgstr ""
+
+#: /wa-system/design/templates/Theme.html:21
+msgid "No customizations have been made to theme settings and template files."
+msgstr ""
+
+#: /wa-system/design/templates/Theme.html:34
+msgid "Latest version <strong>%s</strong>"
+msgstr ""
+
+#: /wa-system/design/templates/Theme.html:35
+msgid "Your customized version of %s theme is up to date."
+msgstr ""
+
+#: /wa-system/design/templates/Theme.html:48
+msgid "Update to version %s is available"
+msgstr ""
+
+#: /wa-system/design/templates/Theme.html:49
+msgid "Theme update requires your commitment because it may affect changes that you previously applied to template files and thus alter your site layout. Click to review the list of files and update."
+msgstr "Theme update requires your confirmation because it may affect changes which you previously applied to template files and thus alter your site layout. Click to review the list of files and update."
+
+#: /wa-system/design/templates/Theme.html:63
+msgid "This theme was either cloned from some of the original themes, or manually uploaded as archive. It can not be updated via Installer app or reverted to the original version because there is no original theme with same ID installed (<strong>%s</strong>)."
+msgstr ""
+
+#: /wa-system/design/templates/Theme.html:219
+msgid "Theme version"
+msgstr ""
+
+#: /wa-system/design/templates/Theme.html:303
+msgid "This will erase all customizations you’ve made to this theme’s template files using the design editor, and reset this theme to original. Are you sure?"
+msgstr ""
+
+#: /wa-system/design/templates/ThemeUpdate.html:4
+msgid "Update theme"
+msgstr ""
+
+#: /wa-system/design/templates/ThemeUpdate.html:5
+msgid "Confirm the list of files which will be replaced with their newest versions from theme version %s."
+msgstr ""
+
+#: /wa-system/design/templates/ThemeUpdate.html:6
+msgid "Files marked with <strong>bold</strong> were previously modified by you — select them only if you’d like to completely drop changes you’ve made to these files. All selected files will be overwritten with their newest versions from the original theme, and there will be no way to automatically rollback this update. (If you feel non-confident, don’t select modified templates by now. You will be able to update them manually file-by-file later on.)"
+msgstr "Files shown in <strong>bold</strong> were previously modified by you; select them only if you’d like to drop all changes you’ve made to those files. All selected files will be overwritten with their newest versions from the original theme, and there will be no way to automatically roll back this update. (If you are not sure about some files, do not select them now; you will be able to update them manually one by one later on.)"
+
+#: /wa-system/design/templates/ThemeUpdate.html:8
+#: /wa-system/design/templates/ThemeUpdate.html:31
+msgid "Theme appearance settings will be updated automatically"
+msgstr ""
+
+#: /wa-system/design/templates/ThemeUpdate.html:8
+#: /wa-system/design/templates/ThemeUpdate.html:31
+msgid "Theme appearance settings (theme.xml)"
+msgstr ""
+
+#: /wa-system/design/templates/ThemeUpdate.html:17
+#: /wa-system/design/templates/ThemeUpdate.html:40
+msgid "You did not modify this file"
+msgstr ""
+
+#: /wa-system/design/templates/ThemeUpdate.html:17
+#: /wa-system/design/templates/ThemeUpdate.html:40
+msgid "%s and %d more unmodified files"
+msgstr "%s and %d more non-modified files"
+
+#: /wa-system/design/templates/ThemeUpdate.html:21
+#: /wa-system/design/templates/ThemeUpdate.html:44
+msgid "You modified this file"
+msgstr ""
+
+#: /wa-system/design/templates/ThemeUpdate.html:54
+msgid "Update all to %s"
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/login/Login.html:17
+msgid "Login name or email"
+msgstr ""
+
+#: /wa-system/design/templates/Theme.html:373
+msgid "Apply this theme for mobile devices only"
+msgstr ""
+
+#: /wa-system/design/templates/Theme.html:635
+msgid "All selected files will be overwritten with their newest versions from the original theme. In case of incompatibility between your customizations and newer theme templates, CSS, and images, your site looks may change unexpectedly. There will be no way to automatically rollback this update. Update?"
+msgstr ""

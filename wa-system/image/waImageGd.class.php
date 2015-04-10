@@ -279,16 +279,28 @@ class waImageGd extends waImage
         extract($options, EXTR_IF_EXISTS);
         $opacity = min(max($opacity, 0), 1);
         imagealphablending($this->image, true);
-
         if ($watermark instanceof waImage) {
 
-            $width = $watermark->width;
-            $height = $watermark->height;
-            $offset = $this->calcWatermarkOffset($width, $height, $align);
             $type = $watermark->type;
-            $watermark = $this->createGDImageResourse($watermark->file, $type);
-            imagecopymerge_alpha($this->image, $watermark, $offset[0], $offset[1], 0, 0, $width, $height, $opacity * 100);
-            imagedestroy($watermark);
+            $gd_watermark = $this->createGDImageResourse($watermark->file, $type);
+
+            $width = ifset($options['width'], $watermark->width);
+            $height = ifset($options['height'], $watermark->height);
+            $offset = $this->calcWatermarkOffset($width, $height, $align);
+
+            if ($width != $watermark->width || $height != $watermark->height) {
+                $watermark_resized = $this->_create($width, $height);
+                if (function_exists('imagecopyresampled')) {
+                    imagecopyresampled($watermark_resized, $gd_watermark, 0, 0, 0, 0, $width, $height, $watermark->width, $watermark->height);
+                } else {
+                    imagecopyresized($watermark_resized, $gd_watermark, 0, 0, 0, 0, $width, $height, $watermark->width, $watermark->height);
+                }
+                imagedestroy($gd_watermark);
+                $gd_watermark = $watermark_resized;
+            }
+
+            imagecopymerge_alpha($this->image, $gd_watermark, $offset[0], $offset[1], 0, 0, $width, $height, $opacity * 100);
+            imagedestroy($gd_watermark);
 
         } else {
             $text = (string)$watermark;
@@ -303,25 +315,33 @@ class waImageGd extends waImage
                 'a' => floor((1 - $opacity) * 127)
             );
 
+            if ($align == self::ALIGN_CENTER) {
+                $rotation = (int) ifempty($options['rotation'], 0);
+                $text_orientation = self::ORIENTATION_HORIZONTAL;
+            } else if ($text_orientation == self::ORIENTATION_VERTICAL) {
+                $rotation = 90;
+            } else {
+                $rotation = 0;
+            }
+
             if (!empty($font_file) && file_exists($font_file)) {
-                
+
                 $gd_info = gd_info();
                 $gd_version = preg_replace('/[^0-9\.]/', '', $gd_info['GD Version']);
-                
+
                 if (!empty($gd_info['FreeType Support']) && version_compare($gd_version, '2.0.1', '>=')) {
                     // Free Type
                     $free_type = true;
                 } else {
                     // True Type
                     $free_type = false;
-                    
+
                     // GD1 use pixels, GD2 use points
                     if (version_compare($gd_version, '2.0', '<')) {
                         $font_size = 24*$font_size/18;    // 24px = 18pt
                     }
-                    
                 }
-                
+
                 if ($free_type) {
                     $metrics = imageftbbox($font_size, 0, $font_file, $text);
                 } else {
@@ -331,16 +351,17 @@ class waImageGd extends waImage
                     $width = $metrics[2] - $metrics[0];
                     $height = $metrics[1] - $metrics[7];
                     if ($text_orientation == self::ORIENTATION_VERTICAL) {
-                        list ($width, $height) = array($height, $width);
+                        list($width, $height) = array($height, $width);
                     }
+
                     $offset = $this->calcWatermarkOffset($width, $height, $align);
-                    $offset = $this->watermarkOffsetFix($offset, $width, $height, $align, $text_orientation);
+                    $offset = $this->watermarkOffsetFix($offset, $width, $height, $align, $text_orientation, $align == self::ALIGN_CENTER ? $rotation : 0);
+
                     $color = imagecolorallocatealpha($this->image, $font_color['r'], $font_color['g'], $font_color['b'], $font_color['a']);
-                    
                     if ($free_type) {
-                        imagefttext($this->image, $font_size, $text_orientation == self::ORIENTATION_VERTICAL ? 90 : 0, $offset[0], $offset[1], $color, $font_file, $text);
+                        imagefttext($this->image, $font_size, $rotation, $offset[0], $offset[1], $color, $font_file, $text);
                     } else {
-                        imagettftext($this->image, $font_size, $text_orientation == self::ORIENTATION_VERTICAL ? 90 : 0, $offset[0], $offset[1], $color, $font_file, $text);
+                        imagettftext($this->image, $font_size, $rotation, $offset[0], $offset[1], $color, $font_file, $text);
                     }
                 } else {
                     throw new waException(_ws("Can't read font file $font_file"));
@@ -357,9 +378,9 @@ class waImageGd extends waImage
                 if ($text_orientation == self::ORIENTATION_VERTICAL) {
                     list ($width, $height) = array($height, $width);
                 }
-                $offset = $this->calcWatermarkOffset($width, $height, $align, $text_orientation);
-                if ($text_orientation == self::ORIENTATION_VERTICAL) {
-                    imagestring_rotate($this->image, $font, 90, $offset[0], $offset[1], $text, $font_color['r'], $font_color['g'], $font_color['b'], $font_color['a']);
+                $offset = $this->calcWatermarkOffset($width, $height, $align);
+                if ($rotation != 0) {
+                    imagestring_rotate($this->image, $font, $rotation, $offset[0], $offset[1], $text, $font_color['r'], $font_color['g'], $font_color['b'], $font_color['a']);
                 } else {
                     $color = imagecolorallocatealpha($this->image, $font_color['r'], $font_color['g'], $font_color['b'], $font_color['a']);
                     imagestring($this->image, $font, $offset[0], $offset[1], $text, $color);
@@ -370,9 +391,15 @@ class waImageGd extends waImage
 
     private function calcWatermarkOffset($width, $height, $align)
     {
-        $offset = '';
+        if (is_array($align)) {
+            return $align;
+        }
+
         $margin = 10;
         switch ($align) {
+            case self::ALIGN_CENTER:
+                $offset = array(($this->width - $width) / 2, ($this->height - $height) / 2);
+                break;
             case self::ALIGN_TOP_LEFT:
                 $offset = array($margin, $margin);
                 break;
@@ -383,27 +410,58 @@ class waImageGd extends waImage
                 $offset = array($margin, $this->height - $height - $margin);
                 break;
             case self::ALIGN_BOTTOM_RIGHT:
+            default:
                 $offset = array($this->width - $width - $margin, $this->height - $height - $margin);
                 break;
         }
         return $offset;
     }
 
-    private function watermarkOffsetFix($offset, $width, $height, $align, $orientation)
+    private function watermarkOffsetFix($offset, $width, $height, $align, $orientation, $rotation)
     {
-        if ($orientation == self::ORIENTATION_HORIZONTAL) {
+        if ($align == self::ALIGN_CENTER) {
+            $offset[1] += $height;
+            if ($rotation) {
+                list($x, $y) = $offset;
+                $sin = sin(deg2rad($rotation));
+                $cos = cos(deg2rad($rotation));
+                $x -= ($width*$cos - $height*$sin - $width)/2;
+                $y += ($width*$sin + $height*$cos - $height)/2;
+                $offset = array($x, $y);
+            }
+        } else if ($orientation == self::ORIENTATION_HORIZONTAL) {
             $offset[1] += $height;
             if ($align == self::ALIGN_BOTTOM_LEFT || $align == self::ALIGN_BOTTOM_RIGHT) {
                 $offset[1] -= $height/4;
             }
-        } else {
+        } else if ($orientation == self::ORIENTATION_VERTICAL) {
             $offset[0] += $width;
             $offset[1] += $height;
-            if ($align == self::ALIGN_BOTTOM_RIGHT) {
+            if ($align == self::ALIGN_BOTTOM_RIGHT || $align == self::ALIGN_TOP_RIGHT) {
                 $offset[0] -= $width/4;
             }
         }
         return $offset;
+    }
+
+    protected function _getPixel($x, $y)
+    {
+        $color = imagecolorat($this->image, $x, $y);
+        if (imageistruecolor($this->image)) {
+            $transparency = ($color >> 24) & 0x7F;
+            $r = ($color >> 16) & 0xFF;
+            $g = ($color >> 8) & 0xFF;
+            $b = $color & 0xFF;
+            return array($r/255, $g/255, $b/255, 1 - $transparency/127);
+        } else {
+            $result = imagecolorsforindex($this->image, $color);
+            return array(
+                $result['red'] / 255,
+                $result['green'] / 255,
+                $result['blue'] / 255,
+                1 - $result['alpha'] / 127,
+            );
+        }
     }
 
     public function __destruct()
@@ -412,7 +470,6 @@ class waImageGd extends waImage
             imagedestroy($this->image);
         }
     }
-
 }
 
 function imagecopymerge_alpha($dst_im, $src_im, $dst_x, $dst_y, $src_x, $src_y, $src_w, $src_h, $pct)

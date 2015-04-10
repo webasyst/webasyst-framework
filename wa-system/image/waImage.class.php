@@ -27,6 +27,7 @@ class waImage
     const ALIGN_TOP_RIGHT    = 'ALIGN_TOP_RIGHT';
     const ALIGN_BOTTOM_LEFT  = 'ALIGN_BOTTOM_LEFT';
     const ALIGN_BOTTOM_RIGHT = 'ALIGN_BOTTOM_RIGHT';
+    const ALIGN_CENTER = 'ALIGN_CENTER';
 
     const ORIENTATION_VERTICAL = 'VERTICAL';
     const ORIENTATION_HORIZONTAL = 'HORIZONTAL';
@@ -443,4 +444,10 @@ class waImage
         $this->_watermark($options);
         return $this;
     }
+
+    public function getPixel($x, $y)
+    {
+        return $this->_getPixel($x, $y);
+    }
 }
+

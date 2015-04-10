@@ -304,7 +304,7 @@ class waContactForm
      * @param string $field_id
      * @param boolean $with_errors whether to add class="error" and error text next to form fields
      */
-    public function html($field_id = null, $with_errors = true)
+    public function html($field_id = null, $with_errors = true, $placeholders = false)
     {
         $this->validateFields();
 
@@ -344,7 +344,9 @@ class waContactForm
                 $this->fields[$field_id]->setParameter('localized_names', _ws('New password'));
                 $opts['add_password_confirm'] = true;
             }
-
+            if ($placeholders) {
+                $opts['placeholder'] = true;
+            }
             return $this->fields[$field_id]->getHTML($opts);
         }
 
@@ -386,7 +388,7 @@ class waContactForm
             }
             $result .= '<div class="' . $class_field . ' ' . $field_class . '"><div class="' . $class_name . '">' .
                 $f->getName(null, true) . '</div><div class="' . $class_value . '">';
-            $result .= "\n" . $this->html($fid, $with_errors);
+            $result .= "\n" . $this->html($fid, $with_errors, $placeholders);
             $result .= "\n</div></div>";
         }
         $result .= '<input type="hidden" name="_csrf" value="'.waRequest::cookie('_csrf', '').'" />';

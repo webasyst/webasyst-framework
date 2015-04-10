@@ -438,6 +438,45 @@ HTACCESS;
         $this->displayJson(array());
     }
 
+    public function themeUpdateAction ()
+    {
+        $theme_id = waRequest::get('theme');
+        $theme = new waTheme($theme_id);
+
+        if (waRequest::method() == 'post') {
+            if (empty(waRequest::post("parent_only"))) {
+                if (waRequest::post('reset')) {
+                    foreach (waRequest::post('reset') as $f) {
+                        $theme->revertFile($f);
+                    }
+                }
+                $theme->update(false);
+            }
+
+            if ($theme->parent_theme && ($theme->parent_theme->type == waTheme::OVERRIDDEN)) {
+                if (waRequest::post('parent_reset')) {
+                    foreach (waRequest::post('parent_reset') as $f) {
+                        $theme->parent_theme->revertFile($f);
+                    }
+                }
+                $theme->parent_theme->update(false);
+            }
+            $this->displayJson(array());
+        } else {
+            $theme_original = new waTheme($theme_id, true, 'original');
+            $data = array(
+                'theme' => $theme,
+                'theme_original_version' => $theme_original->version
+            );
+            if ($theme->parent_theme && ($theme->version == $theme_original->version) && ($theme->parent_theme->type == waTheme::OVERRIDDEN)) {
+                $parent_theme_original = new waTheme($theme->parent_theme->id, $theme->parent_theme->app, 'original');
+                $data['theme_original_version'] = $parent_theme_original->version;
+                $data['parent_only'] = true;
+            }
+            $this->display($data, $this->getConfig()->getRootPath() . '/wa-system/design/templates/ThemeUpdate.html');
+        }
+    }
+
     public function themeUseAction()
     {
         $theme_id = waRequest::post('theme');
@@ -488,7 +527,9 @@ HTACCESS;
             }
         } else {
             list($domain, $route_id) = explode('|', $route);
-            $routes[$domain][$route_id]['theme'] = $theme_id;
+            if (!waRequest::post('mobile_only')) {
+                $routes[$domain][$route_id]['theme'] = $theme_id;
+            }
             $routes[$domain][$route_id]['theme_mobile'] = $theme_id;
         }
 
@@ -563,7 +604,10 @@ HTACCESS;
                 if (empty($r['theme'])) {
                     $r['theme'] = 'default';
                 }
-                if ($r['theme'] == $theme_id) {
+                if (empty($r['theme_mobile'])) {
+                    $r['theme_mobile'] = 'default';
+                }
+                if (($r['theme'] == $theme_id) || ($r['theme_mobile'] == $theme_id)) {
                     $theme_routes[] = $r;
                 }
             }
@@ -583,6 +627,20 @@ HTACCESS;
                 }
             }
 
+            if ($current_theme['type'] == waTheme::OVERRIDDEN) {
+                $theme_original = new waTheme($current_theme->id, $current_theme->app_id, waTheme::ORIGINAL);
+                $theme_original_version = $theme_original->version;
+            } else {
+                $theme_original_version = false;
+            }
+
+            if ($current_theme->parent_theme && $current_theme->parent_theme->type == waTheme::OVERRIDDEN) {
+                $theme_parent_original = new waTheme($current_theme->parent_theme->id, $current_theme->parent_theme->app_id, waTheme::ORIGINAL);
+                $theme_parent_original_version = $theme_parent_original->version;
+            } else {
+                $theme_parent_original_version = false;
+            }
+
             $this->display(array(
                 'routes' => $routes,
                 'domains' => wa()->getRouting()->getDomains(),
@@ -591,6 +649,8 @@ HTACCESS;
                 'design_url' => $this->design_url,
                 'app' => wa()->getAppInfo($app_id),
                 'theme' => $current_theme,
+                'theme_original_version' => $theme_original_version,
+                'theme_parent_original_version' => $theme_parent_original_version,
                 'options' => $this->options,
                 'parent_themes' => $parent_themes,
                 'theme_routes' => $theme_routes,

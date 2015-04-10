@@ -103,6 +103,10 @@ abstract class waViewController extends waController
             }
             $this->layout->display();
         } else {
+            if ((wa()->getEnv() == 'frontend') && waRequest::param('theme_mobile') &&
+                (waRequest::param('theme') != waRequest::param('theme_mobile'))) {
+                wa()->getResponse()->addHeader('Vary', 'User-Agent');
+            }
             // Send headers
             waSystem::getInstance()->getResponse()->sendHeaders();
             // Print all blocks

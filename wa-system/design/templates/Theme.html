@@ -1,12 +1,92 @@
 <div class="block double-padded blank wa-theme" id="wa-theme-{$theme.id}">
 
-    <h1 class="wa-theme-name">{sprintf('[s`%s design theme`]', $theme.name|escape)}</h1>
+    <h1 class="wa-theme-name">
+        {sprintf('[s`%s design theme`]', $theme.name|escape)}
+        <span class="hint">{$theme.version}</span>
+    </h1>
 
     <!-- THEME ACTIONS -->
     <div class="sidebar right250px">
+    
+        <!-- theme update -->
+        {if $theme.type == waTheme::ORIGINAL}
+        
+            <!-- original theme version from /wa-apps/ -->
+            <div class="block double-padded wa-theme-actions wa-theme-latest">
+                <ul class="menu-v with-icons">
+                    
+                    <li>
+                        
+                        <b><i class="icon16 yes"></i>{sprintf('[s`Original version <strong>%s</strong>`]', $theme.version)}</b>
+                        <span class="hint"><br>[s`No customizations have been made to theme settings and template files.`]</span>
+                    </li>
+                    
+                </ul>
+            </div>
+            
+        {elseif $theme.type == waTheme::OVERRIDDEN}
+
+            {if $theme.version == $theme_original_version}
+                {if !$theme.parent_theme || $theme.parent_theme.version == $theme_parent_original_version}
+                <!-- modified, but still the latest version -->
+                <div class="block double-padded wa-theme-actions wa-theme-latest">
+                    <ul class="menu-v with-icons">
+
+                        <li>
+                            <b><i class="icon16 yes"></i>{sprintf('[s`Latest version <strong>%s</strong>`]', $theme.version)}</b>
+                            <span class="hint"><br>{sprintf('[s`Your customized version of %s theme is up to date.`]', $theme.name|escape)}</span>
+                        </li>
+
+                    </ul>
+                </div>
+                {else}
+                <!-- update is available -->
+                <div class="block double-padded wa-theme-actions wa-theme-update-available">
+                    <ul class="menu-v with-icons">
+
+                        <li>
+                            <a class="theme-update bold" href="#" title="[s`This will reset all customizations you applied to this design theme. Are you sure?`]"><i class="icon16 update"></i>[s`Update theme`]</a>
+                            <span class="hint"><br>[s`Theme update requires your commitment because it may affect changes that you previously applied to template files and thus alter your site layout. Click to review the list of files and update.`]</span>
+                        </li>
+
+                    </ul>
+                </div>
+                {/if}
+            {else}
+            <!-- update is available -->
+            <div class="block double-padded wa-theme-actions wa-theme-update-available">
+                <ul class="menu-v with-icons">
+                    
+                    <li>
+                        <a class="theme-update bold" href="#" title="[s`This will reset all customizations you applied to this design theme. Are you sure?`]"><i class="icon16 update"></i>{sprintf('[s`Update to version %s is available`]', $theme_original_version)}</a>
+                        <span class="hint"><br>[s`Theme update requires your commitment because it may affect changes that you previously applied to template files and thus alter your site layout. Click to review the list of files and update.`]</span>
+                    </li>
+
+                </ul>
+            </div>
+            {/if}
+            
+        {else}
+        
+            <!-- no original theme with same ID -->
+            <div class="block double-padded wa-theme-actions wa-theme-orphan">
+                <ul class="menu-v with-icons">
+                    
+                    <li>
+                        <b><i class="icon16 split"></i>{$theme.id}</b>
+                        <span class="hint"><br>{sprintf('[s`This theme was either cloned from some of the original themes, or manually uploaded as archive. It can not be updated via Installer app or reverted to the original version because there is no original theme with same ID installed (<strong>%s</strong>).`]', $theme.id)}</span>
+                    
+                    </li>
+                    
+                </ul>
+            </div>
+            
+        {/if}
+        
+        <!-- misc actions -->
         <div class="block double-padded wa-theme-actions">
             <ul class="menu-v with-icons">
-                <li class="bottom-padded"><a href="?module=design&amp;action=themeDownload&amp;theme={$theme.id}" class="bold"><i class="icon16 download"></i>[s`Download theme backup`] <span class="hint nowrap">.tar.gz</span></a></li>
+                <li><a href="?module=design&amp;action=themeDownload&amp;theme={$theme.id}"><i class="icon16 download"></i>[s`Download theme backup`] <span class="hint nowrap">.tar.gz</span></a></li>
                 <li><a class="theme-copy" href="#"><i class="icon16 split"></i>[s`Clone theme`]</a></li>
                 <li><a class="theme-rename" href="#"><i class="icon16 edit"></i>[s`Rename theme`]</a></li>
                 <li><i class="icon16 link"></i>[s`Parent theme`]: <strong>{if $theme.parent_theme_id}{$theme.parent_theme_id}{else}[s`not set`]{/if}</strong>  <a class="theme-parent inline" href="#">[s`Change`]</a></li>
@@ -42,7 +122,7 @@
 
             {if $cover}
             <p>
-                <img src="{$cover}" />
+                <img src="{$cover}" class="wa-theme-cover" />
             </p>
             {/if}
             
@@ -146,8 +226,17 @@
         <!-- THEME USAGE -->
         <div class="fields" style="width: 100%">
         
-            <h4 class="heading">[s`Theme usage`]</h4>
+            {if count($theme_routes)}<h4 class="heading">[s`Theme usage`]</h4>{/if}
         
+            <div class="field">
+                <div class="name">
+                    [s`Theme version`]
+                </div>
+                <div class="value">
+                    {$theme.version}
+                </div>
+            </div>
+            
             <div class="field">
                 <div class="name">
                     [s`Theme path`]
@@ -162,33 +251,36 @@
                 {/if}                
             </div>
             
-            <div class="field">
-                <div class="name">
-                    [s`Theme usage`]
-                </div>
-                <div class="value no-shift">
-                    
-                    <p class="bold">
-                        {$_theme_usages = []}
-                        {foreach $theme_routes as $_r}
+            {if count($theme_routes)}
+                <div class="field">
+                    <div class="name">
+                        [s`Theme usage`]
+                    </div>
+    
+                    {$_theme_usages = []}
+                    {foreach $theme_routes as $_r}
+                        <div class="value">
                             {if $_r['_domain'] != $wa->get('domain') && $_r['_id'] != $wa->get('route')}
                                 {$_theme_usages[] = htmlspecialchars("{$_r._domain}/{$_r.url}")}
                             {/if}
-                            <a target="_blank" href="{$_r._url}" class="no-underline">{$_r._domain}/{$_r.url} <i class="icon10 new-window"></i></a><br>
-                        {/foreach}
-                    </p>
+                            <a target="_blank" href="{$_r._url}" class="no-underline  bold">{$_r._domain}/{$_r.url} <i class="icon10 new-window"></i></a>
+                        </div>
+                    {/foreach}
+    
                     {if count($theme_routes) > 1}
-                        <p class="gray">
-                            <i class="icon10 exclamation"></i> {sprintf('[s`Customizing %s theme settings below will affect all listed routes. If you want to keep individual designs, use separate theme copies (clones) for each route.`]', $theme.name|escape)}
-                        </p>
+                        <div class="value">
+                            <p class="gray small">
+                                <i class="icon10 exclamation"></i> {sprintf('[s`Customizing %s theme settings below will affect all listed routes. If you want to keep individual designs, use separate theme copies (clones) for each route.`]', $theme.name|escape)}
+                            </p>
+                        </div>
                     {/if}
-                    
+    
                 </div>
-            </div>
+            {/if}
 
         </div>
         
-        {if $theme.about}
+        {if trim($theme.about)}
             <!-- ABOUT -->
             <h4 class="heading">[s`About this theme`]</h4>
             {$theme.about}
@@ -211,14 +303,19 @@
     
 </div>
 
-<div class="dialog width500px height150px" id="wa-theme-reset-dialog">
+
+<div class="width500px height400px" id="wa-theme-update-dialog"></div>
+
+
+<div class="dialog width500px height200px" id="wa-theme-reset-dialog">
     <div class="dialog-background"> </div>
     <div class="dialog-window">
         <form>
             <div class="dialog-content">
                 <div class="dialog-content-indent">
                     <h1>[s`Revert to original`]</h1>
-                    <p><i class="icon10 exclamation"></i> [s`This will reset all customizations you applied to this design theme. Are you sure?`]</p>
+                    <p><i class="icon10 exclamation"></i> [s`This will erase all customizations you’ve made to this theme’s template files using the design editor, and reset this theme to original. Are you sure?`]</p>
+                    
                     {if $theme.parent_theme && $theme.parent_theme.type == waTheme::OVERRIDDEN}
                     <label>
                         <input type="checkbox" name="parent" value="1"> {sprintf("[s`Drop all customizations and revert parent theme <strong>%s</strong> to the original version too`]", $theme.parent_theme_id)}
@@ -237,6 +334,7 @@
         </form>
     </div>
 </div>
+
 
 <div class="dialog width600px height300px" id="wa-theme-start-using-dialog">
     <div class="dialog-background"> </div>
@@ -279,6 +377,15 @@
                                     </select>/
                                 {/if}
                                 <input type="text" name="url" value="" placeholder="*" class="short create-new-route-control">
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <div class="value">
+                                <label>
+                                    <input type="checkbox" name="mobile_only" value="1" {if $theme.id == 'mobile'}checked{/if}>
+                                    [s`Apply this theme for mobile devices only`]
+                                </label>
                             </div>
                         </div>
                     </div>
@@ -531,6 +638,31 @@
         //handler();
 
     });
+    });
+
+    $(".theme-update").on('click', function () {
+        if (!$(this).hasClass('disabled'))  {
+            $('#wa-theme-update-dialog').waDialog({
+                url: '?module=design&action=themeUpdate&theme={$theme.id}',
+                disableButtonsOnSubmit: true,
+                onSubmit: function () {
+                    if (confirm('[s`All selected files will be overwritten with their newest versions from the original theme. In case of incompatibility between your customizations and newer theme templates, CSS, and images, your site looks may change unexpectedly. There will be no way to automatically rollback this update. Update?`]')) {
+                        var data = $(this).serialize();
+                        $.post("?module=design&action=themeUpdate&theme={$theme.id}", data, function (response) {
+                            if (response.status == 'ok') {
+                                location.reload();
+                            } else {
+                                alert(response.errors);
+                            }
+                        }, "json");
+                    } else {
+                        $(this).find(':submit').removeAttr('disabled');
+                    }
+                    return false;
+                }
+            });
+        }
+        return false;
     });
 
     $(".theme-parent").on('click', function () {

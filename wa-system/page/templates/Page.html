@@ -162,6 +162,11 @@
         </ul>
         </div>
         {/foreach}
+
+        <!-- plugin hook: 'backend_pages_sidebar' -->
+        {* @event backend_pages_sidebar.%plugin_id% *}
+        {foreach $backend_pages_sidebar as $_}{$_}{/foreach}
+
     </div>
 {/if}
 <div id="wa-page-container" class="content bordered-left blank{if $sidebar} left250px{/if}">

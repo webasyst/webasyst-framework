@@ -1,0 +1,61 @@
+<div class="dialog-window">
+    <div class="dialog-content">
+
+        <h1>[s`Update theme`] <span class="hint">{if empty($parent_only)}{$theme.name|escape}{else}{$theme.parent_theme.name|escape}{/if} {$theme_original_version|escape}</span></h1>
+        <p>{sprintf('[s`Confirm the list of files which will be replaced with their newest versions from theme version %s.`]', $theme_original_version)}</p>
+        <p class="small"><i class="icon10 exclamation"></i> <em>[s`Files marked with <strong>bold</strong> were previously modified by you — select them only if you’d like to completely drop changes you’ve made to these files. All selected files will be overwritten with their newest versions from the original theme, and there will be no way to automatically rollback this update. (If you feel non-confident, don’t select modified templates by now. You will be able to update them manually file-by-file later on.)`]</em></p>
+        {if empty($parent_only)}
+        <ul class="menu-v">
+            <li><label title="[s`Theme appearance settings will be updated automatically`]" class="gray"><input type="checkbox" disabled checked="checked"> [s`Theme appearance settings (theme.xml)`]</label></li>
+            {$_non_m_files_count = 0}
+            {foreach $theme.files as $f_id => $f}
+                {if empty($f.modified)}{$_non_m_files_count = $_non_m_files_count + 1}{/if}
+            {/foreach}
+            {$_non_m_group_shown_flag = false}
+            {foreach $theme.files as $f_id => $f}
+            {if empty($f.modified)}
+                {if !$_non_m_group_shown_flag}
+                    <li><label title="[s`You did not modify this file`]" class="gray"><input type="checkbox" disabled checked="checked"> {if $_non_m_files_count > 1}{sprintf('[s`%s and %d more unmodified files`]', $f_id|escape, $_non_m_files_count-1)}{else}{$f_id|escape}{/if} </label></li>
+                    {$_non_m_group_shown_flag = true}
+                {/if}
+            {else}
+                <li><label class="bold" title="[s`You modified this file`]"><input name="reset[]" type="checkbox" value="{$f_id|escape}"> {$f_id|escape}</label></li>
+            {/if}
+            {/foreach}
+            
+        </ul>
+        {else}
+        <input type="hidden" name="parent_only" value="1">
+        {/if}
+
+        {if $theme.parent_theme && $theme.parent_theme.type == waTheme::OVERRIDDEN}
+        <br><br>
+        <h3 class="heading">[s`Parent theme`]: {$theme.parent_theme.name} ({$theme.parent_theme.app})</h3>
+        <ul class="menu-v">
+            <li><label title="[s`Theme appearance settings will be updated automatically`]" class="gray"><input type="checkbox" disabled checked="checked"> [s`Theme appearance settings (theme.xml)`]</label></li>
+            {$_non_m_files_count = 0}
+            {foreach $theme.parent_theme.files as $f_id => $f}
+                {if empty($f.modified)}{$_non_m_files_count = $_non_m_files_count + 1}{/if}
+            {/foreach}
+            {$_non_m_group_shown_flag = false}
+            {foreach $theme.parent_theme.files as $f_id => $f}
+            {if empty($f.modified)}
+                {if !$_non_m_group_shown_flag}
+                    <li><label title="[s`You did not modify this file`]" class="gray"><input type="checkbox" disabled checked="checked"> {if $_non_m_files_count > 1}{sprintf('[s`%s and %d more unmodified files`]', $f_id|escape, $_non_m_files_count-1)}{else}{$f_id|escape}{/if} </label></li>
+                    {$_non_m_group_shown_flag = true}
+                {/if}
+            {else}
+                <li><label class="bold" title="[s`You modified this file`]"><input name="parent_reset[]" type="checkbox" value="{$f_id|escape}"> {$f_id|escape}</label></li>
+            {/if}
+            {/foreach}
+        </ul>
+        {/if}
+        <div class="clear-both"></div>
+        
+    </div>
+    <div class="dialog-buttons">
+        <input type="hidden" name="theme" value="{$theme.id}">
+        <input type="submit" class="button red" value="{sprintf('[s`Update all to %s`]', $theme_original_version)}">
+        [s`or`] <a href="#/design/themes/" class="cancel">[s`cancel`]</a>
+    </div>
+</div>

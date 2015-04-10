@@ -752,6 +752,10 @@ abstract class waContactField
             }
         }
 
+        if (!empty($params['placeholder'])) {
+            $attrs .= ' placeholder="'.$this->getName(null, true).'"';
+        }
+
         return $this->getHtmlOne($params, $attrs).$errors_html;
     }
 
