@@ -1,0 +1,31 @@
+<main class="wa-blog-wrapper" role="main">
+
+    {include file="`$wa_active_theme_path`/layout-nav.html" inline}
+
+    <div itemscope itemtype="http://schema.org/WebPage">
+        {if empty($posts) && $wa->currentUrl() == $wa_app_url}
+            <div class="wa-welcome">
+                <i class="wa-smiley"></i>
+                <h1>[`Welcome to your new blog!`]</h1>
+                <p>{sprintf('[`Start by <a href="%s">writing a post</a> in your blog backend.`]', $wa_backend_url|cat:'blog/')}</p>
+            </div>
+        {else}
+            {if isset($breadcrumbs)}
+                <div class="breadcrumbs" itemprop="breadcrumb">
+                    {if $wa->globals('isMyAccount')}
+                        {* within My Account we exclude first node from navigation because links are on the page already *}
+                        {$breadcrumbs[0] = null}
+                    {/if}
+                    {foreach $breadcrumbs as $breadcrumb}
+                        {if $breadcrumb}
+                            <a href="{$breadcrumb.url}">{$breadcrumb.name|escape}</a> <span class="rarr">&rarr;</span>
+                        {/if}
+                    {/foreach}
+                </div>
+            {/if}
+            {$content}
+        {/if}
+    </div>
+</main>
+
+

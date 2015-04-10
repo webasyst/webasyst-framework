@@ -1,0 +1,32 @@
+{if $post.comment_count}
+<section class="comment-list-wrapper" itemscope itemtype="http://schema.org/UserComments">
+    <a name="comments"></a>
+    <h3 class="comment-count">{_w('%d comment','%d comments',$post.comment_count)}</h3>
+    {$depth=-1}
+    {foreach $post.comments as $comment}
+        {if $comment.depth < $depth}
+            {$loop=$depth-$comment.depth}
+            {section name="end-comment" loop=$loop}
+                </div>
+            {/section}
+            {$depth=$comment.depth}
+        {/if}
+        {if $comment.depth == $depth}
+        </div>
+        <div class="comment-wrapper">
+        {/if}
+            {if $comment.depth > $depth}
+            <div class="comment-wrapper">
+                {$depth=$comment.depth}
+            {/if}
+
+            {include file="layout-comment.html" inline}
+            {* sub comment *}
+    {/foreach}
+
+    {section name="end-comment" loop=$depth }
+        </div>
+    {/section}
+    </div>
+</section>
+{/if}

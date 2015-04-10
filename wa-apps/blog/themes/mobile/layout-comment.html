@@ -1,0 +1,48 @@
+<div class="comment-item" id="comment-{$comment.id}" data-comment-id="{$comment.id}">
+    <meta itemprop="commentTime" content="{$comment.datetime|date_format:'Y-m-d\TH:i'}">
+
+    <div class="credentials">
+        {if $comment.user.id} {* <span class="staff">{$wa->accountName()}</span> *}{/if}
+        {* @event prepare_comments_frontend.%plugin_id%.authorname_suffix *}
+        {if !empty($comment.plugins.authorname_suffix)}
+            {foreach $comment.plugins.authorname_suffix as $plugin => $output}{$output}{/foreach}
+        {/if}
+
+        <div class="left-column">
+            <div class="userpic-block">
+                <a name="comment{$comment.id}"{if $comment.site} href="{$comment.site}"{/if}>
+                    <img src="{$comment.user.photo_url_20|default:$comment.user.photo_url}" class="userpic{if $comment.auth_provider && ($comment.auth_provider neq blogCommentModel::AUTH_GUEST) && ($comment.auth_provider neq blogCommentModel::AUTH_USER)} icon16{/if}" alt="">
+                </a>
+            </div>
+        </div>
+
+        <div class="right-column">
+            <div class="author-block">
+                {if empty($comment.site)}
+                    <span class="username" itemprop="creator">{$comment.user.firstname}</span>
+                {else}
+                    <a href="{$comment.site}" class="username" itemprop="creator">{$comment.user.firstname}</a>
+                {/if}
+            </div>
+            <div class="date-block">
+                <span class="hint date" title="{$comment.datetime|wa_datetime}" datetime="{$comment.datetime|date_format:'Y-m-d\TH:i'}">{$comment.datetime|wa_datetime:"humandatetime"}</span>
+            </div>
+            <div class="actions">
+                <a class="reply-link reply-comment-link" href="javascript:void(0);"></a>
+            </div>
+        </div>
+    </div>
+
+    {* @event prepare_comments_frontend.%plugin_id%.before *}
+    {if !empty($comment.plugins.before)}
+        {foreach $comment.plugins.before as $plugin => $output}{$output}{/foreach}
+    {/if}
+    <div class="text-block" itemprop="commentText">{$comment.text|nl2br}</div>
+
+    {* @event prepare_comments_frontend.%plugin_id%.after *}
+    {if !empty($comment.plugins.after)}
+        {foreach $comment.plugins.after as $plugin => $output}{$output}{/foreach}
+    {/if}
+
+
+</div>

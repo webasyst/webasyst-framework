@@ -1,0 +1,15 @@
+<!-- blog css -->
+<link href="{$wa_active_theme_url}mobile.blog.css?v{$wa_theme_version}" rel="stylesheet" type="text/css">
+
+<!-- blog js -->
+<script type="text/javascript" src="{$wa_active_theme_url}mobile.blog.js?v{$wa_theme_version}"></script>
+
+<!-- next & prev links -->
+{foreach $links as $role => $link}
+<link rel="{$role}" href="{$link}">
+{/foreach}
+
+{* @event (frontend_action_default|frontend_action_post|frontend_action_page|frontend_action_error).%plugin_id%.head *}
+{foreach $frontend_action as $plugin => $output}
+    {if !empty($output.head)}{$output.head}{/if}
+{/foreach}

@@ -1,0 +1,25 @@
+{* @event (frontend_action_default|frontend_action_post|frontend_action_page|frontend_action_error).%plugin_id%.nav_before *}
+{foreach $frontend_action as $plugin => $output}
+    {if !empty($output.nav_before)}{$output.nav_before}{/if}
+{/foreach}
+
+{if $wa->currentUrl() != $wa_app_url}
+    <nav class="content-nav-wrapper" role="navigation">
+        <div class="nav-group">
+            <div class="nav-list">
+                <div class="nav-item back-nav-item">
+                    <a href="{$wa->blog->url()}">[`All posts`]</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+{/if}
+
+{* @event (frontend_action_default|frontend_action_post|frontend_action_page|frontend_action_error).%plugin_id%.sidebar *}
+{foreach $frontend_action as $plugin => $output}
+    {if !empty($output.sidebar)}
+        <div class="{$plugin}">
+            {$output.sidebar}
+        </div>
+    {/if}
+{/foreach}

@@ -1,0 +1,84 @@
+{* post stream (list) wrapper *}
+
+{if !$is_lazyloading}
+    <div id="post-stream" class="lazyloading" {if $wa->param('blog_url')}itemscope itemtype="http://schema.org/Blog"{/if}>
+    {if !empty($stream_title)}
+        <h1>{$stream_title|escape}</h1>
+    {/if}
+{/if}
+
+<a name="page_{$page}"></a>
+
+{if $is_search}
+    {include file="stream_search.html" inline}
+{else}
+    {include file="stream_posts.html" inline}
+{/if}
+
+{if $is_lazyloading or ($page eq 1)}
+
+    {$is_single = false}
+    {if count($posts) < $posts_per_page}
+        {$is_single = true}
+    {/if}
+    {if !$is_single}
+        <div class="pageless-wrapper" {if !$is_lazyloading}style="display:none;"{/if}>
+            {if $page lt $pages}
+                {$loaded_post_count=(count($posts)+$posts_per_page * ($page-1) )}
+                {_w('%d post','%d posts',$loaded_post_count)}&nbsp;{_w('of %d post','of %d posts',$post_count)}
+                <div>
+                    <a href="?page={$page+1}" class="pageless-link">[`Show older posts`]</a>
+                </div>
+                <div class="pageless-progress" style="display:none;">
+                    <i class="icon16 loading"></i>
+                    [`Loading...`]
+                </div>
+                {elseif isset($page) && $pages}
+                {_w('%d post','%d posts',$post_count)}
+            {/if}
+        </div>
+    {/if}
+
+{/if}
+
+{if !$is_lazyloading}
+    </div>
+
+    <ul class="menu-h" id="stream-paging">
+        {for $p=1 to $pages}
+            <li class="{if $p eq $page}"selected"{/if}">
+                <a href="{if $p eq $page}#page_{$page}{else}?page={$p}{/if}">{$p}</a>
+            </li>
+        {/for}
+    </ul>
+{/if}
+
+{if $page eq 1 && !$wa->globals('disable_pageless')}
+    <script type="text/javascript">
+        $.pageless({
+            auto: true, // auto load next pages
+            url: '?layout=lazyloading{if $blog_query}&query={urlencode($blog_query)}{/if}',
+            times: 2,
+            target: '.lazyloading:first',
+            scroll: function(response){
+                var progress = '';
+                if (response) {
+                    progress = '<i class="icon16 loading"><'+'/i> <em>[`Loading`]...<'+'/em>';
+                }
+            },
+            count: {$pages},
+            paging_selector:'#stream-paging'
+
+            {if $blog_query}
+                ,prepareContent: function(html) {
+                    // hightlight search query in content text after lazyloading
+                    var tmp = $('<div></div>').append(html);
+                    $.blog_utils.highlight(tmp);
+                    var html = tmp.html();
+                    tmp.remove();
+                    return html;
+                }
+            {/if}
+        });
+    </script>
+{/if}
