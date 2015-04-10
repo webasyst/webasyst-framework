@@ -1,0 +1,9 @@
+{if !empty($title)}
+    <h1 class="search-criteria">
+        {$title}
+        {* @event frontend_collection.%plugin_id%.search_name *}
+        {foreach $frontend_collection as $item}{if !empty($item.search_name)}{$item.search_name}{/if}{/foreach}
+    </h1>
+{/if}
+
+{include file='photos-thumbs.html'}
