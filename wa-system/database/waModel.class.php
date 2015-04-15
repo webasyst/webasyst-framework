@@ -956,6 +956,10 @@ class waModel
     public function fieldExists($field)
     {
         if (is_array($field)) {
+            if (empty($field[0]) || empty($field[1]) ||
+                !preg_match('/^[a-z0-9_]+$/i', $field[0]) || !preg_match('/^[a-z0-9_]+$/i', $field[1])) {
+                return false;
+            }
             try {
                 $this->query("SELECT ".$this->escapeField($field[1])." FROM ".$field[0]." WHERE 0");
                 return true;

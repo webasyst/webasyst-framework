@@ -246,7 +246,10 @@ class waImageImagick extends waImage
                 $iwatermark->resizeImage($width, $height, Imagick::FILTER_CUBIC, 0.5);
             }
             if (method_exists($iwatermark, 'setImageAlphaChannel')) {
-                $iwatermark->setImageAlphaChannel(Imagick::ALPHACHANNEL_ACTIVATE);
+                try {
+                    $iwatermark->setImageAlphaChannel(Imagick::ALPHACHANNEL_ACTIVATE);
+                } catch (Exception $e) {
+                }
             }
             $iwatermark->evaluateImage(Imagick::EVALUATE_MULTIPLY, $opacity, Imagick::CHANNEL_ALPHA);
             $this->im->compositeImage($iwatermark, Imagick::COMPOSITE_DISSOLVE, $offset[0], $offset[1]);
@@ -276,18 +279,18 @@ class waImageImagick extends waImage
                 list ($width, $height) = array($height, $width);
             }
 
-            list($offset, $rotation) = $this->calcWatermarkTextOffset($width, $height, $align, $text_orientation, ifset($options['rotation']));
+            $margin = round($font_size * 0.21);
+            list($offset, $rotation) = $this->calcWatermarkTextOffset($width, $height, $align, $text_orientation, ifset($options['rotation']), $margin);
             $this->im->annotateImage($watermark, $offset[0], $offset[1], $rotation, $text);
             $watermark->clear();
             $watermark->destroy();
         }
     }
 
-    private function calcWatermarkTextOffset($width, $height, $align, $text_orientation, $opt_rotation)
+    private function calcWatermarkTextOffset($width, $height, $align, $text_orientation, $opt_rotation, $margin)
     {
         $rotation = $text_orientation == self::ORIENTATION_VERTICAL ? -90: 0;
         $offset = '';
-        $margin = 10;
         switch ($align) {
             case self::ALIGN_CENTER:
                 $rotation = -$opt_rotation;
@@ -301,31 +304,31 @@ class waImageImagick extends waImage
                 break;
             case self::ALIGN_TOP_LEFT:
                 if ($text_orientation == self::ORIENTATION_HORIZONTAL) {
-                    $offset = array($margin, 2*$margin + round($height/2));
+                    $offset = array($margin, $margin + round($height*7/10));
                 } else {
-                    $offset = array($margin + $width, $margin + $height);
+                    $offset = array($margin + round($width*7/10), $margin + $height);
                 }
                 break;
             case self::ALIGN_TOP_RIGHT:
                 if ($text_orientation == self::ORIENTATION_HORIZONTAL) {
-                    $offset = array($this->width - $width - $margin, $margin + $height);
+                    $offset = array($this->width - $width - $margin, $margin + round($height*7/10));
                 } else {
-                    $offset = array($this->width - round($width/2) - $margin, $margin + $height);
+                    $offset = array($this->width - round($width/10) - $margin, $margin + $height);
                 }
                 break;
             case self::ALIGN_BOTTOM_LEFT:
                 if ($text_orientation == self::ORIENTATION_HORIZONTAL) {
-                    $offset = array($margin, $this->height - round($height/2) - $margin);
+                    $offset = array($margin, $this->height - round($height/10) - $margin);
                 } else {
-                    $offset = array($margin + $width, $this->height - $margin);
+                    $offset = array($margin + round($width*7/10), $this->height - $margin);
                 }
                 break;
             case self::ALIGN_BOTTOM_RIGHT:
             default:
                 if ($text_orientation == self::ORIENTATION_HORIZONTAL) {
-                    $offset = array($this->width - $width - $margin, $this->height - round($height/2) - $margin);
+                    $offset = array($this->width - $width - $margin, $this->height - round($height/10) - $margin);
                 } else {
-                    $offset = array($this->width - round($width/2) - $margin, $this->height - $margin);
+                    $offset = array($this->width - round($width/10) - $margin, $this->height - $margin);
                 }
                 break;
         }

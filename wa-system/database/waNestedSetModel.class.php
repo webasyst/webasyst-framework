@@ -40,12 +40,12 @@ class waNestedSetModel extends waModel
     {
         return $this->parent;
     }
-    
+
     public function getRoot()
     {
         return $this->root;
     }
-    
+
     /**
      *
      * Query for getting descendants
@@ -80,7 +80,7 @@ class waNestedSetModel extends waModel
         }
         return $query;
     }
-    
+
     /**
      * Insert new item on some level (parent_id) before some item (before_id)
      * @param array $data
@@ -99,7 +99,7 @@ class waNestedSetModel extends waModel
         }
         return $id;
     }
-    
+
     public function move($id, $parent_id = null, $before_id = null)
     {
         if (!$this->_move($id, $parent_id)) {
@@ -123,7 +123,7 @@ class waNestedSetModel extends waModel
             $parent_id = $data[$this->parent];
         }
         $parent_id = (int) $parent_id;
-        
+
         if ($parent_id) {
             // get parent's right value
             $result = $this->getById($parent_id);
@@ -152,7 +152,7 @@ class waNestedSetModel extends waModel
                 $data[$this->root] = $result[$this->root];
             }
             return $this->insert($data);
-            
+
         } else {
             $sql = "SELECT MAX(`{$this->right}`) as max FROM `{$this->table}`";
             if ($this->root) {
@@ -171,9 +171,9 @@ class waNestedSetModel extends waModel
             return $this->insert($data);
         }
     }
-    
+
     /**
-     * 
+     *
      * @param int $id
      * @param $parent_id
      */
@@ -197,16 +197,16 @@ class waNestedSetModel extends waModel
         $this->updateById($id, array(
             $this->parent  => $parent ? $parent[$this->id] : 0
         ));
-        
+
         $this->exec("
         UPDATE `{$this->table}`
         SET `{$this->depth}` = `{$this->depth}` + i:parent_depth - i:depth + 1
         WHERE
         `{$this->left}` BETWEEN i:left AND i:right".$root_where,
                 array(
-                    'left' => $left, 
-                    'right' => $right, 
-                    'parent_depth' => $parent ? $parent[$this->depth] : -1, 
+                    'left' => $left,
+                    'right' => $right,
+                    'parent_depth' => $parent ? $parent[$this->depth] : -1,
                     'depth' => $element[$this->depth]
                 )
         );
@@ -275,7 +275,7 @@ class waNestedSetModel extends waModel
 
         return true;
     }
-    
+
     protected function moveUp($id, $before_id)
     {
             $element = $this->getById($id);
@@ -288,24 +288,24 @@ class waNestedSetModel extends waModel
             } else {
                 $root_where = '';
             }
-            
+
             $before = $this->getById($before_id);
             if (empty($before)) {
                 return false;
             }
-            
+
             // not in one level (hasn't one parent)
             if ($element[$this->parent] != $before[$this->parent]) {
                 return false;
             }
-            
+
             // already moved (element before needed item)
             if ($element[$this->right] == $before[$this->left] + 1) {
                 return false;
             }
-            
+
             $width = $element[$this->right] - $element[$this->left] + 1;
-            
+
             $params = array(
                 'left'      => $element[$this->left],
                 'right'     => $element[$this->right],
@@ -313,7 +313,7 @@ class waNestedSetModel extends waModel
                 'step'      => $before[$this->left] - $element[$this->left],
                 'from_left' => $before[$this->left]
             );
-            
+
             $this->exec("
                 UPDATE `{$this->table}`
                 SET `{$this->left}` = `{$this->left}` + IF(`{$this->left}` BETWEEN i:left AND i:right, i:step, i:width)
@@ -324,7 +324,7 @@ class waNestedSetModel extends waModel
                 SET `{$this->right}` = `{$this->right}` + IF(`{$this->right}` BETWEEN i:left AND i:right, i:step, i:width)
                 WHERE `{$this->right}` > i:from_left AND `{$this->right}` <= i:right
             ".$root_where, $params);
-                
+
             return true;
     }
 
@@ -458,7 +458,7 @@ class waNestedSetModel extends waModel
 
         return true;
     }
-    
+
     /**
      * Repair "broken" nested-set tree. "Broken" is when keys combination is illegal and(or) full_urls is incorrect
      */
@@ -474,13 +474,21 @@ class waNestedSetModel extends waModel
             $this->_repair();
         }
     }
-    
+
     private function _repair($root_id = null)
     {
         $tree = array(0 => array('children' => array(), 'url' => ''));
         $parent_ids = array(0);
         $result = true;
         $access_table = array(0 => & $tree[0]);
+
+        // if child item miss parent set parent_id of child to 0
+        $sql = "UPDATE {$this->table} c
+                LEFT JOIN {$this->table} p ON c.parent_id = p.id
+                SET c.parent_id = 0
+                WHERE p.id IS NULL";
+        $this->exec($sql);
+
         while ($parent_ids) {
             $result = $this->query("SELECT * FROM {$this->table}
                 WHERE parent_id IN (".implode(',', $parent_ids).")".
