@@ -308,6 +308,7 @@ class waImageGd extends waImage
                 return;
             }
 
+            $margin = round($font_size / 3.6);
             $font_color = array(
                 'r' => '0x' . substr($font_color, 0, 2),
                 'g' => '0x' . substr($font_color, 2, 2),
@@ -354,7 +355,7 @@ class waImageGd extends waImage
                         list($width, $height) = array($height, $width);
                     }
 
-                    $offset = $this->calcWatermarkOffset($width, $height, $align);
+                    $offset = $this->calcWatermarkOffset($width, $height, $align, $margin);
                     $offset = $this->watermarkOffsetFix($offset, $width, $height, $align, $text_orientation, $align == self::ALIGN_CENTER ? $rotation : 0);
 
                     $color = imagecolorallocatealpha($this->image, $font_color['r'], $font_color['g'], $font_color['b'], $font_color['a']);
@@ -378,7 +379,7 @@ class waImageGd extends waImage
                 if ($text_orientation == self::ORIENTATION_VERTICAL) {
                     list ($width, $height) = array($height, $width);
                 }
-                $offset = $this->calcWatermarkOffset($width, $height, $align);
+                $offset = $this->calcWatermarkOffset($width, $height, $align, $margin);
                 if ($rotation != 0) {
                     imagestring_rotate($this->image, $font, $rotation, $offset[0], $offset[1], $text, $font_color['r'], $font_color['g'], $font_color['b'], $font_color['a']);
                 } else {
@@ -389,13 +390,12 @@ class waImageGd extends waImage
         }
     }
 
-    private function calcWatermarkOffset($width, $height, $align)
+    private function calcWatermarkOffset($width, $height, $align, $margin=10)
     {
         if (is_array($align)) {
             return $align;
         }
 
-        $margin = 10;
         switch ($align) {
             case self::ALIGN_CENTER:
                 $offset = array(($this->width - $width) / 2, ($this->height - $height) / 2);
@@ -477,8 +477,7 @@ function imagecopymerge_alpha($dst_im, $src_im, $dst_x, $dst_y, $src_x, $src_y, 
     // creating a cut resource
     $cut = imagecreatetruecolor($src_w, $src_h);
 
-    $trans_color = imagecolorallocate($cut, 255, 255, 255);
-    imagecolortransparent($cut, $trans_color);
+    $trans_color = imagecolorallocatealpha($cut, 255, 255, 255, 127);
     imagefill($cut, 0, 0, $trans_color);
 
     // copying relevant section from background to the cut resource

@@ -179,14 +179,26 @@ class waContactCompositeField extends waContactField
                     );
                     return $values;
                 } else {
-                    return array(
-                        array(
-                            'data' => array(
-                                $subfield => $value
-                            ),
-                            'ext' => $ext
-                        )
-                    );
+                    if ($is_ext && $ext) {
+                        $data = $contact->get($this->id);
+                        foreach ($data as $sort => &$row) {
+                            if ($row['ext'] == $ext) {
+                                $row['data'][$subfield] = $value;
+                            }
+                        }
+                        unset($row);
+                        return $data;
+                    } else {
+                        // !!! this does not seem right, honestly...
+                        return array(
+                            array(
+                                'data' => array(
+                                    $subfield => $value
+                                ),
+                                'ext' => $ext
+                            )
+                        );
+                    }
                 }
             }
 
