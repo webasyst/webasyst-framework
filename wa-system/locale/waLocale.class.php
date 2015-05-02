@@ -72,6 +72,8 @@ class waLocale
      */
     public static function translate($domain, $locale, $msgid)
     {
+        waLog::deprecated(__METHOD__);
+
         $old_locale = null;
         // load new locale
         if (self::$locale != $locale) {

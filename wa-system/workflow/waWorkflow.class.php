@@ -199,6 +199,7 @@ class waWorkflow
      */
     public function getActionByClass($class_name)
     {
+        waLog::deprecated(__METHOD__);
         $actions = $this->getAvailableActions();
         $action_id = array_search($class_name, $actions); // !!! fails when item is an array
 
@@ -214,6 +215,7 @@ class waWorkflow
      */
     public function getStateByClass($class_name)
     {
+        waLog::deprecated(__METHOD__);
         $states = $this->getAvailableStates();
         $state_id = array_search($class_name, $states); // !!! fails when item is an array
 
@@ -240,6 +242,7 @@ class waWorkflow
      */
     public function getState($params = null)
     {
+        waLog::deprecated(__METHOD__);
         if ($params) {
             return $this->getStateById($params['state_id']);
         }
@@ -255,6 +258,7 @@ class waWorkflow
      */
     public function getActions()
     {
+        waLog::deprecated(__METHOD__);
         $args = func_get_args();
         $params = isset($args[0]) ? $args[0] : null;
         $name_only = isset($args[1]) ? $args[1] : false;

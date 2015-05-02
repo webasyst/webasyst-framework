@@ -410,6 +410,7 @@ abstract class waPayment extends waSystemPlugin
      */
     public function getSettingsList()
     {
+        waLog::deprecated(__METHOD__);
         throw new waException('Use getSettingsHTML instead');
     }
 
@@ -425,6 +426,7 @@ abstract class waPayment extends waSystemPlugin
      */
     final public static function listModules($options = array())
     {
+        waLog::deprecated(__METHOD__);
         throw new waException('Use enumerate instead');
     }
 
@@ -642,6 +644,7 @@ abstract class waPayment extends waSystemPlugin
      */
     final public static function addTransactionData($wa_transaction_id, $result = null)
     {
+        waLog::deprecated(__METHOD__);
         return true;
     }
 
@@ -691,6 +694,7 @@ abstract class waPayment extends waSystemPlugin
      */
     public static function execTransactionCallback($request, $module_id)
     {
+        waLog::deprecated(__METHOD__);
         return self::callback($module_id, $request);
     }
 

@@ -83,6 +83,7 @@ abstract class waController
      */
     public function log($action, $count = null, $contact_id = null, $params = null)
     {
+        waLog::deprecated(__METHOD__);
         return $this->logAction($action, $params, null, $contact_id);
     }
 

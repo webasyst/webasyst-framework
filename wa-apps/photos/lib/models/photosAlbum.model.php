@@ -56,6 +56,9 @@ class photosAlbumModel extends waModel
      */
     public function getStaticAlbums($public_only = false, $owned_only = false)
     {
+
+        waLog::deprecated(__METHOD__);
+
         $user = wa()->getUser();
         $sql = "SELECT a.id, a.name FROM ".$this->table." a ";
         if ($public_only) {
