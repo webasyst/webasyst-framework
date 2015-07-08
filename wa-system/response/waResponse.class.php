@@ -336,7 +336,7 @@ class waResponse
                 $url .= '.'.time();
             }
         // Support external links
-        } elseif (strpos($url, '://') === false) {
+        } elseif ((strpos($url, '://') === false) && (strpos($url, '//') !== 0)) {
             $url = wa()->getRootUrl().$url;
         }
 
@@ -447,7 +447,7 @@ $(function () {
                 $url .= '.'.time();
             }
         // Support external links
-        } elseif (strpos($url, '://') === false) {
+        } elseif ((strpos($url, '://') === false) && (strpos($url, '//') !== 0)) {
             $url = wa()->getRootUrl().$url;
         }
 
