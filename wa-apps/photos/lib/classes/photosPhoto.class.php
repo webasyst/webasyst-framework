@@ -240,8 +240,8 @@ class photosPhoto
                 $w = !is_null($width) ? $width : $height;
                 $original_image = waImage::factory($original_path);
                 $h = $original_image->height * ($w/$original_image->width);
-                $w = round($w);
-                $h = round($h);
+                $w = min(round($w), $original_image->width);
+                $h = min(round($h), $original_image->height);
                 if ($w == $main_thumbnail_width && $h == $main_thumbnail_height) {
                     return $image;
                 }
@@ -256,8 +256,8 @@ class photosPhoto
                 $h = !is_null($width) ? $width : $height;
                 $original_image = waImage::factory($original_path);
                 $w = $original_image->width * ($h/$original_image->height);
-                $w = round($w);
-                $h = round($h);
+                $w = min(round($w), $original_image->width);
+                $h = min(round($h), $original_image->height);
                 if ($w == $main_thumbnail_width && $h == $main_thumbnail_height) {
                     return $image;
                 }

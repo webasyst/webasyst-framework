@@ -156,6 +156,7 @@
                                     template[0].offsetWidth;
                                 template.addClass('in');
                                 if (!file.error) {
+                                    that.filesIds.push(file.id);
                                     setTimeout(function () {
                                         template.hide(200);
                                     }, 5000);
@@ -171,6 +172,7 @@
                     that._reflow = that._transition && template[0].offsetWidth;
                     template.addClass('in');
                     if (!file.error) {
+                        that.filesIds.push(data.result.files[0]);
                         setTimeout(function () {
                             template.hide(200);
                         }, 5000);
@@ -251,6 +253,7 @@
             // Callback for uploads start, equivalent to the global ajaxStart event:
             start: function () {
                 $(this).data('fileupload').filesCount = 0;
+                $(this).data('fileupload').filesIds = [];
                 $("#p-upload-filescount").show().empty();
                 $('#p-upload-step2').hide();
                 $('#p-upload-step2-buttons').hide();
@@ -297,7 +300,7 @@
                         !waiting && showMessage();
                     });
                     // log action and get localized message at the same time
-                    $.get('?module=backend&action=log&action_to_log=photos_upload&count='+files_count, function(r) {
+                    $.get('?module=backend&action=log&action_to_log=photos_upload&count='+files_count, {'ids': that.filesIds}, function(r) {
                         data = r.data;
                         waiting--;
                         !waiting && showMessage();

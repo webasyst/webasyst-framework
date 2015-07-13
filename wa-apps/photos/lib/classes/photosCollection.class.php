@@ -589,7 +589,7 @@ class photosCollection
         } else if (count($hash) == 1) {
             $params[$hash[0]] = $hash[0];
         }
-        $link = wa()->getRouteUrl('photos/frontend', $params, true);
+        $link = wa()->getRouteUrl('photos/frontend', $params, true, wa()->getRouting()->getDomain(null, true, false));
         return $link ? rtrim($link, '/').'/' : null;
     }
 
