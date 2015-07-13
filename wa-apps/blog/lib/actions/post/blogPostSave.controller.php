@@ -215,13 +215,13 @@ class blogPostSaveController extends waJsonController
                 }
                 $this->post_model->updateItem($post['id'], $post);
                 if ($prev_post['status'] != blogPostModel::STATUS_PUBLISHED && $post['status'] == blogPostModel::STATUS_PUBLISHED) {
-                    $this->log('post_publish', 1);
+                    $this->logAction('post_publish', $post['id']);
                 } else {
-                    $this->log('post_edit', 1);
+                    $this->logAction('post_edit', $post['id']);
                 }
             } else {
                 $post['id'] = $this->post_model->updateItem(null, $post);
-                $this->log('post_publish', 1);
+                $this->logAction('post_publish', $post['id']);
             }
 
             $this->saveParams($post['id']);

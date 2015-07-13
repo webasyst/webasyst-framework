@@ -470,7 +470,8 @@ class blogHelper
             if ($blog_id) {
                 $params['blog_url_type'] = $blog_id;
             }
-            $url = wa()->getRouteUrl($route_rule, $params, $absolute);
+            $url = wa()->getRouteUrl($route_rule, $params, $absolute,
+                $absolute ? wa()->getRouting()->getDomain(null, true, false) : null);
         }
         return $url;
     }

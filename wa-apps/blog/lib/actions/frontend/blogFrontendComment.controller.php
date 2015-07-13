@@ -153,7 +153,7 @@ class blogFrontendCommentController extends waJsonController
         try {
             $comment['post_data'] = $this->post;
             $this->comment_id = $this->comment_model->add($comment, $this->parent_id);
-            $this->logAction('comment_add', 'frontend');
+            $this->logAction('comment_add', $this->comment_id);
             return true;
         }
         catch (Exception $e) {

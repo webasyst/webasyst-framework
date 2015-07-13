@@ -191,5 +191,37 @@ class blogConfig extends waAppConfig
             return true;
         }
     }
+
+    public function explainLogs($logs)
+    {
+        $logs = parent::explainLogs($logs);
+        $app_url = wa()->getConfig()->getBackendUrl(true).$this->application.'/';
+        foreach ($logs as $log_id => $l) {
+            if (in_array($l['action'], array('page_add', 'page_edit', 'page_move')) && isset($l['params_html'])) {
+                $logs[$log_id]['params_html'] = str_replace('#/pages/', '?module=pages#/', $l['params_html']);
+            }
+        }
+
+        $post_ids = array();
+        foreach ($logs as $l_id => $l) {
+            if (in_array($l['action'], array('post_publish', 'post_edit')) && $l['params']) {
+                $post_ids[] = $l['params'];
+            }
+        }
+        if ($post_ids) {
+            $post_model = new blogPostModel();
+            $posts = $post_model->getById($post_ids);
+        }
+        foreach ($logs as $l_id => $l) {
+            if (in_array($l['action'], array('post_publish', 'post_edit'))) {
+                if (isset($posts[$l['params']])) {
+                    $p = $posts[$l['params']];
+                    $url = $app_url.'?module=post&id='.$l['params'].'#/';
+                    $logs[$l_id]['params_html'] = '<div class="activity-target"><a href="'.$url.'">'.htmlspecialchars($p['title']).'</a></div>';
+                }
+            }
+        }
+        return $logs;
+    }    
 }
 
