@@ -1,0 +1,60 @@
+<style>
+
+    .s-weather { padding: 0; background: #8fb3d6; background-repeat: none; background-size: cover; text-align: center; height: 100%; color: #fff; background-image: url('{$wa_url}wa-widgets/weather/img/00d-unknown.jpg'); }
+    .s-weather h1 { margin-left: 0.35em; font-weight: normal; padding-top: 30px; }
+    .s-weather h4 { opacity: 0.8; }
+    .widget-2x2 .s-weather h1 { padding-top: 60px; }
+
+    .wa-no-weather { padding: 25px 0px; font-weight: normal; color: #fff; }
+    .widget-2x1 .wa-no-weather { padding: 40px 55px; }
+    .widget-2x2 .wa-no-weather { padding: 80px 35px; }
+
+    /* weather condition codes accroding to openweathermap.org */
+
+    .s-weather-code-01d { background-color: #438fef; background-image: url('{$wa_url}wa-widgets/weather/img/01d.jpg'); }
+    .s-weather-code-01d h1 { text-shadow: 0 1px 3px rgba(55,55,0,0.3); }
+    .s-weather-code-01n { background-color: #5155d2; background-image: url('{$wa_url}wa-widgets/weather/img/01n.jpg'); }
+    .s-weather-code-03d { background-color: #b6c8e3; background-image: url('{$wa_url}wa-widgets/weather/img/03d.jpg'); }
+    .s-weather-code-04d { background-color: #b6bec9; background-image: url('{$wa_url}wa-widgets/weather/img/04d.jpg'); color: #248; }
+    .s-weather-code-09d { background-color: #b3bbd6; background-image: url('{$wa_url}wa-widgets/weather/img/09d.jpg'); color: #028; }
+    
+</style>
+
+<div class="s-weather s-weather-code-{$weather.weather.icon|default:'unknown'}" id="s-weather-widget-{$info['id']}">
+
+    {if empty($weather) || !empty($weather.message)}
+        {if !empty($weather.message) && $weather.message !== 'Error: Not found city'}
+            <div class="errormsg">{$weather.message}</div>
+        {else if $city}
+            <h5 class="align-center hint wa-no-weather">{sprintf('[`Could not retrieve weather conditions for <strong>%s</strong>. Please check city name in widget settings or in your contact info.`]', $city|default:'[`(unknown city)`]')}</h5>
+        {else}
+            <h5 class="align-center hint wa-no-weather">[`Please enter city name in your contact information or in this widget settings`]</h5>
+        {/if}
+    {else}
+        {if !empty($weather.main.temp)}
+            <h1>{$weather.main.temp}&deg;</h1>
+        {/if}
+        <h4>{$city}</h4>
+    {/if}
+</div>
+
+{if !$wa->get('ignore_js')}
+<script>$(function() { "use strict";
+    var timer_id = setInterval(updateWidget, 3600000); // 1 hour
+    var $container = $('#s-weather-widget-{$info['id']}');
+
+    $.wa.updateWeatherWidget = updateWidget; // debugging helper
+
+    function updateWidget() {
+        if ($container.length && $.contains(document, $container[0])) {
+            $.get('{$wa_app_url}?widget={$info.widget}&id={$info.id}&size={$info.size}&nocache=1&ignore_js=1', function(html) {
+                var $tmp = $('<div>').html(html);
+                $container.find('.s-weather').replaceWith($tmp.find('.s-weather'));
+                $tmp.remove();
+            });
+        } else {
+            clearInterval(timer_id);
+        }
+    }
+});</script>
+{/if}
