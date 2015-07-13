@@ -1,0 +1,21 @@
+<span><input type="text" name="{$field_name}" id="{$uniqid}" value="{$field_value|escape}" placeholder="http://"></span>
+
+<script>(function() { "use strict";
+
+    var $input_text = $('#{$uniqid}')
+    var $radios = $input_text.closest('form').find('[name="{$field_name|replace:custom_rss_feed:rss_feed}"]');
+
+    var delay = 0;
+    $radios.change(update);
+    update();
+    delay = 300;
+
+    function update() {
+        if ($radios.filter(':checked').val() == 'custom') {
+            $input_text.closest('.field').slideDown(delay);
+        } else {
+            $input_text.val('').closest('.field').slideUp(delay);
+        }
+    }
+
+})();</script>
