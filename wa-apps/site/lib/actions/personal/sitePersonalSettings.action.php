@@ -48,6 +48,7 @@ class sitePersonalSettingsAction extends waViewAction
             'auth' => isset($auth_config['auth']) ? $auth_config['auth'] : false ,
             'app' => isset($auth_config['app']) ? $auth_config['app'] : $auth_app_id,
             'signup_captcha' => isset($auth_config['signup_captcha']) ? $auth_config['signup_captcha'] : false,
+            'rememberme' => isset($auth_config['rememberme']) ? $auth_config['rememberme'] : false,
             'adapters' => isset($auth_config['adapters']) ? $auth_config['adapters'] : array()
         ));
 

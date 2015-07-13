@@ -29,4 +29,12 @@ class sitePageModel extends waPageModel
         }
     }
 
+    public function getByDomain($domain_id, $route = null, $content = false)
+    {
+        $sql = "SELECT id, parent_id, name, title, full_url, url, route, create_datetime, update_datetime, status".
+            ($content ? ', content' : '')." FROM ".$this->table.'
+            WHERE domain_id = i:0 '.($route !== null ? ' AND route = s:1' : '').'
+            ORDER BY sort';
+        return $this->query($sql, $domain_id, $route)->fetchAll('id');
+    }
 }

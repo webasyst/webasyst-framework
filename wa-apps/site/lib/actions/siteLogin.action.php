@@ -22,6 +22,13 @@ class siteLoginAction extends waLoginAction
 
     protected function afterAuth()
     {
+        if (waRequest::get('return')) {
+            $url = $this->getStorage()->get('auth_referer');
+            if ($url) {
+                $this->getStorage()->del('auth_referer');
+                $this->redirect($url);
+            }
+        }
         $this->getStorage()->del('auth_referer');
         $url = waRequest::param('secure') ? $this->getConfig()->getCurrentUrl() : wa()->getRouteUrl('/frontend/my');
         $this->redirect($url);

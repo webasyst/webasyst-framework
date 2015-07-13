@@ -17,6 +17,12 @@ class sitePersonalSettingsSaveController extends waJsonController
                 unset($config[$domain]['signup_captcha']);
             }
         }
+
+        if (waRequest::post('auth_rememberme')) {
+            $config[$domain]['rememberme'] = true;
+        } elseif (isset($config[$domain]['rememberme'])) {
+            unset($config[$domain]['rememberme']);
+        }
         
         // save auth adapters
         if (waRequest::post('auth_adapters') && waRequest::post('adapter_ids')) {

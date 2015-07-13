@@ -11,7 +11,7 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=((((n%10)==1)&&((n%100)!=11))?(0):(((((n%10)>=2)&&((n%10)<=4))&&(((n%100)<10)||((n%100)>=20)))?(1):2));\n"
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
-"X-Generator: Poedit 1.7.4\n"
+"X-Generator: Poedit 1.7.5\n"
 "Language: ru_RU\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
@@ -1383,8 +1383,24 @@ msgstr "Universal Analytics"
 
 #: /wa-apps/site/templates/actions/settings/Settings.html:177
 msgid "CDN"
-msgstr ""
+msgstr "CDN"
 
 #: /wa-apps/site/templates/actions/settings/Settings.html:180
 msgid "Enable CDN (Content Delivery Network) support for this site by entering CDN URL prefix."
 msgstr "Введите адрес CDN (Content Delivery Network), чтобы включить его автоматическую поддержку для этого сайта."
+
+#: /wa-apps/site/templates/actions/personal/PersonalSettings.html:73
+msgid "Allow \"Remember me\" option in authorization form"
+msgstr "Можно включить «Запомнить меня» в форме авторизации"
+
+#: /wa-apps/site/templates/layouts/Sidebar.html:34
+msgid "Alias (mirror site) for"
+msgstr "Зеркало (алиас) сайта"
+
+#: /wa-apps/site/templates/layouts/Sidebar.html:85
+msgid "This is a mirror site (alias) for <strong>%s</strong>."
+msgstr "Это зеркало сайта <strong>%s</strong>"
+
+#: /wa-apps/site/lib/siteCustomSignup.action.php:61
+msgid "Specified email is already in use."
+msgstr "Указанный email-адрес уже используется."

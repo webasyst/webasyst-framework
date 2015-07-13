@@ -117,11 +117,15 @@
                     </div>
 				</div>
 				{if !empty($params)}
-					{foreach $params item=p}
+					{foreach $params as $p}
+                    {if is_array($p)}
 					<div class="field">
 						<div class="name">{$p.name|escape}</div>
 						<div class="value">{$p.value}</div>
 					</div>
+                    {else}
+                        <h5 class="heading clear-both"><br>{$p}<br><br></h5>
+                    {/if}
 					{/foreach}
 				{/if}				
 				<div class="field">
@@ -135,10 +139,10 @@
 					</div>
 				</div>
                 {/if}
+                
                 {if !empty($route.redirect) || $app}
 				<div class="field">
-					<div class="value">
-
+					<div class="{if !$wa->get('reload_on_change')}value{else}wa-design-save-panel block bordered-top{/if}">
                         {if strlen($route_id)}
                         <div class="block half-padded float-right">
                 			<ul class="menu-h">

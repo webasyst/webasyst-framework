@@ -20,7 +20,7 @@ class siteDomainsSaveController extends waJsonController
         }
 
         $this->response['id'] = $domain_model->insert($data);
-        $this->log('site_add');
+        $this->logAction('site_add', $name);
         // add default routing
         $path = $this->getConfig()->getPath('config', 'routing');
         if (file_exists($path)) { 
@@ -28,12 +28,20 @@ class siteDomainsSaveController extends waJsonController
         } else {
             $routes = array();
         }
-        if (!isset($routes[$name])) {
-            $routes[$name]['site'] = array(
-                'url' => '*',
-                'app' => 'site'
-            );
+
+        if (waRequest::post('alias')) {
+            $alias_domain = waRequest::post('domain');
+            $routes[$name] = $alias_domain;
             waUtils::varExportToFile($routes, $path);
+        } else {
+            if (!isset($routes[$name])) {
+                $routes[$name]['site'] = array(
+                    'url' => '*',
+                    'app' => 'site',
+                    'locale' => wa()->getLocale()
+                );
+                waUtils::varExportToFile($routes, $path);
+            }
         }
     }
 }

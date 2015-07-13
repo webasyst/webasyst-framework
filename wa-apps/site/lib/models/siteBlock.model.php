@@ -13,18 +13,16 @@ class siteBlockModel extends waModel
      */
     public function getById($value)
     {
-        if (is_numeric($value)) {
-            if ($cache = wa()->getCache()) {
-                $cache_key = 'block_' . $value;
-                $result = $cache->get($cache_key);
-                if (!$result) {
-                    $result = parent::getById($value);
-                    if ($result) {
-                        $cache->set($cache_key, $result, 86400);
-                    }
+        if ($cache = wa()->getCache()) {
+            $cache_key = 'block_' . $value;
+            $result = $cache->get($cache_key);
+            if (!$result) {
+                $result = parent::getById($value);
+                if ($result) {
+                    $cache->set($cache_key, $result, 86400);
                 }
-                return $result;
             }
+            return $result;
         } else {
             return parent::getById($value);
         }
