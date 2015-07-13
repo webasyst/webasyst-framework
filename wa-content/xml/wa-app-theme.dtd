@@ -39,7 +39,7 @@
 
 <!ATTLIST setting
     var CDATA #REQUIRED
-    control_type (text|select|checkbox|radio|color|image|image_select) "text"
+    control_type (text|select|checkbox|radio|color|image|image_select|group_divider) "text"
 >
 <!ELEMENT value (#PCDATA)>
 <!ATTLIST value

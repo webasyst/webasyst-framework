@@ -1204,6 +1204,54 @@ class waSystem
     }
 
     /**
+     * @param $widget_id
+     * @return waWidget
+     * @throws waException
+     */
+    public function getWidget($widget_id)
+    {
+        $widget_model = new waWidgetModel();
+        $widget = $widget_model->getById($widget_id);
+        if ($widget) {
+            if ($widget['contact_id'] != self::getUser()->getId()) {
+                throw new waRightsException(_ws('Access denied'));
+            }
+            if ($this->getConfig()->getApplication() != $widget['app_id']) {
+                $path = self::getInstance($widget['app_id'])->getConfig()->getWidgetPath($widget['widget']);
+            } else {
+                $path = $this->getConfig()->getWidgetPath($widget['widget']);
+            }
+            $widget_path = $path . '/lib/config/widget.php';
+            if (file_exists($widget_path)) {
+                if ($widget['app_id'] == 'webasyst') {
+                    $class_filename = $path . '/lib/' . $widget['widget'] . '.widget.php';
+                    if (file_exists($class_filename)) {
+                        require_once($class_filename);
+                    } else {
+                        throw new waException('Widget '.$widget['widget'].' not found');
+                    }
+                    $class = $widget['widget'].'Widget';
+                } else {
+                    $class = $widget['app_id'] . ucfirst($widget['widget']) . 'Widget';
+                }
+                if (!class_exists($class)) {
+                    throw new waException('Widget class '.$class.' '.$widget['widget'].' not found');
+                }
+                $widget_config = include($widget_path);
+                $widget = $widget + $widget_config;
+                if (isset($widget['img'])) {
+                    $widget['img'] = 'wa-apps/'.$widget['app_id'].'/widgets/'.$widget['widget'].'/'.$widget['img'];
+                }
+                return new $class($widget);
+            } else {
+                throw new waException('Widget '.$widget['widget'].' not found');
+            }
+        } else {
+            throw new waException('Widget '.$widget_id.' not found');
+        }
+    }
+
+    /**
      * Trigger event with given $name from current active application.
      *
      * @param  string    $name        Event name.

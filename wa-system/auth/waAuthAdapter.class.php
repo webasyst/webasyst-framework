@@ -1,10 +1,10 @@
-<?php 
+<?php
 
 abstract class waAuthAdapter
 {
-    
+
     protected $options = array();
-    
+
     public function __construct($options = array())
     {
         if (is_array($options)) {
@@ -17,7 +17,7 @@ abstract class waAuthAdapter
     public function getControls()
     {
         return array(
-            'app_id' => 'App ID',
+            'app_id'     => 'App ID',
             'app_secret' => 'App Secret'
         );
     }
@@ -75,15 +75,25 @@ abstract class waAuthAdapter
 
     protected function post($url, $post_data)
     {
-        $ch = curl_init($url);
-        curl_setopt($ch, CURLOPT_HEADER, 0);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_POST, 1);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $post_data);
+        if (function_exists('curl_init')) {
+            $ch = curl_init($url);
+            curl_setopt($ch, CURLOPT_HEADER, 0);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($ch, CURLOPT_POST, 1);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $post_data);
 
-        $content = curl_exec($ch);
-        curl_close($ch);
+            $content = curl_exec($ch);
+            curl_close($ch);
 
-        return $content;
+            return $content;
+        }
+        $context = stream_context_create(array(
+            parse_url($url, PHP_URL_SCHEME) => array(
+                'method'  => 'POST',
+                'header'  => 'Content-type: application/x-www-form-urlencoded',
+                'content' => $post_data
+            ),
+        ));
+        return file_get_contents($url, false, $context);
     }
 }

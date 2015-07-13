@@ -5,22 +5,80 @@ class waWidgetModel extends waModel
     protected $table = 'wa_widget';
     protected $id = 'id';
 
-    public function add($name, $code)
+    public function getByContact($contact_id)
     {
-        $data = array(
-            'name' => $name,
-            'app_id' => waSystem::getInstance()->getApp(),
-            'locale' => waSystem::getInstance()->getLocale(),
-            'code' => $code,
-            'create_contact_id' => waSystem::getInstance()->getUser()->getId(),
-            'create_datetime' => date("Y-m-d H:i:s")
-        );
-        return $this->insert($data);
+        $sql = 'SELECT * FROM '.$this->table.' WHERE contact_id = i:0 ORDER BY block, sort';
+        return $this->query($sql, $contact_id)->fetchAll('id');
     }
 
-    public function getByCode($code)
+    public function add($data, $new_block = false)
     {
-        return $this->getByField('code', $code);
+        $contact_id = wa()->getUser()->getId();
+
+        if ($new_block) {
+            $sql = 'UPDATE ' . $this->table . ' SET block = block + 1 WHERE contact_id = i:0 AND block >= i:1';
+            $this->exec($sql, $contact_id, $data['block']);
+        }
+
+        $sql = 'UPDATE ' . $this->table . ' SET sort = sort + 1 WHERE contact_id = i:0 AND block = i:1 AND sort >= i:2';
+        $this->exec($sql, $contact_id, $data['block'], $data['sort']);
+        return $this->insert(array(
+            'contact_id' => $contact_id,
+            'app_id' => $data['app_id'],
+            'widget' => $data['widget'],
+            'name' => $data['name'],
+            'block' => $data['block'],
+            'sort' => $data['sort'],
+            'size' => $data['size'],
+            'create_datetime' => date('Y-m-d H:i:s')
+        ));
+    }
+
+
+    public function move($w, $block, $sort, $new_block = false)
+    {
+        if (is_numeric($w)) {
+            $w = $this->getById($w);
+        }
+
+        $count_widgets = $this->countByField(array('contact_id' => $w['contact_id'], 'block' => $w['block']));
+        $delete_block = false;
+        // remove block
+        if ($count_widgets == 1) {
+            $sql = 'UPDATE ' . $this->table . ' SET block = block - 1 WHERE contact_id = i:0 AND block > i:1';
+            $this->exec($sql, $w['contact_id'], $w['block']);
+            $delete_block = true;
+        }
+
+        // move within block
+        if (($w['block'] == $block) && !$new_block && !$delete_block) {
+            if ($w['sort'] < $sort) {
+                $sql = 'UPDATE ' . $this->table . ' SET sort = sort - 1 WHERE contact_id = i:0 AND block = i:1 AND sort > i:2 AND sort <= i:3';
+                $this->exec($sql, $w['contact_id'], $w['block'], $w['sort'], $sort);
+            } else {
+                $sql = 'UPDATE ' . $this->table . ' SET sort = sort + 1 WHERE contact_id = i:0 AND block = i:1 AND sort >= i:2 AND sort < i:3';
+                $this->exec($sql, $w['contact_id'], $w['block'], $sort, $w['sort']);
+            }
+        } else {
+            // move all next blocks
+            if ($new_block) {
+                $sql = 'UPDATE ' . $this->table . ' SET block = block + 1 WHERE contact_id = i:0 AND block >= i:1';
+                $this->exec($sql, $w['contact_id'], $block);
+            }
+            // change sort in new block
+            if (!$new_block) {
+                $sql = 'UPDATE ' . $this->table . ' SET sort = sort + 1 WHERE contact_id = i:0 AND block = i:1 AND sort >= i:2';
+                $this->exec($sql, $w['contact_id'], $block, $sort);
+            }
+            // change sort in old block
+            if (!$delete_block) {
+                $sql = 'UPDATE ' . $this->table . ' SET sort = sort - 1 WHERE contact_id = i:0 AND block = i:1 AND sort > i:2';
+                $this->exec($sql, $w['contact_id'], $w['block'], $w['sort']);
+            }
+        }
+        // update widget position
+        $this->updateById($w['id'], array('block' => $block, 'sort' => $sort));
+        return 1;
     }
 
     public function getByApp($app_id)
@@ -55,8 +113,23 @@ class waWidgetModel extends waModel
 
     public function delete($id)
     {
+        $w = $this->getById($id);
+        if (!$w) {
+            return true;
+        }
+
         $sql = "DELETE FROM wa_widget_params WHERE widget_id = i:id";
         $this->exec($sql, array('id' => $id));
+
+        $sql = 'UPDATE wa_widget SET sort = sort - 1 WHERE contact_id = i:0 AND block = i:1 AND sort > i:2';
+        $this->exec($sql, $w['contact_id'], $w['block'], $w['sort']);
+
+        $count_widgets = $this->countByField(array('contact_id' => $w['contact_id'], 'block' => $w['block']));
+        if ($count_widgets == 1) {
+            $sql = 'UPDATE ' . $this->table . ' SET block = block - 1 WHERE contact_id = i:0 AND block > i:1';
+            $this->exec($sql, $w['contact_id'], $w['block']);
+        }
+
         return $this->deleteById($id);
     }
 }

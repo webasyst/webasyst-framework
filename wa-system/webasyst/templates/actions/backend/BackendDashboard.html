@@ -1,0 +1,63 @@
+<div class="d-page-wrapper" id="d-page-wrapper">
+
+    <div class="d-content-wrapper">
+        <section class="d-activity-wrapper" id="d-activity-wrapper">
+            {* NOTIFICATIONS *}
+            {if !empty($notifications)}
+                {include file="../dashboard/DashboardAnnouncement.html" inline}
+            {/if}
+
+            {* ACTIVITY LIST *}
+            <div class="d-activity-block" id="widget-activity">
+                <header class="activity-header-wrapper block">
+                    <h4 class="activity-header heading">[`Live Stream`]</h4>
+                    <div class="activity-filter-wrapper">
+                        <ul class="menu-h dropdown">
+                            <li>
+                                <a href="javascript:void(0);" class="inline-link"><b><i>[`Everything`]</i></b><i class="icon10 darr-tiny"></i></a>
+                                <form action="" id="activity-filter">
+                                    <ul class="menu-v">
+                                        {foreach $apps as $app_id => $app}
+                                        <li>
+                                            <label><input {if in_array($app_id, $user_filters)}checked{/if} type="checkbox" name="app_id[]" value="{$app_id}">&nbsp;{$app.name}</label>
+                                        </li>
+                                        {/foreach}
+                                    </ul>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="cl"></div>
+                </header>
+                <section class="activity-list-wrapper">
+                    <div class="activity-list-block">
+                        {include file="../dashboard/DashboardActivity.html" inline}
+                    </div>
+                </section>
+            </div>
+
+            {* WIDGETS *}
+            <div class="d-widgets-list-wrapper" id="widgets-list-wrapper" data-backend-url="{$wa_backend_url|escape}">
+
+                {* ANIMATION WRAPPER *}
+                <div class="rotated-image-wrapper">
+                    <img class="rotated-image" src="/wa-content/img/loading32.gif" title="Loading">
+                </div>
+            </div>
+        </section>
+
+        {* WIDGETS *}
+        {include file="../dashboard/DashboardWidgets.html" inline}
+
+    </div>
+
+    <div class="d-settings-wrapper" id="d-settings-wrapper">
+        <div class="d-settings-container" id="d-settings-container">
+
+            <div class="d-settings-inner-container">
+                <div class="d-settings-block" id="d-settings-block"></div>
+            </div>
+
+        </div>
+    </div>
+</div>

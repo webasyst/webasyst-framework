@@ -1896,3 +1896,95 @@ msgstr ""
 #: /wa-system/design/templates/Theme.html:48
 msgid "Update is available"
 msgstr ""
+
+#: /wa-system/design/templates/Theme.html:667
+msgid "All customizations you’ve made to this file will be lost!"
+msgstr ""
+
+#: /wa-system/helper/view.php:130
+msgid "Customize dashboard"
+msgstr ""
+
+#: /wa-system/helper/view.php:131
+msgid "Done editing"
+msgstr ""
+
+#: /wa-system/webasyst/lib/actions/dashboard/webasystDashboard.actions.php:121
+msgid "Can't save plugin settings: unknown plugin id"
+msgstr ""
+
+#: /wa-system/webasyst/lib/actions/dashboard/webasystDashboard.actions.php:16
+msgid "Incorrect size"
+msgstr ""
+
+#: /wa-system/webasyst/lib/actions/dashboard/webasystDashboard.actions.php:161
+msgid "Widget not found"
+msgstr ""
+
+#: /wa-system/webasyst/lib/actions/dashboard/webasystDashboardActivity.action.php:108
+msgid "Earlier"
+msgstr ""
+
+#: /wa-system/webasyst/lib/actions/dashboard/webasystDashboardActivity.action.php:110
+msgid "7 Days"
+msgstr ""
+
+#: /wa-system/webasyst/lib/actions/dashboard/webasystDashboardActivity.action.php:112
+msgid "30 Days"
+msgstr ""
+
+#: /wa-system/webasyst/lib/actions/dashboard/webasystDashboardActivity.action.php:114
+msgid "90 Days"
+msgstr ""
+
+#: /wa-system/webasyst/lib/actions/dashboard/webasystDashboardActivity.action.php:116
+msgid "365 Days"
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/backend/BackendDashboard.html:4
+msgid "Dashboard"
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/backend/BackendDashboard.html:18
+msgid "Live Stream"
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/backend/BackendDashboard.html:22
+msgid "Everything"
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/dashboard/DashboardActivity.html:34
+msgid "Load more"
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/dashboard/DashboardSidebar.html:2
+msgid "Drag new widgets onto your dashboard and customize the layout any way you like it. Dashboards are personal, so only you will see your custom layout. Other Webasyst users have their own personal dashboards too."
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/dashboard/DashboardSidebar.html:27
+msgid "Click or drag this widget to install it on your dashboard"
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/dashboard/DashboardWidget.html:31
+msgid "Delete Widget"
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/dashboard/DashboardWidget.html:36
+msgid "Set small size"
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/dashboard/DashboardWidget.html:39
+msgid "Set medium size"
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/dashboard/DashboardWidget.html:42
+msgid "Set big size"
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/dashboard/DashboardWidget.html:48
+msgid "Show settings"
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/dashboard/DashboardWidgets.html:36
+msgid "Your dashboard is empty. Add some widgets by clicking Customize dashboard on the top."
+msgstr ""

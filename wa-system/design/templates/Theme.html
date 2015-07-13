@@ -149,6 +149,9 @@
                     <br>
                     <div class="fields form">
                         {foreach $settings as $s_var => $s}
+                        {if $s.control_type == 'group_divider'}
+                        <h5 class="heading clear-both"><br>{$s.name}</h5>
+                        {else}
                         <div class="field">
                             <div class="name">{$s.name}</div>
                             <div class="value">
@@ -170,6 +173,9 @@
                                 {elseif $s.control_type == 'checkbox'}
                                     <input type="hidden" name="{if !empty($s.parent)}parent_{/if}settings[{$s_var}]" value="">
                                     <input type="checkbox" name="{if !empty($s.parent)}parent_{/if}settings[{$s_var}]" {if $s.value}checked{/if} value="1">
+                                    {if !empty($s.description)}
+                                    <div class="hint">{$s.description}</div>
+                                    {/if}
                                 {elseif $s.control_type == 'image_select'}
                                     <ul class="wa-theme-image-select">
                                         {if !empty($s.parent)}
@@ -182,6 +188,9 @@
                                         {/foreach}
                                     </ul>
                                     <input type="hidden" name="{if !empty($s.parent)}parent_{/if}settings[{$s_var}]" value="{$s.value}">
+                                    {if !empty($s.description)}
+                                    <div class="hint">{$s.description}</div>
+                                    {/if}
                                 {elseif $s.control_type == 'image'}
                                     <input type="hidden" name="{if !empty($s.parent)}parent_{/if}settings[{$s_var}]" value="{ifset($s.value)}">
                                     <input type="file" name="{if !empty($s.parent)}parent_{/if}image[{$s_var}]">
@@ -197,6 +206,9 @@
                                             <a class="small delete-image" href="#">[s`Delete`]</a>
                                         </div>
                                     {/if}
+                                    {if !empty($s.description)}
+                                        <div class="hint">{$s.description}</div>
+                                    {/if}
                                 {else}
                                     {if !$s.value || strlen($s.value) <= 50}
                                     <input class="flexible" id="flex-settings-{$s@index}" type="text" name="{if !empty($s.parent)}parent_{/if}settings[{$s_var}]" value="{$s.value|escape}">
@@ -206,6 +218,7 @@
                                 {/if}
                             </div>                
                         </div>
+                        {/if}
                         {/foreach}
                         
                         <div class="wa-design-save-panel block bordered-top">
@@ -638,6 +651,7 @@
         //handler();
 
     });
+
     });
 
     $(".theme-update").on('click', function () {
@@ -645,8 +659,21 @@
             $('#wa-theme-update-dialog').waDialog({
                 url: '?module=design&action=themeUpdate&theme={$theme.id}',
                 disableButtonsOnSubmit: true,
+                onLoad: function () {
+                    $(this).on('change', 'label.bold input:checkbox', function () {
+                        var l = $(this).parent();
+                        if ($(this).is(':checked')) {
+                            if (!l.find('span.hint').length) {
+                                l.append('<span class="hint"> [s`All customizations you’ve made to this file will be lost!`]</span>');
+                            }
+                        } else {
+                            l.find('span.hint').remove();
+                        }
+                    });
+
+                },
                 onSubmit: function () {
-                    if (confirm('[s`All selected files will be overwritten with their newest versions from the original theme. In case of incompatibility between your customizations and newer theme templates, CSS, and images, your site looks may change unexpectedly. There will be no way to automatically rollback this update. Update?`]')) {
+                    if (confirm({json_encode(mb_strtoupper('[s`All selected files will be overwritten with their newest versions from the original theme. In case of incompatibility between your customizations and newer theme templates, CSS, and images, your site looks may change unexpectedly. There will be no way to automatically rollback this update. Update?`]'))})) {
                         var data = $(this).serialize();
                         $.post("?module=design&action=themeUpdate&theme={$theme.id}", data, function (response) {
                             if (response.status == 'ok') {

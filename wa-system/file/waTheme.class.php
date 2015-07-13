@@ -1561,6 +1561,9 @@ HTACCESS;
             $this->settings = $this->info['settings'];
             foreach ($this->settings as $var => &$s) {
                 $s['name'] = isset($s['name']) ? self::prepareField($s['name']) : $var;
+                if (isset($s['description'])) {
+                    $s['description'] = self::prepareField($s['description']);
+                }
                 if (isset($s['options'])) {
                     foreach ($s['options'] as &$o) {
                         if ($s['control_type'] == 'radio') {
@@ -1817,6 +1820,7 @@ HTACCESS;
      */
     public static function extract($source_path)
     {
+        /** @var string[] $white_list */
         static $white_list = array(
             'js',
             'css',
@@ -1836,6 +1840,7 @@ HTACCESS;
             'eot',
             'otf',
             'woff',
+            'woff2',
             '',
         );
 

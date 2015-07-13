@@ -124,7 +124,7 @@ abstract class waView
     protected function getStaticUrl($url)
     {
         if (!empty($this->options['cdn'])) {
-            return trim($this->options['cdn'], '/').$url;
+            return rtrim($this->options['cdn'], '/').$url;
         }
         return $url;
     }
@@ -187,6 +187,7 @@ abstract class waView
         $this->assign('wa_active_theme_path', $theme->path);
         $this->assign('wa_active_theme_url', $this->getStaticUrl($theme->url));
         $theme_settings = $theme->getSettings(true);
+        $theme_settings_config = $theme->getSettings();
 
         $locales = $theme->getLocales();
 
@@ -207,6 +208,12 @@ abstract class waView
             $this->assign('wa_parent_theme_path', $parent_theme->path);
             if ($parent_settings = $parent_theme->getSettings(true)) {
                 $theme_settings = $theme_settings + $parent_settings;
+                foreach ($parent_theme->getSettings() as $k => $v) {
+                    if (!isset($theme_settings_config[$k])) {
+                        $v['parent'] = 1;
+                        $theme_settings_config[$k] = $v;
+                    }
+                }
             }
             if ($parent_theme->getLocales()) {
                 $locales += $parent_theme->getLocales();
@@ -215,6 +222,7 @@ abstract class waView
         $this->assign('wa_theme_version', $version);
         waLocale::setStrings($locales);
         $this->assign('theme_settings', $theme_settings);
+        $this->assign('theme_settings_config', $theme_settings_config);
         $this->assign('wa_theme_url', $this->getStaticUrl($theme->url));
         $this->setTemplateDir($theme->path);
         return file_exists($theme->path.'/'.$template);

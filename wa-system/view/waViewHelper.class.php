@@ -140,7 +140,7 @@ class waViewHelper
                 try {
                     $action = new $class_name();
                     wa()->getView()->assign('my_nav_selected', $app_id == $old_app ? $my_nav_selected : '');
-                    $result[$app_id] = $action->display();
+                    $result[$app_id] = $action->display(false);
                 } catch (Exception $e) {
                     unset($result[$app_id]);
                 }
@@ -184,16 +184,23 @@ class waViewHelper
         return null;
     }
 
-    public function headJs()
+    public function head()
     {
         $domain = wa()->getRouting()->getDomain(null, true);
         $domain_config_path = $this->getConfig()->getConfigPath('domains/'.$domain.'.php', true, 'site');
+        $html = '';
+        $og = wa()->getResponse()->getMeta('og');
+        if ($og) {
+            foreach ($og as $k => $v) {
+                $html .= '<meta property="og:'.htmlspecialchars($k).'" content="'.htmlspecialchars($v).'" />'.PHP_EOL;
+            }
+        }
+
         if (file_exists($domain_config_path)) {
             /**
              * @var $domain_config array
              */
             $domain_config = include($domain_config_path);
-            $html = '';
             if (!empty($domain_config['head_js'])) {
                 $html .= $domain_config['head_js'];
             }
@@ -232,9 +239,13 @@ HTML;
 HTML;
                 }
             }
-            return $html;
         }
-        return '';
+        return $html;
+    }
+
+    public function headJs()
+    {
+        return $this->head();
     }
 
 
@@ -683,7 +694,7 @@ HTML;
                 $field_name = ucfirst($field_id);
             }
         }
-        return '<div class="wa-form">'.
+        $html = '<div class="wa-form">'.
             ($form ? '<form action="'.($form === 2 ? $this->loginUrl() : '').'" method="post">' : '').'
                 <div class="wa-field wa-field-'.$field_id.'">
                     <div class="wa-name">'.$field_name.'</div>
@@ -697,8 +708,18 @@ HTML;
                         <input'.($error ? ' class="wa-error"' : '').' type="password" name="password"'.($placeholders ? ' placeholder="'._ws('Password').'"' : '').'>'.
                         ($error ? '<em class="wa-error-msg">'.$error.'</em>' : '').'
                     </div>
+                </div>';
+
+        $auth_config = wa()->getAuthConfig();
+        if (!empty($auth_config['rememberme'])) {
+            $html .= '<div class="wa-field wa-field-remember-me">
+                <div class="wa-value">
+                    <label><input name="remember" type="checkbox" '.(waRequest::post('remember') ? 'checked="checked"' : '').' value="1"> '._ws('Remember me').'</label>
                 </div>
-                <div class="wa-field">
+            </div>';
+        }
+
+        $html .= '<div class="wa-field">
                     <div class="wa-value wa-submit">
                         <input type="hidden" name="wa_auth_login" value="1">
                         <input type="submit" value="'._ws('Sign In').'">
@@ -710,6 +731,7 @@ HTML;
                 </div>'.(waRequest::param('secure') ? $this->csrf() : '').
             ($form ? '</form>' : '').'
         </div>';
+        return $html;
     }
 
     public function forgotPasswordForm($error = '', $placeholders = false)

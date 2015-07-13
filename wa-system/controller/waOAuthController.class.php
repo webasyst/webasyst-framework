@@ -33,6 +33,12 @@ class waOAuthController extends waViewController
         $this->executeAction(new webasystOAuthAction());
     }
 
+    protected function displayError($error)
+    {
+        echo $error;
+        exit;
+    }
+
     /**
      * @param array $data
      * @return waContact
@@ -134,7 +140,17 @@ class waOAuthController extends waViewController
         } else {
             $photo_url = false;
         }
-        $contact->save($data);
+        $errors = $contact->save($data);
+        if ($errors) {
+            $error = '';
+            foreach ($errors as $field => $field_errors) {
+                $f = waContactFields::get($field);
+                if ($f) {
+                    $error = '<b>'.$f->getName().'</b>: '.implode(' ', $field_errors);
+                }
+            }
+            $this->displayError($error);
+        }
         $contact_id = $contact->getId();
 
         if ($contact_id && $photo_url) {

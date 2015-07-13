@@ -293,7 +293,7 @@ class waContactFields
             return;
         }
         $fields = include($file);
-        if (!$fields) {
+        if (!$fields || !is_array($fields)) {
             return;
         }
         foreach ($fields as $k => $f) {
@@ -311,14 +311,14 @@ class waContactFields
             throw new waException('Unable to find field '.$id.' in '.$file);
         }
         unset($fields[$k]);
-        
+
         $fields = array_values($fields);
         foreach ($fields as $field) {
             if ($field instanceof waContactField) {
                 $field->prepareVarExport();
             }
         }
-        
+
         waUtils::varExportToFile(array_values($fields), $file, true);
         unset(self::$fieldStatus[$id], self::$personDisabled[$id], self::$companyDisabled[$id]);
     }
@@ -345,7 +345,8 @@ class waContactFields
         $file = wa()->getConfig()->getConfigPath('custom_fields.php', true, 'contacts');
         if (is_readable($file)) {
             $fields = include($file);
-        } else {
+        }
+        if (empty($fields) || !is_array($fields)) {
             $fields = array();
         }
         $changed = false;
@@ -442,6 +443,9 @@ class waContactFields
         }
 
         $old = include($fileRead);
+        if (empty($old) || !is_array($old)) {
+            $old = array();
+        }
         if ($position !== null) {
             $position = (int) $position;
         }
@@ -520,6 +524,9 @@ class waContactFields
         }
         $contactOrder = include($file);
         unset($contactOrder[$id]);
+        if (empty($contactOrder) || !is_array($contactOrder)) {
+            $contactOrder = array();
+        }
         waUtils::varExportToFile($contactOrder, $file, true);
     }
 
@@ -593,7 +600,11 @@ class waContactFields
         // Load custom fields
         $file = wa()->getConfig()->getConfigPath('custom_fields.php', true, 'contacts');
         if (is_readable($file)) {
-            foreach(include($file) as $f) {
+            $cfg = include($file);
+            if (empty($cfg) || !is_array($cfg)) {
+                $cfg = array();
+            }
+            foreach($cfg as $f) {
                 /**
                  * @var waContactField $f
                  */

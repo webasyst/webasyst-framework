@@ -251,6 +251,14 @@ class waPageActions extends waActions
             $params = $this->getPageModel()->getParams($id);
         }
 
+        $og_params = array();
+        foreach ($params as $k => $v) {
+            if (substr($k, 0, 3) == 'og_') {
+                $og_params[substr($k, 3)] = $v;
+                unset($params[$k]);
+            }
+        }
+
         $main_params = array();
         foreach ($vars as $v => $t) {
             if (isset($params[$v])) {
@@ -260,10 +268,12 @@ class waPageActions extends waActions
                 $main_params[$v] = '';
             }
         }
+
         return array(
             'vars' => $vars,
             'params' => $main_params,
             'other_params' => $params,
+            'og_params' => $og_params
         );
     }
 
@@ -411,7 +421,12 @@ class waPageActions extends waActions
                 }
             }
         }
-
+        $og = waRequest::post('og');
+        foreach ($og as $k => $v) {
+            if ($v) {
+                $params['og_'.$k] = $v;
+            }
+        }
         $this->getPageModel()->setParams($id, $params);
     }
 

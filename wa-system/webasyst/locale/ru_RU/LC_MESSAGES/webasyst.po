@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WebAsyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2015-04-10 12:27+0300\n"
+"PO-Revision-Date: 2015-07-13 12:08+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -12,7 +12,7 @@ msgstr ""
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
 "Language: ru_RU\n"
-"X-Generator: Poedit 1.7.4\n"
+"X-Generator: Poedit 1.7.5\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
 
@@ -4019,3 +4019,95 @@ msgstr "Все выбранные файлы будут перезаписаны
 #: /wa-system/design/templates/Theme.html:48
 msgid "Update is available"
 msgstr "Доступно обновление"
+
+#: /wa-system/design/templates/Theme.html:667
+msgid "All customizations you’ve made to this file will be lost!"
+msgstr "Все изменения, которые вы вносили в этот файл, будут потеряны."
+
+#: /wa-system/helper/view.php:130
+msgid "Customize dashboard"
+msgstr "Настроить виджеты"
+
+#: /wa-system/helper/view.php:131
+msgid "Done editing"
+msgstr "Готово"
+
+#: /wa-system/webasyst/lib/actions/dashboard/webasystDashboard.actions.php:121
+msgid "Can't save plugin settings: unknown plugin id"
+msgstr "Ошибка сохранения настроек плагина: неизвестный плагин"
+
+#: /wa-system/webasyst/lib/actions/dashboard/webasystDashboard.actions.php:16
+msgid "Incorrect size"
+msgstr "Недопустимый размер"
+
+#: /wa-system/webasyst/lib/actions/dashboard/webasystDashboard.actions.php:161
+msgid "Widget not found"
+msgstr "Виджет не найден"
+
+#: /wa-system/webasyst/lib/actions/dashboard/webasystDashboardActivity.action.php:108
+msgid "Earlier"
+msgstr "Ранее"
+
+#: /wa-system/webasyst/lib/actions/dashboard/webasystDashboardActivity.action.php:110
+msgid "7 Days"
+msgstr "7 дней"
+
+#: /wa-system/webasyst/lib/actions/dashboard/webasystDashboardActivity.action.php:112
+msgid "30 Days"
+msgstr "30 дней"
+
+#: /wa-system/webasyst/lib/actions/dashboard/webasystDashboardActivity.action.php:114
+msgid "90 Days"
+msgstr "90 дней"
+
+#: /wa-system/webasyst/lib/actions/dashboard/webasystDashboardActivity.action.php:116
+msgid "365 Days"
+msgstr "365 дней"
+
+#: /wa-system/webasyst/templates/actions/backend/BackendDashboard.html:4
+msgid "Dashboard"
+msgstr "Панель управления"
+
+#: /wa-system/webasyst/templates/actions/backend/BackendDashboard.html:18
+msgid "Live Stream"
+msgstr "Лента событий"
+
+#: /wa-system/webasyst/templates/actions/backend/BackendDashboard.html:22
+msgid "Everything"
+msgstr "Все события"
+
+#: /wa-system/webasyst/templates/actions/dashboard/DashboardActivity.html:34
+msgid "Load more"
+msgstr "Показать еще"
+
+#: /wa-system/webasyst/templates/actions/dashboard/DashboardSidebar.html:2
+msgid "Drag new widgets onto your dashboard and customize the layout any way you like it. Dashboards are personal, so only you will see your custom layout. Other Webasyst users have their own personal dashboards too."
+msgstr "Перетащите виджеты на вашу панель управления и расположите их так, как вам удобно. Расположение виджетов у каждого пользователя Webasyst свое."
+
+#: /wa-system/webasyst/templates/actions/dashboard/DashboardSidebar.html:27
+msgid "Click or drag this widget to install it on your dashboard"
+msgstr "Щелкните по виджету или перетащите его на панель управления"
+
+#: /wa-system/webasyst/templates/actions/dashboard/DashboardWidget.html:31
+msgid "Delete Widget"
+msgstr "Удалить виджет"
+
+#: /wa-system/webasyst/templates/actions/dashboard/DashboardWidget.html:36
+msgid "Set small size"
+msgstr "Маленький размер"
+
+#: /wa-system/webasyst/templates/actions/dashboard/DashboardWidget.html:39
+msgid "Set medium size"
+msgstr "Средний размер"
+
+#: /wa-system/webasyst/templates/actions/dashboard/DashboardWidget.html:42
+msgid "Set big size"
+msgstr "Большой размер"
+
+#: /wa-system/webasyst/templates/actions/dashboard/DashboardWidget.html:48
+msgid "Show settings"
+msgstr "Настройки"
+
+#: /wa-system/webasyst/templates/actions/dashboard/DashboardWidgets.html:36
+msgid "Your dashboard is empty. Add some widgets by clicking Customize dashboard on the top."
+msgstr "Ваша панель управления пуста. Добавьте виджеты на панель, щелкнув по ссылке «Настроить виджеты» в левом верхнем углу."
