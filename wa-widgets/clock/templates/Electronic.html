@@ -1,0 +1,47 @@
+{strip}
+<div class="electronic-clock-wrapper {if !empty($town)}has-town{/if}">
+    <div class="electronic-clock-block">
+        <h1 class="time-wrapper"></h1>
+        <h4 class="day-wrapper"></h4>
+        <h4>
+            <span class="date-wrapper"></span>
+            {if !empty($town)}
+                ,
+                <span class="town-wrapper">{$town|escape}</span>
+            {/if}
+        </h4>
+    </div>
+</div>
+{/strip}
+
+{* Init Controller *}
+<script>{include file="../js/clockController.js" inline}</script>
+
+{* Initialize *}
+<script>
+    var is_loaded = (typeof ElectronicClock !== "undefined"),
+            js_href = "{$widget_url}js/electronicClock.js?v={$wa->version()}",
+            widget = DashboardWidgets["{$widget_id}"],
+            options = {
+                widget_id: "{$widget_id}",
+                widget_name: "{$widget_name}",
+                widget_app: "{$widget_app}",
+                source: "{$source}",
+                offset: {$offset},
+                size: "{$size}",
+                lang: "{$lang}"
+            };
+
+    if (is_loaded) {
+        widget.clock = new ElectronicClock(options);
+
+    } else {
+
+        $.getScript(js_href, function() {
+            widget.clock = new ElectronicClock(options);
+        });
+    }
+</script>
+
+{* CSS *}
+<style>{include file="../css/electronicClock.css" inline}</style>
