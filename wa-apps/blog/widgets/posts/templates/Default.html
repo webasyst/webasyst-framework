@@ -1,0 +1,45 @@
+<style>
+    
+    .b-post-title { margin-top: 5px; line-height: 1em; }
+    .b-post-preview { text-overflow: ellipsis; }
+    .b-empty-stream { margin: 35px 20px; font-weight: normal; }
+
+    .b-post-background { position: absolute; width: 100%; height: 100%; }
+    .b-white { background: #fff; }
+    .b-gray { background: #f7f7f7; }
+    .b-green { background: #f3ffe3; }
+    .b-blue { background: #eeffff; }
+    .b-purple { background: #fcf3ff; }
+    .b-red { background: #fff1f1; }
+    .b-yellow { background: #ffffe3; }
+    .b-yellow .highlighted { background: #ff9; }
+    
+    .widget-2x1 .b-empty-stream { margin: 45px 55px; }
+    .widget-2x2 .b-empty-stream { margin: 105px 35px; }
+</style>
+
+{if count($posts)}
+    {$post = $posts|@current}
+    <div class="b-post-background {$post.color}">
+        <div class="block">
+        
+                <h6 class="heading small">
+                    {if strtotime($post.datetime) < $smarty.now - 86400*2}
+                        {$post.datetime|wa_datetime:"humandate"}
+                    {else}
+                        {$post.datetime|wa_datetime:"humandatetime"}
+                    {/if}
+                </h6>
+                <h3 class="b-post-title"><a href="{$wa_backend_url}blog/?module=post&id={$post.id}" class="bold">{$post.title|escape}</a></h3>
+                <p class="small b-post-preview">
+                    <!-- <b>{$post.color}</b> -->
+                    {strip_tags($post.text)}
+                </p>
+        
+        </div>
+    </div>
+{else}
+    <div class="block">
+        <h5 class="align-center hint b-empty-stream">[`There are no posts in your blog yet.`]</h5>
+    </div>
+{/if}
