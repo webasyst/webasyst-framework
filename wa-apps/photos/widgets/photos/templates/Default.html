@@ -1,13 +1,15 @@
 {strip}
 
 <div class="photo-widget-wrapper">
-    {foreach array_rand($photos, $photo_on_widget) as $i}
-        {$photo_image_href = $photos[$i].thumb.url}
-        {$photo_link_href = "{$wa_backend_url}photos/#/photo/{$photos[$i].id}"}
-        <div class="photo-item-wrapper">
-            <a class="image-wrapper is-visible" href="{$photo_link_href}" style="background-image: url({$photo_image_href});"></a>
-        </div>
-    {/foreach}
+    {if $photos}
+        {foreach array_rand($photos, $photo_on_widget) as $i}
+            {$photo_image_href = $photos[$i].thumb.url}
+            {$photo_link_href = "{$wa_backend_url}photos/#/photo/{$photos[$i].id}"}
+            <div class="photo-item-wrapper">
+                <a class="image-wrapper is-visible" href="{$photo_link_href}" style="background-image: url({$photo_image_href});"></a>
+            </div>
+        {/foreach}
+    {/if}
 </div>
 
 {* Initialize *}
