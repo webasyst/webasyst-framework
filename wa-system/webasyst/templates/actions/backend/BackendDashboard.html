@@ -1,3 +1,6 @@
+{* LOAD RESOURCES *}
+<link rel="stylesheet" href="{$wa_url}wa-content/css/dashboard/dashboard.css?v={$wa->version()}">
+
 <div class="d-page-wrapper" id="d-page-wrapper">
 
     <div class="d-content-wrapper">
@@ -10,18 +13,31 @@
             {* ACTIVITY LIST *}
             <div class="d-activity-block" id="widget-activity">
                 <header class="activity-header-wrapper block">
-                    <h4 class="activity-header heading">[`Live Stream`]</h4>
+                    <h4 class="activity-header heading">[`Live Stream`]<i class="icon16 loading" style="display: none;"></i></h4>
                     <div class="activity-filter-wrapper">
                         <ul class="menu-h dropdown">
                             <li>
-                                <a href="javascript:void(0);" class="inline-link"><b><i>[`Everything`]</i></b><i class="icon10 darr-tiny"></i></a>
+                                {$checked = ""}
+                                {$is_not_full = false}
+                                {$check_count = 0}
+                                {capture assign="select_options"}
+                                    {foreach $apps as $app_id => $app}
+                                        {if in_array($app_id, $user_filters) || !$user_filters}
+                                            {$checked = "checked"}
+                                            {$check_count = $check_count + 1}
+                                        {else}
+                                            {$checked = ""}
+                                            {$is_not_full = true}
+                                        {/if}
+                                        <li>
+                                            <label><input {$checked} type="checkbox" name="app_id[]" value="{$app_id}">&nbsp;{$app.name}</label>
+                                        </li>
+                                    {/foreach}
+                                {/capture}
+                                <a href="javascript:void(0);" class="inline-link"><b><i id="activity-select-text" data-full-text="[`All apps`]" data-not-full-text="[`Selected Apps`]">{if $is_not_full}[`Selected Apps`] ({$check_count}){else}[`All apps`]{/if}</i></b><i class="icon10 darr-tiny"></i></a>
                                 <form action="" id="activity-filter">
                                     <ul class="menu-v">
-                                        {foreach $apps as $app_id => $app}
-                                        <li>
-                                            <label><input {if in_array($app_id, $user_filters)}checked{/if} type="checkbox" name="app_id[]" value="{$app_id}">&nbsp;{$app.name}</label>
-                                        </li>
-                                        {/foreach}
+                                        {$select_options|strip}
                                     </ul>
                                 </form>
                             </li>
@@ -30,8 +46,12 @@
                     <div class="cl"></div>
                 </header>
                 <section class="activity-list-wrapper">
-                    <div class="activity-list-block">
-                        {include file="../dashboard/DashboardActivity.html" inline}
+                    <div class="activity-list-block" data-empty-text="[`No events in the live stream yet.`]">
+                        {if !empty($activity)}
+                            {include file="../dashboard/DashboardActivity.html" inline}
+                        {else}
+                            <div class="empty-activity-text">[`No events in the live stream yet.`]</div>
+                        {/if}
                     </div>
                 </section>
             </div>

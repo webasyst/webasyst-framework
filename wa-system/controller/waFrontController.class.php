@@ -62,6 +62,11 @@ class waFrontController
     public function executeWidget($widget, $action = null)
     {
         $widget = $this->system->getWidget(waRequest::get('id'));
+        $app_id = $widget->getInfo('app_id');
+        if ($app_id != 'webasyst') {
+            waSystem::pushActivePlugin($widget->getInfo('widget'), $app_id.'_widget');
+        }
+        $widget->loadLocale($app_id == 'webasyst');
         return $widget->run($action);
     }
 

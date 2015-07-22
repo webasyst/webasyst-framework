@@ -117,42 +117,42 @@
                         </div>
                         {/foreach}
                         <div class="field">
-                            <div class="name">[`Social sharing`]</div>
+                            <div class="name">[s`Social sharing`]</div>
                             <div class="value no-shift">
-                                <label><input class="og-checkbox" type="checkbox" {if empty($og_params)}checked{/if}> [`Use these meta tags for social sharing too`]</label>
+                                <label><input class="og-checkbox" type="checkbox" {if empty($og_params)}checked{/if}> [s`Use these meta tags for social sharing too`]</label>
                             </div>
                         </div>
                     </div>
 
                     <div class="field-group og-group" {if empty($og_params)}style="display: none;"{/if}>
                         <div class="field">
-                            <div class="name">[`Social sharing title`] <span class="hint">og:title</span></div>
+                            <div class="name">[s`Social sharing title`] <span class="hint">og:title</span></div>
                             <div class="value">
                                 <input name="og[title]" class="long bold" value="{ifset($og_params.title, '')|escape}" {if empty($og_params)}disabled{/if}>
                             </div>
                         </div>
                         <div class="field">
-                            <div class="name">[`Social sharing image URL`] <span class="hint">og:image</span></div>
+                            <div class="name">[s`Social sharing image URL`] <span class="hint">og:image</span></div>
                             <div class="value">
                                 <input name="og[image]" class="long" value="{ifset($og_params.image, '')|escape}" {if empty($og_params)}disabled{/if}>
                                 <br>
-                                <span class="hint">[`If not set, a social network will attempt to determine preview image on it’s own.`]</span>
+                                <span class="hint">[s`If not set, a social network will attempt to determine preview image on it’s own.`]</span>
                             </div>
                         </div>
                         <div class="field">
-                            <div class="name">[`Social sharing video URL`] <span class="hint">og:video</span></div>
+                            <div class="name">[s`Social sharing video URL`] <span class="hint">og:video</span></div>
                             <div class="value">
                                 <input name="og[video]" class="long" value="{ifset($og_params.video, '')|escape}" {if empty($og_params)}disabled{/if}>
                             </div>
                         </div>
                         <div class="field">
-                            <div class="name">[`Social sharing description`] <span class="hint">og:description</span></div>
+                            <div class="name">[s`Social sharing description`] <span class="hint">og:description</span></div>
                             <div class="value">
                                 <textarea name="og[description]"{if empty($og_params)}disabled{/if}>{ifset($og_params.description, '')|escape}</textarea>
                             </div>
                         </div>
                         <div class="field">
-                            <div class="name">[`Social sharing type`] <span class="hint">og:type</span></div>
+                            <div class="name">[s`Social sharing type`] <span class="hint">og:type</span></div>
                             <div class="value">
                                 <input name="og[type]" placeholder="" value="{ifset($og_params.type, '')}" {if empty($og_params)}disabled{/if}>
                             </div>
@@ -160,7 +160,7 @@
 
                         <div class="field">
                             <div class="value">
-                                <p class="hint">[`Please refer to <a href="http://ogp.me" target="_blank">Open Graph</a> protocol site for more information on social sharing meta tags and available values.`]</p>
+                                <span class="hint">[s`Please refer to <a href="http://ogp.me" target="_blank">Open Graph</a> protocol site for more information on social sharing meta tags and available values.`]</span>
                             </div>
                         </div>
                     </div>

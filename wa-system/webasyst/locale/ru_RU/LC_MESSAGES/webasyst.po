@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WebAsyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2015-07-13 12:08+0300\n"
+"PO-Revision-Date: 2015-07-21 11:32+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -12,7 +12,7 @@ msgstr ""
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
 "Language: ru_RU\n"
-"X-Generator: Poedit 1.7.5\n"
+"X-Generator: Poedit 1.8.2\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
 
@@ -4111,3 +4111,30 @@ msgstr "Настройки"
 #: /wa-system/webasyst/templates/actions/dashboard/DashboardWidgets.html:36
 msgid "Your dashboard is empty. Add some widgets by clicking Customize dashboard on the top."
 msgstr "Ваша панель управления пуста. Добавьте виджеты на панель, щелкнув по ссылке «Настроить виджеты» в левом верхнем углу."
+
+msgid "Social sharing"
+msgstr "Соцсети"
+
+msgid "Use these meta tags and default product image for social sharing too"
+msgstr "Для соцсетей использовать эти же заголовки и описания"
+
+msgid "Social sharing title"
+msgstr "Заголовок для соцсетей"
+
+msgid "Social sharing image URL"
+msgstr "URL изображения для соцсетей"
+
+msgid "If not set, a social network will attempt to determine preview image on it’s own."
+msgstr "Если адрес не указан явно, соцсеть автоматически выберет одно из изображений на странице"
+
+msgid "Social sharing video URL"
+msgstr "URL видео для соцсетей"
+
+msgid "Social sharing description"
+msgstr "Описание для соцсетей"
+
+msgid "Social sharing type"
+msgstr "Тип страницы для соцсетей"
+
+msgid "Please refer to <a href=\"http://ogp.me\" target=\"_blank\">Open Graph</a> protocol site for more information on social sharing meta tags and available values."
+msgstr "Подробная информация о параметрах для соцсетей и их возможных значениях опубликована на сайте протокола <a href=\"http://ogp.me\" target=\"_blank\">Open Graph</a>."

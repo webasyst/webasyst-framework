@@ -664,7 +664,7 @@ class waAppConfig extends SystemConfig
                     }
                     $widget_info = include($widget_config);
                     $widget_info['has_settings'] = file_exists($this->getWidgetPath($widget_id)."/lib/config/settings.php");
-                    waSystem::pushActivePlugin($widget_id, $this->application);
+                    waSystem::pushActivePlugin($widget_id, $this->application == 'webasyst' ? 'widget' : $this->application.'_widget');
                     // Load widget locale if it exists
                     $locale_path = wa()->getAppPath('widgets/'.$widget_id.'/locale', $this->application);
                     if (is_dir($locale_path)) {

@@ -100,6 +100,8 @@ class webasystDashboardActions extends waActions
         $w = $this->getWidget($id);
 
         $widget = waSystem::getInstance()->getWidget($id);
+        $widget->loadLocale(true);
+
         $namespace = 'widget_'.$id;
 
         $params = array();

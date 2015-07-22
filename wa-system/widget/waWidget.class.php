@@ -34,9 +34,19 @@ class waWidget extends waActions
         $this->path = wa($this->app_id)->getConfig()->getWidgetPath($this->widget);
     }
 
-    public function getInfo()
+    public function getInfo($name = null)
     {
-        return $this->info;
+        return $name ? ifset($this->info[$name]) : $this->info;
+    }
+
+    public function loadLocale($set_current = false)
+    {
+        $locale_path = $this->path.'/locale';
+        $domain = ($this->app_id == 'webasyst' ? '' : $this->app_id.'_').'widget_'.$this->widget;
+
+        if (file_exists($locale_path)) {
+            waLocale::load(wa()->getLocale(), $locale_path, $domain, $set_current);
+        }
     }
 
     /**

@@ -108,23 +108,22 @@ body.is-highlighted #wa-applist {
   overflow: hidden;
 }
 .d-page-wrapper .d-settings-wrapper .d-settings-container .d-settings-inner-container .d-settings-block {
-  padding: 20px;
+  padding: 20px 20px 0;
 }
 .d-page-wrapper .d-settings-wrapper .d-settings-container .d-settings-inner-container .d-settings-block .header-block {
   margin: 0 0 1rem 0;
 }
-.d-page-wrapper .d-settings-wrapper .d-settings-container .d-settings-inner-container .d-settings-block .fields-block {
-  width: 100%;
-}
-.d-page-wrapper .d-settings-wrapper .d-settings-container .d-settings-inner-container .d-settings-block .buttons-block {
-  padding: 10px;
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-}
 .d-page-wrapper .d-settings-wrapper .d-settings-container .d-settings-inner-container .d-settings-block .wa-form {
-  margin-bottom: 40px;
+  overflow: visible;
+}
+.d-page-wrapper .d-settings-wrapper .d-settings-container .d-settings-inner-container .d-settings-block .wa-form .fields {
+  float: none;
+  height: 200px;
+  overflow: auto;
+}
+.d-page-wrapper .d-settings-wrapper .d-settings-container .d-settings-inner-container .d-settings-block .wa-form .buttons-block {
+  padding: 10px;
+  margin: 0 -20px;
 }
 .d-page-wrapper .d-content-wrapper {
   display: table;
@@ -202,7 +201,6 @@ body.is-highlighted #wa-applist {
   border-radius: 3px;
   -webkit-box-shadow: 0 1px 3px rgba(0,0,0,0.13);
   box-shadow: 0 1px 3px rgba(0,0,0,0.13);
-  overflow: hidden;
 }
 .d-page-wrapper .d-content-wrapper .d-activity-wrapper .d-activity-block:first-child {
   margin-top: 0;
@@ -223,6 +221,12 @@ body.is-highlighted #wa-applist {
   font-weight: bold;
   font-size: 1.1em;
   line-height: 2rem;
+}
+.d-page-wrapper .d-content-wrapper .d-activity-wrapper .d-activity-block .activity-header-wrapper .activity-header .loading {
+  position: relative;
+  top: 0.15rem;
+  margin: 0 0 0 0.5rem;
+  vertical-align: baseline;
 }
 .d-page-wrapper .d-content-wrapper .d-activity-wrapper .d-activity-block .activity-header-wrapper .activity-filter-wrapper {
   float: right;
@@ -250,8 +254,14 @@ body.is-highlighted #wa-applist {
   margin: 0;
   top: 1px;
 }
+.d-page-wrapper .d-content-wrapper .d-activity-wrapper .d-activity-block .activity-list-wrapper .empty-activity-text {
+  color: #aaa;
+  text-align: center;
+  padding: 118px 35px 0;
+  font-size: 1.4rem;
+}
 .d-page-wrapper .d-content-wrapper .d-activity-wrapper .d-activity-block .activity-list-wrapper .activity-list-block {
-  min-height: 400px;
+  min-height: 262px;
 }
 .d-page-wrapper .d-content-wrapper .d-activity-wrapper .d-activity-block .activity-list-wrapper .activity-list-block .activity-divider {
   padding: 0.5rem;
@@ -487,6 +497,8 @@ body.is-highlighted #wa-applist {
   text-align: center;
   font-weight: normal;
   color: #aaa;
+  font-size: 1rem;
+  line-height: 1.25;
 }
 .d-page-wrapper .d-content-wrapper .d-widgets-wrapper .d-widgets-block .empty-widgets-wrapper.is-shown {
   display: block;
@@ -755,6 +767,12 @@ body.is-highlighted #wa-applist {
   height: 0;
   cursor: move;
   background: rgba(255,255,255,0.85);
+  background: -moz-linear-gradient(top, rgba(255,255,255,0.85) 0%, rgba(255,255,255,0.85) 50%, rgba(255,255,255,0.95) 75%, #fff 100%);
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, rgba(255,255,255,0.85)), color-stop(50%, rgba(255,255,255,0.85)), color-stop(75%, rgba(255,255,255,0.95)), color-stop(100%, #fff));
+  background: -webkit-linear-gradient(top, rgba(255,255,255,0.85) 0%, rgba(255,255,255,0.85) 50%, rgba(255,255,255,0.95) 75%, #fff 100%);
+  background: -o-linear-gradient(top, rgba(255,255,255,0.85) 0%, rgba(255,255,255,0.85) 50%, rgba(255,255,255,0.95) 75%, #fff 100%);
+  background: -ms-linear-gradient(top, rgba(255,255,255,0.85) 0%, rgba(255,255,255,0.85) 50%, rgba(255,255,255,0.95) 75%, #fff 100%);
+  background: linear-gradient(to bottom, rgba(255,255,255,0.85) 0%, rgba(255,255,255,0.85) 50%, rgba(255,255,255,0.95) 75%, #fff 100%);
 }
 .d-page-wrapper .d-content-wrapper .d-widgets-wrapper .widget-group-wrapper .widget-wrapper .widget-outer-container .widget-inner-container .widget-draggable-block .widget-draggable-ornament {
   visibility: hidden;

@@ -43,35 +43,6 @@ function wa_header()
         $apps_html .= '<li id="wa-app-'.$app_id.'"'.($app_id == $current_app ? ' class="selected"':'').'><a href="'.$app_url.'">'.$img.' '.$app['name'].$count.'</a></li>';
     }
 
-    if ($system->getRequest()->isMobile(false)) {
-        $top_url = '<a href="'.$backend_url.'?mobile=1">mobile version</a>';
-    } else {
-        $url = $app_settings_model->get('webasyst', 'url', $system->getRootUrl(true));
-        $url_info = @parse_url($url);
-        if ($url_info) {
-            $url_name = '';
-            if (empty($url_info['scheme'])) {
-                $url = 'http://'.$url;
-            }
-            if (isset($url_info['host'])) {
-                $url_name .= $url_info['host'];
-            }
-
-            if (isset($url_info['path'])) {
-                if ($url_info['path'] == '/' && !isset($url_info['query'])) {
-
-                } else {
-                    $url_name .= $url_info['path'];
-                }
-            }
-            if (isset($url_info['query'])) {
-                $url_name .= '?'.$url_info['query'];
-            }
-        } else {
-            $url = $url_name = $system->getRootUrl(true);
-        }
-        $top_url = '<a target="_blank" href="'.$url.'">'.$url_name.'</a>';
-    }
     $announcement_model = new waAnnouncementModel();
     $announcements = array();
     if ($current_app != 'webasyst') {
@@ -123,6 +94,7 @@ function wa_header()
     }
 
     $company_name = htmlspecialchars($app_settings_model->get('webasyst', 'name', 'Webasyst'), ENT_QUOTES, 'utf-8');
+    $company_url = $app_settings_model->get('webasyst', 'url', $system->getRootUrl(true));
 
     $version = wa()->getVersion();
 
@@ -140,7 +112,7 @@ function wa_header()
 HTML;
     if (wa()->getApp() == 'webasyst') {
         $html .= <<<HTML
-        <h3>{$company_name}</h3>
+        <h3>{$company_name} <a href="{$company_url}" class="wa-frontend-link" target="_blank"><i class="icon16 new-window"></i></a></h3>
         <a class="inline-link" id="show-dashboard-editable-mode" href="{$backend_url}"><b><i>{$strings['customize']}</i></b></a>
         <input id="close-dashboard-editable-mode" type="button" value="{$strings['done']}" style="display: none;">
 HTML;

@@ -56,27 +56,23 @@ class webasystBackendActions extends waViewActions
                     }
                 }
             }
-
             $block = 0;
-            $sort = 0;
-            $s = 4;
             $contact_id = wa()->getUser()->getId();
             foreach ($widgets as $w) {
-                $ws = $w['sizes'][0][0] * $w['sizes'][0][1];
-                if ($ws > $s) {
-                    $block += 1;
-                    $sort = 0;
-                    $s = 4;
+                $max_size = $w['sizes'][0];
+                foreach ($w['sizes'] as $s) {
+                    if ($s[0] + $s[1] > $max_size[0] + $max_size[1]) {
+                        $max_size = $s;
+                    }
                 }
-                $s -= $ws;
 
                 $row = array(
                     'app_id' => $w['app_id'],
                     'widget' => $w['widget'],
                     'name' => $w['name'],
-                    'block' => $block,
-                    'sort' => $sort++,
-                    'size' => $w['sizes'][0][0] . 'x' . $w['sizes'][0][1],
+                    'block' => $block++,
+                    'sort' => 0,
+                    'size' => $max_size[0] . 'x' . $max_size[1],
                     'contact_id' => $contact_id,
                     'create_datetime' => date('Y-m-d H:i:s')
                 );

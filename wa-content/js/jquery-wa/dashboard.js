@@ -263,55 +263,12 @@ var DashboardWidget;
                 return false;
             });
 
-            that.$widget_wrapper.on("mouseenter", function() {
-                var is_edit_mode = isEditMode();
-                if (is_edit_mode) {
-                    initControlsController(that);
-                }
-            });
-        };
-
-        var initControlsController = function(that) {
-            var $widgetControls = that.$widget_wrapper.find(".size-controls-wrapper .control-item");
-
-            $widgetControls.each( function() {
-                var $control = $(this),
-                    is_active = ( $control.hasClass("is-active") ),
-                    size = {
-                        width: 0,
-                        height: 0
-                    };
-
-                if ($control.hasClass("set-small-size")) {
-                    size = {
-                        width: 1,
-                        height: 1
-                    };
-                }
-
-                if ($control.hasClass("set-medium-size")) {
-                    size = {
-                        width: 2,
-                        height: 1
-                    };
-                }
-
-                if ($control.hasClass("set-big-size")) {
-                    size = {
-                        width: 2,
-                        height: 2
-                    };
-                }
-
-                var is_available = checkAvailability(that, size);
-
-                if (is_available || is_active) {
-                    $control.show();
-                } else {
-                    $control.hide();
-                }
-
-            });
+            //that.$widget_wrapper.on("mouseenter", function() {
+            //    var is_edit_mode = isEditMode();
+            //    if (is_edit_mode) {
+            //        that.initControlsController();
+            //    }
+            //});
         };
 
         var getWidgetSettings = function(that) {
@@ -470,7 +427,7 @@ var DashboardWidget;
                 $settingsContainer = storage.getSettingsContainer(),
                 widgetOffset = $widget_block.offset(),
                 scrollTop = getScrollTop(),
-                scrollLeft = 0,
+                //scrollLeft = 0,
                 block_width = 450,
                 animate_time = storage.animateTime,
                 top_position,
@@ -661,6 +618,9 @@ var DashboardWidget;
 
                 // Загружаем контент
                 $widget.load(widget_href, function() {
+                    // Init Controllers
+                    that.initControlsController();
+                    //
                     console.log("Widget #" + that.widget_id + " is Rendered");
                 });
             }
@@ -727,6 +687,50 @@ var DashboardWidget;
             });
         };
 
+        DashboardWidget.prototype.initControlsController = function() {
+            var that = this,
+                $widgetControls = that.$widget_wrapper.find(".size-controls-wrapper .control-item");
+
+            $widgetControls.each( function() {
+                var $control = $(this),
+                    is_active = ( $control.hasClass("is-active") ),
+                    size = {
+                        width: 0,
+                        height: 0
+                    };
+
+                if ($control.hasClass("set-small-size")) {
+                    size = {
+                        width: 1,
+                        height: 1
+                    };
+                }
+
+                if ($control.hasClass("set-medium-size")) {
+                    size = {
+                        width: 2,
+                        height: 1
+                    };
+                }
+
+                if ($control.hasClass("set-big-size")) {
+                    size = {
+                        width: 2,
+                        height: 2
+                    };
+                }
+
+                var is_available = checkAvailability(that, size);
+
+                if (is_available || is_active) {
+                    $control.show();
+                } else {
+                    $control.hide();
+                }
+
+            });
+        };
+
     })();
 
     // GROUP | Скрипты относящиеся к группе, и движении виджетов внутри них
@@ -736,6 +740,7 @@ var DashboardWidget;
             dropArea: {},
             draggedWidget: false,
             is_new_group: false,
+            is_new_widget: false,
             $widget_group: false,
             $hover_group: false,
             doDragOver: true,
@@ -775,10 +780,10 @@ var DashboardWidget;
             },
             getListWrapper: function() {
                 return $("#widgets-list-wrapper");
-            },
-            getDropOrnament: function() {
-                return $("#d-drop-ornament");
             }
+            //getDropOrnament: function() {
+            //    return $("#d-drop-ornament");
+            //}
         };
 
         var bindEvents = function() {
@@ -1085,7 +1090,7 @@ var DashboardWidget;
             // HOOK. КОРРЕКЦИЯ ДРОП-ПОЗИЦИИ
             var moving_inside_bloc = ( draggedWidget.widget_group_index === groupData.group_index ),
                 problem_area = ( (groupData.widgetsArray.length === 2) && (groupData.group_area === 3) ), // Ситуация 1x1 + 2x1 или наоборот
-                is_end = ( ( target_widget_width == 2 ) && ( group_segment == 4) ),
+                //is_end = ( ( target_widget_width == 2 ) && ( group_segment == 4) ),
                 is_dragged_widget_2x1 = ( draggedWidget.widget_size.width === 2 && draggedWidget.widget_size.height === 1 ),
                 is_dragged_widget_1x1 = ( draggedWidget.widget_size.width === 1 );
 
@@ -1224,12 +1229,28 @@ var DashboardWidget;
                 is_new_group = ( $group.find(".widget-wrapper").length < 2 ),
                 create_new_group = ( is_last_group == new_widget_group_index );
 
+            $.each([$group,$before_widget_group], function() {
+                var $group = $(this);
+                if ($group.length) {
+                    $group.find(".widget-wrapper").each( function() {
+                        var id = $(this).data("widget-id"),
+                            widget;
+
+                        if (typeof DashboardWidgets[id] !== "undefined") {
+                            widget = DashboardWidgets[id];
+                            widget.initControlsController();
+                        }
+                    });
+                }
+            });
+
             // Если позиция виджета изменилась (как виджета внутри блока, так перемещение между блоками)
             if (is_changed) {
 
                 // Удаляем старый блок, если он пуст
-                var is_new_widget = ( storage.newDraggedWidget );
+                var is_new_widget = storage.is_new_widget;
                 var animation_time = checkEmptyGroup($before_widget_group, storage.getWidgetGroups(), is_new_widget);
+                storage.is_new_widget = false;
 
                 // Создаём новый блок для перемещений
                 if (create_new_group) {
@@ -1512,6 +1533,8 @@ var DashboardWidget;
         };
 
         var replaceWidgetAfterCreate = function(event, $group) {
+            storage.is_new_widget = true;
+
             prepareDrop(event, $group);
 
             storage.draggedWidget = false;
@@ -1579,6 +1602,9 @@ var DashboardWidget;
             },
             getWidgetActivity: function() {
                 return $("#widget-activity");
+            },
+            getSettingsWrapper: function() {
+                return $("#d-settings-wrapper");
             }
         };
 
@@ -1617,6 +1643,8 @@ var DashboardWidget;
                     clearTimeout(storage.topLazyLoadingTimer);
                 }
 
+                showLoadingAnimation($widgetActivity);
+
                 storage.activityFilterTimer = setTimeout( function() {
                     showFilteredData( $widgetActivity );
                 }, 2000);
@@ -1624,6 +1652,9 @@ var DashboardWidget;
                 storage.topLazyLoadingTimer = setTimeout( function() {
                     loadNewActivityContent($widgetActivity);
                 }, storage.lazyTime );
+
+                // Change Text
+                changeFilterText();
 
                 return false;
             });
@@ -1676,6 +1707,33 @@ var DashboardWidget;
                     return false;
                 }
             });
+        };
+
+        var changeFilterText = function() {
+            var $filterText = $("#activity-select-text"),
+                full_text = $filterText.data("full-text"),
+                not_full_text = $filterText.data("not-full-text"),
+                $form = $("#activity-filter"),
+                check_count = 0,
+                full_checked = true;
+
+            $form.find("input:checkbox").each( function() {
+                var $input = $(this),
+                    is_checked = ( $input.attr("checked") == "checked" );
+
+                if (!is_checked) {
+                    full_checked = false;
+                } else {
+                    check_count++;
+                }
+            });
+
+            if (full_checked) {
+                $filterText.text(full_text);
+            } else {
+                not_full_text += " (" + check_count + ")";
+                $filterText.text(not_full_text);
+            }
         };
 
         var onPageScroll = function(event) {
@@ -1762,15 +1820,17 @@ var DashboardWidget;
                 });
 
                 $deferred.done( function(response) {
+                    var html = "<div class=\"empty-activity-text\">" + $wrapper.data("empty-text") + "</div>";
                     if ( $.trim(response).length ) {
-                        // Render
-                        $wrapper.html(response);
+                        html = response;
                     }
+                    $wrapper.html(html);
+
+                    hideLoadingAnimation($widgetActivity);
 
                     storage.isActivityFilterLocked = false;
                 });
             }
-
         };
 
         var showEditMode = function() {
@@ -1784,7 +1844,12 @@ var DashboardWidget;
         };
 
         var hideEditMode = function() {
-            var $dashboard = storage.getPageWrapper();
+            var $dashboard = storage.getPageWrapper(),
+                $settings = storage.getSettingsWrapper();
+
+            if ($settings.css("display") != "none") {
+                $settings.find(".hide-settings-link").trigger("click");
+            }
 
             $dashboard.removeClass(storage.dashboardEditableClass);
 
@@ -1860,6 +1925,8 @@ var DashboardWidget;
             if (!storage.isBottomLazyLoadLocked) {
                 storage.isBottomLazyLoadLocked = true;
 
+                showLoadingAnimation($widgetActivity);
+
                 var $linkWrapper = $link.closest(".show-more-activity-wrapper"),
                     $wrapper = $widgetActivity.find(".activity-list-block"),
                     max_id = $wrapper.find(".activity-item:last").data('id'),
@@ -1882,6 +1949,8 @@ var DashboardWidget;
 
                     storage.isBottomLazyLoadLocked = false;
                     storage.lazyLoadCounter++;
+
+                    hideLoadingAnimation($widgetActivity);
                 });
             }
         };
@@ -1890,6 +1959,8 @@ var DashboardWidget;
             // Save data
             if (!storage.isTopLazyLoadLocked) {
                 storage.isTopLazyLoadLocked = true;
+
+                showLoadingAnimation($widgetActivity);
 
                 var $wrapper = $widgetActivity.find(".activity-list-block"),
                     min_id = $wrapper.find(".activity-item:first").data('id'),
@@ -1906,6 +1977,7 @@ var DashboardWidget;
                 $deferred.done( function(response) {
                     if ( $.trim(response).length ) {
                         // Render
+                        $wrapper.find(".empty-activity-text").remove();
                         $wrapper.prepend(response);
                     }
 
@@ -1914,6 +1986,8 @@ var DashboardWidget;
                     storage.topLazyLoadingTimer = setTimeout( function() {
                         loadNewActivityContent($widgetActivity);
                     }, storage.lazyTime );
+
+                    hideLoadingAnimation($widgetActivity);
                 });
             }
         };
@@ -1945,6 +2019,14 @@ var DashboardWidget;
                     }
                 }
             }
+        };
+
+        var showLoadingAnimation = function($widgetActivity) {
+            $widgetActivity.find(".activity-header .loading").show();
+        };
+
+        var hideLoadingAnimation = function($widgetActivity) {
+            $widgetActivity.find(".activity-header .loading").hide();
         };
 
         $(document).ready( function() {

@@ -1988,3 +1988,39 @@ msgstr ""
 #: /wa-system/webasyst/templates/actions/dashboard/DashboardWidgets.html:36
 msgid "Your dashboard is empty. Add some widgets by clicking Customize dashboard on the top."
 msgstr ""
+
+#: /wa-system/page/templates/PageEdit.html:120
+msgid "Social sharing"
+msgstr ""
+
+#: /wa-system/page/templates/PageEdit.html:122
+msgid "Use these meta tags for social sharing too"
+msgstr ""
+
+#: /wa-system/page/templates/PageEdit.html:129
+msgid "Social sharing title"
+msgstr ""
+
+#: /wa-system/page/templates/PageEdit.html:135
+msgid "Social sharing image URL"
+msgstr ""
+
+#: /wa-system/page/templates/PageEdit.html:139
+msgid "If not set, a social network will attempt to determine preview image on it’s own."
+msgstr ""
+
+#: /wa-system/page/templates/PageEdit.html:143
+msgid "Social sharing video URL"
+msgstr ""
+
+#: /wa-system/page/templates/PageEdit.html:149
+msgid "Social sharing description"
+msgstr ""
+
+#: /wa-system/page/templates/PageEdit.html:155
+msgid "Social sharing type"
+msgstr ""
+
+#: /wa-system/page/templates/PageEdit.html:163
+msgid "Please refer to <a href=\"http://ogp.me\" target=\"_blank\">Open Graph</a> protocol site for more information on social sharing meta tags and available values."
+msgstr ""
