@@ -513,7 +513,7 @@ ul.menu-h li.selected a:hover { color: #000 !important; }
 ul.menu-h li.selected a.inline-link b { border-bottom: 0; }
 ul.menu-h.dropdown li { position: relative; }
 ul.menu-h.dropdown li:hover { background: rgba(0,0,0,0.07); }
-ul.menu-h.dropdown ul { display: none; position: absolute; top: 80%; width: 100%; left: -3px; background: #fff; border: 2px solid #aaa; padding: 0; z-index: 50; margin-left: 2px; -moz-box-shadow: 0px 0px 5px #aaa; -webkit-box-shadow: 0px 0px 5px #aaa; box-shadow: 0px 0px 5px #aaa; } /* .menu-h's dropdown menus look like .menu-v's menus: plain, with icons, new branches are rendered to the left from parent menu */
+ul.menu-h.dropdown ul { display: none; position: absolute; top: 80%; width: 100%; left: -3px; background: #fff; border: 2px solid #aaa; padding: 0; z-index: 2000; margin-left: 2px; -moz-box-shadow: 0px 0px 5px #aaa; -webkit-box-shadow: 0px 0px 5px #aaa; box-shadow: 0px 0px 5px #aaa; } /* .menu-h's dropdown menus look like .menu-v's menus: plain, with icons, new branches are rendered to the left from parent menu */
 ul.menu-h.dropdown ul li { display: block; padding: 6px 8px 6px 24px; margin: 0; }
 ul.menu-h.dropdown ul li i.icon16 { margin-left:-20px; margin-right:4px; }
 ul.menu-h.dropdown ul li ul { top: -7px; left: 100%; margin-left: 0; }
