@@ -68,7 +68,7 @@ class weatherWidget extends waWidget
     public function getWeather($date_with_hour, $city, $unit = 'C', $from_cache = true)
     {
         $cache = $this->getCacheWeather();
-        if (empty($cache[$date_with_hour][$city]) || !empty($cache[$date_with_hour][$city]['message']) || !$from_cache) {
+        if (!$from_cache && (empty($cache[$date_with_hour][$city]) || !empty($cache[$date_with_hour][$city]['message']))) {
 
             $weather = array();
 
@@ -134,7 +134,7 @@ class weatherWidget extends waWidget
      */
     protected function loadWeather($city)
     {
-        $url = 'http://api.openweathermap.org/data/2.5/weather?q='.$city.'&units=imperial';
+        $url = 'http://api.openweathermap.org/data/2.5/weather?q='.urlencode($city).'&units=imperial';
         $response = $this->load($url);
         if (!$response) {
             return array();

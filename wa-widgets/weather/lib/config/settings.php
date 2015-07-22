@@ -11,12 +11,12 @@ foreach ($addresses as $address) {
 
 return array(
     'city' => array(
-        'title' => 'City',
+        'title' => /*_w*/('City'),
         'control_type' => waHtmlControl::INPUT,
         'placeholder' => $city
     ),
     'source' => array(
-        'title' => 'Weather source',
+        'title' => /*_w*/('Weather source'),
         'control_type' => waHtmlControl::CUSTOM.' weatherWidget::customFieldLabel',
         'value' => 'OpenWeatherMap.org'
     ),
