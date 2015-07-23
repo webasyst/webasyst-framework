@@ -708,7 +708,7 @@ HTACCESS;
             if ($theme->parent_theme && waRequest::post('parent_settings')) {
                 $this->saveThemeSettings($theme->parent_theme, waRequest::post('parent_settings'), waRequest::file('parent_image'));
             }
-            $this->saveThemeSettings($theme, waRequest::post('settings'), waRequest::file('image'));
+            $this->saveThemeSettings($theme, waRequest::post('settings', array(), 'array'), waRequest::file('image'));
             $this->displayJson(array());
         } catch (waException $e) {
             $this->displayJson(array(), $e->getMessage());

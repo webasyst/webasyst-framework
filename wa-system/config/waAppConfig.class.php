@@ -263,7 +263,7 @@ class waAppConfig extends SystemConfig
             // Can't connect to MySQL server
             if ($e->getCode() == 2002 && !waSystemConfig::isDebug()) {
                 return;
-            } else {
+            } elseif (!empty($app_settings_model)) {
                 $time = null;
                 $row = $app_settings_model->getByField(array('app_id' => $this->application, 'name' => 'update_time'));
                 if ($row) {
@@ -273,7 +273,7 @@ class waAppConfig extends SystemConfig
         } catch (waException $e) {
             return;
         }
-        if (!$time) {
+        if (empty($time)) {
             try {
                 $this->install();
             } catch (waException $e) {
@@ -281,6 +281,7 @@ class waAppConfig extends SystemConfig
                 throw $e;
             }
             $ignore_all = true;
+            $time = null;
         } else {
             $ignore_all = false;
         }

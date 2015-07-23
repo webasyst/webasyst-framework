@@ -23,7 +23,7 @@ class webasystBackendCountController extends waJsonController
                         $this->response[$app_id] = $n;
                     }
                 } catch(Exception $ex) {
-                    waLog::log($ex->__toString());
+                    waLog::log('Error '.$ex->getCode().': '.$ex->getMessage());
                 }
             }
         }
