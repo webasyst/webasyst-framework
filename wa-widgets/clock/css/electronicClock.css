@@ -6,7 +6,6 @@
   width: 100%;
   height: 100%;
   box-sizing: border-box;
-  background: #fff;
   text-align: center;
   line-height: 1;
   color: #000;
@@ -17,6 +16,10 @@
 }
 .electronic-clock-wrapper .time-wrapper {
   margin-bottom: 0;
+  white-space: nowrap;
+}
+.electronic-clock-wrapper .time-wrapper .time-format {
+  font-size: 0.66em;
 }
 .electronic-clock-wrapper .time-wrapper .divider {
   position: relative;

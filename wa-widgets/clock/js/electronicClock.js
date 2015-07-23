@@ -2,59 +2,6 @@ var ElectronicClock;
 
 ( function() {
 
-    var langArray = {
-        ru: {
-            day: [
-                "Воскресенье",
-                "Понедельник",
-                "Вторник",
-                "Среда",
-                "Четверг",
-                "Пятница",
-                "Суббота"
-            ],
-            month: [
-                "Января",
-                "Февраля",
-                "Марта",
-                "Апреля",
-                "Мая",
-                "Июня",
-                "Июля",
-                "Августа",
-                "Сентября",
-                "Октября",
-                "Ноября",
-                "Декабря"
-            ]
-        },
-        en: {
-            day: [
-                "Sunday",
-                "Monday",
-                "Tuesday",
-                "Wednesday",
-                "Thursday",
-                "Friday",
-                "Saturday"
-            ],
-            month: [
-                "January",
-                "February",
-                "March",
-                "April",
-                "May",
-                "June",
-                "July",
-                "August",
-                "September",
-                "October",
-                "November",
-                "December"
-            ]
-        }
-    };
-
     var initClock = function( that ) {
         // Set Time on Start
         setTime(that);
@@ -63,21 +10,15 @@ var ElectronicClock;
     };
 
     var getClockData = function(that) {
-        var is_ru = (that.lang === "ru"),
-            date = getDate(that),
+        var date = getDate(that),
             seconds = date.getSeconds(),
             minutes = date.getMinutes(),
             hours = date.getHours(),
             day = date.getDay(),
             month = date.getMonth(),
             number = date.getDate(),
-            day_name = langArray.en.day[day],
-            month_name = langArray.en.month[month];
-
-        if (is_ru) {
-            day_name = langArray.ru.day[day];
-            month_name = langArray.ru.month[month];
-        }
+            day_name = that.localization.day[day],
+            month_name = that.localization.month[month];
 
         if (hours < 10) {
             hours = "0" + hours;
@@ -91,12 +32,27 @@ var ElectronicClock;
             seconds = "0" + seconds;
         }
 
+        if ( (hours == "00") && (minutes == "00") && (seconds == "00") ) {
+            that.changeDate = true;
+        }
+
         var divider_class = ( (seconds % 2) > 0 ) ? "step-1" : "";
         var clockDivider = "<span class=\"divider " + divider_class + "\">:</span>";
 
-        that.time = hours + "" + clockDivider + "" + minutes; // + ":" + seconds;
+        if (that.format == "12") {
+
+            if (hours > 11) {
+                that.time = ( hours - 12 ) + "" + clockDivider + "" + minutes + "<span class=\"time-format\">pm</span>";
+            } else {
+                that.time = hours + "" + clockDivider + "" + minutes + "<span class=\"time-format\">am</span>";
+            }
+
+        } else {
+            that.time = hours + "" + clockDivider + "" + minutes; // + ":" + seconds;
+        }
         that.day = day_name;
         that.date = number + " " + month_name;
+
     };
 
     var setTime = function(that) {
@@ -105,19 +61,28 @@ var ElectronicClock;
         getClockData(that);
 
         that.$timeWrapper.html(that.time);
-        that.$dayWrapper.html(that.day);
-        that.$dateWrapper.html(that.date);
+
+        if (that.changeDate) {
+            that.$dayWrapper.html(that.day);
+            that.$dateWrapper.html(that.date);
+            that.changeDate = false;
+        }
     };
 
     var getOffset = function( offset, source ) {
-        var result = 0;
+        var result = 0,
+            localTimeZone = -(new Date().getTimezoneOffset()/60),
+            localOffset = localTimeZone * 60 * 60 * 1000;
 
-        if (offset) {
-            if (source != "local") {
+        if (Math.abs(offset) >= 0) {
+            if (source == "local") {
+                result = 0;
 
-                var localTimeZone = -(new Date().getTimezoneOffset()/60),
-                    localOffset = localTimeZone * 60 * 60 * 1000;
+            } else if (source == "server") {
+                result += (offset - localOffset); // In miliseconds
 
+            } else if ( Math.abs(offset) < 1000 ) {
+                offset = offset * 60 * 60 * 1000;
                 result += (offset - localOffset); // In miliseconds
             }
         }
@@ -137,15 +102,17 @@ var ElectronicClock;
 
         // Widget
         that.offset = getOffset( options.offset, options.source );
+        that.format = options.format;
         that.widget_id = options.widget_id;
         that.widget_app = options.widget_app;
         that.widget_name = options.widget_name;
-        that.lang = options.lang;
+        that.localization = options.localization;
 
         // Dynamic vars
         that.time = false;
         that.day = false;
         that.date = false;
+        that.changeDate = false;
 
         // DOM
         that.$widget = DashboardWidgets[that.widget_id].$widget;

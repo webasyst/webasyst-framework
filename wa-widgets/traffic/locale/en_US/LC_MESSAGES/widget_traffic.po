@@ -1,0 +1,32 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: wa-widgets/traffic/\n"
+"POT-Creation-Date: 2015-07-22 17:35+0300\n"
+"PO-Revision-Date: \n"
+"Last-Translator: wa-widgets/traffic/\n"
+"Language-Team: wa-widgets/traffic/\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-Basepath: .\n"
+"Language: en_US\n"
+"X-Generator: Poedit 1.8.2\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPath-1: .\n"
+
+#: /wa-widgets/traffic//templates/Default.html:75
+msgid "Could not retrieve traffic conditions for <strong>%s</strong>. Please check city name in widget settings or in your contact info."
+msgstr ""
+
+#: /wa-widgets/traffic//templates/Default.html:80
+msgid "(unknown city)"
+msgstr ""
+
+#: /wa-widgets/traffic//lib/config/widget.php:4
+msgid "Traffic"
+msgstr ""
+
+#: /wa-widgets/traffic//lib/config/settings.php:14
+msgid "City"
+msgstr ""

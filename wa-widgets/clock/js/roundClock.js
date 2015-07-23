@@ -54,14 +54,19 @@ var RoundClock;
     };
 
     var getOffset = function( offset, source ) {
-        var result = 0;
+        var result = 0,
+            localTimeZone = -(new Date().getTimezoneOffset()/60),
+            localOffset = localTimeZone * 60 * 60 * 1000;
 
-        if (offset) {
-            if (source != "local") {
+        if (Math.abs(offset) >= 0) {
+            if (source == "local") {
+                result = 0;
 
-                var localTimeZone = -(new Date().getTimezoneOffset()/60),
-                    localOffset = localTimeZone * 60 * 60 * 1000;
+            } else if (source == "server") {
+                result += (offset - localOffset); // In miliseconds
 
+            } else if ( Math.abs(offset) < 1000 ) {
+                offset = offset * 60 * 60 * 1000;
                 result += (offset - localOffset); // In miliseconds
             }
         }

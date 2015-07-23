@@ -23,6 +23,42 @@ class newsWidget extends waWidget
         ), $this->getTemplatePath('Default.html'));
     }
 
+    // List of news feeds in widget settings depends on locale
+    protected function getSettingsConfig()
+    {
+        $feeds = array(
+            'http://rss.nytimes.com/services/xml/rss/nyt/InternationalHome.xml'
+                => 'New York Times',
+            'http://feeds.washingtonpost.com/rss/world'
+                => 'Washington Post',
+            'http://www.theguardian.com/world/rss'
+                => 'The Guardian',
+        );
+
+        if (wa()->getLocale() == 'ru_RU') {
+            $feeds = array_merge(array(
+                'https://news.yandex.ru/index.rss'
+                    => 'Яндекс.Новости',
+                'http://russian.rt.com/rss/'
+                    => 'Russia Today (на русском)',
+            ), $feeds);
+        } else {
+            $feeds = array_merge($feeds, array(
+                'http://rt.com/rss/news/'
+                    => 'Russia Today',
+            ));
+        }
+
+        $feeds = array_merge($feeds, array(
+            'custom'
+                => 'RSS feed:',
+        ));
+
+        $result = parent::getSettingsConfig();
+        $result['rss_feed']['options'] = $feeds;
+        return $result;
+    }
+
     // Callback for custom settings control, see settings.php
     public static function getCustomRssControl($field_name, $field_params)
     {

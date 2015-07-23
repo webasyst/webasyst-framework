@@ -18,17 +18,25 @@ if (typeof ClockController === "undefined") {
 
             that.clockInterval = setInterval( function() {
                 var widgetList = DashboardControllers[that.controller_app][that.controller_name]['widget_list'],
-                    widget_count = widgetList.length;
+                    widget_count = widgetList.length,
+                    widgetIDArray = {};
 
                 if (widget_count) {
                     for (var index in widgetList) {
                         if (widgetList.hasOwnProperty(index)) {
                             var widget_id = widgetList[index];
 
-                            if ( (typeof DashboardWidgets[widget_id] !== "undefined") && (typeof DashboardWidgets[widget_id]['clock'] !== "undefined") ) {
-                                var widgetClock = DashboardWidgets[widget_id]['clock'];
+                            if (typeof widgetIDArray[widget_id] === "undefined") {
+                                if ( (typeof DashboardWidgets[widget_id] !== "undefined") && (typeof DashboardWidgets[widget_id]['clock'] !== "undefined") ) {
+                                    var widgetClock = DashboardWidgets[widget_id]['clock'];
 
-                                widgetClock.refreshClock();
+                                    widgetClock.refreshClock();
+
+                                    widgetIDArray[widget_id] = true;
+
+                                } else {
+                                    widgetList.splice(index, 1);
+                                }
 
                             } else {
                                 widgetList.splice(index, 1);
