@@ -1,7 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
-<title>Почта России: Форма №113эн</title>
+<title>Почта России: Форма №112ЭП</title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <style type="text/css">
 body, table { font-family: 'Helvetica', Arial, sans-serif; font-size: 13px; }
@@ -84,21 +84,21 @@ img {
             {$wa->csrf()}
             <table>
             	<tr>
-                    <td colspan="2"><h2>Форма №113эн <span class="hint">Бланк почтового перевода наложенного платежа</span></h2></td>
+                    <td colspan="2"><h2>Форма №112ЭП <span class="hint">Прием переводов в адрес физических и юридических лиц</span></h2></td>
                 </tr>
             	<tr>
-            		<td>Сумма наложенного платежа</td>
+            		<td>Сумма почтового перевода</td>
             		<td><label><input type="text" name="rub" value="{$order.rub|escape:'html'}" />руб.</label> <label><input size="2" type="text" name="cop" value="{$order.cop|escape:'html'}" />коп.</label></td>
             	</tr>
             	<tr>
-            		<td>Сумма наложенного платежа прописью</td>
+            		<td>Сумма почтового перевода прописью</td>
             		<td><input size="80" type="text" name="order_amount" value="{$order.total|wa_format_amount:$order.currency:'words'}" /></td>
             	</tr>
             	<tr>
             		<td>&nbsp;</td>
             		<td>
             		  <br>
-            		  <input type="submit" value="Сформировать бланк формы №113эн" />
+            		  <input type="submit" value="Сформировать бланк формы №112ЭП" />
                     </td>
             	</tr>
             </table>
@@ -107,20 +107,6 @@ img {
         <form action="" class="noprint">
             <input id="print_button" type="button" value="[`Печать`]" onclick="window.print();return false;"/>
         </form>
-    
-        {*relative path from frontend*}
-        <div id="front_div" class="noprint" style="display:none;">
-            <span style="background-color: #ffc" class="noprint" >Лицевая сторона формы №113эн</span>
-            &nbsp;&nbsp;
-            <a href="?{$src_back}" title="" class="noprint" onclick="return show(this,'front_div','back_div');">Оборот формы №113эн</a>
-        </div>
-        
-        <div id="back_div" class="noprint" style="display:none;">
-            <a href="?{$src_front}" title=""
-            class="noprint" onclick="return show(this,'back_div','front_div');">Лицевая сторона формы №113эн</a>
-            &nbsp;&nbsp;
-            <span style="background-color: #ffc" class="noprint" >Оборот формы №113эн</span>
-        </div>
         
         <div id="load_div" class="noprint" >Формирование бланка...</div>
         <p>
