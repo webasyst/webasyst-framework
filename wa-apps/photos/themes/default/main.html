@@ -2,7 +2,7 @@
 {* @event frontend_layout.%plugin_id%.header *}
 {foreach $frontend_layout as $item}{if !empty($item.header)}{$item.header}{/if}{/foreach}
 
-<article class="page-content" itemscope itemtype="http://schema.org/{if $action == 'photo'}Photograph{else}WebPage{/if}">
+<article class="content" itemscope itemtype="http://schema.org/{if $action == 'photo'}Photograph{else}WebPage{/if}">
     {if !empty($breadcrumbs)}
         {if $wa->globals('isMyAccount')}
             {* within My Account we exclude first node from navigation because links are on the page already *}
