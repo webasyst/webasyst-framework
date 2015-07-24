@@ -148,3 +148,39 @@ msgstr ""
 #: /wa-apps/stickies/lib/models/stickiesSheet.model.php:83
 msgid "Board not found"
 msgstr ""
+
+#: /wa-apps/stickies/lib/config/logs.php:5
+msgid "created a new board"
+msgstr "создал новую доску"
+
+#: /wa-apps/stickies/lib/config/logs.php:8
+msgid "edited board"
+msgstr "отредактировал доску"
+
+#: /wa-apps/stickies/lib/config/logs.php:11
+msgid "deleted board"
+msgstr "удалил доску"
+
+#: /wa-apps/stickies/lib/config/logs.php:14
+msgid "added a new sticky"
+msgstr "добавил новую заметку"
+
+#: /wa-apps/stickies/lib/config/logs.php:17
+msgid "edited sticky"
+msgstr "отредактировал заметку"
+
+#: /wa-apps/stickies/lib/config/logs.php:20
+msgid "resized sticky"
+msgstr "изменил размер заметки"
+
+#: /wa-apps/stickies/lib/config/logs.php:23
+msgid "moved sticky to another board"
+msgstr "переместил заметку на другую доску"
+
+#: /wa-apps/stickies/lib/config/logs.php:26
+msgid "deleted sticky"
+msgstr "удалил заметку"
+
+#: /wa-apps/stickies/lib/config/logs.php:29
+msgid "moved sticky"
+msgstr "переместил заметку"

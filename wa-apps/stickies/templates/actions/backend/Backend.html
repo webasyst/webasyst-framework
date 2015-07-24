@@ -1,9 +1,9 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!DOCTYPE html>
 <html>
 <head>
 <meta http-equiv="X-UA-Compatible" content="IE=8">
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<title>[`Stickies`] — {{$wa->accountName()}}</title>
+<title>[`Stickies`] — {{$wa->accountName(false)|escape}}</title>
 {{$wa->css()}}
 
 <link type="text/css" rel="stylesheet" href="{{$wa_app_static_url}}css/stickies.css?v={{$wa->version()}}">
@@ -238,7 +238,7 @@ translate['Error occurred while sorting boards'] = '[`Error occurred while sorti
 translate['no name'] = '[`no name`]';
 translate['Stickies'] = '[`Stickies`]';
 
-var accountName = '{{$wa->accountName()}}';
+var accountName = '{{$wa->accountName()|escape:'javascript'}}';
 var default_background = '{{key($sheet_backgrounds)}}';
 $(document).ready( function() {
 
