@@ -101,7 +101,7 @@ class waFiles
                 throw $e;
             }
         } else {
-            self::create(dirname($target_path));
+            self::create(dirname($target_path).'/');
             if (@copy($source_path, $target_path)) {
                 /*@todo copy file permissions*/
             } else {
@@ -458,8 +458,9 @@ class waFiles
      *
      * @param string $url URL from which a file must be retrieved
      * @param string $path Path for saving the downloaded file
+     * @return int
+     * @throws Exception
      * @throws waException
-     * @return int Size of saved file in bytes
      */
     public static function upload($url, $path)
     {
@@ -467,12 +468,39 @@ class waFiles
         $w = stream_get_wrappers();
         if (in_array($s, $w) && ini_get('allow_url_fopen')) {
             if ($fp = @fopen($url, 'rb')) {
-                if (self::$fp = @fopen($path, 'wb')) {
-                    self::$size = stream_copy_to_stream($fp, self::$fp);
-                    fclose(self::$fp);
-                } else {
+                try {
+                    if (self::$fp = @fopen($path, 'wb')) {
+                        self::$size = stream_copy_to_stream($fp, self::$fp);
+                        fclose(self::$fp);
+                        $stream_meta_data = stream_get_meta_data($fp);
+
+                        $headers = array();
+                        if (isset($stream_meta_data["wrapper_data"]["headers"])) {
+                            $headers = $stream_meta_data["wrapper_data"]["headers"];
+                        } elseif (isset($stream_meta_data["wrapper_data"])) {
+                            $headers = $stream_meta_data["wrapper_data"];
+                        }
+
+                        $header_matches = null;
+                        //check server response codes (500/404/403/302/301/etc)
+                        foreach ($headers as $header) {
+                            if (preg_match('@http/\d+\.\d+\s+(\d+)\s+(.+)$@i', $header, $header_matches)) {
+                                $response_code = intval($header_matches[1]);
+                                $status_description = trim($header_matches[2]);
+                                if ($response_code != 200) {
+                                    throw new waException("Invalid server response with code {$response_code} ($status_description) while request {$url}");
+                                }
+                                break;
+                            }
+                        }
+
+                    } else {
+                        throw new waException('Error while open target file');
+                    }
+                } catch (waException $ex) {
                     fclose($fp);
-                    throw new waException('Error while open target file');
+                    waFiles::delete($path);
+                    throw $ex;
                 }
                 fclose($fp);
             } else {
@@ -492,6 +520,7 @@ class waFiles
                 $response_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
                 if ($response_code != 200) {
                     curl_close($ch);
+                    waFiles::delete($path);
                     throw new waException("Invalid server response with code {$response_code} while request {$url}");
                 }
             }

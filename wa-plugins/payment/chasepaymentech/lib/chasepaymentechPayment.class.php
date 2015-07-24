@@ -2,18 +2,11 @@
 
 /**
  *
- * @author WebAsyst Team
+ * @author Webasyst
  * @name chasepaymentechPayment
  * @description CHASE Paymenttech payment module
  * @property-read string $test_mode
  * @property-read string $hosted_secure_id
- * @property-read string $merchantid
- * @property-read string $messagetype
- * @property-read string $tzcode
- * @property-read string $curriso
- * @property-read string $currexp
- * @property-read string $orderstatus
- * @property-read string $platform
  */
 
 class chasepaymentechPayment extends waPayment implements waIPayment
@@ -22,11 +15,7 @@ class chasepaymentechPayment extends waPayment implements waIPayment
     /**
      * @var double
      */
-    protected $order_id;
-    /**
-     * @var array
-     */
-    protected $request;
+    private $order_id;
 
     protected $allowed_credit_card_types = array(
         'American Express',
@@ -44,7 +33,7 @@ class chasepaymentechPayment extends waPayment implements waIPayment
     {
         return true;
     }
-    
+
     /**
      * @param array $payment_form_data POST form data
      * @param waOrder $order_data formalized order data
@@ -53,11 +42,9 @@ class chasepaymentechPayment extends waPayment implements waIPayment
      */
     public function payment($payment_form_data, $order_data, $auto_submit = false)
     {
-        $order = waOrder::factory($order_data);
-
         return $this->fetch(array(
-            'url' => $this->getUrl(),
-            'params' => $this->getRequestParams($order, true)
+            'url'    => $this->getUrl(),
+            'params' => $this->getRequestParams(waOrder::factory($order_data), true)
         ), '/templates/payment.html');
     }
 
@@ -108,7 +95,7 @@ class chasepaymentechPayment extends waPayment implements waIPayment
 
         $name = $order->billing_address['name'];
         if (!$name) {
-            $name = $order->contact_name;
+            $name = $order->getContactField('name');
         }
         if ($name) {
             $params['name'] = $name;
@@ -132,7 +119,6 @@ class chasepaymentechPayment extends waPayment implements waIPayment
      */
     public function callbackInit($request)
     {
-        $this->request = $request;
         if (!empty($request['sessionId'])) {
             $unpack = $this->unpackSessionId($request['sessionId']);
             $this->app_id = $unpack[0];
@@ -157,6 +143,8 @@ class chasepaymentechPayment extends waPayment implements waIPayment
 
         if ($transaction_data['type'] == waPayment::OPERATION_AUTH_CAPTURE) {
             $app_payment_method = self::CALLBACK_CONFIRMATION;
+        } else {
+            $app_payment_method = null;
         }
 
         $tm = new waTransactionModel();
@@ -169,7 +157,6 @@ class chasepaymentechPayment extends waPayment implements waIPayment
         if (!$tm->getByFields($fields)) {
             $transaction_data = $this->saveTransaction($transaction_data, $request);
             $result = $this->execAppCallback($app_payment_method, $transaction_data);
-            self::addTransactionData($transaction_data['id'], $result);
         }
 
         return $result;
@@ -178,18 +165,18 @@ class chasepaymentechPayment extends waPayment implements waIPayment
     protected function formalizeData($transaction_raw_data)
     {
         $view_data = implode(' ', array(
-            'Name: ' . $transaction_raw_data['name'],
-            'Card: ' . $transaction_raw_data['cardType']. ' '. $transaction_raw_data['cardNumber'],
-            'Transaction time: ' .
-                $transaction_raw_data['transactionStart'] . ' - ' .
-                $transaction_raw_data['transactionEnd'],
+            'Name: '.$transaction_raw_data['name'],
+            'Card: '.$transaction_raw_data['cardType'].' '.$transaction_raw_data['cardNumber'],
+            'Transaction time: '.
+            $transaction_raw_data['transactionStart'].' - '.
+            $transaction_raw_data['transactionEnd'],
         ));
 
         if ($transaction_raw_data['status'] == '000') {
-            $type  = waPayment::OPERATION_AUTH_CAPTURE;
+            $type = waPayment::OPERATION_AUTH_CAPTURE;
             $state = waPayment::STATE_AUTH;
         } else {
-            $type  = waPayment::OPERATION_CANCEL;
+            $type = waPayment::OPERATION_CANCEL;
             $state = waPayment::STATE_CANCELED;
         }
 
@@ -198,7 +185,7 @@ class chasepaymentechPayment extends waPayment implements waIPayment
 
 
         $transaction_data = parent::formalizeData($transaction_raw_data);
-        $transaction_data =  array_merge($transaction_data, array(
+        $transaction_data = array_merge($transaction_data, array(
             'type'        => $type,
             'native_id'   => ifset($transaction_raw_data['transId']),
             'amount'      => ifset($transaction_raw_data['amount']),
@@ -221,18 +208,6 @@ class chasepaymentechPayment extends waPayment implements waIPayment
     }
 
     /**
-     * @param $xml
-     */
-    protected static function dumpXml($xml)
-    {
-        $doc = new DomDocument('1.0', 'UTF-8');
-        $doc->loadXML($xml);
-        $doc->preserveWhiteSpace = true;
-        $doc->formatOutput = true;
-        echo $doc->saveXML();
-    }
-
-    /**
      * @param $assign
      * @param string $template
      * @return string
@@ -242,6 +217,6 @@ class chasepaymentechPayment extends waPayment implements waIPayment
         $view = wa()->getView();
         $assign['p'] = $this;
         $view->assign($assign);
-        return $view->fetch($this->path . $template);
+        return $view->fetch($this->path.$template);
     }
 }

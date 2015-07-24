@@ -67,6 +67,13 @@
                     <label for="s-auth-captcha">[`Enable captcha for signup form`]</label><br>
                 </div>
 
+                <div class="block not-padded bottom-padded">
+                    <label>
+                    <input name="auth_rememberme" type="checkbox" {if !empty($auth_config.rememberme)}checked="checked"{/if} value="1">
+                    [`Allow "Remember me" option in authorization form`]
+                    </label>
+                </div>
+
                 <!-- third-party auth -->
                 <div>
                     <input id="s-auth-adapters" name="auth_adapters" type="checkbox" {if !empty($auth_config['adapters'])}checked="checked"{/if}>

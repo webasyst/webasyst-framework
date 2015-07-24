@@ -86,11 +86,15 @@ class siteRoutingEditAction extends waViewAction
     {
         $result = array();
         foreach ($config as $id => $info) {
-            $info['id'] = $id;
-            $result[$id] = array(
-                'name' => $info['name'],
-                'value' => $this->getHTML($route_id, $info, isset($values[$id]) ? $values[$id]: null)
-            );
+            if (is_array($info)) {
+                $info['id'] = $id;
+                $result[$id] = array(
+                    'name' => $info['name'],
+                    'value' => $this->getHTML($route_id, $info, isset($values[$id]) ? $values[$id] : null)
+                );
+            } else {
+                $result[] = $info;
+            }
         }
         return $result;
     }
@@ -105,9 +109,15 @@ class siteRoutingEditAction extends waViewAction
         switch ($info['type']) {
             case 'input':
                 $html = '<input type="text" name="params['.$info['id'].']" value="'.htmlspecialchars($value).'">';
+                if (isset($info['description'])) {
+                    $html .= '<p class="hint">'.$info['description'].'</p>';
+                }
                 return $html;
             case 'textarea':
                 $html = '<textarea name="params['.$info['id'].']">'.htmlspecialchars($value).'</textarea>';
+                if (isset($info['description'])) {
+                    $html .= '<p class="hint">'.$info['description'].'</p>';
+                }
                 return $html;
             case 'select':
                 $html = '<select name="params['.$info['id'].']">';

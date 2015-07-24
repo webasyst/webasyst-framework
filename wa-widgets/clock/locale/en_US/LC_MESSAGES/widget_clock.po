@@ -1,0 +1,56 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: wa-widgets/clock/\n"
+"POT-Creation-Date: 2015-07-22 17:06+0300\n"
+"PO-Revision-Date: \n"
+"Last-Translator: wa-widgets/clock/\n"
+"Language-Team: wa-widgets/clock/\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-Basepath: .\n"
+"Language: en_US\n"
+"X-Generator: Poedit 1.8.2\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPath-1: .\n"
+
+#: /wa-widgets/clock//lib/config/widget.php:4
+msgid "Clock"
+msgstr ""
+
+#: /wa-widgets/clock//lib/config/settings.php:5
+msgid "Time"
+msgstr ""
+
+#: /wa-widgets/clock//lib/config/settings.php:176
+msgid "Type"
+msgstr ""
+
+#: /wa-widgets/clock//lib/config/settings.php:181
+msgid "Round"
+msgstr ""
+
+#: /wa-widgets/clock//lib/config/settings.php:185
+msgid "Electronic"
+msgstr ""
+
+#: /wa-widgets/clock//lib/config/settings.php:191
+msgid "Caption"
+msgstr ""
+
+#: /wa-widgets/clock//lib/config/settings.php:196
+msgid "City"
+msgstr ""
+
+#: /wa-widgets/clock//lib/config/settings.php:202
+msgid "Electronic format"
+msgstr ""
+
+#: /wa-widgets/clock//lib/config/settings.php:207
+msgid "Electronic 24 hours"
+msgstr ""
+
+#: /wa-widgets/clock//lib/config/settings.php:211
+msgid "Electronic AM/PM"
+msgstr ""

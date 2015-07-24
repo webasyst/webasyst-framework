@@ -1,0 +1,98 @@
+<style>
+    #currency-quotes-{$info['id']} .s-currency-quote { display: inline-block; min-width: 49%; position: relative; }
+    #currency-quotes-{$info['id']} .cq-cover-block { background: #ccc; opacity: 0.6; }
+    
+    .widget-2x1 .s-currency-quote { text-align: center; padding-top: 25px; }
+</style>
+
+<div class="block" id="currency-quotes-{$info['id']}">
+    <div class="cq-info">
+        {if !empty($quotes)}
+            {if !$is_today}
+                <span class="hint">{sprintf("Показываются данные на %s", $date|wa_date)}</span>
+            {/if}
+            <div class="s-currency-quote">
+                <h2 class="quote" title="Курс ЦБ РФ на {$date|wa_date:'humandate'}">{$quotes.USD.val|default:'&mdash;'}</h2>
+                <h4>
+                    <span class="heading">USD</span>
+                    <span class="highlighted" title="Изменение курса по сравнению с предыдущим днем">{$quotes.USD.diff_str|default:'&mdash;'}</span>
+                </h4>
+            </div>
+            <div class="s-currency-quote">
+                <h2 class="quote" title="Курс ЦБ РФ на {$date|wa_date:'humandate'}">{$quotes.EUR.val|default:'&mdash;'}</h2>
+                <h4>
+                    <span class="heading">EUR</span>
+                    <span class="highlighted" title="Изменение курса по сравнению с предыдущим днем">{$quotes.EUR.diff_str|default:'&mdash;'}</span>
+                </h4>
+            </div>
+        {else}
+            <span class="errormsg">Нет данных за последние 10 дней.</span>
+        {/if}
+    </div>
+    <div class="block hidden cq-cover-block">
+        <i class="icon16 loading"></i>
+    </div>
+</div>
+
+{if !$wa->get('ignore_js')}
+<script>
+    $(function() {
+        $('#currency-quotes-{$info['id']}').click(function(e) {
+
+            var container = $(this);
+            var cover = $('.cq-cover-block', container);
+            cover.css({
+                position: 'absolute',
+                width: '100%',
+                height: '100%',
+                top: 0,
+                left: 0
+            }).show();
+            var loading = cover.find('.loading');
+            var w = loading.width();
+            var h = loading.height();
+            var W = cover.width();
+            var H = cover.height();
+            loading.css({
+                marginTop: (H - h) / 2,
+                marginLeft: (W - w) / 2
+            });
+
+            e.preventDefault();
+
+            var timerDef = $.Deferred();
+            setTimeout(function() {
+                timerDef.resolve();
+            }, 500);
+
+            var reqDef = $.get('{$wa_app_url}?widget={$info.widget}&id={$info.id}&size={$info.size}&nocache=1');
+
+            $.when(reqDef, timerDef).done(function(html) {
+                var tmp = $('<div>').html(html);
+                container.find('.cq-info').replaceWith(tmp.find('.cq-info'));
+                cover.hide();
+                tmp.remove();
+            });
+
+        });
+
+        // run 1 hour updater
+        (function() {
+            var timeout = 60000000;         // 1 hour
+            var timer_id = setInterval(function() {
+                var container = $('#currency-quotes-{$info['id']}');
+                if (container.length) {
+                    $.get('{$wa_app_url}?widget={$info.widget}&id={$info.id}&size={$info.size}&nocache=1&ignore_js=1', function(html) {
+                        var tmp = $('<div>').html(html);
+                        container.find('.s-weather').replaceWith(tmp.find('.s-weather'));
+                        tmp.remove();
+                    });
+                } else {
+                    clearInterval(timer_id);
+                }
+            }, timeout);
+        })();
+
+    });
+</script>
+{/if}

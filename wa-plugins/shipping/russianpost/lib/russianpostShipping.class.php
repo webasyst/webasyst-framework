@@ -2,7 +2,7 @@
 
 /**
  * Плагин расчета доставки Почтой России.
- * 
+ *
  * @see http://www.russianpost.ru/rp/servise/ru/home/postuslug/bookpostandparcel/parcelltariff
  *
  * @property $region
@@ -27,7 +27,7 @@
  */
 class russianpostShipping extends waShipping
 {
-    
+
     /**
      * Регистрирует пользовательские элементы управления плагина для использования в интерфейсе настроек.
      * Элементы управления формируются методами класса плагина, имена которых начинаются на 'settings'
@@ -44,7 +44,7 @@ class russianpostShipping extends waShipping
 
     /**
      * Формирует HTML-код пользовательского элемента управления с идентификатором 'WeightCosts'.
-     * 
+     *
      * @see waHtmlControl::getControl()
      * @param string $name Идентификатор элемента управления, указанный в файле настроек
      * @param array $params Параметры элемента управления, указанные в файле настроек
@@ -155,7 +155,7 @@ class russianpostShipping extends waShipping
             $control .= "</tbody>";
             $control .= "</table>";
         } else {
-            $control .= 'Для Российской Федерации не указаны регионы. Добавьте хотя бы один регион в настройках стран и регионов.';
+            $control .= 'Для Российской Федерации не указаны регионы.';
         }
         return $control;
     }
@@ -219,7 +219,7 @@ class russianpostShipping extends waShipping
 
     /**
      * Получение стоимости вариантов доставки, доступных для указанного тарифного пояса.
-     * 
+     *
      * @see http://www.russianpost.ru/rp/servise/ru/home/postuslug/bookpostandparcel/parcelltariff
      * @param float $weight Суммарный вес отправления
      * @param float $price Суммарная стоимость отправляемых товаров
@@ -253,8 +253,8 @@ class russianpostShipping extends waShipping
      * Возвращает массив предварительно рассчитанной стоимости и сроков доступных вариантов доставки,
      * либо сообщение об ошибке для отображения покупателю,
      * либо false, если способ доставки в текущих условиях не дложен быть доступен.
-     * 
-     * 
+     *
+     *
      * @example <pre>
      * //возврат массива вариантов доставки
      * return array(
@@ -267,32 +267,32 @@ class russianpostShipping extends waShipping
      *      ),
      *      ...
      * );
-     * 
+     *
      * //сообщение об ошибке
      * return 'Для расчета стоимости доставки укажите регион доставки';
-     * 
+     *
      * //способ доставки недоступен
      * return false;</pre>
      *
      * Полезные методы базового класса (waShipping), которые можно использовать в коде метода calculate():
-     * 
+     *
      *     <pre>
      *     // суммарная стоимость отправления
      *     $price = $this->getTotalPrice();
-     *     
+     *
      *     // суммарный вес отправления
      *     $weight = $this->getTotalWeight();
-     *     
+     *
      *     // массив с информацией о заказанных товарах
      *     $items = $this->getItems();
-     *     
+     *
      *     // массив с полной информацией об адресе получателя либо значение указанного поля адреса
      *     $address = $this->getAddress($field = null);
      *     </pre>
-     * 
+     *
      * @return mixed
      */
-    public function calculate()
+    protected function calculate()
     {
         $weight = $this->getTotalWeight();
         if ($weight > $this->max_weight) {
@@ -326,7 +326,9 @@ class russianpostShipping extends waShipping
                     $services = false;
                 }
             } else {
-                $services = 'Для расчета стоимости доставки укажите регион доставки';
+                $services = array(
+                    array('rate' => null, 'comment' => 'Для расчета стоимости доставки укажите регион доставки')
+                );
             }
         }
         return $services;
@@ -347,6 +349,10 @@ class russianpostShipping extends waShipping
     public function getPrintForms(waOrder $order = null)
     {
         return extension_loaded('gd') ? array(
+            112 => array(
+                'name'        => 'Форма №112ЭП',
+                'description' => 'Бланк приема переводов в адрес физических и юридических лиц',
+            ),
             113 => array(
                 'name'        => 'Форма №113',
                 'description' => 'Бланк почтового перевода наложенного платежа',
@@ -383,7 +389,7 @@ class russianpostShipping extends waShipping
 
     /**
      * Вспомогательный метод для печати формы с идентификатором 113.
-     * 
+     *
      * @param waOrder $order Объект, содержащий информацию о заказе
      * @param array $params
      * @return string HTML-код формы
@@ -440,10 +446,12 @@ class russianpostShipping extends waShipping
                 $this->view()->assign('editable', waRequest::post() ? false : true);
                 break;
             default:
-                $this->view()->assign(array(
-                    'src_front' => http_build_query(array_merge($request, array('side' => 'front'))),
-                    'src_back'  => http_build_query(array_merge($request, array('side' => 'back'))),
-                ));
+                $this->view()->assign(
+                    array(
+                        'src_front' => http_build_query(array_merge($request, array('side' => 'front'))),
+                        'src_back'  => http_build_query(array_merge($request, array('side' => 'back'))),
+                    )
+                );
                 if (!$strict && !$order) {
                     $this->view()->assign('action', 'preview');
                 }
@@ -453,6 +461,71 @@ class russianpostShipping extends waShipping
         }
 
         return $this->view()->fetch($this->path.'/templates/form113.html');
+    }
+
+    /**
+     * Вспомогательный метод для печати формы с идентификатором 112.
+     *
+     * @param waOrder $order Объект, содержащий информацию о заказе
+     * @param array $params
+     * @return string HTML-код формы
+     */
+    private function displayPrintForm112(waOrder $order, $params = array())
+    {
+        $strict = true;
+        $request = waRequest::request();
+
+        $order['rub'] = intval(waRequest::request('rub', round(floor($order->total))));
+        $order['cop'] = min(99, max(0, intval(waRequest::request('cop', round($order->total * 100 - $order['rub'] * 100)))));
+
+        switch ($side = waRequest::get('side', ($order ? '' : 'print'), waRequest::TYPE_STRING)) {
+            case 'front':
+                $image_info = null;
+                if ($image = $this->read('f112ep_front.gif', $image_info)) {
+                    $format = '%.W{n0} %.2{f0}';
+
+                    $this->printOnImage($image, sprintf('%d', $order['rub']), 110, 680);
+                    $this->printOnImage($image, sprintf('%02d', $order['cop']), 430, 680);
+                    $this->printOnImage($image, waRequest::request('order_amount', waCurrency::format($format, $order->total, $order->currency)), 650, 620, 30);
+                    $this->printOnImage($image, $this->company_name, 210, 875);
+                    $this->printOnImage($image, $this->address1, 210, 957);
+                    $this->printOnImage($image, $this->address2, 70, 1040);
+                    $this->printOnImagePersign($image, $this->zip, 1965, 1020, 58.3, 50);
+
+                    $this->printOnImagePersign($image, $this->inn, 227, 1330, 55.5, 45);
+
+                    $this->printOnImagePersign($image, $this->bank_kor_number, 1207, 1330, 55.5, 45);
+                    $this->printOnImage($image, $this->bank_name, 570, 1405);
+                    $this->printOnImagePersign($image, $this->bank_account_number, 310, 1470, 55.5, 45);
+                    $this->printOnImagePersign($image, $this->bik, 1815, 1470, 55.5, 45);
+
+                    header("Content-type: image/gif");
+                    imagegif($image);
+                    exit;
+                }
+                break;
+            case 'print':
+                if (!$strict && !$order) {
+                    $this->view()->assign('action', 'preview');
+                }
+                $this->view()->assign('editable', waRequest::post() ? false : true);
+                break;
+            default:
+                $this->view()->assign(
+                    array(
+                        'src_front' => http_build_query(array_merge($request, array('side' => 'front'))),
+                        'src_back'  => http_build_query(array_merge($request, array('side' => 'back'))),
+                    )
+                );
+                if (!$strict && !$order) {
+                    $this->view()->assign('action', 'preview');
+                }
+                $this->view()->assign('order', $order);
+                $this->view()->assign('editable', waRequest::post() ? false : true);
+                break;
+        }
+
+        return $this->view()->fetch($this->path.'/templates/form112.html');
     }
 
     /**
@@ -468,8 +541,8 @@ class russianpostShipping extends waShipping
     }
 
     /**
-     * Разбиение адреса получателя на подстроки длиной от 25 до 40 символов для удобного отображения на печатной форме. 
-     * 
+     * Разбиение адреса получателя на подстроки длиной от 25 до 40 символов для удобного отображения на печатной форме.
+     *
      * @param waOrder $order Объект, содержащий информацию о заказе
      * @return array
      */
@@ -555,10 +628,12 @@ class russianpostShipping extends waShipping
                 $this->view()->assign('order', $order);
                 break;
             default:
-                $this->view()->assign(array(
-                    'src_front' => http_build_query(array_merge($request, array('side' => 'front'))),
-                    'src_back'  => http_build_query(array_merge($request, array('side' => 'back'))),
-                ));
+                $this->view()->assign(
+                    array(
+                        'src_front' => http_build_query(array_merge($request, array('side' => 'front'))),
+                        'src_back'  => http_build_query(array_merge($request, array('side' => 'back'))),
+                    )
+                );
                 if (!$strict && !$order) {
                     $this->view()->assign('action', 'preview');
                 }
@@ -569,7 +644,7 @@ class russianpostShipping extends waShipping
         }
         return $this->view()->fetch($this->path.'/templates/form116.html');
     }
-    
+
     /**
      * Возвращает информацию о статусе отправления (HTML).
      *
@@ -607,7 +682,7 @@ class russianpostShipping extends waShipping
 
     /**
      * Предварительная подготовка данных для сохранения настроек с помощью метода saveSettings() базового класса waSystemPlugin.
-     * 
+     *
      * @see waSystemPlugin::saveSettings()
      */
     public function saveSettings($settings = array())
@@ -622,7 +697,7 @@ class russianpostShipping extends waShipping
                     if (strpos($value, ',') !== false) {
                         $value = str_replace(',', '.', $value);
                     }
-                    $value = str_replace(',', '.', (double) $value);
+                    $value = str_replace(',', '.', (double)$value);
                 }
                 unset($value);
             }
@@ -632,7 +707,7 @@ class russianpostShipping extends waShipping
 
     /**
      * Отображение указанного фрагмента текста на изображении печатной формы.
-     * 
+     *
      * @param resource $image Графический ресурс
      * @param string $text Текст
      * @param int $x Горизонтальная координата
@@ -687,10 +762,10 @@ class russianpostShipping extends waShipping
                 break;
         }
     }
-    
+
     /**
      * Посимвольное отображение указанного фрагмента текста на изображении печатной формы.
-     * 
+     *
      * @param resource $image Графический ресурс
      * @param string $text Текст
      * @param int $x Горизонтальная координата
@@ -706,13 +781,13 @@ class russianpostShipping extends waShipping
             $x += $cell_size;
         }
     }
-    
+
     /**
      * Чтение содержимого графического файла.
-     * 
+     *
      * @param string $file Путь к файлу
      * @param array $info Массив информации об изображении
-     * @return resource|bool В случае ошибки возвращает false 
+     * @return resource|bool В случае ошибки возвращает false
      */
     private function read($file, &$info)
     {
@@ -720,8 +795,9 @@ class russianpostShipping extends waShipping
             $file = $this->path.'/lib/config/data/'.$file;
         }
         $info = @getimagesize($file);
-        if (!$info)
+        if (!$info) {
             return false;
+        }
         switch ($info[2]) {
             case 1:
                 // Create recource from gif image

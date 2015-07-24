@@ -1,0 +1,116 @@
+<style>
+    .b-link-to-all-posts { position: absolute; bottom: 0; left: 0; right: 0; text-align: center; opacity: 0; padding: 18px 0 0;
+background: -moz-linear-gradient(top,  rgba(255,255,255,0) 0%, rgba(255,255,255,1) 47%); /* FF3.6+ */
+background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(255,255,255,0)), color-stop(47%,rgba(255,255,255,1))); /* Chrome,Safari4+ */
+background: -webkit-linear-gradient(top,  rgba(255,255,255,0) 0%,rgba(255,255,255,1) 47%); /* Chrome10+,Safari5.1+ */
+background: -o-linear-gradient(top,  rgba(255,255,255,0) 0%,rgba(255,255,255,1) 47%); /* Opera 11.10+ */
+background: -ms-linear-gradient(top,  rgba(255,255,255,0) 0%,rgba(255,255,255,1) 47%); /* IE10+ */
+background: linear-gradient(to bottom,  rgba(255,255,255,0) 0%,rgba(255,255,255,1) 47%); /* W3C */
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00ffffff', endColorstr='#ffffff',GradientType=0 ); /* IE6-9 */
+}
+    .widget-block:hover .b-link-to-all-posts { opacity: 1; transition: opacity 0.5s; }
+
+    .b-comments-widget .b-comment { margin: 10px 0 20px; }
+    .b-comments-widget .b-comment-text { margin-top: 7px; margin-bottom: 5px; }
+    
+    .b-no-comments { margin: 35px 20px; font-weight: normal; }
+    
+    .widget-2x1 .b-no-comments { margin: 45px 55px; }
+    .widget-2x2 .b-no-comments { margin: 105px 35px; }
+</style>
+
+<div class="block b-comments-widget">
+
+  {if !count($comments)}
+  
+    <h5 class="align-center hint b-no-comments">[`There are no comments in your blog yet.`]</h5>
+    
+  {else}
+  
+      <div class="b-link-to-all-posts">
+        <div class="block">
+          <a href="{$wa_backend_url}blog/?module=comments">
+            [`View all comments`]
+          </a>
+        </div>
+      </div>
+    
+      <h6 class="heading">[`Latest comments`]</h6>
+    
+    
+      {foreach $comments as $comment}
+        <div class="b-comment {if $comment.status == blogCommentModel::STATUS_DELETED}b-deleted{/if}" data-comment-id="{$comment.id}">
+          <span class="b-comment-auth-{$comment.auth_provider|default:blogCommentModel::AUTH_USER}">
+            {capture name=commentor_name}
+              <i class="icon16{if !$comment.auth_provider || $comment.auth_provider eq blogCommentModel::AUTH_GUEST || $comment.auth_provider eq blogCommentModel::AUTH_USER} userpic20{/if}" style="background-image: url('{$comment.user.photo_url_20}');"></i><span class="bold">{$comment.user.name|escape}</span>
+            {/capture}
+            {if $comment.site}
+              <a href="{$comment.site}">
+                {$smarty.capture.commentor_name}
+              </a>
+            {else}
+              {$smarty.capture.commentor_name}
+            {/if}
+            {if !$comment.contact_id && $comment.email}
+              <span class="hint">{$comment.email|escape}</span>
+            {/if}
+          </span>
+    
+          <span class="hint">
+            {$comment.datetime|wa_datetime:"humandatetime"}, {$comment.ip}
+          </span>
+    
+          {if $comment.status == blogCommentModel::STATUS_DELETED}
+            <p class="b-comment-text">[`Comment deleted`]</p>
+          {elseif isset($comment.post) && (!$comment.post || $comment.post.status neq blogPostModel::STATUS_PUBLISHED)}
+            <p class="b-comment-text hint italic">[`Comment to an unpublished post (not visible anymore)`]</p>
+          {else}
+            {* COMMENT TEXT *}
+            <p class="b-comment-text">
+              <span{if isset($comment['new'])} class="highlighted"{/if}>{$comment.text|escape|nl2br}</span>
+            </p>
+            {* post link *}
+            {if isset($comment.post) && $comment.post}
+              <p class="hint">
+                [`on`]
+                {if $comment.post.blog_status == blogBlogModel::STATUS_PRIVATE}
+                  <i class="icon10 lock-bw no-overhanging"></i>
+                {/if}
+                {if $comment.post.status eq blogPostModel::STATUS_PUBLISHED}
+                  <a href="{strip}
+                    {if $comment.post.status eq blogPostModel::STATUS_PUBLISHED && $comment.post.blog_status eq blogBlogModel::STATUS_PUBLIC && $comment.post.link}
+                      {$comment.post.link[0]}
+                    {else}
+                      {$wa_backend_url}blog/?module=post&amp;id={$comment.post_id}
+                    {/if}
+                    {if $comment.post.status eq blogPostModel::STATUS_PUBLISHED}
+                      #comments
+                    {else}
+                      &amp;action=edit
+                    {/if}
+                  {/strip}">
+                    <span{if $comment.post.color && $comment.post.color != 'b-white'} class="b-{$comment.post.color|substr:2}"{/if}>
+                      {$comment.post.title|escape}
+                    </span>
+                  </a>
+                {else}
+                  [`unpublished post`]
+                {/if}
+              </p>
+            {/if}
+            {* in reply to *}
+            {if $comment.parent && isset($comment.parent_text)}
+              <p class="hint">[`in reply to`]<strong>
+                {if $comment.parent_status == blogCommentModel::STATUS_DELETED}
+                  <strike>[`Comment deleted`]</strike>
+                {else}
+                  {$comment.parent_text|escape}
+                {/if}
+              </strong></p>
+            {/if}
+          {/if}
+        </div>
+      {/foreach}
+      
+  {/if}
+</div>

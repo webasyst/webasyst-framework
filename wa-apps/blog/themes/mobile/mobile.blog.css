@@ -258,7 +258,7 @@
   display: none;
 }
 .wa-blog-wrapper .comment-form-wrapper .comment-form-fields .field-line .wa-captcha img {
-  width: 100%;
+  max-width: 100%;
   -webkit-border-radius: 5px;
   border-radius: 5px;
 }

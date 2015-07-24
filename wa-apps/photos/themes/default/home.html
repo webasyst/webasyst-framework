@@ -36,6 +36,31 @@
         {include file='photos-thumbs.html'}
     {/if}
     
+    
+    <!-- FOLLOW -->
+    <aside class="connect inline align-center">
+        {if !empty($theme_settings.facebook_likebox_code)}
+            <div class="likebox">
+                {$theme_settings.facebook_likebox_code}
+            </div>
+        {/if}
+        {if !empty($theme_settings.twitter_timeline_code)}
+            <div class="likebox">
+                {$theme_settings.twitter_timeline_code}
+            </div>
+        {/if}
+        {if !empty($theme_settings.vk_widget_code)}
+            <div class="likebox">
+                {$theme_settings.vk_widget_code}
+            </div>
+        {/if}
+        {*
+        <div class="likebox">
+             your custom social widget
+        </div>
+        *}
+    </aside>
+    
 {else}
 
     <div class="welcome">

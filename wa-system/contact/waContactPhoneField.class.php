@@ -101,7 +101,6 @@ class waContactPhoneFormatter extends waContactFieldFormatter
         $formats_str  = array(
             // 10 digits
             '0 800 ###-###',
-            '0 (5##) ##-##-##',
             wa()->getLocale() == 'ru_RU' ? '(###) ###-##-##' : '(###) ###-####',
             // 11 digits
             '(0##) ####-####',

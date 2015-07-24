@@ -1,23 +1,16 @@
 /*
- * Webasyst Default 2.0 theme family
+ * Webasyst Default 3.0 theme family
  *
  * Photos app CSS
  * (requires linking base default.css file from the Site app)
  *
  * @link http://www.webasyst.com/
  * @author Webasyst LLC
- * @copyright 2014 Webasyst LLC
+ * @copyright 2015 Webasyst LLC
  * @package Webasyst
  *
  * ... extends base Site app's default.css
  */
-
-.page-nav .nav-sidebar { width: 220px; float: left; padding: 0; }
-.page-nav .nav-sidebar .nav-sidebar-content { padding: 12% 20% 12% 0; }
-.page-content { margin-right: 0; margin-left: 0; box-shadow: -3px 0 8px -8px rgba(0, 0, 0, 0.7); }
-.page-content.with-sidebar { border-left: none; }
-
-.container { max-width: 970px; /* to match default biggest photo thumbnail size width */ }
 
 #gallery-nav { text-align: center; margin-top: -20px;  margin-bottom: 30px; }
 #gallery-nav ul.menu-h li { float: none; display: inline-block; display: block\9; float: left\9; }
@@ -39,7 +32,7 @@ h1.search-criteria { margin-bottom: 1.5em; text-align: center; }
 --------- */
 
 ul.albums { padding: 0; margin: 0 0 20px; text-align: left; }
-ul.albums li { width: 300px; list-style: none; display: inline-block; text-align: center; margin-top: 30px; margin-bottom: 20px; vertical-align: top; }
+ul.albums li { width: 315px; list-style: none; display: inline-block; text-align: center; margin-top: 30px; margin-bottom: 20px; vertical-align: top; }
 ul.albums li .cover { width: 208px; min-height: 208px; margin: 0 auto 10px; position: relative; line-height: 1.2em; }
 ul.albums li .cover .sublayer { position: absolute; background: #fff; box-shadow: 0 1px 5px rgba(0,0,0,0.2); left: 2px; right: -2px; bottom: 5px;top:-2px; width: 192px; height: 192px; }
 ul.albums li .cover .sublayer.layer1 { z-index: 9; border-color: #aaa; -moz-transform: rotate(-3deg); -moz-transition: all 0.2s ease-in-out; -webkit-transform: rotate(-3deg); -webkit-transition: all 0.2s ease-in-out; transform: rotate(-3deg); transition: all 0.2s ease-in-out; }
@@ -62,8 +55,8 @@ ul.albums.subalbums li:hover .cover img { box-shadow: 0 2px 8px rgba(0,0,0,0.25)
 /* Single photo (slide by slide view)
 ------------------------------------- */
 
-.slideshow { text-align: center; border-bottom: 1px solid rgba(0,0,0,0.15); margin: -25px -30px 0; background: #eee; }
-.slideshow-navigator { background: #fff; padding: 8px 0 4px; border-top: 1px solid rgba(0,0,0,0.15); position: relative; }
+.slideshow { text-align: center; border-bottom: 1px solid rgba(0,0,0,0.15); margin: 0; }
+.slideshow-navigator { background: #fff; padding: 8px 0 4px;  position: relative; }
 
 .photo { margin-bottom: 0; width: 100%; margin-bottom: -5px; }
 .photo img { max-width: 100%; height: auto !important; }
@@ -118,7 +111,7 @@ ul.photostream li.stream-nav.ff i { background-position: -12px 0; }
 
 .view-plain { margin-top: 20px; }
 .view-plain h5 { margin-bottom: 3px; }
-.view-plain .image { margin: 5px -30px 0; max-width: 970px; text-align: left\9; }
+.view-plain .image { margin: 5px -15px 0; max-width: 970px; text-align: left\9; }
 .view-plain img.shadowed { -moz-box-shadow: 0 1px 3px #aaa; -webkit-box-shadow: 0 1px 3px #aaa; box-shadow: 0 1px 3px #aaa; }
 
 ul.view-thumbs { padding: 0; /* margin: -25px -30px 30px;  */list-style: none; text-align: center; line-height: 0; }
@@ -222,6 +215,7 @@ ul.auth-type li a img { margin-right: 5px; top: 4px; position: relative; }
     #gallery-nav { margin-top: 0; }
     
     .image img { height: auto !important; }
+    .image i.image-nav { display: none !important; }
     ul.view-thumbs li { width: auto; }
     ul.view-thumbs li .image { margin: 0 10px 30px; }
     ul.view-thumbs li img.shadowed { box-shadow: none; }
@@ -245,4 +239,14 @@ ul.auth-type li a img { margin-right: 5px; top: 4px; position: relative; }
     
     ul.albums { text-align: center; }
 
+}
+
+
+/* WIDE
+========= */
+
+@media screen and (min-width: 1300px) {
+
+    ul.albums li { width: 294px; }
+    
 }

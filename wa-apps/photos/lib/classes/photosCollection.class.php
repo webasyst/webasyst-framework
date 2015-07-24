@@ -589,7 +589,7 @@ class photosCollection
         } else if (count($hash) == 1) {
             $params[$hash[0]] = $hash[0];
         }
-        $link = wa()->getRouteUrl('photos/frontend', $params, true);
+        $link = wa()->getRouteUrl('photos/frontend', $params, true, wa()->getRouting()->getDomain(null, true, false));
         return $link ? rtrim($link, '/').'/' : null;
     }
 
@@ -728,7 +728,7 @@ class photosCollection
                                 }
                             }
                             foreach ($data as $id => &$v) {
-                                $v[$f] = photosPhoto::getThumbInfo($v, $size);
+                                $v[$f] = photosPhoto::getThumbInfo($v, $size, false);
                             }
                             unset($v);
                         }
@@ -736,7 +736,7 @@ class photosCollection
                             foreach ($data as $id => &$v) {
                                 $v['frontend_link'] = photosFrontendPhoto::getLink(array(
                                     'url' => $this->frontend_base_url ? $this->frontend_base_url.'/'.$v['url'] : $v['url']
-                                ));
+                                ), null, false);
                             }
                             unset($v);
                         }

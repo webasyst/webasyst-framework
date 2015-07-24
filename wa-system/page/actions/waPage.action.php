@@ -56,6 +56,22 @@ class waPageAction extends waViewAction
                 'keywords' => isset($page['keywords']) ? $page['keywords'] : '',
                 'description' => isset($page['description']) ? $page['description'] : ''
             ));
+
+            // Open Graph
+            $og = false;
+            foreach (array('title', 'image', 'video', 'description', 'type') as $k) {
+                if (!empty($page['og_'.$k])) {
+                    $og = true;
+                    $this->getResponse()->setOGMeta($k, $page['og_'.$k]);
+                }
+            }
+            if (!$og) {
+                $this->getResponse()->setOGMeta('title', $page['title']);
+                if (!empty($page['description'])) {
+                    $this->getResponse()->setOGMeta('description', $page['description']);
+                }
+            }
+
             $this->view->assign('page', $page);
 
             try {
@@ -73,7 +89,7 @@ class waPageAction extends waViewAction
         }
     }
 
-    public function display($clear_assign = true)
+    public function display($clear_assign = false)
     {
         if (waSystemConfig::isDebug()) {
             return parent::display($clear_assign);

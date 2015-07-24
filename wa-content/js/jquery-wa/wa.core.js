@@ -35,14 +35,14 @@ $.wa = $.extend(true, $.wa, {
 		}
 		hash = hash.replace(/\/\//g, "/");
 		hash = hash.replace(/^.*#/, '');
-		if ($.browser.safari) {
+		if ($.browser && $.browser.safari) {
 			// Work around bug in safari 5.0.5 and down that broke UTF8 hashes
 			if (parent) {
 				parent.window.location = parent.window.location.href.replace(/#.*/, '') + '#' + hash;
 			} else {
 				location = location.href.replace(/#.*/, '') + '#' + hash;
 			}
-		} else if (parent && !$.browser.msie) {
+		} else if (parent && (!$.browser || !$.browser.msie)) {
 			parent.window.location.hash = hash;
 		} else {
 			location.hash = hash;
@@ -244,12 +244,12 @@ $.wa = $.extend(true, $.wa, {
 
 	/** Enable automatic close of .dropdowns when user clicks on item inside one. */
 	dropdownsCloseEnable: function() {
-		$('.dropdown:not(.disabled)').live('click', this.dropdownsClickHandler);
+		$(document).on('click', '.dropdown:not(.disabled)', this.dropdownsClickHandler);
 	},
 
 	/** Disable automatic close of .dropdowns when user clicks on item inside one. */
 	dropdownsCloseDisable: function() {
-		$('.dropdown:not(.disabled)').die('click', this.dropdownsClickHandler);
+		$(document).off('click', '.dropdown:not(.disabled)', this.dropdownsClickHandler);
 	},
 
 	/** Click handler used in dropdownsCloseDisable() and dropdownsCloseEnable(). */

@@ -1,103 +1,92 @@
-<nav class="page-nav" role="navigation">
+{* @event (frontend_action_default|frontend_action_post|frontend_action_page|frontend_action_error).%plugin_id%.nav_before *}
+{foreach $frontend_action as $plugin => $output}
+	{if !empty($output.nav_before)}{$output.nav_before}{/if}
+{/foreach}
 
-    {* @event (frontend_action_default|frontend_action_post|frontend_action_page|frontend_action_error).%plugin_id%.nav_before *}
-    {foreach $frontend_action as $plugin => $output}
-    	{if !empty($output.nav_before)}{$output.nav_before}{/if}
+<nav class="sidebar" role="navigation">
+
+    <!-- SUBSCRIBE -->
+	{$rss = $wa->blog->rssUrl()}
+	{if $rss}
+		<div class="subscribe leadbox">
+            <ul>
+    			<li><a href="{$rss}" title="[s`RSS`]"><i class="icon16 rss"></i>[s`RSS`]</a></li>
+    			{*
+				<li><a href="#" title="[s`Facebook`]"><i class="icon16 facebook"></i><span>[s`Facebook`]</span></a></li>
+				<li><a href="#" title="[s`Twitter`]"><i class="icon16 twitter"></i><span>[`Twitter`]</span></a></li>
+				<li><a href="#" title="[s`VK`]"><i class="icon16 vk"></i><span>[s`VK`]</span></a></li>
+				*}
+			</ul>
+		</div>
+	{/if}
+    
+    <!-- TIMELINE navigation -->
+    {$timeline = $wa->blog->timeline()}
+    {if !empty($timeline)}
+    
+		<ul class="tree timeline">
+		{$year=null}
+		{foreach $timeline as $year_month => $item}
+			{if $year neq $item.year}
+				{if !$item@first}
+                        </ul>
+                    </li>
+                {/if}
+                <li{if $item.year_selected} class="selected"{/if}>
+	            {$year=$item.year}
+    	        <a href="{$item.year_link}">{$item.year|default:'NULL'}</a>
+				<ul class="tree">
+            {/if}
+            <li {if $item.selected}class="selected"{/if}>
+                <a href="{$item.link}" title="{_w("%d post","%d posts",$item.count)}">{_ws(date("F",gmmktime(0,0,0,$item.month,1)))}</a>
+            </li>
+		    {if $item@last}
+		            </ul>
+	    	    </li>
+            {/if}
+        {/foreach}
+        </ul>
+
+	{/if}
+        
+	<!-- PLUGINS -->
+	{* @event (frontend_action_default|frontend_action_post|frontend_action_page|frontend_action_error).%plugin_id%.sidebar *}
+	{foreach $frontend_action as $plugin => $output}
+	  {if !empty($output.sidebar)}
+	      <hr>
+	      <div class="{$plugin}">
+              {$output.sidebar}
+          </div>
+      {/if}
     {/foreach}
 
-    <div class="nav-sidebar">
-    
-        <div class="nav-sidebar-body">
-
-            {if $wa->currentUrl() != $wa_app_url}
-                <!-- back home nav -->
-                <ul class="menu-h single-link">
-                    <li class="waSlideMenu-back"><a href="{$wa->blog->url()}">[`All posts`]</a></li>
-                </ul>
-            {/if}            
-
-            <!-- subscribe -->
-    		{$rss = $wa->blog->rssUrl()}
-    		{if $rss}
-    			<div class="subscribe">
-                    <ul>
-            			<li><a href="{$rss}" title="[s`RSS`]"><i class="icon16 rss"></i>[s`RSS`]</a></li>
-        				{if !empty($theme_settings.facebook)}
-        				    <li><a href="{$theme_settings.facebook|escape}" title="[s`Facebook`]"><i class="icon16 facebook"></i><span>[s`Facebook`]</span></a></li>
-        				{/if}
-        				{if !empty($theme_settings.twitter)}
-            				<li><a href="https://twitter.com/{str_replace('@','',$theme_settings.twitter|escape)}" title="[s`Twitter`]"><i class="icon16 twitter"></i><span>[`Twitter`]</span></a></li>
-            				<li id="twitter-follow-code">
-            				    <a href="https://twitter.com/{str_replace('@','',$theme_settings.twitter|escape)}" class="twitter-follow-button">Follow @{str_replace('@','',$theme_settings.twitter|escape)}</a>
-            				    <script src="//platform.twitter.com/widgets.js" type="text/javascript"></script>
-            				</li>
-        				{/if}
-        				{if !empty($theme_settings.vk)}
-        				    <li><a href="{$theme_settings.vk|escape}" title="[s`VK`]"><i class="icon16 vk"></i><span>[s`VK`]</span></a></li>
-        				{/if}
-        				{if !empty($theme_settings.gplus)}
-        				    <li><a href="{$theme_settings.gplus|escape}" title="[s`Google+`]"><i class="icon16 gplus"></i><span>[s`Google+`]</span></a></li>
-        				{/if}
-        			</ul>
-        		</div>
-    		{/if}
-
-            <!-- search -->
-            <form method="get" action="{$wa_app_url}" class="search">
-                <div class="search-wrapper">
-                    <input type="search" name="query" {if !empty($blog_query)}value="{$blog_query}"{/if} placeholder="[`Search posts`]">
-                    <button type="submit"></button>
-                </div>
-                <div class="clear-both"></div>
-            </form>
-            
-            <!-- timeline navigation -->
-            {$timeline = $wa->blog->timeline()}
-            {if !empty($timeline)}
-            
-    			<ul class="tree timeline">
-    			{$year=null}
-    			{foreach $timeline as $year_month => $item}
-    				{if $year neq $item.year}
-    					{if !$item@first}
-    	                        </ul>
-                            </li>
-                        {/if}
-    	                <li{if $item.year_selected} class="selected"{/if}>
-        	            {$year=$item.year}
-            	        <a href="{$item.year_link}">{$item.year|default:'NULL'}</a>
-    					<ul class="tree">
-                    {/if}
-                    <li {if $item.selected}class="selected"{/if}>
-                        <a href="{$item.link}" title="{_w("%d post","%d posts",$item.count)}">{_ws(date("F",gmmktime(0,0,0,$item.month,1)))}</a>
-                    </li>
-    			    {if $item@last}
-    			            </ul>
-    		    	    </li>
-    	            {/if}
-                {/foreach}
-    	        </ul>
-    
-        	{/if}
-                
-        	<!-- plugins -->
-    		{* @event (frontend_action_default|frontend_action_post|frontend_action_page|frontend_action_error).%plugin_id%.sidebar *}
-    		{foreach $frontend_action as $plugin => $output}
-    		  {if !empty($output.sidebar)}
-    		      <hr>
-    		      <div class="{$plugin}">
-                      {$output.sidebar}
-                  </div>
-              {/if}
-            {/foreach}
-        
+    <!-- FOLLOW -->
+    <aside class="connect">
+        {if !empty($theme_settings.facebook_likebox_code)}
+            <div class="likebox">
+                {$theme_settings.facebook_likebox_code}
+            </div>
+        {/if}
+        {if !empty($theme_settings.twitter_timeline_code)}
+            <div class="likebox">
+                {$theme_settings.twitter_timeline_code}
+            </div>
+        {/if}
+        {if !empty($theme_settings.vk_widget_code)}
+            <div class="likebox">
+                {$theme_settings.vk_widget_code}
+            </div>
+        {/if}
+        {*
+        <div class="likebox">
+             your custom social widget
         </div>
-
-    </div>
-
+        *}
+    </aside>
+    
 </nav>
 
-<div class="page-content" itemscope itemtype="http://schema.org/WebPage">
+<div class="content with-sidebar" itemscope itemtype="http://schema.org/WebPage">
 
     {if empty($posts) && $wa->currentUrl() == $wa_app_url}
 

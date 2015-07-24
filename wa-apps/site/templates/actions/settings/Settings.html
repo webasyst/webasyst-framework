@@ -6,6 +6,11 @@
 <div class="block s-grey-toolbar">
 	<div class="float-right">
 		<ul class="menu-h">
+            {if empty($domain_alias)}
+            <!-- plugin hook: 'backend_settings.action_button_li' -->
+            {* @event backend_settings.%plugin_id%.action_button_li *}
+            {foreach $backend_settings as $_}{ifset($_.action_button_li)}{/foreach}
+            {/if}
 			<li><a id="s-delete" href="#"><i class="icon16 delete"></i>[`Delete entire website`]</a></li>
 		</ul>
 	</div>
@@ -39,6 +44,7 @@
         				</div>
         			</div>
         		</div>
+            {if empty($domain_alias)}
         		<div class="field">
         			<div class="name">
         				<strong>&#123;$wa-&gt;apps()&#125; [`menu`]</strong>
@@ -77,8 +83,10 @@
         				</div>
         			</div>
         		</div>
+            {/if}
     		</div>
-    
+
+            {if empty($domain_alias)}
     		<div class="field-group">
         		<div class="field">
         			<div class="name">[`Background`]</div>
@@ -181,6 +189,10 @@
                     </div>
                 </div>
             </div>
+
+            <!-- plugin hook: 'backend_settings.section' -->
+            {* @event backend_settings.%plugin_id%.section *}
+            {foreach $backend_settings as $_}{ifset($_.section)}{/foreach}
     
             <div class="field-group">
                 <div class="field">
@@ -190,6 +202,7 @@
                     </div>
                 </div>
             </div>
+            {/if}
     
             <div class="field">
                 <div class="value">

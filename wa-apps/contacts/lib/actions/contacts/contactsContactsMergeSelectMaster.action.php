@@ -94,12 +94,12 @@ class contactsContactsMergeSelectMasterAction extends waViewAction
         // List of contacts that can be safely merged into other contacts
         $slave_ids = array();
         foreach($contacts as &$c) {
-            if ($c['is_user']) {
+            if ($c['is_user'] > 0) {
                 $c['master_only'] = ($c['master_only'] ? $c['master_only'].'<br>' : '')._w('Users can not be merged into other contacts.');
             } else if (empty($c['master_only'])) {
                 $slave_ids[] = $c['id'];
             }
-            
+
             $author = array(
                 'name' => ''
             );
@@ -110,7 +110,7 @@ class contactsContactsMergeSelectMasterAction extends waViewAction
                 }
             }
             $c['author'] = $author;
-            
+
         }
         unset($c);
 

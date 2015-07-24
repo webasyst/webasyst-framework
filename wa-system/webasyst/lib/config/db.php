@@ -273,15 +273,16 @@ return array(
     ),
     'wa_widget' => array(
         'id' => array('int', 11, 'null' => 0, 'autoincrement' => 1),
-        'code' => array('varchar', 32, 'null' => 0),
+        'widget' => array('varchar', 32, 'null' => 0),
         'name' => array('varchar', 255, 'null' => 0),
-        'create_contact_id' => array('int', 11, 'null' => 0),
-        'create_datetme' => array('datetime', 'null' => 0),
+        'contact_id' => array('int', 11, 'null' => 0),
+        'create_datetime' => array('datetime', 'null' => 0),
         'app_id' => array('varchar', 32, 'null' => 0),
-        'locale' => array('varchar', 16, 'null' => 0),
+        'block' => array('int', 11, 'null' => 0),
+        'sort' => array('int', 11, 'null' => 0),
+        'size' => array('char', 3, 'null' => 0),
         ':keys' => array(
             'PRIMARY' => 'id',
-            'code' => array('code', 'app_id', 'unique' => 1),
         ),
     ),
     'wa_widget_params' => array(

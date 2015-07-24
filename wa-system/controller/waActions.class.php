@@ -51,19 +51,26 @@ abstract class waActions extends waController
         return wa()->getView();
     }
 
-    public function display(array $data, $template = null, $return = false)
+    protected function getTemplate()
     {
-        $view = $this->getView();
-
-        if ($template === null) {
-            $template = ucfirst($this->action);
-        }
+        $template = ucfirst($this->action);
 
         if (strpbrk($template, '/:') === false) {
             $match = array();
             preg_match("/[A-Z][^A-Z]+/", get_class($this), $match);
             $template = $this->getPluginRoot().'templates/actions/'.
-                strtolower($match[0])."/".$match[0].$template.$view->getPostfix();
+                strtolower($match[0])."/".$match[0].$template.$this->getView()->getPostfix();
+        }
+
+        return $template;
+    }
+
+    public function display(array $data, $template = null, $return = false)
+    {
+        $view = $this->getView();
+
+        if ($template === null) {
+            $template = $this->getTemplate();
         }
 
         // assign vars

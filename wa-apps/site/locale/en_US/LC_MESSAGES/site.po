@@ -8,7 +8,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 1.7.4\n"
+"X-Generator: Poedit 1.7.5\n"
 "Language: en_US\n"
 
 #: /wa-apps/site/templates/layouts/Sidebar.html:51
@@ -1252,4 +1252,20 @@ msgstr ""
 
 #: /wa-apps/site/templates/actions/settings/Settings.html:180
 msgid "Enable CDN (Content Delivery Network) support for this site by entering CDN URL prefix."
+msgstr ""
+
+#: /wa-apps/site/templates/actions/personal/PersonalSettings.html:73
+msgid "Allow \"Remember me\" option in authorization form"
+msgstr ""
+
+#: /wa-apps/site/templates/layouts/Sidebar.html:34
+msgid "Alias (mirror site) for"
+msgstr ""
+
+#: /wa-apps/site/templates/layouts/Sidebar.html:85
+msgid "This is a mirror site (alias) for <strong>%s</strong>."
+msgstr ""
+
+#: /wa-apps/site/lib/siteCustomSignup.action.php:61
+msgid "Specified email is already in use."
 msgstr ""

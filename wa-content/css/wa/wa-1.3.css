@@ -95,15 +95,20 @@ p a { text-decoration: underline; }
 #wa-launchpad a { color: #888; margin-right: 20px; margin-top: 5px; text-decoration: none; }
 #wa-launchpad li.selected a { color: #eee; }
 a#wa-launchpad-add { float: right; margin-right: 12px; color: #888; text-decoration: none; }
-#wa-announcement { background: #eed; font-size: 0.9em; padding: 0; }
+#wa-announcement { background: #ffd; font-size: 0.9em; padding: 0; position: relative; box-shadow: 0 1px 3px -1px rgba(0, 0, 0, 0.13); }
 #wa-announcement p { padding: 10px; margin: 0; border-bottom: 1px solid #ccb; }
 #wa-announcement.critical { background: #fcc; }
 #wa-announcement.critical p { border-color: #caa; }
-#wa-announcement a.wa-announcement-close { float: right; display: inline-block; margin-right: 12px; margin-top: 12px; margin-left: 10px; color: #884; text-decoration: none; }
+#wa-announcement a.wa-announcement-close { float: right; display: inline-block; margin-right: 12px; margin-top: 7px; margin-left: 13px; color: #aa6; text-decoration: none; font-size: 1.6em; }
 #wa-account { width: 200px; }
 #wa-account { float: left; text-align: center; }
 #wa-account h3 { font-weight: normal; font-size: 16px; text-decoration: none; color: #333; margin: 15px 0 5px; }
 #wa-account a { padding: 0; font-size: .8em; }
+#wa-account a.wa-dashboard-link { display: block; line-height: 1.5em; }
+#wa-account a.wa-dashboard-link:hover h3 { color: red !important; }
+#wa-account a.wa-frontend-link { opacity: 0; transition: 0.5s opacity; position: absolute; }
+#wa-account a.wa-frontend-link i { margin-left: 0.2em; margin-top: 0.1em; }
+#wa-account:hover a.wa-frontend-link { opacity: 1; transition-delay: 0.5s; }
 #wa-usercorner { width: 206px; float: right; padding: 10px 10px; }
 #wa-usercorner .profile.image32px .details { min-height: 60px; }
 #wa-usercorner a.hint { margin-right: 5px; }

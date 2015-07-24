@@ -2,7 +2,7 @@
 
 /**
  *
- * @author WebAsyst Team
+ * @author Webasyst
  * @name WorldPay
  * @description WorldPay payment module
  * @property-read string $test_mode

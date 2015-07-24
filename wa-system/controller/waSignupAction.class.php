@@ -113,7 +113,7 @@ class waSignupAction extends waViewAction
             }
         }
 
-        if (is_array($auth_config['fields'])) {
+        if (!empty($auth_config['fields']) && is_array($auth_config['fields'])) {
             foreach ($auth_config['fields'] as $fld_id => $fld) {
                 if (array_key_exists('required', $fld) && !$data[$fld_id] && $fld_id !== 'password') {
                     $field = waContactFields::get($fld_id);

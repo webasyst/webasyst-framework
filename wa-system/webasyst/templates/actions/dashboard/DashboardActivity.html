@@ -1,0 +1,37 @@
+{$_group = ifset($datetime_group, '')}
+{foreach $activity as $activity_item}
+    {$app_name = $activity_item.app.name}
+    {$app_color = ifset($activity_item.app.sash_color, "#aaa")}
+    {if $activity_item.datetime_group != $_group}
+        <div class="activity-divider heading">{$activity_item.datetime_group}</div>
+    {/if}
+    {$_group=$activity_item.datetime_group}
+
+    <div class="activity-item" data-id="{$activity_item.id}">
+        {if !empty($activity_item.contact_photo) && $activity_item.is_user}
+            <header class="item-image-wrapper">
+                <img class="image-item userpic" src="{waContact::getPhotoUrl($activity_item.contact_id, $activity_item.contact_photo, 32, 32)}" alt="">
+            </header>
+        {/if}
+        <div class="item-content-wrapper">
+            <div class="inline-content">
+                <span class="activity-app" style="background: {$app_color}">{$app_name}</span>
+                <span class="activity-username">
+                    <a href="{$wa_backend_url}contacts/#/contact/{$activity_item.contact_id}">{$activity_item.contact_name|escape}</a>
+                </span>
+                <span class="activity-action gray">{$activity_item.action_name|escape}</span>
+                {if !empty($activity_item.params_html)}
+                    {$activity_item.params_html}
+                {/if}
+            </div>
+            <div class="activity-datetime hint">{waDateTime::format('humandatetime', $activity_item.datetime)}</div>
+        </div>
+    </div>
+{/foreach}
+
+{if !empty($activity_load_more)}
+    <div class="activity-divider show-more-activity-wrapper is-loading">
+        <a class="d-load-more-activity inline-link" id="d-load-more-activity" href="javascript:void(0);"><b><i>[`Load more`]</i></b></a>
+        <img class="d-load-more-animation" src="/wa-content/img/loading32.gif" title="Loading">
+    </div>
+{/if}

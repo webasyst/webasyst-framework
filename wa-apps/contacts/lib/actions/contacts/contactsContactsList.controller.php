@@ -30,6 +30,7 @@ class contactsContactsListController extends waJsonController
         $this->prepare();
 
         if ( ( $query = trim(waRequest::post('query'), '/'))) {
+            $query = urldecode($query);
             if (strpos($query, '/') === false) {
                 $h = $hash = 'search/'.$query;
             } else {

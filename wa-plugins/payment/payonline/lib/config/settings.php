@@ -27,7 +27,7 @@ return array(
     'gateway'       => array(
         'value'        => 'select/',
         'title'        => 'Форма оплаты',
-        'description'  => 'Выберите форму оплаты, которая должна открываться при переходе покупателя на платежную страницу PayOnline System.',
+        'description'  => 'Выберите форму оплаты, которая должна открываться при переходе покупателя на платежную страницу PayOnline.',
         'control_type' => waHtmlControl::SELECT,
         'options'      => array(
             array('title' => 'форма для оплаты банковской картой', 'value' => ''),

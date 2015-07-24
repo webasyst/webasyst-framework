@@ -13,6 +13,13 @@ class webasystCompressCli extends waCliController
     private $path;
     private $archive_path;
 
+    private $params = array();
+
+    private static $default = array(
+        'style' => 'no-vendors',
+        'skip'  => 'none',
+    );
+
     /**
      * @var array
      */
@@ -28,6 +35,7 @@ class webasystCompressCli extends waCliController
 
     private function printHelp()
     {
+
         if (preg_match('/^webasyst(\w+)Cli$/', __CLASS__, $matches)) {
             $callback = create_function('$m', 'return strtolower($m[1]);');
             $action = preg_replace_callback('/^([\w]{1})/', $callback, $matches[1]);
@@ -62,10 +70,10 @@ HELP;
     public function execute()
     {
         $slug = waRequest::param(0);
-        $params = waRequest::param();
+        $this->params = waRequest::param();
         $id_pattern = '[a-z][a-z0-9_]+';
         try {
-            if (empty($params) || isset($params['help']) || empty($slug)) {
+            if (empty($this->params) || isset($this->params['help']) || empty($slug)) {
                 $this->printHelp();
             } else {
                 if (preg_match("@^({$id_pattern})($|/(plugins|themes)/({$id_pattern})$)@", $slug, $matches)) {
@@ -80,7 +88,15 @@ HELP;
                     throw new Exception("invalid SLUG");
                 }
 
-                $skip = ifset($params['skip'], '');
+                $this->tracef('Check & compress %s with params:', $slug);
+
+                foreach (self::$default as $param => $default) {
+                    $this->tracef("\t%s\t%s", $param, implode(', ', $this->getParam($param)));
+                }
+
+
+                $this->tracef('PHP version %s', phpversion());
+
 
                 if ($skipped = $this->initPath()) {
                     $this->trace(str_repeat('-', 80));
@@ -95,7 +111,7 @@ HELP;
 
 
                 $compress = true;
-
+                $skip = ifset($this->params['skip'], '');
 
                 if (!in_array($skip, array('test', 'all'), true)) {
                     //test minimal requirements
@@ -107,7 +123,7 @@ HELP;
                 }
 
                 if ('theme' != $this->type) {
-                    $style = explode(',', ifset($params['style'], 'no-vendors'));
+                    $style = $this->getParam('style');
                     if (!in_array('false', $style, true)) {
                         $count = $this->codeStyle($style);
                         if ($count === false) {
@@ -136,6 +152,15 @@ HELP;
             $this->tracef("ERROR: %s\n\n", $ex->getMessage());
             $this->printHelp();
         }
+    }
+
+    /**
+     * @param string $name
+     * @return array
+     */
+    private function getParam($name)
+    {
+        return array_map('trim', explode(',', ifset($this->params[$name], ifset(self::$default[$name]))));
     }
 
     private function initPath()
@@ -423,6 +448,7 @@ HELP;
                         'sms_plugins',
                         'shipping_plugins',
                         'payment_plugins',
+                        'routing_params',
                         'pages',
                         'themes',
                         'rights',
@@ -785,6 +811,7 @@ HELP;
                 '@\.log$@'                                            => 'log file',
                 '@\.md5$@'                                            => 'checksum file',
                 '@\.(exe|dll|sys)$@'                                  => 'executable file',
+                '@(/|^)[^\.]*todo$@i'                                 => 'TODO file',
                 '@(/|^)[^\.]+$@'                                      => 'unknown type file',
             )
         );

@@ -1,0 +1,40 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: wa-widgets/weather/\n"
+"POT-Creation-Date: 2015-07-22 17:35+0300\n"
+"PO-Revision-Date: \n"
+"Last-Translator: wa-widgets/weather/\n"
+"Language-Team: wa-widgets/weather/\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-Basepath: .\n"
+"Language: en_US\n"
+"X-Generator: Poedit 1.8.2\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPath-1: .\n"
+
+#: /wa-widgets/weather//templates/Default.html:40
+msgid "Could not retrieve weather conditions for <strong>%s</strong>. Please check city name in widget settings or in your contact info."
+msgstr ""
+
+#: /wa-widgets/weather//templates/Default.html:40
+msgid "(unknown city)"
+msgstr ""
+
+#: /wa-widgets/weather//templates/Default.html:42
+msgid "Please enter city name in your contact information or in this widget settings."
+msgstr ""
+
+#: /wa-widgets/weather//lib/config/widget.php:4
+msgid "Weather"
+msgstr ""
+
+#: /wa-widgets/weather//lib/config/settings.php:14
+msgid "City"
+msgstr ""
+
+#: /wa-widgets/weather//lib/config/settings.php:19
+msgid "Weather source"
+msgstr ""

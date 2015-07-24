@@ -1,0 +1,83 @@
+{* LOAD RESOURCES *}
+<link rel="stylesheet" href="{$wa_url}wa-content/css/dashboard/dashboard.css?v={$wa->version()}">
+
+<div class="d-page-wrapper" id="d-page-wrapper">
+
+    <div class="d-content-wrapper">
+        <section class="d-activity-wrapper" id="d-activity-wrapper">
+            {* NOTIFICATIONS *}
+            {if !empty($notifications)}
+                {include file="../dashboard/DashboardAnnouncement.html" inline}
+            {/if}
+
+            {* ACTIVITY LIST *}
+            <div class="d-activity-block" id="widget-activity">
+                <header class="activity-header-wrapper block">
+                    <h4 class="activity-header heading">[`Live Stream`]<i class="icon16 loading" style="display: none;"></i></h4>
+                    <div class="activity-filter-wrapper">
+                        <ul class="menu-h dropdown">
+                            <li>
+                                {$checked = ""}
+                                {$is_not_full = false}
+                                {$check_count = 0}
+                                {capture assign="select_options"}
+                                    {foreach $apps as $app_id => $app}
+                                        {if in_array($app_id, $user_filters) || !$user_filters}
+                                            {$checked = "checked"}
+                                            {$check_count = $check_count + 1}
+                                        {else}
+                                            {$checked = ""}
+                                            {$is_not_full = true}
+                                        {/if}
+                                        <li>
+                                            <label><input {$checked} type="checkbox" name="app_id[]" value="{$app_id}">&nbsp;{$app.name}</label>
+                                        </li>
+                                    {/foreach}
+                                {/capture}
+                                <a href="javascript:void(0);" class="inline-link"><b><i id="activity-select-text" data-full-text="[`All apps`]" data-not-full-text="[`Selected Apps`]">{if $is_not_full}[`Selected Apps`] ({$check_count}){else}[`All apps`]{/if}</i></b><i class="icon10 darr-tiny"></i></a>
+                                <form action="" id="activity-filter">
+                                    <ul class="menu-v">
+                                        {$select_options|strip}
+                                    </ul>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="cl"></div>
+                </header>
+                <section class="activity-list-wrapper">
+                    <div class="activity-list-block" data-empty-text="[`No events in the live stream yet.`]">
+                        {if !empty($activity)}
+                            {include file="../dashboard/DashboardActivity.html" inline}
+                        {else}
+                            <div class="empty-activity-text">[`No events in the live stream yet.`]</div>
+                        {/if}
+                    </div>
+                </section>
+            </div>
+
+            {* WIDGETS *}
+            <div class="d-widgets-list-wrapper" id="widgets-list-wrapper" data-backend-url="{$wa_backend_url|escape}">
+
+                {* ANIMATION WRAPPER *}
+                <div class="rotated-image-wrapper">
+                    <img class="rotated-image" src="/wa-content/img/loading32.gif" title="Loading">
+                </div>
+            </div>
+        </section>
+
+        {* WIDGETS *}
+        {include file="../dashboard/DashboardWidgets.html" inline}
+
+    </div>
+
+    <div class="d-settings-wrapper" id="d-settings-wrapper">
+        <div class="d-settings-container" id="d-settings-container">
+
+            <div class="d-settings-inner-container">
+                <div class="d-settings-block" id="d-settings-block"></div>
+            </div>
+
+        </div>
+    </div>
+</div>

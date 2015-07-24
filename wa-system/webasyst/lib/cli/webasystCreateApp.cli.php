@@ -135,11 +135,15 @@ HELP;
 App with id "{$app_id}" created!
 
 Useful commands:
-    #generate app's database description file db.php
+    # generate app's database description file db.php
     php wa.php generateDb $app_id
 
-    #generate app's locale files
+    # generate app's locale files
     php wa-system/locale/locale.php $app_id
+
+    # generate layouts, controllers and actions
+    php wa.php createLayout $app_id backend
+    php wa.php createAction --help
 REPORT;
 
             if (isset($params['plugins'])) {

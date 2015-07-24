@@ -436,7 +436,6 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) {
                     var initial_value = (this.fieldData.options && this.fieldData.options[this.fieldValue]) || this.fieldValue;
                     var input = $('<input type="text" class="hidden val">').val(initial_value);
                     var select = $('<select class="hidden val"></select>').hide();
-                    var change_handler;
 
                     var getVal = function() {
                         if (input.is(':visible')) {
@@ -448,6 +447,24 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) {
                         }
                     };
 
+                    var change_handler = function() {
+                        var parent_val_element = $(this);
+                        var old_val = getVal();
+                        var parent_value = (parent_val_element.val() || '').toLowerCase();
+                        var values = cond_field.fieldData.parent_options[parent_value];
+                        if (values) {
+                            input.hide();
+                            select.show().children().remove();
+                            for (i = 0; i < values.length; i++) {
+                                select.append($('<option></option>').attr('value', values[i]).text(values[i]).attr('selected', cond_field.fieldValue == values[i]));
+                            }
+                            select.val(old_val);
+                        } else {
+                            input.val(old_val || '').show().blur();
+                            select.hide();
+                        }
+                    };
+
                     // Listen to change events from field we depend on.
                     // setTimeout() to ensure that field created its new domElement.
                     setTimeout(function() {
@@ -455,24 +472,11 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) {
                             input.show();
                             return;
                         }
-                        parent_field.domElement.on('change', '.val', change_handler = function() {
-                            var parent_val_element = $(this);
-                            var old_val = getVal();
-                            var parent_value = (parent_val_element.val() || '').toLowerCase();
-                            var values = cond_field.fieldData.parent_options[parent_value];
-                            if (values) {
-                                input.hide();
-                                select.show().children().remove();
-                                for (i = 0; i < values.length; i++) {
-                                    select.append($('<option></option>').attr('value', values[i]).text(values[i]).attr('selected', cond_field.fieldValue == values[i]));
-                                }
-                                select.val(old_val);
-                            } else {
-                                input.val(old_val || '').show().blur();
-                                select.hide();
-                            }
-                        });
-                        change_handler.call(parent_field.domElement.find('.val:visible')[0]);
+                        parent_field.domElement.on('change', '.val', change_handler);
+                        var el = parent_field.domElement.find('.val:visible');
+                        if (el.length) {
+                            change_handler.call(el.get(0));
+                        }
                     }, 0);
 
                     cond_field.unbindEventHandlers = function() {

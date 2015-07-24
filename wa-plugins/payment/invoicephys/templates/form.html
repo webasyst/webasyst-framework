@@ -1,151 +1,127 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html>
+{*
+Шаблон квитанции для физических лиц (РФ)
+
+ @var waOrder $order Order data
+ @var string[string] $settings Payment plugin settings (data already escaped!)
+
+*}{strip}
+<!DOCTYPE HTML>
+<html style="padding: 0; margin: 0;">
 <head>
-{* шаблон квитанции для физических лиц (РФ) *}
-<title>Квитанция {$order.order_id_str}</title>
-<meta http-equiv=content-type content="text/html;  charset=utf-8">
-<style type="text/css">
-{include file="./../css/printform.css" inline}
-body {
-    font-family: times new roman;
-    font-size: 11px;
-}
-@media screen {
-
-    input,.noprint {
-        display: inline;
-        height: auto;
-    }
-    .printable{
-        display: none;
-    }
-}
-
-@media print {
-    input,.noprint {
-        display: none;
-    }
-    .printable{
-        display: inline;
-    }
-}
-</style>
-{if !empty($strict)}
-<script type="text/javascript">
-var lang_strings = {
-    'edit_link':'Редактировать',
-    'field_title':'nnnnn',
-    'save_link':'Использовать'
-}
-</script>
-<script type="text/javascript" src="/wa-plugins/payment/invoicephys/js/inline_edit_printform.js"></script>
-{/if}
+    <meta charset="UTF-8">
+    <title>Квитанция {$order.order_id_str|escape}</title>
 </head>
-<body {if !empty($strict)} onload="printform.init('inline_edit');"{/if}>
+<body style="padding: 0; margin: 0; font-family: Verdana, Arial, sans-serif; font-size: 7pt; line-height: 1; color: #000;">
 
-<div align=center>
-    <br>
-    <table cellspacing=0 cellpadding=4 width=680 border=1>
-        <tbody>
-            <tr>
-                <td valign=bottom width="30%">
-                    <p align=right>Извещение</p>
-                    <p align=right>&nbsp;</p>
-                    <p align=right>&nbsp;</p>
-                    <p align=right>&nbsp;</p>
-                    <p align=right>&nbsp;</p>
-                    <p align=right>&nbsp;</p>
-                    <p align=right>&nbsp;</p>
-                    <p align=right>Кассир</p>
-                </td>
-                <td width="70%">
-                    {capture name='row'}
-                    <table cellspacing=0 cellpadding=2 width="100%" border=0>
-                        <tbody>
-                            <tr>
-                                <td colspan=3><strong>Получатель платежа</strong></td>
-                            </tr>
-                            <tr>
-                                <td colspan=3>Наименование:&nbsp;{$settings.company_name}</td>
-                            </tr>
-                            <tr>
-                                <td>счет:&nbsp;{$settings.bank_account_number}</td>
-                                <td>инн:&nbsp;{$settings.inn}</td>
-                                <td>кпп:&nbsp;{$settings.kpp}</td>
-                            </tr>
-                            <tr>
-                                <td colspan=3>Наименование банка:&nbsp;{$settings.bank_name}</td>
-                            </tr>
-                            <tr>
-                                <td>кор.&nbsp;счет:&nbsp;{$settings.bank_kor_number}</td>
-                                <td colspan=2>бик:&nbsp;{$settings.bik}</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <br>
-                    <table cellspacing=0 cellpadding=2 width="100%" border=0>
-                        <tbody>
-                            {if !empty($order.billing_address.address)}
-                            <tr>
-                                <td><strong>Плательщик</strong></td>
-                            </tr>
-                            <tr>
-                                <td class="inline_edit">{$order.billing_address.name|escape}</td>
-                            </tr>
-                            <tr>
-                                <td class="inline_edit">{$order.billing_address.address|escape}</td>
-                            </tr>
-                            {else}
-
-                            <tr>
-                                <td><strong>Плательщик</strong></td>
-                            </tr>
-                            <tr>
-                                <td class="inline_edit">{$order.shipping_address.name|escape}</td>
-                            </tr>
-                            <tr>
-                                <td class="inline_edit">{$order.shipping_address.address|escape}</td>
-                            </tr>
-                            {/if}
-                        </tbody>
-                    </table>
-                    <br>
-                    <table cellspacing=0 cellpadding=2 width="100%" border=1>
-                        <tbody>
+    <table cellpadding="8" cellspacing="0" width="680" border="0" style="border-collapse: collapse; margin: auto;">
+        <tr>
+            <td style="vertical-align: bottom; width: 30%; border: 2px solid #000; text-align: right;">
+                <table cellpadding="0" cellspacing="0" border="0" width="100%" style="border-collapse:collapse;">
+                    <tr>
+                        <td style="vertical-align: top; text-align: right;">Извещение</td>
+                    </tr>
+                    <tr>
+                        <td style="vertical-align: top; padding: 15em 0 5px; text-align: right;">Кассир</td>
+                    </tr>
+                </table>
+            </td>
+            <td style="width: 70%; border: 2px solid #000;">
+                {capture name='row'}
+                    <table cellpadding="0" cellspacing="0" border="0" width="100%" style="border-collapse:collapse;">
                         <tr>
-                            <td><div align=center>Назначение платежа</div></td>
-                            <td><div align=center>Дата</div></td>
-                            <td><div align=center>Сумма</div></td>
+                            <td style="vertical-align: top;">
+                                <table cellpadding="4" cellspacing="0" border="0" width="100%" style="border-collapse:collapse;">
+                                    <tr>
+                                        <td colspan=3><strong>Получатель платежа</strong></td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan=3>Наименование:&nbsp;{$settings.company_name}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>счет:&nbsp;{$settings.bank_account_number}</td>
+                                        <td>инн:&nbsp;{$settings.inn}</td>
+                                        <td>кпп:&nbsp;{$settings.kpp}</td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan=3>Наименование банка:&nbsp;{$settings.bank_name}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>кор.&nbsp;счет:&nbsp;{$settings.bank_kor_number}</td>
+                                        <td colspan=2>бик:&nbsp;{$settings.bik}</td>
+                                    </tr>
+                                </table>
+                            </td>
                         </tr>
                         <tr>
-                            <td><div align=center class="inline_edit">{$settings.description|regex_replace:'/\{\$order\.id\}/':$order.id_str}</div></td>
-                            <td><div align=center>&nbsp;</div></td>
-                            <td><div align=center class="inline_edit">{$order.total|wa_format_amount:$order.currency:'%2'}</div></td>
+                            <td style="vertical-align: top; padding: 10px 0 0;">
+                                <table cellspacing=0 cellpadding=4 width="100%" border="0">
+                                    {if !empty($order.billing_address.address)}
+                                        <tr>
+                                            <td><strong>Плательщик</strong></td>
+                                        </tr>
+                                        <tr>
+                                            <td>{$order.billing_address.name|default:$order.contact_name|escape}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>{$order.billing_address.address|escape}</td>
+                                        </tr>
+                                    {else}
+                                        <tr>
+                                            <td><strong>Плательщик</strong></td>
+                                        </tr>
+                                        <tr>
+                                            <td>{$order.shipping_address.name|default:$order.contact_name|escape}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>{$order.shipping_address.address|escape}</td>
+                                        </tr>
+                                    {/if}
+                                </table>
+                            </td>
                         </tr>
-                        </tbody>
+                        <tr>
+                            <td style="vertical-align: top; padding: 10px 0 0;">
+                                <table cellspacing="0" cellpadding="4" border="1" style="width: 100%; text-align: center;">
+                                    <tr>
+                                        <td>Назначение платежа</td>
+                                        <td>Дата</td>
+                                        <td>Сумма</td>
+                                    </tr>
+                                    <tr>
+                                        <td>{$settings.description|regex_replace:'/\{\$order\.id\}/':{$order.id_str|escape}}</td>
+                                        <td></td>
+                                        <td>{$order.total|wa_format_amount:$order.currency:'%2'}</td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="vertical-align: top; padding: 10px 0 5px;">
+                                Подпись плательщика:
+                            </td>
+                        </tr>
                     </table>
-                    <p>Подпись плательщика:</p>
-                    {/capture}
-                    {$smarty.capture.row}
-                </td>
-            </tr>
-            <tr>
-                <td valign=bottom>
-                    <p align=right>Квитанция</p>
-                    <p align=right>&nbsp;</p>
-                    <p align=right>&nbsp;</p>
-                    <p align=right>&nbsp;</p>
-                    <p align=right>&nbsp;</p>
-                    <p align=right>&nbsp;</p>
-                    <p align=right>&nbsp;</p>
-                    <p align=right>Кассир</p>
-                </td>
-                <td>
-                    {$smarty.capture.row}
-                </td>
-            </tr>
-        </tbody>
+                {/capture}
+                {$smarty.capture.row}
+            </td>
+        </tr>
+        <tr>
+            <td style="vertical-align: bottom; border: 2px solid #000; text-align: right;">
+                <table cellpadding="0" cellspacing="0" border="0" width="100%" style="border-collapse:collapse;">
+                    <tr>
+                        <td style="vertical-align: top; text-align: right;">Квитанция</td>
+                    </tr>
+                    <tr>
+                        <td style="vertical-align: top; padding: 15em 0 5px; text-align: right;">Кассир</td>
+                    </tr>
+                </table>
+            </td>
+            <td style="border: 2px solid #000;">
+                {$smarty.capture.row}
+            </td>
+        </tr>
     </table>
-</div>
+
 </body>
 </html>
+{/strip}

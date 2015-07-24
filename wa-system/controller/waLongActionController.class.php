@@ -17,52 +17,65 @@
  * This controller helps to implement potentially long operations when it's impossible to
  * avoid max execution time limit.
  *
- * Each operation is identified by processId. It is possible to run several processes with
+ * Each long operation is identified by processId. It is possible to run several processes with
  * different ids at the same time.
- *
- * Only one instance of (descendant of) this class with given id can be a Runner at given time.
- * Runner is an instance that performs actual work. Runner works until he's done or until
- * he dies exceeding max execution time. Browser must request page again from time to time
- * if old connection gets closed to resume the process.
- *
- * While Runner is alive, all other possible instances will automatically become Messengers.
- * Messenger don't do real work but can access (and give to user) some information about
- * Runner's status.
- *
- * It is possible to keep data that is guaranteed not to became corrupt regardless of
- * when (or if) script fails. $this->data is a persistent array and $this->fd is
- * a file descriptor with this guarantee. Only Runner has write access to this persistent data.
- * All data in $this->data must be serializable.
- *
- * For all methods of this class that are called inside a transaction:
- * 1) If a script fails inside a transaction then all changes to $this->data and
- *    $this->fd file get reverted and are not visible inside subsequent transactions.
- * 2) If transaction completes successfully then all changes to $this->data and $this->fd
- *    are visible to subsequent transactions.
- *
- * Execution time for every function that runs inside a transaction must be reasonably small
- * for this class to be able to keep it's guarantees.
- * Reasonably small = no more than 10% of max execution time for each transaction.
  *
  * Controller's entry point for this class expects a 'processId' get or post parameter.
  * It then becomes available as $this->processId. If id is not given in request,
  * a new process is started and $this->info() is responsible for returning id to user
- * for subsequent operations. $this->newProcess indicates whether this
- * Runner created the process (true) or not (false).
+ * for subsequent operations. $this->newProcess indicates whether current call
+ * created the process (true) or not (false).
  *
- * $this->finish() gets called when $this->isDone() return true.
- * If $this->finish() return true, then process removes all its files and cannot
- * be accessed again. Otherwise another instance can be called for this process
- * to access the same result data and file.
+ * Browser must request page from time to time keep the process alive,
+ * as well as fetching info about its status.
  *
- * Besides $this->fd and $this->data, $this->max_exec_time is also available for reading.
- * It contains max execution time for this script (false if unknown).
+ * When a correct 'processId' get/post parameter is present, the call can either become a Runner
+ * or a Messenger. There can only be one Runner at given time with given processId.
+ * Runner is an instance that performs actual work. Runner works until he's done or until
+ * he dies exceeding max execution time.
+ *
+ * While Runner is alive, all other possible instances will automatically become Messengers.
+ * Messengers don't do real work but can access (and return to browser) some information about
+ * Runner's status.
+ * See $this->_obtainLock() for the inner mechanism of how Runner uniqueness is achieved.
+ *
+ * Runner performs work by repeatedly calling $this->step() in a loop,
+ * while $this->isDone() returns false. See the actual loop in $this->execute().
+ *
+ * step(), isDone() and some other methods of this class run inside a transaction.
+ * See comments for each method specifying transaction status.
+ * Transactions guarantee data consistency regardless of when (or if) script fails.
+ * $this->data is a persistent array and $this->fd is a file descriptor with this guarantee.
+ * Only Runner has write access to this persistent data. All data in $this->data must be serializable.
+ *
+ * Transaction makes the following guarantees:
+ * 1) If a script fails inside a transaction then all changes to $this->data and
+ *    $this->fd file get reverted and are not visible inside subsequent transactions.
+ * 2) If transaction completes successfully then all changes to $this->data and $this->fd
+ *    are visible to subsequent transactions.
+ * See $this->_save() and $this->_loadData() for the inner mechanism of how guarantees are achieved.
+ *
+ * Execution time for every function that runs inside a transaction must be reasonably small
+ * for this class to be able to progress while keeping it's guarantees.
+ * Reasonably small = no more than 10-20% of max execution time for each transaction (i.e. step()).
+ *
+ * As soon as all work is done and $this->isDone() returns true, all new calls become Messengers
+ * and should return something to browser indicating success. For such Messengers $this->finish() is called first.
+ * It may return true to make the class clean up all data of current process. Or ir may return false
+ * to postpone cleaning-up, allowing more time (and more Messengers). This may be useful, for example,
+ * to wait until user downloads data file generated by a long process.
+ *
+ * Note that for such Messengers, when finish() returned false, infoReady() is called instead of info()
+ * to return data to browser.
+ *
+ * $this->max_exec_time is also available for reading. It contains max execution time for this script (false if unknown).
  *
  * @property-read string $processId
  * @property array $data
  * @property-read resource $fd
  * @property-read boolean $newProcess
  * @property-read int $max_exec_time
+ * @property-read int $isRunner
  */
 abstract class waLongActionController extends waController
 {
@@ -73,7 +86,7 @@ abstract class waLongActionController extends waController
     /**
      * @var waLongActionController
      */
-    private static $instance;
+    protected static $instance;
 
     /**
      * Checks if it's ok to initialize a new process.
@@ -103,11 +116,8 @@ abstract class waLongActionController extends waController
     /**
      * Performs a small piece of work.
      * Runs inside a transaction ($this->data and $this->fd are accessible).
-     *
-     * The longer it takes to complete one step, the more time it is possible to lose if script fails.
-     * The shorter, the more overhead there are because of copying $this->data and $this->fd after
-     * each step. So, it should be reasonably long and reasonably short at the same time.
-     * 5-10% of max execution time is recommended.
+     * Should never take longer than 3-5 seconds (10-15% of max_execution_time).
+     * It is safe to make very short steps: they are batched into longer packs between saves.
      *
      * $this->getStorage() session is already closed.
      * @return boolean false to end this Runner and call info(); true to continue.
@@ -125,6 +135,15 @@ abstract class waLongActionController extends waController
      */
     abstract protected function finish($filename);
 
+    /** Called by a Messenger when the Runner is still alive, or when a Runner
+     * exited voluntarily, but isDone() is still false.
+     *
+     * This function must send $this->processId to browser to allow user to continue.
+     *
+     * $this->data is read-only. $this->fd is not available.
+     */
+    abstract protected function info();
+
     /**
      * Called by a new Runner when the old one dies.
      * Should be used to restore any non-persistent data for $this->step() if needed.
@@ -135,14 +154,25 @@ abstract class waLongActionController extends waController
     {
     }
 
-    /** Called by a Messenger when the Runner is still alive, or when a Runner
-     * exited voluntarily, but isDone() is still false.
-     *
-     * This function must send $this->processId to allow user to continue.
-     *
-     * $this->data is read-only. $this->fd is not available.
+    /** Called instead of info() when isDone() is true but finish() returned false,
+     * indicating that it's not ready to clean up data yet. This could return meaningful
+     * data to browser.
+     * $this->data is read-only, $this->fd is not available.
+     * $this->getStorage() session is already closed.
+     * @param $filename string full path to resulting file
      */
-    protected function info()
+    protected function infoReady($filename)
+    {
+    }
+
+    /**
+     * Called by a Runner when PHP is just about to die of max_execution_time limit.
+     * Class can be in any state. You should be careful and not make any assumptions
+     * about where exactly the script died.
+     *
+     * Still, can be useful to send $this->info() to user from a dying runner.
+     */
+    protected function uncleanShutdown()
     {
     }
 
@@ -151,40 +181,40 @@ abstract class waLongActionController extends waController
     //
 
     // actual source for $this->processId for __get()
-    private $_processId = 0;
+    protected $_processId = 0;
 
     // persistent storage.
-    private $_data = array(
+    protected $_data = array(
         'data'        => array(), // actual source for $this->data for __get() and __set()
-        'avg_time'    => 15, // average time in seconds between calls to $this->_save(), total_time/total_saves
+        'avg_time'    => null, // average time in seconds between calls to $this->_save(), total_time/total_saves
         'total_saves' => 0,
         'total_time'  => 0,
-        'heartbeat'   => false, //timestamp of last save
-        'complete'    => false,
-        'ready'       => false,
+        'total_steps' => 0,
+        'heartbeat'   => false, // microtime of last save to disk
+        'ready'       => false, // true if last isDone() call returned true
     );
 
     /**
      * actual source for $this->fd for __get()
      * @var resource
      */
-    private $_fd = null;
+    protected $_fd = null;
 
     // Whether we're currently inside a transaction
-    private $_transaction = false;
+    protected $_transaction = false;
 
     // Whether it's a Runner object
-    private $_runner = false;
+    protected $_runner = false;
 
     // true if this Runner generated process id himself (didn't get it from request)
-    private $_newProcess = false;
+    protected $_newProcess = false;
 
-    private $_max_exec_time;
-    private $_chunk_time;
+    protected $_max_exec_time;
+    protected $_chunk_time;
 
     // Files used by this class.
     // Actual filenames are filled in by $this->_initDataStructures() and $this->_obtainLock()
-    private $_files = array(
+    protected $_files = array(
         'new'      => array(
             'data' => '', // file with $this->data serialized.
             'file' => '', // $this->fd points here. File is locked by a live Runner permanently.
@@ -196,11 +226,12 @@ abstract class waLongActionController extends waController
         'flock_ok' => '', // this file exists if we're sure that flock works in this system.
     );
 
-    // last call of _save()
     /**
+     * Contains microtime and resets on start of the Runner and on each save() that writes to disk.
+     * Used to measure total time of the process.
      * @var float
      */
-    private $_heartbeat = 0.0;
+    protected $_heartbeat = 0.0;
 
     /**
      *
@@ -232,8 +263,9 @@ abstract class waLongActionController extends waController
                 $this->_runner = false;
                 if ($this->finish($this->_files['old']['file'])) {
                     $this->_cleanup();
+                } else {
+                    $this->infoReady($this->_files['old']['file']);
                 }
-                // check info output
                 return;
             }
             switch ($status) {
@@ -266,39 +298,44 @@ abstract class waLongActionController extends waController
         // to be able to return processId to browser instantly.
         $continue = !$this->_newProcess;
 
+        $starting_step = $this->_data['total_steps'];
         $this->_heartbeat = microtime(true);
-        $this->_data['complete'] = !$continue;
-        $this->_save(true);
         $this->_transaction = true;
-        while ($continue && !$this->isDone()) {
+
+        $is_done = $this->isDone();
+        while ($continue && !$is_done) {
+            $this->_data['total_steps']++;
             $continue = $this->step();
-            $this->_data['complete'] = !$continue;
-            $this->_save();
+            $continue = $this->_save() && $continue;
+            $is_done = $this->isDone();
         }
 
-        if ($continue) {
-            // We're done!
-            $this->_data['ready'] = true;
+        if ($is_done) {
+            if (!$this->_data['ready'] || $this->_data['total_steps'] != $starting_step) {
+                $this->_data['ready'] = true;
+                $this->_save(true);
+            }
         }
-        $this->_save(true);
 
         $this->_runner = false;
         $this->_transaction = false;
 
-        if ($continue) {
+        // Disable our shutdown handler at this point
+        self::$instance = false;
+
+        if ($is_done) {
             if ($this->finish($this->_files['old']['file'])) {
                 $this->_cleanup();
+            } else {
+                $this->infoReady($this->_files['old']['file']);
             }
-            // check info output
         } else {
             $this->info();
         }
-
-        self::$instance = false;
     }
 
     /** Close $this->_fd and remove all files we created */
-    private function _cleanup()
+    protected function _cleanup()
     {
         @fflush($this->_fd);
         @flock($this->_fd, LOCK_UN);
@@ -314,7 +351,7 @@ abstract class waLongActionController extends waController
     /** Creates private files and $this->... data structures for new process.
      * Initializes $this->_processId, $this->_data, $this->_fd, $this->_runner = true
      * Called once when a process is created. */
-    private function _initDataStructures()
+    protected function _initDataStructures()
     {
         // Generate new unique id
         $attempts = 3;
@@ -360,7 +397,7 @@ abstract class waLongActionController extends waController
      * @throws waException
      * @return string status of this instance: TYPE_RUNNER, TYPE_MESSENGER, or TYPE_NONE if data files not found.
      */
-    private function _obtainLock()
+    protected function _obtainLock()
     {
         $this->_files = $this->_getFilenames();
 
@@ -429,7 +466,7 @@ abstract class waLongActionController extends waController
      * @param $fileContents string data file contents
      * @return Array|boolean Unserialized array or false on failure
      **/
-    private function unserializeData($fileContents)
+    protected function unserializeData($fileContents)
     {
         $arr = explode('#', $fileContents, 2);
         if (count($arr) != 2) {
@@ -451,7 +488,7 @@ abstract class waLongActionController extends waController
      * @throws waException
      * @return String serialized data
      */
-    private function serializeData($array)
+    protected function serializeData($array)
     {
         $serialized = serialize($array);
         if (!$serialized) {
@@ -463,7 +500,7 @@ abstract class waLongActionController extends waController
     /** Loads data from files using filenames from $this->_files
      * Makes sure both $this->_data and $this->_fd contain
      * non-corrupt data, restoring it if needed. */
-    private function _loadData()
+    protected function _loadData()
     {
         if (!$this->_runner) {
             throw new waException('Cannot _loadData() for Messenger.');
@@ -479,6 +516,7 @@ abstract class waLongActionController extends waController
                 throw new waException('Both sets of data are corrupt in waLongActionController.');
             }
 
+            // Just copy old file into new file, and we're ok.
             ftruncate($this->_fd, 0);
             fseek($this->_fd, 0);
             $fd2 = fopen($this->_files['old']['file'], 'rb');
@@ -494,7 +532,7 @@ abstract class waLongActionController extends waController
     }
 
     /** Return a new $this->_files structure using $this->processId */
-    private function _getFilenames()
+    protected function _getFilenames()
     {
         $dir = waSystem::getInstance()->getTempPath('longop/'.$this->processId);
         return array(
@@ -516,66 +554,94 @@ abstract class waLongActionController extends waController
 
     }
 
-    /** Saves current persistent data. */
-    private function _save($force = false, $attempts = 3)
+    /**
+     * Saves current persistent data.
+     *
+     * Non-forced saves will batch multiple steps into one write to disk, when steps are too short.
+     *
+     * Saving and loading process must ensure data consistency between transactions
+     * no matter how and where transaction fails (including the saving process).
+     *
+     * Invariant:
+     * 1) if new_data unserializes successfully, then new_data and new_file contain
+     * consistent (non-corrupt) state of the process.
+     * 2) if new_data fails to unserialize, then old_data and old_file contain
+     * consistent state.
+     */
+    protected function _save($force = false)
     {
 
-        // // Do not save more often than once a sec
-
-        // invariant:
-        // 1) if new_data unserializes successfully, then new_data and new_file contain
-        // consistent (non-corrupt) state of the process.
-        // 2) if new_data fails to unserialize, then old_data and old_file contain
-        // consistent state.
-
-        // At this point 'old' represents good data before current transaction even started;
-        // new_data contains garbage; and new_file is in correct state for the end of current transaction.
-
-        static $skipped = 0;
         $curTime = microtime(true);
-        if (!$force) {
-            if (($curTime - $this->_data['heartbeat']) > $this->_chunk_time) {
-                $force = true;
-            }
-        }
-        ++$skipped;
+        $force = $force || ($curTime - $this->_heartbeat) > $this->_chunk_time;
 
         if ($force) {
+
+            //
+            // At this point 'old' represents good data before current transaction even started;
+            // new_data contains garbage; and new_file is in correct state for the end of current transaction.
+            //
+
             fflush($this->_fd);
+            $prev_heartbeat = $this->_data['heartbeat'];
             $this->_data['total_saves']++;
             $this->_data['total_time'] += $curTime - $this->_heartbeat;
             $this->_data['avg_time'] = $this->_data['total_time'] / $this->_data['total_saves'];
             $this->_data['heartbeat'] = $curTime;
             $this->_heartbeat = $curTime;
 
-            $this->put($this->_files['new']['data'], $this->serializeData($this->_data));
-
-            // Now 'new' represents good data after current transaction.
-            // We can now spoil 'old' since we have 'new'.
-
-            $failed = !copy($this->_files['new']['file'], $this->_files['old']['file']);
-            $failed = !copy($this->_files['new']['data'], $this->_files['old']['data']) || $failed;
-
-            //clearstatcache();
-            //$failed = filesize($this->_files['old']['data']) <= 0 || $failed; // too risky to check this on windows
+            $failed = (false === $this->put($this->_files['new']['data'], $this->serializeData($this->_data)));
 
             if ($failed) {
-                if ($attempts > 0) {
-                    clearstatcache();
-                    usleep(mt_rand(300, 900));
-                    $this->_save($force, $attempts - 1);
-                    return;
-                } else {
-                    throw new waException('Unable to save data files.');
-                }
-            } else {
-                $skipped = 0;
+                // We can't save results of current runner to disk. Hopefully the problems are temporary,
+                // and the subsequent save call will be able to continue. If problem persists, the new runner
+                // will have to do the batch of work again. Oh, well.
+                $this->runnerFatalWarning('Unable to save `new` data file: '.$this->_files['new']['data']);
+                $this->_data['heartbeat'] = $prev_heartbeat;
+                $this->_data['total_saves']--;
+
+                // save() can not continue, but current runner may.
+                return true;
             }
 
-            // Now both 'new' and 'old' represent good data after current transaction.
+            //
+            // Now at this time, 'new' represents good data after current transaction.
+            // Now we also need to copy good data into 'old'.
+            // (It is now safe to spoil 'old' since we have 'new', see invariant.)
+            //
 
-            // finally, garbage in new_data ensures that invariant stays true
-            // while step() works on new_file.
+            $attempts = 3;
+            do {
+                $attempts--;
+                $failed = !copy($this->_files['new']['file'], $this->_files['old']['file']);
+                $failed = !copy($this->_files['new']['data'], $this->_files['old']['data']) || $failed;
+
+                //clearstatcache();
+                //$failed = filesize($this->_files['old']['data']) <= 0 || $failed; // too risky to check this on windows
+
+                if ($failed) {
+                    clearstatcache();
+                    usleep(mt_rand(300, 900));
+                } else {
+                    break;
+                }
+            } while ($attempts > 0);
+
+            if ($failed) {
+                // Well... We're currently in kinda ok state since at least we managed to
+                // write the `new` set of files. Nothing is lost so far. Hopefully,
+                // $this->_loadData() will be able to continue from there.
+                $this->runnerFatalWarning('Unable to save `old` set of data files: '.$this->_files['old']['file'].' and '.$this->_files['old']['data']);
+
+                // Current runner can not continue without spoiling the only copy of data we have.
+                return false;
+            }
+
+            //
+            // Now both 'new' and 'old' represent good data after current transaction.
+            //
+
+            // Putting garbage in new_data ensures that invariant stays true,
+            // while step() works on new_file inside a transaction, possibly spoiling it.
             $this->put($this->_files['new']['data'], 'garbage');
 
             // Reset file position in $this->fd to EOF. Since we don't save file position
@@ -584,6 +650,24 @@ abstract class waLongActionController extends waController
             if ($this->_runner && $this->_transaction) {
                 $this->save();
             }
+        }
+
+        // We're ok, current Runner may continue.
+        return true;
+    }
+
+    /**
+     * Called when something went badly wrong so that current Runner should not continue,
+     * (at least should immidiately notify a developer if in debug mode).
+     * Still, not badly enough yet to break the whole long action process.
+     */
+    protected function runnerFatalWarning($msg)
+    {
+        if (waSystemConfig::isDebug()) {
+            // In debug mode, better to fail fast.
+            throw new waException($msg);
+        } else {
+            waLog::log('waLongActionController ('.get_class($this).'): '.$msg);
         }
     }
 
@@ -596,29 +680,27 @@ abstract class waLongActionController extends waController
      * @param string $filename2
      * @return boolean true if lock is obtained, false otherwise
      */
-    private function _mainLock($filename, $filename2)
+    protected function _mainLock($filename, $filename2)
     {
-        // Flock will always block on Windows systems, regardless of LOCK_NB option.
-        // On some combinations of system and HTTP server flock does not
-        // work reliably at all. We're sure we can trust flock only if we've already seen it working
-        // OR if we've just created unique processId and nobody else knows it yet.
-
-        //todo check complete state
-
-        $waitTime = $this->_data['complete'] ? 1 : max(ifset($this->_data['avg_time'], 0), $this->_chunk_time) * 2;
-        if (!$this->_newProcess && !file_exists($this->_files['flock_ok']) && time() < filemtime($filename) + $waitTime) {
-            // Recent modification found. Lock failed.
-            return false;
+        // On windows, check if file was not modified recently.
+        // We need this because flock() on windows always blocks, regardless of LOCK_NB option.
+        // Without this all our messengers would hang and JS would receive no data at all.
+        $waitTime = $this->getLockWaitTime();
+        if (!$this->_newProcess && !file_exists($this->_files['flock_ok']) && strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+            if (!$this->_newProcess && !file_exists($this->_files['flock_ok']) && time() < filemtime($filename) + $waitTime) {
+                // Recent modification found. Lock failed.
+                return false;
+            }
         }
 
         $this->_fd = fopen($filename, 'a+b');
 
-        // Okay. File wasn't modified recently. Trying to obtain flock.
+        // Okay. It seems to be safe to try to obtain flock.
         if (!flock($this->_fd, LOCK_EX | LOCK_NB)) { // On windows it's possible to hang here in flock. Have to live with that.
             // flock failed! Now we're sure it works, so we won't need to check
-            // file modification time.
+            // file modification time again.
             if (!touch($this->_files['flock_ok'])) {
-                throw new waException('Unable to create file: '.$this->_files['flock_ok']);
+                $this->runnerFatalWarning('Unable to create file: '.$this->_files['flock_ok']);
             }
             fflush($this->_fd);
             flock($this->_fd, LOCK_UN); // being paranoid
@@ -627,16 +709,30 @@ abstract class waLongActionController extends waController
             return false;
         }
 
-        // We've got the flock. But this doesn't mean anything yet.
+        // We've got the flock. But this doesn't mean anything yet :(
+        // On some combinations of system and HTTP server flock does not
+        // work reliably. We're sure we can trust flock only if we've already seen it working
+        // OR if we've just created unique processId and nobody else knows it yet.
         if ($this->_newProcess || file_exists($this->_files['flock_ok'])) {
             // flock is ok in this system, so we're sure there is no other Runner.
             return true;
         }
 
         // Bad luck, we cannot trust the flock.
-        // Fail to lock if the second file was modified reasonably recently.
-        // (we must check the second file since the first one is touched by fopen(..., 'ab')
-        $waitTime = $this->_data['complete'] ? 1 : min(ifset($this->_data['avg_time'], 0), $this->_chunk_time) * 3;
+        // We'll wait some reasonable time making sure nobody writes to the second file.
+        $time = filemtime($filename2);
+        while (time() <= $time + $waitTime) {
+            sleep(1);
+            // Since we're holding the flock(), another Messenger may discover that flock() can be trusted.
+            // Then we don't have to wait any longer. In real life this never happens because of
+            // the default session locking mechanism though...
+            clearstatcache();
+            if (file_exists($this->_files['flock_ok'])) {
+                return true;
+            }
+        }
+
+        // Fail to lock if the second file was modified recently.
         if (time() < filemtime($filename2) + $waitTime) {
             // Recent modification found. Releasing...
             fflush($this->_fd);
@@ -648,12 +744,23 @@ abstract class waLongActionController extends waController
 
         // A race condition is possible here between where we check filemtime()
         // and where we touch() the file. However, since we close session only
-        // after obtaining this lock (and sessions have their own internal not file-based lock),
-        // this pretty much ensures we'll be ok. Still not perfect though.
+        // after obtaining this lock (and default sessions have their own internal not file-based lock),
+        // this serves as a pretty safe back up plan. Still not perfect though.
         touch($filename2);
 
         // So, finally, we're sure there's no other Runner.
         return true;
+    }
+
+    /** Helper for _mainLock(), see usage there. */
+    protected function getLockWaitTime()
+    {
+        // This trick considerably speeds up first runner startup time when we can not trust the flock() yet.
+        if ($this->_data['total_saves'] < 3) {
+            $this->_chunk_time = min($this->_chunk_time, 2);
+        }
+
+        return max($this->_data['total_saves'] > 0 ? $this->_data['avg_time'] : 0, $this->_chunk_time) * 2.5;
     }
 
     public function &__get($field)
@@ -673,6 +780,9 @@ abstract class waLongActionController extends waController
                 }
                 $fd = $this->_fd;
                 return $fd; // not by reference
+            case 'isRunner':
+                $is_runner = $this->_runner;
+                return $is_runner; // not by reference
             case 'processId':
                 $pid = $this->_processId;
                 return $pid; // not by reference
@@ -702,6 +812,8 @@ abstract class waLongActionController extends waController
                 }
                 $this->_data['data'] = $value;
                 return;
+            case 'isRunner':
+                throw new waException('isRunner is read-only.');
             case 'fd':
                 throw new waException('File descriptor is read-only.');
             case 'processId':
@@ -714,18 +826,23 @@ abstract class waLongActionController extends waController
         $this->$field = $value;
     }
 
-    private function put($filename, $data)
+    protected function put($filename, $data)
     {
         $retry = 5;
-        while (file_put_contents($filename, $data) === false) {
-            if (!$retry--) {
-                break;
+        while (true) {
+            $retry--;
+            $success = file_put_contents($filename, $data);
+            if ($success !== false) {
+                return $success;
+            } else if ($retry <= 0) {
+                return false;
+            } else {
+                sleep(1);
             }
-            sleep(1);
         }
     }
 
-    private function get($filename)
+    protected function get($filename)
     {
         $retry = 5;
         while (($res = file_get_contents($filename)) === false) {
@@ -737,17 +854,15 @@ abstract class waLongActionController extends waController
         return $res;
     }
 
-    static function shutdown()
+    public static function shutdown()
     {
         if (!empty(self::$instance) && (self::$instance instanceof waLongActionController)) {
-            if (empty(self::$instance->_data['ready'])) {
-                self::$instance->_data['complete'] = true;
-                self::$instance->_save(true);
-            }
+            self::$instance->uncleanShutdown();
+            self::$instance = null;
         }
     }
 
-    private function initEnv()
+    protected function initEnv()
     {
         // How much time we can safely run?
         $this->_max_exec_time = ini_get('max_execution_time');
@@ -758,7 +873,13 @@ abstract class waLongActionController extends waController
         // We'll try to disable execution time limit.
         // It doesn't always work, but it doesn't hurt either.
         @set_time_limit(0);
-        $this->_chunk_time = min(10, $this->_max_exec_time ? $this->_max_exec_time / 6 : 5);
+
+        // Depending on total time limit, determine how often we'd like to write data to file.
+        if ($this->_max_exec_time) {
+            $this->_chunk_time = min(10, $this->_max_exec_time / 6);
+        } else {
+            $this->_chunk_time = 7;
+        }
     }
 }
 

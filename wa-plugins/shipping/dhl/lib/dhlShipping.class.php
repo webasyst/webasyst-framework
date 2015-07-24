@@ -58,8 +58,8 @@ class dhlShipping extends waShipping
 
         return parent::getSettingsHTML($params);
     }
-    
-    public function calculate()
+
+    protected function calculate()
     {
         $request = $this->prepareRequest();
         $url = $this->getUrl();
@@ -222,7 +222,7 @@ class dhlShipping extends waShipping
         @curl_setopt($ch, CURLOPT_TIMEOUT,        20);
         @curl_setopt($ch, CURLOPT_HEADER, 0);
         @curl_setopt($ch, CURLOPT_URL, $url);
-        @curl_setopt($ch, CURLOPT_POST);
+        @curl_setopt($ch, CURLOPT_POST, 1);
         @curl_setopt($ch, CURLOPT_POSTFIELDS, $request);
 
         $result = @curl_exec($ch);

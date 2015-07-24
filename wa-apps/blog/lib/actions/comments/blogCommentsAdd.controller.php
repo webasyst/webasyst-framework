@@ -65,7 +65,7 @@ class blogCommentsAddController extends waJsonController
         }
 
         $id = $comment_model->add($comment, $this->parent_id);
-        $this->log('comment_add', 1);
+        $this->logAction('comment_add',  $id);
 
 
         $comment =  $comment_model->getById($id);

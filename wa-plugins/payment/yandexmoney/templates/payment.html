@@ -1,3 +1,4 @@
+{if $integration_type =='kassa'}
 <form id="paymentForm" action="{$form_url}" method="post" target="_top">
     {foreach $hidden_fields as $name => $value}
         <input type="hidden" name="{$name}" value="{$value|escape}"/>
@@ -9,13 +10,38 @@
         <br/>
         <br/>
         <script type="text/javascript">
-            setTimeout(function () {
-                document.getElementById('paymentForm').submit();
-            }, 3000);
+            (function(){
+                var form = document.getElementById('paymentForm');
+                var timer = setTimeout(function () {
+                    document.getElementById('paymentFormSubmit').setAttribute('disabled','disabled');
+                    form.submit();
+                }, 3000);
+                form.addEventListener("submit", function(){
+                    document.getElementById('paymentFormSubmit').setAttribute('disabled','disabled');
+                    if(timer) {
+                        clearTimeout(timer);
+                    }
+                });
+            })();
         </script>
     {/if}
     {foreach $fields as $field}
         {$field}<br>
     {/foreach}
-    <input type="submit" value="Оплатить заказ на сайте Яндекс.Денег"/>
+    <input id="paymentFormSubmit"  type="submit" value="Оплатить заказ на сайте Яндекс.Денег"/>
 </form>
+{else}
+    Оплатите вашим кошельком в Яндекс.Деньги:<br>
+    <iframe frameborder="0" allowtransparency="true" scrolling="no"
+        src="https://money.yandex.ru/embed/small.xml?account={$plugin->account}&quickpay=small&yamoney-payment-type=on&button-text=01&button-size=l&button-color=orange&targets={$order['description']|escape:'url'}&default-sum={$order['amount']|escape:'url'}&successURL={$return_url|escape:'url'}&label={$label|escape:'url'}"
+        width="228" height="54">
+
+    </iframe><br>
+    или банковской картой:<br>
+
+    <iframe frameborder="0" allowtransparency="true" scrolling="no"
+            src="https://money.yandex.ru/embed/small.xml?account={$plugin->account}&quickpay=small&any-card-payment-type=on&button-text=01&button-size=l&button-color=orange&targets={$order['description']|escape:'url'}&default-sum={$order['amount']|escape:'url'}&successURL={$return_url|escape:'url'}&label={$label|escape:'url'}"
+            width="228" height="54">
+
+    </iframe>
+{/if}

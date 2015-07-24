@@ -28,16 +28,19 @@ class contactsContactsInfoAction extends waViewAction
             $this->view->assign('save_url', '?module=profile&action=save');
             $this->view->assign('password_save_url', '?module=profile&action=password');
             $this->view->assign('save_geocoords_url', '?module=profile&action=saveGeocoords');
+            $this->view->assign('regions_url', '?module=profile&action=regions&country=');
             $this->view->assign('photo_upload_url', '?module=profile&action=tmpimage');
             $this->view->assign('photo_editor_url', '?module=profile&action=photo');
             $this->view->assign('photo_editor_uploaded_url', '?module=profile&action=photo&uploaded=1');
+
+            //#
+
         } else {
             $this->id = (int) waRequest::get('id');
             if (empty($this->id)) {
                 throw new waException('No id specified.');
             }
             $r = $cr->getRight(null, $this->id);
-            //var_dump($r );exit;
             if (!$r) {
                 throw new waRightsException(_w('Access denied'));
             } else {

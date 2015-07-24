@@ -656,7 +656,7 @@ class photosAlbumModel extends waModel
         }
 
         $collection = new photosCollection($key_photo_ids);
-        $photos = $collection->getPhotos('*,thumb_96x96,thumb_192x192');
+        $photos = $collection->getPhotos('*,thumb_96x96,thumb_192x192', 0, count($key_photo_ids));
         foreach($albums as &$a) {
             if ($a['key_photo_id'] && !empty($photos[$a['key_photo_id']])) {
                 $a['key_photo'] = $photos[$a['key_photo_id']];

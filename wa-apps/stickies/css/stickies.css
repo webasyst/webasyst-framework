@@ -22,19 +22,19 @@ body{
 }
 
 .sticky .sticky-resizable-se {
-	width: 17px; 
-	height: 17px; 
-	position: absolute; 
-	right: -5px; 
+	width: 17px;
+	height: 17px;
+	position: absolute;
+	right: -5px;
 	bottom: -5px;
-	background: url('../img/resize.png') no-repeat; 		
+	background: url('../img/resize.png') no-repeat;
 	background-position: 3px 3px;
 }
 
 #wa-system-notice {
 	left: 0;
 	width: 100%;
-	bottom: 0px;
+	bottom: 0;
 	max-height: 30%;
 	padding: 0;
 	overflow: auto;
@@ -82,7 +82,7 @@ input { font-size: 0.9em; }
 .stickies-sidebar-scrolable { position: relative; overflow:auto; overflow-x:hidden; height: 100%; margin: 44px 0 0 0;}
 .sticky-createnew { padding: 0 10px; position: absolute; top:0; left:0; width: 100%; height: 44px;}
 .sticky-createnew .menu-v { margin-top: 0; }
-.sticky-createnew .menu-v a { padding-top: 15px; padding-bottom: 15px; background:rgba(255, 249, 207, 0.25); 
+.sticky-createnew .menu-v a { padding-top: 15px; padding-bottom: 15px; background:rgba(255, 249, 207, 0.25);
 filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr='#65fff9cf', endColorstr='#65fff9cf'); color: #fff; }
 .sticky-createnew .menu-v a:hover { background:rgba(255, 249, 207, 0.25); }
 
@@ -110,7 +110,7 @@ ul.thumbs a:hover { border: solid 1px #fff; }
 
 div.sticky { position:absolute; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box; z-index:1; width:155px; height:172px; }
 ul.thumbs li { min-width:inherit; }
-div.sticky-inner { padding:0px; background:#fef49c; border:solid 1px #bca902; margin:10px; -moz-box-shadow:3px 3px 10px rgba(0, 0, 0, 0.5); -webkit-box-shadow:3px 3px 10px rgba(0, 0, 0, 0.5); box-shadow:3px 3px 10px rgba(0, 0, 0, 0.5); position:relative; margin:0; }
+div.sticky-inner { padding:0; background:#fef49c; border:solid 1px #bca902; margin:10px; -moz-box-shadow:3px 3px 10px rgba(0, 0, 0, 0.5); -webkit-box-shadow:3px 3px 10px rgba(0, 0, 0, 0.5); box-shadow:3px 3px 10px rgba(0, 0, 0, 0.5); position:relative; margin:0; }
 div.sticky-inner.active { cursor:pointer; margin:-1px 0 0 -1px; -moz-box-shadow:3px 3px 16px rgba(0, 0, 0, 0.7); -webkit-box-shadow:3px 3px 16px rgba(0, 0, 0, 0.7); box-shadow:3px 3px 16px rgba(0, 0, 0, 0.7); }
 .sticky-inner:hover .sticky-header { display: block; }
 .sticky-header { background:#feea3d; border:1px solid #bca902; font-size:0.7em; margin:-17px -1px 0 -1px; height:13px; padding: 1px 0; opacity: 0.8; }
@@ -137,7 +137,7 @@ i.sticky { background:#FEF49C }
 
 #wa ::-webkit-scrollbar { width:10px; height:10px; }
 #wa ::-webkit-scrollbar-button:start:decrement, #doc ::-webkit-scrollbar-button:end:increment { display:block; height:0; background-color:transparent; }
-#wa ::-webkit-scrollbar-track-piece { background-color:rgba(255, 240, 220, 0.95) background-image:url(../img/scroll.png); background-position: center center; -webkit-border-radius:0; -webkit-border-bottom-right-radius:10px; -webkit-border-bottom-left-radius:10px; }
+#wa ::-webkit-scrollbar-track-piece { background-color:rgba(255, 240, 220, 0.95); background-image:url("../img/scroll.png"); background-position: center center; -webkit-border-radius:0; -webkit-border-bottom-right-radius:10px; -webkit-border-bottom-left-radius:10px; }
 #wa ::-webkit-scrollbar-thumb:vertical { height:50px; background-color:rgba(255, 240, 220, 0.75); -webkit-border-radius:10px; }
 #wa ::-webkit-scrollbar-thumb:horizontal { width:50px; background-color:rgba(255, 240, 220, 0.75); -webkit-border-radius:10px; }
 

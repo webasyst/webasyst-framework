@@ -1,0 +1,73 @@
+{strip}
+<div class="electronic-clock-wrapper {if !empty($town)}has-town{/if}">
+    <div class="electronic-clock-block">
+        <h1 class="time-wrapper"></h1>
+        {if !empty($town)}
+            <h4><span class="date-wrapper">{trim(str_replace(date('Y'), '', wa_date('humandate')), ' .,')}</span></h4>
+            <h4><span class="town-wrapper">{$town|escape}</span></h4>
+        {else}
+            <h4 class="day-wrapper">{_ws(waDateTime::date('l'))}</h4>
+            <h4><span class="date-wrapper">{trim(str_replace(date('Y'), '', wa_date('humandate')), ' .,')}</span></h4>
+        {/if}
+    </div>
+</div>
+{/strip}
+
+{* Init Controller *}
+<script>{include file="../js/clockController.js" inline}</script>
+
+{* Initialize *}
+<script>
+( function() {
+    var is_loaded = (typeof ElectronicClock !== "undefined"),
+        js_href = "{$widget_url}js/electronicClock.js?v={$wa->version()}",
+        widget = DashboardWidgets["{$widget_id}"],
+        options = {
+            widget_id: "{$widget_id}",
+            widget_name: "{$widget_name}",
+            widget_app: "{$widget_app}",
+            format: "{$format}",
+            source: "{$source}",
+            offset: {$offset},
+            size: "{$size}",
+            localization: {
+                day: [
+                    "[s`Sunday`]",
+                    "[s`Monday`]",
+                    "[s`Tuesday`]",
+                    "[s`Wednesday`]",
+                    "[s`Thursday`]",
+                    "[s`Friday`]",
+                    "[s`Saturday`]"
+                ],
+                month: [
+                    "{_ws('January', 'January', 2)}",
+                    "{_ws('February', 'February', 2)}",
+                    "{_ws('March', 'March', 2)}",
+                    "{_ws('April', 'April', 2)}",
+                    "{_ws('May', 'May', 2)}",
+                    "{_ws('June', 'June', 2)}",
+                    "{_ws('July', 'July', 2)}",
+                    "{_ws('August', 'August', 2)}",
+                    "{_ws('September', 'September', 2)}",
+                    "{_ws('October', 'October', 2)}",
+                    "{_ws('November', 'November', 2)}",
+                    "{_ws('December', 'December', 2)}"
+                ]
+            }
+        };
+
+    if (is_loaded) {
+        widget.clock = new ElectronicClock(options);
+
+    } else {
+
+        $.getScript(js_href, function() {
+            widget.clock = new ElectronicClock(options);
+        });
+    }
+})();
+</script>
+
+{* CSS *}
+<style>{include file="../css/electronicClock.css" inline}</style>

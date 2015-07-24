@@ -19,10 +19,22 @@ return array(
         'control_type' => 'input',
     ),
     'protocol'        => array(
-        'value'        => webmoneyPayment::PROTOCOL_WEBMONEY,
-        'title'        => 'Версия подключения',
-        'description'  => '',
-        'control_type' => 'select webmoneyPayment::_getProtocols'
+        'value'            => webmoneyPayment::PROTOCOL_WEBMONEY,
+        'title'            => 'Протокол подключения',
+        'description'      => '',
+        'control_type'     => 'select',
+        'options_callback' => array('webmoneyPayment', '_getProtocols'),
+
+    ),
+    'hash_method'     => array(
+        'value'        => 'md5',
+        'title'        => 'Подпись',
+        'description'  => 'Способ формирования контрольной подписи',
+        'control_type' => 'select',
+        'options'      => array(
+            'md5' => 'MD5',
+            'sha' => 'SHA-256',
+        ),
     ),
     'TESTMODE'        => array(
         'value'        => '',

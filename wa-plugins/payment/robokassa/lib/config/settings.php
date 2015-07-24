@@ -1,26 +1,25 @@
 <?php
 
 return array(
-    'merchant_login'   => array(
+    'merchant_login'    => array(
         'value'        => 'demo',
         'title'        => 'Логин',
         'description'  => 'Логин магазина в обменном пункте',
         'control_type' => waHtmlControl::INPUT,
     ),
-
-    'merchant_pass1'   => array(
+    'merchant_pass1'    => array(
         'value'        => '',
         'title'        => 'Пароль №1',
         'description'  => 'Вводится в настройках аккаунта в ROBOXchange.',
         'control_type' => waHtmlControl::INPUT,
     ),
-    'merchant_pass2'   => array(
+    'merchant_pass2'    => array(
         'value'        => '',
         'title'        => 'Пароль №2',
         'description'  => 'Вводится в настройках аккаунта в ROBOXchange.',
         'control_type' => waHtmlControl::INPUT,
     ),
-    'locale'           => array(
+    'locale'            => array(
         'value'        => '',
         'title'        => 'Язык интерфейса',
         'description'  => 'Выберите язык, на котором должна отображаться платежная страница на сайте ROBOXchange',
@@ -31,8 +30,8 @@ return array(
             ''   => '(не определен)',
         ),
     ),
-    'gateway_currency' => array(
-        'value'        => 'WMR',
+    'gateway_currency'  => array(
+        'value'        => '',
         'title'        => 'Валюта шлюза',
         'description'  => '',
         'control_type' => 'GatewayCurrency',
@@ -43,8 +42,8 @@ return array(
         'description'  => '',
         'control_type' => waHtmlControl::INPUT,
     ),
-    'testmode'         => array(
-        'value'        => '',
+    'testmode'          => array(
+        'value'        => '1',
         'title'        => 'Тестовый режим',
         'description'  => '',
         'control_type' => waHtmlControl::CHECKBOX,

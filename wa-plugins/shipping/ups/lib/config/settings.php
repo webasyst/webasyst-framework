@@ -50,7 +50,7 @@ return array(
     ),
 
     'country' => array(
-        'value' => 'USA',
+        'value' => 'usa',
         'title' => /*_wp*/('Origin country'),
         'description' => /*_wp*/('Please select an origin country, from where you will ship'),
         'control_type' => waHtmlControl::SELECT.' waShipping::settingCountrySelect'

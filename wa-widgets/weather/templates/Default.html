@@ -1,0 +1,73 @@
+<style>
+
+    .s-weather { padding: 0 0 35px; background: #1c60ac; text-align: center; height: 100%; color: #fff; }
+    .s-weather .s-weather-icon { width: 256px; height: 256px; background-size: 256px 256px; margin: -35px auto 0; }
+    .s-weather h2 { margin-left: 0.35em; font-weight: normal; margin-top: -45px; }
+    .s-weather h4 { opacity: 0.8; font-weight: normal; }
+    
+    .widget-1x1 .s-weather-icon,
+    .widget-2x1 .s-weather-icon { width: 128px; height: 128px; background-size: 128px 128px; margin-top: -15px; }
+    .widget-1x1 .s-weather h2,
+    .widget-2x1 .s-weather h2 { margin-top: -25px; margin-bottom: 5px; }
+    .widget-2x1 .s-weather h6 { font-size: 0.8em; }
+    .widget-2x2 .s-weather h6 { font-size: 1.3em; }
+
+    .wa-no-weather { padding: 25px 0px; font-weight: normal; color: #fff; }
+    .widget-2x1 .wa-no-weather { padding: 40px 55px; }
+    .widget-2x2 .wa-no-weather { padding: 80px 35px; }
+
+    /* weather condition codes accroding to openweathermap.org */
+    
+    .s-weather-day { background: -moz-linear-gradient(top,  rgba(19,54,130,1) 0%, rgba(39,147,223,1) 100%); /* FF3.6+ */
+background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(19,54,130,1)), color-stop(100%,rgba(39,147,223,1))); /* Chrome,Safari4+ */
+background: -webkit-linear-gradient(top,  rgba(19,54,130,1) 0%,rgba(39,147,223,1) 100%); /* Chrome10+,Safari5.1+ */
+background: -o-linear-gradient(top,  rgba(19,54,130,1) 0%,rgba(39,147,223,1) 100%); /* Opera 11.10+ */
+background: -ms-linear-gradient(top,  rgba(19,54,130,1) 0%,rgba(39,147,223,1) 100%); /* IE10+ */
+background: linear-gradient(to bottom,  rgba(19,54,130,1) 0%,rgba(39,147,223,1) 100%); /* W3C */
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#133682', endColorstr='#2793df',GradientType=0 ); /* IE6-9 */
+ }
+    .s-weather-night { background: #0f2657 url('{$wa_url}wa-widgets/weather/img/night.jpg') no-repeat; background-size: cover; }
+    .s-weather-notavailable { background: #aaa; }
+        
+</style>
+
+<div class="s-weather s-weather-{if empty($weather.weather.icon)}notavailable{else}{if $weather.weather.icon|strstr:'n'}night{else}day{/if}{/if}" id="s-weather-widget-{$info['id']}">
+
+    {if empty($weather) || !empty($weather.message)}
+        {if !empty($weather.message) && $weather.message !== 'Error: Not found city'}
+            <div class="errormsg">{$weather.message}</div>
+        {else if $city}
+            <h5 class="align-center hint wa-no-weather">{sprintf('[`Could not retrieve weather conditions for <strong>%s</strong>. Please check city name in widget settings or in your contact info.`]', $city|default:'[`(unknown city)`]')}</h5>
+        {else}
+            <h5 class="align-center hint wa-no-weather">[`Please enter city name in your contact information or in this widget settings.`]</h5>
+        {/if}
+    {else}
+    
+        <div src="{$wa_url}wa-widgets/weather/img/11.png" class="s-weather-icon" style="background-image: url('{$wa_url}wa-widgets/weather/img/{$weather.weather.icon|default:'unknown'}.png');"></div>
+
+        <h2>{$weather.main.temp}&deg;</h2>
+        <h6>{$city}</h6>
+        
+    {/if}
+</div>
+
+{if !$wa->get('ignore_js')}
+<script>$(function() { "use strict";
+    var timer_id = setInterval(updateWidget, 3600000); // 1 hour
+    var $container = $('#s-weather-widget-{$info['id']}');
+
+    $.wa.updateWeatherWidget = updateWidget; // debugging helper
+
+    function updateWidget() {
+        if ($container.length && $.contains(document, $container[0])) {
+            $.get('{$wa_app_url}?widget={$info.widget}&id={$info.id}&size={$info.size}&nocache=1&ignore_js=1', function(html) {
+                var $tmp = $('<div>').html(html);
+                $container.find('.s-weather').replaceWith($tmp.find('.s-weather'));
+                $tmp.remove();
+            });
+        } else {
+            clearInterval(timer_id);
+        }
+    }
+});</script>
+{/if}

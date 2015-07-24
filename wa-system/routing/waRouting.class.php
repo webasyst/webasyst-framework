@@ -37,6 +37,11 @@ class waRouting
         }
     }
 
+    public function isAlias($domain)
+    {
+        return isset($this->aliases[$domain]) ? $this->aliases[$domain] : false;
+    }
+
 
     public function getDomains()
     {

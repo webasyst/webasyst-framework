@@ -178,7 +178,7 @@ class waAutoload
         'waViewAction'             => 'controller/waViewAction.class.php',
         'waViewActions'            => 'controller/waViewActions.class.php',
         'waViewController'         => 'controller/waViewController.class.php',
-        'waWidget'                 => 'controller/waWidget.class.php',
+        'waWidget'                 => 'widget/waWidget.class.php',
 
         'waCurrency'               => 'currency/waCurrency.class.php',
 
@@ -259,8 +259,6 @@ class waAutoload
         'waView'                   => 'view/waView.class.php',
         'waViewHelper'             => 'view/waViewHelper.class.php',
         'waAppViewHelper'          => 'view/waAppViewHelper.class.php',
-
-        'waWidgets'                => 'widget/waWidgets.class.php',
 
         'waWorkflow'               => 'workflow/waWorkflow.class.php',
         'waWorkflowAction'         => 'workflow/waWorkflowAction.class.php',

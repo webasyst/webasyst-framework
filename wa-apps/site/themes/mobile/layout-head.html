@@ -27,7 +27,7 @@
 {* CSS *}
     <link rel="stylesheet" href="{$wa_theme_url}mobile.css?v{$wa_theme_version}">
     {if $wa->shop && $wa->shop->currency() == 'RUB'}
-        <link href="{$wa_static_url}wa-content/font/ruble/arial/fontface.css" rel="stylesheet" type="text/css">
+        <link href="{$wa_url}wa-content/font/ruble/arial/fontface.css" rel="stylesheet" type="text/css">
     {/if}
 
     {* links active plugins CSS *}
@@ -44,7 +44,7 @@
     {$wa->js()}
 
     {* links Google Analytics tracking code and site's custom JS (defined in Site app settings) *}
-    {$wa->headJs()}
+    {$wa->head()}
 {* END JAVASCRIPT *}
 
 {* Сonnecting additional scripts and styles of applications *}

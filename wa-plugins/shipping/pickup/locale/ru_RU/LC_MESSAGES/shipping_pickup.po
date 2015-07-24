@@ -25,7 +25,7 @@ msgid ""
 "Self pickup from a nearby store location (customer selects location from the "
 "list)."
 msgstr ""
-"Самовывоз из ближашей точки выдачи (список точек доступен в виде списка)."
+"Самовывоз из ближайшей точки выдачи (список точек доступен в виде списка)."
 
 #: //wa-plugins/shipping/pickup/lib/pickupShipping.class.php:88
 msgid "Delivery sheet"

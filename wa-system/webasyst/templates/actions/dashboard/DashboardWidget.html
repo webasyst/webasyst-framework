@@ -1,0 +1,60 @@
+{strip}
+
+{$_widget_width = $w.size.0}
+{$_widget_height = $w.size.1}
+{$is_small = ( ($_widget_width == 1) && ($_widget_height == 1) )}
+{$is_medium = ( ($_widget_width == 2) && ($_widget_height == 1) )}
+{$is_big = ( ($_widget_width == 2) && ($_widget_height == 2) )}
+{$widget_color = "#{rand(0, 9)}{rand(0, 9)}{rand(0, 9)}"}
+{$has_small_size = ifset($w.has_sizes.small)}
+{$has_medium_size = ifset($w.has_sizes.medium)}
+{$has_big_size = ifset($w.has_sizes.big)}
+{$has_settings = !empty($w.has_settings)}
+
+<div class="widget-wrapper widget-{$w.size.0}x{$w.size.1}" id="widget-wrapper-{$w.id}" data-widget-id="{$w.id}">
+    <div class="widget-outer-container">
+        <div class="widget-inner-container">
+
+            <div class="widget-drop-ornament"></div>
+
+            <div class="widget-settings-wrapper"></div>
+
+            <div class="widget-block" id="widget-{$w.id}">
+                <div class="loading-wrapper">
+                    <i class="icon16 loading"></i>
+                </div>
+            </div>
+
+            <div class="widget-controls-wrapper">
+
+                <div class="delete-control-wrapper">
+                    <a class="control-item delete-widget-link" href="javascript:void(0);" title="[`Delete Widget`]" draggable="false"></a>
+                </div>
+
+                <div class="size-controls-wrapper">
+                    {if $has_small_size}
+                        <a class="control-item set-small-size {if $is_small}is-active{/if}" href="javascript:void(0);" title="[`Set small size`]" draggable="false"></a>
+                    {/if}
+                    {if $has_medium_size}
+                        <a class="control-item set-medium-size {if $is_medium}is-active{/if}" href="javascript:void(0);" title="[`Set medium size`]" draggable="false"></a>
+                    {/if}
+                    {if $has_big_size}
+                        <a class="control-item set-big-size {if $is_big}is-active{/if}" href="javascript:void(0);" title="[`Set big size`]" draggable="false"></a>
+                    {/if}
+                </div>
+
+                {if $has_settings}
+                    <div class="settings-control-wrapper">
+                        <a class="control-item show-settings-link inline-link" href="javascript:void(0);" title="[`Show settings`]" draggable="false"><b><i>[`Settings`]</i></b></a>
+                    </div>
+                {/if}
+
+            </div>
+
+            <div class="widget-draggable-block" draggable="true">
+                <div class="widget-draggable-ornament" style="background-color: {$widget_color};"></div>
+            </div>
+        </div>
+    </div>
+</div>
+{/strip}

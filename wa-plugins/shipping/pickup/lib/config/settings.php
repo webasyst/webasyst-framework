@@ -14,4 +14,3 @@ return array(
         'control_type' => waHtmlControl::CHECKBOX,
     ),
 );
-//EOF

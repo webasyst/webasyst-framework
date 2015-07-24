@@ -69,6 +69,16 @@ abstract class waViewAction extends waController
 
     protected function getThemeUrl()
     {
+        if (wa()->getEnv() == 'frontend') {
+            $domain = wa()->getRouting()->getDomain(null, true);
+            $domain_config_path = wa()->getConfig()->getConfigPath('domains/' . $domain . '.php', true, 'site');
+            if (file_exists($domain_config_path)) {
+                $domain_config = include($domain_config_path);
+                if (!empty($domain_config['cdn'])) {
+                    return rtrim($domain_config['cdn'], '/').$this->getTheme()->getUrl();
+                }
+            }
+        }
         return $this->getTheme()->getUrl();
     }
 

@@ -1,0 +1,106 @@
+<style>
+.wa-news-widget .snw-entry { margin-bottom: 10px; line-height: 1em; font-family: 'Helvetica Neue', Arial, sans-serif; }
+.wa-news-widget .snw-entry a { text-decoration: none; }
+
+.wa-empty-feed { margin: 30px 20px; font-weight: normal; }
+
+.widget-2x1 .wa-empty-feed { margin: 45px 55px; }
+.widget-2x2 .wa-empty-feed { margin: 105px 35px; }
+
+.widget-block .wa-news-widget .wa-link-to-all-news {
+    position: absolute; bottom: 0; left: 0; right: 0; text-align: center; opacity: 0; padding: 18px 0 0;
+    background: -moz-linear-gradient(top,  rgba(255,255,255,0) 0%, rgba(255,255,255,1) 47%); /* FF3.6+ */
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(255,255,255,0)), color-stop(47%,rgba(255,255,255,1))); /* Chrome,Safari4+ */
+    background: -webkit-linear-gradient(top,  rgba(255,255,255,0) 0%,rgba(255,255,255,1) 47%); /* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(top,  rgba(255,255,255,0) 0%,rgba(255,255,255,1) 47%); /* Opera 11.10+ */
+    background: -ms-linear-gradient(top,  rgba(255,255,255,0) 0%,rgba(255,255,255,1) 47%); /* IE10+ */
+    background: linear-gradient(to bottom,  rgba(255,255,255,0) 0%,rgba(255,255,255,1) 47%); /* W3C */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00ffffff', endColorstr='#ffffff',GradientType=0 ); /* IE6-9 */
+}
+.widget-block:hover .wa-news-widget .wa-link-to-all-news { opacity: 1; transition: opacity 0.5s; }
+</style>
+
+{if empty($rss_url)}
+
+    <div class="block">
+        <h5 class="align-center hint wa-empty-feed">[`Please set up news source in widget settings.`]</h5>
+    </div>
+
+{else}
+
+<div class="block wa-news-widget" id="{$uniqid}">
+    <p class="snw-entry hidden template">
+        <a href="" class="entry-title entry-link" target="_blank"></a>
+        <span class="entry-datetime hint"></span>
+    </p>
+
+    <div class="hidden wa-link-to-all-news"><div class="block">
+        <a href="javascript:void(0)" target="_blank">[`Show all news`] <i class="icon16 new-window"></i></a>
+    </div></div>
+</div>
+
+
+<script>(function() { "use strict";
+    var $wrapper = $('#{$uniqid}');
+    var rss_url = {$rss_url|json_encode};
+    var error_string = "[`Unable to load news feed`]";
+
+    (function() {
+        if (window.google && google.load) {
+            return $.Deferred(function(d) {
+                d.resolve();
+            });
+        } else {
+            return $.ajax({
+                dataType: "script",
+                url: '\/\/www.google.com/jsapi',
+                cache: true
+            });
+        }
+    })().done(function() {
+        google.load("feeds", "1", {
+            callback: function() {
+                var feed = new google.feeds.Feed(rss_url);
+                feed.setNumEntries(15);
+                updateFeed(feed);
+                setInterval(function() {
+                    updateFeed(feed);
+                }, 15*60000);
+            }
+        });
+    });
+
+    function updateFeed(feed) {
+        feed.load(function (data) {
+            data.feed.link && $wrapper.find('.wa-link-to-all-news').show().find('a').attr('href', data.feed.link);
+            $wrapper.children('.snw-entry:not(.template)').remove();
+            if (data.error) {
+                showError(data.error);
+            } else {
+                buildTable(data.feed.entries);
+            }
+        });
+    }
+
+    function buildTable(entries) {
+        var $template = $wrapper.children('.template');
+        var blocks = [];
+        entries.forEach(function(entry) {
+            var $entry = $template.clone().removeClass('hidden template');
+            $entry.find('.entry-datetime').text((new Date(entry.publishedDate)).toLocaleString());
+            $entry.find('.entry-title').text(entry.title);
+            $entry.find('.entry-link').attr('href', entry.link);
+            blocks.push($entry);
+        });
+        $wrapper.append(blocks);
+    }
+
+    function showError(error) {
+        console && console.log(error);
+        var $entry = $wrapper.children('.template').clone().removeClass('hidden template').addClass('errormsg').empty();
+        $entry.append($('<p class="align-center">').text(error_string)).appendTo($wrapper);
+    }
+
+})();</script>
+
+{/if}

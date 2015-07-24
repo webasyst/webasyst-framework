@@ -43,48 +43,21 @@ function wa_header()
         $apps_html .= '<li id="wa-app-'.$app_id.'"'.($app_id == $current_app ? ' class="selected"':'').'><a href="'.$app_url.'">'.$img.' '.$app['name'].$count.'</a></li>';
     }
 
-    if ($system->getRequest()->isMobile(false)) {
-        $top_url = '<a href="'.$backend_url.'?mobile=1">mobile version</a>';
-    } else {
-        $url = $app_settings_model->get('webasyst', 'url', $system->getRootUrl(true));
-        $url_info = @parse_url($url);
-        if ($url_info) {
-            $url_name = '';
-            if (empty($url_info['scheme'])) {
-                $url = 'http://'.$url;
-            }
-            if (isset($url_info['host'])) {
-                $url_name .= $url_info['host'];
-            }
-
-            if (isset($url_info['path'])) {
-                if ($url_info['path'] == '/' && !isset($url_info['query'])) {
-
-                } else {
-                    $url_name .= $url_info['path'];
-                }
-            }
-            if (isset($url_info['query'])) {
-                $url_name .= '?'.$url_info['query'];
-            }
-        } else {
-            $url = $url_name = $system->getRootUrl(true);
-        }
-        $top_url = '<a target="_blank" href="'.$url.'">'.$url_name.'</a>';
-    }
     $announcement_model = new waAnnouncementModel();
-    $data = $announcement_model->getByApps($user->getId(), array_keys($apps), $user['create_datetime']);
     $announcements = array();
-    foreach ($data as $row) {
-        // show no more than 1 message per application
-        if (isset($announcements[$row['app_id']]) && count($announcements[$row['app_id']]) >= 1) {
-            continue;
+    if ($current_app != 'webasyst') {
+        $data = $announcement_model->getByApps($user->getId(), array_keys($apps), $user['create_datetime']);
+        foreach ($data as $row) {
+            // show no more than 1 message per application
+            if (isset($announcements[$row['app_id']]) && count($announcements[$row['app_id']]) >= 1) {
+                continue;
+            }
+            $announcements[$row['app_id']][] = $row['text'] . ' <span class="hint">' . waDateTime::format('humandatetime', $row['datetime']) . '</span>';
         }
-        $announcements[$row['app_id']][] = $row['text'].' <span class="hint">'.waDateTime::format('humandatetime', $row['datetime']).'</span>';
     }
     $announcements_html = '';
     foreach ($announcements as $app_id => $texts) {
-        $announcements_html .= '<a href="#" rel="'.$app_id.'" class="wa-announcement-close inline-link" title="close"><b><i>'._ws('Close').'</i></b></a><p>';
+        $announcements_html .= '<a href="#" rel="'.$app_id.'" class="wa-announcement-close" title="close">&times;</a><p>';
         $announcements_html .= implode('<br />', $texts);
         $announcements_html .= '</p>';
     }
@@ -121,15 +94,35 @@ function wa_header()
     }
 
     $company_name = htmlspecialchars($app_settings_model->get('webasyst', 'name', 'Webasyst'), ENT_QUOTES, 'utf-8');
+    $company_url = $app_settings_model->get('webasyst', 'url', $system->getRootUrl(true));
 
     $version = wa()->getVersion();
+
+    $strings = array(
+        'customize' => _ws('Customize dashboard'),
+        'done' => _ws('Done editing'),
+        'date' => _ws(waDateTime::date('l')).', '.trim(str_replace(date('Y'), '', waDateTime::format('humandate')), ' ,/'),
+    );
+
     $html = <<<HTML
 <script type="text/javascript">var backend_url = "{$backend_url}";</script>
 {$announcements_html}
 <div id="wa-header">
     <div id="wa-account">
-        <h3>{$company_name}</h3>
-        {$top_url}
+HTML;
+    if (wa()->getApp() == 'webasyst') {
+        $html .= <<<HTML
+        <h3>{$company_name} <a href="{$company_url}" class="wa-frontend-link" target="_blank"><i class="icon16 new-window"></i></a></h3>
+        <a class="inline-link" id="show-dashboard-editable-mode" href="{$backend_url}"><b><i>{$strings['customize']}</i></b></a>
+        <input id="close-dashboard-editable-mode" type="button" value="{$strings['done']}" style="display: none;">
+HTML;
+    } else {
+        $html .= <<<HTML
+        <a href="{$backend_url}" class="wa-dashboard-link"><h3>{$company_name}</h3>
+        <span class="gray">{$strings['date']}</span></a>
+HTML;
+    }
+    $html .= <<<HTML
     </div>
     <div id="wa-usercorner">
         <div class="profile image32px">

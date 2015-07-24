@@ -98,8 +98,8 @@ ul.menu-v li ul.menu-v li a { padding: 2px 6px; }
 
 ul.menu-h { margin: 0; padding: 0; }
 ul.menu-h.bottom-padded { margin-bottom: 15px; }
-ul.menu-h li { list-style: none; display: inline-block; padding: 0 10px 0 0; line-height: 1.1em; display:block\9; float:left\9; /* ie8 hack */ }
-ul.menu-h li a { display: inline-block; padding: 3px 5px; display:block\9; float:left\9; /* ie8 hack */ }
+ul.menu-h li { list-style: none; display: inline-block; padding: 0 10px 0 0; line-height: 1.1em; }
+ul.menu-h li a { display: inline-block; padding: 3px 5px; }
 ul.menu-h li a img.icon16 { position: relative; top: 3px; left: -3px; }
 ul.menu-h li a i.icon16 { margin-top: -0.1em; }
 ul.menu-h li.selected a { color: #000; text-decoration: none; }
@@ -254,7 +254,7 @@ i.icon10 { background-repeat:no-repeat; height:10px; width:10px; display:inline-
 
 .search { position: relative; }
 
-.search input { width: 100%; height: 24px; padding: 0 15px; float: left; border: 0; border-radius: 13px; -webkit-appearance: none; margin-right: 0; -moz-box-sizing: border-box; border: 1px solid #ddd; }
+.search input { width: 100%; height: 24px; padding: 0 15px; float: left; border: 0; border-radius: 13px; -webkit-appearance: none; margin-right: 0; -moz-box-sizing: border-box; box-sizing: border-box; border: 1px solid #ddd; }
 .search input:focus { outline: 0; background: #fff; }
 
 .search input::-webkit-input-placeholder { color: #aaa; font-weight: normal; }
@@ -384,7 +384,7 @@ input[type=submit].gray { background: #eee linear-gradient(to bottom, rgba(255,2
 #footer #sub-links ul { list-style: none; padding: 0; margin: 0; }
 #footer #sub-links ul li { float: left;  padding: 0 15px 0 0; }
 #footer #poweredby { text-align: center; float: right; padding-top: 0; }
-#footer #poweredby .dots { font-size: 0.8em; text-decoration: none; display: inline-block; width: 54px; height: 9px; background: url("/wa-content/img/dots/all-dots-default-order.png") no-repeat 0 3px; padding-top: 3px; margin-left: 10px; display: block\9; float: right\9; }
+#footer #poweredby .dots { font-size: 0.8em; text-decoration: none; display: inline-block; width: 54px; height: 9px; background: url("/wa-content/img/dots/all-dots-default-order.png") no-repeat 0 3px; padding-top: 3px; margin-left: 10px; }
 
 /* Customized app-dependent UI colors
 ------------------------------------- */

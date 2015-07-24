@@ -181,7 +181,7 @@ class photosConfig extends waAppConfig
 
         return $routes;
     }
-    
+
     public function getSidebarWidth()
     {
         $settings_model = new waContactSettingsModel();
@@ -195,7 +195,7 @@ class photosConfig extends waAppConfig
         }
         return max(min($width, 400), 200);
     }
-    
+
     public function setSidebarWidth($width)
     {
         $width = max(min((int)$width, 400), 200);
@@ -207,7 +207,7 @@ class photosConfig extends waAppConfig
             $width
         );
     }
-    
+
     public function getSaveQuality() {
         $quality = $this->getOption('save_quality');
         if(!$quality) {
@@ -215,5 +215,48 @@ class photosConfig extends waAppConfig
         }
         return $quality;
     }
-    
+
+    public function explainLogs($logs)
+    {
+        $logs = parent::explainLogs($logs);
+        $photo_ids = array();
+        foreach ($logs as $l_id => $l) {
+            if (in_array($l['action'], array('photos_upload')) && $l['params']) {
+                $photo_ids = array_merge($photo_ids, explode(',', $l['params']));
+            }
+        }
+        if ($photo_ids) {
+            $photo_model = new photosPhotoModel();
+            $photos = $photo_model->getById($photo_ids);
+        }
+        foreach ($logs as $l_id => $l) {
+            if (in_array($l['action'], array('photos_upload'))) {
+                $ids = explode(',', $l['params']);
+                $html = '';
+                foreach ($ids as $id) {
+                    if (!empty($photos[$id])) {
+                        $p = $photos[$id];
+                        $url = wa()->getConfig()->getBackendUrl(true).$l['app_id'].'/#/photo/'.$id.'/';
+                        $_is_2x_enabled = $this->getOption('enable_2x');
+                        $_image_size = '96x96';
+                        if ($_is_2x_enabled) {
+                            $_image_size = '96x96@2x';
+                        }
+                        $img = photosPhoto::getEmbedImgHtml($p, $_image_size);
+
+                        $html .= '<div class="photo-item"><a href="'.$url.'">'.$img.'</a></div>';
+                    }
+                }
+                if ($html) {
+                    $logs[$l_id]['params_html'] = '<div class="activity-photo-wrapper"><div class="activity-photo-list">'.$html.'</div></div>';
+                }
+            }
+        }
+        return $logs;
+    }
+
+    public function getCDN()
+    {
+        return wa()->getView()->getHelper()->photos->getCDN();
+    }
 }

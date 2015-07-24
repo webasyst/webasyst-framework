@@ -1,10 +1,23 @@
 <?php
+
 /**
- * @property double $surcharge
+ * @property-read string $region Регион
+ * @property-read string $city Город
+ * @property-read double $surcharge Надбавка (%)
+ * @property-read string $company_name Получатель наложенного платежа (магазин)
+ * @property-read string $address1 Адрес получателя наложенного платежа (магазина), строка 1
+ * @property-read string $address2 Адрес получателя наложенного платежа (магазина), строка 2
+ * @property-read string $zip Индекс получателя наложенного платежа (магазина)
+ * @property-read string $inn ИНН получателя наложенного платежа (магазина)
+ * @property-read string $bank_kor_number Кор. счет получателя наложенного платежа (магазина)
+ * @property-read string $bank_name Наименование банка получателя наложенного платежа (магазина)
+ * @property-read string $bank_account_number Расчетный счет получателя наложенного платежа (магазина)
+ * @property-read string $bik БИК получателя наложенного платежа (магазина)
  */
 class emsruShipping extends waShipping
 {
-    public function calculate()
+
+    protected function calculate()
     {
         $params = array();
         $params['weight'] = max(0.1, $this->getTotalWeight());
@@ -69,7 +82,9 @@ class emsruShipping extends waShipping
                 $services = 'Стоимость доставки не может быть рассчитана, так как в настройках способа доставки «EMS Почта России» не указан адрес отправителя.';
             }
         } elseif ($incomplete) {
-            $services = 'Для расчета стоимости доставки укажите страну, регион и город доставки.';
+            $services = array(
+                array('rate' => null, 'comment' => 'Для расчета стоимости доставки укажите страну, регион и город доставки.')
+            );
         } else {
             $services = 'Ошибка расчета стоимости доставки в указанные город и регион.';
         }
@@ -308,7 +323,8 @@ class emsruShipping extends waShipping
                     $curl_error = 'curl error: '.curl_errno($ch);
                 }
                 curl_close($ch);
-            } else {
+            }
+            if ($curl_error) {
                 throw new waException($curl_error);
             }
         } else {
@@ -321,12 +337,11 @@ class emsruShipping extends waShipping
                 @ini_set('default_socket_timeout', $old_timeout);
             }
         }
-        if (!$response && $hint) {
+        if (empty($response) && $hint) {
             throw new waException(sprintf('Ошибка расчета стоимости доставки (Empty response. Hint: %s)', $hint));
         }
 
         $json = json_decode($response, true);
-        $result = array();
         if ($rsp = ifset($json['rsp'])) {
             switch ($rsp['stat']) {
                 case 'ok':
@@ -350,5 +365,250 @@ class emsruShipping extends waShipping
     {
         $url = "http://www.emspost.ru/ru/tracking/?id=".urlencode($tracking_id);
         return 'Отслеживание отправления: <a href="'.$url.'" target="_blank">'.$url.'</a>';
+    }
+
+    /**
+     * Возвращает массив с информацией о печатных формах, формируемых плагином.
+     * @param waOrder $order Объект, содержащий информацию о заказе
+     * @return array
+     */
+    public function getPrintForms(waOrder $order = null)
+    {
+        return extension_loaded('gd') ? array(
+            112 => array(
+                'name'        => 'Форма №112ЭП',
+                'description' => 'Бланк приема переводов в адрес физических и юридических лиц',
+            ),
+        ) : array();
+    }
+
+    /**
+     * Возвращает HTML-код указанной печатной формы.
+     *
+     * @param string $id Идентификатор формы, определенный в методе getPrintForms()
+     * @param waOrder $order Объект, содержащий информацию о заказе
+     * @param array $params Дополнительные необязательные параметры, передаваемые в шаблон печатной формы
+     * @throws waException
+     * @return string HTML-код формы
+     */
+    public function displayPrintForm($id, waOrder $order, $params = array())
+    {
+        $method = 'displayPrintForm'.$id;
+        if (method_exists($this, $method)) {
+            if (extension_loaded('gd')) {
+                return $this->$method($order, $params);
+            } else {
+                throw new waException('PHP extension GD not loaded');
+            }
+        } else {
+            throw new waException('Print form not found');
+        }
+    }
+
+
+    /**
+     * Вспомогательный метод для печати формы с идентификатором 112.
+     *
+     * @param waOrder $order Объект, содержащий информацию о заказе
+     * @param array $params
+     * @return string HTML-код формы
+     */
+    private function displayPrintForm112(waOrder $order, $params = array())
+    {
+        $strict = true;
+        $request = waRequest::request();
+
+        $order['rub'] = intval(waRequest::request('rub', round(floor($order->total))));
+        $order['cop'] = min(99, max(0, intval(waRequest::request('cop', round($order->total * 100 - $order['rub'] * 100)))));
+        switch ($side = waRequest::get('side', ($order ? '' : 'print'), waRequest::TYPE_STRING)) {
+            case 'front':
+                $image_info = null;
+                if ($image = $this->read('f112ep_front.gif', $image_info)) {
+                    $format = '%.W{n0} %.2{f0}';
+
+                    $this->printOnImage($image, sprintf('%d', $order['rub']), 110, 680);
+                    $this->printOnImage($image, sprintf('%02d', $order['cop']), 430, 680);
+                    $this->printOnImage($image, waRequest::request('order_amount', waCurrency::format($format, $order->total, $order->currency)), 650, 620, 30);
+                    $this->printOnImage($image, $this->company_name, 210, 875);
+                    $this->printOnImage($image, $this->address1, 210, 957);
+                    $this->printOnImage($image, $this->address2, 70, 1040);
+                    $this->printOnImagePersign($image, $this->zip, 1965, 1020, 58.3, 50);
+
+                    $this->printOnImagePersign($image, $this->inn, 227, 1330, 55.5, 45);
+
+                    $this->printOnImagePersign($image, $this->bank_kor_number, 1207, 1330, 55.5, 45);
+                    $this->printOnImage($image, $this->bank_name, 570, 1405);
+                    $this->printOnImagePersign($image, $this->bank_account_number, 310, 1470, 55.5, 45);
+                    $this->printOnImagePersign($image, $this->bik, 1815, 1470, 55.5, 45);
+
+                    header("Content-type: image/gif");
+                    imagegif($image);
+                    exit;
+                } else {
+                    throw new waException('Image not found', 404);
+                }
+
+                break;
+            case 'print':
+                if (!$strict && !$order) {
+                    $this->view()->assign('action', 'preview');
+                }
+                $this->view()->assign('editable', waRequest::post() ? false : true);
+                break;
+            default:
+                $this->view()->assign('src_front', http_build_query(array_merge($request, array('side' => 'front'))));
+                if (!$strict && !$order) {
+                    $this->view()->assign('action', 'preview');
+                }
+                $this->view()->assign('order', $order);
+                $this->view()->assign('editable', waRequest::post() ? false : true);
+                break;
+        }
+
+        return $this->view()->fetch($this->path.'/templates/form112.html');
+    }
+
+
+    /**
+     * Отображение указанного фрагмента текста на изображении печатной формы.
+     *
+     * @param resource $image Графический ресурс
+     * @param string $text Текст
+     * @param int $x Горизонтальная координата
+     * @param int $y Вертикальная координата
+     * @param int $font_size Размер шрифта
+     */
+    private function printOnImage(&$image, $text, $x, $y, $font_size = 35)
+    {
+        $y += $font_size;
+        static $font_path = null;
+        static $text_color = null;
+        static $mode;
+        static $convert = false;
+
+        if (is_null($font_path)) {
+            $font_path = $this->path.'/lib/config/data/arial.ttf';
+            $font_path = (file_exists($font_path) && function_exists('imagettftext')) ? $font_path : false;
+        }
+        if (is_null($text_color)) {
+            $text_color = ImageColorAllocate($image, 16, 16, 16);
+        }
+
+        if (empty($mode)) {
+            if ($font_path) {
+                $info = gd_info();
+                if (!empty($info['JIS-mapped Japanese Font Support'])) {
+                    //any2eucjp
+                    $convert = true;
+                }
+                if (!empty($info['FreeType Support']) && version_compare(preg_replace('/[^0-9\.]/', '', $info['GD Version']), '2.0.1', '>=')) {
+                    $mode = 'ftt';
+                } else {
+                    $mode = 'ttf';
+                }
+            } else {
+                $mode = 'string';
+            }
+        }
+        if ($convert) {
+            $text = iconv('utf-8', 'EUC-JP', $text);
+        }
+
+        switch ($mode) {
+            case 'ftt':
+                imagefttext($image, $font_size, 0, $x, $y, $text_color, $font_path, $text);
+                break;
+            case 'ttf':
+                imagettftext($image, $font_size, 0, $x, $y, $text_color, $font_path, $text);
+                break;
+            case 'string':
+                imagestring($image, $font_size, $x, $y, $text, $text_color);
+                break;
+        }
+    }
+
+    /**
+     * Посимвольное отображение указанного фрагмента текста на изображении печатной формы.
+     *
+     * @param resource $image Графический ресурс
+     * @param string $text Текст
+     * @param int $x Горизонтальная координата
+     * @param int $y Вертикальная координата
+     * @param int $cell_size Размер смещения вправо для отображения следующего символа
+     * @param int $font_size Размер шрифта
+     */
+    private function printOnImagePersign(&$image, $text, $x, $y, $cell_size = 34, $font_size = 35)
+    {
+        $size = mb_strlen($text, 'UTF-8');
+        for ($i = 0; $i < $size; $i++) {
+            $this->printOnImage($image, mb_substr($text, $i, 1, 'UTF-8'), $x, $y, $font_size);
+            $x += $cell_size;
+        }
+    }
+
+    /**
+     * Чтение содержимого графического файла.
+     *
+     * @param string $file Путь к файлу
+     * @param array $info Массив информации об изображении
+     * @return resource|bool В случае ошибки возвращает false
+     */
+    private function read($file, &$info)
+    {
+        if ($file) {
+            $file = $this->path.'/lib/config/data/'.$file;
+        }
+        $info = @getimagesize($file);
+        if (!$info) {
+            return false;
+        }
+        switch ($info[2]) {
+            case 1:
+                // Create recource from gif image
+                $srcIm = @imagecreatefromgif($file);
+                break;
+            case 2:
+                // Create recource from jpg image
+                $srcIm = @imagecreatefromjpeg($file);
+                break;
+            case 3:
+                // Create resource from png image
+                $srcIm = @imagecreatefrompng($file);
+                break;
+            case 5:
+                // Create resource from psd image
+                break;
+            case 6:
+                // Create recource from bmp image imagecreatefromwbmp
+                $srcIm = @imagecreatefromwbmp($file);
+                break;
+            case 7:
+                // Create resource from tiff image
+                break;
+            case 8:
+                // Create resource from tiff image
+                break;
+            case 9:
+                // Create resource from jpc image
+                break;
+            case 10:
+                // Create resource from jp2 image
+                break;
+            default:
+                break;
+        }
+        return empty($srcIm) ? false : $srcIm;
+    }
+
+    /**
+     * Кеширование экземпляра класса шаблонизатора (Smarty) для многократного использования.
+     */
+    private function view()
+    {
+        static $view;
+        if (!$view) {
+            $view = wa()->getView();
+        }
+        return $view;
     }
 }

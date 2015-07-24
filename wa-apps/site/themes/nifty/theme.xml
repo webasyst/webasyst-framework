@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE theme PUBLIC "wa-app-theme" "http://www.webasyst.com/wa-content/xml/wa-app-theme.dtd">
-<theme id="nifty" system="0" vendor="webasyst" author="Webasyst" app="site" version="1.1.3">
+<theme id="nifty" system="0" vendor="webasyst" author="Webasyst" app="site" version="1.1.4">
   <name locale="en_US">Nifty</name>
   <name locale="ru_RU">Nifty</name>
   <description locale="ru_RU">Семейство адаптивных тем дизайна.</description>

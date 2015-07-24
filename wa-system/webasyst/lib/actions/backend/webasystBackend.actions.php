@@ -14,19 +14,126 @@ class webasystBackendActions extends waViewActions
     public function defaultAction()
     {
         try {
+            $dashboard_type = waRequest::get('dashboard_type');
+
             $this->setLayout(new webasystBackendLayout());
+
             $this->view->assign("username", wa()->getUser()->getName());
+
+            $this->dashboardAction();
+            $this->action = 'dashboard';
+            return;
+
             $template_file = wa()->getDataPath('templates/BackendDefault.html', false, 'webasyst');
             if (file_exists($template_file)) {
                 $this->template = 'file:'.$template_file;
             }
-        } catch (waException $e) { 
+        } catch (waException $e) {
+            throw $e;
             // user not exists
             if ($e->getCode() == 404) {
                 wa()->getUser()->logout();
                 wa()->dispatch();
                 exit;
             }
+        }
+    }
+
+    public function dashboardAction()
+    {
+        $widget_model = new waWidgetModel();
+        $locale = wa()->getUser()->getLocale();
+        if (!wa()->getUser()->getSettings('webasyst', 'dashboard')) {
+            $apps = wa()->getApps(true);
+            $widgets = array();
+            foreach ($apps as $app_id => $app) {
+                if (($app_id == 'webasyst') || $this->getUser()->getRights($app_id, 'backend')) {
+                    foreach (wa($app_id)->getConfig()->getWidgets() as $w_id => $w) {
+                        if (!empty($w['locale']) && ($w['locale'] != $locale)) {
+                            continue;
+                        }
+                        $widgets[] = $w;
+                    }
+                }
+            }
+            $block = 0;
+            $contact_id = wa()->getUser()->getId();
+            foreach ($widgets as $w) {
+                $max_size = $w['sizes'][0];
+                foreach ($w['sizes'] as $s) {
+                    if ($s[0] + $s[1] > $max_size[0] + $max_size[1]) {
+                        $max_size = $s;
+                    }
+                }
+
+                $row = array(
+                    'app_id' => $w['app_id'],
+                    'widget' => $w['widget'],
+                    'name' => $w['name'],
+                    'block' => $block++,
+                    'sort' => 0,
+                    'size' => $max_size[0] . 'x' . $max_size[1],
+                    'contact_id' => $contact_id,
+                    'create_datetime' => date('Y-m-d H:i:s')
+                );
+                $widget_model->insert($row);
+            }
+            wa()->getUser()->setSettings('webasyst', 'dashboard', 1);
+        }
+
+        $rows = $widget_model->getByContact($this->getUserId());
+        $widgets = array();
+        foreach ($rows as $row) {
+            if (($row['app_id'] == 'webasyst') || $this->getUser()->getRights($row['app_id'], 'backend')) {
+                $app_widgets = wa($row['app_id'])->getConfig()->getWidgets();
+                if (isset($app_widgets[$row['widget']])) {
+                    $row['size'] = explode('x', $row['size']);
+                    $row = $row + $app_widgets[$row['widget']];
+                    foreach ($row['sizes'] as $s) {
+                        if ($s == array(1, 1)) {
+                            $row['has_sizes']['small'] = true;
+                        } elseif ($s == array(2, 1)) {
+                            $row['has_sizes']['medium'] = true;
+                        } elseif ($s == array(2, 2)) {
+                            $row['has_sizes']['big'] = true;
+                        }
+                    }
+                    $widgets[$row['block']][] = $row;
+                }
+            }
+        }
+        $this->view->assign('widgets', $widgets);
+
+        // announcement
+        $user = wa()->getUser();
+        $announcement_model = new waAnnouncementModel();
+        $apps = $user->getApps();
+        $data = $announcement_model->getByApps($user->getId(), array_keys($apps), $user['create_datetime']);
+        $announcements = array();
+        $announcements_apps = array();
+        foreach ($data as $row) {
+            // show no more than 1 message per application
+            if (!empty($announcements_apps[$row['app_id']])) {
+                continue;
+            }
+            $announcements_apps[$row['app_id']] = true;
+            $announcements[] = $row;
+        }
+        $this->view->assign('notifications', $announcements);
+
+        // activity stream
+        $activity_action = new webasystDashboardActivityAction();
+        $this->view->assign('apps', wa()->getUser()->getApps());
+        $user_filters = wa()->getUser()->getSettings('webasyst', 'dashboard_activity');
+        if ($user_filters) {
+            $user_filters = explode(',', $user_filters);
+        } else {
+            $user_filters = array();
+        }
+        $this->view->assign('user_filters', $user_filters);
+        $this->view->assign('activity', $activity_action->getLogs(array(), $count));
+        if ($count == 50) {
+            $this->view->assign('activity_load_more', true);
         }
     }
 

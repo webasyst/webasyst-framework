@@ -5,6 +5,7 @@
     invoiceId="{$result.data.invoiceId}"
     shopId="{$result.data.shopId}"
 {if (!empty($result.data.techMessage) && $result.data.code)}
-    techMessage="{$result.data.techMessage}"
+
+    techMessage="{$result.data.techMessage|escape:'html':'utf-8'}"
 {/if}
 />

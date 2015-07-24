@@ -97,15 +97,9 @@ class waAppViewHelper
                     }
                 }
                 unset($page);
-                // make tree
                 foreach ($pages as $page_id => $page) {
                     if ($page['parent_id'] && isset($pages[$page['parent_id']])) {
                         $pages[$page['parent_id']]['childs'][] = &$pages[$page_id];
-                    }
-                }
-                foreach ($pages as $page_id => $page) {
-                    if ($page['parent_id']) {
-                        unset($pages[$page_id]);
                     }
                 }
                 if ($cache) {
@@ -114,6 +108,11 @@ class waAppViewHelper
             }
             if ($parent_id) {
                 return isset($pages[$parent_id]['childs']) ? $pages[$parent_id]['childs'] : array();
+            }
+            foreach ($pages as $page_id => $page) {
+                if ($page['parent_id']) {
+                    unset($pages[$page_id]);
+                }
             }
             return $pages;
         } catch (Exception $e) {

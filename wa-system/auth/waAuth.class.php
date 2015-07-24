@@ -81,7 +81,7 @@ class waAuth implements waiAuth
             }
         }
         // check options
-        if ($info && $info['id'] && (!$this->getOption('is_user') || !empty($info['is_user']))) {
+        if ($info && $info['id'] && (!$this->getOption('is_user') || ifempty($info['is_user']) > 0)) {
             return $info;
         }
         return false;
@@ -150,7 +150,7 @@ class waAuth implements waiAuth
         if ($params && isset($params['id'])) {
             $contact_model = new waContactModel();
             $user_info = $contact_model->getById($params['id']);
-            if ($user_info && ($user_info['is_user'] || !$this->options['is_user'])) {
+            if ($user_info && ($user_info['is_user'] > 0 || !$this->options['is_user'])) {
                 waSystem::getInstance()->getResponse()->setCookie('auth_token', null, -1);
                 return $this->getAuthData($user_info);
             }
@@ -169,7 +169,7 @@ class waAuth implements waiAuth
         }
         if ($login && strlen($login)) {
             $user_info = $this->getByLogin($login);
-            if ($user_info && ($user_info['is_user'] || !$this->options['is_user']) &&
+            if ($user_info && ($user_info['is_user'] > 0 || !$this->options['is_user']) &&
                 waContact::getPasswordHash($password) === $user_info['password']) {
                 $auth_config = wa()->getAuthConfig();
                 if (wa()->getEnv() == 'frontend' && !empty($auth_config['params']['confirm_email'])) {
@@ -234,7 +234,7 @@ HTML;
             $id = substr($token, 15, -15);
             $user_info = $model->getById($id);
             $this->checkBan($user_info);
-            if ($user_info && ($user_info['is_user'] || !$this->options['is_user']) &&
+            if ($user_info && ($user_info['is_user'] > 0 || !$this->options['is_user']) &&
                 $token === $this->getToken($user_info)) {
                 $response->setCookie('auth_token', $token, time() + 2592000, null, '', false, true);
                 return $this->getAuthData($user_info);

@@ -1,0 +1,38 @@
+{strip}
+
+<div class="photo-widget-wrapper">
+    {if $photos}
+        {foreach array_rand($photos, $photo_on_widget) as $i}
+            {$photo_image_href = $photos[$i].thumb.url}
+            {$photo_link_href = "{$wa_backend_url}photos/#/photo/{$photos[$i].id}"}
+            <div class="photo-item-wrapper">
+                <a class="image-wrapper is-visible" href="{$photo_link_href}" style="background-image: url({$photo_image_href});"></a>
+            </div>
+        {/foreach}
+    {/if}
+</div>
+
+{* Initialize *}
+<script>
+( function() {
+    var is_loaded = (typeof PhotoWidget !== "undefined"),
+        js_href = "{$widget_url}js/photoWidget.js?{$wa->version()}",
+        widget = DashboardWidgets["{$widget_id}"],
+        options = {
+            widget: widget,
+            photos: {$json_photos}
+        };
+
+    if (is_loaded) {
+        widget.photoWidget = new PhotoWidget(options);
+    } else {
+        $.getScript(js_href, function() {
+            widget.photoWidget = new PhotoWidget(options);
+        });
+    }
+})();
+</script>
+{/strip}
+
+<!-- CSS -->
+<style>{include file="../css/photoWidget.css" inline}</style>

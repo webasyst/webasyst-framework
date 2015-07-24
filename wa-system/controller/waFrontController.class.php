@@ -48,12 +48,9 @@ class waFrontController
                 $this->system->getConfig()->onInit();
             }
         }
-        if ($widget = waRequest::param('widget')) {
-            $this->executeWidget($widget, $action);
-        } elseif ($this->system->getEnv() == 'backend') {
-            $url = explode("/", $this->system->getConfig()->getRequestUrl(true));
-            if (isset($url[2]) && isset($url[3]) && $url[2] == 'widgets') {
-                $this->executeWidget($url[3], $action);
+        if ($this->system->getEnv() == 'backend') {
+            if ($widget = waRequest::get('widget')) {
+                $this->executeWidget($widget, $action);
             } else {
                 $this->execute($plugin, $module, $action);
             }
@@ -64,18 +61,13 @@ class waFrontController
 
     public function executeWidget($widget, $action = null)
     {
-        $prefix = $this->system->getConfig()->getPrefix('prefix');
-        $class_name = $prefix.ucfirst($widget)."Widget";
-        if (class_exists($class_name, true)) {
-            /**
-             * @var $controller waWidget
-             */
-            $controller = new $class_name();
-            return $controller->run($action);
-        } else {
-            throw new waException(sprintf('Widget "%s" not found by URL (%s).', $widget, $this->system->getConfig()->getRequestUrl(false)), 404);
+        $widget = $this->system->getWidget(waRequest::get('id'));
+        $app_id = $widget->getInfo('app_id');
+        if ($app_id != 'webasyst') {
+            waSystem::pushActivePlugin($widget->getInfo('widget'), $app_id.'_widget');
         }
-
+        $widget->loadLocale($app_id == 'webasyst');
+        return $widget->run($action);
     }
 
     /** Execute appropriate controller and return it's result.
@@ -104,6 +96,27 @@ class waFrontController
                 waSystem::pushActivePlugin($plugin, $prefix);
                 if (is_dir($plugin_path.'/locale')) {
                     waLocale::load($this->system->getLocale(), $plugin_path.'/locale', waSystem::getActiveLocaleDomain(), false);
+                }
+            }
+        }
+
+        // custom login and signup
+        if (wa()->getEnv() == 'frontend') {
+            if (!$plugin && !$action && ($module == 'login')) {
+                $login_action = $this->system->getConfig()->getFactory('login_action');
+                if ($login_action) {
+                    $controller = $this->system->getDefaultController();
+                    $controller->setAction($login_action);
+                    $r = $controller->run();
+                    return $r;
+                }
+            } elseif (!$plugin && !$action && ($module == 'signup')) {
+                $signup_action = $this->system->getConfig()->getFactory('signup_action');
+                if ($signup_action) {
+                    $controller = $this->system->getDefaultController();
+                    $controller->setAction($signup_action);
+                    $r = $controller->run();
+                    return $r;
                 }
             }
         }

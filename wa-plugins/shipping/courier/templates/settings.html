@@ -81,7 +81,7 @@
         <div class="value">
             <table class="zebra">
                 <thead>
-                <tr>
+                <tr class="white">
                     <th colspan="2" class="rate-by">
                             <span class="weight" {if $values.rate_by != 'weight'}style="display:none;"{/if}>
                                 {$p->_w('Shipment weight')}
@@ -115,7 +115,7 @@
                         <td title="{$p->_w('Shipment amount')}">
                             <input type="text"
                                    value="{$rate.limit|escape}"
-                                   class="refreshable input"
+                                   class="refreshable input short numerical"
                                    name="{$namespace|escape}[rate][{$rate@index}][limit]"
                                     >
                             <span class="rate-by">
@@ -135,6 +135,7 @@
                         <td title="{$p->_w('Shipping rate')}">
                             <input type="text"
                                    value="{$rate.cost|escape}"
+                                   class="short numerical"
                                    name="{$namespace|escape}[rate][{$rate@index}][cost]"
                                     >
                             <span class="currency">{$values.currency}</span>

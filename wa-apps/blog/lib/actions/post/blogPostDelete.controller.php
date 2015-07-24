@@ -9,7 +9,7 @@ class blogPostDeleteController extends waJsonController
             $blogs = $blog_model->getAvailable($this->getUser(),'id');
             $options = array('id'=>$ids,'blog_id'=>array_keys($blogs));
             $this->response['deleted'] = $post_model->deleteByField($options);
-            $this->log('post_delete', 1);
+            $this->logAction('post_delete', implode(',', $ids));
         } else {
             $this->errors[] = 'empty request';
         }

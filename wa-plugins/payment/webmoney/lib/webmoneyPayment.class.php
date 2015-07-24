@@ -13,6 +13,7 @@
  * @property-read string $LMI_SIM_MODE
  * @property-read string $TESTMODE
  * @property-read string $protocol
+ * @property-read string $hash_method
  */
 class webmoneyPayment extends waPayment implements waIPayment
 {
@@ -20,6 +21,8 @@ class webmoneyPayment extends waPayment implements waIPayment
     const PROTOCOL_WEBMONEY = 'webmoney';
     const PROTOCOL_WEBMONEY_LEGACY = 'webmoney_legacy';
     const PROTOCOL_PAYMASTER = 'paymaster';
+    const PROTOCOL_WEBMONEY_LEGACY_COM = 'webmoney_legacy_com';
+    const PROTOCOL_PAYMASTER_COM = 'paymaster_com';
 
     /**
      * Возвращает ISO3-коды валют, поддерживаемых платежной системой,
@@ -40,6 +43,8 @@ class webmoneyPayment extends waPayment implements waIPayment
         switch ($this->protocol) {
             case self::PROTOCOL_WEBMONEY_LEGACY:
             case self::PROTOCOL_PAYMASTER:
+            case self::PROTOCOL_WEBMONEY_LEGACY_COM:
+            case self::PROTOCOL_PAYMASTER_COM:
                 $currency = array('RUB', 'UAH', 'USD', 'EUR', 'UZS', 'BYR');
                 break;
             case self::PROTOCOL_WEBMONEY:
@@ -72,7 +77,7 @@ class webmoneyPayment extends waPayment implements waIPayment
      * Значение атрибута "action" формы может содержать URL сервера платежной системы либо URL текущей страницы (т. е. быть пустым).
      * Во втором случае отправленные пользователем платежные данные снова передаются в этот же метод для дальнейшей обработки, если это необходимо,
      * например, для проверки, сохранения в базу данных, перенаправления на сайт платежной системы и т. д.
-     * @param array $payment_form_data Содержимое POST-запроса, полученное при отправке платедной формы
+     * @param array $payment_form_data Содержимое POST-запроса, полученное при отправке платежной формы
      *     (если в формы оплаты не указано значение атрибута "action")
      * @param waOrder $order_data Объект, содержащий всю доступную информацию о заказе
      * @param bool $auto_submit Флаг, обозначающий, должна ли платежная форма автоматически отправить данные без участия пользователя
@@ -124,6 +129,8 @@ class webmoneyPayment extends waPayment implements waIPayment
         switch ($this->protocol) {
             case self::PROTOCOL_PAYMASTER:
             case self::PROTOCOL_WEBMONEY_LEGACY:
+            case self::PROTOCOL_PAYMASTER_COM:
+            case self::PROTOCOL_WEBMONEY_LEGACY_COM:
                 break;
             case self::PROTOCOL_WEBMONEY:
             default:
@@ -252,6 +259,10 @@ class webmoneyPayment extends waPayment implements waIPayment
     protected function getEndpointUrl()
     {
         switch ($this->protocol) {
+            case self::PROTOCOL_WEBMONEY_LEGACY_COM:
+            case self::PROTOCOL_PAYMASTER_COM:
+                $url = 'https://psp.paymaster24.com/Payment/Init';
+                break;
             case self::PROTOCOL_WEBMONEY_LEGACY:
             case self::PROTOCOL_PAYMASTER:
                 $url = 'https://paymaster.ru/Payment/Init';
@@ -283,6 +294,7 @@ class webmoneyPayment extends waPayment implements waIPayment
         $result = false;
         switch ($this->protocol) {
             case self::PROTOCOL_PAYMASTER:
+            case self::PROTOCOL_PAYMASTER_COM:
                 /**
                  * Check user sign
                  * base64
@@ -318,12 +330,19 @@ class webmoneyPayment extends waPayment implements waIPayment
                 /**
                  *  11.Secret Key
                  */
-                $hash_string .= $this->secret_key.';';
-                $transaction_hash = strtolower(base64_encode(md5($hash_string, true)));
+                $hash_string .= $this->secret_key;
+                if ($this->hash_method == 'md5') {
+                    $transaction_hash = base64_encode(md5($hash_string, true));
+                } else {
+                    $transaction_hash = base64_encode(sha1($hash_string, true));
+                }
                 unset($hash_string);
+
+                $transaction_sign = isset($data['LMI_HASH']) ? $data['LMI_HASH'] : null;
 
                 break;
             case self::PROTOCOL_WEBMONEY_LEGACY:
+            case self::PROTOCOL_WEBMONEY_LEGACY_COM:
             case self::PROTOCOL_WEBMONEY:
             default:
                 /**
@@ -357,14 +376,23 @@ class webmoneyPayment extends waPayment implements waIPayment
                 foreach ($fields as $field) {
                     $hash_string .= (isset($data[$field]) ? $data[$field] : '');
                 }
-                $transaction_hash = strtolower(md5($hash_string));
+
+                if ($this->hash_method == 'md5') {
+                    $transaction_hash = strtolower(md5($hash_string));
+                } else {
+                    if (function_exists('hash') && function_exists('hash_algos') && in_array('sha256', hash_algos())) {
+                        $transaction_hash = strtolower(hash('sha256', $hash_string));
+                    } else {
+                        throw new waException('sha256 not supported');
+                    }
+                }
                 unset($data['LMI_SECRET_KEY']);
                 unset($hash_string);
 
+                $transaction_sign = isset($data['LMI_HASH']) ? strtolower($data['LMI_HASH']) : null;
+
                 break;
         }
-
-        $transaction_sign = isset($data['LMI_HASH']) ? strtolower($data['LMI_HASH']) : null;
 
         if (!empty($data['LMI_PREREQUEST']) || ($transaction_sign == $transaction_hash)) {
             $result = true;
@@ -406,7 +434,7 @@ class webmoneyPayment extends waPayment implements waIPayment
             }
         }
 
-        // выполняем базовую обработку данных 
+        // выполняем базовую обработку данных
         $transaction_data = parent::formalizeData($request);
 
 
@@ -435,6 +463,10 @@ class webmoneyPayment extends waPayment implements waIPayment
             if ($currency && !is_array($currency)) {
                 $transaction_data['currency_id'] = $currency;
             }
+        }
+
+        if ((int)ifset($request['LMI_MODE'])) {
+            $transaction_data['view_data'] = ' ТЕСТОВЫЙ ЗАПРОС';
         }
 
         return $transaction_data;
@@ -468,6 +500,14 @@ class webmoneyPayment extends waPayment implements waIPayment
         $protocols[] = array(
             'title' => 'подключение к PayMaster',
             'value' => self::PROTOCOL_PAYMASTER,
+        );
+        $protocols[] = array(
+            'title' => 'подключение к Paymaster24 (режим совместимости)',
+            'value' => self::PROTOCOL_WEBMONEY_LEGACY_COM,
+        );
+        $protocols[] = array(
+            'title' => 'подключение к Paymaster24',
+            'value' => self::PROTOCOL_PAYMASTER_COM,
         );
         return $protocols;
     }

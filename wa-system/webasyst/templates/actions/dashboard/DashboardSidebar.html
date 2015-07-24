@@ -1,0 +1,42 @@
+<header class="widgets-list-header-wrapper">
+    <h4 class="widgets-list-header">[`Drag new widgets onto your dashboard and customize the layout any way you like it. Dashboards are personal, so only you will see your custom layout. Other Webasyst users have their own personal dashboards too.`]</h4>
+    <div class="cl"></div>
+</header>
+
+<section class="d-widgets-list-block">
+
+    {foreach $widgets as $app_id => $app_widgets}
+    <div class="list-group-wrapper {$app_id}-list-group">
+        {if $app_id != 'webasyst'}
+        <header class="group-header-wrapper">
+            <h5 class="group-header heading">{$apps[$app_id].name}</h5>
+        </header>
+        {/if}
+
+        {strip}
+        <div class="list-wrapper">
+            {foreach $app_widgets as $widget}
+
+                <div class="widget-item-wrapper"
+                    id="list-widget-{$widget.widget}"
+                    data-app_id="{$widget.app_id}"
+                    data-size="{$widget.size}"
+                    data-widget="{$widget.widget}"
+                >
+                    <div class="image-wrapper">
+                        <div class="image-block" draggable="true" title="[`Click or drag this widget to install it on your dashboard`]">
+                            {if !empty($widget.img)}
+                                <img class="image-item" src="{$wa_url}{$widget.img}" alt="{$widget.name}">
+                            {/if}
+                        </div>
+                    </div>
+                    <div class="text-block">
+                        {$widget.name}
+                    </div>
+                </div>
+            {/foreach}
+        </div>
+        {/strip}
+    </div>
+    {/foreach}
+</section>

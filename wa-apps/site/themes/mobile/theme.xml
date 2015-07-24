@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE theme PUBLIC "wa-app-theme" "http://www.webasyst.com/wa-content/xml/wa-app-theme.dtd">
-<theme id="mobile" system="0" vendor="webasyst" author="Webasyst" app="site" version="1.0.0">
+<theme id="mobile" system="0" vendor="webasyst" author="Webasyst" app="site" version="1.0.1">
     <name locale="en_US">Mobile</name>
     <name locale="ru_RU">Mobile</name>
     <description locale="en_US">Theme for mobile devices</description>

@@ -65,20 +65,24 @@ class waException extends Exception
         } else {
             $app = array();
         }
-        if (!waSystemConfig::isDebug() && $wa) {
+        if (!waSystemConfig::isDebug() && $wa && $wa->getEnv() !== 'cli') {
             $env = $wa->getEnv();
             $file = $code = $this->getCode();
             if (!$code || !file_exists(dirname(__FILE__).'/data/'.$code.'.php')) {
                 $file = 'error';
             }
-            include(dirname(__FILE__).'/data/'.$file.'.php');
+            if (file_exists(waConfig::get('wa_path_config').DIRECTORY_SEPARATOR.'exception'.DIRECTORY_SEPARATOR.$file.'.php')) {
+                include(waConfig::get('wa_path_config').DIRECTORY_SEPARATOR.'exception'.DIRECTORY_SEPARATOR.$file.'.php');
+            } else {
+                include(dirname(__FILE__).'/data/'.$file.'.php');
+            }
             exit;
         }
 
         if (($wa && $wa->getEnv() == 'cli') || (!$wa && php_sapi_name() == 'cli')) {
             return date("Y-m-d H:i:s")." php ".implode(" ", waRequest::server('argv'))."\n".
             "Error: {$this->getMessage()}\nwith code {$this->getCode()} in '{$this->getFile()}' around line {$this->getLine()}:{$this->getFileContext()}\n".
-            $this->getTraceAsString()."\n".
+            "\nCall stack:\n".$this->getTraceAsString()."\n".
             ($additional_info ? "Error while initializing waSystem during error generation: ".$additional_info."\n" : '');
         } elseif ($this->code == 404) {
             $response = new waResponse();
@@ -91,34 +95,34 @@ class waException extends Exception
         $trace = htmlentities($this->getTraceAsString(), ENT_NOQUOTES, 'utf-8');
         $result = <<<HTML
 <div style="width:99%; position:relative; text-align: left;">
-	<h2 id='Title'>{$message}</h2>
-	<div id="Context" style="display: block;">
-		<h3>Error with code {$this->getCode()} in '{$this->getFile()}' around line {$this->getLine()}:</h3>
-		<pre>{$context}</pre>
-	</div>
-	<div id="Trace">
-		<h2>Call stack</h2>
-		<pre>{$trace}</pre>
-	</div>
-	<div id="Request">
-		<h2>Request</h2>
-		<pre>{$request}</pre>
+    <h2 id='Title'>{$message}</h2>
+    <div id="Context" style="display: block;">
+        <h3>Error with code {$this->getCode()} in '{$this->getFile()}' around line {$this->getLine()}:</h3>
+        <pre>{$context}</pre>
+    </div>
+    <div id="Trace">
+        <h2>Call stack</h2>
+        <pre>{$trace}</pre>
+    </div>
+    <div id="Request">
+        <h2>Request</h2>
+        <pre>{$request}</pre>
     </div>
 </div>
-<div style="text-align: left;">
-    <h2>Params</h2>
-    <pre>{$params}</pre>
-</div>
+    <div style="text-align: left;">
+        <h2>Params</h2>
+        <pre>{$params}</pre>
+    </div>
 HTML;
 
         if ($additional_info) {
             $additional_info = htmlentities($additional_info, ENT_NOQUOTES, 'utf-8');
             $result .= <<<HTML
 
-<div style="text-align: left;">
-    <h2>Error while initializing waSystem during error generation</h2>
-    <pre>{$additional_info}</pre>
-</div>
+    <div style="text-align: left;">
+        <h2>Error while initializing waSystem during error generation</h2>
+        <pre>{$additional_info}</pre>
+    </div>
 HTML;
 
         }

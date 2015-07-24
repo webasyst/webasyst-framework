@@ -49,26 +49,26 @@ $(function () {
         }});
     };
 
-    if ($("#wa-applist ul").sortable) {
+    if ($.fn.sortable) {
         sortableApps();
-    } else {
+    } else if (!$('#wa').hasClass('disable-sortable-header')) {
         var urls = [];
+        if (!$.browser) {
+            urls.push('jquery/jquery-migrate-1.2.1.min.js');
+        }
         if (!$.ui) {
-            urls.push('jquery.ui.core.min.js');
-            urls.push('jquery.ui.widget.min.js');
-            urls.push('jquery.ui.mouse.min.js');
+            urls.push('jquery-ui/jquery.ui.core.min.js');
+            urls.push('jquery-ui/jquery.ui.widget.min.js');
+            urls.push('jquery-ui/jquery.ui.mouse.min.js');
         } else if (!$.ui.mouse) {
-            urls.push('jquery.ui.mouse.min.js');
+            urls.push('jquery-ui/jquery.ui.mouse.min.js');
         }
-        var path = $("#wa-header-js").attr('src').replace(/jquery-wa\/wa.header.js.*$/, 'jquery-ui/');
-        var before = $("#wa-header-js").next();
-        for (var i = 0; i < urls.length; i++) {
-            $("#wa-header-js").clone().removeAttr('id').attr('src', path+urls[i]).insertBefore(before);
-        }
-        $.getScript(path + 'jquery.ui.sortable.min.js', function () {
-            sortableApps();
-        });
+        urls.push('jquery-ui/jquery.ui.sortable.min.js');
 
+        var path = $("#wa-header-js").attr('src').replace(/jquery-wa\/wa.header.js.*$/, '');
+        $.when.apply($, $.map(urls, function(file) {
+            return $.getScript(path + file);
+        })).done(sortableApps);
     }
 
 /*
@@ -96,7 +96,7 @@ $(function () {
             this.timeout = null;
         }
     });
-*/    
+*/
 
     var pixelRatio = !!window.devicePixelRatio ? window.devicePixelRatio : 1;
     $(window).on("load", function() {
@@ -114,7 +114,7 @@ $(function () {
         {
             $('#wa-header').css('height', '83px');
             $('#wa-moreapps').removeClass('uarr');
-            $('#wa-header').removeClass('wa-moreapps');            
+            $('#wa-header').removeClass('wa-moreapps');
             $(window).resize();
         } else {
             if ($('#wa-applist li:last').attr('id')) {
@@ -127,10 +127,17 @@ $(function () {
         return false;
     });
 
-    $("a.wa-announcement-close", $('#wa')[0]).live('click', function () {
+    $('#wa').on('click', 'a.wa-announcement-close', function () {
         var app_id = $(this).attr('rel');
-        $(this).next('p').remove();
-        $(this).remove();
+        if ($(this).closest('.d-notification-block').length) {
+            $(this).closest('.d-notification-block').remove();
+            if (!$('.d-notification-wrapper').children().length) {
+                $('.d-notification-wrapper').hide();
+            }
+        } else {
+            $(this).next('p').remove();
+            $(this).remove();
+        }
         var url = backend_url + "?module=settings&action=save";
         $.post(url, {app_id: app_id, name: 'announcement_close', value: 'now()'});
         return false;

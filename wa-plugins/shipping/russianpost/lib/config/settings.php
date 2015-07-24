@@ -192,7 +192,7 @@ return array(
 
     'color'  => array(
         'value'        => '1',
-        'title'        => 'Печатать желтую полосу',
+        'title'        => 'Печатать желтую полосу (форма ф. 113эн)',
         'description'  => '',
         'control_type' => waHtmlControl::CHECKBOX,
     ),

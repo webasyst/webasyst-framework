@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * @author WebAsyst Team
+ * @author Webasyst
  *
  */
 class stickiesStickyAddMethod extends stickiesAPIMethod

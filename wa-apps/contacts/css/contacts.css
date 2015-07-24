@@ -418,6 +418,8 @@ ul.v-list li { list-style: none; background: white; padding: 8px; border-top: 1p
 
 .c-view-settings .field { width: 80%; }
 
+#c-info-tabs { white-space: normal; height: auto; }
+
 /* TABLET
 ========= */
 
@@ -430,3 +432,4 @@ ul.v-list li { list-style: none; background: white; padding: 8px; border-top: 1p
     .content.right200px { margin-right: 200px !important; }
 
 }
+

@@ -160,9 +160,10 @@ class liqpayPayment extends waPayment
         if ($this->order_prefix) {
             $pattern = wa_make_pattern($this->order_prefix, '@');
             $pattern = "@^{$pattern}(.+)$@";
-            $order_id = null;
             if (preg_match($pattern, $order_id, $matches)) {
                 $order_id = $matches[1];
+            } else {
+                $order_id = null;
             }
         }
 

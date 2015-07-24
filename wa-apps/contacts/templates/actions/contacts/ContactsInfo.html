@@ -312,7 +312,11 @@
 
         })();
 
-        $.wa.contactEditor.wa_app_url = '{$wa_app_url}';
+        {if !empty($limited_own_profile)}
+            $.wa.contactEditor.wa_app_url = '';
+        {else}
+            $.wa.contactEditor.wa_app_url = '{$wa_app_url}';
+        {/if}
         $.wa.contactEditor.update_title = {if !$wa->request('no_update_title')}true{else}false{/if};
         $.wa.contactEditor.wa_backend_url = '{$wa_backend_url}';
         $.wa.contactEditor.contact_id = {$contact.id};
@@ -328,6 +332,9 @@
         {/if}
         {if !empty($password_save_url)}
             $.wa.contactEditor.passwdSaveUrl = "{$password_save_url}";
+        {/if}
+        {if !empty($regions_url)}
+            $.wa.contactEditor.regionsUrl = "{$regions_url}";
         {/if}
 
         $.wa.contactEditor.initFactories({json_encode($contactFields)}, {json_encode($contactFieldsOrder)});

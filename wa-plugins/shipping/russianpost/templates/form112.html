@@ -1,0 +1,119 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title>Почта России: Форма №112ЭП</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+body, table { font-family: 'Helvetica', Arial, sans-serif; font-size: 13px; }
+body { padding: 10px; }
+input { font-size: 13px; margin-top: 2px; }
+table td { padding-right: 20px; }
+#img-link {
+	width:auto;
+	outline: none;
+	padding:0;
+	display:inline;
+}
+.hint { color: #aaa; font-size: 0.8em; }
+img {
+	border-width:0;
+	padding: 0;
+	margin: 0;
+}
+#load_div {
+    background: url('{$wa_url}wa-content/img/loading16.gif') no-repeat;
+    height:16px;
+    padding-left: 20px;
+    padding-top: 0;
+}
+@media print 
+{
+    body { padding: 0; margin: 0; }
+    .noprint 
+    {
+        display:none;
+    }
+}
+</style>
+<script type="text/javascript">
+    <!--
+    function show(node,hide_id,show_id){
+    var hide_node;
+    if(hide_node = document.getElementById(hide_id)){
+    	hide_node.style.display = 'none';
+    }
+    var load_node;
+    if(load_node = document.getElementById('load_div')){
+    	load_node.style.display = '';
+    }
+    var image_node;
+    if(image_node = document.getElementById('image')){
+    	image_node.src = node.href;
+    	image_node.style.display = 'none';
+    	image_node.parentNode.href = node.href;
+    	image_node.parentNode.style.display = 'none';
+    	image_node.onload = function(){
+            load(show_id);
+        }
+    }
+    return false;
+    }
+    
+    function load(show_id){
+    var show_node;
+    if(show_node = document.getElementById(show_id)){
+    	show_node.style.display = '';
+    
+    }
+    var image_node;
+    if(image_node = document.getElementById('image')){
+    	image_node.style.display = '';
+    	image_node.parentNode.style.display = 'block';
+    }
+    var load_node;
+    if(load_node = document.getElementById('load_div')){
+    	load_node.style.display = 'none';
+    }
+    }
+    //-->
+</script>
+</head>
+<body>
+    {if $editable}
+        <form id="edit_front_form" action="" method="post">
+            {$wa->csrf()}
+            <table>
+            	<tr>
+                    <td colspan="2"><h2>Форма №112ЭП <span class="hint">Прием переводов в адрес физических и юридических лиц</span></h2></td>
+                </tr>
+            	<tr>
+            		<td>Сумма почтового перевода</td>
+            		<td><label><input type="text" name="rub" value="{$order.rub|escape:'html'}" />руб.</label> <label><input size="2" type="text" name="cop" value="{$order.cop|escape:'html'}" />коп.</label></td>
+            	</tr>
+            	<tr>
+            		<td>Сумма почтового перевода прописью</td>
+            		<td><input size="80" type="text" name="order_amount" value="{$order.total|wa_format_amount:$order.currency:'words'}" /></td>
+            	</tr>
+            	<tr>
+            		<td>&nbsp;</td>
+            		<td>
+            		  <br>
+            		  <input type="submit" value="Сформировать бланк формы №112ЭП" />
+                    </td>
+            	</tr>
+            </table>
+        </form>
+    {else}
+        <form action="" class="noprint">
+            <input id="print_button" type="button" value="[`Печать`]" onclick="window.print();return false;"/>
+        </form>
+        
+        <div id="load_div" class="noprint" >Формирование бланка...</div>
+        <p>
+            <a id="img_link" style="display:none;border:0" target="_blank" href="?{$src_front}">
+            	<img width="100%" id="image" src="?{$src_front}" alt="" title="" onload="load('front_div');"/>
+            </a>
+        </p>
+    {/if}
+</body>
+</html>

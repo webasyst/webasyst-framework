@@ -75,7 +75,10 @@ class waAppSettingsModel extends waModel
         } else {
             $this->insert(array('app_id' => $key, 'name' => $name, 'value' => $value));
         }
-        self::$settings[$key][$name] = $value;
+        // if settings loaded
+        if (isset(self::$settings[$app_id])) {
+            self::$settings[$key][$name] = $value;
+        }
         return true;
     }
 

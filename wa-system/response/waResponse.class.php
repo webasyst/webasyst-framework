@@ -277,6 +277,12 @@ class waResponse
         return $this;
     }
 
+    public function setOGMeta($property, $content)
+    {
+        $this->metas['og'][$property] = $content;
+        return $this;
+    }
+
     /**
      * Returns META data: page TITLE, META tags 'keywords', 'description'.
      *
@@ -336,7 +342,7 @@ class waResponse
                 $url .= '.'.time();
             }
         // Support external links
-        } elseif (strpos($url, '://') === false) {
+        } elseif ((strpos($url, '://') === false) && (strpos($url, '//') !== 0)) {
             $url = wa()->getRootUrl().$url;
         }
 
@@ -388,7 +394,7 @@ class waResponse
             $result .= '
 <script type="text/javascript">
 $(function () {
-    var div = $("<div></div>");
+    var div = $(\'<div class="theme-preview"></div>\');
     div.css({
         position: "fixed",
         bottom: 0,
@@ -402,7 +408,7 @@ $(function () {
         "border-image": "url(\''.wa()->getUrl().'wa-content/img/recovery-mode-background.png\') 10 10 10 10 repeat",
         "font-family": "Lucida Grande",
         "font-size": "14px",
-        "z-index": 100500,
+        "z-index": 100500
     });
     div.html("'.sprintf(_ws('<strong>%s</strong> theme preview in action'), $theme).'");';
             if (wa()->getUser()->isAuth() && wa()->getUser()->getRights('shop')) {
@@ -447,7 +453,7 @@ $(function () {
                 $url .= '.'.time();
             }
         // Support external links
-        } elseif (strpos($url, '://') === false) {
+        } elseif ((strpos($url, '://') === false) && (strpos($url, '//') !== 0)) {
             $url = wa()->getRootUrl().$url;
         }
 

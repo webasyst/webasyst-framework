@@ -10,7 +10,8 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
-"X-Generator: Poedit 1.5.5\n"
+"X-Generator: Poedit 1.7.6\n"
+"Language: en_US\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
 
@@ -43,9 +44,7 @@ msgid "Estimated delivery time"
 msgstr ""
 
 #: //wa-plugins/shipping/flatrate/lib/config/settings.php:23
-msgid ""
-"Average order transit time. Estimated delivery date will be calculated "
-"automatically and shown to customer"
+msgid "Average order transit time. Estimated delivery date will be calculated automatically and shown to customer"
 msgstr ""
 
 #: //wa-plugins/shipping/flatrate/lib/config/settings.php:26
@@ -73,9 +72,7 @@ msgid "Prompt for address"
 msgstr ""
 
 #: //wa-plugins/shipping/flatrate/lib/config/settings.php:36
-msgid ""
-"Request customer to fill in all address fields in case shipping address was "
-"not provided yet"
+msgid "Request customer to fill in all address fields in case shipping address was not provided yet"
 msgstr ""
 
 #: //wa-plugins/shipping/flatrate/templates/form.html:8
@@ -119,7 +116,7 @@ msgid "Fixed shipping rate not depending on the shipment value and weight."
 msgstr ""
 
 #: //wa-plugins/shipping/flatrate/lib/config/settings.php:9
-msgid "Fixed shipping rate amount"
+msgid "Enter shipping rate as a flat rate, as a percent of cart total, or as a sum of both. Examples: <b>20</b>, <b>10%</b>, <b>20+10%</b>"
 msgstr ""
 
 #: //wa-plugins/shipping/flatrate/lib/config/settings.php:23

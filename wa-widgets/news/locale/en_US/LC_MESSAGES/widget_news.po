@@ -1,0 +1,28 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: wa-widgets/news/\n"
+"POT-Creation-Date: 2015-07-22 17:35+0300\n"
+"PO-Revision-Date: \n"
+"Last-Translator: wa-widgets/news/\n"
+"Language-Team: wa-widgets/news/\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-Basepath: .\n"
+"Language: en_US\n"
+"X-Generator: Poedit 1.8.2\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPath-1: .\n"
+
+#: /wa-widgets/news//templates/Default.html:14
+msgid "Please set up news source in widget settings."
+msgstr ""
+
+#: /wa-widgets/news//lib/config/widget.php:4
+msgid "News"
+msgstr ""
+
+#: /wa-widgets/news//lib/config/settings.php:6
+msgid "News feed"
+msgstr ""

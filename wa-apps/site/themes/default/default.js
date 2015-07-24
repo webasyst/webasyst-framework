@@ -5,11 +5,18 @@
 
     var storage = {
         activeClass: "submenu-is-shown",
-        showTime: 300
+        showTime: 200,
+        $last_li: false,
+        getMain: function() {
+            return $(".maincontent");
+        },
+        getFooter: function() {
+            return $(".globalfooter");
+        }
     };
 
     var bindEvents = function() {
-        var $selector = $(".flyout-nav li");
+        var $selector = $(".flyout-nav > li");
 
         $selector.on("mouseenter", function() {
             showSubMenu( $(this) );
@@ -24,7 +31,10 @@
                 is_active = $li.hasClass(storage.activeClass);
 
             if (is_active) {
-                hideSubMenu( $li );
+                var href = $li.find("> a").attr("href");
+                if ( href && (href !== "javascript:void(0);") ) {
+                    hideSubMenu( $li );
+                }
 
             } else {
                 showSubMenu( $li );
@@ -34,15 +44,26 @@
     };
 
     var showSubMenu = function( $li ) {
-        var is_active = $li.hasClass(storage.activeClass);
+        var is_active = $li.hasClass(storage.activeClass),
+            has_sub_menu = ( $li.find(".flyout").length );
 
         if (is_active) {
             clearTimeout( leave );
 
         } else {
-            enter = setTimeout( function() {
-                $li.addClass(storage.activeClass);
-            }, storage.showTime);
+            if (has_sub_menu) {
+
+                enter = setTimeout( function() {
+
+                    if (storage.$last_li && storage.$last_li.length) {
+                        clearTimeout( leave );
+                        storage.$last_li.removeClass(storage.activeClass);
+                    }
+
+                    $li.addClass(storage.activeClass);
+                    toggleMainOrnament(true);
+                }, storage.showTime);
+            }
         }
     };
 
@@ -53,9 +74,26 @@
             clearTimeout( enter );
 
         } else {
+            storage.$last_li = $li;
+
             leave = setTimeout(function () {
                 $li.removeClass(storage.activeClass);
-            }, storage.showTime);
+                toggleMainOrnament(false);
+            }, storage.showTime * 2);
+        }
+    };
+
+    var toggleMainOrnament = function($toggle) {
+        var $main = storage.getMain(),
+            $footer = storage.getFooter();
+
+        if ($toggle) {
+            $main.addClass(storage.activeClass);
+            $footer.addClass(storage.activeClass);
+
+        } else {
+            $main.removeClass(storage.activeClass);
+            $footer.removeClass(storage.activeClass);
         }
     };
 
@@ -88,26 +126,6 @@ $(document).ready(function() {
             $('#header-container').css('padding-top', _logo_vertical_shift+'px');
             $('#logo').css('margin-top', '-'+_logo_vertical_shift+'px');
         
-        });
-    }
-
-    // SIDEBAR slide menu
-    if ($('.slidemenu').length)
-    {
-        var _back_lbl = 'Back';
-        if ( $('.slidemenu').attr('data-back-lbl') )
-            _back_lbl = $('.slidemenu').attr('data-back-lbl');
-            
-        $('.slidemenu').waSlideMenu({
-            slideSpeed          : 300,
-            loadContainer       : '#page-content',
-            backLinkContent     : _back_lbl,
-            excludeUri          : ['/', '#'],
-            loadOnlyLatest      : false,
-            setTitle            : true,
-            scrollToTopSpeed    : 200,
-            backOnTop           : false,
-            beforeLoad          : function(){ $('h1.category-name').append(' <i class="icon24 loading"></i>'); }
         });
     }
 

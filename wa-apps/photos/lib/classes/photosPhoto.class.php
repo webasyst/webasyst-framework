@@ -5,7 +5,7 @@ class photosPhoto
     const AUTHOR_PHOTO_SIZE = 32;
     const SHARP_AMOUNT = 6;
 
-    public static function getPhotoUrl($photo, $size = null, $absolute = false)
+    public static function getPhotoUrl($photo, $size = null, $absolute = false, $cdn = null)
     {
         if (!$size) {
             $size = 970;
@@ -15,6 +15,11 @@ class photosPhoto
             $path .= '.'.$photo['hash'];
         }
         $path .= '/'.$photo['id'].'.'.($size ?  $size.'.' : '').$photo['ext'];
+
+        $cdn = ifset($cdn, wa('photos')->getConfig()->getCDN());
+        if ($cdn) {
+            return $cdn.wa()->getDataUrl($path, true, 'photos', false);
+        }
 
         if (waSystemConfig::systemOption('mod_rewrite')) {
             return wa()->getDataUrl($path, true, 'photos', $absolute);
@@ -28,7 +33,7 @@ class photosPhoto
         }
     }
 
-    public static function getPhotoUrlTemplate($photo, $absolute = false)
+    public static function getPhotoUrlTemplate($photo, $absolute = false, $cdn = null)
     {
         $path = self::getPhotoFolder($photo['id']).'/'.$photo['id'];
         if ($photo['status'] <= 0 && !empty($photo['hash'])) {
@@ -36,7 +41,10 @@ class photosPhoto
         }
         $path .= '/'.$photo['id'].'.%size%.'.$photo['ext'];
 
-        if (waSystemConfig::systemOption('mod_rewrite')) {
+        $cdn = ifset($cdn, wa('photos')->getConfig()->getCDN());
+        if ($cdn) {
+            return $cdn.wa()->getDataUrl($path, true, 'photos', false);
+        } else if (waSystemConfig::systemOption('mod_rewrite')) {
             return wa()->getDataUrl($path, true, 'photos', $absolute);
         } else {
             return wa()->getDataUrl('thumb.php/'.$path, true, 'photos', $absolute);
@@ -240,8 +248,8 @@ class photosPhoto
                 $w = !is_null($width) ? $width : $height;
                 $original_image = waImage::factory($original_path);
                 $h = $original_image->height * ($w/$original_image->width);
-                $w = round($w);
-                $h = round($h);
+                $w = min(round($w), $original_image->width);
+                $h = min(round($h), $original_image->height);
                 if ($w == $main_thumbnail_width && $h == $main_thumbnail_height) {
                     return $image;
                 }
@@ -256,8 +264,8 @@ class photosPhoto
                 $h = !is_null($width) ? $width : $height;
                 $original_image = waImage::factory($original_path);
                 $w = $original_image->width * ($h/$original_image->height);
-                $w = round($w);
-                $h = round($h);
+                $w = min(round($w), $original_image->width);
+                $h = min(round($h), $original_image->height);
                 if ($w == $main_thumbnail_width && $h == $main_thumbnail_height) {
                     return $image;
                 }
@@ -389,19 +397,19 @@ class photosPhoto
         );
     }
 
-    public static function getThumbInfo($photo, $size)
+    public static function getThumbInfo($photo, $size, $absolute = true)
     {
         $size_info = photosPhoto::parseSize($size);
         return array(
             'size' => photosPhoto::getRealSizesOfThumb($photo, $size_info),
-            'url' => photosPhoto::getPhotoUrl($photo, $size, true),
+            'url' => photosPhoto::getPhotoUrl($photo, $size, $absolute, wa('photos')->getConfig()->getCDN()),
             'bound' => array(
                 'width' => $size_info['width'],
                 'height' => $size_info['height']
         ));
     }
 
-    public static function getEmbedImgHtml($photo, $size, $attributes = array(), $style = true)
+    public static function getEmbedImgHtml($photo, $size, $attributes = array(), $style = true, $absolute = true, $cdn = null)
     {
         if ($photo['width'] && $photo['height']) {
 
@@ -416,7 +424,7 @@ class photosPhoto
         if (!isset($attributes['alt'])) {
             $attributes['alt'] = '';
         }
-        $photo['src'] = photosPhoto::getPhotoUrl($photo, $size, true);
+        $photo['src'] = photosPhoto::getPhotoUrl($photo, $size, $absolute, ifset($cdn, wa('photos')->getConfig()->getCDN()));
         if ($photo['edit_datetime']) {
             $photo['src'] .= '?'.strtotime($photo['edit_datetime']);
         }

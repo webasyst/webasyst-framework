@@ -11,6 +11,8 @@ class photosSitemapConfig extends waSitemapConfig
         $album_photos_model = new photosAlbumPhotosModel();
         $page_model = new photosPageModel();
 
+        $real_domain = $this->routing->getDomain(null, true, false);
+
         foreach ($routes as $route) {
             $this->routing->setRoute($route);
 
@@ -58,7 +60,7 @@ class photosSitemapConfig extends waSitemapConfig
 
             // pages
 
-            $main_url = wa()->getRouteUrl($app_id."/frontend", array(), true);
+            $main_url = wa()->getRouteUrl($app_id."/frontend", array(), true, $real_domain);
             $domain = $this->routing->getDomain(null, true);
             $sql = "SELECT full_url, url, create_datetime, update_datetime FROM ".$page_model->getTableName().'
                     WHERE status = 1 AND domain = s:domain AND route = s:route';

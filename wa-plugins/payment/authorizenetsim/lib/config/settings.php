@@ -8,7 +8,7 @@ return array(
         'control_type' => waHtmlControl::INPUT,
     ),
 
-    'key'      => array(
+    'trans_key'      => array(
         'value'         => '',
         'title'         => /*_wp*/('Transaction Key'),
         'description'   => /*_wp*/('Please input your transaction key (this can be found in your Authorize.Net account panel).<br>This information is stored in crypted way (secure)'),

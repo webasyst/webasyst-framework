@@ -1,4 +1,5 @@
 <?php
+
 /**
  *
  * @property-read array $rate_zone
@@ -14,6 +15,8 @@ class pickupShipping extends waShipping
      * Example of direct usage HTML templates instead waHtmlControl
      * (non-PHPdoc)
      * @see waShipping::getSettingsHTML()
+     * @param array $params
+     * @return string HTML
      */
     public function getSettingsHTML($params = array())
     {
@@ -52,7 +55,7 @@ class pickupShipping extends waShipping
         return $html;
     }
 
-    public function calculate()
+    protected function calculate()
     {
         $currency = $this->currency;
         $rates = $this->rate;
@@ -61,9 +64,9 @@ class pickupShipping extends waShipping
         $i = 1;    // start from index 1
         foreach ($rates as $rate) {
             $deliveries[$i++] = array(
-                'name' => $rate['location'],
-                'currency' => $currency,
-                'rate' => $rate['cost'],
+                'name'         => $rate['location'],
+                'currency'     => $currency,
+                'rate'         => $rate['cost'],
                 'est_delivery' => ''
             );
         }

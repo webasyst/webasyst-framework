@@ -45,13 +45,13 @@ class blogBlogSettingsAction extends waViewAction
                 if ($blog_id) {
                     $new_blog_created = false;
                     $blog_model->updateById($blog_id, $settings);
-                    $this->log('blog_modify');
+                    $this->logAction('blog_modify', $blog_id);
                 } else {
                     $new_blog_created = true;
                     $settings['sort'] = (int) $blog_model->select('MAX(`sort`)')->fetchField() + 1;
                     $settings['id'] = $blog_id = $blog_model->insert($settings);
                     $this->getUser()->setRight($this->getApp(), "blog.{$blog_id}", blogRightConfig::RIGHT_FULL);
-                    $this->log('blog_add');
+                    $this->logAction('blog_add', $blog_id);
                 }
 
                 // Create new settlement if asked to

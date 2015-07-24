@@ -1,0 +1,53 @@
+{$_capture_array = []}
+{strip}
+<section class="d-widgets-wrapper" id="d-widgets-wrapper">
+    <div class="d-widgets-block">
+        <div id="d-widgets-block">
+            {foreach $widgets as $block => $block_widgets}
+                <div class="widget-group-wrapper">
+                    {foreach $block_widgets as $w}
+
+                        {include file="./DashboardWidget.html" inline}
+
+                        {* INIT WIDGET *}
+                        {capture append="_capture_array"}
+                            <script>
+                                DashboardWidgets["{$w.id}"] = new DashboardWidget({
+                                    widget_id: "{$w.id}",
+                                    widget_href: "{$wa_backend_url}{$w.app_id}/?widget={$w.widget}&id={$w.id}",
+                                    widget_sort: "{$w.sort}",
+                                    widget_group_index: "{$block_widgets@index}",
+                                    widget_size: {
+                                        width: "{$w.size.0}",
+                                        height: "{$w.size.1}"
+                                    }
+                                });
+                            </script>
+                        {/capture}
+                    {/foreach}
+                </div>
+            {/foreach}
+
+            {* EMPTY GROUP*}
+            <div class="widget-group-wrapper"></div>
+        </div>
+
+        <div class="empty-widgets-wrapper {if empty($widgets)}is-shown{/if}" id="empty-widgets-wrapper">
+            [`Your dashboard is empty. Add some widgets by clicking Customize dashboard on the top.`]
+        </div>
+
+        {* HIDDEN LOADING SCREEN *}
+        <div class="loading-ornament-wrapper">
+            <div class="image-wrapper"></div>
+        </div>
+    </div>
+
+    {* LOAD RESOURCES *}
+    <script src="{$wa_url}wa-content/js/jquery-wa/dashboard.js?v={$wa->version()}"></script>
+    <script src="{$wa_url}wa-content/js/d3/d3.min.js"></script>
+
+    {* SCRIPTS *}
+    {$_capture_array|implode:''|strip}
+
+</section>
+{/strip}

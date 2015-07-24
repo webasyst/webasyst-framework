@@ -1,9 +1,9 @@
 <div class="block double-padded">
     <ul class="menu-v with-icons">
-        {foreach from=$domains item=d key=d_id}
+        {foreach $domains as $d_id => $d}
         <li{if $d_id == $domain_id} class="selected"{/if}>
             <a href="?domain_id={$d_id}">
-                <i class="icon16 favicon" style="background-image:url(http://{$d.name|escape}/favicon.ico)"></i>{str_replace('www.','',$d.title)|escape}
+                <i class="icon16 favicon" style="background-image:url(http{if waRequest::isHttps()}s{/if}://{$d.name|escape}/favicon.ico)"></i>{str_replace('www.','',$d.title)|escape}
             </a>
         </li>
         {/foreach}
@@ -20,6 +20,34 @@
 			</p>
 
 			<p>[`Enter the URL of your new website. You should own the domain and map it into your Webasyst installation (the URL should be the effective URL to access this Webasyst installation). Contact your hosting provider on how to map your domain name.`] <a href="[`http://www.webasyst.com/developers/docs/routing/site-app-routing/`]" target="_blank">[`Help`]</a> <i class="icon10 new-window"></i></p>
+
+            <p>
+                <ul class="menu-v">
+                    <li>
+                        <label>
+                            <input type="radio" name="alias" value="0" checked> [`New site`]
+                        </label>
+                    </li>
+                    <li>
+                        <label>
+                            <input type="radio" name="alias" value="1">
+                            [`Alias (mirror site) for`]
+                            <select id="alias-domain" name="domain">
+                                {foreach $domains as $d_id => $d}
+                                    {if empty($d.is_alias)}
+                                    <option value="{$d.name|escape}">{$d.name|escape}</option>
+                                    {/if}
+                                {/foreach}
+                            </select>
+                            <script type="text/javascript">
+                                $('#alias-domain').on('change', function () {
+                                    $('#alias-domain').parent().find('input').attr('checked', 'checked');
+                                });
+                            </script>
+                        </label>
+                    </li>
+                </ul>
+            </p>
             <span class="errormsg"></span>
 		</div>
 		<div class="dialog-buttons">
@@ -38,10 +66,12 @@
         </h5>
     </div>
     <ul class="menu-v s-links with-icons">
+        {if empty($domain_alias)}
         <li id="s-link-pages"><a href="#/pages/"><i class="icon16 notebook"></i>[s`Pages`]</a></li>
         <li id="s-link-design"><a href="#/design/"><i class="icon16 palette"></i>[s`Design`]</a></li>
         <li id="s-link-routing"><a href="#/routing/"><i class="icon16 split"></i>[`Structure`]</a></li>
         <li id="s-link-personal"><a href="#/personal/"><i class="icon16 access"></i>[`Personal`]</a></li>
+        {/if}
         <li id="s-link-settings"><a href="#/settings/"><i class="icon16 settings"></i>[`Settings`]</a></li>
 
         {* @event backend_sidebar.%plugin_id%.menu_li *}
@@ -50,6 +80,11 @@
         {if is_array($output) && isset($output.menu_li)}{$output.menu_li}{/if}
         {/foreach}
     </ul>
+    {if !empty($domain_alias)}
+    <div class="block align-center hint">
+        {sprintf('[`This is a mirror site (alias) for <strong>%s</strong>.`]', $domain_alias)}
+    </div>
+    {/if}
 </div>
 
 

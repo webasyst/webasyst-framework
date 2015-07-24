@@ -1,18 +1,42 @@
-<article class="page-content" itemscope itemtype="http://schema.org/WebPage">
+{if $wa->currentUrl() == $wa_app_url && (empty($page.id) && empty($page.content))}    
 
-    {if $wa->currentUrl() == $wa_app_url && (empty($page.id) && empty($page.content))}
+    <div class="welcome">
+        <h1>[`Welcome to your new site!`]</h1>
+        <p>{sprintf('[`Start by <a href="%s">creating a page</a> in your site backend.`]', $wa_backend_url|cat:'site/#/pages/')}</p>
+    </div>
     
-        <div class="welcome">
-            <h1>[`Welcome to your new site!`]</h1>
-            <p>{sprintf('[`Start by <a href="%s">creating a page</a> in your site backend.`]', $wa_backend_url|cat:'site/#/pages/')}</p>
-        </div>
-        
-    {else}
-    
+{else}
+
+    <article class="content with-sidebar" itemscope itemtype="http://schema.org/WebPage">   
         {$content} {* see page.html *}
+    </article>
+
+    <div class="content">
+    
+        <!-- FOLLOW -->
+        <aside class="connect inline">
+            {if !empty($theme_settings.facebook_likebox_code)}
+                <div class="likebox">
+                    {$theme_settings.facebook_likebox_code}
+                </div>
+            {/if}
+            {if !empty($theme_settings.twitter_timeline_code)}
+                <div class="likebox">
+                    {$theme_settings.twitter_timeline_code}
+                </div>
+            {/if}
+            {if !empty($theme_settings.vk_widget_code)}
+                <div class="likebox">
+                    {$theme_settings.vk_widget_code}
+                </div>
+            {/if}
+            {*
+            <div class="likebox">
+                 your custom social widget
+            </div>
+            *}
+        </aside>
         
-    {/if}
-    
-    <div class="clear-both"></div>
-    
-</article>
+    </div>
+
+{/if}

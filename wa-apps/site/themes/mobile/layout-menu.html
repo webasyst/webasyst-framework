@@ -1,11 +1,24 @@
 <section class="hidden-menu-wrapper">
     <div class="menu-block-wrapper">
 
-        <div class="logo-wrapper">
-            {if $theme_settings.logo}
-                <img src="{$wa_theme_url}{$theme_settings.logo}" alt="{$wa->accountName()}" id="logo">
-            {/if}
-        </div>
+        {if $theme_settings.logo}
+            <div class="logo-wrapper">
+                <a href="{$wa_url}">
+                    <img src="{$wa_theme_url}{$theme_settings.logo}" alt="{$wa->accountName()}" id="logo">
+                </a>
+            </div>
+        {/if}
+
+        {if $wa->shop && $wa->shop->settings('phone')}
+            <div class="shop-details-wrapper">
+                <div class="phone-wrapper">{$wa->shop->settings('phone')}</div>
+                {if $wh = $wa->shop->settings('workhours')}
+                    <div class="workhours-wrapper">
+                        {$wh.days_from_to}{if $wh.hours_from && $wh.hours_to} {$wh.hours_from}—{$wh.hours_to}{/if}
+                    </div>
+                {/if}
+            </div>
+        {/if}
 
         {$search_action = $wa->getUrl('shop/frontend/search')}
         {if !$search_action}
@@ -15,14 +28,19 @@
         {if $search_action}
             <div class="search-wrapper">
                 <form action="{$search_action}" method="get">
-                    <input class="text-field" type="text" value="{if !empty($query)}{$query}{/if}" name="query" placeholder="[s`Search`]">
-                    <input class="submit-field" type="submit" value="">
+                    <div class="relative">
+                        <input class="text-field" type="text" value="{if !empty($query)}{$query}{/if}" name="query" placeholder="[s`Search`]">
+                        <input class="submit-field" type="submit" value="">
+                    </div>
                 </form>
             </div>
         {/if}
 
         <nav class="nav-wrapper" role="navigation">
-        
+
+            {* It is necessary to check the status of privacy *}
+            {$apps_available = []}
+
             <!-- APPS -->
             <div class="nav-group">
                 <div class="nav-list">
@@ -30,78 +48,81 @@
                         <div class="nav-item {if $a.url==$wa_app_url && !$wa->globals('isMyAccount')}active-nav-item{/if}">
                             <a href="{$a.url}">{$a.name}</a>
                         </div>
+                        {$apps_available[$a.app] = 1}
                     {/foreach}
                 </div>
             </div>
-            
+
             <!-- PAGES -->
+            {if $wa->site && !empty($apps_available['site'])}
+                {$pages = $wa->site->pages()}
+                {if count($pages)}
+                    <div class="nav-group">
+                        <div class="nav-header">[`Information`]</div>
+                        <div class="nav-list">
+                            {$selected_node = null}
+                            {foreach $pages as $p}
+                                {if $wa->currentUrl()|strstr:$p.url && strlen($p.url) >= strlen($selected_node.url)}{$selected_node = $p}{/if}
+                            {/foreach}
+                            {if !$selected_node}{$selected_node.id = null}{/if}
 
-            {$pages = $wa->site->pages()}
-            {if count($pages)}
-                <div class="nav-group">
-                    <div class="nav-header">[`Information`]</div>
-                    <div class="nav-list">
-                        {$selected_node = null}
-                        {foreach $pages as $p}
-                            {if $wa->currentUrl()|strstr:$p.url && strlen($p.url) >= strlen($selected_node.url)}{$selected_node = $p}{/if}
-                        {/foreach}
-                        {if !$selected_node}{$selected_node.id = null}{/if}
+                            {* render *}
+                            {foreach $pages as $p}
+                                {if $p.url != $wa_url}
+                                    <div class="nav-item {if $p.id == $selected_node.id}active-nav-item{/if}">
+                                        <a href="{$p.url}">{$p.name}</a>
+                                    </div>
+                                {/if}
+                            {/foreach}
+                        </div>
+                    </div>
+                {/if}
+            {/if}
 
-                        {* render *}
-                        {foreach $pages as $p}
-                            {if $p.url != $wa_url}
-                                <div class="nav-item {if $p.id == $selected_node.id}active-nav-item{/if}">
+            {if $wa->shop && !empty($apps_available['shop'])}
+                {$shop_pages = $wa->shop->pages()}
+                {if count($shop_pages)}
+                    <div class="nav-group">
+                        <div class="nav-header">[s`Shop`]</div>
+                        <div class="nav-list">
+                            {foreach $shop_pages as $page}
+                                <div class="nav-item">
+                                    <a href="{$page.url}">{$page.name}</a>
+                                </div>
+                            {/foreach}
+                        </div>
+                    </div>
+                {/if}
+            {/if}
+
+            {if $wa->blog && !empty($apps_available['blog'])}
+                {$pages = $wa->blog->pages()}
+                {if count($pages)}
+                    <div class="nav-group">
+                        <div class="nav-header">[s`Blog`]</div>
+                        <div class="nav-list">
+                            {foreach $pages as $p}
+                                <div class="nav-item">
                                     <a href="{$p.url}">{$p.name}</a>
                                 </div>
-                            {/if}
-                        {/foreach}
+                            {/foreach}
+                        </div>
                     </div>
-                </div>
+                {/if}
             {/if}
 
-            {$shop_pages = $wa->shop->pages()}
-            {if count($shop_pages)}
-                <div class="nav-group">
-                    <div class="nav-header">[s`Shop`]</div>
-                    <div class="nav-list">
-                        {foreach $shop_pages as $page}
-                            <div class="nav-item">
-                                <a href="{$page.url}">{$page.name}</a>
-                            </div>
-                        {/foreach}
-                    </div>
-                </div>
-            {/if}
-
-            {$pages = $wa->blog->pages()}
-            {if count($pages)}
-
-                <div class="nav-group">
-                    <div class="nav-header">[s`Blog`]</div>
-                    <div class="nav-list">
-                        {foreach $pages as $p}
-                            <div class="nav-item">
-                                <a href="{$p.url}">{$p.name}</a>
-                            </div>
-                        {/foreach}
-                    </div>
-                </div>
-            {/if}
-
-            {if $wa->photos}
-            
+            {if $wa->photos && !empty($apps_available['photos'])}
                 <!-- PHOTOS CORE NAVIGATION -->
-                {$photo_url = $wa->getUrl('photos/frontend')}
                 <div class="nav-group">
                     <div class="nav-header">[s`Photos`]</div>
                     <div class="nav-list">
+                        {$photo_url = $wa->getUrl('photos/frontend')}
                         <div class="nav-item {if $wa->currentUrl() == $wa_app_url}selected{/if}">
                             <a href="{$photo_url}">[`All photos`]</a>
                         </div>
                         <div class="nav-item {if $wa->param('action') neq 'page' && $wa->param('action') neq 'album' && $wa->param('hash') == 'favorites'}selected{/if}">
                             <a href="{$photo_url}favorites/">[`Editors’ choice`]</a>
                         </div>
-
                         {$pages = $wa->photos->pages()}
                         {if count($pages)}
                             {foreach $pages as $p}
@@ -112,11 +133,9 @@
                         {/if}
                     </div>
                 </div>
-                
             {/if}
             
             {if $wa->isAuthEnabled()}
-            
                 <!-- USER ACCOUNT -->
                 <div class="nav-group">
                     <div class="nav-header">[s`My account`]</div>
@@ -148,9 +167,7 @@
                         {/if}
                     </div>
                 </div>
-                
             {/if}
-
         </nav>
     </div>
 </section>

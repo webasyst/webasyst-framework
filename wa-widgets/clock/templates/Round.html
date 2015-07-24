@@ -1,0 +1,40 @@
+<div class="round-clock-wrapper {if !empty($town)}has-town{/if}">
+    <div class="round-clock-block" id="round-clock-{$widget_id}"></div>
+    {if !empty($town)}
+        <div class="town-name-wrapper">{$town|escape}</div>
+    {/if}
+</div>
+
+{* Init Controller *}
+<script>{include file="../js/clockController.js" inline}</script>
+
+{* Initialize *}
+<script>
+( function() {
+    var is_loaded = (typeof RoundClock !== "undefined"),
+        js_href = "{$widget_url}js/roundClock.js?v={$wa->version()}",
+        widget = DashboardWidgets["{$widget_id}"],
+        options = {
+            widget_id: "{$widget_id}",
+            widget_name: "{$widget_name}",
+            widget_app: "{$widget_app}",
+            show_town: {if !empty($town)}true{else}false{/if},
+            source: "{$source}",
+            offset: {$offset},
+            size: "{$size}"
+        };
+
+    if (is_loaded) {
+        widget.clock = new RoundClock(options);
+
+    } else {
+
+        $.getScript(js_href, function() {
+            widget.clock = new RoundClock(options);
+        });
+    }
+})();
+</script>
+
+{* CSS *}
+<style>{include file="../css/roundClock.css" inline}</style>

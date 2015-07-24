@@ -110,6 +110,7 @@ class photosUploadPhotoController extends waJsonController
         }
 
         return array(
+            'id' => $id,
             'name' => $file->name,
             'type' => $file->type,
             'size' => $file->size,
