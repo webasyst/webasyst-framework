@@ -1,9 +1,9 @@
 <div id="shipping-pickup-settings">
     <div class="field">
-        <div class="name">{$p->_w('Currency')}</label>
+        <div class="name">{$p->_w('Currency')}
         </div>
         <div class="value">
-            <select name="{$namespace|escape}[currency]" autocomplete="off">
+            <select name="{$namespace|escape}[currency]">
                 <option value="">-</option>
                 {foreach $currencies as $currency}
                     <option value="{$currency.code|escape}"{if $values.currency == $currency.code} selected="selected"{/if}>{"`$currency.title` (`$currency.code`)"|escape}</option>
@@ -104,7 +104,7 @@
                 
                 // increase index inside input name
                 var name = input.attr('name');
-                input.attr('name', name.replace(/\[rate\]\[(\d+)\]/, function(str, p1) {
+                input.attr('name', name.replace(/\[rate]\[(\d+)]/, function(str, p1) {
                     return '[rate][' + (parseInt(p1, 10) + 1) + ']';
                 }));
                 
