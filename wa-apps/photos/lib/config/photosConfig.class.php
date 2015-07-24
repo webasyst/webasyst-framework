@@ -181,7 +181,7 @@ class photosConfig extends waAppConfig
 
         return $routes;
     }
-    
+
     public function getSidebarWidth()
     {
         $settings_model = new waContactSettingsModel();
@@ -195,7 +195,7 @@ class photosConfig extends waAppConfig
         }
         return max(min($width, 400), 200);
     }
-    
+
     public function setSidebarWidth($width)
     {
         $width = max(min((int)$width, 400), 200);
@@ -207,7 +207,7 @@ class photosConfig extends waAppConfig
             $width
         );
     }
-    
+
     public function getSaveQuality() {
         $quality = $this->getOption('save_quality');
         if(!$quality) {
@@ -254,5 +254,9 @@ class photosConfig extends waAppConfig
         }
         return $logs;
     }
-    
+
+    public function getCDN()
+    {
+        return wa()->getView()->getHelper()->photos->getCDN();
+    }
 }

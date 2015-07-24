@@ -728,7 +728,7 @@ class photosCollection
                                 }
                             }
                             foreach ($data as $id => &$v) {
-                                $v[$f] = photosPhoto::getThumbInfo($v, $size);
+                                $v[$f] = photosPhoto::getThumbInfo($v, $size, false);
                             }
                             unset($v);
                         }
@@ -736,7 +736,7 @@ class photosCollection
                             foreach ($data as $id => &$v) {
                                 $v['frontend_link'] = photosFrontendPhoto::getLink(array(
                                     'url' => $this->frontend_base_url ? $this->frontend_base_url.'/'.$v['url'] : $v['url']
-                                ));
+                                ), null, false);
                             }
                             unset($v);
                         }

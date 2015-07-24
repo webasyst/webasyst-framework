@@ -212,11 +212,11 @@ class photosPhotoRenderHelper
             );
             $item['full_url'] = photosFrontendPhoto::getLink(array(
                 'url' => $item['url']
-            ), $this->album ? $this->album : $this->hash);
+            ), $this->album ? $this->album : $this->hash, false);
             if (!$contain && $item['id'] == $photo['id']) {
                 $next = current($photo_stream);
                 if ($next) {
-                    $this->next_photo_url = photosFrontendPhoto::getLink($next, $this->album ? $this->album : $this->hash);
+                    $this->next_photo_url = photosFrontendPhoto::getLink($next, $this->album ? $this->album : $this->hash, false);
                 }
                 $contain = true;
             }

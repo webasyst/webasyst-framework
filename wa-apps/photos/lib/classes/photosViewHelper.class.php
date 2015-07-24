@@ -132,7 +132,7 @@ class photosViewHelper extends waAppViewHelper
         $attributes['data-photo-id'] = $photo['id'];
         $attributes['class'] = !empty($attributes['class']) ? $attributes['class'] : '';
         $attributes['class'] .= ' photo_img';    // !Important: obligatory class. Need in frontend JS
-        return photosPhoto::getEmbedImgHtml($photo, $size, $attributes, $style);
+        return photosPhoto::getEmbedImgHtml($photo, $size, $attributes, $style, false, $this->cdn);
     }
 
     public function ratingHtml($rating, $size = 10, $show_when_zero = false)
@@ -162,6 +162,11 @@ class photosViewHelper extends waAppViewHelper
         unset($ca);
 
         return $child_albums;
+    }
+
+    public function getCDN()
+    {
+        return $this->cdn;
     }
 }
 
