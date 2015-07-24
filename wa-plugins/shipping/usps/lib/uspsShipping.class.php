@@ -95,7 +95,7 @@ class uspsShipping extends waShipping
         return $items;
     }
 
-    public function calculate()
+    protected function calculate()
     {
         $this->correctItems();
         $rates = $this->executeQuery(
