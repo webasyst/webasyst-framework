@@ -1,5 +1,5 @@
 body {
-  background: #eeeeee;
+  background: #eee;
 }
 body #wa-usercorner,
 body #wa-applist {
@@ -1007,6 +1007,9 @@ body.is-highlighted #wa-applist {
 }
 .widget-2x2 h6 {
   font-size: 1.1em;
+}
+#close-dashboard-editable-mode {
+  position: relative;
 }
 body.tv {
   background: #000;

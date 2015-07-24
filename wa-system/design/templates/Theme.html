@@ -150,7 +150,7 @@
                     <div class="fields form">
                         {foreach $settings as $s_var => $s}
                         {if $s.control_type == 'group_divider'}
-                        <h5 class="heading clear-both"><br>{$s.name}</h5>
+                        <h5 class="heading clear-both"><br>{$s.name}<br><br></h5>
                         {else}
                         <div class="field">
                             <div class="name">{$s.name}</div>
@@ -159,6 +159,9 @@
                                     <select name="{if !empty($s.parent)}parent_{/if}settings[{$s_var}]">
                                         {html_options options=$s.options selected=ifset($s.value)}
                                     </select>
+                                    {if !empty($s.description)}
+                                    <div class="hint">{$s.description}</div>
+                                    {/if}
                                 {elseif $s.control_type == 'radio'}
                                 {foreach $s.options as $v => $o}
                                     <label>
@@ -214,6 +217,9 @@
                                     <input class="flexible" id="flex-settings-{$s@index}" type="text" name="{if !empty($s.parent)}parent_{/if}settings[{$s_var}]" value="{$s.value|escape}">
                                     {else}
                                     <textarea class="flexible" id="flex-settings-{$s@index}" name="{if !empty($s.parent)}parent_{/if}settings[{$s_var}]">{$s.value|escape}</textarea>
+                                    {/if}
+                                    {if !empty($s.description)}
+                                    <div class="hint">{$s.description}</div>
                                     {/if}
                                 {/if}
                             </div>                

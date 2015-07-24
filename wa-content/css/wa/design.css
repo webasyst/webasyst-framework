@@ -58,6 +58,7 @@ h5.wa-themes-group { padding-top: 20px; margin-left: 20px; text-transform: upper
 .wa-theme-image-select li { list-style: none; display: inline-block; float: left\9; margin: 0 0 5px 0; padding: 0; }
 .wa-theme-image-select a { display: block; max-height: 70px; max-width: 70px; overflow: hidden; border: 4px solid #fff; }
 .wa-theme-image-select li.selected a { border-color: #FDDA3B; border-radius: 4px; }
+.wa-theme-image-select a img { margin-bottom: -1px; }
 
 /*     .wa-theme-image-upload { display: inline-block; } */
 .wa-theme-image-upload img { margin-bottom: 10px; display: block; }
