@@ -264,6 +264,38 @@ textarea {
   -o-transition: all 1000ms linear;
   transition: all 1000ms linear;
 }
+@-moz-keyframes infinity-rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+@-webkit-keyframes infinity-rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+@-o-keyframes infinity-rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes infinity-rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
 /* END ANIMATION STYLES (TRANSITION) */
 /* MAIN LAYOUT STYLES */
 body {
@@ -484,6 +516,7 @@ input[type="submit"] {
   -webkit-box-shadow: 0 1px 1px rgba(0,0,0,0.1);
   box-shadow: 0 1px 1px rgba(0,0,0,0.1);
   -webkit-appearance: none;
+  -moz-appearance: none;
   appearance: none;
   -webkit-user-select: none;
   -moz-user-select: none;
@@ -626,13 +659,13 @@ input[type="submit"].gray-button {
   font-size: 0.9em;
   color: #121212;
   text-decoration: none;
-  background: #fcd630;
-  background: #fcd630 -moz-linear-gradient(top, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0) 100%);
-  background: #fcd630 -webkit-gradient(linear, left top, left bottom, color-stop(0%, rgba(255,255,255,0.5)), color-stop(100%, rgba(255,255,255,0)));
-  background: #fcd630 -webkit-linear-gradient(top, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0) 100%);
-  background: #fcd630 -o-linear-gradient(top, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0) 100%);
-  background: #fcd630 -ms-linear-gradient(top, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0) 100%);
-  background: #fcd630 linear-gradient(to bottom, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0) 100%);
+  background: #eee;
+  background: #eee -moz-linear-gradient(top, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0) 100%);
+  background: #eee -webkit-gradient(linear, left top, left bottom, color-stop(0%, rgba(255,255,255,0.5)), color-stop(100%, rgba(255,255,255,0)));
+  background: #eee -webkit-linear-gradient(top, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0) 100%);
+  background: #eee -o-linear-gradient(top, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0) 100%);
+  background: #eee -ms-linear-gradient(top, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0) 100%);
+  background: #eee linear-gradient(to bottom, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0) 100%);
 }
 .wa-auth-adapters li a img {
   vertical-align: middle;
@@ -716,6 +749,7 @@ input[type="submit"].gray-button {
   -webkit-box-shadow: 0 1px 1px rgba(0,0,0,0.1);
   box-shadow: 0 1px 1px rgba(0,0,0,0.1);
   -webkit-appearance: none;
+  -moz-appearance: none;
   appearance: none;
   -webkit-user-select: none;
   -moz-user-select: none;
@@ -733,8 +767,6 @@ input[type="submit"].gray-button {
 /* MENU STYLES (LEFT CONTROL MENU) */
 body.menu-is-shown {
   overflow: hidden;
-/*.site-wrapper*/
-/*$filter( blur(2px) );*/
 }
 body.menu-is-shown .hidden-menu-wrapper {
   left: 0;
@@ -768,7 +800,7 @@ body.menu-is-shown .hidden-menu-wrapper {
   background: rgba(28,31,35,0.93);
 }
 .hidden-menu-wrapper .menu-block-wrapper .logo-wrapper {
-  padding: 1em 0 0;
+  padding: 1rem 0 0;
   position: relative;
   text-align: center;
   line-height: 0;
@@ -778,10 +810,38 @@ body.menu-is-shown .hidden-menu-wrapper {
   -webkit-border-radius: 3px;
   border-radius: 3px;
 }
+.hidden-menu-wrapper .menu-block-wrapper .shop-details-wrapper {
+  color: #fff;
+  margin: 1rem 0 0;
+}
+.hidden-menu-wrapper .menu-block-wrapper .shop-details-wrapper:first-child {
+  margin-top: 0;
+  padding-top: 1rem;
+}
+.hidden-menu-wrapper .menu-block-wrapper .shop-details-wrapper .phone-wrapper {
+  padding: 0.25rem 0 0.25rem 2rem;
+  font-weight: bold;
+  line-height: 1.25rem;
+  background: transparent url("img/icons/phone.png") 0.2rem 0 no-repeat;
+  background-size: auto 1.75rem;
+}
+.hidden-menu-wrapper .menu-block-wrapper .shop-details-wrapper .workhours-wrapper {
+  padding: 0.125rem 0 0.125rem 2rem;
+  margin: 1rem 0 0;
+  line-height: 1.25rem;
+  background: transparent url("img/icons/switch-on.png") 0 no-repeat;
+  background-size: auto 1.5rem;
+}
 .hidden-menu-wrapper .menu-block-wrapper .search-wrapper {
-  position: relative;
   margin: 1em 0 0;
   overflow-x: hidden;
+}
+.hidden-menu-wrapper .menu-block-wrapper .search-wrapper:first-child {
+  margin-top: 0;
+  padding-top: 1rem;
+}
+.hidden-menu-wrapper .menu-block-wrapper .search-wrapper .relative {
+  position: relative;
 }
 .hidden-menu-wrapper .menu-block-wrapper .search-wrapper input {
   margin: 0;
@@ -957,10 +1017,11 @@ body.menu-is-shown .hidden-menu-wrapper {
 }
 .header-wrapper .logo-wrapper a {
   display: block;
+  margin: auto;
+  max-width: 190px;
   text-decoration: none;
   line-height: 3rem;
   overflow: hidden;
-  text-overflow: ellipsis;
   white-space: nowrap;
 }
 .header-wrapper .logo-wrapper img {
