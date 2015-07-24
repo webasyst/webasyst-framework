@@ -16,7 +16,7 @@ class contactsContactsUserController extends waJsonController
             }
             return;
         }
-        
+
         if (waRequest::getMethod() != 'post') {
             throw new waException('Send something via POST to confirm operation.');
         }
@@ -80,22 +80,17 @@ class contactsContactsUserController extends waJsonController
         waUser::revokeUser($id);
         $this->response = true;
     }
-    
+
     protected function createCredentials($id)
     {
-        $r = $this->createLogin($id, true);
-        if (!$r) {
+        if (!$this->createLogin($id, true)) {
             return false;
         }
-        if (waRequest::post('password') && waRequest::post('confirm_password')) {
-            if (!$this->userPassword($id, true)) {
-                return false;
-            }
+        if (!$this->userPassword($id, true)) {
+            return false;
         }
         $r = $this->createLogin($id);
-        if (waRequest::post('password') && waRequest::post('confirm_password')) {
-            $this->userPassword($id);
-        }
+        $this->userPassword($id);
         return $r;
     }
 
@@ -145,7 +140,7 @@ class contactsContactsUserController extends waJsonController
     protected function createLogin($id, $just_check = false)
     {
         $user = new waUser($id);
-        
+
         $login = trim(waRequest::post('login'));
         if (strlen($login) <= 0) {
             $this->errors[] = _w('Login is required.');

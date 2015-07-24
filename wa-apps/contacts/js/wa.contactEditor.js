@@ -120,10 +120,10 @@ $.wa.contactEditorFactory = function(options) {
 
         _getUrl: function(url_name) {
             if (typeof this[url_name] === 'string') {
-                if (this.saveUrl.slice(0, this.wa_app_url.length) !== this.wa_app_url) {
+                if (this[url_name].slice(0, this.wa_app_url.length) !== this.wa_app_url) {
                     return this.wa_app_url + this[url_name];
                 }
-                return this.saveUrl;
+                return this[url_name];
             } else {
                 return '';
             }

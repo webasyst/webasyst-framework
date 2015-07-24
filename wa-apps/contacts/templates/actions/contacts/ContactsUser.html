@@ -10,6 +10,44 @@
     {$email = reset($emails)}
 {/if}
 
+
+{capture assign="password_block"}
+    <div id="c-password-block" style="display:none;">
+        <form id="c-password-form" method="post" action="{$wa_app_url}?module=contacts&action=user&id={$contact.id}&a=passwd">
+            <div class="c-one-tab">
+                <div class="field">
+                    <div class="name">[`Password`]</div>
+                    <div class="value">
+                        <a href="javascript:void(0)" class="small inline-link c-tab-toggle"><b><i>[`change password`]</i></b></a><br>
+                        <span class="hint">[`The same password is used to access personal account and backend.`]</span>
+                    </div>
+                </div>
+            </div>
+            <div class="c-two-tab" style="display:none;">
+                <div class="field ">
+                    <div class="name">[`New password`]</div>
+                    <div class="value">
+                        <input name="password" type="password" class="c-password-input" autocomplete="off" />
+                    </div>
+                </div>
+                <div class="field">
+                    <div class="name">[`Confirm password`]</div>
+                    <div class="value">
+                        <input name="confirm_password" type="password" class="c-confirm-password-input" autocomplete="off" />
+                    </div>
+                </div>
+                <div class="field">
+                    <div class="value">
+                        <input type="submit" class="button green" value="[`Save`]"> [`or`]
+                        <a class="inline-link cancel c-tab-toggle" href="javascript:void(0)"><b><i>[`cancel`]</i></b></a>
+                        <i class="icon16 loading" style="margin-left: 16px; display: none;"></i>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+{/capture}
+
 <div class="block not-padded" style="width: 100%; float: left; display: block;">
     <div class="fields">
         <div class="field">
@@ -75,6 +113,16 @@
                 </p>
             </div>
         </div>
+
+        {if !empty($limited_own_profile)}
+            <div class="field" style="margin-bottom: 10px;">
+                <div class="name">[`Login`]</div>
+                <div class="value">
+                    <span class="c-login">{if $contact.login}{$contact.login|escape}{/if}</span>
+                </div>
+            </div>
+            {$password_block}
+        {/if}
 
     </div>
 </div>
@@ -172,40 +220,7 @@
                 </form>
             </div>
 
-            <div id="c-password-block" style="display:none;">
-                <form id="c-password-form" method="post" action="{$wa_app_url}?module=contacts&action=user&id={$contact.id}&a=passwd">
-                    <div class="c-one-tab">
-                        <div class="field">
-                            <div class="name">[`Password`]</div>
-                            <div class="value">
-                                <a href="javascript:void(0)" class="small inline-link c-tab-toggle"><b><i>[`change password`]</i></b></a><br>
-                                <span class="hint">[`The same password is used to access personal account and backend.`]</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="c-two-tab" style="display:none;">
-                        <div class="field ">
-                            <div class="name">[`New password`]</div>
-                            <div class="value">
-                                <input name="password" type="password" class="c-password-input" autocomplete="off" />
-                            </div>
-                        </div>
-                        <div class="field">
-                            <div class="name">[`Confirm password`]</div>
-                            <div class="value">
-                                <input name="confirm_password" type="password" class="c-confirm-password-input" autocomplete="off" />
-                            </div>
-                        </div>
-                        <div class="field">
-                            <div class="value">
-                                <input type="submit" class="button green" value="[`Save`]"> [`or`]
-                                <a class="inline-link cancel c-tab-toggle" href="javascript:void(0)"><b><i>[`cancel`]</i></b></a>
-                                <i class="icon16 loading" style="margin-left: 16px; display: none;"></i>
-                            </div>
-                        </div>
-                    </div>
-                </form>
-            </div>
+            {$password_block}
 
             <div class="c-shown-on-access">
                 <div class="field">
