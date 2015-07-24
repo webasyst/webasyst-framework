@@ -1,10 +1,30 @@
+<!-- search -->
+<form method="get" action="{$wa_app_url}" class="search">
+    <div class="search-wrapper">
+        <input type="search" name="query" {if !empty($blog_query)}value="{$blog_query}"{/if} placeholder="[`Search posts`]">
+        <button type="submit"></button>
+    </div>
+    <div class="clear-both"></div>
+</form>
+
+{$blogs = $wa->blog->blogs()}
 {$pages = $wa->blog->pages()}
-{if count($pages)}
-    <ul class="pages">
-        <!-- pages -->            
-        {foreach $pages as $page}
-            <li{if strlen($page.url)>1 && $wa->currentUrl()|strstr:$page.url} class="selected"{/if}><a href="{$page.url}">{$page.name}</a></li>
-        {/foreach}
-    </ul>
-{/if}
+<ul class="pages">
+
+    {foreach $blogs as $blog}
+        <li class="{if $wa->globals('blog_id') eq $blog.id && empty($is_search)}selected{/if}">
+            <a href="{$blog.link}">{$blog.name}</a>
+        </li>
+    {foreachelse}
+        <li>
+            <a href="{$wa->blog->url()}">[`All posts`]</a>
+        </li>
+    {/foreach}
+
+    {foreach $pages as $page}
+        <li{if strlen($page.url)>1 && $wa->currentUrl()|strstr:$page.url} class="selected"{/if}><a href="{$page.url}">{$page.name}</a></li>
+    {/foreach}
+    
+</ul>
+
 
