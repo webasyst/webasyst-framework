@@ -48,4 +48,10 @@ return array(
         'description'  => '',
         'control_type' => waHtmlControl::INPUT,
     ),
+    'emailprintform'  => array(
+        'value'        => true,
+        'title'        => 'Отправлять квитанцию покупателю по email',
+        'description'  => '',
+        'control_type' => waHtmlControl::CHECKBOX,
+    ),
 );
