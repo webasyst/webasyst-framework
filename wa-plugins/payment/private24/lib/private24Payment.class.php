@@ -40,7 +40,6 @@ class private24Payment extends waPayment implements waIPayment
 
     protected function callbackInit($request)
     {
-        $this->request = $request;
         $pattern = '/^([a-z]+)_(.+)_(.+)$/';
         $data = array();
         parse_str(ifset($request['payment']), $data);
@@ -70,13 +69,24 @@ class private24Payment extends waPayment implements waIPayment
                     $result['redirect'] = $this->getAdapter()->getBackUrl(waAppPayment::URL_SUCCESS, $transaction_data);
                     break;
                 case self::STATE_DECLINED:
+                default:
                     $result['redirect'] = $this->getAdapter()->getBackUrl(waAppPayment::URL_FAIL, $transaction_data);
             }
-        }
-        if (ifempty($transaction_data['state']) == self::STATE_CAPTURED) {
-            $transaction_data = $this->saveTransaction($transaction_data, $request);
+        } elseif (!empty($transaction_data['state'])) {
+            $method = null;
+            switch ($transaction_data['state']) {
+                case self::STATE_CAPTURED:
+                    $method = self::CALLBACK_PAYMENT;
+                    break;
+                case self::STATE_DECLINED:
+                    $method = self::CALLBACK_DECLINE;
+                    break;
+            }
 
-            $this->execAppCallback(self::CALLBACK_PAYMENT, $transaction_data);
+            $transaction_data = $this->saveTransaction($transaction_data, $request);
+            if ($method) {
+                $this->execAppCallback($method, $transaction_data);
+            }
         }
 
         return $result;
@@ -96,11 +106,10 @@ class private24Payment extends waPayment implements waIPayment
             'order_id'    => $this->order_id,
             'view_data'   => 'Phone: '.ifset($raw['sender_phone'], '-'),
         ));
-        if ($transaction_raw_data['state'] == 'ok') {
+        if (ifset($raw['state']) == 'ok') {
             $transaction_data['state'] = self::STATE_CAPTURED;
-        } elseif ($transaction_raw_data['state'] == 'fail') {
+        } elseif (ifset($raw['state']) == 'fail') {
             $transaction_data['state'] = self::STATE_DECLINED;
-
         }
 
         return $transaction_data;
