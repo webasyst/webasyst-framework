@@ -28,11 +28,11 @@ class payonlinePayment extends waPayment implements waIPayment, waIPaymentRefund
 
     public function payment($payment_form_data, $order_data, $auto_submit = false)
     {
-        $allowed = (array) $this->allowedCurrency();
+        $allowed = (array)$this->allowedCurrency();
         if (!in_array($order_data['currency_id'], $allowed)) {
             return array(
                 'type' => 'error',
-                'data' => _w(''),
+                'data' => 'Ошибка оплаты. Валюта не поддерживается',
             );
         }
 

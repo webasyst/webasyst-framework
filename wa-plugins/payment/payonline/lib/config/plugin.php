@@ -1,7 +1,7 @@
 <?php
 return array(
-    'name'        => 'PayOnline System',
-    'description' => 'Оплата через процессинговый центр PayOnline System',
+    'name'        => 'PayOnline',
+    'description' => 'Оплата через процессинговый центр PayOnline',
     'icon'        => 'img/payonline16.png',
     'logo'        => 'img/payonline.png',
     'vendor'      => 'webasyst',
