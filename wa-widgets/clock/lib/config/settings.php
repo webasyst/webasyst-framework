@@ -4,6 +4,7 @@ return array(
     'source' => array(
         'title' => /*_w*/('Time'),
         'control_type' => waHtmlControl::SELECT,
+        'value' => 'local',
         'options' => array(
             array(
                 'value'       => 'local',

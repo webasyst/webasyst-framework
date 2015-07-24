@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: wa-widgets/weather/\n"
 "POT-Creation-Date: 2015-07-22 17:35+0300\n"
 "PO-Revision-Date: \n"
-"Last-Translator: wa-widgets/weather/\n"
+"Last-Translator: \n"
 "Language-Team: wa-widgets/weather/\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
@@ -36,6 +36,15 @@ msgstr "Погода"
 msgid "City"
 msgstr "Город"
 
-#: /wa-widgets/weather//lib/config/settings.php:19
 msgid "Weather source"
 msgstr "Источник"
+
+msgid "Format"
+msgstr "Формат"
+
+msgid "Celsius"
+msgstr "Градусы Цельсия"
+
+msgid "Fahrenheit"
+msgstr "Градусы Фаренгейта"
+
