@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @property-read string $bank_account_number
  * @property-read string $bank_kor_number
@@ -11,6 +12,7 @@
  * @property-read string $cust_inn
  * @property-read string $inn
  * @property-read string $kpp
+ * @property-read bool $emailprintform
  */
 class invoicejurPayment extends waPayment implements waIPayment, waIPaymentCapture
 {
@@ -19,11 +21,6 @@ class invoicejurPayment extends waPayment implements waIPayment, waIPaymentCaptu
         return 'RUB';
     }
 
-    /**
-     * (non-PHPdoc)
-     * @see waIPayment::payment()
-     * @param $order_data waOrder
-     */
     public function payment($payment_form_data, $order_data, $auto_submit = false)
     {
         if (!empty($payment_form_data['printform'])) {
@@ -44,8 +41,9 @@ class invoicejurPayment extends waPayment implements waIPayment, waIPaymentCaptu
     {
         $forms = array();
         $forms[$this->id] = array(
-            'name'        => 'Счет',
-            'description' => 'Счет на оплату для юридического лица (РФ)',
+            'name'           => 'Счет',
+            'description'    => 'Счет на оплату для юридического лица (РФ)',
+            'emailprintform' => $this->emailprintform,
         );
         return $forms;
     }
@@ -55,13 +53,13 @@ class invoicejurPayment extends waPayment implements waIPayment, waIPaymentCaptu
      * Displays printable form content (HTML) by id
      * @param string $id
      * @param waOrder $order
+     * @param array $params
+     * @return string
+     * @throws waException
      */
     public function displayPrintForm($id, waOrder $order, $params = array())
     {
         if ($id == $this->id) {
-            $view = wa()->getView();
-            $view->assign('settings', $this->getSettings(), true);
-
             $company = ($this->cust_company ? $this->cust_company : 'company');
             $inn = ($this->cust_inn ? $this->cust_inn : 'inn');
             $params = $order['params'];
@@ -71,8 +69,11 @@ class invoicejurPayment extends waPayment implements waIPayment, waIPaymentCaptu
                 'inn'     => ifset($params['payment_params_'.$inn], $order->contact_id ? $order->getContactField($inn) : ''),
             );
 
+            $view = wa()->getView();
+
             $view->assign('order', $order);
-            $view->assign('company', $company);
+            $view->assign('settings', $this->getSettings(), true);
+            $view->assign('company', $company, true);
             return $view->fetch($this->path.'/templates/form.html');
         } else {
             throw new waException('print form not found');
@@ -112,5 +113,4 @@ class invoicejurPayment extends waPayment implements waIPayment, waIPaymentCaptu
         }
         return $result;
     }
-
 }
