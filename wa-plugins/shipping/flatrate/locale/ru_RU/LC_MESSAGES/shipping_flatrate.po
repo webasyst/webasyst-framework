@@ -11,7 +11,8 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=((((n%10)==1)&&((n%100)!=11))?(0):(((((n%10)>=2)&&((n%10)<=4))&&(((n%100)<10)||((n%100)>=20)))?(1):2));\n"
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
-"X-Generator: Poedit 1.5.5\n"
+"X-Generator: Poedit 1.7.6\n"
+"Language: ru_RU\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
 
@@ -28,8 +29,8 @@ msgid "Shipping rate"
 msgstr "Стоимость доставки"
 
 #: //wa-plugins/shipping/flatrate/lib/config/settings.php:9
-msgid "Fixed shipping rate amount"
-msgstr "Фиксированная стоимость доставки"
+msgid "Enter shipping rate as a flat rate, as a percent of cart total, or as a sum of both. Examples: <b>20</b>, <b>10%</b>, <b>20+10%</b>"
+msgstr "Введите стоимость доставки в виде числа, процента от общей стоимости корзины покупок или в виде суммы этих слагаемых. Примеры: <b>500</b>, <b>10%</b>, <b>500+10%</b>"
 
 #: //wa-plugins/shipping/flatrate/lib/config/settings.php:15
 msgid "Currency"
@@ -118,4 +119,3 @@ msgstr "В заказе нет товаров"
 #: //wa-plugins/shipping/flatrate/templates/form.html:20
 msgid "Total amount"
 msgstr "Итого"
-

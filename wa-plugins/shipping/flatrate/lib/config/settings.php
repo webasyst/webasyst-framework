@@ -6,7 +6,7 @@ return array(
     'cost'     => array(
         'value'        => 10,
         'title'        => /*_wp*/('Shipping rate'),
-        'description'  => /*_wp*/('Fixed shipping rate amount'),
+        'description'  => /*_wp*/('Enter shipping rate as a flat rate, as a percent of cart total, or as a sum of both. Examples: <b>20</b>, <b>10%</b>, <b>20+10%</b>'),
         'control_type' => waHtmlControl::INPUT,
     ),
 

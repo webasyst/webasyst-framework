@@ -16,7 +16,7 @@ class flatrateShipping extends waShipping
      * Returns array of estimated shipping rates and transit times.
      * or error message to be displayed to customer,
      * or false, if this shipping option must not be available under certain conditions.
-     * 
+     *
      * @example <pre>
      * //return array of shipping options
      * return array(
@@ -29,31 +29,31 @@ class flatrateShipping extends waShipping
      *      ),
      *      ...
      * );
-     * 
+     *
      * //return error message
      * return 'Для расчета стоимости доставки укажите регион доставки';
-     * 
+     *
      * //shipping option is unavailable
      * return false;</pre>
      *
      * Useful parent class (waShipping) methods to be used in calculate() method:
-     * 
+     *
      *     <pre>
      *     // total package price
      *     $price = $this->getTotalPrice();
-     *     
+     *
      *     // total package weight
      *     $weight = $this->getTotalWeight();
-     *     
+     *
      *     // order items array
      *     $items = $this->getItems();
-     *     
+     *
      *     // obtain either full address info array or specified address field value
      *     $address = $this->getAddress($field = null);</pre>
-     *     
+     *
      * @return mixed
      */
-    public function calculate()
+    protected function calculate()
     {
         if ($this->delivery === '') {
             $est_delivery = null;
@@ -62,11 +62,11 @@ class flatrateShipping extends waShipping
         }
         return array(
             'ground' => array(
-                'name'         => $this->_w('Ground shipping'),
+                //'name'         => $this->_w('Ground shipping'), optional shipping service name
                 'description'  => '',
                 'est_delivery' => $est_delivery, //string
                 'currency'     => $this->currency,
-                'rate'         => $this->cost,
+                'rate'         => $this->parseCost($this->cost),
             ),
         );
     }
@@ -192,5 +192,31 @@ class flatrateShipping extends waShipping
     {
         //request either all or no address fields depending on the value of the corresponding plugin settings option
         return $this->prompt_address ? array() : false;
+    }
+
+    /**
+     * @param $string
+     * @return float
+     */
+    private function parseCost($string)
+    {
+        $cost = 0.0;
+
+        $string = preg_replace('@\\s+@', '', $string);
+
+        foreach (preg_split('@\+|(\-)@', $string, null, PREG_SPLIT_OFFSET_CAPTURE | PREG_SPLIT_NO_EMPTY) as $chunk) {
+            $value = str_replace(',', '.', trim($chunk[0]));
+            if (strpos($value, '%')) {
+                $value = round($this->getTotalPrice() * floatval($value) / 100.0, 2);
+            } else {
+                $value = floatval($value);
+            }
+            if ($chunk[1] && (substr($string, $chunk[1] - 1, 1) == '-')) {
+                $cost -= $value;
+            } else {
+                $cost += $value;
+            }
+        }
+        return max(0.0, $cost);
     }
 }
