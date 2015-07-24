@@ -1,5 +1,5 @@
 <style>
-    
+
     .b-post-title { margin-top: 5px; line-height: 1em; }
     .b-post-preview { text-overflow: ellipsis; }
     .b-empty-stream { margin: 35px 20px; font-weight: normal; }
@@ -13,16 +13,15 @@
     .b-red { background: #fff1f1; }
     .b-yellow { background: #ffffe3; }
     .b-yellow .highlighted { background: #ff9; }
-    
+
     .widget-2x1 .b-empty-stream { margin: 45px 55px; }
     .widget-2x2 .b-empty-stream { margin: 105px 35px; }
 </style>
 
-{if count($posts)}
-    {$post = $posts|@current}
+{if !empty($post)}
     <div class="b-post-background {$post.color}">
         <div class="block">
-        
+
                 <h6 class="heading small">
                     {if strtotime($post.datetime) < $smarty.now - 86400*2}
                         {$post.datetime|wa_datetime:"humandate"}
@@ -35,7 +34,7 @@
                     <!-- <b>{$post.color}</b> -->
                     {strip_tags($post.text)}
                 </p>
-        
+
         </div>
     </div>
 {else}
