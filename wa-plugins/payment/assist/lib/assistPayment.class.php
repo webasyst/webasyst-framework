@@ -44,7 +44,7 @@ class assistPayment extends waPayment
         return $url;
     }
 
-    public static function responceCodes()
+    public static function responseCodes()
     {
         $codes = array(
             'AS000' => 'АВТОРИЗАЦИЯ УСПЕШНО ЗАВЕРШЕНА',

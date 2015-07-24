@@ -31,7 +31,7 @@
 <input type="hidden" name="AssistIDCCPayment" value="1">
 {if $settings.sandbox}
 	Тестовый режим. Выберите ответ системы:<select name="DemoResult">
-{foreach assistPayment::responceCodes() as $code=>$name}
+{foreach assistPayment::responseCodes() as $code=>$name}
 <option value="{$code|escape}">{$name|escape}</option>
     {/foreach}
     </select>
