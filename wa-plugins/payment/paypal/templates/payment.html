@@ -1,17 +1,17 @@
 <form id="payment-form" action="{$form_url}" method="post" target="_top">
 
-    {foreach from=$hidden_fields key=name item=value}
-    	<input type="hidden" name="{$name}" value="{if $name != 'x_header_html_payment_form'}{$value|escape}{else}{$value}{/if}" />
-    {/foreach}
+{foreach $hidden_fields as $name => $value}
+    <input type="hidden" name="{$name}" value="{$value|escape}" />
+{/foreach}
 
-    {if $auto_submit}
-    <i class="icon16 loading"></i> <em>[`Redirecting to secure PayPal website for payment...`]</em>
+{if $auto_submit}
+    <i class="icon16 loading"></i> <em>{$plugin->_w('Redirecting to secure PayPal website for payment...')}</em>
     <br /><br />
     <script type="text/javascript">
     setTimeout(function () {
         document.getElementById('payment-form').submit();
     }, 3000);
     </script>
-    {/if}
-    <input type="submit" value="[`Proceed to PayPal to make payment`]" />
+{/if}
+    <input type="submit" value="{$plugin->_w('Proceed to PayPal to make payment')|escape}" />
 </form>
