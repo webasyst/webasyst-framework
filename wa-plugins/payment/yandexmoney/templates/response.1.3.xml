@@ -1,12 +1,4 @@
 <?xml version="1.0" encoding="windows-1251"?>
 <response performedDatetime="{$result.data.performedDatetime}">
-    <result 
-        code="{$result.data.code}"
-        action="{$result.data.action}"
-        shopId="{$result.data.shopId}"
-        invoiceId="{$result.data.invoiceId|default:''|escape}"
-{if !empty($result.data.techMessage) && $result.data.code}
-        techMessage="{$result.data.techMessage|escape}"
-{/if}
-    />
+    <result code="{$result.data.code}" action="{$result.data.action}" shopId="{$result.data.shopId}" invoiceId="{$result.data.invoiceId|default:''|escape}" {if !empty($result.data.techMessage) && $result.data.code}techMessage="{$result.data.techMessage|escape}"{/if} />
 </response>
