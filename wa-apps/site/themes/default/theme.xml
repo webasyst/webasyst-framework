@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE theme PUBLIC "wa-app-theme" "http://www.webasyst.com/wa-content/xml/wa-app-theme.dtd">
-<theme id="default" system="0" vendor="webasyst" author="Webasyst" app="site" version="2.2.2">
-    <name locale="en_US">Default 2.0</name>
-    <name locale="ru_RU">Дефолт 2.0</name>
+<theme id="default" system="0" vendor="webasyst" author="Webasyst" app="site" version="3.0.0">
+    <name locale="en_US">Default 3.0</name>
+    <name locale="ru_RU">Дефолт 3.0</name>
     <description locale="en_US">Adaptive design theme for all base Webasyst apps</description>
     <description locale="ru_RU">Семейство адаптивных тем дизайна для всех базовых приложений Webasyst</description>
     <files>
         <file path="index.html" custom="0">
-    		<description locale="en_US">Core layout of Default 2.0 theme family</description>
-    		<description locale="ru_RU">Основной макет тем дизайна семейства «Дефолт 2.0»</description>
+    		<description locale="en_US">Core layout of Default 3.0 theme family</description>
+    		<description locale="ru_RU">Основной макет тем дизайна семейства «Дефолт 3.0»</description>
         </file>
         <file path="default.css" custom="0">
-    		<description locale="en_US">Core CSS of the Default 2.0 theme family</description>
-    		<description locale="ru_RU">Основной файл CSS-стилей семейства тем дизайна «Дефолт 2.0»</description>
+    		<description locale="en_US">Core CSS of the Default 3.0 theme family</description>
+    		<description locale="ru_RU">Основной файл CSS-стилей семейства тем дизайна «Дефолт 3.0»</description>
         </file>
         <file path="default.js" custom="0">
         </file>
@@ -23,10 +23,6 @@
     	<file path="header.html" custom="0">
     		<description locale="en_US">App specific header content</description>
     		<description locale="ru_RU">Содержимое «шапки» приложения</description>
-    	</file>
-    	<file path="banner.html" custom="0">
-    		<description locale="en_US">App specific banner content</description>
-    		<description locale="ru_RU">Контент в области баннера</description>
     	</file>
     	<file path="main.html" custom="0">
     		<description locale="en_US">Main layout for Site app content</description>
@@ -73,135 +69,77 @@
     </about>
     <about locale="ru_RU">
         <![CDATA[
-<p><b>Default</b> — это универсальное семейство адаптивных тем дизайна для всех базовых приложений фреймворка Вебасист: Сайт, Блог, Фото, Shop-Script и других. Родительской (основной) темой семейства, включающей в себя базовый набор CSS-стилей и общий макет дизайна index.html, является тема Default для приложения «Сайт» (данная тема). Все темы дизайна Default для других приложений (Блог, Фото и других) используют базовый CSS и index.html из родительской (основной) темы.</p>
+<p><b>Дефолт</b> — это универсальное семейство адаптивных тем дизайна для всех базовых приложений фреймворка Вебасист: Сайт, Блог, Фото, Shop-Script и других. Родительской (основной) темой семейства, включающей в себя базовый набор CSS-стилей и общий макет дизайна index.html, является тема Default для приложения «Сайт» (данная тема). Все темы дизайна Default для других приложений (Блог, Фото и других) используют базовый CSS и index.html из родительской (основной) темы.</p>
 <p>Темы дизайна семейства Default оптимизированы для всех современных браузеров, планшетных компьютеров и мобильных устройств на основе iOS и Android. CSS-стили подключаются в зависимости от разрешения и типа устройства, которым пользуется посетитель сайта.</p>
 ]]>
     </about>
     <settings>
-        <setting var="logo" control_type="image">
-            <value></value>
-            <filename>img/logo.*</filename>
-            <name locale="en_US">Logo</name>
-            <name locale="ru_RU">Логотип</name>
-        </setting>
-        <setting var="banner_caption" control_type="text">
-            <value locale="en_US"></value>
-            <value locale="ru_RU"></value>
-            <name locale="en_US">Site-wide banner caption</name>
-            <name locale="ru_RU">Заголовок на основном баннере</name>
-        </setting>
         <setting var="color_scheme" control_type="image_select">
-            <value>img/backgrounds/themesettings/green.png</value>
-            <name locale="ru_RU">Баннер</name>
+            <value>img/themesettings/red.png</value>
+            <name locale="ru_RU">Цветовая схема</name>
             <name locale="en_US">Color scheme</name>
             <options>
-                <option value="img/backgrounds/themesettings/green.png"></option>
-                <option value="img/backgrounds/themesettings/blue.png"></option>
-                <option value="img/backgrounds/themesettings/red.png"></option>
-                <option value="img/backgrounds/themesettings/yellow.png"></option>
-                <option value="img/backgrounds/themesettings/purple.png"></option>
-                <option value="img/backgrounds/themesettings/gray.png"></option>
-                <option value="img/backgrounds/themesettings/bokeh_green.jpg"></option>
-                <option value="img/backgrounds/themesettings/bokeh_blue.jpg"></option>
-                <option value="img/backgrounds/themesettings/bokeh_vivid.jpg"></option>
-                <option value="img/backgrounds/themesettings/bokeh_orange.jpg"></option>
-                <option value="img/backgrounds/themesettings/bokeh_purple.jpg"></option>
-                <option value="img/backgrounds/themesettings/bokeh_gray.jpg"></option>
-                <option value="img/backgrounds/themesettings/sky_green.jpg"></option>
-                <option value="img/backgrounds/themesettings/sky_red.jpg"></option>
-                <option value="img/backgrounds/themesettings/sky_purple.jpg"></option>
-                <option value="img/backgrounds/themesettings/sky_nebula.jpg"></option>
-                <option value="img/backgrounds/themesettings/sky_aurora.jpg"></option>
-                <option value="img/backgrounds/themesettings/sky_blue.jpg"></option> 
-                <option value="img/backgrounds/themesettings/abstract_blue.jpg"></option>
-                <option value="img/backgrounds/themesettings/abstract_purple.jpg"></option>
-                <option value="img/backgrounds/themesettings/abstract_gray.jpg"></option>
-                <option value="img/backgrounds/themesettings/abstract_vivid.jpg"></option>
-                <option value="img/backgrounds/themesettings/abstract_brown.jpg"></option>
-                <option value="img/backgrounds/themesettings/abstract_orange.jpg"></option>
-                <option value="img/backgrounds/themesettings/special_winter.jpg"></option>
+                <option value="img/themesettings/green.png"></option>
+                <option value="img/themesettings/blue.png"></option>
+                <option value="img/themesettings/red.png"></option>
+                <option value="img/themesettings/yellow.png"></option>
+                <option value="img/themesettings/purple.png"></option>
+                <option value="img/themesettings/gray.png"></option>
+                <option value="img/themesettings/pink.png"></option>
+                <option value="img/themesettings/cyan.png"></option>
+                <option value="img/themesettings/lime.png"></option>
+                <option value="img/themesettings/brown.png"></option>
             </options>
         </setting>
-        <setting var="custom_background" control_type="image">
+        <setting var="font_family" control_type="select">
             <value></value>
-            <filename>img/custom_background.*</filename>
-            <name locale="en_US">Custom banner background</name>
-            <name locale="ru_RU">Свое фоновое изображение для баннера</name>
-        </setting>
-        <setting var="custom_background_stretch" control_type="checkbox">
-            <value>0</value>
-            <name locale="en_US">Stretch custom background to fit full width</name>
-            <name locale="ru_RU">Растянуть мое фоновое изображение по всей ширине</name>
-        </setting>
-        <setting var="custom_background_banner_text_color" control_type="select">
-            <value></value>
-            <name locale="en_US">Text above custom background</name>
-            <name locale="ru_RU">Текст на фоне моего изображения</name>
+            <name locale="ru_RU">Семейство шрифтов</name>
+            <name locale="en_US">Font family</name>
             <options>
                 <option value="">
-                    <name locale="ru_RU">Светлый</name>
-                    <name locale="en_US">Light</name>
+                    <name locale="ru_RU">Helvetica (Arial)</name>
+                    <name locale="en_US">Helvetica (Arial)</name>
                 </option>
-                <option value="text_scheme_dark">
-                    <name locale="ru_RU">Темный</name>
-                    <name locale="en_US">Dark</name>
+                <option value="font_family_trebuchet">
+                    <name locale="ru_RU">Trebuchet MS</name>
+                    <name locale="en_US">Trebuchet MS</name>
                 </option>
-                <option value="text_scheme_red">
-                    <name locale="ru_RU">Красный</name>
-                    <name locale="en_US">Red</name>
+                <option value="font_family_verdana">
+                    <name locale="ru_RU">Verdana</name>
+                    <name locale="en_US">Verdana</name>
                 </option>
-                <option value="text_scheme_green">
-                    <name locale="ru_RU">Зеленый</name>
-                    <name locale="en_US">Green</name>
-                </option>
-                <option value="text_scheme_blue">
-                    <name locale="ru_RU">Синий</name>
-                    <name locale="en_US">Blue</name>
-                </option>
-                <option value="text_scheme_purple">
-                    <name locale="ru_RU">Фиолетовый</name>
-                    <name locale="en_US">Purple</name>
+                <option value="font_family_georgia">
+                    <name locale="ru_RU">Georgia</name>
+                    <name locale="en_US">Georgia</name>
                 </option>
             </options>
         </setting>
-        <setting var="facebook" control_type="text">
-            <value>http://</value>
-            <name locale="en_US">Facebook page URL</name>
-            <name locale="ru_RU">Адрес страницы в «Фейсбуке»</name>
-        </setting>
-        <setting var="twitter" control_type="text">
-            <value>username</value>
-            <name locale="en_US">Twitter username</name>
-            <name locale="ru_RU">Имя пользователя в «Твиттере»</name>
-            <description locale="en_US">Example: webasyst</description>
-            <description locale="ru_RU">Например: webasyst_ru</description>
-        </setting>
-        <setting var="vk" control_type="text">
-            <value>http://</value>
-            <name locale="en_US">VK.com page URL</name>
-            <name locale="ru_RU">Адрес страницы или группы во «ВКонтакте»</name>
-        </setting>
-        <setting var="instagram" control_type="text">
-            <value>username</value>
-            <name locale="en_US">Instagram username</name>
-            <name locale="ru_RU">Имя пользователя в «Инстаграме»</name>
-            <description locale="en_US">Example: webasyst</description>
-            <description locale="ru_RU">Например: webasyst_ru</description>
-        </setting>
-        <setting var="youtube" control_type="text">
-            <value>http://</value>
-            <name locale="en_US">Youtube channel URL</name>
-            <name locale="ru_RU">Адрес канала YouTube</name>
-        </setting>
-        <setting var="pinterest" control_type="text">
-            <value>http://</value>
-            <name locale="en_US">Pinterest page URL</name>
-            <name locale="ru_RU">Адрес страницы в Pinterest</name>
-        </setting>
-        <setting var="gplus" control_type="text">
-            <value>http://</value>
-            <name locale="en_US">Google+ URL</name>
-            <name locale="ru_RU">Адрес страницы в Google+</name>
+        <setting var="font_size" control_type="select">
+            <value></value>
+            <name locale="ru_RU">Размер шрифта</name>
+            <name locale="en_US">Font size</name>
+            <options>
+                <option value="font_size_12">
+                    <name locale="ru_RU">12px</name>
+                    <name locale="en_US">12px</name>
+                </option>
+                <option value="font_size_13">
+                    <name locale="ru_RU">13px</name>
+                    <name locale="en_US">13px</name>
+                </option>
+                <option value="">
+                    <name locale="ru_RU">14px</name>
+                    <name locale="en_US">14px</name>
+                </option>
+                <option value="font_size_15">
+                    <name locale="ru_RU">15px</name>
+                    <name locale="en_US">15px</name>
+                </option>
+                <option value="font_size_16">
+                    <name locale="ru_RU">16px</name>
+                    <name locale="en_US">16px</name>
+                </option>
+            </options>
         </setting>
         <setting var="pagination" control_type="select">
             <value>lazyloading</value>
@@ -209,14 +147,70 @@
             <name locale="ru_RU">Длинные списки</name>
             <options>
                 <option value="lazyloading">
-                    <name locale="ru_RU">Автоматическая подгрузка при скролле (lazy loading)</name>
-                    <name locale="en_US">Auto load on scroll (lazy loading)</name>
+                    <name locale="ru_RU">Lazy loading: автоматическая подгрузка при скролле</name>
+                    <name locale="en_US">Lazy loading: auto load on scroll</name>
                 </option>
                 <option value="paging">
-                    <name locale="ru_RU">Постраничная навигация (1 2 3 4 ...)</name>
-                    <name locale="en_US">Paginated lists (1 2 3 4 ...)</name>
+                    <name locale="ru_RU">1 2 3 4: Постраничная навигация</name>
+                    <name locale="en_US">1 2 3 4: Paginated lists</name>
                 </option>
             </options>
+        </setting>
+
+        <setting var="divider_social" control_type="group_divider">
+            <value></value>
+            <name locale="en_US">Social</name>
+            <name locale="ru_RU">Соцсети</name>
+        </setting>
+        <setting var="facebook_likebox_code" control_type="text">
+            <value locale="en_US"><![CDATA[<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.4&appId=167596066655267";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+<div class="fb-page" data-href="https://www.facebook.com/Webasyst" data-small-header="false" data-adapt-container-width="true" data-hide-cover="false" data-show-facepile="true" data-show-posts="false"><div class="fb-xfbml-parse-ignore"><blockquote cite="https://www.facebook.com/Webasyst"><a href="https://www.facebook.com/Webasyst">Webasyst</a></blockquote></div></div>]]></value>
+            <value locale="ru_RU"><![CDATA[<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.4&appId=167596066655267";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+<div class="fb-page" data-href="https://www.facebook.com/Webasyst.RU" data-small-header="false" data-adapt-container-width="true" data-hide-cover="false" data-show-facepile="true" data-show-posts="false"><div class="fb-xfbml-parse-ignore"><blockquote cite="https://www.facebook.com/Webasyst.RU"><a href="https://www.facebook.com/Webasyst.RU">Webasyst RU</a></blockquote></div></div>]]></value>
+            <name locale="en_US">Facebook Page Plugin</name>
+            <name locale="ru_RU">Виджет Фейсбука</name>
+            <description locale="en_US">Embed your Facebook page badge code here. Code can be obtained on Facebook website: https://developers.facebook.com/docs/plugins/page-plugin</description>
+            <description locale="ru_RU">Поместите в это поле код виджета вашей страницы на Фейсбуке. Код можно получить в Фейсбуке на странице https://developers.facebook.com/docs/plugins/page-plugin</description>
+        </setting>
+        <setting var="twitter_timeline_code" control_type="text">
+            <value locale="en_US"><![CDATA[<a class="twitter-timeline" href="https://twitter.com/webasyst" data-widget-id="624283167772528641">Tweets by @webasyst</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>]]></value>
+            <value locale="ru_RU"><![CDATA[<a class="twitter-timeline" href="https://twitter.com/webasyst_ru" data-widget-id="624283167772528641">Tweets by @webasyst_ru</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>]]></value>
+            <name locale="en_US">Twitter Timeline code</name>
+            <name locale="ru_RU">Виджет Твиттера</name>
+            <description locale="en_US">Embed your Twitter Timeline code here. Code can be obtained on Twitter website: https://twitter.com/settings/widgets</description>
+            <description locale="ru_RU">Поместите в это поле код ленты Твиттера. Код можно получить на сайте Твиттера: https://twitter.com/settings/widgets</description>
+        </setting>
+        <setting var="vk_widget_code" control_type="text">
+            <value locale="en_US"></value>
+            <value locale="ru_RU"><![CDATA[<script type="text/javascript" src="//vk.com/js/api/openapi.js?116"></script>
+
+<!-- VK Widget -->
+<div id="vk_groups"></div>
+<script type="text/javascript">
+VK.Widgets.Group("vk_groups", {mode: 0, width: "260", height: "400", color1: 'FFFFFF', color2: '2B587A', color3: '5B7FA6'}, 21415010);
+</script>]]></value>
+            <name locale="en_US">VK Page Widget</name>
+            <name locale="ru_RU">Виджет Вконтакте</name>
+            <description locale="en_US">Embed your VK community widget code here. Code can be obtained on VK website: http://vk.com/dev/Community</description>
+            <description locale="ru_RU">Поместите в это поле код виджета вашего сообщества во Вконтакте. Код можно получить на сайте соцсети http://vk.com/dev/Community</description>
         </setting>
     </settings>
     <locales>
