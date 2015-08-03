@@ -13,7 +13,7 @@ var DashboardControllers = {};
 var DashboardWidget;
 
 // Общая логика страницы с виджетами
-( function($) {
+( function($, backend_url) {
 
     // Проверка на пустую группу
     var checkEmptyGroup = function( $currentGroup, $groups, is_new_widget ) {
@@ -116,7 +116,7 @@ var DashboardWidget;
 
     // Определяем СпроллТоп
     var getScrollTop = function() {
-        return $(window).scrollTop();
+        return $(window)['scrollTop']();
     };
 
     var isEditMode = function() {
@@ -334,7 +334,8 @@ var DashboardWidget;
             // Current Widget Area
             var before_widget_area = that.widget_size.width * that.widget_size.height,
                 after_widget_area = size.width * size.height,
-                delta_area = after_widget_area - before_widget_area;
+                delta_area = after_widget_area - before_widget_area,
+                result = false;
 
             if (delta_area > 0) {
 
@@ -347,16 +348,14 @@ var DashboardWidget;
                     //console.log("Ситуация 1х1, 1х1 => 2x1, 1х1");
                     return false;
                 }
-
-                return ( (groupData.group_area + delta_area) <= storage.maxGroupArea );
-
-            } else if (delta_area < 0) {
-
-                return true
-            } else {
-
-                return false
+                result = ( (groupData.group_area + delta_area) <= storage.maxGroupArea );
             }
+
+            if (delta_area < 0) {
+                result = true
+            }
+
+            return result;
         };
 
         var setWidgetType = function(that) {
@@ -621,7 +620,7 @@ var DashboardWidget;
                     // Init Controllers
                     that.initControlsController();
                     //
-                    console.log("Widget #" + that.widget_id + " is Rendered");
+                    //console.log("Widget #" + that.widget_id + " is Rendered");
                 });
             }
         };
@@ -1575,16 +1574,24 @@ var DashboardWidget;
             dashboardEditableClass: "is-editable-mode",
             activeEditModeClass: "is-active",
             isLoadingClass: "is-loading",
-            isHiddenClass: "is-hidden",
+            hiddenClass: "is-hidden",
+            showClass: "is-shown",
+            animateClass: "is-animated",
+            lazyLoadCounter: 0,
             isEditModeActive: false,
             isWidgetListLoaded: false,
-            lazyLoadCounter: 0,
             isBottomLazyLoadLocked: false,
             isTopLazyLoadLocked: false,
             isActivityFilterLocked: false,
             topLazyLoadingTimer: 0,
             activityFilterTimer: 0,
             lazyTime: 15 * 1000,
+            scrollData: {
+                top: false,
+                fixedTop: false,
+                fixedBottom: false,
+                scrollValue: 0
+            },
             getPageWrapper: function() {
                 return $("#d-page-wrapper");
             },
@@ -1605,19 +1612,30 @@ var DashboardWidget;
             },
             getSettingsWrapper: function() {
                 return $("#d-settings-wrapper");
+            },
+            getCloseTutorialHref: function() {
+                return "?module=dashboard&action=closeTutorial";
+            },
+            getNotifications: function() {
+                return $("#d-notification-wrapper");
+            },
+            getFirstNoticeWrapper: function() {
+                return $("#d-first-notice-wrapper");
             }
         };
 
         var bindEvents = function() {
             var $showLink = storage.getShowButton(),
                 $hideLink = storage.getHideButton(),
-                $widgetActivity = storage.getWidgetActivity();
+                $widgetActivity = storage.getWidgetActivity(),
+                $closeNoticeLink = storage.getFirstNoticeWrapper().find(".close-notice-link");
+
+            $closeNoticeLink.on("click", function() {
+                hideFirstNotice();
+            });
 
             $showLink.on("click", function() {
-                $showLink.hide();
-                $hideLink.show();
-                showEditMode();
-                showWidgetList();
+                onShowLinkClick( $(this) );
                 return false;
             });
 
@@ -1709,6 +1727,64 @@ var DashboardWidget;
             });
         };
 
+        var onShowLinkClick = function($showLink) {
+            var $hideLink = storage.getHideButton(),
+                $firstNotice = storage.getFirstNoticeWrapper(),
+                notice_is_shown = ( $firstNotice.css("display") !== "none" );
+
+            // Change Buttons
+            $showLink.hide();
+            $hideLink.show();
+
+            // Hide First Notice
+            if (notice_is_shown) {
+                $firstNotice.find(".close-notice-link").trigger("click");
+            }
+
+            //
+            showEditMode();
+            //
+            showWidgetList();
+        };
+
+        var showFirstNotice = function() {
+            var $wrapper = storage.getFirstNoticeWrapper(),
+                $activity = storage.getWidgetActivity(),
+                showNotice = $wrapper.data("show-notice"),
+                $notifications = storage.getNotifications();
+
+            if (showNotice) {
+                $activity.addClass(storage.hiddenClass);
+                $notifications.addClass(storage.hiddenClass);
+                $wrapper.show();
+            }
+        };
+
+        var hideFirstNotice = function() {
+            var $wrapper = storage.getFirstNoticeWrapper(),
+                $activity = storage.getWidgetActivity(),
+                $notifications = storage.getNotifications();
+
+            // hide DOM
+            $wrapper.hide();
+
+            $activity
+                .removeClass(storage.hiddenClass)
+                .addClass(storage.animateClass);
+
+            $notifications
+                .removeClass(storage.hiddenClass)
+                .addClass(storage.animateClass);
+
+            setTimeout( function() {
+                $activity.addClass(storage.showClass);
+                $notifications.addClass(storage.showClass);
+            }, 4);
+
+            // set data
+            $.post(storage.getCloseTutorialHref(), {});
+        };
+
         var changeFilterText = function() {
             var $filterText = $("#activity-select-text"),
                 full_text = $filterText.data("full-text"),
@@ -1736,7 +1812,7 @@ var DashboardWidget;
             }
         };
 
-        var onPageScroll = function(event) {
+        var onPageScroll = function() {
             var scrollTop = getScrollTop(),
                 is_edit_mode = isEditMode(),
                 $activityBlock = $("#d-activity-wrapper"),
@@ -1766,7 +1842,15 @@ var DashboardWidget;
         };
 
         var scrollingWidgetContent = function(options) {
-            var scrollTop = options.scrollTop,
+            var scrollData = {
+                    top: storage.scrollData.top,
+                    fixedTop: storage.scrollData.fixedTop,
+                    fixedBottom: storage.scrollData.fixedBottom,
+                    scrollValue: storage.scrollData.scrollValue
+                },
+                scrollTop = options.scrollTop,
+                old_scroll_data = scrollData.scrollValue,
+                direction = ( old_scroll_data > scrollTop ) ? 1 : -1,
                 displayArea = options.displayArea,
                 is_edit_mode = options.is_edit_mode,
                 activity_height = options.activity_height,
@@ -1774,30 +1858,146 @@ var DashboardWidget;
                 $widgetsBlock = $widgetsWrapper.find(".d-widgets-block"),
                 widgets_height = $widgetsBlock.outerHeight(),
                 widgets_top = $widgetsWrapper.offset().top,
-                display_width = displayArea.width,
+                dynamic_widgets_top = $widgetsBlock.offset().top,
                 display_height = displayArea.height,
+                display_width = displayArea.width,
+                bottom_fixed_class = "fixed-to-bottom",
+                top_fixed_class = "fixed-to-top",
+                is_mobile = false,
                 min_width = 720,
-                is_mobile = false;
-
-            var activateScroll = ( !is_edit_mode && (activity_height > widgets_height) && ( display_width > min_width ) && !is_mobile ),
                 delta;
 
+            var activateScroll = ( !is_edit_mode && !is_mobile && (activity_height > widgets_height) && ( display_width > min_width ) );
+
             if (activateScroll) {
+                delta = scrollTop - widgets_top;
 
+                // Если высота виджетов меньше размера дисплея, то всё просто
                 if (widgets_height < display_height) {
-                    delta = scrollTop - widgets_top;
-                } else {
-                    delta = scrollTop - (widgets_height + widgets_top - display_height);
-                }
+                    if (delta > 0) {
 
-                if (delta > 0) {
-                    $widgetsBlock.css({
-                        top: delta
-                    });
+                        if (scrollData.top || !scrollData.fixedTop || scrollData.fixedBottom) {
+                            $widgetsBlock.removeAttr("style");
+                            $widgetsBlock.addClass(top_fixed_class);
+
+                            scrollData.top = false;
+                            scrollData.fixedTop = true;
+                            scrollData.fixedBottom = false;
+                        }
+
+                    } else {
+
+                        if (scrollData.top || scrollData.fixedTop || scrollData.fixedBottom) {
+                            $widgetsBlock.removeAttr("style");
+                            $widgetsBlock.removeClass(bottom_fixed_class);
+                            $widgetsBlock.removeClass(top_fixed_class);
+
+                            scrollData.top = false;
+                            scrollData.fixedTop = false;
+                            scrollData.fixedBottom = false;
+                        }
+                    }
+
+                // Если высота больще экрана
                 } else {
-                    $widgetsBlock.attr("style", "");
+
+                    // Если меньше чем изначальное положение отключаем
+                    if (scrollTop <= widgets_top) {
+
+                        if (scrollData.top || scrollData.fixedTop || scrollData.fixedBottom) {
+                            $widgetsBlock
+                                .removeAttr("style")
+                                .removeClass(bottom_fixed_class)
+                                .removeClass(top_fixed_class);
+
+                            scrollData.top = false;
+                            scrollData.fixedTop = false;
+                            scrollData.fixedBottom = false;
+                        }
+
+                    // Если выше начала после скролла фиксируем к верху
+                    } else if (scrollTop <= dynamic_widgets_top && dynamic_widgets_top >= widgets_top) {
+
+                        if (direction > 0) {
+
+                            if (scrollData.top || !scrollData.fixedTop || scrollData.fixedBottom) {
+                                $widgetsBlock
+                                    .removeAttr("style")
+                                    .removeClass(bottom_fixed_class)
+                                    .addClass(top_fixed_class);
+
+                                scrollData.top = false;
+                                scrollData.fixedTop = true;
+                                scrollData.fixedBottom = false;
+                            }
+
+                        } else {
+
+                            if (!scrollData.top || scrollData.fixedTop || scrollData.fixedBottom) {
+                                $widgetsBlock
+                                    .css("top", dynamic_widgets_top - widgets_top)
+                                    .removeClass(top_fixed_class)
+                                    .removeClass(bottom_fixed_class);
+
+                                scrollData.top = true;
+                                scrollData.fixedTop = false;
+                                scrollData.fixedBottom = false;
+                            }
+
+                        }
+
+                    // Если ниже конца
+                    } else if (scrollTop + display_height >= dynamic_widgets_top + widgets_height) {
+
+                        // Если направление скролла вверх
+                        if (direction > 0) {
+
+                            if (!scrollData.top || scrollData.fixedTop || scrollData.fixedBottom) {
+                                $widgetsBlock
+                                    .css("top", dynamic_widgets_top - widgets_top)
+                                    .removeClass(top_fixed_class)
+                                    .removeClass(bottom_fixed_class);
+
+                                scrollData.top = true;
+                                scrollData.fixedTop = false;
+                                scrollData.fixedBottom = false;
+                            }
+
+                        // Если направление скролла вниз
+                        } else {
+
+                            if (scrollData.top || scrollData.fixedTop || !scrollData.fixedBottom) {
+                                $widgetsBlock
+                                    .removeAttr("style")
+                                    .removeClass(top_fixed_class)
+                                    .addClass(bottom_fixed_class);
+
+                                scrollData.top = false;
+                                scrollData.fixedTop = false;
+                                scrollData.fixedBottom = true;
+                            }
+                        }
+
+                    // Во всех других случаях
+                    } else {
+
+                        if (!scrollData.top || scrollData.fixedTop || scrollData.fixedBottom) {
+                            $widgetsBlock
+                                .css("top", dynamic_widgets_top - widgets_top)
+                                .removeClass(top_fixed_class)
+                                .removeClass(bottom_fixed_class);
+
+                            scrollData.top = true;
+                            scrollData.fixedTop = false;
+                            scrollData.fixedBottom = false;
+                        }
+                    }
                 }
             }
+
+            // Save New Data
+            scrollData.scrollValue = scrollTop;
+            storage.scrollData = scrollData;
         };
 
         var showFilteredData = function( $widgetActivity) {
@@ -1876,7 +2076,7 @@ var DashboardWidget;
                 is_loaded = storage.isWidgetListLoaded;
 
             // Show block
-            $widgetList.removeClass(storage.isHiddenClass);
+            $widgetList.removeClass(storage.hiddenClass);
 
             // Render
             if (!is_loaded) {
@@ -1903,7 +2103,7 @@ var DashboardWidget;
         var hideWidgetList = function() {
             var $widgetList = storage.getWidgetList();
 
-            $widgetList.addClass(storage.isHiddenClass);
+            $widgetList.addClass(storage.hiddenClass);
         };
 
         var startAnimateWidgetList = function() {
@@ -2030,9 +2230,12 @@ var DashboardWidget;
         };
 
         $(document).ready( function() {
+            //
             bindEvents();
+            //
+            showFirstNotice();
         });
 
     })();
 
-})(jQuery);
+})(jQuery, backend_url);
