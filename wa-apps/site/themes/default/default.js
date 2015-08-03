@@ -171,20 +171,20 @@ $(document).ready(function() {
     // STICKY CART for non-mobile
     if ( !(MatchMedia("only screen and (max-width: 760px)")) ) {
         $(window).scroll(function(){
-           	if ( $(this).scrollTop() >= 110 && !$("#cart").hasClass( "fixed" ) && !$("#cart").hasClass( "empty" ) && !($(".cart-summary-page")).length ) {
+           	if ( $(this).scrollTop() >= 55 && !$("#cart").hasClass( "fixed" ) && !$("#cart").hasClass( "empty" ) && !($(".cart-summary-page")).length ) {
            	    $("#cart").hide();
            	    
            	    $("#cart").addClass( "fixed" );       	    
            	    if ($('#cart-flyer').length)
            	    {
-           	        var _width = $('#cart-flyer').width()+50;
-           	        var _offset_right = $(window).width() - $('#cart-flyer').offset().left - _width;
+           	        var _width = $('#cart-flyer').width()+52;
+           	        var _offset_right = $(window).width() - $('#cart-flyer').offset().left - _width + 1;
            	        
            	        $("#cart").css({ "right": _offset_right+"px", "width": _width+"px" });
            	    }
            	    
            	    $("#cart").slideToggle(200);
-           	} else if ( $(this).scrollTop() < 100 && $("#cart").hasClass( "fixed" ) ) {
+           	} else if ( $(this).scrollTop() < 50 && $("#cart").hasClass( "fixed" ) ) {
     	        $("#cart").removeClass( "fixed" );
         	    $("#cart").css({ "width": "auto" });	   
         	}

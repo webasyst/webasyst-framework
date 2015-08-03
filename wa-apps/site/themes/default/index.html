@@ -35,7 +35,6 @@
     <script type="text/javascript" src="{$wa_static_url}wa-content/js/jquery/jquery-1.11.1.min.js" ></script>
     <script type="text/javascript" src="{$wa_static_url}wa-content/js/jquery/jquery-migrate-1.2.1.min.js"></script>
     <script type="text/javascript" src="{$wa_theme_url}default.js?v{$wa_theme_version}"></script>
-    <script type="text/javascript" src="{$wa_theme_url}waslidemenu/jquery.waslidemenu.min.js?v{$wa_theme_version}"></script>
 
     {$wa->js()} {* links active plugins JS *}
     
@@ -59,12 +58,12 @@
     
 </head>
 <body>
-    <header class="globalheader">
+    <header class="globalheader"{if $theme_settings.color_custom} style="background: {$theme_settings.color_custom}"{/if}>
     
         {if count($wa->apps())>0 || $wa->isAuthEnabled()}
         
             <!-- GLOBAL NAVIGATION -->
-            <div id="globalnav">
+            <div id="globalnav"{if $theme_settings.header_scheme|strstr:'white'} class="light"{/if}>
                 <div class="container">
                     
                     <h2>
@@ -80,7 +79,9 @@
                         <!-- core site sections (apps) -->
                         <ul class="apps">
                             {foreach $wa->apps() as $a}
-                                <li{if $a.url==$wa_app_url && !$wa->globals('isMyAccount')} class="selected"{/if}><a href="{$a.url}">{$a.name}</a></li>
+                                {if !($a.url == $wa_url && $a.name == $wa->accountName())}
+                                    <li{if $a.url==$wa_app_url && !$wa->globals('isMyAccount')} class="selected"{/if}><a href="{$a.url}">{$a.name}</a></li>
+                                {/if}
                             {/foreach}
                         </ul>
             
@@ -199,20 +200,18 @@
                     <a href="mailto:{$wa->shop->settings('email')}">{$wa->shop->settings('email')}</a>
                 {/if}
             </div>
-                  
-            <div class="footer-block">
-                {if $wa->mailer && $wa->getUrl('mailer/frontend/subscribe')}
-                    <div class="mailer-subscribe">
-                        <a href="#" class="top">[s`Follow us`]</a>
-                        <form action="{$wa->getUrl('mailer/frontend/subscribe')}" id="mailer-subscribe-form" target="mailer-subscribe-iframe">
-                            <input type="email" name="email" placeholder="your@email.here">
-                            <input type="submit" value="[s`Subscribe`]">
-                        </form>
-                        <iframe id="mailer-subscribe-iframe" name="mailer-subscribe-iframe" src="javascript:true" style="width:0;height:0;border:0px solid #666;float:right;background: #666;"></iframe>
-                        <p style="display:none" id="mailer-subscribe-thankyou"><i>[s`Thank you! We’ll keep you posted.`]</i></p>
-                    </div>
-                {/if}
+                
+            {if $wa->mailer && $wa->getUrl('mailer/frontend/subscribe')}  
+            <div class="footer-block mailer-subscribe">
+                <a href="#" class="top">[s`Follow us`]</a>
+                <form action="{$wa->getUrl('mailer/frontend/subscribe')}" id="mailer-subscribe-form" target="mailer-subscribe-iframe">
+                    <input type="email" name="email" placeholder="your@email.here">
+                    <input type="submit" value="[s`Subscribe`]">
+                </form>
+                <iframe id="mailer-subscribe-iframe" name="mailer-subscribe-iframe" src="javascript:true" style="width:0;height:0;border:0px solid #666;float:right;background: #666;"></iframe>
+                <p style="display:none" id="mailer-subscribe-thankyou"><i>[s`Thank you! We’ll keep you posted.`]</i></p>
             </div>
+            {/if}
             
             <div class="clear-both"></div>
             
