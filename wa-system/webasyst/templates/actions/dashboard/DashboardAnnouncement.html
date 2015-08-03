@@ -1,4 +1,4 @@
-<div class="d-notification-wrapper">
+<div class="d-notification-wrapper {if empty($show_tutorial)}is-shown{/if}" id="d-notification-wrapper">
     {foreach $notifications as $n}
     <div class="d-notification-block">
 
@@ -10,9 +10,6 @@
         </div>
 
         {*
-            <div class="description-wrapper">
-                 SOME TEXT HERE
-            </div>
             <footer class="button-block">
                 <a class="button green" href="javascript:void(0);">Renew Now</a>
             </footer>

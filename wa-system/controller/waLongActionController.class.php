@@ -298,7 +298,7 @@ abstract class waLongActionController extends waController
         // to be able to return processId to browser instantly.
         $continue = !$this->_newProcess;
 
-        $starting_step = $this->_data['total_steps'];
+        $this->_last_save_step = $this->_data['total_steps'];
         $this->_heartbeat = microtime(true);
         $this->_transaction = true;
 
@@ -310,11 +310,14 @@ abstract class waLongActionController extends waController
             $is_done = $this->isDone();
         }
 
-        if ($is_done) {
-            if (!$this->_data['ready'] || $this->_data['total_steps'] != $starting_step) {
-                $this->_data['ready'] = true;
-                $this->_save(true);
-            }
+        // Remember the ready flag so that next attempt does not have to start a runner again
+        if ($is_done && !$this->_data['ready']) {
+            $this->_data['ready'] = true;
+            $this->_save(true);
+        }
+        // Force a save if last call to _save() was not forced
+        if ($this->_data['total_steps'] != $this->_last_save_step) {
+            $this->_save(true);
         }
 
         $this->_runner = false;
@@ -570,7 +573,6 @@ abstract class waLongActionController extends waController
      */
     protected function _save($force = false)
     {
-
         $curTime = microtime(true);
         $force = $force || ($curTime - $this->_heartbeat) > $this->_chunk_time;
 
@@ -650,6 +652,8 @@ abstract class waLongActionController extends waController
             if ($this->_runner && $this->_transaction) {
                 $this->save();
             }
+
+            $this->_last_save_step = $this->_data['total_steps'];
         }
 
         // We're ok, current Runner may continue.

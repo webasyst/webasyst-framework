@@ -140,6 +140,12 @@ class webasystDashboardActions extends waActions
         $this->displayJson($response);
     }
 
+    public function closeTutorialAction()
+    {
+        wa()->getUser()->setSettings('webasyst', 'widget_tutorial_closed', 1);
+        $this->displayJson('ok');
+    }
+
     /**
      * @return waWidgetModel
      */

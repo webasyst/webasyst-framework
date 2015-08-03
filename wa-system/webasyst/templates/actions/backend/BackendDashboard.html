@@ -11,7 +11,7 @@
             {/if}
 
             {* ACTIVITY LIST *}
-            <div class="d-activity-block" id="widget-activity">
+            <div class="d-activity-block {if empty($show_tutorial)}is-shown{/if}" id="widget-activity">
                 <header class="activity-header-wrapper block">
                     <h4 class="activity-header heading">[`Live Stream`]<i class="icon16 loading" style="display: none;"></i></h4>
                     <div class="activity-filter-wrapper">
@@ -34,7 +34,7 @@
                                         </li>
                                     {/foreach}
                                 {/capture}
-                                <a href="javascript:void(0);" class="inline-link"><b><i id="activity-select-text" data-full-text="[`All apps`]" data-not-full-text="[`Selected Apps`]">{if $is_not_full}[`Selected Apps`] ({$check_count}){else}[`All apps`]{/if}</i></b><i class="icon10 darr-tiny"></i></a>
+                                <a href="javascript:void(0);" class="inline-link"><b><i id="activity-select-text" data-full-text="[`All apps`]" data-not-full-text="[`Selected apps`]">{if $is_not_full}[`Selected apps`] ({$check_count}){else}[`All apps`]{/if}</i></b><i class="icon10 darr-tiny"></i></a>
                                 <form action="" id="activity-filter">
                                     <ul class="menu-v">
                                         {$select_options|strip}
@@ -50,10 +50,27 @@
                         {if !empty($activity)}
                             {include file="../dashboard/DashboardActivity.html" inline}
                         {else}
-                            <div class="empty-activity-text">[`No events in the live stream yet.`]</div>
+                            <div class="empty-activity-text">
+                                <h2>[`No events in the live stream yet.`]</h2>
+                                <p>[`Live stream collects all events from installed apps and presents them in a chronological order.`]</p>
+                            </div>
                         {/if}
                     </div>
                 </section>
+            </div>
+
+            {* FIRST NOTICE *}
+            <div class="d-first-notice-wrapper" id="d-first-notice-wrapper" data-show-notice="{if !empty($show_tutorial)}true{else}false{/if}">
+                <div class="d-first-notice-block">
+                    <div class="notice-ornament"></div>
+                    <div class="notice-content">
+                        <h3>[`Welcome to your personal dashboard!`]</h3>
+                        <p>[`Customize widgets and dashboard layout using the link above. Dashboards are personal, so only you will see your custom layout. Other Webasyst users have their own personal dashboards too.`]</p>
+                    </div>
+                    <div class="notice-buttons">
+                        <input class="close-notice-link" type="button" value="[`Ok, thanks`]">
+                    </div>
+                </div>
             </div>
 
             {* WIDGETS *}
@@ -61,7 +78,7 @@
 
                 {* ANIMATION WRAPPER *}
                 <div class="rotated-image-wrapper">
-                    <img class="rotated-image" src="/wa-content/img/loading32.gif" title="Loading">
+                    <img class="rotated-image" src="/wa-content/img/loading32.gif" title="[`Loading`]">
                 </div>
             </div>
         </section>

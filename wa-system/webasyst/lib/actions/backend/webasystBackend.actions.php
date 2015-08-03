@@ -43,6 +43,8 @@ class webasystBackendActions extends waViewActions
     {
         $widget_model = new waWidgetModel();
         $locale = wa()->getUser()->getLocale();
+
+        // Create dashboard widgets on first login
         if (!wa()->getUser()->getSettings('webasyst', 'dashboard')) {
             $apps = wa()->getApps(true);
             $widgets = array();
@@ -81,6 +83,7 @@ class webasystBackendActions extends waViewActions
             wa()->getUser()->setSettings('webasyst', 'dashboard', 1);
         }
 
+        // fetch widgets
         $rows = $widget_model->getByContact($this->getUserId());
         $widgets = array();
         foreach ($rows as $row) {
@@ -135,6 +138,9 @@ class webasystBackendActions extends waViewActions
         if ($count == 50) {
             $this->view->assign('activity_load_more', true);
         }
+
+        // Whether to show tutorial
+        $this->view->assign('show_tutorial', !wa()->getUser()->getSettings('webasyst', 'widget_tutorial_closed'));
     }
 
     public function logoutAction()

@@ -12,6 +12,7 @@
  * @package wa-system
  * @subpackage config
  */
+
 class waSystemConfig
 {
     protected $root_path = null;
@@ -173,13 +174,13 @@ class waSystemConfig
 
     public function getHostUrl()
     {
-            if (waRequest::isHttps()) {
-                $url = 'https://';
-            } else {
-                $url = 'http://';
-            }
-            $url .= waRequest::server('HTTP_HOST');
-            return $url;
+        if (waRequest::isHttps()) {
+            $url = 'https://';
+        } else {
+            $url = 'http://';
+        }
+        $url .= waRequest::server('HTTP_HOST');
+        return $url;
     }
 
     public function getDomain()
@@ -194,29 +195,33 @@ class waSystemConfig
 
     protected function configure()
     {
+        if (!extension_loaded('mbstring') && !function_exists('mb_strlen')) {
+            die('PHP extension mbstring required');
+        }
         @mb_internal_encoding('UTF-8');
         @ini_set('default_charset', 'utf-8');
 
         @ini_set('register_globals', 'off');
         // magic quotes
-        @ini_set("magic_quotes_runtime",0);
-        if (version_compare('5.4', PHP_VERSION, '>') && function_exists('set_magic_quotes_runtime') && get_magic_quotes_runtime()){
+        @ini_set("magic_quotes_runtime", 0);
+        if (version_compare('5.4', PHP_VERSION, '>') && function_exists('set_magic_quotes_runtime') && get_magic_quotes_runtime()) {
             @set_magic_quotes_runtime(false);
         }
         // IIS
         if (!isset($_SERVER['REQUEST_URI'])) {
             $_SERVER['REQUEST_URI'] = $_SERVER['PHP_SELF'];
             if (isset($_SERVER['QUERY_STRING']) && strlen($_SERVER['QUERY_STRING'])) {
-                  $_SERVER['REQUEST_URI'].= '?'.$_SERVER['QUERY_STRING'];
-             }
-             self::$system_options['mod_rewrite'] = false;
+                $_SERVER['REQUEST_URI'] .= '?'.$_SERVER['QUERY_STRING'];
+            }
+            self::$system_options['mod_rewrite'] = false;
         }
 
         if (!get_magic_quotes_gpc()) {
             return;
         }
 
-        function array_stripslashes($array) {
+        function array_stripslashes($array)
+        {
             return is_array($array) ? array_map("array_stripslashes", $array) : stripslashes($array);
         }
 
@@ -255,16 +260,17 @@ class waSystemConfig
     {
         $this->root_path = $root_path;
         waConfig::add(array(
-            'wa_path_root'        => $root_path,
-            'wa_path_apps'        => $root_path.DIRECTORY_SEPARATOR.'wa-apps',
+            'wa_path_root'      => $root_path,
+            'wa_path_apps'      => $root_path.DIRECTORY_SEPARATOR.'wa-apps',
             'wa_path_system'    => $root_path.DIRECTORY_SEPARATOR.'wa-system',
-            'wa_path_log'        => $root_path.DIRECTORY_SEPARATOR.'wa-log',
-            'wa_path_data'        => $root_path.DIRECTORY_SEPARATOR.'wa-data',
-            'wa_path_content'        => $root_path.DIRECTORY_SEPARATOR.'wa-content',
+            'wa_path_log'       => $root_path.DIRECTORY_SEPARATOR.'wa-log',
+            'wa_path_data'      => $root_path.DIRECTORY_SEPARATOR.'wa-data',
+            'wa_path_content'   => $root_path.DIRECTORY_SEPARATOR.'wa-content',
             'wa_path_config'    => $root_path.DIRECTORY_SEPARATOR.'wa-config',
-            'wa_path_cache'        => $root_path.DIRECTORY_SEPARATOR.'wa-cache',
-            'wa_path_plugins'    => $root_path.DIRECTORY_SEPARATOR.'wa-plugins',
-            'wa_path_installer'    => $root_path.DIRECTORY_SEPARATOR.'wa-installer',
+            'wa_path_cache'     => $root_path.DIRECTORY_SEPARATOR.'wa-cache',
+            'wa_path_plugins'   => $root_path.DIRECTORY_SEPARATOR.'wa-plugins',
+            'wa_path_installer' => $root_path.DIRECTORY_SEPARATOR.'wa-installer',
+            'wa_path_widgets'   => $root_path.DIRECTORY_SEPARATOR.'wa-widgets',
         ));
     }
 

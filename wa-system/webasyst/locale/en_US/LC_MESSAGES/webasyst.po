@@ -2024,3 +2024,34 @@ msgstr ""
 #: /wa-system/page/templates/PageEdit.html:163
 msgid "Please refer to <a href=\"http://ogp.me\" target=\"_blank\">Open Graph</a> protocol site for more information on social sharing meta tags and available values."
 msgstr ""
+
+#: /wa-system/webasyst/templates/actions/backend/BackendDashboard.html:37
+#: /wa-system/webasyst/templates/actions/backend/BackendDashboard.html:37
+msgid "All apps"
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/backend/BackendDashboard.html:37
+#: /wa-system/webasyst/templates/actions/backend/BackendDashboard.html:37
+msgid "Selected apps"
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/backend/BackendDashboard.html:49
+#: /wa-system/webasyst/templates/actions/backend/BackendDashboard.html:53
+msgid "No events in the live stream yet."
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/backend/BackendDashboard.html:64
+msgid "Welcome to your personal dashboard!"
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/backend/BackendDashboard.html:65
+msgid "Customize widgets and dashboard layout using the link above. Dashboards are personal, so only you will see your custom layout. Other Webasyst users have their own personal dashboards too."
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/backend/BackendDashboard.html:68
+msgid "Ok, thanks"
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/backend/BackendDashboard.html:55
+msgid "Live stream collects all events from installed apps and presents them in a chronological order."
+msgstr ""

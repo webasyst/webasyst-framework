@@ -68,7 +68,7 @@ class webasystDashboardActivityAction extends waViewAction
             if (!empty($apps[$row['app_id']])) {
                 $row['app'] = $apps[$row['app_id']];
                 $logs = wa($row['app_id'])->getConfig()->getLogActions(true);
-                $row['action_name'] = $logs[$row['action']]['name'];
+                $row['action_name'] = ifset($logs[$row['action']]['name'], $row['action']);
                 if (strpos($row['action'], 'del')) {
                     $row['type'] = 4;
                 } elseif (strpos($row['action'], 'add')) {
@@ -91,7 +91,11 @@ class webasystDashboardActivityAction extends waViewAction
         foreach ($apps_rows as $app_id => $app_rows) {
             $app_rows = wa($app_id)->getConfig()->explainLogs($app_rows);
             foreach ($app_rows as $row_id => $row) {
-                $rows[$row_id] = $row;
+                if ($row) {
+                    $rows[$row_id] = $row;
+                } else {
+                    unset($rows[$row_id]);
+                }
             }
         }
         return $rows;
