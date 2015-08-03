@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WebAsyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2015-07-24 12:37+0300\n"
+"PO-Revision-Date: 2015-07-28 10:59+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -12,7 +12,7 @@ msgstr ""
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
 "Language: ru_RU\n"
-"X-Generator: Poedit 1.8.2\n"
+"X-Generator: Poedit 1.7.6\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
 
@@ -4082,7 +4082,7 @@ msgstr "Показать еще"
 
 #: /wa-system/webasyst/templates/actions/dashboard/DashboardSidebar.html:2
 msgid "Drag new widgets onto your dashboard and customize the layout any way you like it. Dashboards are personal, so only you will see your custom layout. Other Webasyst users have their own personal dashboards too."
-msgstr "Перетащите виджеты на вашу панель управления и расположите их так, как вам удобно. Расположение виджетов у каждого пользователя Webasyst свое."
+msgstr "Перетащите виджеты на вашу панель управления и расположите их так, как вам удобно. Расположение виджетов у каждого пользователя Webasyst индивидуально."
 
 #: /wa-system/webasyst/templates/actions/dashboard/DashboardSidebar.html:27
 msgid "Click or drag this widget to install it on your dashboard"
@@ -4144,3 +4144,28 @@ msgstr "Подробная информация о параметрах для �
 
 msgid "Customize the rest of theme settings in your Webasyst backend > <i>select app</i> > Design."
 msgstr "Полный список настроек темы дизайна доступен в бекенде Webasyst > <i>приложение</i> > Дизайн."
+
+msgid "No events in the live stream yet."
+msgstr "Лента событий пока пуста."
+
+msgid "All apps"
+msgstr "Все приложения"
+
+msgid "Selected apps"
+msgstr "Приложения"
+
+#: /wa-system/webasyst/templates/actions/backend/BackendDashboard.html:64
+msgid "Welcome to your personal dashboard!"
+msgstr "Добро пожаловать на вашу панель управления Webasyst!"
+
+#: /wa-system/webasyst/templates/actions/backend/BackendDashboard.html:65
+msgid "Customize widgets and dashboard layout using the link above. Dashboards are personal, so only you will see your custom layout. Other Webasyst users have their own personal dashboards too."
+msgstr "Настройте вашу панель управления с помощью ссылки выше. Располагайте виджеты так, как удобно именно вам. Набор виджетов на панели управления у каждого пользователя Webasyst индивидуален."
+
+#: /wa-system/webasyst/templates/actions/backend/BackendDashboard.html:68
+msgid "Ok, thanks"
+msgstr "Ок, спасибо"
+
+#: /wa-system/webasyst/templates/actions/backend/BackendDashboard.html:55
+msgid "Live stream collects all events from installed apps and presents them in a chronological order."
+msgstr "Лента отображает события из всех приложений, установленных в вашем Webasyst."

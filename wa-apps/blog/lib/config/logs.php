@@ -4,6 +4,10 @@ return array(
     'post_publish' => array(
         'name' => /*_w*/('published blog post')
     ),
+    'post_unpublish' => array(
+        'name' => /*_w*/('unpublished blog post')
+    ),
+
     'post_edit' => array(
         'name' => /*_w*/('edited blog post')
     ),

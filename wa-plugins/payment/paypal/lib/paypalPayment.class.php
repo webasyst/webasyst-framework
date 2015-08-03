@@ -244,16 +244,15 @@ class paypalPayment extends waPayment implements waIPayment
                     throw new waPaymentException('Unsupported payment operation');
                 }
                 // checking plugin settings 'email' field
-                // UNDEFINED VARIABLE $data???
-                if (empty($data['receiver_email']) || !($this->email) || $this->email != $data['receiver_email']) {
-                    throw new waPaymentException('Invalid receiver email: '.ifempty($data['receiver_email']));
+                if (empty($request['receiver_email']) || !($this->email) || $this->email != $request['receiver_email']) {
+                    throw new waPaymentException('Invalid receiver email: '.ifempty($request['receiver_email']));
                 }
                 // checking transaction unique id
                 if ($this->getUniqueTransaction($transaction_data)) {
                     throw new waPaymentException('Duplicate transaction');
                 }
                 $transaction_data['state'] = self::STATE_CAPTURED;
-                $transaction_data = $this->saveTransaction($transaction_data, $data);
+                $transaction_data = $this->saveTransaction($transaction_data, $request);
 
                 // calling app's payment handler method for paid order
                 $result = $this->execAppCallback(self::CALLBACK_PAYMENT, $transaction_data);

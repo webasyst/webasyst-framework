@@ -659,15 +659,20 @@ class waAppConfig extends SystemConfig
                     $path = $this->getAppPath('widgets');
                 }
                 foreach (waFiles::listdir($path) as $widget_id) {
-                    $widget_config = $this->getWidgetPath($widget_id)."/lib/config/widget.php";
-                    if (!file_exists($widget_config)) {
+                    $widget_dir = $this->getWidgetPath($widget_id);
+                    $widget_config = $widget_dir."/lib/config/widget.php";
+                    if (!is_dir($widget_dir) || !file_exists($widget_config)) {
                         continue;
                     }
                     $widget_info = include($widget_config);
                     $widget_info['has_settings'] = file_exists($this->getWidgetPath($widget_id)."/lib/config/settings.php");
                     waSystem::pushActivePlugin($widget_id, $this->application == 'webasyst' ? 'widget' : $this->application.'_widget');
                     // Load widget locale if it exists
-                    $locale_path = wa()->getAppPath('widgets/'.$widget_id.'/locale', $this->application);
+                    if ($this->application == 'webasyst') {
+                        $locale_path = waConfig::get('wa_path_widgets').'/'.$widget_id.'/locale';
+                    } else {
+                        $locale_path = wa()->getAppPath('widgets/'.$widget_id.'/locale', $this->application);
+                    }
                     if (is_dir($locale_path)) {
                         waLocale::load($locale, $locale_path, wa()->getActiveLocaleDomain(), false);
                     }

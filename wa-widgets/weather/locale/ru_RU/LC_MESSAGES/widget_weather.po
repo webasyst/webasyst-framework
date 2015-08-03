@@ -40,11 +40,10 @@ msgid "Weather source"
 msgstr "Источник"
 
 msgid "Format"
-msgstr "Формат"
+msgstr "Шкала"
 
 msgid "Celsius"
-msgstr "Градусы Цельсия"
+msgstr "Градусы Цельсия C"
 
 msgid "Fahrenheit"
-msgstr "Градусы Фаренгейта"
-
+msgstr "Градусы Фаренгейта F"

@@ -11,6 +11,7 @@
         {$content} {* see page.html *}
     </article>
 
+    {if !empty($action) && $action == 'page'}
     <div class="content">
     
         <!-- FOLLOW -->
@@ -38,5 +39,6 @@
         </aside>
         
     </div>
+    {/if}
 
 {/if}

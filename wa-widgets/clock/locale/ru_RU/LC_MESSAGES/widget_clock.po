@@ -12,7 +12,7 @@ msgstr ""
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
 "Language: ru_RU\n"
-"X-Generator: Poedit 1.8.2\n"
+"X-Generator: Poedit 1.7.6\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
 
@@ -55,3 +55,11 @@ msgstr "24 часа"
 #: /wa-widgets/clock//lib/config/settings.php:211
 msgid "Electronic AM/PM"
 msgstr "AM/PM"
+
+#: /wa-widgets/clock/lib/config/settings.php:11
+msgid "Local"
+msgstr "Местное"
+
+#: /wa-widgets/clock/lib/config/settings.php:15
+msgid "Server"
+msgstr "Серверное"

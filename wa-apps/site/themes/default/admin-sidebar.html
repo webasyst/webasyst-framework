@@ -12,18 +12,18 @@
 {$plugin = $wa->param('plugin')}
 {$quick_links = []}
 {if empty($plugin)}
-    {if $app == 'shop' && $action == 'category'}
+    {if $app == 'shop' && $action == 'category' && !empty($category)}
         {$quick_links[] = [
             "name" => "[s`Edit`]",
             "href" => "{$wa_backend_url}shop/?action=products#/products/category_id={$category.id}"
         ]}
-    {elseif $app == 'shop' && $action == 'product'}
+    {elseif $app == 'shop' && $action == 'product' && !empty($product)}
         {$quick_links[] = [
             "name" => "[s`Edit`]",
             "href" => "{$wa_backend_url}shop/?action=products#/product/{$product.id}/edit/"
         ]}
 
-    {elseif $app == 'blog' && $action == 'post'}
+    {elseif $app == 'blog' && $action == 'post' && !empty($post)}
         {$quick_links[] = [
             "name" => "[s`Edit`]",
             "href" => "{$wa_backend_url}blog/?module=post&id={$post.id}&action=edit"
@@ -31,9 +31,9 @@
 
     {elseif $action == 'page'}
         {$href = false}
-        {if $app == 'shop'}
+        {if $app == 'shop' && !empty($page)}
             {$href = "{$wa_backend_url}{$app}/?action=storefronts#/pages/{$page.id}"}
-        {elseif $app == 'blog'}
+        {elseif $app == 'blog' && !empty($page)}
             {$href = "{$wa_backend_url}{$app}/?module=pages#/{$page.id}"}
         {/if}
         {if $href}
@@ -149,7 +149,7 @@
         padding: 0 7px;
         opacity: 0;
         overflow: hidden;
-        background: #444;
+        background: rgba(42,42,42,0.6);
         color: #999;
     }
     .s-live-setting-wrapper .s-live-setting-block .theme-settings-wrapper .group-wrapper .settings-list .set-item {

@@ -10,6 +10,7 @@ SELECT tag.id as id, tag.name as name, COUNT(tag.id) as count
 FROM {$this->table} AS tag
 LEFT JOIN blog_post_tag ON (blog_post_tag.tag_id = tag.id)
 GROUP BY tag.id
+ORDER BY tag.name
 SQL;
         $tags = $this->query($sql)->fetchAll('id');
         if ($tags && $options) {

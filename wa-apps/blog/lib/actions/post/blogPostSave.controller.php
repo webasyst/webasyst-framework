@@ -216,6 +216,8 @@ class blogPostSaveController extends waJsonController
                 $this->post_model->updateItem($post['id'], $post);
                 if ($prev_post['status'] != blogPostModel::STATUS_PUBLISHED && $post['status'] == blogPostModel::STATUS_PUBLISHED) {
                     $this->logAction('post_publish', $post['id']);
+                } else if ($prev_post['status'] == blogPostModel::STATUS_PUBLISHED && $post['status'] != blogPostModel::STATUS_PUBLISHED) {
+                    $this->logAction('post_unpublish', $post['id']);
                 } else {
                     $this->logAction('post_edit', $post['id']);
                 }
@@ -271,7 +273,7 @@ class blogPostSaveController extends waJsonController
     private function delete($post)
     {
         $post_model = new blogPostModel();
-        $post = $post_model->getFieldsById($post['id'], array('id', 'blog_id', 'contact_id'));
+        $post = $post_model->getFieldsById($post['id'], array('id', 'blog_id', 'contact_id', 'status'));
         if ($post) {
             if (!$this->getUser()->isAdmin($this->getApp())) {
                 // author of post
@@ -282,6 +284,9 @@ class blogPostSaveController extends waJsonController
                 }
             }
             $post_model->deleteById($post['id']);
+            if ($post['status'] == blogPostModel::STATUS_PUBLISHED) {
+                $this->logAction('post_delete', $post['id']);
+            }
             $this->response['redirect'] = '?blog='.$post['blog_id'];
         } else {
             $this->response['redirect'] = '?';

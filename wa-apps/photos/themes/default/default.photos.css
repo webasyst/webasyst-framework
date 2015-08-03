@@ -111,7 +111,7 @@ ul.photostream li.stream-nav.ff i { background-position: -12px 0; }
 
 .view-plain { margin-top: 20px; }
 .view-plain h5 { margin-bottom: 3px; }
-.view-plain .image { margin: 5px -15px 0; max-width: 970px; text-align: left\9; }
+.view-plain .image { margin: 5px 0 0; max-width: 970px; text-align: left\9; }
 .view-plain img.shadowed { -moz-box-shadow: 0 1px 3px #aaa; -webkit-box-shadow: 0 1px 3px #aaa; box-shadow: 0 1px 3px #aaa; }
 
 ul.view-thumbs { padding: 0; /* margin: -25px -30px 30px;  */list-style: none; text-align: center; line-height: 0; }

@@ -29,7 +29,7 @@ msgstr ""
 
 #: /wa-apps/blog/plugins/emailsubscription/lib/blogEmailsubscriptionPlugin.class.php:80
 msgid "New post in the blog “%s”"
-msgstr ""
+msgstr "New post in blog “%s”"
 
 #: /wa-apps/blog/plugins/emailsubscription/lib/blogEmailsubscriptionPlugin.class.php:104
 msgid "Subscribed via email"

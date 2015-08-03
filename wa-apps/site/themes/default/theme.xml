@@ -74,6 +74,15 @@
 ]]>
     </about>
     <settings>
+        <setting var="header_scheme" control_type="image_select">
+            <value>img/themesettings/black.png</value>
+            <name locale="ru_RU">Верхнее меню</name>
+            <name locale="en_US">Top menu</name>
+            <options>
+                <option value="img/themesettings/black.png"></option>
+                <option value="img/themesettings/white.png"></option>
+            </options>
+        </setting>
         <setting var="color_scheme" control_type="image_select">
             <value>img/themesettings/red.png</value>
             <name locale="ru_RU">Цветовая схема</name>
@@ -90,6 +99,11 @@
                 <option value="img/themesettings/lime.png"></option>
                 <option value="img/themesettings/brown.png"></option>
             </options>
+        </setting>
+        <setting var="color_custom" control_type="color">
+            <value></value>
+            <name locale="ru_RU">Свой цвет</name>
+            <name locale="en_US">Custom color</name>
         </setting>
         <setting var="font_family" control_type="select">
             <value></value>
@@ -183,14 +197,13 @@
 }(document, 'script', 'facebook-jssdk'));</script>
 
 <div class="fb-page" data-href="https://www.facebook.com/Webasyst.RU" data-small-header="false" data-adapt-container-width="true" data-hide-cover="false" data-show-facepile="true" data-show-posts="false"><div class="fb-xfbml-parse-ignore"><blockquote cite="https://www.facebook.com/Webasyst.RU"><a href="https://www.facebook.com/Webasyst.RU">Webasyst RU</a></blockquote></div></div>]]></value>
-            <name locale="en_US">Facebook Page Plugin</name>
+            <name locale="en_US">Facebook Page Plugin code</name>
             <name locale="ru_RU">Виджет Фейсбука</name>
             <description locale="en_US">Embed your Facebook page badge code here. Code can be obtained on Facebook website: https://developers.facebook.com/docs/plugins/page-plugin</description>
             <description locale="ru_RU">Поместите в это поле код виджета вашей страницы на Фейсбуке. Код можно получить в Фейсбуке на странице https://developers.facebook.com/docs/plugins/page-plugin</description>
         </setting>
         <setting var="twitter_timeline_code" control_type="text">
-            <value locale="en_US"><![CDATA[<a class="twitter-timeline" href="https://twitter.com/webasyst" data-widget-id="624283167772528641">Tweets by @webasyst</a>
-<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>]]></value>
+            <value locale="en_US"><![CDATA[<a class="twitter-timeline" href="https://twitter.com/webasyst" data-widget-id="625947505319124993">Tweets by @webasyst</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>]]></value>
             <value locale="ru_RU"><![CDATA[<a class="twitter-timeline" href="https://twitter.com/webasyst_ru" data-widget-id="624283167772528641">Tweets by @webasyst_ru</a>
 <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>]]></value>
             <name locale="en_US">Twitter Timeline code</name>
@@ -207,7 +220,7 @@
 <script type="text/javascript">
 VK.Widgets.Group("vk_groups", {mode: 0, width: "260", height: "400", color1: 'FFFFFF', color2: '2B587A', color3: '5B7FA6'}, 21415010);
 </script>]]></value>
-            <name locale="en_US">VK Page Widget</name>
+            <name locale="en_US">VK Page Widget code</name>
             <name locale="ru_RU">Виджет Вконтакте</name>
             <description locale="en_US">Embed your VK community widget code here. Code can be obtained on VK website: http://vk.com/dev/Community</description>
             <description locale="ru_RU">Поместите в это поле код виджета вашего сообщества во Вконтакте. Код можно получить на сайте соцсети http://vk.com/dev/Community</description>
