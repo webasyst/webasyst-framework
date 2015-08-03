@@ -196,32 +196,62 @@ class blogConfig extends waAppConfig
     {
         $logs = parent::explainLogs($logs);
         $app_url = wa()->getConfig()->getBackendUrl(true).$this->application.'/';
-        foreach ($logs as $log_id => $l) {
-            if (in_array($l['action'], array('page_add', 'page_edit', 'page_move')) && isset($l['params_html'])) {
-                $logs[$log_id]['params_html'] = str_replace('#/pages/', '?module=pages#/', $l['params_html']);
-            }
-        }
 
         $post_ids = array();
+        $comment_ids = array();
         foreach ($logs as $l_id => $l) {
-            if (in_array($l['action'], array('post_publish', 'post_edit')) && $l['params']) {
-                $post_ids[] = $l['params'];
+            if (in_array($l['action'], array('page_add', 'page_edit', 'page_move')) && isset($l['params_html'])) {
+                $logs[$l_id]['params_html'] = str_replace('#/pages/', '?module=pages#/', $l['params_html']);
+            } else if ($l['action'] == 'post_edit' && version_compare(wa('webasyst')->getVersion(), '1.4.0.40888') >= 0) {
+                // Removal of log records in activity is only supported since 1.4.0.40888,
+                // but we don't want to raise requirements yet, so have to check for version here.
+                // !!! TODO: should probably remove the check later and update requirements.php
+                $logs[$l_id] = null;
+            } else if (in_array($l['action'], array('post_edit', 'post_publish', 'post_unpublish')) && $l['params']) {
+                $post_ids[$l['params']] = 1;
+            } else if (in_array($l['action'], array('comment_add', 'comment_delete', 'comment_restore')) && $l['params']) {
+                $comment_ids[$l['params']] = 1;
+            }
+        }
+        if ($comment_ids) {
+            $comment_model = new blogCommentModel();
+            $comments = $comment_model->getById(array_keys($comment_ids));
+            foreach($comments as $c) {
+                $post_ids[$c['post_id']] = 1;
             }
         }
         if ($post_ids) {
             $post_model = new blogPostModel();
-            $posts = $post_model->getById($post_ids);
+            $posts = $post_model->getById(array_keys($post_ids));
         }
         foreach ($logs as $l_id => $l) {
-            if (in_array($l['action'], array('post_publish', 'post_edit'))) {
-                if (isset($posts[$l['params']])) {
-                    $p = $posts[$l['params']];
-                    $url = $app_url.'?module=post&id='.$l['params'].'#/';
-                    $logs[$l_id]['params_html'] = '<div class="activity-target"><a href="'.$url.'">'.htmlspecialchars($p['title']).'</a></div>';
+            if (!$l) {
+                continue;
+            }
+
+            // Link to blog post in question
+            $p = $c = null;
+            if (in_array($l['action'], array('post_edit', 'post_publish', 'post_unpublish')) && isset($posts[$l['params']])) {
+                $p = $posts[$l['params']];
+            } else if (in_array($l['action'], array('comment_add', 'comment_delete', 'comment_restore')) && isset($comments[$l['params']])) {
+                $c = $comments[$l['params']];
+                if (isset($posts[$c['post_id']])) {
+                    $p = $posts[$c['post_id']];
                 }
+            }
+            if (!empty($p)) {
+                if ($p['status'] == blogPostModel::STATUS_PUBLISHED) {
+                    $url = $app_url.'?module=post&id='.$p['id'];
+                } else {
+                    $url = $app_url.'?module=post&action=edit&id='.$p['id'];
+                }
+                $logs[$l_id]['params_html'] = '<div class="activity-target"><a href="'.$url.'">'.htmlspecialchars($p['title']).'</a></div>';
+            }
+            if (!empty($c)) {
+                $logs[$l_id]['params_html'] .= '<div class="activity-body"><p'.($c['status'] == 'deleted' ? ' class="strike gray"' : '').'>'.nl2br(htmlspecialchars(mb_substr($c['text'], 0, 512))).'</p></div>';
             }
         }
         return $logs;
-    }    
+    }
 }
 

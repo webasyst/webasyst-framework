@@ -46,10 +46,10 @@ class blogPostsWidget extends waWidget
     {
         $blogs = array();
         $blog_model = new blogBlogModel();
+        $blogs[''] = _wp('All blogs');
         foreach($blog_model->getAvailable(wa()->getUser()) as $b) {
             $blogs[$b['id']] = $b['name'];
         }
-        $blogs[''] = _wp('From all blogs');
         $result = parent::getSettingsConfig();
         $result['blog_id']['options'] = $blogs;
         return $result;

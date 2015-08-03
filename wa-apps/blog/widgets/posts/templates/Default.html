@@ -29,7 +29,7 @@
                         {$post.datetime|wa_datetime:"humandatetime"}
                     {/if}
                 </h6>
-                <h3 class="b-post-title"><a href="{$wa_backend_url}blog/?module=post&id={$post.id}" class="bold">{$post.title|escape}</a></h3>
+                <h3 class="b-post-title"><a href="{$wa_backend_url}blog/?module=post&id={$post.id}" class="bold">{$post.title|escape|truncate:36}</a></h3>
                 <p class="small b-post-preview">
                     <!-- <b>{$post.color}</b> -->
                     {strip_tags($post.text)}

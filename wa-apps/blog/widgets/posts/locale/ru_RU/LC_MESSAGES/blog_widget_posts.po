@@ -12,7 +12,7 @@ msgstr ""
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
 "Language: ru_RU\n"
-"X-Generator: Poedit 1.8.2\n"
+"X-Generator: Poedit 1.7.6\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
 
@@ -24,9 +24,8 @@ msgstr "В вашем блоге еще нет записей."
 msgid "Posts"
 msgstr "Записи"
 
-msgid "From all blogs"
-msgstr "Из всех блогов"
+msgid "All blogs"
+msgstr "Все блоги"
 
 msgid "Blog"
 msgstr "Блог"
-
