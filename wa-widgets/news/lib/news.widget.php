@@ -56,6 +56,12 @@ class newsWidget extends waWidget
 
         $result = parent::getSettingsConfig();
         $result['rss_feed']['options'] = $feeds;
+
+        // Select first feed by default if nothing is selected
+        if (empty($result['rss_feed']['value'])) {
+            $result['rss_feed']['value'] = key($feeds);
+        }
+
         return $result;
     }
 

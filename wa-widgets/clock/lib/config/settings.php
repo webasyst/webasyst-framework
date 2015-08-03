@@ -8,11 +8,11 @@ return array(
         'options' => array(
             array(
                 'value'       => 'local',
-                'title'       => 'Local',
+                'title'       => /*_w*/('Local'),
             ),
             array(
                 'value'       => 'server',
-                'title'       => 'Server',
+                'title'       => /*_w*/('Server'),
             ),
             array(
                 'value'       => '-12',

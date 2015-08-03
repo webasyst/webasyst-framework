@@ -54,3 +54,11 @@ msgstr ""
 #: /wa-widgets/clock//lib/config/settings.php:211
 msgid "Electronic AM/PM"
 msgstr ""
+
+#: /wa-widgets/clock/lib/config/settings.php:11
+msgid "Local"
+msgstr ""
+
+#: /wa-widgets/clock/lib/config/settings.php:15
+msgid "Server"
+msgstr ""
