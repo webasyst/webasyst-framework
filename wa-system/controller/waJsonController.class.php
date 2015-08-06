@@ -50,4 +50,10 @@ abstract class waJsonController extends waController
     {
         $this->errors[] = array($message, $data);
     }
+
+    protected function preExecute()
+    {
+        $this->getResponse()->addHeader('Content-type', 'application/json');
+        parent::preExecute();
+    }
 }
