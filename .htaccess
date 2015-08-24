@@ -1,9 +1,24 @@
-<FilesMatch "\.md5$">
-    Deny from all
+# Block access to files that can expose sensitive information:
+# backups and source files that may be left by some text editors 
+# and can pose a security risk when anyone has access to them.
+<FilesMatch "(^#.*#|\.(bak|conf|dist|fla|in[ci]|log|md5|sh|sql|sw[op])|~)$">
+    # Apache < 2.3
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+        Satisfy All
+    </IfModule>
+    # Apache ≥ 2.3
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
 </FilesMatch>
 
 DirectoryIndex index.php
-Options -Indexes
+# Block access to directories without a default document.
+<IfModule mod_autoindex.c>
+    Options -Indexes
+</IfModule>
 # Comment the following line, if option Multiviews not allowed here
 Options -MultiViews
 
@@ -14,7 +29,7 @@ AddDefaultCharset utf-8
     # Uncomment the following line, if you are having trouble
     #RewriteBase /
 
-    RewriteCond %{REQUEST_URI} !\.(js|css|jpg|jpeg|gif|png)$ [or]
+    RewriteCond %{REQUEST_URI} !\.(js|css|jpg|jpeg|gif|png|svg|ttf|eot|otf|woff|woff2)$ [or]
     RewriteCond %{REQUEST_URI} apple-touch-icon\.png$
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteCond %{REQUEST_FILENAME} !-d
@@ -22,7 +37,7 @@ AddDefaultCharset utf-8
 </ifModule>
 
 <ifModule mod_headers.c>
-    <FilesMatch "\.(jpg|jpeg|png|gif|js|css)$">
-	Header set Cache-Control "max-age=3153600, public"
+    <FilesMatch "\.(jpg|jpeg|png|gif|js|css|svg|ttf|eot|otf|woff|woff2)$">
+        Header set Cache-Control "max-age=3153600, public"
     </FilesMatch>
 </ifModule>
