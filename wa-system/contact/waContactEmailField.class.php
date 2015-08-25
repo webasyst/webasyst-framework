@@ -27,15 +27,24 @@ class waContactEmailField extends waContactStringField
     {
         $value = parent::set($contact, $value, $params, $add);
         $status = wa()->getEnv() == 'frontend' ? 'unconfirmed' : 'unknown';
+        $old = $contact->get($this->id);
         if ($this->isMulti()) {
             foreach ($value as $k => $v) {
                 if (!isset($v['status'])) {
-                    $value[$k]['status'] = $status;
+                    if ($old && isset($old[$k]['status']) && ($old[$k]['value'] == $v['value'])) {
+                        $value[$k]['status'] = $old[$k]['status'];
+                    } else {
+                        $value[$k]['status'] = $status;
+                    }
                 }
             }
         } else {
             if (is_array($value) && !isset($value['status'])) {
-                $value['status'] = $status;
+                if ($old && isset($old['status']) && ($value['value'] == $old['value'])) {
+                    $value['status'] = $old['status'];
+                } else {
+                    $value['status'] = $status;
+                }
             }
         }
         return $value;

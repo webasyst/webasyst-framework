@@ -37,6 +37,7 @@ li.error a { color: red; }
 .wa-themes ul.thumbs li { text-align: center; margin-right: 5px; }
 .wa-themes ul.thumbs li a h5 { color: #000; margin-bottom: 10px; }
 .wa-themes ul.thumbs li a .wa-theme-cover { width: 200px; height: 220px; overflow: hidden; box-shadow: 0 2px 9px #777; margin: 0 auto 10px; background: #fff; position: relative; }
+.wa-themes ul.thumbs li a .wa-theme-cover img { width: 200px; height: 220px; }
 .wa-themes ul.thumbs li a .wa-theme-cover .wa-in-use-badge { position: absolute; left: -12px; right: -12px; bottom: 0; margin-top: -10px; background: #5a4; color: #fff; font-style: italic; padding: 8px; font-weight: bold; }
 .wa-themes ul.thumbs li a .wa-theme-cover span.hint { margin-top: 100px; display: block; }
 .wa-themes ul.thumbs li a:hover .wa-theme-cover { box-shadow: 0 4px 13px #666; }

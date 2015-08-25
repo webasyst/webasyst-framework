@@ -86,7 +86,11 @@
         <!-- misc actions -->
         <div class="block double-padded wa-theme-actions">
             <ul class="menu-v with-icons">
-                <li><a href="?module=design&amp;action=themeDownload&amp;theme={$theme.id}"><i class="icon16 download"></i>[s`Download theme backup`] <span class="hint nowrap">.tar.gz</span></a></li>
+                {if count($theme->related_themes)>1}
+                    <li><a class="theme-download" href="#"><i class="icon16 download"></i>[s`Download theme backup`]</a></li>
+                {else}
+                    <li><a href="?module=design&amp;action=themeDownload&amp;theme={$theme.id}"><i class="icon16 download"></i>[s`Download theme backup`] <span class="hint nowrap">.tar.gz</span></a></li>
+                {/if}
                 <li><a class="theme-copy" href="#"><i class="icon16 split"></i>[s`Clone theme`]</a></li>
                 <li><a class="theme-rename" href="#"><i class="icon16 edit"></i>[s`Rename theme`]</a></li>
                 <li><i class="icon16 link"></i>[s`Parent theme`]: <strong>{if $theme.parent_theme_id}{$theme.parent_theme_id}{else}[s`not set`]{/if}</strong>  <a class="theme-parent inline" href="#">[s`Change`]</a></li>
@@ -467,6 +471,31 @@
     </div>
 </div>
 
+<div class="dialog height300px" id="wa-theme-download-dialog">
+    <div class="dialog-background"> </div>
+    <div class="dialog-window">
+        <form>
+            <div class="dialog-content">
+                <div class="dialog-content-indent">
+                    <h1>{$theme.name|escape}</h1>
+                    <ul class="menu-v with-icons">
+                        {foreach $theme.related_themes as $related_theme_id => $related_theme}
+                        <li{if ($theme.app_id==$related_theme.app_id)||($theme.parent_theme_id==$related_theme_id)} class="bold"{/if}><a href="?module=design&amp;action=themeDownload&amp;theme={$related_theme.id}&amp;app_id={$related_theme.app_id}"><i class="icon16 download"></i>{sprintf('[s`%s theme (version %s) for %s app`]',$related_theme.name,$related_theme.version,ifempty($apps[$related_theme.app_id]['name'],$related_theme.app))|escape} <span class="hint nowrap">.tar.gz</span></a></li>
+                        {/foreach}
+
+                    </ul>
+                </div>
+                <div class="clear"></div>
+            </div>
+            <div class="dialog-buttons">
+                <div class="dialog-buttons-gradient">
+                    <a href="#/design/themes/" class="cancel button">[s`Close`]</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
 
 <div class="dialog width600px height250px" id="wa-theme-parent-dialog">
     <div class="dialog-background"> </div>
@@ -537,6 +566,10 @@
                 return false;
             }
         });
+        return false;
+    });
+    $(".theme-download").on('click', function () {
+        $("#wa-theme-download-dialog").waDialog();
         return false;
     });
 

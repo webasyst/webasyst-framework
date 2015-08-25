@@ -223,7 +223,10 @@ abstract class waView
         waLocale::setStrings($locales);
         $this->assign('theme_settings', $theme_settings);
         $this->assign('theme_settings_config', $theme_settings_config);
+
         $this->assign('wa_theme_url', $this->getStaticUrl($theme->url));
+        $this->assign('wa_real_theme_url', $theme->url);
+
         $this->setTemplateDir($theme->path);
         return file_exists($theme->path.'/'.$template);
     }

@@ -19,10 +19,11 @@
  * @property string $description
  * @property string $about
  * @property string $version
+ * @property string $vendor
  * @property int $edition Incremental counter of theme changes
+ * @property string $parent_theme_id Parent theme ID
  * @property-read string $id
  * @property-read string $slug
- * @property-read string $vendor
  * @property-read string $author
  * @property-read string $app_id
  * @property-read string $cover
@@ -33,9 +34,9 @@
  * @property-read string $original
  * @property-read string $type
  * @property-read string $url Theme directory URL
- * @property-read string $parent_theme_id Parent theme ID
  * @property-read string $source_theme_id Source theme ID for duplicated one
  * @property-read waTheme $parent_theme Parent theme instance or false
+ * @property-read waTheme[] $related_themes
  * @property-read array $used theme settlement URLs
  * @property-read bool $system
  * @property-read string[] $thumbs
@@ -1706,6 +1707,41 @@ HTACCESS;
     }
 
     /**
+     * @return waTheme[]
+     * @throws waException
+     */
+    private function getRelatedThemes()
+    {
+        $themes = array(
+            sprintf('%s:%s', $this->app_id, $this->id) => $this,
+        );
+        if ($this->parent_theme_id) {
+            $themes[$this->parent_theme_id] = $this->getParentTheme();
+        }
+
+        $apps = wa()->getApps();
+        foreach ($apps as $app_id => $info) {
+            if (!empty($info['frontend']) && !empty($info['themes'])) {
+                $theme_id = sprintf('%s:%s', $app_id, $this->id);
+                if (!isset($themes[$theme_id])) {
+                    try {
+                        $theme = new waTheme($this->id, $app_id);
+                        if ($theme->parent_theme_id && isset($themes[$theme->parent_theme_id])) {
+                            $themes[$theme_id] = $theme;
+                        }
+                        unset($theme);
+                    } catch (waException $ex) {
+                        //ignore error
+                    }
+                }
+            }
+        }
+
+        return $themes;
+
+    }
+
+    /**
      * @return bool
      */
     private function getSystem()
@@ -2034,7 +2070,7 @@ HTACCESS;
         if (file_exists($this->path) && class_exists('Archive_Tar', true)) {
             waFiles::create($target_file);
             $tar_object = new Archive_Tar($target_file, true);
-            $tar_object->setIgnoreRegexp('@(\.(php\d?|svn|git|fw_|files\.md5$))@');
+            $tar_object->setIgnoreRegexp('@(\.(php\d?|_|DS_Store|\.db|svn|git|fw_|files\.md5$))@');
             $path = getcwd();
             chdir(dirname($this->path));
             if (!$tar_object->create('./'.basename($this->path))) {

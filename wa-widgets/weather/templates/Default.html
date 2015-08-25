@@ -37,7 +37,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#133682', end
         {if !empty($weather.message) && $weather.message !== 'Error: Not found city'}
             <div class="errormsg">{$weather.message}</div>
         {else if $city}
-            <h5 class="align-center hint wa-no-weather">{sprintf('[`Could not retrieve weather conditions for <strong>%s</strong>. Please check city name in widget settings or in your contact info.`]', $city|default:'[`(unknown city)`]')}</h5>
+            <h5 class="align-center hint wa-no-weather">{sprintf('[`Could not retrieve weather conditions for <strong>%s</strong>. Please check city name in widget settings or in your contact info.`]', $city|escape|default:'[`(unknown city)`]')}</h5>
         {else}
             <h5 class="align-center hint wa-no-weather">[`Please enter city name in your contact information or in this widget settings.`]</h5>
         {/if}
@@ -46,7 +46,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#133682', end
         <div src="{$wa_url}wa-widgets/weather/img/11.png" class="s-weather-icon" style="background-image: url('{$wa_url}wa-widgets/weather/img/{$weather.weather.icon|default:'unknown'}.png');"></div>
 
         <h2>{$weather.main.temp}&deg;</h2>
-        <h6>{$city}</h6>
+        <h6>{$city|escape}</h6>
         
     {/if}
 </div>

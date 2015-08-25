@@ -261,8 +261,8 @@ class waAppConfig extends SystemConfig
             $time = $app_settings_model->get($this->application, 'update_time');
         } catch (waDbException $e) {
             // Can't connect to MySQL server
-            if ($e->getCode() == 2002 && !waSystemConfig::isDebug()) {
-                return;
+            if ($e->getCode() == 2002) {
+                throw $e;
             } elseif (!empty($app_settings_model)) {
                 $time = null;
                 $row = $app_settings_model->getByField(array('app_id' => $this->application, 'name' => 'update_time'));

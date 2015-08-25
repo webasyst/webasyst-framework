@@ -70,7 +70,7 @@ class waDesignActions extends waActions
             'app_id' => $app_id,
             'app' => $app,
             'routing_url' => $routing_url,
-            'options' => $this->options
+            'options' => $this->options,
         ), $template);
     }
 
@@ -656,7 +656,8 @@ HTACCESS;
                 'theme_routes' => $theme_routes,
                 'path'=>waTheme::getThemesPath($app_id),
                 'cover' => $cover,
-                'route_url' => $route_url
+                'route_url' => $route_url,
+                'apps'=>wa()->getApps(),
             ), $this->getConfig()->getRootPath().'/wa-system/design/templates/Theme.html');
         }
     }
@@ -794,7 +795,8 @@ HTACCESS;
     public function themeDownloadAction()
     {
         $theme_id = waRequest::get('theme');
-        $theme = new waTheme($theme_id, $this->getAppId());
+        $app_id=waRequest::get('app_id',$this->getAppId());
+        $theme = new waTheme($theme_id, $app_id);
         $this->logAction('theme_download', $theme_id);
         $target_file = $theme->compress(wa()->getTempPath("themes"));
         waFiles::readFile($target_file, basename($target_file), false);

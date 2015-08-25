@@ -201,6 +201,7 @@ class waAutoload
         'waDbResultUpdate'         => 'database/waDbResultUpdate.class.php',
         'waDbStatement'            => 'database/waDbStatement.class.php',
         'waModel'                  => 'database/waModel.class.php',
+        'waModelExpr'               => 'database/waModelExpr.class.php',
         'waNestedSetModel'         => 'database/waNestedSetModel.class.php',
 
         'waSMS'                    => 'sms/waSMS.class.php',

@@ -132,4 +132,35 @@ class waWidgetModel extends waModel
 
         return $this->deleteById($id);
     }
+
+    public function deleteByWidget($app_id, $widget)
+    {
+        // delete from params
+        $sql = "DELETE p FROM wa_widget_params p JOIN wa_widget w ON p.widget_id = w.id
+                WHERE w.app_id = s:0 AND w.widget = s:1";
+        $this->exec($sql, $app_id, $widget);
+
+        // fix sort
+        $sql = "SELECT w.id FROM wa_widget w
+                JOIN wa_widget w2 ON w.contact_id = w2.contact_id AND w.block = w2.block
+                AND w.app_id != w2.app_id AND w.widget != w2.widget
+                WHERE w2.app_id = s:0 AND w2.widget = s:1 AND w.sort > w2.sort";
+        $ids = $this->query($sql, $app_id, $widget)->fetchAll(null, true);
+        if ($ids) {
+            $sql = "UPDATE ".$this->table." SET sort = sort - 1 WHERE id IN (i:ids)";
+            $this->exec($sql, array('ids' => $ids));
+        }
+        // fix block
+        $sql = "SELECT w.* FROM `wa_widget` w
+                LEFT JOIN wa_widget w2 ON w.contact_id = w2.contact_id AND w.block = w2.block
+                AND w.app_id != w2.app_id AND w.widget != w2.widget
+                WHERE w.app_id = s:0 AND w.widget = s:1 AND w.sort = 0 AND w2.id IS NULL ORDER BY block DESC";
+        $rows = $this->query($sql, $app_id, $widget);
+        foreach ($rows as $row) {
+            $sql = "UPDATE ".$this->table." SET block = block - 1 WHERE contact_id = i:0 AND block > i:1";
+            $this->exec($sql, $row['contact_id'], $row['block']);
+        }
+        // delete widgets
+        return $this->deleteByField(array('app_id' => $app_id, 'widget' => $widget));
+    }
 }

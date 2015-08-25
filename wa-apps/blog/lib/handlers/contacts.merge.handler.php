@@ -7,6 +7,10 @@ class blogContactsMergeHandler extends waEventHandler
         $master_id = $params['id'];
         $merge_ids = $params['contacts'];
 
+        if(!$merge_ids) {
+            return null;
+        }
+
         $m = new waModel();
 
         foreach(array(
