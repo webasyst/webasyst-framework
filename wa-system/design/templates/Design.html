@@ -177,7 +177,7 @@
                         if (!params['route']) {
                             location.href = $(this).attr('href');
                         } else {
-                            hash = hash.replace(/route=[^&]/, 'route=' + params['route']);
+                            hash = hash.replace(/route=[^&]+/, 'route=' + params['route']);
                             $.wa.setHash(hash.replace(/theme=[^&]+/, 'theme=' + params['theme']));
                         }
                     } else {
@@ -300,20 +300,36 @@
                     } else {
                         var li = $('#wa-theme-list li:first');
                     }
+                    var hash_params = waDesignParams(hash);
                     if (li.data('routing')) {
-                        $("#wa-design-container").load(li.data('routing') + '&reload_on_change=1', function () {
-                            $("#wa-design-container .back").remove();
-                            $(".s-route-core").hide();
-                            $('.s-route-details .fields').
-                                    prepend($('<div class="field-group"></div>').
-                                            append($('<div class="field"><div class="name">URL</div></div>').
-                                                    append($('<div class="value"></div>').html($('#s-route-where').html()))
-                                    )
-                            );
-                            $("#wa-design-container .s-route-delete").closest('div').remove();
-                        });
+                        var li_route = li.data('routing').replace(/.*route=([^&]+).*?/i, '$1');
+                        if (hash_params['route'] && (hash_params['route'] != li_route)) {
+                            var tmp_li = $('#wa-theme-list li[data-routing$="route=' + hash_params['route'] + '"]:first');
+                            if (tmp_li.length) {
+                                tmp_li.find('a').click();
+                            }
+                        } else {
+                            $("#wa-design-container").load(li.data('routing') + '&reload_on_change=1', function () {
+                                $("#wa-design-container .back").remove();
+                                $(".s-route-core").hide();
+                                $('.s-route-details .fields').
+                                        prepend($('<div class="field-group"></div>').
+                                                append($('<div class="field"><div class="name">URL</div></div>').
+                                                        append($('<div class="value"></div>').html($('#s-route-where').html()))
+                                        )
+                                );
+                                $("#wa-design-container .s-route-delete").closest('div').remove();
+                            });
+                        }
                     } else {
-                        $.wa.setHash(location.hash.replace(/&?action=settings/, ''));
+                        if (hash_params['route']) {
+                            var tmp_li = $('#wa-theme-list li[data-routing$="route=' + hash_params['route'] + '"]:first');
+                            if (tmp_li.length) {
+                                tmp_li.find('a').click();
+                            }
+                        } else {
+                            $.wa.setHash(location.hash.replace(/&?action=settings/, ''));
+                        }
                     }
                 } else {
                     if (hash.indexOf('action=') == -1) {

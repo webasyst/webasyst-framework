@@ -28,6 +28,8 @@ abstract class waMyProfileAction extends waViewAction
     }
 
     /**
+     * @param waContactForm $form
+     * @param waContact $contact
      * @return bool
      */
     protected function saveFromPost($form, $contact)

@@ -1096,7 +1096,7 @@ body.tv #d-activity-wrapper {
   display: none;
 }
 body.tv .d-page-wrapper .d-content-wrapper .d-widgets-wrapper .widget-group-wrapper .widget-wrapper .widget-outer-container .widget-inner-container .widget-block {
-  background: #fff;
+  background: #333;
 }
 @media (max-width: 676px) {
   .d-page-wrapper .d-content-wrapper .d-widgets-wrapper {
