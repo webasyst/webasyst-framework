@@ -112,6 +112,7 @@
 
         $('.wa-theme-globalnav').on('mouseover', function () {
             $('#wa-theme-list').css('display', '');
+            $('#wa-app').css('overflow', 'visible');
         });
 
         var waDesignHash = function (url) {
@@ -171,7 +172,12 @@
                 if (set_active_only) {
                     return false;
                 }
-                var hash = location.hash;
+                var current_action = $('#wa-design-menu > li.selected').data('action');
+                if (typeof(current_action) !== 'undefined'){
+                    var hash = href+'&action='+current_action;
+                } else {
+                    var hash = href;
+                }
                 if (hash.indexOf('theme=') !== -1) {
                     if (hash.indexOf('action=settings') !== -1) {
                         if (!params['route']) {
