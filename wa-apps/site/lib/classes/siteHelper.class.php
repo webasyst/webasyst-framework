@@ -11,7 +11,7 @@ class siteHelper
     {
         if (!self::$domains) {
             $domain_model = new siteDomainModel();
-            $q = $domain_model->select('*');
+            $q = $domain_model->select('*')->order('id');
             if (!wa()->getUser()->isAdmin('site')) {
                 $domain_ids = wa()->getUser()->getRights('site', 'domain.%', false);
                 if ($domain_ids) {
