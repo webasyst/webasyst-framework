@@ -28,7 +28,9 @@ abstract class webasystCreateCliController extends waCliController
     protected function showHelp()
     {
         echo <<<HELP
+
 Hint: use wa-config/developer.php to setup common defaults e.g. vendor, version
+
 HELP;
 
     }
@@ -48,7 +50,7 @@ HELP;
     {
         $errors = array();
         if (!preg_match('@^[a-z][a-z0-9]+$@', $this->app_id)) {
-            $errors[] = "Invalid plugin ID";
+            $errors[] = "Invalid app ID";
         }
         return $errors;
     }

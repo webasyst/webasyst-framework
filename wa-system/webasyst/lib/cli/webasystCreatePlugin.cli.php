@@ -16,6 +16,7 @@ Optional parameters:
     -vendor (Numerical vendor id)
     -frontend (Has frontend)
     -settings (Implements custom settings screen)
+    -disable (1|true) not enable plugin at wa-config/apps/app_id/plugins.php
 Example: php wa.php createPlugin someapp myplugin -name 'My plugin' -version 1.0.0 -vendor 123456 -frontend -settings
 HELP;
         parent::showHelp();
@@ -38,22 +39,28 @@ HELP;
     protected function verifyParams($params = array())
     {
         $errors = parent::verifyParams($params);
-        if (!empty($params['version']) && !preg_match('@^[\d]+(\.\d+)*$@', $params['version'])) {
-            $errors[] = 'Invalid version format';
+
+        if (!preg_match('@^[a-z][a-z0-9]+$@', $this->plugin_id)) {
+            $errors[] = "Invalid plugin ID";
         }
-        if ($info = wa()->getAppInfo($this->app_id)) {
-            if (empty($info['plugins'])) {
-                $errors[] = "Application '{$this->app_id}' doesn't support plugins";
-            } else {
-                if (!preg_match('@^[a-z][a-z0-9]+$@', $this->plugin_id)) {
-                    $errors[] = "Invalid plugin ID";
-                }
-                if (isset($params['frontend']) && empty($info['frontend'])) {
-                    $errors[] = "Invalid option frontend, application {$this->app_id} doesn't support frontend";
-                }
+        if (empty($errors)) {
+            if (!empty($params['version']) && !preg_match('@^[\d]+(\.\d+)*$@', $params['version'])) {
+                $errors[] = 'Invalid version format';
             }
-        } else {
-            $errors[] = "Application not found";
+            if ($info = wa()->getAppInfo($this->app_id)) {
+                if (empty($info['plugins'])) {
+                    $errors[] = "Application '{$this->app_id}' doesn't support plugins";
+                } else {
+                    if (!preg_match('@^[a-z][a-z0-9]+$@', $this->plugin_id)) {
+                        $errors[] = "Invalid plugin ID";
+                    }
+                    if (isset($params['frontend']) && empty($info['frontend'])) {
+                        $errors[] = "Invalid option frontend, application {$this->app_id} doesn't support frontend";
+                    }
+                }
+            } else {
+                $errors[] = "Application not found";
+            }
         }
         return $errors;
     }
@@ -120,6 +127,14 @@ HELP;
         $this->createStructure($paths);
         $this->protect($protected_paths);
 
+        if (!isset($params['disable'])) {
+            $this->installPlugin();
+            $errors = $this->flushCache();
+            if ($errors) {
+                print "Error during delete cache files:\n\t".implode("\n\t", $errors)."\n";
+            }
+        }
+
         return $config;
     }
 
@@ -145,7 +160,7 @@ PHP;
 
     protected function showReport($data = array())
     {
-            echo <<<REPORT
+        echo <<<REPORT
 Plugin with id "$this->plugin_id" created!
 
 Useful commands:
@@ -155,5 +170,19 @@ Useful commands:
     #generate plugin's locale files
     php wa-system/locale/locale.php $this->app_id/plugins/$this->plugin_id
 REPORT;
+    }
+
+    private function installPlugin()
+    {
+        $path = wa()->getConfig()->getConfigPath('plugins.php', true, $this->app_id);
+        $plugins = null;
+        if (file_exists($path)) {
+            $plugins = include($path);
+        }
+        if (!is_array($plugins)) {
+            $plugins = array();
+        }
+        $plugins[$this->plugin_id] = true;
+        waUtils::varExportToFile($plugins, $path);
     }
 }

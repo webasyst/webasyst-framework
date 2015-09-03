@@ -11,13 +11,22 @@ Usage: php wa.php createWidget [app_id] [widget_id] [parameters]
     app_id - App id (string in lower case)
     widget_id - Widget id (string in lower case)
 Optional parameters:
-    -name (Plugin name; if comprised of several words, enclose in quotes; e.g., 'My plugin')
+    -name (Plugin name; if comprised of several words, enclose in quotes; e.g., 'My widget')
     -version (Plugin version; e.g., 1.0.0)
     -vendor (Numerical vendor id)
     -settings (has settings)
-Example: php wa.php createPlugin someapp mywidget -name 'My widget' -version 1.0.0 -vendor 123456 -settings
+Example: php wa.php createWidget someapp mywidget -name 'My widget' -version 1.0.0 -vendor 123456 -settings
 HELP;
         parent::showHelp();
+    }
+
+    protected function verifyParams($params = array())
+    {
+        $errors = array();
+        if (!preg_match('@^[a-z][a-z0-9]+$@', $this->widget_id)) {
+            $errors[] = "Invalid widget ID";
+        }
+        return $errors;
     }
 
     protected function create($params = array())
@@ -71,7 +80,7 @@ HELP;
     {
         parent::initPath();
         if ($this->app_id == 'webasyst') {
-            $this->path = wa()->getConfig()->getPath('widgets').'/'.$this->widget_id;
+            $this->path = wa()->getConfig()->getPath('widgets').'/'.$this->widget_id.'/';
         } else {
             $this->path = wa()->getAppPath('widgets/'.$this->widget_id, $this->app_id).'/';
         }

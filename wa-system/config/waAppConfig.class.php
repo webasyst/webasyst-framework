@@ -252,6 +252,11 @@ class waAppConfig extends SystemConfig
         if (file_exists($this->getAppPath().'/lib/config/factories.php')) {
             $this->factories = include($this->getAppPath().'/lib/config/factories.php');
         }
+        if (!empty($this->options['factories']) && is_array($this->options['factories'])) {
+            foreach ($this->options['factories'] as $k => $v) {
+                $this->factories[$k] = $v;
+            }
+        }
     }
 
     public function checkUpdates()

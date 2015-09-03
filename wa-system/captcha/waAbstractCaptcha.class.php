@@ -34,9 +34,10 @@ abstract class waAbstractCaptcha
     /**
      * @abstract
      * @param string $code
+     * @param string $error
      * @return bool
      */
-    abstract public function isValid($code = null);
+    abstract public function isValid($code = null, &$error = '');
 
     /**
      * @abstract
