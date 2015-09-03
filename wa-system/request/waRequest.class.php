@@ -23,6 +23,11 @@ class waRequest
 
     protected static $params = array();
 
+    /**
+     * @var bool Is request from mobile device?
+     */
+    protected static $mobile;
+
     public function __construct()
     {
     }
@@ -206,6 +211,10 @@ class waRequest
      */
     public static function isMobile($check = true)
     {
+        if (self::$mobile !== null) {
+            return self::$mobile;
+        }
+ 
         if ($check) {
             if (self::get('nomobile') !== null) {
                 if (self::get('nomobile')) {
@@ -217,6 +226,7 @@ class waRequest
                 waSystem::getInstance()->getStorage()->remove('nomobile');
             }
             if (waSystem::getInstance()->getStorage()->read('nomobile')) {
+                self::$mobile = false;
                 return false;
             }
         }
@@ -224,29 +234,33 @@ class waRequest
 
         $desktop_platforms = array(
             'ipad'       => 'ipad',
-            'galaxy-tab' => 'android.*?GT\-P'
+            'galaxy-tab' => 'android.*?GT\-P',
+            'bot'        => '(googlebot\b|facebot|yandexbot|bingbot|twitterbot)',
         );
         foreach ($desktop_platforms as $pattern) {
             if (preg_match('/'.$pattern.'/i', $user_agent)) {
+                self::$mobile = false;
                 return false;
             }
         }
 
         $mobile_platforms = array(
             "android"    => "android",
-            "blackberry" => "blackberry",
+            "blackberry" => "(blackberry|rim tablet os)",
             "iphone"     => "(iphone|ipod)",
-            "opera"      => "opera (mini|mobi)",
-            "palm"       => "(avantgo|blazer|elaine|hiptop|palm|plucker|xiino)",
+            "opera"      => "opera (mini|mobi|mobile)",
+            "palm"       => "(palmos|avantgo|blazer|elaine|hiptop|palm|plucker|xiino)",
             "windows"    => "windows\sce;\s(iemobile|ppc|smartphone)",
             "generic"    => "(kindle|mobile|mmp|midp|o2|pda|pocket|psp|symbian|smartphone|treo|up.browser|up.link|vodafone|wap)"
         );
         foreach ($mobile_platforms as $id => $pattern) {
             if (preg_match('/'.$pattern.'/i', $user_agent)) {
+                self::$mobile = $id;
                 return $id;
             }
         }
 
+        self::$mobile = false;
         return false;
     }
 
