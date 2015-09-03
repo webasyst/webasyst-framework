@@ -144,6 +144,39 @@ abstract class waShipping extends waSystemPlugin
     }
 
     /**
+     * Checks a specified address in accordance with the rules returned by waShipping::allowedAddress
+     *
+     * @param array $address
+     * @return bool
+     */
+    public function isAllowedAddress($address = array())
+    {
+        $match = true;
+        foreach ($this->allowedAddress() as $address) {
+            $match = true;
+            foreach ($address as $field => $value) {
+                if (!empty($value) && !empty($this->address[$field])) {
+                    $expected = mb_strtolower($this->address[$field]);
+                    if (is_array($value)) {
+                        if (!in_array($expected, array_map('mb_strtolower', $value))) {
+                            $match = false;
+                            break;
+                        }
+                    } elseif ($expected != mb_strtolower($value)) {
+                        $match = false;
+                        break;
+                    }
+                }
+            }
+            if ($match) {
+                break;
+            }
+        }
+
+        return $match;
+    }
+
+    /**
      *
      * Returns available shipping options info, rates, and estimated delivery times
      * @param array $items
@@ -176,28 +209,7 @@ abstract class waShipping extends waSystemPlugin
         }
         $this->params = array_merge($this->params, $params);
         try {
-            $match = true;
-            foreach ($this->allowedAddress() as $address) {
-                $match = true;
-                foreach ($address as $field => $value) {
-                    if (!empty($value) && !empty($this->address[$field])) {
-                        $expected = mb_strtolower($this->address[$field]);
-                        if (is_array($value)) {
-                            if (!in_array($expected, array_map('mb_strtolower', $value))) {
-                                $match = false;
-                                break;
-                            }
-                        } elseif ($expected != mb_strtolower($value)) {
-                            $match = false;
-                            break;
-                        }
-                    }
-                }
-                if ($match) {
-                    break;
-                }
-            }
-            $rates = $match ? $this->addItems($items)->calculate() : false;
+            $rates = $this->isAllowedAddress($address) ? $this->addItems($items)->calculate() : false;
         } catch (waException $ex) {
             $rates = $ex->getMessage();
         }
