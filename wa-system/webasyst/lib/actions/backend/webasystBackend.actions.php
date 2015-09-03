@@ -14,20 +14,10 @@ class webasystBackendActions extends waViewActions
     public function defaultAction()
     {
         try {
-            $dashboard_type = waRequest::get('dashboard_type');
-
-            $this->setLayout(new webasystBackendLayout());
-
-            $this->view->assign("username", wa()->getUser()->getName());
-
-            $this->dashboardAction();
             $this->action = 'dashboard';
-            return;
-
-            $template_file = wa()->getDataPath('templates/BackendDefault.html', false, 'webasyst');
-            if (file_exists($template_file)) {
-                $this->template = 'file:'.$template_file;
-            }
+            $this->setLayout(new webasystBackendLayout());
+            $this->view->assign("username", wa()->getUser()->getName());
+            $this->dashboardAction();
         } catch (waException $e) {
             throw $e;
             // user not exists
@@ -51,6 +41,11 @@ class webasystBackendActions extends waViewActions
             foreach ($apps as $app_id => $app) {
                 if (($app_id == 'webasyst') || $this->getUser()->getRights($app_id, 'backend')) {
                     foreach (wa($app_id)->getConfig()->getWidgets() as $w_id => $w) {
+                        if (!empty($w['rights'])) {
+                            if (!waWidget::checkRights($w['rights'])) {
+                                continue;
+                            }
+                        }
                         if (!empty($w['locale']) && ($w['locale'] != $locale)) {
                             continue;
                         }
@@ -92,6 +87,12 @@ class webasystBackendActions extends waViewActions
                 if (isset($app_widgets[$row['widget']])) {
                     $row['size'] = explode('x', $row['size']);
                     $row = $row + $app_widgets[$row['widget']];
+                    if (!empty($row['rights'])) {
+                        if (!waWidget::checkRights($row['rights'])) {
+                            continue;
+                        }
+                    }
+                    $row['href'] = wa()->getAppUrl($row['app_id'])."?widget={$row['widget']}&id={$row['id']}";
                     foreach ($row['sizes'] as $s) {
                         if ($s == array(1, 1)) {
                             $row['has_sizes']['small'] = true;

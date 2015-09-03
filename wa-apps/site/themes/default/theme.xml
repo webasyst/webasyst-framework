@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE theme PUBLIC "wa-app-theme" "http://www.webasyst.com/wa-content/xml/wa-app-theme.dtd">
-<theme id="default" system="0" vendor="webasyst" author="Webasyst" app="site" version="3.0.0">
+<theme id="default" system="0" vendor="webasyst" author="Webasyst" app="site" version="3.1.0">
     <name locale="en_US">Default 3.0</name>
     <name locale="ru_RU">Дефолт 3.0</name>
     <description locale="en_US">Adaptive design theme for all base Webasyst apps</description>
@@ -74,19 +74,62 @@
 ]]>
     </about>
     <settings>
+        <setting var="logo" control_type="image">
+            <value></value>
+            <filename>img/logo.*</filename>
+            <name locale="en_US">Logo</name>
+            <name locale="ru_RU">Логотип</name>
+        </setting>
+        <setting var="header_links" control_type="select">
+            <value>wa-apps</value>
+            <name locale="ru_RU">Ссылки в верхнем меню</name>
+            <name locale="en_US">Header links</name>
+            <description locale="ru_RU">Ссылки верхнего меню навигации могут определяться либо основной структурой сайта (меню {$wa->apps()} настраивается в приложении «Сайт» в разделе «Настройки»), либо информационным страницами выбранного приложения</description>
+            <description locale="en_US">Top header menu links will be displayed according to the site core structure (as defined in the Site app > Settings > {$wa->apps()}) or the list of selected app info pages</description>
+            <options>
+                <option value="wa-apps">
+                    <name locale="ru_RU">Приложение «Сайт» > Настройки > {$wa->apps()}</name>
+                    <name locale="en_US">Site app > Settings > {$wa->apps()}</name>
+                </option>
+                <option value="site-pages">
+                    <name locale="ru_RU">Страницы приложения «Сайт»</name>
+                    <name locale="en_US">Site app pages</name>
+                </option>
+                <option value="shop-pages">
+                    <name locale="ru_RU">Страницы приложения «Магазин»</name>
+                    <name locale="en_US">Shop app pages</name>
+                </option>
+                <option value="blog-pages">
+                    <name locale="ru_RU">Страницы приложения «Блог»</name>
+                    <name locale="en_US">Blog app pages</name>
+                </option>
+                <option value="photos-pages">
+                    <name locale="ru_RU">Страницы приложения «Фото»</name>
+                    <name locale="en_US">Photos app pages</name>
+                </option>
+                <option value="hub-pages">
+                    <name locale="ru_RU">Страницы приложения «Хаб»</name>
+                    <name locale="en_US">Hub app pages</name>
+                </option>
+                <option value="none">
+                    <name locale="ru_RU">Не показывать</name>
+                    <name locale="en_US">None</name>
+                </option>
+            </options>
+        </setting>
         <setting var="header_scheme" control_type="image_select">
             <value>img/themesettings/black.png</value>
-            <name locale="ru_RU">Верхнее меню</name>
-            <name locale="en_US">Top menu</name>
+            <name locale="ru_RU">Цвет фона верхнего меню</name>
+            <name locale="en_US">Header background</name>
             <options>
                 <option value="img/themesettings/black.png"></option>
                 <option value="img/themesettings/white.png"></option>
             </options>
         </setting>
         <setting var="color_scheme" control_type="image_select">
-            <value>img/themesettings/red.png</value>
+            <value>img/themesettings/white.png</value>
             <name locale="ru_RU">Цветовая схема</name>
-            <name locale="en_US">Color scheme</name>
+            <name locale="en_US">Subheader background</name>
             <options>
                 <option value="img/themesettings/green.png"></option>
                 <option value="img/themesettings/blue.png"></option>
@@ -97,13 +140,13 @@
                 <option value="img/themesettings/pink.png"></option>
                 <option value="img/themesettings/cyan.png"></option>
                 <option value="img/themesettings/lime.png"></option>
-                <option value="img/themesettings/brown.png"></option>
+                <option value="img/themesettings/white.png"></option>
             </options>
         </setting>
         <setting var="color_custom" control_type="color">
             <value></value>
             <name locale="ru_RU">Свой цвет</name>
-            <name locale="en_US">Custom color</name>
+            <name locale="en_US">Header custom background</name>
         </setting>
         <setting var="font_family" control_type="select">
             <value></value>
@@ -157,7 +200,7 @@
         </setting>
         <setting var="pagination" control_type="select">
             <value>lazyloading</value>
-            <name locale="en_US">Long lists</name>
+            <name locale="en_US">Long lists display</name>
             <name locale="ru_RU">Длинные списки</name>
             <options>
                 <option value="lazyloading">
@@ -173,8 +216,8 @@
 
         <setting var="divider_social" control_type="group_divider">
             <value></value>
-            <name locale="en_US">Social</name>
-            <name locale="ru_RU">Соцсети</name>
+            <name locale="en_US">Social widgets</name>
+            <name locale="ru_RU">Виджеты соцсетей</name>
         </setting>
         <setting var="facebook_likebox_code" control_type="text">
             <value locale="en_US"><![CDATA[<div id="fb-root"></div>
@@ -225,6 +268,56 @@ VK.Widgets.Group("vk_groups", {mode: 0, width: "260", height: "400", color1: 'FF
             <description locale="en_US">Embed your VK community widget code here. Code can be obtained on VK website: http://vk.com/dev/Community</description>
             <description locale="ru_RU">Поместите в это поле код виджета вашего сообщества во Вконтакте. Код можно получить на сайте соцсети http://vk.com/dev/Community</description>
         </setting>
+        
+        <setting var="divider_footer" control_type="group_divider">
+            <value></value>
+            <name locale="en_US">Footer</name>
+            <name locale="ru_RU">«Подвал» сайта</name>
+        </setting>
+        <setting var="footer_links" control_type="checkbox">
+            <value>1</value>
+            <name locale="ru_RU">Ссылки в «подвале» сайта</name>
+            <name locale="en_US">Footer links</name>
+            <description locale="ru_RU"><![CDATA[В подвале будут показаны ссылки на ваши страницы в соцсетях, а также ссылки на основные разделы вашего сайта (разделы автоматически определяются набором установленных приложений Webasyst). При необходимости отредактировать ссылки в подвале сайта вы можете в шаблоне дизайна index.html в блоке &lt;!-- FOOTER --&gt;.]]></description>
+            <description locale="en_US"><![CDATA[Enable this option to display links to your company’s social network resources and links to core site sections (according to Webasyst apps installed in your account). When needed, edit footer links in the index.html template file under the &lt;!-- FOOTER --&gt; section.]]></description>
+        </setting>
+        <setting var="footer_note" control_type="text">
+            <name locale="en_US">Footer custom text note</name>
+            <name locale="ru_RU">Дополнительный текст в «подвале» сайта</name>
+            <value locale="en_US">Delivering awesomeness since 2015. All rights reserved.</value>
+            <value locale="ru_RU">При использовании материалов с сайта обязательно указание прямой ссылки на источник.</value>
+            <description locale="ru_RU">Дополнительная подсказка посетителям вашего сайта (и поисковым системам).</description>
+            <description locale="en_US">Add a disclaimer or a hint to your site visitors (and search engines too).</description>
+        </setting>
+        <setting var="facebook" control_type="text">
+            <value locale="en_US">https://www.facebook.com/Webasyst</value>
+            <value locale="ru_RU">https://www.facebook.com/Webasyst.RU</value>
+            <name locale="en_US">Facebook page URL</name>
+            <name locale="ru_RU">Адрес страницы в Фейсбуке</name>
+        </setting>
+        <setting var="twitter" control_type="text">
+            <value locale="en_US">https://twitter.com/webasyst</value>
+            <value locale="ru_RU">https://twitter.com/webasyst_ru</value>
+            <name locale="en_US">Twitter URL</name>
+            <name locale="ru_RU">Адрес в Твиттере</name>
+        </setting>
+        <setting var="vk" control_type="text">
+            <value locale="en_US"></value>
+            <value locale="ru_RU">https://vk.com/webasyst_ru</value>
+            <name locale="en_US">VK.com page URL</name>
+            <name locale="ru_RU">Адрес страницы или группы во Вконтакте</name>
+        </setting>
+        <setting var="instagram" control_type="text">
+            <value>#</value>
+            <name locale="en_US">Instagram feed URL</name>
+            <name locale="ru_RU">Адрес в Инстаграме</name>
+        </setting>
+        <setting var="youtube" control_type="text">
+            <value>#</value>
+            <name locale="en_US">Youtube channel URL</name>
+            <name locale="ru_RU">Адрес канала YouTube</name>
+        </setting>
+        
     </settings>
     <locales>
         <locale>

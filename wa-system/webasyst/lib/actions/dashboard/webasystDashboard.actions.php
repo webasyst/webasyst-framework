@@ -37,7 +37,6 @@ class webasystDashboardActions extends waActions
         $this->displayJson(array('result' => 1));
     }
 
-
     public function sidebarAction()
     {
         $apps = array('webasyst' => wa()->getAppInfo('webasyst'))  + wa()->getUser()->getApps();
@@ -47,6 +46,11 @@ class webasystDashboardActions extends waActions
         $widgets = array();
         foreach ($apps as $app_id => $app) {
             foreach (wa($app_id)->getConfig()->getWidgets() as $w_id => $w) {
+                if (!empty($w['rights'])) {
+                    if (!waWidget::checkRights($w['rights'])) {
+                        continue;
+                    }
+                }
                 if (!empty($w['locale']) && ($w['locale'] != $locale)) {
                     continue;
                 }

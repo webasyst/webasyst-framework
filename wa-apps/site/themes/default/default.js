@@ -5,18 +5,14 @@
 
     var storage = {
         activeClass: "submenu-is-shown",
+        activeShadowClass: "is-shadow-shown",
         showTime: 200,
-        $last_li: false,
-        getMain: function() {
-            return $(".maincontent");
-        },
-        getFooter: function() {
-            return $(".globalfooter");
-        }
+        $last_li: false
     };
 
     var bindEvents = function() {
-        var $selector = $(".flyout-nav > li");
+        var $selector = $(".flyout-nav > li"),
+            links = $selector.find("> a");
 
         $selector.on("mouseenter", function() {
             showSubMenu( $(this) );
@@ -26,21 +22,69 @@
             hideSubMenu( $(this) );
         });
 
-        $selector.on("click", function() {
-            var $li = $(this),
-                is_active = $li.hasClass(storage.activeClass);
+        links.on("click", function() {
+            onClick( $(this).closest("li") );
+        });
 
-            if (is_active) {
-                var href = $li.find("> a").attr("href");
-                if ( href && (href !== "javascript:void(0);") ) {
-                    hideSubMenu( $li );
-                }
+        links.each( function() {
+            var link = this,
+                $li = $(link).closest("li"),
+                has_sub_menu = ( $li.find(".flyout").length );
 
-            } else {
-                showSubMenu( $li );
+            if (has_sub_menu) {
+                link.addEventListener("touchstart", function(event) {
+                    onTouchStart(event, $li );
+                }, false);
             }
         });
 
+        $("body").get(0).addEventListener("touchstart", function(event) {
+            onBodyClick(event, $(this));
+        }, false);
+
+    };
+
+    var onBodyClick = function(event) {
+        var activeBodyClass = storage.activeShadowClass,
+            is_click_on_shadow = ( $(event.target).hasClass(activeBodyClass) );
+
+        if (is_click_on_shadow) {
+            var $active_li = $(".flyout-nav > li." + storage.activeClass).first();
+
+            if ($active_li.length) {
+                hideSubMenu( $active_li );
+            }
+        }
+    };
+
+    var onClick = function( $li ) {
+        var is_active = $li.hasClass(storage.activeClass);
+
+        if (is_active) {
+            var href = $li.find("> a").attr("href");
+            if ( href && (href !== "javascript:void(0);") ) {
+                hideSubMenu( $li );
+            }
+
+        } else {
+            showSubMenu( $li );
+        }
+    };
+
+    var onTouchStart = function(event, $li) {
+        event.preventDefault();
+
+        var is_active = $li.hasClass(storage.activeClass);
+
+        if (is_active) {
+            hideSubMenu( $li );
+        } else {
+            var $last_li = $(".flyout-nav > li." +storage.activeClass);
+            if ($last_li.length) {
+                storage.$last_li = $last_li;
+            }
+            showSubMenu( $li );
+        }
     };
 
     var showSubMenu = function( $li ) {
@@ -84,16 +128,13 @@
     };
 
     var toggleMainOrnament = function($toggle) {
-        var $main = storage.getMain(),
-            $footer = storage.getFooter();
+        var $body = $("body"),
+            activeClass = storage.activeShadowClass;
 
         if ($toggle) {
-            $main.addClass(storage.activeClass);
-            $footer.addClass(storage.activeClass);
-
+            $body.addClass(activeClass);
         } else {
-            $main.removeClass(storage.activeClass);
-            $footer.removeClass(storage.activeClass);
+            $body.removeClass(activeClass);
         }
     };
 
@@ -123,7 +164,7 @@ $(document).ready(function() {
             var _logo_height = $('#logo').height();
             var _logo_vertical_shift = Math.round((_logo_height-25)/2);
             
-            $('#header-container').css('padding-top', _logo_vertical_shift+'px');
+            $('#globalnav').css('padding-top', _logo_vertical_shift+'px');
             $('#logo').css('margin-top', '-'+_logo_vertical_shift+'px');
         
         });
