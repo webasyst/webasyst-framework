@@ -33,8 +33,7 @@ $.wa = $.extend(true, $.wa, {
 		if (!(hash instanceof String) && hash.toString) {
 			hash = hash.toString();
 		}
-		hash = hash.replace(/\/\//g, "/");
-		hash = hash.replace(/^.*#/, '');
+		hash = hash.replace(/\/\//g, "/").replace(/^.*#/, '');
 		if ($.browser && $.browser.safari) {
 			// Work around bug in safari 5.0.5 and down that broke UTF8 hashes
 			if (parent) {
@@ -210,16 +209,17 @@ $.wa = $.extend(true, $.wa, {
 		dialog = $(dialog);
 
 		// Have to adjust width and height via JS because of min-width and min-height properties.
-		var wdw = dialog.find('.dialog-window');
+		var wdw = dialog.find('.dialog-window'),
 
-		var dw = wdw.outerWidth(true);
-		var dh = wdw.outerHeight(true);
+			dw = wdw.outerWidth(true),
+			dh = wdw.outerHeight(true),
 
-		var ww = $(window).width();
-		var wh = $(window).height();
+			wind = $(window),
+			ww = wind.width(),
+			wh = wind.height(),
 
-		var w = (ww-dw)/2 / ww;
-		var h = (wh-dh)/2 / wh;
+			w = (ww-dw)/2 / ww,
+			h = (wh-dh)/2 / wh;
 
 		wdw.css({
 			'left': Math.round(w*100)+'%',
@@ -275,16 +275,14 @@ $.wa = $.extend(true, $.wa, {
 		var onBlur = function() {
 			var v = input.val();
 			if (!v || v == defValue) {
-				input.val(defValue);
-				input.addClass(cssClass);
+				input.val(defValue).addClass(cssClass);
 			}
 		};
 		onBlur();
 		input.blur(onBlur);
 		input.focus(function() {
 			if (input.hasClass(cssClass)) {
-				input.removeClass(cssClass);
-				input.val('');
+				input.removeClass(cssClass).val('');
 			}
 		});
 	},
