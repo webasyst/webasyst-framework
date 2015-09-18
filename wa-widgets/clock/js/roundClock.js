@@ -8,7 +8,7 @@ var RoundClock;
 
     var radians = 0.0174532925;
 
-    var getMargin = function(that, widget_size ) {
+    var getMargin = function(that, widget_size, widget_min_side ) {
         var margin = 0;
 
         if (widget_size === "1x1") {
@@ -16,6 +16,8 @@ var RoundClock;
 
             if (that.show_town) {
                 margin = 10;
+            } else if (widget_min_side < 150) {
+                margin = 15;
             }
         }
 
@@ -24,6 +26,8 @@ var RoundClock;
 
             if (that.show_town) {
                 margin = 10;
+            } else if (widget_min_side < 300) {
+                margin = 15;
             }
         }
 
@@ -32,6 +36,8 @@ var RoundClock;
 
             if (that.show_town) {
                 margin = 20;
+            } else if (widget_min_side < 300) {
+                margin = 15;
             }
         }
 
@@ -96,10 +102,10 @@ var RoundClock;
         that.$wrapper = d3.select("#round-clock-" + that.widget_id);
 
         // Vars
-        that.margin = getMargin(that, options.size);
         that.node_width = parseInt(that.$widget.offsetWidth);
         that.node_height = getNodeHeight(that, options.size);
         that.min_side = ( Math.min.apply(Math, [that.node_width, that.node_height]) );
+        that.margin = getMargin(that, options.size, that.min_side);
         that.width = that.min_side - ( that.margin * 2 );
         that.height = that.min_side - ( that.margin * 2 );
         that.clockRadius = ( Math.min.apply(Math, [that.width, that.height]) ) / 2;

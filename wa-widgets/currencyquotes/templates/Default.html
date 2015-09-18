@@ -1,8 +1,8 @@
 <style>
     #currency-quotes-{$info['id']} .s-currency-quote { display: inline-block; min-width: 49%; position: relative; }
     #currency-quotes-{$info['id']} .cq-cover-block { background: #ccc; opacity: 0.6; }
-    
-    .widget-2x1 .s-currency-quote { text-align: center; padding-top: 25px; }
+
+    .widget-2x1 .s-currency-quote { text-align: center; padding-top: 2rem; }
 </style>
 
 <div class="block" id="currency-quotes-{$info['id']}">
@@ -38,6 +38,9 @@
 <script>
     $(function() {
         $('#currency-quotes-{$info['id']}').click(function(e) {
+            if (location.pathname != {$wa_backend_url|json_encode}) {
+                return false;
+            }
 
             var container = $(this);
             var cover = $('.cq-cover-block', container);
@@ -78,7 +81,7 @@
 
         // run 1 hour updater
         (function() {
-            var timeout = 60000000;         // 1 hour
+            var timeout = 60*60*1000; // 1 hour
             var timer_id = setInterval(function() {
                 var container = $('#currency-quotes-{$info['id']}');
                 if (container.length) {
