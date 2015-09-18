@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE theme PUBLIC "wa-app-theme" "http://www.webasyst.com/wa-content/xml/wa-app-theme.dtd">
-<theme id="default" system="0" vendor="webasyst" author="Webasyst" app="site" version="3.1.0">
+<theme id="default" system="0" vendor="webasyst" author="Webasyst" app="site" version="3.1.1">
     <name locale="en_US">Default 3.0</name>
     <name locale="ru_RU">Дефолт 3.0</name>
     <description locale="en_US">Adaptive design theme for all base Webasyst apps</description>
@@ -120,7 +120,7 @@
         <setting var="header_scheme" control_type="image_select">
             <value>img/themesettings/black.png</value>
             <name locale="ru_RU">Цвет фона верхнего меню</name>
-            <name locale="en_US">Header background</name>
+            <name locale="en_US">Header background color</name>
             <options>
                 <option value="img/themesettings/black.png"></option>
                 <option value="img/themesettings/white.png"></option>
@@ -128,8 +128,8 @@
         </setting>
         <setting var="color_scheme" control_type="image_select">
             <value>img/themesettings/white.png</value>
-            <name locale="ru_RU">Цветовая схема</name>
-            <name locale="en_US">Subheader background</name>
+            <name locale="ru_RU">Цветовая схема основного меню</name>
+            <name locale="en_US">Subheader color scheme</name>
             <options>
                 <option value="img/themesettings/green.png"></option>
                 <option value="img/themesettings/blue.png"></option>
@@ -145,8 +145,14 @@
         </setting>
         <setting var="color_custom" control_type="color">
             <value></value>
-            <name locale="ru_RU">Свой цвет</name>
-            <name locale="en_US">Header custom background</name>
+            <name locale="ru_RU">Свой цвет основного меню</name>
+            <name locale="en_US">Subheader custom color</name>
+        </setting>
+        <setting var="header_custom_image" control_type="image">
+            <value></value>
+            <filename>img/header.*</filename>
+            <name locale="ru_RU">Свой фон основного меню</name>
+            <name locale="en_US">Subheader custom image</name>
         </setting>
         <setting var="font_family" control_type="select">
             <value></value>
@@ -212,6 +218,13 @@
                     <name locale="en_US">1 2 3 4: Paginated lists</name>
                 </option>
             </options>
+        </setting>
+        <setting var="admin_sidebar" control_type="checkbox">
+            <value>1</value>
+            <name locale="ru_RU">Боковая панель администратора</name>
+            <name locale="en_US">Admin sidebar</name>
+            <description locale="ru_RU">Боковая панель видна только авторизованным пользователям Webasyst и позволяет наглядно предпросматривать основные настройки темы дизайна «Дефолт 3.0» и переходить к редактированию данных в бекенд.</description>
+            <description locale="en_US">Admin sidebar allows you to quickly preview Default 3.0 theme base  settings and to easily proceed to backend for editing published data. Visible to Webasyst backend administrators only.</description>
         </setting>
 
         <setting var="divider_social" control_type="group_divider">
@@ -282,10 +295,10 @@ VK.Widgets.Group("vk_groups", {mode: 0, width: "260", height: "400", color1: 'FF
             <description locale="en_US"><![CDATA[Enable this option to display links to your company’s social network resources and links to core site sections (according to Webasyst apps installed in your account). When needed, edit footer links in the index.html template file under the &lt;!-- FOOTER --&gt; section.]]></description>
         </setting>
         <setting var="footer_note" control_type="text">
-            <name locale="en_US">Footer custom text note</name>
-            <name locale="ru_RU">Дополнительный текст в «подвале» сайта</name>
             <value locale="en_US">Delivering awesomeness since 2015. All rights reserved.</value>
             <value locale="ru_RU">При использовании материалов с сайта обязательно указание прямой ссылки на источник.</value>
+            <name locale="en_US">Footer custom text note</name>
+            <name locale="ru_RU">Дополнительный текст в «подвале» сайта</name>
             <description locale="ru_RU">Дополнительная подсказка посетителям вашего сайта (и поисковым системам).</description>
             <description locale="en_US">Add a disclaimer or a hint to your site visitors (and search engines too).</description>
         </setting>

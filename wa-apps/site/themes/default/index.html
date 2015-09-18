@@ -58,7 +58,7 @@
     
 </head>
 <body>
-    <header class="globalheader"{if $theme_settings.color_custom} style="background: {$theme_settings.color_custom}"{/if}>
+    <header class="globalheader" style="{if $theme_settings.color_custom}background-color: {$theme_settings.color_custom};{/if}{if $theme_settings.header_custom_image}background-image: url('{$wa_theme_url|cat:$theme_settings.header_custom_image}');{/if}">
     
         {if count($wa->apps())>0 || $wa->isAuthEnabled()}
         
@@ -263,7 +263,9 @@
     </footer>
 
     {* admin-only slideout sidebar for nice and smooth real time theme customizations *}
-    {if $wa->user()->isAdmin()}{include file="admin-sidebar.html" inline}{/if}
+    {if $theme_settings.admin_sidebar}
+        {if $wa->user()->isAdmin()}{include file="admin-sidebar.html" inline}{/if}
+    {/if}
 
 </body>
 </html>

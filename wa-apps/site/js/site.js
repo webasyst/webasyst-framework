@@ -66,7 +66,7 @@ $.wa.site = {
 						} else if (actionName == 'files') {
                             this.filesAction(hash.slice(i).join('/'));
 							return;
-						} else if (parseInt(h, 10) != h && h.indexOf('=') == -1) {
+						} else if (parseInt(h, 10) != h && h.indexOf('=') == -1 && actionName != 'plugins') {
 							actionName += h.substr(0,1).toUpperCase() + h.substr(1);
 						} else {
 							attrMarker = i;
@@ -192,6 +192,17 @@ $.wa.site = {
         }
         return 1;
     },
+
+	pluginsAction: function (params) {
+		this.savePanel(false);
+		if ($('#wa-plugins-container').length) {
+			$.plugins.dispatch(params);
+		} else {
+			$("#s-content").load('?module=plugins', {}, function () {
+				$.wa.site.active($("#s-link-plugins"));
+			});
+		}
+	},
 
 	filesAction: function (load, path) {
 		this.savePanel(false);
