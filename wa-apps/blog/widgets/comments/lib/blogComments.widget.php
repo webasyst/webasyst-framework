@@ -75,8 +75,9 @@ class blogCommentsWidget extends waWidget
         $search_options['approved'] = true;
 
         $comment_model = new blogCommentModel();
-        return $comment_model->getList($search_options, array("photo_url_20"), array(
+        return $comment_model->getList($search_options, array("photo_url_50"), array(
             'datetime' => blogActivity::getUserActivity(),
+            'dont_mark_as_read' => true,
         ));
     }
 }
