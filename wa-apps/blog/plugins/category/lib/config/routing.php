@@ -1,7 +1,8 @@
 <?php
+
 return array(
-    'category/<category>/'=>array(
-        'module'=>'frontend',
-        'search'=>'category',
+    'category/<category>/' => array(
+        'module' => 'frontend',
+        'search' => 'category',
     ),
 );

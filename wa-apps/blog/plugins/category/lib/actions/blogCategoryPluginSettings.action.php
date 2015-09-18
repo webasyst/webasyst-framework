@@ -1,6 +1,6 @@
 <?php
 
-class blogCategoryPluginBackendSettingsAction extends blogPluginsSettingsViewAction
+class blogCategoryPluginSettingsAction extends blogPluginsSettingsViewAction
 {
     public function execute()
     {

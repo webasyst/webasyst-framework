@@ -1,6 +1,6 @@
 <?php
 
-class blogImportPluginBackendSettingsAction extends blogPluginsSettingsViewAction
+class blogImportPluginSettingsAction extends blogPluginsSettingsViewAction
 {
     public function execute()
     {

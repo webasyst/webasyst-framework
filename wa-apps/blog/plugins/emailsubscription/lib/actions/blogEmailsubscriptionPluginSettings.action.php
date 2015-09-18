@@ -1,6 +1,6 @@
 <?php
 
-class blogEmailsubscriptionPluginBackendSettingsAction extends waViewAction
+class blogEmailsubscriptionPluginSettingsAction extends waViewAction
 {
     public function execute()
     {
