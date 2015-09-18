@@ -296,5 +296,6 @@ class waAutoload
         'waPageActions'            => 'page/actions/waPage.actions.php',
 
         'waDesignActions'          => 'design/actions/waDesign.actions.php',
+        'waPluginsActions'         => 'plugin/actions/waPlugins.actions.php',
     );
 }

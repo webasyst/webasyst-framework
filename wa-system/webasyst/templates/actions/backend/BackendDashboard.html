@@ -1,5 +1,6 @@
 {* LOAD RESOURCES *}
 <link rel="stylesheet" href="{$wa_url}wa-content/css/dashboard/dashboard.css?v={$wa->version()}">
+<script src="{$wa_url}wa-content/js/jquery-wa/wa.dialog.js"></script>
 
 <div class="d-page-wrapper" id="d-page-wrapper">
 
@@ -97,4 +98,48 @@
 
         </div>
     </div>
+
+    {if $is_admin}
+
+        {* Dashboard selector *}
+        <div class="d-dashboards-list-wrapper" id="d-dashboards-list-wrapper">
+            <select id="d-dashboards-select" name="">
+                <option value="default_dashboard" selected>[`My dashboard`]</option>
+                <optgroup label="[`Webasyst TV`]">
+                    {foreach $public_dashboards as $d}
+                        <option value="{$d.id}">{$d.name|escape}</option>
+                    {/foreach}
+                    <option value="new_dashboard">[`Create new dashboard...`]</option>
+                </optgroup>
+            </select>
+        </div>
+
+        {* New dashboard dialog *}
+        <div class="dialog width400px height200px" id="dashboard-editor-dialog">
+            <div class="dialog-background"></div>
+            <form action="?module=dashboard&action=dashboardSave">
+                <div class="dialog-window">
+                    <div class="dialog-content">
+                        <div class="dialog-content-indent">
+                            <h1>[`New dashboard`]</h1>
+                            <div class="fields form width100px">
+                                <div class="field">
+                                    <div class="name">[`Dashboard title`]</div>
+                                    <div class="value"><input type="text" name="dashboard[name]" value=""></div>
+                                </div>
+                            </div>
+                            <p class="hint">[`Webasyst TV dashboards look best on 4K and Full HD TVs and can be viewed using any modern web browser by the unique auto-generated secret link.`]</p>
+                        </div>
+                    </div>
+                    <div class="dialog-buttons">
+                        <div class="dialog-buttons-gradient">
+                            <input type="submit" value="[`Save`]" class="button green">
+                            [`or`] <a class="cancel" href="#">[`cancel`]</a>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+    {/if}
 </div>

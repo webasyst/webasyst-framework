@@ -955,7 +955,6 @@ XML;
         foreach ($files as $f_id => $f) {
             if (!empty($f['modified'])) {
                 $modified[] = $f_id;
-                break;
             }
         }
 
@@ -978,12 +977,8 @@ XML;
 
         foreach ($list_files as $f) {
             // ignore files
-            if ($f !== 'build.php') {
-                foreach ((array)$skip_pattern as $pattern) {
-                    if (preg_match($pattern, $f)) {
-                        continue 2;
-                    }
-                }
+            if ($f !== 'build.php' && preg_match($skip_pattern, $f)) {
+                continue;
             }
             // ignore image settings and modified
             if ($f == 'theme.xml' || in_array($f, $img_files) || in_array($f, $modified)) {
@@ -1552,7 +1547,7 @@ HTACCESS;
     }
 
 
-    public function getSettings($values_only = false)
+    public function getSettings($values_only = false, $locale = null)
     {
         $this->init();
         if ($values_only === 'full') {
@@ -1583,7 +1578,7 @@ HTACCESS;
                     unset($o);
                 }
                 if (isset($s['value']) && is_array($s['value'])) {
-                    $s['value'] = $s['value'][self::getLocale($s['value'])];
+                    $s['value'] = $s['value'][self::getLocale($s['value'], $locale)];
                 }
             }
             unset($s);
@@ -1614,9 +1609,11 @@ HTACCESS;
      * @param array $data
      * @return string
      */
-    private static function getLocale($data = array())
+    private static function getLocale($data = array(), $locale = null)
     {
-        $locale = wa()->getLocale();
+        if (!$locale) {
+            $locale = wa()->getLocale();
+        }
         if ($data) {
             if (!isset($data[$locale])) {
                 $locale = 'en_US';

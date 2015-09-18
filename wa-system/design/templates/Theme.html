@@ -217,11 +217,13 @@
                                         <div class="hint">{$s.description}</div>
                                     {/if}
                                 {else}
+                                    <div>
                                     {if !$s.value || strlen($s.value) <= 50}
                                     <input class="flexible" id="flex-settings-{$s@index}" type="text" name="{if !empty($s.parent)}parent_{/if}settings[{$s_var}]" value="{$s.value|escape}">
                                     {else}
                                     <textarea class="flexible" id="flex-settings-{$s@index}" name="{if !empty($s.parent)}parent_{/if}settings[{$s_var}]">{$s.value|escape}</textarea>
                                     {/if}
+                                    </div>
                                     {if !empty($s.description)}
                                     <div class="hint">{$s.description}</div>
                                     {/if}

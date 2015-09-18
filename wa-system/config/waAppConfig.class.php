@@ -274,6 +274,8 @@ class waAppConfig extends SystemConfig
                 if ($row) {
                     $time = $row['value'];
                 }
+            } elseif ($this->application != 'webasyst' && ($this->environment == 'frontend')) {
+                wa('webasyst');
             }
         } catch (waException $e) {
             return;
@@ -774,6 +776,9 @@ class waAppConfig extends SystemConfig
                         }
                         if (isset($plugin_info['frontend']) && $plugin_info['frontend']) {
                             $plugin_info['handlers']['routing'] = 'routing';
+                        }
+                        if (!empty($plugin_info[$this->application.'_settings'])) {
+                            $plugin_info['custom_settings'] = $plugin_info[$this->application.'_settings'];
                         }
                         $this->plugins[$plugin_id] = $plugin_info;
                     }

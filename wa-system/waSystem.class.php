@@ -449,7 +449,16 @@ class waSystem
     public function dispatch()
     {
         try {
-            if (preg_match('/^sitemap-?([a-z0-9_]+)?(-([0-9]+))?.xml$/i', $this->config->getRequestUrl(true), $m)) {
+            $is_dashboard = false;
+            if ($this->getEnv() == 'backend') {
+                $url = explode("/", $this->getConfig()->getRequestUrl(true, true));
+                $is_dashboard = ifset($url[1]) == 'dashboard';
+            }
+
+            if ($is_dashboard) {
+                $webasyst_system = self::getInstance('webasyst', null, true);
+                $webasyst_system->getFrontController()->execute(null, 'dashboard', 'tv');
+            } elseif (preg_match('/^sitemap-?([a-z0-9_]+)?(-([0-9]+))?.xml$/i', $this->config->getRequestUrl(true), $m)) {
                 $app_id = isset($m[1]) ? $m[1] : 'webasyst';
                 if ($this->appExists($app_id)) {
                     self::getInstance($app_id);
@@ -1213,9 +1222,6 @@ class waSystem
         $widget_model = new waWidgetModel();
         $widget = $widget_model->getById($widget_id);
         if ($widget) {
-            if ($widget['contact_id'] != self::getUser()->getId()) {
-                throw new waRightsException(_ws('Access denied'));
-            }
             if ($this->getConfig()->getApplication() != $widget['app_id']) {
                 $path = self::getInstance($widget['app_id'])->getConfig()->getWidgetPath($widget['widget']);
             } else {

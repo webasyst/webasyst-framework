@@ -512,6 +512,7 @@ HTACCESS;
                 'app' => $this->getAppId(),
                 'theme' => $theme_id,
                 'theme_mobile' => $theme_id,
+                'locale' => wa()->getLocale(),
             );
             if ($route['url'] == '*') {
                 $routes[$domain][$route_id] = $route;
@@ -578,9 +579,22 @@ HTACCESS;
             }
         } else {
 
-            $settings = $current_theme->getSettings();
+            $current_locale = null;
+            $routes = $this->getRoutes();
+            $theme_routes = array();
+            $preview_url = false;
+            foreach ($routes as $r) {
+                if ((waRequest::get('route') == $r['_id']) && !empty($r['locale'])) {
+                    $current_locale = $r['locale'];
+                }
+                if (!$preview_url && $r['app'] == $app_id) {
+                    $preview_url = $r['_url'].'?theme_hash='.$this->getThemeHash().'&set_force_theme='.$theme_id;
+                }
+            }
+
+            $settings = $current_theme->getSettings(false, $current_locale);
             if ($current_theme->parent_theme) {
-                $parent_settings = $current_theme->parent_theme->getSettings();
+                $parent_settings = $current_theme->parent_theme->getSettings(false, $current_locale);
                 foreach ($parent_settings as &$s) {
                     $s['parent'] = 1;
                 }
@@ -589,15 +603,6 @@ HTACCESS;
                     $parent_settings[$k] = $v;
                 }
                 $settings = $parent_settings;
-            }
-
-            $routes = $this->getRoutes();
-            $theme_routes = array();
-            $preview_url = false;
-            foreach ($routes as $r) {
-                if (!$preview_url && $r['app'] == $app_id) {
-                    $preview_url = $r['_url'].'?theme_hash='.$this->getThemeHash().'&set_force_theme='.$theme_id;
-                }
             }
 
             foreach ($this->getRoutes(true) as $r) {
@@ -642,6 +647,7 @@ HTACCESS;
             }
 
             $this->display(array(
+                'current_locale' => $current_locale,
                 'routes' => $routes,
                 'domains' => wa()->getRouting()->getDomains(),
                 'preview_url' => $preview_url,
@@ -707,9 +713,9 @@ HTACCESS;
             $theme_id = waRequest::get('theme');
             $theme = new waTheme($theme_id);
             if ($theme->parent_theme && waRequest::post('parent_settings')) {
-                $this->saveThemeSettings($theme->parent_theme, waRequest::post('parent_settings'), waRequest::file('parent_image'));
+                $this->saveThemeSettings($theme->parent_theme, waRequest::post('parent_settings'), waRequest::file('parent_image'), waRequest::post('locale'));
             }
-            $this->saveThemeSettings($theme, waRequest::post('settings', array(), 'array'), waRequest::file('image'));
+            $this->saveThemeSettings($theme, waRequest::post('settings', array(), 'array'), waRequest::file('image'), waRequest::post('locale'));
             $this->displayJson(array());
         } catch (waException $e) {
             $this->displayJson(array(), $e->getMessage());
@@ -722,7 +728,7 @@ HTACCESS;
      * @param waRequestFileIterator $files
      * @throws waException
      */
-    protected function saveThemeSettings(waTheme $theme, $settings, $files)
+    protected function saveThemeSettings(waTheme $theme, $settings, $files, $locale = null)
     {
         if($theme->type == waTheme::ORIGINAL){
             $theme->copy();

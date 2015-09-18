@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WebAsyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2015-08-11 16:25+0300\n"
+"PO-Revision-Date: 2015-09-15 18:56+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -1870,4 +1870,127 @@ msgstr ""
 
 #: /wa-system/webasyst/templates/actions/backend/BackendDashboard.html:55
 msgid "Live stream collects all events from installed apps and presents them in a chronological order."
+msgstr ""
+
+msgid "Apps"
+msgstr ""
+
+msgid "Widgets"
+msgstr ""
+
+#: /wa-system/captcha/recaptcha/waReCaptcha.class.php:57
+msgid "The secret parameter is missing."
+msgstr ""
+
+#: /wa-system/captcha/recaptcha/waReCaptcha.class.php:60
+msgid "The secret parameter is invalid or malformed."
+msgstr ""
+
+#: /wa-system/captcha/recaptcha/waReCaptcha.class.php:63
+msgid "The response parameter is missing."
+msgstr ""
+
+#: /wa-system/captcha/recaptcha/waReCaptcha.class.php:66
+msgid "The response parameter is invalid or malformed."
+msgstr ""
+
+#: /wa-system/controller/waFrontController.class.php:66
+msgid "You don’t have permissions to view this widget"
+msgstr ""
+
+#: /wa-system/design/templates/Theme.html:483
+msgid "%s theme (version %s) for %s app"
+msgstr ""
+
+#: /wa-system/plugin/templates/Plugins.html:20
+msgid "Popular plugins"
+msgstr ""
+
+#: /wa-system/plugin/templates/Plugins.html:39
+msgid "No plugins are installed."
+msgstr ""
+
+#: /wa-system/plugin/templates/Plugins.html:47
+#: /wa-system/plugin/templates/Plugins.html:320
+msgid "Loading..."
+msgstr ""
+
+#: /wa-system/plugin/templates/Plugins.html:165
+msgid "Plugins"
+msgstr ""
+
+#: /wa-system/plugin/templates/Settings.html:26
+msgid "Plugin %s is installed and working."
+msgstr ""
+
+#: /wa-system/plugin/templates/Settings.html:29
+msgid "No configuration options are available for this plugin."
+msgstr ""
+
+#: /wa-system/plugin/templates/Settings.html:36
+msgid "Unknown plugin"
+msgstr ""
+
+#: /wa-system/webasyst/lib/cli/webasystCreateApp.cli.php:278
+msgid "Hello world"
+msgstr ""
+
+#: /wa-system/webasyst/lib/cli/webasystCreateApp.cli.php:283
+msgid "Navigation"
+msgstr ""
+
+#: /wa-system/webasyst/lib/cli/webasystCreateApp.cli.php:286
+msgid "Menu item 1"
+msgstr ""
+
+#: /wa-system/webasyst/lib/cli/webasystCreateApp.cli.php:289
+msgid "Menu item 2"
+msgstr ""
+
+#: /wa-system/webasyst/lib/cli/webasystCreateApp.cli.php:292
+msgid "Menu item 3"
+msgstr ""
+
+#: /wa-system/webasyst/lib/cli/webasystCreateApp.cli.php:301
+msgid "Woohoo, Webasyst app is ready!"
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/backend/BackendDashboard.html:107
+msgid "My dashboard"
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/backend/BackendDashboard.html:108
+msgid "Webasyst TV"
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/backend/BackendDashboard.html:112
+msgid "Create new dashboard..."
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/backend/BackendDashboard.html:124
+msgid "New dashboard"
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/backend/BackendDashboard.html:127
+msgid "Dashboard title"
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/backend/BackendDashboard.html:131
+msgid "Webasyst TV dashboards look best on 4K and Full HD TVs and can be viewed using any modern web browser by the unique auto-generated secret link."
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/dashboard/DashboardEditPublic.html:34
+msgid "Dashboard public link"
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/dashboard/DashboardEditPublic.html:38
+msgid "You are about to permanently delete this dashboard. Are you sure?"
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/dashboard/DashboardEditPublic.html:38
+msgid "Delete dashboard"
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/dashboard/DashboardSidebar.html:16
+msgid "Add widgets"
 msgstr ""
