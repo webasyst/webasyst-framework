@@ -142,9 +142,11 @@ ul.menu-v.categories li.selected a { color: #000; text-decoration: none; font-we
     .subscribe ul li a span { display: none; }
     .subscribe:after { clear: both; }
     .subscribe #twitter-follow-code { display: none; }
+    
+    .sidebar { padding: 0 15px !important; }
      
     .post { margin-right: 0 !important; overflow-x: hidden; }
-    .post h3 { font-size: 1.3em; }
+    .post h3 { font-size: 1.6em; }
     .post img { max-width: 100%; height: auto !important; }
     
     .comment-form-fields label { width: auto; float: none; }

@@ -3,16 +3,20 @@
  * @author Webasyst
  *
  */
-class blogPluginsAction extends waViewAction
+class blogPluginsActions extends waPluginsActions
 {
-    public function execute()
+    protected $plugins_hash = '#';
+    protected $is_ajax = false;
+    protected $shadowed = true;
+
+    public function defaultAction()
     {
         if (!$this->getUser()->isAdmin($this->getApp())) {
             throw new waRightsException(_w('Access denied'));
         }
         $this->getResponse()->setTitle(_w('Plugin settings page'));
-
         $this->setLayout(new blogDefaultLayout());
-        $this->view->assign('plugins', wa()->getConfig()->getPlugins());
+
+        parent::defaultAction();
     }
 }

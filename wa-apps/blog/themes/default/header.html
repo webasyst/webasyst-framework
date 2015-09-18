@@ -7,11 +7,9 @@
     <div class="clear-both"></div>
 </form>
 
-{$blogs = $wa->blog->blogs()}
-{$pages = $wa->blog->pages()}
 <ul class="pages">
 
-    {foreach $blogs as $blog}
+    {foreach $wa->blog->blogs() as $blog}
         <li class="{if $wa->globals('blog_id') eq $blog.id && empty($is_search)}selected{/if}">
             <a href="{$blog.link}">{$blog.name}</a>
         </li>
@@ -21,9 +19,12 @@
         </li>
     {/foreach}
 
-    {foreach $pages as $page}
-        <li{if strlen($page.url)>1 && $wa->currentUrl()|strstr:$page.url} class="selected"{/if}><a href="{$page.url}">{$page.name}</a></li>
-    {/foreach}
+    {if $theme_settings.header_links != 'blog-pages'}
+        {* display static page list in case it was not yet displayed in the core index.html layout template *}
+        {foreach $wa->blog->pages() as $page}
+            <li{if strlen($page.url)>1 && $wa->currentUrl()|strstr:$page.url} class="selected"{/if}><a href="{$page.url}">{$page.name}</a></li>
+        {/foreach}
+    {/if}
     
 </ul>
 
