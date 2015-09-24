@@ -132,3 +132,6 @@
 .tv .round-clock-wrapper .round-clock-block .hands-cover {
   fill: #000;
 }
+.mobile .round-clock-wrapper {
+  font-size: 1rem;
+}

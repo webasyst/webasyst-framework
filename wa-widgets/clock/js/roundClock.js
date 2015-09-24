@@ -9,39 +9,19 @@ var RoundClock;
     var radians = 0.0174532925;
 
     var getMargin = function(that, widget_size, widget_min_side ) {
-        var margin = 0;
+        var margin, modifier = 5;
 
-        if (widget_size === "1x1") {
-            margin = 25;
-
-            if (that.show_town) {
-                margin = 10;
-            } else if (widget_min_side < 150) {
-                margin = 15;
-            }
-        }
-
-        if (widget_size === "2x1") {
-            margin = 25;
-
-            if (that.show_town) {
-                margin = 10;
-            } else if (widget_min_side < 300) {
-                margin = 15;
-            }
+        if ( (widget_size === "1x1") || (widget_size === "2x1") ) {
+            modifier = 5;
         }
 
         if (widget_size === "2x2") {
-            margin = 50;
-
-            if (that.show_town) {
-                margin = 20;
-            } else if (widget_min_side < 300) {
-                margin = 15;
-            }
+            modifier = 8;
         }
 
-        return margin;
+        margin = ( that.show_town ) ?  ( widget_min_side / ( modifier * 2 ) ) : ( widget_min_side / modifier ) ;
+
+        return ( margin > 0 ) ? margin : 0;
     };
 
     var getNodeHeight = function(that, widget_size) {
