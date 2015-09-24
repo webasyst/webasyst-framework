@@ -1234,14 +1234,14 @@ class waSystem
                     if (file_exists($class_filename)) {
                         require_once($class_filename);
                     } else {
-                        throw new waException('Widget '.$widget['widget'].' not found');
+                        throw new waException('Widget '.$widget['widget'].' not found', 404);
                     }
                     $class = $widget['widget'].'Widget';
                 } else {
                     $class = $widget['app_id'] . ucfirst($widget['widget']) . 'Widget';
                 }
                 if (!class_exists($class)) {
-                    throw new waException('Widget class '.$class.' '.$widget['widget'].' not found');
+                    throw new waException('Widget class '.$class.' '.$widget['widget'].' not found', 404);
                 }
                 $widget_config = include($widget_path);
                 $widget = $widget + $widget_config;
@@ -1250,10 +1250,10 @@ class waSystem
                 }
                 return new $class($widget);
             } else {
-                throw new waException('Widget '.$widget['widget'].' not found');
+                throw new waException('Widget '.$widget['widget'].' not found', 404);
             }
         } else {
-            throw new waException('Widget '.$widget_id.' not found');
+            throw new waException('Widget '.$widget_id.' not found', 404);
         }
     }
 

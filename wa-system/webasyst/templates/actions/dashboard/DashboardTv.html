@@ -12,12 +12,12 @@
     <link rel="stylesheet" href="{$wa_url}wa-content/css/dashboard-tv/dashboard-tv.css?v={$wa->version()}">
 </head>
 {strip}
-<body class="tv">
+<body class="tv" style="background:#000">
     <div class="d-page-wrapper" id="d-page-wrapper">
         <div class="d-content-wrapper">
 
             <div class="page-header-wrapper">
-                <div class="page-header">{$dashboard.name|escape}</div>
+                <div class="page-header" data-dashboard-status="{$dashboard_status|escape}">{$dashboard.name|escape}</div>
             </div>
 
             {* WIDGETS *}

@@ -108,7 +108,7 @@ class waWidgetModel extends waModel
                 $sql = 'UPDATE ' . $this->table . '
                         SET block = block + 1
                         WHERE contact_id = i:0
-                            AND dashboard_id IS NULL
+                            AND dashboard_id <=> :2
                             AND block >= i:1';
                 $this->exec($sql, $w['contact_id'], $block, $w['dashboard_id']);
             }

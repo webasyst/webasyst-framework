@@ -275,6 +275,9 @@ var DashboardWidget;
             });
 
             $widgetControls.on("click", ".delete-widget-link", function() {
+                // Hide button
+                $(this).css("visibility","hidden");
+                // Delete
                 that.deleteWidget();
                 return false;
             });
@@ -836,6 +839,13 @@ var DashboardWidget;
                 return false;
             });
 
+            // Custom Dashboard, подцветка при наведении на пустую группу
+            $groups_wrapper.on("dragover", ".ornament-widget-group", function(event) {
+                onEmptyGroupOver(event, $(this), $groups_wrapper );
+                event.preventDefault();
+                return false;
+            });
+
             // Навели на группу
             $groups_wrapper.on("dragenter", ".widget-group-wrapper", function() {
                 onDragEnter( $(this) );
@@ -848,6 +858,12 @@ var DashboardWidget;
                 } else if (storage.newDraggedWidget) {
                     onWidgetListDrop(event, $(this));
                 }
+                event.preventDefault();
+            });
+
+            // Custom Dashboard
+            $groups_wrapper.on("drop", ".ornament-widget-group", function(event) {
+                onEmptyGroupDrop(event);
                 event.preventDefault();
             });
         };
@@ -926,10 +942,7 @@ var DashboardWidget;
             // Marking new group
             if (delta < border_width) {
 
-                if (!$group.hasClass(activeClass)) {
-                    $group.addClass(activeClass);
-                    storage.$hover_group = $group;
-                }
+                markingGroup("border-hover", $group);
 
                 clearWidgetOrnament();
 
@@ -942,9 +955,7 @@ var DashboardWidget;
                         $group.addClass(storage.lockedGroupClass);
                     }
 
-                    // Set Classes to current Group
-                    $group.addClass(storage.hoverGroupClass);
-                    storage.$hover_group = $group;
+                    markingGroup("hover", $group);
                 }
 
                 if (!is_group_locked) {
@@ -1579,6 +1590,52 @@ var DashboardWidget;
             return $deferred;
         };
 
+        // For Custom Dashboard
+        var onEmptyGroupDrop = function(event) {
+            var $group = storage.getWidgetGroups().last();
+
+            if (storage.draggedWidget) {
+                prepareDrop(event, $group);
+
+            } else if (storage.newDraggedWidget) {
+                onWidgetListDrop(event, $group);
+            }
+        };
+
+        var onEmptyGroupOver = function(event, $emptyGroup, $wrapper) {
+            var $lastGroupContainer = $wrapper.find(".widget-group-wrapper").last();
+
+            markingGroup("hover", $lastGroupContainer);
+        };
+
+        var markingGroup = function( type, $group, callback ) {
+            var hoverClass = storage.hoverGroupClass,
+                borderHoverClass = storage.showGroupOrnamentClass,
+                activeClass;
+
+            if (type == "hover") {
+                activeClass = hoverClass;
+
+                if (!$group.hasClass(activeClass)) {
+                    $group.addClass(activeClass);
+                    storage.$hover_group = $group.addClass(activeClass);
+                }
+            }
+
+            if (type == "border-hover") {
+                activeClass = borderHoverClass;
+
+                if (!$group.hasClass(activeClass)) {
+                    $group.addClass(activeClass);
+                    storage.$hover_group = $group.addClass(activeClass);
+                }
+            }
+
+            if (callback && typeof callback == "function") {
+                callback();
+            }
+        };
+
         // Main Initialize
 
         $(document).ready( function() {
@@ -1768,20 +1825,25 @@ var DashboardWidget;
                     return false;
                 }
             });
+            $("#d-widgets-block").on("click", ".widget-wrapper", function(e) {
+                if (e.altKey && (e.ctrlKey || e.metaKey)) {
+                    return false;
+                }
+            });
 
             //$showLink.click();
             //$("body").addClass(storage.dashboardCustomEditClass);
+
+            storage.getPageWrapper().on("click", ".d-delete-dashboard-wrapper a", function() {
+                var $link = $(this),
+                    do_delete = confirm( $link.data("confirm-text") );
+
+                if (do_delete) {
+                    deleteCustomDashboard( $link.data("dashboard-id") );
+                }
+                return false;
+            });
         };
-
-        storage.getPageWrapper().on("click", ".d-delete-dashboard-wrapper a", function() {
-            var $link = $(this),
-                do_delete = confirm( $link.data("confirm-text") );
-
-            if (do_delete) {
-                deleteCustomDashboard( $link.data("dashboard-id") );
-            }
-            return false;
-        });
 
         var onShowLinkClick = function($showLink) {
             var $hideLink = storage.getHideButton(),
@@ -2297,9 +2359,8 @@ var DashboardWidget;
         };
 
         var initDashboardSelect = function() {
-            var $dList = storage.getDashboardsList(),
+            var $dashboardList = storage.getDashboardsList(),
                 $select = getDashboardSelect(),
-                $header = $("#wa-applist"),
                 default_value = $select.find("option").first().val();
 
             storage.dashboardSelectData.default = default_value;
@@ -2307,7 +2368,7 @@ var DashboardWidget;
 
             $select.val(default_value);
 
-            $header.append($dList);
+            $dashboardList.prepend($select);
         };
 
         var changeDashboard = function() {
@@ -2369,15 +2430,16 @@ var DashboardWidget;
         };
 
         var renderDashboardLinks = function( $link, $deleteLink ) {
-            var $groupsWrapper = storage.getGroupsWrapper();
-            //
-            $("#d-dashboard-link-wrapper").remove();
+            var $groupsWrapper = storage.getGroupsWrapper(),
+                $linkWrapper = $("#d-dashboard-link-wrapper"),
+                $linkHTML = $link.html();
+
+            // Link
+            $linkWrapper.html( $linkHTML );
+
+            // Delete
             $("#d-delete-dashboard-wrapper").remove();
-            //
-            $link.attr("id", "d-dashboard-link-wrapper").slideDown(200);
             $deleteLink.attr("id", "d-delete-dashboard-wrapper").slideDown(200);
-            //
-            $groupsWrapper.before( $link );
             $groupsWrapper.after( $deleteLink );
         };
 
@@ -2434,7 +2496,7 @@ var DashboardWidget;
             var $select = getDashboardSelect();
 
             // Set for clear Browser form saver
-            $select.hide();
+            $select.css("visibility", "hidden");
 
             // Reload
             location.reload();

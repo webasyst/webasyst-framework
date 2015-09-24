@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WebAsyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2015-09-17 13:33+0300\n"
+"PO-Revision-Date: 2015-09-23 16:08+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -12,7 +12,7 @@ msgstr ""
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
 "Language: ru_RU\n"
-"X-Generator: Poedit 1.7.6\n"
+"X-Generator: Poedit 1.8.4\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
 
@@ -4260,8 +4260,8 @@ msgid "Webasyst TV"
 msgstr ""
 
 #: /wa-system/webasyst/templates/actions/backend/BackendDashboard.html:112
-msgid "Create new dashboard..."
-msgstr "Новая панель управления..."
+msgid "New Webasyst TV dashboard..."
+msgstr "Новая панель Webasyst TV..."
 
 #: /wa-system/webasyst/templates/actions/backend/BackendDashboard.html:124
 msgid "New dashboard"
@@ -4272,12 +4272,12 @@ msgid "Dashboard title"
 msgstr "Название"
 
 #: /wa-system/webasyst/templates/actions/backend/BackendDashboard.html:131
-msgid "Webasyst TV dashboards look best on 4K and Full HD TVs and can be viewed using any modern web browser by the unique auto-generated secret link."
-msgstr "Панели управления Webasyst TV предназначены для отображения на телевизорах и устройствах с разрешением 4K или Full HD. Открыть панель управления можно по приватной ссылке с помощью любого современного браузера."
+msgid "Webasyst TV dashboards can be opened in any modern web browser and streamed to 4K or Full HD TVs."
+msgstr "Панель управления Webasyst TV открывается по уникальной приватной ссылке в любом современном браузере и предназначена для трансляции на телевизоры 4K или Full HD."
 
 #: /wa-system/webasyst/templates/actions/dashboard/DashboardEditPublic.html:34
 msgid "Dashboard public link"
-msgstr "Ссылка на просмотр"
+msgstr "Ссылка"
 
 #: /wa-system/webasyst/templates/actions/dashboard/DashboardEditPublic.html:38
 msgid "You are about to permanently delete this dashboard. Are you sure?"
@@ -4290,3 +4290,23 @@ msgstr "Удалить панель управления"
 #: /wa-system/webasyst/templates/actions/dashboard/DashboardSidebar.html:16
 msgid "Add widgets"
 msgstr "Добавить виджеты"
+
+msgid "Installed"
+msgstr "Установлены"
+
+msgid "Install new widgets"
+msgstr "Добавить виджеты"
+
+msgid "Only you can see this dashboard."
+msgstr "Эту панель управления видите только вы."
+
+msgid "Themes to clone"
+msgstr "Клонировать темы"
+
+#: /wa-system/design/templates/Theme.html:485
+msgid "All %s themes (recommended)"
+msgstr "Тема «%s» для всех приложений (рекомендуется)"
+
+#: /wa-system/design/templates/Theme.html:486
+msgid "Only %s theme for this app (%s)"
+msgstr "Тема «%s» только для приложения «%s»"

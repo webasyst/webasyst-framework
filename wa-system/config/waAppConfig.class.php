@@ -108,7 +108,7 @@ class waAppConfig extends SystemConfig
             if (in_array($l['action'], array('page_add', 'page_edit', 'page_move'))) {
                 $page_ids[] = $l['params'];
             } elseif (substr($l['action'], 0, 8) == 'template' || substr($l['action'], 0, 5) == 'theme') {
-                $logs[$l_id]['params_html'] = $l['params'];
+                $logs[$l_id]['params_html'] = htmlspecialchars($l['params']);
             }
         }
         if ($page_ids) {
@@ -122,7 +122,7 @@ class waAppConfig extends SystemConfig
             foreach ($logs as &$l) {
                 if (in_array($l['action'], array('page_add', 'page_edit', 'page_move')) && isset($pages[$l['params']])) {
                     $l['params_html'] = '<div class="activity-target"><a href="'.$app_url.'#/pages/'.$l['params'].'">'.
-                        $pages[$l['params']].'</a></div>';
+                        htmlspecialchars($pages[$l['params']]).'</a></div>';
                 }
             }
             unset($l);

@@ -98,14 +98,20 @@ var DashboardWidget;
 
         if ($widget.length) {
 
-            // Clear old HTML
-            $widget.html("");
-
             // Проставляем класс (класс размера виджета)
             setWidgetType(that);
 
             // Загружаем контент
-            $widget.load(widget_href, function() {});
+            $.ajax({
+                url: widget_href,
+                dataType: 'html',
+                global: false,
+                data: {}
+            }).done(function(r) {
+                $widget.html(r);
+            }).fail(function() {
+                $widget.html("");
+            });
         }
     };
 
@@ -136,6 +142,49 @@ var DashboardWidget;
             clearTimeout(storage.timeout);
             refreshPage();
         }, false);
+
+        // Once in a while check if something's changed on a dashboard.
+        // Because users are lazy to reload their TVs after they modified settings.
+        setInterval(function() {
+            $.post('?check_status=1', {}, function(r) {
+                var known_status = $('#d-page-wrapper .page-header').first().data('dashboard-status');
+                if (r.data != known_status) {
+                    location.reload();
+                }
+            }, 'json');
+        }, 5*60*1000);
+
+        // Do a full page reload once in a while.
+        // Because browsers on TVs leak memory and tend to eventually crash.
+        setTimeout(function() {
+            location.reload();
+        }, 4*60*60*1000);
+
+        // Development helper: Ctrl + Alt + dblclick on a widget reloads the widget
+        $("#d-widgets-block").on("dblclick", ".widget-wrapper", function(e) {
+            if (e.altKey && (e.ctrlKey || e.metaKey)) {
+                var id = $(this).data("widget-id");
+                if (id > 0) {
+                    DashboardWidgets[id] && DashboardWidgets[id].renderWidget();
+                }
+
+                // Clear accidental text selection
+                setTimeout( function() {
+                    if(document.selection && document.selection.empty) {
+                        document.selection.empty();
+                    } else if(window.getSelection) {
+                        window.getSelection().removeAllRanges();
+                    }
+                }, 0);
+
+                return false;
+            }
+        });
+        $("#d-widgets-block").on("click", ".widget-wrapper", function(e) {
+            if (e.altKey && (e.ctrlKey || e.metaKey)) {
+                return false;
+            }
+        });
     };
 
     var refreshPage = function() {

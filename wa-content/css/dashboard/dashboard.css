@@ -1,13 +1,6 @@
 body {
   background: #eee;
 }
-body #wa-usercorner,
-body #wa-applist {
-  -webkit-transition: opacity 300ms linear;
-  -moz-transition: opacity 300ms linear;
-  -ms-transition: opacity 300ms linear;
-  transition: opacity 300ms linear;
-}
 body.is-highlighted {
   background: #ccc;
   -webkit-transition: background 300ms linear;
@@ -19,23 +12,40 @@ body.is-highlighted #wa-header {
   background: rgba(0,0,0,0.05);
 }
 body.is-highlighted #wa-header #wa-usercorner,
-body.is-highlighted #wa-header #wa-applist .ui-sortable {
-  opacity: 0;
+body.is-highlighted #wa-header #wa-applist > ul,
+body.is-highlighted #wa-header #wa-applist > .ui-sortable {
+  visibility: hidden;
 }
-body.is-highlighted #wa-header .d-dashboards-list-wrapper {
+body.is-highlighted #wa-header .d-dashboard-header-content {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
-  height: 100%;
+  height: 83px;
   text-align: center;
 }
-body.is-highlighted #wa-header .d-dashboards-list-wrapper select {
-  margin: 30px 0 0;
+body.is-highlighted #wa-header .d-dashboard-header-content .d-dashboards-list-wrapper {
+  padding: 17px 0 0;
+}
+body.is-highlighted #wa-header .d-dashboard-header-content .d-dashboards-list-wrapper select {
   display: inline-block;
   width: 250px;
   font-size: 110%;
   cursor: pointer;
+}
+body.is-highlighted #wa-header .d-dashboard-header-content .d-dashboard-link-wrapper {
+  padding: 10px 0 0;
+  font-size: 0.9em;
+  color: #777;
+}
+body.is-highlighted #wa-header .d-dashboard-header-content .d-dashboard-link-wrapper a {
+  color: #ffff8b;
+  font-weight: bold;
+  margin-left: 4px;
+  text-decoration: underline;
+}
+body.is-highlighted #wa-header .d-dashboard-header-content .d-dashboard-link-wrapper a:hover {
+  color: #ffff4b !important;
 }
 #wa-app {
   margin: 0 0;
@@ -46,6 +56,9 @@ body.is-highlighted #wa-header .d-dashboards-list-wrapper select {
   height: 0;
   overflow: hidden;
   clear: both;
+}
+.d-page-wrapper {
+  text-shadow: none;
 }
 .d-page-wrapper .page-header-wrapper .page-header {
   margin: 0;
@@ -916,8 +929,8 @@ body.is-highlighted #wa-header .d-dashboards-list-wrapper select {
 .d-page-wrapper .d-content-wrapper .d-widgets-wrapper .widget-group-wrapper .widget-wrapper .widget-outer-container .widget-inner-container .widget-controls-wrapper .delete-control-wrapper {
   position: absolute;
   z-index: 1;
-  left: 0;
-  top: 0;
+  left: -11px;
+  top: -8px;
   opacity: 0;
 }
 .d-page-wrapper .d-content-wrapper .d-widgets-wrapper .widget-group-wrapper .widget-wrapper .widget-outer-container .widget-inner-container .widget-controls-wrapper .size-controls-wrapper {
@@ -935,12 +948,12 @@ body.is-highlighted #wa-header .d-dashboards-list-wrapper select {
 .d-page-wrapper .d-content-wrapper .d-widgets-wrapper .widget-group-wrapper .widget-wrapper .widget-outer-container .widget-inner-container .widget-controls-wrapper .control-item {
   display: inline-block;
   vertical-align: top;
-  width: 2rem;
-  height: 2rem;
-  margin: 0 0.125rem;
+  width: 28px;
+  height: 28px;
+  margin: 0 2px;
   box-sizing: border-box;
   background: transparent 50% 0 no-repeat;
-  background-size: auto 8rem;
+  background-size: auto 112px;
   font-size: 0;
 }
 .d-page-wrapper .d-content-wrapper .d-widgets-wrapper .widget-group-wrapper .widget-wrapper .widget-outer-container .widget-inner-container .widget-controls-wrapper .control-item.is-active {
@@ -948,11 +961,11 @@ body.is-highlighted #wa-header .d-dashboards-list-wrapper select {
 }
 .d-page-wrapper .d-content-wrapper .d-widgets-wrapper .widget-group-wrapper .widget-wrapper .widget-outer-container .widget-inner-container .widget-controls-wrapper .control-item:hover,
 .d-page-wrapper .d-content-wrapper .d-widgets-wrapper .widget-group-wrapper .widget-wrapper .widget-outer-container .widget-inner-container .widget-controls-wrapper .control-item.is-active {
-  background-position: 50% -2rem;
+  background-position: 50% -28px;
 }
 .d-page-wrapper .d-content-wrapper .d-widgets-wrapper .widget-group-wrapper .widget-wrapper .widget-outer-container .widget-inner-container .widget-controls-wrapper .control-item.delete-widget-link {
-  margin: -0.6rem 0 0 -0.8rem;
-  background-image: url("../../img/dashboard/widget-delete-icon.png?v=1.0");
+  margin: 0;
+  background-image: url("../../img/dashboard/widget-delete-icon.png?v=1.2");
   background-color: #fff;
   -webkit-border-radius: 50%;
   -moz-border-radius: 50%;
@@ -961,16 +974,16 @@ body.is-highlighted #wa-header .d-dashboards-list-wrapper select {
   box-shadow: 0 0 10px rgba(123,123,123,0.66);
 }
 .d-page-wrapper .d-content-wrapper .d-widgets-wrapper .widget-group-wrapper .widget-wrapper .widget-outer-container .widget-inner-container .widget-controls-wrapper .control-item.set-small-size {
-  background-image: url("../../img/dashboard/widget-1x1.png?v=1.0");
+  background-image: url("../../img/dashboard/widget-1x1.png?v=1.2");
 }
 .d-page-wrapper .d-content-wrapper .d-widgets-wrapper .widget-group-wrapper .widget-wrapper .widget-outer-container .widget-inner-container .widget-controls-wrapper .control-item.set-medium-size {
-  background-image: url("../../img/dashboard/widget-2x1.png?v=1.0");
+  background-image: url("../../img/dashboard/widget-2x1.png?v=1.2");
 }
 .d-page-wrapper .d-content-wrapper .d-widgets-wrapper .widget-group-wrapper .widget-wrapper .widget-outer-container .widget-inner-container .widget-controls-wrapper .control-item.set-big-size {
-  background-image: url("../../img/dashboard/widget-2x2.png?v=1.0");
+  background-image: url("../../img/dashboard/widget-2x2.png?v=1.2");
 }
 .d-page-wrapper .d-content-wrapper .d-widgets-wrapper .widget-group-wrapper .widget-wrapper .widget-outer-container .widget-inner-container .widget-controls-wrapper .control-item.show-settings-link {
-  background-image: url("../../img/dashboard/widget-settings.png?v=1.0");
+  background-image: url("../../img/dashboard/widget-settings.png?v=1.2");
 }
 .d-page-wrapper.is-editable-mode .d-content-wrapper .d-activity-wrapper .d-activity-block,
 .d-page-wrapper.is-editable-mode .d-content-wrapper .d-activity-wrapper .d-notification-wrapper {
@@ -1109,45 +1122,49 @@ body.is-highlighted #wa-header .d-dashboards-list-wrapper select {
   position: relative;
 }
 @media (max-width: 676px) {
-  .d-page-wrapper {
+  html.mobile {
+    font-size: 100%;
+    font-size: 4.5vw;
+  }
+  html.mobile .d-page-wrapper {
     margin: 5px 0 0;
   }
-  .d-page-wrapper .d-content-wrapper {
+  html.mobile .d-page-wrapper .d-content-wrapper {
     display: block;
   }
-  .d-page-wrapper .d-content-wrapper .d-widgets-wrapper {
+  html.mobile .d-page-wrapper .d-content-wrapper .d-widgets-wrapper {
     display: block;
     padding: 0 10px 0 0;
   }
-  .d-page-wrapper .d-content-wrapper .d-widgets-wrapper .widget-group-wrapper {
+  html.mobile .d-page-wrapper .d-content-wrapper .d-widgets-wrapper .widget-group-wrapper {
     width: 100%;
     padding: 0 0 100%;
     height: 0;
   }
-  .d-page-wrapper .d-content-wrapper .d-widgets-wrapper .widget-group-wrapper .widget-wrapper {
+  html.mobile .d-page-wrapper .d-content-wrapper .d-widgets-wrapper .widget-group-wrapper .widget-wrapper {
     border: 0;
   }
-  .d-page-wrapper .d-content-wrapper .d-widgets-wrapper .widget-group-wrapper .widget-wrapper.widget-1x1 {
+  html.mobile .d-page-wrapper .d-content-wrapper .d-widgets-wrapper .widget-group-wrapper .widget-wrapper.widget-1x1 {
     width: 50%;
     padding: 0 0 50%;
     height: 0;
   }
-  .d-page-wrapper .d-content-wrapper .d-widgets-wrapper .widget-group-wrapper .widget-wrapper.widget-1x2 {
+  html.mobile .d-page-wrapper .d-content-wrapper .d-widgets-wrapper .widget-group-wrapper .widget-wrapper.widget-1x2 {
     width: 50%;
     padding: 0 0 100%;
     height: 0;
   }
-  .d-page-wrapper .d-content-wrapper .d-widgets-wrapper .widget-group-wrapper .widget-wrapper.widget-2x1 {
+  html.mobile .d-page-wrapper .d-content-wrapper .d-widgets-wrapper .widget-group-wrapper .widget-wrapper.widget-2x1 {
     width: 100%;
     padding: 0 0 50%;
     height: 0;
   }
-  .d-page-wrapper .d-content-wrapper .d-widgets-wrapper .widget-group-wrapper .widget-wrapper.widget-2x2 {
+  html.mobile .d-page-wrapper .d-content-wrapper .d-widgets-wrapper .widget-group-wrapper .widget-wrapper.widget-2x2 {
     width: 100%;
     padding: 0 0 100%;
     height: 0;
   }
-  .d-page-wrapper .d-content-wrapper .d-widgets-wrapper .widget-group-wrapper .widget-wrapper .widget-outer-container {
+  html.mobile .d-page-wrapper .d-content-wrapper .d-widgets-wrapper .widget-group-wrapper .widget-wrapper .widget-outer-container {
     position: absolute;
     top: 0;
     left: 0;
@@ -1213,20 +1230,6 @@ body.is-highlighted #wa-header .d-dashboards-list-wrapper select {
 body.is-custom-edit-mode {
   background: #aaa;
   color: #121212;
-}
-body.is-custom-edit-mode .d-page-wrapper.is-editable-mode .d-dashboard-link-wrapper {
-  padding: 1rem;
-  text-align: center;
-  color: #333;
-}
-body.is-custom-edit-mode .d-page-wrapper.is-editable-mode .d-dashboard-link-wrapper a {
-  color: #ffff8b;
-  font-weight: bold;
-  margin-left: 4px;
-  text-decoration: underline;
-}
-body.is-custom-edit-mode .d-page-wrapper.is-editable-mode .d-dashboard-link-wrapper a:hover {
-  color: #ffff4b !important;
 }
 body.is-custom-edit-mode .d-page-wrapper.is-editable-mode .d-delete-dashboard-wrapper {
   margin: 3.5rem 0 0;
@@ -1507,29 +1510,28 @@ body.is-custom-edit-mode .d-page-wrapper.is-editable-mode .d-content-wrapper .d-
 }
 body.is-custom-edit-mode .d-page-wrapper.is-editable-mode .d-content-wrapper .d-widgets-wrapper .d-widgets-block .widget-group-wrapper .widget-wrapper .widget-outer-container .widget-inner-container .widget-controls-wrapper .delete-control-wrapper .control-item,
 body.is-custom-edit-mode .d-page-wrapper.is-editable-mode .d-content-wrapper .d-widgets-wrapper .d-widgets-block .ornament-widget-group .widget-wrapper .widget-outer-container .widget-inner-container .widget-controls-wrapper .delete-control-wrapper .control-item {
-  margin: 0;
   background-position: 50% 0;
 }
 body.is-custom-edit-mode .d-page-wrapper.is-editable-mode .d-content-wrapper .d-widgets-wrapper .d-widgets-block .widget-group-wrapper .widget-wrapper .widget-outer-container .widget-inner-container .widget-controls-wrapper .settings-control-wrapper .show-settings-link,
 body.is-custom-edit-mode .d-page-wrapper.is-editable-mode .d-content-wrapper .d-widgets-wrapper .d-widgets-block .ornament-widget-group .widget-wrapper .widget-outer-container .widget-inner-container .widget-controls-wrapper .settings-control-wrapper .show-settings-link {
-  background-position: 50% -4rem;
+  background-position: 50% -56px;
   color: #fff;
 }
 body.is-custom-edit-mode .d-page-wrapper.is-editable-mode .d-content-wrapper .d-widgets-wrapper .d-widgets-block .widget-group-wrapper .widget-wrapper .widget-outer-container .widget-inner-container .widget-controls-wrapper .settings-control-wrapper .show-settings-link:hover,
 body.is-custom-edit-mode .d-page-wrapper.is-editable-mode .d-content-wrapper .d-widgets-wrapper .d-widgets-block .ornament-widget-group .widget-wrapper .widget-outer-container .widget-inner-container .widget-controls-wrapper .settings-control-wrapper .show-settings-link:hover,
 body.is-custom-edit-mode .d-page-wrapper.is-editable-mode .d-content-wrapper .d-widgets-wrapper .d-widgets-block .widget-group-wrapper .widget-wrapper .widget-outer-container .widget-inner-container .widget-controls-wrapper .settings-control-wrapper .show-settings-link.is-active,
 body.is-custom-edit-mode .d-page-wrapper.is-editable-mode .d-content-wrapper .d-widgets-wrapper .d-widgets-block .ornament-widget-group .widget-wrapper .widget-outer-container .widget-inner-container .widget-controls-wrapper .settings-control-wrapper .show-settings-link.is-active {
-  background-position: 50% -6rem;
+  background-position: 50% -84px;
 }
 body.is-custom-edit-mode .d-page-wrapper.is-editable-mode .d-content-wrapper .d-widgets-wrapper .d-widgets-block .widget-group-wrapper .widget-wrapper .widget-outer-container .widget-inner-container .widget-controls-wrapper .size-controls-wrapper .control-item,
 body.is-custom-edit-mode .d-page-wrapper.is-editable-mode .d-content-wrapper .d-widgets-wrapper .d-widgets-block .ornament-widget-group .widget-wrapper .widget-outer-container .widget-inner-container .widget-controls-wrapper .size-controls-wrapper .control-item {
-  background-position: 50% -4rem;
+  background-position: 50% -56px;
 }
 body.is-custom-edit-mode .d-page-wrapper.is-editable-mode .d-content-wrapper .d-widgets-wrapper .d-widgets-block .widget-group-wrapper .widget-wrapper .widget-outer-container .widget-inner-container .widget-controls-wrapper .size-controls-wrapper .control-item:hover,
 body.is-custom-edit-mode .d-page-wrapper.is-editable-mode .d-content-wrapper .d-widgets-wrapper .d-widgets-block .ornament-widget-group .widget-wrapper .widget-outer-container .widget-inner-container .widget-controls-wrapper .size-controls-wrapper .control-item:hover,
 body.is-custom-edit-mode .d-page-wrapper.is-editable-mode .d-content-wrapper .d-widgets-wrapper .d-widgets-block .widget-group-wrapper .widget-wrapper .widget-outer-container .widget-inner-container .widget-controls-wrapper .size-controls-wrapper .control-item.is-active,
 body.is-custom-edit-mode .d-page-wrapper.is-editable-mode .d-content-wrapper .d-widgets-wrapper .d-widgets-block .ornament-widget-group .widget-wrapper .widget-outer-container .widget-inner-container .widget-controls-wrapper .size-controls-wrapper .control-item.is-active {
-  background-position: 50% -6rem;
+  background-position: 50% -84px;
 }
 @media (max-width: 1350px) {
   body.is-custom-edit-mode .d-page-wrapper.is-editable-mode .d-content-wrapper .d-widgets-wrapper .d-widgets-block {

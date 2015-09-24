@@ -102,17 +102,15 @@
     {if $is_admin}
 
         {* Dashboard selector *}
-        <div class="d-dashboards-list-wrapper" id="d-dashboards-list-wrapper">
-            <select id="d-dashboards-select" name="">
-                <option value="default_dashboard" selected>[`My dashboard`]</option>
-                <optgroup label="[`Webasyst TV`]">
-                    {foreach $public_dashboards as $d}
-                        <option value="{$d.id}">{$d.name|escape}</option>
-                    {/foreach}
-                    <option value="new_dashboard">[`Create new dashboard...`]</option>
-                </optgroup>
-            </select>
-        </div>
+        <select class="d-dashboards-select" id="d-dashboards-select" name="">
+            <option value="default_dashboard" selected>[`My dashboard`]</option>
+            <optgroup label="[`Webasyst TV`]">
+                {foreach $public_dashboards as $d}
+                    <option value="{$d.id}">{$d.name|escape}</option>
+                {/foreach}
+                <option value="new_dashboard">[`New Webasyst TV dashboard...`]</option>
+            </optgroup>
+        </select>
 
         {* New dashboard dialog *}
         <div class="dialog width400px height200px" id="dashboard-editor-dialog">
@@ -128,7 +126,7 @@
                                     <div class="value"><input type="text" name="dashboard[name]" value=""></div>
                                 </div>
                             </div>
-                            <p class="hint">[`Webasyst TV dashboards look best on 4K and Full HD TVs and can be viewed using any modern web browser by the unique auto-generated secret link.`]</p>
+                            <p class="hint">[`Webasyst TV dashboards can be opened in any modern web browser and streamed to 4K or Full HD TVs.`]</p>
                         </div>
                     </div>
                     <div class="dialog-buttons">

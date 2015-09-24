@@ -249,9 +249,13 @@ class webasystDashboardActions extends waActions
     public static function generateHash()
     {
         $result = '';
-        $chars = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
-        for($i = 0; $i < 32; $i++) {
-            $result .= $chars{mt_rand(0, strlen($chars)-1)};
+        $chars = '123456789';
+        for($i = 1; $i < 20; $i++) {
+            if ($i % 5 == 0) {
+                $result .= '00';
+            } else {
+                $result .= $chars{mt_rand(0, strlen($chars)-1)};
+            }
         }
         return $result;
     }

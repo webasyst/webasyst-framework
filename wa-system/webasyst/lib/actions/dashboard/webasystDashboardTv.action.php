@@ -44,12 +44,14 @@ class webasystDashboardTvAction extends waViewAction
     {
         // fetch widgets
         $widgets = array();
+        $hash_data = array();
         $widget_model = new waWidgetModel();
         $rows = $widget_model->getByDashboard($dashboard['id']);
         $base_href = wa()->getConfig()->getBackendUrl(true)."dashboard/{$dashboard['hash']}/";
         foreach ($rows as $row) {
             $app_widgets = wa($row['app_id'])->getConfig()->getWidgets();
             if (isset($app_widgets[$row['widget']])) {
+                $hash_data[] = join('.', array($row['id'], $row['block'], $row['sort'], $row['size']));
                 $row['size'] = explode('x', $row['size']);
                 $row = $row + $app_widgets[$row['widget']];
                 $row['href'] = $base_href."?widget_id={$row['id']}";
@@ -66,7 +68,19 @@ class webasystDashboardTvAction extends waViewAction
             }
         }
 
+        sort($hash_data);
+        $dashboard_status = md5($dashboard['name'].'/'.join('/', $hash_data));
+
+        if (waRequest::request('check_status')) {
+            echo json_encode(array(
+                'status' => 'ok',
+                'data' => $dashboard_status,
+            ));
+            exit;
+        }
+
         $this->view->assign(array(
+            'dashboard_status' => $dashboard_status,
             'dashboard' => $dashboard,
             'widgets' => $widgets,
         ));

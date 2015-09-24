@@ -384,6 +384,7 @@
             }
         }
         $(document).ready(function () {
+            $('#wa-app').css('overflow', 'visible');
             var a = $('#wa-design-sidebar .wa-theme-block a[href="' + location.hash + '"]:first');
             if (a.length) {
                 a.parent().addClass('selected');
