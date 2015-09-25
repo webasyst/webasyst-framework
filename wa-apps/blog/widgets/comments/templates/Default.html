@@ -31,7 +31,7 @@
                     <div class="main-column">
                         {* Name *}
                         <span class="b-author-name bold">
-                            {if !empty($comment.user.name|escape)}
+                            {if !empty($comment.user.name)}
                                 <a href="{$_author_uri}">{$comment.user.name|escape}</a>
                             {else}
                                 {if empty($comment.contact_id) && !empty($comment.email)}

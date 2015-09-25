@@ -120,3 +120,6 @@
   background: -ms-linear-gradient(top, rgba(51,51,51,0) 0%, #333 50%);
   background: linear-gradient(to bottom, rgba(51,51,51,0) 0%, #333 50%);
 }
+.mobile .b-comments-widget {
+  font-size: 1rem;
+}

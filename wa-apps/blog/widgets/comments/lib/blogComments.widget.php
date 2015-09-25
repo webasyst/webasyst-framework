@@ -6,7 +6,13 @@ class blogCommentsWidget extends waWidget
 
     public function defaultAction()
     {
-        $user = $this->getUser();
+        // When viewed from a public dashboard, pretend we're logged in
+        $old_user = $user = $this->getUser();
+        if (wa()->getUser()->getId() != $user->getId()) {
+            $old_user = wa()->getUser();
+            wa()->setUser($user);
+        }
+
         $filter = $this->getSettings('filter', 'all');
         $blogs = blogHelper::getAvailable();
         $blog_ids = array_keys($blogs);
@@ -17,6 +23,8 @@ class blogCommentsWidget extends waWidget
             'offset' => 0,
             'limit' => 6,
         ));
+
+        wa()->setUser($old_user);
 
         // get related posts info
         $post_ids = array();
@@ -79,5 +87,19 @@ class blogCommentsWidget extends waWidget
             'datetime' => blogActivity::getUserActivity(),
             'dont_mark_as_read' => true,
         ));
+    }
+
+
+    public function getUser()
+    {
+        if (!wa()->getUser()->getId()) {
+            try {
+                $c = new waUser($this->info['contact_id']);
+                $c->getName();
+                return $c;
+            } catch (waException $e) {
+            }
+        }
+        return wa()->getUser();
     }
 }
