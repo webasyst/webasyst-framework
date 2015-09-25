@@ -1667,6 +1667,7 @@ var DashboardWidget;
             isBottomLazyLoadLocked: false,
             isTopLazyLoadLocked: false,
             isActivityFilterLocked: false,
+            is_dialog_shown: false,
             topLazyLoadingTimer: 0,
             activityFilterTimer: 0,
             lazyTime: 15 * 1000,
@@ -1790,8 +1791,13 @@ var DashboardWidget;
 
             // Escape close edit-mode
             $(document).on("keyup", function(event) {
-                if (event.keyCode == 27 && storage.isEditModeActive) {
-                    $hideLink.trigger("click");
+                var is_dialog_shown = storage.is_dialog_shown;
+                if ( !is_dialog_shown ) {
+                    if (event.keyCode == 27 && storage.isEditModeActive) {
+                        $hideLink.trigger("click");
+                    }
+                } else {
+                    storage.is_dialog_shown = false;
                 }
             });
 
@@ -2447,6 +2453,8 @@ var DashboardWidget;
             var $dialogWrapper = $("#dashboard-editor-dialog"),
                 $loading = '<i class="icon16 loading"></i>';
 
+            storage.is_dialog_shown = true;
+
             $dialogWrapper.waDialog({
                 onLoad: function() {
                     var $input = $dialogWrapper.find("input:text:first");
@@ -2485,6 +2493,8 @@ var DashboardWidget;
                         } else {
                             alert(responce.errors);
                         }
+
+                        storage.is_dialog_shown = false;
                     });
 
                     return false;

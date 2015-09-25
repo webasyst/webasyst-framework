@@ -58,6 +58,10 @@
 .widget-2x1 .s-weather {
   padding-top: 5em;
 }
+.widget-1x1 .s-weather.s-weather-notavailable,
+.widget-2x1 .s-weather.s-weather-notavailable {
+  padding-top: 0;
+}
 .widget-1x1 .s-weather .s-weather-icon-wrapper,
 .widget-2x1 .s-weather .s-weather-icon-wrapper {
   top: -1.25em;
@@ -74,6 +78,9 @@
 }
 .widget-2x1 .s-weather .wa-no-weather {
   padding: 2em 2.75em;
+}
+.widget-2x2 .s-weather.s-weather-notavailable {
+  padding-top: 0;
 }
 .widget-2x2 .s-weather h6 {
   font-size: 1.3em;

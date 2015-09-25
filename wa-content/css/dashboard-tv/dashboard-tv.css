@@ -253,8 +253,14 @@ html {
     font-size: 50%;
     font-size: 2.5vw;
   }
-  .d-page-wrapper .page-header-wrapper {
-    display: none;
+  .d-page-wrapper .page-header-wrapper.is-hidden {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
+  }
+  .d-page-wrapper .page-header-wrapper.is-hidden .page-header {
+    display: table-cell;
+    padding: 10px 0 0;
   }
   .d-page-wrapper .d-content-wrapper .d-widgets-wrapper .widget-group-wrapper {
     width: 50%;
