@@ -285,6 +285,7 @@ return array(
         'widget' => array('varchar', 32, 'null' => 0),
         'name' => array('varchar', 255, 'null' => 0),
         'contact_id' => array('int', 11, 'null' => 0),
+        'dashboard_id' => array('int', 11),
         'create_datetime' => array('datetime', 'null' => 0),
         'app_id' => array('varchar', 32, 'null' => 0),
         'block' => array('int', 11, 'null' => 0),
