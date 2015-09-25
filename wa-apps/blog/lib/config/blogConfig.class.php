@@ -253,5 +253,19 @@ class blogConfig extends waAppConfig
         }
         return $logs;
     }
+
+    public function getPlugins()
+    {
+        $fix = $this->plugins === null;
+        parent::getPlugins();
+        if ($fix) {
+            foreach ($this->plugins as $p_id => $p) {
+                if (!empty($p['blog_settings'])) {
+                    $this->plugins[$p_id]['custom_settings_url'] = '?plugin='.$p['id'].'&module=backend&action=settings';
+                }
+            }
+        }
+        return $this->plugins;
+    }
 }
 

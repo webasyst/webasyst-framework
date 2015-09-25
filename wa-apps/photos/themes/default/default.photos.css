@@ -32,7 +32,7 @@ h1.search-criteria { margin-bottom: 1.5em; text-align: center; }
 --------- */
 
 ul.albums { padding: 0; margin: 0 0 20px; text-align: left; }
-ul.albums li { width: 315px; list-style: none; display: inline-block; text-align: center; margin-top: 30px; margin-bottom: 20px; vertical-align: top; }
+ul.albums li { min-width: 238px; list-style: none; display: inline-block; text-align: center; margin-top: 30px; margin-bottom: 20px; vertical-align: top; }
 ul.albums li .cover { width: 208px; min-height: 208px; margin: 0 auto 10px; position: relative; line-height: 1.2em; }
 ul.albums li .cover .sublayer { position: absolute; background: #fff; box-shadow: 0 1px 5px rgba(0,0,0,0.2); left: 2px; right: -2px; bottom: 5px;top:-2px; width: 192px; height: 192px; }
 ul.albums li .cover .sublayer.layer1 { z-index: 9; border-color: #aaa; -moz-transform: rotate(-3deg); -moz-transition: all 0.2s ease-in-out; -webkit-transform: rotate(-3deg); -webkit-transition: all 0.2s ease-in-out; transform: rotate(-3deg); transition: all 0.2s ease-in-out; }

@@ -12,6 +12,7 @@
  * @package wa-system
  * @subpackage shipping
  */
+
 abstract class waShipping extends waSystemPlugin
 {
 
@@ -65,7 +66,7 @@ abstract class waShipping extends waSystemPlugin
      * @param array [string]string $item['name'] name of package item
      * @param array [string]mixed $item['weight'] weight of package item
      * @param array [string]mixed $item['price'] price of package item
-     * @param array [string]mixed $item['quantity'] quantity of packate item
+     * @param array [string]mixed $item['quantity'] quantity of package item
      * @return waShipping
      */
     public function addItem($item)
@@ -82,7 +83,7 @@ abstract class waShipping extends waSystemPlugin
      * @param array [][string]string $items['name'] name of package item
      * @param array [][string]mixed $items['weight'] weight of package item
      * @param array [][string]mixed $items['price'] price of package item
-     * @param array [][string]mixed $items['quantity'] quantity of packate item
+     * @param array [][string]mixed $items['quantity'] quantity of package item
      * @return waShipping
      */
     public function addItems($items)
@@ -152,11 +153,14 @@ abstract class waShipping extends waSystemPlugin
     public function isAllowedAddress($address = array())
     {
         $match = true;
-        foreach ($this->allowedAddress() as $address) {
+        if (empty($address)) {
+            $address = $this->address;
+        }
+        foreach ($this->allowedAddress() as $allowed_address) {
             $match = true;
-            foreach ($address as $field => $value) {
-                if (!empty($value) && !empty($this->address[$field])) {
-                    $expected = mb_strtolower($this->address[$field]);
+            foreach ($allowed_address as $field => $value) {
+                if (!empty($value) && !empty($address[$field])) {
+                    $expected = mb_strtolower($address[$field]);
                     if (is_array($value)) {
                         if (!in_array($expected, array_map('mb_strtolower', $value))) {
                             $match = false;
@@ -185,9 +189,9 @@ abstract class waShipping extends waSystemPlugin
      * @param array [][string]string $items['name'] name of package item
      * @param array [][string]mixed $items['weight'] weight of package item
      * @param array [][string]mixed $items['price'] price of package item
-     * @param array [][string]mixed $items['quantity'] quantity of packate item
+     * @param array [][string]mixed $items['quantity'] quantity of package item
      *
-     * @param array [string]string $address shipping adress
+     * @param array [string]string $address shipping address
      *
      *
      * @param array [mixed]mixed $params
@@ -196,7 +200,7 @@ abstract class waShipping extends waSystemPlugin
      *
      * @return string|array[string]array
      * @return array[string]['name']string
-     * @return array[string]['desription']string
+     * @return array[string]['description']string
      * @return array[string]['est_delivery']string
      * @return array[string]['currency']string
      * @return array[string]['rate']mixed float or array for min-max
@@ -209,7 +213,11 @@ abstract class waShipping extends waSystemPlugin
         }
         $this->params = array_merge($this->params, $params);
         try {
-            $rates = $this->isAllowedAddress($address) ? $this->addItems($items)->calculate() : false;
+            if ($this->isAllowedAddress()) {
+                $rates = $this->addItems($items)->calculate();
+            } else {
+                $rates = false;
+            }
         } catch (waException $ex) {
             $rates = $ex->getMessage();
         }
@@ -265,7 +273,7 @@ abstract class waShipping extends waSystemPlugin
 
     /**
      *
-     * List of allowed address paterns
+     * List of allowed address patterns
      * @return array
      */
     public function allowedAddress()
@@ -473,7 +481,7 @@ abstract class waShipping extends waSystemPlugin
         $url = wa()->getAppUrl('webasyst').'?module=backend&action=regions';
 
         // container id for interaction with js purpose
-        $id = preg_replace("![\[\]]{1,2}!", "-", $name);
+        $id = preg_replace("![\\[\\]]{1,2}!", "-", $name);
         if ($id[strlen($id) - 1] == "-") {
             $id = substr($id, 0, -1);
         }

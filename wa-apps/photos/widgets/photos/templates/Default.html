@@ -1,16 +1,20 @@
 {strip}
 
-<div class="photo-widget-wrapper">
-    {if $photos}
+{if $photos}
+    <div class="photo-widget-wrapper">
         {foreach array_rand($photos, $photo_on_widget) as $i}
-            {$photo_image_href = $photos[$i].thumb.url}
+            {$photo_image_href = $photos[$i]['thumb_mobile']['url']}
             {$photo_link_href = "{$wa_backend_url}photos/#/photo/{$photos[$i].id}"}
             <div class="photo-item-wrapper">
                 <a class="image-wrapper is-visible" href="{$photo_link_href}" style="background-image: url({$photo_image_href});"></a>
             </div>
         {/foreach}
-    {/if}
-</div>
+    </div>
+{else}
+    <div class="block">
+        <h5 class="align-center hint p-empty-stream">[`There are no photos uploaded yet.`]</h5>
+    </div>
+{/if}
 
 {* Initialize *}
 <script>
@@ -35,4 +39,11 @@
 {/strip}
 
 <!-- CSS -->
-<style>{include file="../css/photoWidget.css" inline}</style>
+<style>
+    {include file="../css/photoWidget.css" inline}
+    
+    .p-empty-stream { margin: 35px 15px; font-weight: normal; }
+    .widget-2x1 .p-empty-stream { margin: 45px 55px; }
+    .widget-2x2 .p-empty-stream { margin: 105px 35px; }
+    
+</style>

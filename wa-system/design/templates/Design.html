@@ -188,6 +188,13 @@
                         } else {
                             hash = hash + '&route=' + params['route'];
                         }
+                        if (!params['domain']) {
+                            hash = hash.replace(/&domain=[^&]+/, '');
+                        } else if (hash.indexOf('domain=') != -1) {
+                            hash = hash.replace(/domain=[^&]+/, 'domain=' + params['domain']);
+                        } else {
+                            hash = hash + '&domain=' + params['domain'];
+                        }
                         $.wa.setHash(hash.replace(/theme=[^&]+/, 'theme=' + params['theme']));
                     }
                 } else {
@@ -377,6 +384,7 @@
             }
         }
         $(document).ready(function () {
+            $('#wa-app').css('overflow', 'visible');
             var a = $('#wa-design-sidebar .wa-theme-block a[href="' + location.hash + '"]:first');
             if (a.length) {
                 a.parent().addClass('selected');

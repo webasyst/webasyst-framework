@@ -40,7 +40,7 @@ $.wa = $.extend(true, $.wa, {
 			if (parent) {
 				parent.window.location = parent.window.location.href.replace(/#.*/, '') + '#' + hash;
 			} else {
-				location = location.href.replace(/#.*/, '') + '#' + hash;
+				window.location = location.href.replace(/#.*/, '') + '#' + hash;
 			}
 		} else if (parent && (!$.browser || !$.browser.msie)) {
 			parent.window.location.hash = hash;

@@ -45,3 +45,11 @@
 .electronic-clock-wrapper .date-wrapper {
   color: #aaa;
 }
+.tv .electronic-clock-wrapper {
+  background: #000;
+  width: 100.5%;
+  height: 100.5%;
+}
+.tv .electronic-clock-wrapper .town-name-wrapper {
+  color: #d0d0d0;
+}

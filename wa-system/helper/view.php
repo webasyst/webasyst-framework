@@ -143,6 +143,14 @@ HTML;
                 <a href="#" id="wa-moreapps"></a>
             </li>
         </ul>
+HTML;
+    if (wa()->getApp() == 'webasyst') {
+        $html .= '<div class="d-dashboard-header-content">
+            <div class="d-dashboards-list-wrapper" id="d-dashboards-list-wrapper"></div>
+            <div class="d-dashboard-link-wrapper" id="d-dashboard-link-wrapper"><i class="icon10 lock-bw"></i> '._w('Only you can see this dashboard.').'</div>
+        </div>';
+    }
+    $html .= <<<HTML
     </div>
 </div>
 <script id="wa-header-js" type="text/javascript" src="{$root_url}wa-content/js/jquery-wa/wa.header.js?v{$version}"></script>

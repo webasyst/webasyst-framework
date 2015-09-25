@@ -34,10 +34,10 @@ li.error a { color: red; }
 
 .wa-themes { background: url(../../img/cloth-background-light.jpg); box-shadow: 0 6px 10px -5px #777 inset; min-height: 500px; }
 .wa-themes ul.thumbs { padding: 25px 20px; margin-top: 0; }
-.wa-themes ul.thumbs li { text-align: center; margin-right: 5px; }
+.wa-themes ul.thumbs li { text-align: center; margin-right: 33px; width: 300px; }
 .wa-themes ul.thumbs li a h5 { color: #000; margin-bottom: 10px; }
-.wa-themes ul.thumbs li a .wa-theme-cover { width: 200px; height: 220px; overflow: hidden; box-shadow: 0 2px 9px #777; margin: 0 auto 10px; background: #fff; position: relative; }
-.wa-themes ul.thumbs li a .wa-theme-cover img { width: 200px; height: 220px; }
+.wa-themes ul.thumbs li a .wa-theme-cover { width: 300px; height: 330px; overflow: hidden; box-shadow: 0 2px 9px #777; margin: 0 auto 10px; background: #fff; position: relative; border: none; }
+.wa-themes ul.thumbs li a .wa-theme-cover img { width: 300px; height: 330px; }
 .wa-themes ul.thumbs li a .wa-theme-cover .wa-in-use-badge { position: absolute; left: -12px; right: -12px; bottom: 0; margin-top: -10px; background: #5a4; color: #fff; font-style: italic; padding: 8px; font-weight: bold; }
 .wa-themes ul.thumbs li a .wa-theme-cover span.hint { margin-top: 100px; display: block; }
 .wa-themes ul.thumbs li a:hover .wa-theme-cover { box-shadow: 0 4px 13px #666; }
@@ -70,7 +70,7 @@ h5.wa-themes-group { padding-top: 20px; margin-left: 20px; text-transform: upper
 .wa-theme-about p { line-height: 1.5em; }
 .wa-theme-about pre { background: none repeat scroll 0 0 #EEEEEE; border-left: 3px solid #CCCCCC; color: #777777; font-size: 0.9em; padding: 20px; }
 
-.wa-theme-cover { border: 1px solid #ddd; }
+.wa-theme-cover { border: 1px solid rgba(0,0,0,0.2); width: 300px; height: 330px; }
 
 .wa-theme-actions { }
 .wa-theme-actions.wa-theme-latest { background: #dfc; }

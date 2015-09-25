@@ -180,7 +180,7 @@ class blogCommentModel extends waNestedSetModel
             unset($item);
         }
 
-        if (!empty($viewed_comments)) {
+        if (!empty($viewed_comments) && empty($extend_options['dont_mark_as_read'])) {
             foreach ($viewed_comments as $post_id => $ids) {
                 blogActivity::getInstance()->set("c.{$post_id}", $ids);
             }

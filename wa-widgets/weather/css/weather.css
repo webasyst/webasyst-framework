@@ -1,0 +1,106 @@
+.s-weather {
+  height: 100%;
+  box-sizing: border-box;
+  background: #1c60ac;
+  text-align: center;
+  font-size: 16px;
+  color: #fff;
+  padding: 10em 0 0 0;
+}
+.s-weather .s-weather-icon-wrapper {
+  position: absolute;
+  top: -2.5em;
+  left: 0;
+  width: 100%;
+  height: auto;
+  text-align: center;
+}
+.s-weather .s-weather-icon-wrapper .s-weather-icon {
+  position: relative;
+  display: inline-block;
+  width: 16em;
+  height: 16em;
+  background-size: 16em 16em;
+}
+.s-weather h2 {
+  position: relative;
+  left: 0.2em;
+  margin: 0;
+  font-weight: normal;
+  font-size: 4em;
+}
+.s-weather h4 {
+  margin: 0.75em 0 0;
+  opacity: 0.8;
+  font-weight: normal;
+}
+.s-weather .wa-no-weather {
+  padding: 2em 0;
+  font-weight: normal;
+  color: #fff;
+}
+.s-weather.s-weather-day {
+  background: -moz-linear-gradient(top, #133682 0%, #2793df 100%);
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #133682), color-stop(100%, #2793df));
+  background: -webkit-linear-gradient(top, #133682 0%, #2793df 100%);
+  background: -o-linear-gradient(top, #133682 0%, #2793df 100%);
+  background: -ms-linear-gradient(top, #133682 0%, #2793df 100%);
+  background: linear-gradient(to bottom, #133682 0%, #2793df 100%);
+}
+.s-weather.s-weather-night {
+  background: #0f2657 url("../img/night.jpg") no-repeat;
+  background-size: cover;
+}
+.s-weather.s-weather-notavailable {
+  background: #aaa;
+}
+.widget-1x1 .s-weather,
+.widget-2x1 .s-weather {
+  padding-top: 5em;
+}
+.widget-1x1 .s-weather.s-weather-notavailable,
+.widget-2x1 .s-weather.s-weather-notavailable {
+  padding-top: 0;
+}
+.widget-1x1 .s-weather .s-weather-icon-wrapper,
+.widget-2x1 .s-weather .s-weather-icon-wrapper {
+  top: -1.25em;
+}
+.widget-1x1 .s-weather .s-weather-icon-wrapper .s-weather-icon,
+.widget-2x1 .s-weather .s-weather-icon-wrapper .s-weather-icon {
+  width: 8em;
+  height: 8em;
+  background-size: 8em 8em;
+}
+.widget-1x1 .s-weather h2,
+.widget-2x1 .s-weather h2 {
+  font-size: 2em;
+}
+.widget-2x1 .s-weather .wa-no-weather {
+  padding: 2em 2.75em;
+}
+.widget-2x2 .s-weather.s-weather-notavailable {
+  padding-top: 0;
+}
+.widget-2x2 .s-weather h6 {
+  font-size: 1.3em;
+}
+.widget-2x2 .s-weather .wa-no-weather {
+  padding: 4em 1.5em;
+}
+.tv .s-weather-day {
+  background: -moz-linear-gradient(top, #0f2d62 0%, #1b679c 100%);
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #0f2d62), color-stop(100%, #1b679c));
+  background: -webkit-linear-gradient(top, #0f2d62 0%, #1b679c 100%);
+  background: -o-linear-gradient(top, #0f2d62 0%, #1b679c 100%);
+  background: -ms-linear-gradient(top, #0f2d62 0%, #1b679c 100%);
+  background: linear-gradient(to bottom, #0f2d62 0%, #1b679c 100%);
+}
+.tv .s-weather,
+.mobile .s-weather {
+  font-size: 1.1rem;
+}
+.mobile .widget-1x1 .s-weather h2,
+.mobile .widget-2x1 .s-weather h2 {
+  font-size: 2em;
+}

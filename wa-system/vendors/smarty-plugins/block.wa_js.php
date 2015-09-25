@@ -29,9 +29,9 @@ function smarty_block_wa_js($params, $content, &$smarty) {
     //
     // Non-debug mode: merge all files into one cache
     //
-    if (!SystemConfig::isDebug() && isset($params['file'])) {
-        $root_path = $wa->getConfig()->getRootPath();
-        $app_path = $wa->getConfig()->getAppPath();
+    if ((defined('DEBUG_WA_JS') || !SystemConfig::isDebug()) && isset($params['file'])) {
+        $root_path = str_replace('\\', '/', $wa->getConfig()->getRootPath());
+        $app_path = str_replace('\\', '/', $wa->getConfig()->getAppPath());
         $result = '';
         $files_combine = array();
         $mtime = file_exists($app_path.'/'.$params['file']) ? filemtime($app_path.'/'.$params['file']) : 0;
@@ -72,7 +72,11 @@ function smarty_block_wa_js($params, $content, &$smarty) {
                 // https://developers.google.com/closure/compiler/docs/gettingstarted_app
 
                 if ($compiler = waSystemConfig::systemOption('js_compiler')) {
-                    $cmd = 'java -jar "'.$compiler.'"';
+                    $create_source_map = waSystemConfig::systemOption('js_compiler_source_map');
+                    $cmd = 'java -jar "'.$compiler.'" --summary_detail_level 0';
+                    if ($create_source_map) {
+                         $cmd .= ' --create_source_map "%outname%.map" --source_map_format=V3';
+                    }
                     foreach ($files_combine as $file) {
                         $cmd .= ' --js "'.$root_path.'/'.$file.'"';
                     }
@@ -81,6 +85,15 @@ function smarty_block_wa_js($params, $content, &$smarty) {
                     $r = !$res;
                     if(!$r) {
                         waLog::log("Error occured while compress files:\n\t".implode("\n\t",$files_combine)."\n\t{$params['file']}\n\ncommand:\n{$cmd}",__FUNCTION__.'.log');
+                    } else if ($create_source_map && file_exists($app_path.'/'.$params['file'].'.map')) {
+                        if ( ( $contents = @file_get_contents($app_path.'/'.$params['file']))) {
+                            $contents = rtrim($contents)."\n//# sourceMappingURL=".basename($params['file']).".map";
+                            @file_put_contents($app_path.'/'.$params['file'], $contents);
+                        }
+                        if ( ( $contents = @file_get_contents($app_path.'/'.$params['file'].'.map'))) {
+                            $contents = str_replace($root_path.'/', wa()->getRootUrl(), $contents);
+                            @file_put_contents($app_path.'/'.$params['file'].'.map', $contents);
+                        }
                     }
                 } else {
                     $r = false;
@@ -120,7 +133,6 @@ function smarty_block_wa_js($params, $content, &$smarty) {
             $result .= '<script type="text/javascript" src="' . $f . '"></script>'."\n";
 
             // Add datepicker localization automatically
-            // !!! This is not really a good idea since it will break in non-debug mode anyways
             if (substr($f, $n) == $jquery_ui_path.'datepicker.min.js' && $locale != 'en_US') {
                 $result .= '<script type="text/javascript" src="' . $wa->getRootUrl() . 'wa-content/js/jquery-ui/i18n/jquery.ui.datepicker-'.$locale.'.js"></script>'."\n";
             }

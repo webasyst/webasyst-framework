@@ -955,7 +955,6 @@ XML;
         foreach ($files as $f_id => $f) {
             if (!empty($f['modified'])) {
                 $modified[] = $f_id;
-                break;
             }
         }
 
@@ -978,12 +977,8 @@ XML;
 
         foreach ($list_files as $f) {
             // ignore files
-            if ($f !== 'build.php') {
-                foreach ((array)$skip_pattern as $pattern) {
-                    if (preg_match($pattern, $f)) {
-                        continue 2;
-                    }
-                }
+            if ($f !== 'build.php' && preg_match($skip_pattern, $f)) {
+                continue;
             }
             // ignore image settings and modified
             if ($f == 'theme.xml' || in_array($f, $img_files) || in_array($f, $modified)) {
@@ -1552,7 +1547,7 @@ HTACCESS;
     }
 
 
-    public function getSettings($values_only = false)
+    public function getSettings($values_only = false, $locale = null)
     {
         $this->init();
         if ($values_only === 'full') {
@@ -1583,7 +1578,7 @@ HTACCESS;
                     unset($o);
                 }
                 if (isset($s['value']) && is_array($s['value'])) {
-                    $s['value'] = $s['value'][self::getLocale($s['value'])];
+                    $s['value'] = $s['value'][self::getLocale($s['value'], $locale)];
                 }
             }
             unset($s);
@@ -1614,9 +1609,11 @@ HTACCESS;
      * @param array $data
      * @return string
      */
-    private static function getLocale($data = array())
+    private static function getLocale($data = array(), $locale = null)
     {
-        $locale = wa()->getLocale();
+        if (!$locale) {
+            $locale = wa()->getLocale();
+        }
         if ($data) {
             if (!isset($data[$locale])) {
                 $locale = 'en_US';
@@ -1814,36 +1811,138 @@ HTACCESS;
         $this->flush();
     }
 
-    /**
-     *
-     * @throws waException
-     * @return waTheme
-     */
-    public function duplicate()
+    private function getAvailableId($apps = array())
     {
         $numerator = 0;
-        $available = null;
+        $exists = null;
+        if (empty($apps)) {
+            $apps = array($this->app);
+        }
         do {
             $id = $this->id.++$numerator;
             if ($numerator > 1000) {
                 break;
             }
-        } while ($available = self::exists($id, $this->app, true));
 
-        if ($available) {
+            foreach ($apps as $app_id) {
+                if ($exists = self::exists($id, $app_id, true)) {
+                    break;
+                }
+
+            }
+        } while ($exists);
+
+        if ($exists) {
             throw new waException(_w("Duplicate theme failed"));
         }
-        $names = $this->getName(true);
-        foreach ($names as &$name) {
-            $name .= ' '.$numerator;
+        return $numerator;
+    }
+
+    /**
+     *
+     * @throws waException
+     * @param bool $related duplicate all related themes
+     * @param mixed[string] $options
+     * @param string[string] $options['id']
+     * @param string[string] $options['name']
+     * @return waTheme
+     */
+    public function duplicate($related = false, $options = array())
+    {
+        if (!empty($options['id'])) {
+            self::verify($options['id']);
         }
-        unset($name);
-        $params = array(
-            'name'            => $names,
-            'system'          => false,
-            'source_theme_id' => $this->id,
-        );
-        return $this->copy($this->id.$numerator, $params);
+        if ($related) {
+            $apps = array();
+            $parent_theme = null;
+            foreach ($this->related_themes as $related_theme) {
+                $apps[] = $related_theme->app_id;
+                if (!$parent_theme && $related_theme->parent_theme_id) {
+                    $parent_theme = $related_theme->parent_theme;
+                }
+                unset($related_theme);
+            }
+            if (!empty($options['id'])) {
+                $exists = false;
+                foreach ($apps as $app_id) {
+                    if ($exists = self::exists($options['id'], $app_id, true)) {
+                        break;
+                    }
+
+                }
+                if ($exists) {
+                    throw new waException(_w("Duplicate theme failed"));
+                }
+            }
+
+            $numerator = $this->getAvailableId($apps);
+            if ($parent_theme) {
+                if (!empty($options['id'])) {
+                    $parent_theme_id = $parent_theme->app_id.':'.$options['id'];
+                } else {
+                    $parent_theme_id = $parent_theme->app_id.':'.$this->id.$numerator;
+                }
+
+            } else {
+                $parent_theme_id = null;
+            }
+            $duplicate = null;
+            foreach ($this->related_themes as $related_theme) {
+                if (!empty($options['name'])) {
+                    $names = trim($options['name']);
+                } else {
+                    $names = $related_theme->getName(true);
+                    foreach ($names as &$name) {
+                        $name .= ' '.$numerator;
+                    }
+                    unset($name);
+                }
+                $params = array(
+                    'name'            => $names,
+                    'system'          => false,
+                    'source_theme_id' => $related_theme->id,
+                );
+                if ($parent_theme_id && $related_theme->parent_theme_id) {
+                    $params['parent_theme_id'] = $parent_theme_id;
+                }
+                if (!empty($options['id'])) {
+                    $id = $options['id'];
+                } else {
+                    $id = $this->id.$numerator;
+                }
+
+                $instance = $related_theme->copy($id, $params);
+                if ($related_theme->app_id == $this->app_id) {
+                    $duplicate = $instance;
+                }
+                unset($related_theme);
+                unset($instance);
+            }
+            return $duplicate;
+        } else {
+            $numerator = $this->getAvailableId();
+
+            if (!empty($options['id'])) {
+                $id = $options['id'];
+            } else {
+                $id = $this->id.$numerator;
+            }
+            if (!empty($options['name'])) {
+                $names = trim($options['name']);
+            } else {
+                $names = $this->getName(true);
+                foreach ($names as &$name) {
+                    $name .= ' '.$numerator;
+                }
+                unset($name);
+            }
+            $params = array(
+                'name'            => $names,
+                'system'          => false,
+                'source_theme_id' => $this->id,
+            );
+            return $this->copy($id, $params);
+        }
     }
 
     /**

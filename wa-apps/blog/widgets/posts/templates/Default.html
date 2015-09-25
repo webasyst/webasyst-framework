@@ -16,24 +16,27 @@
 
     .widget-2x1 .b-empty-stream { margin: 45px 55px; }
     .widget-2x2 .b-empty-stream { margin: 105px 35px; }
+
+    /* TV */
+    .tv .b-post-background { background: transparent; }
 </style>
 
 {if !empty($post)}
     <div class="b-post-background {$post.color}">
         <div class="block">
 
-                <h6 class="heading small">
-                    {if strtotime($post.datetime) < $smarty.now - 86400*2}
-                        {$post.datetime|wa_datetime:"humandate"}
-                    {else}
-                        {$post.datetime|wa_datetime:"humandatetime"}
-                    {/if}
-                </h6>
-                <h3 class="b-post-title"><a href="{$wa_backend_url}blog/?module=post&id={$post.id}" class="bold">{$post.title|escape|truncate:36}</a></h3>
-                <p class="small b-post-preview">
-                    <!-- <b>{$post.color}</b> -->
-                    {strip_tags($post.text)}
-                </p>
+            <h6 class="heading small">
+                {if strtotime($post.datetime) < $smarty.now - 86400*2}
+                    {$post.datetime|wa_datetime:"humandate"}
+                {else}
+                    {$post.datetime|wa_datetime:"humandatetime"}
+                {/if}
+            </h6>
+            <h3 class="b-post-title"><a href="{$wa_backend_url}blog/?module=post&id={$post.id}" class="bold">{$post.title|escape|truncate:36}</a></h3>
+            <p class="small b-post-preview">
+                <!-- <b>{$post.color}</b> -->
+                {strip_tags($post.text)}
+            </p>
 
         </div>
     </div>

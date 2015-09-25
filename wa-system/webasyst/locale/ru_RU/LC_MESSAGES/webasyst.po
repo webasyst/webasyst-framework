@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WebAsyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2015-08-21 12:41+0300\n"
+"PO-Revision-Date: 2015-09-23 16:08+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -12,7 +12,7 @@ msgstr ""
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
 "Language: ru_RU\n"
-"X-Generator: Poedit 1.7.6\n"
+"X-Generator: Poedit 1.8.4\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
 
@@ -4172,3 +4172,141 @@ msgstr "Лента отображает события из всех прило�
 
 msgid "%s theme (version %s) for %s app"
 msgstr "Тема «%s» (версия %s) для приложения «%s»"
+
+msgid "Apps"
+msgstr "Приложения"
+
+msgid "Widgets"
+msgstr "Виджеты"
+
+#: /wa-system/captcha/recaptcha/waReCaptcha.class.php:57
+msgid "The secret parameter is missing."
+msgstr ""
+
+#: /wa-system/captcha/recaptcha/waReCaptcha.class.php:60
+msgid "The secret parameter is invalid or malformed."
+msgstr ""
+
+#: /wa-system/captcha/recaptcha/waReCaptcha.class.php:63
+msgid "The response parameter is missing."
+msgstr ""
+
+#: /wa-system/captcha/recaptcha/waReCaptcha.class.php:66
+msgid "The response parameter is invalid or malformed."
+msgstr ""
+
+#: /wa-system/controller/waFrontController.class.php:66
+msgid "You don’t have permissions to view this widget"
+msgstr "Недостаточно прав доступа для просмотра виджета"
+
+#: /wa-system/plugin/templates/Plugins.html:20
+msgid "Popular plugins"
+msgstr "Популярные плагины"
+
+#: /wa-system/plugin/templates/Plugins.html:39
+msgid "No plugins are installed."
+msgstr "Плагины не установлены."
+
+#: /wa-system/plugin/templates/Plugins.html:47 /wa-system/plugin/templates/Plugins.html:320
+msgid "Loading..."
+msgstr "Загрузка..."
+
+#: /wa-system/plugin/templates/Plugins.html:165
+msgid "Plugins"
+msgstr "Плагины"
+
+#: /wa-system/plugin/templates/Settings.html:26
+msgid "Plugin %s is installed and working."
+msgstr "Плагин «%s» установлен и работает."
+
+#: /wa-system/plugin/templates/Settings.html:29
+msgid "No configuration options are available for this plugin."
+msgstr "Этот плагин не предоставляет возможность изменения настроек."
+
+#: /wa-system/plugin/templates/Settings.html:36
+msgid "Unknown plugin"
+msgstr "Неизвестный плагин"
+
+#: /wa-system/webasyst/lib/cli/webasystCreateApp.cli.php:278
+msgid "Hello world"
+msgstr "Hello world"
+
+#: /wa-system/webasyst/lib/cli/webasystCreateApp.cli.php:283
+msgid "Navigation"
+msgstr ""
+
+#: /wa-system/webasyst/lib/cli/webasystCreateApp.cli.php:286
+msgid "Menu item 1"
+msgstr ""
+
+#: /wa-system/webasyst/lib/cli/webasystCreateApp.cli.php:289
+msgid "Menu item 2"
+msgstr ""
+
+#: /wa-system/webasyst/lib/cli/webasystCreateApp.cli.php:292
+msgid "Menu item 3"
+msgstr ""
+
+#: /wa-system/webasyst/lib/cli/webasystCreateApp.cli.php:301
+msgid "Woohoo, Webasyst app is ready!"
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/backend/BackendDashboard.html:107
+msgid "My dashboard"
+msgstr "Моя панель управления"
+
+#: /wa-system/webasyst/templates/actions/backend/BackendDashboard.html:108
+msgid "Webasyst TV"
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/backend/BackendDashboard.html:112
+msgid "New Webasyst TV dashboard..."
+msgstr "Новая панель Webasyst TV..."
+
+#: /wa-system/webasyst/templates/actions/backend/BackendDashboard.html:124
+msgid "New dashboard"
+msgstr "Новая панель управления"
+
+#: /wa-system/webasyst/templates/actions/backend/BackendDashboard.html:127
+msgid "Dashboard title"
+msgstr "Название"
+
+#: /wa-system/webasyst/templates/actions/backend/BackendDashboard.html:131
+msgid "Webasyst TV dashboards can be opened in any modern web browser and streamed to 4K or Full HD TVs."
+msgstr "Панель управления Webasyst TV открывается по уникальной приватной ссылке в любом современном браузере и предназначена для трансляции на телевизоры 4K или Full HD."
+
+#: /wa-system/webasyst/templates/actions/dashboard/DashboardEditPublic.html:34
+msgid "Dashboard public link"
+msgstr "Ссылка"
+
+#: /wa-system/webasyst/templates/actions/dashboard/DashboardEditPublic.html:38
+msgid "You are about to permanently delete this dashboard. Are you sure?"
+msgstr "Панель управления будет удалена без возможности восстановления. Вы уверены?"
+
+#: /wa-system/webasyst/templates/actions/dashboard/DashboardEditPublic.html:38
+msgid "Delete dashboard"
+msgstr "Удалить панель управления"
+
+#: /wa-system/webasyst/templates/actions/dashboard/DashboardSidebar.html:16
+msgid "Add widgets"
+msgstr "Добавить виджеты"
+
+msgid "Installed"
+msgstr "Установлены"
+
+msgid "Install new widgets"
+msgstr "Добавить виджеты"
+
+msgid "Only you can see this dashboard."
+msgstr "Эту панель управления видите только вы."
+
+msgid "Themes to clone"
+msgstr "Клонировать темы"
+
+#: /wa-system/design/templates/Theme.html:485
+msgid "All %s themes (recommended)"
+msgstr "Тема «%s» для всех приложений (рекомендуется)"
+
+#: /wa-system/design/templates/Theme.html:486
+msgid "Only %s theme for this app (%s)"
+msgstr "Тема «%s» только для приложения «%s»"

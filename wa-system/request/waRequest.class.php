@@ -211,10 +211,6 @@ class waRequest
      */
     public static function isMobile($check = true)
     {
-        if (self::$mobile !== null) {
-            return self::$mobile;
-        }
- 
         if ($check) {
             if (self::get('nomobile') !== null) {
                 if (self::get('nomobile')) {
@@ -226,9 +222,12 @@ class waRequest
                 waSystem::getInstance()->getStorage()->remove('nomobile');
             }
             if (waSystem::getInstance()->getStorage()->read('nomobile')) {
-                self::$mobile = false;
                 return false;
             }
+        }
+
+        if (self::$mobile !== null) {
+            return self::$mobile;
         }
         $user_agent = self::server('HTTP_USER_AGENT');
 
@@ -245,6 +244,7 @@ class waRequest
         }
 
         $mobile_platforms = array(
+            "google-mobile" => "googlebot\-mobile",
             "android"    => "android",
             "blackberry" => "(blackberry|rim tablet os)",
             "iphone"     => "(iphone|ipod)",

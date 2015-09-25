@@ -17,21 +17,16 @@
  * jQuery Mobile (http://jquerymobile.com/) is the default and recommended CSS/JS framework for building mobile versions of Webasyst apps.
 */
 @import "../jquery-mobile/jquery.mobile-1.1.1.min.css";
-@import "../jquery-mobile/jquery.mobile.custom.css"; 
-
-
-
+@import "../jquery-mobile/jquery.mobile.custom.css";
 
 html { -webkit-text-size-adjust: none; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; }
 .ui-li::-moz-focus-inner {
-border: 0;
-}
-#wa.wa-app-list { background: #fff; }
+border: 0; }
+#wa.wa-app-list { background: #fff; min-width: 320px; }
 #wa.wa-app-list .ui-content { padding: 15px 10px; }
 #wa.wa-mobile-login { background:url('../../img/cloth-background-light.jpg'); }
 @media all and (-webkit-min-device-pixel-ratio: 2) {
-	#wa.wa-mobile-login { background:url('../../img/cloth-background-light.jpg'); background-size:200px 200px; }
-}
+	#wa.wa-mobile-login { background:url('../../img/cloth-background-light.jpg'); background-size:200px 200px; } }
 #wa.wa-mobile-login .ui-grid-a > * { width: 100%; }
 #wa.wa-mobile-login .ui-grid-a .ui-btn { margin-left: 2px; margin-right: 2px; }
 #wa.wa-mobile-login div.ui-body-r { background: transparent; }
@@ -73,3 +68,18 @@ border: 0;
 #wa fieldset.ui-controlgroup { margin: 0;}
 
 .userpic { border-radius: 50%; }
+
+.is-dashboard-shown #wa.wa-app-list,
+.is-dashboard-shown #apps,
+.is-dashboard-shown #wa-mobile-apps-list { background: #eee; }
+
+#apps > .ui-bar-a { background: #000; }
+#apps > .ui-bar-a .ui-btn-inner { border: 0; }
+#apps > .ui-bar-a .ui-shadow,
+#apps > .ui-bar-a .ui-icon-shadow { text-shadow: none; -webkit-box-shadow: none; box-shadow: none; }
+#apps > .ui-bar-a .ui-btn-up-a { background: transparent; border: 0; top: 8px; }
+
+.d-mobile-toggle-wrapper { margin: 15px 0 0; text-align: center; }
+.d-mobile-toggle-wrapper .d-mobile-view-toggle { display: inline-block; vertical-align: top; border-radius: .5rem; border: 1px solid #aaa; font-size: 0; line-height: 0; overflow: hidden; }
+.d-mobile-toggle-wrapper .d-mobile-view-toggle .link-item { display: inline-block; vertical-align: top; padding: .5rem .8rem; font-size: 1rem; line-height: 1em; background: #fff; text-decoration: none; text-shadow: none; color: #aaa; box-sizing: border-box; }
+.d-mobile-toggle-wrapper .d-mobile-view-toggle .link-item.is-active { background: #aaa; color: #fff; }
