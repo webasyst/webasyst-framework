@@ -234,7 +234,6 @@ class waRequest
         $desktop_platforms = array(
             'ipad'       => 'ipad',
             'galaxy-tab' => 'android.*?GT\-P',
-            'bot'        => '(googlebot\b|facebot|yandexbot|bingbot|twitterbot)',
         );
         foreach ($desktop_platforms as $pattern) {
             if (preg_match('/'.$pattern.'/i', $user_agent)) {

@@ -43,6 +43,12 @@ class waPlugin
         return $this->info['name'];
     }
 
+    public function getInfo()
+    {
+        return $this->info;
+    }
+
+
     public function getVersion()
     {
         $version = isset($this->info['version']) ? $this->info['version'] : '0.0.1';
