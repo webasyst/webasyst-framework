@@ -1,6 +1,9 @@
 body {
   background: #eee;
 }
+body .d-dashboard-header-content {
+  display: none;
+}
 body.is-highlighted {
   background: #ccc;
   -webkit-transition: background 300ms linear;
@@ -17,6 +20,7 @@ body.is-highlighted #wa-header #wa-applist > .ui-sortable {
   visibility: hidden;
 }
 body.is-highlighted #wa-header .d-dashboard-header-content {
+  display: block;
   position: absolute;
   top: 0;
   left: 0;
@@ -712,7 +716,7 @@ body.is-highlighted #wa-header .d-dashboard-header-content .d-dashboard-link-wra
   margin: 0;
   padding: 0;
   border: solid transparent;
-  font-size: 1rem;
+  font-size: 14px;
   line-height: 1;
   border-width: 10px 0 0 10px;
   box-sizing: border-box;
@@ -1117,6 +1121,10 @@ body.is-highlighted #wa-header .d-dashboard-header-content .d-dashboard-link-wra
 }
 .widget-2x2 h6 {
   font-size: 1.1em;
+}
+.tv .d-page-wrapper .d-content-wrapper .d-widgets-wrapper .widget-group-wrapper .widget-wrapper,
+.mobile .d-page-wrapper .d-content-wrapper .d-widgets-wrapper .widget-group-wrapper .widget-wrapper {
+  font-size: 1rem;
 }
 #close-dashboard-editable-mode {
   position: relative;
