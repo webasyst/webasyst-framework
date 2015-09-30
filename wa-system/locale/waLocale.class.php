@@ -371,7 +371,7 @@ function _w($msgid1, $msgid2 = null, $n = null, $sprintf = true)
 function sprintf_wp()
 {
     $args = func_get_args();
-    array_unshift($args, _w(array_shift($args)));
+    array_unshift($args, _wp(array_shift($args)));
     return call_user_func_array('sprintf', $args);
 }
 
