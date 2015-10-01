@@ -41,7 +41,7 @@ class blogPostSaveController extends waJsonController
     {
         $post = array(
             'id'                 => waRequest::post('post_id', null, waRequest::TYPE_INT),
-            'title'              => substr(waRequest::post('title', '', waRequest::TYPE_STRING_TRIM), 0, 255),
+            'title'              => mb_substr(waRequest::post('title', '', waRequest::TYPE_STRING_TRIM), 0, 255),
             'text'               => waRequest::post('text'),
             'blog_id'            => waRequest::post('blog_id'),
             'contact_id'         => waRequest::post('contact_id'),
