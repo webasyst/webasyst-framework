@@ -840,7 +840,10 @@ class waContactsCollection
 
         }
         $sql = "INSERT ".($ignore ? "IGNORE " : "")."INTO ".$table." (".implode(",", $insert_fields).")
-                SELECT DISTINCT ".implode(",", $select_fields)." ".$this->getSQL($primary_email).$this->getOrderBy();
+                SELECT DISTINCT ".implode(",", $select_fields)." ".$this->getSQL($primary_email);
+        $sql .= $this->getGroupBy();
+        $sql .= $this->getHaving();
+        $sql .= $this->getOrderBy();
         return $this->getModel()->exec($sql);
     }
 

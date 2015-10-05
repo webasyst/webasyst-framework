@@ -1,16 +1,14 @@
 <?php
 
-class webasystCreatePluginCli extends waCliController
+class webasystCreatePluginCli extends webasystCreateCliController
 {
-    public function execute()
+    protected $plugin_id = false;
+
+    protected function showHelp()
     {
-        $app_id = waRequest::param(0);
-        $plugin_id = waRequest::param(1);
-        $params = waRequest::param();
-        if (empty($app_id) || empty($plugin_id) || isset($params['help'])) {
-            $help = <<<HELP
+        echo <<<HELP
 Usage: php wa.php createPlugin [app_id] [plugin_id] [parameters]
-    app_id - App id (string in lower case) 
+    app_id - App id (string in lower case)
     plugin_id - Plugin id (string in lower case)
 Optional parameters:
     -name (Plugin name; if comprised of several words, enclose in quotes; e.g., 'My plugin')
@@ -18,71 +16,137 @@ Optional parameters:
     -vendor (Numerical vendor id)
     -frontend (Has frontend)
     -settings (Implements custom settings screen)
+    -disable (1|true) not enable plugin at wa-config/apps/app_id/plugins.php
 Example: php wa.php createPlugin someapp myplugin -name 'My plugin' -version 1.0.0 -vendor 123456 -frontend -settings
 HELP;
-            print $help."\n";
-        } else {
-            $errors = array();
+        parent::showHelp();
+    }
+
+
+    protected function init()
+    {
+        $init = parent::init();
+        $this->plugin_id = waRequest::param(1);
+        return $init && !empty($this->plugin_id);
+    }
+
+    protected function initPath()
+    {
+        parent::initPath();
+        $this->path = wa()->getAppPath('plugins/'.$this->plugin_id, $this->app_id).'/';
+    }
+
+    protected function verifyParams($params = array())
+    {
+        $errors = parent::verifyParams($params);
+
+        if (!preg_match('@^[a-z][a-z0-9]+$@', $this->plugin_id)) {
+            $errors[] = "Invalid plugin ID";
+        }
+        if (empty($errors)) {
             if (!empty($params['version']) && !preg_match('@^[\d]+(\.\d+)*$@', $params['version'])) {
                 $errors[] = 'Invalid version format';
             }
-            if ($info = wa()->getAppInfo($app_id)) {
+            if ($info = wa()->getAppInfo($this->app_id)) {
                 if (empty($info['plugins'])) {
-                    $errors[] = "Application '{$app_id}' doesn't support plugins";
+                    $errors[] = "Application '{$this->app_id}' doesn't support plugins";
                 } else {
-                    if (!preg_match('@^[a-z][a-z0-9]+$@', $plugin_id)) {
+                    if (!preg_match('@^[a-z][a-z0-9]+$@', $this->plugin_id)) {
                         $errors[] = "Invalid plugin ID";
                     }
                     if (isset($params['frontend']) && empty($info['frontend'])) {
-                        $errors[] = "Invalid option frontend, application {$app_id} doesn't support frontend";
+                        $errors[] = "Invalid option frontend, application {$this->app_id} doesn't support frontend";
                     }
                 }
             } else {
                 $errors[] = "Application not found";
             }
-
-            if ($errors) {
-                print "ERROR:\n\t";
-                print implode("\n\t", $errors);
-                print "\n";
-            } else {
-                $plugin_path = wa()->getAppPath('plugins/'.$plugin_id, $app_id);
-                $this->create($app_id, $plugin_id, $plugin_path, $params);
-            }
         }
+        return $errors;
     }
 
 
-    protected function create($app_id, $plugin_id, $path, $params = array())
+    protected function create($params = array())
     {
-        $report = '';
-        if (!file_exists($path)) {
-            $plugin = array(
-                'name'     => empty($params['name']) ? ucfirst($plugin_id) : $params['name'],
-                'icon'     => 'img/'.$plugin_id.'.gif',
-                'version'  => $version = empty($params['version']) ? '0.1' : $params['version'],
-                'vendor'   => $vendor = empty($params['vendor']) ? '--' : $params['vendor'],
-                'handlers' => array( //TODO optional include some demo handlers
-                ),
-            );
-            $path .= '/';
-            mkdir($path);
+        $config = array(
+            'name'     => empty($params['name']) ? ucfirst($this->plugin_id) : $params['name'],
+            'icon'     => 'img/'.$this->plugin_id.'.gif',
+            'version'  => ifempty($params['version'], $this->getDefaults('version')),
+            'vendor'   => ifempty($params['vendor'], $this->getDefaults('vendor')),
+            'handlers' => array(),//TODO optional include some demo handlers
+        );
 
-            mkdir($path.'css');
-            touch($path.'css/'.$plugin_id.'.css');
-            mkdir($path.'js');
-            touch($path.'js/'.$plugin_id.'.js');
-            mkdir($path.'img');
-            // lib
-            mkdir($path.'lib');
-            waFiles::protect($path.'lib');
-            $class_name = $app_id.ucfirst($plugin_id).'Plugin';
-            wa($app_id, true);
-            $extends = $app_id.'Plugin';
-            if (!class_exists($extends)) {
-                $extends = 'waPlugin';
+
+        $paths = array(
+            'css/'.$this->plugin_id.'.css',
+            'js/'.$this->plugin_id.'.js',
+            'img/',
+            'lib/',
+            'lib/actions/backend/',
+            'lib/classes/',
+            'lib/config/',
+            'lib/'.$this->app_id.ucfirst($this->plugin_id).'Plugin.class.php' => $this->getPluginClassCode(),
+            'lib/vendors/',
+        );
+
+        if (isset($params['db'])) {
+            array_push($paths, array('lib/models/'));
+        }
+        if (isset($params['locale'])) {
+            array_push($paths, array('locale/'));
+        }
+
+        if (isset($params['frontend'])) {
+            $config['frontend'] = true;
+
+            array_push(
+                $paths,
+                array(
+                    'lib/actions/frontend/',
+                    'templates/actions/frontend/',
+                )
+            );
+            $paths['lib/config/routing.php'] = array('*' => 'frontend');
+
+        }
+
+        if (isset($params['settings'])) {
+            $paths['lib/config/settings.php'] = array();
+        }
+
+        $paths['lib/config/plugin.php'] = $config;
+
+        $protected_paths = array(
+            'lib/',
+            'templates/',
+        );
+        if (isset($params['locale'])) {
+            array_push($protected_paths, array('locale/'));
+        }
+
+        $this->createStructure($paths);
+        $this->protect($protected_paths);
+
+        if (!isset($params['disable'])) {
+            $this->installPlugin();
+            $errors = $this->flushCache();
+            if ($errors) {
+                print "Error during delete cache files:\n\t".implode("\n\t", $errors)."\n";
             }
-            $class = <<<PHP
+        }
+
+        return $config;
+    }
+
+    private function getPluginClassCode()
+    {
+        $class_name = $this->app_id.ucfirst($this->plugin_id).'Plugin';
+        wa($this->app_id, true);
+        $extends = $this->app_id.'Plugin';
+        if (!class_exists($extends)) {
+            $extends = 'waPlugin';
+        }
+        $code = <<<PHP
 <?php
 
 class {$class_name} extends {$extends}
@@ -91,61 +155,34 @@ class {$class_name} extends {$extends}
 }
 
 PHP;
-            waFiles::write($path.'lib/'.$app_id.ucfirst($plugin_id).'Plugin.class.php', $class);
-            mkdir($path.'lib/config');
-            mkdir($path.'lib/actions');
+        return $code;
+    }
 
-            mkdir($path.'lib/classes');
-            if (isset($params['db'])) {
-                mkdir($path.'lib/models');
-            }
-
-
-            if (isset($params['frontend'])) {
-                $plugin['frontend'] = true;
-                $routing = array('*' => 'frontend');
-                waUtils::varExportToFile($routing, $path.'lib/config/routing.php');
-
-                // frontend controller
-                mkdir($path.'lib/actions/frontend');
-            }
-
-            // config
-            waUtils::varExportToFile($plugin, $path.'lib/config/plugin.php');
-            if (isset($params['settings'])) {
-                waUtils::varExportToFile(array(), $path.'lib/config/settings.php');
-            }
-
-            // templates
-            mkdir($path.'templates');
-            waFiles::protect($path.'templates');
-            mkdir($path.'templates/actions');
-            mkdir($path.'templates/actions/backend');
-            // backend template
-            if (isset($params['frontend'])) {
-                // frontend template
-                mkdir($path.'templates/actions/frontend');
-            }
-            // locale
-            if (isset($params['locale'])) {
-                mkdir($path.'locale');
-                waFiles::protect($path.'locale');
-            }
-            $report .= <<<REPORT
-Plugin with id "$plugin_id" created!
+    protected function showReport($data = array())
+    {
+        echo <<<REPORT
+Plugin with id "$this->plugin_id" created!
 
 Useful commands:
     #generate plugin's database description file db.php
-    php wa.php generateDb $app_id/$plugin_id table1 table2 table3
+    php wa.php generateDb $this->app_id/$this->plugin_id table1 table2 table3
 
     #generate plugin's locale files
-    php wa-system/locale/locale.php $app_id/plugins/$plugin_id
+    php wa-system/locale/locale.php $this->app_id/plugins/$this->plugin_id
 REPORT;
-        } else {
-            $report .= <<<REPORT
-Plugin with id "$plugin_id" already exists.
-REPORT;
+    }
+
+    private function installPlugin()
+    {
+        $path = wa()->getConfig()->getConfigPath('plugins.php', true, $this->app_id);
+        $plugins = null;
+        if (file_exists($path)) {
+            $plugins = include($path);
         }
-        print $report."\n";
+        if (!is_array($plugins)) {
+            $plugins = array();
+        }
+        $plugins[$this->plugin_id] = true;
+        waUtils::varExportToFile($plugins, $path);
     }
 }

@@ -62,6 +62,9 @@ class waFrontController
     public function executeWidget($widget, $action = null)
     {
         $widget = $this->system->getWidget(waRequest::get('id'));
+        if (!$widget->isAllowed()) {
+            throw new waException(_ws('You don’t have permissions to view this widget'), 403);
+        }
         $app_id = $widget->getInfo('app_id');
         if ($app_id != 'webasyst') {
             waSystem::pushActivePlugin($widget->getInfo('widget'), $app_id.'_widget');

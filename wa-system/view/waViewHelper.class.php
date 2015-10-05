@@ -192,7 +192,7 @@ class waViewHelper
         $og = wa()->getResponse()->getMeta('og');
         if ($og) {
             foreach ($og as $k => $v) {
-                $html .= '<meta property="og:'.htmlspecialchars($k).'" content="'.htmlspecialchars($v).'" />'.PHP_EOL;
+                $html .= '<meta property="'.htmlspecialchars($k).'" content="'.htmlspecialchars($v).'" />'.PHP_EOL;
             }
         }
 

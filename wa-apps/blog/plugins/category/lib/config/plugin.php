@@ -4,7 +4,7 @@ return array(
     'name'        => /*_wp*/('Categories'),
     'description' => /*_wp*/('Posts filtering by category'),
     'vendor'      => 'webasyst',
-    'version'     => '1.0.0',
+    'version'     => '1.1',
     'img'         => 'img/category.png',
     'frontend'    => true,
 
@@ -22,5 +22,5 @@ return array(
         'frontend_action_post'   => 'frontendSidebar',
         'frontend_action_page'   => 'frontendSidebar',
     ),
-    'blog_settings' => true,
+    'custom_settings' => true,
 );

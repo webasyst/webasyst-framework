@@ -36,6 +36,14 @@ class waContactForm
      */
     public static function loadConfig($file, $options = array())
     {
+        $config = self::readConfig($file);
+        $form = new self($config['fields'], $options);
+        $form->setValue($config['values']);
+        return $form;
+    }
+
+    protected static function readConfig($file)
+    {
         if (is_array($file)) {
             $fields_config = $file;
         } else {
@@ -101,10 +109,10 @@ class waContactForm
 
             $fields[$full_field_id] = $f;
         }
-
-        $form = new self($fields, $options);
-        $form->setValue($values);
-        return $form;
+        return array(
+            'fields' => $fields,
+            'values' => $values
+        );
     }
 
     protected static function getClone($f, $opts)

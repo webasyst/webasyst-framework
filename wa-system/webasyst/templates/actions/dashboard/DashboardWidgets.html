@@ -14,7 +14,7 @@
                             <script>
                                 DashboardWidgets["{$w.id}"] = new DashboardWidget({
                                     widget_id: "{$w.id}",
-                                    widget_href: "{$wa_backend_url}{$w.app_id}/?widget={$w.widget}&id={$w.id}",
+                                    widget_href: {$w.href|json_encode},
                                     widget_sort: "{$w.sort}",
                                     widget_group_index: "{$block_widgets@index}",
                                     widget_size: {

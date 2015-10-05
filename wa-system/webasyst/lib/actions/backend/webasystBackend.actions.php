@@ -2,41 +2,24 @@
 
 class webasystBackendActions extends waViewActions
 {
-
     public function defaultMobileAction()
     {
         $apps = $this->getUser()->getApps();
         $this->view->assign('apps', $apps);
-        $backend_url = $this->getConfig()->getBackendUrl(true);
-        $this->view->assign('backend_url', $backend_url);
+        $this->view->assign('backend_url', $this->getConfig()->getBackendUrl(true));
     }
 
     public function defaultAction()
     {
-        try {
-            $dashboard_type = waRequest::get('dashboard_type');
+        $this->action = 'dashboard';
+        $this->setLayout(new webasystBackendLayout());
+        $this->view->assign("username", wa()->getUser()->getName());
+        $this->dashboardAction();
+    }
 
-            $this->setLayout(new webasystBackendLayout());
-
-            $this->view->assign("username", wa()->getUser()->getName());
-
-            $this->dashboardAction();
-            $this->action = 'dashboard';
-            return;
-
-            $template_file = wa()->getDataPath('templates/BackendDefault.html', false, 'webasyst');
-            if (file_exists($template_file)) {
-                $this->template = 'file:'.$template_file;
-            }
-        } catch (waException $e) {
-            throw $e;
-            // user not exists
-            if ($e->getCode() == 404) {
-                wa()->getUser()->logout();
-                wa()->dispatch();
-                exit;
-            }
-        }
+    public function dashboardMobileAction()
+    {
+        $this->dashboardAction();
     }
 
     public function dashboardAction()
@@ -51,6 +34,11 @@ class webasystBackendActions extends waViewActions
             foreach ($apps as $app_id => $app) {
                 if (($app_id == 'webasyst') || $this->getUser()->getRights($app_id, 'backend')) {
                     foreach (wa($app_id)->getConfig()->getWidgets() as $w_id => $w) {
+                        if (!empty($w['rights'])) {
+                            if (!waWidget::checkRights($w['rights'])) {
+                                continue;
+                            }
+                        }
                         if (!empty($w['locale']) && ($w['locale'] != $locale)) {
                             continue;
                         }
@@ -92,6 +80,12 @@ class webasystBackendActions extends waViewActions
                 if (isset($app_widgets[$row['widget']])) {
                     $row['size'] = explode('x', $row['size']);
                     $row = $row + $app_widgets[$row['widget']];
+                    if (!empty($row['rights'])) {
+                        if (!waWidget::checkRights($row['rights'])) {
+                            continue;
+                        }
+                    }
+                    $row['href'] = wa()->getAppUrl($row['app_id'])."?widget={$row['widget']}&id={$row['id']}";
                     foreach ($row['sizes'] as $s) {
                         if ($s == array(1, 1)) {
                             $row['has_sizes']['small'] = true;
@@ -105,7 +99,6 @@ class webasystBackendActions extends waViewActions
                 }
             }
         }
-        $this->view->assign('widgets', $widgets);
 
         // announcement
         $user = wa()->getUser();
@@ -122,25 +115,38 @@ class webasystBackendActions extends waViewActions
             $announcements_apps[$row['app_id']] = true;
             $announcements[] = $row;
         }
-        $this->view->assign('notifications', $announcements);
 
         // activity stream
         $activity_action = new webasystDashboardActivityAction();
-        $this->view->assign('apps', wa()->getUser()->getApps());
         $user_filters = wa()->getUser()->getSettings('webasyst', 'dashboard_activity');
         if ($user_filters) {
             $user_filters = explode(',', $user_filters);
         } else {
             $user_filters = array();
         }
-        $this->view->assign('user_filters', $user_filters);
-        $this->view->assign('activity', $activity_action->getLogs(array(), $count));
-        if ($count == 50) {
-            $this->view->assign('activity_load_more', true);
+        $activity = $activity_action->getLogs(array(), $count);
+        $activity_load_more = $count == 50;
+
+        $is_admin = wa()->getUser()->isAdmin('webasyst');
+        $public_dashboards = array();
+        if ($is_admin) {
+            $dashboard_model = new waDashboardModel();
+            $public_dashboards = $dashboard_model->order('name')->fetchAll('id');
         }
 
-        // Whether to show tutorial
-        $this->view->assign('show_tutorial', !wa()->getUser()->getSettings('webasyst', 'widget_tutorial_closed'));
+        $this->view->assign(array(
+            'widgets' => $widgets,
+            'notifications' => $announcements,
+            'public_dashboards' => $public_dashboards,
+            'apps' => wa()->getUser()->getApps(),
+
+            'user_filters' => $user_filters,
+            'activity_load_more' => $activity_load_more,
+            'activity' => $activity,
+            'is_admin' => $is_admin,
+
+            'show_tutorial' => !wa()->getUser()->getSettings('webasyst', 'widget_tutorial_closed'),
+        ));
     }
 
     public function logoutAction()

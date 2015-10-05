@@ -1,0 +1,125 @@
+.b-comments-widget {
+  font-size: 14px;
+}
+.b-comments-widget:after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 0;
+  height: 0;
+  border: 10px solid #eda300;
+  border-left-color: transparent;
+  border-bottom-color: transparent;
+}
+.b-comments-widget:hover .b-link-to-all-posts {
+  opacity: 1;
+}
+.b-comments-widget .b-comment {
+  margin: 1.5em 0 0;
+}
+.b-comments-widget .b-comment:first-of-type {
+  margin-top: 0.5em;
+}
+.b-comments-widget .b-comment .b-header {
+  display: table;
+  width: 100%;
+  table-layout: fixed;
+}
+.b-comments-widget .b-comment .b-header .left-column,
+.b-comments-widget .b-comment .b-header .main-column {
+  display: table-cell;
+  vertical-align: middle;
+}
+.b-comments-widget .b-comment .b-header .left-column {
+  width: 2.285714285714286em;
+  padding: 0 0.75em 0 0;
+}
+.b-comments-widget .b-comment .b-header .main-column {
+  padding: 0 0 0.1em;
+}
+.b-comments-widget .b-comment .b-header .b-author-image {
+  display: block;
+  width: 2.285714285714286em;
+  height: 2.285714285714286em;
+}
+.b-comments-widget .b-comment .b-header .b-author-image img {
+  width: 100%;
+  max-height: 100%;
+}
+.b-comments-widget .b-comment .b-header .b-author-name,
+.b-comments-widget .b-comment .b-header .b-comment-date {
+  display: block;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.b-comments-widget .b-comment .b-header .b-author-name {
+  padding: 0.2em 0 0;
+}
+.b-comments-widget .b-comment .b-header .b-comment-date {
+  margin: 0.25em 0 0;
+}
+.b-comments-widget .b-comment .b-comment-text {
+  margin: 0.3em 0 0;
+}
+.b-comments-widget .b-comment .b-comment-subtext {
+  margin: 0.2em 0 0;
+}
+.b-comments-widget .b-no-comments {
+  margin: 35px 20px;
+  font-weight: normal;
+}
+.b-comments-widget .b-link-to-all-posts {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  text-align: center;
+  opacity: 0;
+  padding: 18px 0 0;
+  background: -moz-linear-gradient(top, rgba(255,255,255,0) 0%, #fff 50%);
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, rgba(255,255,255,0)), color-stop(50%, #fff));
+  background: -webkit-linear-gradient(top, rgba(255,255,255,0) 0%, #fff 50%);
+  background: -o-linear-gradient(top, rgba(255,255,255,0) 0%, #fff 50%);
+  background: -ms-linear-gradient(top, rgba(255,255,255,0) 0%, #fff 50%);
+  background: linear-gradient(to bottom, rgba(255,255,255,0) 0%, #fff 50%);
+  transition: opacity 0.5s;
+}
+.widget-2x1 .b-comments-widget .b-no-comments {
+  margin: 45px 55px;
+}
+.widget-2x2 .b-comments-widget .b-no-comments {
+  margin: 105px 35px;
+}
+.tv .b-comments-widget {
+  font-size: 1rem;
+}
+.tv .b-comments-widget .hint a {
+  color: #e2e25b;
+}
+.tv .b-comments-widget .b-comment .b-header .b-comment-date {
+  color: #aaa;
+  font-size: 0.9em;
+}
+.tv .b-comments-widget .b-comment .b-header .b-author-name a {
+  color: #eee;
+}
+.tv .b-comments-widget .b-comment .b-comment-text {
+  font-size: 1.1em;
+}
+.tv .b-comments-widget .b-comment .b-comment-subtext {
+  font-size: 0.9em;
+}
+.tv .b-comments-widget .b-link-to-all-posts {
+  background: -moz-linear-gradient(top, rgba(51,51,51,0) 0%, #333 50%);
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, rgba(51,51,51,0)), color-stop(50%, #333));
+  background: -webkit-linear-gradient(top, rgba(51,51,51,0) 0%, #333 50%);
+  background: -o-linear-gradient(top, rgba(51,51,51,0) 0%, #333 50%);
+  background: -ms-linear-gradient(top, rgba(51,51,51,0) 0%, #333 50%);
+  background: linear-gradient(to bottom, rgba(51,51,51,0) 0%, #333 50%);
+}
+.mobile .b-comments-widget {
+  font-size: 1rem;
+}

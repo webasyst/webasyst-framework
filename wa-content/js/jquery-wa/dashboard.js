@@ -124,6 +124,22 @@ var DashboardWidget;
             activeClass = "is-editable-mode";
         return $pageWrapper.hasClass(activeClass);
     };
+    
+    var getDashboardSelect = function() {
+        return ( $("#d-dashboards-select") || false )
+    };
+
+    var getDashboardID = function() {
+        var $select = getDashboardSelect(),
+            value = ( $select.length ) ? $select.val() : false;
+
+        // If Default Dashboard
+        if (value == 0) {
+            value = false
+        }
+
+        return value;
+    };
 
     // WIDGET | Скрипты относящиеся к Виджету и его внутренностям
     ( function() {
@@ -259,6 +275,9 @@ var DashboardWidget;
             });
 
             $widgetControls.on("click", ".delete-widget-link", function() {
+                // Hide button
+                $(this).css("visibility","hidden");
+                // Delete
                 that.deleteWidget();
                 return false;
             });
@@ -820,6 +839,13 @@ var DashboardWidget;
                 return false;
             });
 
+            // Custom Dashboard, подцветка при наведении на пустую группу
+            $groups_wrapper.on("dragover", ".ornament-widget-group", function(event) {
+                onEmptyGroupOver(event, $(this), $groups_wrapper );
+                event.preventDefault();
+                return false;
+            });
+
             // Навели на группу
             $groups_wrapper.on("dragenter", ".widget-group-wrapper", function() {
                 onDragEnter( $(this) );
@@ -832,6 +858,12 @@ var DashboardWidget;
                 } else if (storage.newDraggedWidget) {
                     onWidgetListDrop(event, $(this));
                 }
+                event.preventDefault();
+            });
+
+            // Custom Dashboard
+            $groups_wrapper.on("drop", ".ornament-widget-group", function(event) {
+                onEmptyGroupDrop(event);
                 event.preventDefault();
             });
         };
@@ -910,10 +942,7 @@ var DashboardWidget;
             // Marking new group
             if (delta < border_width) {
 
-                if (!$group.hasClass(activeClass)) {
-                    $group.addClass(activeClass);
-                    storage.$hover_group = $group;
-                }
+                markingGroup("border-hover", $group);
 
                 clearWidgetOrnament();
 
@@ -926,9 +955,7 @@ var DashboardWidget;
                         $group.addClass(storage.lockedGroupClass);
                     }
 
-                    // Set Classes to current Group
-                    $group.addClass(storage.hoverGroupClass);
-                    storage.$hover_group = $group;
+                    markingGroup("hover", $group);
                 }
 
                 if (!is_group_locked) {
@@ -1314,7 +1341,11 @@ var DashboardWidget;
 
                 // Иначе создаём группу в конце
             } else {
-                $wrapper.append($new_group);
+                //$wrapper.append($new_group);
+
+                // After last group
+                var $lastGroup = $wrapper.find(".widget-group-wrapper").last();
+                $lastGroup.after($new_group);
             }
 
         };
@@ -1548,6 +1579,7 @@ var DashboardWidget;
                     block: 0,
                     sort: 0,
                     size: storage.newDraggedWidget.widget_size.width + "x" + storage.newDraggedWidget.widget_size.height,
+                    dashboard_id: getDashboardID(),
                     new_block: 1
                 };
 
@@ -1556,6 +1588,52 @@ var DashboardWidget;
             }, "json");
 
             return $deferred;
+        };
+
+        // For Custom Dashboard
+        var onEmptyGroupDrop = function(event) {
+            var $group = storage.getWidgetGroups().last();
+
+            if (storage.draggedWidget) {
+                prepareDrop(event, $group);
+
+            } else if (storage.newDraggedWidget) {
+                onWidgetListDrop(event, $group);
+            }
+        };
+
+        var onEmptyGroupOver = function(event, $emptyGroup, $wrapper) {
+            var $lastGroupContainer = $wrapper.find(".widget-group-wrapper").last();
+
+            markingGroup("hover", $lastGroupContainer);
+        };
+
+        var markingGroup = function( type, $group, callback ) {
+            var hoverClass = storage.hoverGroupClass,
+                borderHoverClass = storage.showGroupOrnamentClass,
+                activeClass;
+
+            if (type == "hover") {
+                activeClass = hoverClass;
+
+                if (!$group.hasClass(activeClass)) {
+                    $group.addClass(activeClass);
+                    storage.$hover_group = $group.addClass(activeClass);
+                }
+            }
+
+            if (type == "border-hover") {
+                activeClass = borderHoverClass;
+
+                if (!$group.hasClass(activeClass)) {
+                    $group.addClass(activeClass);
+                    storage.$hover_group = $group.addClass(activeClass);
+                }
+            }
+
+            if (callback && typeof callback == "function") {
+                callback();
+            }
         };
 
         // Main Initialize
@@ -1572,17 +1650,24 @@ var DashboardWidget;
         var storage = {
             activeLighterClass: "is-highlighted",
             dashboardEditableClass: "is-editable-mode",
+            dashboardCustomEditClass: "is-custom-edit-mode",
+            dashboardTvClass: "tv",
             activeEditModeClass: "is-active",
             isLoadingClass: "is-loading",
             hiddenClass: "is-hidden",
             showClass: "is-shown",
             animateClass: "is-animated",
             lazyLoadCounter: 0,
+            dashboardSelectData: {
+                default: false,
+                active: false
+            },
             isEditModeActive: false,
             isWidgetListLoaded: false,
             isBottomLazyLoadLocked: false,
             isTopLazyLoadLocked: false,
             isActivityFilterLocked: false,
+            is_dialog_shown: false,
             topLazyLoadingTimer: 0,
             activityFilterTimer: 0,
             lazyTime: 15 * 1000,
@@ -1592,6 +1677,7 @@ var DashboardWidget;
                 fixedBottom: false,
                 scrollValue: 0
             },
+            is_custom_dashboard: false,
             getPageWrapper: function() {
                 return $("#d-page-wrapper");
             },
@@ -1621,14 +1707,27 @@ var DashboardWidget;
             },
             getFirstNoticeWrapper: function() {
                 return $("#d-first-notice-wrapper");
+            },
+            getDashboardsList: function() {
+                return $("#d-dashboards-list-wrapper");
             }
+        };
+
+        var initialize = function() {
+            // Init Select
+            initDashboardSelect();
         };
 
         var bindEvents = function() {
             var $showLink = storage.getShowButton(),
                 $hideLink = storage.getHideButton(),
                 $widgetActivity = storage.getWidgetActivity(),
+                $dashboardList = storage.getDashboardsList(),
                 $closeNoticeLink = storage.getFirstNoticeWrapper().find(".close-notice-link");
+
+            $dashboardList.on("change", "#d-dashboards-select", function() {
+                changeDashboard( $(this) );
+            });
 
             $closeNoticeLink.on("click", function() {
                 hideFirstNotice();
@@ -1692,8 +1791,13 @@ var DashboardWidget;
 
             // Escape close edit-mode
             $(document).on("keyup", function(event) {
-                if (event.keyCode == 27 && storage.isEditModeActive) {
-                    $hideLink.trigger("click");
+                var is_dialog_shown = storage.is_dialog_shown;
+                if ( !is_dialog_shown ) {
+                    if (event.keyCode == 27 && storage.isEditModeActive) {
+                        $hideLink.trigger("click");
+                    }
+                } else {
+                    storage.is_dialog_shown = false;
                 }
             });
 
@@ -1701,9 +1805,11 @@ var DashboardWidget;
                 onPageScroll(event);
             });
 
-            storage.topLazyLoadingTimer = setTimeout( function() {
-                loadNewActivityContent($widgetActivity);
-            }, storage.lazyTime );
+            if (!storage.is_custom_dashboard) {
+                storage.topLazyLoadingTimer = setTimeout(function () {
+                    loadNewActivityContent($widgetActivity);
+                }, storage.lazyTime);
+            }
 
             // Development helper: Ctrl + Alt + dblclick on a widget reloads the widget
             $("#d-widgets-block").on("dblclick", ".widget-wrapper", function(e) {
@@ -1724,6 +1830,24 @@ var DashboardWidget;
 
                     return false;
                 }
+            });
+            $("#d-widgets-block").on("click", ".widget-wrapper", function(e) {
+                if (e.altKey && (e.ctrlKey || e.metaKey)) {
+                    return false;
+                }
+            });
+
+            //$showLink.click();
+            //$("body").addClass(storage.dashboardCustomEditClass);
+
+            storage.getPageWrapper().on("click", ".d-delete-dashboard-wrapper a", function() {
+                var $link = $(this),
+                    do_delete = confirm( $link.data("confirm-text") );
+
+                if (do_delete) {
+                    deleteCustomDashboard( $link.data("dashboard-id") );
+                }
+                return false;
             });
         };
 
@@ -2045,17 +2169,26 @@ var DashboardWidget;
 
         var hideEditMode = function() {
             var $dashboard = storage.getPageWrapper(),
-                $settings = storage.getSettingsWrapper();
+                $settings = storage.getSettingsWrapper(),
+                dashboard_id = getDashboardID(),
+                is_custom_dashboard = ( dashboard_id !== "default_dashboard" && dashboard_id !== "new_dashboard" );
 
-            if ($settings.css("display") != "none") {
-                $settings.find(".hide-settings-link").trigger("click");
+            // if we in Custom Dashboard
+            if (is_custom_dashboard) {
+                reloadDashboard();
+
+            } else {
+
+                if ($settings.css("display") != "none") {
+                    $settings.find(".hide-settings-link").trigger("click");
+                }
+
+                $dashboard.removeClass(storage.dashboardEditableClass);
+
+                toggleHighlighterGroups();
+
+                storage.isEditModeActive = false;
             }
-
-            $dashboard.removeClass(storage.dashboardEditableClass);
-
-            toggleHighlighterGroups();
-
-            storage.isEditModeActive = false;
         };
 
         var toggleHighlighterGroups = function() {
@@ -2183,9 +2316,11 @@ var DashboardWidget;
 
                     storage.isTopLazyLoadLocked = false;
 
-                    storage.topLazyLoadingTimer = setTimeout( function() {
-                        loadNewActivityContent($widgetActivity);
-                    }, storage.lazyTime );
+                    if (!storage.is_custom_dashboard) {
+                        storage.topLazyLoadingTimer = setTimeout( function() {
+                            loadNewActivityContent($widgetActivity);
+                        }, storage.lazyTime );
+                    }
 
                     hideLoadingAnimation($widgetActivity);
                 });
@@ -2229,7 +2364,175 @@ var DashboardWidget;
             $widgetActivity.find(".activity-header .loading").hide();
         };
 
+        var initDashboardSelect = function() {
+            var $dashboardList = storage.getDashboardsList(),
+                $select = getDashboardSelect(),
+                default_value = $select.find("option").first().val();
+
+            storage.dashboardSelectData.default = default_value;
+            storage.dashboardSelectData.active = default_value;
+
+            $select.val(default_value);
+
+            $dashboardList.prepend($select);
+        };
+
+        var changeDashboard = function() {
+            var $body = $('body'),
+                customEditClass = storage.dashboardCustomEditClass,
+                tvClass = storage.dashboardTvClass,
+                value = getDashboardID();
+
+            if (value == "new_dashboard") {
+
+                var $select = getDashboardSelect(),
+                    last_active_val = storage.dashboardSelectData.active;
+
+                // Set Select data
+                $select.val(last_active_val);
+
+                createNewDashboard();
+
+            } else if (value == "default_dashboard") {
+                reloadDashboard();
+
+            } else {
+                // Set var (needed for intervals)
+                storage.is_custom_dashboard = true;
+
+                // Set custom ornament
+                $body
+                    .addClass(customEditClass)
+                    .addClass(tvClass);
+
+                // Load Widgets
+                initCustomDashboard(value);
+
+                storage.dashboardSelectData.active = value;
+            }
+        };
+
+        var initCustomDashboard = function( dashboard_id) {
+            var $deferred = $.Deferred(),
+                $dashboardArea = $("#d-widgets-block"),
+                dashboard_href = "?module=dashboard&action=editPublic&dashboard_id=" + dashboard_id,
+                dashboard_data = {};
+
+            $dashboardArea.html("");
+
+            $.post(dashboard_href, dashboard_data, function(response) {
+                $deferred.resolve(response);
+            });
+
+            $deferred.done( function(html) {
+                $dashboardArea.html(html);
+
+                var $link = $dashboardArea.find(".d-dashboard-link-wrapper"),
+                    $deleteLink = $dashboardArea.find(".d-delete-dashboard-wrapper");
+
+                renderDashboardLinks( $link, $deleteLink );
+            });
+
+        };
+
+        var renderDashboardLinks = function( $link, $deleteLink ) {
+            var $groupsWrapper = storage.getGroupsWrapper(),
+                $linkWrapper = $("#d-dashboard-link-wrapper"),
+                $linkHTML = $link.html();
+
+            // Link
+            $linkWrapper.html( $linkHTML );
+
+            // Delete
+            $("#d-delete-dashboard-wrapper").remove();
+            $deleteLink.attr("id", "d-delete-dashboard-wrapper").slideDown(200);
+            $groupsWrapper.after( $deleteLink );
+        };
+
+        var createNewDashboard = function() {
+            var $dialogWrapper = $("#dashboard-editor-dialog"),
+                $loading = '<i class="icon16 loading"></i>';
+
+            storage.is_dialog_shown = true;
+
+            $dialogWrapper.waDialog({
+                onLoad: function() {
+                    var $input = $dialogWrapper.find("input:text:first");
+
+                    $input.focus();
+                },
+                onSubmit: function($dialog) {
+                    var $form = $dialog.find("form"),
+                        $deferred = $.Deferred();
+
+                    // Load
+                    $dialog.find(':submit:first').parent().append($loading);
+
+                    $.post( $form.attr('action'), $form.serialize(), function(responce) {
+                        $deferred.resolve(responce);
+                    }, 'json');
+
+                    $deferred.done( function(responce) {
+
+                        // Remove Load
+                        $form.find('.loading').remove();
+
+                        if (responce.status == 'ok') {
+                            var $select = getDashboardSelect(),
+                                $newOption = $('<option value="'+responce.data.id+'">' + responce.data.name +'</option>');
+
+                            $select.find("[value=\"new_dashboard\"]:first").before($newOption);
+
+                            $dialog.trigger('close');
+
+                            $select
+                                .val(responce.data.id)
+                                .trigger("change");
+
+                            $form[0].reset();
+                        } else {
+                            alert(responce.errors);
+                        }
+
+                        storage.is_dialog_shown = false;
+                    });
+
+                    return false;
+                }
+            });
+        };
+
+        var reloadDashboard = function() {
+            var $select = getDashboardSelect();
+
+            // Set for clear Browser form saver
+            $select.css("visibility", "hidden");
+
+            // Reload
+            location.reload();
+        };
+
+        var deleteCustomDashboard = function( dashboard_id ) {
+            var $deferred = $.Deferred(),
+                delete_href = "?module=dashboard&action=dashboardDelete",
+                delete_data = {
+                    id: dashboard_id
+                };
+
+            if (dashboard_id) {
+                $.post(delete_href, delete_data, function(responce) {
+                    $deferred.resolve(responce);
+                }, "json");
+
+                $deferred.done( function(responce) {
+                    location.reload();
+                    return false;
+                });
+            }
+        };
+
         $(document).ready( function() {
+            initialize();
             //
             bindEvents();
             //

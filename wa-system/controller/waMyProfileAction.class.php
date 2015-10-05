@@ -28,6 +28,8 @@ abstract class waMyProfileAction extends waViewAction
     }
 
     /**
+     * @param waContactForm $form
+     * @param waContact $contact
      * @return bool
      */
     protected function saveFromPost($form, $contact)
@@ -170,7 +172,7 @@ abstract class waMyProfileAction extends waViewAction
 
         // If nothing found, fall back to the default field list
         if (!$enabled) {
-            foreach(array('firstname', 'middlename', 'lastname', 'email', 'phone', 'password') as $fld_id) {
+            foreach(array('firstname', 'middlename', 'lastname', 'email', 'phone', 'password', 'password_confirm') as $fld_id) {
                 if (!empty($fields[$fld_id])) {
                     $enabled[$fld_id] = $fields[$fld_id];
                 }
@@ -211,6 +213,11 @@ abstract class waMyProfileAction extends waViewAction
             }
         }
         return $user_info;
+    }
+
+    public function display($clear_assign = true)
+    {
+        return parent::display(false);
     }
 }
 

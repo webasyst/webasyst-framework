@@ -86,8 +86,13 @@
         <!-- misc actions -->
         <div class="block double-padded wa-theme-actions">
             <ul class="menu-v with-icons">
-                <li><a href="?module=design&amp;action=themeDownload&amp;theme={$theme.id}"><i class="icon16 download"></i>[s`Download theme backup`] <span class="hint nowrap">.tar.gz</span></a></li>
-                <li><a class="theme-copy" href="#"><i class="icon16 split"></i>[s`Clone theme`]</a></li>
+                {if count($theme->related_themes)>1}
+                    <li><a class="theme-download" href="#"><i class="icon16 download"></i>[s`Download theme backup`]</a></li>
+
+                {else}
+                    <li><a href="?module=design&amp;action=themeDownload&amp;theme={$theme.id}"><i class="icon16 download"></i>[s`Download theme backup`] <span class="hint nowrap">.tar.gz</span></a></li>
+                {/if}
+                <li><a class="theme-copy" href="#" data-related="{if count($theme->related_themes)>1}1{else}0{/if}"><i class="icon16 split"></i>[s`Clone theme`]</a></li>
                 <li><a class="theme-rename" href="#"><i class="icon16 edit"></i>[s`Rename theme`]</a></li>
                 <li><i class="icon16 link"></i>[s`Parent theme`]: <strong>{if $theme.parent_theme_id}{$theme.parent_theme_id}{else}[s`not set`]{/if}</strong>  <a class="theme-parent inline" href="#">[s`Change`]</a></li>
                 <li class="top-padded">
@@ -213,11 +218,13 @@
                                         <div class="hint">{$s.description}</div>
                                     {/if}
                                 {else}
+                                    <div>
                                     {if !$s.value || strlen($s.value) <= 50}
                                     <input class="flexible" id="flex-settings-{$s@index}" type="text" name="{if !empty($s.parent)}parent_{/if}settings[{$s_var}]" value="{$s.value|escape}">
                                     {else}
                                     <textarea class="flexible" id="flex-settings-{$s@index}" name="{if !empty($s.parent)}parent_{/if}settings[{$s_var}]">{$s.value|escape}</textarea>
                                     {/if}
+                                    </div>
                                     {if !empty($s.description)}
                                     <div class="hint">{$s.description}</div>
                                     {/if}
@@ -467,6 +474,80 @@
     </div>
 </div>
 
+<div class="dialog height200px" id="wa-theme-copy-dialog">
+    <div class="dialog-background"> </div>
+    <div class="dialog-window">
+        <form>
+            <div class="dialog-content">
+                <div class="dialog-content-indent">
+                    <h1>[s`Clone theme`]</h1>
+                    <div class="fields form">
+                        <div class="field">
+                            <div class="name">
+                                [s`Theme name`]
+                            </div>
+                            <div class="value">
+                                <input type="text" id="wa-theme-copy-name" name="name" value="{$theme.name|escape} 1" >
+                            </div>
+                        </div>
+                        <div class="field">
+                            <div class="name">
+                                [s`Theme ID`]
+                            </div>
+                            <div class="value">
+                                <input type="text" id="wa-theme-copy-id" name="id" value="{$theme.id}1"  class="bold">
+                            </div>
+                        </div>
+                        <div class="field">
+                            <div class="name">
+                                [s`Themes to clone`]
+                            </div>
+                            <div class="value no-shift">
+                                <label><strong><input name="related" type="radio" value="1" checked="checked">&nbsp;{'[`All %s themes (recommended)`]'|sprintf:$theme.name|escape}</strong></label>
+                            </div>
+                            <div class="value no-shift">
+                                <label><input name="related" type="radio" value="0">&nbsp;{'[`Only %s theme for this app (%s)`]'|sprintf:$theme.name:ifempty($apps[$theme.app]['name'],$theme.app)|escape}</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="clear"></div>
+            </div>
+            <div class="dialog-buttons">
+                <div class="dialog-buttons-gradient">
+                    <input type="submit" class="button green" value="[s`Clone theme`]">
+                    [s`or`] <a href="#/design/themes/" class="cancel">[s`cancel`]</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="dialog height300px" id="wa-theme-download-dialog">
+    <div class="dialog-background"> </div>
+    <div class="dialog-window">
+        <form>
+            <div class="dialog-content">
+                <div class="dialog-content-indent">
+                    <h1>{$theme.name|escape}</h1>
+                    <ul class="menu-v with-icons">
+                        {foreach $theme.related_themes as $related_theme_id => $related_theme}
+                            <li{if ($theme.app_id==$related_theme.app_id)||($theme.parent_theme_id==$related_theme_id)} class="bold"{/if}><a href="?module=design&amp;action=themeDownload&amp;theme={$related_theme.id}&amp;app_id={$related_theme.app_id}"><i class="icon16 download"></i>{sprintf('[s`%s theme (version %s) for %s app`]',$related_theme.name,$related_theme.version,ifempty($apps[$related_theme.app_id]['name'],$related_theme.app))|escape} <span class="hint nowrap">.tar.gz</span></a></li>
+                        {/foreach}
+
+                    </ul>
+                </div>
+                <div class="clear"></div>
+            </div>
+            <div class="dialog-buttons">
+                <div class="dialog-buttons-gradient">
+                    <a href="#/design/themes/" class="cancel button">[s`Close`]</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
 
 <div class="dialog width600px height250px" id="wa-theme-parent-dialog">
     <div class="dialog-background"> </div>
@@ -537,6 +618,10 @@
                 return false;
             }
         });
+        return false;
+    });
+    $(".theme-download").on('click', function () {
+        $("#wa-theme-download-dialog").waDialog();
         return false;
     });
 
@@ -718,18 +803,42 @@
     });
 
     $(".theme-copy").on('click', function () {
-        $.post("?module=design&action=themeCopy", { theme: theme_id}, function (response) {
-            if (response.status == 'ok') {
-                if(response.data.redirect) {
-                    location.href = location.href.replace(/#.*$/,'') + response.data.redirect;
-                    location.reload();
+        var themeCopy = function (related,options) {
+            var params = {
+                theme: theme_id,
+                related: related,
+                options:options
+            };
+            $.post("?module=design&action=themeCopy", params, function (response) {
+                $("#wa-theme-copy-dialog").hide();
+                if (response.status == 'ok') {
+                    if (response.data.redirect) {
+                        location.href = location.href.replace(/#.*$/, '') + response.data.redirect;
+                        location.reload();
+                    } else {
+                        location.reload(true);
+                    }
                 } else {
-                    location.reload(true);
+                    alert(response.errors);
                 }
-            } else {
-                alert(response.errors);
-            }
-        }, "json");
+            }, "json");
+        };
+        if ($(this).data('related')) {
+            $("#wa-theme-copy-dialog").waDialog({
+                disableButtonsOnSubmit: true,
+                onSubmit: function () {
+                    var $form = $(this);
+                    var options = {
+                        id:$form.find("#wa-theme-copy-id").val(),
+                        name:$form.find("#wa-theme-copy-name").val()
+                    };
+                    themeCopy($form.find(':input:checked').val(),options);
+                    return false;
+                }
+            });
+        } else {
+            themeCopy(false,null);
+        }
         return false;
     });
 

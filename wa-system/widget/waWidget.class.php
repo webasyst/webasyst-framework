@@ -14,7 +14,6 @@
  */
 class waWidget extends waActions
 {
-
     protected $id;
     protected $info;
     protected $widget;
@@ -34,9 +33,38 @@ class waWidget extends waActions
         $this->path = wa($this->app_id)->getConfig()->getWidgetPath($this->widget);
     }
 
-    public function getInfo($name = null)
+    public function isAllowed()
     {
-        return $name ? ifset($this->info[$name]) : $this->info;
+        if ($this->getInfo('dashboard_id')) {
+            return wa()->getUser()->isAdmin('webasyst');
+        } else {
+            return $this->getInfo('contact_id') == wa()->getUser()->getId()
+                    && self::checkRights($this->getInfo('rights', array()));
+        }
+    }
+
+    public static function checkRights($rights)
+    {
+        foreach ($rights as $r_app_id => $r_app_rights) {
+            foreach ($r_app_rights as $r_name => $r_value) {
+                $u_value = wa()->getUser()->getRights($r_app_id, $r_name);
+                if ($r_value === true) {
+                    if (!$u_value) {
+                        return false;
+                    }
+                } else {
+                    if ($u_value < $r_value) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
+    public function getInfo($name = null, $default = null)
+    {
+        return $name ? ifset($this->info[$name], $default) : $this->info;
     }
 
     public function loadLocale($set_current = false)

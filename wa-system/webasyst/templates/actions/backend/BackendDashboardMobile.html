@@ -1,0 +1,58 @@
+{* LOAD RESOURCES *}
+{strip}
+
+{$_capture_array = []}
+
+<div class="d-page-wrapper" id="d-page-wrapper">
+    <div class="d-content-wrapper">
+        <section class="d-widgets-wrapper" id="d-widgets-wrapper">
+            <div class="d-widgets-block">
+                <div id="d-widgets-block">
+                    {foreach $widgets as $block => $block_widgets}
+                        <div class="widget-group-wrapper">
+                            {foreach $block_widgets as $w}
+
+                                {include file="../dashboard/DashboardWidget.html" inline}
+
+                                {* INIT WIDGET *}
+                                {capture append="_capture_array"}
+                                    ( function($) {
+                                        DashboardWidgets["{$w.id}"] = new DashboardWidget({
+                                            widget_id: "{$w.id}",
+                                            widget_href: {$w.href|json_encode},
+                                            widget_sort: "{$w.sort}",
+                                            widget_group_index: "{$block_widgets@index}",
+                                            widget_size: {
+                                                width: "{$w.size.0}",
+                                                height: "{$w.size.1}"
+                                            }
+                                        });
+                                    })(jQuery);
+                                {/capture}
+                            {/foreach}
+                        </div>
+                    {/foreach}
+
+                    {* EMPTY GROUP*}
+                    <div class="widget-group-wrapper"></div>
+                </div>
+
+                <div class="empty-widgets-wrapper {if empty($widgets)}is-shown{/if}" id="empty-widgets-wrapper">
+                    [`Your dashboard is empty. Add some widgets by clicking Customize dashboard on the top.`]
+                </div>
+
+                {* HIDDEN LOADING SCREEN *}
+                <div class="loading-ornament-wrapper">
+                    <div class="image-wrapper"></div>
+                </div>
+            </div>
+
+            {* SCRIPTS *}
+            <script>
+                {$_capture_array|implode:''|strip}
+            </script>
+
+        </section>
+    </div>
+</div>
+{/strip}

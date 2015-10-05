@@ -1,0 +1,50 @@
+{strip}
+{$_capture_array = []}
+{foreach $widgets as $block => $block_widgets}
+    <div class="widget-group-wrapper">
+        {foreach $block_widgets as $w}
+
+            {include file="./DashboardWidget.html" inline}
+
+            {* INIT WIDGET *}
+            {capture append="_capture_array"}
+                DashboardWidgets["{$w.id}"] = new DashboardWidget({
+                    widget_id: "{$w.id}",
+                    widget_href: {$w.href|json_encode},
+                    widget_sort: "{$w.sort}",
+                    widget_group_index: "{$block_widgets@index}",
+                    widget_size: {
+                        width: "{$w.size.0}",
+                        height: "{$w.size.1}"
+                    }
+                });
+            {/capture}
+        {/foreach}
+    </div>
+{/foreach}
+
+<div class="widget-group-wrapper"></div>
+
+{* EMPTY GROUP For TV View *}
+{for $i = 0 to 7}
+<div class="ornament-widget-group"></div>
+{/for}
+
+<div class="d-dashboard-link-wrapper" style="display: none;">
+    [`Dashboard public link`]:&nbsp;<a href="{$dashboard_url}" target="_blank" title="" class="bold">{$dashboard_url}</a>
+</div>
+
+<div class="d-delete-dashboard-wrapper" style="display: none;">
+    <a href="javascript:void(0);" data-dashboard-id="{$dashboard.id}" data-confirm-text="[`You are about to permanently delete this dashboard. Are you sure?`]">[`Delete dashboard`]</a>
+</div>
+
+{* SCRIPTS *}
+<script>
+( function($) {
+    DashboardWidgets = new Object();
+    DashboardControllers = new Object();
+
+    {$_capture_array|implode:''|strip}
+})(jQuery);
+</script>
+{/strip}

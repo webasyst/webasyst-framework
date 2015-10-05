@@ -11,12 +11,19 @@ class weatherWidget extends waWidget
         $nocache = $this->getRequest()->get('nocache');
 
         if (!$city) {
-            $addresses = wa()->getUser()->get('address:city');
-            foreach ($addresses as $address) {
-                if (!empty($address['value'])) {
-                    $city = $address['value'];
-                    break;
+            $user = wa()->getUser();
+            if (!$user->getId() && $this->info['dashboard_id']) {
+                $user = new waContact($this->info['contact_id']);
+            }
+            try {
+                $addresses = $user->get('address:city');
+                foreach ($addresses as $address) {
+                    if (!empty($address['value'])) {
+                        $city = $address['value'];
+                        break;
+                    }
                 }
+            } catch (waException $e) {
             }
         }
 
@@ -79,6 +86,11 @@ class weatherWidget extends waWidget
             for ($tries = 3; $tries > 0; $tries--) {
                 try {
                     $weather = $this->loadWeather($city);
+                    if ($weather) {
+                        $cache[$date_with_hour][$city] = $weather;
+                        $this->setCacheWeather($cache);
+                        break;
+                    }
                 } catch (Exception $e) {
                     // Something's badly wrong (as opposed to an empty result)
                     // and we should not try again.
@@ -87,15 +99,8 @@ class weatherWidget extends waWidget
                     );
                     break;
                 }
-                if (!empty($weather) && empty($weather['message'])) {
-                    // Only write to real persistemt cache if there's no error
-                    $this->setCacheWeather($cache);
-                    break;
-                }
                 $tries > 1 && sleep(4 - $tries);
             }
-
-            $cache[$date_with_hour][$city] = $weather;
 
             // Open the session storage again
             wa()->getStorage()->open();

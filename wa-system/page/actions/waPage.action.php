@@ -62,13 +62,13 @@ class waPageAction extends waViewAction
             foreach (array('title', 'image', 'video', 'description', 'type') as $k) {
                 if (!empty($page['og_'.$k])) {
                     $og = true;
-                    $this->getResponse()->setOGMeta($k, $page['og_'.$k]);
+                    $this->getResponse()->setOGMeta('og:'.$k, $page['og_'.$k]);
                 }
             }
             if (!$og) {
-                $this->getResponse()->setOGMeta('title', $page['title']);
+                $this->getResponse()->setOGMeta('og:title', $page['title']);
                 if (!empty($page['description'])) {
-                    $this->getResponse()->setOGMeta('description', $page['description']);
+                    $this->getResponse()->setOGMeta('og:description', $page['description']);
                 }
             }
 

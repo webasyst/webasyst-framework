@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WebAsyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2015-07-28 10:59+0300\n"
+"PO-Revision-Date: 2015-09-28 09:39+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -12,7 +12,7 @@ msgstr ""
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
 "Language: ru_RU\n"
-"X-Generator: Poedit 1.7.6\n"
+"X-Generator: Poedit 1.8.4\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
 
@@ -369,8 +369,8 @@ msgstr[2] "минут"
 msgid "Login name"
 msgstr "Логин"
 
-msgid "Login name or email"
-msgstr "Логин или email"
+msgid "Email or login name"
+msgstr "Email или логин"
 
 msgid "Password"
 msgstr "Пароль"
@@ -1565,6 +1565,9 @@ msgstr "Неправильный формат изображения: "
 #: /wa-system/image/waImage.class.php:97
 msgid "Not %s image adapter"
 msgstr "Not %s image adapter"
+
+msgid "No image adapters found. Install ImageMagick or GD extension to enable image-processing functionality."
+msgstr "Не найдено ни одного расширения для работы с изображениями. Установите ImageMagick или GD."
 
 #: /wa-system/image/waImage.class.php:276
 msgid "File must be writable: "
@@ -3458,9 +3461,7 @@ msgid "Embeds HTML block by ID"
 msgstr "Отображает содержимое блока по его идентификатору"
 
 msgid "Returns authorized user data from associated record in “Contacts” app. \"<em>field</em>\" (string) is optional and indicates the field id to be returned. If not  Returns <em>false</em> if user is not authorized"
-msgstr ""
-"Возвращает массив с данными авторизованного пользователя из соответствующей записи приложения «Контакты». Если указан необязательный параметр <code>'field'</code> , то возвращается содержимое конкретного поля записи о контакте. Функция принимает любые параметры, подходящие для метода <code><a href=\"http://www.webasyst.ru/developers/docs/basics/classes/waContact#method-get\" target=\"_blank\">get()</a></code> системного класса <code>waContact</"
-"code>. Если пользователь не авторизован, функция возвращает <code>false</code>"
+msgstr "Возвращает массив с данными авторизованного пользователя из соответствующей записи приложения «Контакты». Если указан необязательный параметр <code>'field'</code> , то возвращается содержимое конкретного поля записи о контакте. Функция принимает любые параметры, подходящие для метода <code><a href=\"http://www.webasyst.ru/developers/docs/basics/classes/waContact#method-get\" target=\"_blank\">get()</a></code> системного класса <code>waContact</code>. Если пользователь не авторизован, функция возвращает <code>false</code>"
 
 msgid "Returns User Agent info by specified “<em>key</em>” parameter:"
 msgstr "Возвращает информацию User Agent по указанному параметру <em>key</em>:"
@@ -3701,7 +3702,9 @@ msgstr "разрешил доступ для контакта"
 msgid "disabled access for contact"
 msgstr "запретил доступ для контакта"
 
-#: /wa-system/contact/waContactCompositeField.class.php:84 /wa-system/contact/waContactField.class.php:339 /wa-system/contact/waContactField.class.php:457
+#: /wa-system/contact/waContactCompositeField.class.php:84
+#: /wa-system/contact/waContactField.class.php:339
+#: /wa-system/contact/waContactField.class.php:457
 msgid "Data must be an array."
 msgstr "Данные должны быть массивом"
 
@@ -3752,7 +3755,8 @@ msgstr "Мой профиль"
 msgid "New password"
 msgstr "Новый пароль"
 
-#: /wa-system/contact/waContactForm.class.php:364 /wa-system/controller/waMyProfileAction.class.php:145
+#: /wa-system/contact/waContactForm.class.php:364
+#: /wa-system/controller/waMyProfileAction.class.php:145
 msgid "Photo"
 msgstr "Фото"
 
@@ -3788,7 +3792,8 @@ msgstr "Скачать архив с темой дизайна"
 msgid "Clone theme"
 msgstr "Создать клон темы"
 
-#: /wa-system/design/templates/Theme.html:11 /wa-system/design/templates/Theme.html:296
+#: /wa-system/design/templates/Theme.html:11
+#: /wa-system/design/templates/Theme.html:296
 msgid "Rename theme"
 msgstr "Переименовать тему"
 
@@ -3796,7 +3801,8 @@ msgstr "Переименовать тему"
 msgid "You did not apply customizations to this theme yet, and thus there is nothing to revert."
 msgstr "Вы еще не вносили изменения в эту тему дизайна, поэтому сбрасывать пока нечего."
 
-#: /wa-system/design/templates/Theme.html:47 /wa-system/design/templates/Theme.html:281
+#: /wa-system/design/templates/Theme.html:47
+#: /wa-system/design/templates/Theme.html:281
 msgid "Start using %s theme"
 msgstr "Начать использовать тему «%s»"
 
@@ -3984,23 +3990,28 @@ msgstr "Подтвердите обновление всех выбранных 
 msgid "Files marked with <strong>bold</strong> were previously modified by you — select them only if you’d like to completely drop changes you’ve made to these files. All selected files will be overwritten with their newest versions from the original theme, and there will be no way to automatically rollback this update. (If you feel non-confident, don’t select modified templates by now. You will be able to update them manually file-by-file later on.)"
 msgstr "Файлы, которые вы ранее редактировали, выделены <strong>жирным</strong>. Выберите только те файлы, которые хотите полностью сбросить до их оригинальных версий из обновленной темы дизайна, тем самым удалив все внесенные вами ранее изменения. (Если вы не уверены, нужно ли обновлять тот или иной файл, не выбирайте его. Позже вы сможете обновить все эти файлы по одному.)"
 
-#: /wa-system/design/templates/ThemeUpdate.html:8 /wa-system/design/templates/ThemeUpdate.html:31
+#: /wa-system/design/templates/ThemeUpdate.html:8
+#: /wa-system/design/templates/ThemeUpdate.html:31
 msgid "Theme appearance settings will be updated automatically"
 msgstr "Настройки темы дизайна будут обновлены автоматически"
 
-#: /wa-system/design/templates/ThemeUpdate.html:8 /wa-system/design/templates/ThemeUpdate.html:31
+#: /wa-system/design/templates/ThemeUpdate.html:8
+#: /wa-system/design/templates/ThemeUpdate.html:31
 msgid "Theme appearance settings (theme.xml)"
 msgstr "Настройки оформления (theme.xml)"
 
-#: /wa-system/design/templates/ThemeUpdate.html:17 /wa-system/design/templates/ThemeUpdate.html:40
+#: /wa-system/design/templates/ThemeUpdate.html:17
+#: /wa-system/design/templates/ThemeUpdate.html:40
 msgid "You did not modify this file"
 msgstr "Вы не вносили изменения в этот файл"
 
-#: /wa-system/design/templates/ThemeUpdate.html:17 /wa-system/design/templates/ThemeUpdate.html:40
+#: /wa-system/design/templates/ThemeUpdate.html:17
+#: /wa-system/design/templates/ThemeUpdate.html:40
 msgid "%s and %d more unmodified files"
 msgstr "%s и еще %d неизмененных файлов"
 
-#: /wa-system/design/templates/ThemeUpdate.html:21 /wa-system/design/templates/ThemeUpdate.html:44
+#: /wa-system/design/templates/ThemeUpdate.html:21
+#: /wa-system/design/templates/ThemeUpdate.html:44
 msgid "You modified this file"
 msgstr "Вы вносили изменения в этот файл"
 
@@ -4169,3 +4180,146 @@ msgstr "Ок, спасибо"
 #: /wa-system/webasyst/templates/actions/backend/BackendDashboard.html:55
 msgid "Live stream collects all events from installed apps and presents them in a chronological order."
 msgstr "Лента отображает события из всех приложений, установленных в вашем Webasyst."
+
+msgid "%s theme (version %s) for %s app"
+msgstr "Тема «%s» (версия %s) для приложения «%s»"
+
+msgid "Apps"
+msgstr "Приложения"
+
+msgid "Widgets"
+msgstr "Виджеты"
+
+#: /wa-system/captcha/recaptcha/waReCaptcha.class.php:57
+msgid "The secret parameter is missing."
+msgstr ""
+
+#: /wa-system/captcha/recaptcha/waReCaptcha.class.php:60
+msgid "The secret parameter is invalid or malformed."
+msgstr ""
+
+#: /wa-system/captcha/recaptcha/waReCaptcha.class.php:63
+msgid "The response parameter is missing."
+msgstr ""
+
+#: /wa-system/captcha/recaptcha/waReCaptcha.class.php:66
+msgid "The response parameter is invalid or malformed."
+msgstr ""
+
+#: /wa-system/controller/waFrontController.class.php:66
+msgid "You don’t have permissions to view this widget"
+msgstr "Недостаточно прав доступа для просмотра виджета"
+
+#: /wa-system/plugin/templates/Plugins.html:20
+msgid "Popular plugins"
+msgstr "Популярные плагины"
+
+#: /wa-system/plugin/templates/Plugins.html:39
+msgid "No plugins are installed."
+msgstr "Плагины не установлены."
+
+#: /wa-system/plugin/templates/Plugins.html:47
+#: /wa-system/plugin/templates/Plugins.html:320
+msgid "Loading..."
+msgstr "Загрузка..."
+
+#: /wa-system/plugin/templates/Plugins.html:165
+msgid "Plugins"
+msgstr "Плагины"
+
+#: /wa-system/plugin/templates/Settings.html:26
+msgid "Plugin %s is installed and working."
+msgstr "Плагин «%s» установлен и работает."
+
+#: /wa-system/plugin/templates/Settings.html:29
+msgid "No configuration options are available for this plugin."
+msgstr "Этот плагин не предоставляет возможность изменения настроек."
+
+#: /wa-system/plugin/templates/Settings.html:36
+msgid "Unknown plugin"
+msgstr "Неизвестный плагин"
+
+#: /wa-system/webasyst/lib/cli/webasystCreateApp.cli.php:278
+msgid "Hello world"
+msgstr "Hello world"
+
+#: /wa-system/webasyst/lib/cli/webasystCreateApp.cli.php:283
+msgid "Navigation"
+msgstr ""
+
+#: /wa-system/webasyst/lib/cli/webasystCreateApp.cli.php:286
+msgid "Menu item 1"
+msgstr ""
+
+#: /wa-system/webasyst/lib/cli/webasystCreateApp.cli.php:289
+msgid "Menu item 2"
+msgstr ""
+
+#: /wa-system/webasyst/lib/cli/webasystCreateApp.cli.php:292
+msgid "Menu item 3"
+msgstr ""
+
+#: /wa-system/webasyst/lib/cli/webasystCreateApp.cli.php:301
+msgid "Woohoo, Webasyst app is ready!"
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/backend/BackendDashboard.html:107
+msgid "My dashboard"
+msgstr "Моя панель управления"
+
+#: /wa-system/webasyst/templates/actions/backend/BackendDashboard.html:108
+msgid "Webasyst TV"
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/backend/BackendDashboard.html:112
+msgid "New Webasyst TV dashboard..."
+msgstr "Новая панель Webasyst TV..."
+
+#: /wa-system/webasyst/templates/actions/backend/BackendDashboard.html:124
+msgid "New dashboard"
+msgstr "Новая панель управления"
+
+#: /wa-system/webasyst/templates/actions/backend/BackendDashboard.html:127
+msgid "Dashboard title"
+msgstr "Название"
+
+#: /wa-system/webasyst/templates/actions/backend/BackendDashboard.html:131
+msgid "Webasyst TV dashboards can be opened in any modern web browser and streamed to 4K or Full HD TVs."
+msgstr "Панель управления Webasyst TV открывается по уникальной приватной ссылке в любом современном браузере и предназначена для трансляции на телевизоры 4K или Full HD."
+
+#: /wa-system/webasyst/templates/actions/dashboard/DashboardEditPublic.html:34
+msgid "Dashboard public link"
+msgstr "Ссылка"
+
+#: /wa-system/webasyst/templates/actions/dashboard/DashboardEditPublic.html:38
+msgid "You are about to permanently delete this dashboard. Are you sure?"
+msgstr "Панель управления будет удалена без возможности восстановления. Вы уверены?"
+
+#: /wa-system/webasyst/templates/actions/dashboard/DashboardEditPublic.html:38
+msgid "Delete dashboard"
+msgstr "Удалить панель управления"
+
+#: /wa-system/webasyst/templates/actions/dashboard/DashboardSidebar.html:16
+msgid "Add widgets"
+msgstr "Добавить виджеты"
+
+msgid "Installed"
+msgstr "Установлены"
+
+msgid "Install new widgets"
+msgstr "Добавить виджеты"
+
+msgid "Only you can see this dashboard."
+msgstr "Эту панель управления видите только вы."
+
+msgid "Themes to clone"
+msgstr "Клонировать темы"
+
+#: /wa-system/design/templates/Theme.html:485
+msgid "All %s themes (recommended)"
+msgstr "Тема «%s» для всех приложений (рекомендуется)"
+
+#: /wa-system/design/templates/Theme.html:486
+msgid "Only %s theme for this app (%s)"
+msgstr "Тема «%s» только для приложения «%s»"
+

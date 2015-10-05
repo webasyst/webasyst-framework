@@ -6,6 +6,13 @@ class blogPostsWidget extends waWidget
 
     public function defaultAction()
     {
+        // When viewed from a public dashboard, pretend we're logged in
+        $old_user = $user = $this->getUser();
+        if (wa()->getUser()->getId() != $user->getId()) {
+            $old_user = wa()->getUser();
+            wa()->setUser($user);
+        }
+
         $blog_model = new blogBlogModel();
         $blogs = $blog_model->getAvailable(wa()->getUser());
 
@@ -16,19 +23,19 @@ class blogPostsWidget extends waWidget
             $blog_ids = array_keys($blogs);
         }
 
-        $search_options = array(
+        $post_model = new blogPostModel();
+        $posts = $post_model->search(array(
             'blog_id' => $blog_ids,
-        );
-        $extend_options = array (
+        ), array(
             'status' => 'view',
             'author_link' => false,
             'rights' => true,
             'text' => 'cut'
-        );
-        $post_model = new blogPostModel();
-        $posts = $post_model->search($search_options, $extend_options, array(
+        ), array(
             'blog' => $blogs,
         ))->fetchSearchPage(1, 1);
+        wa()->setUser($old_user);
+
         $post = reset($posts);
         $blog = false;
         if ($post && !empty($blogs[$post['blog_id']])) {
@@ -53,5 +60,18 @@ class blogPostsWidget extends waWidget
         $result = parent::getSettingsConfig();
         $result['blog_id']['options'] = $blogs;
         return $result;
+    }
+
+    public function getUser()
+    {
+        if (!wa()->getUser()->getId()) {
+            try {
+                $c = new waUser($this->info['contact_id']);
+                $c->getName();
+                return $c;
+            } catch (waException $e) {
+            }
+        }
+        return wa()->getUser();
     }
 }

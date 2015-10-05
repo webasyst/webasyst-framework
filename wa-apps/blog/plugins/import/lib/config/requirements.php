@@ -7,5 +7,3 @@ return array(
         'value'       => 1,
     ),
 );
-
-//EOF

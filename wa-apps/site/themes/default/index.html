@@ -58,32 +58,28 @@
     
 </head>
 <body>
-    <header class="globalheader"{if $theme_settings.color_custom} style="background: {$theme_settings.color_custom}"{/if}>
+    <header class="globalheader" style="{if $theme_settings.color_custom}background-color: {$theme_settings.color_custom};{/if}{if $theme_settings.header_custom_image}background-image: url('{$wa_theme_url|cat:$theme_settings.header_custom_image}');{/if}">
     
         {if count($wa->apps())>0 || $wa->isAuthEnabled()}
         
             <!-- GLOBAL NAVIGATION -->
-            <div id="globalnav"{if $theme_settings.header_scheme|strstr:'white'} class="light"{/if}>
+            <div id="globalnav" class="{if $theme_settings.header_scheme|strstr:'white'}light{/if}">
                 <div class="container">
                     
                     <h2>
                         <a href="{$wa_url}">
-                            {$wa->accountName()}
+                            {if $theme_settings.logo}
+                                <img src="{$wa_theme_url}{$theme_settings.logo}?v{$wa_theme_version}" alt="{$wa->accountName()}" id="logo" />
+                                <span>{$wa->accountName()}</span>
+                            {else}
+                                {$wa->accountName()}
+                            {/if}
                         </a>
                     </h2>
         
                     <button id="mobile-nav-toggle"><!-- nav toggle for mobile devices --></button>
                     
-                    <nav role="navigation">
-                    
-                        <!-- core site sections (apps) -->
-                        <ul class="apps">
-                            {foreach $wa->apps() as $a}
-                                {if !($a.url == $wa_url && $a.name == $wa->accountName())}
-                                    <li{if $a.url==$wa_app_url && !$wa->globals('isMyAccount')} class="selected"{/if}><a href="{$a.url}">{$a.name}</a></li>
-                                {/if}
-                            {/foreach}
-                        </ul>
+                    <nav>
             
                         {if $wa->isAuthEnabled()}
                             <!-- user auth -->
@@ -124,6 +120,29 @@
                             </div>
                         {/if}
                         
+                        <!-- core site sections (apps) -->
+                        <ul class="apps">
+                            {$_links = []}
+                            {if $theme_settings.header_links == 'site-pages'}
+                                {if $wa->site}{$_links = $wa->site->pages()}{/if}
+                            {elseif $theme_settings.header_links == 'shop-pages'}
+                                {if $wa->shop}{$_links = $wa->shop->pages()}{/if}
+                            {elseif $theme_settings.header_links == 'blog-pages'}
+                                {if $wa->blog}{$_links = $wa->blog->pages()}{/if}
+                            {elseif $theme_settings.header_links == 'photos-pages'}
+                                {if $wa->photos}{$_links = $wa->photos->pages()}{/if}
+                            {elseif $theme_settings.header_links == 'hub-pages'}
+                                {if $wa->hub}{$_links = $wa->hub->pages()}{/if}
+                            {elseif $theme_settings.header_links != 'none'}
+                                {$_links = $wa->apps()}
+                            {/if}
+                            {foreach $_links as $a}
+                                {if !($a.url == $wa_url && $a.name == $wa->accountName())}
+                                    <li{if $a.url==$wa_app_url && !$wa->globals('isMyAccount') || strlen($a.url)>1 && $wa->currentUrl()|strstr:$a.url} class="selected"{/if}><a href="{$a.url}">{$a.name}</a></li>
+                                {/if}
+                            {/foreach}
+                        </ul>
+                        
                     </nav>
                     <div class="clear-both"></div>
                      
@@ -150,71 +169,85 @@
     </header>
     
     <!-- APP CONTENT -->
-    <main class="maincontent" role="main">
+    <main class="maincontent">
         <div class="container">
             {include file="`$wa_active_theme_path`/main.html" inline}
         </div>
     </main>
     
     <!-- FOOTER -->
-    <footer class="globalfooter" role="contentinfo">
+    <footer class="globalfooter">
         <div class="container">
-            
-            {*
-            <div style="float:right">
-                you might be looking for adding some footer content here
-            </div>
-            *}
-            
-            {if $wa->shop}
-                <div class="footer-block">
-                    <a href="{$wa->getUrl('shop/frontend')}" class="top">[s`Shop`]</a>
-                    <a href="{$wa->getUrl('shop/frontend/cart')}">[s`Cart`]</a>
-                    <a href="{$wa->getUrl('shop/frontend/checkout')}">[s`Checkout`]</a>
-                </div>
-            {/if}
 
-            {if $wa->photos}
-                <div class="footer-block">
-                    <a href="{$wa->getUrl('photos/frontend')}" class="top">[s`Photos`]</a>
-                    <a href="{$wa->getUrl('photos/frontend')}">[s`Photostream`]</a>
-                    <a href="{$wa->getUrl('photos/frontend')}favorites/">[s`Favorites`]</a>
+            {if !empty($theme_settings.footer_links)}
+                        
+                <div class="footer-block contact-us">
+    
+                    <div class="social">
+                        {if $wa->blog && $rss}<a href="{$rss}" title="[s`RSS`]"><i class="icon24 rss"></i></a>{/if}
+                        {if !empty($theme_settings.facebook)}<a href="{$theme_settings.facebook}" title="[s`Facebook`]"><i class="icon24 facebook"></i></a>{/if}
+                        {if !empty($theme_settings.twitter)}<a href="{$theme_settings.twitter}" title="[s`Twitter`]"><i class="icon24 twitter"></i></a>{/if}
+                        {if !empty($theme_settings.vk)}<a href="{$theme_settings.vk}" title="[s`VK`]"><i class="icon24 vk"></i></a>{/if}
+                        {if !empty($theme_settings.instagram)}<a href="{$theme_settings.instagram}" title="[s`Instagram`]"><i class="icon24 instagram"></i></a>{/if}
+                        {if !empty($theme_settings.youtube)}<a href="{$theme_settings.youtube}" title="[s`Youtube`]"><i class="icon24 youtube"></i></a>{/if}
+                    </div>
+                    
+                    {if $wa->shop}
+                        <a href="mailto:{$wa->shop->settings('email')}">{$wa->shop->settings('email')}</a>
+                        <strong>{$wa->shop->settings('phone')}</strong>
+                    {/if}
+                    
                 </div>
-            {/if}
             
-            {if $wa->blog}
-                <div class="footer-block">
-                    <a href="{$wa->getUrl('blog/frontend')}" class="top">[s`Blog`]</a>
-                    <a href="{$wa->getUrl('blog/frontend/rss')}">[s`RSS`]</a>
-                    {$blogs = $wa->blog->blogs()}
-                    {foreach $blogs as $b}
-                        <a href="{$b.link}">{$b.name}</a>
-                    {/foreach}
-                </div>
-            {/if}
-
-            <div class="footer-block">
-                <a href="#" class="top">[s`Contact us`]</a>
+            
                 {if $wa->shop}
-                    <span>{$wa->shop->settings('phone')}</span>
-                    <a href="mailto:{$wa->shop->settings('email')}">{$wa->shop->settings('email')}</a>
+                    <div class="footer-block">
+                        <a href="{$wa->getUrl('shop/frontend')}" class="top">[s`Shop`]</a>
+                        <a href="{$wa->getUrl('shop/frontend/cart')}">[s`Cart`]</a>
+                        <a href="{$wa->getUrl('shop/frontend/checkout')}">[s`Checkout`]</a>
+                    </div>
                 {/if}
-            </div>
+    
+                {if $wa->photos}
+                    <div class="footer-block">
+                        <a href="{$wa->getUrl('photos/frontend')}" class="top">[s`Photos`]</a>
+                        <a href="{$wa->getUrl('photos/frontend')}">[s`Photostream`]</a>
+                        <a href="{$wa->getUrl('photos/frontend')}favorites/">[s`Favorites`]</a>
+                    </div>
+                {/if}
                 
-            {if $wa->mailer && $wa->getUrl('mailer/frontend/subscribe')}  
-            <div class="footer-block mailer-subscribe">
-                <a href="#" class="top">[s`Follow us`]</a>
-                <form action="{$wa->getUrl('mailer/frontend/subscribe')}" id="mailer-subscribe-form" target="mailer-subscribe-iframe">
-                    <input type="email" name="email" placeholder="your@email.here">
-                    <input type="submit" value="[s`Subscribe`]">
-                </form>
-                <iframe id="mailer-subscribe-iframe" name="mailer-subscribe-iframe" src="javascript:true" style="width:0;height:0;border:0px solid #666;float:right;background: #666;"></iframe>
-                <p style="display:none" id="mailer-subscribe-thankyou"><i>[s`Thank you! We’ll keep you posted.`]</i></p>
-            </div>
+                {if $wa->blog}
+                    <div class="footer-block">
+                        <a href="{$wa->getUrl('blog/frontend')}" class="top">[s`Blog`]</a>
+                        <a href="{$wa->getUrl('blog/frontend/rss')}">[s`RSS`]</a>
+                        {$blogs = $wa->blog->blogs()}
+                        {foreach $blogs as $b}
+                            <a href="{$b.link}">{$b.name}</a>
+                        {/foreach}
+                    </div>
+                {/if}
+                    
+                {if $wa->mailer && $wa->getUrl('mailer/frontend/subscribe')}  
+                <div class="footer-block mailer-subscribe">
+                    <a href="#" class="top">[s`Follow us`]</a>
+                    <form action="{$wa->getUrl('mailer/frontend/subscribe')}" id="mailer-subscribe-form" target="mailer-subscribe-iframe">
+                        <input type="email" name="email" placeholder="your@email.here">
+                        <input type="submit" value="[s`Subscribe`]" class="small">
+                    </form>
+                    <iframe id="mailer-subscribe-iframe" name="mailer-subscribe-iframe" src="javascript:true" style="width:0;height:0;border:0px solid #666;float:right;background: #666;"></iframe>
+                    <p style="display:none" id="mailer-subscribe-thankyou"><i>[s`Thank you! We’ll keep you posted.`]</i></p>
+                </div>
+                {/if}
             {/if}
             
             <div class="clear-both"></div>
             
+            {if !empty($theme_settings.footer_note)}
+                <p class="hint footer-note">
+                    {$theme_settings.footer_note}
+                </p>
+            {/if}
+                
         </div>
         
         <div class="container">
@@ -230,7 +263,9 @@
     </footer>
 
     {* admin-only slideout sidebar for nice and smooth real time theme customizations *}
-    {if $wa->user()->isAdmin()}{include file="admin-sidebar.html" inline}{/if}
+    {if $theme_settings.admin_sidebar}
+        {if $wa->user()->isAdmin()}{include file="admin-sidebar.html" inline}{/if}
+    {/if}
 
 </body>
 </html>

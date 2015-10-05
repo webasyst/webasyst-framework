@@ -46,7 +46,7 @@ class siteRoutingSaveController extends waJsonController
                 $robots = new siteRobots($domain);
                 $robots->add($route['app'], $route['url']);
                 // log
-                $this->log('route_add');
+                $this->logAction('route_add', $domain.'/'.$route['url']);
             } elseif (isset($route['redirect'])) {
                 if ($route['url'] && substr($route['url'], -1) != '*' && substr($route['url'], -1) != '/' && strpos(substr($route['url'], -5), '.') === false) {
                     $route['url'] .= '/';
@@ -63,7 +63,7 @@ class siteRoutingSaveController extends waJsonController
                 // save
                 waUtils::varExportToFile($routes, $path);
                 // log
-                $this->log('route_add');
+                $this->logAction('route_add', $domain.'/'.$route['url']);
             }
 
             $html = '<tr id="route-'.$route_id.'">
@@ -148,7 +148,7 @@ class siteRoutingSaveController extends waJsonController
             }
 
             // log
-            $this->log('route_edit');
+            $this->logAction('route_edit', $domain.'/'.$routes[$domain][$route_id]['url']);
         }
 
     }

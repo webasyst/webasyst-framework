@@ -477,6 +477,9 @@ class waModel
      */
     protected function castValue($type, $value, $is_null = false)
     {
+        if ($value instanceof waModelExpr) {
+            return (string)$value;
+        }
         switch ($type) {
             case 'bigint':
             case 'tinyint':

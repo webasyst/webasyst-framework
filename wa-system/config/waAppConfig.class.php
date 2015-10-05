@@ -108,7 +108,7 @@ class waAppConfig extends SystemConfig
             if (in_array($l['action'], array('page_add', 'page_edit', 'page_move'))) {
                 $page_ids[] = $l['params'];
             } elseif (substr($l['action'], 0, 8) == 'template' || substr($l['action'], 0, 5) == 'theme') {
-                $logs[$l_id]['params_html'] = $l['params'];
+                $logs[$l_id]['params_html'] = htmlspecialchars($l['params']);
             }
         }
         if ($page_ids) {
@@ -122,7 +122,7 @@ class waAppConfig extends SystemConfig
             foreach ($logs as &$l) {
                 if (in_array($l['action'], array('page_add', 'page_edit', 'page_move')) && isset($pages[$l['params']])) {
                     $l['params_html'] = '<div class="activity-target"><a href="'.$app_url.'#/pages/'.$l['params'].'">'.
-                        $pages[$l['params']].'</a></div>';
+                        htmlspecialchars($pages[$l['params']]).'</a></div>';
                 }
             }
             unset($l);
@@ -252,6 +252,11 @@ class waAppConfig extends SystemConfig
         if (file_exists($this->getAppPath().'/lib/config/factories.php')) {
             $this->factories = include($this->getAppPath().'/lib/config/factories.php');
         }
+        if (!empty($this->options['factories']) && is_array($this->options['factories'])) {
+            foreach ($this->options['factories'] as $k => $v) {
+                $this->factories[$k] = $v;
+            }
+        }
     }
 
     public function checkUpdates()
@@ -261,14 +266,16 @@ class waAppConfig extends SystemConfig
             $time = $app_settings_model->get($this->application, 'update_time');
         } catch (waDbException $e) {
             // Can't connect to MySQL server
-            if ($e->getCode() == 2002 && !waSystemConfig::isDebug()) {
-                return;
+            if ($e->getCode() == 2002) {
+                throw $e;
             } elseif (!empty($app_settings_model)) {
                 $time = null;
                 $row = $app_settings_model->getByField(array('app_id' => $this->application, 'name' => 'update_time'));
                 if ($row) {
                     $time = $row['value'];
                 }
+            } elseif ($this->application != 'webasyst' && ($this->environment == 'frontend')) {
+                wa('webasyst');
             }
         } catch (waException $e) {
             return;
@@ -769,6 +776,9 @@ class waAppConfig extends SystemConfig
                         }
                         if (isset($plugin_info['frontend']) && $plugin_info['frontend']) {
                             $plugin_info['handlers']['routing'] = 'routing';
+                        }
+                        if (!empty($plugin_info[$this->application.'_settings'])) {
+                            $plugin_info['custom_settings'] = $plugin_info[$this->application.'_settings'];
                         }
                         $this->plugins[$plugin_id] = $plugin_info;
                     }

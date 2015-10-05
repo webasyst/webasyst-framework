@@ -14,8 +14,11 @@
     {/if}{/foreach}
 
     
-    {foreach $wa->photos->pages() as $page}
-        <li{if strlen($page.url)>1 && $wa->currentUrl()|strstr:$page.url} class="selected"{/if}><a href="{$page.url}">{$page.name}</a></li>
-    {/foreach}
+    {if $theme_settings.header_links != 'photos-pages'}
+        {* display static page list in case it was not yet displayed in the core index.html layout template *}
+        {foreach $wa->photos->pages() as $page}
+            <li{if strlen($page.url)>1 && $wa->currentUrl()|strstr:$page.url} class="selected"{/if}><a href="{$page.url}">{$page.name}</a></li>
+        {/foreach}
+    {/if}
 
 </ul>

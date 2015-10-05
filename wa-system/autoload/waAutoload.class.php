@@ -201,6 +201,7 @@ class waAutoload
         'waDbResultUpdate'         => 'database/waDbResultUpdate.class.php',
         'waDbStatement'            => 'database/waDbStatement.class.php',
         'waModel'                  => 'database/waModel.class.php',
+        'waModelExpr'               => 'database/waModelExpr.class.php',
         'waNestedSetModel'         => 'database/waNestedSetModel.class.php',
 
         'waSMS'                    => 'sms/waSMS.class.php',
@@ -295,5 +296,6 @@ class waAutoload
         'waPageActions'            => 'page/actions/waPage.actions.php',
 
         'waDesignActions'          => 'design/actions/waDesign.actions.php',
+        'waPluginsActions'         => 'plugin/actions/waPlugins.actions.php',
     );
 }

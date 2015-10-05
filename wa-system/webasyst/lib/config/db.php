@@ -1,5 +1,27 @@
 <?php
 return array(
+    'wa_api_auth_codes' => array(
+        'code' => array('varchar', 32, 'null' => 0),
+        'contact_id' => array('int', 11, 'null' => 0),
+        'client_id' => array('varchar', 32, 'null' => 0),
+        'scope' => array('text', 'null' => 0),
+        'expires' => array('datetime', 'null' => 0),
+        ':keys' => array(
+            'PRIMARY' => 'code',
+        ),
+    ),
+    'wa_api_tokens' => array(
+        'contact_id' => array('int', 11, 'null' => 0),
+        'client_id' => array('varchar', 32, 'null' => 0),
+        'token' => array('varchar', 32, 'null' => 0),
+        'scope' => array('text', 'null' => 0),
+        'create_datetime' => array('datetime', 'null' => 0),
+        'expires' => array('datetime'),
+        ':keys' => array(
+            'PRIMARY' => 'token',
+            'contact_client' => array('contact_id', 'client_id', 'unique' => 1),
+        ),
+    ),
     'wa_announcement' => array(
         'id' => array('int', 11, 'null' => 0, 'autoincrement' => 1),
         'app_id' => array('varchar', 32, 'null' => 0),
@@ -146,28 +168,6 @@ return array(
             'PRIMARY' => array('contact_id', 'app_id', 'name'),
         ),
     ),
-    'wa_api_auth_codes' => array(
-        'code' => array('varchar', 32, 'null' => 0),
-        'contact_id' => array('int', 11, 'null' => 0),
-        'client_id' => array('varchar', 32, 'null' => 0),
-        'scope' => array('text', 'null' => 0),
-        'expires' => array('datetime', 'null' => 0),
-        ':keys' => array(
-            'PRIMARY' => 'code',
-        ),
-    ),
-    'wa_api_tokens' => array(
-        'contact_id' => array('int', 11, 'null' => 0),
-        'client_id' => array('varchar', 32, 'null' => 0),
-        'token' => array('varchar', 32, 'null' => 0),
-        'scope' => array('text', 'null' => 0),
-        'create_datetime' => array('datetime', 'null' => 0),
-        'expires' => array('datetime'),
-        ':keys' => array(
-            'PRIMARY' => 'token',
-            'contact_client' => array('contact_id', 'client_id', 'unique' => 1),
-        ),
-    ),
     'wa_country' => array(
         'name' => array('varchar', 255, 'null' => 0),
         'iso3letter' => array('varchar', 3, 'null' => 0),
@@ -179,6 +179,15 @@ return array(
             'isonumeric' => array('isonumeric', 'unique' => 1),
             'iso2letter' => array('iso2letter', 'unique' => 1),
             'name' => 'name',
+        ),
+    ),
+    'wa_dashboard' => array(
+        'id' => array('int', 11, 'null' => 0, 'autoincrement' => 1),
+        'name' => array('varchar', 255, 'null' => 0),
+        'hash' => array('varchar', 32, 'null' => 0),
+        ':keys' => array(
+            'PRIMARY' => 'id',
+            'hash' => array('hash', 'unique' => 1),
         ),
     ),
     'wa_group' => array(
@@ -276,6 +285,7 @@ return array(
         'widget' => array('varchar', 32, 'null' => 0),
         'name' => array('varchar', 255, 'null' => 0),
         'contact_id' => array('int', 11, 'null' => 0),
+        'dashboard_id' => array('int', 11),
         'create_datetime' => array('datetime', 'null' => 0),
         'app_id' => array('varchar', 32, 'null' => 0),
         'block' => array('int', 11, 'null' => 0),

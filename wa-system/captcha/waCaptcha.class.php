@@ -64,7 +64,12 @@ class waCaptcha extends waAbstractCaptcha
 HTML;
     }
 
-    public function isValid($code = null)
+    /**
+     * @param string $code
+     * @param string $error
+     * @return bool
+     */
+    public function isValid($code = null, &$error = '')
     {
         if ($code === null) {
             $code = waRequest::post('captcha');
@@ -77,6 +82,7 @@ HTML;
             wa()->getStorage()->set('captcha', $captcha);
             return true;
         } else {
+            $error = _ws('Invalid captcha');
             return false;
         }
     }

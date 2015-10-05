@@ -5,7 +5,7 @@ class photosPhotosWidget extends waWidget
     public function defaultAction()
     {
         $collection = new photosCollection();
-        $photos = array_values($collection->getPhotos("*,thumb", 0, 100));
+        $photos = array_values($collection->getPhotos("*,thumb_mobile", 0, 100));
         $this->display(array(
             'photos' => $photos,
             'uniqid' => uniqid(),
@@ -39,7 +39,7 @@ class photosPhotosWidget extends waWidget
         $result_array = array();
         foreach ($photos as $photo) {
             $result_array[] = array(
-                "image_href" => $photo['thumb']['url'],
+                "image_href" => $photo['thumb_mobile']['url'],
                 "link_href" => $wa_photos_url.'#/photo/'.$photo['id'].'/',
             );
         }

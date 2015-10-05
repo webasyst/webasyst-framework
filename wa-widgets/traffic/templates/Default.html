@@ -21,29 +21,141 @@
 </style>
 
 <div class="map-canvas-wrapper">
-    <div class="map-canvas" id="s-traffic-map-{$info['id']}" title="{sprintf('%s traffic', $city)}"></div>
+    <div class="map-canvas" id="s-traffic-map-{$info['id']}" title="{sprintf('%s traffic', $city)|escape}"></div>
 </div>
 
-<script src="//api-maps.yandex.ru/2.1/?lang=ru_RU&onload=_trafficWidget{$info['id']}Init" type="text/javascript"></script>
+{*<script src="//api-maps.yandex.ru/2.1/?lang=ru_RU&onload=_trafficWidget{$info['id']}Init" type="text/javascript"></script>*}
+{*<script>*}
+    {*function _trafficWidget{$info['id']}Init() {*}
+        {**}
+        {**}
+        {**}
+        {*ymaps.ready( function() {*}
+            {*var center = [];*}
+
+            {*var initMap = function(center) {*}
+                {*var myMap = new ymaps.Map('s-traffic-map-{$info['id']}', {*}
+                        {*center: center,*}
+                        {*zoom: 10,*}
+                        {*controls: []*}
+                    {*});*}
+
+                {*// Создадим элемент управления "Пробки".*}
+                {*var trafficControl = new ymaps.control.TrafficControl({ state: {*}
+                        {*// Отображаются пробки "Сейчас".*}
+                        {*providerKey: 'traffic#actual',*}
+                        {*// Начинаем сразу показывать пробки на карте.*}
+                        {*trafficShown: true*}
+                    {*}});*}
+                {*// Добавим контрол на карту.*}
+                {*myMap.controls.add(trafficControl);*}
+                {*// Получим ссылку на провайдер пробок "Сейчас" и включим показ инфоточек.*}
+                {*trafficControl.getProvider('traffic#actual').state.set('infoLayerShown', true);*}
+
+                {*// Создаем панель поиска*}
+                {*var searchControl = new ymaps.control.SearchControl({*}
+                    {*provider: 'yandex#map'*}
+                {*});*}
+
+                {*// добавляем панель на карту в нужную позицию*}
+                {*myMap.controls.add(searchControl, { left: '40px', top: '10px' });*}
+
+                {*// добавляем zoom панель на карту и дизейблим zoom по скролу*}
+                {*myMap.controls.add('zoomControl', { left: 5, top: 75 } );*}
+                {*myMap.behaviors.disable("scrollZoom");*}
+            {*};*}
+
+            {*//geocoding*}
+            {*function run(tries) {*}
+                {*var myGeocoder = ymaps.geocode({$city|json_encode});*}
+                {*var errorHandler = function() {*}
+                    {*if (tries > 0) {*}
+                        {*setTimeout(function() {*}
+                            {*run(tries - 1);*}
+                        {*}, 700 - tries * 100);*}
+                    {*} else {*}
+                        {*{$msg = sprintf('[`Could not retrieve traffic conditions for <strong>%s</strong>. Please check city name in widget settings or in your contact info.`]', $city|escape|default:'[`(unknown city)`]')}*}
+                        {*$('#s-traffic-map-{$info['id']}').html('<h5 class="align-center hint wa-no-traffic">{$msg}</h5>');*}
+                    {*}*}
+                {*};*}
+                {*myGeocoder.then(*}
+                    {*function (res) {*}
+                        {*var geo = res.geoObjects.get(0);*}
+                        {*if (geo) {*}
+                            {*initMap(geo.geometry.getCoordinates());*}
+                        {*} else {*}
+                            {*errorHandler();*}
+                        {*}*}
+                    {*},*}
+                    {*function () {*}
+                        {*errorHandler();*}
+                    {*}*}
+                {*);*}
+            {*}*}
+            {*run(3);*}
+        {*});*}
+    {*}*}
+{*</script>*}
 
 <script>
-    function _trafficWidget{$info['id']}Init() {
-        var center = [];
+    ( function($) {
 
-        var initMap = function(center) {
-            var myMap = new ymaps.Map('s-traffic-map-{$info['id']}', {
-                    center: center,
-                    zoom: 10,
-                    controls: []
-                });
+        var href = "//api-maps.yandex.ru/2.1/?lang=ru_RU",
+            canvas_id = "s-traffic-map-{$info['id']}",
+            tries = 3;
+        
+        var initMap = function() {
+            var myGeoCoder = ymaps.geocode({$city|json_encode});
+
+            var errorHandler = function() {
+                if (tries > 0) {
+                    setTimeout( function() {
+                        tries--;
+                        initMap();
+                    }, 700 - tries * 100);
+                } else {
+                    {$msg = sprintf('[`Could not retrieve traffic conditions for <strong>%s</strong>. Please check city name in widget settings or in your contact info.`]', $city|escape|default:'[`(unknown city)`]')}
+                    $('#s-traffic-map-{$info['id']}').html('<h5 class="align-center hint wa-no-traffic">{$msg}</h5>');
+                }
+            };
+
+            myGeoCoder.then(
+                function(res) {
+                    var geo = res.geoObjects.get(0);
+                    if (geo) {
+
+                        var coordinates = geo.geometry.getCoordinates();
+                        renderYMap(coordinates);
+
+                    } else {
+
+                        errorHandler();
+
+                    }
+                },
+                function () {
+                    errorHandler();
+                }
+            );
+        };
+
+        var renderYMap = function(center) {
+            var myMap = new ymaps.Map(canvas_id, {
+                center: ( center || [36.090857, 28.08148] ),
+                zoom: 10,
+                controls: []
+            });
 
             // Создадим элемент управления "Пробки".
-            var trafficControl = new ymaps.control.TrafficControl({ state: {
+            var trafficControl = new ymaps.control.TrafficControl({
+                state: {
                     // Отображаются пробки "Сейчас".
                     providerKey: 'traffic#actual',
                     // Начинаем сразу показывать пробки на карте.
                     trafficShown: true
-                }});
+                }
+            });
+
             // Добавим контрол на карту.
             myMap.controls.add(trafficControl);
             // Получим ссылку на провайдер пробок "Сейчас" и включим показ инфоточек.
@@ -55,41 +167,27 @@
             });
 
             // добавляем панель на карту в нужную позицию
-            myMap.controls.add(searchControl, { left: '40px', top: '10px' });
+            myMap.controls.add(searchControl, {
+                left: '40px',
+                top: '10px'
+            });
 
             // добавляем zoom панель на карту и дизейблим zoom по скролу
-            myMap.controls.add('zoomControl', { left: 5, top: 75 } );
+            myMap.controls.add('zoomControl', {
+                left: 5,
+                top: 75
+            });
+
             myMap.behaviors.disable("scrollZoom");
         };
 
-        //geocoding
-        function run(tries) {
-            var myGeocoder = ymaps.geocode("{$city}");
-            var errorHandler = function() {
-                if (tries > 0) {
-                    setTimeout(function() {
-                        run(tries - 1);
-                    }, 700 - tries * 100);
-                } else {
-                    {$msg = sprintf('[`Could not retrieve traffic conditions for <strong>%s</strong>. Please check city name in widget settings or in your contact info.`]', $city|default:'[`(unknown city)`]')}
-                    $('#s-traffic-map-{$info['id']}').html('<h5 class="align-center hint wa-no-traffic">{$msg}</h5>');
-                }
-            };
-            myGeocoder.then(
-                function (res) {
-                    var geo = res.geoObjects.get(0);
-                    if (geo) {
-                        initMap(geo.geometry.getCoordinates());
-                    } else {
-                        errorHandler();
-                    }
-                },
-                function () {
-                    errorHandler();
-                }
-            );
+        if (typeof ymaps == "undefined") {
+            $.getScript(href, function() {
+                ymaps.ready(initMap);
+            });
+        } else {
+            ymaps.ready(initMap);
         }
-        run(3);
-
-    }
+        
+    })(jQuery);
 </script>
