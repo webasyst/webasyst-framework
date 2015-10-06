@@ -4,12 +4,12 @@ class blogImportPluginSettingsAction extends blogPluginsSettingsViewAction
 {
     public function execute()
     {
-        waHtmlControl::registerControl('ReplaceMap', __CLASS__."::controlReplaceMap");
+        waHtmlControl::registerControl('ReplaceMap', array($this, 'controlReplaceMap'));
         $this->plugin_id = 'import';
         parent::execute();
         $this->getResponse()
-        ->addJs('plugins/import/js/settings.js?'.wa()->getVersion(), true)
-        ->addJs('js/jquery.form.js', true);
+             ->addJs('plugins/import/js/settings.js?'.wa()->getVersion(), true)
+             ->addJs('js/jquery.form.js', true);
 
         $protocols = array();
         $protocols['wordpress'] = array(
@@ -79,40 +79,40 @@ class blogImportPluginSettingsAction extends blogPluginsSettingsViewAction
 function blog_import_html_control_replace_add(element, eventObject) {
     var row = $(element).parents('table').find('tbody tr:last');
     if(row){
-    	row = row.clone().insertAfter(row);
-    	row.find(':text').val('');
-    	row.find(':checked').attr('checked',false);
+        row = row.clone().insertAfter(row);
+        row.find(':text').val('');
+        row.find(':checked').attr('checked',false);
     }
     return false;
 }
 function blog_import_html_control_replace_remove(element, eventObject) {
 var row = $(element).parents('tr');
     if($(element).parents('table').find('tbody tr').length > 1) {
-    	row.remove();
+        row.remove();
     } else {
-    	row.find(':text').val('');
-    	row.find(':checked').attr('checked',false);
+        row.find(':text').val('');
+        row.find(':checked').attr('checked',false);
     }
     return false;
 }
 </script>
 <table class="zebra">
-	<thead>
-		<tr>
-        	<td>{$strings['search']}</td>
-        	<td>{$strings['replace']}</td>
-        	<td>{$strings['regexp']}</td>
-			<td>&nbsp;</td>
+    <thead>
+        <tr>
+            <td>{$strings['search']}</td>
+            <td>{$strings['replace']}</td>
+            <td>{$strings['regexp']}</td>
+            <td>&nbsp;</td>
         </tr>
-	</thead>
-	<tfoot>
-		<tr>
-			<td colspan="4">
-				<a href="#" class="inline-link" onClick="return blog_import_html_control_replace_add(this,event)"><i class="icon16 add"></i><b><i>{$strings['add']}</i></b></a>
-			</td>
-		</tr>
-	</tfoot>
-	<tbody>
+    </thead>
+    <tfoot>
+        <tr>
+            <td colspan="4">
+                <a href="#" class="inline-link" onClick="return blog_import_html_control_replace_add(this,event)"><i class="icon16 add"></i><b><i>{$strings['add']}</i></b></a>
+            </td>
+        </tr>
+    </tfoot>
+    <tbody>
 HTML;
         foreach ($params['value']['search'] as $id => $value) {
             $control .= "\n\t\t<tr>";
@@ -124,9 +124,9 @@ HTML;
             }
             $control .= <<<HTML
 
-			<td>
-				<a href="#" class="inline-link" onClick="return blog_import_html_control_replace_remove(this,event)"><i class="icon16 delete" title="{$strings['remove']}"></i></a>
-			</td>
+            <td>
+                <a href="#" class="inline-link" onClick="return blog_import_html_control_replace_remove(this,event)"><i class="icon16 delete" title="{$strings['remove']}"></i></a>
+            </td>
 HTML;
             $control .= "\n\t\t</tr>";
         }

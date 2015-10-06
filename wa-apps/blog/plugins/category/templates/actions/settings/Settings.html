@@ -13,7 +13,7 @@ table#b-plugins-categories tr:hover td.b-actions a { display: inline; }
 document.title = '{$title|escape:'javascript'}';
 </script>
 <script type="text/javascript" src="{$wa_app_static_url}plugins/category/js/settings.js?{$wa->version()}"></script>
-<form action="?plugin=category&amp;action=settings" method="POST" id="plugin-category-form" >
+<form action="?plugin=category&amp;module=settings" method="POST" id="plugin-category-form" >
 
 {$wa->csrf()}
 <h6 class="heading">[`Category list`]</h6>
@@ -55,7 +55,7 @@ document.title = '{$title|escape:'javascript'}';
                 <option {if $category.icon eq $icon}selected="selected"{/if} value="{$icon|escape}">
                   <i class="icon16 {$icon}"></i>{$icon|escape}
                 </option>
-        		{/foreach}
+                {/foreach}
               </select>
         </ul>
             </td>

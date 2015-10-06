@@ -4,7 +4,7 @@ return array(
     'name'        => /*_wp*/('Categories'),
     'description' => /*_wp*/('Posts filtering by category'),
     'vendor'      => 'webasyst',
-    'version'     => '1.1',
+    'version'     => '1.2',
     'img'         => 'img/category.png',
     'frontend'    => true,
 

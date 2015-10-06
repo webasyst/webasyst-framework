@@ -1,24 +1,24 @@
 <div class="block" id="blog-category-sidebar-block">
     <span class="count">
-        <a href="?module=plugins#/settings/custom/category/"><i class="icon16 add"></i></a>
+        <a href="?module=plugins#/category/"><i class="icon16 add"></i></a>
     </span>
-	<h5 class="heading collapse-handler">
-		<i class="icon16 darr"></i>[`Categories`]
-	</h5>
-	{if $categories}
-	<ul id="blog-category-menu" class="menu-v with-icons collapsible category-menu">
-		{foreach $categories as $category}
-			<li {if $category.url == $category_url}class="selected"{/if} id="blog_category_li_item_{$category.id}">
-				<a href="?search=category&amp;category={$category.url|escape}">
-					<span class="count">{$category.qty}</span>
-					{if $category.icon}<i class="icon16 {$category.icon}"></i>{/if}{$category.name|escape}
-				</a>
-			</li>
-		{/foreach}
-	</ul>
-	{else}
+    <h5 class="heading collapse-handler">
+        <i class="icon16 darr"></i>[`Categories`]
+    </h5>
+    {if $categories}
+    <ul id="blog-category-menu" class="menu-v with-icons collapsible category-menu">
+        {foreach $categories as $category}
+            <li {if $category.url == $category_url}class="selected"{/if} id="blog_category_li_item_{$category.id}">
+                <a href="?search=category&amp;category={$category.url|escape}">
+                    <span class="count">{$category.qty}</span>
+                    {if $category.icon}<i class="icon16 {$category.icon}"></i>{/if}{$category.name|escape}
+                </a>
+            </li>
+        {/foreach}
+    </ul>
+    {else}
     <div class="block align-center">
-        <span class="hint">{'?module=plugins#/settings/custom/category/'|string_format:'[`Add at least one category in the <a href="%s">plugin settings</a>`]'}</span>
+        <span class="hint">{'?module=plugins#/category/'|string_format:'[`Add at least one category in the <a href="%s">plugin settings</a>`]'}</span>
     </div>
     {/if}
 </div>
