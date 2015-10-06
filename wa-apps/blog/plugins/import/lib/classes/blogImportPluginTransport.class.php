@@ -82,10 +82,10 @@ abstract class blogImportPluginTransport /* implements Serializable*/
         $params['control_wrapper'] = <<<HTML
 <div class="field">
 %s
-<div class="value no-shift">
-	%s
-	%s
-</div>
+    <div class="value no-shift">
+    %s
+    %s
+    </div>
 </div>
 HTML;
         foreach ($this->options as $field => $properties) {

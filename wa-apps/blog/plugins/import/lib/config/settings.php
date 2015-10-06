@@ -29,7 +29,8 @@ return array(
         'title'                  => /*_wp*/('Author'),
         'description'            => /*_wp*/("All imported posts will be authored by this user"),
         'value'                  => 0,
-        'control_type' => 'select blogHelper::getAuthors',
+        'control_type'     => waHtmlControl::SELECT,
+        'options_callback' => array('blogHelper', 'getAuthors'),
     ),
     'replace' => array(
         'title'                  => /*_wp*/('Find and replace'),

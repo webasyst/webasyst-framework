@@ -170,7 +170,7 @@ $.wa_blog_plugins_import = {
     progressHandler: function (url, processId, response) {
         // display progress
         // if not completed do next iteration
-        var self = $.wa_blog.plugins_import;
+        var self = $.wa_blog_plugins_import;
         var timer;
 
         if (response && response.ready) {

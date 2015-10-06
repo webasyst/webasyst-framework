@@ -44,10 +44,8 @@ class blogImportPluginBackendRunController extends waLongActionController
             $namespace = $plugin_namespace.'_'.strtolower($transport);
             $this->initPlugin();
             if ($post = $this->getRequest()->post($plugin_namespace)) {
-                $this->plugin->setup($post);
-                if ($this->plugin->validateSettings($this->errors)) {
-                    $this->plugin->saveSettings();
-                } else {
+                $this->plugin->saveSettings($post);
+                if (!$this->plugin->validateSettings($this->errors)) {
                     throw new waException(_wp('Invalid replace settings'));
                 }
             }
@@ -131,6 +129,6 @@ class blogImportPluginBackendRunController extends waLongActionController
      */
     private function getTransport()
     {
-        return $this->transport = & $this->data['transport'];
+        return $this->transport = &$this->data['transport'];
     }
 }
