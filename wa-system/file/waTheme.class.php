@@ -2070,7 +2070,7 @@ HTACCESS;
                 foreach ($files as $file) {
                     if ($extract_pattern && !preg_match("@^{$extract_pattern}(/|$)@", $file['filename'])) {
                         self::throwThemeException('UNEXPECTED_FILE_PATH', "{$file['filename']}. Expect files in [{$extract_path}] directory");
-                    } elseif (preg_match('@\\.(php\d*|pl)@', $file['filename'], $matches)) {
+                    } elseif (preg_match('@\\.(php\d*|pl)$@', $file['filename'], $matches)) {
                         if (preg_match('@(^|/)build\\.php$@', $file['filename'])) {
                             $file['content'] = $tar_object->extractInString($file['filename']);
                             if (!preg_match('@^<\\?php[\\s\\n]+return[\\s\\n]+\\d+;[\\s\\n]*$@', $file['content'])) {
