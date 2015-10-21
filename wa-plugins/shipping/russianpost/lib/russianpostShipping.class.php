@@ -655,7 +655,7 @@ class russianpostShipping extends waShipping
      */
     public function tracking($tracking_id = null)
     {
-        return 'Отслеживание отправления: <a href="http://www.russianpost.ru/Tracking20/" target="_blank">http://www.russianpost.ru/Tracking20/</a>';
+        return 'Отслеживание отправления: <a href="https://pochta.ru/tracking" target="_blank">https://pochta.ru/tracking</a>';
     }
 
     /**
