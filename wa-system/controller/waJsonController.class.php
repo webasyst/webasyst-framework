@@ -31,7 +31,9 @@ abstract class waJsonController extends waController
 
     public function display()
     {
-        $this->getResponse()->addHeader('Content-Type', 'application/json');
+        if (waRequest::isXMLHttpRequest()) {
+            $this->getResponse()->addHeader('Content-Type', 'application/json');
+        }
         $this->getResponse()->sendHeaders();
         if (!$this->errors) {
             $data = array('status' => 'ok', 'data' => $this->response);
