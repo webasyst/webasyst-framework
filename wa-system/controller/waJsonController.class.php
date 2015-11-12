@@ -53,4 +53,3 @@ abstract class waJsonController extends waController
         $this->errors[] = array($message, $data);
     }
 }
-
