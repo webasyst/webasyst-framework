@@ -38,7 +38,7 @@ class waContactCategoriesField extends waContactChecklistField
             $this->model = new waContactCategoryModel();
         }
         if (!$this->categories) {
-            $this->categories = $this->model->getALl('id');
+            $this->categories = $this->model->getAll('id');
         }
 
         // System categories are disabled
