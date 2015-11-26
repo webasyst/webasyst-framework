@@ -68,8 +68,12 @@ HELP;
         $action_path = wa()->getAppPath('lib/actions/'.$module.'/', $app_id);
         $action_filename = $this->getPhpFilename($app_id, $module, $action_type, $action_names);
         waFiles::create($action_path);
-        file_put_contents($action_path.$action_filename, $php);
-        $files_created[] = $action_path.$action_filename;
+        if (!file_exists($action_path.$action_filename)) {
+            file_put_contents($action_path.$action_filename, $php);
+            $files_created[] = $action_path.$action_filename;
+        } else {
+            print sprintf("File already exists: %s\n", $action_path.$action_filename);
+        }
 
         // Save templates
         if ($action_type == 'action' || $action_type == 'actions') {
@@ -77,12 +81,20 @@ HELP;
             waFiles::create($template_path);
             foreach($action_names as $action_name) {
                 $template_filename = $this->getTemplateFilename($module, $action_type, $action_name);
-                file_put_contents($template_path.$template_filename, "<h1>Hello, World!</h1> <!-- !!! TODO FIXME -->\n\n<p>{$action_path}{$action_filename}</p>\n<p>{$template_path}{$template_filename}</p>");
-                $files_created[] = $template_path.$template_filename;
+                if (!file_exists($template_path.$template_filename)) {
+                    file_put_contents($template_path.$template_filename, "<h1>Hello, World!</h1> <!-- !!! TODO FIXME -->\n\n<p>{$action_path}{$action_filename}</p>\n<p>{$template_path}{$template_filename}</p>");
+                    $files_created[] = $template_path.$template_filename;
+                } else {
+                    print sprintf("File already exists: %s\n", $template_path.$template_filename);
+                }
             }
         }
 
-        print "Successfully created the following files:\n".join("\n", $files_created);
+        if ($files_created) {
+            print "Successfully created the following files:\n".join("\n", $files_created);
+        } else {
+            print "Nothing changed.";
+        }
     }
 
     protected function getPhpWrap($app_id, $module, $action_type, $action_names)

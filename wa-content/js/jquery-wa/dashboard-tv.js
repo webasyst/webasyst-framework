@@ -85,13 +85,13 @@ var DashboardWidget;
         that.$widget_wrapper = $("#widget-wrapper-" + that.widget_id);
 
         // Functions
-        that.renderWidget();
+        that.renderWidget(true);
 
         // Hide Notice after create
         toggleEmptyWidgetNotice(true);
     };
 
-    DashboardWidget.prototype.renderWidget = function() {
+    DashboardWidget.prototype.renderWidget = function(force) {
         var that = this,
             widget_href = that.widget_href + "&id=" + that.widget_id + "&size=" + that.widget_size.width + "x" + that.widget_size.width,
             $widget = that.$widget;
@@ -110,7 +110,9 @@ var DashboardWidget;
             }).done(function(r) {
                 $widget.html(r);
             }).fail(function() {
-                $widget.html("");
+                if (force) {
+                    $widget.html("");
+                }
             });
         }
     };
@@ -164,8 +166,9 @@ var DashboardWidget;
         $("#d-widgets-block").on("dblclick", ".widget-wrapper", function(e) {
             if (e.altKey && (e.ctrlKey || e.metaKey)) {
                 var id = $(this).data("widget-id");
-                if (id > 0) {
-                    DashboardWidgets[id] && DashboardWidgets[id].renderWidget();
+                if (id > 0 && DashboardWidgets[id]) {
+                    DashboardWidgets[id].$widget.html('<div class="block"><i class="icon16 loading"></i></div>');
+                    DashboardWidgets[id].renderWidget(true);
                 }
 
                 // Clear accidental text selection

@@ -149,7 +149,11 @@ function wa_dump_helper(&$value, &$level_arr = array(), $cli = null)
     }
 
     // Simple types
-    if (!is_array($value) && !is_object($value)) {
+    if (is_resource($value)) {
+        return print_r($value, 1).' ('.get_resource_type($value).')';
+    } else if (is_float($value)) {
+        return print_r($value, 1);
+    } else if (!is_array($value) && !is_object($value)) {
         $result = var_export($value, true);
         if (!$cli) {
             $result = htmlspecialchars($result);
