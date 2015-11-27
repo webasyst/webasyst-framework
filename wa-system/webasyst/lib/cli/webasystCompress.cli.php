@@ -806,6 +806,7 @@ HELP;
                 '@\.(bak|old|user|te?mp|www)(\.(php|css|js|html))?$@' => 'temp file',
                 '@(/|^)(\.DS_Store|\.desktop\.ini|thumbs\.db)$@'      => 'system file',
                 '@\b\.(svn|git|hg_archival\.txt)\b@'                  => 'CVS file',
+                '@^\.git.*@'                                          => 'GIT file',
                 '@\.(zip|rar|gz)$@'                                   => 'archive',
                 '@\.log$@'                                            => 'log file',
                 '@\.md5$@'                                            => 'checksum file',
