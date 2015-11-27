@@ -259,7 +259,7 @@ HELP;
         );
         foreach ($this->files as $file) {
             if (in_array(pathinfo($file, PATHINFO_EXTENSION), $ext)) {
-                if (in_array('no-vendors', $param, true) && preg_match('@^(lib/|js/)?vendors/@', $file)) {
+                if (in_array('no-vendors', $param, true) && preg_match('@^(lib/|js/)?vendors?/@', $file)) {
                     continue;
                 }
                 if (preg_match('@(js|css)/compiled/.+\.(js|css)$@', $file)) {
@@ -456,6 +456,7 @@ HELP;
                         'auth',
                         'my_account',
                         'mobile',
+                        'sash_color',
                     )
                 );
                 break;
@@ -498,9 +499,7 @@ HELP;
                 $result = false;
                 $this->tracef("Invalid %s's settings: empty routing for frontend", $this->type);
             } else {
-                foreach ($routing as $route) {
-                    //TODO
-                }
+                //TODO test $routing
             }
         } else {
             if ($routing !== false) {

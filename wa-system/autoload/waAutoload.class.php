@@ -83,7 +83,10 @@ class waAutoload
                 return $result;
             }
         } elseif (substr($class, 0, 4) === 'waDb') {
-            return $this->base_path.'/wa-system/database/'.$class.'.class.php';
+            $file = $this->base_path.'/wa-system/database/'.$class.'.class.php';
+            if (is_readable($file)) {
+                return $file;
+            }
         } elseif (substr($class, 0, 2) == 'wa') {
             if (strpos($class, '.') !== false) return null;
             $dir = preg_replace("/^wai?([A-Z][a-z]+).*?$/", "$1", $class);

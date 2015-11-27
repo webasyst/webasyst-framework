@@ -331,6 +331,7 @@ class waPlugin
 
     /**
      * @param mixed [string] $settings Array of settings key=>value
+     * @return void|array
      */
     public function saveSettings($settings = array())
     {

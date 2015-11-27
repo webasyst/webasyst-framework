@@ -63,7 +63,13 @@ class waMailPOP3
             // auth
             $this->auth();
         } else {
-            throw new waException($errstr, $errno);
+            if (!preg_match('//u', $errstr)) {
+                $tmp = @iconv('windows-1251', 'utf-8//ignore', $errstr);
+                if ($tmp) {
+                    $errstr = $tmp;
+                }
+            }
+            throw new waException($errstr.' ('.$errno.')', $errno);
         }
     }
 

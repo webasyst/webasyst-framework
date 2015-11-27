@@ -449,22 +449,31 @@ class waTheme implements ArrayAccess
      */
     private function getXML($as_dom = false)
     {
-
         if ($as_dom && !class_exists('DOMDocument')) {
             throw new waException('PHP extension DOM required');
+        } elseif (!function_exists('simplexml_load_file')) {
+            throw new waException('PHP extension SimpleXML required');
         }
         $path = $this->path.'/'.self::PATH;
         if (file_exists($path) && filesize($path)) {
+            libxml_use_internal_errors(true);
+            libxml_clear_errors();
             if ($as_dom) {
                 $xml = new DOMDocument(1.0, 'UTF-8');
                 $xml->preserveWhiteSpace = false;
                 $xml->formatOutput = true;
-                $xml->load($path);
+                if (!$xml->load($path, LIBXML_NOCDATA)) {
+                    $this->throwXmlError($path);
+                }
                 $xml->preserveWhiteSpace = false;
                 $xml->formatOutput = true;
             } else {
                 $xml = @simplexml_load_file($path, null, LIBXML_NOCDATA);
+                if (!$xml) {
+                    $this->throwXmlError($path);
+                }
             }
+
         } else {
             $data = <<<XML
 <?xml version="1.0" encoding="UTF-8"?>
@@ -480,7 +489,7 @@ XML;
                 $xml = new DOMDocument(1.0, 'UTF-8');
                 $xml->preserveWhiteSpace = false;
                 $xml->formatOutput = true;
-                $xml->loadXML($data);
+                $xml->loadXML($data, LIBXML_NOCDATA);
                 $xml->preserveWhiteSpace = false;
                 $xml->formatOutput = true;
             } else {
@@ -488,6 +497,47 @@ XML;
             }
         }
         return $xml;
+    }
+
+    /**
+     * @param $path
+     * @throws waException
+     */
+    private function throwXmlError($path)
+    {
+        $xml_errors = libxml_get_errors();
+        /**
+         * @var LibXMLError[] $xml_errors
+         */
+
+        $log = 'waTheme.log';
+        $relative_path = ltrim(str_replace(wa()->getConfig()->getRootPath(), '', $path), '\\/');
+        $error = sprintf("Error occurred while read theme XML file %s, For details see log at %s", $relative_path, $log);
+
+        $log_error = array(
+            sprintf("Error occurred while read theme XML file %s.", $path)
+        );
+        foreach ($xml_errors as $er) {
+            $level = 'unknown';
+            switch ($er->level) {
+                case LIBXML_ERR_FATAL:
+                    $level = 'Fatal error';
+                    break;
+                case LIBXML_ERR_ERROR:
+                    $level = 'Error';
+                    break;
+                case LIBXML_ERR_WARNING:
+                    $level = 'Warning';
+                    break;
+                case LIBXML_ERR_NONE:
+                    $level = 'Notice';
+                    break;
+            }
+            $log_error[] = "{$level} #{$er->code} at [{$er->line}:{$er->column}]: {$er->message}";
+        }
+        waLog::log(implode("\n\t", $log_error), $log);
+        libxml_clear_errors();
+        throw new waException($error);
     }
 
     /**
@@ -1842,9 +1892,9 @@ HTACCESS;
      *
      * @throws waException
      * @param bool $related duplicate all related themes
-     * @param mixed[string] $options
-     * @param string[string] $options['id']
-     * @param string[string] $options['name']
+     * @param mixed [string] $options
+     * @param string [string] $options['id']
+     * @param string [string] $options['name']
      * @return waTheme
      */
     public function duplicate($related = false, $options = array())
@@ -2070,7 +2120,7 @@ HTACCESS;
                 foreach ($files as $file) {
                     if ($extract_pattern && !preg_match("@^{$extract_pattern}(/|$)@", $file['filename'])) {
                         self::throwThemeException('UNEXPECTED_FILE_PATH', "{$file['filename']}. Expect files in [{$extract_path}] directory");
-                    } elseif (preg_match('@\\.(php\d*|pl)@', $file['filename'], $matches)) {
+                    } elseif (preg_match('@\\.(php\d*|pl)$@', $file['filename'], $matches)) {
                         if (preg_match('@(^|/)build\\.php$@', $file['filename'])) {
                             $file['content'] = $tar_object->extractInString($file['filename']);
                             if (!preg_match('@^<\\?php[\\s\\n]+return[\\s\\n]+\\d+;[\\s\\n]*$@', $file['content'])) {

@@ -556,9 +556,19 @@ class waFiles
                 $send_as = str_replace('"', '\"', is_string($attach) ? $attach : basename($file));
                 $send_as = preg_replace('~[\n\r]+~', ' ', $send_as);
 
-                $x_accel_redirect = waSystemConfig::systemOption('x_accel_redirect');
-
                 $file_size = filesize($file);
+
+                /**
+                 * @see https://www.nginx.com/resources/wiki/start/topics/examples/x-accel/
+                 */
+                $x_accel_redirect = waSystemConfig::systemOption('x_accel_redirect');
+                if(!empty($x_accel_redirect)){
+                    $base_path = wa()->getConfig()->getRootPath();
+                    if (strpos($file, $base_path) !== 0) {
+                        $x_accel_redirect = false;
+                    }
+                }
+
                 $response->setStatus(200);
                 if (empty($x_accel_redirect)) {
                     $from = $to = false;
@@ -630,8 +640,7 @@ class waFiles
                     $response->sendHeaders();
                     $response = null;
 
-                    //TODO: adjust chunk size
-                    $chunk = 1048576; //1M
+                    $chunk = 131072; //128KB
                     while (!feof($fp) && $chunk && (connection_status() == 0)) {
                         if ($to) {
                             $chunk = min(1 + $to - @ftell($fp), $chunk);
@@ -644,6 +653,10 @@ class waFiles
 
                     @fclose($fp);
                 } else {
+
+                    $path = wa()->getRootUrl().substr($file, strlen($base_path));
+                    $path = preg_replace('@([/\\\\]+)@', '/', $path);
+
                     $response->addHeader("Content-type", $file_type);
                     //RFC 6266
                     $response->addHeader("Content-Disposition", "attachment; filename=\"{$send_as}\"");
@@ -657,7 +670,7 @@ class waFiles
                         $response->addHeader("Content-MD5", $md5);
                     }
 
-                    $response->addHeader("X-Accel-Redirect", $file);
+                    $response->addHeader("X-Accel-Redirect", $path);
                     $response->sendHeaders();
                     $response = null;
                     //@future

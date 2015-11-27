@@ -160,6 +160,11 @@ body.is-highlighted #wa-header .d-dashboard-header-content .d-dashboard-link-wra
   padding: 10px;
   margin: 0 -20px;
 }
+.d-page-wrapper .d-settings-wrapper .d-settings-container .d-settings-inner-container .d-settings-block .wa-form textarea {
+  min-width: auto;
+  width: 100%;
+  box-sizing: border-box;
+}
 .d-page-wrapper .d-content-wrapper {
   display: table;
   width: 100%;

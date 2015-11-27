@@ -233,7 +233,7 @@ class russianpostShipping extends waShipping
         $halfkilocost = $this->halfkilocost;
         $overhalfkilocost = $this->overhalfkilocost;
 
-        $rate['ground'] = $this->halfkilocost[$zone] + $this->overhalfkilocost[$zone] * ceil((($weight < 0.5 ? 0.5 : $weight) - 0.5) / 0.5);
+        $rate['ground'] = $halfkilocost[$zone] + $overhalfkilocost[$zone] * ceil((($weight < 0.5 ? 0.5 : $weight) - 0.5) / 0.5);
 
         $rate['air'] = $rate['ground'] + $this->getSettings('air');
 
@@ -655,7 +655,11 @@ class russianpostShipping extends waShipping
      */
     public function tracking($tracking_id = null)
     {
-        return 'Отслеживание отправления: <a href="http://www.russianpost.ru/Tracking20/" target="_blank">http://www.russianpost.ru/Tracking20/</a>';
+        $template = 'Отслеживание отправления: <a href="https://pochta.ru/tracking" target="_blank">https://pochta.ru/tracking</a>';
+        if($tracking_id){
+            $template .= sprintf(' <b>%s</b>',htmlentities($tracking_id,ENT_NOQUOTES,'utf-8'));
+        }
+        return $template;
     }
 
     /**
@@ -833,6 +837,6 @@ class russianpostShipping extends waShipping
             default:
                 break;
         }
-        return !$srcIm ? false : $srcIm;
+        return empty($srcIm) ? false : $srcIm;
     }
 }

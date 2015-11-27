@@ -31,8 +31,14 @@ class webasystDashboardActions extends waActions
             throw new waException(_ws('Widget not found'), 404);
         }
 
-        $r = $this->getWidgetModel()->move($widget->getInfo(), $block, $sort, waRequest::post('new_block'));
-        $this->displayJson(array('result' => $r));
+        $response = array(
+            'old' => array(
+                'block' => $widget->getInfo('block'),
+                'sort' => $widget->getInfo('sort'),
+            )
+        );
+        $response['result'] = $this->getWidgetModel()->move($widget->getInfo(), $block, $sort, waRequest::post('new_block'));
+        $this->displayJson($response);
     }
 
     public function widgetDeleteAction()
@@ -152,6 +158,8 @@ class webasystDashboardActions extends waActions
 
         $response = $widget->setSettings($settings);
         $response['message'] = _w('Saved');
+        $response['block'] = $widget->getInfo('block');
+        $response['sort'] = $widget->getInfo('sort');
         $this->displayJson($response);
     }
 

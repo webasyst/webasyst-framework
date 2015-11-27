@@ -13,7 +13,7 @@ class googleMap extends waMapAdapter
         $locale = wa()->getLocale();
         $zoom = ifset($options['zoom'], 10);
         if (!empty($options['static'])) {
-            return '<a target="_blank" href="//maps.google.ru/maps?q='.urlencode($address).'&z='.$zoom.'">'.$this->getStaticImg($address, $options).'</a>';
+            return '<a target="_blank" href="//maps.google.com/maps?q='.urlencode($address).'&z='.$zoom.'">'.$this->getStaticImg($address, $options).'</a>';
         } else {
             $id = uniqid();
             $width = ifset($options['width'], '100%');
