@@ -202,8 +202,13 @@ class waTheme implements ArrayAccess
                         'edition'         => 0,
                         'source_theme_id' => '',
                     );
-                    if (!$xml = $this->getXML()) {
-                        trigger_error("Invalid theme description {$path}", E_USER_WARNING);
+                    try {
+                        if (!$xml = $this->getXML()) {
+                            trigger_error("Invalid theme description {$path}", E_USER_WARNING);
+                            break;
+                        }
+                    } catch (waException $ex) {
+                        trigger_error("Invalid theme description {$path}: ".$ex->getMessage(), E_USER_WARNING);
                         break;
                     }
                     /**
