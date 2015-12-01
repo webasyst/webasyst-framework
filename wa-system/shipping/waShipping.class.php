@@ -316,6 +316,26 @@ abstract class waShipping extends waSystemPlugin
      */
     public static function execCallback($params, $module_id)
     {
+        $module = self::factory($module_id);
+        $module->callbackInit($params);
+        $module->init();
+        $module->callbackHandler($params);
+    }
+
+    /**
+     * @param array $request
+     * @return waShipping $this
+     */
+    protected function callbackInit($request)
+    {
+        return $this;
+    }
+
+    /**
+     * @param array $request
+     */
+    protected function callbackHandler($request)
+    {
         ;
     }
 

@@ -502,6 +502,11 @@ class waSystem
                 waRequest::setParam('module_id', strtok($url, '/?'));
                 $webasyst_system = self::getInstance('webasyst');
                 $webasyst_system->getFrontController()->execute(null, 'payments', null, true);
+            } elseif (!strncmp($this->config->getRequestUrl(true), 'shipping.php/', 13)) {
+                $url = substr($this->config->getRequestUrl(true), 13);
+                waRequest::setParam('module_id', strtok($url, '/?'));
+                $webasyst_system = self::getInstance('webasyst');
+                $webasyst_system->getFrontController()->execute(null, 'shipping', null, true);
             } elseif ($this->getEnv() == 'backend' && !$this->getUser()->isAuth()) {
                 $webasyst_system = self::getInstance('webasyst', null, true);
                 $webasyst_system->getFrontController()->execute(null, 'login', waRequest::get('action'), true);
