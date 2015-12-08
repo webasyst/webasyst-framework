@@ -168,11 +168,11 @@ class australiapostShipping extends waShipping
         $params = array();
         $params['from_postcode'] = $this->zip;
         $params['to_postcode'] = $zip;
-        $params['length'] = min(1, $this->length);
-        $params['width']  = min(1, $this->width);
-        $params['height'] = min(1, $this->height);
+        $params['length'] = max(1, $this->length);
+        $params['width']  = max(1, $this->width);
+        $params['height'] = max(1, $this->height);
         $params['weight'] = number_format(
-                min(0.1, $this->getTotalWeight()), 2
+                max(0.1, $this->getTotalWeight()), 2
         );
 
         return http_build_query($params);
