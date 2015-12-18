@@ -186,7 +186,8 @@ $(function () {
             error: function () {
                 setTimeout(updateCount, 60000);
             },
-            dataType: "json"
+            dataType: "json",
+            async: true
         });
     };
 

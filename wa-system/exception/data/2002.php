@@ -1,3 +1,3 @@
-<?php 
-$message = 'Can not connect to MySQL server.';
+<?php
+$message = 'Cannot connect to MySQL server.';
 include('error.php');

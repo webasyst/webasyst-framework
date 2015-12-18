@@ -315,7 +315,7 @@ HTML;
         return waRequest::get('module', $default);
     }
 
-    public function css()
+    public function css($strict = false)
     {
         if (wa()->getEnv() == 'backend' || wa()->getEnv() == 'api') {
             $css = '<link href="'.wa()->getRootUrl().'wa-content/css/wa/wa-1.3.css?v'.$this->version(true).'" rel="stylesheet" type="text/css" >
@@ -330,12 +330,12 @@ HTML;
         } else {
             $css = '';
         }
-        return $css.wa()->getResponse()->getCss(true);
+        return $css.wa()->getResponse()->getCss(true, $strict);
     }
 
-    public function js()
+    public function js($strict = false)
     {
-        return wa()->getResponse()->getJs(true);
+        return wa()->getResponse()->getJs(true, $strict);
     }
 
     /**
