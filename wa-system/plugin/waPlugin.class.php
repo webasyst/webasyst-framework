@@ -165,12 +165,21 @@ class waPlugin
         }
     }
 
-    public function uninstall()
+    public function uninstall($force = false)
     {
         // check uninstall.php
         $file = $this->path.'/lib/config/uninstall.php';
-        if (file_exists($file)) {
-            include($file);
+        if (file_exists($file) && ($force === true)) {
+            try {
+                include($file);
+
+            } catch (Exception $ex) {
+                if ($force) {
+                    waLog::log(sprintf("Error while uninstall %s at %s: %s", $this->id, $this->app_id, $ex->getMessage(), 'installer.log'));
+                } else {
+                    throw $ex;
+                }
+            }
         }
 
         $file_db = $this->path.'/lib/config/db.php';
@@ -181,7 +190,7 @@ class waPlugin
                 $sql = "DROP TABLE IF EXISTS ".$table;
                 $model->exec($sql);
             }
-        } 
+        }
         // Remove plugin settings
         $app_settings_model = new waAppSettingsModel();
         $app_settings_model->del($this->app_id.".".$this->id);

@@ -35,20 +35,16 @@ class webasystApiAuthAction extends waViewAction
         $this->contact_id = $this->getUser()->getId();
 
         if (waRequest::method() == 'post') {
+            if (waRequest::post('_csrf') != waRequest::cookie('_csrf')) {
+                $this->view->assign('error_code', 'invalid_request');
+                $this->view->assign('error', 'CSRF Protection');
+                $this->template = 'ApiError';
+                return;
+            }
             if (waRequest::post('approve')) {
                 $this->approve();
             } else {
                 $this->deny();
-            }
-        } else {
-            $tokens_model = new waApiTokensModel();
-            $token = $tokens_model->getByField(array(
-                'contact_id' => $this->contact_id,
-                'client_id' => $this->client_id
-            ));
-            // if token exists then create auth code and redirect to redirect_uri
-            if ($token) {
-                $this->approve();
             }
         }
         $this->view->assign('client_name', $this->client_name, true);
@@ -132,8 +128,8 @@ class webasystApiAuthAction extends waViewAction
     {
         $auth_codes_model = new waApiAuthCodesModel();
         $code = md5(microtime(true).uniqid());
-        // + 5 min
-        $expires = date('Y-m-d H:i:s', time() + 300);
+        // + 3 min
+        $expires = date('Y-m-d H:i:s', time() + 180);
         $auth_codes_model->insert(array(
             'code' => $code,
             'client_id' => $this->client_id,

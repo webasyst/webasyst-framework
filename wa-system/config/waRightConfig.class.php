@@ -80,6 +80,14 @@ abstract class waRightConfig
     }
 
     /**
+     * List of controls added via $this->addItem().
+     */
+    public function getItems()
+    {
+        return $this->items;
+    }
+
+    /**
      * Return custom access rights managed by app for contact id (not considering group he's in) or a set of group ids.
      * Application must override this if it uses custom access rights storage.
      *

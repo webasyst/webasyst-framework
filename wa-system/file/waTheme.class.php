@@ -204,11 +204,11 @@ class waTheme implements ArrayAccess
                     );
                     try {
                         if (!$xml = $this->getXML()) {
-                            trigger_error("Invalid theme description {$path}", E_USER_WARNING);
+                            waLog::log("Invalid theme description {$path}", 'themes.log');
                             break;
                         }
                     } catch (waException $ex) {
-                        trigger_error("Invalid theme description {$path}: ".$ex->getMessage(), E_USER_WARNING);
+                        waLog::log("Invalid theme description {$path}: ".$ex->getMessage(), 'themes.log');
                         break;
                     }
                     /**

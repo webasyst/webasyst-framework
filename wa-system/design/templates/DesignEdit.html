@@ -9,7 +9,7 @@
         <ul class="menu-v with-icons wa-theme wa-theme-templates">
             {foreach $theme_files as $f_id => $f}
             <li class="{if $f_id == $file.id}selected {/if}{if $f@first}top-padded {/if}{if $f.parent}{if !empty($f.parent_exists)}inherit{else}error{/if}{/if}">
-                <a {if !empty($f.modified)}class="bold"{/if} href="{$design_url}theme={$theme.id}&file={$f_id|escape}"{if !empty($f.parent_exists)} title="[s`parent theme file`]"{/if}>
+                <a {if !empty($f.modified)}class="bold"{/if} href="{$design_url}theme={$theme.id}&file={$f_id|escape:'url'}"{if !empty($f.parent_exists)} title="[s`parent theme file`]"{/if}>
                 <i class="icon16 {if !empty($f.parent_exists)}link{else}script{if substr($f_id, -4)=='.css'}-css{elseif substr($f_id, -3)=='.js'}-js{/if}{/if}"></i>{$f_id|escape|truncate:25:'...':false:true}
                 </a>
             </li>
@@ -21,7 +21,7 @@
 </div>
 <div class="content left200px bordered-left blank">
 <div class="wa-design-editor">
-    <form id="wa-design-form" method="post" action="?module=design&theme_id={$theme_id}&file={$file.id|escape}&action=save">
+    <form id="wa-design-form" method="post" action="?module=design&theme_id={$theme_id}&file={$file.id|escape:'url'}&action=save">
         <div class="block wa-design-gray-toolbar">
             {if $file.id}
             <div class="float-right">
@@ -35,7 +35,7 @@
                                     if (!d.length) {
                                         d = $('<div id="wa-design-view-original-dialog"></div>').appendTo('body');
                                     }
-                                    var url = $(this).attr('href') + '&theme_id={$theme_id}&file={$file.id}';
+                                    var url = $(this).attr('href') + '&theme_id={$theme_id}&file={$file.id|escape:'url'}';
                                     d.waDialog({
                                         url: url,
                                         buttons: '<input type="button" class="button cancel" value="[s`Close`]"> <input type="submit" class="button yellow float-right" value="[s`Roll back my file to the original version`]">',
@@ -197,7 +197,7 @@
                                 $("#wa-editor-help").hide();
                                 return false;
                             }
-                            $("#wa-editor-help").load('?module=pages&action=help', "app={$wa->app()}&file={if $file}{$file.id}{/if}", function () {
+                            $("#wa-editor-help").load('?module=pages&action=help', "app={$wa->app()}&file={if $file}{$file.id|escape:'url'}{/if}", function () {
                                 $(this).show();
                                 var f = function (e) {
                                     if ($(e.target).attr('id') == 'wa-editor-help' || $(e.target).parents('#wa-editor-help').length) {

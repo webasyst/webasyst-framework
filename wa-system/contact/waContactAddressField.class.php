@@ -353,4 +353,23 @@ class waContactAddressSeveralLinesFormatter extends waContactAddressOneLineForma
     }
 }
 
+class waContactAddressDataFormatter extends waContactAddressOneLineFormatter
+{
+    public function format($data)
+    {
+        $parts = $this->getParts($data);
+        $data['value'] = array();
+        foreach($parts['parts'] + $data['data'] as $key => $value) {
+            if (strlen($value)) {
+                $data['value'][$key] = $value;
+            }
+        }
+        unset($data['value']['lat'], $data['value']['lng']);
+
+        $adr = waContactFields::get('address');
+        $data['for_map'] = $adr->format($data, 'forMap');
+        return $data;
+    }
+}
+
 // EOF

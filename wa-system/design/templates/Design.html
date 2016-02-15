@@ -128,18 +128,18 @@
                 i--;
             }
             return url;
-        }
+        };
 
         var waDesignParams = function (url) {
             url = waDesignHash(url);
             var params_ar = url.split('&');
-            var params = {};
+            var params = { };
             for (var i = 0; i < params_ar.length; i++) {
                 var tmp = params_ar[i].split('=');
                 params[tmp[0]] = tmp[1];
             }
             return params;
-        }
+        };
 
         $("#wa-theme-list li a").click(function (e, set_active_only) {
             $('#wa-theme-list').hide();
@@ -233,7 +233,7 @@
             });
         {/if}
 
-        var site_routing_full = function () {};
+        var site_routing_full = function () { };
         var wa_design_not_load = false;
         function waDesignLoad(hash) {
             var hash_params = waDesignParams(hash || location.hash);

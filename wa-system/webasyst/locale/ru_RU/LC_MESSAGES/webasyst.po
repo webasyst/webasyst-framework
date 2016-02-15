@@ -3185,7 +3185,7 @@ msgid "Warsaw"
 msgstr "Варшава"
 
 msgid "Zagreb"
-msgstr "загреб"
+msgstr "Загреб"
 
 msgid "Zaporozhye"
 msgstr "Запорожье"

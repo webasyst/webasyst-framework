@@ -34,7 +34,11 @@ class Smarty_Internal_Write_File {
         $_dirpath = dirname($_filepath);
         // if subdirs, create dir structure
         if ($_dirpath !== '.' && !file_exists($_dirpath)) {
-            mkdir($_dirpath, $smarty->_dir_perms === null ? 0777 : $smarty->_dir_perms, true);
+            if (class_exists('waFiles')) {
+                waFiles::create($_dirpath, true);
+            } else {
+                mkdir($_dirpath, $smarty->_dir_perms === null ? 0777 : $smarty->_dir_perms, true);
+            }
         }
 
         // write to tmp file, then move to overt file lock race condition
@@ -44,11 +48,11 @@ class Smarty_Internal_Write_File {
             throw new SmartyException("unable to write file {$_tmp_file}");
             return false;
         }
-        
+
         /*
          * Windows' rename() fails if the destination exists,
          * Linux' rename() properly handles the overwrite.
-         * Simply unlink()ing a file might cause other processes 
+         * Simply unlink()ing a file might cause other processes
          * currently reading that file to fail, but linux' rename()
          * seems to be smart enough to handle that for us.
          */
