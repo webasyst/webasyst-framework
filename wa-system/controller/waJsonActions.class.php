@@ -21,7 +21,7 @@ abstract class waJsonActions extends waController
 
     protected function preExecute()
     {
-
+        $this->getResponse()->addHeader('Content-type', 'application/json');
     }
 
     protected function execute($action)
