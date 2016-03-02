@@ -268,7 +268,7 @@ a#wa-my-username { font-weight: bold; text-decoration: none; }
 
 /* <frame>-like layout: scrollable main viewport content +
  * fixed always-on-the-top bottom toolbar.
- * E.g. template/page editor with always visible ‘Save’ button
+ * E.g. template/page editor with always visible 'Save' button
  * in the Site app
 -------------------------------------------- */
 .frame.viewport { position: absolute; overflow: auto; bottom: 50px; left: 0; right: 0; top: 0;}

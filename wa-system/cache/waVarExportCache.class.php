@@ -17,11 +17,14 @@ class waVarExportCache extends waFileCache
 {
     protected function writeToFile($file, $v)
     {
-        if ((!file_exists($file) && is_writable(dirname($file))) || is_writable($file)) {
-            return file_put_contents($file, "<?php\nreturn ".var_export($v, true).";\n");
-        } elseif (waSystemConfig::isDebug()) {
+        if ($this->ttl === 0) {
+            return true;
+        }
+        $result = waUtils::varExportToFile($v, $file);
+        if (!$result && waSystemConfig::isDebug()) {
             throw new waException("Cannot write to cache file ".$file, 601);
         }
+        return $result;
     }
 
     protected function readFromFile($file)

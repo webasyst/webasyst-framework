@@ -51,7 +51,6 @@ class waDesignActions extends waActions
         $routing_url = false;
         if (wa()->appExists('site')) {
             wa('site');
-            $domain_model = new siteDomainModel();
             $routing_url = wa()->getAppUrl('site').'#/routing/';
         }
         $current_url = $this->design_url.'theme='.$theme['id'];
@@ -104,9 +103,17 @@ class waDesignActions extends waActions
                 }
             }
             $file = $theme->getFile($f);
-            if (!$file && !file_exists($theme->getPath().'/'.$f)) {
-                $f = 'index.html';
-                $file = $theme->getFile($f);
+            if (!$file) {
+                $f = preg_replace('@(\\{1,}|/{2,})@', '/', $f);
+                if (!$f
+                    ||
+                    preg_match('@(^|/)\.\./@', $f)
+                    ||
+                    !file_exists($theme->getPath().'/'.$f)
+                ) {
+                    $f = 'index.html';
+                    $file = $theme->getFile($f);
+                }
             }
             $file['id'] = $f;
             if ($theme->parent_theme_id && !empty($file['parent'])) {
@@ -274,6 +281,7 @@ class waDesignActions extends waActions
 
     public function saveAction()
     {
+
         $app_id = $this->getAppId();
         $theme_id = waRequest::get('theme_id');
         $file = waRequest::get('file');
@@ -285,57 +293,66 @@ class waDesignActions extends waActions
 
         // copy original theme
         $theme = new waTheme($theme_id, $app_id);
-        if ($theme['type'] == waTheme::ORIGINAL) {
-            $theme->copy();
-        }
+        try {
+            if ($theme['type'] == waTheme::ORIGINAL) {
+                $theme->copy();
+            }
 
-        // create file
-        if (!$file) {
-            // parent
-            if (waRequest::post('type')) {
-                $file = waRequest::post('parent');
-                $theme->addFile($file, '', array('parent' => 1));
-            } else {
-                $file = waRequest::post('file');
-                if ($this->checkFile($file, $errors)) {
-                    $theme->addFile($file, waRequest::post('description'));
-                }
-            }
-            if (!$errors) {
-                if (!$theme->save()) {
-                    $errors = _ws('Insufficient file access permissions to save theme settings');
+            // create file
+            if (!$file) {
+                // parent
+                if (waRequest::post('type')) {
+                    $file = waRequest::post('parent');
+                    $theme->addFile($file, '', array('parent' => 1));
                 } else {
-                    $this->logAction('template_add', $file);
-                }
-            }
-        } else {
-            if (waRequest::post('file') && $file != waRequest::post('file')) {
-                if (!$this->checkFile(waRequest::post('file'), $errors)) {
-                    $this->displayJson(array(), $errors);
-                    return;
-                }
-                $theme->removeFile($file);
-                $file = waRequest::post('file');
-                if (!$theme->addFile($file, waRequest::post('description'))->save()) {
-                    $errors = _ws('Insufficient file access permissions to save theme settings');
-                } else {
-                    $this->logAction('template_edit', $file);
-                }
-            } else {
-                $f = $theme->getFile($file);
-                if (!empty($theme['parent_theme_id']) && $f['parent']) {
-                    $theme = new waTheme($theme['parent_theme_id']);
-                    if ($theme['type'] == waTheme::ORIGINAL) {
-                        $theme->copy();
+                    $file = waRequest::post('file');
+                    if ($this->checkFile($file, $errors)) {
+                        $theme->addFile($file, waRequest::post('description'));
                     }
                 }
-                if (!$theme->changeFile($file, waRequest::post('description'))) {
-                    $errors = _ws('Insufficient file access permissions to save theme settings');
-                } else {
-                    $this->logAction('template_edit', $file);
+                if (!$errors) {
+                    if (!$theme->save()) {
+                        $errors = _ws('Insufficient file access permissions to save theme settings');
+                    } else {
+                        $this->logAction('template_add', $file);
+                    }
                 }
+            } else {
+                if (waRequest::post('file') && ($file != waRequest::post('file'))) {
+                    if (!$this->checkFile(waRequest::post('file'), $errors)) {
+                        $this->displayJson(array(), $errors);
+                        return;
+                    }
+                    $theme->removeFile($file);
+                    $file = waRequest::post('file');
+                    if (!$theme->addFile($file, waRequest::post('description'))->save()) {
+                        $errors = _ws('Insufficient file access permissions to save theme settings');
+                    } else {
+                        $this->logAction('template_edit', $file);
+                    }
+                } else {
+                    $f = $theme->getFile($file);
+                    if (empty($f)) {
+                        if ($this->checkFile($file, $errors)) {
+                            $errors = _ws('Insufficient file access permissions to save theme settings');
+                        }
+                    }
+                    if (!empty($theme['parent_theme_id']) && !empty($f['parent'])) {
+                        $theme = new waTheme($theme['parent_theme_id']);
+                        if ($theme['type'] == waTheme::ORIGINAL) {
+                            $theme->copy();
+                        }
+                    }
+                    if (!$theme->changeFile($file, waRequest::post('description'))) {
+                        $errors = _ws('Insufficient file access permissions to save theme settings');
+                    } else {
+                        $this->logAction('template_edit', $file);
+                    }
+                }
+                @touch($theme->getPath().'/'.waTheme::PATH);
             }
-            @touch($theme->getPath().'/'.waTheme::PATH);
+        } catch (waException $ex) {
+            $errors = $ex->getMessage();
         }
 
         $response = array();

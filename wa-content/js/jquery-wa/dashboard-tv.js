@@ -158,9 +158,9 @@ var DashboardWidget;
 
         // Do a full page reload once in a while.
         // Because browsers on TVs leak memory and tend to eventually crash.
-        setTimeout(function() {
+        setInterval(function() {
             location.reload();
-        }, 4*60*60*1000);
+        }, 150*60*1000);
 
         // Development helper: Ctrl + Alt + dblclick on a widget reloads the widget
         $("#d-widgets-block").on("dblclick", ".widget-wrapper", function(e) {

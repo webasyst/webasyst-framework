@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WebAsyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2015-09-28 09:39+0300\n"
+"PO-Revision-Date: 2016-03-02 13:42+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -4238,6 +4238,18 @@ msgstr "Этот плагин не предоставляет возможнос
 #: /wa-system/plugin/templates/Settings.html:36
 msgid "Unknown plugin"
 msgstr "Неизвестный плагин"
+
+msgid "Bytes"
+msgstr "Байт"
+
+msgid "KBytes"
+msgstr "КБайт"
+
+msgid "MBytes"
+msgstr "МБайт"
+
+msgid "GBytes"
+msgstr "ГБайт"
 
 #: /wa-system/webasyst/lib/cli/webasystCreateApp.cli.php:278
 msgid "Hello world"

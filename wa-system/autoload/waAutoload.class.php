@@ -157,7 +157,6 @@ class waAutoload
         'waVarExportCache'         => 'cache/waVarExportCache.class.php',
         'waiCache'                 => 'cache/waiCache.interface.php',
 
-        'waAnalyticsConfig'        => 'config/waAnalyticsConfig.class.php',
         'waAppConfig'              => 'config/waAppConfig.class.php',
         'waConfig'                 => 'config/waConfig.class.php',
         'waRightConfig'            => 'config/waRightConfig.class.php',
