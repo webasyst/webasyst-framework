@@ -17,7 +17,7 @@ class waVarExportCache extends waFileCache
 {
     protected function writeToFile($file, $v)
     {
-        if ($this->ttl === 0) {
+        if ($this->ttl < 0) {
             return true;
         }
         $result = waUtils::varExportToFile($v, $file);

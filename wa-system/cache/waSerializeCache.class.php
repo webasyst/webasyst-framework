@@ -13,12 +13,12 @@
  * @subpackage cache
  */
 
-class waSerializeCache extends waFileCache 
+class waSerializeCache extends waFileCache
 {
-    
+
     protected function writeToFile($file, $v)
     {
-        if ($this->ttl === 0) {
+        if ($this->ttl < 0) {
             return null;
         }
         if (!file_exists($file) || is_writable($file)) {
@@ -46,5 +46,5 @@ class waSerializeCache extends waFileCache
             }
         }
         return null;
-    }    
+    }
 }
