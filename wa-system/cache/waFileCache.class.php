@@ -21,17 +21,17 @@ abstract class waFileCache implements waiCache
      * @var string
      */
     protected $key;
-    
+
     /**
      * Expire time in sec
      *
      * @var int
      */
     protected $ttl;
-    protected $app_id;    
+    protected $app_id;
     protected $value = null;
-    
-    public function __construct($key, $ttl = 0, $app_id = null)
+
+    public function __construct($key, $ttl = -1, $app_id = null)
     {
         $this->key = trim($key, '/');
         $this->ttl = $ttl;
@@ -42,7 +42,7 @@ abstract class waFileCache implements waiCache
     {
         return waSystem::getInstance()->getCachePath('cache/'.$this->key.'.php', $this->app_id);
     }
-    
+
     public function get()
     {
         if ($this->value !== null) {
@@ -52,14 +52,14 @@ abstract class waFileCache implements waiCache
         $this->value = $this->readFromFile($this->getFilePath(), $t);
         return $this->value;
     }
-    
-    
+
+
     public function set($value)
-    {        
+    {
         $this->value = null;
         return $this->writeToFile($this->getFilePath(), $value);
-    }    
-    
+    }
+
     public function delete()
     {
         $this->value = null;
@@ -68,13 +68,13 @@ abstract class waFileCache implements waiCache
             return @unlink($file);
         }
         return true;
-    }   
+    }
 
     public function isCached()
     {
         return $this->get() === null ? false : true;
     }
-    
+
     abstract protected function writeToFile($file, $v);
     abstract protected function readFromFile($file);
-} 
+}
