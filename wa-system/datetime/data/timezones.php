@@ -202,7 +202,7 @@ return array (
   'America/Anguilla' => 
   array (
     0 => '−04',
-    1 => 
+    1 =>
     array (
       0 => 'Anguilla',
       1 => 'Antigua',
@@ -768,16 +768,35 @@ return array (
       4 => 'Istanbul',
     ),
   ),
-  'Europe/Kaliningrad' => 
+  'Europe/Kiev' =>
+  array (
+    0 => '+03',
+    1 =>
+    array (
+      1 => 'Kiev',
+      2 => 'Zaporozhye',
+      3 => 'Mariehamn',
+      4 => 'Minsk',
+      5 => 'Riga',
+    ),
+  ),
+  'Europe/Tallinn' =>
+  array (
+    0 => '+03',
+    1 =>
+    array (
+      1 => 'Tallinn',
+      2 => 'Sofia',
+      3 => 'Uzhgorod',
+      4 => 'Vilnius',
+    ),
+  ),
+  'Europe/Kaliningrad' =>
   array (
     0 => '+03',
     1 => 
     array (
       0 => 'Kaliningrad',
-      1 => 'Kiev',
-      2 => 'Mariehamn',
-      3 => 'Minsk',
-      4 => 'Riga',
     ),
   ),
   'Europe/Simferopol' => 
@@ -786,21 +805,9 @@ return array (
     1 => 
     array (
       0 => 'Simferopol',
-      1 => 'Sofia',
-      2 => 'Tallinn',
-      3 => 'Uzhgorod',
-      4 => 'Vilnius',
     ),
   ),
-  'Europe/Zaporozhye' => 
-  array (
-    0 => '+03',
-    1 => 
-    array (
-      0 => 'Zaporozhye',
-    ),
-  ),
-  'Indian/Antananarivo' => 
+  'Indian/Antananarivo' =>
   array (
     0 => '+03',
     1 => 
@@ -919,7 +926,14 @@ return array (
     1 => 
     array (
       0 => 'Thimphu',
-      1 => 'Yekaterinburg',
+    ),
+  ),
+  'Asia/Yekaterinburg' =>
+  array (
+    0 => '+06',
+    1 =>
+    array (
+      0 => 'Yekaterinburg',
     ),
   ),
   'Indian/Chagos' => 
@@ -948,7 +962,7 @@ return array (
       1 => 'Ho_Chi_Minh',
       2 => 'Hovd',
       3 => 'Jakarta',
-      4 => 'Novokuznetsk',
+      4 => 'Phnom_Penh',
     ),
   ),
   'Asia/Novosibirsk' => 
@@ -958,7 +972,7 @@ return array (
     array (
       0 => 'Novosibirsk',
       1 => 'Omsk',
-      2 => 'Phnom_Penh',
+      2 => 'Novokuznetsk',
       3 => 'Pontianak',
       4 => 'Vientiane',
     ),
@@ -991,16 +1005,23 @@ return array (
       4 => 'Hong_Kong',
     ),
   ),
+  'Asia/Krasnoyarsk' =>
+  array (
+    0 => '+08',
+    1 =>
+    array (
+      0 => 'Krasnoyarsk',
+    ),
+  ),
   'Asia/Kashgar' => 
   array (
     0 => '+08',
     1 => 
     array (
       0 => 'Kashgar',
-      1 => 'Krasnoyarsk',
-      2 => 'Kuala_Lumpur',
-      3 => 'Kuching',
-      4 => 'Macau',
+      1 => 'Kuala_Lumpur',
+      2 => 'Kuching',
+      3 => 'Macau',
     ),
   ),
   'Asia/Makassar' => 

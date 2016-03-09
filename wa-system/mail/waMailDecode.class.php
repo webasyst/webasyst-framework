@@ -17,7 +17,8 @@ class waMailDecode
     protected $options = array(
         'buffer_size' => 16384,
         'headers_only' => false,
-        'attach_path' => ''
+        'max_attachments' => 10,
+        'attach_path' => '',
     );
 
     const STATE_START = 1;
@@ -95,6 +96,7 @@ class waMailDecode
         $this->state = self::STATE_HEADER;
         $this->parts = array(array());
         $this->attachments = array();
+        $this->part_index = 0;
         $this->body = array();
         $this->part = &$this->parts[0];
         // check end of file
@@ -116,8 +118,10 @@ class waMailDecode
             }
             if (!$this->is_last) {
                 if (!$this->options['headers_only']) {
-                    fclose($this->source);
-                    throw new waException("Конец письма уже достигнут. Есть какие-то данные еще.");
+                    if ($this->options['max_attachments'] >= 0 && count($this->attachments) < $this->options['max_attachments']) {
+                        fclose($this->source);
+                        throw new waException("Конец письма уже достигнут. Есть какие-то данные еще.");
+                    }
                 }
             }
         }
@@ -355,7 +359,7 @@ class waMailDecode
                         if (substr($this->buffer, $this->buffer_offset, 2) == "--") {
                             if (isset($this->part['parent'])) {
                                 $this->part_index = $this->part['parent'];
-                                $this->part = &$this->parts[$this->part_index];
+                                $this->part = &$this->parts[$this->part['parent']];
                                 $this->buffer_offset += 2;
                                 $this->skipLineBreak();
                                 return true;
@@ -505,6 +509,10 @@ class waMailDecode
                 }
                 break;
             case self::TYPE_ATTACH:
+                if ($this->options['max_attachments'] >= 0 && count($this->attachments) >= $this->options['max_attachments']) {
+                    $this->state = self::STATE_END;
+                    break;
+                }
                 $boundary = "\n--".$part['boundary'];
                 if (!file_exists($this->options['attach_path'])) {
                     waFiles::create($this->options['attach_path']);

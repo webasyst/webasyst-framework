@@ -351,7 +351,7 @@ class waFiles
      */
     public static function convert($file, $from, $to = 'UTF-8', $target = null)
     {
-        if ($src = fopen($file, 'rb')) {
+        if ($src = @fopen($file, 'rb')) {
             $filter = sprintf('convert.iconv.%s/%s//IGNORE', $from, $to);
             if (!@stream_filter_prepend($src, $filter)) {
                 throw new waException("error while register file filter");
@@ -363,7 +363,7 @@ class waFiles
                 }
                 $target = preg_replace('@\.[^\.]+$@', '', $file).'_'.$to.$extension;
             }
-            if ($dst = fopen($target, 'wb')) {
+            if ($dst = @fopen($target, 'wb')) {
                 stream_copy_to_stream($src, $dst);
                 fclose($src);
                 fclose($dst);
@@ -560,20 +560,23 @@ class waFiles
 
                 /**
                  * @see https://www.nginx.com/resources/wiki/start/topics/examples/x-accel/
+                 * @todo fix encoding workaround
                  */
                 $x_accel_redirect = waSystemConfig::systemOption('x_accel_redirect');
-                if(!empty($x_accel_redirect)){
+                if (!empty($x_accel_redirect)) {
                     $base_path = wa()->getConfig()->getRootPath();
                     if (strpos($file, $base_path) !== 0) {
                         $x_accel_redirect = false;
                     }
+                } else {
+                    $base_path = null;
                 }
 
                 $response->setStatus(200);
                 if (empty($x_accel_redirect)) {
                     $from = $to = false;
-
-                    if ($http_range = waRequest::server('HTTP_RANGE')) {
+                    $http_range = waRequest::server('HTTP_RANGE');
+                    if (!empty($http_range)) {
                         // multi range support incomplete
                         list($dimension, $range) = explode("=", $http_range, 2);
                         $ranges = explode(',', $range);

@@ -132,11 +132,12 @@ class waAutoload
     }
 
     protected $system_classes = array(
+        'waAPIException'           => 'api/waAPIException.class.php',
         'waAPIController'          => 'api/waAPIController.class.php',
         'waAPIDecorator'           => 'api/waAPIDecorator.class.php',
-        'waAPIDecoratorJSON'       => 'api/waAPIDecoratorJSON.class.php',
         'waAPIDecoratorXML'        => 'api/waAPIDecoratorXML.class.php',
-        'waAPIException'           => 'api/waAPIException.class.php',
+        'waAPIDecoratorJSON'       => 'api/waAPIDecoratorJSON.class.php',
+        'waAPIRightsMethod'        => 'api/waAPIRightsMethod.class.php',
         'waAPIMethod'              => 'api/waAPIMethod.class.php',
 
         'waAuth'                   => 'auth/waAuth.class.php',
@@ -156,7 +157,6 @@ class waAutoload
         'waVarExportCache'         => 'cache/waVarExportCache.class.php',
         'waiCache'                 => 'cache/waiCache.interface.php',
 
-        'waAnalyticsConfig'        => 'config/waAnalyticsConfig.class.php',
         'waAppConfig'              => 'config/waAppConfig.class.php',
         'waConfig'                 => 'config/waConfig.class.php',
         'waRightConfig'            => 'config/waRightConfig.class.php',

@@ -82,12 +82,23 @@ class waSystemConfig
         $path = waConfig::get('wa_path_data').'/public/site/data/'.$domain.'/'.$file;
         if (!file_exists($path)) {
             if (substr($domain, 0, 4) == 'www.') {
-                $domain = substr($domain, 4);
+                $domain2 = substr($domain, 4);
             } else {
-                $domain = 'www.'.$domain;
+                $domain2 = 'www.'.$domain;
             }
-            $path = waConfig::get('wa_path_data').'/public/site/data/'.$domain.'/'.$file;
+            $path = waConfig::get('wa_path_data').'/public/site/data/'.$domain2.'/'.$file;
         }
+
+        // check alias
+        if (!file_exists($path)) {
+            $routes = $this->getConfigFile('routing');
+            if (!empty($routes[$domain]) && is_string($routes[$domain])) {
+                $path = waConfig::get('wa_path_data').'/public/site/data/'.$routes[$domain].'/'.$file;
+            } elseif (!empty($routes[$domain2]) && is_string($routes[$domain2])) {
+                $path = waConfig::get('wa_path_data').'/public/site/data/'.$routes[$domain2].'/'.$file;
+            }
+        }
+
         if (file_exists($path)) {
             $file_type = waFiles::getMimeType($file);
             header("Content-type: {$file_type}");

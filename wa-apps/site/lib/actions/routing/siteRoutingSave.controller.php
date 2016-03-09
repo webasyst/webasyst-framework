@@ -57,6 +57,10 @@ class siteRoutingSaveController extends waJsonController
                 if (substr($route['redirect'], -1) != '*' && substr($route['redirect'], -1) != '/' && strpos(substr($route['redirect'], -5), '.') === false) {
                     $route['redirect'] .= '/';
                 }
+                $redirect_parts = @parse_url($route['redirect']);
+                if (!isset($redirect_parts['scheme']) && preg_match("/^[^\/]+\./uis", $route['redirect'])) {
+                    $route['redirect'] = 'http://'.$route['redirect'];
+                }
                 $route_id = $this->getRouteId($routes[$domain]);
                 $routes[$domain] = array($route_id => $route) + $routes[$domain];
                 $this->response['add'] = 'top';

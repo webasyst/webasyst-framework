@@ -1,10 +1,15 @@
-<?php 
+<?php
 
 class siteDomainsSaveController extends waJsonController
 {
     public function execute()
     {
-        $name = mb_strtolower(rtrim(waRequest::post('name'), '/'));
+        $name = siteHelper::validateDomainUrl(waRequest::post('name', '', 'string'));
+        if (!$name) {
+            $this->errors = sprintf(_w("Incorrect domain URL: %s"), waRequest::post('name', '', 'string'));
+            return;
+        }
+
         $domain_model = new siteDomainModel();
         $data = array();
         if (!preg_match('!^[a-z0-9/\._-]+$!i', $name)) {
@@ -23,7 +28,7 @@ class siteDomainsSaveController extends waJsonController
         $this->logAction('site_add', $name);
         // add default routing
         $path = $this->getConfig()->getPath('config', 'routing');
-        if (file_exists($path)) { 
+        if (file_exists($path)) {
             $routes = include($path);
         } else {
             $routes = array();
@@ -43,5 +48,17 @@ class siteDomainsSaveController extends waJsonController
                 waUtils::varExportToFile($routes, $path);
             }
         }
+
+        $event_params = $domain_model->getById($this->response['id']) + array(
+            'just_created' => true,
+            'routes' => $routes[$name],
+            'config' => array(),
+        );
+
+        /**
+         * @event domain_save
+         * @return void
+         */
+        wa('site')->event('domain_save', $event_params);
     }
 }

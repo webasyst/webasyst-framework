@@ -39,7 +39,7 @@ table { border-collapse: collapse; border-spacing: 0; }
 
 /* Common HTML elements, fonts, and colors
 ------------------------------------------ */
-html, body { height: 100%; width: 100%; font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 14px; }
+html, body { height: 100%; width: 100%; font-family: 'Helvetica Neue', 'Liberation Sans', Arial, sans-serif; font-size: 14px; }
 a, a:visited { color: #03c; outline:0 none; } /* dynamic content everywhere, so no special :visited markup */
 a { text-decoration: none; }
 a:hover { color: red !important; }
@@ -48,7 +48,7 @@ input[type="button"]::-moz-focus-inner { border: 0; }
 input[type="submit"]::-moz-focus-inner { border: 0; }
 a img { border: 0; }
 p, dl, hr, h1, h2, h3, h4, h5, h6, ol, ul, pre, table, address, fieldset, blockquote { margin-bottom: 1.5em; }
-h1, h2, h3 { font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 1.8em; }
+h1, h2, h3 { font-family: 'Helvetica Neue', 'Liberation Sans', Arial, sans-serif; font-size: 1.8em; }
 h1 a { text-decoration:none; }
 h2 { font-size: 1.35em; }
 h3 { font-size: 1.05em; }
@@ -66,7 +66,7 @@ tbody th, tbody td {/*  border-top:1px solid #bbb; border-bottom:1px solid #bbb;
 tfoot th, tfoot td { /* border-top:2px solid #666; background:#eee;  */}
 form { overflow:hidden; }
 input, textarea, select { margin:0;}
-input, textarea { font-size: 1em; color: #000; font-family: 'Helvetica Neue', Arial, sans-serif; }
+input, textarea { font-size: 1em; color: #000; font-family: 'Helvetica Neue', 'Liberation Sans', Arial, sans-serif; }
 input[type="button"]:focus { outline:none; outline-offset:-2px; }
 fieldset { border:1px solid #bbb; padding:10px; position:relative; background:#e9e9e9; margin-bottom:10px; }
 legend { font-size:1.1em; padding:.4em .8em; background:#fff; //background:none;
@@ -77,7 +77,7 @@ fieldset p input[type="text"] { width:98%; }
 fieldset p select { width:99%; }
 blockquote { color: #777; font-size:0.9em; padding:20px; background: #eee; border-left: 3px solid #ddd; }
 blockquote cite { font-size:.9em; }
-p { line-height: 1.5em; font-family: 'Lucida Grande', 'Lucida Sans Unicode', 'Helvetica Neue', Arial, sans-serif; }
+p { line-height: 1.5em; font-family: 'Lucida Grande', 'Lucida Sans Unicode', 'Helvetica Neue', 'Liberation Sans', Arial, sans-serif; }
 p a { text-decoration: underline; }
 
 /* Webasyst backend UI common elements & header
@@ -268,7 +268,7 @@ a#wa-my-username { font-weight: bold; text-decoration: none; }
 
 /* <frame>-like layout: scrollable main viewport content +
  * fixed always-on-the-top bottom toolbar.
- * E.g. template/page editor with always visible ‘Save’ button
+ * E.g. template/page editor with always visible 'Save' button
  * in the Site app
 -------------------------------------------- */
 .frame.viewport { position: absolute; overflow: auto; bottom: 50px; left: 0; right: 0; top: 0;}
@@ -307,7 +307,7 @@ a#wa-my-username { font-weight: bold; text-decoration: none; }
 .clear-left { clear: left; }
 .clear-right { clear: right; }
 .highlighted { background:#ffc; }
-.heading, .heading a { font-family: 'Helvetica Neue', Arial, sans-serif; color: #999; text-transform:uppercase; padding: 0; margin: 0; text-decoration: none; cursor: pointer; }
+.heading, .heading a { font-family: 'Helvetica Neue', 'Liberation Sans', Arial, sans-serif; color: #999; text-transform:uppercase; padding: 0; margin: 0; text-decoration: none; cursor: pointer; }
 .gray, .grey, a.gray, a.grey, .gray a, .grey a { color: #aaa; }
 .red { color: #f00; }
 .black { color: #000; }
@@ -375,7 +375,7 @@ input.long { min-width: 350px !important; width: 350px !important; }
 .fields { float: left /* to handle clear within the form */; margin-bottom: 10px; overflow: visible; } /* wrapper for .field */
 .field-group { margin: 5px 0 30px; }
 .field { clear: left; margin: 0; padding-top: 3px; }
-.field .name { float: left; width: 155px; padding-top: 0.05em; padding-bottom: 10px; color: #888; font-size: 0.95em; font-family: 'Helvetica Neue', Arial, sans-serif; }
+.field .name { float: left; width: 155px; padding-top: 0.05em; padding-bottom: 10px; color: #888; font-size: 0.95em; font-family: 'Helvetica Neue', 'Liberation Sans', Arial, sans-serif; }
 .field .name.large { font-size: 1.2em; font-weight:bold; color:#000; }
 .fields.form .field .name { padding-top: 0.45em; /* color: #000; */ /* class="fields form" is for forms with text inputs */ }
 .fields.form .field .value.no-shift { padding-top: 0.3em; /* use in class="fields form" forms for elements with no inputs within class="value" to exclude unwanted paddings */ }
@@ -418,7 +418,7 @@ input.small { font-size: 0.8em; width: 100px !important; min-width: 100px !impor
 input.empty { color: #aaa; }
 input.error, textarea.error, select.error { border: 2px solid red; color: red; }
 .button { -moz-border-radius: 24px; -webkit-border-radius: 24px; border-radius: 24px; color:#111; text-shadow:0 1px 1px #fff; font-weight:bold;
-border: 3px solid #ddd; -moz-box-shadow: -1px -1px 0 #444444 inset; -webkit-box-shadow: -1px -1px 0 #444444 inset;box-shadow: -1px -1px 0 #444444 inset; white-space:nowrap; font-size:14px!important; line-height:20px; height:34px; padding:2px 15px 3px; font-family: 'Helvetica Neue', Arial, sans-serif;
+border: 3px solid #ddd; -moz-box-shadow: -1px -1px 0 #444444 inset; -webkit-box-shadow: -1px -1px 0 #444444 inset;box-shadow: -1px -1px 0 #444444 inset; white-space:nowrap; font-size:14px!important; line-height:20px; height:34px; padding:2px 15px 3px; font-family: 'Helvetica Neue', 'Liberation Sans', Arial, sans-serif;
 background: rgb(255,255,255);
 background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIwJSIgeTI9IjEwMCUiPgogICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iI2ZmZmZmZiIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiNkZGRkZGQiIHN0b3Atb3BhY2l0eT0iMSIvPgogIDwvbGluZWFyR3JhZGllbnQ+CiAgPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEiIGhlaWdodD0iMSIgZmlsbD0idXJsKCNncmFkLXVjZ2ctZ2VuZXJhdGVkKSIgLz4KPC9zdmc+);
 background: -moz-linear-gradient(top,  rgba(255,255,255,1) 0%, rgba(221,221,221,1) 100%);
@@ -455,7 +455,7 @@ a.button:hover { color: #000 !important; }
 
 /* MENUs
 -------------------------------------------- */
-ul.menu-v { list-style-type:none; margin:5px 0 0; padding: 0; font-size: 14px; font-family: 'Helvetica Neue', 'Trebuchet MS', Arial, sans-serif; }
+ul.menu-v { list-style-type:none; margin:5px 0 0; padding: 0; font-size: 14px; font-family: 'Helvetica Neue', 'Liberation Sans', 'Trebuchet MS', Arial, sans-serif; }
 ul.menu-v li { text-align:left; display:block; margin:0 -2px 3px 0; padding: 5px 0; line-height:1em; position: relative /* for overhanging icons */; min-width: 60px; }
 ul.menu-v a { outline:none; -moz-outline:none; font-style:normal; text-decoration: none; color: #03c; display: block /* for proper hierarchical menus display */; padding: 5px; margin: -5px; }
 ul.menu-v a strong.small.highlighted { color: #000; }
@@ -504,7 +504,7 @@ ul.menu-v li.gray a, ul.menu-v li.grey a { color: #aaa; }
 ul.menu-v li.gray a:hover, ul.menu-v li.grey a:hover { color: red; }
 
 /* .menu-h is for horizontal menus: view mode, filters, etc. */
-ul.menu-h { margin: 0; padding:0; max-width: 100%; font-family: 'Helvetica Neue', 'Trebuchet MS', Arial, sans-serif; }
+ul.menu-h { margin: 0; padding:0; max-width: 100%; font-family: 'Helvetica Neue', 'Liberation Sans', 'Trebuchet MS', Arial, sans-serif; }
 ul.menu-h li { display: inline-block; //display: inline;
 text-align:left; list-style-type:none; font-weight:normal; padding: 5px; line-height:1em; margin: 0 10px 0 0; }
 ul.menu-h a { text-decoration:none; display: block; padding: 5px; margin: -5px; }
@@ -538,7 +538,7 @@ ul.menu-h.dropdown.clickable li:hover ul li:hover ul li:hover ul { display: none
 
 /* TABs
 -------------------------------------------- */
-ul.tabs { font-family: 'Helvetica Neue', 'Trebuchet MS', Arial, sans-serif; list-style: none; margin: 0 0 0 10px; padding: 0; white-space: nowrap; height: 32px; }
+ul.tabs { font-family: 'Helvetica Neue', 'Liberation Sans', 'Trebuchet MS', Arial, sans-serif; list-style: none; margin: 0 0 0 10px; padding: 0; white-space: nowrap; height: 32px; }
 ul.tabs li { display: inline-block; //display: inline;
 vertical-align: top; margin: 0 5px 0 0; position: relative; background: #eee; border: 1px solid #ddd; }
 ul.tabs li a,
@@ -1016,7 +1016,7 @@ i.icon10 { background-repeat:no-repeat; background-image: url(../../../wa-conten
 .ui-slider-horizontal.ui-widget-content { background: #bbb; }
 .ui-slider-horizontal .ui-widget-header { background: #0a0; height: 4px; position: relative; top: -1px; }
 .ui-state-default { background-color: #dd8; border-color: #855; }
-.ui-datepicker { font-family: 'Lucida Grande', 'Helvetica Neue', Arial, sans-serif; }
+.ui-datepicker { font-family: 'Lucida Grande', 'Helvetica Neue', 'Liberation Sans', Arial, sans-serif; }
 .ui-datepicker.ui-widget-content { -moz-border-radius: 10px 10px 10px 10px; -webkit-border-radius: 10px 10px 10px 10px; border-radius: 10px 10px 10px 10px; -moz-box-shadow: 0 0 20px #BBBBBB; background: none repeat scroll 0 0 #FFFFFF; border: 7px solid #F3F3F3; }
 .ui-datepicker .ui-datepicker-header { background: none; border:none; height: 20px; }
 .ui-datepicker .ui-datepicker-title { font-weight: bold; font-size:1.15em; color:#555; line-height: 20px; }
@@ -1046,7 +1046,7 @@ i.icon10 { background-repeat:no-repeat; background-image: url(../../../wa-conten
 #wa .el-rte .workzone { border: 0; padding: 10px; }
 #wa .ace { padding: 15px 12px; }
 
-#wa .jqplot-target { font-family: 'Lucida Grande', 'Helvetica Neue', Arial, sans-serif; }
+#wa .jqplot-target { font-family: 'Lucida Grande', 'Helvetica Neue', 'Liberation Sans', Arial, sans-serif; }
 #wa table.jqplot-table-legend,
 #wa table.jqplot-cursor-legend { border: 0; }
 #wa td.jqplot-table-legend > div { border: 0; }

@@ -1331,6 +1331,7 @@ class waSystem
                 /**
                  * @var $handler waEventHandler
                  */
+                self::pushActivePlugin(null, $app_id);
                 $handler = new $class_name();
                 try {
                     $r = $handler->execute($params);
@@ -1340,6 +1341,7 @@ class waSystem
                 } catch (Exception $e) {
                     waLog::log('Event handling error in '.$file_path.': '.$e->getMessage());
                 }
+                self::popActivePlugin();
             }
         }
         if (isset(self::$handlers['plugins'][$event_app_id][$name])) {

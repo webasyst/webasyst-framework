@@ -881,7 +881,7 @@ body.menu-is-shown .hidden-menu-wrapper {
 .hidden-menu-wrapper .menu-block-wrapper .nav-wrapper .nav-group .nav-header + .nav-list > .nav-item:first-child {
   border-top: 1px solid #fff;
 }
-.hidden-menu-wrapper .menu-block-wrapper .nav-wrapper .nav-group .nav-list,
+ul.hidden-menu-wrapper .menu-block-wrapper .nav-wrapper .nav-group .nav-list,
 .hidden-menu-wrapper .menu-block-wrapper .nav-wrapper .nav-group .nav-list li,
 .hidden-menu-wrapper .menu-block-wrapper .nav-wrapper .nav-group .nav-list .nav-item {
   margin: 0;

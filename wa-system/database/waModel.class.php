@@ -367,7 +367,7 @@ class waModel
      */
     public function updateById($id, $data, $options = null, $return_object = false)
     {
-        return $this->updateByField($this->id, $id, $data, $options, $return_object);
+        return $this->updateByField($this->remapIds($id), $data, $options, $return_object);
     }
 
     /**
@@ -805,7 +805,8 @@ class waModel
      */
     public function getById($value)
     {
-        return $this->getByField($this->id, $value, is_array($value) ? $this->id : false);
+        $all = !is_array($this->id) && is_array($value);
+        return $this->getByField($this->remapIds($value), $all ? $this->id : false);
     }
 
     /**
@@ -921,7 +922,7 @@ class waModel
      */
     public function deleteById($value)
     {
-        return $this->deleteByField($this->id, $value);
+        return $this->deleteByField($this->remapIds($value));
     }
 
     /**
@@ -1032,6 +1033,23 @@ class waModel
     {
         $schema = $this->formatSchema($schema);
         $this->adapter->createSchema($schema);
+    }
+
+    protected function remapIds($id)
+    {
+        if (!is_array($this->id)) {
+            return array($this->id => $id);
+        }
+
+        $field = array_fill_keys($this->id, null);
+        foreach ($this->id as $n => $name) {
+            if (isset($id[$name])) {
+                $field[$name] = $id[$name];
+            } elseif (isset($id[$n])) {
+                $field[$name] = $id[$n];
+            }
+        }
+        return $field;
     }
 
     private function formatSchema($schema)

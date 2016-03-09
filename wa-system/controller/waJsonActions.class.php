@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 /*
  * This file is part of Webasyst framework.
@@ -40,7 +40,6 @@ abstract class waJsonActions extends waController
 
     }
 
-
     public function run($params = null)
     {
         $action = $params;
@@ -52,6 +51,9 @@ abstract class waJsonActions extends waController
         $this->postExecute();
 
         if ($this->action == $action) {
+            if (waRequest::isXMLHttpRequest()) {
+                $this->getResponse()->addHeader('Content-type', 'application/json');
+            }
             $this->getResponse()->sendHeaders();
             if (!$this->errors) {
                 $data = array('status' => 'ok', 'data' => $this->response);

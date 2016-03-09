@@ -25,6 +25,7 @@
  * @property-read string $id
  * @property-read string $slug
  * @property-read string $author
+ * @property-read string $app
  * @property-read string $app_id
  * @property-read string $cover
  * @property-read string $path
@@ -204,11 +205,11 @@ class waTheme implements ArrayAccess
                     );
                     try {
                         if (!$xml = $this->getXML()) {
-                            trigger_error("Invalid theme description {$path}", E_USER_WARNING);
+                            waLog::log("Invalid theme description {$path}", 'themes.log');
                             break;
                         }
                     } catch (waException $ex) {
-                        trigger_error("Invalid theme description {$path}: ".$ex->getMessage(), E_USER_WARNING);
+                        waLog::log("Invalid theme description {$path}: ".$ex->getMessage(), 'themes.log');
                         break;
                     }
                     /**
@@ -390,6 +391,10 @@ class waTheme implements ArrayAccess
     {
         if ($description) {
             $options['description'] = $description;
+        }
+        $path = preg_replace('@(\\{1,}|/{2,})@', '/', $path);
+        if (preg_match('@(^|/)\.\./@', $path)) {
+            throw new waException("Unexpected file path");
         }
         if (!in_array(pathinfo($path, PATHINFO_EXTENSION), array('css', 'js', 'html'))) {
             throw new waException("Unexpected file extension");
@@ -1493,7 +1498,8 @@ HTACCESS;
     public function offsetGet($offset)
     {
         $value = null;
-        if ($method_name = $this->getMethod($offset)) {
+        $method_name = $this->getMethod($offset);
+        if ($method_name) {
             $value = $this->{$method_name}();
         } elseif ($this->init($offset)) {
             $value =  &$this->info[$offset];
@@ -1520,7 +1526,8 @@ HTACCESS;
      */
     public function offsetSet($offset, $value)
     {
-        if ($method_name = $this->getMethod($offset, 'set')) {
+        $method_name = $this->getMethod($offset, 'set');
+        if ($method_name) {
             //hook for $theme['name']=array('ru_RU' => 'name'); and etc
             $value = $this->{$method_name}($value);
         } elseif ($this->init($offset)) {
@@ -1601,7 +1608,6 @@ HTACCESS;
         }
     }
 
-
     public function getSettings($values_only = false, $locale = null)
     {
         $this->init();
@@ -1647,7 +1653,6 @@ HTACCESS;
         }
         return $this->settings;
     }
-
 
     public function getLocales()
     {
@@ -1749,7 +1754,8 @@ HTACCESS;
     private function getParentTheme()
     {
         if (!isset($this->parent_theme)) {
-            if ($id = $this->offsetGet('parent_theme_id')) {
+            $id = $this->offsetGet('parent_theme_id');
+            if ($id) {
                 $this->parent_theme = new self($id);
             } else {
                 $this->parent_theme = false;
@@ -1880,7 +1886,8 @@ HTACCESS;
             }
 
             foreach ($apps as $app_id) {
-                if ($exists = self::exists($id, $app_id, true)) {
+                $exists = self::exists($id, $app_id, true);
+                if ($exists) {
                     break;
                 }
 
@@ -1920,7 +1927,8 @@ HTACCESS;
             if (!empty($options['id'])) {
                 $exists = false;
                 foreach ($apps as $app_id) {
-                    if ($exists = self::exists($options['id'], $app_id, true)) {
+                    $exists = self::exists($options['id'], $app_id, true);
+                    if ($exists) {
                         break;
                     }
 

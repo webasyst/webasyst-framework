@@ -65,7 +65,7 @@ class currencyquotesWidget extends waWidget
     {
         $cache = $this->getCacheQuotes();
         if (!isset($cache[$date]) || !$from_cache) {
-
+            wa()->getStorage()->close();
             $quotes = array();
             // make maximum 3 tries for loading quotes
             for ($try = 0, $pause = 1; $try < 3; $try += 1, $pause += 0.5) {
@@ -164,7 +164,7 @@ class currencyquotesWidget extends waWidget
     {
         if (!extension_loaded('curl')) {
             if (ini_get('allow_url_fopen')) {
-                $default_socket_timeout = @ini_set('default_socket_timeout', 15);
+                $default_socket_timeout = @ini_set('default_socket_timeout', 10);
                 $result = file_get_contents($url);
                 @ini_set('default_socket_timeout', $default_socket_timeout);
             } else {
@@ -181,7 +181,7 @@ class currencyquotesWidget extends waWidget
                 $error .= ": ".curl_errno($ch)." - ".curl_error($ch);
                 throw new waException($error);
             }
-            @curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 15);
+            @curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
             @curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
             @curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
             @curl_setopt($ch, CURLOPT_TIMEOUT, 15);

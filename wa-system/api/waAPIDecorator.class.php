@@ -11,6 +11,9 @@ class waAPIDecorator
      */
     public static function factory($format = null)
     {
+        if (!$format) {
+            $format = 'json';
+        }
         $class = 'waAPIDecorator'.strtoupper($format);
         if (class_exists($class)){
             return new $class();

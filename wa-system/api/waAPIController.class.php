@@ -48,6 +48,9 @@ class waAPIController
             }
         } elseif ($request_url == 'api.php/token') {
             wa()->getFrontController()->execute(null, 'api', 'token');
+        } elseif ($request_url == 'api.php/revoke') {
+            $this->checkToken();
+            wa()->getFrontController()->execute(null, 'api', 'revoke');
         } elseif ($request_url === 'api.php') {
             $this->execute(waRequest::get('app'), waRequest::get('method'));
         } else {

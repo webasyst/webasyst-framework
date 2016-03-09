@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 class siteBlockModel extends waModel
 {
@@ -13,7 +13,7 @@ class siteBlockModel extends waModel
      */
     public function getById($value)
     {
-        if ($cache = wa()->getCache()) {
+        if ($cache = wa('site')->getCache()) {
             $cache_key = 'block_' . $value;
             $result = $cache->get($cache_key);
             if (!$result) {
@@ -34,7 +34,7 @@ class siteBlockModel extends waModel
      */
     public function deleteById($value)
     {
-        if ($cache = wa()->getCache()) {
+        if ($cache = wa('site')->getCache()) {
             $cache->delete('block_' . $value);
         }
         return parent::deleteById($value);
@@ -42,7 +42,7 @@ class siteBlockModel extends waModel
 
     public function updateById($id, $data, $options = null, $return_object = false)
     {
-        if ($cache = wa()->getCache()) {
+        if ($cache = wa('site')->getCache()) {
             $cache->delete('block_' . $id);
         }
         return parent::updateById($id, $data, $options, $return_object);
@@ -57,7 +57,7 @@ class siteBlockModel extends waModel
         if (!isset($data['create_datetime'])) {
             $data['create_datetime'] = date('Y-m-d H:i:s');
         }
-        $data['sort'] = $this->select("MAX(sort)")->fetchField();
+        $data['sort'] = (int) $this->select("MAX(sort)")->fetchField() + 1;
         return $this->insert($data);
     }
 
@@ -68,19 +68,27 @@ class siteBlockModel extends waModel
      */
     public function move($id, $sort)
     {
-        if (!$id) {
+        $sort = (int)$sort;
+        if (!$id || $sort < 1) {
             return false;
         }
-        $sort = (int)$sort;
-        if ($row = $this->getByField($this->id, $id)) {
-            $sql = "UPDATE ".$this->table." SET sort = sort ";
-            if ($row['sort'] < $sort) {
-                $sql .= "- 1 WHERE sort > ".$row['sort']." AND sort <= ".$sort;
-            } elseif ($row['sort'] > $sort) {
-                $sql .= "+ 1 WHERE sort >= ".$sort." AND sort < ".$row['sort'];
-            }
-            return $this->exec($sql) && $this->updateById($id, array('sort' => $sort));
+
+        $blocks = $this->select('id, sort')->order('sort')->fetchAll('id', true);
+        if (empty($blocks[$id])) {
+            return false;
         }
-        return false;
+        $block_ids = $blocks;
+        unset($block_ids[$id]);
+        $block_ids = array_keys($block_ids);
+        array_splice($block_ids, $sort - 1, 0, array($id));
+        foreach($block_ids as $i => $id) {
+            $new_sort = $i + 1;
+            if ($blocks[$id] != $new_sort) {
+                $this->updateById($id, array(
+                    'sort' => $new_sort,
+                ));
+            }
+        }
+        return true;
     }
 }

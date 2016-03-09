@@ -44,7 +44,26 @@ class waDateTime
     {
         $file = dirname(__FILE__)."/data/timezones.php";
         if (file_exists($file)) {
-            return include($file);
+            $data = include($file);
+            if (version_compare(PHP_VERSION, '5.3.0') >= 0) {
+                $tmp = array();
+                foreach ($data as $k => $v) {
+                    $date_time = new DateTime('now');
+                    $tz = new DateTimeZone($k);
+                    $date_time->setTimezone($tz);
+                    $offset = $date_time->getOffset();
+                    if ($offset !== false) {
+                        $data[$k][0] = ($offset >= 0 ? '+' : '−').str_pad((float)abs($offset)/3600, 2, '0', STR_PAD_LEFT);
+                    }
+                    $tmp[$k] = $offset;
+                }
+                asort($tmp);
+                foreach ($tmp as $k => $offset) {
+                    $tmp[$k] = $data[$k];
+                }
+                $data = $tmp;
+            }
+            return $data;
         }
 
         $data = DateTimeZone::listIdentifiers();

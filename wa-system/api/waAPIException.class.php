@@ -2,19 +2,25 @@
 
 class waAPIException extends Exception
 {
+    public $response;
     protected $status_code;
     protected $error;
     protected $error_description;
 
-    public function __construct($error, $error_description = null, $status_code = null)
+    public function __construct($error, $error_description = null, $status_code = null, $response = array())
     {
         if (empty($status_code) && is_numeric($error_description)) {
             $status_code = $error_description;
             $error_description = null;
         }
-        $this->status_code = $status_code;
-        $this->error = $error;
+        $this->message = $this->error = $error;
+        $this->code = $this->status_code = $status_code;
         $this->error_description = $error_description;
+
+        $this->response = array('error' => $this->error) + $response;
+        if ($this->error_description) {
+            $this->response['error_description'] = $this->error_description;
+        }
     }
 
     public function __toString()
@@ -49,16 +55,12 @@ class waAPIException extends Exception
             }
         }
 
-        $response = array('error' => $this->error);
-        if ($this->error_description) {
-            $response['error_description'] = $this->error_description;
-        }
         wa()->getResponse()->sendHeaders();
-        $result .= waAPIDecorator::factory($format)->decorate($response);
+        $result .= waAPIDecorator::factory($format)->decorate($this->response);
         if (!empty($callback)) {
             $result .= ');';
         }
         return $result;
     }
-    
+
 }

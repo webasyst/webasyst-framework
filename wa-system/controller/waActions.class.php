@@ -94,6 +94,9 @@ abstract class waActions extends waController
 
     public function displayJson($data, $errors = null)
     {
+        if (waRequest::isXMLHttpRequest()) {
+            $this->getResponse()->addHeader('Content-type', 'application/json');
+        }
         $this->getResponse()->sendHeaders();
         if (!$errors) {
             echo json_encode(array('status' => 'ok', 'data' => $data));

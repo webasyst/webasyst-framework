@@ -128,7 +128,7 @@ $.wa.site = {
                     if (response.status == 'ok') {
                         location.href = '?domain_id=' + response.data.id + '#/settings/';
                     } else if (response.status == 'fail') {
-                        $("#addsite-dialog span.error").html(response.errors).show();
+                        $("#addsite-dialog span.errormsg").html(response.errors).show();
                     }
                 }, "json");
                 return false;

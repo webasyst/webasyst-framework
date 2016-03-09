@@ -200,6 +200,9 @@
             $("#page-" + params).addClass('selected');
             waExpand(params);
         }
+        $("#wa-page-container").html('<div class="block double-padded">' +
+            '[s`Loading`]... <i class="icon16 loading"></i>' +
+            '</div><div class="clear"></div>');
         $("#wa-page-container").load("?module=pages&action=edit&id=" + params);
     }
 
