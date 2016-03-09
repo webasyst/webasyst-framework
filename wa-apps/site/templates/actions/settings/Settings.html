@@ -44,7 +44,14 @@
         				</div>
         			</div>
         		</div>
-            {if empty($domain_alias)}
+            {if !empty($domain_alias)}
+                <div class="field">
+                    <div class="name bold">[`Alias (mirror site) for`]</div>
+                    <div class="value no-shift">
+                        {$domain_alias}
+                    </div>
+                </div>
+            {else}
         		<div class="field">
         			<div class="name">
         				<strong>&#123;$wa-&gt;apps()&#125; [`menu`]</strong>

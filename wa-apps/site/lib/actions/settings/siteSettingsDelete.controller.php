@@ -20,9 +20,9 @@ class siteSettingsDeleteController extends waJsonController
                         if ($route && isset($routes[$domain['name']][$route])) {
                             unset($routes[$domain['name']][$route]);
                             // save new routing config
-                            waUtils::varExportToFile($routes, $path);                            
+                            waUtils::varExportToFile($routes, $path);
                         }
-                        // delete site/domain 
+                        // delete site/domain
                         elseif (!$route) {
                             unset($routes[$domain['name']]);
                             // save new routing config
@@ -35,8 +35,10 @@ class siteSettingsDeleteController extends waJsonController
                     waFiles::delete(wa()->getDataPath('data/'.$domain['name']), true);
                     // delete site from db
                     $domain_model->deleteById($domain_id);
+                    wa('site')->event('domain_delete', $domain);
                     $this->logAction('site_delete');
-                } 
+                }
+
             }
         }
     }

@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 class siteHelper
 {
@@ -6,7 +6,7 @@ class siteHelper
     protected static $domains = array();
     protected static $locale = null;
     protected static $themes = array();
-    
+
     public static function getDomains($full = false)
     {
         if (!self::$domains) {
@@ -52,7 +52,7 @@ class siteHelper
             if (isset(self::$domains['default'])) {
                 unset(self::$domains['default']);
             }
-        }    
+        }
         $result = array();
         foreach (self::$domains as $id => $d) {
             $result[$id] = $d['title'] ? $d['title'] : $d['name'];
@@ -67,7 +67,7 @@ class siteHelper
         }
         return $result;
     }
-    
+
     public static function getDomainId()
     {
         if (!self::$domain_id) {
@@ -81,7 +81,7 @@ class siteHelper
                         self::$domain_id = $d_id;
                         break;
                     }
-                }    
+                }
             }
 
             if (!self::$domain_id) {
@@ -97,8 +97,8 @@ class siteHelper
             if (self::$domain_id && !isset($domains[self::$domain_id])) {
                 throw new waException('Domain not found', 404);
             }
-        }    
-        return self::$domain_id;   
+        }
+        return self::$domain_id;
     }
 
     public static function setDomain($id, $domain)
@@ -106,7 +106,7 @@ class siteHelper
         self::getDomains();
         self::$domains[$id]['name'] = $domain;
     }
-    
+
     public static function getDomain($key = 'name')
     {
         self::getDomains();
@@ -120,7 +120,7 @@ class siteHelper
         $domain_info['id'] = self::getDomainId();
         return $domain_info;
     }
-    
+
     public static function getApp($info = true)
     {
         $app_id = waRequest::get('app');
@@ -132,13 +132,13 @@ class siteHelper
         }
         return $app_id;
     }
-    
+
     public static function getApps($app_key = false)
     {
         $wa = wa();
         $routes = $wa->getRouting()->getRoutes(self::getDomain());
         $all_apps = $wa->getApps();
-        
+
         $apps = array();
         foreach ($routes as $route_id => $route) {
             if (isset($route['app'])) {
@@ -160,7 +160,7 @@ class siteHelper
             }
         }
         return $apps;
-        
+
     }
 
     public static function getThemes($app_id, $name_only = true)
@@ -177,10 +177,10 @@ class siteHelper
                 $theme = $theme['name'];
             }
             return $themes;
-        } 
+        }
         return self::$themes[$app_id];
     }
-    
+
     public static function copyTheme($source, $dest)
     {
         if (!file_exists($dest)) {
@@ -203,7 +203,7 @@ class siteHelper
             }
         }
     }
-    
+
     public static function getDomainUrl()
     {
         $u1 = rtrim(wa()->getRootUrl(false, false), '/');
@@ -213,8 +213,8 @@ class siteHelper
         } else {
             return '';
         }
-    }    
-    
+    }
+
     public static function sortThemes($themes, $route)
     {
         $result = array();
@@ -232,5 +232,15 @@ class siteHelper
             $result[$t] = $theme;
         }
         return $result;
-    }    
+    }
+
+    public static function validateDomainUrl($url)
+    {
+        $url = mb_strtolower(trim($url, '/'));
+        $url = preg_replace('~[/\\\\]+~', '/', $url);
+        if (preg_match('~[:<>"%\?]|/\.\./~', $url)) {
+            return false;
+        }
+        return $url;
+    }
 }
