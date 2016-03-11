@@ -367,7 +367,11 @@ class waModel
      */
     public function updateById($id, $data, $options = null, $return_object = false)
     {
-        return $this->updateByField($this->remapIds($id), $data, $options, $return_object);
+        if (!is_array($this->id)) {
+            return $this->updateByField($this->id, $id, $data, $options, $return_object);
+        } else {
+            return $this->updateByField($this->remapIds($id), $data, $options, $return_object);
+        }
     }
 
     /**
@@ -806,7 +810,11 @@ class waModel
     public function getById($value)
     {
         $all = !is_array($this->id) && is_array($value);
-        return $this->getByField($this->remapIds($value), $all ? $this->id : false);
+        if (!is_array($this->id)) {
+            return $this->getByField($this->id, $value, $all ? $this->id : false);
+        } else {
+            return $this->getByField($this->remapIds($value), $all ? $this->id : false);
+        }
     }
 
     /**
@@ -922,7 +930,11 @@ class waModel
      */
     public function deleteById($value)
     {
-        return $this->deleteByField($this->remapIds($value));
+        if (!is_array($this->id)) {
+            return $this->deleteByField($this->id, $value);
+        } else {
+            return $this->deleteByField($this->remapIds($value));
+        }
     }
 
     /**
