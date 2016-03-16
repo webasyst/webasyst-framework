@@ -20,14 +20,16 @@ class waAPIDecoratorJSON extends waAPIDecorator
      * вида array('uid' => array(111,222)) заменяем его на
      * array(111,222), т.к. array('uid' => ...) это
      * обертка для структурирования хмл.
+     * @param array $arr
+     * @return array
      */
     protected function parseArray($arr)
     {
         foreach ($arr as $key => $val) {
-            if ($key === '_element'){
+            if ($key === '_element') {
                 unset($arr[$key]);
             }
-            if (is_array($val)){
+            if (is_array($val)) {
                 $arr[$key] = $this->parseArray($val);
             }
         }

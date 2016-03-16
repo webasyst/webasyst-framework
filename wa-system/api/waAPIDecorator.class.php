@@ -4,7 +4,6 @@ class waAPIDecorator
 {
 
     /**
-     * @param waAPIMethod $method
      * @param string $format JSON|XML
      * @return waAPIDecorator
      * @throws waAPIException
@@ -15,7 +14,7 @@ class waAPIDecorator
             $format = 'json';
         }
         $class = 'waAPIDecorator'.strtoupper($format);
-        if (class_exists($class)){
+        if (class_exists($class)) {
             return new $class();
         } else {
             throw new waAPIException(2, 'Unknown decorator');
@@ -23,7 +22,7 @@ class waAPIDecorator
     }
 
     /**
-     * @param $response
+     * @param array $response
      * @return string
      */
     public function decorate($response)

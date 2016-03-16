@@ -8,11 +8,11 @@ waSystem::getInstance(null, new SystemConfig('api'));
 waSystem::getInstance('webasyst');
 
 // Execute api controller
-try{
-	$controller = new waAPIController();
-	$controller->dispatch();
+try {
+    $controller = new waAPIController();
+    $controller->dispatch();
 } catch (waAPIException $e) {
-	print $e;
+    print $e;
 } catch (Exception $e) {
     $e = new waAPIException('server_error', $e->getMessage(), 500);
     print $e;

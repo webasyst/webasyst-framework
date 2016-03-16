@@ -32,7 +32,7 @@ class waAPIException extends Exception
         $format = strtoupper(waRequest::request('format', 'JSON'));
         if ($format && !in_array($format, array("XML", "JSON"))) {
             $this->error = 'invalid_request';
-            $this->error_description  = 'Invalid response format: '.$format;
+            $this->error_description = 'Invalid response format: '.$format;
             $format = 'JSON';
         }
         if (!$format) {
@@ -41,7 +41,7 @@ class waAPIException extends Exception
 
         $result = '';
 
-        if ($format == 'XML'){
+        if ($format == 'XML') {
             wa()->getResponse()->addHeader('Content-type', 'text/xml; charset=utf-8');
         } elseif ($format == 'JSON') {
             $callback = (string)waRequest::get('callback', false);
@@ -49,7 +49,7 @@ class waAPIException extends Exception
             if ($callback) {
                 wa()->getResponse()->setStatus(200);
                 wa()->getResponse()->addHeader('Content-type', 'text/javascript; charset=utf-8');
-                $result .= $callback .'(';
+                $result .= $callback.'(';
             } else {
                 wa()->getResponse()->addHeader('Content-type', 'application/json; charset=utf-8');
             }
@@ -62,5 +62,4 @@ class waAPIException extends Exception
         }
         return $result;
     }
-
 }
