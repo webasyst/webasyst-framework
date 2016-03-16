@@ -30,7 +30,7 @@ class waFileCacheAdapter extends waCacheAdapter
         $file = $this->options['path'].'/'.$key.'.php';
         if (file_exists($file) && is_writable($file)) {
             $info = unserialize(file_get_contents($file));
-            if (!empty($info['ttl']) && time() - $info['time'] >= $info['ttl']) {
+            if (!empty($info['ttl']) && $info['ttl'] >= 0 && time() - $info['time'] >= $info['ttl']) {
                 return null;
             } else {
                 return $info['value'];

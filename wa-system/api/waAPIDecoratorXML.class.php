@@ -20,7 +20,7 @@ class waAPIDecoratorXML extends waAPIDecorator
 
         $this->xml->appendChild($root);
 
-        if(!is_array($response)){
+        if (!is_array($response)) {
             $root->appendChild($this->xml->createTextNode($response));
         } else {
             $this->parseArray($root, $response);
@@ -28,6 +28,11 @@ class waAPIDecoratorXML extends waAPIDecorator
         return $this->xml->saveXML();
     }
 
+    /**
+     * @param DOMElement $context
+     * @param array $array
+     * @param string $list_item_name
+     */
     protected function parseArray(& $context, $array, $list_item_name = null)
     {
         if (!$list_item_name && isset($array['_element'])) {
@@ -70,7 +75,7 @@ class waAPIDecoratorXML extends waAPIDecorator
                 } else {
                     $this->parseArray($context, $value);
                 }
-            }elseif(is_int($key) && !is_array($value)){
+            } elseif (is_int($key) && !is_array($value)) {
                 if ($list_item_name) {
                     $this->createNode($context, $list_item_name, $value);
                 }
@@ -78,10 +83,15 @@ class waAPIDecoratorXML extends waAPIDecorator
         }
     }
 
+    /**
+     * @param DOMElement$context
+     * @param string $name
+     * @param string $value
+     */
     protected function createNode(& $context, $name, $value)
     {
         $element = $this->xml->createElement((string)$name);
-        if((string)$value !== ''){
+        if ((string)$value !== '') {
             $element->appendChild($this->xml->createTextNode((string)$value));
         }
         $context->appendChild($element);

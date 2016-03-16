@@ -1,13 +1,13 @@
 <?php
 
-class waAPIController 
+class waAPIController
 {
 
     /**
      * Format of the response - xml or json, by default JSON
      */
     protected $format = 'JSON';
-    
+
     protected $known_formats = array('XML', 'JSON');
 
 
@@ -16,7 +16,7 @@ class waAPIController
         if ($code) {
             wa()->getResponse()->setStatus($code);
         }
-        if($this->format == 'XML'){
+        if ($this->format == 'XML') {
             wa()->getResponse()->addHeader('Content-type', 'text/xml; charset=utf-8');
         } elseif ($this->format == 'JSON') {
             $callback = (string)waRequest::get('callback', false);
@@ -24,7 +24,7 @@ class waAPIController
             if ($callback) {
                 wa()->getResponse()->setStatus(200);
                 wa()->getResponse()->addHeader('Content-type', 'text/javascript; charset=utf-8');
-                echo $callback .'(';
+                echo $callback.'(';
             } else {
                 wa()->getResponse()->addHeader('Content-type', 'application/json; charset=utf-8');
             }
@@ -67,14 +67,13 @@ class waAPIController
     }
 
 
-
     protected function execute($app, $method_name)
     {
         if ($format = waRequest::get('format')) {
             $format = strtoupper($format);
             if (!in_array($format, array('JSON', 'XML'))) {
                 $this->response(array(
-                    'error' => 'invalid_request',
+                    'error'             => 'invalid_request',
                     'error_description' => 'Invalid response format: '.$format
                 ));
                 return;
