@@ -18,7 +18,7 @@ class waSerializeCache extends waFileCache
 
     protected function writeToFile($file, $v)
     {
-        if ($this->ttl < 0) {
+        if ($this->ttl == 0) {
             return null;
         }
         if (!file_exists($file) || is_writable($file)) {
@@ -39,7 +39,7 @@ class waSerializeCache extends waFileCache
             $info = unserialize(file_get_contents($file));
             if ($t && $info['time'] < $t) {
                 return null;
-            } elseif (!empty($info['ttl']) && time() - $info['time'] >= $info['ttl']) {
+            } elseif (!empty($info['ttl']) && $info['ttl'] >= 0 && time() - $info['time'] >= $info['ttl']) {
                 return null;
             } else {
                 return $info['value'];

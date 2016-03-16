@@ -6,7 +6,7 @@ class waRuntimeCache implements waiCache
     protected $key;
     protected static $cache = array();
 
-    public function __construct($key, $ttl = 0, $app_id = null)
+    public function __construct($key, $ttl = -1, $app_id = null)
     {
         if (!$app_id) {
             $app_id = wa()->getApp();
