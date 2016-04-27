@@ -241,10 +241,11 @@ abstract class waShipping extends waSystemPlugin
      * @param string $id
      * @param waOrder $order
      * @param array $params
+     * @return string HTML code
      */
     public function displayPrintForm($id, waOrder $order, $params = array())
     {
-
+        return '';
     }
 
     /**
@@ -643,5 +644,4 @@ HTML;
 
         return $this->app_adapter;
     }
-
 }

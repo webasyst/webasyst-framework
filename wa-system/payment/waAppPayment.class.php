@@ -12,7 +12,7 @@
  * @package wa-system
  * @subpackage payment
  */
-abstract class waAppPayment
+abstract class waAppPayment implements waiPluginApp
 {
     const URL_SUCCESS = 'success';
     const URL_DECLINE = 'decline';
@@ -28,7 +28,7 @@ abstract class waAppPayment
     protected $merchant_id;
     protected $app_id;
 
-    final function __construct()
+    final public function __construct()
     {
         $this->init();
     }
@@ -63,7 +63,6 @@ abstract class waAppPayment
      * @param $key string
      * @param $name
      * @param $value
-     * @internal param array $settings key-value
      * @return array
      */
     abstract public function setSettings($plugin_id, $key, $name, $value);
@@ -75,7 +74,7 @@ abstract class waAppPayment
      * @throws waException
      * @return mixed
      */
-    public final function execCallbackHandler($method)
+    final public function execCallbackHandler($method)
     {
         $args = func_get_args();
         array_shift($args);

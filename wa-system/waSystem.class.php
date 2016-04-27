@@ -604,12 +604,12 @@ class waSystem
     {
         $params = array();
         $app = $argv[1];
-        $class = $app.ucfirst($argv[2])."Cli";
+        $class = $app.ucfirst(ifset($argv[2], 'help'))."Cli";
         $argv = array_slice($argv, 3);
         while ($arg = array_shift($argv)) {
-            if(mb_substr($arg, 0, 2) == '--') {
+            if (mb_substr($arg, 0, 2) == '--') {
                 $key = mb_substr($arg, 2);
-            } else if(mb_substr($arg, 0, 1) == '-') {
+            } elseif (mb_substr($arg, 0, 1) == '-') {
                 $key = mb_substr($arg, 1);
             } else {
                 $params[] = $arg;

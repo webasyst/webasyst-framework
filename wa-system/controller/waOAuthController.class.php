@@ -65,11 +65,11 @@ class waOAuthController extends waViewController
                     'contact_id' => $contact_id,
                     'field' => $data['source'].'_id'
                 ));
-                // save new link
-                $contact->save(array(
-                    $data['source'].'_id' => $data['source_id']
-                ));
             }
+            // save the link
+            $contact->save(array(
+                $data['source'].'_id' => $data['source_id']
+            ));
             $contact_id = $contact->getId();
         }
 

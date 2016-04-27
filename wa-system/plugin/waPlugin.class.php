@@ -21,6 +21,9 @@ class waPlugin
      */
     protected $settings_config;
 
+    /**
+     * @var mixed[string] App defined settings list
+     */
     protected $common_settings_config = array();
 
 
@@ -93,7 +96,7 @@ class waPlugin
                 }
             }
             ksort($files);
-            if (!$is_debug) {
+            if (!$is_debug && !empty($cache)) {
                 // get last time
                 if ($files) {
                     $keys = array_keys($files);
@@ -151,6 +154,9 @@ class waPlugin
         $file = $this->path.'/lib/config/install.php';
         if (file_exists($file)) {
             $app_id = $this->app_id;
+            /**
+             * @var string $app_id
+             */
             include($file);
             // clear db scheme cache, see waModel::getMetadata
             try {
@@ -206,7 +212,7 @@ class waPlugin
             $contact_rights_model->exec($sql, array('app_id' => $this->app_id));
         }
 
-        // Remove cache of the appliaction
+        // Remove cache of the application
         waFiles::delete(wa()->getAppCachePath('', $this->app_id));
     }
 
@@ -253,9 +259,12 @@ class waPlugin
     {
         $file = $this->path.'/lib/config/routing.php';
         if (file_exists($file)) {
+            /**
+             * @var array $route Variable available at routing file
+             */
             return include($file);
         } else {
-            return;
+            return array();
         }
     }
 
@@ -302,7 +311,8 @@ class waPlugin
                 }
             }
             #merge user settings from database with raw default settings
-            if ($settings_config = $this->getSettingsConfig()) {
+            $settings_config = $this->getSettingsConfig();
+            if ($settings_config) {
                 foreach ($settings_config as $key => $row) {
                     if (!isset($this->settings[$key])) {
                         $this->settings[$key] = is_array($row) ? (isset($row['value']) ? $row['value'] : null) : $row;
@@ -380,4 +390,3 @@ class waPlugin
         return array($this->app_id, $this->id);
     }
 }
-

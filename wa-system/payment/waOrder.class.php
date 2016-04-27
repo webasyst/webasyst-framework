@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @property string $id
  * @property string $id_str
@@ -14,6 +15,8 @@
  * @property double $shipping shipping price
  * @property string $shipping_name
  * @property string $payment_name
+ *
+ * @property bool $recurrent 
  *
  * @property string description
  * @property string description_en
@@ -107,10 +110,16 @@ class waOrder implements ArrayAccess
         );
         if (!empty($data)) {
             foreach ($data as $field => $value) {
+                if (($field == 'contact') && ($value instanceof waContact)) {
+                    $this->contact = $value;
+                    $field = 'contact_id';
+                    $value = $this->contact->getId();
+                }
+
                 $this->data[$field] = $value;
                 $this->fields[] = $field;
                 if (isset($this->alias[$field]) && !isset($data[$this->alias[$field]])) {
-                    $this->data[$this->alias[$field]] = & $this->data[$field];
+                    $this->data[$this->alias[$field]] = &$this->data[$field];
                     $this->fields[] = $this->alias[$field];
                 }
             }
@@ -193,17 +202,18 @@ class waOrder implements ArrayAccess
 
     private function init()
     {
-        $this->init_address($this->data['billing_address']);
-        $this->init_address($this->data['shipping_address']);
+        $this->initAddress($this->data['billing_address']);
+        $this->initAddress($this->data['shipping_address']);
         if (empty($this->data['description_en'])) {
             $this->data['description_en'] = waLocale::transliterate(ifset($this->data['description'], ''));
         }
     }
 
-    private function init_address(&$address)
+    private function initAddress(&$address)
     {
         static $model;
-        $dummy_address = array_fill_keys(array('name',
+        $dummy_address = array_fill_keys(array(
+            'name',
             'firstname',
             'lastname',
             'address',
@@ -229,7 +239,8 @@ class waOrder implements ArrayAccess
                 if (!$model) {
                     $model = new waRegionModel();
                 }
-                if ($region = $model->get($address['country'], $address['region'])) {
+                $region = $model->get($address['country'], $address['region']);
+                if ($region) {
                     $address['region_name'] = $region['name'];
                 }
             }
@@ -254,7 +265,7 @@ class waOrder implements ArrayAccess
             }
 
             $address['name'] = '';
-            $fields = array('firstname', 'lasname', 'middlename',);
+            $fields = array('firstname', 'lastname', 'middlename',);
             foreach ($fields as $field) {
                 if (!empty($address[$field])) {
                     $address['name'] .= ' '.$address[$field];
@@ -292,11 +303,13 @@ class waOrder implements ArrayAccess
 
     public function getContactField($field, $format = null)
     {
-        if ($this->getContact()) {
+        if ($field === 'contact_id') {
+            return ifset($this->data['contact_id']);
+        } elseif ($this->getContact()) {
             $value = $this->contact->get($field, $format);
             if (is_array($value)) {
                 $res = reset($value);
-                if(is_array($res)) {
+                if (is_array($res)) {
                     $value = $res['value'];
                 } else {
                     $value = $res;

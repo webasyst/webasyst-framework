@@ -12,6 +12,7 @@
  * @package wa-system
  * @subpackage payment
  */
+
 class waPaymentException extends waException
 {
 }

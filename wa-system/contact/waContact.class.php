@@ -150,7 +150,7 @@ class waContact implements ArrayAccess
         }
 
         $dir = self::getPhotoDir($id, false);
-        
+
         if ($ts) {
             if ($size != 'original' && $retina) {
                 $size .= '@2x';
@@ -179,7 +179,7 @@ class waContact implements ArrayAccess
             }
         }
     }
-    
+
     public static function getPhotoDir($contact_id, $with_prefix = true)
     {
         $str = str_pad($contact_id, 4, '0', STR_PAD_LEFT);
@@ -769,8 +769,13 @@ class waContact implements ArrayAccess
                 $locale = isset($contact_info['locale']) ? $contact_info['locale'] : '';
             }
         }
-        if (wa()->getEnv() == 'frontend' && waRequest::param('locale')) {
-            return waRequest::param('locale');
+        if (wa()->getEnv() == 'frontend') {
+            if (wa()->getStorage()->get('locale')) {
+                return wa()->getStorage()->get('locale');
+            }
+            if (waRequest::param('locale')) {
+                return waRequest::param('locale');
+            }
         }
         // try get locale by header Accept-Language (only for current user)
         if (!$locale && $this instanceof waAuthUser) {
@@ -1202,7 +1207,7 @@ class waContact implements ArrayAccess
     {
         return waDateTime::format("datetime", null, $this->get('timezone'), $this->getLocale());
     }
-    
+
     public function getTopFields()
     {
         $top = array();
@@ -1213,14 +1218,14 @@ class waContact implements ArrayAccess
                 waContactFields::getAll('company', true),
             );
         }
-        
+
         $country_model = new waCountryModel();
         $iso3letters_map = $country_model->select('DISTINCT iso3letter')->fetchAll('iso3letter', true);
-        
+
         foreach ($fields[intval($this['is_company'])] as $f) {
             $info = $f->getInfo();
             if ($f->getParameter('top') && ($value = $this->get($info['id'], 'top,html')) ) {
-                
+
                 if ($info['type'] == 'Address') {
                     $data = $this->get($info['id']);
                     $data_for_map = $this->get($info['id'], 'forMap');
@@ -1244,9 +1249,9 @@ class waContact implements ArrayAccess
                     }
                     unset($v);
                 }
-                
+
                 $delimiter = ($info['type'] == 'Composite' || $info['type'] == 'Address') ? "<br>" : ", ";
-                
+
                 $top[] = array(
                     'id' => $info['id'],
                     'name' => $f->getName(),
