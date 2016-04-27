@@ -360,7 +360,7 @@ function _w($msgid1, $msgid2 = null, $n = null, $sprintf = true)
         return waLocale::$adapter->ngettext($msgid1, $msgid2, $n === 'm' ? 1 : 2);
     } else {
         $str = waLocale::$adapter->ngettext($msgid1, $msgid2, $n);
-        if ($sprintf && ($i = strpos($str, '%')) !== false) {
+        if ($sprintf and strpos($str, '%') !== false) {
             return sprintf($str, $n);
         }
         return $str;
@@ -408,7 +408,7 @@ function _wd($domain, $msgid1, $msgid2 = null, $n = null, $sprintf = true)
         return waLocale::$adapter->dgettext($domain, $msgid1);
     } else {
         $str = waLocale::$adapter->dngettext($domain, $msgid1, $msgid2, $n);
-        if ($sprintf && strpos($str, '%d') !== false) {
+        if ($sprintf and strpos($str, '%') !== false) {
             return sprintf($str, $n);
         }
         return $str;
