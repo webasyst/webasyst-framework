@@ -215,7 +215,7 @@ class waNet
                             /**
                              * @var SimpleXMLElement $content
                              */
-                            $content = (string)$content->__toString();
+                            $content = (string)$content->asXML();
                         } elseif ($class == 'DOMDocument') {
                             /**
                              * @var DOMDocument $content
