@@ -442,11 +442,7 @@ class waHtmlControl
         $control .= self::addCustomParams(array('class', 'style', 'cols', 'rows', 'wrap', 'id', 'placeholder', 'readonly', 'autofocus',), $params);
         $control .= ">{$value}</textarea>";
 
-        if (empty($params['wysiwyg']) && !empty($params['wisywig'])) {
-            $params['wysiwyg'] = $params['wisywig'];
-        }
-
-        if (!empty($params['wysiwyg '])) {
+        if (isset($params['wysiwyg'])) {
             if (!is_array($params['wysiwyg'])) {
                 $params['wysiwyg'] = array();
             }
@@ -459,15 +455,13 @@ class waHtmlControl
             $options = json_encode($params['wysiwyg']);
             $control .= <<<HTML
 <style type="text/css">
-    .CodeMirror {
-        border: 1px solid #ABADB3;
-    }
+    #{$params['id']} {border: 1px solid #abadb3;}
 </style>
 <script type="text/javascript">
-    if(typeof(CodeMirror) == 'function') {
+    if (typeof(CodeMirror) == 'function') {
         setTimeout(function(){
             CodeMirror.fromTextArea(document.getElementById('{$params['id']}'), {$options});
-        },500);
+        }, 100);
     }
 </script>
 HTML;
