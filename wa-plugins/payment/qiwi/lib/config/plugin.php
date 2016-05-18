@@ -5,7 +5,7 @@ return array(
     'icon'        => 'img/qiwi16.png',
     'logo'        => 'img/qiwi.png',
     'vendor'      => 'webasyst',
-    'version'     => '1.0.1',
+    'version'     => '1.0.2',
     'locale'      => array('ru_RU',),
     'type'        => waPayment::TYPE_ONLINE,
 );
