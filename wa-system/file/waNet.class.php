@@ -6,8 +6,6 @@
  * @todo error handler
  * @todo body handler
  *
- * @todo proxy settings
- *
  * @todo waBrowser class (with cookie support)
  */
 class waNet
@@ -28,6 +26,7 @@ class waNet
     const FORMAT_JSON = 'json';
     const FORMAT_XML = 'xml';
     const FORMAT_RAW = 'raw';
+    const FORMAT_CUSTOM = 'custom';
 
     protected $user_agent = 'Webasyst Framework';
     protected $accept_cookies = false;
@@ -50,7 +49,12 @@ class waNet
             'curl',
             'fopen',
             'socket',
-        )
+        ),
+        'ssl'            => array(
+            'key'      => '',
+            'cert'     => '',
+            'password' => '',
+        ),
 
         //TODO add support for auth data
         //auth data
@@ -145,7 +149,6 @@ class waNet
         }
     }
 
-
     protected function buildHeaders($transport, $raw = true)
     {
         $this->request_headers['Connection'] = 'close';
@@ -193,7 +196,6 @@ class waNet
                 $headers[] = sprintf('%s: %s', $header, $value);
             }
             return $headers;
-
         }
     }
 
@@ -215,11 +217,15 @@ class waNet
                             /**
                              * @var SimpleXMLElement $content
                              */
-                            $content = (string)$content->__toString();
+                            $content = (string)$content->asXML();
                         } elseif ($class == 'DOMDocument') {
                             /**
                              * @var DOMDocument $content
                              */
+                            if (!empty($this->options['charset'])) {
+                                $content->encoding = $this->options['charset'];
+                            }
+                            $content->preserveWhiteSpace = false;
                             $content = (string)$content->saveXML();
                         }
                     }
@@ -239,8 +245,11 @@ class waNet
             case self::FORMAT_XML:
                 $this->request_headers['Content-Type'] = 'application/xml';
                 break;
+            case self::FORMAT_CUSTOM:
+                //$this->request_headers['Content-Type'] ='application/'.$this->options['custom_content_type'];
+                break;
             default:
-                $this->request_headers['Content-type'] = 'application/x-www-form-urlencoded';
+                $this->request_headers['Content-Type'] = 'application/x-www-form-urlencoded';
                 break;
         }
         if (!empty($this->options['md5'])) {
@@ -380,7 +389,6 @@ class waNet
         return false;
     }
 
-
     private function runCurl($url, $params, $method, $curl_options = array())
     {
         $this->getCurl($url, $params, $method, $curl_options);
@@ -441,6 +449,19 @@ class waNet
                     $curl_default_options[CURLOPT_SSL_VERIFYPEER] = false;
                 }
 
+                if (array_filter($this->options['ssl'], 'strlen')) {
+
+                    if (!empty($this->options['ssl']['key'])) {
+                        $curl_default_options[CURLOPT_SSLKEY] = $this->options['ssl']['key'];
+                    }
+                    if (!empty($this->options['ssl']['cert'])) {
+                        $curl_default_options[CURLOPT_SSLCERT] = $this->options['ssl']['cert'];
+                    }
+                    if (!empty($this->options['ssl']['password'])) {
+                        $curl_default_options[CURLOPT_SSLCERTPASSWD] = $this->options['ssl']['password'];
+                    }
+
+                }
 
                 if ($this->accept_cookies) {
                     $curl_default_options[CURLOPT_COOKIEFILE] = $this->cookies;
@@ -470,9 +491,7 @@ class waNet
 
             }
 
-            $curl_options = array(
-                CURLOPT_FOLLOWLOCATION => true,
-            );
+            $curl_options = array();
 
             if ($content) {
                 switch ($method) {
@@ -497,25 +516,18 @@ class waNet
                 }
             }
 
-
             $headers = $this->buildHeaders('curl', false);
             if ($headers) {
                 $curl_options[CURLOPT_HTTPHEADER] = $headers;
             }
 
             if (empty($curl_options[CURLOPT_POST]) && empty($curl_options[CURLOPT_POSTFIELDS])) {
-                if ((version_compare(PHP_VERSION, '5.4', '>=') || !ini_get('safe_mode')) && !ini_get('open_basedir')) {
+                if (version_compare(PHP_VERSION, '5.4', '>=') || (!ini_get('safe_mode') && !ini_get('open_basedir'))) {
                     $curl_options[CURLOPT_FOLLOWLOCATION] = true;
-                }
-            } else {
-                if (isset($curl_options[CURLOPT_FOLLOWLOCATION])) {
-                    //redirect doesn't work properly with POST
-                    unset($curl_options[CURLOPT_FOLLOWLOCATION]);
                 }
             }
 
             $curl_options[CURLOPT_URL] = $url;
-
 
             foreach ($curl_options as $param => $option) {
                 curl_setopt($this->ch, $param, $option);
@@ -577,9 +589,7 @@ class waNet
             'user_agent'    => $this->user_agent,
         );
 
-
         $headers = $this->buildHeaders('fopen', false);
-
 
         if (isset($this->options['proxy_host']) && strlen($this->options['proxy_host'])) {
             $proxy = $this->options['proxy_host'];
@@ -589,7 +599,8 @@ class waNet
             $context_params['proxy'] = $proxy;
 
             if (!empty($this->options['proxy_user'])) {
-                //"Proxy-Authorization: Basic $auth";
+                $auth = base64_encode(sprintf('%s:%s', $this->options['proxy_user'], $this->options['proxy_password']));
+                $headers[] = "Proxy-Authorization: Basic $auth";
             }
         }
 
@@ -621,12 +632,13 @@ class waNet
                 // PHP 5.6 or greater will find the system cert by default. When
                 // < 5.6, try load it
                 if (PHP_VERSION_ID < 50600) {
-                    $options['ssl']['cafile'] = '';//$this->defaultCaFile();
+                    //TODO try default system path with ca files
+                    //$context_params['ssl']['cafile'] = '';
                 }
             }
         } else {
-            $options['ssl']['verify_peer'] = false;
-            $options['ssl']['verify_peer_name'] = false;
+            $context_params['ssl']['verify_peer'] = false;
+            $context_params['ssl']['verify_peer_name'] = false;
         }
 
         return stream_context_create(array('http' => $context_params,));
@@ -643,7 +655,6 @@ class waNet
     private function runSocketContext($url, $content, $method)
     {
         $host = parse_url($url, PHP_URL_HOST);
-
 
         $port = parse_url($url, PHP_URL_PORT);
         if (empty($port)) {
@@ -705,7 +716,6 @@ class waNet
         }
         return $body;
     }
-
 
     /**
      * 413 Entity Too Large error workaround

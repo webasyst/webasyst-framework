@@ -51,24 +51,6 @@ abstract class waAppPayment implements waiPluginApp
 
     /**
      *
-     * @param $plugin_id string
-     * @param $key string
-     * @return array
-     */
-    abstract public function getSettings($plugin_id, $key);
-
-    /**
-     *
-     * @param $plugin_id string
-     * @param $key string
-     * @param $name
-     * @param $value
-     * @return array
-     */
-    abstract public function setSettings($plugin_id, $key, $name, $value);
-
-    /**
-     *
      * Callback method handler for plugin
      * @param string $method one of Confirmation, Payment
      * @throws waException

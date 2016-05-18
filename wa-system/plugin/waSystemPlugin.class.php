@@ -23,8 +23,6 @@ abstract class waSystemPlugin
 
     /**
      *
-     * Enter description here ...
-     * @param waiPluginSettings $model
      * @param string $key
      * @throws waException
      */
@@ -91,7 +89,10 @@ abstract class waSystemPlugin
         $config_path = $base_path.DIRECTORY_SEPARATOR.'lib'.DIRECTORY_SEPARATOR.'config'.DIRECTORY_SEPARATOR.'plugin.php';
 
         $plugin = null;
-        if ($config_path && file_exists($config_path) && ($config = include($config_path))) {
+        if ($base_path && file_exists($base_path)
+            && $config_path && file_exists($config_path)
+            && ($config = include($config_path))
+        ) {
             $default = array(
                 'name'        => preg_replace('@[A-Z]@', ' $1', $id),
                 'description' => '',

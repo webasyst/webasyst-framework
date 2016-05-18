@@ -228,7 +228,7 @@ class waContactRegionField extends waContactField
                         var o, selected = false;
                         for (i = 0; i < r.data.oOrder.length; i++) {
                             o = $('<option></option>').attr('value', r.data.oOrder[i]).text(r.data.options[r.data.oOrder[i]]).attr('disabled', r.data.oOrder[i] === '');
-                            if (!selected && old_val === r.data.oOrder[i]) {
+                            if (!selected && old_val === r.data.oOrder[i] && r.data.oOrder[i] !== '') {
                                 o.attr('selected', true);
                                 selected = true;
                             }

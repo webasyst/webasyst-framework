@@ -41,7 +41,18 @@ class waAPIController
         $request_url = rtrim(wa()->getConfig()->getRequestUrl(true, true), '/');
         if ($request_url === 'api.php/auth') {
             $user = wa()->getUser();
-            if (!$user->isAuth()) {
+            if (waRequest::post('cancel')) {
+                $url = waRequest::get('redirect_uri', '', 'string');
+                if (waRequest::get('response_type', 'code', 'string') == 'token') {
+                    wa()->getResponse()->redirect($url.'#error=access_denied');
+                } else {
+                    if ($url) {
+                        wa()->getResponse()->redirect($url.(strpos($url, '?') === false ? '?' : '&').'error=access_denied');
+                    } else {
+                        throw new waAPIException('access_denied', "You've denied access to ".htmlspecialchars(waRequest::get('client_name')), 403);
+                    }
+                }
+            } else if (!$user->isAuth()) {
                 wa()->getFrontController()->execute(null, 'login');
             } else {
                 wa()->getFrontController()->execute(null, 'api', 'auth');

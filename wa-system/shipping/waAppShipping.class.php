@@ -18,24 +18,6 @@ abstract class waAppShipping implements waiPluginApp
 
     /**
      *
-     * @param $plugin_id string
-     * @param $key string
-     * @return array
-     */
-    abstract public function getSettings($plugin_id, $key);
-
-    /**
-     *
-     * @param string $plugin_id
-     * @param string $key
-     * @param string $name
-     * @param $value
-     * @return array
-     */
-    abstract public function setSettings($plugin_id, $key, $name, $value);
-
-    /**
-     *
      * @return string
      */
     final public function getAppId()

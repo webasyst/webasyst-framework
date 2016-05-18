@@ -38,7 +38,7 @@ class waUser extends waContact
     public static function getByLogin($login)
     {
         $user_model = new waUserModel();
-        if (! ( $row = $user_model->getByField('login', $login))) {
+        if (!$login || ! ( $row = $user_model->getByField('login', $login))) {
             return null;
         }
         return new waUser($row['id']);

@@ -831,12 +831,19 @@ return array (
   ),
   'Europe/Moscow' => 
   array (
-    0 => '+04',
+    0 => '+03',
     1 => 
     array (
       0 => 'Moscow',
-      1 => 'Samara',
-      2 => 'Volgograd',
+      1 => 'Volgograd',
+    ),
+  ),
+  'Europe/Samara' => 
+  array (
+    0 => '+04',
+    1 => 
+    array (
+      0 => 'Samara',
     ),
   ),
   'Indian/Mahe' => 

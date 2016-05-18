@@ -446,7 +446,7 @@ class waHtmlControl
             $params['wysiwyg'] = $params['wisywig'];
         }
 
-        if (!empty($params['wysiwyg '])) {
+        if (!empty($params['wysiwyg'])) {
             if (!is_array($params['wysiwyg'])) {
                 $params['wysiwyg'] = array();
             }
