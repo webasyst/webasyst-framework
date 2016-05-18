@@ -4,7 +4,7 @@ return array(
     'description' => 'United States Parcel Service. Real-time shipping rate calculation via USPS Web Tools API.',
     'icon'        => 'img/usps16.png',
     'logo'        => 'img/usps.png',
-    'version'     => '1.0.0',
+    'version'     => '1.0.1',
     'vendor'      => 'webasyst',
     'external' => true
 );
