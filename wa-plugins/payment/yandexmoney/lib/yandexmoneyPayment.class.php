@@ -4,8 +4,9 @@
  *
  * @author Webasyst
  * @name YandexMoney
- * @description YandexMoney pament module
+ * @description YandexMoney payment module
  * @property-read string $integration_type
+ * @property-read string $account
  * @property-read string $TESTMODE
  * @property-read string $shopPassword
  * @property-read string $ShopID
@@ -84,10 +85,17 @@ class yandexmoneyPayment extends waPayment implements waIPayment
                     'scid'           => $this->scid,
                     'ShopID'         => $this->ShopID,
                     'CustomerNumber' => $order_data['customer_contact_id'],
-                    'customerNumber' => $order_data['customer_contact_id'],
+                    //'customerNumber' => $order_data['customer_contact_id'],
                     'orderNumber'    => $this->app_id.'_'.$this->merchant_id.'_'.$order_data['order_id'],
                     'Sum'            => number_format($order_data['amount'], 2, '.', ''),
                 );
+                if ($order_data->recurrent === true) {
+                    //пользователь не сможет отказаться от повторных списаний (но сможет прервать оплату)
+                    $hidden_fields['rebillingOn'] = 'true';
+                } elseif ($order_data->recurrent === false) {
+                    // пользователь увидит галочку Запомнить карту и сможет отказаться от повторных списаний.
+                    $hidden_fields['rebillingOn'] = 'false';
+                }
                 $fields = array();
                 if ($this->payment_mode) {
                     switch ($this->payment_mode) {
@@ -127,13 +135,16 @@ class yandexmoneyPayment extends waPayment implements waIPayment
 
                 $view->assign('auto_submit', $auto_submit);
                 break;
+
+            case 'mpos':
+                //TODO use custom form
+                break;
         }
 
         $view->assign('integration_type', $this->integration_type);
 
         return $view->fetch($this->path.'/templates/payment.html');
     }
-
 
     protected function callbackInit($request)
     {
@@ -149,8 +160,41 @@ class yandexmoneyPayment extends waPayment implements waIPayment
             $this->app_id = $match[1];
             $this->merchant_id = $match[2];
             $this->order_id = $match[3];
+        } elseif (!empty($request['orderDetails'])) {
+            //@see https://tech.yandex.ru/money/doc/payment-solution/payment-process/payments-mpos-docpage/
+            // mobile terminal — detect app automatically/parse string
+            //shop:100500 #order_id new
+            if (preg_match('@^(\w+):(\d+)(\s+|$)@', $request['orderDetails'], $match)) {
+                $this->app_id = $match[1];
+                $this->merchant_id = $match[2];
+                $comment = trim($match[3]);
+                if (preg_match('@^(\d+)(\s+|$)@', $comment, $match)) {
+                    $this->order_id = $match[1];
+                } else {
+                    $this->order_id = 'offline';
+                }
+            } elseif (preg_match('@^#?(\d+)(\s+|$)@', $request['orderDetails'], $match)) {
+                $this->order_id = $match[1];
+            } else {
+                $this->order_id = 'offline';
+            }
+            if (empty($this->merchant_id)) {
+                $this->merchant_id = array($this, 'callbackMatchSettings');
+            }
+        } elseif (isset($request['paymentType']) && ($request['paymentType'] == 'MP')) {
+            $this->order_id = 'offline';
+            $this->merchant_id = array($this, 'callbackMatchSettings');
         }
         return parent::callbackInit($request);
+    }
+
+    public function callbackMatchSettings($settings)
+    {
+        return !empty($settings['ShopID'])
+        && ($settings['ShopID'] == ifset($this->request['shopId']))
+        && !empty($settings['scid'])
+        && ($settings['scid'] == ifset($this->request['scid']))
+        && ($settings['payment_mode'] == 'MP');
     }
 
     /**
@@ -180,21 +224,45 @@ class yandexmoneyPayment extends waPayment implements waIPayment
 
         $this->verifySign($request);
 
+
+        if (($this->order_id === 'offline') || (ifset($request['paymentType']) == 'MP')) {
+            $transaction_data['unsettled'] = true;
+            $fields = array(
+                'native_id' => $transaction_data['native_id'],
+                'plugin'    => $this->id,
+                'type'      => array(waPayment::OPERATION_CHECK, waPayment::OPERATION_AUTH_CAPTURE),
+            );
+            $tm = new waTransactionModel();
+            $check = $tm->getByField($fields);
+            if ($check && !empty($check['order_id'])) {
+                if ($transaction_data['order_id'] != $check['order_id']) {
+                    if (($transaction_data['order_id'] !== 'offline') && ($transaction_data['order_id'] != $check['order_id'])) {
+                        $message = ' Внимание: номер переданного заказа %s не совпадает с сопоставленным';
+                        $transaction_data['view_data'] .= sprintf($message, htmlentities($transaction_data['order_id'], ENT_NOQUOTES, 'utf-8'));
+                    }
+                    $transaction_data['order_id'] = $check['order_id'];
+                }
+            }
+        }
+
         switch ($transaction_data['type']) {
             case self::OPERATION_CHECK:
                 $app_payment_method = self::CALLBACK_CONFIRMATION;
-                $transaction_data['state'] = self::STATE_AUTH;
+                $transaction_data['state'] = '';
                 break;
 
             case self::OPERATION_AUTH_CAPTURE:
-                // exclude transactions duplicates
-                $tm = new waTransactionModel();
+                //XXX rebillingOn workaround needed
+                if (empty($tm)) {
+                    $tm = new waTransactionModel();
+                }
                 $fields = array(
                     'native_id' => $transaction_data['native_id'],
                     'plugin'    => $this->id,
                     'type'      => waPayment::OPERATION_AUTH_CAPTURE,
                 );
                 if ($tm->getByFields($fields)) {
+                    // exclude transactions duplicates
                     throw new waPaymentException('already accepted', self::XML_SUCCESS);
                 }
 
@@ -206,8 +274,8 @@ class yandexmoneyPayment extends waPayment implements waIPayment
         }
 
         $transaction_data = $this->saveTransaction($transaction_data, $request);
-
         $result = $this->execAppCallback($app_payment_method, $transaction_data);
+
         return $this->getXMLResponse($request, !empty($result['result']) ? self::XML_SUCCESS : self::XML_PAYMENT_REFUSED, ifset($result['error']));
     }
 
@@ -299,6 +367,7 @@ class yandexmoneyPayment extends waPayment implements waIPayment
             }
 
         }
+
         if ($missed_fields) {
             self::log(
                 $this->id,
@@ -323,6 +392,7 @@ class yandexmoneyPayment extends waPayment implements waIPayment
      * Convert transaction raw data to formatted data
      * @param array $transaction_raw_data
      * @return array $transaction_data
+     * @throws waPaymentException
      */
     protected function formalizeData($transaction_raw_data)
     {
@@ -345,17 +415,40 @@ class yandexmoneyPayment extends waPayment implements waIPayment
             }
         }
 
+        if ($this->TESTMODE) {
+
+            $currency = 10643;
+            if (ifset($transaction_raw_data['orderSumCurrencyPaycash']) != $currency) {
+                $view_data .= ' Реальная оплата в тестовом режиме;';
+            } else {
+                $view_data .= ' Тестовый режим;';
+            }
+        } else {
+            $currency = 643;
+            if (ifset($transaction_raw_data['orderSumCurrencyPaycash']) != $currency) {
+                throw new waPaymentException('Invalid currency code', self::XML_PAYMENT_REFUSED);
+            }
+        }
+
+        if (!empty($transaction_raw_data['paymentType'])) {
+            $types = self::settingsPaymentOptions();
+            if (isset($types[$transaction_raw_data['paymentType']])) {
+                $view_data .= ' '.$types[$transaction_raw_data['paymentType']];
+            }
+        }
+
+
         $transaction_data = array_merge(
             $transaction_data,
             array(
                 'type'        => null,
                 'native_id'   => ifset($transaction_raw_data['invoiceId']),
                 'amount'      => ifset($transaction_raw_data['orderSumAmount']),
-                'currency_id' => ifset($transaction_raw_data['orderSumCurrencyPaycash']) == 643 ? 'RUB' : 'N/A',
+                'currency_id' => 'RUB',
                 'customer_id' => ifempty($transaction_raw_data['customerNumber'], ifset($transaction_raw_data['CustomerNumber'])),
                 'result'      => 1,
                 'order_id'    => $this->order_id,
-                'view_data'   => $view_data,
+                'view_data'   => trim($view_data),
             )
         );
 
@@ -363,6 +456,11 @@ class yandexmoneyPayment extends waPayment implements waIPayment
             case 'checkOrder': //Проверка заказа
                 $this->version = '3.0';
                 $transaction_data['type'] = self::OPERATION_CHECK;
+                if ($this->order_id === 'offline') {
+
+                } else {
+                    $transaction_data['view_data'] .= ' Проверка актуальности заказа;';
+                }
                 break;
             case 'paymentAviso': //Уведомления об оплате
                 $this->version = '3.0';
@@ -422,16 +520,34 @@ class yandexmoneyPayment extends waPayment implements waIPayment
         );
     }
 
+    /**
+     * @link https://tech.yandex.ru/money/doc/payment-solution/reference/payment-type-codes-docpage/
+     * @return array
+     */
     public static function settingsPaymentOptions()
     {
         return array(
-            'PC' => 'платеж со счета в Яндекс.Деньгах',
-            'AC' => 'платеж с банковской карты',
-            'GP' => 'платеж по коду через терминал',
-            'MC' => 'оплата со счета мобильного телефона',
-            'WM' => 'оплата со счета WebMoney',
+            'PC' => 'Оплата со счета в Яндекс.Деньгах',
+            'AC' => 'Оплата с банковской карты',
+            'GP' => 'Оплата по коду через терминал',
+            'MC' => 'Оплата со счета мобильного телефона',
+            'WM' => 'Оплата со счета WebMoney',
             'SB' => 'Оплата через Сбербанк Онлайн',
             'AB' => 'Оплата в Альфа-Клик',
+            'MP' => 'Оплата через мобильный терминал (mPOS)',
+            'MA' => 'Оплата через MasterPass',
+            'PB' => 'Оплата через интернет-банк Промсвязьбанка',
+            'QW' => 'Оплата через QIWI Wallet',
+            'KV' => 'Оплата через КупиВкредит (Тинькофф Банк)',
+            'QP' => 'Оплата через Доверительный платеж («Куппи.ру»)',
         );
+    }
+
+    public static function settingsPaymentModeOptions()
+    {
+        return array(
+            'customer' => 'На выбор покупателя после перехода на сайт Яндекса (рекомендуется)',
+            ''         => 'Не задан (определяется Яндексом)',
+        ) + self::settingsPaymentOptions();
     }
 }
