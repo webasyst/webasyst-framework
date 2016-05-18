@@ -31,6 +31,9 @@ class waRequestFileIterator extends waRequestFile implements Iterator,Countable,
             // Several files with the same input name
             $init = false;
             foreach($_FILES[$input_name]['name'] as $i=>$name){
+                if (is_array($name)) {
+                    continue; // deep nested file arrays are not supported by this iterator
+                }
                 $this->indexes[] = $i;
                 if($init){
                     $this->files[] = new waRequestFile(array(

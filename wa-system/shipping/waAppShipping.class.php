@@ -1,9 +1,10 @@
 <?php
-abstract class waAppShipping
+
+abstract class waAppShipping implements waiPluginApp
 {
     protected $app_id;
 
-    final function __construct()
+    final public function __construct()
     {
         $this->init();
     }
@@ -14,24 +15,6 @@ abstract class waAppShipping
             $this->app_id = wa()->getApp();
         }
     }
-
-    /**
-     *
-     * @param $plugin_id string
-     * @param $key string
-     * @return array
-     */
-    abstract public function getSettings($plugin_id, $key);
-
-    /**
-     *
-     * @param string $plugin_id
-     * @param string $key
-     * @param string $name
-     * @param $value
-     * @return array
-     */
-    abstract public function setSettings($plugin_id, $key, $name, $value);
 
     /**
      *
@@ -49,7 +32,7 @@ abstract class waAppShipping
      * @throws waException
      * @return mixed
      */
-    public final function execCallbackHandler($method)
+    final public function execCallbackHandler($method)
     {
         $args = func_get_args();
         array_shift($args);

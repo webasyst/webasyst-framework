@@ -108,6 +108,9 @@ class waAuth implements waiAuth
      */
     public function getByLogin($login)
     {
+        if (!$login) {
+            return null;
+        }
         $result = array();
         $model = new waContactModel();
         if ($this->options['login'] == 'login') {

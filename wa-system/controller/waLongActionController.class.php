@@ -598,11 +598,11 @@ abstract class waLongActionController extends waController
                 // and the subsequent save call will be able to continue. If problem persists, the new runner
                 // will have to do the batch of work again. Oh, well.
                 $this->runnerFatalWarning('Unable to save `new` data file: '.$this->_files['new']['data']);
-                $this->_data['heartbeat'] = $prev_heartbeat;
+                $this->_data['heartbeat'] = $prev_heartbeat + 2;
                 $this->_data['total_saves']--;
 
                 // save() can not continue, but current runner may.
-                return true;
+                return @file_exists($this->_files['new']['data']);
             }
 
             //
@@ -876,7 +876,7 @@ abstract class waLongActionController extends waController
 
         // We'll try to disable execution time limit.
         // It doesn't always work, but it doesn't hurt either.
-        @set_time_limit(0);
+        @set_time_limit(900);
 
         // Depending on total time limit, determine how often we'd like to write data to file.
         if ($this->_max_exec_time) {

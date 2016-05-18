@@ -155,6 +155,23 @@ HTML;
 </div>
 <script id="wa-header-js" type="text/javascript" src="{$root_url}wa-content/js/jquery-wa/wa.header.js?v{$version}"></script>
 HTML;
+
+    /**
+     * @event backend_header
+     * @return array[string]array $return[%plugin_id%] array of html output
+     * @return array[string][string]string $return[%plugin_id%]['header_top'] html output
+     * @return array[string][string]string $return[%plugin_id%]['header_bottom'] html output
+     */
+    $params = array('html' => &$html);
+    $results = wa()->event(array('webasyst', 'backend_header'), $params, array('html'));
+    foreach($results as $data) {
+        if (is_array($data)) {
+            $html = ifset($data['header_top'], '').$html.ifset($data['header_bottom'], '');
+        } else {
+            $html .= (string) $data;
+        }
+    }
+
     return $html;
 }
 

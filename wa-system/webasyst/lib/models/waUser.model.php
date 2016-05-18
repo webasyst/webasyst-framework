@@ -7,6 +7,9 @@ class waUserModel extends waModel
 
     public function getByLogin($login)
     {
+        if (!$login) {
+            return null;
+        }
         return $this->getByField('login', $login);
     }
 

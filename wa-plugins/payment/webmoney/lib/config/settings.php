@@ -33,7 +33,8 @@ return array(
         'control_type' => 'select',
         'options'      => array(
             'md5' => 'MD5',
-            'sha' => 'SHA-256',
+            'sha' => 'SHA-1',
+            'sha256' => 'SHA-256',
         ),
     ),
     'TESTMODE'        => array(

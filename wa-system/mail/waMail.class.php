@@ -28,7 +28,20 @@ class waMail extends Swift_Mailer
         if ($this->wa_set_transport) {
             $this->_transport = self::getTransportByEmail(key($message->getFrom()));
         }
-        return parent::send($message, $failedRecipients);
+        try {
+            return parent::send($message, $failedRecipients);
+        } catch (Exception $e) {
+            $log = array();
+            $log[] = sprintf('Error sending email from "%s" to "%s" with subject "%s"',
+                join('", "', array_keys($message->getFrom())),
+                join('", "', array_keys($message->getTo())),
+                $message->getSubject()
+            );
+            $log[] = $e->getMessage();
+            $log[] = $e->getTraceAsString();
+            waLog::log(join("\n", $log), 'mail.log');
+            return false;
+        }
     }
 
     /**

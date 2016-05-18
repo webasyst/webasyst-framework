@@ -333,8 +333,14 @@ class webmoneyPayment extends waPayment implements waIPayment
                 $hash_string .= $this->secret_key;
                 if ($this->hash_method == 'md5') {
                     $transaction_hash = base64_encode(md5($hash_string, true));
-                } else {
+                } else if ($this->hash_method == 'sha') {
                     $transaction_hash = base64_encode(sha1($hash_string, true));
+                } else {
+                    if (function_exists('hash') && function_exists('hash_algos') && in_array('sha256', hash_algos())) {
+                        $transaction_hash = base64_encode(hash('sha256', $hash_string, true)); 
+                    } else {
+                        throw new waException('sha256 not supported');
+                    }
                 }
                 unset($hash_string);
 

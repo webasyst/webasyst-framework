@@ -551,12 +551,13 @@ class waFiles
             }
             @ini_set('async_send', 1);
             wa()->getStorage()->close();
+            $file_size = filesize($file);
 
             if ($attach !== null) {
                 $send_as = str_replace('"', '\"', is_string($attach) ? $attach : basename($file));
                 $send_as = preg_replace('~[\n\r]+~', ' ', $send_as);
 
-                $file_size = filesize($file);
+
 
                 /**
                  * @see https://www.nginx.com/resources/wiki/start/topics/examples/x-accel/
@@ -681,6 +682,7 @@ class waFiles
                 }
             } else {
                 $response->addHeader("Content-type", $file_type);
+                $response->addHeader("Content-Length", $file_size);
                 $response->addHeader("Last-Modified", filemtime($file));
                 if ($md5) {
                     $response->addHeader("Content-MD5", $md5);

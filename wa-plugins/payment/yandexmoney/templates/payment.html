@@ -1,4 +1,4 @@
-{if $integration_type =='kassa'}
+{if $integration_type == 'kassa'}
 <form id="paymentForm" action="{$form_url}" method="post" target="_top">
     {foreach $hidden_fields as $name => $value}
         <input type="hidden" name="{$name}" value="{$value|escape}"/>
@@ -30,6 +30,8 @@
     {/foreach}
     <input id="paymentFormSubmit"  type="submit" value="Оплатить заказ на сайте Яндекс.Денег"/>
 </form>
+{elseif $integration_type == 'mpos'}
+    Оплатите банковской картой при получении заказа с использованием мобильного терминала
 {else}
     Оплатите вашим кошельком в Яндекс.Деньги:<br>
     <iframe frameborder="0" allowtransparency="true" scrolling="no"

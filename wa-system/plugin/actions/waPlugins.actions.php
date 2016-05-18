@@ -82,14 +82,17 @@ class waPluginsActions extends waActions
         $namespace = $this->getAppId().'_'.$plugin_id;
         $plugin = waSystem::getInstance()->getPlugin($plugin_id);
         $settings = (array)$this->getRequest()->post($namespace);
-        $files = waRequest::file($namespace);
-        $settings_definitions = $plugin->getSettings();
-        foreach ($files as $name => $file) {
-            if (isset($settings_definitions[$name])) {
-                $settings[$name] = $file;
-            }
-        }
         try {
+            $files = waRequest::file($namespace);
+            $settings_definitions = $plugin->getSettings();
+            foreach ($files as $name => $file) {
+                if (isset($settings_definitions[$name])
+                    && !empty($settings_definitions[$name]['control_type'])
+                    && ($settings_definitions[$name]['control_type'] == waHtmlControl::FILE)
+                ) {
+                    $settings[$name] = $file;
+                }
+            }
             $response = (array)$plugin->saveSettings($settings);
             $response['message'] = _w('Saved');
             $this->displayJson($response);

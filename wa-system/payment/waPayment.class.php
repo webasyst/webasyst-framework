@@ -136,6 +136,13 @@ abstract class waPayment extends waSystemPlugin
      */
     const OPERATION_HOSTED_PAYMENT_AFTER_ORDER = 'HOSTED_PAYMENT_AFTER_ORDER';
 
+    /**
+     *
+     * Повторный платеж, инициируемый приложением
+     * @var string
+     */
+    const OPERATION_RECURRENT = 'RECURRENT';
+
     const STATE_CAPTURED = 'CAPTURED';
     const STATE_AUTH = 'AUTH';
     const STATE_REFUNDED = 'REFUNDED';
@@ -143,6 +150,8 @@ abstract class waPayment extends waSystemPlugin
     const STATE_PARTIAL_REFUNDED = 'PARTIAL_REFUNDED';
     const STATE_DECLINED = 'DECLINED';
     const STATE_VERIFIED = 'VERIFIED';
+
+    const ORDER_UNKNOWN = 'offline';
 
     const TYPE_CARD = 'card';
     const TYPE_ONLINE = 'online';
@@ -241,6 +250,9 @@ abstract class waPayment extends waSystemPlugin
 
         if ($this->key) {
             $this->setSettings($this->getAdapter()->getSettings($this->id, $this->key));
+            if (($this->merchant_id === '*') || is_callable($this->merchant_id)) {
+                $this->merchant_id = $this->getAdapter()->getMerchantId();
+            }
         }
         $this->merchant_id =& $this->key;
         return $this;
@@ -312,11 +324,39 @@ abstract class waPayment extends waSystemPlugin
      */
     protected function callbackInit($request)
     {
+        $suggested_app_id = null;
+        if (empty($this->app_id) || ($this->app_id == 'webasyst')) {
+            $apps = wa()->getApps();
+
+            foreach ($apps as $app_id => $app) {
+                if (!empty($app['payment_plugins'])) {
+                    if ($suggested_app_id === null) {
+                        $suggested_app_id = $app_id;
+                    } else {
+                        #more then one app
+                        $suggested_app_id = false;
+                        break;
+                    }
+                }
+            }
+            if ($suggested_app_id) {
+                $this->app_id = $suggested_app_id;
+            }
+        }
+
         $log = array(
-            'method'      => __METHOD__,
-            'app_id'      => $this->app_id,
-            'merchant_id' => $this->merchant_id,
+            'method' => __METHOD__,
+            'app_id' => $this->app_id,
+
         );
+        if (is_callable($this->merchant_id)) {
+            $log['merchant_id'] = '***callback***';
+        } else {
+            $log['merchant_id'] = $this->merchant_id;
+        }
+        if (!empty($suggested_app_id)) {
+            $log['_magic'] = 'APP_ID suggested';
+        }
         self::log($this->id, $log);
         return $this;
     }
@@ -324,7 +364,7 @@ abstract class waPayment extends waSystemPlugin
     /**
      *
      * @param $request array
-     * @return void
+     * @return mixed
      */
     protected function callbackHandler($request)
     {
@@ -406,7 +446,7 @@ abstract class waPayment extends waSystemPlugin
 
     /**
      * @deprecated
-     * @return array()
+     * @throws waException
      */
     public function getSettingsList()
     {
@@ -421,7 +461,7 @@ abstract class waPayment extends waSystemPlugin
     /**
      * @deprecated use enumerate instead
      * @param $options array
-     * @return array
+     * @throws waException
      */
     final public static function listModules($options = array())
     {
@@ -453,7 +493,7 @@ abstract class waPayment extends waSystemPlugin
         return $methods;
     }
 
-    function __call($method, $params)
+    public function __call($method, $params)
     {
         //XXX back compatibility
         if (preg_match('/^([a-z]+)Transaction$/', $method, $matches)) {
@@ -480,7 +520,7 @@ abstract class waPayment extends waSystemPlugin
     protected static function log($module_id, $data)
     {
         static $id;
-        if(empty($id)){
+        if (empty($id)) {
             $id = uniqid();
         }
         $rec = '#'.$id."\n";
@@ -668,7 +708,7 @@ abstract class waPayment extends waSystemPlugin
      * @param bool $force_https
      * @return string callback relay url
      */
-    public final function getRelayUrl($force_https = null)
+    final public function getRelayUrl($force_https = null)
     {
         $url = wa()->getRootUrl(true, true).'payments.php/'.$this->id.'/';
         //TODO detect - is allowed https
@@ -742,6 +782,10 @@ abstract class waPayment extends waSystemPlugin
             $path = $this->path.'/lib/config/guide.php';
             if (file_exists($path)) {
                 $this->guide = include($path);
+
+                if (!is_array($this->guide)) {
+                    $this->guide = array();
+                }
 
                 foreach ($this->guide as & $guide) {
                     if (isset($guide['title'])) {
@@ -889,7 +933,6 @@ abstract class waPayment extends waSystemPlugin
         }
         return strtoupper($country['iso2letter']);
     }
-
 }
 
 interface waIPayment
@@ -921,6 +964,15 @@ interface waIPaymentCapture
      * @param array [string]mixed $transaction_raw_data['refund_amount']
      */
     public function capture($transaction_raw_data);
+}
+
+interface waIPaymentRecurrent
+{
+    /**
+     *
+     * @param array $order_data
+     */
+    public function recurrent($order_data);
 }
 
 interface waIPaymentRefund

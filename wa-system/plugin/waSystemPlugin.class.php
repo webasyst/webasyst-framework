@@ -23,8 +23,6 @@ abstract class waSystemPlugin
 
     /**
      *
-     * Enter description here ...
-     * @param waiPluginSettings $model
      * @param string $key
      * @throws waException
      */
@@ -39,14 +37,16 @@ abstract class waSystemPlugin
 
     /**
      * Список доступных плагинов
-     * @param $options array
+     * @param array $options
+     * @param string $type
      * @return array
      */
     public static function enumerate($options = array(), $type = null)
     {
         $plugins = array();
         foreach (waFiles::listdir(self::getPath($type)) as $id) {
-            if ($info = self::info($id, $options = array(), $type)) {
+            $info = self::info($id, $options, $type);
+            if ($info) {
                 $plugins[$id] = $info;
             }
         }
@@ -89,7 +89,10 @@ abstract class waSystemPlugin
         $config_path = $base_path.DIRECTORY_SEPARATOR.'lib'.DIRECTORY_SEPARATOR.'config'.DIRECTORY_SEPARATOR.'plugin.php';
 
         $plugin = null;
-        if ($config_path && file_exists($config_path) && ($config = include($config_path))) {
+        if ($base_path && file_exists($base_path)
+            && $config_path && file_exists($config_path)
+            && ($config = include($config_path))
+        ) {
             $default = array(
                 'name'        => preg_replace('@[A-Z]@', ' $1', $id),
                 'description' => '',
@@ -206,6 +209,7 @@ abstract class waSystemPlugin
      *
      * Return plugin property, described at plugin config
      * @param string $property
+     * @return mixed
      */
     final public function getProperties($property = null)
     {
@@ -247,7 +251,6 @@ abstract class waSystemPlugin
     {
         $args = func_get_args();
         return self::__w($args, $this->type, $this->id, $this->path);
-
     }
 
     private static function __w($string, $type, $id, $path)
@@ -263,7 +266,6 @@ abstract class waSystemPlugin
 
         $args = (array)$string;
         if ($domains[$domain]) {
-
             array_unshift($args, $domain);
             $string = call_user_func_array('_wd', $args);
         } else {
@@ -401,6 +403,10 @@ abstract class waSystemPlugin
      * Инициализация значений настроек модуля доставки
      */
 
+    /**
+     * @param array $settings
+     * @return array
+     */
     public function saveSettings($settings = array())
     {
         $settings_config = $this->config();
@@ -426,10 +432,21 @@ abstract class waSystemPlugin
             }
         }
 
+        $adapter = $this->getAdapter();
+
         foreach ($settings as $name => $value) {
             $this->settings[$name] = $value;
-            $this->getAdapter()->setSettings($this->id, $this->key, $name, $value);
+            $adapter->setSettings($this->id, $this->key, $name, $value);
         }
         return $settings;
     }
+
+
+
+    /**
+     *
+     * @throws waException
+     * @return waAppPayment
+     */
+    abstract protected function getAdapter();
 }

@@ -52,27 +52,27 @@ class vkontakteAuth extends waOAuth2Adapter
                 waLog::log($this->getId(). ':'. $status. ': Error '.$response['error']['error_code']." (".$response['error']['error_msg'].')', 'auth.log');
                 throw new waException($response['error']['error_msg'], $response['error']['error_code']);
             }
-            $response = $response['response'][0];
+            $response = ifset($response['response'][0]);
             if ($response) {
                 $data = array(
                     'source' => 'vkontakte',
                     'source_id' => $response['uid'],
                     'url' => "http://vk.com/id".$response['uid'],
-                    'name' => $response['first_name']." ".$response['last_name'],
-                    'firstname' => $response['first_name'],
-                    'lastname' => $response['last_name'],
-                    'photo_url' => $response['photo_medium']
+                    'name' => trim(ifset($response['first_name'], '')." ".ifset($response['last_name'], '')),
+                    'firstname' => ifset($response['first_name'], ''),
+                    'lastname' => ifset($response['last_name'], ''),
+                    'photo_url' => ifset($response['photo_medium'], '')
                 );
                 if (!empty($token['email'])) {
                     $data['email'] = $token['email'];
                 }
-                if ($response['home_phone']) {
+                if (!empty($response['home_phone'])) {
                     $data['phone.home'] = $response['home_phone'];
                 }
-                if ($response['sex']) {
+                if (!empty($response['sex'])) {
                     $data['sex'] = $response['sex'] == 2 ? 'm' : 'f';
                 }
-                if ($response['bdate']) {
+                if (!empty($response['bdate'])) {
                     $b = explode('.', $response['bdate']);
                     if (count($b) == 3) {
                         $data['birthday'] = $b[2].'-'.$b[1].'-'.$b[0];

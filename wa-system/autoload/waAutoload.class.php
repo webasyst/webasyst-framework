@@ -219,6 +219,7 @@ class waAutoload
         'waRightsException'        => 'exception/waRightsException.class.php',
 
         'waFiles'                  => 'file/waFiles.class.php',
+        'waNet'                    => 'file/waNet.class.php',
         'waTheme'                  => 'file/waTheme.class.php',
 
         'waLayout'                 => 'layout/waLayout.class.php',

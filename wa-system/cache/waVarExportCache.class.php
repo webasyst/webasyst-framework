@@ -30,7 +30,7 @@ class waVarExportCache extends waFileCache
     protected function readFromFile($file)
     {
         if (file_exists($file)) {
-            if ($this->ttl >= 0 && time() - filemtime($file) >= $this->ttl) {
+            if ($this->ttl >= 0 && time() - @filemtime($file) >= $this->ttl) {
                 $this->delete();
                 return null;
             } else {

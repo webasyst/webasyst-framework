@@ -7,23 +7,23 @@
 
     <!-- THEME ACTIONS -->
     <div class="sidebar right250px">
-    
+
         <!-- theme update -->
         {if $theme.type == waTheme::ORIGINAL}
-        
+
             <!-- original theme version from /wa-apps/ -->
             <div class="block double-padded wa-theme-actions wa-theme-latest">
                 <ul class="menu-v with-icons">
-                    
+
                     <li>
-                        
+
                         <b><i class="icon16 yes"></i>{sprintf('[s`Original version <strong>%s</strong>`]', $theme.version)}</b>
                         <span class="hint"><br>[s`No customizations have been made to theme settings and template files.`]</span>
                     </li>
-                    
+
                 </ul>
             </div>
-            
+
         {elseif $theme.type == waTheme::OVERRIDDEN}
 
             {if $theme.version == $theme_original_version}
@@ -56,7 +56,7 @@
             <!-- update is available -->
             <div class="block double-padded wa-theme-actions wa-theme-update-available">
                 <ul class="menu-v with-icons">
-                    
+
                     <li>
                         <a class="theme-update bold" href="#" title="[s`This will reset all customizations you applied to this design theme. Are you sure?`]"><i class="icon16 update"></i>{sprintf('[s`Update to version %s is available`]', $theme_original_version)}</a>
                         <span class="hint"><br>[s`Theme update requires your commitment because it may affect changes that you previously applied to template files and thus alter your site layout. Click to review the list of files and update.`]</span>
@@ -65,24 +65,24 @@
                 </ul>
             </div>
             {/if}
-            
+
         {else}
-        
+
             <!-- no original theme with same ID -->
             <div class="block double-padded wa-theme-actions wa-theme-orphan">
                 <ul class="menu-v with-icons">
-                    
+
                     <li>
                         <b><i class="icon16 split"></i>{$theme.id}</b>
                         <span class="hint"><br>{sprintf('[s`This theme was either cloned from some of the original themes, or manually uploaded as archive. It can not be updated via Installer app or reverted to the original version because there is no original theme with same ID installed (<strong>%s</strong>).`]', $theme.id)}</span>
-                    
+
                     </li>
-                    
+
                 </ul>
             </div>
-            
+
         {/if}
-        
+
         <!-- misc actions -->
         <div class="block double-padded wa-theme-actions">
             <ul class="menu-v with-icons">
@@ -110,27 +110,27 @@
             </ul>
         </div>
     </div>
-    
+
     <div class="content right250px">
-    
+
         {if !$theme_routes}
-                       
+
             <!-- THEME IS NOT IN USE -->
-            
+
             {if $wa->get('just_installed')}
                 <p class="bold successmsg"><i class="icon16 yes"></i>{sprintf(_ws('%s design theme has been successfully installed. Start using this theme by clicking the button below.'), $theme.name|escape)}</p>
             {else}
                 <p>
                     {sprintf(_ws('%s design theme is currently not in use on your websites.'), $theme.name|escape)}
                 </p>
-            {/if}            
+            {/if}
 
             {if $cover}
             <p>
                 <img src="{$cover}" class="wa-theme-cover" />
             </p>
             {/if}
-            
+
             <p style="line-height: 2.2em;">
                 <a id="theme-start-using" href="#" class="button green">{sprintf('[s`Start using %s theme`]', $theme.name|escape)}</a>
                 {if !empty($preview_url)}
@@ -138,16 +138,16 @@
                 <span class="nowrap"><a class="wa-theme-preview" target="_blank" href="{$preview_url}">[s`preview this theme`]</a> <i class="icon10 new-window" style="margin-top: 0.8em;"></i></span>
                 {/if}
             </p>
-        {else}                        
-            
-        
+        {else}
+
+
             <!-- THEME SETTINGS FORM -->
-        
+
             {if $settings}
-            
+
                 <script type="text/javascript" src="{$wa_url}wa-content/js/farbtastic/farbtastic.js"></script>
                 <link rel="stylesheet" href="{$wa_url}wa-content/js/farbtastic/farbtastic.css" type="text/css" />
-            
+
                 <iframe style="display: none" id="theme-settings-iframe" name="theme-settings-iframe"></iframe>
                 <form id="theme-settings" method="post" action="?module=design&action=themeSettings&theme={$theme.id}" enctype="multipart/form-data" target="theme-settings-iframe">
                     {$wa->csrf()}
@@ -159,7 +159,7 @@
                         {else}
                         <div class="field">
                             <div class="name">{$s.name}</div>
-                            <div class="value">
+                            <div class="value{if in_array($s.control_type, ['select', 'radio', 'checkbox', 'file'])} no-shift{/if}">
                                 {if $s.control_type == 'select'}
                                     <select name="{if !empty($s.parent)}parent_{/if}settings[{$s_var}]">
                                         {html_options options=$s.options selected=ifset($s.value)}
@@ -178,6 +178,9 @@
                                 {/foreach}
                                 {elseif $s.control_type == 'color'}
                                     <input class="color" type="text" name="{if !empty($s.parent)}parent_{/if}settings[{$s_var}]" value="{$s.value}">
+                                    {if !empty($s.description)}
+                                    <div class="hint">{$s.description}</div>
+                                    {/if}
                                 {elseif $s.control_type == 'checkbox'}
                                     <input type="hidden" name="{if !empty($s.parent)}parent_{/if}settings[{$s_var}]" value="">
                                     <input type="checkbox" name="{if !empty($s.parent)}parent_{/if}settings[{$s_var}]" {if $s.value}checked{/if} value="1">
@@ -229,11 +232,11 @@
                                     <div class="hint">{$s.description}</div>
                                     {/if}
                                 {/if}
-                            </div>                
+                            </div>
                         </div>
                         {/if}
                         {/foreach}
-                        
+
                         <div class="wa-design-save-panel block bordered-top">
                             <input type="submit" class="button green" value="[s`Save`]">
                             <span id="theme-settings-message" style="display: none"><i class="icon16 yes" style="margin-top: 0.5em;"></i> [s`Saved`]</span>
@@ -245,15 +248,15 @@
                     <br>
                     <em>{sprintf('[s`%s design theme does not offer customizable display settings. Please use template editor for customizing the theme.`]', $theme.name|escape)}</em>
                 </p>
-            {/if}    
+            {/if}
 
         {/if}
-        
+
         <!-- THEME USAGE -->
         <div class="fields" style="width: 100%">
-        
+
             {if count($theme_routes)}<h4 class="heading">[s`Theme usage`]</h4>{/if}
-        
+
             <div class="field">
                 <div class="name">
                     [s`Theme version`]
@@ -262,7 +265,7 @@
                     {$theme.version}
                 </div>
             </div>
-            
+
             <div class="field">
                 <div class="name">
                     [s`Theme path`]
@@ -274,15 +277,15 @@
                     <div class="value hint">
                         [s`Last modified`]: <strong>{$theme.mtime|wa_datetime:"humandatetime"}</strong>
                     </div>
-                {/if}                
+                {/if}
             </div>
-            
+
             {if count($theme_routes)}
                 <div class="field">
                     <div class="name">
                         [s`Theme usage`]
                     </div>
-    
+
                     {$_theme_usages = []}
                     {foreach $theme_routes as $_r}
                         <div class="value">
@@ -292,7 +295,7 @@
                             <a target="_blank" href="{$_r._url}" class="no-underline  bold">{$_r._domain}/{$_r.url} <i class="icon10 new-window"></i></a>
                         </div>
                     {/foreach}
-    
+
                     {if count($theme_routes) > 1}
                         <div class="value">
                             <p class="gray small">
@@ -300,18 +303,18 @@
                             </p>
                         </div>
                     {/if}
-    
+
                 </div>
             {/if}
 
         </div>
-        
+
         {if trim($theme.about)}
             <!-- ABOUT -->
             <h4 class="heading">[s`About this theme`]</h4>
             {$theme.about}
         {/if}
-        
+
         {if !empty($theme.thumbs)}
             <!-- THUMB SIZES -->
             <h4 class="heading">[s`Thumbnails`]</h4>
@@ -322,11 +325,11 @@
                 {/foreach}
             </ul>
         {/if}
-        
+
         <div class="clear-both"></div>
-        
+
     </div>
-    
+
 </div>
 
 
@@ -341,7 +344,7 @@
                 <div class="dialog-content-indent">
                     <h1>[s`Revert to original`]</h1>
                     <p><i class="icon10 exclamation"></i> [s`This will erase all customizations you’ve made to this theme’s template files using the design editor, and reset this theme to original. Are you sure?`]</p>
-                    
+
                     {if $theme.parent_theme && $theme.parent_theme.type == waTheme::OVERRIDDEN}
                     <label>
                         <input type="checkbox" name="parent" value="1"> {sprintf("[s`Drop all customizations and revert parent theme <strong>%s</strong> to the original version too`]", $theme.parent_theme_id)}
@@ -370,7 +373,7 @@
                 <div class="dialog-content-indent">
                     <h1>{$theme.name}</h1>
                     <p>{sprintf("[s`Start using this theme on one of your existing %s app routes, or create a new route:`]", $app.name)}</p>
-                    
+
                     <div class="fields width100px form">
                         <div class="field">
                             <div class="name">[s`Existing route`]</div>
@@ -392,7 +395,7 @@
                             <div class="name">[s`New route`]</div>
                             <div class="value">
                                 <input name="route" id="create-new-route-choice" value="new" type="radio"{if !count($routes)} checked{/if}>
-                            
+
                                 {if count($domains) == 1}
                                     <input name="domain" type="hidden" value="{current($domains)}">
                                 {current($domains)}/{else}
@@ -415,8 +418,8 @@
                             </div>
                         </div>
                     </div>
-                    
-                    
+
+
                 </div>
                 <div class="clear"></div>
             </div>
@@ -914,12 +917,12 @@
     if(url.length) {
         $('#wa-theme-{$theme.id} .js-theme-routing-url').removeClass('js-theme-routing-url').wrap('<a href="'+url.attr('href')+'"></a>');
     }
-    
+
     // colorpickers
     $('.color').each(function() {
         var input = $(this);
-        var replacer = $('<span class="color-replacer">' + 
-            '<i class="icon16 color" style="background: #'+input.val().substr(1)+'"></i>' + 
+        var replacer = $('<span class="color-replacer">' +
+            '<i class="icon16 color" style="background: #'+input.val().substr(1)+'"></i>' +
             '</span>').insertAfter(input);
         var picker = $('<div style="display:none;" class="color-picker"></div>').
             insertAfter(replacer);
@@ -932,7 +935,7 @@
             picker.slideToggle(200);
             return false;
         });
-        
+
         var timer_id;
         input.unbind('keydown').bind('keydown', function() {
             if (timer_id) {
@@ -942,9 +945,9 @@
                 farbtastic.setColor(input.val());
             }, 250);
         });
-        
+
     });
-    
+
     $('.create-new-route-control').focus(function(){
         $('#create-new-route-choice').attr('checked', 'checked');
     });

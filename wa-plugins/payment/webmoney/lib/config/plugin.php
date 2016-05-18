@@ -5,5 +5,5 @@ return array(
     'icon'        => 'img/webmoney16.png',
     'logo'        => 'img/webmoney.png',
     'vendor'      => 'webasyst',
-    'version'     => '1.0.0',
+    'version'     => '1.0.1',
 );
