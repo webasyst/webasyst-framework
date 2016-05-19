@@ -38,7 +38,7 @@ class waAPIController
 
     public function dispatch()
     {
-        $request_url = rtrim(wa()->getConfig()->getRequestUrl(true, true), '/');
+        $request_url = trim(wa()->getConfig()->getRequestUrl(true, true), '/');
         if ($request_url === 'api.php/auth') {
             $user = wa()->getUser();
             if (waRequest::post('cancel')) {
@@ -72,7 +72,7 @@ class waAPIController
                 $parts = explode('.', $parts[1], 2);
                 $this->execute($parts[0], $parts[1]);
             } else {
-                throw new waAPIException('invalid_request');
+                throw new waAPIException('invalid_request', 'Malformed request or server misconfiguration. Request URL: '.htmlspecialchars($request_url), 400);
             }
         }
     }

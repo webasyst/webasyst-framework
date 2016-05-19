@@ -18,18 +18,18 @@ class waFileCacheAdapter extends waCacheAdapter
     {
         $key = trim($key, '/');
         if (!$group || $group === true) {
-            return $app_id.'/cache/'. $key;
+            return $app_id.'/cache/k_'. $key.'.slz';
         } else {
-            return $app_id.'/cache/'.$group.'/'.$key;
+            return $app_id.'/cache/g_'.$group.'/'.$key.'.slz';
         }
     }
 
 
     public function get($key)
     {
-        $file = $this->options['path'].'/'.$key.'.php';
+        $file = $this->options['path'].'/'.$key;
         if (file_exists($file) && is_writable($file)) {
-            $info = unserialize(file_get_contents($file));
+            $info = @unserialize(file_get_contents($file));
             if (!empty($info['ttl']) && $info['ttl'] >= 0 && time() - $info['time'] >= $info['ttl']) {
                 return null;
             } else {
@@ -41,7 +41,7 @@ class waFileCacheAdapter extends waCacheAdapter
 
     public function set($key, $value, $expiration = null, $group = null)
     {
-        $file = waFiles::create($this->options['path'].'/'.$key.'.php');
+        $file = waFiles::create($this->options['path'].'/'.$key);
         $data = serialize(array('time' => time(), 'ttl' => $expiration, 'value' => $value));
         if (!file_exists($file) || is_writable($file)) {
             $r = @file_put_contents($file, $data, LOCK_EX);
