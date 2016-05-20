@@ -5,14 +5,16 @@
  *
  * @see http://www.russianpost.ru/rp/servise/ru/home/postuslug/bookpostandparcel/parcelltariff
  *
- * @property $region
- * @property $halfkilocost
- * @property $currency
- * @property $overhalfkilocost
- * @property $caution
- * @property $max_weight
- * @property $complex_calculation_weight
- * @property $commission
+ * @property-read $api_login
+ * @property-read $api_password
+ * @property-read $region
+ * @property-read $halfkilocost
+ * @property-read $currency
+ * @property-read $overhalfkilocost
+ * @property-read $caution
+ * @property-read $max_weight
+ * @property-read $complex_calculation_weight
+ * @property-read $commission
  *
  * @property string $company_name
  * @property string $address1
@@ -27,6 +29,7 @@
  */
 class russianpostShipping extends waShipping
 {
+    private $wsdl = 'https://tracking.russianpost.ru/rtm34?wsdl';
 
     /**
      * Регистрирует пользовательские элементы управления плагина для использования в интерфейсе настроек.
@@ -655,11 +658,382 @@ class russianpostShipping extends waShipping
      */
     public function tracking($tracking_id = null)
     {
-        $template = 'Отслеживание отправления: <a href="https://pochta.ru/tracking" target="_blank">https://pochta.ru/tracking</a>';
-        if($tracking_id){
-            $template .= sprintf(' <b>%s</b>',htmlentities($tracking_id,ENT_NOQUOTES,'utf-8'));
+        $template = 'Отслеживание отправления вручную: <a href="https://pochta.ru/tracking" target="_blank">https://pochta.ru/tracking</a>';
+        if ($tracking_id) {
+            $template .= sprintf(' <b>%s</b>', htmlentities($tracking_id, ENT_NOQUOTES, 'utf-8'));
+            if (class_exists('SoapClient') && $this->api_login && $this->api_password) {
+                $timeout = ini_get('default_socket_timeout');
+                ini_set('default_socket_timeout', 10);
+                try {
+                    $status = $this->trackingStatus($tracking_id);
+                    if (!empty($status['message'])) {
+                        $template = $status['message'];
+                    }
+                    if (!empty($status['error'])) {
+                        $template .= $status['error'];
+                    }
+                } catch (SoapFault $ex) {
+                    $message = array(
+                        'tracking_id' => $tracking_id,
+                        'code'        => $ex->getCode(),
+                        'error'       => $ex->getMessage(),
+                    );
+                    waLog::log(var_export($message, true), 'wa-plugins/shipping/russianpost/soap.error.log');
+                    $template .= "Произаошла ошибка при обращении к API Почты России";
+                } catch (Exception $ex) {
+                    $template .= $ex->getMessage();
+                }
+                ini_set('default_socket_timeout', $timeout);
+            }
         }
         return $template;
+    }
+
+    private function getTrackingData($tracking_id)
+    {
+        $valid = false;
+        if (preg_match('@^\d{14}$@', $tracking_id)) {
+            $valid = true;
+        } elseif (preg_match('@^\w{2}\d{9}\w{2}$@', $tracking_id)) {
+            $valid = true;
+        }
+
+        if (!$valid) {
+            throw new waException('Неверный формат идентификатора отправления');
+        }
+
+        $options = array(
+            'soap_version' => SOAP_1_2,
+        );
+
+
+        $params = array(
+            'OperationHistoryRequest' => array(
+                'Barcode'     => $tracking_id,
+                'MessageType' => '0',
+                'Language'    => 'RUS',
+            ),
+            'AuthorizationHeader'     => array(
+                'login'    => $this->api_login,
+                'password' => $this->api_password,
+            ),
+        );
+
+        $wrappers = stream_get_wrappers();
+
+        $protocol = parse_url($this->wsdl, PHP_URL_SCHEME);
+        if (!in_array($protocol, $wrappers, true)) {
+            $this->wsdl = preg_replace('@^https://@', 'http://', $this->wsdl);
+            $protocol = parse_url($this->wsdl, PHP_URL_SCHEME);
+        }
+
+        if (!in_array($protocol, $wrappers, true)) {
+            $error = 'В системе не найдено адаптеров для '.$protocol;
+        } else {
+            $client = new SoapClient($this->wsdl, $options);
+            $param = new SoapParam($params, 'OperationHistoryRequest');
+            $result = $client->getOperationHistory($param);
+            if (empty($result)) {
+                $error = $client->getError();
+            } elseif (!empty($result->AuthorizationFault)) {
+                $error = (string)$result->AuthorizationFault;
+            } elseif (!empty($result->OperationHistoryFault)) {
+                $error = (string)$result->OperationHistoryFault;
+            } elseif (!empty($result->LanguageFault)) {
+                $error = (string)$result->LanguageFault;
+            } else {
+                $timestamp = time();
+                if (!empty($result->OperationHistoryData->historyRecord)) {
+                    $rows = array();
+
+                    foreach ($result->OperationHistoryData->historyRecord as $record) {
+                        $row = array(
+                            'operation' => (string)ifempty($record->OperationParameters->OperType->Name),
+                            'date'      => (string)ifempty($record->OperationParameters->OperDate),
+                            'post_zip'  => (string)ifempty($record->AddressParameters->OperationAddress->Index),
+                            'post_name' => (string)ifempty($record->AddressParameters->OperationAddress->Description),
+                            'type'      => (string)ifempty($record->OperationParameters->OperAttr->Name),
+                            'weight'    => (int)ifempty($record->ItemParameters->Mass),
+                            'payment'   => (int)ifempty($record->FinanceParameters->Payment),
+                            'value'     => (int)ifempty($record->FinanceParameters->Value),
+                            'zip'       => (string)ifempty($record->AddressParameters->DestinationAddress->Index),
+                            'address'   => (string)ifempty($record->AddressParameters->DestinationAddress->Description),
+                            'recipient' => (string)ifempty($record->UserParameters->Rcpn),
+                        );
+                        $rows[] = $row;
+                    };
+                }
+            }
+        }
+
+        return compact('rows', 'error', 'timestamp');
+    }
+
+    private function trackingStatus($tracking_id)
+    {
+        $keep_interval = 72;
+        $refresh_interval = 3;
+
+        $message = '';
+        $error = '';
+
+        $cache = new waSerializeCache('tracking.'.urlencode($tracking_id), $keep_interval * 3600, 'wa-plugins/shipping/russianpost');
+        try {
+            if (!($data = $cache->get())) {
+                $data = $this->getTrackingData($tracking_id);
+                if (!empty($data['timestamp'])) {
+                    $cache->set($data);
+                } else {
+                    $error = htmlentities($data['error'], ENT_NOQUOTES, 'utf-8');
+                }
+            } elseif (($data['timestamp'] + $refresh_interval * 3600) < time()) {
+                $new_data = $this->getTrackingData($tracking_id);
+                if ($new_data) {
+                    if (!empty($new_data['timestamp'])) {
+                        $data = $new_data;
+                        $cache->set($data);
+                    } else {
+                        $error = htmlentities($new_data['error'], ENT_NOQUOTES, 'utf-8');
+                    }
+
+                }
+            }
+        } catch (Exception $ex) {
+            $error = htmlentities($ex->getMessage(), ENT_NOQUOTES, 'utf-8');
+        }
+
+        if (!empty($data['rows'])) {
+
+            $generic = array(
+                'address',
+                'weight',
+                'payment',
+                'value',
+                'recipient',
+                'zip',
+            );
+            $generic = array_fill_keys($generic, array('-'));
+
+            foreach ($data['rows'] as &$row) {
+                if (!empty($row['date'])) {
+                    $row['date'] = strtotime($row['date']);
+                    $row['datetime'] = wa_date('humandatetime', $row['date']);
+                    $row['date'] = wa_date('humandate', $row['date']);
+                }
+                if (!empty($row['payment'])) {
+                    $row['payment'] = wa_currency($row['payment'] / 100, 'RUB');
+                }
+                if (!empty($row['value'])) {
+                    $row['value'] = wa_currency($row['value'] / 100, 'RUB');
+                }
+                if (!empty($row['weight'])) {
+                    $row['weight'] = sprintf('%0.2f', $row['weight'] / 1000);
+                }
+                foreach ($row as $field => &$cell) {
+                    $cell = htmlentities($cell, ENT_QUOTES, 'utf-8');
+                    unset($cell);
+                }
+                foreach ($generic as $field => &$value) {
+                    if (!empty($row[$field])) {
+                        $value = $row[$field];
+                    }
+                    unset($value);
+                }
+                unset($row);
+            }
+
+            if ($error) {
+                $error = sprintf('<br/>При автоматическом обновлении истории отправления произошла ошибка: <span class="errormsg">%s</span>', $error);
+            }
+
+            $message = $this->getStatusHtml($tracking_id, $data, $generic, $error);
+
+        } else {
+            if ($error) {
+                $error = sprintf('<br/>Ошибка обмена данными с сервисом Почты России для автоматического отслеживания отправления: <span class="errormsg">%s</span>', $error);
+            }
+        }
+        return compact('message', 'error');
+    }
+
+    private function getStatusHtml($tracking_id, $data, $generic, &$error)
+    {
+        $status = '';
+        if ($row = end($data['rows'])) {
+            $status = <<<HTML
+Текущий статус: <strong>{$row['operation']} {$row['datetime']}</strong>, место: {$row['post_zip']} {$row['post_name']}
+HTML;
+        }
+
+        $updated = wa_date('humandatetime', $data['timestamp']);
+
+        $table = <<<HTML
+
+HTML;
+
+        $table .= <<<HTML
+<table class="zebra table" style="white-space: nowrap;">
+<thead>
+<tr>
+    <th>Операция</th>
+    <th>Дата</th>
+    <th title="Место проведения операции">Место</th>
+</tr>
+</thead>
+HTML;
+        $table .= '<tbody>';
+
+        foreach ($data['rows'] as $row) {
+            $table .= <<<HTML
+<tr>
+    <td>{$row['operation']}<br/><span class="hint">{$row['type']}</span></td>
+    <td>{$row['datetime']}</td>
+    <td>{$row['post_name']}<br/><span class="hint">{$row['post_zip']}</span></td>
+</tr>
+HTML;
+        }
+
+
+        $table .= <<<HTML
+</tbody></table>
+HTML;
+
+        $table_frontend = <<<HTML
+
+HTML;
+
+        $table_frontend .= <<<HTML
+<table class="zebra table" style="white-space: nowrap;">
+<thead>
+<tr>
+    <th class="align-right">Операция</th>
+    <th class="align-right">Дата</th>
+    <th class="align-right" title="Место проведения операции">Место</th>
+</tr>
+</thead>
+HTML;
+        $table_frontend .= '<tbody>';
+
+        foreach ($data['rows'] as $row) {
+            $table_frontend .= <<<HTML
+<tr>
+    <td class="align-right">{$row['operation']}<br/><span class="hint">{$row['type']}</span></td>
+    <td class="align-right">{$row['datetime']}</td>
+    <td class="align-right">{$row['post_name']}<br/><span class="hint">{$row['post_zip']}</span></td>
+</tr>
+HTML;
+        }
+
+
+        $table_frontend .= <<<HTML
+</tbody></table>
+HTML;
+
+
+        $id = 'wa_plugins_shipping_russianpost_'.preg_replace('@([^a-z_0-9])@', '', $tracking_id);
+        switch (wa()->getEnv()) {
+            case 'backend':
+                $html = <<<HTML
+{$status} <a href="#" class="inline-link" id="{$id}_show" style="float: right">Подробнее...</a>
+
+<script type="text/javascript">
+(function () {
+    $('#{$id}_show').bind('click', function() {
+        var dialog =  $('#{$id}_dialog');
+        if (typeof dialog.waDialog == 'function') {
+            if (dialog.length && dialog.parents('div').length) {
+                $('#{$id}_dialog_').remove();
+                dialog.appendTo('body');
+                dialog.attr('id', dialog.attr('id')+'_');
+            }
+            $('#{$id}_dialog_').waDialog();
+        } else {
+            var a = $(this);
+            if (dialog.length) {
+                var table = dialog.find('.dialog-content-indent');
+                a.replaceWith(table);
+                dialog.remove();
+            }
+                    
+            $(this).hide();
+        }
+        return false;
+    });
+})();
+</script>
+            
+<div class="dialog" id="{$id}_dialog" style="display: none;">
+    <div class="dialog-background">
+    </div>
+    <div class="dialog-window">
+        <div class="dialog-content">
+            <div class="dialog-content-indent fields">
+                <h1>История отправления {$tracking_id}</h1>
+                <div class="block fields">
+                    <div class="field">
+                        <div class="name">Адресовано:</div>
+                        <div class="value">{$generic['zip']}, {$generic['address']}, {$generic['recipient']}</div>
+                    </div>
+                    <div class="field">
+                        <div class="name">Объявленная ценность:</div>
+                        <div class="value">{$generic['value']}</div>
+                    </div>
+                    <div class="field">
+                        <div class="name">Наложенный платеж:</div>
+                        <div class="value">{$generic['payment']}</div>
+                    </div>
+                    <div class="field">
+                        <div class="name">Вес (кг):</div>
+                        <div class="value">{$generic['weight']}</div>
+                    </div>
+                </div>
+                
+                {$table}
+                <br/>
+                <span class="hint">Дата запроса к сервису Почты России для отслеживания отправления: {$updated}</span>
+                {$error}
+            </div>
+        </div>
+        <div class="dialog-buttons">
+            <div class="dialog-buttons-gradient">
+                <a class="cancel button" href="#">Закрыть</a>
+            </div>
+        </div>
+    </div>
+</div>
+HTML;
+                break;
+            default:
+                $html = <<<HTML
+<span>{$status} <br/><a href="#" class="inline-link" id="{$id}_show" style="float: left">Показать всю историю отправления...</a><br/></span>
+<div id="{$id}_full" style="display: none;">
+Адресовано: {$generic['zip']}, {$generic['address']}, {$generic['recipient']}<br>
+Объявленная ценность: {$generic['value']}<br>
+Наложенный платеж: {$generic['payment']}<br>
+Вес (кг): {$generic['weight']}<br>
+{$table_frontend}
+<span class="hint">Дата запроса к сервису Почты России для отслеживания отправления: {$updated}</span>
+</div>
+
+
+<script type="text/javascript">
+(function () {
+    $('#{$id}_show').bind('click', function() {
+        var history =  $('#{$id}_full');
+        var a = $(this).parent();
+        if (history.length) {
+            history.show();
+            a.remove();
+        }
+        return false;
+    });
+})();
+</script>
+HTML;
+                break;
+        }
+        $error = '';
+        return $html;
     }
 
     /**
@@ -731,7 +1105,7 @@ class russianpostShipping extends waShipping
             $font_path = (file_exists($font_path) && function_exists('imagettftext')) ? $font_path : false;
         }
         if (is_null($text_color)) {
-            $text_color = ($this->COLOR && false) ? ImageColorAllocate($image, 32, 32, 96) : ImageColorAllocate($image, 16, 16, 16);
+            $text_color = ($this->color && false) ? imagecolorallocate($image, 32, 32, 96) : imagecolorallocate($image, 16, 16, 16);
         }
 
         if (empty($mode)) {

@@ -1,7 +1,24 @@
 <?php
 return array(
-    'region' => array(
-        'value' => array(
+    'api_login'    => array(
+        'value'        => '',
+        'placeholder'  => '',
+        'control_type' => waHtmlControl::INPUT,
+        'title'        => 'Логин для API Почта России',
+        'description'  => 'Чтобы получить логин, необходимо зарегистрироваться на сайте <a href="https://tracking.pochta.ru/" target="_blank">Почты Россиии<i class="icon16 new-window"></i></a>.<br/><br/>',
+    ),
+    'api_password' => array(
+        'value'        => '',
+        'placeholder'  => '',
+        'control_type' => waHtmlControl::INPUT,
+        'title'        => 'Пароль для API Почта России',
+        'description'  =><<<HTML
+Чтобы получить пароль, необходимо зарегистрироваться на сайте <a href="https://tracking.pochta.ru/" target="_blank">https://tracking.pochta.ru/</a>. <a href="https://tracking.pochta.ru/support/faq/how_to_get_access" target="_blank">Как получить доступ</a><br/><br/><br/>
+HTML
+ ,
+    ),
+    'region'       => array(
+        'value'        => array(
             '22' => array('zone' => 3, 'avia_only' => false), /*Алтайский край*/
             '28' => array('zone' => 4, 'avia_only' => false), /*Амурская область*/
             '29' => array('zone' => 2, 'avia_only' => false), /*Архангельская область*/
@@ -86,36 +103,36 @@ return array(
             '89' => array('zone' => 3, 'avia_only' => false), /*Ямало-Ненецкий автономный округ*/
             '76' => array('zone' => 1, 'avia_only' => false), /*Ярославская область*/
         ),
-        'title' => 'Регионы',
+        'title'        => 'Регионы',
         'control_type' => 'RegionRatesControl',
     ),
     'halfkilocost' => array(
-        'value'        => array(1 => 149.90, 2 => 152.0, 3 => 158.10, 4 => 192.60, 5 => 215.00, ),
+        'value'        => array(1 => 149.90, 2 => 152.0, 3 => 158.10, 4 => 192.60, 5 => 215.00,),
         'title'        => 'Стоимость отправки посылки весом до 0.5 килограмм (включительно)',
         'description'  => '',
         'control_type' => 'WeightCosts',
     ),
 
     'overhalfkilocost' => array(
-        'value'        => array(1 => 13.40, 2 => 15.60, 3 => 22.30, 4 => 31.80, 5 => 36.40, ),
+        'value'        => array(1 => 13.40, 2 => 15.60, 3 => 22.30, 4 => 31.80, 5 => 36.40,),
         'title'        => 'Стоимость отправки каждых дополнительных 0.5 килограмм',
         'description'  => '',
         'control_type' => 'WeightCosts',
     ),
 
-    'air'    => array(
+    'air'                        => array(
         'value'        => '295.00',
         'title'        => 'Надбавка за отправление «Авиа»',
         'description'  => 'Укажите стоимость в рублях',
         'control_type' => waHtmlControl::INPUT,
     ),
-    'caution' => array(
+    'caution'                    => array(
         'value'        => '',
         'title'        => 'Все посылки отправляются с отметкой «Осторожно»',
         'description'  => '',
         'control_type' => waHtmlControl::CHECKBOX,
     ),
-    'max_weight' => array(
+    'max_weight'                 => array(
         'value'        => '20',
         'title'        => 'Максимальный вес отправления',
         'description'  => 'Укажите вес в килограммах',
@@ -127,7 +144,7 @@ return array(
         'description'  => 'Укажите вес в килограммах, начиная с которого к стоимости доставки посылки прибавляется 30% (согласно правилам усложненной тарификации Почты России)',
         'control_type' => waHtmlControl::INPUT,
     ),
-    'commission' => array(
+    'commission'                 => array(
         'value'        => '4',
         'title'        => 'Плата за сумму объявленной ценности посылки',
         'description'  => 'Укажите размер комиссии в процентах. Например, укажите 4, если с каждого рубля взимается 4 копейки.',
@@ -141,37 +158,37 @@ return array(
         'control_type' => 'text',
     ),
 
-    'address1' => array(
+    'address1'            => array(
         'value'        => '',
         'title'        => 'Адрес получателя наложенного платежа (магазина), строка 1',
         'description'  => 'Почтовый адрес получателя наложенного платежа.',
         'control_type' => 'text',
     ),
-    'address2' => array(
+    'address2'            => array(
         'value'        => '',
         'title'        => 'Адрес получателя наложенного платежа (магазина), строка 2',
         'description'  => 'Заполните, если адрес не помещается в одну строку.',
         'control_type' => 'text',
     ),
-    'zip' => array(
+    'zip'                 => array(
         'value'        => '',
         'title'        => 'Индекс получателя наложенного платежа (магазина)',
         'description'  => 'Индекс должен состоять ровно из 6 цифр.',
         'control_type' => 'text',
     ),
-    'inn'    => array(
+    'inn'                 => array(
         'value'        => '',
         'title'        => 'ИНН получателя наложенного платежа (магазина)',
         'description'  => 'Заполняется только для юридических лиц. 10 цифр.',
         'control_type' => 'text',
     ),
-    'bank_kor_number' => array(
+    'bank_kor_number'     => array(
         'value'        => '',
         'title'        => 'Кор. счет получателя наложенного платежа (магазина)',
         'description'  => 'Заполняется только для юридических лиц. 20 цифр.',
         'control_type' => 'text',
     ),
-    'bank_name' => array(
+    'bank_name'           => array(
         'value'        => '',
         'title'        => 'Наименование банка получателя наложенного платежа (магазина)',
         'description'  => 'Заполняется только для юридических лиц.',
@@ -183,19 +200,17 @@ return array(
         'description'  => 'Заполняется только для юридических лиц. 20 цифр.',
         'control_type' => 'text',
     ),
-    'bik'    => array(
+    'bik'                 => array(
         'value'        => '',
         'title'        => 'БИК получателя наложенного платежа (магазина)',
         'description'  => 'Заполняется только для юридических лиц. 9 цифр.',
         'control_type' => 'text',
     ),
 
-    'color'  => array(
+    'color' => array(
         'value'        => '1',
         'title'        => 'Печатать желтую полосу (форма ф. 113эн)',
         'description'  => '',
         'control_type' => waHtmlControl::CHECKBOX,
     ),
-
 );
-//EOF
