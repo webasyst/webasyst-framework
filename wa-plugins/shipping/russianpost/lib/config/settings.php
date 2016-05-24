@@ -43,6 +43,7 @@ HTML
             '44' => array('zone' => 1, 'avia_only' => false), /*Костромская область*/
             '23' => array('zone' => 2, 'avia_only' => false), /*Краснодарский край*/
             '24' => array('zone' => 3, 'avia_only' => false), /*Красноярский край*/
+            '91' => array('zone' => 3, 'avia_only' => false), /*Крым республика*/
             '45' => array('zone' => 3, 'avia_only' => false), /*Курганская область*/
             '46' => array('zone' => 1, 'avia_only' => false), /*Курская область*/
             '47' => array('zone' => 2, 'avia_only' => false), /*Ленинградская область*/

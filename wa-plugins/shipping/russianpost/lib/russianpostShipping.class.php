@@ -812,7 +812,7 @@ class russianpostShipping extends waShipping
                 'recipient',
                 'zip',
             );
-            $generic = array_fill_keys($generic, array('-'));
+            $generic = array_fill_keys($generic, '-');
 
             foreach ($data['rows'] as &$row) {
                 if (!empty($row['date'])) {
@@ -1178,11 +1178,11 @@ HTML;
         }
         switch ($info[2]) {
             case 1:
-                // Create recource from gif image
+                // Create resource from gif image
                 $srcIm = @imagecreatefromgif($file);
                 break;
             case 2:
-                // Create recource from jpg image
+                // Create resource from jpg image
                 $srcIm = @imagecreatefromjpeg($file);
                 break;
             case 3:
@@ -1193,7 +1193,7 @@ HTML;
                 // Create resource from psd image
                 break;
             case 6:
-                // Create recource from bmp image imagecreatefromwbmp
+                // Create resource from bmp image imagecreatefromwbmp
                 $srcIm = @imagecreatefromwbmp($file);
                 break;
             case 7:
