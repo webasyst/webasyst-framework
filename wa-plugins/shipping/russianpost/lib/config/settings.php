@@ -1,23 +1,23 @@
 <?php
 return array(
-    'api_login'    => array(
+    'api_login'        => array(
         'value'        => '',
         'placeholder'  => '',
         'control_type' => waHtmlControl::INPUT,
         'title'        => 'Логин для API Почта России',
         'description'  => 'Чтобы получить логин, необходимо зарегистрироваться на сайте <a href="https://tracking.pochta.ru/" target="_blank">Почты Россиии<i class="icon16 new-window"></i></a>.<br/><br/>',
     ),
-    'api_password' => array(
+    'api_password'     => array(
         'value'        => '',
         'placeholder'  => '',
         'control_type' => waHtmlControl::INPUT,
         'title'        => 'Пароль для API Почта России',
-        'description'  =><<<HTML
+        'description'  => <<<HTML
 Чтобы получить пароль, необходимо зарегистрироваться на сайте <a href="https://tracking.pochta.ru/" target="_blank">https://tracking.pochta.ru/</a>. <a href="https://tracking.pochta.ru/support/faq/how_to_get_access" target="_blank">Как получить доступ</a><br/><br/><br/>
 HTML
- ,
+        ,
     ),
-    'region'       => array(
+    'region'           => array(
         'value'        => array(
             '22' => array('zone' => 3, 'avia_only' => false), /*Алтайский край*/
             '28' => array('zone' => 4, 'avia_only' => false), /*Амурская область*/
@@ -48,11 +48,11 @@ HTML
             '46' => array('zone' => 1, 'avia_only' => false), /*Курская область*/
             '47' => array('zone' => 2, 'avia_only' => false), /*Ленинградская область*/
             '48' => array('zone' => 1, 'avia_only' => false), /*Липецкая область*/
-            '49' => array('zone' => 5, 'avia_only' => false), /*Магаданская область*/
+            '49' => array('zone' => 5, 'avia_only' => true), /*Магаданская область*/
             '77' => array('zone' => 1, 'avia_only' => false), /*Москва*/
             '50' => array('zone' => 1, 'avia_only' => false), /*Московская область*/
             '51' => array('zone' => 2, 'avia_only' => false), /*Мурманская область*/
-            '83' => array('zone' => 3, 'avia_only' => false), /*Ненецкий автономный округ*/
+            '83' => array('zone' => 3, 'avia_only' => true), /*Ненецкий автономный округ*/
             '52' => array('zone' => 1, 'avia_only' => false), /*Нижегородская область*/
             '53' => array('zone' => 2, 'avia_only' => false), /*Новгородская область*/
             '54' => array('zone' => 3, 'avia_only' => false), /*Новосибирская область*/
@@ -86,6 +86,7 @@ HTML
             '64' => array('zone' => 2, 'avia_only' => false), /*Саратовская область*/
             '65' => array('zone' => 5, 'avia_only' => false), /*Сахалинская область*/
             '66' => array('zone' => 2, 'avia_only' => false), /*Свердловская область*/
+            '92' => array('zone' => 3, 'avia_only' => false), /*Севастополь*/
             '67' => array('zone' => 1, 'avia_only' => false), /*Смоленская область*/
             '26' => array('zone' => 2, 'avia_only' => false), /*Ставропольский край*/
             '68' => array('zone' => 1, 'avia_only' => false), /*Тамбовская область*/
@@ -100,22 +101,27 @@ HTML
             '74' => array('zone' => 2, 'avia_only' => false), /*Челябинская область*/
             '20' => array('zone' => 2, 'avia_only' => false), /*Чеченская республика*/
             '21' => array('zone' => 2, 'avia_only' => false), /*Чувашская республика*/
-            '87' => array('zone' => 5, 'avia_only' => false), /*Чукотский автономный округ*/
+            '87' => array('zone' => 5, 'avia_only' => true), /*Чукотский автономный округ*/
             '89' => array('zone' => 3, 'avia_only' => false), /*Ямало-Ненецкий автономный округ*/
             '76' => array('zone' => 1, 'avia_only' => false), /*Ярославская область*/
         ),
         'title'        => 'Регионы',
         'control_type' => 'RegionRatesControl',
     ),
-    'halfkilocost' => array(
-        'value'        => array(1 => 149.90, 2 => 152.0, 3 => 158.10, 4 => 192.60, 5 => 215.00,),
+    'exclude_cities'   => array(
+        'value'       => '',
+        'title'       => 'Не доставлять в города',
+        'description' => 'Названия городов через запятую (например, город магазина)',
+		'control_type' => waHtmlControl::INPUT,
+    ),
+    'halfkilocost'     => array(
+        'value'        => array(1 => 150.90, 2 => 185.0, 3 => 193.10, 4 => 233.60, 5 => 261.00,),
         'title'        => 'Стоимость отправки посылки весом до 0.5 килограмм (включительно)',
         'description'  => '',
         'control_type' => 'WeightCosts',
     ),
-
     'overhalfkilocost' => array(
-        'value'        => array(1 => 13.40, 2 => 15.60, 3 => 22.30, 4 => 31.80, 5 => 36.40,),
+        'value'        => array(1 => 16.00, 2 => 19.00, 3 => 26.00, 4 => 39.00, 5 => 44.00,),
         'title'        => 'Стоимость отправки каждых дополнительных 0.5 килограмм',
         'description'  => '',
         'control_type' => 'WeightCosts',
@@ -123,7 +129,7 @@ HTML
 
     'air'                        => array(
         'value'        => '295.00',
-        'title'        => 'Надбавка за отправление «Авиа»',
+        'title'        => 'Надбавка за отправление «Авиа» (руб.)',
         'description'  => 'Укажите стоимость в рублях',
         'control_type' => waHtmlControl::INPUT,
     ),
@@ -147,15 +153,51 @@ HTML
     ),
     'commission'                 => array(
         'value'        => '4',
-        'title'        => 'Плата за сумму объявленной ценности посылки',
+        'title'        => 'Плата за сумму объявленной ценности посылки (%)',
         'description'  => 'Укажите размер комиссии в процентах. Например, укажите 4, если с каждого рубля взимается 4 копейки.',
         'control_type' => waHtmlControl::INPUT,
     ),
+
+    'extra_charge' => array(
+        'value'        => 0,
+        'title'        => 'Надбавка фиксированная (руб.)',
+        'description'  => 'Указанная сумма будет добавлена к общей рассчитанной стоимости доставки.',
+        'control_type' => waHtmlControl::INPUT,
+    ),
+
+    'delivery_date_show' => array(
+        'value'        => true,
+        'title'        => 'Показывать приблизительные сроки доставки',
+        'description'  => '',
+        'control_type' => waHtmlControl::CHECKBOX,
+    ),
+
+    'delivery_date_min' => array(
+        'value'        => 7,
+        'title'        => 'Приблизительный минимальный срок доставки',
+        'description'  => 'Укажите число дней',
+        'control_type' => waHtmlControl::INPUT,
+    ),
+
+    'delivery_date_max' => array(
+        'value'        => 14,
+        'title'        => 'Приблизительный максимальный срок доставки',
+        'description'  => 'Укажите число дней',
+        'control_type' => waHtmlControl::INPUT,
+    ),
+
 
     'company_name' => array(
         'value'        => '',
         'title'        => 'Получатель наложенного платежа (магазин)',
         'description'  => 'Для юридического лица — полное или краткое наименование; для гражданина — ФИО полностью.',
+        'control_type' => 'text',
+    ),
+
+    'company_name2' => array(
+        'value'        => '',
+        'title'        => 'Получатель наложенного платежа (магазин)',
+        'description'  => '(вторая строка)',
         'control_type' => 'text',
     ),
 
@@ -207,6 +249,62 @@ HTML
         'description'  => 'Заполняется только для юридических лиц. 9 цифр.',
         'control_type' => 'text',
     ),
+
+
+    'document' => array(
+        'value'        => '',
+        'title'        => 'Документ (магазина)',
+        'description'  => 'Наименование документа получателя наложенного платежа.',
+        'control_type' => 'text',
+    ),
+
+    'document_series' => array(
+        'value'        => '',
+        'title'        => 'Серия документа (магазина)',
+        'description'  => 'Серия документа получателя наложенного платежа.',
+        'control_type' => 'text',
+    ),
+
+
+    'document_number' => array(
+        'value'        => '',
+        'title'        => 'Номер документа (магазина)',
+        'description'  => 'Номер документа получателя наложенного платежа.',
+        'control_type' => 'text',
+    ),
+
+
+    'document_issued_day' => array(
+        'value'        => '',
+        'title'        => 'Дата выдачи документа, число (магазина)',
+        'description'  => 'Дата выдачи документа получателя наложенного платежа (число).',
+        'control_type' => 'text',
+    ),
+
+
+    'document_issued_month' => array(
+        'value'        => '',
+        'title'        => 'Дата выдачи документа, месяц (магазина)',
+        'description'  => 'Дата выдачи документа получателя наложенного платежа (месяц, две цифры).',
+        'control_type' => 'text',
+    ),
+
+
+    'document_issued_year' => array(
+        'value'        => '',
+        'title'        => 'Дата выдачи документа, год (магазина)',
+        'description'  => 'Дата выдачи документа получателя наложенного платежа (год, две последние цифры).',
+        'control_type' => 'text',
+    ),
+
+
+    'document_issued' => array(
+        'value'        => '',
+        'title'        => 'Кем выдан документ (магазина)',
+        'description'  => 'Название организации, выдавшей документ',
+        'control_type' => 'text',
+    ),
+
 
     'color' => array(
         'value'        => '1',
