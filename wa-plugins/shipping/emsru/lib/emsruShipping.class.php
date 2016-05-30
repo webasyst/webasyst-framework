@@ -2,8 +2,10 @@
 
 /**
  * @property-read string $region Регион
+ * @property-read bool $home_delivery
  * @property-read string $city Город
  * @property-read double $surcharge Надбавка (%)
+ * @property-read double $fixed_surcharge Надбавка
  * @property-read string $company_name Получатель наложенного платежа (магазин)
  * @property-read string $address1 Адрес получателя наложенного платежа (магазина), строка 1
  * @property-read string $address2 Адрес получателя наложенного платежа (магазина), строка 2
@@ -28,6 +30,7 @@ class emsruShipping extends waShipping
             return 'Вес отправления не задан.';
         }
         $incomplete = false;
+        $home = false;
         switch ($country_iso3 = $this->getAddress('country')) {
             case 'rus':
                 $address = array_merge(array('country' => 'rus'), $this->getSettings());
@@ -36,6 +39,10 @@ class emsruShipping extends waShipping
                 if (empty($params['to'])) {
                     $address = $this->getAddress();
                     $incomplete = empty($address['city']) && empty($address['region']);
+                } elseif (!$this->home_delivery) {
+                    if ($params['to'] == $params['from']) {
+                        $home = true;
+                    }
                 }
                 break;
             default: /* International shipping*/
@@ -51,7 +58,9 @@ class emsruShipping extends waShipping
                 break;
         }
         $services = array();
-        if (!empty($params['to'])) {
+        if ($home) {
+            $services = false;
+        } elseif (!empty($params['to'])) {
             if (!empty($params['from']) || !empty($params['type'])) {
                 if ($result = $this->request('ems.calculate', $params)) {
 
@@ -68,6 +77,9 @@ class emsruShipping extends waShipping
                     $rate = doubleval(ifset($result['price'], 0));
                     if (doubleval($this->surcharge) > 0) {
                         $rate += $this->getTotalPrice() * doubleval($this->surcharge) / 100.0;
+                    }
+                    if (doubleval($this->fixed_surcharge) > 0) {
+                        $rate += $this->fixed_surcharge;
                     }
                     $services['main'] = array(
                         'rate'         => $rate,
