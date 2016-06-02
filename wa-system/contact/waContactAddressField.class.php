@@ -76,7 +76,7 @@ class waContactAddressField extends waContactCompositeField
             'sensor'  => 'false'
         );
         $url = $url.'?'.http_build_query($params);
-        $timeout = 25;
+        $timeout = 9;
         if (function_exists('curl_init')) {
             $ch = curl_init($url);
             curl_setopt($ch, CURLOPT_HEADER, 0);
@@ -129,6 +129,8 @@ class waContactAddressField extends waContactCompositeField
                 } else if ($response['status'] == "OVER_QUERY_LIMIT") {
                     $sm->set($app_id, $name, time());
                 }
+            } else {
+                $sm->set($app_id, $name, time());
             }
         }
         return $value;

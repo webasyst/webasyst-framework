@@ -81,10 +81,10 @@ HELP;
                     $this->type = ifset($matches[3], 'app');
                     $this->app_id = $matches[1];
                     $this->extension_id = ifset($matches[4]);
-                } elseif (preg_match("@^wa-plugins/(payment|shipping|sms)/({$id_pattern})$@", $slug, $matches)) {
-                    $this->app_id = 'wa-plugins';
-                    $this->type = $matches[1];
-                    $this->extension_id = $matches[2];
+                } elseif (preg_match("@^(wa-plugins/(payment|shipping|sms))/({$id_pattern})$@", $slug, $matches)) {
+                    $this->app_id = $matches[1];
+                    $this->type = $matches[2];
+                    $this->extension_id = $matches[3];
                 } else {
                     throw new Exception("invalid SLUG");
                 }
@@ -192,10 +192,12 @@ HELP;
             case 'payment':
                 $namespace = $this->extension_id.ucfirst($this->type);
                 $this->path = wa()->getConfig()->getPath('plugins').'/'.$this->type.'/'.$this->extension_id;
+                $type = 'plugin';
                 break;
             case 'sms':
                 $namespace = $this->extension_id.strtoupper($this->type);
                 $this->path = wa()->getConfig()->getPath('plugins').'/'.$this->type.'/'.$this->extension_id;
+                $type = 'plugin';
                 break;
             default:
                 throw new waException('Unknown type '.$this->type);
@@ -506,15 +508,28 @@ HELP;
                         'rights',
                     )
                 );
-                if ($this->app_id == 'shop') {
-                    $available = array_merge(
-                        $available,
-                        array(
-                            'shop_settings',
-                            'importexport',
-                            'export_profile',
-                        )
-                    );
+                switch ($this->app_id) {
+                    case 'shop':
+                        $available = array_merge(
+                            $available,
+                            array(
+                                'shop_settings',
+                                'importexport',
+                                'export_profile',
+                            )
+                        );
+                        break;
+                    case 'wa-plugins/shipping':
+                        $available = array_merge(
+                            $available,
+                            array(
+                                'external_tracking',
+                                'external',
+                            )
+                        );
+                        break;
+                    default:
+                        break;
                 }
                 break;
         }
@@ -666,6 +681,7 @@ HELP;
             array('pipe', 'w'),//stdout
             array('pipe', 'w'),//stderr
         );
+        $pipes = array();
         $process = proc_open($command, $descriptor_spec, $pipes);
         $lines = preg_split("@[\r\n]+@", stream_get_contents($pipes[1]));
         $res = stream_get_contents($pipes[2]);

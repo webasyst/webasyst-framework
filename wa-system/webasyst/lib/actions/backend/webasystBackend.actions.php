@@ -28,48 +28,7 @@ class webasystBackendActions extends waViewActions
         $locale = wa()->getUser()->getLocale();
 
         // Create dashboard widgets on first login
-        if (!wa()->getUser()->getSettings('webasyst', 'dashboard')) {
-            $apps = wa()->getApps(true);
-            $widgets = array();
-            foreach ($apps as $app_id => $app) {
-                if (($app_id == 'webasyst') || $this->getUser()->getRights($app_id, 'backend')) {
-                    foreach (wa($app_id)->getConfig()->getWidgets() as $w_id => $w) {
-                        if (!empty($w['rights'])) {
-                            if (!waWidget::checkRights($w['rights'])) {
-                                continue;
-                            }
-                        }
-                        if (!empty($w['locale']) && ($w['locale'] != $locale)) {
-                            continue;
-                        }
-                        $widgets[] = $w;
-                    }
-                }
-            }
-            $block = 0;
-            $contact_id = wa()->getUser()->getId();
-            foreach ($widgets as $w) {
-                $max_size = $w['sizes'][0];
-                foreach ($w['sizes'] as $s) {
-                    if ($s[0] + $s[1] > $max_size[0] + $max_size[1]) {
-                        $max_size = $s;
-                    }
-                }
-
-                $row = array(
-                    'app_id' => $w['app_id'],
-                    'widget' => $w['widget'],
-                    'name' => $w['name'],
-                    'block' => $block++,
-                    'sort' => 0,
-                    'size' => $max_size[0] . 'x' . $max_size[1],
-                    'contact_id' => $contact_id,
-                    'create_datetime' => date('Y-m-d H:i:s')
-                );
-                $widget_model->insert($row);
-            }
-            wa()->getUser()->setSettings('webasyst', 'dashboard', 1);
-        }
+        wa('webasyst')->getConfig()->initUserWidgets();
 
         // fetch widgets
         $rows = $widget_model->getByContact($this->getUserId());

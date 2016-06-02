@@ -30,6 +30,15 @@ class waSMS
         }
     }
 
+    public static function adapterExists($from = null)
+    {
+        try {
+            $sms = new self();
+            return !!$sms->getAdapter($from);
+        } catch (Exception $e) {
+            return false;
+        }
+    }
 
     /**
      * @param string $from

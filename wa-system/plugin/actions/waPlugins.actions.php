@@ -86,9 +86,12 @@ class waPluginsActions extends waActions
             $files = waRequest::file($namespace);
             $settings_definitions = $plugin->getSettings();
             foreach ($files as $name => $file) {
-                if (isset($settings_definitions[$name])
-                    && !empty($settings_definitions[$name]['control_type'])
-                    && ($settings_definitions[$name]['control_type'] == waHtmlControl::FILE)
+                if (true
+                    || #TODO use this check in future
+                    (isset($settings_definitions[$name])
+                        && !empty($settings_definitions[$name]['control_type'])
+                        && ($settings_definitions[$name]['control_type'] == waHtmlControl::FILE)
+                    )
                 ) {
                     $settings[$name] = $file;
                 }

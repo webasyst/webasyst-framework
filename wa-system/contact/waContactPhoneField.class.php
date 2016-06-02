@@ -55,8 +55,10 @@ class waContactPhoneField extends waContactStringField
     public function format($data, $format = null)
     {
         $data = parent::format($data, $format);
-
-        if ($format && in_array('html', explode(',', $format))) {
+        if ($format && !is_array($format)) {
+            $format = explode(',', $format);
+        }
+        if ($format && in_array('html', $format)) {
             if ($this->isMulti()) {
                 if (is_array($data)) {
                     $result = htmlspecialchars($data['value']);

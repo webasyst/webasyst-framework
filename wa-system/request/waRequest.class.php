@@ -309,13 +309,8 @@ class waRequest
         if (isset($data[$name])) {
             return $type ? self::cast($data[$name], $type) : $data[$name];
         } else {
-            return self::getDefault($default);
+            return $default;
         }
-    }
-
-    protected static function getDefault(&$default)
-    {
-        return is_array($default) && $default ? array_shift($default) : $default;
     }
 
     /**

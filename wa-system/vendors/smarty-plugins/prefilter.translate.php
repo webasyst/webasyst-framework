@@ -15,6 +15,9 @@ function smarty_gettext_s_translate($matches)
 
 function smarty_prefilter_translate($source, &$smarty)
 {
-    $source = preg_replace_callback("/\[\`([^\`]+)\`\]/usi", "smarty_gettext_translate", $source);
-    return preg_replace_callback("/\[s\`([^\`]+)\`\]/usi", "smarty_gettext_s_translate", $source);
+    $mid_result = preg_replace_callback("/\[\`([^\`]+)\`\]/usi", "smarty_gettext_translate", $source);
+    if ($mid_result === null) {
+        return $source;
+    }
+    return preg_replace_callback("/\[s\`([^\`]+)\`\]/usi", "smarty_gettext_s_translate", $mid_result);
 }

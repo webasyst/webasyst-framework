@@ -628,7 +628,9 @@ class waFiles
                         }
                     }
 
-                    $response->addHeader("Cache-Control", "no-cache, must-revalidate");
+                    if (!$response->getHeader("Cache-Control")) {
+                        $response->addHeader("Cache-Control", "no-cache, must-revalidate");
+                    }
                     $response->addHeader("Content-type", "{$file_type}");
                     $response->addHeader("Content-Disposition", "attachment; filename=\"{$send_as}\"");
                     $response->addHeader("Last-Modified", filemtime($file));
@@ -667,7 +669,9 @@ class waFiles
                     $response->addHeader("Accept-Ranges", "bytes");
                     $response->addHeader("Content-Length", $file_size);
                     $response->addHeader("Expires", "0");
-                    $response->addHeader("Cache-Control", "no-cache, must-revalidate", false);
+                    if (!$response->getHeader("Cache-Control")) {
+                        $response->addHeader("Cache-Control", "no-cache, must-revalidate");
+                    }
                     $response->addHeader("Pragma", "public");
                     $response->addHeader("Connection", "close");
                     if ($md5) {

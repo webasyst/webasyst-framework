@@ -25,7 +25,7 @@ class waContactInfoStorage extends waContactStorage
         }
         return $this->model;
     }
-    
+
     public function load(waContact $contact, $fields = null)
     {
         $this->getModel();
@@ -46,6 +46,11 @@ class waContactInfoStorage extends waContactStorage
         if ($contact->getId()) {
             return $this->model->updateById($contact->getId(), $fields);
         } else {
+            // Avoid SQL strict mode complains about
+            // `name` field not having a default value.
+            if (!isset($fields['name'])) {
+                $fields['name'] = '';
+            }
             return $this->model->insert($fields);
         }
     }

@@ -157,6 +157,9 @@ function wa_dump_helper(&$value, &$level_arr = array(), $cli = null)
         $result = var_export($value, true);
         if (!$cli) {
             $result = htmlspecialchars($result);
+            if (!strlen($result)) {
+                $result = '&lt;encoding problems&gt;';
+            }
         }
         return $result;
     }
