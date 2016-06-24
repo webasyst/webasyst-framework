@@ -1,13 +1,14 @@
 <?php
 return array(
-    'api_login'        => array(
+    #api
+    'api_login'    => array(
         'value'        => '',
         'placeholder'  => '',
         'control_type' => waHtmlControl::INPUT,
         'title'        => 'Логин для API Почта России',
         'description'  => 'Чтобы получить логин, необходимо зарегистрироваться на сайте <a href="https://tracking.pochta.ru/" target="_blank">Почты Россиии<i class="icon16 new-window"></i></a>.<br/><br/>',
     ),
-    'api_password'     => array(
+    'api_password' => array(
         'value'        => '',
         'placeholder'  => '',
         'control_type' => waHtmlControl::INPUT,
@@ -17,6 +18,9 @@ return array(
 HTML
         ,
     ),
+
+    #parcel
+
     'region'           => array(
         'value'        => array(
             '22' => array('zone' => 3, 'avia_only' => false), /*Алтайский край*/
@@ -109,10 +113,10 @@ HTML
         'control_type' => 'RegionRatesControl',
     ),
     'exclude_cities'   => array(
-        'value'       => '',
-        'title'       => 'Не доставлять в города',
-        'description' => 'Названия городов через запятую (например, город магазина)',
-		'control_type' => waHtmlControl::INPUT,
+        'value'        => '',
+        'title'        => 'Не доставлять в города',
+        'description'  => 'Названия городов через запятую (например, город магазина)',
+        'control_type' => waHtmlControl::INPUT,
     ),
     'halfkilocost'     => array(
         'value'        => array(1 => 150.90, 2 => 185.0, 3 => 193.10, 4 => 233.60, 5 => 261.00,),
@@ -127,48 +131,206 @@ HTML
         'control_type' => 'WeightCosts',
     ),
 
-    'air'                        => array(
+    'air'     => array(
         'value'        => '295.00',
         'title'        => 'Надбавка за отправление «Авиа» (руб.)',
         'description'  => 'Укажите стоимость в рублях',
         'control_type' => waHtmlControl::INPUT,
     ),
-    'caution'                    => array(
+    'caution' => array(
         'value'        => '',
         'title'        => 'Все посылки отправляются с отметкой «Осторожно»',
         'description'  => '',
         'control_type' => waHtmlControl::CHECKBOX,
     ),
-    'max_weight'                 => array(
+
+    'max_weight' => array(
         'value'        => '20',
         'title'        => 'Максимальный вес отправления',
         'description'  => 'Укажите вес в килограммах',
         'control_type' => waHtmlControl::INPUT,
     ),
+
     'complex_calculation_weight' => array(
         'value'        => '10',
         'title'        => 'Вес усложненной тарификации',
         'description'  => 'Укажите вес в килограммах, начиная с которого к стоимости доставки посылки прибавляется 30% (согласно правилам усложненной тарификации Почты России)',
         'control_type' => waHtmlControl::INPUT,
     ),
-    'commission'                 => array(
+
+    'commission' => array(
         'value'        => '4',
         'title'        => 'Плата за сумму объявленной ценности посылки (%)',
         'description'  => 'Укажите размер комиссии в процентах. Например, укажите 4, если с каждого рубля взимается 4 копейки.',
         'control_type' => waHtmlControl::INPUT,
     ),
 
-    'extra_charge' => array(
+    'extra_charge'       => array(
         'value'        => 0,
         'title'        => 'Надбавка фиксированная (руб.)',
         'description'  => 'Указанная сумма будет добавлена к общей рассчитанной стоимости доставки.',
         'control_type' => waHtmlControl::INPUT,
+		'description'  => '<br/><br/><br/><br/>',
+    ),	
+	
+    #bookpost
+
+    'bookpost' => array(
+        'value'        => 'none',
+        'title'        => 'Отправлять бандероли',
+        'control_type' => waHtmlControl::RADIOGROUP,
+        'options'      => array(
+            'none'     => 'Не отправлять',
+            'simple'   => 'Простые',
+            'ordered'  => 'Заказные',
+            'declared' => 'С объявленной ценностью',
+        ),
+        'description'  => '«Если вы включили выше отправку бандеролей, то все заказы стоимостью менее 10 000 руб. и весом менее максимального (не может превышать 2 кг) будут отправляться бандеролями, а не посылками.',
     ),
 
+    'bookpost_max_weight' => array(
+        'value'        => '1.9',
+        'title'        => '«Максимальный вес заказа для отправки бандеролью (кг)',
+        'description'  => 'Укажите вес в килограммах',
+        'control_type' => waHtmlControl::INPUT,
+    ),
+
+    'bookpost_simple_cost' => array(
+        'value'        => '43.66',
+        'title'        => 'Стоимость отправки бандероли весом 0,1 кг',
+        'description'  => '',
+        'class'        => 'russianpost_bookpost russianpost_simple',
+        'control_type' => waHtmlControl::INPUT,
+    ),
+
+    'bookpost_weight_simple_cost' => array(
+        'value'        => '2.95',
+        'title'        => 'Стоимость отправки каждых 0,02 кг',
+        'description'  => '',
+        'class'        => 'russianpost_bookpost russianpost_simple',
+        'control_type' => waHtmlControl::INPUT,
+    ),
+
+    'bookpost_ordered_cost' => array(
+        'value'        => '62.54',
+        'title'        => 'Стоимость отправки бандероли весом 0,1 кг',
+        'description'  => '',
+        'class'        => 'russianpost_bookpost russianpost_ordered',
+        'control_type' => waHtmlControl::INPUT,
+    ),
+
+    'bookpost_weight_ordered_cost' => array(
+        'value'        => '2.95',
+        'title'        => 'Стоимость отправки каждых 0,02 кг',
+        'description'  => '',
+        'class'        => 'russianpost_bookpost russianpost_ordered',
+        'control_type' => waHtmlControl::INPUT,
+    ),
+
+    'bookpost_weight_declared_cost' => array(
+        'value'        => array(1 => 82.60, 2 => 88.50, 3 => 94.40, 4 => 100.30, 5 => 118.00,),
+        'title'        => 'Стоимость отправки каждых 0.5 килограмм бандероли с объявленной ценностью',
+        'description'  => '',
+        'class'        => 'russianpost_bookpost russianpost_declared',
+        'control_type' => 'WeightCosts',
+    ),
+
+    'bookpost_declared_commission' => array(
+        'value'        => '4',
+        'title'        => 'Плата за сумму объявленной ценности бандероли (%)',
+        'description'  => 'Укажите размер комиссии в процентах. Например, укажите 4, если с каждого рубля взимается 4 копейки.',
+        'class'        => 'russianpost_bookpost russianpost_declared',
+        'control_type' => waHtmlControl::INPUT,
+    ),
+
+    'bookpost_air' => array(
+        'value'        => '134.00',
+        'title'        => 'Надбавка за отправление «Авиа» для бандероли(руб.)',
+        'description'  => 'Укажите стоимость в рублях<br/><br/><br/><br/>',
+        'class'        => 'russianpost_bookpost russianpost_declared',
+        'control_type' => waHtmlControl::INPUT,
+    ),
+
+    #dleivery date
     'delivery_date_show' => array(
         'value'        => true,
         'title'        => 'Показывать приблизительные сроки доставки',
-        'description'  => '',
+        'description'  => <<<HTML
+<script type="text/javascript">
+(function () {
+    "use strict";
+    var russianpost = {
+        form: null,
+        delivery_date_show: null,
+        bookpost_type: null,
+        bookpost_fields: null,
+
+        bind: function () {
+            var delivery_date = $(':input[name$="\[delivery_date_show\]"]:first');
+
+
+            this.form = delivery_date.parents('form:first');
+
+            var bookpost_type = this.form.find(':input[name$="\[bookpost\]"]');
+
+            var self = this;
+
+            delivery_date.unbind('change').bind('change', function (event) {
+                if (self.delivery_date_show == null) {
+                    self.delivery_date_show = self.form.find('.russianpost_delivery_date_show').parents('div.field');
+                }
+                self.toggle(self.delivery_date_show, event, this.checked)
+            }).trigger('change');
+
+            bookpost_type.unbind('change').bind('change', function (event) {
+                self.changeBookpost(event, this)
+            }).trigger('change');
+        },
+
+        changeBookpost: function (event, element) {
+            if (element.checked) {
+                var slow = event.originalEvent;
+                if (this.bookpost_fields == null) {
+                    this.bookpost_fields = this.form.find('.russianpost_bookpost');
+                }
+                this.hide(this.bookpost_fields.filter(':not(.russianpost_' + element.value + ')').parents('div.field'), slow);
+                this.show(this.bookpost_fields.filter('.russianpost_' + element.value).parents('div.field'), slow);
+            }
+        },
+
+        toggle: function (item, event, show) {
+            if (show === null) {
+                show = !item.is(':visible');
+            }
+            if (show) {
+                this.show(item, event.originalEvent)
+            } else {
+                this.hide(item, event.originalEvent)
+            }
+        },
+        show: function (item, slow) {
+            if (slow) {
+                item.slideDown();
+            } else {
+                item.show();
+            }
+
+        },
+        hide: function (item, slow) {
+            if (slow) {
+                item.slideUp();
+            } else {
+                item.hide();
+            }
+        }
+    };
+
+    russianpost.bind();
+
+})();
+</script>
+HTML
+        ,
         'control_type' => waHtmlControl::CHECKBOX,
     ),
 
@@ -177,17 +339,19 @@ HTML
         'title'        => 'Приблизительный минимальный срок доставки',
         'description'  => 'Укажите число дней',
         'control_type' => waHtmlControl::INPUT,
+        'class'        => 'russianpost_delivery_date_show',
     ),
 
     'delivery_date_max' => array(
         'value'        => 14,
         'title'        => 'Приблизительный максимальный срок доставки',
-        'description'  => 'Укажите число дней',
+        'description'  => 'Укажите число дней<br/><br/><br/><br/>',
         'control_type' => waHtmlControl::INPUT,
+        'class'        => 'russianpost_delivery_date_show',
     ),
 
-
-    'company_name' => array(
+    #sender
+    'company_name'      => array(
         'value'        => '',
         'title'        => 'Получатель наложенного платежа (магазин)',
         'description'  => 'Для юридического лица — полное или краткое наименование; для гражданина — ФИО полностью.',
@@ -217,6 +381,13 @@ HTML
         'value'        => '',
         'title'        => 'Индекс получателя наложенного платежа (магазина)',
         'description'  => 'Индекс должен состоять ровно из 6 цифр.',
+        'control_type' => 'text',
+    ),
+    'phone'               => array(
+        'value'        => '',
+        'title'        => 'Телефон отправителя (магазина)',
+        'description'  => '',
+        'placeholder'  => '+7(123)123-45-67',
         'control_type' => 'text',
     ),
     'inn'                 => array(
@@ -250,7 +421,6 @@ HTML
         'control_type' => 'text',
     ),
 
-
     'document' => array(
         'value'        => '',
         'title'        => 'Документ (магазина)',
@@ -265,14 +435,12 @@ HTML
         'control_type' => 'text',
     ),
 
-
     'document_number' => array(
         'value'        => '',
         'title'        => 'Номер документа (магазина)',
         'description'  => 'Номер документа получателя наложенного платежа.',
         'control_type' => 'text',
     ),
-
 
     'document_issued_day' => array(
         'value'        => '',
@@ -281,14 +449,12 @@ HTML
         'control_type' => 'text',
     ),
 
-
     'document_issued_month' => array(
         'value'        => '',
         'title'        => 'Дата выдачи документа, месяц (магазина)',
         'description'  => 'Дата выдачи документа получателя наложенного платежа (месяц, две цифры).',
         'control_type' => 'text',
     ),
-
 
     'document_issued_year' => array(
         'value'        => '',
@@ -297,14 +463,12 @@ HTML
         'control_type' => 'text',
     ),
 
-
     'document_issued' => array(
         'value'        => '',
         'title'        => 'Кем выдан документ (магазина)',
         'description'  => 'Название организации, выдавшей документ',
         'control_type' => 'text',
     ),
-
 
     'color' => array(
         'value'        => '1',

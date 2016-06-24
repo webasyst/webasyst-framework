@@ -37,35 +37,12 @@ img {
 </style>
 <script type="text/javascript">{literal}
 <!--
-function show(node,hide_id,show_id){
-    var hide_node;
-    if(hide_node = document.getElementById(hide_id)){
-        hide_node.style.display = 'none';
-    }
-    var load_node;
-    if(load_node = document.getElementById('load_div')){
-        load_node.style.display = '';
-    }
-    var image_node;
-    if(image_node = document.getElementById('image')){
-        image_node.src = node.href;
-        image_node.style.display = 'none';
-    image_node.parentNode.href = node.href;
-    image_node.parentNode.style.display = 'none';
-        image_node.onload = function(){load(show_id);}
-    }
-    return false;
-}
 
-function load(show_id){
-    var show_node;
-    if(show_node = document.getElementById(show_id)){
-        show_node.style.display = '';
-    }
+function load(){
     var image_node;
     if(image_node = document.getElementById('image')){
         image_node.style.display = '';
-    image_node.parentNode.style.display = 'block';
+        image_node.parentNode.style.display = 'block';
     }
     var load_node;
     if(load_node = document.getElementById('load_div')){
@@ -81,16 +58,7 @@ function load(show_id){
 {$wa->csrf()}
 <table>
     <tr><td colspan="2"><h2>Форма №116 <span class="hint">Сопроводительный адрес к посылке</span></h2></td></tr>
-    <tr>
-        <td>Сумма объявленной ценности</td>
-        <td><input size="80" type="text" name="order_price"
-            value="{$order.total|wa_format_amount:$order.currency:'words'}" /></td>
-    </tr>
-    <tr>
-        <td>Сумма наложенного платежа</td>
-        <td><input size="80" type="text" name="order_amount"
-            value="{$order.total|wa_format_amount:$order.currency:'words'}" /></td>
-    </tr>
+
     <tr>
         <td>Сумма объявленной ценности (цифрами)</td>
         <td><input type="text" name="order_price_d"
@@ -102,10 +70,10 @@ function load(show_id){
             value="{$order.total|wa_format_amount:$order.currency}" /></td>
     </tr>
 
-	<tr>
+    <tr>
         <td colspan="2"><strong><br/><br/>Получатель заказа:</strong></td>
     </tr>
-	
+
     <tr>
         <td>ФИО</td>
         <td><input size="80" type="text" name="shipping_name"
@@ -122,21 +90,21 @@ function load(show_id){
             value="{$order.shipping_address.zip|escape:'html'}" /></td>
     </tr>
 
-	<tr>
+    <tr>
         <td colspan="2"><strong><br/><br/>Отправитель (магазин):</strong></td>
     </tr>
-	
+
     <tr>
         <td>Документ</td>
-        <td><input type="text" name="document" value="{$settings.document|escape}" placeholder="паспорт"></td>
+        <td><input type="text" name="document" value="{$settings.document|default:''|escape}" placeholder="паспорт"></td>
     </tr>
     <tr>
         <td>Серия документа</td>
-        <td><input type="text" name="document_number" value="{$settings.document_number|escape}"></td>
+        <td><input type="text" name="document_series" value="{$settings.document_series|default:''|escape}"></td>
     </tr>
     <tr>
         <td>Номер документа</td>
-        <td><input type="text" name="document" value="{$settings.document|escape}"></td>
+        <td><input type="text" name="document_number" value="{$settings.document_number|default:''|escape}"></td>
     </tr>
     <tr>
         <td>Дата выдачи документа</td>
@@ -149,14 +117,11 @@ function load(show_id){
         </td>
     </tr>
     <tr>
-        <td>Документ выдан</td>
+        <td>Кем выдан документ</td>
         <td><input type="text" name="document_issued" value="{$settings.document_issued|escape}"></td>
     </tr>
-
-    <tr>
-        <td>Почтовый индекс</td>
-        <td><input type="text" name="shipping_zip"
-                   value="{$order.shipping_address.zip|escape:'html'}" /></td>
+	<tr>
+        <td colspan="2">Эти данные также можно отредактировать в настройках плагина Почта России.</td>
     </tr>
     <tr>
         <td>&nbsp;</td>
@@ -167,21 +132,13 @@ function load(show_id){
 {else}
 <form action="" class="noprint">
     <input id="print_button" type="button" src="{$wa_url}wa-plugins/shipping/russianpost/img/printer-icon.gif" value="Печать" onclick="window.print();return false;"/>
-</form> {*relative path from frontend*}
-<div id="front_div" class="noprint" style="display:none;"><span
-    style="background-color: #ffc" class="noprint">Лицевая сторона формы №116</span> &nbsp;&nbsp; <a href="?{$src_back}" title=""
-    class="noprint" onclick="return show(this,'front_div','back_div');">Оборот формы №116</a>
-</div>
+</form>
 
-<div id="back_div" class="noprint" style="display:none;"><a
-    id="edit_front_link" href="?{$src_front}"
-    title="" class="noprint"
-    onclick="return show(this,'back_div','front_div');">Лицевая сторона формы №116</a> &nbsp;&nbsp; <span style="background-color: #ffc" class="noprint">Оборот формы №116</span></div>
 
 <div id="load_div" class="noprint">Формирование бланка...</div>
 <p>
 <a href="?{$src_front}" target="_blank" title="" style="display:none;border:0" >
-<img width="100%" id="image" src="?{$src_front}" alt=""    title="" onload="load('front_div');" />
+<img width="100%" id="image" src="?{$src_front}" alt=""    title="" onload="load();" />
 </a>
 </p>
 {/if}
