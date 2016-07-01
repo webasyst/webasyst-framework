@@ -436,11 +436,23 @@ class waHtmlControl
 
     private function getTextareaControl($name, $params = array())
     {
+        $allowed_params = array(
+            'class',
+            'style',
+            'cols',
+            'rows',
+            'wrap',
+            'id',
+            'placeholder',
+            'readonly',
+            'autofocus',
+            'disabled'
+            );
         $control = '';
         $control_name = htmlentities($name, ENT_QUOTES, self::$default_charset);
         $value = htmlentities((string)$params['value'], ENT_QUOTES, self::$default_charset);
         $control .= "<textarea name=\"{$control_name}\"";
-        $control .= self::addCustomParams(array('class', 'style', 'cols', 'rows', 'wrap', 'id', 'placeholder', 'readonly', 'autofocus',), $params);
+        $control .= self::addCustomParams($allowed_params, $params);
         $control .= ">{$value}</textarea>";
 
         if (empty($params['wysiwyg']) && !empty($params['wisywig'])) {
