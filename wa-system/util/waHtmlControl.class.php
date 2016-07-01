@@ -605,7 +605,7 @@ HTML;
             $option_value = htmlentities((string)$option_value, ENT_QUOTES, self::$default_charset);
             $control .= "<option value=\"{$option_value}\"";
             $control .= self::addCustomParams(array('selected'), $params);
-            $control .= self::addCustomParams(array('class', 'style', 'description' => 'title',), $option);
+            $control .= self::addCustomParams(array('class', 'style', 'description' => 'title', 'disabled'), $option);
             $option_title = htmlentities(self::_wp(ifset($option['title'], $option_value), $params), ENT_QUOTES, self::$default_charset);
             $control .= ">{$option_title}</option>\n";
         }
