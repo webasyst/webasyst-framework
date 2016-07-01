@@ -429,7 +429,7 @@ class waHtmlControl
         $control = '';
         $control_name = htmlentities($name, ENT_QUOTES, self::$default_charset);
         $control .= "<input type=\"file\" name=\"{$control_name}\" ";
-        $control .= self::addCustomParams(array('class', 'style', 'size', 'maxlength', 'value', 'id'), $params);
+        $control .= self::addCustomParams(array('class', 'style', 'size', 'maxlength', 'value', 'id', 'disabled'), $params);
         $control .= ">";
         return $control;
     }
