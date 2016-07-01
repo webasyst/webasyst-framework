@@ -719,7 +719,7 @@ HTML;
         $params['namespace'] = $namespace = self::makeNamespace($params);
         $contact = wa()->getUser();
         $values = isset($params['value']) ? (array)$params['value'] : array();
-        $custom_params = array('class', 'style', 'placeholder', 'id', 'readonly',);
+        $custom_params = array('class', 'style', 'placeholder', 'id', 'readonly', 'disabled');
         $id = 0;
         foreach ((array)$params['options'] as $field) {
             $params['namespace'] = $namespace;
