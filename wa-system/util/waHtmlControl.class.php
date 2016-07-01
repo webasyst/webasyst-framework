@@ -552,7 +552,7 @@ HTML;
                 $option_title = htmlentities(self::_wp($option['title'], $params), ENT_QUOTES, self::$default_charset);
                 $control .= ">&nbsp;<label";
                 $control .= self::addCustomParams(array('id' => 'for',), $params);
-                $control .= self::addCustomParams(array('description' => 'title', 'class', 'style',), $option);
+                $control .= self::addCustomParams(array('description' => 'title', 'class', 'style', 'disabled'), $option);
                 $control .= ">{$option_title}</label>\n";
             } else {
                 $control .= ">\n";
