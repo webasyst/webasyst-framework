@@ -508,10 +508,22 @@ HTML;
      */
     private function getPasswordControl($name, $params = array())
     {
+        $allowed_params = array(
+            'class',
+            'style',
+            'size',
+            'maxlength',
+            'value',
+            'id',
+            'placeholder',
+            'readonly',
+            'autofocus',
+            'disabled'
+        );
         $control = '';
         $control_name = htmlentities($name, ENT_QUOTES, self::$default_charset);
         $control .= "<input type=\"password\" name=\"{$control_name}\"";
-        $control .= self::addCustomParams(array('class', 'style', 'size', 'maxlength', 'value', 'id', 'placeholder', 'readonly', 'autofocus'), $params);
+        $control .= self::addCustomParams($allowed_params, $params);
         $control .= ">";
         return $control;
     }
