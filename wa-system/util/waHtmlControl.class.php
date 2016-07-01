@@ -701,7 +701,7 @@ HTML;
             $control .= ">";
         }
         $control .= "<input type=\"checkbox\" name=\"{$name}\"";
-        $control .= self::addCustomParams(array('value', 'class', 'style', 'checked', 'id', 'title', 'readonly',), $params);
+        $control .= self::addCustomParams(array('value', 'class', 'style', 'checked', 'id', 'title', 'readonly', 'disabled'), $params);
         $control .= ">";
         if (isset($params['label']) && $params['label']) {
             $control .= '&nbsp;'.htmlentities(self::_wp($params['label'], $params), ENT_QUOTES, self::$default_charset)."</label>";
