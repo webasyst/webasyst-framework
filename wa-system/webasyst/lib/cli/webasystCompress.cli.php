@@ -506,6 +506,7 @@ HELP;
                     array(
                         'handlers',
                         'rights',
+                        'custom_settings',
                     )
                 );
                 switch ($this->app_id) {
