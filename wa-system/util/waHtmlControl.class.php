@@ -404,6 +404,7 @@ class waHtmlControl
             'value',
             'placeholder',
             'readonly',
+            'disabled',
             'autocomplete',
             'autofocus',
             'format'             => 'data-regexp',
