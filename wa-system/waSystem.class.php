@@ -181,25 +181,29 @@ class waSystem
      * @param string $class
      * @param array $options
      * @param mixed $first_param
-     * @return mixed
+     * @return object
      */
-    protected function getFactory($name, $class, $options = array(), $first_param = false)
+    protected function getFactory($name, $class, array $options = array(), $first_param = false)
     {
-        if ($config = $this->getConfig()->getFactory($name)) {
-            if (is_array($config)) {
-                $class = $config[0];
-                $options = isset($config[1]) ? $config[1] : $options;
-            } else {
-                $class = $config;
-            }
-        }
         if (!isset($this->factories[$name])) {
+            if ($config = $this->getConfig()->getFactory($name)) {
+                if (is_array($config)) {
+                    $class = $config[0];
+                    if (isset($config[1])) {
+                        $options = array_merge((array)$config[1], $options);
+                    }
+                } else {
+                    $class = $config;
+                }
+            }
+            
             if ($first_param !== false) {
                 $this->factories[$name] = new $class($first_param, $options);
             } else {
                 $this->factories[$name] = new $class($options);
             }
         }
+        
         return $this->factories[$name];
     }
 
