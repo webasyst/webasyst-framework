@@ -165,14 +165,14 @@ HTML
         'control_type' => waHtmlControl::INPUT,
     ),
 
-    'extra_charge'       => array(
+    'extra_charge' => array(
         'value'        => 0,
         'title'        => 'Надбавка фиксированная (руб.)',
         'description'  => 'Указанная сумма будет добавлена к общей рассчитанной стоимости доставки.',
         'control_type' => waHtmlControl::INPUT,
-		'description'  => '<br/><br/><br/><br/>',
-    ),	
-	
+        'description'  => '<br/><br/><br/><br/>',
+    ),
+
     #bookpost
 
     'bookpost' => array(
@@ -206,7 +206,7 @@ HTML
     'bookpost_weight_simple_cost' => array(
         'value'        => '2.95',
         'title'        => 'Стоимость отправки каждых 0,02 кг',
-        'description'  => '',
+        'description'  => '<br/><br/><br/><br/>',
         'class'        => 'russianpost_bookpost russianpost_simple',
         'control_type' => waHtmlControl::INPUT,
     ),
@@ -222,7 +222,7 @@ HTML
     'bookpost_weight_ordered_cost' => array(
         'value'        => '2.95',
         'title'        => 'Стоимость отправки каждых 0,02 кг',
-        'description'  => '',
+        'description'  => '<br/><br/><br/><br/>',
         'class'        => 'russianpost_bookpost russianpost_ordered',
         'control_type' => waHtmlControl::INPUT,
     ),
@@ -243,7 +243,7 @@ HTML
         'control_type' => waHtmlControl::INPUT,
     ),
 
-    'bookpost_air' => array(
+    'bookpost_air'       => array(
         'value'        => '134.00',
         'title'        => 'Надбавка за отправление «Авиа» для бандероли(руб.)',
         'description'  => 'Укажите стоимость в рублях<br/><br/><br/><br/>',
