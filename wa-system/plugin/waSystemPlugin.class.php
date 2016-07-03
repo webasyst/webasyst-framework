@@ -543,6 +543,7 @@ abstract class waSystemPlugin
     public function uninstall($force = false)
     {
         $full_id = "{$this->type}_{$this->id}";
+        $info = array('type' => $this->type, 'id' => $this->id);
 
         // check uninstall.php
         $uninstall_script = $this->path.'/lib/config/uninstall.php';
@@ -573,6 +574,11 @@ abstract class waSystemPlugin
 
         // Remove cache of the application
         waFiles::delete(wa()->getAppCachePath('', 'webasyst'));
+
+        /**
+         * @event uninstall_system_plugin
+         */
+        wa()->event(array('webasyst', 'uninstall_system_plugin'), $info);
     }
 
     /**
