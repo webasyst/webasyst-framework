@@ -400,10 +400,31 @@ abstract class waSystemPlugin
     }
 
     /**
-     * @todo write smth
+     *
      */
     protected function install()
     {
+        $file_db = $this->path.'/lib/config/db.php';
+        if (file_exists($file_db)) {
+            $schema = include($file_db);
+            $model = new waModel();
+            $model->createSchema($schema);
+        }
+        // check install.php
+        $file = $this->path.'/lib/config/install.php';
+        if (file_exists($file)) {
+            include($file);
+            // clear db scheme cache, see waModel::getMetadata
+            try {
+                // remove files
+                $path = waConfig::get('wa_path_cache').'/db/';
+                waFiles::delete($path, true);
+            } catch (waException $e) {
+                waLog::log($e->__toString());
+            }
+            // clear runtime cache
+            waRuntimeCache::clearAll();
+        }
     }
 
     /**
