@@ -536,6 +536,46 @@ abstract class waSystemPlugin
     }
 
     /**
+     * @param bool $force
+     * @throws Exception
+     * @throws waException
+     */
+    public function uninstall($force = false)
+    {
+        $full_id = "{$this->type}_{$this->id}";
+
+        // check uninstall.php
+        $uninstall_script = $this->path.'/lib/config/uninstall.php';
+        if (file_exists($uninstall_script) && ($force === true)) {
+            try {
+                include($uninstall_script);
+            } catch (Exception $ex) {
+                if ($force) {
+                    waLog::log(sprintf("Error while uninstall %s plugin %s: %s", $this->type, $this->id, $ex->getMessage(), 'installer.log'));
+                } else {
+                    throw $ex;
+                }
+            }
+        }
+
+        $file_db = $this->path.'/lib/config/db.php';
+        if (file_exists($file_db)) {
+            $schema = include($file_db);
+            $model = new waModel();
+            foreach (array_keys($schema) as $table) {
+                $sql = "DROP TABLE IF EXISTS ".$table;
+                $model->exec($sql);
+            }
+        }
+        // Remove plugin settings
+        $app_settings_model = new waAppSettingsModel();
+        $app_settings_model->del("webasyst.".$full_id);
+
+        // Remove cache of the application
+        waFiles::delete(wa()->getAppCachePath('', 'webasyst'));
+    }
+
+    /**
      * Includes file with update
      *
      * @param string $file
