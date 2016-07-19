@@ -63,7 +63,11 @@ class waContact implements ArrayAccess
             } catch (waException $e) {
                 $l = null;
             }
-            self::$options['default']['locale'] = waRequest::getLocale($l);
+            if (!$l) {
+                $locales = waLocale::getAll(false);
+                $l = reset($locales);
+            }
+            self::$options['default']['locale'] = $l;
         }
         if (!isset(self::$options['default']['timezone'])) {
             self::$options['default']['timezone'] = @date_default_timezone_get();
@@ -754,10 +758,21 @@ class waContact implements ArrayAccess
      */
     public function getLocale()
     {
+        if ($this instanceof waAuthUser && wa()->getEnv() == 'frontend') {
+            // User selected specific locale (stored in session)?
+            if (wa()->getStorage()->get('locale')) {
+                return wa()->getStorage()->get('locale');
+            }
+            // Routing settlement has a locale setting?
+            if (waRequest::param('locale')) {
+                return waRequest::param('locale');
+            }
+        }
+
         if (!$this->id) {
             $locale = isset($this->data['locale']) ? $this->data['locale'] : null;
             if (!$locale) {
-                $locale = waRequest::get('lang');
+                $locale = waRequest::get('lang', null, 'string');
             }
         } else {
             if (isset(self::$cache[$this->id]['locale'])) {
@@ -766,23 +781,16 @@ class waContact implements ArrayAccess
                 $contact_model = new waContactModel();
                 $contact_info = $contact_model->getById($this->id);
                 $this->setCache($contact_info);
-                $locale = isset($contact_info['locale']) ? $contact_info['locale'] : '';
+                $locale = isset($contact_info['locale']) ? $contact_info['locale'] : null;
             }
         }
-        if (wa()->getEnv() == 'frontend') {
-            if (wa()->getStorage()->get('locale')) {
-                return wa()->getStorage()->get('locale');
-            }
-            if (waRequest::param('locale')) {
-                return waRequest::param('locale');
-            }
-        }
-        // try get locale by header Accept-Language (only for current user)
-        if (!$locale && $this instanceof waAuthUser) {
-            $locale = waRequest::getLocale();
-        }
+
         if (!$locale) {
             $locale = self::$options['default']['locale'];
+            if ($this instanceof waAuthUser) {
+                // Try to guess locale using Accept-Language request header
+                $locale = waRequest::getLocale($locale);
+            }
         }
         return $locale;
     }

@@ -77,13 +77,14 @@ class waException extends Exception
             return join("\n", $result);
         }
 
-        // HTTP response code
-        $response = new waResponse();
-        $response->setStatus(500);
-        if (($this->code < 600) && ($this->code >= 400)) {
-            $response->setStatus($this->code);
+        // Modify HTTP response code when exception propagated all the way up the stack.
+        $send_response_code = true;
+        if(function_exists('debug_backtrace')) {
+            $send_response_code = count(debug_backtrace()) <= 1;
         }
-        $response->sendHeaders();
+        if ($send_response_code) {
+            $this->sendResponseCode();
+        }
 
         // Error message in non-debug mode uses a separate file as a template
         if (!waSystemConfig::isDebug() && $wa) {
@@ -103,12 +104,20 @@ class waException extends Exception
             if (!$code || !file_exists(dirname(__FILE__).'/data/'.$code.'.php')) {
                 $file = 'error';
             }
-            if (file_exists(waConfig::get('wa_path_config').DIRECTORY_SEPARATOR.'exception'.DIRECTORY_SEPARATOR.$file.'.php')) {
-                include(waConfig::get('wa_path_config').DIRECTORY_SEPARATOR.'exception'.DIRECTORY_SEPARATOR.$file.'.php');
-            } else {
-                include(dirname(__FILE__).'/data/'.$file.'.php');
+            $file_candidates = array(
+                waConfig::get('wa_path_config').'/exception/'.$code.'.php',
+                waConfig::get('wa_path_config').'/exception/error.php',
+                dirname(__FILE__).'/data/'.$file.'.php',
+            );
+
+            foreach($file_candidates as $f) {
+                if (file_exists($f)) {
+                    ob_start();
+                    include($f);
+                    return ob_get_clean();
+                }
             }
-            exit;
+            return '';
         }
 
         // Error message in debug mode includes development info
@@ -149,5 +158,15 @@ HTML;
 
         }
         return $result;
+    }
+
+    public function sendResponseCode()
+    {
+        $response = new waResponse();
+        $response->setStatus(500);
+        if (($this->code < 600) && ($this->code >= 400)) {
+            $response->setStatus($this->code);
+        }
+        $response->sendHeaders();
     }
 }

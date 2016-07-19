@@ -14,8 +14,8 @@ class mailruAuth extends waOAuth2Adapter
     {
         return array(
             'app_id' => 'ID',
+            'app_private' => 'Приватный ключ',
             'app_secret' => 'Секретный ключ',
-            'app_private' => 'Приватный ключ'
         );
     }
 

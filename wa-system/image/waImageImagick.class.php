@@ -26,19 +26,18 @@ class waImageImagick extends waImage
      */
     public static function check()
     {
-        if (!extension_loaded('imagick'))
-        {
-            throw new waException(_ws('ImageMagick is not installed.'));
+        static $checked = null;
+        if ($checked === null) {
+            if (!extension_loaded('imagick') || !class_exists('Imagick')) {
+                throw new waException(_ws('ImageMagick is not installed.'));
+            }
         }
-
-        return self::$checked = true;
+        return $checked = true;
     }
 
     public function __construct($file)
     {
-        if (!self::$checked) {
-            self::check();
-        }
+        self::check();
         parent::__construct($file);
 
         $this->im = new Imagick;

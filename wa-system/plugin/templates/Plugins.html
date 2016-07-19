@@ -83,7 +83,11 @@
 
         ready: false,
         $menu: null,
+        /**
+         * @var Number
+         */
         timer: null,
+        xhr: null,
 
         init: function (options) {
             this.options = $.extend(this.options, options || { });
@@ -163,31 +167,42 @@
                 if ($plugin.length) {
                     var url = this.helper.getContentUrl($plugin, path);
                     if (url) {
-                        var self = this;
+                        this.path.plugin = path.plugin;
+
+                        if (this.xhr) {
+                            this.xhr.abort();
+                        }
+
                         $content.html(this.options.loading);
-                        $content.load(url, function () {
-                            self.path.plugin = path.plugin;
+                        var self = this;
+                        this.xhr = $.ajax({
+                            url: url,
+                            success: function (data) {
+                                self.xhr = null;
+                                if (self.path.plugin == path.plugin) {
+                                    $content.html(data);
+                                    // update title
+                                    if (self.path.plugin) {
+                                        document.title = self.options.plugin_names[self.path.plugin] + self.options.title_suffix;
+                                    } else {
+                                        document.title = $_('Plugins') + self.options.title_suffix;
+                                    }
 
-                            // update title
-                            if (self.path.plugin) {
-                                document.title = self.options.plugin_names[self.path.plugin] + self.options.title_suffix;
-                            } else {
-                                document.title = $_('Plugins') + self.options.title_suffix;
-                            }
+                                    self.$menu.find('li.selected').removeClass('selected');
+                                    var href = self.options.path + (self.path.plugin ? self.path.plugin + '/' : '');
+                                    self.$menu.find('a[href="' + href + '"]').parents('li').addClass('selected');
 
-                            self.$menu.find('li.selected').removeClass('selected');
-                            var href = self.options.path + (self.path.plugin ? self.path.plugin + '/' : '');
-                            self.$menu.find('a[href="' + href + '"]').parents('li').addClass('selected');
-
-                            if (!self.options.useIframeTransport) {
-                                $('#plugins-settings-form').submit(function () {
-                                    self.saveHandlerAjax(this);
-                                    return false;
-                                });
-                            } else {
-                                $('#plugins-settings-form').submit(function () {
-                                    self.saveHandlerIframe(this);
-                                });
+                                    if (!self.options.useIframeTransport) {
+                                        $('#plugins-settings-form').submit(function () {
+                                            self.saveHandlerAjax(this);
+                                            return false;
+                                        });
+                                    } else {
+                                        $('#plugins-settings-form').submit(function () {
+                                            self.saveHandlerIframe(this);
+                                        });
+                                    }
+                                }
                             }
 
                         });
@@ -267,7 +282,7 @@
         },
 
         message: function (status, message) {
-            /* enable previos disabled inputs */
+            /* enable previous disabled inputs */
 
             var $container = $('#plugins-settings-form-status');
             $container.empty().show();
@@ -326,16 +341,18 @@
         }
     };
 
+
     $.plugins.init({
         'loading': '{"[`Loading...`]<i class=\"icon16 loading\"></i>"|escape:'javascript'}',
         'title_suffix': ' — {$wa->accountName(false)|escape:'javascript'}',
         'plugin_names': {json_encode($plugin_names)}
     });
-    {if empty($is_ajax)}
-        $('#wa-plugin-list a').click(function  () {
-            $.plugins.dispatch($(this).attr('href'), true);
-        });
-    {/if}
+{if empty($is_ajax)}
+
+    $('#wa-plugin-list a').click(function  () {
+        $.plugins.dispatch($(this).attr('href'), true);
+    });
+{/if}
 })(jQuery);
 </script>
 {if !empty($shadowed)}</div>{/if}

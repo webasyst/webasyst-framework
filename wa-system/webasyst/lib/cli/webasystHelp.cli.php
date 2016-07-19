@@ -14,7 +14,7 @@ class webasystHelpCli extends waCliController
         }
 
         print "Available CLI actions:\n";
-        print implode("\n", $actions);
+        print implode("\n", $actions)."\n";
     }
 
     private static function replace($m)

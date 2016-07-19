@@ -65,7 +65,7 @@ class waAppConfig extends SystemConfig
                         $cache_adapter = new $cache_class($options);
                         $this->cache = new waCache($cache_adapter, $this->application);
                     } catch (waException $e) {
-                        waLog::log($e->getMessage());
+                        waLog::log($e->getMessage()." (".$e->getCode().")\n".$e->getTraceAsString());
                     }
                 }
             }
@@ -263,32 +263,45 @@ class waAppConfig extends SystemConfig
     {
         try {
             $app_settings_model = new waAppSettingsModel();
-            $time = $app_settings_model->get($this->application, 'update_time');
         } catch (waDbException $e) {
-            // Can't connect to MySQL server
-            if ($e->getCode() == 2002) {
-                throw $e;
-            } elseif (!empty($app_settings_model)) {
-                $time = null;
-                $row = $app_settings_model->getByField(array('app_id' => $this->application, 'name' => 'update_time'));
-                if ($row) {
-                    $time = $row['value'];
-                }
-            } elseif ($this->application != 'webasyst' && ($this->environment == 'frontend')) {
+            // 1146 = Table doesn't exist
+            if ($e->getCode() == 1146 && $this->application == 'webasyst') {
+                // First launch of the wramework with working db.php setup.
+                // $this->install() call below will create wa_* tables, then we'll be able
+                // to create and use models.
+            } elseif ($e->getCode() == 1146 && $this->application != 'webasyst' && $this->environment == 'frontend') {
+                // 'webasyst' system app is not automatically started in frontend (as opposed to backend).
+                // When framework is first launched via frontend, wa_* tables do not exist yet.
+                // So we launch the app to give it a chance to install properly.
                 wa('webasyst');
+                $app_settings_model = new waAppSettingsModel();
+            } else {
+                throw $e;
             }
         } catch (waException $e) {
-            return;
+            if ($e->getCode() == 600 && $this->application == 'webasyst') {
+                // wa-config/db.php file does not exist.
+                // This is part of initial configuration of the framework.
+                return;
+            } else {
+                throw $e;
+            }
+        }
+        if (!empty($app_settings_model)) {
+            $time = $app_settings_model->get($this->application, 'update_time', null);
         }
         if (empty($time)) {
             try {
                 $this->install();
             } catch (waException $e) {
-                waLog::log($e->__toString());
+                waLog::log("Error installing application ".$this->application." at first run:\n".$e->getMessage()." (".$e->getCode().")\n".$e->getTraceAsString());
                 throw $e;
             }
             $ignore_all = true;
             $time = null;
+            if (empty($app_settings_model)) {
+                $app_settings_model = new waAppSettingsModel();
+            }
         } else {
             $ignore_all = false;
         }
@@ -337,7 +350,7 @@ class waAppConfig extends SystemConfig
                         echo $e;
                     }
                     // log errors
-                    waLog::log($e->__toString());
+                    waLog::log("Error running update of ".$this->application.": {$file}\n".$e->getMessage()." (".$e->getCode().")\n".$e->getTraceAsString());
                     break;
                 }
             }

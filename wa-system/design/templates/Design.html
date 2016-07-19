@@ -29,7 +29,7 @@
                                     <span class="hint">{$_t.name}</span>
                                 </a>
                             </li>
-                            {if !empty($r.theme_mobile) && ($r.theme_mobile != $r.theme)}
+                            {if !empty($r.theme_mobile) && ($r.theme_mobile != $r.theme) && !empty($themes[$r.theme_mobile])}
                                 {$_t = $themes[$r.theme_mobile]}
                                 {$_url = "{$design_url}theme={$r.theme_mobile}&domain={urlencode($r._domain)}&route={$r._id}"}
                                 <li class="no-icon 3{if $current_url == $_url} selected{/if}" data-routing="{$r._routing_url}">
@@ -57,8 +57,8 @@
                 <li class="float-right">
                     <a data-url="{$theme.preview_url|escape}" href="{$theme.preview_url|escape}" target="_blank" class="wa-theme-preview" title="[s`Site`]"><i class="icon48 preview"></i><span data-used="[s`Site`]" data-preview="[s`Preview`]">{if $theme.is_used}[s`Site`]{else}[s`Preview`]{/if}</span></a>
                 </li>
-            {/if}    
-            
+            {/if}
+
             <li data-action="theme" class="info selected"><a class="wa-themes-link" href="{$design_url}theme={$theme.id}&action=theme"><i class="icon48 appearance"></i>[s`Appearance`]</a></li>
             {if !empty($options.pages) && $wa->userRights('pages')}
             <li class="pages"><a data-action="pages" href="{$design_url}pages/"><i class="icon48 pages"></i>[s`Pages`]</a></li>
