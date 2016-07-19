@@ -20,7 +20,8 @@ class developerBackendExecAction extends waViewAction
             throw new waRightsException($message);
         }
 
-        // !!! TODO: only allow access from localhost?
+        error_reporting(E_ALL);
+        ini_set('display_errors', 1);
 
         eval(waRequest::post('code')); // Welcome to the dark side!
     }

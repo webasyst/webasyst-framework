@@ -18,6 +18,7 @@ class waRequest
     const TYPE_INT = 'int';
     const TYPE_STRING = 'string';
     const TYPE_STRING_TRIM = 'string_trim';
+    const TYPE_ARRAY_TRIM = 'array_trim';
     const TYPE_ARRAY_INT = 'array_int';
     const TYPE_ARRAY = 'array';
 
@@ -32,7 +33,7 @@ class waRequest
     {
     }
 
-    protected static function cast($val, $type = null)
+    protected static function cast($val, $type = null, $rec_limit = 50)
     {
         $type = trim(strtolower($type));
         switch ($type) {
@@ -60,6 +61,20 @@ class waRequest
             case self::TYPE_ARRAY:
                 if (!is_array($val)) {
                     $val = (array)$val;
+                }
+                break;
+            case self::TYPE_ARRAY_TRIM:
+                if (!is_array($val)) {
+                    $val = (array)$val;
+                }
+                foreach($val as $k => $v) {
+                    if (is_array($v)) {
+                        if ($rec_limit > 0) {
+                            $val[$k] = self::cast($v, self::TYPE_ARRAY_TRIM, $rec_limit - 1);
+                        }
+                    } else {
+                        $val[$k] = self::cast($v, self::TYPE_STRING_TRIM);
+                    }
                 }
                 break;
         }
@@ -111,6 +126,7 @@ class waRequest
      *     waRequest::TYPE_INT - integer
      *     waRequest::TYPE_STRING - string
      *     waRequest::TYPE_STRING_TRIM string with trimmed space characters
+     *     waRequest::TYPE_ARRAY_TRIM array with all string values trimmed recursively
      *     waRequest::TYPE_ARRAY_INT = array of integers
      *     waRequest::TYPE_ARRAY = array of various data
      * @example waRequest::get('id', 0, waRequest::TYPE_INT)

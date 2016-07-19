@@ -214,7 +214,7 @@ class waDesignActions extends waActions
             }
             $r['theme'] = $t_id;
             $themes[$t_id]['is_used'] = true;
-            if (isset($r['theme_mobile'])) {
+            if (isset($r['theme_mobile']) && isset($themes[$r['theme_mobile']])) {
                 $themes[$r['theme_mobile']]['is_used'] = true;
             }
             $url = $r['_url'];

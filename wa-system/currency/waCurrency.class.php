@@ -119,10 +119,10 @@ class waCurrency
      * @param string $format Amount format. The format string must begin with % character and may contain the following
      *     optional parts in the specified order:
      *     - Precision (number of digits after decimal separator) expressed as an arbitrary integer value. If not
-     *       specified, then 2 decinal digits are displayed by default.
-     *     - Display type (as a number; e.g., "123456", or in words; e.g., 'one hundred and twenty-three thousand four
-     *       hundred and fifty-six"). To use the numerical format, specify i; for verbal format, use w. The verbal
-     *       expression of a number contains its integer part only, the decimal part is ignored. If the display type is
+     *       specified, then 2 decimal digits are displayed by default.
+     *     - Display type (as a number; e.g., "123456", or in words; e.g., 'one hundred and twenty-three thousand four hundred
+     *       and fifty-six"). To use the numerical format, specify i; for verbal format, use w; to omit amount altogether, use !.
+     *       The verbal expression of a number contains its integer part only, the decimal part is ignored. If the display type is
      *       not specified, then the numerical format is used by default.
      *     - Currency sign or name. To add it to the formatted amount value, specify one of the following identifiers in
      *       curly brackets:
@@ -150,7 +150,7 @@ class waCurrency
         self::$format_data['n'] = $n;
         self::$format_data['locale'] = $locale;
         self::$format_data['currency'] = $currency;
-        $pattern = '/%([0-9]?\.?[0-9]?)([iw]*)({[n|f|c|s|h][0-9]?})?/i';
+        $pattern = '/%([0-9]?\.?[0-9]?)([iw!]*)({[n|f|c|s|h][0-9]?})?/i';
         $result = preg_replace_callback($pattern, array('self', 'replace_callback'), $format);
         if ($locale !== $old_locale) {
             wa()->setLocale($old_locale);
@@ -214,6 +214,8 @@ class waCurrency
             if (strstr($format, 'W') !== false) {
                 $result = mb_strtoupper(mb_substr($result, 0, 1)).mb_substr($result, 1);
             }
+        } else if (strstr($format_lower, '!') !== false) {
+            $result = '';
         } else {
             if ($pad_to_width !== false) {
                 $result = str_pad($n, $pad_to_width, '0', STR_PAD_LEFT);
@@ -274,7 +276,7 @@ class waCurrency
             }
         }
 
-        return $result;
+        return ltrim($result);
     }
 
     protected static function getData()

@@ -1,5 +1,31 @@
-<script type="text/javascript" src="http://www.webasyst.com/wa-data/public/site/themes/webasystcom/ui.js"></script>
+<script type="text/javascript" src="//www.webasyst.com/wa-data/public/site/themes/webasystcom/ui.js"></script>
+<script type="text/javascript" src="//www.webasyst.com/wa-content/js/prettify/prettify.js"></script>
+<link href="//www.webasyst.com/wa-content/js/prettify/prettify.css" type="text/css" rel="stylesheet">
 
+<script>$(function($) {
+    prettyPrint();
+
+    // List of icons for icons tab
+    var icons = {if !empty($icons)}{json_encode($icons)}{else}[]{/if};
+    var html = '';
+    for(var i=0; i<icons.length; i++) {
+        if (0 == i % 4) {
+            if (i != 0) {
+                html += '</tr>';
+            }
+            html += '<tr>';
+        }
+        html += '<td><i class="'+icons[i].substr(1).replace('.', ' ')+'"></i> '+icons[i]+'</td>';
+    }
+    html += '</tr>';
+    $('#icons-wrapper').html('<table id="dpg-icons-table" style="width:100%; line-height: 1.5em;">'+html+'</table>');
+});</script>
+
+
+
+{IF $wa->locale() == 'ru_RU'}
+
+        {* ru_RU *}
 
           <div class="sidebar left200px wa-ui-class">
             <div class="block">
@@ -505,25 +531,506 @@ $('&lt;div&gt;Текст простого сообщения&lt;/div&gt;').waDia
 
             </div>
           </div>
+
         <div class="clear"></div>
 
-<link href="http://www.webasyst.com/wa-content/js/prettify/prettify.css" type="text/css" rel="stylesheet">
-<script type="text/javascript" src="http://www.webasyst.com/wa-content/js/prettify/prettify.js"></script>
-<script>$(function($) {
-    prettyPrint();
 
-    // List of icons for icons tab
-    var icons = {{if !empty($icons)}}{{json_encode($icons)}}{{else}}[]{{/if}};
-    var html = '';
-    for(var i=0; i<icons.length; i++) {
-        if (0 == i % 4) {
-            if (i != 0) {
-                html += '</tr>';
-            }
-            html += '<tr>';
-        }
-        html += '<td><i class="'+icons[i].substr(1).replace('.', ' ')+'"></i> '+icons[i]+'</td>';
-    }
-    html += '</tr>';
-    $('#icons-wrapper').html('<table id="dpg-icons-table" style="width:100%;">'+html+'</table>');
-});</script>
+
+{ELSE}
+
+
+        {* en *}
+
+
+        <div class="wa-ui">
+
+          <div class="sidebar left200px wa-ui-class">
+            <div class="block">
+
+            <ul class="menu-v" id ="wa-ui-classes">
+              <li><a href="#menu-v" class="inline-link bold"><b><i>.menu-v</i></b></a></li>
+              <li><a href="#menu-h" class="inline-link"><b><i>.menu-h</i></b></a></li>
+              <li><a href="#tabs" class="inline-link"><b><i>.tabs</i></b></a></li>
+              <li><a href="#zebra" class="inline-link"><b><i>.zebra</i></b></a></li>
+              <li><a href="#thumbs" class="inline-link"><b><i>.thumbs</i></b></a></li>
+              <li><a href="#sidebar" class="inline-link"><b><i>.sidebar</i></b></a></li>
+              <li><a href="#fields" class="inline-link"><b><i>.fields</i></b></a></li>
+              <li><a href="#icon16" class="inline-link"><b><i>.icon16</i></b></a></li>
+              <li><a href="#dialog" class="inline-link"><b><i>.dialog</i></b></a></li>
+<!--               <li><a href="#tooltip" class="inline-link"><b><i>.tooltip</i></b></a></li> -->
+              <li><a href="#profile" class="inline-link"><b><i>.profile</i></b></a></li>
+              <li><a href="#progressbar" class="inline-link"><b><i>.progressbar</i></b></a></li>
+              <li><a href="#various" class="inline-link">&nbsp;<b><i>(misc)</i></b></a></li>
+            </ul>
+
+            </div>
+
+          </div>
+          <div class="content left200px wa-ui-playground">
+            <div class="wa-ui-description" id="wa-class-description">
+
+
+        <!-- MENU-V -->
+              <div id="wa-class-desc-menu-v" style="display:none">
+                <div class="block double-padded">
+                  <p>Class <code><strong>.menu-v</strong></code> allows creating vertical menus of hyperlinks and should be applied to an <code>ul</code> element; e.g.:</p>
+<pre class="prettyprint">&lt;ul class="menu-v with-icons"&gt;</pre>
+
+                  <p>In the example above additional class name <code>.with-icons</code> is specified for the list to set the desired menu type
+                    (specifying menu type is optional). Webasyst supports the following menu types:</p>
+                <ul>
+                  <li><code>ul.menu-v<strong>.with-icons</strong></code>: a menu with small <a href="#icon16" class="wa-ui-link inline-link"><b><i>icons</i></b></a>
+                    to the left of links (this class displays all icons added by means of <code class="nowrap">&lt;i class="icon16 ..."&gt;&lt;/u&gt;</code> elements
+                    inside links to the left of menu items);</li>
+                  <li><code>ul.menu-v<strong>.compact</strong></code>: a compact menu (reduced vertical margins for menu items);</li>
+                  <li><code>ul.menu-v<strong>.dropdown</strong></code>: a drop-down menu (each nested level drops down when the mouse cursor is moved over
+                    (<code>:hover</code>) its parent item in the current level).</li>
+                </ul>
+                  <p>Different menu types can be used in combination with each other; e.g.:</p>
+<pre class="prettyprint">&lt;ul class="menu-v with-icons compact"&gt;</pre>
+
+                  <p>Class <code>.menu-v</code> is used for creation of hierarchical menus of unlimited depth, where each next level <code class="nowrap">ul.menu-v</code>
+                    is placed inside the current menu item <code>li</code>. We recommend placing hierarchical menus inside blocks
+                    <code class="nowrap">&lt;div class="hierarchical"&gt;&lt;/div&gt;</code>.</p>
+                  <p>To selected menu items style class <code>.selected</code> can de assigned:</p>
+<pre class="prettyprint">&lt;li class="selected"&gt;</pre>
+                </div>
+
+
+                <ul class="tabs wa-class-settings" id="wa-menu-v-type">
+                  <li class="selected" id="wa-menu-v-type-f"><a href="#">Plain</a></li>
+                  <li id="wa-menu-v-type-h"><a href="#">Hierarchical</a></li>
+                  <li id="wa-menu-v-type-d"><a href="#">Drop-down</a></li>
+                </ul>
+                <div class="tab-content"></div>
+
+              </div>
+
+
+
+            <!-- MENU-H -->
+              <div id="wa-class-desc-menu-h" style="display:none">
+                <div class="block double-padded">
+                  <p>Class <code><strong>.menu-h</strong></code> allows creating horizontal menus and should be applied to <code>ul</code> elements:</p>
+<pre class="prettyprint">&lt;ul class="menu-h"&gt;</pre>
+                  <p>Additional class <code>ul.menu-h<strong>.dropdown</strong></code> is used for adding drop-down submenus where each nested level
+                    appears when the mouse cursor is moved over its parent item (<code>:hover</code>) in tyhe current menu level.</p>
+                  <p>To selected menu items class <code>.selected</code> can be assigned:</p>
+<pre class="prettyprint">&lt;li class="selected"&gt;</pre>
+                </div>
+
+                <ul class="tabs wa-class-settings" id="wa-menu-h-type">
+                  <li class="selected" id="wa-menu-h-type-f"><a href="#">Plain</a></li>
+                  <li id="wa-menu-h-type-d"><a href="#">Drop-down</a></li>
+                </ul>
+                <div class="tab-content"></div>
+
+              </div>
+
+
+
+
+
+
+              <!-- TABS -->
+              <div id="wa-class-desc-tabs" style="display:none">
+                <div class="block double-padded">
+                  <p>Class <code><strong>.tabs</strong></code> is used to display a horizontal tabs-like menu. This class should be applied to <code>ul</code> elements:</p>
+<pre class="prettyprint">&lt;<strong>ul</strong> class="tabs"&gt;</pre>
+                    <p>In order for the <code>li</code> element's contents to appear visually as a tab, it must be inserted between hyperlink tags:</p>
+<pre class="prettyprint">&lt;a&gt;&lt;/a&gt;</pre>
+                <p>Class <code>.tabs</code> should be used together with block element <code>&lt;div class="<strong>tab-content</strong>"&gt;</code>
+                  following directly after <code>&lt;ul class="tabs"&gt;</code>; this will add a visual border under menu tabs.</p>
+                    <p>A selected tab is highlighted using class <code>.selected</code>:</p>
+<pre class="prettyprint">&lt;li class="selected"&gt;</pre>
+                </div>
+
+              </div>
+
+
+
+
+              <!-- ZEBRA -->
+              <div id="wa-class-desc-zebra" style="display:none">
+                <div class="block double-padded">
+                  <p>Class <code><strong>.zebra</strong></code> is used for displaying data as a table with a different background color for each subsequent row.
+                  This class can be applied to elements <code>&lt;<strong>table</strong> class="zebra"&gt;</code> and <code>&lt;<strong>ul</strong> class="zebra"&gt;</code>.</p>
+                </div>
+
+                <ul class="tabs wa-class-settings" id="wa-zebra-type">
+                  <li class="selected" id="wa-zebra-type-ul"><a href="#">List</a></li>
+                  <li id="wa-zebra-type-table"><a href="#">Table</a></li>
+                </ul>
+                <div class="tab-content"></div>
+
+              </div>
+
+
+
+
+            <!-- THUMBS -->
+              <div id="wa-class-desc-thumbs" style="display:none">
+                <div class="block double-padded">
+                <p>Class <code>ul<strong>.thumbs</strong></code> is used for displaying images as a table-like list; e.g., photos in a web album, photos in a contact list, product images, etc.</p>
+                  <p>By default each list item (<code>li</code>) width is automatically calculated based on the particular image size. You can additionally specify the desired width in pixels by assigning a special
+                  style class; e.g.:</p>
+<pre class="prettyprint">&lt;ul class="thumbs <strong>li100px</strong>"&gt;</pre>
+                  <p>Available image width classes: <code>.li50px</code>, <code>.li100px</code>, <code>.li150px</code>, <code>.li200px</code>, <code>.li250px</code>,
+                    <code>.li300px</code>, <code>.li350px</code>.</p>
+                  <p>Using class <code>.highlighted</code> (e.g., <code>&lt;li class="<strong>highlighted</strong>"&gt;</code>) you can highlight certain list elements to draw users' attention to them
+                  (e.g., items recently added by other users since the current user's previous login to the backend).</p>
+                  <p>Selected items can be highlighted using class <code>.selected</code>; e.g.:</p>
+<pre class="prettyprint">&lt;li class="selected"&gt;</pre>
+                </div>
+
+              </div>
+
+
+
+
+              <!-- SIDEBAR -->
+              <div id="wa-class-desc-sidebar" style="display:none">
+                <div class="block double-padded">
+                <p>One of the most convenient methods of creating a web page layout is by using classes <code><strong>.sidebar</strong></code>
+                  and <code><strong>.content</strong></code>. With these two classes you can create a multi-column page layout with common scrolling; this is a convenient and the most familiar appearance of a web
+                  page for Internet users.</p>
+<pre class="prettyprint">
+&lt;div class="<strong>sidebar</strong> left200px"&gt;
+  &lt;div class="block"&gt;
+    left column 200 pixels wide
+  &lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="<strong>sidebar</strong> right100px"&gt;
+  &lt;div class="block"&gt;
+    right column 100 pixels wide
+  &lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="<strong>content</strong> left200px right100px"&gt;
+  &lt;div class="block"&gt;
+    main content
+  &lt;/div&gt;
+&lt;/div&gt;</pre>
+
+        <p>The width and relative position of each column is adjustable using additional classes <code>.left<strong>N</strong>px</code> and <code>.right<strong>N</strong>px</code>,
+          where values <em>left</em> and <em>right</em> denote a column's position, and a number instead of <em>N</em> sets width in pixels (available width values:
+          100, 200, 250, 300, 400). The number of left and right columns is unlimited. For their correct appearance on a page, first calculate their width as well as distance from the left and the right side of block
+          <code>.content</code> and then assign it using the same classes (<code>.leftNpx</code> и <code>.rightNpx</code>). For example, if there are two left columns with class <code>.sidebar.left200px</code>, then
+          you should assign class <code>.content<strong>.left400px</strong></code> to the main content block.</p>
+
+                <p>If no column size and distance from the main content blocks have been specified, the default value of 200 pixels will be applied. We recommend using this width for the left column, because it appears
+                most naturally in the Webasyst interface.</p>
+
+                <p>Instead of class <code>.sidebar</code> you can use class <code><strong>.sidebar-fixed</strong></code>. It helps creating a similar layout column, but with a fixed position on a page which is not changed
+                when the page is scrolled up or down.</p>
+         </div>
+              </div>
+
+
+
+
+
+            <!-- FIELDS -->
+              <div id="wa-class-desc-fields" style="display:none">
+                <div class="block double-padded">
+                  <p><code><strong>.fields</strong></code> group classes allow a web designer to display various data lists (e.g., user contact information or a
+                    registration form) as
+                    <span class="nowrap">&quot;key&mdash;value&quot;</span> pairs
+                  using block elements <code>div</code>.</p>
+                <p>Use of <code>.fields</code> group classes:
+<pre>
+.fields (.form)
+  (.field-group)
+    <strong>.field</strong>
+      .name
+      .value
+      (.value)
+      (.value)
+    <strong>.field</strong>
+      .name
+      .value
+      (.value)
+      (.value)</pre>
+      </p>
+                </div>
+
+                <ul class="tabs wa-class-settings" id="wa-fields-type">
+                  <li class="selected" id="wa-fields-type-view"><a href="#">View</a></li>
+                  <li id="wa-fields-type-form"><a href="#">Registration form</a></li>
+                </ul>
+                <div class="tab-content"></div>
+
+              </div>
+
+
+
+
+
+              <!-- ICON16 -->
+              <div id="wa-class-desc-icon16" style="display:none">
+                <div class="block double-padded">
+                <div id="icons-wrapper"></div>
+                <p>Classes <code><strong>.icon16</strong></code> and <code><strong>.icon10</strong></code> are applied to elements <code>i</code> and allow
+                  embedding small 16*16 and 10*10 pixels large icons in texts, hyperlinks, or titles; e.g.: <i class="icon10 yes"></i> or <i class="icon16 yes"></i>.</p>
+<pre class="prettyprint">
+&lt;i class="icon16 <strong>iconname</strong>"&gt;</pre>
+                <p>All Webasyst icons are combined in a single image file <code>wa-content/img/icon16.png</code> (and <code>icon10.png</code> respectively).
+                  The full list of icons available in Webasyst is specified in style sheet file <code>wa-content/css/wa/wa-1.0.css</code>. If the vailable icons are not enough for your application, their set
+                  can be extended by arbitrary icon files using the following syntax:</p>
+<pre class="prettyprint">.icon16.iconname { }</pre>
+                <p>Icons included in Webasyst installation package are based on sets <strong>Fugue</strong> and <strong>Diagona</strong> created by Yusuke&nbsp;Kamiyamane: <a href="http://p.yusukekamiyamane.com/">http://p.yusukekamiyamane.com/</a>. They contain over 3000&nbsp;icons, which can be used free of charge according to the terms of the Creative Commons
+                Attribution&nbsp;3.0 license. We recommend using these icons in development of Webasyst applications.</p>
+         </div>
+
+              </div>
+
+
+
+             <!-- DIALOG -->
+              <div id="wa-class-desc-dialog" style="display:none">
+                <div class="block double-padded">
+
+                  <p>Dialogs are an important are frequently used elements of web interfaces.</p>
+                  <p>Framework Webasyst offers a mechanism of creating dialogs using JavaScript.</p>
+                  <p>To create a dialog, include the following JavaScript file in your web page:</p>
+<pre class="prettyprint">
+&lt;script type="text/javascript" src="{$wa_url}wa-content/js/jquery-wa/wa.dialog.js"
+type="text/javascript"&gt;&lt;/script&gt;
+</pre>
+                  <p>Then, in order to transform any web page element <code>$(el)</code> to a dialog, apply the following JavaScript code:</p>
+<pre class="prettyprint">
+$(el).waDialog(options);
+</pre>
+                  <p>Below is shown a imply example (a dialog with one text field and a confirmation button):</p>
+
+<pre class="prettyprint">
+$('&lt;div&gt;Enter your name: &lt;input type="text" name="name"/&gt;&lt;/div&gt;').waDialog({
+'buttons': '&lt;input type="submit" value="OK" /&gt;',
+onSubmit: function (d) {
+    $.post('?module=m', $(this).serialize(), function () {
+        d.trigger('close'); // close dialog
+    }, 'json');
+    return false;
+}
+});
+</pre>
+
+                  <p>Method waDialog accepts <code>options</code> as an array of parameters, which allow a developer to control the dialog's behavior. Below is provided
+                    the list of acceptable parameters and their default values:</p>
+                  <ul>
+                    <li><code>esc: true</code>: whether the dialog will be hidden, when the Esc key is pressed; enabled by default</li>
+                    <li><code>buttons: null</code>: defines the dialog buttons, if they should be specified explicitely</li>
+                    <li><code>url: null</code>: the dialog content is loaded from the specified URL using jQuery.get</li>
+                    <li><code>disableButtonsOnSubmit: false</code>: disables all data submission buttons within the dialog, when data are sent via a web form
+                      (input[type=submit])</li>
+                    <li><code>onLoad: null</code>: callback function called upon complete loading of the dialog content</li>
+                    <li><code>onCancel: null</code>: callback function called upon a click on the "cancel" button</li>
+                    <li><code>onSubmit: null</code>: callback function called upon data submission via the dialog's web form</li>
+                    <li><code>onClose: null</code>: callback function called, when the dialog is closed</li>
+                    <li><code>className: ''</code>: CSS class name added to the dialog's HTML block</li>
+                    <li><code>width: ''</code>: width; e.g., '400px'</li>
+                    <li><code>height: ''</code>: height, similar to the width</li>
+                    <li><code>title: ''</code>: if specified, element <code>&lt;h1&gt;title&lt;/h1&gt;</code> is added to the dialog's content</li>
+                  </ul>
+
+
+                  <p>In all callback functions, except for <code>onSubmit</code>, variable <code>this</code> refers to the dialog element.</p>
+
+                  <p>In case of <code>onSumbit</code> variable <code>this</code> refers to the &lt;form&gt; element, and the dialog element is passed to the function as the
+                    first parameter:</p>
+
+<pre class="prettyprint">
+onSubmit: function (d) {
+        $.post('?module=m', $(this).serialize(), function () {
+            d.trigger('close'); // close dialog
+        }, 'json');
+        return false;
+}
+</pre>
+
+
+                  <p>A dialog's structure consists of two main parts: main conitent with web form fields and buttons.</p>
+                  <p>In the element passed to the dialog creation method call you can specify both blocks. The content with form fields should placed inside a
+                    <code>div</code> element with class name <code>dialog-content</code> and buttons inside a <code>div</code> with class name
+                    <code>dialog-buttons</code>:</p>
+
+<pre class="prettyprint">
+$('&lt;div&gt;&lt;form&gt;&lt;div class="dialog-content"&gt;Content&lt;/div&gt;
+  &lt;div class="dialog-buttons"&gt;&lt;input type="submit" value="OK" /&gt;
+  &lt;/div&gt;&lt;/form&gt;&lt;/div&gt;').waDialog({
+  'onSubmit': function (d) {
+    d.trigger('close');
+    return false;
+  }
+});
+</pre>
+
+                  <p>If no block with CSS class name <code>dialog-content</code> has been specified, then it is considered that no buttons block has been passed to
+                    the dialog creation
+                    method. In this case you can specify it by means of the <code>buttons</code> parameter:</p>
+
+
+<pre class="prettyprint">
+$('&lt;div&gt;Simple message text&lt;/div&gt;').waDialog({
+'buttons': '&lt;input type="submit" value="Close" /&gt;',
+'onSubmit': function (d) {
+    d.trigger('close');
+    return false;
+}
+});
+</pre>
+
+
+                  <p>To all elements of a dialog, which have a CSS class named "cancel", the event closing the dialog by a mouse click is automatically attached.</p>
+
+                  <blockquote>To avoid possible conflicts, do not use CSS class "dialog" for elements, to which you apply <code>waDialog</code>.</blockquote>
+
+                </div>
+              </div>
+
+
+
+              <!-- TOOLTIP
+              <div id="wa-class-desc-tooltip" style="display:none">
+                <div class="block double-padded">
+                <p>С помощью класса <code><strong>.tooltip</strong></code> удобно делать контекстные всплывающие подсказки. Подсказка (HTML-блок) всплывает при наведении курсора на «вызывающий» ее элемент. Контекстные подсказки встраиваются с помощью следующей HTML-конструкции:</p>
+                <pre class="prettyprint">
+                ...
+                </pre>
+         </div>
+              </div>
+
+-->
+
+              <!-- PROFILE -->
+              <div id="wa-class-desc-profile" style="display:none">
+                <div class="block double-padded">
+                <p>Class <code><strong>.profile</strong></code> was initially created for displaying user contact information with his/her photo,
+                  but was later found useful for a wider scope of application. For example, it suits very well for displaying comments with author images (avatars),
+                  product information blocks with product images, photo thumbnails with EXIF data, etc. Class <code>.profile</code> is suitable for displaying any kind of information in the form
+                  "image on the left, text on the right". It can be used in HTML templates as shown below:</p>
+<pre class="prettyprint">
+&lt;div class="<strong>profile</strong> image96px"&gt;
+  &lt;div class="<strong>image</strong>"&gt;
+      image
+    &lt;/div&gt;
+    &lt;div class="<strong>details</strong>"&gt;
+      image
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</pre>
+        <p>Using additional class <code><strong>.image96px</strong></code>, you can specify the exact image size inside the <code>.image</code> block. Other available image size values: <code>.image20px</code>, <code>.image32px</code>, <code>.image50px</code>.</p>
+         </div>
+              </div>
+
+
+
+              <!-- PROGRESSBAR -->
+              <div id="wa-class-desc-progressbar" style="display:none">
+                <div class="block double-padded">
+                <p>Class <code><strong>.progressbar</strong></code> is used to display a colored progress bar created using HTML and CSS only:</p>
+<pre class="prettyprint">
+&lt;div class="progressbar"&gt;
+  &lt;div class="progressbar-outer"&gt;
+    &lt;div class="progressbar-inner" id="my-custom-progressbar-id" <strong>style="width: 37%;"</strong>&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</pre>
+                  <p>The highlighted attribute <code>style</code> sets the current progress bar state in percents; you can change its value using JavaScript. An example with jQuery code:</p>
+<pre class="prettyprint">
+$('#my-custom-progressbar-id').css('width','41%'); //setting progress bar value to 41%
+</pre>
+        <p>You can change the appearance of the progress bar using special CSS classes corresponding to different background colors (<code>.progressbar<strong>.green</strong></code>,
+          <code>.progressbar<strong>.yellow</strong></code>, <code>.progressbar<strong>.red</strong></code>, <code>.progressbar<strong>.blue</strong></code>) and a class to display its mini version: <code>.progressbar<strong>.small</strong></code>.</p>
+         </div>
+              </div>
+
+
+             <!-- VARIOUS -->
+              <div id="wa-class-desc-various" style="display:none">
+                <div class="block double-padded">
+                <p>During development of various Webasyst interfaces classes and structures listed below are also frequently used.</p>
+
+                <h3>.inline-link</h3>
+                <p>Dashed underline for links: <a href="#" class="inline-link"><b><i>link example</i></b></a>. We recommend applying this class to all links performing some local action on a page; e.g., displaying
+                a hint, expanding a menu item, etc. In HTML templates it is implemented using a combination of <code>a</code>, <code>b</code> и <code>i</code> elements as shown below:</p>
+<pre class="prettyprint">
+&lt;a href="#" class="inline-link"&gt;&lt;b&gt;&lt;i&gt;link text&lt;/i&gt;&lt;/b&gt;&lt;/a&gt;</pre>
+
+        <h3>.button</h3>
+                <p>Nice large button:</p>
+                <p>
+                  <input type="button" class="button" value="Gray" />
+                  <input type="button" class="button green" value="Green" />
+                  <input type="button" class="button blue" value="Blue" />
+                  <input type="button" class="button yellow" value="Yellow" />
+                  <input type="button" class="button red" value="Red" /></p>
+                <p>Class <code>.button</code> should be applied to elements <code>input</code> and <code>a</code> as shown in the example below:</p>
+<pre class="prettyprint">
+&lt;input type="button" class="button" value="Button" /&gt;
+&lt;a href="#" class="button"&gt;Button&lt;/a&gt;</pre>
+
+        <h3>.paging</h3>
+                <p>Current page indicator:<br />
+                <div class="paging">
+            <a class="selected" href="#">1</a>
+            <a href="#">2</a>
+            <a href="#">3</a>
+            ...
+            <a href="#">10</a>
+            <a class="prevnext" href="#"><i class="icon10 larr"></i> prev</a>
+            <a class="prevnext" href="#">next <i class="icon10 rarr"></i></a>
+          </div>
+                </p>
+                <p>Syntax for embedding in a template:</p>
+<pre class="prettyprint">
+&lt;div class="<strong>paging</strong>"&gt;
+  &lt;a class="selected" href="#"&gt;1&lt;/a&gt;
+  &lt;a href="#"&gt;2&lt;/a&gt;
+  &lt;a href="#"&gt;3&lt;/a&gt;
+  ...
+  &lt;a href="#"&gt;10&lt;/a&gt;
+  &lt;a class="prevnext" href="#"&gt;&lt;i class="icon10 larr"&gt;&lt;/i&gt; prev&lt;/a&gt;
+  &lt;a class="prevnext" href="#"&gt;next &lt;i class="icon10 rarr"&gt;&lt;/i&gt;&lt;/a&gt;
+&lt;/div&gt;</pre>
+
+        <h3>.small, .large, .hint</h3>
+                  <p>These classes change appearance of text inside inline and block elements (<code>span</code>, <code>em</code>, <code>div</code>, etc.):</p>
+<pre class="prettyprint">
+&lt;span class="large"&gt;text&lt;/span&gt;
+&lt;span class="small"&gt;text&lt;/span&gt;
+&lt;span class="hint"&gt;text&lt;/span&gt;</pre>
+<p><span class="large">text</span><br />
+<span class="small">text</span><br />
+<span class="hint">text</span><br />
+                </p>
+
+         </div>
+              </div>
+
+
+
+            </div>
+
+            <div class="wa-ui-sandbox">
+
+              <div class="block double-padded">
+                <h6 class="heading" style="text-transform: none !important;">HTML (editable)</h6>
+                <textarea id="wa-class-html"></textarea>
+              </div>
+
+              <div class="block double-padded">
+                <h6 class="heading">View <input type="button" value="Update" onclick="$.waui.preview();return false" /></h6>
+                <iframe id="wa-class-preview" scrolling="no"></iframe>
+              </div>
+
+            </div>
+          </div>
+         </div>
+
+ <link href="/wa-content/js/prettify/prettify.css" type="text/css" rel="stylesheet">
+ <script type="text/javascript" src="/wa-content/js/prettify/prettify.js"></script>
+ <script>prettyPrint();</script>
+
+
+
+{/IF}

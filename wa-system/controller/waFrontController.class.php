@@ -96,10 +96,8 @@ class waFrontController
                         throw new waRightsException(_ws("Access denied"), 403);
                     }
                 }
-                waSystem::pushActivePlugin($plugin, $prefix);
-                if (is_dir($plugin_path.'/locale')) {
-                    waLocale::load($this->system->getLocale(), $plugin_path.'/locale', waSystem::getActiveLocaleDomain(), false);
-                }
+                // Load plugin, including updates check, locale, etc.
+                $this->system->getPlugin($plugin, true);
             }
         }
 

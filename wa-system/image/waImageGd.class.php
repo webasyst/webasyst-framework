@@ -18,9 +18,7 @@ class waImageGd extends waImage
 
     public function __construct($file)
     {
-        if (!self::$checked) {
-            self::check();
-        }
+        self::check();
         parent::__construct($file);
         if (!is_resource($this->image)) {
             $this->image = $this->createGDImageResourse($this->file, $this->type);
@@ -53,6 +51,11 @@ class waImageGd extends waImage
 
     public static function check()
     {
+        static $checked = null;
+        if ($checked !== null) {
+            return $checked;
+        }
+
         if (!function_exists('gd_info')) {
             throw new waException(_ws('GD is not installed'));
         }
@@ -63,7 +66,7 @@ class waImageGd extends waImage
         if (!version_compare($version, '2.0', '>=')) {
             throw new waException(_ws('Need GD version of the above 2.0.1'));
         }
-        return self::$checked = true;
+        return $checked = true;
     }
 
     protected function _create($width, $height)
