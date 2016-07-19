@@ -18,5 +18,9 @@ class developerBackendAction extends developerAction
             $this->setTemplate('string:<div class="tripple-padded block"><h2 style="color:red">{$message|escape}</h2></div>');
             $this->view->assign('message', $message);
         }
+
+        // Browsers don't like it when JS is sent over POST.
+        // This disables internal browser's XSS filtering.
+        header('X-XSS-Protection: 0');
     }
 }
