@@ -11,16 +11,21 @@ class waLog
     protected static $path;
 
     /**
-     * Write message into log file.
+     * Save a message to a log file.
      *
-     * @return bool
+     * @param variant $message Message to be logged.
+     * @param string $file Name of log file.
+     * @param string $once Whether logging must be done only once, only to a non-existent file.
+     * @return boolean Logging completion status.
      */
-    public static function log($message, $file = 'error.log')
+    public static function log($message, $file = 'error.log', $once = false)
     {
         self::loadPath();
         $file = self::$path.$file;
+        
+        $file_existed = file_exists($file);
 
-        if (!file_exists($file)) {
+        if (!$file_existed) {
             waFiles::create($file);
             touch($file);
             chmod($file, 0666);
@@ -28,18 +33,20 @@ class waLog
             return false;
         }
 
-        $fd = fopen($file, 'a');
-        if (flock($fd, LOCK_EX)) {
-            fwrite($fd, PHP_EOL.date('Y-m-d H:i:s:').PHP_EOL.$message);
-            fflush($fd);
-            flock($fd, LOCK_UN);
+        if (!$once || !$file_existed) {
+            $fd = fopen($file, 'a');
+            if (flock($fd, LOCK_EX)) {
+                fwrite($fd, PHP_EOL.date('Y-m-d H:i:s:').PHP_EOL.$message);
+                fflush($fd);
+                flock($fd, LOCK_UN);
+            }
+            fclose($fd);
         }
-        fclose($fd);
 
         return true;
     }
 
-    public static function dump($var, $file = 'dump.log')
+    public static function dump($var, $file = 'dump.log', $once = false)
     {
         $result = '';
         // Show where we've been called from
@@ -56,7 +63,7 @@ class waLog
 
         $result .= wa_dump_helper($var)."\n";
 
-        waLog::log($result, $file);
+        waLog::log($result, $file, $once);
     }
 
     public static function delete($file)
