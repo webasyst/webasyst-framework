@@ -37,7 +37,7 @@ h6 { font-size: 1em; }
 h1, h2, h3 { line-height:1.2em; }
 ul, ol { padding-top:0; }
 ol { list-style: decimal; }
-input, textarea, select { margin:0; } 
+input, textarea, select { margin:0; }
 input, textarea { font-size: 1em; color: #000; }
 input[type="button"]:focus { outline:none; outline-offset:-2px; }
 fieldset { border:1px solid #bbb; padding:10px; position:relative; background:#e9e9e9; margin-bottom:10px; }
@@ -71,7 +71,7 @@ input:-ms-input-placeholder { color: #bbb; }
 .hint a,
 .hint:visited,
 .hint a:visited { color: #888; }
-.gray .dropdown ul 
+.gray .dropdown ul
 .gray a,
 .gray:visited,
 .gray a:visited { color: #888; }
@@ -186,7 +186,7 @@ ul.tree ul a { padding: 3px 6px; font-size: 90%; }
 .wa-form .wa-field .wa-value .errormsg { margin-left: 0; }
 .wa-form .wa-field .wa-value.wa-submit { margin-top: 10px; }
 .wa-form .wa-field .wa-value p label { display: block; margin: 0; }
-.wa-form .wa-field .wa-value p { line-height: 1.6em; margin-bottom: 23px; position: relative; } 
+.wa-form .wa-field .wa-value p { line-height: 1.6em; margin-bottom: 23px; position: relative; }
 .wa-form .wa-field .wa-value p span { color: #777; font-size: 0.9em; display: block; }
 .wa-form .wa-field .wa-value p i.icon16 { float: left; left: -20px; margin-top: 2px; position: absolute; }
 .wa-form .wa-field .wa-value p input { display: block; margin-bottom: 2px; }
@@ -263,11 +263,8 @@ table.lined tr.service td { padding-top: 5px; padding-bottom: 5px; padding-left:
 .search input:-moz-placeholder,
 .search input::-moz-placeholder { color: #aaa; font-weight: normal; }
 .search input:-ms-input-placeholder { color: #aaa; font-weight: normal; }
- 
+
 .search button { min-width: 32px; overflow: visible; position: absolute; right: 0px; float: left; border: none; padding: 0; cursor: pointer; height: 32px; color: #fff; background-color: transparent; background-image: url(img/search16black.png); background-repeat: no-repeat; background-position: 8px 6px; background-size: 16px 16px; border-radius: 0 3px 3px 0; font-size: 1.0em; }
-.search button:hover { background-color: rgba(100,100,100,0.1); }
-.search button:active,
-.search button:focus { background-color: rgba(100,100,100,0.2); outline: 0; }
 .search button::-moz-focus-inner { /* remove extra button spacing for Mozilla Firefox */ border: 0; padding: 0; }
 
 /* Header: global navigation
@@ -295,9 +292,9 @@ header .auth li a:hover { color: #eea !important; }
 header .auth li a:visited { color: #777; }
 
 header .cart { float: right; }
-header .cart a { padding: 12px 16px 11px 13px; display: block; background: #444; color: #fff; font-size: 1.5em; }
+header .cart a { padding: 12px 16px 11px 13px; display: block; background: rgba(255,255,255,0.3); color: #fff; font-size: 1.5em; }
 header .cart a strong { color: #ff7; }
-header .cart a:hover { background: #555 !important; }
+header .cart a:hover { background: rgba(255,255,255,0.4) !important; }
 header .cart .cart-just-added { display: none; padding: 9px 18px; font-size: 0.9em; }
 header .cart a.cart-to-checkout { display: none !important; text-align: center; font-weight: bold; padding: 11px 18px; color: #006bd8; font-size: 1.1em; }
 header .cart a.cart-to-checkout:hover { background: #fff !important; }
@@ -332,6 +329,7 @@ header #globalnav.light .cart a strong { color: #fff; }
 header #globalnav.light .cart.empty a { background: transparent !important; }
 header #globalnav.light .cart.empty a:hover { background: #e7e7e7 !important; }
 header #globalnav.light .cart.empty a strong { color: #aaa !important; }
+header #globalnav.light.andgray { background: #eee; }
 
 /* Header: app navigation
 ------------------------- */
@@ -413,7 +411,7 @@ footer a:hover { color: red !important; }
 .appfooter { position: relative; text-align: center; padding: 20px; color: #aaa; border-top: 1px solid #ddd; min-height: 1.5em; margin-top: 20px; }
 .appfooter .copyright { position: absolute; left: 0; }
 .appfooter .poweredby { position: absolute; right: 0; }
-.appfooter .dots { font-size: 0.8em; text-decoration: none; display: inline-block; width: 54px; height: 9px; background: url("/wa-content/img/dots/all-dots-default-order@2x.png") no-repeat 0 3px; padding-top: 3px; margin-right: 10px; background-size: 54px 9px; }
+.appfooter .dots { font-size: 0.8em; text-decoration: none; display: inline-block; width: 54px; height: 9px; background: url("img/dots/all-dots-default-order@2x.png") no-repeat 0 3px; padding-top: 3px; margin-right: 10px; background-size: 54px 9px; }
 
 /* 16x16 Icons
 -------------- */
@@ -527,11 +525,54 @@ html.font_size_16 body { font-size: 16px; }
 .font_family_verdana * { font-family: Verdana, sans-serif; }
 .font_family_georgia,
 .font_family_georgia * { font-family: Georgia, Times, serif; }
-.font_family_opensans,
-.font_family_opensans * { font-family: 'Open Sans', sans-serif; }
-.font_family_ptsans,
-.font_family_ptsans * { font-family: 'PT Sans', sans-serif; }
+.font_family_google_opensans,
+.font_family_google_opensans * { font-family: 'Open Sans', sans-serif; }
+.font_family_google_ptsans,
+.font_family_google_ptsans * { font-family: 'PT Sans', sans-serif; }
+.font_family_google_ptserif,
+.font_family_google_ptserif * { font-family: 'PT Serif', sans-serif; }
+.font_family_google_roboto,
+.font_family_google_roboto * { font-family: 'Roboto', sans-serif; }
+.font_family_google_lora,
+.font_family_google_lora * { font-family: 'Lora', sans-serif; }
+.font_family_google_ubuntu,
+.font_family_google_ubuntu * { font-family: 'Ubuntu', sans-serif; }
 
+.font_family_google_fira,
+.font_family_google_fira * { font-family: 'Fira Sans', sans-serif; }
+.font_family_google_fira b,
+.font_family_google_fira strong,
+.font_family_google_fira .bold { font-weight: 500; }
+.font_family_google_fira header .pages li a { font-weight: 500; padding-top: 9px; }
+.font_family_google_fira header h2 { padding-top: 12px; }
+.font_family_google_fira ul.thumbs li { font-size: 1.05em; }
+.font_family_google_fira ul.thumbs li h5 { font-weight: 500; }
+.font_family_google_fira input[type="button"],
+.font_family_google_fira input[type="submit"] { padding-bottom: 3px; }
+.font_family_google_fira .search input { padding-top: 3px; }
+.font_family_google_fira header .auth { margin-top: 13px; }
+.font_family_google_fira header .auth i.userpic20 { margin-top: 1px; }
+.font_family_google_fira header .cart a strong { display: inline-block; margin-top: 1px;}
+.font_family_google_fira .staff { position: relative; top: -2px; padding-bottom: 0 !important; }
+.font_family_google_fira .add2cart input[type="submit"]  { padding-bottom: 4px; }
+.font_family_google_fira .slider a h3 { font-size: 2.8em; }
+.font_family_google_fira .stocks .icon16 { margin-top: 0; }
+.font_family_google_fira .credentials a,
+.font_family_google_fira .credentials span { vertical-align: top; }
+.font_family_google_fira .credentials { padding-top: 2px; }
+.font_family_google_fira .credentials .userpic,
+.font_family_google_fira .comments .credentials .userpic { margin-top: -2px; }
+.font_family_google_fira .comments .actions a { margin-right: 0; }
+
+.font_family_google_ptsansandserif,
+.font_family_google_ptsansandserif * { font-family: 'PT Sans Caption', sans-serif; }
+.font_family_google_ptsansandserif p,
+.font_family_google_ptsansandserif .olives-content,
+.font_family_google_ptsansandserif ul.thumbs li span.summary,
+.font_family_google_ptsansandserif table.features td { font-family: 'PT Serif', sans-serif; font-size: 110%; }
+.font_family_google_ptsansandserif p a { font-family: 'PT Serif'; }
+.font_family_google_ptsansandserif ul.thumbs li h5,
+.font_family_google_ptsansandserif ul.thumbs.mini li h5 { font-size: 120%; }
 /* Mobile
 --------- */
 
@@ -549,13 +590,13 @@ html.font_size_16 body { font-size: 16px; }
 ========= */
 
 @media screen and (min-width: 760px) and (max-width: 1024px) {
-    
+
     body { -webkit-text-size-adjust: 100%; }
-    
+
     .container { padding: 0 25px; }
     .sidebar { width: 200px; }
     .content.with-sidebar { margin-right: 220px; }
-    
+
     header h2 { margin-right: 10px; }
     header .apps { margin-left: -10px; }
     header .apps li a { padding: 12px 10px; }
@@ -565,10 +606,10 @@ html.font_size_16 body { font-size: 16px; }
 
     /* @media screen and (orientation : portrait) { */
     @media screen and (max-width: 850px) {
-    
+
 
     }
-    
+
 }
 
 
@@ -582,10 +623,10 @@ html.font_size_16 body { font-size: 16px; }
     h1 { font-size: 2em; }
     h2 { font-size: 1.5em; }
     h3 { font-size: 1.3em; }
-    
+
     .container { min-width: 0; padding: 0; }
     .breadcrumbs { font-size: 1.0em; line-height: 1.5em; margin-bottom: 10px; }
-    
+
     .sidebar { float: none !important; width: auto !important; padding: 0 !important; }
     .content { padding: 0px 15px; overflow-x: hidden; }
     .content.with-sidebar { margin-left: 0 !important; margin-right: 0 !important; }
@@ -596,6 +637,7 @@ html.font_size_16 body { font-size: 16px; }
     header #globalnav.light { box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
     header #globalnav.light .cart.empty a { background: #f3f3f3 !important; }
     .color_scheme_white header #globalnav.light { box-shadow: none; border-bottom: 1px solid rgba(0,0,0,0.13); }
+    .color_scheme_white header #globalnav.light.andgray { border-bottom: none; }
 
     header h2 { margin: 9px 50px 10px 0 !important; float: left; font-size: 1.2em !important; position: fixed; top: 7px; left: 15px; z-index: 9999; font-weight: normal !important; padding: 0 !important; display: block !important; }
     header h2 a img { display: none; }
@@ -612,9 +654,9 @@ html.font_size_16 body { font-size: 16px; }
     header .cart.fixed { position: absolute; right: 58px !important; min-width: 0 !important; max-width: 64px; }
     header .cart a { height: 1em; padding: 16px 9px 15px 17px; background: #ffba00; }
     header .cart.fixed a { background: #ffba00; }
-    header .cart a strong { display: none; }
+    header .cart a strong { display: none !important; }
     header .cart #cart-content { display: none; }
-    
+
     header ul.flyout-nav li.submenu-is-shown > a { background: rgba(0,0,0,.33); border-radius: 3px; }
 
     .content img { max-width: 100%; }
@@ -640,14 +682,14 @@ html.font_size_16 body { font-size: 16px; }
     .wa-auth-adapters p { width: 80%; }
     .wa-captcha input.wa-captcha-input { width: 100px; }
     .errormsg { margin-left: 0; }
-    
+
     table td { padding: 5px; }
     html.my ul.menu-h li a { padding: 10px; }
     .comment-form-fields label { float: left; }
     .sub-links li { font-size: 110%; margin-bottom: 5px; }
     .sidebar .likebox { display: none; }
     .connect.inline .likebox { display: block; width: auto; }
-    
+
     .wa-signup-form .wa-form .wa-field.wa-field-email .wa-value input { min-width: 240px; }
     .wa-signup-form .wa-form .wa-field.wa-field-password .wa-value input,
     .wa-signup-form .wa-form .wa-field.wa-field-password_confirm .wa-value input { min-width: 160px; width: 160px; }

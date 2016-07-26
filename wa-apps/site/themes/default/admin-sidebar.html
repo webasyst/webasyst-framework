@@ -374,21 +374,25 @@
                             <div class="settings-list">
                                 {if $setting.control_type == 'radio'}
                                     {foreach from=$setting.options key=key item=option}
+                                        {if !$key|strstr:'_google_'}
                                         <div class="set-item">
                                             <label class="label">
                                                 <input type="radio" name="{$array_name}[{$name}]" value="{$key}" {if $theme_settings[$name] == {$key}}checked{/if}>
                                                 <span class="label-text">{$option.name}</span>
                                             </label>
                                         </div>
+                                        {/if}
                                     {/foreach}
                                 {elseif $setting.control_type == 'select'}
                                     {foreach from=$setting.options key=key item=option}
+                                        {if !$key|strstr:'_google_'}
                                         <div class="set-item">
                                             <label class="label">
                                                 <input type="radio" name="{$array_name}[{$name}]" value="{$key}" {if $theme_settings[$name] == {$key}}checked{/if}>
                                                 <span class="label-text">{$option}</span>
                                             </label>
                                         </div>
+                                        {/if}
                                     {/foreach}
                                 {elseif $setting.control_type == 'image_select'}
                                     {foreach from=$setting.options key=key item=option}

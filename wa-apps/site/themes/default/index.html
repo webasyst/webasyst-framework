@@ -13,11 +13,12 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1{if $wa->isMobile()}, maximum-scale=1, user-scalable=0{/if}" />
+    <meta http-equiv="x-ua-compatible" content="IE=edge">
 
     <title>{$wa->title()|escape}</title>
     <meta name="Keywords" content="{$wa->meta('keywords')|escape}" />
     <meta name="Description" content="{$wa->meta('description')|escape}" />
-    
+
     {if !empty($canonical)}<link rel="canonical" href="{$canonical}"/>{/if}
     <link rel="shortcut icon" href="/favicon.ico"/>
     {if $wa->blog}
@@ -25,23 +26,75 @@
         {$rss=$wa->blog->rssUrl()}
         {if $rss}<link rel="alternate" type="application/rss+xml" title="{$wa->accountName()}" href="{$rss}">{/if}
     {/if}
-       
+
     <!-- css -->
     <link href="{$wa_theme_url}default.css?v{$wa_theme_version}" rel="stylesheet" type="text/css"/>
     {if $wa->shop && $wa->shop->currency() == 'RUB'}<link href="{$wa_url}wa-content/font/ruble/arial/fontface.css" rel="stylesheet" type="text/css">{/if}
     {$wa->css()} {* links active plugins CSS *}
-    
+    {if $theme_settings.font_family|strstr:'_google_'}
+        {if $theme_settings.font_family|strstr:'fira'}{$_real_font_name = 'Fira+Sans:400,500,700,400italic,500italic,700italic'}{/if}
+        {if $theme_settings.font_family|strstr:'opensans'}{$_real_font_name = 'Open+Sans:400,700,700italic,400italic'}{/if}
+        {if $theme_settings.font_family|strstr:'ptsans'}{$_real_font_name = 'PT+Sans:400,700,700italic,400italic'}{/if}
+        {if $theme_settings.font_family|strstr:'ptserif'}{$_real_font_name = 'PT+Serif:400,700,700italic,400italic'}{/if}
+        {if $theme_settings.font_family|strstr:'ptsansandserif'}{$_real_font_name = 'PT+Sans+Caption:400,700|PT+Serif:400,700,700italic,400italic'}{/if}
+        {if $theme_settings.font_family|strstr:'roboto'}{$_real_font_name = 'Roboto:400,700,700italic,400italic'}{/if}
+        {if $theme_settings.font_family|strstr:'lora'}{$_real_font_name = 'Lora:400,700,700italic,400italic'}{/if}
+        {if $theme_settings.font_family|strstr:'ubuntu'}{$_real_font_name = 'Ubuntu:400,700,700italic,400italic'}{/if}
+        <link href='https://fonts.googleapis.com/css?family={$_real_font_name}&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
+    {/if}
+
     <!-- js -->
     <script type="text/javascript" src="{$wa_static_url}wa-content/js/jquery/jquery-1.11.1.min.js" ></script>
     <script type="text/javascript" src="{$wa_static_url}wa-content/js/jquery/jquery-migrate-1.2.1.min.js"></script>
     <script type="text/javascript" src="{$wa_theme_url}default.js?v{$wa_theme_version}"></script>
 
     {$wa->js()} {* links active plugins JS *}
-    
+
     {include file="`$wa_active_theme_path`/head.html" inline}
-    
+
     {$wa->head()} {* links Google Analytics tracking code, site's custom JS (defined in Site app settings), and meta data such as Open Graph data *}
-    
+
+    <!-- custom colors -->
+    <style>
+        {if $theme_settings.color_text} html, body { color: {$theme_settings.color_text}; } {/if}
+        {if $theme_settings.color_links} a { color: {$theme_settings.color_links}; } {/if}
+        {if $theme_settings.color_links_hover} a:hover { color: {$theme_settings.color_links_hover}; } {/if}
+        {if $theme_settings.color_links_visited} a:visited { color: {$theme_settings.color_links_visited}; } {/if}
+        {if $theme_settings.color_hint}
+            .hint,
+            .breadcrumbs,
+            .breadcrumbs a,
+            .breadcrumbs span.rarr,
+            table.features tr.divider td,
+            .bestsellers .bestsellers-header,
+            ul.thumbs li span.summary,
+            .review .summary,
+            .review .summary .date,
+            ul.albums li .count,
+            .album-note,
+            .credentials .username, .credentials .username a { color: {$theme_settings.color_hint}; }
+        {/if}
+        {if $theme_settings.header_customcolor_links}
+            header h2 a, header h2 a:hover,
+            header .apps li a, header .apps li a:hover,
+            header .auth li a, header .auth li a:hover,
+            header .auth li a strong, header .auth li a:hover strong,
+            header #globalnav.light .apps li a, header #globalnav.light .apps li a:hover,
+            header #globalnav.light .apps li.selected a,
+            header #globalnav.light .apps li.selected a:hover { color: {$theme_settings.header_customcolor_links} !important; }
+            header #globalnav.light .apps li.selected a { font-weight: bold; }
+            header #globalnav.light h2 a,
+            header #globalnav.light h2 a:hover { color: {$theme_settings.header_customcolor_links} !important; }
+            header .apps li.selected a { background: transparent; }
+        {/if}
+        {if $theme_settings.color_custom_links}
+            header .pages li a, header .pages li a:hover,
+            .color_scheme_white header .pages li a,
+            .color_scheme_white header .pages li a:hover { color: {$theme_settings.color_custom_links} !important; }
+        {/if}
+        {if trim($theme_settings.style_custom)}{$theme_settings.style_custom}{/if}
+    </style>
+
     <!--[if lt IE 9]>
     <script>
     document.createElement('header');
@@ -55,17 +108,18 @@
     document.createElement('menu');
     </script>
     <![endif]-->
-    
+
 </head>
 <body>
     <header class="globalheader" style="{if $theme_settings.color_custom}background-color: {$theme_settings.color_custom};{/if}{if $theme_settings.header_custom_image}background-image: url('{$wa_theme_url|cat:$theme_settings.header_custom_image}');{/if}">
-    
+
         {if count($wa->apps())>0 || $wa->isAuthEnabled()}
-        
+
             <!-- GLOBAL NAVIGATION -->
-            <div id="globalnav" class="{if $theme_settings.header_scheme|strstr:'white'}light{/if}">
+            <div id="globalnav" class="{if $theme_settings.header_scheme|strstr:'white'}light{if $theme_settings.header_scheme|strstr:'andgray'} andgray{/if}{/if}"{if $theme_settings.header_customcolor} style="background-color: {$theme_settings.header_customcolor};""{/if}>
                 <div class="container">
-                    
+
+                    {if $theme_settings.header_sitename || $theme_settings.logo}
                     <h2>
                         <a href="{$wa_url}">
                             {if $theme_settings.logo}
@@ -76,15 +130,16 @@
                             {/if}
                         </a>
                     </h2>
-        
+                    {/if}
+
                     <button id="mobile-nav-toggle"><!-- nav toggle for mobile devices --></button>
-                    
+
                     <nav>
-            
+
                         {if $wa->isAuthEnabled()}
                             <!-- user auth -->
                             <ul class="auth">
-                                                        
+
                                 {if $wa->user()->isAuth()}
                                     {if $wa->myUrl()}
                                         <li{if $wa->globals('isMyAccount')} class="bold"{/if}>
@@ -100,7 +155,7 @@
                                 {/if}
                             </ul>
                         {/if}
-            
+
                         {if $wa->shop}
                             <!-- cart -->
                             {$cart_total = $wa->shop->cart->total()}
@@ -119,7 +174,7 @@
                                  </a>
                             </div>
                         {/if}
-                        
+
                         <!-- core site sections (apps) -->
                         <ul class="apps">
                             {$_links = []}
@@ -142,47 +197,47 @@
                                 {/if}
                             {/foreach}
                         </ul>
-                        
+
                     </nav>
                     <div class="clear-both"></div>
-                     
+
                 </div>
             </div>
-            
+
         {/if}
 
         <!-- APP NAVIGATION -->
-        <div class="container appnav" id="header-container">
+        <div class="container appnav" id="header-container"{if $theme_settings.header_scheme|strstr:'andgray'} style="border-top: 1px solid transparent;"{/if}>
             {if $wa->globals('isMyAccount')}
-            
+
                 {* focused personal accounts navigation *}
                 {$wa->myNav('pages')}
-                
+
             {else}
 
                 {include file="`$wa_active_theme_path`/header.html" inline}
-            
-            {/if}            
-            <div class="clear-both"></div> 
-        </div>        
-        
+
+            {/if}
+            <div class="clear-both"></div>
+        </div>
+
     </header>
-    
+
     <!-- APP CONTENT -->
     <main class="maincontent">
         <div class="container">
             {include file="`$wa_active_theme_path`/main.html" inline}
         </div>
     </main>
-    
+
     <!-- FOOTER -->
     <footer class="globalfooter">
         <div class="container">
 
             {if !empty($theme_settings.footer_links)}
-                        
+
                 <div class="footer-block contact-us">
-    
+
                     <div class="social">
                         {if $wa->blog && $rss}<a href="{$rss}" title="[s`RSS`]"><i class="icon24 rss"></i></a>{/if}
                         {if !empty($theme_settings.facebook)}<a href="{$theme_settings.facebook}" title="[s`Facebook`]"><i class="icon24 facebook"></i></a>{/if}
@@ -191,15 +246,15 @@
                         {if !empty($theme_settings.instagram)}<a href="{$theme_settings.instagram}" title="[s`Instagram`]"><i class="icon24 instagram"></i></a>{/if}
                         {if !empty($theme_settings.youtube)}<a href="{$theme_settings.youtube}" title="[s`Youtube`]"><i class="icon24 youtube"></i></a>{/if}
                     </div>
-                    
+
                     {if $wa->shop}
                         <a href="mailto:{$wa->shop->settings('email')}">{$wa->shop->settings('email')}</a>
                         <strong>{$wa->shop->settings('phone')}</strong>
                     {/if}
-                    
+
                 </div>
-            
-            
+
+
                 {if $wa->shop}
                     <div class="footer-block">
                         <a href="{$wa->getUrl('shop/frontend')}" class="top">[s`Shop`]</a>
@@ -207,7 +262,7 @@
                         <a href="{$wa->getUrl('shop/frontend/checkout')}">[s`Checkout`]</a>
                     </div>
                 {/if}
-    
+
                 {if $wa->photos}
                     <div class="footer-block">
                         <a href="{$wa->getUrl('photos/frontend')}" class="top">[s`Photos`]</a>
@@ -215,7 +270,7 @@
                         <a href="{$wa->getUrl('photos/frontend')}favorites/">[s`Favorites`]</a>
                     </div>
                 {/if}
-                
+
                 {if $wa->blog}
                     <div class="footer-block">
                         <a href="{$wa->getUrl('blog/frontend')}" class="top">[s`Blog`]</a>
@@ -226,8 +281,8 @@
                         {/foreach}
                     </div>
                 {/if}
-                    
-                {if $wa->mailer && $wa->getUrl('mailer/frontend/subscribe')}  
+
+                {if $wa->mailer && $wa->getUrl('mailer/frontend/subscribe')}
                 <div class="footer-block mailer-subscribe">
                     <a href="#" class="top">[s`Follow us`]</a>
                     <form action="{$wa->getUrl('mailer/frontend/subscribe')}" id="mailer-subscribe-form" target="mailer-subscribe-iframe">
@@ -239,27 +294,27 @@
                 </div>
                 {/if}
             {/if}
-            
+
             <div class="clear-both"></div>
-            
+
             {if !empty($theme_settings.footer_note)}
                 <p class="hint footer-note">
                     {$theme_settings.footer_note}
                 </p>
             {/if}
-                
+
         </div>
-        
+
         <div class="container">
             <div class="appfooter">
                 <div class="copyright">
                     &copy; {time()|wa_datetime:"Y"}
                     <a href="{$wa_url}">{$wa->accountName()}</a>
-                </div>            
+                </div>
                 {include file="`$wa_active_theme_path`/footer.html" inline}
             </div>
         </div>
-        
+
     </footer>
 
     {* admin-only slideout sidebar for nice and smooth real time theme customizations *}
