@@ -9,7 +9,7 @@ class siteFilesAction extends waViewAction
         $this->view->assign('dirs', $dirs);
         $this->view->assign('domain', siteHelper::getDomain());
     }
-    
+
     protected function getDirs($path)
     {
         $result = array();
@@ -18,11 +18,11 @@ class siteFilesAction extends waViewAction
             if ($f !== '.' && $f !== '..' && is_dir($path.'/'.$f)) {
                 if ($sub_dirs = $this->getDirs($path.'/'.$f)) {
                     $result[] = array(
-                        'id' => $f,
-                        'childs' => $sub_dirs 
+                        'id' => utf8_encode($f),
+                        'childs' => $sub_dirs
                     );
                 } else {
-                    $result[] = $f;
+                    $result[] = utf8_encode($f);
                 }
             }
         }

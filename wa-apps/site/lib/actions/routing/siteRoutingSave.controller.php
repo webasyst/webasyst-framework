@@ -16,6 +16,9 @@ class siteRoutingSaveController extends waJsonController
             $routes = array();
         }
         $domain = siteHelper::getDomain();
+        if (empty($routes[$domain])) {
+            $routes[$domain] = array();
+        }
         $route_id = waRequest::get('route', '');
 
         // new route
@@ -25,7 +28,7 @@ class siteRoutingSaveController extends waJsonController
                 if (!$route['url']) {
                     $route['url'] = '*';
                 }
-                $route_id = $this->getRouteId(isset($routes[$domain]) ? $routes[$domain] : array());
+                $route_id = $this->getRouteId($routes[$domain]);
                 if ($route['url'] == '*') {
                     $routes[$domain][$route_id] = $route;
                     $this->response['add'] = 'bottom';
@@ -37,7 +40,7 @@ class siteRoutingSaveController extends waJsonController
                             $route['url'] .= '/*';
                         }
                     }
-                    $routes[$domain] = array($route_id => $route) + (isset($routes[$domain]) ? $routes[$domain] : array());
+                    $routes[$domain] = array($route_id => $route) + $routes[$domain];
                     $this->response['add'] = 'top';
                 }
                 // save
@@ -90,6 +93,9 @@ class siteRoutingSaveController extends waJsonController
                     </tr>';
             $this->response['html'] = $html;
         } else {
+            if (empty($routes[$domain][$route_id])) {
+                $routes[$domain][$route_id] = array();
+            }
             $old = $routes[$domain][$route_id];
             $new = $this->getRoute($old);
 

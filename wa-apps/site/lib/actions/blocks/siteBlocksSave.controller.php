@@ -7,7 +7,7 @@ class siteBlocksSaveController extends waJsonController
         $id = waRequest::get('id');
         $info = waRequest::post('info');
 
-        if (!preg_match("/^[a-z0-9\._]+$/i", $info['id'])) {
+        if (!preg_match('/^[a-z0-9\._]+$/i', $info['id'])) {
             $this->errors = array(
                 _w('Only latin characters, numbers and underscore symbol are allowed.'),
                 'input[name="info[id]"]'
@@ -28,7 +28,8 @@ class siteBlocksSaveController extends waJsonController
             } catch (Exception $e) {
                 if ($model->getById($info['id'])) {
                     $this->errors = array(
-                        _w('Block with id "%s" already exists', null, null, $info['id']) // _w('Block with id "%s" already exists')
+                        sprintf(_w('Block with id "%s" already exists'), $info['id']),
+                        'input[name="info[id]"]'
                     );
                 } else {
                     throw $e;
@@ -42,7 +43,8 @@ class siteBlocksSaveController extends waJsonController
             } catch (Exception $e) {
                 if ($model->getById($info['id'])) {
                     $this->errors = array(
-                        _w('Block with id "%s" already exists', null, null, $info['id']) // _w('Block with id "%s" already exists')
+                        sprintf(_w('Block with id "%s" already exists'), $info['id']),
+                        'input[name="info[id]"]'
                     );
                 } else {
                     throw $e;
