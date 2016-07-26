@@ -424,6 +424,7 @@ class emsruShipping extends waShipping
      * @param waOrder $order Объект, содержащий информацию о заказе
      * @param array $params
      * @return string HTML-код формы
+     * @throws waException
      */
     private function displayPrintForm112(waOrder $order, $params = array())
     {
@@ -432,7 +433,8 @@ class emsruShipping extends waShipping
 
         $order['rub'] = intval(waRequest::request('rub', round(floor($order->total))));
         $order['cop'] = min(99, max(0, intval(waRequest::request('cop', round($order->total * 100 - $order['rub'] * 100)))));
-        switch ($side = waRequest::get('side', ($order ? '' : 'print'), waRequest::TYPE_STRING)) {
+        $side = waRequest::get('side', ($order ? (waRequest::get('mass_print') ? 'front' : '') : 'print'), waRequest::TYPE_STRING);
+        switch ($side) {
             case 'front':
                 $image_info = null;
                 if ($image = $this->read('f112ep_front.gif', $image_info)) {
