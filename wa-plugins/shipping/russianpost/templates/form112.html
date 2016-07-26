@@ -122,10 +122,11 @@ img {
             </table>
         </form>
     {else}
+        {if !waRequest::get('mass_print')}
         <form action="" class="noprint">
             <input id="print_button" type="button" value="[`Печать`]" onclick="window.print();return false;"/>
         </form>
-
+        {/if}
         <div id="load_div" class="noprint" >Формирование бланка...</div>
         <p>
             <a id="img_link" style="display:none;border:0" target="_blank" href="?{$src_front}">

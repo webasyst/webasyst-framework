@@ -132,9 +132,11 @@
         </table>
     </form>
 {else}
+    {if !waRequest::get('mass_print')}
     <form action="" class="noprint">
         <input id="print_button" type="button" value="[`Печать`]" onclick="window.print();return false;"/>
     </form>
+    {/if}
     {*relative path from frontend*}
     <div id="front_div" class="noprint" style="display:none;">
         <span style="background-color: #ffc" class="noprint">Лицевая сторона формы №113эн</span>

@@ -119,7 +119,7 @@ HTML
         'control_type' => waHtmlControl::INPUT,
     ),
     'halfkilocost'     => array(
-        'value'        => array(1 => 150.90, 2 => 185.0, 3 => 193.10, 4 => 233.60, 5 => 261.00,),
+        'value'        => array(1 => 150.00, 2 => 185.0, 3 => 193.00, 4 => 233.00, 5 => 261.00,),
         'title'        => 'Стоимость отправки посылки весом до 0.5 килограмм (включительно)',
         'description'  => '',
         'control_type' => 'WeightCosts',
@@ -132,7 +132,7 @@ HTML
     ),
 
     'air'     => array(
-        'value'        => '295.00',
+        'value'        => '429.00',
         'title'        => 'Надбавка за отправление «Авиа» (руб.)',
         'description'  => 'Укажите стоимость в рублях',
         'control_type' => waHtmlControl::INPUT,

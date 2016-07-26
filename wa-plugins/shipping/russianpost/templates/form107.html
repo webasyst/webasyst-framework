@@ -105,9 +105,11 @@
         </table>
     </form>
 {else}
+    {if !waRequest::get('mass_print')}
     <form action="" class="noprint">
         <input id="print_button" type="button" src="{$wa_url}wa-plugins/shipping/russianpost/img/printer-icon.gif" value="Печать" onclick="window.print();return false;"/>
     </form>
+    {/if}
     {foreach $pages as $page}
         <p>
             <a href="?{$page}" target="_blank" title="" style="display:none;border:0">

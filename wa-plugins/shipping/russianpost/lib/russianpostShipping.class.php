@@ -1047,7 +1047,8 @@ class russianpostShipping extends waShipping
     {
         $strict = true;
         $request = waRequest::request();
-        switch ($side = waRequest::get('side', ($order ? (waRequest::get('mass_print') ? 'print' : '') : 'print'), waRequest::TYPE_STRING)) {
+        $side = waRequest::get('side', ($order ? (waRequest::get('mass_print') ? 'print' : '') : 'print'), waRequest::TYPE_STRING);
+        switch ($side) {
             case 'front':
                 $offsets = array(0, 3480);
                 $image_info = null;
@@ -1055,7 +1056,7 @@ class russianpostShipping extends waShipping
                 if ($image = $this->read('f107.gif', $image_info)) {
                     #company
                     $items = $order->items;
-                    $post_items = waRequest::request('item');
+                    $post_items = waRequest::request('item', array());
                     foreach ($offsets as $offset) {
                         $blocks = array(
                             array(270 + $offset, 3030, 55,),
@@ -1068,7 +1069,7 @@ class russianpostShipping extends waShipping
                         for ($i = 0; $i < 14; $i++) {
                             if (isset($items[$i + $page * 14])) {
                                 $item = $items[$i + $page * 14];
-                                $edited_item = ifset($post_items[$i + $page * 14]);
+                                $edited_item = ifset($post_items[$i + $page * 14], array());
 
                                 $y = 1010 + round(120.5 * $i);
                                 $this->printOnImage($image, $page * 14 + $i + 1, 290 + $offset, $y, 50);
@@ -1095,7 +1096,20 @@ class russianpostShipping extends waShipping
                             }
                         }
 
+                        $total = 0;
+
                         if ($i + $page * 14 >= count($items)) {
+                            foreach ($items as $id => $item) {
+                                $edited_item = ifset($post_items[$id], array());
+
+                                $item['quantity'] = intval(ifset($edited_item['quantity'], $item['quantity']));
+                                $item['price'] = $item['price'] * $item['quantity'];
+                                $item['price'] = self::floatval(ifset($edited_item['price'], $item['price']));
+                                if (!empty($item['price'])) {
+                                    $total += $item['price'];
+
+                                }
+                            }
                             $this->printOnImage($image, $order->getTotalQuantity(), 2010 + $offset, 2720, 50);
                             $total = waCurrency::format('%2', $total, $order->currency);
                             $this->printOnImage($image, $total, 2360 + $offset, 2720, 50);

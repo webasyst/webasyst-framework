@@ -111,9 +111,9 @@ function load(){
         <td>
             <input type="text" name="document_issued_day" value="{$settings.document_issued_day|escape}" placeholder="дд" size="2">
             /
-            <input type="text" name="document_issued_month" value="{$settings.document_issued_month|escape}" placeholder="мм"size="2">
+            <input type="text" name="document_issued_month" value="{$settings.document_issued_month|escape}" placeholder="мм" size="2">
             /
-            <input type="text" name="document_issued_year" value="{$settings.document_issued_year|escape}" placeholder="гг"size="2">
+            <input type="text" name="document_issued_year" value="{$settings.document_issued_year|escape}" placeholder="гг" size="2">
         </td>
     </tr>
     <tr>
@@ -130,9 +130,11 @@ function load(){
 </table>
 </form>
 {else}
+{if !waRequest::get('mass_print')}
 <form action="" class="noprint">
     <input id="print_button" type="button" src="{$wa_url}wa-plugins/shipping/russianpost/img/printer-icon.gif" value="Печать" onclick="window.print();return false;"/>
 </form>
+{/if}
 
 
 <div id="load_div" class="noprint">Формирование бланка...</div>
