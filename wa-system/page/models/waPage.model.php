@@ -235,7 +235,7 @@ class waPageModel extends waModel
     public function getPublishedPages($domain, $route)
     {
         $sql = "SELECT id, parent_id, name, title, full_url, url, create_datetime, update_datetime FROM ".$this->table.'
-                    WHERE status = 1 AND domain = s:domain AND route = s:route ORDER BY sort';
+                    WHERE status = 1 AND '.$this->domain_field.' = s:domain AND route = s:route ORDER BY sort';
         return $this->query($sql, array('domain' => $domain, 'route' => $route))->fetchAll('id');
     }
 
