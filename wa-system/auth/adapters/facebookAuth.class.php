@@ -19,7 +19,7 @@ class facebookAuth extends waOAuth2Adapter
     {
         // Login dialog url
         $redirect_uri = $this->getOption('redirect_uri');
-        return self::LOGIN_URL."?client_id=".$this->app_id."&scope=email&redirect_uri=".urlencode($redirect_uri);
+        return self::LOGIN_URL."?client_id=".$this->app_id."&scope=email&display=popup&redirect_uri=".urlencode($redirect_uri);
     }
 
     public function getAccessToken($code)
