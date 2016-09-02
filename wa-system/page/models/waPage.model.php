@@ -245,4 +245,9 @@ class waPageModel extends waModel
             $cache->deleteGroup('pages');
         }
     }
+    
+    public function getDomainField()
+    {
+        return $this->domain_field;
+    }
 }
