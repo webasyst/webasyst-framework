@@ -552,7 +552,11 @@ HELP;
         $result = true;
         $routing = $this->getItemConfig('routing');
         if (!empty($this->config['frontend'])) {
-            if (empty($routing)) {
+            if ($this->type != 'plugin' && (empty($routing)) ||
+            ($this->type == 'plugin'
+            && empty($routing)
+            && !empty($this->config['handlers']['routing'])
+            && !$this->pluginClassMethodExists($this->config['handlers']['routing']))) {
                 $result = false;
                 $this->tracef("Invalid %s's settings: empty routing for frontend", $this->type);
             } else {
@@ -568,6 +572,22 @@ HELP;
             }
         }
         return $result;
+    }
+
+    private function pluginClassMethodExists($method, $visibiliy = 'public')
+    {
+        $file = wa()->getConfig()->getRootPath().'/wa-apps/'
+            .$this->app_id.'/plugins/'.$this->extension_id.'/lib/'
+            .$this->app_id.ucfirst($this->extension_id).'Plugin.class.php';
+        if (is_readable($file)) {
+            wa($this->app_id);
+            include ($file);
+            $class = $this->app_id.ucfirst($this->extension_id).'Plugin';
+            $reflection = new ReflectionMethod($class, $method);
+            $reflection_method = 'is'.ucfirst($visibiliy);
+            return method_exists($class, $method) && $reflection->$reflection_method();
+        }
+        return false;
     }
 
     private function testInstall()
