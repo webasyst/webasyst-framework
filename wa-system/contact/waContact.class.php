@@ -1139,6 +1139,48 @@ class waContact implements ArrayAccess
     }
 
     /**
+     * Verifies that a password matches a hash.
+     *
+     * If configuration file wa-config/SystemConfig.class.php contains information about user-defined function
+     * wa_password_hash_verify(), then that function is used for hash checking. Otherwise, this function uses
+     * getPasswordHash() method for generating and checking hash.
+     * See description of PHP function password_verify().
+     *
+     * @param string $password Password string
+     * @param string $hash Password hash
+     * @return boolean
+     */
+    public static function verifyPasswordHash($password, $hash)
+    {
+        if (function_exists('wa_password_hash_verify')) {
+            return wa_password_hash_verify($password, $hash);
+        } else {
+            return self::getPasswordHash($password) === $hash;
+        }
+    }
+
+    /**
+     * Checks that a password hash should upgrade (e.g., change algo and/or add a salt).
+     *
+     * By default, hash is generated using PHP function md5(). If configuration file wa-config/SystemConfig.class.php
+     * contains user-defined function wa_password_hash_shouldupgrade(), then that function is used for determining of
+     * upgrade desirability. This function returns false otherwise, i.e. upgrade is not required.
+     * wa_password_hash_shouldupgrade() is useful for seamless password salt integration. It should look at prefix of
+     * hash string to detect upgrade desirability.
+     *
+     * @param string $hash Password hash
+     * @return boolean
+     */
+    public static function shouldUpgradePasswordHash($hash)
+    {
+        if (function_exists('wa_password_hash_shouldupgrade')) {
+            return wa_password_hash_shouldupgrade($hash);
+        } else {
+            return false;
+        }
+    }
+
+    /**
      * Adds contact to a category.
      *
      * @param int|string $category_id Category's simple numeric or system string key (app_id)

@@ -173,7 +173,12 @@ class waAuth implements waiAuth
         if ($login && strlen($login)) {
             $user_info = $this->getByLogin($login);
             if ($user_info && ($user_info['is_user'] > 0 || !$this->options['is_user']) &&
-                waContact::getPasswordHash($password) === $user_info['password']) {
+                waContact::verifyPasswordHash($password, $user_info['password'])) {
+                if (isset($user_info['id']) && waContact::shouldUpgradePasswordHash($user_info['password'])) {
+                    $contact_model = new waContactModel();
+                    $user_info['password'] = waContact::getPasswordHash($password);
+                    $contact_model->updateById($user_info['id'], array('password' => $user_info['password']));
+                }
                 $auth_config = wa()->getAuthConfig();
                 if (wa()->getEnv() == 'frontend' && !empty($auth_config['params']['confirm_email'])) {
                     $contact_emails_model = new waContactEmailsModel();

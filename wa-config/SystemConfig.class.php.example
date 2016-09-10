@@ -3,6 +3,27 @@
 require_once realpath(dirname(__FILE__).'/../').'/wa-system/autoload/waAutoload.class.php';
 waAutoload::register();
 
+# wa_password_hash* examples suitable for seamless salt integration
+#
+#function wa_password_hash($password)
+#{
+#    return password_hash($password, PASSWORD_BCRYPT);
+#}
+#
+#function wa_password_hash_verify($password, $hash)
+#{
+#    if (substr($hash, 0, 1) === "$") {
+#        return password_verify($password, $hash);
+#    } else {
+#        return md5($password) === $hash;
+#    }
+#}
+#
+#function wa_password_hash_shouldupgrade($hash)
+#{
+#    return substr($hash, 0, 1) !== "$" && iconv_strlen($hash) == 32;
+#}
+
 class SystemConfig extends waSystemConfig
 {
 		
