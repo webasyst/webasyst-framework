@@ -1108,4 +1108,35 @@ HTML;
         }
         return self::$helpers[$app];
     }
+    
+    
+    
+    /**
+     * @param string $app_id Application id.
+     * @param string $name Event name.
+     * @param null $params Parameters passed to event handlers.
+     * @param string $return_type
+     * @return null|string|array
+     */
+    public function event($app_id, $name, &$params = null, $return_type = 'string')
+    {
+        $result = null;
+
+        if(wa()->appExists($app_id)) {
+            $plugins = wa($app_id)->event('custom.'.$name, $params);
+
+            if(is_array($plugins)) {
+                if ($return_type == 'string') {
+                    $result = '';
+                    foreach ($plugins as $plugin) {
+                        $result .= $plugin;
+                    }
+                } elseif ($return_type == 'array') {
+                    $result = $plugins;
+                }
+            }
+        }
+
+        return $result;
+    }
 }
