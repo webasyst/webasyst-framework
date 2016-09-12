@@ -4,199 +4,28 @@
  * @property-read string $merchant_login
  * @property-read string $merchant_pass1
  * @property-read string $merchant_pass2
+ * @property-read string $merchant_test_pass1
+ * @property-read string $merchant_test_pass2
+ * @property-read string $hash
  * @property-read string $locale
  * @property-read string $testmode
  * @property-read string $gateway_currency
  * @property-read string $merchant_currency
- *
+ * @property-read int $lifetime
+ * @property-read boolean $commission
+ * @link http://docs.robokassa.ru/ru/
  *
  */
 class robokassaPayment extends waPayment implements waIPayment
 {
-    private $url = 'https://auth.robokassa.ru/Merchant/Index.aspx';
-    private $test_url = 'http://test.robokassa.ru/Index.aspx';
+    private static $url = 'https://auth.robokassa.ru/Merchant/';
 
     private $order_id;
     private $request_testmode = 1;
 
-    protected function initControls()
-    {
-        $this->registerControl('GatewayCurrency');
-    }
-
     public function allowedCurrency()
     {
-
         return $this->merchant_currency ? $this->merchant_currency : 'RUB';
-    }
-
-    public static function settingGatewayCurrency($name, $params = array())
-    {
-        $default = array(
-            'title_wrapper'       => false,
-            'description_wrapper' => false,
-            'control_wrapper'     => '%s%s%s',
-        );
-        $params = array_merge($params, $default);
-        $options = array();
-
-        $data = array();
-        $data['Language'] = 'ru';
-
-        if (!empty($params['instance']) && ($params['instance'] instanceof self)) {
-            $data['MerchantLogin'] = $params['instance']->merchant_login;
-            $test = !!$params['instance']->testmode;
-        } else {
-            $test = false;
-        }
-        if ($test || empty($data['MerchantLogin'])) {
-            $url = 'http://test.robokassa.ru/Webservice/Service.asmx/GetCurrencies?';
-        } else {
-            $url = 'http://merchant.roboxchange.com/WebService/Service.asmx/GetCurrencies?';
-        }
-
-        if (empty($data['MerchantLogin'])) {
-            $data['MerchantLogin'] = 'demo';
-        }
-
-        $url .= 'MerchantLogin='.$data['MerchantLogin'];
-        $url .= '&Language='.$data['Language'];
-
-        if (extension_loaded('curl') && ($ch = @curl_init())) {
-
-            curl_setopt($ch, CURLOPT_URL, $url);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-
-            if ((version_compare(PHP_VERSION, '5.4', '>=') || !ini_get('safe_mode')) && !ini_get('open_basedir')) {
-                //curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
-                ;
-            }
-
-            $http_response = curl_exec($ch);
-
-            if (!$http_response) {
-                self::log(
-                    preg_replace('/payment$/', '', strtolower(__CLASS__)),
-                    array(
-                        'error' => curl_errno($ch).':'.curl_error($ch),
-                    )
-                );
-                curl_close($ch);
-            } else {
-
-                if ($content_type = curl_getinfo($ch, CURLINFO_CONTENT_TYPE)) {
-                    if (preg_match('/charset=[\'"]?([a-z\-0-9]+)[\'"]?/i', $content_type, $matches)) {
-                        $charset = strtolower($matches[1]);
-                        if (!in_array($charset, array('utf-8', 'utf8'))) {
-                            $http_response = iconv($charset, 'utf-8', $http_response);
-                        }
-                    }
-                }
-                curl_close($ch);
-                $options = self::parse($http_response, $url);
-            }
-
-        } elseif (ini_get('allow_url_fopen')) {
-            $old_timeout = @ini_set('default_socket_timeout', 15);
-            $http_response = '';
-            if ($stream = fopen($url, 'rb')) {
-                while (!feof($stream)) {
-                    $http_response .= fread($stream, 4096);
-                }
-                $meta = stream_get_meta_data($stream);
-                fclose($stream);
-
-
-                if ($http_response) {
-                    foreach (ifset($meta['wrapper_data'], array()) as $meta_data) {
-                        if (strpos($meta_data, ':')) {
-                            list($meta_name, $content_type) = explode(':', $meta_data, 2);
-                            if (strtolower($meta_name) == 'content-type') {
-                                if (preg_match('/charset=[\'"]?([a-z\-0-9]+)[\'"]?/i', $content_type, $matches)) {
-                                    $charset = strtolower($matches[1]);
-                                    if (!in_array($charset, array('utf-8', 'utf8'))) {
-                                        $http_response = iconv($charset, 'utf-8', $http_response);
-                                    }
-                                }
-                                break;
-                            }
-                        }
-                    }
-                    $options = self::parse($http_response, $url);
-                }
-            }
-            @ini_set('default_socket_timeout', $old_timeout);
-        }
-        if (empty($options)) {
-            $message = '<span class="errormsg">Произошла ошибка при получении списка доступных способов оплаты шлюза (Детали в логе платежного плагина).</span>';
-            if (!empty($params['value'])) {
-                $message .= sprintf(
-                    '<span class="hint">Текущее значение настройки: <b>%s</b>.</span>',
-                    htmlentities($params['value'], ENT_NOQUOTES, waHtmlControl::$default_charset)
-                );
-            } else {
-                $message .= '<span class="hint">Покупателю будет предложено самостоятельно выбрать способ оплаты на сайте платежного шлюза.</span>';
-            }
-            return waHtmlControl::getControl(waHtmlControl::HIDDEN, $name, $params).$message;
-        } else {
-            array_unshift(
-                $options,
-                array(
-                    'title' => 'Покупателю будет предложен выбор на сайте шлюза',
-                    'value' => '',
-                    'group' => 'Пользовательский',
-                )
-            );
-            $params['options'] = $options;
-            return waHtmlControl::getControl(waHtmlControl::SELECT, $name, $params);
-        }
-    }
-
-    private static function parse($http_response, $url = null)
-    {
-        $options = array();
-        if ($xml = @simplexml_load_string($http_response)) {
-            if ($code = (int)$xml->Result->Code) {
-                self::log(
-                    preg_replace('/payment$/', '', strtolower(__CLASS__)),
-                    array(
-                        'url'   => $url,
-                        'error' => $code.': '.(string)$xml->Result->Description,
-                        'xml'   => $http_response,
-                    )
-                );
-                $options[] = array(
-                    'title' => (string)$xml->Result->Description,
-                    'value' => null,
-                    'group' => 'Ошибка получения списка валют',
-                );
-            } else {
-                foreach ($xml->Groups as $xml_group) {
-                    foreach ($xml_group->Group as $xml_group_item) {
-                        foreach ($xml_group_item->Items as $xml_items) {
-                            foreach ($xml_items as $xml_item) {
-                                $options[] = array(
-                                    'title' => (string)$xml_group_item['Description'].' — '.(string)$xml_item['Name'],
-                                    'value' => (string)$xml_item['Label'],
-                                    'group' => (string)$xml_group_item['Code'],
-                                );
-                            }
-                        }
-                    }
-                }
-            }
-        } else {
-            self::log(
-                preg_replace('/payment$/', '', strtolower(__CLASS__)),
-                array(
-                    'url'   => $url,
-                    'error' => 'Invalid service response',
-                    'xml'   => $http_response,
-                )
-            );
-        }
-        return $options;
     }
 
     public function payment($payment_form_data, $order_data, $auto_submit = false)
@@ -204,35 +33,67 @@ class robokassaPayment extends waPayment implements waIPayment
         $order = waOrder::factory($order_data);
         $description = preg_replace('/[^\.\?,\[]\(\):;"@\\%\s\w\d]+/', ' ', $order->description);
         $description = preg_replace('/[\s]{2,}/', ' ', $description);
-        $form_fields = array();
-        $form_fields['MrchLogin'] = $this->merchant_login;
-        $form_fields['OutSum'] = number_format($order->total, 2, '.', '');
-        $form_fields['InvId'] = $order->id;
-        $hash_string = implode(':', $form_fields).':'.$this->merchant_pass1;
+
+        $sum = $order->total;
+        if ($this->commission) {
+            $sum = $this->getCommission($sum);
+        }
+
+        $form_fields = array(
+            'MrchLogin' => $this->merchant_login,
+            'OutSum'    => number_format($sum, 2, '.', ''),
+            'InvId'     => $order->id,
+        );
+
+        $form_fields['SignatureValue'] = $this->getPaymentHash($form_fields);
+        $form_fields['IsTest'] = sprintf('%d', !!$this->testmode);
+        $form_fields['Desc'] = mb_substr($description, 0, 100, "UTF-8");
+        $form_fields['IncCurrLabel'] = $this->gateway_currency;
+        $form_fields['Culture'] = $this->locale;
+        $form_fields['Encoding'] = 'utf-8';
+        if (!empty($this->lifetime)) {
+            $form_fields['ExpirationDate'] = date('c', strtotime(sprintf('+%d hour', max(1, $this->lifetime))));
+        }
+
+
+        $form_fields['shp_wa_app_id'] = $this->app_id;
+        $form_fields['shp_wa_merchant_id'] = $this->merchant_id;
+        $form_fields['shp_wa_testmode'] = intval($this->testmode);
+
+        $view = wa()->getView();
+        $form_url = self::$url.'Index.aspx';
+
+        $view->assign(compact('form_fields', 'form_url', 'auto_submit'));
+
+        return $view->fetch($this->path.'/templates/payment.html');
+    }
+
+    private function getPaymentHash($form_fields)
+    {
+        $hash_string = implode(':', $form_fields).':'.($this->testmode ? $this->merchant_test_pass1 : $this->merchant_pass1);
         $hash_string .= ':shp_wa_app_id='.$this->app_id;
         $hash_string .= ':shp_wa_merchant_id='.$this->merchant_id;
 
         $hash_string .= sprintf(':shp_wa_testmode=%d', $this->testmode);
-
-
-        $form_fields['SignatureValue'] = md5($hash_string);
-        $form_fields['Desc'] = mb_substr($description, 0, 100, "UTF-8");
-        $form_fields['IncCurrLabel'] = $this->gateway_currency;
-        $form_fields['Culture'] = $this->locale;
-
-        $form_fields['shp_wa_app_id'] = $this->app_id;
-        $form_fields['shp_wa_merchant_id'] = $this->merchant_id;
-
-        $form_fields['shp_wa_testmode'] = intval($this->testmode);
-
-        $view = wa()->getView();
-
-        $view->assign('form_fields', $form_fields);
-        $view->assign('form_url', $this->getEndpointUrl());
-        $view->assign('auto_submit', $auto_submit);
-
-        return $view->fetch($this->path.'/templates/payment.html');
+        switch ($this->hash) {
+            case 'sha256':
+                if (function_exists('hash') && function_exists('hash_algos') && in_array('sha256', hash_algos())) {
+                    $hash = hash($this->hash, $hash_string);
+                } else {
+                    throw new waException('sha256 not supported');
+                }
+                break;
+            case 'sha1':
+                $hash = sha1($hash_string);
+                break;
+            case 'md5':
+            default:
+                $hash = md5($hash_string);
+                break;
+        }
+        return $hash;
     }
+
 
     protected function callbackInit($request)
     {
@@ -276,7 +137,6 @@ class robokassaPayment extends waPayment implements waIPayment
                 break;
         }
 
-
         if ($app_payment_method) {
             $transaction_data = $this->saveTransaction($transaction_data, $request);
             $this->execAppCallback($app_payment_method, $transaction_data);
@@ -313,15 +173,150 @@ class robokassaPayment extends waPayment implements waIPayment
         return $transaction_data;
     }
 
-    private function getEndpointUrl()
+
+    public static function settingGatewayCurrency($name, $params = array())
     {
-        return $this->testmode ? $this->test_url : $this->url;
+        $default = array(
+            'title_wrapper'       => false,
+            'description_wrapper' => false,
+            'control_wrapper'     => '%s%s%s',
+        );
+        $params = array_merge($params, $default);
+
+        $data = array();
+
+
+        if (!empty($params['instance']) && ($params['instance'] instanceof self)) {
+            $data['MerchantLogin'] = $params['instance']->merchant_login;
+        }
+
+        $params['options'] = self::getCurrencyOptions($data);
+
+        if (empty($params['options'])) {
+            $message = <<<HTML
+<span class="errormsg">
+    Произошла ошибка при получении списка доступных способов оплаты шлюза (Детали в логе платежного плагина).
+</span>
+HTML;
+            if (!empty($params['value'])) {
+                $template = <<<HTML
+<span class="hint">
+    Текущее значение настройки: <b>%s</b>.
+</span>
+HTML;
+                $message .= sprintf($template, htmlentities($params['value'], ENT_QUOTES, waHtmlControl::$default_charset));
+            } else {
+                $message .= <<<HTML
+<span class="hint">
+    Покупателю будет предложено самостоятельно выбрать способ оплаты на сайте платежного шлюза.
+</span>
+HTML;
+            }
+            return waHtmlControl::getControl(waHtmlControl::HIDDEN, $name, $params).$message;
+        } else {
+            return waHtmlControl::getControl(waHtmlControl::SELECT, $name, $params);
+        }
+    }
+
+    protected function initControls()
+    {
+        $this->registerControl('GatewayCurrency');
+    }
+
+    private function getCommission($amount)
+    {
+        if (!$this->gateway_currency) {
+            throw new waPaymentException('Для рассчета коммиссии необходимо выбрать способ оплаты');
+        }
+        $params = array(
+            'MerchantLogin' => $this->merchant_login,
+            'IncCurrLabel'  => $this->gateway_currency,
+            'IncSum'        => number_format($amount, 2, '.', ''),
+        );
+        $xml = self::queryXmlService('CalcOutSumm', $params);
+        if ($rate = (double)$xml->OutSum) {
+            return $rate;
+        }
+        throw new waPaymentException(sprintf('Не удалось рассчитать комиссию для %s', $this->gateway_currency));
+    }
+
+    private static function getCurrencyOptions($data = array())
+    {
+        $options = array();
+        try {
+            $params = array(
+                'MerchantLogin' => $data['MerchantLogin'],
+            );
+
+            $xml = self::queryXmlService('GetCurrencies', $params);
+
+            $options[] = array(
+                'title' => 'На выбор покупателя на сайте шлюза',
+                'value' => '',
+                'group' => 'Пользовательский',
+            );
+            foreach ($xml->Groups as $xml_group) {
+                foreach ($xml_group->Group as $xml_group_item) {
+                    foreach ($xml_group_item->Items as $xml_items) {
+                        foreach ($xml_items as $xml_item) {
+                            $options[] = array(
+                                'title' => (string)$xml_item['Name'].' — '.(string)$xml_item['Alias'],
+                                'value' => (string)$xml_item['Label'],
+                                'group' => (string)$xml_group_item['Description'],
+                            );
+                        }
+                    }
+                }
+            }
+
+        } catch (waException $ex) {
+            self::log(preg_replace('/payment$/', '', strtolower(__CLASS__)), $ex->getMessage());
+        }
+        return $options;
+    }
+
+    /**
+     * @param string $service
+     * @param string[] $params
+     * @return SimpleXMLElement
+     * @throws waException
+     */
+    private static function queryXmlService($service, $params = array())
+    {
+        $options = array(
+            'format' => waNet::FORMAT_XML,
+            'verify' => false,
+        );
+
+        if (!class_exists('waNet')) {
+            throw new waPaymentException('Требуется актуальная версия фреймворка Webasyst');
+        }
+        $net = new waNet($options);
+
+        if (empty($params['MerchantLogin'])) {
+            $params['MerchantLogin'] = 'demo';
+        }
+        if (empty($params['Language'])) {
+            $params['Language'] = 'ru';
+        }
+
+        $url = '%sWebService/Service.asmx/%s?%s';
+
+        $xml = $net->query(sprintf($url, self::$url, $service, http_build_query($params)));
+
+        if ($code = (int)$xml->Result->Code) {
+            $message = (string)$xml->Result->Description;
+            self::log(preg_replace('/payment$/', '', strtolower(__CLASS__)), $code.': '.$message);
+            throw new waPaymentException($message);
+        }
+        return $xml;
     }
 
     private function verifySign($request)
     {
-        if ($this->merchant_pass2) {
-            $hash_string = ifempty($request['OutSum'], '').':'.ifempty($request['InvId'], '').':'.$this->merchant_pass2;
+        $password = $this->testmode ? $this->merchant_test_pass2 : $this->merchant_pass2;
+        if ($password) {
+            $hash_string = ifempty($request['OutSum'], '').':'.ifempty($request['InvId'], '').':'.$password;
             $hash_string .= ':shp_wa_app_id='.$this->app_id;
             $hash_string .= ':shp_wa_merchant_id='.$this->merchant_id;
             if (isset($request['shp_wa_testmode']) || $this->testmode) {
