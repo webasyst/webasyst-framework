@@ -354,7 +354,7 @@ class waPageActions extends waActions
         // save params
         $this->saveParams($id);
         // После сохранения данных отправляем на обработку
-        if($is_new) {
+        if(!$is_new) {
             $data['id'] = $id;
         }
         // Хук после сохранения данных страницы ( тут возможна передача параметров  $data по ссылке)
