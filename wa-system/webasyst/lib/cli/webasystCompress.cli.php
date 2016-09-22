@@ -803,7 +803,6 @@ HELP;
 
         $functions_blacklist = array(
             '@^mysqli?_\.+@'              => 'Use waModel instead',
-            '@^call_user_func(_array)?$@' => 'Bad practice',
             '@^eregi?(_replace)$@'        => 'Deprecated, use preg/preg_replace',
             '@^spliti?$@'                 => 'Deprecated, use explode',
         );
