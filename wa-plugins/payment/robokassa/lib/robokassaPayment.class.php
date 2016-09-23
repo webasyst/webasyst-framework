@@ -119,8 +119,19 @@ class robokassaPayment extends waPayment implements waIPayment
         switch ($transaction_result) {
             case 'result':
                 $this->verifySign($request);
+
+                if ($this->commission) {
+                    $amount = $this->getRates($transaction_data['amount']);
+                    if ($amount && ($amount != $transaction_data['amount'])) {
+                        $template = ' С магазина была удержана комиссия, фактическая полученная сумма %0.2f';
+                        $transaction_data['view_data'] .= sprintf($template, $transaction_data['amount']);
+                        $transaction_data['amount'] = $amount;
+                    }
+                }
+
                 $app_payment_method = self::CALLBACK_PAYMENT;
                 $transaction_data['state'] = self::STATE_CAPTURED;
+                $transaction_data['type'] = self::OPERATION_AUTH_CAPTURE;
                 break;
             case 'success':
                 $url = $this->getAdapter()->getBackUrl(waAppPayment::URL_SUCCESS, $transaction_data);
@@ -163,13 +174,15 @@ class robokassaPayment extends waPayment implements waIPayment
     protected function formalizeData($transaction_raw_data)
     {
         $transaction_data = parent::formalizeData($transaction_raw_data);
-        $transaction_data['native_id'] = $this->order_id;
-        $transaction_data['order_id'] = $this->order_id;
-        $transaction_data['amount'] = ifempty($transaction_raw_data['OutSum'], '');
-        $transaction_data['currency_id'] = $this->merchant_currency;
+        $transaction_data['view_data'] = '';
         if ($this->testmode || $this->request_testmode) {
             $transaction_data['view_data'] = 'Тестовый режим';
         }
+        $transaction_data['native_id'] = $this->order_id;
+        $transaction_data['order_id'] = $this->order_id;
+        $transaction_data['amount'] = ifempty($transaction_raw_data['OutSum'], '');
+
+        $transaction_data['currency_id'] = $this->merchant_currency;
         return $transaction_data;
     }
 
@@ -231,11 +244,40 @@ HTML;
         $params = array(
             'MerchantLogin' => $this->merchant_login,
             'IncCurrLabel'  => $this->gateway_currency,
-            'IncSum'        => number_format($amount, 2, '.', ''),
+            'IncSum'        => number_format(doubleval($amount), 2, '.', ''),
         );
         $xml = self::queryXmlService('CalcOutSumm', $params);
         if ($rate = (double)$xml->OutSum) {
             return $rate;
+        }
+        throw new waPaymentException(sprintf('Не удалось рассчитать комиссию для %s', $this->gateway_currency));
+    }
+
+    private function getRates($amount)
+    {
+        if (!$this->gateway_currency) {
+            throw new waPaymentException('Для рассчета коммиссии необходимо выбрать способ оплаты');
+        }
+        $params = array(
+            'MerchantLogin' => $this->merchant_login,
+            'IncCurrLabel'  => $this->gateway_currency,
+            'OutSum'        => number_format(doubleval($amount), 2, '.', ''),
+        );
+        $xml = self::queryXmlService('GetRates', $params);
+
+        $xpath = '/RatesList/Groups/Group/Items/Currency[@Label="%s"]/Rate';
+        $xpath = sprintf($xpath, $this->gateway_currency);
+        if ($namespaces = $xml->getNamespaces(true)) {
+            $name = array();
+            foreach ($namespaces as $id => $namespace) {
+                $xml->registerXPathNamespace($name[] = 'wa'.$id, $namespace);
+            }
+            $xpath = preg_replace('@(^[/]*|[/]+)@', '$1'.implode(':', $name).':', $xpath);
+        }
+
+        if ($rates = $xml->xpath($xpath)) {
+            $rate = reset($rates);
+            return (double)$rate['IncSum'];
         }
         throw new waPaymentException(sprintf('Не удалось рассчитать комиссию для %s', $this->gateway_currency));
     }
@@ -291,7 +333,6 @@ HTML;
         if (!class_exists('waNet')) {
             throw new waPaymentException('Требуется актуальная версия фреймворка Webasyst');
         }
-        $net = new waNet($options);
 
         if (empty($params['MerchantLogin'])) {
             $params['MerchantLogin'] = 'demo';
@@ -301,14 +342,25 @@ HTML;
         }
 
         $url = '%sWebService/Service.asmx/%s?%s';
+        $net = new waNet($options);
+        try {
 
-        $xml = $net->query(sprintf($url, self::$url, $service, http_build_query($params)));
-
+            $xml = $net->query(sprintf($url, self::$url, $service, http_build_query($params)));
+        } catch (waException $ex) {
+            if ($message = $net->getResponse(true)) {
+                self::log(preg_replace('/payment$/', '', strtolower(__CLASS__)), $ex->getMessage());
+                self::log(preg_replace('/payment$/', '', strtolower(__CLASS__)), $message);
+                throw new waPaymentException($message);
+            } else {
+                throw $ex;
+            }
+        }
         if ($code = (int)$xml->Result->Code) {
             $message = (string)$xml->Result->Description;
             self::log(preg_replace('/payment$/', '', strtolower(__CLASS__)), $code.': '.$message);
             throw new waPaymentException($message);
         }
+
         return $xml;
     }
 
