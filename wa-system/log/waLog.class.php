@@ -30,7 +30,7 @@ class waLog
 
         $fd = fopen($file, 'a');
         if (flock($fd, LOCK_EX)) {
-            fwrite($fd, PHP_EOL.date('Y-m-d H:i:s:').PHP_EOL.$message);
+            fwrite($fd, PHP_EOL.PHP_EOL.'IP: '.waRequest::getIp().PHP_EOL.date('Y-m-d H:i:s').PHP_EOL.$message);
             fflush($fd);
             flock($fd, LOCK_UN);
         }
