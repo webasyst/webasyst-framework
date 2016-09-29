@@ -75,10 +75,13 @@ class waGettextParser
         } elseif (strpos($this->config['project'], 'wa-plugins') !== false) {
             $function_pattern[] = '_wp';
             $function_pattern[] = '->_w';
+            $function_pattern[] = 'sprintf_wp';
         } elseif (strpos($this->config['project'], '/plugins/')) {
             $function_pattern[] = '_wp';
+            $function_pattern[] = 'sprintf_wp';
         } elseif (strpos($this->config['project'], '/widgets/')) {
             $function_pattern[] = '_wp';
+            $function_pattern[] = 'sprintf_wp';
         } else {
             $function_pattern[] = '_w';
             $function_pattern[] = 'sprintf_wp';

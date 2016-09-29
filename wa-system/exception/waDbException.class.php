@@ -13,4 +13,13 @@
  */
 class waDbException extends waException
 {
+    public function __construct($message, $code=500)
+    {
+        $new_message = $message;
+        if (!waSystemConfig::isDebug()) {
+            $new_message = "Database error. See log for details.";
+        }
+        parent::__construct($new_message, $code);
+        waLog::log($message."\n".$this->getTraceAsString(), 'db.log');
+    }
 }

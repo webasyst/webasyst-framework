@@ -92,6 +92,12 @@ class waDbQuery
         return $this->model->query($sql)->fetch();
     }
 
+    public function fetchAssoc()
+    {
+        $sql = $this->getSQL();
+        return $this->model->query($sql)->fetchAssoc();
+    }
+
     public function fetchField($field = false, $seek = false)
     {
         $sql = $this->getSQL();

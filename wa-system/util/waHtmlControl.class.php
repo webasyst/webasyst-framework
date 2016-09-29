@@ -431,6 +431,22 @@ class waHtmlControl
         $control .= "<input type=\"file\" name=\"{$control_name}\" ";
         $control .= self::addCustomParams(array('class', 'style', 'size', 'maxlength', 'value', 'id'), $params);
         $control .= ">";
+        if (!empty($params['value'])) {
+            if (!empty($params['img_path'])) {
+                $path = wa()->getDataPath($params['img_path'], true);
+                if (file_exists($path.'/'.$params['value'])) {
+                    $url = wa()->getDataUrl($params['img_path'], true);
+                    $file = htmlentities($url.$params['value'], ENT_NOQUOTES, self::$default_charset);
+                    $control .= "<br/><span><img src=\"{$file}\"></span>";
+                } else {
+                    $file = htmlentities($params['value'], ENT_NOQUOTES, self::$default_charset);
+                    $control .= "<br/><span>{$file}</span>";
+                }
+            } else {
+                $file = htmlentities($params['value'], ENT_NOQUOTES, self::$default_charset);
+                $control .= "<br/><span>{$file}</span>";
+            }
+        }
         return $control;
     }
 
@@ -468,7 +484,7 @@ class waHtmlControl
     if(typeof(CodeMirror) == 'function') {
         setTimeout(function(){
             CodeMirror.fromTextArea(document.getElementById('{$params['id']}'), {$options});
-        },500);
+        }, 500);
     }
 </script>
 HTML;
@@ -858,7 +874,7 @@ HTML;
                     }
                 }
                 if ($param_value !== false) {
-                    if (in_array($param, array('title', 'description'))) {
+                    if (in_array($param, array('title', 'description', 'placeholder'))) {
                         $param_value = self::_wp($param_value, $params);
                     } elseif (in_array($param, array('disabled', 'readonly'))) {
                         $param_value = $param;

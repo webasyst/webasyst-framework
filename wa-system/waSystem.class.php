@@ -259,7 +259,9 @@ class waSystem
      */
     public function setUser(waUser $user)
     {
-        self::$factories_common['auth_user'] = $user;
+        if (!waConfig::get('is_template')) {
+            self::$factories_common['auth_user'] = $user;
+        }
     }
 
     /**
@@ -458,6 +460,10 @@ class waSystem
 
     public function dispatch()
     {
+        if (waConfig::get('is_template')) {
+            return;
+        }
+
         try {
             $is_dashboard = false;
             if ($this->getEnv() == 'backend') {
@@ -620,6 +626,10 @@ class waSystem
 
     public function dispatchCli($argv)
     {
+        if (waConfig::get('is_template')) {
+            return;
+        }
+
         $params = array();
         $app = $argv[1];
         $class = $app.ucfirst(ifset($argv[2], 'help'))."Cli";
@@ -1149,6 +1159,7 @@ class waSystem
         if (!$app) {
             $app = wa()->getConfig()->getPrefix();
         }
+
         return array_push(self::$activePlugin, $plugin ? array($app, $plugin) : array($app));
     }
 
@@ -1226,7 +1237,7 @@ class waSystem
             }
             return new $class($plugin_info);
         } else {
-            throw new waException('Plugin '.$plugin_id.' not found');
+            throw new waException('Plugin '.$plugin_id.' @ '.$app_id.' not found');
         }
     }
 

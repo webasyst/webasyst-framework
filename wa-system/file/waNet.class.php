@@ -70,7 +70,7 @@ class waNet
     /**
      * waNet constructor.
      * @param array $options
-     * @param array $custom_headers
+     * @param array $custom_headers key => value format
      */
     public function __construct($options = array(), $custom_headers = array())
     {
@@ -412,11 +412,11 @@ class waNet
         if (extension_loaded('curl') && function_exists('curl_init')) {
             if (empty($this->ch)) {
                 if (!($this->ch = curl_init())) {
-                    throw new Exception(_ws("Error cUrl init"));
+                    throw new waException(_ws("Error cUrl init"));
                 }
 
                 if (curl_errno($this->ch) != 0) {
-                    throw new Exception(_ws("Error cUrl init").' '.curl_errno($this->ch).' '.curl_error($this->ch));
+                    throw new waException(_ws("Error cUrl init").' '.curl_errno($this->ch).' '.curl_error($this->ch));
                 }
                 if (!is_array($curl_options)) {
                     $curl_options = array();
@@ -571,7 +571,7 @@ class waNet
             if (empty($hint)) {
                 $hint = $this->getHint(__LINE__);
             }
-            throw new Exception("Invalid server response with code {$response_code} while request {$url}.{$hint}\n\t(fopen used)");
+            throw new waException("Invalid server response with code {$response_code} while request {$url}.{$hint}\n\t(fopen used)");
         }
         return $response;
     }

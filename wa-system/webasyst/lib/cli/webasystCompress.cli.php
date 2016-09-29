@@ -28,8 +28,10 @@ class webasystCompressCli extends waCliController
     protected function preExecute()
     {
         if (class_exists('waAutoload')) {
-            waAutoload::getInstance()->add('Archive_Tar', '/wa-installer/lib/vendors/PEAR/Tar.php');
-            waAutoload::getInstance()->add('PEAR', '/wa-installer/lib/vendors/PEAR/PEAR.php');
+            if (file_exists(wa()->getConfig()->getPath('installer'))) {
+                waAutoload::getInstance()->add('Archive_Tar', '/wa-installer/lib/vendors/PEAR/Tar.php');
+                waAutoload::getInstance()->add('PEAR', '/wa-installer/lib/vendors/PEAR/PEAR.php');
+            }
         }
     }
 
@@ -47,6 +49,7 @@ Usage: php wa.php {$action} slug [params]
 Slug examples:
     myapp
     someapp/plugins/myplugin
+    someapp/widgets/mywidget
     someapp/themes/mytheme
     wa-plugins/payment/myplugin
     wa-plugins/shipping/myplugin
@@ -77,7 +80,7 @@ HELP;
             if (empty($this->params) || isset($this->params['help']) || empty($slug)) {
                 $this->printHelp();
             } else {
-                if (preg_match("@^({$id_pattern})($|/(plugins|themes)/({$id_pattern})$)@", $slug, $matches)) {
+                if (preg_match("@^({$id_pattern})($|/(plugins|widgets|themes)/({$id_pattern})$)@", $slug, $matches)) {
                     $this->type = ifset($matches[3], 'app');
                     $this->app_id = $matches[1];
                     $this->extension_id = ifset($matches[4]);
@@ -150,7 +153,28 @@ HELP;
                 }
 
                 if ($compress && !in_array($skip, array('compress', 'all'), true)) {
+                    $this->trace();
                     $this->compress();
+                    if ($skipped) {
+                        $this->trace(str_repeat('-', 80));
+                        $this->tracef("NOTICE: Archive created without %d file(s)", count($skipped));
+                        $map = array();
+                        foreach ($skipped as $file => $description) {
+                            if (!isset($map[$description])) {
+                                $map[$description] = 0;
+                            }
+                            ++$map[$description];
+                        }
+
+                        $this->trace(str_repeat('-', 80));
+                        $line = 0;
+                        $this->tracef('%2s | %-65s | %s', '##', 'DESCRIPTION', 'count');
+                        $this->trace(str_repeat('-', 80));
+                        foreach ($map as $description => $count) {
+                            $this->tracef('%02d | %-65s | %d', ++$line, $description, $count);
+                        }
+                        $this->trace(str_repeat('-', 80));
+                    }
                 } elseif ($compress) {
                     $this->trace('Test completed');
                 } else {
@@ -176,12 +200,13 @@ HELP;
     private function initPath()
     {
 
-        $type = preg_replace('@(plugin|theme|app)s$@', '$1', $this->type);
+        $type = preg_replace('@(plugin|widget|theme|app)s$@', '$1', $this->type);
         switch ($type) {
             case 'app':
                 $namespace = $this->app_id;
                 $this->path = wa()->getConfig()->getAppsPath($this->app_id, null);
                 break;
+            case 'widget': #TODO #51.808
             case 'plugin':
             case 'theme':
                 $namespace = $this->app_id.ucfirst($this->extension_id);
@@ -214,10 +239,20 @@ HELP;
         sort($this->files);
         $blacklist = array();
         if ($this->type == 'app') {
-            $blacklist['@^plugins/.+@'] = 'application\'s plugins';
+            $blacklist['@^plugins/.+@'] = "application's plugins";
             if (true) {
-                $blacklist['@^themes/(?!default).+@'] = 'application\'s themes';
+                $blacklist['@^themes/(?!default).+@'] = "application's themes";
             }
+            $blacklist['@^widgets/.+@'] = "application's widgets";
+        }
+
+        $whitelist = array();
+
+        # use .gitignore
+        if (file_exists($this->path.'/.gitignore')) {
+            $rules = $this->parseGitignore($this->path.'/.gitignore');
+            $blacklist = array_merge($rules['blacklist'], $blacklist);
+            $whitelist = array_merge($rules['whitelist'], $whitelist);
         }
 
         waRequest::setParam(
@@ -230,7 +265,45 @@ HELP;
                 'extension' => $this->extension_id,
             )
         );
-        return $this->filter($this->files, $blacklist);
+        return $this->filter($this->files, $blacklist, $whitelist);
+    }
+
+    private function parseGitignore($file)
+    {
+        $blacklist = array();
+        $whitelist = array();
+
+        $description = 'Gitignore rule ';
+
+        $lines = file($file);
+        foreach ($lines as $line) {
+            $line = trim($line);
+            if ($line === '') {
+                # empty line
+                continue;
+            }
+            if (substr($line, 0, 1) == '#') {
+                # a comment
+                continue;
+            }
+            if (substr($line, 0, 1) == '!') {
+                $line = substr($line, 1);
+                $whitelist[self::getGitPattern($line)] = $description.'!'.$line;
+            } else {
+                $blacklist[self::getGitPattern($line)] = $description.$line;
+            }
+
+        }
+        return compact('blacklist', 'whitelist');
+    }
+
+    private static function getGitPattern($pattern)
+    {
+        $pattern = preg_replace('@^/\*\*/@', '', $pattern);
+        $pattern = preg_replace('@^/@', '^', $pattern);
+        $pattern = preg_replace('@/\*\*/@', '([^/]+/){0,}', $pattern);
+        $pattern = preg_replace('@\*@', '.*', $pattern);
+        return "@{$pattern}@";
     }
 
     private function checkConfig($path)
@@ -265,6 +338,8 @@ HELP;
                     if (!is_array($config)) {
                         $this->tracef('ERROR: Invalid or empty config %s', $name);
                         $config = false;
+                    } else {
+                        //TODO check icon path #51.795
                     }
                 }
             }
@@ -475,6 +550,7 @@ HELP;
             'vendor',
             'img',
             'icon',
+            'logo',
             'frontend',
             'license',
             'critical',
@@ -497,6 +573,16 @@ HELP;
                         'my_account',
                         'mobile',
                         'sash_color',
+                        'system',
+                    )
+                );
+                break;
+            case 'widget':
+                $available = array_merge(
+                    $available,
+                    array(
+                        'rights',
+                        'size',
                     )
                 );
                 break;
@@ -626,52 +712,70 @@ HELP;
     {
         $result = true;
 
-        if (defined('PHP_BINARY')) {
-            $php_bin = constant('PHP_BINARY');
-        } elseif (defined('PHP_BINDIR')) {
-            $php_bin = constant('PHP_BINDIR');
-        } else {
-            $php_bin = 'php';
-        }
+        if ($this->execAvailable()) {
 
-        $command = sprintf('%s -v', $php_bin);
-        $res = $this->exec($command, $outputs);
-        if (($res !== 0) && ($php_bin != 'php')) {
-            $php_bin = 'php';
+            if (defined('PHP_BINARY')) {
+                $php_bin = constant('PHP_BINARY');
+            } elseif (defined('PHP_BINDIR')) {
+                $php_bin = constant('PHP_BINDIR');
+            } else {
+                $php_bin = 'php';
+            }
+
             $command = sprintf('%s -v', $php_bin);
             $res = $this->exec($command, $outputs);
-        }
-        if ($res === 0) {
-            $this->trace('Run PHP syntax check');
-            $this->tracef("bin path: %s\nPHP Version:\n\t%s\n", $php_bin, implode("\n\t", $outputs));
-            foreach ($this->files as $file) {
-                if (pathinfo($file, PATHINFO_EXTENSION) == 'php') {
-                    $command = sprintf('%s -l -f "%s/%s"', $php_bin, $this->path, $file);
-                    $outputs = null;
+            if (($res !== 0) && ($php_bin != 'php')) {
+                $php_bin = 'php';
+                $command = sprintf('%s -v', $php_bin);
+                $res = $this->exec($command, $outputs);
+            }
+            if ($res === 0) {
+                $this->trace('Run PHP syntax check');
+                $this->tracef("bin path: %s\nPHP Version:\n\t%s\n", $php_bin, implode("\n\t", $outputs));
+                foreach ($this->files as $file) {
+                    if (pathinfo($file, PATHINFO_EXTENSION) == 'php') {
+                        $command = sprintf('%s -l -f "%s/%s"', $php_bin, $this->path, $file);
+                        $outputs = null;
 
-                    $res = $this->exec($command, $outputs);
+                        $res = $this->exec($command, $outputs);
 
-                    if ($res !== 0) {
-                        $outputs = array_filter($outputs, 'trim');
-                        if ($outputs) {
-                            $this->tracef("PHP errors at file %s:", $file);
-                            foreach ($outputs as $output) {
-                                $this->tracef("\t%s", trim(str_replace($this->path.'/'.$file, 'file', $output)));
+                        if ($res !== 0) {
+                            $outputs = array_filter($outputs, 'trim');
+                            if ($outputs) {
+                                $this->tracef("PHP errors at file %s:", $file);
+                                foreach ($outputs as $output) {
+                                    $this->tracef("\t%s", trim(str_replace($this->path.'/'.$file, 'file', $output)));
+                                }
+                                $result = false;
                             }
-                            $result = false;
                         }
                     }
                 }
-            }
 
-            if ($result) {
-                $this->trace("PHP file syntax check success");
+                if ($result) {
+                    $this->trace("PHP file syntax check\tOK");
+                }
+            } else {
+                $this->trace("PHP binary not found, compile check skipped");
             }
-            $this->trace();
         } else {
-            $this->trace("PHP binary not found, compile check skipped");
+            $this->trace("WARNING: PHP syntax check skipped (proc_open function not available)");
         }
         return $result;
+    }
+
+    private function execAvailable()
+    {
+        if (function_exists('proc_open')) {
+            $disabled = preg_split('@(,\s*)@', @ini_get('disable_functions'));
+            if (in_array('proc_open', $disabled)) {
+                return false;
+            } else {
+                return true;
+            }
+        } else {
+            return false;
+        }
     }
 
     private function exec($command, &$lines)
@@ -683,6 +787,7 @@ HELP;
             array('pipe', 'w'),//stderr
         );
         $pipes = array();
+
         $process = proc_open($command, $descriptor_spec, $pipes);
         $lines = preg_split("@[\r\n]+@", stream_get_contents($pipes[1]));
         $res = stream_get_contents($pipes[2]);
@@ -878,14 +983,18 @@ HELP;
         }
         try {
             $time = microtime(true);
-            $tar_object = new Archive_Tar($this->archive_path, true);
-            $result = $tar_object->create($archive_files);
-            if ($result) {
-                $size = filesize($this->archive_path);
-                $this->tracef("\ntime\t%d ms\nsize\t%0.2f KByte\n", (microtime(true) - $time) * 1000, $size / 1024);
+            if (class_exists('Archive_Tar')) {
+                $tar_object = new Archive_Tar($this->archive_path, true);
+                $result = $tar_object->create($archive_files);
+                if ($result) {
+                    $size = filesize($this->archive_path);
+                    $this->tracef("\ntime\t%d ms\nsize\t%0.2f KByte\n", (microtime(true) - $time) * 1000, $size / 1024);
 
+                } else {
+                    $this->trace('Error during compress archive');
+                }
             } else {
-                $this->trace('Error during compress archive');
+                $this->trace('Error during compress archive: class Archive_Tar not found');
             }
         } catch (Exception $ex) {
             $this->trace($ex->getMessage());
@@ -938,7 +1047,7 @@ HELP;
         return $count;
     }
 
-    private function filter(&$files, $blacklist = array())
+    private function filter(&$files, $blacklist = array(), $whitelist = array())
     {
         $blacklist = array_merge(
             $blacklist,
@@ -961,8 +1070,9 @@ HELP;
         foreach ($files as $id => $file) {
             foreach ($blacklist as $pattern => $description) {
                 if (preg_match($pattern, $file)) {
-                    unset($files[$id]);
                     $skipped[$file] = $description;
+                    //@TODO add whitelist check
+                    unset($files[$id]);
                     break;
                 }
             }

@@ -60,7 +60,7 @@ class waException extends Exception
             $additional_info = $e->getMessage();
         }
 
-        $message = nl2br($this->getMessage());
+        $message = nl2br(htmlspecialchars($this->getMessage(), ENT_NOQUOTES, 'utf-8'));
 
         // CLI-friendly error message
         if (($wa && $wa->getEnv() == 'cli') || (!$wa && php_sapi_name() == 'cli')) {

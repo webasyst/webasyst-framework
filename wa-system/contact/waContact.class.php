@@ -1052,7 +1052,7 @@ class waContact implements ArrayAccess
      */
     public function setRight($app_id, $name, $value)
     {
-        if (!$this->isAdmin($app_id)) {
+        if ($this->id && !$this->isAdmin($app_id) && !waConfig::get('is_template')) {
             $right_model = new waContactRightsModel();
             return $right_model->save($this->id, $app_id, $name, $value);
         }

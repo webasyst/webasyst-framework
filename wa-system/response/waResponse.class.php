@@ -108,8 +108,7 @@ class waResponse
         $domain = '',
         $secure = false,
         $http_only = false
-    )
-    {
+    ) {
         if (!$path) {
             $path = waSystem::getInstance()->getRootUrl();
         }
@@ -142,8 +141,8 @@ class waResponse
     /**
      * Sets server response status.
      *
-     * @param  int  $code  Server status code
-
+     * @param  int $code Server status code
+     * @return waResponse  Instance of waResponse class
      */
     public function setStatus($code = 200)
     {
@@ -208,7 +207,7 @@ class waResponse
                 foreach ($value as $var) {
                     header($name.': '.$var, false);
                 }
-            }  else {
+            } else {
                 header($name.': '.$value);
             }
         }

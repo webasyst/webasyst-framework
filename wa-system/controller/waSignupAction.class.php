@@ -95,6 +95,18 @@ class waSignupAction extends waViewAction
 
         $auth_config = wa()->getAuthConfig();
 
+        // remove unknown or dangerous keys from $data
+        $contact_model = new waContactModel();
+        $allowed_fields = waContactFields::getAll();
+        $allowed_fields += $contact_model->getMetadata();
+        $allowed_fields = array_diff_key($allowed_fields, array_fill_keys(array(
+            'id', 'is_company', 'is_user', 'last_datetime', 'company_contact_id',
+            'create_datetime', 'create_app_id', 'create_method', 'create_contact_id',
+            'photo', 'birth_day', 'birth_month', 'birth_year',
+        ), 1));
+        $data = array_intersect_key($data, $allowed_fields);
+        unset($allowed_fields);
+
         // set unknown or unconfirmed status for email
         if (isset($data['email']) && $data['email']) {
             if (!empty($auth_config['params']['confirm_email'])) {
@@ -137,7 +149,7 @@ class waSignupAction extends waViewAction
             return false;
         }
 
-        if(isset($data['birthday']) && is_array($data['birthday']['value'])) {
+        if(isset($data['birthday']['value']) && is_array($data['birthday']['value'])) {
             foreach ($data['birthday']['value'] as $bd_id => $bd_val) {
                 if(strlen($bd_val) === 0) {
                     $data['birthday']['value'][$bd_id] = null;
