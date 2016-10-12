@@ -1095,4 +1095,9 @@ class waModel
         }
         return $schema;
     }
+
+    public function truncate()
+    {
+        $this->exec("TRUNCATE {$this->table}");
+    }
 }
