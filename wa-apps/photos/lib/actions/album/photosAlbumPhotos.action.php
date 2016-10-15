@@ -56,7 +56,7 @@ class photosAlbumPhotosAction extends waViewAction
          * Add extra widget(s)
          * @event backend_album
          */
-        $this->view->assign('backend_album', wa()->event('backend_album', $album['id']));
+        $this->view->assign('backend_album', wa()->event('backend_album', $album));
 		
         $this->template = 'templates/actions/photo/PhotoList.html';
         $this->view->assign('sidebar_width', $config->getSidebarWidth());
