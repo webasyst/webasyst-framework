@@ -134,6 +134,12 @@
                             <i class="icon10 delete-bw"></i>
                             <a href="#" id="p-album-delete" class="gray">[`Delete album`]</a>
                         {/if}
+		
+                        {* @event backend_album.%plugin_id%.settings *}
+                        <!-- plugin hook: "backend_album.settings" -->
+                        {foreach $backend_album as $plugin => $output}
+                        {if is_array($output) && isset($output.settings)}{$output.settings}{/if}
+                        {/foreach}
                     {else if (!empty($frontend_link))}
                         [`Public link`]: <a target="_blank" href="{$frontend_link}" id="photo-list-frontend-link">{$frontend_link}</a>
                         <i class="icon10 new-window"></i>
