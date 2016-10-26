@@ -123,7 +123,13 @@ class courierShipping extends waShipping
         self::sortRates($rates);
         $rates = array_reverse($rates);
         foreach ($rates as $rate) {
-            if ($limit !== null && floatval($rate['limit']) < $limit && $price === null) {
+            if (($limit !== null)
+                && ($price === null)
+                && (
+                    (floatval($rate['limit']) < $limit)
+                    || ((floatval($rate['limit']) == 0) && (floatval($limit) == 0))
+                )
+            ) {
                 $price = $this->parseCost($rate['cost']);
             }
             $prices[] = $this->parseCost($rate['cost']);
@@ -226,7 +232,9 @@ class courierShipping extends waShipping
                 }
                 try {
                     $map = wa()->getMap($map_adapter)->getHTML($shipping_address_text, array(
-                        'width' => '100%', 'height' => '350pt', 'zoom' => 16
+                        'width'  => '100%',
+                        'height' => '350pt',
+                        'zoom'   => 16
                     ));
                 } catch (waException $e) {
                     $map = '';
