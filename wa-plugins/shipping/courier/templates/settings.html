@@ -3,7 +3,7 @@
         <div class="name">{$p->_w('Shipping region')}</div>
         <div class="value">
             <select name="{$namespace|escape}[rate_zone][country]">
-                <option value=""></option>
+                <option value=""{if empty($values.rate_zone.country)} selected="selected"{/if}></option>
                 {foreach $countries as $country}
                     <option value="{$country.iso3letter|escape}"{if !empty($values.rate_zone.country) && ($values.rate_zone.country == $country.iso3letter)} selected="selected"{/if}>{$country.name|escape}</option>
                 {/foreach}
@@ -20,9 +20,9 @@
                 <input name="{$namespace|escape}[rate_zone][region]" value="" type="hidden">
             {else}
                 <select name="{$namespace|escape}[rate_zone][region]">
-                    <option value=""></option>
+                    <option value=""{if empty($values.rate_zone.region)} selected="selected"{/if}></option>
                     {foreach $regions as $region}
-                        <option value="{$region.code|escape}"{if $values.rate_zone.region == $region.code} selected="selected"{/if}>{$region.name|escape}</option>
+                        <option value="{$region.code|escape}"{if ifset($values.rate_zone.region) == $region.code} selected="selected"{/if}>{$region.name|escape}</option>
                     {/foreach}
                 </select>
                 <br>
@@ -39,7 +39,7 @@
         <div class="value">
             {$p->_w('City name')}: <input name="{$namespace|escape}[rate_zone][city]" value="{ifset($values.rate_zone.city)}" type="text">
 
-            <p class="hint">{$p->_w('If courier shipping is provided within a specific city, enter the city name so customer will not be prompted to enter city name when this shipping option is selected — city name will be automatically fetched as you specified. In case city name left blank, customer will be prompted to enter city name.')}</p>
+            <p class="hint">{$p->_w('If courier shipping is provided only within specific cities, enter the city names separated by comma so that customer is not be prompted to enter city name when this shipping option is selected; a city name will be automatically fetched as you specify it here. If this field is left blank, a customer will be prompted to enter a city name.')}</p>
         </div>
     </div>
 
@@ -185,7 +185,7 @@
 </div>
 <script type="text/javascript">
     $(function () {
-        'use strict'
+        'use strict';
 
         var container = $('#courier-pickup-settings');
 

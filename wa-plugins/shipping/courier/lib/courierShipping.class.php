@@ -160,7 +160,7 @@ class courierShipping extends waShipping
         $address = array();
         foreach ($rate_zone as $field => $value) {
             if (!empty($value)) {
-                $address[$field] = $value;
+                $address[$field] = strpos($value, ',') ? array_map('trim', explode(',', $value)) : $value;
             }
         }
         return array($address);
