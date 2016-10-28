@@ -284,6 +284,12 @@ class waPlugin
             if (!empty($params['subject']) && !empty($row['subject']) && !in_array($row['subject'], (array)$params['subject'])) {
                 continue;
             }
+            //use custom control params from settings config
+            foreach ($params as $param_key => $param_value) {
+                if (!empty($row[$param_key])) {
+                    unset($params[$param_key]);
+                }
+            }
             $row = array_merge($row, $params);
             $row['value'] = $this->getSettings($name);
             if (!empty($row['control_type'])) {
