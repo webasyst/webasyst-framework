@@ -364,7 +364,7 @@ class waFiles
                 $target = preg_replace('@\.[^\.]+$@', '', $file).'_'.$to.$extension;
             }
             $_target = $target == $file ? $target . '_' : $target;
-            if ($dst = @fopen($target, 'wb')) {
+            if ($dst = @fopen($_target, 'wb')) {
                 stream_copy_to_stream($src, $dst);
                 fclose($src);
                 fclose($dst);
