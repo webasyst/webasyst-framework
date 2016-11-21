@@ -363,6 +363,7 @@ class waFiles
                 }
                 $target = preg_replace('@\.[^\.]+$@', '', $file).'_'.$to.$extension;
             }
+            $_target = $target == $file ? $target . '_' : $target;
             if ($dst = @fopen($target, 'wb')) {
                 stream_copy_to_stream($src, $dst);
                 fclose($src);
@@ -371,6 +372,7 @@ class waFiles
                 fclose($src);
                 throw new waException("Error while convert file encoding");
             }
+            self::move($_target, $target);
             return $target;
         } else {
             return false;
