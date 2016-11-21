@@ -18,8 +18,11 @@
  * @property-read $commission
  * @property-read $extra_charge
  *
- * @property-read string $bookpost Отправлять бандероли
+ * @property-read bool $parcel Отправлять посылки
+ *
+ * @property-read bool $bookpost Отправлять бандероли
  * @property-read float $bookpost_max_weight Максимальный вес бандероли
+ * @property-read float $bookpost_max_price Максимальная сумма бандероли
  * @property-read string $bookpost_simple_cost Стоимость отправки бандероли весом 0,1 кг
  * @property-read string $bookpost_weight_simple_cost Стоимость отправки каждых 0,02 кг
  * @property-read string $bookpost_ordered_cost Стоимость отправки бандероли весом 0,1 кг
@@ -376,26 +379,7 @@ class russianpostShipping extends waShipping
                     $avia = in_array($method, array('all', 'avia'), true);
                     $ground = in_array($method, array('all', 'ground'), true);
 
-                    if ($ground) {
-                        $services['ground'] = array(
-                            'name'         => 'Посылка, наземный транспорт',
-                            'id'           => 'ground',
-                            'est_delivery' => $delivery_date,
-                            'rate'         => $rate['ground'],
-                            'currency'     => 'RUB',
-                        );
-                    }
-                    if ($avia) {
-                        $services['avia'] = array(
-                            'name'         => 'Посылка, Авиа',
-                            'id'           => 'avia',
-                            'est_delivery' => $delivery_date,
-                            'rate'         => $rate['avia'],
-                            'currency'     => 'RUB',
-                        );
-                    }
-
-                    if (($weight <= min($this->bookpost_max_weight, 2)) && ($this->getTotalPrice() < 10000)) {
+                    if (($weight <= $this->bookpost_max_weight) && ($this->getTotalPrice() < $this->bookpost_max_price)) {
                         $extra_weight = round(max(0.1, $weight) - 0.1, 3);
                         switch ($this->bookpost) {
                             case 'simple':
@@ -450,6 +434,44 @@ class russianpostShipping extends waShipping
                                 break;
 
                         }
+                    }
+
+                    switch ($this->parcel) {
+                        case 'none':
+                        case 'false':
+                        case '0':
+                        case false:
+                            break;
+                        case 'otherwise':
+                            if (isset($services['bookpost_declared_avia']) || isset($services['bookpost_declared_ground'])) {
+                                break;
+                            }
+                        /* no break */
+                        case true:
+                        case 'always':
+                            if ($ground) {
+                                $services['ground'] = array(
+                                    'name'         => 'Посылка, наземный транспорт',
+                                    'id'           => 'ground',
+                                    'est_delivery' => $delivery_date,
+                                    'rate'         => $rate['ground'],
+                                    'currency'     => 'RUB',
+                                );
+                            }
+                            if ($avia) {
+                                $services['avia'] = array(
+                                    'name'         => 'Посылка, Авиа',
+                                    'id'           => 'avia',
+                                    'est_delivery' => $delivery_date,
+                                    'rate'         => $rate['avia'],
+                                    'currency'     => 'RUB',
+                                );
+                            }
+                            break;
+                    }
+
+                    if (empty($services)) {
+                        $services = false;
                     }
 
                 } else {
@@ -568,7 +590,7 @@ class russianpostShipping extends waShipping
 
                     #
                     $this->printOnImage($image, $order->contact_lastname, 1000, 1660);
-                    $this->printOnImage($image, $order->contact_firstname.' '.$order->contact_secondname, 850, 1715);
+                    $this->printOnImage($image, $order->contact_firstname.' '.$order->contact_middlename, 850, 1715);
 
                     $size = 35;
                     $sizes = array(35, 30, 30);
@@ -656,7 +678,7 @@ class russianpostShipping extends waShipping
                         case 'paid':
                             $this->printOnImage($image, 'X', 2310, 460, 35);
                             break;
-                        default:
+                        case 'simple':
                             $this->printOnImage($image, 'X', 2310, 385, 35);
                             break;
                     }
@@ -677,7 +699,7 @@ class russianpostShipping extends waShipping
 
                     #SMS notice
                     $phone = preg_replace('@\D+@', '', $this->phone);
-                    if (waRequest::get('arrival_notice') && preg_match('@^(7|8)(\d{3})(\d{7})$@', $phone, $matches)) {
+                    if (waRequest::get('shipping_sms') && preg_match('@^(7|8)(\d{3})(\d{7})$@', $phone, $matches)) {
                         $this->printOnImagePersign($image, $matches[2], 480, 1810, 103, 80);
                         $this->printOnImagePersign($image, $matches[3], 810, 1810, 103, 80);
 
@@ -704,7 +726,7 @@ class russianpostShipping extends waShipping
                     $this->printOnImage($image, $address[2], 2300, 2280 + (35 - $size), $size);
 
                     #SMS notice
-                    if (waRequest::get('shipping_sms') && ($phone = $order->getContactField('phone'))) {
+                    if (waRequest::get('arrival_notice') && ($phone = $order->getContactField('phone'))) {
                         if (preg_match('@^(\+?7|8)(\d{3})(\d{7})$@', $phone, $matches)) {
                             $this->printOnImagePersign($image, $matches[2], 2445, 2435, 103, 80);
                             $this->printOnImagePersign($image, $matches[3], 2775, 2435, 103, 80);
@@ -1463,14 +1485,14 @@ HTML;
                 a.replaceWith(table);
                 dialog.remove();
             }
-                    
+
             $(this).hide();
         }
         return false;
     });
 })();
 </script>
-            
+
 <div class="dialog" id="{$id}_dialog" style="display: none;">
     <div class="dialog-background">
     </div>
@@ -1496,7 +1518,7 @@ HTML;
                         <div class="value">{$generic['weight']}</div>
                     </div>
                 </div>
-                
+
                 {$table}
                 <br/>
                 <span class="hint">Дата запроса к сервису Почты России для отслеживания отправления: {$updated}</span>
@@ -1588,6 +1610,9 @@ HTML;
                 }
                 unset($value);
             }
+        }
+        if ((ifset($settings['parcel'], 'none') == 'none') && (ifset($settings['bookpost'], 'none') == 'none')) {
+            throw new waException('Выберите хотя бы один вид отправления: посылку или бандероль.');
         }
         return parent::saveSettings($settings);
     }
