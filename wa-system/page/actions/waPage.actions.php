@@ -353,7 +353,12 @@ class waPageActions extends waActions
 
         // save params
         $this->saveParams($id);
-
+        // После сохранения данных отправляем на обработку
+        if(!$is_new) {
+            $data['id'] = $id;
+        }
+        // Хук после сохранения данных страницы ( тут возможна передача параметров  $data по ссылке)
+        wa()->event('page_save', $data);
         // prepare response
         $this->displayJson(array(
             'id' => $id,
@@ -437,6 +442,8 @@ class waPageActions extends waActions
         $page_model = $this->getPageModel();
         $page = $page_model->getById($id);
         if ($page) {
+            // Хук перед удалением страницы и подстраниц (т.к. надо сначала обработать и подстраницы)
+             wa()->event('page_delete', $page);
             // remove childs
             $childs = $this->getPageChilds($id);
             if ($childs) {
