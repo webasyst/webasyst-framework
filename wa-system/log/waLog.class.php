@@ -41,6 +41,21 @@ class waLog
 
     public static function dump($var, $file = 'dump.log')
     {
+        $args = func_get_args();
+
+        if (count($args) > 1) {
+            $last_arg = end($args);
+            if (is_string($last_arg) && substr($last_arg, -4) === '.log') {
+                $file = array_pop($args);
+                $vars = $args;
+            } else {
+                $vars = $args;
+                $file = 'dump.log';
+            }
+        } else {
+            $vars = array($var);
+        }
+
         $result = '';
         // Show where we've been called from
         if(function_exists('debug_backtrace')) {
@@ -54,7 +69,9 @@ class waLog
             }
         }
 
-        $result .= wa_dump_helper($var)."\n";
+        foreach ($vars as $var) {
+            $result .= wa_dump_helper($var)."\n";
+        }
 
         waLog::log($result, $file);
     }
