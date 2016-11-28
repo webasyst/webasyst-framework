@@ -30,12 +30,12 @@ class waPageModel extends waModel
 
     public function updateDomain($old_domain, $new_domain)
     {
-        return $this->updateByField(array('domain' => $old_domain), array('domain' => $new_domain));
+        return $this->updateByField(array($this->domain_field => $old_domain), array($this->domain_field => $new_domain));
     }
 
     public function updateRoute($domain, $old_route, $new_route)
     {
-        return $this->updateByField(array('domain' => $domain, 'route' => $old_route), array('route' => $new_route));
+        return $this->updateByField(array($this->domain_field => $domain, 'route' => $old_route), array('route' => $new_route));
     }
 
     public function updateFullUrl($ids, $new_url, $old_url)
@@ -245,7 +245,7 @@ class waPageModel extends waModel
             $cache->deleteGroup('pages');
         }
     }
-    
+
     public function getDomainField()
     {
         return $this->domain_field;

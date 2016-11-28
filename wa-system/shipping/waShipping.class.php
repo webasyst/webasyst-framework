@@ -46,6 +46,12 @@ abstract class waShipping extends waSystemPlugin
         }
     }
 
+    protected function initControls()
+    {
+        $this->registerControl('DeliveryIntervalControl');
+        parent::initControls();
+    }
+
     /**
      *
      * Sets destination address
@@ -227,8 +233,8 @@ abstract class waShipping extends waSystemPlugin
     /**
      * @param waOrder $order
      * @return array[string]array
-     * @return array[string]['name']string название печатной формы
-     * @return array[string]['description']string описание печатной формы
+     * @return array[string]['name']string printform's name
+     * @return array[string]['description']string printform's description
      */
     public function getPrintForms(waOrder $order = null)
     {
@@ -560,6 +566,357 @@ HTML;
     }
 
     /**
+     * @since installer 1.5.14
+     * @param $name
+     * @param array $params
+     * @return string
+     */
+    public static function settingDeliveryIntervalControl($name, $params = array())
+    {
+        // container id for interaction with js purpose
+        $wrappers = array(
+            'title'               => '',
+            'title_wrapper'       => '%s',
+            'description_wrapper' => '<br>%s<br>',
+            'description'         => '',
+            'control_wrapper'     => "%s\n%s\n%s\n",
+
+        );
+
+        $params = array_merge($params, $wrappers);
+
+        waHtmlControl::addNamespace($params, $name);
+
+        $html = "";
+
+
+        $interval_params = $params;
+        $interval_params['value'] = ifset($params['value']['interval']);
+        $interval_params['control_wrapper'] = "%2\$s\n%1\$s\n%3\$s\n";
+        $interval_params['title'] = ifset($params['title_interval'], 'Ask the desired delivery interval');
+        $html .= waHtmlControl::getControl(waHtmlControl::CHECKBOX, 'interval', $interval_params);
+        waHtmlControl::makeId($interval_params, 'interval');
+        $html .= ifset($params['control_separator'], '<br/>');
+
+        $date_params = $params;
+        $date_params['value'] = ifset($params['value']['date']);
+        $date_params['title'] = ifset($params['title_date'], 'Ask the desired date');
+        $date_params['control_wrapper'] = "%2\$s\n%1\$s\n%3\$s\n";
+        $html .= waHtmlControl::getControl(waHtmlControl::CHECKBOX, 'date', $date_params);
+        waHtmlControl::makeId($date_params, 'date');
+        $html .= ifset($params['control_separator'], '<br/>');
+
+        $intervals_params = $params;
+        $intervals_params['value'] = ifempty(
+            $params['value']['intervals'],
+            array(
+                0 => array(
+                    'from'   => 10,
+                    'from_m' => 0,
+                    'to'     => 12,
+                    'to_m'   => 0,
+                    'day'    => array_fill(0, 5, true),
+                ),
+            )
+        );
+
+        $rows = array();
+
+        waHtmlControl::addNamespace($intervals_params, 'intervals');
+
+        foreach ($intervals_params['value'] as $id => $value) {
+            $interval_items_params = $intervals_params;
+            waHtmlControl::addNamespace($interval_items_params, $id);
+
+            $default_params = array(
+                'title' => ifset($params['title_from'], 'from'),
+                'class' => 'short',
+                'value' => ifset($value['from']),
+            );
+            $from = waHtmlControl::getControl(waHtmlControl::INPUT, 'from', $default_params + $interval_items_params);
+            if (!empty($params['minutes'])) {
+                $default_params = array(
+                    'title' => '',
+                    'class' => 'short',
+                    'value' => sprintf('%02d', ifset($value['from_m'], 0)),
+                );
+                $from .= ':'.waHtmlControl::getControl(waHtmlControl::INPUT, 'from_m', $default_params + $interval_items_params);
+            }
+
+            $default_params = array(
+                'title' => ifset($params['title_till'], 'till'),
+                'class' => 'short',
+                'value' => ifset($value['to']),
+            );
+            $to = waHtmlControl::getControl(waHtmlControl::INPUT, 'to', $default_params + $interval_items_params);
+            if (!empty($params['minutes'])) {
+                $default_params = array(
+                    'title' => '',
+                    'class' => 'short',
+                    'value' => sprintf('%02d', ifset($value['to_m'], 0)),
+                );
+                $to .= ':'.waHtmlControl::getControl(waHtmlControl::INPUT, 'to_m', $default_params + $interval_items_params);
+            }
+
+            $days = array();
+            $days_params = $interval_items_params;
+            waHtmlControl::addNamespace($days_params, 'day');
+            for ($day = 0; $day < 7; $day++) {
+                $default_params = array(
+                    'value' => ifset($value['day'][$day]),
+                );
+                $days[] = waHtmlControl::getControl(waHtmlControl::CHECKBOX, $day, $default_params + $days_params);
+            }
+            $days = implode('</td><td class="js-days">', $days);
+            $rows[] = <<<HTML
+<tr>
+    <td>{$from}</td>
+    <td>{$to}</td>
+    <td class="js-days">{$days}</td>
+    <td><a class="inline-link delete-interval"><i class="icon16 delete"></i></a></td>
+    
+</tr>
+HTML;
+        }
+        $rows = implode("</tr>\n<tr>", $rows);
+
+        $days = array(
+            'Mon',
+            'Tue',
+            'Wed',
+            'Thu',
+            'Fri',
+            'Sat',
+            'Sun',
+        );
+        foreach ($days as &$day) {
+            $day = _ws($day);
+        }
+        unset($day);
+        $days = implode('</th><th class="js-days">', $days);
+
+        $interval_description = htmlentities(ifset($params['description_interval'], 'Delivery intervals'), ENT_QUOTES, waHtmlControl::$default_charset);
+        $add_interval = htmlentities(ifset($params['description_interval'], 'Add interval'), ENT_QUOTES, waHtmlControl::$default_charset);
+
+        waHtmlControl::makeId($params);
+        $html .= <<<HTML
+<table class="zebra" id="{$params['id']}">
+    <thead>
+    <tr>
+        <th colspan="2">{$interval_description}</th>
+        <th class="js-days">{$days}</th>
+        <th>&nbsp;</th>
+    </tr>
+    </thead>
+    <tbody>
+    </tbody>
+        {$rows}
+    <tfoot>
+    <tr class="white">
+        <td colspan="2"><a class="inline-link add-interval"><i class="icon16 add"></i><b><i>{$add_interval}</i></b></a></td>
+        <td colspan="8">&nbsp;</td>
+    </tr>
+    </tfoot>
+</table>
+HTML;
+
+        $html .= <<<HTML
+<script type="text/javascript">
+    $(function () {
+        'use strict';
+        var table = $('#{$params['id']}');
+        var date = $('#{$date_params['id']}');
+        var interval = $('#{$interval_params['id']}');
+
+        interval.change(function (event) {
+            var fast = event.originalEvent ? false : true;
+            if (this.checked) {
+                table.show(fast ? null : 400);
+                date.attr('disabled', null);
+            } else {
+                table.hide(fast ? null : 400);
+                date.attr('disabled', true);
+            }
+        }).change();
+
+        date.change(function (event) {
+            var fast = event.originalEvent ? false : true;
+            if (this.checked) {
+                table.find('.js-days').show(fast ? null : 400);
+                table.find('.js-days input').attr('disabled', null);
+            } else {
+                table.find('.js-days').hide(fast ? null : 400);
+                table.find('.js-days input').attr('disabled', true);
+            }
+        }).change();
+
+        var set = function (tr, last) {
+            tr.find('input[type="checkbox"]').attr('checked', true);
+            var value = last ? parseInt(last.find('input[name*="[to]"]').val()) : 10;
+            var delta = last ? (24 + value - parseInt(last.find('input[name*="[from]"]').val())) : 2;
+            tr.find('input[name*="[from]"]').val(value % 24).trigger('change');
+            tr.find('input[name*="[to]"]').val((value + delta) % 24).trigger('change');
+        };
+
+        table.on('keyup, change', 'input[name*="[from]"]', function () {
+            var el = $(this);
+            var value = el.val();
+            if (!value) {
+                value = 0;
+            }
+            el.val(Math.max(0, Math.min(23, parseInt(value))));
+        });
+
+        table.on('keyup, change', 'input[name*="[to]"]', function () {
+            var el = $(this);
+            var value = el.val();
+            if (!value) {
+                value = 0;
+            }
+            el.val(Math.max(1, Math.min(23, parseInt(value))));
+        });
+
+        table.on('click', '.add-interval', function () {
+            var last = table.find('tbody > tr:last');
+            var clone = last.clone();
+
+            clone.find('input').each(function () {
+                var input = $(this);
+                // increase index inside input name
+                var name = input.attr('name');
+                input.attr('name', name.replace(/\[intervals\]\[(\d+)\]/, function (str, p1) {
+                    return '[intervals][' + (parseInt(p1, 10) + 1) + ']';
+                }));
+            });
+            set(clone, last);
+
+            last.after(clone);
+
+            return false;
+        });
+
+        table.on('click', '.delete-interval', function () {
+            var el = $(this);
+            if (table.find('tbody > tr').length > 1) {
+                el.parents('tr:first').remove();
+            } else {
+                set(el.parents('tr:first'));
+            }
+            return false;
+        });
+
+    });
+</script>
+HTML;
+        return $html;
+    }
+
+    /**
+     * @since installer 1.5.14
+     * @param string $name
+     * @param array $params
+     * @return string
+     */
+    public static function settingCustomDeliveryIntervalControl($name, $params = array())
+    {
+        $html = '';
+
+        $wrappers = array(
+            'title'               => '',
+            'title_wrapper'       => '%s',
+            'description_wrapper' => '<br>%s<br>',
+            'description'         => '',
+            'control_wrapper'     => "%s\n%s\n%s\n",
+
+        );
+
+        $params = array_merge($params, $wrappers);
+
+        $date_params = $params;
+
+        if (isset($params['params']['date'])) {
+            $date_params['style'] = "position: relative; z-index: 100000;";
+            $date_name = preg_replace('@([_\w]+)(\]?)$@', '$1.date$2', $name);
+            $offset = intval(ifset($params['params']['date'], 0));
+            $html .= waHtmlControl::getControl(waHtmlControl::INPUT, $date_name, $date_params);
+            waHtmlControl::makeId($date_params, $date_name);
+        }
+
+        $interval_params = $params;
+        $intervals = ifempty($params['params']['intervals'], array());
+        $interval_params['options'] = array();
+        foreach ($intervals as $interval) {
+            if (is_array($interval) && isset($interval['from']) && isset($interval['to'])) {
+                $days = ifset($interval['day'], array());
+                $value = sprintf(
+                    '%d:%02d-%d:%02d',
+                    $interval['from'],
+                    ifset($interval['from_m'], 0),
+                    $interval['to'],
+                    ifset($interval['to_m'], 0)
+                );
+                $interval_params['options'][] = array(
+                    'value' => $value,
+                    'title' => $value,
+                    'data'  => array('days' => array_keys($days)),
+                );
+            }
+
+        }
+
+        $interval_name = preg_replace('@([_\w]+)(\]?)$@', '$1.interval$2', $name);
+        if ($interval_params['options']) {
+            $html .= waHtmlControl::getControl(waHtmlControl::SELECT, $interval_name, $interval_params);
+            waHtmlControl::makeId($interval_params, $interval_name);
+        } elseif (!empty($params['options']['interval'])) {
+            $html .= waHtmlControl::getControl(waHtmlControl::INPUT, $interval_name, $interval_params);
+        }
+        if (isset($params['params']['date']) && isset($offset)) {
+            $root_url = wa()->getRootUrl();
+            $html .= <<<HTML
+<script type="text/javascript">
+    $(function () {
+        'use strict';
+        var date = $('#{$date_params['id']}');
+        var interval = $('#{$interval_params['id']}');
+        var init = function () {
+            date.datepicker();
+            date.datepicker("option", {
+                "dateFormat": 'yy-mm-dd',
+                'minDate': {$offset},
+                'onSelect': function (dateText) {
+                    var d = new Date(dateText);
+                    /**
+                     * filter select by days
+                     */
+                    interval.find('option').each(function () {
+                        var option = $(this);
+                        option.attr('disabled', (option.data('days').indexOf((d.getDay() + 6) % 7) == -1) ? 'disabled' : null);
+                    });
+                }
+            });
+            $('.ui-datepicker').css('zIndex', 999999);
+        };
+        if (typeof(date.datepicker) != 'function') {
+            $("<link/>", {
+                rel: "stylesheet",
+                type: "text/css",
+                href: "{$root_url}wa-content/css/jquery-ui/jquery-ui-1.7.2.custom.css"
+            }).appendTo("head");
+            $.getScript('{$root_url}wa-content/js/jquery-ui/jquery-ui-1.7.2.custom.min.js', init);
+        } else {
+            init();
+        }
+
+    });
+</script>
+HTML;
+        }
+
+        return $html;
+    }
+
+    /**
      *
      * Get shipping plugin
      * @param string $id
@@ -617,7 +974,7 @@ HTML;
     /**
      *
      * @throws waException
-     * @return waAppPayment
+     * @return waAppShipping
      */
     final protected function getAdapter()
     {

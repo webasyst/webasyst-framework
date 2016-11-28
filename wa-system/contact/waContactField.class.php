@@ -410,8 +410,8 @@ abstract class waContactField
             }
 
             // Check if current user can view $cid profile.
-            if (!$rights_model && class_exists('ContactsRightsModel')) {
-                $rights_model = new ContactsRightsModel();
+            if (!$rights_model && class_exists('contactsRightsModel')) {
+                $rights_model = new contactsRightsModel();
                 $userId = waSystem::getInstance()->getUser()->getId();
             }
             if ($rights_model && $rights_model->getRight($userId, $cid)) {

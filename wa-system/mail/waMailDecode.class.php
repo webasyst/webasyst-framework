@@ -106,7 +106,7 @@ class waMailDecode
                 if (!$part) {
                     if ($this->is_last) {
                         fclose($this->source);
-                        throw new waException("Письмо не было завершено, а данные в файле уже кончились.");
+                        throw new waException("Letter was not completed, but there are no more data in file.");
                     }
                     $this->read();
                 }
@@ -120,7 +120,7 @@ class waMailDecode
                 if (!$this->options['headers_only']) {
                     if ($this->options['max_attachments'] >= 0 && count($this->attachments) < $this->options['max_attachments']) {
                         fclose($this->source);
-                        throw new waException("Конец письма уже достигнут. Есть какие-то данные еще.");
+                        throw new waException("End of letter reached. There are some more data.");
                     }
                 }
             }

@@ -30,6 +30,8 @@ class waContactNameField extends waContactStringField
     {
         if ($contact['is_company']) {
             $name = !empty($contact['company']) ? $contact['company'] : '';
+        } else if ($contact['is_user'] && ($contact['is_user'] == 1 || $contact['login'])) {
+            $name = waUser::formatName($contact);
         } else {
             $name = array();
             foreach(self::getNameOrder() as $part) {
@@ -119,13 +121,15 @@ class waContactNameField extends waContactStringField
         return $value;
     }
 
-    public static function formatName($contact)
+    public static function formatName($contact, $force_not_user = false)
     {
         if (!is_array($contact) && !($contact instanceof waContact)) {
             return '';
         }
         if (!empty($contact['is_company'])) {
             $name = !empty($contact['company']) ? $contact['company'] : '';
+        } else if (!$force_not_user && !empty($contact['is_user']) && ($contact['is_user'] == 1 || !empty($contact['login']))) {
+            $name = waUser::formatName($contact);
         } else {
             $name = array();
             foreach(self::getNameOrder() as $part) {
@@ -135,9 +139,9 @@ class waContactNameField extends waContactStringField
                     }
                 }
             }
-
             $name = trim(implode(' ', $name));
         }
+
         if (!$name && $name !== '0') {
             $email = '';
             if ($contact instanceof waContact) {

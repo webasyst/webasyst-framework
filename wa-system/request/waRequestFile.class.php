@@ -25,7 +25,8 @@
  * @property string $type
  * @property int $size
  * @property string $tmp_name
- * @property string $error
+ * @property string $error Error description
+ * @property int $error_code UPLOAD_ERR_* constant
  * @property string $extension
  */
 class waRequestFile
@@ -50,7 +51,7 @@ class waRequestFile
             $this->data = null;
             return;
         }
-        foreach($this->data as $k => $v) {
+        foreach ($this->data as $k => $v) {
             if (!isset($data[$k])) {
                 throw new waException("Key {$k} must be set.");
             }
@@ -93,8 +94,13 @@ class waRequestFile
         }
     }
 
-    /** When 2-nd parameter is omitted, first one is considered to be full path */
-    public function copyTo($dir, $name=null)
+    /**
+     * @param string $dir
+     * @param string $name When 2-nd parameter is omitted, first one is considered to be full path
+     * @return bool
+     * @throws waException
+     */
+    public function copyTo($dir, $name = null)
     {
         return @copy($this->data['tmp_name'], $this->concatFullPath($dir, $name));
     }
@@ -169,7 +175,7 @@ class waRequestFile
             }
             if (!$this->skip_uploaded_check && !is_uploaded_file($tmp_name)) {
                 throw new waException('Possible file upload attack: '.$tmp_name);
-            } else if ($this->skip_uploaded_check && !file_exists($tmp_name)) {
+            } elseif ($this->skip_uploaded_check && !file_exists($tmp_name)) {
                 throw new waException('No such file ($tmp_name): '.$tmp_name);
             }
         }
@@ -213,6 +219,7 @@ class waRequestFile
      * @param string $dir - directory
      * @param string $name - name of the file
      * @return string - full path
+     * @throws waException
      */
     protected function concatFullPath($dir, $name)
     {
@@ -222,7 +229,7 @@ class waRequestFile
 
         if (!$this->skip_uploaded_check && !is_uploaded_file($this->data['tmp_name'])) {
             throw new waException('Temporary file does not exist anymore.');
-        } else if ($this->skip_uploaded_check && !file_exists($this->data['tmp_name'])) {
+        } elseif ($this->skip_uploaded_check && !file_exists($this->data['tmp_name'])) {
             throw new waException('Temporary file does not exist anymore.');
         }
 

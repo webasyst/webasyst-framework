@@ -44,7 +44,7 @@ jQuery.fn.waDialog = function (options) {
         var d = $('<div ' + (id ? 'id = "' + id + '"' : '') + ' class="dialog ' + cl + '" style="display: none">'+
                     '<div class="dialog-background"></div>'+
                     '<div class="dialog-window"></div>'+
-              '</div>').appendTo('body');
+              '</div>').appendTo(d.parent().length ? d.parent() : 'body');
         if (content.find('.dialog-content').length || content.find('.dialog-buttons').length) {
             $('.dialog-window', d).append(content.show());
             var dc = content.find('.dialog-content');

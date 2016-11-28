@@ -16,7 +16,7 @@
     </style>
     <script src="{$wa_url}wa-content/js/jquery/jquery-1.11.1.min.js" type="text/javascript"></script>
     <script src="{$wa_url}wa-content/js/jquery/jquery-migrate-1.2.1.min.js" type="text/javascript"></script>
-    <script src="{$wa_url}wa-content/js/jquery-wa/wa.dialog.js" type="text/javascript"></script>
+    <script src="{$wa_url}wa-content/js/jquery-wa/wa.dialog.js?{$wa->version(true)}" type="text/javascript"></script>
 </head>
 <body>
 <div id="wa-login"{if $background} style="background-image: url('{$wa_url}{$background}'); {if !$stretch} background-size: auto;{/if}"{/if}>
@@ -47,5 +47,11 @@
         }
     });
 </script>
+
+<script src="{$wa_url}wa-content/js/jquery-wa/wa.core.js?{$wa->version(true)}"></script>
+<script>
+$.wa.determineTimezone({$wa_url|json_encode});
+</script>
+
 </body>
 </html>

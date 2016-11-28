@@ -234,23 +234,14 @@ class waModel
         $sql = trim($sql);
         $result = $this->adapter->query($sql);
         if (!$result) {
-            $error = "Query Error\nQuery: ".$sql.
-                     "\nError: ".$this->adapter->errorCode().
-                     "\nMessage: ".$this->adapter->error();
-            $trace = debug_backtrace();
-            $stack = "";
-            $default = array('file' => 'n/a', 'line' => 'n/a');
-            foreach ($trace as $i => $row) {
-                $row = array_merge($row, $default);
-                $stack .= $i.". ".$row['file'].":".$row['line']."\n".
-                     (isset($row['class']) ? $row['class'] : '').
-                     (isset($row['type']) ? $row['type'] : '').
-                     $row['function']."()\n";
-            }
-            waLog::log($error."\nStack:\n".$stack, 'db.log');
+            $error = sprintf(
+                "Query Error %d: %s\nQuery: %s",
+                $this->adapter->errorCode(),
+                $this->adapter->error(),
+                $sql
+            );
             throw new waDbException($error, $this->adapter->errorCode());
         }
-
         return $result;
     }
 
@@ -955,6 +946,18 @@ class waModel
         return true;
     }
 
+    /** Truncates the table, deleting all rows. */
+    public function truncate()
+    {
+        try {
+            $this->exec("TRUNCATE {$this->table}");
+        } catch (Exception $e) {
+            // DB user does not have enough rights for TRUNCATE.
+            // Fall back to DELETE. Slow but sure.
+            $this->exec("DELETE FROM {$this->table}");
+        }
+    }
+
     /**
      * Prepare query and returns object of waDbStatement
      *
@@ -1094,10 +1097,5 @@ class waModel
             }
         }
         return $schema;
-    }
-
-    public function truncate()
-    {
-        $this->exec("TRUNCATE {$this->table}");
     }
 }

@@ -50,7 +50,7 @@ class waContactCountryField extends waContactSelectField
         }
         if ($id) {
             if (! ( $result = $this->model->name($id))) {
-                throw new Exception('Unknown country ISO-3 code: '.$id);
+                throw new waException('Unknown country ISO-3 code: '.$id);
             }
             return $result;
         }

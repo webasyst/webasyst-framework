@@ -1,68 +1,28 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd"><html>
+<!DOCTYPE html>
+<html>
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <title>{$wa->appName()} &mdash; {$wa->accountName()}</title>
 
-    <link rel="stylesheet" type="text/css" href="{$wa_url}wa-content/js/jquery-plugins/jquery-imageareaselect/imgareaselect-default.css?{$wa->version()}" />
+    <link rel="stylesheet" href="{$wa_url}wa-content/css/profile/profile-layout.css?{$wa->version(true)}">
     {$wa->css()}
-    <link rel="stylesheet" type="text/css" href="{$wa_app_static_url}css/contacts.css?{$wa->version()}" media="screen" />
-    <!--[if IE 7]>
-    <link type="text/css" href="{$wa_app_static_url}css/contacts.ie7.css?{$wa->version()}" rel="stylesheet">
-    <![endif]-->
-    <!--[if IE 8]>
-    <link type="text/css" href="{$wa_app_static_url}css/contacts.ie8.css?{$wa->version()}" rel="stylesheet">
-    <![endif]-->
 
-    {*
-    * jQuery with plugins
-    *}
-    <script type="text/javascript" src="{$wa_url}wa-content/js/jquery/jquery-1.8.2.min.js"></script>
-    {wa_js file="js/compiled/contacts-jquery.js"}
-    {$wa_url}wa-content/js/jquery-ui/jquery.ui.core.min.js
-    {$wa_url}wa-content/js/jquery-ui/jquery.ui.widget.min.js
-    {$wa_url}wa-content/js/jquery-ui/jquery.ui.datepicker.min.js
-    {$wa_url}wa-content/js/jquery-ui/jquery.ui.mouse.min.js
-    {$wa_url}wa-content/js/jquery-ui/jquery.ui.draggable.min.js
-    {$wa_url}wa-content/js/jquery-ui/jquery.ui.droppable.min.js
-    {$wa_url}wa-content/js/jquery-ui/jquery.ui.sortable.min.js
-
-
-    {$wa_url}wa-content/js/jquery-plugins/jquery.formalize.js
-    {$wa_url}wa-content/js/jquery-plugins/jquery.history.js
-    {$wa_url}wa-content/js/jquery-plugins/jquery-imageareaselect/jquery.imgareaselect.min.js
-    {$wa_url}wa-content/js/jquery-plugins/jquery.json.js
-    {$wa_url}wa-content/js/jquery-plugins/jquery.scrollTo-min.js
-    {$wa_url}wa-content/js/jquery-plugins/json2.js
-    {$wa_url}wa-content/js/jquery-plugins/jquery.store.js
-    {$wa_url}wa-content/js/jquery-plugins/jquery.hoverIntent.minified.js
-    {$wa_url}wa-content/js/jquery-wa/wa.dialog.js
-    {$wa_app_static_url}js/jquery.sticky.js
-    {/wa_js}
-    <script type="text/javascript" src="{$wa_url}wa-content/js/jquery-wa/wa.core.js?{$wa->version()}"></script>
-    <script type="text/javascript" src="?module=profile&action=loc&v={$wa->version()}"></script>
-
-    {*
-    * Contacts app
-    *}
-    {wa_js file="js/compiled/contacts.js"}
-        {$wa_app_static_url}js/fieldTypes.js
-        {$wa_app_static_url}js/wa.controller.js
-        {$wa_app_static_url}js/wa.grid.js
-        {$wa_app_static_url}js/wa.history.js
-        {$wa_app_static_url}js/wa.contactEditor.js
-    {/wa_js}
-
-    {$wa->js(false)}
+    <script src="{$wa_url}wa-content/js/jquery/jquery-1.8.2.min.js"></script>
+    <script src="{$wa_url}wa-content/js/jquery-wa/wa.core.js?{$wa->version(true)}"></script>
 </head>
-<body id="{$wa_app}">
+<body>
+
 <div id="wa">
     {$wa->header()}
-    <div id="wa-app">
-        <div id="c-core">
-            {$content}
+
+    <div class="t-app-wrapper" id="wa-app">
+        <div class="t-content-wrapper">
+            <div class="t-content-block" id="t-content">
+                {$content}
+            </div>
         </div>
     </div>
 </div>
+
 </body>
 </html>

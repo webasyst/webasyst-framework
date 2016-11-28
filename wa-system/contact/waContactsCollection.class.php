@@ -187,6 +187,8 @@ class waContactsCollection
                 } elseif ($f == 'photo_url' || substr($f, 0, 10) == 'photo_url_') {
                     $required_fields['photo'] = 'c';
                     $this->post_fields['_internal'][] = $f;
+                } elseif ($f == '_event') {
+                    $this->post_fields['_internal'][] = $f;
                 } else {
                     $this->post_fields['data'][] = $f;
                 }
@@ -229,6 +231,11 @@ class waContactsCollection
         $data = $this->getModel()->query($sql)->fetchAll('id');
         $ids = array_keys($data);
 
+        // Update group and category count, if needed
+        if ($this->update_count && $limit > count($data) && count($data) != $this->update_count['count']) {
+            $this->update_count['model']->updateCount($this->update_count['id'], count($data));
+        }
+
         //
         // Load fields from other storages
 
@@ -265,25 +272,28 @@ class waContactsCollection
                         } else {
                             switch($f) {
                                 case '_online_status':
-
                                     $llm = new waLoginLogModel();
-                                    $contact_ids_map = $llm->select('DISTINCT contact_id')->where('datetime_out IS NULL')->fetchAll('contact_id');
                                     $timeout = waUser::getOption('online_timeout');
+                                    $contact_ids_map = $llm->select('DISTINCT contact_id')
+                                        ->where('contact_id IN (?)', array($ids))
+                                        ->where('datetime_out IS NULL')
+                                        ->fetchAll('contact_id');
                                     foreach($data as &$v) {
+                                        $v['_online_status'] = 'offline';
+                                        // Ever logged in?
                                         if (isset($v['last_datetime']) && $v['last_datetime'] && $v['last_datetime'] != '0000-00-00 00:00:00') {
-                                              if (time() - strtotime($v['last_datetime']) < $timeout) {
-                                                  if (isset($contact_ids_map[$v['id']])) {
-                                                      $v['_online_status'] = 'online';
-                                                  } else {
-                                                      $v['_online_status'] = 'offline';
-                                                  }
-                                              }
-                                          }
-                                          $v['_online_status'] = 'offline';
+                                            // Were active in the last 5 minutes?
+                                            if (time() - strtotime($v['last_datetime']) < $timeout) {
+                                                // Make sure user didn't log out
+                                                if (isset($contact_ids_map[$v['id']])) {
+                                                    $v['_online_status'] = 'online';
+                                                }
+                                            }
+                                        }
                                     }
                                     unset($v);
-
                                     break;
+
                                 case '_access':
                                     $rm = new waContactRightsModel();
                                     $accessStatus = $rm->getAccessStatus($ids);
@@ -296,6 +306,26 @@ class waContactsCollection
                                     }
                                     unset($v);
                                     break;
+
+                                case '_event':
+                                    $cem = new waContactEventsModel();
+                                    $events = $cem->getEventByContact($ids);
+                                    $events_by_contacts = array();
+                                    foreach ($events as $id=>$e) {
+                                        if (empty($events_by_contacts[$e['contact_id']])) {
+                                            $events_by_contacts[$e['contact_id']] = $e;
+                                        }
+                                    }
+                                    foreach($data as $id => &$v) {
+                                        if (!isset($events_by_contacts[$id])) {
+                                            $v['_event'] = '';
+                                            continue;
+                                        }
+                                        $v['_event'] = $events_by_contacts[$id];
+                                    }
+                                    unset($v);
+                                    break;
+
                                 default:
                                     throw new waException('Unknown internal field: '.$f);
                             }
@@ -360,13 +390,13 @@ class waContactsCollection
                         'new'        => $new,
                     );
                     /**
-                * @event contacts_collection
-                * @param array [string]mixed $params
-                * @param array [string]waContactsCollection $params['collection']
-                * @param array [string]boolean $params['auto_title']
-                * @param array [string]boolean $params['new']
-                * @return bool null if ignored, true when something changed in the collection
-                */
+                    * @event contacts_collection
+                    * @param array [string]mixed $params
+                    * @param array [string]waContactsCollection $params['collection']
+                    * @param array [string]boolean $params['auto_title']
+                    * @param array [string]boolean $params['new']
+                    * @return bool null if ignored, true when something changed in the collection
+                    */
                     $processed = wa()->event(array('contacts', 'contacts_collection'), $params);
                     if (!$processed) {
                         $this->where[] = 0;
@@ -616,7 +646,14 @@ class waContactsCollection
 
     protected function usersPrepare($params, $auto_title = true)
     {
-        $this->where[] = 'c.is_user = 1';
+        $this->where[] = 'c.login IS NOT NULL';
+        if ($params == 'banned') {
+            $this->where[] = 'c.is_user = -1';
+        } else if ($params == 'active_and_banned') {
+            $this->where[] = 'c.is_user <> 0';
+        } else {
+            $this->where[] = 'c.is_user = 1';
+        }
         if ($auto_title) {
             $this->addTitle(_ws('All users'));
         }
@@ -640,11 +677,12 @@ class waContactsCollection
             );
         }
 
+        $this->where[] = "cg.group_id = ".(int)$id;
+        $this->where[] = "c.is_user > 0";
         $this->joins[] = array(
             'table' => 'wa_user_groups',
             'alias' => 'cg',
         );
-        $this->where[] = "cg.group_id = ".(int)$id;
     }
 
 

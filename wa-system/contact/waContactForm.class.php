@@ -211,19 +211,9 @@ class waContactForm
         if ($this->post === null && waRequest::post($this->opt('namespace'))) {
             $post = array();
             $fields = $this->fields();
-            $is_frontend = wa()->getEnv() === 'frontend';
             foreach ((array)waRequest::post($this->opt('namespace')) as $f_id => $value) {
                 if (isset($fields[$f_id])) {
-                    if ($is_frontend) {
-                        $my_profile = $fields[$f_id]->getParameter('my_profile');
-                        if ($my_profile && $my_profile == '2') {
-                            $post[$f_id] = $value;
-                        } else {
-                            $post[$f_id] = $value;    
-                        }
-                    } else {
-                        $post[$f_id] = $value;
-                    }
+                    $post[$f_id] = $value;
                 }
             }
             if ($post) {
@@ -243,7 +233,7 @@ class waContactForm
             } else {
                 return $this->post[$field_id];
             }
-            
+
         }
         return $this->post;
     }

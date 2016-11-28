@@ -267,7 +267,7 @@ class waHtmlControl
                 return $message;
             }
         } else {
-            throw new Exception("Call undefined function {$function_name} at ".__CLASS__);
+            throw new waException("Call undefined function {$function_name} at ".__CLASS__);
         }
 
     }
@@ -285,7 +285,7 @@ class waHtmlControl
         if (is_callable($callback)) {
             self::$custom_controls[$type] = $callback;
         } else {
-            throw new Exception("invalid callback for control type {$type}");
+            throw new waException("invalid callback for control type {$type}");
         }
     }
 
@@ -302,14 +302,14 @@ class waHtmlControl
         //settings_{$name}_{$id}
         $params['id'] = $id ? $id : ((isset($params['id']) && $params['id']) ? $params['id'] : strtolower(__CLASS__));
         if (isset($params['namespace'])) {
-
+            $params['id'] .= '_'.implode('_', (array)$params['namespace']);
         }
         if ($name) {
             $params['id'] .= "_{$name}";
         } elseif ($name === false) {
             $params['id'] .= ++$counter.'_';
         }
-        $params['id'] = preg_replace(array('/[_]{2,}/', '/[_]{1,}$/'), array('_', ''), str_replace(array('[', ']'), '_', $params['id']));
+        $params['id'] = preg_replace(array('/[_]{2,}/', '/[_]{1,}$/'), array('_', ''), str_replace(array('[', ']','.'), '_', $params['id']));
     }
 
     final private static function makeNamespace($params)
@@ -404,6 +404,7 @@ class waHtmlControl
             'value',
             'placeholder',
             'readonly',
+            'required',
             'disabled',
             'autocomplete',
             'autofocus',
@@ -419,7 +420,7 @@ class waHtmlControl
     {
         $control_name = htmlentities($name, ENT_QUOTES, self::$default_charset);
         $control = "<input type=\"hidden\" name=\"{$control_name}\" ";
-        $control .= self::addCustomParams(array('class', 'value'), $params);
+        $control .= self::addCustomParams(array('class', 'value', 'disabled'), $params);
         $control .= ">";
         return $control;
     }
@@ -429,8 +430,24 @@ class waHtmlControl
         $control = '';
         $control_name = htmlentities($name, ENT_QUOTES, self::$default_charset);
         $control .= "<input type=\"file\" name=\"{$control_name}\" ";
-        $control .= self::addCustomParams(array('class', 'style', 'size', 'maxlength', 'value', 'id'), $params);
+        $control .= self::addCustomParams(array('class', 'style', 'id'), $params);
         $control .= ">";
+        if (!empty($params['value'])) {
+            if (!empty($params['img_path'])) {
+                $path = wa()->getDataPath($params['img_path'], true);
+                if (file_exists($path.'/'.$params['value'])) {
+                    $url = wa()->getDataUrl($params['img_path'], true);
+                    $file = htmlentities($url.$params['value'], ENT_NOQUOTES, self::$default_charset);
+                    $control .= "<br/><span><img src=\"{$file}\"></span>";
+                } else {
+                    $file = htmlentities($params['value'], ENT_NOQUOTES, self::$default_charset);
+                    $control .= "<br/><span>{$file}</span>";
+                }
+            } else {
+                $file = htmlentities($params['value'], ENT_NOQUOTES, self::$default_charset);
+                $control .= "<br/><span>{$file}</span>";
+            }
+        }
         return $control;
     }
 
@@ -468,7 +485,7 @@ class waHtmlControl
     if(typeof(CodeMirror) == 'function') {
         setTimeout(function(){
             CodeMirror.fromTextArea(document.getElementById('{$params['id']}'), {$options});
-        },500);
+        }, 500);
     }
 </script>
 HTML;
@@ -819,15 +836,15 @@ HTML;
             if (is_array($callback)) {
                 if (is_object($callback[0])) {
                     if (!method_exists($callback[0], $callback[1])) {
-                        throw new Exception("Method {$callback[1]} not exists at class ".get_class($callback[0]));
+                        throw new waException("Method {$callback[1]} not exists at class ".get_class($callback[0]));
                     }
                 } elseif (!class_exists($callback[0])) {
-                    throw new Exception("Class {$callback[0]} not found");
+                    throw new waException("Class {$callback[0]} not found");
                 }
                 //TODO check method exists
             } else {
                 if (!function_exists($callback)) {
-                    throw new Exception("Function {$callback} not found");
+                    throw new waException("Function {$callback} not found");
                 }
             }
             return call_user_func_array($callback, array($name, $params));
@@ -858,7 +875,7 @@ HTML;
                     }
                 }
                 if ($param_value !== false) {
-                    if (in_array($param, array('title', 'description'))) {
+                    if (in_array($param, array('title', 'description', 'placeholder'))) {
                         $param_value = self::_wp($param_value, $params);
                     } elseif (in_array($param, array('disabled', 'readonly'))) {
                         $param_value = $param;
@@ -871,6 +888,13 @@ HTML;
                     }
                 }
             }
+        }
+        if (!empty($params['data'])) {
+            $data = array();
+            foreach ($params['data'] as $field => $value) {
+                $data['data-'.$field] = json_encode($value);
+            }
+            $params_string .= $this->addCustomParams(array_keys($data), $data);
         }
         return $params_string;
     }

@@ -118,12 +118,14 @@
                 this.dispatch(location.hash, true);
 
                 if (this.$menu.find('> li:not(#wa-plugins-list) > a').length) {
-                    this.$menu.sortable({
-                        containment: 'parent',
-                        distance: 5,
-                        items: '> li:not(#wa-plugins-list)',
-                        tolerance: 'pointer',
-                        update: $.plugins.sortHandler
+                    this.helper.loadJqUI(function() {
+                        $.plugins.$menu.sortable({
+                            containment: 'parent',
+                            distance: 5,
+                            items: '> li:not(#wa-plugins-list)',
+                            tolerance: 'pointer',
+                            update: $.plugins.sortHandler
+                        });
                     });
                 }
             }
@@ -149,7 +151,14 @@
             if (!hash) {
                 $plugin = this.$menu.find('li:first > a:first');
                 if ($plugin.length) {
-                    window.location.hash = hash = $plugin.attr('href');
+                    hash = $plugin.attr('href');
+                }
+            }
+            if (hash && window.location.hash != hash) {
+                if (window.history && window.history.replaceState) {
+                    window.history.replaceState(null, null, hash);
+                } else {
+                    window.location.hash = hash;
                 }
             }
 
@@ -157,58 +166,62 @@
             this.path.dispatch = path;
             var load = force || (path.plugin !== this.path.plugin);
 
-
             /* change plugins section */
-            if (load) {
-                var $content = $('#wa-plugins-content');
-                this.path.tail = null;
+            if (!load) {
+                return;
+            }
 
-                $plugin = $(path.plugin ? ("#plugin-" + path.plugin) : '#wa-plugins-list');
-                if ($plugin.length) {
-                    var url = this.helper.getContentUrl($plugin, path);
-                    if (url) {
-                        this.path.plugin = path.plugin;
+            var $content = $('#wa-plugins-content');
+            this.path.tail = null;
 
-                        if (this.xhr) {
-                            this.xhr.abort();
+            $plugin = $(path.plugin ? ("#plugin-" + path.plugin) : '#wa-plugins-list');
+            if (!$plugin.length) {
+                return;
+            }
+            var url = this.helper.getContentUrl($plugin, path);
+            if (!url) {
+                return;
+            }
+
+            this.path.plugin = path.plugin;
+
+            if (this.xhr) {
+                this.xhr.abort();
+            }
+
+            $content.html(this.options.loading);
+            var self = this;
+            this.xhr = $.ajax({
+                url: url,
+                success: function (data) {
+                    self.xhr = null;
+                    if (self.path.plugin == path.plugin) {
+                        $content.html(data);
+                        // update title
+                        if (self.path.plugin) {
+                            document.title = self.options.plugin_names[self.path.plugin] + self.options.title_suffix;
+                        } else {
+                            document.title = $_('Plugins') + self.options.title_suffix;
                         }
 
-                        $content.html(this.options.loading);
-                        var self = this;
-                        this.xhr = $.ajax({
-                            url: url,
-                            success: function (data) {
-                                self.xhr = null;
-                                if (self.path.plugin == path.plugin) {
-                                    $content.html(data);
-                                    // update title
-                                    if (self.path.plugin) {
-                                        document.title = self.options.plugin_names[self.path.plugin] + self.options.title_suffix;
-                                    } else {
-                                        document.title = $_('Plugins') + self.options.title_suffix;
-                                    }
+                        self.$menu.find('li.selected').removeClass('selected');
+                        var href = self.options.path + (self.path.plugin ? self.path.plugin + '/' : '');
+                        self.$menu.find('a[href="' + href + '"]').parents('li').addClass('selected');
 
-                                    self.$menu.find('li.selected').removeClass('selected');
-                                    var href = self.options.path + (self.path.plugin ? self.path.plugin + '/' : '');
-                                    self.$menu.find('a[href="' + href + '"]').parents('li').addClass('selected');
-
-                                    if (!self.options.useIframeTransport) {
-                                        $('#plugins-settings-form').submit(function () {
-                                            self.saveHandlerAjax(this);
-                                            return false;
-                                        });
-                                    } else {
-                                        $('#plugins-settings-form').submit(function () {
-                                            self.saveHandlerIframe(this);
-                                        });
-                                    }
-                                }
-                            }
-
-                        });
+                        if (!self.options.useIframeTransport) {
+                            $('#plugins-settings-form').submit(function () {
+                                self.saveHandlerAjax(this);
+                                return false;
+                            });
+                        } else {
+                            $('#plugins-settings-form').submit(function () {
+                                self.saveHandlerIframe(this);
+                            });
+                        }
                     }
                 }
-            }
+
+            });
         },
 
         saveHandlerIframe: function (form) {
@@ -278,6 +291,30 @@
                     url = '?module=plugins&action=settings&id=' + path.plugin;
                 }
                 return url;
+            },
+
+            loadJqUI: function(callback) {
+                var files = [];
+                if (!$.ui) {
+                    files.push('wa-content/js/jquery-ui/jquery.ui.core.min.js');
+                }
+                if (!$.widget) {
+                    files.push('wa-content/js/jquery-ui/jquery.ui.widget.min.js');
+                }
+                if (!$.ui || !$.ui.mouse) {
+                    files.push('wa-content/js/jquery-ui/jquery.ui.mouse.min.js');
+                }
+                if (!$.fn.sortable) {
+                    files.push('wa-content/js/jquery-ui/jquery.ui.sortable.min.js');
+                }
+
+                if (files.length) {
+                    $.when.apply($, files.map(function(file) {
+                        return $.getScript($.plugins.options.wa_url + file);
+                    })).then(callback);
+                } else {
+                    callback();
+                }
             }
         },
 
@@ -321,16 +358,16 @@
             }
         },
         sortHandler: function (event, ui) {
-            var self = this;
+            var self = $.plugins;
             $.ajax({
                 type: 'POST',
                 url: '?module=plugins&action=sort',
                 data: {
                     slug: $(ui.item).attr('id').replace(/^plugin-/, ''),
-                    pos: $(ui.item).index()
+                    pos: $(ui.item).index()-2
                 },
                 success: function (data, textStatus, jqXHR) {
-                    if (!data || !data.status || (data.status != "ok") || !data.data || (data.data != "ok")) {
+                    if (!data || !data.status || data.status != "ok") {
                         self.$menu.sortable('cancel');
                     }
                 },
@@ -343,16 +380,19 @@
 
 
     $.plugins.init({
+        'wa_url': {json_encode($wa_url)},
         'loading': '{"[`Loading...`]<i class=\"icon16 loading\"></i>"|escape:'javascript'}',
         'title_suffix': ' — {$wa->accountName(false)|escape:'javascript'}',
         'plugin_names': {json_encode($plugin_names)}
     });
-{if empty($is_ajax)}
 
-    $('#wa-plugin-list a').click(function  () {
-        $.plugins.dispatch($(this).attr('href'), true);
-    });
-{/if}
+    {if empty($is_ajax)}
+        $('#wa-plugin-list a').click(function  () {
+            $.plugins.dispatch($(this).attr('href'), true);
+            return false;
+        });
+    {/if}
+
 })(jQuery);
 </script>
 {if !empty($shadowed)}</div>{/if}

@@ -61,6 +61,7 @@ class waAppConfig extends SystemConfig
                     $options = $cache_config[$type];
                     $cache_type = $options['type'];
                     $cache_class = 'wa'.ucfirst($cache_type).'CacheAdapter';
+
                     try {
                         $cache_adapter = new $cache_class($options);
                         $this->cache = new waCache($cache_adapter, $this->application);
@@ -266,14 +267,14 @@ class waAppConfig extends SystemConfig
         } catch (waDbException $e) {
             // 1146 = Table doesn't exist
             if ($e->getCode() == 1146 && $this->application == 'webasyst') {
-                // First launch of the wramework with working db.php setup.
+                // First launch of the framework with working db.php setup.
                 // $this->install() call below will create wa_* tables, then we'll be able
                 // to create and use models.
             } elseif ($e->getCode() == 1146 && $this->application != 'webasyst' && $this->environment == 'frontend') {
                 // 'webasyst' system app is not automatically started in frontend (as opposed to backend).
                 // When framework is first launched via frontend, wa_* tables do not exist yet.
                 // So we launch the app to give it a chance to install properly.
-                wa('webasyst');
+                $this->initWebasystApp();
                 $app_settings_model = new waAppSettingsModel();
             } else {
                 throw $e;
@@ -290,63 +291,60 @@ class waAppConfig extends SystemConfig
         if (!empty($app_settings_model)) {
             $time = $app_settings_model->get($this->application, 'update_time', null);
         }
+
+        // Install the app and remember to skip all updates
+        // if this is the first launch.
+        $is_first_launch = false;
         if (empty($time)) {
+            $time = null;
+            $is_first_launch = true;
+
             try {
                 $this->install();
             } catch (waException $e) {
                 waLog::log("Error installing application ".$this->application." at first run:\n".$e->getMessage()." (".$e->getCode().")\n".$e->getTraceAsString());
                 throw $e;
             }
-            $ignore_all = true;
-            $time = null;
+
             if (empty($app_settings_model)) {
                 $app_settings_model = new waAppSettingsModel();
             }
-        } else {
-            $ignore_all = false;
         }
 
+        // Use cache to skip slow filesystem-based scanning for updates
         if (!self::isDebug()) {
-            $cache = new waVarExportCache('updates', 0, $this->application);
-            if ($cache->isCached() && $cache->get() <= $time) {
+            $cache = new waVarExportCache('updates', -1, $this->application);
+            if ($time && $cache->isCached() && $cache->get() <= $time) {
                 return;
             }
         }
-        $path = $this->getAppPath().'/lib/updates';
-        $cache_database_dir = $this->getPath('cache').'/db';
-        if (file_exists($path)) {
-            $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($path), RecursiveIteratorIterator::SELF_FIRST);
-            $files = array();
-            foreach ($iterator as $file) {
-                /**
-                 * @var SplFileInfo $file
-                 */
-                if ($file->isFile() && preg_match('/^[0-9]+\.php$/', $file->getFilename())) {
-                    $t = substr($file->getFilename(), 0, -4);
-                    if ($t > $time) {
-                        $files[$t] = $file->getPathname();
-                    }
-                }
-            }
-            ksort($files);
-            if (!self::isDebug()) {
-                // get last time
-                if ($files) {
-                    $keys = array_keys($files);
-                    $cache->set(end($keys));
-                } else {
-                    $cache->set($time ? $time : 1);
-                }
-            }
+
+        // Scan for app updates
+        $files = $this->getUpdateFiles($this->getAppPath().'/lib/updates', $time);
+        if ($files) {
+            $keys = array_keys($files);
+            $last_update_ts = end($keys);
+        } else {
+            $last_update_ts = 1;
+        }
+
+        // Remember last update file in cache
+        if (!empty($cache)) {
+            $cache->set($last_update_ts);
+        }
+
+        if ($is_first_launch) {
+            // Updates are all skipped on app's first launch with install.php
+            $app_settings_model->set($this->application, 'update_time', $last_update_ts);
+        } else {
+            $cache_database_dir = $this->getPath('cache').'/db';
             foreach ($files as $t => $file) {
                 try {
-                    if (!$ignore_all) {
-                        $this->includeUpdate($file);
-                        waFiles::delete($cache_database_dir);
-                        $app_settings_model->set($this->application, 'update_time', $t);
-                    }
+                    $this->includeUpdate($file);
+                    waFiles::delete($cache_database_dir);
+                    $app_settings_model->set($this->application, 'update_time', $t);
                 } catch (Exception $e) {
-                    if (waSystemConfig::isDebug()) {
+                    if (self::isDebug()) {
                         echo $e;
                     }
                     // log errors
@@ -354,28 +352,38 @@ class waAppConfig extends SystemConfig
                     break;
                 }
             }
-        } else {
-            $t = 1;
-        }
-        if ($ignore_all) {
-            if (!isset($t) || !$t) {
-                $t = 1;
-            }
-            if (!isset($app_settings_model)) {
-                $app_settings_model = new waAppSettingsModel();
-            }
-            $app_settings_model->set($this->application, 'update_time', $t);
         }
 
-        if (isset($this->info['edition']) && $this->info['edition']) {
-            if (!isset($app_settings_model)) {
-                $app_settings_model = new waAppSettingsModel();
-            }
-            if (!$app_settings_model->get($this->application, 'edition')) {
-                $app_settings_model->set($this->application, 'edition', $this->info['edition']);
-            }
+    }
+
+    protected function initWebasystApp()
+    {
+        wa('webasyst');
+    }
+
+    protected function getUpdateFiles($path, $time)
+    {
+        if (!file_exists($path)) {
+            return array();
         }
 
+        $files = array();
+        $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($path), RecursiveIteratorIterator::SELF_FIRST);
+        foreach ($iterator as $file) {
+            /** @var SplFileInfo $file */
+            if (!$file->isFile()) {
+                continue;
+            }
+            $filename = $file->getFilename();
+            if (preg_match('/^[0-9]+\.php$/', $filename)) {
+                $t = substr($filename, 0, -4);
+                if ($t > $time) {
+                    $files[$t] = $file->getPathname();
+                }
+            }
+        }
+        ksort($files);
+        return $files;
     }
 
     private function includeUpdate($file)
@@ -418,9 +426,11 @@ class waAppConfig extends SystemConfig
         // Remove all app settings
         $app_settings_model = new waAppSettingsModel();
         $app_settings_model->del($this->application);
-
         $contact_settings_model = new waContactSettingsModel();
         $contact_settings_model->deleteByField('app_id', $this->application);
+        // Remove app tokens
+        $app_tokens_model = new waAppTokensModel();
+        $app_tokens_model->deleteByField('app_id', $this->application);
         // Remove all rights to app
         $contact_rights_model = new waContactRightsModel();
         $contact_rights_model->deleteByField('app_id', $this->application);
@@ -439,6 +449,14 @@ class waAppConfig extends SystemConfig
         }
         if ($bind && waLocale::getDomain() != $this->application) {
             waLocale::load($locale, $this->getAppPath('locale'), $this->application, $bind);
+        }
+    }
+
+    public static function clearAutoloadCache($app_id)
+    {
+        $cache_file = waConfig::get('wa_path_cache').'/apps/'.$app_id.'/config/autoload.php';
+        if (file_exists($cache_file)) {
+            @unlink($cache_file);
         }
     }
 
@@ -671,7 +689,7 @@ class waAppConfig extends SystemConfig
         if ($this->widgets === null) {
             $locale = wa()->getLocale();
             $file = waConfig::get('wa_path_cache')."/apps/".$this->application.'/config/widgets.'.$locale.'.php';
-            if (!file_exists($file) || SystemConfig::isDebug()) {
+            if (!file_exists($file) || self::isDebug()) {
                 $this->widgets = array();
                 if ($this->application == 'webasyst') {
                     $path = $this->getRootPath().'/wa-widgets';
@@ -726,7 +744,7 @@ class waAppConfig extends SystemConfig
                     }
                     $this->widgets[$widget_id] = $widget_info;
                 }
-                if (!SystemConfig::isDebug()) {
+                if (!self::isDebug()) {
                     waUtils::varExportToFile($this->widgets, $file);
                 } else {
                     waFiles::delete($file);
@@ -748,7 +766,7 @@ class waAppConfig extends SystemConfig
         if ($this->plugins === null) {
             $locale = wa()->getLocale();
             $file = waConfig::get('wa_path_cache')."/apps/".$this->application.'/config/plugins.'.$locale.'.php';
-            if (!file_exists($file) || SystemConfig::isDebug()) {
+            if (!file_exists($file) || self::isDebug()) {
                 waFiles::create(waConfig::get('wa_path_cache')."/apps/".$this->application.'/config');
                 // read plugins from file wa-config/[APP_ID]/plugins.php
                 $path = $this->getConfigPath('plugins.php', true);
@@ -796,7 +814,7 @@ class waAppConfig extends SystemConfig
                         $this->plugins[$plugin_id] = $plugin_info;
                     }
                 }
-                if (!SystemConfig::isDebug()) {
+                if (!self::isDebug()) {
                     waUtils::varExportToFile($this->plugins, $file);
                 } else {
                     waFiles::delete($file);
@@ -814,6 +832,7 @@ class waAppConfig extends SystemConfig
      * Update general plugin sort
      * @param string $plugin plugin id
      * @param int $sort 0 is first
+     * @throws waException
      */
     public function setPluginSort($plugin, $sort)
     {
@@ -849,7 +868,7 @@ class waAppConfig extends SystemConfig
     /**
      * Sets or clears the value of app's indicator displayed next to its icon in main backend menu.
      *
-     * @param mixed Indicator value. If empty value is specified, indicator value is cleared.
+     * @param mixed $n Indicator value. If empty value is specified, indicator value is cleared.
      */
     public function setCount($n = null)
     {
@@ -864,5 +883,11 @@ class waAppConfig extends SystemConfig
             unset($count[$this->application]);
             wa()->getStorage()->set('apps-count', $count);
         }
+    }
+
+    public function dispatchAppToken($data)
+    {
+        $m = new waAppTokensModel();
+        $m->deleteById($data['token']);
     }
 }

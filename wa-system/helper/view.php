@@ -68,26 +68,8 @@ function wa_header()
     $logout = _ws('logout');
     $userpic = '<img width="32" height="32" src="'.$user->getPhoto(32).'" alt="">';
     $username = htmlspecialchars(waContactNameField::formatName($user), ENT_QUOTES, 'utf-8');
-
-    // If the user has access to contacts app then show a link to his profile
-    if (wa()->appExists('contacts')) {
-        require_once(wa()->getConfig()->getAppsPath('contacts', 'lib/models/contactsRights.model.php'));
-        try {
-            $cr = new contactsRightsModel();
-        } catch (waDbException $e) {
-            wa('contacts');
-            $cr = new contactsRightsModel();
-        }
-        if ($user->getRights('contacts', 'backend') && $cr->getRight(null, $user['id'])) {
-            $userpic = '<a href="'.$backend_url.'contacts/#/contact/'.$user['id'].'">'.$userpic.'</a>';
-            $username = '<a href="'.$backend_url.'contacts/#/contact/'.$user['id'].'" id="wa-my-username">'.$username.'</a>';
-        } else {
-            $userpic = '<a href="'.$backend_url.'?module=profile">'.$userpic.'</a>';
-            $username = '<a href="'.$backend_url.'?module=profile" id="wa-my-username">'.$username.'</a>';
-        }
-    }
-
-    $more = _ws('more');
+    $userpic = '<a href="'.$backend_url.'?module=profile">'.$userpic.'</a>';
+    $username = '<a href="'.$backend_url.'?module=profile" id="wa-my-username">'.$username.'</a>';
 
     if ($applist_class) {
         $applist_class = ' class="'.trim($applist_class).'"';
@@ -96,7 +78,7 @@ function wa_header()
     $company_name = htmlspecialchars($app_settings_model->get('webasyst', 'name', 'Webasyst'), ENT_QUOTES, 'utf-8');
     $company_url = $app_settings_model->get('webasyst', 'url', $system->getRootUrl(true));
 
-    $version = wa()->getVersion();
+    $version = wa()->getVersion('webasyst');
 
     $strings = array(
         'customize' => _ws('Customize dashboard'),
@@ -124,7 +106,7 @@ HTML;
     }
     $html .= <<<HTML
     </div>
-    <div id="wa-usercorner">
+    <div id="wa-usercorner" data-user-id="{$user['id']}">
         <div class="profile image32px">
             <div class="image">
                 {$userpic}
@@ -150,10 +132,15 @@ HTML;
             <div class="d-dashboard-link-wrapper" id="d-dashboard-link-wrapper"><i class="icon10 lock-bw"></i> '._w('Only you can see this dashboard.').'</div>
         </div>';
     }
+    if (!$user['timezone']) {
+        $attrs = ' data-determine-timezone="1"';
+    } else {
+        $attrs = '';
+    }
     $html .= <<<HTML
     </div>
 </div>
-<script id="wa-header-js" type="text/javascript" src="{$root_url}wa-content/js/jquery-wa/wa.header.js?v{$version}"></script>
+<script id="wa-header-js" type="text/javascript" src="{$root_url}wa-content/js/jquery-wa/wa.header.js?{$version}"{$attrs}></script>
 HTML;
 
     /**

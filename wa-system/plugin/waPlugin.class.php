@@ -74,7 +74,7 @@ class waPlugin
         $is_debug = waSystemConfig::isDebug();
 
         if (!$is_debug) {
-            $cache = new waVarExportCache('updates', 0, $this->app_id.".".$this->id);
+            $cache = new waVarExportCache('updates', -1, $this->app_id.".".$this->id);
             if ($cache->isCached() && $cache->get() <= $time) {
                 return;
             }

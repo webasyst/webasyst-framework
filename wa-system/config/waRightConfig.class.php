@@ -124,11 +124,24 @@ abstract class waRightConfig
 
     /**
      * Set default access for given contact and return access rights to set up in system access storage.
+     * Called after contact has been granted Limited access to the app.
      *
      * @param int $contact_id
      * @return array access key => value
      */
     public function setDefaultRights($contact_id)
+    {
+        return $this->getDefaultRights($contact_id);
+    }
+
+    /**
+     * Return access rights to set in access control dialog by default
+     * for a contact without any rights yet.
+     *
+     * @param int $contact_id
+     * @return array access key => value
+     */
+    public function getDefaultRights($contact_id)
     {
         return array();
     }
@@ -311,6 +324,16 @@ HTML;
                             '<td><input type="hidden" name="app['.$name.']" value="0"><input type="checkbox" name="app['.$name.']" value="'.(isset($params['value']) ? $params['value'] : 1).'"'.($own ? ' checked="checked"' : '').'></td>'.
                             ($inherited !== null ? '<td><input type="checkbox"'.($group ? ' checked="checked"' : '').' disabled="disabled"></td>' : '').
                         '</tr>';
+            case 'always_enabled':
+                if ($inherited !== null) {
+                    $html = '<td><div>'.$label.'</div></td>'.
+                            '<td><i class="icon10 yes"></i></td>'.
+                            '<td></td><td></td>';
+                } else {
+                    $html = '<td><div>'.$label.'</div></td>'.
+                            '<td><i class="icon10 yes"></i></td>';
+                }
+                return '<tr'.($params['cssclass'] ? ' class="'.$params['cssclass'].'"' : '').'>'.$html.'</tr>';
             case 'list':
                 $indicator = '';
                 if (isset($params['hint1']) && $params['hint1'] == 'all_checkbox') {

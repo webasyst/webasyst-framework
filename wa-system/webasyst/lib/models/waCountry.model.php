@@ -89,8 +89,10 @@ class waCountryModel extends waModel
     public function preload($locale=null)
     {
         $locale = $this->ensureLocale($locale);
-        self::$cache = $this->all(0, 100500, $locale); // limit set to force loading from db, not calling preload()
-        self::$cacheLocale = $locale;
+        if (self::$cacheLocale !== $locale) {
+            self::$cache = $this->all(0, 100500, $locale); // limit set to force loading from db, not calling preload()
+            self::$cacheLocale = $locale;
+        }
     }
 
     // Return $locale if it exists, or en_US otherwise.

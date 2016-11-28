@@ -167,6 +167,19 @@ class waAuthUser extends waUser
         $this->id = $this->data = null;
         $this->auth = false;
     }
-}
 
-// EOF
+    public function getTimezone()
+    {
+        $data = array(
+            $this->get('timezone'),
+            waRequest::cookie('tz', '', 'string'),
+            waRequest::cookie('oldtz', '', 'string'),
+            self::$options['default']['timezone'],
+        );
+        foreach($data as $timezone) {
+            if ($timezone) {
+                return $timezone;
+            }
+        }
+    }
+}

@@ -41,7 +41,7 @@ class waUser extends waContact
         if (!$login || ! ( $row = $user_model->getByField('login', $login))) {
             return null;
         }
-        return new waUser($row['id']);
+        return new waUser($row);
     }
 
     /**
@@ -158,8 +158,10 @@ class waUser extends waContact
         $apps = waSystem::getInstance()->getApps();
 
         $right_model = new waContactRightsModel();
-        $rights = $right_model->getApps(-$this->id, 'backend', true, false);
-        $is_admin = isset($rights['webasyst']) && $rights['webasyst'];
+        $is_admin = $this->isAdmin();
+        if (!$is_admin) {
+            $rights = $right_model->getApps(-$this->id, 'backend', true, false);
+        }
 
         $sorted_apps = array();
         if ($sorted) {
@@ -183,12 +185,14 @@ class waUser extends waContact
         return $sorted_apps;
     }
 
-    public static function revokeUser($id) {
+    public static function revokeUser($id, $clear_login_password = true) {
         // wa_contact
         $user = new waContact($id);
         $user['is_user'] = 0;
-        $user['login'] = null;
-        $user['password'] = '';
+        if ($clear_login_password) {
+            $user['login'] = null;
+            $user['password'] = '';
+        }
         $user->save();
 
         // user groups
@@ -219,5 +223,70 @@ class waUser extends waContact
             }
         }
     }
-}
 
+    public static function formatName($user)
+    {
+        // Read user name display fields from settings
+        $asm = new waAppSettingsModel();
+        $user_name_display = $asm->get('webasyst', 'user_name_display', 'name');
+        if ($user_name_display) {
+            $user_name_display = explode(',', $user_name_display);
+        } else {
+            // Fall back to fields order for a plain contact
+            $user_name_display = waContactNameField::getNameOrder();
+        }
+
+        // Compose the name string from parts
+        $formatted_user_name = array();
+        $allowed_fields = array('firstname', 'middlename', 'lastname', 'login');
+        $allowed_fields = array_fill_keys($allowed_fields, true);
+        foreach ($user_name_display as $field) {
+            $field = trim($field);
+            if (empty($allowed_fields[$field])) {
+                continue;
+            }
+            $value = !empty($user[$field]) ? $user[$field] : '';
+            if (is_string($value) && strlen($value) > 0) {
+                $formatted_user_name[] = $value;
+            }
+        }
+        $formatted_user_name = trim(join(' ', $formatted_user_name));
+        if ($formatted_user_name) {
+            return $formatted_user_name;
+        }
+
+        // Fall back to basic name, if known
+        if ($user instanceof waContact) {
+            $name = $user->getCache('name');
+            if ($name) {
+                return $name;
+            }
+        } else if (!empty($user['name']) && strlen($user['name']) > 0) {
+            return $user['name'];
+        }
+
+        if (!empty($user['id'])) {
+            return 'user_id='.$user['id'];
+        }
+    }
+
+    public static function getNameAndStatus($user)
+    {
+        $formatted_user_name = self::formatName($user);
+        $view = wa()->getView();
+
+        $user_birthday_str = '';
+        if ($user['birth_day'] && $user['birth_month']) {
+            $date = date(sprintf('Y-%s-%s', $user['birth_month'], $user['birth_day']));
+            $time = strtotime($date);
+            $user_birthday_str = waDateTime::format('shortdate', $time, waDateTime::getDefaultTimeZone());
+        }
+        $view->assign(array(
+            'user' => $user,
+            'formatted_user_name' => $formatted_user_name,
+            'user_birthday_str' => $user_birthday_str
+        ));
+        return $view->fetch('wa-system/user/templates/NameAndStatus.html');
+    }
+
+}

@@ -1,0 +1,57 @@
+{strip}
+
+{$_styles = []}
+{if !empty($user._event.bg_color)}
+    {$_styles[] = "background: `$user._event.bg_color`;"}
+{/if}
+{if !empty($user._event.font_color)}
+    {$_styles[] = "color: `$user._event.font_color`;"}
+{/if}
+
+<span class="user-info">
+    {*if !empty($user.photo_url_16)}
+        <i class="icon16 userpic20" style="background-image: url('{$user.photo_url_16}');"></i>
+    {/if*}
+    {$user_name = $formatted_user_name|default:$user.name|default:''|escape}
+    {if !empty($user_name)}
+        <span class="user-name {if $user.is_user == 0}italic{/if} {if $user.is_user <= 0}gray{/if}">{$user_name}</span>
+    {/if}
+    {if !empty($user._online_status) && $user._online_status == 'online'}
+        {$title = sprintf('[`%s is now online`]', $user_name)}
+        <i class="icon16 status-green-tiny" title="{$title}"></i>
+    {/if}
+    {if !empty($user.birth_day) && $user.birth_day == waDateTime::format('j') && $user.birth_month == waDateTime::format('n')}
+        {$title = sprintf('[`%s\'s birthday — %s`]', $user_name, $user_birthday_str)}
+        <i class="icon16 cake" title="{$title}"></i>
+    {/if}
+    {if !empty($user._event)}
+        {if $user._event.is_allday}{$_timezone = waDateTime::getDefaultTimeZone()}{else}{$_timezone = null}{/if}
+
+        {if (waDateTime::format('Y', $user._event.start) == waDateTime::format('Y'))}
+            {$_start_date = waDateTime::format('shortdate', $user._event.start, $_timezone)}
+        {else}
+            {$_start_date = waDateTime::format('humandate', $user._event.start, $_timezone)}
+        {/if}
+
+        {if (waDateTime::format('Y', $user._event.end) == waDateTime::format('Y'))}
+            {$_end_date = waDateTime::format('shortdate', $user._event.end, $_timezone)}
+        {else}
+            {$_end_date = waDateTime::format('humandate', $user._event.end, $_timezone)}
+        {/if}
+
+        {if $_start_date == $_end_date}
+            {$title = "`$user._event.summary` (`$_start_date`)"}
+        {else}
+            {$title = "`$user._event.summary` (`$_start_date` — `$_end_date`)"}
+        {/if}
+
+        <span class="user-badge" {if !empty($_styles)}style="{$_styles|join:""}"{/if} title="{$title}">
+            {$user._event.summary}
+        </span>
+    {/if}
+    {*{if !empty($user.login)}*}
+        {*<span class="user-login">{$user.login}</span>*}
+    {*{/if}*}
+</span>
+
+{/strip}

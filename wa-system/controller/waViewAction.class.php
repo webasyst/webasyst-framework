@@ -166,11 +166,12 @@ abstract class waViewAction extends waController
             if (!$this->cache_time && $this->cache_id) {
                 $this->view->clearCache($this->getTemplate(), $this->cache_id);
             }
+            $this->preExecute();
             $this->execute();
             $result = $this->view->fetch($this->getTemplate(), $this->cache_id);
             if ($clear_assign) {
                 $this->view->clearAllAssign();
-            }            
+            }
             return $result;
         }
     }

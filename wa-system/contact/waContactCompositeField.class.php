@@ -45,7 +45,7 @@ class waContactCompositeField extends waContactField
                 }
                 return $data;
             } else {
-                return $this->format($data, $format);
+                return $this->format(ifset($data[0], array()), $format);
             }
         } else {
             return array();

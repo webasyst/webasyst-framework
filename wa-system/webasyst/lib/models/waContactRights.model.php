@@ -50,7 +50,7 @@ class waContactRightsModel extends waModel {
         }
 
         if (!is_array($id)) {
-            $cached = isset(self::$cache[$id]) && isset(self::$cache[$id][$app_id]) && ((!$name && (count(self::$cache[$id][$app_id]) > 1)) || ($name && isset(self::$cache[$id][$app_id][$name])));
+            $cached = isset(self::$cache[$id]) && isset(self::$cache[$id][$app_id]);
         } else {
             $cached = false;
         }
@@ -68,7 +68,6 @@ class waContactRightsModel extends waModel {
                     FROM ".$this->table."
                     WHERE group_id IN (i:group_id)
                         AND app_id = s:app_id
-                        AND value > 0
                     GROUP BY name";
             $rights = $this->query($sql, array(
                 'group_id' => $group_ids,
@@ -162,18 +161,19 @@ class waContactRightsModel extends waModel {
      * @param int $id treated as user id if positive; group id otherwise; 0 is group id for guests.
      * @param string $app_id application id
      * @param string $name key to save value for
-     * @param int $value int value to save; negative saved as 0.
+     * @param int $value int value to save
      * @return bool
      */
     public function save($id, $app_id, $name, $value)
     {
+        unset(self::$cache[$id][$app_id]);
         $id = -$id;
         if ($app_id == 'webasyst' && $name == 'backend') {
             $this->deleteByField('group_id', $id);
         } else if ($name == 'backend' && $value != 1) {
             $this->deleteByField(array('group_id' => $id, 'app_id' => $app_id));
         }
-        if ($value <= 0) {
+        if ((int)$value === 0) {
             $sql = "DELETE FROM ".$this->table."
                     WHERE group_id = i:group_id AND
                           app_id = s:app_id AND
@@ -192,10 +192,6 @@ class waContactRightsModel extends waModel {
             'name' => $name,
             'value' => $value
         ));
-
-        if ($result && isset(self::$cache[-$id][$app_id])) {
-            self::$cache[-$id][$app_id][$name] = $value;
-        }
 
         return $result;
     }
@@ -276,34 +272,33 @@ class waContactRightsModel extends waModel {
      */
     public function getApps($id, $name='backend', $check_groups=true, $noWA=true)
     {
-        $cache = false;
-        if ($check_groups && is_numeric($id) && $id < 0) {
-            $user_groups_model = new waUserGroupsModel();
-            $cache = -$id;
-            $id = array_merge(array($id, 0), $user_groups_model->getGroupIds(-$id));
-        }
-
         if ((is_array($id) && !$id) || (!is_numeric($id) && !is_array($id))) {
             return array();
         }
 
+        if ($check_groups && is_numeric($id) && $id < 0) {
+            $user_groups_model = new waUserGroupsModel();
+            $id = array_merge(array($id, 0), $user_groups_model->getGroupIds(-$id));
+        }
+
         $sql = "SELECT app_id, MAX(value) v
                 FROM ".$this->table."
-                WHERE group_id IN (i:group_id)"
-                .($noWA ? " AND app_id != 'webasyst' " : '').
-                    "AND name = s:name
+                WHERE group_id IN (i:group_id)
+                    AND name = s:name
                     AND value > 0
                 GROUP BY app_id";
 
-                $data = $this->query($sql, array('group_id' => $id, 'name' => $name));
-                $result = array();
-                foreach ($data as $row) {
-                    $result[$row['app_id']] = $row['v'];
-                    if ($cache) {
-                        self::$cache[$cache][$row['app_id']][$name] = $row['v'];
-                    }
-                }
-                return $result;
+        $result = array();
+        $data = $this->query($sql, array('group_id' => $id, 'name' => $name));
+        foreach ($data as $row) {
+            $result[$row['app_id']] = $row['v'];
+        }
+
+        if ($noWA) {
+            unset($result['webasyst']);
+        }
+
+        return $result;
     }
 
     /**

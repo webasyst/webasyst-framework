@@ -64,11 +64,33 @@ class waAutoload
     {
         if ($path = $this->get($class)) {
             if (!file_exists($path)) {
-                throw new Exception(sprintf('Not found file [%1$s] for class [%2$s]', $path, $class));
+
+                // Clear autoload cache of loaded apps
+                if (!isset($this->system_classes[$class]) && class_exists('waSystem', false) && !waSystemConfig::isDebug()) {
+                    foreach(array_keys(wa()->getApps()) as $app_id) {
+                        if (waSystem::isLoaded($app_id)) {
+                            waAppConfig::clearAutoloadCache($app_id);
+                        }
+                    }
+                }
+
+                $msg = sprintf('Not found file [%1$s] for class [%2$s]', $path, $class);
+                if ($class == 'waException') {
+                    throw new Exception($msg, 500);
+                } else {
+                    throw new waException($msg, 500);
+                }
             }
-            require $path;
+
+            require_once $path;
+
             if (!class_exists($class, false) && !interface_exists($class, false)) {
-               throw new Exception(sprintf('Not found class [%2$s] at file [%1$s]', $path, $class));
+                $msg = sprintf('Not found class [%2$s] in file [%1$s]', $path, $class);
+                if ($class == 'waException') {
+                    throw new Exception($msg, 500);
+                } else {
+                    throw new waException($msg, 500);
+                }
             }
         }
     }
@@ -204,7 +226,7 @@ class waAutoload
         'waDbResultUpdate'         => 'database/waDbResultUpdate.class.php',
         'waDbStatement'            => 'database/waDbStatement.class.php',
         'waModel'                  => 'database/waModel.class.php',
-        'waModelExpr'               => 'database/waModelExpr.class.php',
+        'waModelExpr'              => 'database/waModelExpr.class.php',
         'waNestedSetModel'         => 'database/waNestedSetModel.class.php',
 
         'waSMS'                    => 'sms/waSMS.class.php',
@@ -275,6 +297,7 @@ class waAutoload
         'waApiTokensModel'         => 'webasyst/lib/models/waApiTokens.model.php',
         'waApiAuthCodesModel'      => 'webasyst/lib/models/waApiAuthCodes.model.php',
         'waAppSettingsModel'       => 'webasyst/lib/models/waAppSettings.model.php',
+        'waAppTokensModel'         => 'webasyst/lib/models/waAppTokens.model.php',
         'waAnnouncementModel'      => 'webasyst/lib/models/waAnnouncement.model.php',
         'waContactModel'           => 'webasyst/lib/models/waContact.model.php',
         'waContactCategoriesModel' => 'webasyst/lib/models/waContactCategories.model.php',
@@ -287,7 +310,7 @@ class waAutoload
         'waContactFieldValuesModel' => 'webasyst/lib/models/waContactFieldValues.model.php',
         'waCountryModel'           => 'webasyst/lib/models/waCountry.model.php',
         'waGroupModel'             => 'webasyst/lib/models/waGroup.model.php',
-        'waLogModel'          => 'webasyst/lib/models/waLog.model.php',
+        'waLogModel'               => 'webasyst/lib/models/waLog.model.php',
         'waLoginLogModel'          => 'webasyst/lib/models/waLoginLog.model.php',
         'waUserGroupsModel'        => 'webasyst/lib/models/waUserGroups.model.php',
         'waRegionModel'            => 'webasyst/lib/models/waRegion.model.php',

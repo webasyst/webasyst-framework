@@ -52,23 +52,42 @@ $(function () {
     if ($.fn.sortable) {
         sortableApps();
     } else if (!$('#wa').hasClass('disable-sortable-header')) {
+
         var urls = [];
         if (!$.browser) {
-            urls.push('jquery/jquery-migrate-1.2.1.min.js');
+            urls.push('wa-content/js/jquery/jquery-migrate-1.2.1.min.js');
         }
         if (!$.ui) {
-            urls.push('jquery-ui/jquery.ui.core.min.js');
-            urls.push('jquery-ui/jquery.ui.widget.min.js');
-            urls.push('jquery-ui/jquery.ui.mouse.min.js');
+            urls.push('wa-content/js/jquery-ui/jquery.ui.core.min.js');
+            urls.push('wa-content/js/jquery-ui/jquery.ui.widget.min.js');
+            urls.push('wa-content/js/jquery-ui/jquery.ui.mouse.min.js');
         } else if (!$.ui.mouse) {
-            urls.push('jquery-ui/jquery.ui.mouse.min.js');
+            urls.push('wa-content/js/jquery-ui/jquery.ui.mouse.min.js');
         }
-        urls.push('jquery-ui/jquery.ui.sortable.min.js');
+        urls.push('wa-content/js/jquery-ui/jquery.ui.sortable.min.js');
 
-        var path = $("#wa-header-js").attr('src').replace(/jquery-wa\/wa.header.js.*$/, '');
+        var $script = $("#wa-header-js");
+        var path = $script.attr('src').replace(/wa-content\/js\/jquery-wa\/wa.header.js.*$/, '');
         $.when.apply($, $.map(urls, function(file) {
-            return $.getScript(path + file);
+            return $.ajax({
+                cache: true,
+                dataType: "script",
+                url: path + file
+            });
         })).done(sortableApps);
+
+        // Determine user timezone when "Timezone: Auto" is saved in profile
+        if ($script.data('determine-timezone') && !document.cookie.match(/\btz=/)) {
+            var version = $script.attr('src').split('?', 2)[1];
+            $.ajax({
+                cache: true,
+                dataType: "script",
+                url: path + "wa-content/js/jquery-wa/wa.core.js?" + version,
+                success: function() {
+                    $.wa.determineTimezone(path);
+                }
+            });
+        }
     }
 
 /*

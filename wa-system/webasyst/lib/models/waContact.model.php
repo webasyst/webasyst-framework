@@ -91,9 +91,19 @@ class waContactModel extends waModel
         $right_model = new waContactRightsModel();
         $right_model->deleteByField('group_id', $nid);
 
+        // Delete from contact rights
+        if (class_exists('contactsRightsModel')) {
+            $contact_rights_model = new contactsRightsModel();
+            $contact_rights_model->deleteByField('group_id', $nid);
+        }
+
         // Delete settings
         $setting_model = new waContactSettingsModel();
         $setting_model->deleteByField('contact_id', $id);
+
+        // Delete app tokens
+        $app_tokens_model = new waAppTokensModel();
+        $app_tokens_model->deleteByField('contact_id', $id);
 
         // Delete emails
         $contact_email_model = new waContactEmailsModel();
@@ -102,17 +112,6 @@ class waContactModel extends waModel
         // Delete from groups
         $user_groups_model = new waUserGroupsModel();
         $user_groups_model->deleteByField('contact_id', $id);
-
-        // Delete from contact lists
-        if (class_exists('contactsContactListsModel')) {
-            // @todo: Use plugin for contacts
-            $contact_lists_model = new contactsContactListsModel();
-            $contact_lists_model->deleteByField('contact_id', $id);
-        }
-
-        // Delete from contact rights
-        $contact_rights_model = new contactsRightsModel();
-        $contact_rights_model->deleteByField('group_id', $nid);
 
         // Delete data
         $contact_data_model = new waContactDataModel();
@@ -129,6 +128,10 @@ class waContactModel extends waModel
         // update counters in wa_contact_category
         $contact_category_model = new waContactCategoryModel();
         $contact_category_model->recalcCounters($category_ids);
+
+        // Delete calendar events
+        $contact_events_model = new waContactEventsModel();
+        $contact_events_model->deleteByField('contact_id', $id);
 
 //        // Delete contact from logs
 //        $login_log_model = new waLoginLogModel();
@@ -160,6 +163,20 @@ class waContactModel extends waModel
         return $this->query($sql, $email)->fetch();
     }
 
+    public function getByGroups($groups)
+    {
+        if (is_array($groups) && $groups) {
+            $sql = "SELECT c.*
+                    FROM wa_contact c
+                        JOIN wa_user_groups g
+                            ON g.contact_id=c.id
+                    WHERE g.group_id IN (?)
+                    GROUP BY c.id";
+            return $this->query($sql, array($groups))->fetchAll('id');
+        } else {
+            return array();
+        }
+    }
 }
 
 // EOF
