@@ -1,10 +1,10 @@
 <?php
 
 /**
- * Payments callback
+ * Shipping callback
  *
  * Available by URL:
- * @link http://ROOT_PATH/shipping/i:module_id/
+ * @link http://ROOT_PATH/shipping.php/s:module_id/
  */
 class webasystShippingAction extends waViewAction
 {
@@ -18,6 +18,15 @@ class webasystShippingAction extends waViewAction
 
         if (!empty($result['template'])) {
             $this->template = $result['template'];
+        } elseif (isset($result['template'])) {
+            exit;
+        }
+        wa()->setActive('webasyst');
+
+        if (!empty($result['header'])) {
+            foreach ((array) $result['header'] as $name => $value) {
+                $this->getResponse()->addHeader($name, $value);
+            }
         }
 
         $this->view->assign('params', $params);
