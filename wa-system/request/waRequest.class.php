@@ -362,21 +362,28 @@ class waRequest
     /**
      * Returns user's IP address.
      *
-     * @param string|int $get_as_int IP address either as string or as integer
+     * @param bool $get_as_int
+     * @return string|int IP address either as string or as integer
      */
     public static function getIp($get_as_int = false)
     {
-        if (getenv('HTTP_X_FORWARDED_FOR')) {
-            $ip = getenv('HTTP_X_FORWARDED_FOR');
+        if (getenv('HTTP_CLIENT_IP')) {
+            $ip = getenv('HTTP_CLIENT_IP');
+        } elseif (getenv('HTTP_X_FORWARDED_FOR')) {
+            // Contains a chain of proxy addresses, the last IP goes directly to the customer to contact the proxy server.
+            $ip = explode(',', getenv('HTTP_X_FORWARDED_FOR'));
+            $ip = trim(array_pop($ip));
         } else {
             $ip = getenv('REMOTE_ADDR');
         }
+
         if ($get_as_int) {
             $ip = ip2long($ip);
             if ($ip > 2147483647) {
                 $ip -= 4294967296;
             }
         }
+
         return $ip;
     }
 
