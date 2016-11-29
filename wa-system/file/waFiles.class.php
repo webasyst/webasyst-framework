@@ -356,14 +356,11 @@ class waFiles
             if (!@stream_filter_prepend($src, $filter)) {
                 throw new waException("error while register file filter");
             }
-            if ($target === null) {
-                $extension = pathinfo($file, PATHINFO_EXTENSION);
-                if ($extension) {
-                    $extension = '.'.$extension;
-                }
-                $target = preg_replace('@\.[^\.]+$@', '', $file).'_'.$to.$extension;
+            if (!$target) {
+                $target = $file;
             }
-            if ($dst = @fopen($target, 'wb')) {
+            $_target = $target == $file ? '_' . $target : $target;
+            if ($dst = @fopen($_target, 'wb')) {
                 stream_copy_to_stream($src, $dst);
                 fclose($src);
                 fclose($dst);
@@ -371,6 +368,8 @@ class waFiles
                 fclose($src);
                 throw new waException("Error while convert file encoding");
             }
+            self::copy($_target, $target);
+            self::delete($_target);
             return $target;
         } else {
             return false;
