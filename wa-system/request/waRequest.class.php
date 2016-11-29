@@ -367,16 +367,52 @@ class waRequest
      */
     public static function getIp($get_as_int = false)
     {
-        if (getenv('HTTP_CLIENT_IP')) {
-            $ip = getenv('HTTP_CLIENT_IP');
-        } elseif (getenv('HTTP_X_FORWARDED_FOR')) {
-            // Contains a chain of proxy addresses, the last IP goes directly to the customer to contact the proxy server.
-            $ip = explode(',', getenv('HTTP_X_FORWARDED_FOR'));
-            $ip = trim(array_pop($ip));
-        } else {
-            $ip = getenv('REMOTE_ADDR');
+        //
+        // Normally the only trusted source of client's IP address is REMOTE_ADDR.
+        // Everything else (HTTP_CLIENT_IP, HTTP_X_FORWARDED_FOR) comes from headers
+        // and may be forged by client himself.
+        //
+        // However, many hostings use reverse-proxying (such as nginx in front of apache).
+        // In such case REMOTE_ADDR will contain an address of a proxy.
+        // Unfortunately, we cannot automatically find out whether hosting uses
+        // reverse-proxy or not.
+        //
+        // To control this aspect, there is a config option 'trusted_proxies' in wa-config/config.php
+        // When hosting does not use reverse-proxy, 'trusted_proxies' should be set to empty array.
+        // When reverse-proxying is used, it should be a list of IP addresses of proxies.
+        // The result is that when REMOTE_ADDR is one of listed IPs, getIp() is allowed to look
+        // into header-based sources such as HTTP_X_FORWARDED_FOR.
+        //
+        // The default behavious in case 'trusted_proxies' is not set is to trust any request
+        // to provide IP via headers.
+        //
+
+        // IP that directly contacted the server (may turn out to be a proxy)
+        $ip = getenv('REMOTE_ADDR');
+        if ($ip === '::1') { // ipv6 localhost
+            $ip = '127.0.0.1';
         }
 
+        // Check if $ip can be a proxy
+        $is_trusted_proxy = true;
+        $trusted_proxies = SystemConfig::systemOption('trusted_proxies');
+        if (is_array($trusted_proxies)) {
+            $trusted_proxies[] = '127.0.0.1';
+            $is_trusted_proxy = in_array($ip, $trusted_proxies);
+        }
+
+        // get client's IP from headers if allowed
+        if ($is_trusted_proxy) {
+            if (getenv('HTTP_X_FORWARDED_FOR')) {
+                // Contains a chain of proxy addresses, the last IP goes directly to the customer to contact the proxy server.
+                $ip = array_filter(array_map('trim', explode(',', getenv('HTTP_X_FORWARDED_FOR'))));
+                $ip = trim(end($ip));
+            } elseif (getenv('HTTP_CLIENT_IP')) {
+                $ip = getenv('HTTP_CLIENT_IP');
+            }
+        }
+
+        // Convert to int if needed
         if ($get_as_int) {
             $ip = ip2long($ip);
             if ($ip > 2147483647) {
