@@ -1,0 +1,59 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: team/plugins/googlecalendar\n"
+"POT-Creation-Date: 2016-11-30 10:00+0000\n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: team/plugins/googlecalendar\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=((((n%10)==1)&&((n%100)!=11))?(0):(((((n%10)>=2)&&((n%10)<=4))&&(((n%100)<10)||((n%100)>=20)))?(1):2));\n"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-Basepath: .\n"
+"Language: ru_RU\n"
+"X-Generator: Poedit 1.8.11\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPath-1: .\n"
+
+msgid "Issued by Google for your Web application"
+msgstr "Предоставляется со стороны Google при регистрации приложения"
+
+msgid "URL where a user will return after Google OAuth authorization."
+msgstr "Адрес, на который будет возвращаться пользователь после OAuth-авторизации в Google."
+
+msgid "Copy specified URL to the appropriate field in your Google application settings."
+msgstr "Скопируйте указанный адрес в соответствующее поле в настройках приложения в Google."
+
+msgid "To receive Client ID and secret <a href=\"https://console.developers.google.com/\" target=\"_blank\">register an application</a> on the Google Developers Console."
+msgstr "Для получения Идентификатора клиента и секрета <a href=\"https://console.developers.google.com/\" target=\"_blank\">зарегистрируйте приложение</a> в консоли разработчика Google."
+
+msgid "<a href=\"https://support.webasyst.com/16033/team-add-calendar-google/\" target=\"_blank\">Step-by-step manual on connecting with a Google Calendar</a>"
+msgstr "<a href=\"http://support.webasyst.ru/16031/team-add-calendar-google/\" target=\"_blank\">Инструкция по подключению к сервису «Календарь Google»</a>"
+
+msgid "Client ID"
+msgstr "Идентификатор клиента"
+
+msgid "Client secret"
+msgstr "Секрет клиента"
+
+msgid "Open in Google Drive"
+msgstr "Открыть в Google Диске"
+
+msgid "Another Google account"
+msgstr "Другой аккаунт Google"
+
+msgid "Need your attention"
+msgstr "Требуется ваше внимание"
+
+msgid "Authorization code is canceled or expired"
+msgstr "Код авторизации истек или был отменен"
+
+msgid "Renew authorization code"
+msgstr "Обновить код авторизации"
+
+msgid "Google Calendar integration"
+msgstr "Интеграция с календарями Google"
+
+msgid "Google Calendar"
+msgstr "Календарь Google"
