@@ -1038,10 +1038,13 @@ class waContact implements ArrayAccess
             return $result;
         } else {
             if ($is_admin) {
-                return $data['backend'];
+                return $name ? $data['backend'] : $data;
             }
             if (!$has_app_access) {
-                return 0;
+                return $name ? 0 : array();
+            }
+            if (!$name) {
+                return $data;
             }
 
             $r = ifset($data[$name], 0);

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WebAsyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2016-06-22 17:09+0300\n"
+"PO-Revision-Date: 2016-12-01 13:56+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -4340,4 +4340,10 @@ msgstr "Тема «%s» для всех приложений (рекоменду
 #: /wa-system/design/templates/Theme.html:486
 msgid "Only %s theme for this app (%s)"
 msgstr "Тема «%s» только для приложения «%s»"
+
+msgid "%s's birthday — %s"
+msgstr "%s отмечает день рождения — %s"
+
+msgid "%s is now online"
+msgstr "%s сейчас онлайн"
 

@@ -30,6 +30,7 @@ function smarty_block_wa_js($params, $content, &$smarty) {
     // Non-debug mode: merge all files into one cache
     //
     if ((defined('DEBUG_WA_JS') || !SystemConfig::isDebug()) && isset($params['file'])) {
+        $params['uibundle'] = ifset($params['uibundle'], true);
         $root_path = str_replace('\\', '/', $wa->getConfig()->getRootPath());
         $app_path = str_replace('\\', '/', $wa->getConfig()->getAppPath());
         $result = '';
@@ -40,7 +41,7 @@ function smarty_block_wa_js($params, $content, &$smarty) {
             $f = trim($f);
             $f = substr($f, $n);
             if ($f) {
-                if (substr($f, 0, $jquery_ui_path_n) == $jquery_ui_path) {
+                if ($params['uibundle'] && substr($f, 0, $jquery_ui_path_n) == $jquery_ui_path) {
                     $jquery_f = substr($f, $jquery_ui_path_n);
                     if (substr($jquery_f, -7) == '.min.js') {
                         $jquery_f = substr($jquery_f, 0, -7);

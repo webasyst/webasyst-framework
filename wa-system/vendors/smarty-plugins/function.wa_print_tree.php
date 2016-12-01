@@ -33,6 +33,20 @@ function smarty_function_wa_print_tree($params, &$smarty)
 
     $html = '<ul'. (isset($params['class']) ? ' class="'.$params['class'].'"' : '').(isset($params['attrs']) ? ' '.$params['attrs'] : '').'>';
 
+    // Modify params for recursive calls
+    if (isset($params['attrs'])) {
+        unset($params['attrs']);
+    }
+    if (isset($params['class'])) {
+        if (strpos($params['class'], 'menu-v') !== false) {
+            $params['class'] = 'menu-v';
+        } elseif (strpos($params['class'], 'menu-h') !== false) {
+            $params['class'] = 'menu-v';
+        } else {
+            unset($params['class']);
+        }
+    }
+
     preg_match_all('/:([a-z_]+(?:\.[a-z]+)?)/', $params['elem'], $match);
 
     foreach ($data as $row) {
