@@ -40,6 +40,21 @@ return array(
             'PRIMARY' => array('app_id', 'name'),
         ),
     ),
+    'wa_app_tokens' => array(
+        'contact_id' => array('int', 11),
+        'app_id' => array('varchar', 32, 'null' => 0),
+        'type' => array('varchar', 32, 'null' => 0),
+        'create_datetime' => array('datetime', 'null' => 0),
+        'expire_datetime' => array('datetime'),
+        'token' => array('varchar', 32, 'null' => 0),
+        'data' => array('text'),
+        ':keys' => array(
+            'token' => array('token', 'unique' => 1),
+            'app' => 'app_id',
+            'contact' => 'contact_id',
+            'expire' => 'expire_datetime',
+        ),
+    ),
     'wa_contact' => array(
         'id' => array('int', 11, 'null' => 0, 'autoincrement' => 1),
         'name' => array('varchar', 150, 'null' => 0),
@@ -72,6 +87,17 @@ return array(
             'login' => array('login', 'unique' => 1),
             'name' => 'name',
             'id_name' => array('id', 'name'),
+        ),
+    ),
+    'wa_contact_calendars' => array(
+        'id' => array('int', 11, 'null' => 0, 'autoincrement' => 1),
+        'name' => array('varchar', 255, 'null' => 0),
+        'bg_color' => array('varchar', 7),
+        'font_color' => array('varchar', 7),
+        'sort' => array('int', 11, 'null' => 0, 'default' => '0'),
+        'is_limited' => array('tinyint', 1, 'null' => 0, 'default' => '0'),
+        ':keys' => array(
+            'PRIMARY' => 'id',
         ),
     ),
     'wa_contact_categories' => array(
@@ -137,6 +163,28 @@ return array(
             'status' => 'status',
         ),
     ),
+    'wa_contact_events' => array(
+        'id' => array('int', 11, 'null' => 0, 'autoincrement' => 1),
+        'uid' => array('varchar', 255),
+        'create_datetime' => array('datetime', 'null' => 0),
+        'update_datetime' => array('datetime', 'null' => 0),
+        'contact_id' => array('int', 11, 'null' => 0),
+        'calendar_id' => array('int', 11, 'null' => 0),
+        'summary' => array('varchar', 255, 'null' => 0),
+        'description' => array('text'),
+        'location' => array('varchar', 255),
+        'start' => array('datetime', 'null' => 0),
+        'end' => array('datetime', 'null' => 0),
+        'is_allday' => array('tinyint', 4, 'null' => 0, 'default' => '0'),
+        'is_status' => array('tinyint', 4, 'null' => 0, 'default' => '0'),
+        'sequence' => array('int', 11, 'null' => 0, 'default' => '0'),
+        ':keys' => array(
+            'PRIMARY' => 'id',
+            'uid' => 'uid',
+            'contact_id' => 'contact_id',
+            'calendar_id' => 'calendar_id',
+        ),
+    ),
     'wa_contact_field_values' => array(
         'id' => array('int', 11, 'null' => 0, 'autoincrement' => 1),
         'parent_field' => array('varchar', 64, 'null' => 0),
@@ -196,6 +244,8 @@ return array(
         'cnt' => array('int', 11, 'null' => 0, 'default' => '0'),
         'icon' => array('varchar', 255, 'null' => 1),
         'sort' => array('int', 11, 'null' => 1),
+        'type' => array('enum', "'group', 'location'", 'null' => 0, 'default' => 'group'),
+        'description' => array('text'),
         ':keys' => array(
             'PRIMARY' => 'id',
             'name' => 'name',
@@ -211,6 +261,7 @@ return array(
         'params' => array('text'),
         ':keys' => array(
             'PRIMARY' => 'id',
+            'contact' => array('contact_id', 'id'),
         ),
     ),
     'wa_login_log' => array(
@@ -220,6 +271,7 @@ return array(
         'datetime_out' => array('datetime'),
         ':keys' => array(
             'PRIMARY' => 'id',
+            'contact_datetime' => array('contact_id', 'datetime_out'),
         ),
     ),
     'wa_region' => array(
@@ -275,6 +327,7 @@ return array(
     'wa_user_groups' => array(
         'contact_id' => array('int', 11, 'null' => 0),
         'group_id' => array('int', 11, 'null' => 0),
+        'datetime' => array('datetime'),
         ':keys' => array(
             'PRIMARY' => array('contact_id', 'group_id'),
             'group_id' => 'group_id',

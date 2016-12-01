@@ -5,6 +5,7 @@
  * @var string $backend_url
  * @var array $app
  * @var array $url
+ * @var array $message
  */
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"

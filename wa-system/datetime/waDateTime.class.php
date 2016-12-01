@@ -180,6 +180,20 @@ class waDateTime
         return $result;
     }
 
+    public static function getMonthNames($n=1, $case='ucfirst')
+    {
+        $result = array('');
+        foreach(explode(' ', 'January February March April May June July August September October November December') as $m) {
+            $name = _ws($m, $m, $n);
+            if ($case == 'lower') {
+                $name = mb_strtolower($name);
+            }
+            $result[] = $name;
+        }
+        unset($result[0]);
+        return $result;
+    }
+
     protected static function convertFormat($format)
     {
         $replace = array(
@@ -205,6 +219,7 @@ class waDateTime
      *       current user date
      *     - 'humandate': returns the date in format 'd f Y' supported by method date (format strings listed below are
      *       also supported by that method)
+     *     - 'shortdate': same as 'humandate', but year is not specified if same as current year
      *     - 'date': returns date/time in format 'Y-m-d'
      *     - 'time': returns date/time in format 'H:i'
      *     - 'fulltime': returns date/time in format 'H:i:s'
@@ -229,6 +244,12 @@ class waDateTime
         $old_locale = waLocale::getLocale();
         if ($locale != $old_locale) {
             wa()->setLocale($locale);
+        }
+
+        $cut_year = null;
+        if ($format === 'shortdate') {
+            $cut_year = date('Y');
+            $format = 'humandate';
         }
 
         if ($format === 'humandatetime') {
@@ -264,6 +285,12 @@ class waDateTime
         } else {
             $result = self::date(self::getFormat($format, $locale), $time, $timezone, $locale);
         }
+
+        if ($cut_year) {
+            $result = str_replace($cut_year, '', $result);
+            $result = trim($result, ' ,./\\');
+        }
+
         if ($locale != $old_locale) {
             wa()->setLocale($old_locale);
         }
@@ -289,8 +316,7 @@ class waDateTime
         }
         $locale = waLocale::getInfo($locale);
         $date_formats = isset($locale['date_formats']) ? $locale['date_formats'] : array();
-
-        $default = array(
+        $date_formats += array(
             'humandate' => 'd f Y',
             'date' => 'Y-m-d',
             'time' => 'H:i',
@@ -302,14 +328,12 @@ class waDateTime
 
         if (isset($date_formats[$format])) {
             return $date_formats[$format];
-        } elseif (isset($default[$format])) {
-            return $default[$format];
         } elseif ( defined($format) && (strpos($format, 'DATE_') === 0) ) {
             return constant($format);
-        } elseif (stripos("ymdhisfjnucrzt", $format) !== false) {
+        } elseif (preg_match("~[ymdhisfjnucrzt]~i", $format)) {
             return $format;
         } else {
-            trigger_error("waDateTime format '{$format}' undefined",E_USER_NOTICE);
+            trigger_error("waDateTime format '{$format}' undefined", E_USER_NOTICE);
             return "Y-m-d H:i:s";
         }
     }
@@ -321,7 +345,7 @@ class waDateTime
      * @param string $format Format string accepted by parameter$format of method getFormat().
      * @see self::getFormat()
      * @param string|null $locale Locale identifier. If not specifed, current user's locale is determined automatically.
-     * @see string
+     * @return string
      */
     public static function getFormatJS($format, $locale = null)
     {

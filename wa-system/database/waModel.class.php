@@ -946,6 +946,18 @@ class waModel
         return true;
     }
 
+    /** Truncates the table, deleting all rows. */
+    public function truncate()
+    {
+        try {
+            $this->exec("TRUNCATE {$this->table}");
+        } catch (Exception $e) {
+            // DB user does not have enough rights for TRUNCATE.
+            // Fall back to DELETE. Slow but sure.
+            $this->exec("DELETE FROM {$this->table}");
+        }
+    }
+
     /**
      * Prepare query and returns object of waDbStatement
      *

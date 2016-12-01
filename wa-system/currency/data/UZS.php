@@ -2,12 +2,12 @@
 
 return array(
     'code' => 'UZS',
-    'sign' => 'som',
+    'sign' => 'sum',
     'sign_position' => null,
     'sign_delim' => null,
-    'title' => 'Uzbekistani som',
+    'title' => 'Uzbekistan sum',
     'name' => array(
-        'som',
+        'sum',
     ),
     'frac_name' => array(
         'tiyin',

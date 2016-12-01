@@ -55,8 +55,8 @@ class waPageActions extends waActions
         /**
          * Backend sidebar pages
          * UI hook allow extends backend settings page
-         * @event backend_page_edit
-         * @param array $page
+         * @event backend_pages_sidebar
+         * @param array $params
          * @return array[string][string]string $return[%plugin_id%] html output
          */
         $event_params = array();
@@ -354,6 +354,22 @@ class waPageActions extends waActions
         // save params
         $this->saveParams($id);
 
+        /**
+         * New page created or existing page modified.
+         *
+         * @event page_save
+         * @param array $params
+         * @param array[array] $params['page'] page data after save
+         * @param array[array] $params['old'] page data before save (null if page is new)
+         * @return void
+         */
+        $event_params = array(
+            'page' => $page_model->getById($id),
+            'old' => $is_new ? null : $old,
+        );
+        wa()->event('page_save', $event_params);
+        $data = $event_params['page'];
+
         // prepare response
         $this->displayJson(array(
             'id' => $id,
@@ -433,12 +449,29 @@ class waPageActions extends waActions
 
     public function deleteAction()
     {
-        $id = waRequest::post('id');
+        $id = waRequest::post('id', null, 'int');
         $page_model = $this->getPageModel();
         $page = $page_model->getById($id);
         if ($page) {
-            // remove childs
+
             $childs = $this->getPageChilds($id);
+
+            /**
+             * Before page deletion
+             *
+             * @event page_delete
+             * @param array $params
+             * @param array[array] $params['page'] page data
+             * @param array[array] $params['child_ids'] list of ids of all subpages that will also be deleted
+             * @return void
+             */
+            $event_params = array(
+                'page' => $page,
+                'child_ids' => $childs,
+            );
+            wa()->event('page_delete', $event_params);
+
+            // remove childs
             if ($childs) {
                 $page_model->delete($childs);
             }

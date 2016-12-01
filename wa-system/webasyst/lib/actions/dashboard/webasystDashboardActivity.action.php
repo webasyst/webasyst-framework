@@ -6,6 +6,12 @@ class webasystDashboardActivityAction extends waViewAction
     {
         wa()->getStorage()->close();
         $filters = waRequest::post();
+        if (!isset($filters['app_id']) || !is_array($filters['app_id'])) {
+            $user_filter = wa()->getUser()->getSettings('webasyst', 'dashboard_activity');
+            if ($user_filter) {
+                $filters['app_id'] = explode(',', $user_filter);
+            }
+        }
         if (waRequest::post('save_filters')) {
             unset($filters['save_filters']);
             wa()->getUser()->setSettings('webasyst', 'dashboard_activity', waRequest::post('app_id'));
@@ -26,10 +32,7 @@ class webasystDashboardActivityAction extends waViewAction
         $log_model = new waLogModel();
         $apps = wa()->getUser()->getApps();
         if (!isset($filters['app_id']) || !is_array($filters['app_id'])) {
-            $user_filter = wa()->getUser()->getSettings('webasyst', 'dashboard_activity');
-            if ($user_filter) {
-                $filters['app_id'] = explode(',', $user_filter);
-            }
+            unset($filters['app_id']);
         }
         if (!$this->getUser()->isAdmin()) {
             if (!empty($filters['app_id'])) {
@@ -57,7 +60,9 @@ class webasystDashboardActivityAction extends waViewAction
                     continue;
                 }
             }
+            $row['name'] = $row['contact_name'];
             $contact_name = waContactNameField::formatName($row);
+            unset($row['name']);
             if ($contact_name) {
                 $row['contact_name'] = $contact_name;
             }
@@ -67,6 +72,9 @@ class webasystDashboardActivityAction extends waViewAction
             $row['datetime_group'] = $this->getDatetimeGroup($row['datetime']);
             if (!empty($apps[$row['app_id']])) {
                 $row['app'] = $apps[$row['app_id']];
+                if (empty($apps_rows[$row['app_id']])) {
+                    waLocale::loadByDomain($row['app_id']);
+                }
                 $logs = wa($row['app_id'])->getConfig()->getLogActions(true);
                 $row['action_name'] = ifset($logs[$row['action']]['name'], $row['action']);
                 if (strpos($row['action'], 'del')) {

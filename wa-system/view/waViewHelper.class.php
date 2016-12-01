@@ -344,25 +344,38 @@ HTML;
      */
     public function version($app_id = null)
     {
+        // Framework version?
         if ($app_id === true) {
             $app_info = wa()->getAppInfo('webasyst');
-            return isset($app_info['version']) ? $app_info['version'] : '0.0.1';
-        } else {
-            if ($this->version === null) {
-                $app_info = wa()->getAppInfo($app_id);
-                $this->version = isset($app_info['version']) ? $app_info['version'] : '0.0.1';
-                if (SystemConfig::isDebug()) {
-                    $this->version .= ".".time();
-                } else {
-                    $file = wa()->getAppPath('lib/config/build.php', $app_id);
-                    if (file_exists($file)) {
-                        $build = include($file);
-                        $this->version .= '.'.$build;
-                    }
-                }
+            $result = isset($app_info['version']) ? $app_info['version'] : '0.0.1';
+            if (SystemConfig::isDebug() && defined('DEBUG_WA_ASSETS')) {
+                $result .= ".".time();
             }
+            return $result;
+        }
+
+        if (!$app_id) {
+            $app_id = wa()->getApp();
+        }
+        if ($app_id == $this->app_id && $this->version !== null) {
             return $this->version;
         }
+
+        $app_info = wa()->getAppInfo($app_id);
+        $result = isset($app_info['version']) ? $app_info['version'] : '0.0.1';
+        if (SystemConfig::isDebug()) {
+            $result .= ".".time();
+        } else {
+            $file = wa()->getAppPath('lib/config/build.php', $app_id);
+            if (file_exists($file)) {
+                $build = include($file);
+                $result .= '.'.$build;
+            }
+        }
+        if ($app_id == $this->app_id) {
+            $this->version = $result;
+        }
+        return $result;
     }
 
     public function get($name, $default = null)
@@ -420,9 +433,9 @@ HTML;
         }
     }
 
-    public function getUrl($route, $params = array(), $absolute = false)
+    public function getUrl($route, $params = array(), $absolute = false, $domain = null, $route_url = null)
     {
-        return wa()->getRouteUrl($route, $params, $absolute);
+        return wa()->getRouteUrl($route, $params, $absolute, $domain, $route_url);
     }
 
     public function contacts($hash = null, $fields = 'id,name')
@@ -537,7 +550,7 @@ HTML;
     {
         if ($value === null) {
             return wa()->getStorage()->get($key);
-        } else {
+        } else if (substr($key, 0, 5) !== 'auth_') {
             wa()->getStorage()->set($key, $value);
         }
     }
@@ -1086,6 +1099,78 @@ HTML;
         }
         return false;
 
+    }
+
+    public function contactProfileTabs($id, $options = array())
+    {
+        if (!wa_is_int($id)) {
+            throw new waException('bad parameters', 500);
+        }
+
+        $tabs = ifset($options['tabs']);
+        if (!is_array($tabs)) {
+            $tabs = $this->getContactTabs((int)$id);
+        }
+
+        $selected_tab = ifset($options['selected_tab']);
+        if (!$selected_tab) {
+            $selected_tab = key($tabs);
+        }
+
+        $view = wa()->getView();
+        $view->assign(array(
+            'profile_content_layout_template' => wa()->getAppPath('templates/actions/profile/ProfileContent.html', 'webasyst'),
+            'uniqid' => str_replace('.', '-', uniqid('s', true)),
+            'selected_tab' => $selected_tab,
+            'contact_id' => $id,
+            'tabs' => $tabs,
+        ));
+
+        $template_file = $this->getConfig()->getConfigPath('ProfileTabs.html', true, 'webasyst');
+        if (file_exists($template_file)) {
+            return $view->fetch('file:'.$template_file);
+        } else {
+            return $view->fetch(wa()->getAppPath('templates/actions/profile/ProfileTabs.html', 'webasyst'));
+        }
+    }
+
+    public function getContactTabs($id)
+    {
+        $id = (int) $id;
+        if (!$id) {
+            return array();
+        }
+
+        // Tabs of 'Team' app should always be on the left
+        $event_result = wa()->event(array('contacts', 'profile.tab'), $id);
+        if (!empty($event_result['team'])) {
+            $event_result = array(
+                'team' => $event_result['team'],
+            ) + $event_result;
+        }
+
+        $links = array();
+        foreach ($event_result as $app_id => $one_or_more_links) {
+            if (isset($one_or_more_links['html']) || isset($one_or_more_links['url']) || isset($one_or_more_links['id'])) {
+                $one_or_more_links = array($one_or_more_links);
+            }
+
+            $i = '';
+            foreach ($one_or_more_links as $link) {
+                while (empty($link['id']) || isset($links[$link['id']])) {
+                    $link['id'] = $app_id.$i;
+                    $i++;
+                }
+                $links[$link['id']] = $link + array(
+                    'url' => '',
+                    'title' => '',
+                    'count' => '',
+                    'html' => '',
+                );
+            }
+        }
+
+        return $links;
     }
 
     public function __get($app)

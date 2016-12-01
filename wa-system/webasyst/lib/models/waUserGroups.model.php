@@ -22,28 +22,59 @@ class waUserGroupsModel extends waModel
 
     public function getGroupIds($contact_id)
     {
+        // Caching here saves plenty of queries for access right checking
+        static $last_contact_id = null;
+        static $last_user_groups = null;
+        if (!is_array($contact_id) && (int) $contact_id === $last_contact_id) {
+            return $last_user_groups;
+        }
         $sql = "SELECT group_id FROM ".$this->table."
                 WHERE ".(is_array($contact_id) ? "contact_id IN (i:id)" : "contact_id=i:id");
-        return array_keys($this->query($sql, array('id' => $contact_id))->fetchAll('group_id'));
+        $result = array_keys($this->query($sql, array('id' => $contact_id))->fetchAll('group_id'));
+        if (!is_array($contact_id)) {
+            $last_contact_id = (int) $contact_id;
+            $last_user_groups = $result;
+        }
+        return $result;
     }
 
-    public function add($data)
+    public function add($data, $group_id=null)
     {
-        $sql = "INSERT IGNORE INTO ".$this->table." (contact_id, group_id) VALUES ";
-        foreach ($data as &$row) {
-            $row = "(".(int)$row[0].",".(int)$row[1].")";
+        if (!is_array($data)) {
+            $data = array(
+                array((int) $data, (int) $group_id),
+            );
         }
 
-        if ($data) {
-            $sql .= implode(",", $data);
-            return $this->exec($sql);
+        $values = array();
+        $group_ids = array();
+        $datetime = date('Y-m-d H:i:s');
+        foreach ($data as $row) {
+            $contact_id = (int) $row[0];
+            $group_id = (int) $row[1];
+            if ($contact_id && $group_id) {
+                $values[] = "({$contact_id},{$group_id},'{$datetime}')";
+                $group_ids[$group_id] = $group_id;
+            }
         }
+        if ($values) {
+            $sql = "INSERT IGNORE INTO ".$this->table." (contact_id, group_id, datetime) VALUES ";
+            $sql .= implode(",", $values);
+            $result = $this->exec($sql);
+            $m = new waGroupModel();
+            $m->updateCounts($group_ids);
+            return $result;
+        }
+
         return true;
     }
 
     public function emptyGroup($group_id) {
         $sql = "DELETE FROM `{$this->table}` WHERE group_id=".((int)$group_id);
         $this->exec($sql);
+
+        $m = new waGroupModel();
+        $m->updateCount($group_id, 0);
     }
 
     public function delete($contact_id, $group_id=null)
@@ -65,7 +96,10 @@ class waUserGroupsModel extends waModel
 
         if ($where) {
             $sql = "DELETE FROM ".$this->table." WHERE ".implode(" AND ", $where);
-            return $this->exec($sql);
+            $result = $this->exec($sql);
+            $m = new waGroupModel();
+            $m->updateCounts(ifempty($group_id));
+            return $result;
         }
         return true;
     }
@@ -86,6 +120,9 @@ class waUserGroupsModel extends waModel
       * @return array user_id => array(group_id, group_id, ...)
       */
     public function getGroupIdsForUsers($contacts) {
+        if (!$contacts) {
+            return array();
+        }
         $sql = "SELECT contact_id, group_id
                 FROM ".$this->table."
                 WHERE contact_id IN (i:ids)";

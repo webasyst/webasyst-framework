@@ -28,7 +28,6 @@ abstract class waJsonActions extends waController
     {
         $method = $action.'Action';
         if (method_exists($this, $method)) {
-            $this->action = $action;
             $this->$method();
         }else{
             throw new waException(sprintf("Invalid action or missed method at %s for action %s",get_class($this),$action));
@@ -46,8 +45,9 @@ abstract class waJsonActions extends waController
         if (!$action) {
             $action = 'default';
         }
+        $this->action = $action;
         $this->preExecute();
-        $this->execute($action);
+        $this->execute($this->action);
         $this->postExecute();
 
         if ($this->action == $action) {

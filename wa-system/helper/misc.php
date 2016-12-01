@@ -148,6 +148,13 @@ function wa_dump_helper(&$value, &$level_arr = array(), $cli = null)
         return '** Too big level of nesting **';
     }
 
+    $htmlspecialchars_mode = ENT_NOQUOTES;
+    if (defined('ENT_SUBSTITUTE')) {
+        $htmlspecialchars_mode |= ENT_SUBSTITUTE;
+    } else if (defined('ENT_IGNORE')) {
+        $htmlspecialchars_mode |= ENT_IGNORE;
+    }
+
     // Simple types
     if (is_resource($value)) {
         return print_r($value, 1).' ('.get_resource_type($value).')';
@@ -156,7 +163,7 @@ function wa_dump_helper(&$value, &$level_arr = array(), $cli = null)
     } else if (!is_array($value) && !is_object($value)) {
         $result = var_export($value, true);
         if (!$cli) {
-            $result = htmlspecialchars($result);
+            $result = htmlspecialchars($result, $htmlspecialchars_mode, 'utf-8');
             if (!strlen($result)) {
                 $result = '&lt;encoding problems&gt;';
             }
@@ -208,15 +215,15 @@ function wa_dump_helper(&$value, &$level_arr = array(), $cli = null)
         $value_to_iterate = (array) $value;
 
         if ($value_to_iterate) {
-            $str .= $br.'{';
+            $str .= ' {';
         } else {
             return $str.' {}';
         }
 
     } else {
-        $str = 'Array';
+        $str = 'array';
         if ($value) {
-            $str .= $br.'(';
+            $str .= '(';
         } else {
             return $str.'()';
         }
@@ -225,10 +232,12 @@ function wa_dump_helper(&$value, &$level_arr = array(), $cli = null)
 
     $level_arr[] = &$value;
     foreach($value_to_iterate as $key => &$val) {
-        if (!$cli) {
-            $key = htmlspecialchars($key);
+        if (is_array($value)) {
+            $key = wa_dump_helper($key);
+        } else if (!$cli) {
+            $key = htmlspecialchars($key, $htmlspecialchars_mode, 'utf-8');
         }
-        $str .= $br."  ".$key.' => '.wa_dump_helper($val, $level_arr, $cli);
+        $str .= $br."  ".$key.' => '.wa_dump_helper($val, $level_arr, $cli).(is_array($value) ? ',' : '');
     }
     array_pop($level_arr);
 

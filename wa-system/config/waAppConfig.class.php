@@ -426,9 +426,11 @@ class waAppConfig extends SystemConfig
         // Remove all app settings
         $app_settings_model = new waAppSettingsModel();
         $app_settings_model->del($this->application);
-
         $contact_settings_model = new waContactSettingsModel();
         $contact_settings_model->deleteByField('app_id', $this->application);
+        // Remove app tokens
+        $app_tokens_model = new waAppTokensModel();
+        $app_tokens_model->deleteByField('app_id', $this->application);
         // Remove all rights to app
         $contact_rights_model = new waContactRightsModel();
         $contact_rights_model->deleteByField('app_id', $this->application);
@@ -447,6 +449,14 @@ class waAppConfig extends SystemConfig
         }
         if ($bind && waLocale::getDomain() != $this->application) {
             waLocale::load($locale, $this->getAppPath('locale'), $this->application, $bind);
+        }
+    }
+
+    public static function clearAutoloadCache($app_id)
+    {
+        $cache_file = waConfig::get('wa_path_cache').'/apps/'.$app_id.'/config/autoload.php';
+        if (file_exists($cache_file)) {
+            @unlink($cache_file);
         }
     }
 
@@ -873,5 +883,11 @@ class waAppConfig extends SystemConfig
             unset($count[$this->application]);
             wa()->getStorage()->set('apps-count', $count);
         }
+    }
+
+    public function dispatchAppToken($data)
+    {
+        $m = new waAppTokensModel();
+        $m->deleteById($data['token']);
     }
 }

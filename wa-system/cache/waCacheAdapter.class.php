@@ -1,5 +1,8 @@
 <?php
-
+/**
+ * Base class for an adapter to abstract away communication
+ * to a key/value storage such as Memcached.
+ */
 abstract class waCacheAdapter
 {
     protected $options;

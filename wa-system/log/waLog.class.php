@@ -37,7 +37,7 @@ class waLog
         $result = false;
         $fd = fopen($file, 'a');
         if (flock($fd, LOCK_EX)) {
-            $result = fwrite($fd, PHP_EOL.date('Y-m-d H:i:s:').PHP_EOL.$message);
+            $result = fwrite($fd, PHP_EOL.date('Y-m-d H:i:s').' '.waRequest::getIp().PHP_EOL.$message.PHP_EOL);
             fflush($fd);
             flock($fd, LOCK_UN);
         }
@@ -47,14 +47,28 @@ class waLog
     }
 
     /**
-     * Debugging helper to dump a variable to a log file.
+     * Debugging helper to dump any number of variables to a log file.
      *
-     * @param mixed $var Variable to be logged.
-     * @param string $file Name of log file relative to wa-log directory.
+     * @param mixed $var... any number of arguments to be logged
+     * @param string $file Last argument is treated as filename relative to wa-log directory, if it's a string ending with '.log'.
      * @return boolean Logging completion status.
      */
     public static function dump($var, $file = 'dump.log')
     {
+        $args = func_get_args();
+        if (count($args) > 1) {
+            $last_arg = end($args);
+            if (is_string($last_arg) && substr($last_arg, -4) === '.log') {
+                $file = array_pop($args);
+                $vars = $args;
+            } else {
+                $vars = $args;
+                $file = 'dump.log';
+            }
+        } else {
+            $vars = array($var);
+        }
+
         $result = '';
         // Show where we've been called from
         if(function_exists('debug_backtrace')) {
@@ -68,7 +82,9 @@ class waLog
             }
         }
 
-        $result .= wa_dump_helper($var)."\n";
+        foreach ($vars as $var) {
+            $result .= wa_dump_helper($var)."\n";
+        }
 
         return waLog::log($result, $file);
     }

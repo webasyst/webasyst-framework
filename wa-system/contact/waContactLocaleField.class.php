@@ -33,7 +33,7 @@ class waContactLocaleField extends waContactSelectField
 
         if ($id) {
             if (!isset($this->locales[$id])) {
-                throw new Exception('Unknown locale: '.$id);
+                throw new waException('Unknown locale: '.$id);
             }
             return $this->locales[$id];
         }

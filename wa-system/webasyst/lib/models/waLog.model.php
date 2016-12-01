@@ -66,7 +66,7 @@ class waLogModel extends waModel
             $where_string .= ' AND ('.$this->getWhereByField($where).')';
         }
         $sql = "SELECT l.*, c.name contact_name, c.photo contact_photo, c.firstname, c.lastname, c.middlename,
-c.company, c.is_company, c.is_user
+c.company, c.is_company, c.is_user, c.login
                 FROM ".$this->table." l
                 LEFT JOIN wa_contact c ON l.contact_id = c.id
                 WHERE ".$where_string."

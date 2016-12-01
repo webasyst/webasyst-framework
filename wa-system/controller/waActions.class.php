@@ -22,7 +22,6 @@ abstract class waActions extends waController
     {
         $method = $action.'Action';
         if (method_exists($this, $method)) {
-            $this->action = $action;
             $this->$method();
         } else {
             throw new waException(sprintf("Invalid action or missed method %s at %s for action %s", $method, get_class($this), $action));
@@ -40,8 +39,9 @@ abstract class waActions extends waController
         if (!$action) {
             $action = 'default';
         }
+        $this->action = $action;
         $this->preExecute();
-        $this->execute($action);
+        $this->execute($this->action);
         $this->postExecute();
     }
 

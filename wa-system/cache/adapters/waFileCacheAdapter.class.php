@@ -2,11 +2,6 @@
 
 class waFileCacheAdapter extends waCacheAdapter
 {
-    /**
-     * @var Memcached
-     */
-    protected static $memcached;
-
     protected function init()
     {
         if (!isset($this->options['path'])) {

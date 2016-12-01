@@ -89,7 +89,7 @@ HELP;
                     $this->type = $matches[2];
                     $this->extension_id = $matches[3];
                 } else {
-                    throw new Exception("invalid SLUG");
+                    throw new waException("invalid SLUG");
                 }
 
                 $this->tracef('Check & compress %s with params:', $slug);
@@ -908,7 +908,6 @@ HELP;
 
         $functions_blacklist = array(
             '@^mysqli?_\.+@'              => 'Use waModel instead',
-            '@^call_user_func(_array)?$@' => 'Bad practice',
             '@^eregi?(_replace)$@'        => 'Deprecated, use preg/preg_replace',
             '@^spliti?$@'                 => 'Deprecated, use explode',
         );
@@ -1035,7 +1034,7 @@ HELP;
                     sprintf("Error while create checksum file [%d] %s at", strlen(basename($path)), $path, __METHOD__)
                 );
             }
-            throw new Exception('Error while create checksum file', 500);
+            throw new waException('Error while create checksum file', 500);
         }
         $this->tracef(
             "time: %dms\t%d files, %0.2f KBytes %s",

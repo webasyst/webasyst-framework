@@ -38,10 +38,12 @@ class waLocale
             self::$init = true;
             // Alias to gettext
 
-            if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN' || !function_exists('gettext')) {
+            if ($adapter) {
+                self::$adapter = $adapter;
+            } else if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN' || !function_exists('gettext')) {
                 self::$adapter = new waLocalePHPAdapter();
             } else {
-                self::$adapter = $adapter ? $adapter :  new waLocaleAdapter();
+                 self::$adapter = new waLocaleAdapter();
             }
         }
     }

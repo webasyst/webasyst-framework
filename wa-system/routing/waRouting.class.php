@@ -395,7 +395,7 @@ class waRouting
         $check_current_route = true;
         if ($this->route && $params) {
             foreach ($params as $k => $v) {
-                if (isset($this->route[$k]) && $this->route[$k] != $v) {
+                if ($k != 'url' && isset($this->route[$k]) && $this->route[$k] != $v) {
                     $check_current_route = false;
                     break;
                 }
