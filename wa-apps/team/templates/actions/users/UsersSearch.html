@@ -1,0 +1,26 @@
+{strip}
+
+<div class="t-users-page" id="t-users-page">
+    {* HEADER *}
+    <header class="t-content-header">
+        <h1>{$search|escape}</h1>
+    </header>
+
+    {* CONTENT *}
+    <div class="t-content-body">
+        {if !empty($contacts)}
+            {include file="./Users.inc.html" contacts=$contacts}
+        {else}
+            <p class="t-description">[`No users found.`]</p>
+        {/if}
+    </div>
+
+    {* JS *}
+    <script>
+        ( function($) {
+            $.team.setTitle({json_encode($search)});
+        })(jQuery);
+    </script>
+</div>
+
+{/strip}

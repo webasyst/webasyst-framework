@@ -1,0 +1,27 @@
+{strip}
+
+<div class="t-users-page" id="t-users-page">
+    {* HEADER *}
+    <header class="t-content-header">
+        <h1>[`Inactive users`]</h1>
+    </header>
+
+    {* CONTENT *}
+    <div class="t-content-body">
+        {if !empty($contacts)}
+            {include file="./Users.inc.html" contacts=$contacts}
+        {else}
+            <p class="t-description">[`No inactive users.`]</p>
+        {/if}
+    </div>
+
+    {* JS *}
+    <script>
+        ( function($) {
+            $.team.setTitle('[`Inactive users`]');
+            $.team.sidebar.updateCount('{$wa_app_url}inactive/', {count($contacts)});
+        })(jQuery);
+    </script>
+</div>
+
+{/strip}

@@ -1,0 +1,91 @@
+{$wrapper_id = uniqid('t-confirm-deletion-dialog')}
+
+<div class="t-dialog-wrapper is-full-screen t-confirm-deletion-dialog" id="{$wrapper_id}">
+    <div class="t-dialog-background"></div>
+    <div class="t-dialog-block">
+        <header class="t-dialog-header">
+            <h1>[`Delete contacts`] <span style="color: #aaa;">({$total_count_requested})</span></h1>
+        </header>
+        <div class="t-dialog-content">
+            <p>[`Contact deletion cannot be undone.`]</p>
+            {if $contacts}
+                <p><strong style="color:red;">[`IMPORTANT NOTE:`]</strong>
+                    {if $total_count_requested == count($contacts)}
+                        [`All selected contacts have links to other applications.`]
+                    {else}
+                        {sprintf(_w('%d of %d selected contacts shown below have links to other applications.'), count($contacts), $total_count_requested)}
+                    {/if}
+
+                    {if !$is_superadmin}
+                        [`Deletion of these contacts is allowed to an Administrator only.`]
+                    {else}
+                        [`After deletion of these contacts, other applications will refer to non-existent contacts.`]
+                    {/if}
+                </p>
+                <table class="zebra full-width">
+                    {foreach $contacts as $id => $c}
+                        {$name = $c.name}
+                        <tr>
+                            <td class="min-width"><img src="{wa_backend_url()}?action=photo&id={$id}&size=20" width="20" height="20"></td>
+                            <td colspan="2">{strip}
+                                {$c.name|escape}
+                                {if $c.not_allowed_reason}
+                                    :&nbsp;
+                                    <em class="errormsg">{$c.not_allowed_reason|escape}</em>
+                                {/if}
+                            {/strip}</td>
+                        </tr>
+                        {if $is_superadmin}
+                            {foreach $c.links as $app_id => $app_links}
+                                {foreach $app_links as $l}
+                                    <tr>
+                                        <td></td>
+                                        <td>{$apps[$app_id].name}/{$l.role|truncate:50|escape}</td>
+                                        <td>{_w("%d link", "%d links", $l.links_number)}</td>
+                                    </tr>
+                                {/foreach}
+                            {/foreach}
+                        {/if}
+                    {/foreach}
+                </table>
+            {/if}
+        </div>
+        <footer class="t-dialog-footer">
+            <div class="t-actions">
+                {if $allowed_ids}
+                    <input type="submit" class="button red t-button delete-button" value="{if !$contacts}
+                            [`Delete contacts`]
+                        {elseif $is_superadmin}
+                            [`Delete anyway`]
+                        {else}
+                            {sprintf(_w('Delete %d of %d selected'), count($ids), $all)}
+                        {/if}">
+                    [`or`]
+                    <a class="js-close-dialog" href="javascript:void(0);">[`cancel`]</a>
+                {else}
+                    <input type="submit" class="button t-button js-close-dialog" value="[`Close`]">
+                    {*<a href="javascript:void(0)" class="button js-close-dialog">[`Close`]</a>*}
+                {/if}
+            </div>
+        </footer>
+    </div>
+</div>
+
+<script>(function() { "use strict";
+
+    var $wrapper = $('#{$wrapper_id}');
+
+    // string with comma-separated contact_ids
+    var allowed_ids = {$allowed_ids|json_encode};
+    if (!allowed_ids) {
+        return;
+    }
+
+    $wrapper.find('.t-actions .delete-button').click(function() {
+        $(this).parent().append('<i class="icon16 loading"></i>');
+        $.post('?module=users&action=delete', { id: allowed_ids }, function(){
+            $wrapper.trigger('contacts_deleted', [allowed_ids.split(',')]).trigger('close');
+        });
+    });
+
+})();</script>

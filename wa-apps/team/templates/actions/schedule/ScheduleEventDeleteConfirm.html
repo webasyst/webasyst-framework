@@ -1,0 +1,27 @@
+{strip}
+
+<div class="t-dialog-wrapper is-full-screen t-delete-event-popup" id="t-event-delete">
+    <div class="t-dialog-background"></div>
+    <div class="t-dialog-block">
+        <header class="t-dialog-header">
+            <h1>[`Delete this event?`]</h1>
+        </header>
+        <footer class="t-dialog-footer">
+            <div class="t-actions">
+                <input class="button red t-button js-delete-event" type="button" value="[`Delete`]">
+                <span style="margin: 0 4px;">[`or`]</span>
+                <a class="js-close-dialog" href="javascript:void(0);">[`cancel`]</a>
+            </div>
+        </footer>
+    </div>
+    <script>
+        ( function($) {
+            new EventDeleteDialog({
+                $wrapper: $("#t-event-delete"),
+                event_id: "{$event.id}"
+            });
+        })(jQuery);
+    </script>
+</div>
+
+{/strip}

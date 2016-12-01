@@ -1,0 +1,43 @@
+{strip}
+
+<div class="t-dialog-wrapper is-full-screen t-delete-calendar-popup" id="t-calendar-delete">
+    <div class="t-dialog-background"></div>
+    <div class="t-dialog-block">
+        <header class="t-dialog-header">
+            <h2>[`Delete this calendar?`]</h2>
+        </header>
+        <div class="t-dialog-content">
+            {if $count_events <= 0}
+                <p>
+                    [`This calendar is empty. No events will be deleted.`]
+                </p>
+            {else}
+                <p>
+                    {sprintf(_w('%d event in this calendar will be deleted', '%d events in this calendar will be deleted', $count_events))}
+                </p>
+                {if $count_external_calendars > 0}
+                    <p>
+                        {sprintf(_w('%d connection to external calendars will be deleted', '%d connections to external calendars will be deleted', $count_external_calendars))}
+                    </p>
+                {/if}
+            {/if}
+        </div>
+        <footer class="t-dialog-footer">
+            <div class="t-actions">
+                <input class="button red js-delete-calendar" type="button" value="[`Delete`]">
+                <span style="margin: 0 4px;">[`or`]</span>
+                <a class="js-close-dialog" href="javascript:void(0);">[`cancel`]</a>
+            </div>
+        </footer>
+    </div>
+    <script>
+        ( function($) {
+            new CalendarDeleteDialog({
+                $wrapper: $("#t-calendar-delete"),
+                calendar_id: "{$calendar.id}"
+            });
+        })(jQuery);
+    </script>
+</div>
+
+{/strip}
