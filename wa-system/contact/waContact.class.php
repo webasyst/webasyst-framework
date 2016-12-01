@@ -410,6 +410,14 @@ class waContact implements ArrayAccess
                     $result = waContactFields::getStorage('data')->get($this, $field_id);
                 }
 
+                // Remember in cache that there's no data for this field id.
+                // When data exists, it's done in appropriate storage.
+                if ($result === null) {
+                    $this->setCache(array(
+                        $field_id => null,
+                    ));
+                }
+
                 // special case for is_company field when is_company IS NULL (e.g.: new contact)
                 // and from firstname, middlename, lastname and company, only company is not empty
                 if ($field_id == 'is_company' &&

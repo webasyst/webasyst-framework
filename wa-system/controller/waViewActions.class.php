@@ -112,16 +112,28 @@ abstract class waViewActions extends waController
         }
 
         $pluginRoot = $this->getPluginRoot();
+        preg_match("/([A-Z][^A-Z]+)/", get_class($this), $match);
         if ($pluginRoot) {
+            $old_style_match = $match;
+            $match = array();
             preg_match("/Plugin([A-Z][^A-Z]+)/", get_class($this), $match);
-        } else {
-            preg_match("/([A-Z][^A-Z]+)/", get_class($this), $match);
         }
 
-        $template = $pluginRoot.$this->template_folder.strtolower($match[1])."/".$match[1].$template.$this->view->getPostfix();
-        return $template;
-    }
+        $full_template = $pluginRoot.$this->template_folder.strtolower($match[1])."/".$match[1].$template.$this->view->getPostfix();
+        if (!$pluginRoot || file_exists(wa()->getAppPath().'/'.$full_template)) {
+            return $full_template;
+        }
 
+        // There used to be a bug that made this class look for plugin templates in the wrong place.
+        // The bug was fixed, and the path calculated above should go for all modern uses.
+        // But for compatibility with older plugins we still check for a template in old place.
+        $full_template2 = $pluginRoot.$this->template_folder.strtolower($old_style_match[1])."/".$old_style_match[1].$template.$this->view->getPostfix();
+        if (file_exists(wa()->getAppPath().'/'.$full_template2)) {
+            return $full_template2;
+        }
+
+        return $full_template;
+    }
 
     public function setTemplate($template)
     {
