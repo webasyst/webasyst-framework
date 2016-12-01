@@ -1,0 +1,40 @@
+{$container_id = uniqid('t-office365-account-info-')}
+<div id="{$container_id}" class="t-office365-account-info">
+    <div>
+        {$calendar.params.user_email}
+        {$calendar.params.user_name}
+    </div>
+    {if $is_token_invalid}
+        {if $action === 'info'}
+            <div style="margin-top: 20px; padding: 20px; background-color: #fee; width: 500px;">
+                <strong class="errormsg">{_wp('Authorization code is canceled or expired')}</strong>
+                {if $calendar.is_own}
+                    <a href="javascript:void(0);" class="t-office365-receive-token">
+                        <i class="icon16 update"></i>
+                        {_wp('Renew authorization code')}
+                    </a>
+                    <div class="t-office365-auth-block"></div>
+                {/if}
+            </div>
+        {elseif $action === 'schedule_settings'}
+            <div style="margin-top: 4px;">
+                <a href="{$wa_app_url}calendar/external/?id={$calendar.id}" style="color: red !important; font-weight: bold;">{_wp('Need your attention')}</a>
+            </div>
+        {/if}
+    {/if}
+</div>
+
+{if $action === 'info' && $is_token_invalid && $calendar.is_own}
+    <script>
+        $(function () {
+            var container = $('#{$container_id}');
+            container.find('.t-office365-receive-token').click(function () {
+                $.post('?plugin=office365&module=backend&action=renewToken', {
+                    id: {$calendar.id}
+                }, function (html) {
+                    container.find('.t-office365-auth-block').html(html);
+                });
+            });
+        });
+    </script>
+{/if}
