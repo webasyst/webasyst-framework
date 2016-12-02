@@ -4,23 +4,23 @@ return array(
     'user_name_formats' => array(
         array(
             'format' => 'lastname,firstname,middlename',
-            'name' => _w('Lastname Firstname Middlename')
+            'name' => 'Lastname Firstname Middlename'
         ),
         array(
             'format' => 'lastname,firstname',
-            'name' => _w('Lastname Firstname')
+            'name' => 'Lastname Firstname'
         ),
         array(
             'format' => 'firstname,lastname',
-            'name' => _w('Firstname Lastname')
+            'name' => 'Firstname Lastname'
         ),
         array(
             'format' => 'firstname,middlename,lastname',
-            'name' => _w('Firstname Middlename Lastname')
+            'name' => 'Firstname Middlename Lastname'
         ),
         array(
             'format' => 'login',
-            'name' => _w('Login')
+            'name' => 'Login'
         )
     ),
     'external_calendar_sync_max_date_offset' => '6'     // in months

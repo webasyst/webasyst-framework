@@ -14,9 +14,8 @@
     <link rel="stylesheet" href="{$wa_app_static_url}css/team.css?{$wa->version()}">
 
     {* JS *}
-    {* TODO: MIN JS FILES *}
-    {/strip}{wa_js}
-        {$wa_url}wa-content/js/jquery/jquery-1.11.1.min.js
+    <script src="{$wa_url}wa-content/js/jquery/jquery-1.11.1.min.js?{$wa->version(true)}"></script>
+    {/strip}{wa_js file="js/compiled/team-external.min.js" uibundle=''}
         {$wa_url}wa-content/js/jquery/jquery-migrate-1.2.1.min.js
         {$wa_url}wa-content/js/jquery-ui/jquery.ui.core.min.js
         {$wa_url}wa-content/js/jquery-ui/jquery.ui.widget.min.js
@@ -31,7 +30,7 @@
         {$wa_url}wa-content/js/jquery-wa/wa.core.js
         {$wa_url}wa-content/js/jquery-wa/wa.dialog.js
         {$wa_url}wa-content/js/farbtastic/farbtastic.js
-    {/wa_js}{wa_js}
+    {/wa_js}{wa_js file="js/compiled/team.min.js"}
         {$wa_app_static_url}js/plugins/timepicker/jquery.timepicker.min.js
         {$wa_app_static_url}js/team.js
         {$wa_app_static_url}js/sidebar.js

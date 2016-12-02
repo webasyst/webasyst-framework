@@ -1791,12 +1791,12 @@ var EventDeleteDialog = ( function($) {
         that.$block.on("click", ".js-delete-event", function(event) {
             event.preventDefault();
             if (!that.is_locked) {
-                that.delete();
+                that['delete']();
             }
         });
     };
 
-    EventDeleteDialog.prototype.delete = function() {
+    EventDeleteDialog.prototype['delete'] = function() {
         var that = this,
             href = "?module=schedule&action=eventDelete",
             data = {

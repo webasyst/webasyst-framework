@@ -10,16 +10,19 @@ class teamUsersSearchAction extends teamContentViewAction
         }
         $res = teamAutocompleteController::usersAutocomplete($search) ;
 
-        $contacts = array();
+        $contacts = $list = array();
         if ($res) {
             $ids = array();
             foreach ($res as $r) {
                 $ids[] = $r['id'];
             }
-            $contacts = teamUser::getList('/id/'.join(',', $ids), array(
+            $list = teamUser::getList('/id/'.join(',', $ids), array(
                 'order' => 'last_datetime DESC',
                 'access_rights' => false,
             ));
+        }
+        foreach ($res as $r) {
+            $contacts[$r['id']] = $list[$r['id']];
         }
         $this->view->assign(array(
             'search' => $search,

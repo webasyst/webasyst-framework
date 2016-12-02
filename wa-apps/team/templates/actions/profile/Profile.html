@@ -76,8 +76,8 @@
                         </p>
                     {/if}
 
-                    {if $user.is_user}
-
+                    {if $user.is_user > 0}
+                        <p>
                         {if $groups}
                             {$_g = []}
                             {foreach $groups as $_id=>$_name}
@@ -90,8 +90,11 @@
                                 <a href="javascript:void(0)" class="inline-link small" id="header-customize-groups-link">&nbsp;<b>[`Edit groups`]</b></a>
                             {/if}
                         {/if}
-                        <br><br>
-                        
+                        </p>
+                    {else if $user.is_user < 0}
+                        <p class="grey">[`Access is switched off`]</p>
+                    {else if $invite}
+                        <p><em>[`User invitation has been sent`]</em></p>
                     {/if}
 
                     <!-- plugin hook: 'backend_profile.before_top' -->

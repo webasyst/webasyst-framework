@@ -828,12 +828,12 @@ var GroupDeleteDialog = ( function($) {
         that.$block.on("click", ".js-delete-event", function(event) {
             event.preventDefault();
             if (!that.is_locked) {
-                that.delete();
+                that['delete']();
             }
         });
     };
 
-    GroupDeleteDialog.prototype.delete = function() {
+    GroupDeleteDialog.prototype['delete'] = function() {
         var that = this,
             href = "?module=group&action=delete",
             data = {

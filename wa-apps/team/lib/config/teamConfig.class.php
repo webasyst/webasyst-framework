@@ -55,7 +55,14 @@ class teamConfig extends waAppConfig
 
     public function getUsernameFormats()
     {
-        return $this->getOptionWithDefault('user_name_formats', array());
+        $res = $this->getOptionWithDefault('user_name_formats', array());
+        if (is_array($res)) {
+            foreach ($res as &$r) {
+                $r['name'] = _w($r['name']);
+            }
+            unset($r);
+        }
+        return $res;
     }
 
     /**

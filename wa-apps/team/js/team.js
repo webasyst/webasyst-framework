@@ -422,8 +422,6 @@ var TeamDialog = ( function($) {
         that.$wrapper.remove();
         //
         that.onClose(that.$wrapper, that);
-        //
-        delete this;
     };
 
     TeamDialog.prototype.refresh = function() {
@@ -516,7 +514,12 @@ var TeamEditable = ( function($) {
 
     TeamEditable.prototype.renderField = function() {
         var that = this,
-            $field = $('<input class="bold" type="text" name="" value="' + ( that.is_empty ? '' : that.$wrapper.text() ) + '"  />');
+            text = that.$wrapper.text(),
+            $field = $('<input class="bold" type="text" name="" />');
+
+        if (!that.is_empty) {
+            $field.val(text);
+        }
 
         var parent_w = that.$wrapper.parent().width(),
             wrapper_w = that.$wrapper.width(),

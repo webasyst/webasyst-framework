@@ -597,12 +597,12 @@ var CalendarDeleteDialog = ( function($) {
         that.$block.on("click", ".js-delete-calendar", function(event) {
             event.preventDefault();
             if (!that.is_locked) {
-                that.delete();
+                that['delete']();
             }
         });
     };
 
-    CalendarDeleteDialog.prototype.delete = function() {
+    CalendarDeleteDialog.prototype['delete'] = function() {
         var that = this,
             href = "?module=calendar&action=delete",
             data = {

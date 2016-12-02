@@ -377,7 +377,7 @@ msgstr "Изменить группу"
 #: /wa-apps/team/templates/actions/users/Users.html:16
 #: /wa-apps/team/templates/actions/users/UsersOnline.html:36
 msgid "Last seen"
-msgstr "Последний просмотр"
+msgstr "Последний визит"
 
 #: /wa-apps/team/templates/actions/group/Group.html:26
 #: /wa-apps/team/templates/actions/group/GroupEdit.html:91
@@ -634,7 +634,7 @@ msgstr "Отправить"
 #: /wa-apps/team/templates/actions/users/UsersInactive.html:21
 #: /wa-apps/team/templates/actions/Sidebar.html:108
 msgid "Inactive users"
-msgstr "Заблокированные"
+msgstr "Неактивные"
 
 #: /wa-apps/team/templates/actions/users/UsersInactive.html:14
 msgid "No inactive users."
@@ -1382,3 +1382,57 @@ msgstr "Для использования JavaScript API карт Google нео�
 
 msgid "Use <a class=\"js-edit-group inline-link\" href=\"%s\"><b><i>Plugins</i></b></a> section to install plugin you need."
 msgstr "Используйте раздел <a class=\"js-edit-group inline-link\" href=\"%s\"><b><i>Плагины</i></b></a> для установки необходимых плагинов."
+
+msgid "All apps"
+msgstr "Все приложения"
+
+msgid "Vacation"
+msgstr "Отпуск"
+
+msgid "Business"
+msgstr "Командировка"
+
+msgid "Illness"
+msgstr "Больничный"
+
+msgid "Meeting"
+msgstr "Встреча"
+
+msgid "Other"
+msgstr "Другое"
+
+msgid "on vacation"
+msgstr "в отпуске"
+
+msgid "in a business trip"
+msgstr "в командировка"
+
+msgid "sick"
+msgstr "болею"
+
+msgid "at the meeting"
+msgstr "на встрече"
+
+msgid "%s's birthday — %s"
+msgstr "%s отмечает день рождения — %s"
+
+msgid "Access disabled by %1$s, %2$s"
+msgstr "Доступ выключил %1$s, %2$s"
+
+msgid "Remote"
+msgstr "Удаленно"
+
+msgid "Administrators"
+msgstr "Администраторы"
+
+msgid "%s HQ"
+msgstr "%s"
+
+msgid "This is a list of users who are no longer members of your team. You have disabled their access to your Webasyst backend."
+msgstr "Это список пользователей, которые больше не работают в вашей команде. Им отключен доступ в бекенд вашего Вебасиста."
+
+msgid "Access is switched off"
+msgstr "Доступ выключен"
+
+msgid "User invitation has been sent"
+msgstr "Отправлено приглашение войти в команду"

@@ -14,6 +14,12 @@ class teamProfileAction extends teamContentViewAction
         waRequest::setParam('login', $user['login']);
         $user->load();
 
+        $invite = null;
+        if ($user['is_user'] == 0) {
+            $watm = new waAppTokensModel();
+            $invite = $watm->select('expire_datetime')->where("contact_id=".intval($user['id']." AND expire_datetime < '".date('Y-m-d H:i:s')."'"))->fetchAssoc();
+        }
+
         $twasm = new teamWaAppSettingsModel();
         $user_name_format = $twasm->getUserNameDisplayFormat();
         if ($user_name_format !== 'login') {
@@ -33,6 +39,7 @@ class teamProfileAction extends teamContentViewAction
             'groups'                           => teamHelper::groupRights($ugm->getGroups($user->getId())),
             // teamHelper::getVisibleGroups($user),
             'user_name_formatted'              => $user_name_formatted,
+            'invite'                           => $invite,
         ));
         $this->view->assign(teamCalendar::getHtml($user['id'], null, null, true));
     }
