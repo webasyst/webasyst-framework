@@ -550,7 +550,13 @@ HTML;
     {
         if ($value === null) {
             return wa()->getStorage()->get($key);
-        } else if (substr($key, 0, 5) !== 'auth_') {
+        }
+        if (is_array($key)) {
+            $str_key = $key[0];
+        } else {
+            $str_key = $key;
+        }
+        if (substr($str_key, 0, 5) !== 'auth_') {
             wa()->getStorage()->set($key, $value);
         }
     }

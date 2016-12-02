@@ -41,10 +41,14 @@ jQuery.fn.waDialog = function (options) {
 
     if (!d.hasClass('dialog')) {
         var content = $(this);
-        var d = $('<div ' + (id ? 'id = "' + id + '"' : '') + ' class="dialog ' + cl + '" style="display: none">'+
+        var $dialog_parent = d.parent();
+        if (!$dialog_parent.length || !$dialog_parent.is(':visible')) {
+            $dialog_parent = $('body');
+        }
+        d = $('<div ' + (id ? 'id = "' + id + '"' : '') + ' class="dialog ' + cl + '" style="display: none">'+
                     '<div class="dialog-background"></div>'+
                     '<div class="dialog-window"></div>'+
-              '</div>').appendTo(d.parent().length ? d.parent() : 'body');
+              '</div>').appendTo($dialog_parent);
         if (content.find('.dialog-content').length || content.find('.dialog-buttons').length) {
             $('.dialog-window', d).append(content.show());
             var dc = content.find('.dialog-content');

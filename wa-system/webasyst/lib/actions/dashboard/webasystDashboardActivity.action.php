@@ -27,7 +27,7 @@ class webasystDashboardActivityAction extends waViewAction
         }
     }
 
-    public function getLogs($filters = array(), &$count = null)
+    public function getLogs($filters = array(), &$count = null, $autoload_more = true)
     {
         $log_model = new waLogModel();
         $apps = wa()->getUser()->getApps();
@@ -42,6 +42,7 @@ class webasystDashboardActivityAction extends waViewAction
             }
         }
         $rows = $log_model->getLogs($filters);
+        $last_row = end($rows);
         $count = count($rows);
         $apps = wa()->getApps(true);
         $apps_rows = array();
@@ -96,6 +97,8 @@ class webasystDashboardActivityAction extends waViewAction
             $prev = $row;
             unset($row);
         }
+        unset($row);
+
         foreach ($apps_rows as $app_id => $app_rows) {
             $app_rows = wa($app_id)->getConfig()->explainLogs($app_rows);
             foreach ($app_rows as $row_id => $row) {
@@ -106,6 +109,31 @@ class webasystDashboardActivityAction extends waViewAction
                 }
             }
         }
+
+        // Sometimes all 50 rows are filtered out. Should skip to next 50 then
+        if ($count == 50 && !$rows) {
+            $filters['max_id'] = $last_row['id'];
+            return $this->getLogs($filters, $count, $autoload_more);
+        }
+
+        $rows = array_values($rows);
+        if (!$autoload_more || !$rows) {
+            return $rows;
+        }
+
+        // Load more items if exist
+        while ($count == 50 && count($rows) < 50) {
+            $filters['max_id'] = $last_row['id'];
+            $new_rows = $this->getLogs($filters, $count, false);
+            if (!$new_rows) {
+                break;
+            }
+            $rows = array_merge($rows, $new_rows);
+            $last_row = end($new_rows);
+        }
+
+        $rows = array_slice($rows, 0, 50);
+        $count = max($count, count($rows));
         return $rows;
     }
 
