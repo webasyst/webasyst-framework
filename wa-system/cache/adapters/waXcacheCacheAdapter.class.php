@@ -109,7 +109,17 @@ class waXcacheCacheAdapter extends waCacheAdapter
      */
     public function set($key, $value, $expiration = null, $group = null)
     {
-        return xcache_set($key, serialize($value), ($expiration ? $expiration : 0));
+        // Cache expires immediately
+        if (!is_null($expiration) && (intval($expiration) <= 0)) {
+            return true;
+        }
+
+        // XCache item with ttl==0 never expires
+        if (is_null($expiration)) {
+            $expiration = 0;
+        }
+
+        return xcache_set($key, serialize($value), intval($expiration));
     }
 
 }
