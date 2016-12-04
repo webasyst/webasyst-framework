@@ -27,15 +27,15 @@ class waXcacheCacheAdapter extends waCacheAdapter
     {
         parent::init();
 
-        if(!extension_loaded('XCache')) {
+        if (!extension_loaded('XCache')) {
             throw new waException("XCache module not loaded");
         }
 
-        if(version_compare(phpversion("XCache"), "3.1.0", "<")) {
+        if (version_compare(phpversion("XCache"), "3.1.0", "<")) {
             throw new waException("XCache version 3.1.0 or newer required");
         }
 
-        if(!isset($this->options["prefix"])) {
+        if (!isset($this->options["prefix"])) {
             throw new waException("Prefix for XCache is not set");
         }
     }
@@ -60,8 +60,8 @@ class waXcacheCacheAdapter extends waCacheAdapter
      */
     public function delete($key)
     {
-        if(!xcache_isset($key)) {
-            return TRUE;
+        if (!xcache_isset($key)) {
+            return true;
         }
 
         return xcache_unset($key);
@@ -73,13 +73,13 @@ class waXcacheCacheAdapter extends waCacheAdapter
     public function deleteAll()
     {
         xcache_unset_by_prefix($this->options["prefix"]);
-        return TRUE;
+        return true;
     }
 
     public function deleteGroup($group)
     {
         xcache_unset_by_prefix($group);
-        return TRUE;
+        return true;
     }
 
     /**
@@ -91,11 +91,11 @@ class waXcacheCacheAdapter extends waCacheAdapter
     public function get($key)
     {
         $v = xcache_get($key);
-        if($v) {
+        if ($v) {
             return unserialize($v);
         }
 
-        return NULL;
+        return null;
     }
 
     /**
@@ -109,7 +109,7 @@ class waXcacheCacheAdapter extends waCacheAdapter
      */
     public function set($key, $value, $expiration = null, $group = null)
     {
-        return xcache_set($key, serialize($value), ($expiration ? $expiration: 0));
+        return xcache_set($key, serialize($value), ($expiration ? $expiration : 0));
     }
 
 }
