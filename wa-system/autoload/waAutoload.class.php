@@ -308,6 +308,7 @@ class waAutoload
         'waContactRightsModel'     => 'webasyst/lib/models/waContactRights.model.php',
         'waContactSettingsModel'   => 'webasyst/lib/models/waContactSettings.model.php',
         'waContactFieldValuesModel' => 'webasyst/lib/models/waContactFieldValues.model.php',
+        'waContactEventsModel'      => 'webasyst/lib/models/waContactEvents.model.php',
         'waCountryModel'           => 'webasyst/lib/models/waCountry.model.php',
         'waGroupModel'             => 'webasyst/lib/models/waGroup.model.php',
         'waLogModel'               => 'webasyst/lib/models/waLog.model.php',

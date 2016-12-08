@@ -148,21 +148,34 @@
             if (hash === undefined) {
                 hash = window.location.hash;
             }
+
             if (!hash) {
                 $plugin = this.$menu.find('li:first > a:first');
                 if ($plugin.length) {
                     hash = $plugin.attr('href');
                 }
             }
-            if (hash && window.location.hash != hash) {
-                if (window.history && window.history.replaceState) {
-                    window.history.replaceState(null, null, hash);
-                } else {
-                    window.location.hash = hash;
+
+            //
+            // So, at this point `hash` can be either the full weindow.location.hash,
+            // OR a part of the hash passed to us by wrapping controller
+            // e.g. see pluginsAction in site.js
+            //
+            // parsePath() is supposed to deal with this mess
+            var path = this.parsePath(hash);
+
+            // Set a proper window.location.hash if we managed to parse the plugin
+            if (path && path.plugin) {
+                var full_hash = this.options.path + path.plugin;
+                if (window.location.hash != full_hash) {
+                    if (window.history && window.history.replaceState) {
+                        window.history.replaceState(null, null, full_hash);
+                    } else {
+                        window.location.hash = full_hash;
+                    }
                 }
             }
 
-            var path = this.parsePath(hash);
             this.path.dispatch = path;
             var load = force || (path.plugin !== this.path.plugin);
 
@@ -220,7 +233,6 @@
                         }
                     }
                 }
-
             });
         },
 

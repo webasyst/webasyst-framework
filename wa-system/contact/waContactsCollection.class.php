@@ -350,7 +350,7 @@ class waContactsCollection
                         if (!($f = waContactFields::get($field_id))) {
                             continue;
                         }
-                        if (!$f->isMulti()) {
+                        if (!empty($value[0]) && !$f->isMulti()) {
                             $post_data[$contact_id][$field_id] = isset($value[0]['data']) ? $value[0]['data'] :
                                 (is_array($value[0]) ? $value[0]['value'] : $value[0]);
                         }
