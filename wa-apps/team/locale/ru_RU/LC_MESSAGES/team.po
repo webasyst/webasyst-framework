@@ -12,7 +12,7 @@ msgstr ""
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
 "Language: ru_RU\n"
-"X-Generator: Poedit 1.8.11\n"
+"X-Generator: Poedit 1.8.8\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
 
@@ -1436,3 +1436,24 @@ msgstr "Доступ выключен"
 
 msgid "User invitation has been sent"
 msgstr "Отправлено приглашение войти в команду"
+
+msgid "Open your user profile."
+msgstr "Перейдите в свой профиль пользователя."
+
+msgid "Under the calendar, click <strong>“Personal calendar settings”</strong>."
+msgstr "Под календарём щёлкните по ссылке <strong>«Персональные настройки календаря»</strong>."
+
+msgid "Select <strong>“Add external calendar”</strong>."
+msgstr "Выберите <strong>«Добавить внешний календарь»</strong>."
+
+msgid "Select <strong>“%s”</strong> and confirm your choice."
+msgstr "Выберите <strong>«%s»</strong> и подтвердите свой выбор."
+
+msgid "Complete settings fields using provided hints and save the changes."
+msgstr "Заполните поля настроек, используя подсказки, и сохраните изменения."
+
+msgid "Connect your %s now"
+msgstr "Подключить мой %s сейчас"
+
+msgid "To connect an external calendar:"
+msgstr "Для подключения внешнего календаря:"

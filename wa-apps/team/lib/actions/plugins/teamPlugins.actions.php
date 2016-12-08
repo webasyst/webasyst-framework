@@ -6,7 +6,7 @@ class teamPluginsActions extends waPluginsActions
     protected $is_ajax = false;
     protected $shadowed = true;
 
-    public function defaultAction()
+    public function preExecute()
     {
         if (!teamHelper::hasRights()) {
             throw new waRightsException();
@@ -16,6 +16,42 @@ class teamPluginsActions extends waPluginsActions
             $this->setLayout(new teamDefaultLayout());
         }
         $this->getResponse()->setTitle(_w('Plugin settings page'));
-        parent::defaultAction();
     }
+
+    public function getTemplatePath($action = null)
+    {
+        $path = parent::getTemplatePath($action);
+        if ($action !== 'settings') {
+            $path = parent::getTemplatePath($action);
+        } else {
+
+            $is_calendar_external = false;
+            $has_settings = false;
+            $plugin_id = waRequest::get('id', null);
+            if ($plugin_id) {
+                $plugins = teamCalendarExternalPlugin::getPlugins();
+                if (isset($plugins[$plugin_id])) {
+                    $plugin = waSystem::getInstance()->getPlugin($plugin_id);
+                    $has_settings = false;
+                    if (is_object($plugin) && $plugin instanceof teamCalendarExternalPlugin) {
+                        $is_calendar_external = true;
+                        $has_settings = $plugin->hasSettings();
+                    }
+                }
+            }
+
+            if ($is_calendar_external) {
+                $this->getView()->assign(array(
+                    'orig_path' => $path,
+                    'has_settings' => $has_settings,
+                    'plugin' => $plugin
+                ));
+                $path = $this->getConfig()->getAppPath('templates/actions/plugins/Settings.html');
+            }
+
+        }
+
+        return $path;
+    }
+
 }

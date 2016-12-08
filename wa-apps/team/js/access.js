@@ -266,6 +266,8 @@ var AccessPage = ( function($) {
         //
         that.initElasticHeader();
         //
+        that.initHover();
+        //
         that.bindEvents();
     };
 
@@ -331,6 +333,51 @@ var AccessPage = ( function($) {
         }
 
         return result;
+    };
+
+    AccessPage.prototype.initHover = function() {
+        var that = this,
+            $activeUser = false,
+            $activeApp = false,
+            hover_class = "highlighted";
+
+        that.$wrapper.on("mouseenter", ".t-access-status", function() {
+            render( $(this) );
+        });
+
+        that.$wrapper.on("mouseleave", ".t-access-status", clear);
+
+        function render( $link ) {
+            var user_id = $link.data("user-id"),
+                app_id = $link.data("app-id");
+
+            clear();
+
+            if (user_id && app_id) {
+                var $user = $("#t-user-" + user_id),
+                    $app = $("#t-app-" + app_id);
+
+                if ($user.length) {
+                    $user.addClass(hover_class);
+                    $activeUser = $user;
+                }
+                if ($app.length) {
+                    $app.addClass(hover_class);
+                    $activeApp = $app;
+                }
+            }
+        }
+
+        function clear() {
+            if ($activeUser) {
+                $activeUser.removeClass(hover_class);
+                $activeUser = false;
+            }
+            if ($activeApp) {
+                $activeApp.removeClass(hover_class);
+                $activeApp = false;
+            }
+        }
     };
 
     return AccessPage;

@@ -150,7 +150,7 @@
 
                                                         <div class="t-event-block {$_classes|join:" "}" style="{$_styles|join:""}">
                                                             {if !empty($_event.icon_class)}
-                                                                <i class="icon16 {$_event.icon_class}" style="{if !empty($_event.icon_image)}background-image: url({$_event.icon_image});{/if}"></i>
+                                                                <i class="icon16 {if !empty($_event.icon_image)}kill-wa-style{/if} {$_event.icon_class}" style="{if !empty($_event.icon_image)}background-image: url({$_event.icon_image});{/if}"></i>
                                                             {elseif $_is_birthday && $_user}
                                                                 {$title = sprintf(_w("%s's birthday — %s"), $_user.name|escape, $_event.birthday_str)}
                                                                 <i class="icon16 cake" title="{$title}"></i>

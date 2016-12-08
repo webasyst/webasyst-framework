@@ -18,9 +18,9 @@
                         {/if}
                     {/if}
 
-                    <div class="t-row">
+                    <div class="t-row" id="t-user-{$_user.id}">
                         <a href="{$_user.uri}" class="t-user-name" title="{$_user.name|escape}">
-                            <i class="icon16 {$_icon_class}" style="{if !empty($_user.photo_url_32)}background-image: url({$_user.photo_url_32}){/if}"></i>
+                            <i class="icon16 {if !empty($_user.photo_url_32)}kill-wa-style{/if} {$_icon_class}" style="{if !empty($_user.photo_url_32)}background-image: url({$_user.photo_url_32}){/if}"></i>
 
                             <span class="t-name">
                                 {if $_user.is_user == -1}
@@ -108,7 +108,7 @@
                 <div class="t-header-apps">
                     <div class="t-row t-header t-apps-list">
                         {foreach $apps as $app}
-                            <div class="t-app-column">
+                            <div class="t-app-column" id="t-app-{$app.id}">
 
                                 <div class="t-app-item">
                                     <img class="t-app-image" src="{$wa_url}{$app.icon.48}" alt="{$app.name|escape}">

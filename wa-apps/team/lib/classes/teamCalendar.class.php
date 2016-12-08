@@ -134,22 +134,23 @@ class teamCalendar
                 if (empty($c['birth_day']) || empty($c['birth_month']) || ($user_id && $user_id != $c['id'])) {
                     continue;
                 }
-                $c['birthday'] = date('Y')
-                    .'-'.str_pad($c['birth_month'], 2, '0', STR_PAD_LEFT)
-                    .'-'.str_pad($c['birth_day'], 2, '0', STR_PAD_LEFT);
-                if ($c['birthday'] < $period_start || $c['birthday'] > $period_end) {
-                    continue;
-                } else {
+                $year = date('Y', strtotime($period_start));
+                while ($year <= date('Y', strtotime($period_end))) {
+
+                    $c['birthday'] = $year
+                        .'-'.str_pad($c['birth_month'], 2, '0', STR_PAD_LEFT)
+                        .'-'.str_pad($c['birth_day'], 2, '0', STR_PAD_LEFT);
                     $events[] = array(
-                        'id'          => null,
-                        'start'       => $c['birthday'],
-                        'end'         => $c['birthday'],
-                        'summary'     => 'Birthday',
-                        'calendar_id' => 'birthday',
-                        'contact_id'  => $c['id'],
-                        'is_allday'   => 1,
+                        'id'           => null,
+                        'start'        => $c['birthday'],
+                        'end'          => $c['birthday'],
+                        'summary'      => 'Birthday',
+                        'calendar_id'  => 'birthday',
+                        'contact_id'   => $c['id'],
+                        'is_allday'    => 1,
                         'birthday_str' => waDateTime::format('shortdate', strtotime($c['birthday']), waDateTime::getDefaultTimeZone())
                     );
+                    $year = date('Y', strtotime('+1 year', strtotime($year.'-01-01')));
                 }
             }
             unset($c);

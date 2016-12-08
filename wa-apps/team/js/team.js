@@ -215,7 +215,7 @@ var ContentRouter = ( function($) {
         var that = this,
             $content = that.$content;
 
-        $content.children('.router-loading-indicator').remove();
+        $(".router-loading-indicator").remove();
 
         if (show) {
             var $header = $content.find(".t-content-header h1"),

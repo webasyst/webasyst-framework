@@ -1,3 +1,10 @@
+<div class="t-block t-connect-info-block" style="display: none; margin: 20px 0;">
+    <div style="margin-left: -0.25em; padding-bottom: 10px;">
+        <i class="icon16 yes"></i><span class="f-text" style="text-decoration: line-through;">[`Register application on %s`]</span>
+    </div>
+    <div><span class="f-text">2. [`Connect %s account:`]</span></div>
+</div>
+
 <form>
     <div class="fields form">
         <div class="field">
@@ -7,7 +14,7 @@
             {foreach $plugins as $plugin}
                 <div class="value t-external-calendar-item-wrapper">
                     <label>
-                        <i class="icon16" style="background-image: url({$plugin.icon16_url}); background-size: contain"></i>
+                        <i class="icon16 kill-wa-style" style="background-image: url({$plugin.icon16_url});"></i>
                         <input type="radio" name="id" value="{$plugin.id}"
                                {if empty($plugin['enabled'])}disabled="disabled"{/if}
                                 {if !empty($plugin['checked'])}checked="checked"{/if}>
@@ -57,6 +64,27 @@
             container.find('[name=id]').not(':disabled').attr('checked', true);
         }
 
+        var storage = new $.store();
+        var refer = storage.get("team/plugins/refer");
+        if (refer) {
+            storage.del("team/plugins/refer");
+            refer = refer.replace('"', '').replace('"', '');
+            var plugins = {$plugins|json_encode};
+            var plugin = plugins[refer];
+            if (plugin) {
+                container.find('[name=id][value="' + refer + '"]').attr('checked', true);
+                if (storage.get("team/plugins/refer_has_settings")) {
+                    storage.del("team/plugins/refer_has_settings");
+                    var provider_name = plugin.name;
+                    $('.t-connect-info-block', container).show().find('.f-text').each(function () {
+                        var txt_block = $(this),
+                                txt = txt_block.text() || '';
+                        txt_block.text(txt.replace('%s', provider_name));
+                    });
+                }
+            }
+        }
+
         var checked_and_enabled = null;
         container.find('[name=id]').each(function () {
             var $input = $(this);
@@ -73,6 +101,7 @@
                 submitButtonDisable();
             });
         }
+
 
         container.find('form').submit(function (e) {
             var form = $(this);
@@ -123,7 +152,7 @@
 
 
         {if !empty($auth_error)}
-        alert({$auth_error|json_encode});
+            alert({$auth_error|json_encode});
         {/if}
 
         container.on('click', '.t-cancel-external-calendar', function (e) {

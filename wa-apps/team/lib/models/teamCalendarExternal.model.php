@@ -48,6 +48,10 @@ class teamCalendarExternalModel extends waModel
             $data['calendar_id'] = null;
         }
 
+        if (empty($data['name'])) {
+            $data['name'] = '';
+        }
+
         return $this->insert($data);
     }
 
@@ -122,6 +126,20 @@ class teamCalendarExternalModel extends waModel
         ))->fetchAll(null, true);
         if ($ids) {
             $this->delete($ids);
+        }
+    }
+
+    /**
+     * @param array[]string|string $type
+     * @param bool $with_wa_events
+     */
+    public function deleteByType($type, $with_wa_events = false)
+    {
+        $ids = $this->select('id')->where('type IN(:type)', array(
+            'type' => $type
+        ))->fetchAll(null, true);
+        if ($ids) {
+            $this->delete($ids, $with_wa_events);
         }
     }
 

@@ -23,7 +23,7 @@ class teamScheduleDayAction extends teamCalendarAction
             if (empty($u['birth_day']) || empty($u['birth_month'])) {
                 continue;
             }
-            $u['birthday'] = date('Y')
+            $u['birthday'] = date('Y', strtotime($date))
                 .'-'.str_pad($u['birth_month'], 2, '0', STR_PAD_LEFT)
                 .'-'.str_pad($u['birth_day'], 2, '0', STR_PAD_LEFT);
             if ($u['birthday'] < $day || $u['birthday'] > $day) {

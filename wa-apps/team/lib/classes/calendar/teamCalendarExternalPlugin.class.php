@@ -14,7 +14,7 @@ abstract class teamCalendarExternalPlugin extends waPlugin
 
     /**
      * @param $plugin_id
-     * @return teamCalendarExternalPlugin|null
+     * @return null|teamCalendarExternalPlugin
      */
     public static function factory($plugin_id)
     {
@@ -23,7 +23,8 @@ abstract class teamCalendarExternalPlugin extends waPlugin
         }
         $plugins = self::getPlugins();
         if (!isset($plugins[$plugin_id])) {
-            return null;
+            self::getCalendarExternalModel()->deleteByType($plugin_id);
+            return new teamCalendarExternalNullPlugin($plugin_id);
         }
         $info = $plugins[$plugin_id];
         $class_name = $info['app_id'] . teamHelper::ucfirst($info['id']) . 'Plugin';
@@ -49,6 +50,9 @@ abstract class teamCalendarExternalPlugin extends waPlugin
         if (wa_is_int($calendar_external)) {
             $calendar_external = self::getCalendarExternalModel()->getCalendar($calendar_external);
         }
+        if (!$calendar_external) {
+            return null;
+        }
         if (is_array($calendar_external) && !empty($calendar_external) && isset($calendar_external['type'])) {
             $calendar_external = new teamCalendarExternal($calendar_external);
         }
@@ -56,6 +60,9 @@ abstract class teamCalendarExternalPlugin extends waPlugin
             return null;
         }
         $plugin = self::factory($calendar_external->getType());
+        if (!$plugin) {
+            return null;
+        }
         $plugin->setCalendar($calendar_external);
         return $plugin;
     }
@@ -105,11 +112,19 @@ abstract class teamCalendarExternalPlugin extends waPlugin
         return $this->calendar;
     }
 
+    public function hasSettings()
+    {
+        return count($this->getSettingsConfig()) > 0;
+    }
+
     public function __get($name)
     {
         return $this->getSettings($name);
     }
 
+    /**
+     * @return string
+     */
     public function getIconUrl()
     {
         if (!isset($this->info['icon16_url'])) {
@@ -277,5 +292,11 @@ abstract class teamCalendarExternalPlugin extends waPlugin
             self::$cem = new teamCalendarExternalModel();
         }
         return self::$cem;
+    }
+
+    public function uninstall($force = false)
+    {
+        self::getCalendarExternalModel()->deleteByType($this->id);
+        return parent::uninstall($force);
     }
 }
