@@ -1,0 +1,191 @@
+$border_c = #ddd
+
+.t-calendar-page
+    .t-content-header
+        & > .t-layout
+            margin 1em 0 0
+
+            & > .t-column
+                vertical-align middle
+
+    .t-calendar-wrapper
+        margin 1em 0 0
+
+.t-calendar-wrapper
+    user-select none
+
+    .t-labels-wrapper
+        table
+            border-collapse separate
+            table-layout fixed
+            width 100%
+            margin 0
+            border 0
+
+            .t-column
+                padding 4px 0
+                text-align center
+                color #ccc
+
+    .t-calendar-block
+        .t-week-row
+            position relative
+            height $week_h
+            border solid $border_c
+            border-width 0 1px 1px 1px
+
+            &:first-child
+                border-top-width: 1px
+
+            .t-week-background
+            .t-week-table
+                border-collapse separate
+                table-layout fixed
+                width 100%
+                margin 0
+                border 0
+
+                td.t-column
+                    border solid $border_c
+                    border-width 0 0 0 1px
+                    cursor pointer
+
+                    &:first-child
+                        border-left 0
+
+            .t-week-background
+                position absolute
+                top 0
+                left 0
+                width 100%
+                height 100%
+
+            .t-week-table
+                position relative
+                border-color transparent
+
+                td.t-column
+                    border-color transparent
+
+            .t-day-ornament
+                width 100%
+                height $week_h
+                box-sizing border-box
+                border 2px solid transparent
+                cursor pointer
+
+                &.is-unactive
+                    background #eee
+
+                &.is-active
+                    background #fdfcf4
+                    border-color #ffd72f
+
+                &.is-highlighted
+                    background #fdfcf4
+
+                &.is-selected
+                    background #ffc // f6fbff
+
+            .t-action-wrapper
+                padding $event_pad
+
+                .t-action
+                    height $event_h
+                    padding 0 0 0 2px
+                    font-size (13/$rem)em
+                    line-height $event_h
+                    white-space nowrap
+                    overflow hidden
+                    text-overflow ellipsis
+                    cursor pointer
+                    color $link_c
+
+                    &:hover
+                        text-decoration underline
+
+            .t-day-wrapper
+                padding $event_pad * 2 6px 0
+                font-size (13/$rem)em
+                line-height $event_h
+                text-align right
+                color #aaa
+                cursor pointer
+
+.t-event-wrapper
+    padding $event_pad
+    user-select none
+
+    &.type-0
+        .t-event-block
+            border-radius 10px 10px 10px 10px
+
+    &.type-1
+        .t-event-block
+            border-radius 10px 2px 2px 10px
+
+    &.type-2
+        .t-event-block
+            border-radius 2px
+
+    &.type-3
+        .t-event-block
+            border-radius 2px 10px 10px 2px
+
+    .t-event-block
+        width 100%
+        height $event_h
+        padding 0 0 0 2px
+        box-sizing border-box
+
+        border-radius 2px
+        border 1px solid rgba(0,0,0,.02)
+        background #f8f8f8
+
+        font-size (13/$rem)em
+        line-height $event_h
+        white-space nowrap
+        overflow hidden
+        text-overflow ellipsis
+
+        text-align center
+        cursor default
+        transition border-color 200ms linear
+
+        &.is-event
+            background #f7f7f7
+
+        &.is-single
+            text-align left
+            padding-left 4px
+            background #fff
+
+        &.js-view-event
+            cursor pointer
+
+        &:hover
+            border-color rgba(0,0,0,.3)
+
+        &.transparent
+            background transparent
+            border-color transparent
+            color #121212
+
+            &:hover
+                background #f8f8f8
+                border-color rgba(0,0,0,.02)
+
+        .icon16
+            position relative
+            display inline-block
+            vertical-align top
+            margin 0 4px 0 0
+            top 2px
+
+        .t-day-count
+            padding 0 6px 0 4px
+            color #666
+
+        .t-start
+            display: inline-block;
+            margin: 0 4px 0 0;
