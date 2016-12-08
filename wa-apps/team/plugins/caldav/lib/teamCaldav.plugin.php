@@ -592,6 +592,7 @@ class teamCaldavPlugin extends teamCalendarExternalPlugin
 
     protected function renderTemplate($template_path, $assign = array())
     {
+        waSystem::pushActivePlugin('caldav', 'team');
         $view = wa()->getView();
         $vars = $view->getVars();
         $view->clearAllAssign();
@@ -599,6 +600,7 @@ class teamCaldavPlugin extends teamCalendarExternalPlugin
         $res = $view->fetch($template_path);
         $view->clearAllAssign();
         $view->assign($vars);
+        waSystem::popActivePlugin();
         return $res;
     }
 

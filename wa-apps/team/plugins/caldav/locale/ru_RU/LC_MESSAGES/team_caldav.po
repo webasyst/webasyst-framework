@@ -37,7 +37,7 @@ msgstr "Логин"
 msgid "Service"
 msgstr "Сервис"
 
-msgid "Specify URL to your CalDAV-server"
+msgid "Specify URL to your CalDAV server"
 msgstr "Укажите адрес вашего сервера CalDAV"
 
 msgid "iCloud, Yandex, Yahoo!, Fruux calendars and any CalDAV server integration"
@@ -51,3 +51,6 @@ msgstr "Яндекс"
 
 msgid "Other"
 msgstr "Другое"
+
+msgid "cancel"
+msgstr "отмена"
