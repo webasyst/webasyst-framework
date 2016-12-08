@@ -8,7 +8,7 @@
 {if empty($_selected_calendar)}
     {$_selected_calendar = [
         "id" => "",
-        "name" => "[`Empty`]",
+        "name" => "{_wp('Empty')}",
         "bg_color" => "#f0f0f0"
     ]}
 {/if}
@@ -20,21 +20,21 @@
         <form method="post" action="?plugin=ics&module=backend&action=import" enctype="multipart/form-data" target="t_ics_iframe_import">
             <div class="t-ics-import-form">
                 <header class="t-dialog-header">
-                    <h1>[`Import events from file`]</h1>
+                    <h1>{_wp('Import events from file')}</h1>
                 </header>
                 <div class="t-dialog-content">
                     <div class="fields">
                         <div class="field">
                             <div class="name">
-                                [`Choose .ics file`]
+                                {_wp('Choose .ics file')}
                             </div>
                             <div class="value">
-                                <input type="file" name="file" value="[`Import from file`]">
+                                <input type="file" name="file" value="{_wp('Import from file')}">
                             </div>
                         </div>
                         <div class="field">
                             <div class="name">
-                                [`Calendar`]
+                                {_wp('Calendar')}
                             </div>
                             <div class="value">
 
@@ -70,8 +70,8 @@
                             <div class="t-column left">
                                 {$wa->csrf()}
                                 <input type="hidden" name="contact_id" value="{$wa->user('id')}">
-                                <input class="button green" type="submit" value="[`Import`]"> [`or`]
-                                <a href="javascript:void(0)" class="cancel js-close-dialog">[`cancel`]</a>
+                                <input class="button green" type="submit" value="{_wp('Import')}"> {_wp('or')}
+                                <a href="javascript:void(0)" class="cancel js-close-dialog">{_wp('cancel')}</a>
                                 <i class="icon16 loading" style="display: none;"></i>
                             </div>
                         </div>
