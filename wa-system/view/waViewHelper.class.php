@@ -1156,17 +1156,29 @@ HTML;
         }
 
         $links = array();
-        foreach ($event_result as $app_id => $one_or_more_links) {
+        foreach ($event_result as $plugin_app_id => $one_or_more_links) {
             if (isset($one_or_more_links['html']) || isset($one_or_more_links['url']) || isset($one_or_more_links['id'])) {
                 $one_or_more_links = array($one_or_more_links);
+            }
+
+            // App to check access rights
+            $app_id = $plugin_app_id;
+            if (substr($app_id, -7) === '-plugin') {
+                $app_id = 'contacts';
             }
 
             $i = '';
             foreach ($one_or_more_links as $link) {
                 while (empty($link['id']) || isset($links[$link['id']])) {
-                    $link['id'] = $app_id.$i;
+                    $link['id'] = $plugin_app_id.$i;
                     $i++;
                 }
+
+                // Do not show tabs user has no access to and would not be able to load
+                if (!empty($link['url']) && !wa()->getUser()->getRights($app_id, 'backend')) {
+                    continue;
+                }
+
                 $links[$link['id']] = $link + array(
                     'url' => '',
                     'title' => '',

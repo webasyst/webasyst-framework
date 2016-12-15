@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WebAsyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2016-12-01 13:56+0300\n"
+"PO-Revision-Date: 2016-12-15 12:55+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -4346,4 +4346,41 @@ msgstr "%s отмечает день рождения — %s"
 
 msgid "%s is now online"
 msgstr "%s сейчас онлайн"
+
+#: /wa-system/controller/waFrontController.class.php:141
+msgid "Plugin not found"
+msgstr "Плагин не найден"
+
+#: /wa-system/file/waNet.class.php:415
+#: /wa-system/file/waNet.class.php:419
+msgid "Error cUrl init"
+msgstr "Ошибка инициализации cUrl"
+
+#: /wa-system/webasyst/lib/config/webasystConfig.class.php:19
+msgid "edited contact"
+msgstr "отредактировал контакт"
+
+#: /wa-system/webasyst/templates/actions/profile/ProfilePage.html:12
+msgid "Change photo"
+msgstr "Изменить фото"
+
+#: /wa-system/webasyst/templates/actions/profile/ProfilePage.html:28
+msgid "@"
+msgstr "в"
+
+#: /wa-system/webasyst/templates/actions/profile/ProfilePhoto.html:25
+msgid "Drop photo here"
+msgstr "Перетащите фото сюда"
+
+#: /wa-system/webasyst/templates/actions/profile/ProfilePhoto.html:30
+msgid "To change drop another photo or upload file (JPG, GIF или PNG):"
+msgstr "Для замены перетащите другое фото или загрузите файл (JPG, GIF или PNG):"
+
+#: /wa-system/webasyst/templates/actions/profile/ProfilePhoto.html:33
+msgid "Or upload file (JPG, GIF or PNG):"
+msgstr "Или загрузить файл (JPG, GIF или PNG):"
+
+#: /wa-system/webasyst/templates/actions/profile/ProfilePhoto.html:57
+msgid "Are you sure you want to delete this photo?"
+msgstr "Вы действительно хотите удалить фото?"
 

@@ -81,7 +81,7 @@ class Smarty_Security {
      */
     protected $php_functions = array(
         'eval', 'exec', 'system', 'popen', 'proc_open', 'shell_exec', 'passthru',
-        'file_put_contents', 'file_get_contents', 'fopen', 'file', 'fwrite', 'fputs', 'copy', 'rename', 'move_uploaded_file',
+        'file_put_contents', 'file_get_contents', 'fopen', 'file', 'fwrite', 'fputs', 'copy', 'rename', 'move_uploaded_file', 'readfile',
         'link', 'symlink', 'unlink',
         'call_user_func', 'call_user_func_array', 'create_function', 'call_user_method', 'call_user_method_array',
         'preg_replace_callback', 'wa', 'wa_lambda', 'preg_replace', 'unserialize', 'serialize', 'debug_backtrace',

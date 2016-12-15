@@ -100,7 +100,12 @@ class waAutoload
         if (isset($this->system_classes[$class])) {
             return $this->base_path.'/wa-system/'.$this->system_classes[$class];
         } elseif (substr($class, 0, 9) === 'waContact') {
-            $result = $this->base_path.'/wa-system/contact/'.$class.'.class.php';
+            if (substr($class, 0, 16) === 'waContactAddress') {
+                // formatters live in the same file as waContactAddressField
+                $result = $this->base_path.'/wa-system/contact/waContactAddressField.class.php';
+            } else {
+                $result = $this->base_path.'/wa-system/contact/'.$class.'.class.php';
+            }
             if (is_readable($result)) {
                 return $result;
             }
