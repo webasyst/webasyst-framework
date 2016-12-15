@@ -16,7 +16,7 @@ class teamContactsProfileTabHandler extends waEventHandler
             && waRequest::request('action', '', 'string') == 'info'
             && wa()->appExists('contacts');
         if ($is_old_contacts) {
-            $is_old_contacts = version_compare(wa()->getVersion('contacts'), '1.1.4') < 0;
+            $is_old_contacts = version_compare(wa()->getVersion('contacts'), '1.2.0') < 0;
         }
 
         $old_app = wa()->getApp();

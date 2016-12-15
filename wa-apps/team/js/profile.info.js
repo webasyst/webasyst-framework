@@ -2195,7 +2195,11 @@ $.wa.contactEditorFactory = function(options) { "use strict"; //{{{
                         $.scrollTo('-=100px');
                         return;
                     } else if (that.contact_id && newData.data.reload) {
-                        window.location.reload();
+                        if (window.profileTab) {
+                            window.profileTab.rootWindow.location.reload();
+                        } else {
+                            window.location.reload();
+                        }
                         return;
                     }
 
