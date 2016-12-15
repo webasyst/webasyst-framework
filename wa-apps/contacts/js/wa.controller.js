@@ -569,9 +569,15 @@
             if (!params[5]) {
                 p.view = 'list';
             }
-            var hash = this.cleanHash('#/contacts/search/'+filters);
+            var hash = filters;
             $.wa.controller.setBlock('contacts-list', null, ['search-actions']);
-            this.loadGrid(p, hash.substr(1), null, {
+
+            var escaped_hash = hash || '';
+            if (escaped_hash.indexOf('/') >= 0) {
+                escaped_hash = escaped_hash.replace('/', '\\/');
+            }
+
+            this.loadGrid(p, '/contacts/search/' + (escaped_hash ? escaped_hash + '/' : ''), null, {
                 afterLoad: function(data) {
                     $.wa.controller.hideLoading();
                     if (options && options.search) {

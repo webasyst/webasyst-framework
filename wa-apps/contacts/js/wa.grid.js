@@ -11,7 +11,7 @@
         init: function () {
             
             this.defaultSettings = {
-                limit: 30, 
+                limit: 30,
                 offset: 0, 
                 sort: 'name', 
                 order: 1, 

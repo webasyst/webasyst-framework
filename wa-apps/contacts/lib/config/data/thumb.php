@@ -3,7 +3,7 @@
 $path = realpath(dirname(__FILE__)."/../../../../../")."/wa-config/SystemConfig.class.php";
 
 if (!file_exists($path)) {
-    header("Location: ../../../../../wa-content/img/userpic96.jpg");        
+    header("Location: ../../../../../wa-content/img/userpic96.jpg");
     exit;
 }
 
@@ -14,7 +14,7 @@ waSystem::getInstance(null, $config);
 $file = wa()->getConfig()->getRequestUrl(true);
 if (substr($file, 0, 10) == "thumb.php/") {
     $file = substr($file, 10);
-    $root_url = "../../../../../../../../../"; 
+    $root_url = "../../../../../../../../../";
 } else {
     $root_url = "../../../../../../../../";
 }
@@ -23,7 +23,7 @@ $file = explode("/", $file);
 
 if (count($file) != 4) {
     header("Location: {$root_url}wa-content/img/userpic96.jpg");
-    exit;    
+    exit;
 }
 
 $request_file = $file[3];
@@ -32,10 +32,12 @@ $file = explode(".", $file[3]);
 
 if (!$contact_id || count($file) != 3) {
     header("Location: {$root_url}wa-content/img/userpic96.jpg");
-    exit;    
+    exit;
 }
 
+$is_2x = '';
 if (substr($file[1], -3) == '@2x') {
+    $is_2x = '@2x';
     $file[1] = substr($file[1], 0, -3);
     $size = explode("x", $file[1]);
     foreach ($size as &$s) {
@@ -48,8 +50,8 @@ if (substr($file[1], -3) == '@2x') {
 
 
 if (count($size) != 2 || !$size[0] || !$size[1]) {
-    header("Location: {$root_url}wa-content/img/userpic96.jpg");
-    exit;    
+    header("Location: {$root_url}wa-content/img/userpic96{$is_2x}.jpg");
+    exit;
 }
 
 $file = $file[0].".jpg";
@@ -57,8 +59,8 @@ $path = wa()->getDataPath(waContact::getPhotoDir($contact_id), true, 'contacts',
 $filepath = "{$path}{$file}";
 
 if (!file_exists($filepath)) {
-    header("Location: {$root_url}wa-content/img/userpic96.jpg");
-    exit;    
+    header("Location: {$root_url}wa-content/img/userpic96{$is_2x}.jpg");
+    exit;
 }
 
 if ($size[0] == $size[1]) {
