@@ -45,6 +45,8 @@ class teamCalendarExternalSync
         if ($this->calendar) {
             $this->calendar = $this->executeOne($this->calendar);
         }
+
+        $this->deleteAbandoned();
     }
 
     /**
@@ -127,9 +129,18 @@ class teamCalendarExternalSync
     }
 
     /**
+     * Delete abandoned (not connected) calendars
+     */
+    protected function deleteAbandoned()
+    {
+        // 3 hour timeout
+        $this->getCalendarModel()->deleteAbandoned(10800);
+    }
+
+    /**
      * @return teamCalendarExternalModel
      */
-    public function getCalendarModel()
+    protected function getCalendarModel()
     {
         if (!$this->cem) {
             $this->cem = new teamCalendarExternalModel();

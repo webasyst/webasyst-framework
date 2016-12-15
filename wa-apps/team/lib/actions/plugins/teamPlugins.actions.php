@@ -31,7 +31,7 @@ class teamPluginsActions extends waPluginsActions
             if ($plugin_id) {
                 $plugins = teamCalendarExternalPlugin::getPlugins();
                 if (isset($plugins[$plugin_id])) {
-                    $plugin = waSystem::getInstance()->getPlugin($plugin_id);
+                    $plugin = teamCalendarExternalPlugin::factory($plugin_id);
                     $has_settings = false;
                     if (is_object($plugin) && $plugin instanceof teamCalendarExternalPlugin) {
                         $is_calendar_external = true;

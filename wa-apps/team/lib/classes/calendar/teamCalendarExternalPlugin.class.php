@@ -16,7 +16,7 @@ abstract class teamCalendarExternalPlugin extends waPlugin
      * @param $plugin_id
      * @return null|teamCalendarExternalPlugin
      */
-    public static function factory($plugin_id)
+    public static function factory($plugin_id, $set_active = false)
     {
         if (waConfig::get('is_template')) {
             return null;
@@ -26,13 +26,12 @@ abstract class teamCalendarExternalPlugin extends waPlugin
             self::getCalendarExternalModel()->deleteByType($plugin_id);
             return new teamCalendarExternalNullPlugin($plugin_id);
         }
-        $info = $plugins[$plugin_id];
-        $class_name = $info['app_id'] . teamHelper::ucfirst($info['id']) . 'Plugin';
-        if (!class_exists($class_name)) {
-            return null;
-        }
-        $plugin = new $class_name($info);
-        if (!($plugin instanceof teamCalendarExternalPlugin)) {
+        try {
+            $plugin = wa('team')->getPlugin($plugin_id, $set_active);
+            if (!($plugin instanceof teamCalendarExternalPlugin)) {
+                return null;
+            }
+        } catch (waException $e) {
             return null;
         }
         return $plugin;

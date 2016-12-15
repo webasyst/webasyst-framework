@@ -47,7 +47,7 @@ class teamCalendarExternalAuthorizeController extends waJsonController
     public function authorizeBegin()
     {
         $calendar = $this->getCalendarById(wa()->getRequest()->get('id'));
-        $plugin = teamCalendarExternalPlugin::factory($calendar['type']);
+        $plugin = teamCalendarExternalPlugin::factory($calendar['type'], true);
         if (!$plugin) {
             throw new waException(_w('External calendar plugin not found'));
         }
@@ -60,11 +60,12 @@ class teamCalendarExternalAuthorizeController extends waJsonController
         if (!$id) {
             $id = $this->getRequest()->param('id');
         }
-        $plugin = teamCalendarExternalPlugin::factory($id);
+        $plugin = teamCalendarExternalPlugin::factory($id, true);
         if (!$plugin) {
             throw new waException(_w('External calendar plugin not found'));
         }
         $res = $plugin->authorizeEnd();
+        waSystem::popActivePlugin();
 
         $id = $res['id'];
 

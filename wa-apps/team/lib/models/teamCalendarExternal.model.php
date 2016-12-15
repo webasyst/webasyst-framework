@@ -143,6 +143,20 @@ class teamCalendarExternalModel extends waModel
         }
     }
 
+    public function deleteAbandoned($timeout = null)
+    {
+        if ($timeout === null) {
+            $timeout = 3600;   // 1 hour
+        }
+        $sql = "SELECT tce.id FROM `team_calendar_external` tce 
+                  LEFT JOIN `wa_contact_calendars` wcc ON wcc.id = tce.calendar_id
+                  WHERE wcc.id IS NULL AND tce.create_datetime < ?";
+        $ids = $this->query($sql, date('Y-m-d H:i:s', time() - $timeout))->fetchAll(null, true);
+        if ($ids) {
+            $this->delete($ids, false);
+        }
+    }
+
     public function getMinStart($id)
     {
         $calendar = $this->getCalendar($id);

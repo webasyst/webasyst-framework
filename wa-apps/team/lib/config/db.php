@@ -13,7 +13,8 @@ return array(
         'synchronize_datetime' => array('datetime'),
         ':keys' => array(
             'PRIMARY' => 'id',
-            'contact_id' => 'contact_id'
+            'contact_id' => 'contact_id',
+            'calendar_id' => 'calendar_id'
         )
     ),
     'team_calendar_external_params' => array(
