@@ -892,7 +892,7 @@ HTML;
         if (!empty($params['data'])) {
             $data = array();
             foreach ($params['data'] as $field => $value) {
-                $data['data-'.$field] = json_encode($value);
+                $data['data-'.$field] = trim(json_encode($value), '"');
             }
             $params_string .= $this->addCustomParams(array_keys($data), $data);
         }
