@@ -34,4 +34,27 @@ class waString
 
         return $uuid;
     }
+
+    /**
+     * Converts string to float with very aggressive algorithm:
+     *
+     * 1. Change all commas to dots (decimal and thousands separators)
+     * 2. Drop any symbols except numbers and dots
+     * 3. Drop all dots but last (thousands separator aware)
+     *
+     * 'abc 100.22' => 100.22
+     * '$10,300.55' => 10300.55
+     * '.55c' => 0.55
+     * 'Be careful. 42!' => 0.42
+     * 'No Face No Name No Number' => 0
+     *
+     * e.t.c.
+     *
+     * @param string $str
+     * @return float
+     */
+    public static function toFloat($str)
+    {
+        return (float)preg_replace(array('/,/u', '/[^\d^\.]/u', '/\.(?=[^.]*\.)/u'), array('.'), $str);
+    }
 }
