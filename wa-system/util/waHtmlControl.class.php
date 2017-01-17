@@ -290,6 +290,17 @@ class waHtmlControl
     }
 
     /**
+     * Returns user control registered status
+     *
+     * @param string $type User control type.
+     * @return boolean Whether specified user control is already registered.
+     */
+    public static function isRegisteredControl($type)
+    {
+        return isset(self::$custom_controls[$type]);
+    }
+
+    /**
      *
      * @param $params
      * @param $name
