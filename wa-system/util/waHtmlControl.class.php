@@ -283,7 +283,9 @@ class waHtmlControl
     public static function registerControl($type, $callback)
     {
         if (is_callable($callback)) {
-            self::$custom_controls[$type] = $callback;
+            if (!self::isRegisteredControl($type)) {
+                self::$custom_controls[$type] = $callback;
+            }
         } else {
             throw new waException("invalid callback for control type {$type}");
         }
