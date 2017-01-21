@@ -908,6 +908,16 @@ HTML;
             $html .= $this->csrf();
         }
         $html .= '</form></div>';
+        
+        $name = sprintf('%04x%04x', mt_rand(0, 0xffff), mt_rand(0, 0xffff)); // просто влом было писать что-то длинное
+        $html = preg_replace('/ name="/', ' data-'.$name.'="', $html);
+
+        $html .= <<<HTML
+<script>$(function(){ $('[data-{$name}]').each(function(i,v) {
+  $(v).prop('name', $(v).data('{$name}'));
+});});</script>
+HTML;
+        
         return $html;
     }
 
