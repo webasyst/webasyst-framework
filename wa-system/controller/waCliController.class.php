@@ -14,6 +14,12 @@
  */
 class waCliController extends waController
 {
+    public function preExecute()
+	{
+		parent::preExecute();
+        @set_time_limit(0);
+	}
+    
     public function execute()
     {
 
