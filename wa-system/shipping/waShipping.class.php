@@ -28,11 +28,11 @@ abstract class waShipping extends waSystemPlugin
      *
      * @var waAppShipping
      */
-    private $app_adapter;
+    public $app_adapter;
 
-    protected $app_id;
+    public $app_id;
 
-    protected function init()
+    public function init()
     {
         if (!$this->app_id && $this->app_adapter) {
             $this->app_id = $this->app_adapter->getAppId();
