@@ -1,23 +1,23 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	<meta name="apple-mobile-web-app-capable" content="yes" />
-	<meta name="viewport" content="width=device-width; initial-scale=1; maximum-scale=1; user-scalable=0;" />
-	<title>{$wa->accountName()}</title>
-	<script type="text/javascript" src="{$wa_url}wa-content/js/jquery/jquery-1.8.1.min.js"></script>
-	<script type="text/javascript" src="{$wa_url}wa-content/js/jquery-mobile/jquery.mobile-1.1.1.min.js"></script>
-	<link rel="stylesheet" href="{$wa_url}wa-content/css/wa/wa-mobile-1.0.css" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="viewport" content="width=device-width; initial-scale=1; maximum-scale=1; user-scalable=0;" />
+    <title>{$wa->accountName()}</title>
+    <script type="text/javascript" src="{$wa_url}wa-content/js/jquery/jquery-1.8.1.min.js"></script>
+    <script type="text/javascript" src="{$wa_url}wa-content/js/jquery-mobile/jquery.mobile-1.1.1.min.js"></script>
+    <link rel="stylesheet" href="{$wa_url}wa-content/css/wa/wa-mobile-1.0.css?{$wa->version(true)}" />
 </head>
 <body>
 <div id="wa" data-role="page" class="wa-mobile-fields wa-mobile-login">
-	<div data-role="header" data-position="inline">
-		<h1>{$wa->accountName()}</h1>
-	</div>
-	<div data-role="content">
-	
+    <div data-role="header" data-position="inline">
+        <h1>{$wa->accountName()}</h1>
+    </div>
+    <div data-role="content">
+
         <h2>{$client_name|truncate:25}</h2>
-        
+
         {if !empty($code)}
             Code<br>
             <textarea readonly>{$code}</textarea>
@@ -32,19 +32,22 @@
                     {$app.name}
                 </li>
                 {/foreach}
-            </ul> 
+            </ul>
             <form method="post" action="" data-ajax="false">
-                    {$wa->csrf()}
-                    <div class="wa-api-allow">
-                        <input type="submit" name="approve" value="[s`Allow`]" id="wa-login-submit">
-                    </div>
-                    <div class="wa-api-deny">
-                        <input type="submit" name="deny" value="[s`Deny`]" id="wa-login-submit">
-                    </div>
+                {$wa->csrf()}
+                <div class="wa-api-allow">
+                    <input type="submit" name="approve" value="[s`Allow`]">
+                </div>
+                <div class="wa-api-deny">
+                    <input type="submit" name="deny" value="[s`Deny`]">
+                </div>
+                <div class="wa-api-logout">
+                    <input type="submit" name="logout" value="[s`Log out`]" data-shadow="false">
+                </div>
             </form>
         {/if}
 
-	</div>
+    </div>
 </div>
 </body>
 </html>

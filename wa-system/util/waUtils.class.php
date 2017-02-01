@@ -29,7 +29,7 @@ class waUtils
             $result = @file_put_contents($file, $file_contents, LOCK_EX);
         }
 
-        // Clear opcache so that file changes are visible to `include` immidiately
+        // Clear opcache so that file changes are visible to `include` immediately
         if ($result && function_exists('opcache_invalidate')) {
             @opcache_invalidate($file, true);
         }

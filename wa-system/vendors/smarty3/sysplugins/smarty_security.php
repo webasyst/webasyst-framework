@@ -94,7 +94,7 @@ class Smarty_Security {
         'mysql_fetch_object', 'mysqli_fetch_object',
         'dom_import_simplexml', 'simplexml_load_string', 'simplexml_load_file',
         'spl_autoload_register', 'spl_autoload_call', 'sscanf', 'curl_init',
-        'debug_backtrace',
+        'debug_backtrace', 'mail',
     );
     /**
      * This is an array of trusted PHP modifiers.

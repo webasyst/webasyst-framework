@@ -9,9 +9,9 @@
  * @copyright 2011 Webasyst LLC
  * @package Webasyst
  */
-  
+
 /*
- * Webasyst & jQuery Mobile 
+ * Webasyst & jQuery Mobile
  * ------------------------
  * Linking jQuery Mobile, and some overrides.
  * jQuery Mobile (http://jquerymobile.com/) is the default and recommended CSS/JS framework for building mobile versions of Webasyst apps.
@@ -26,12 +26,15 @@ border: 0; }
 #wa.wa-app-list .ui-content { padding: 15px 10px; }
 #wa.wa-mobile-login { background:url('../../img/cloth-background-light.jpg'); }
 @media all and (-webkit-min-device-pixel-ratio: 2) {
-	#wa.wa-mobile-login { background:url('../../img/cloth-background-light.jpg'); background-size:200px 200px; } }
+    #wa.wa-mobile-login { background:url('../../img/cloth-background-light.jpg'); background-size:200px 200px; } }
 #wa.wa-mobile-login .ui-grid-a > * { width: 100%; }
 #wa.wa-mobile-login .ui-grid-a .ui-btn { margin-left: 2px; margin-right: 2px; }
 #wa.wa-mobile-login div.ui-body-r { background: transparent; }
 #wa.wa-mobile-login .wa-api-allow .ui-btn { color: green; }
 #wa.wa-mobile-login .wa-api-deny .ui-btn { color: #a00; }
+#wa.wa-mobile-login .wa-api-logout { margin-top: 2.5em; }
+#wa.wa-mobile-login .wa-api-logout .ui-btn, #wa.wa-mobile-login .wa-api-logout .ui-btn .ui-btn-inner { color: #999; background: none; border: none; }
+
 #wa.wa-mobile-login h2,
 #wa.wa-mobile-login p { text-align: center; }
 #wa.wa-mobile-login ul { text-align: center; padding: 0; margin: 0; }

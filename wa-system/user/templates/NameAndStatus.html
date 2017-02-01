@@ -7,18 +7,18 @@
 {if !empty($user._event.font_color)}
     {$_styles[] = "color: `$user._event.font_color`;"}
 {/if}
+{$user_name = $formatted_user_name|default:$user.name|default:''|escape}
 
-<span class="user-info">
-    {*if !empty($user.photo_url_16)}
-        <i class="icon16 userpic20" style="background-image: url('{$user.photo_url_16}');"></i>
-    {/if*}
-    {$user_name = $formatted_user_name|default:$user.name|default:''|escape}
-    {if !empty($user_name)}
-        <span class="user-name {if $user.is_user == 0}italic{/if} {if $user.is_user <= 0}gray{/if}">{$user_name}</span>
-    {/if}
+<span class="wa-user-info">
     {if !empty($user._online_status) && $user._online_status == 'online'}
         {$title = sprintf(_ws('%s is now online'), $user_name)}
         <i class="icon16 status-green-tiny" title="{$title}"></i>
+    {/if}
+    {*if !empty($user.photo_url_16)}
+        <i class="icon16 userpic20" style="background-image: url('{$user.photo_url_16}');"></i>
+    {/if*}
+    {if !empty($user_name)}
+        <span class="user-name {if $user.is_user == 0}italic{/if} {if $user.is_user <= 0}gray{/if}">{$user_name}</span>
     {/if}
     {if !empty($user.birth_day) && $user.birth_day == waDateTime::format('j') && $user.birth_month == waDateTime::format('n')}
         {$title = sprintf(_ws('%s\'s birthday — %s'), $user_name, $user_birthday_str)}

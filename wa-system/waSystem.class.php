@@ -196,7 +196,7 @@ class waSystem
         if (isset($this->factories[$name])) {
             return $this->factories[$name];
         }
-        if ( ( $config = $this->getConfig()->getFactory($name))) {
+        if (($config = $this->getConfig()->getFactory($name))) {
             if (is_array($config)) {
                 $class = $config[0];
                 $options = isset($config[1]) ? $config[1] : $options;
@@ -285,8 +285,12 @@ class waSystem
      * @return waMapAdapter
      * @throws waException
      */
-    public function getMap($adapter = 'google')
+    public function getMap($adapter = null)
     {
+        if (empty($adapter)) {
+            $adapter = wa()->getSetting('map_adapter', 'google', 'webasyst');
+        }
+
         $file = $this->config->getPath('system').'/map/adapters/'.$adapter.'Map.class.php';
         if (!file_exists($file)) {
             $file = $this->config->getPath('plugins').'/map/adapters/'.$adapter.'Map.class.php';
@@ -301,6 +305,9 @@ class waSystem
         throw new waException("Map adapter not found.");
     }
 
+    /**
+     * @return waMapAdapter[]
+     */
     public function getMapAdapters()
     {
         $locale = $this->getLocale();

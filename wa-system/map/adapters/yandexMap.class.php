@@ -95,4 +95,22 @@ ymaps.ready(function () {
 HTML;
         return $this->getBaseHTML($id, $script, $options);
     }
+
+    public function getJs($html = true)
+    {
+        $url = 'https://api-maps.yandex.ru/2.1/';
+        $params = array(
+            'lang' => wa()->getLocale(),
+        );
+
+        $url .= http_build_query($params);
+        if ($html) {
+            return <<<HTML
+<script type="text/javascript" src="{$url}"></script>
+HTML;
+
+        } else {
+            return $url;
+        }
+    }
 }

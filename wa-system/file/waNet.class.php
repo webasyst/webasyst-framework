@@ -76,6 +76,10 @@ class waNet
     {
         $this->user_agent = sprintf('Webasyst-Framework/%s', wa()->getVersion('webasyst'));
         //TODO read proxy settings from generic config
+
+        if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+            $this->options['verify'] = false;
+        }
         $this->options = array_merge($this->options, $options);
         $this->request_headers = array_merge($this->request_headers, $custom_headers);
     }
@@ -205,8 +209,10 @@ class waNet
      */
     protected function encodeRequest($content)
     {
+        $format = ifempty($this->options['request_format'], $this->options['format']);
+
         if (!is_string($content)) {
-            switch ($this->options['format']) {
+            switch ($format) {
                 case self::FORMAT_JSON:
                     $content = json_encode($content);
                     break;
@@ -237,7 +243,7 @@ class waNet
         }
 
         $this->request_headers['Content-Length'] = strlen($content);
-        switch ($this->options['format']) {
+        switch ($format) {
             case self::FORMAT_JSON:
                 $this->request_headers['Content-Type'] = 'application/json';
                 break;

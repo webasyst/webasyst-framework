@@ -175,7 +175,7 @@ class waPlugin
     {
         // check uninstall.php
         $file = $this->path.'/lib/config/uninstall.php';
-        if (file_exists($file) && ($force === true)) {
+        if (file_exists($file)) {
             try {
                 include($file);
 

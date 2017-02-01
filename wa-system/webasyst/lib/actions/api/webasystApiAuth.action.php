@@ -36,6 +36,26 @@ class webasystApiAuthAction extends waViewAction
         }
 
         $this->contact_id = $this->getUser()->getId();
+        if (waRequest::method() == 'post') {
+            if (waRequest::post('_csrf') != waRequest::cookie('_csrf')) {
+                return $this->showError('invalid_request', 'CSRF Protection');
+            }
+            if (waRequest::post('logout')) {
+                $this->getUser()->logout();
+                if (!class_exists('waLogModel')) {
+                    wa('webasyst');
+                }
+                $log_model = new waLogModel();
+                $log_model->insert(array(
+                    'app_id' => 'webasyst',
+                    'contact_id' => $this->contact_id,
+                    'datetime' => date("Y-m-d H:i:s"),
+                    'params' => 'api',
+                    'action' => 'logout',
+                ));
+                wa()->getResponse()->redirect(wa()->getConfig()->getRequestUrl(false));
+            }
+        }
 
         $apps = array();
         $scope = explode(',', waRequest::get('scope', '', 'string'));
@@ -50,9 +70,6 @@ class webasystApiAuthAction extends waViewAction
         $scope = join(',', array_keys($apps));
 
         if (waRequest::method() == 'post') {
-            if (waRequest::post('_csrf') != waRequest::cookie('_csrf')) {
-                return $this->showError('invalid_request', 'CSRF Protection');
-            }
             if (waRequest::post('approve')) {
                 $this->approve($scope);
             } else {

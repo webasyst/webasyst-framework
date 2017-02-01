@@ -50,10 +50,10 @@ class waFrontController
             }
         }
 
-        list($plugin, $module, $action, $widget) = $this->getDispatchParams();
+        list($plugin, $module, $action, $is_widget) = $this->getDispatchParams();
 
-        if ($this->system->getEnv() == 'backend' && $widget) {
-            $this->executeWidget($widget, $action);
+        if ($this->system->getEnv() == 'backend' && $is_widget) {
+            $this->executeWidget($action);
         } else {
             $this->execute($plugin, $module, $action);
         }
@@ -68,11 +68,11 @@ class waFrontController
         $action = waRequest::get($this->options['action'], null, 'string');
         if ($env == 'frontend') {
             $module = 'frontend';
-            $widget = $plugin = null;
+            $is_widget = $plugin = null;
         } else {
             // Dispatch params are allowed via GET in backend
             $module = waRequest::get($this->options['module'], 'backend', 'string');
-            $widget = waRequest::get('widget', null, 'string');
+            $is_widget = waRequest::get('widget', null, 'string');
             $plugin = waRequest::get('plugin', null, 'string');
         }
 
@@ -82,14 +82,13 @@ class waFrontController
         $action = waRequest::param('action', $action, 'string');
 
         // Make sure parameters are sane
-        $result = array($plugin, $module, $action, $widget);
-        foreach ($result as $i => $v) {
+        foreach (array($plugin, $module, $action) as $i => $v) {
             if ($v && !$this->isDispatchParamValid($v)) {
                 throw new waException('Bad parameters ('.$i.')', 400);
             }
         }
 
-        return $result;
+        return array($plugin, $module, $action, $is_widget);
     }
 
     /** Validator for $this->getDispatchParams() */
@@ -98,7 +97,7 @@ class waFrontController
         return preg_match('~^[a-z_][a-z0-9_]*$~i', $v);
     }
 
-    public function executeWidget($widget, $action = null)
+    protected function executeWidget($action = null)
     {
         $widget = $this->system->getWidget(waRequest::get('id'));
         if (!$widget->isAllowed()) {

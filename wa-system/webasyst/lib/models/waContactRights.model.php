@@ -250,7 +250,7 @@ class waContactRightsModel extends waModel {
      */
     public function getUsers($app_id, $name = 'backend', $value = 1)
     {
-        $sql = "SELECT DISTINCT IF(r.group_id < 0, -r.group_id, g.contact_id)
+        $sql = "SELECT DISTINCT IF(r.group_id < 0, -r.group_id, g.contact_id) AS cid
                 FROM  wa_contact_rights r
                 LEFT JOIN wa_user_groups g ON r.group_id = g.group_id
                 WHERE (r.app_id = s:app_id AND r.name = s:name AND r.value >= i:value) OR
@@ -259,6 +259,7 @@ class waContactRightsModel extends waModel {
             // app admin
             $sql .= " OR (r.app_id = s:app_id AND r.name = 'backend' AND r.value > 1)";
         }
+        $sql .= " HAVING cid IS NOT NULL";
         return $this->query($sql, array('app_id' => $app_id, 'name' => $name, 'value' => $value))->fetchAll(null, true);
     }
 

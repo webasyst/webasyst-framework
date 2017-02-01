@@ -3,10 +3,11 @@
  * Script to generate contact photo thumbnails.
  */
 
+// /wa-data/public/contacts/photos/09/00/9/1547652850.144x144@2x.jpg
+$root_url = '../../../../../../../';
 $path = realpath(dirname(__FILE__)."/../../../")."/wa-config/SystemConfig.class.php";
-
 if (!file_exists($path)) {
-    header("Location: ../../../../../wa-content/img/userpic96.jpg");
+    header("Location: {$root_url}wa-content/img/userpic96.jpg");
     exit;
 }
 
@@ -16,10 +17,9 @@ waSystem::getInstance(null, $config);
 
 $file = wa()->getConfig()->getRequestUrl(true);
 if (substr($file, 0, 10) == "thumb.php/") {
+    // /wa-data/public/contacts/photos/thumb.php/09/00/9/1547652850.144x144@2x.jpg
     $file = substr($file, 10);
-    $root_url = "../../../../../../../../../";
-} else {
-    $root_url = "../../../../../../../../";
+    $root_url .= '../';
 }
 
 $file = explode("/", $file);

@@ -98,6 +98,9 @@ class waAPIController
         if (!waSystem::getInstance()->appExists($app)) {
             throw new waAPIException('invalid_request', 'Application '.$app.' not exists');
         }
+        if (wa()->getUser()->getRights($app, 'backend') <= 0) {
+            throw new waAPIException('access_denied', 403);
+        }
 
         // check scope
         $scope = explode(',', $token['scope']);
