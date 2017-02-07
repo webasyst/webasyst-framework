@@ -62,6 +62,7 @@ class blogPostAction extends waViewAction
         $this->view->assign('contact_rights', $this->getUser()->getRights('contacts', 'backend'));
         if ($this->getConfig()->getOption('can_use_smarty')) {
             try {
+                $this->view->assign('post', $post);
                 $post['text'] = $this->view->fetch("string:{$post['text']}", $this->cache_id);
             } catch (SmartyException $ex) {
                 $post['text'] = blogPost::handleTemplateException($ex, $post);
