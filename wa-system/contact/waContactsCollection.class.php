@@ -232,7 +232,7 @@ class waContactsCollection
         $ids = array_keys($data);
 
         // Update group and category count, if needed
-        if ($this->update_count && $limit > count($data) && count($data) != $this->update_count['count']) {
+        if ($offset == 0 && $this->update_count && $limit > count($data) && count($data) != $this->update_count['count']) {
             $this->update_count['model']->updateCount($this->update_count['id'], count($data));
         }
 

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WebAsyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2017-01-24 15:10+0300\n"
+"PO-Revision-Date: 2017-02-08 13:13+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -3574,6 +3574,9 @@ msgstr "Добавляет HTML-блок по ID"
 msgid "Returns path to theme folder by <em>theme_id</em> and <em>APP_ID</em>"
 msgstr "Возвращает путь к папке темы дизайна по <em>theme_id</em> и <em>APP_ID</em>"
 
+msgid "Returns path to theme folder by <em>theme_id</em>"
+msgstr "Возвращает путь к папке темы дизайна по <em>theme_id</em>"
+
 #: /wa-system/webasyst/templates/mail/Signup.html:1
 msgid "Thank you for registering on %s!"
 msgstr "Вы успешно зарегистрировались на сайте «%s»!"
@@ -3658,7 +3661,7 @@ msgstr "удалил тему"
 
 #: /wa-system/config/waAppConfig.class.php:84
 msgid "reset theme settings"
-msgstr "восстановил дефолт-настройки темы"
+msgstr "восстановил стандартные настройки темы"
 
 #: /wa-system/config/waAppConfig.class.php:87
 msgid "create theme duplicate"
@@ -4382,6 +4385,9 @@ msgstr "Или загрузить файл (JPG, GIF или PNG):"
 #: /wa-system/webasyst/templates/actions/profile/ProfilePhoto.html:57
 msgid "Are you sure you want to delete this photo?"
 msgstr "Вы действительно хотите удалить фото?"
+
+msgid "Maps"
+msgstr "Карты"
 
 msgid "<a href=\"https://developers.google.com/maps/documentation/javascript/get-api-key\">Obtain a Google Maps API key</a> only if the free limit of 25,000 map loads per 24 hours is not sufficient."
 msgstr "<a href=\"https://developers.google.com/maps/documentation/javascript/get-api-key\">Получите Google Maps API key</a>, только если вам не хватает бесплатной квоты в 25&nbsp;000 загрузок карт в течение 24&nbsp;часов."

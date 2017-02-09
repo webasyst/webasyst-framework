@@ -45,6 +45,6 @@ class waDefaultViewController extends waViewController
             $this->setLayout($this->getAction()->getLayout());
         }
 
-        $this->executeAction($this->action);
+        $this->executeAction($this->getAction());
     }
 }
