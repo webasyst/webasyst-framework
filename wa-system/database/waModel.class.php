@@ -886,7 +886,7 @@ class waModel
         // Single field, multiple values?
         if (is_array($value)) {
             //recursion: $value is a nested array of 'field'=>'value' items to create an 'OR' condition
-            if (wa_is_int($field)) {
+            if (wa_is_int($field) && is_array($value)) {
                 foreach ($value as $value_field => $value_value) {
                     $where[] = $this->getWhereByField($value_field, $value_value, $add_table_name);
                 }
@@ -904,6 +904,10 @@ class waModel
             }
         }
 
+        // Single field, single value
+        return $prefix.$this->escapeField($field).
+                       ($value === null ? " IS NULL" : " = ".$this->getFieldValue($field, $value));
+    }
         // Single field, single value
         return $prefix.$this->escapeField($field).
                        ($value === null ? " IS NULL" : " = ".$this->getFieldValue($field, $value));
