@@ -908,10 +908,6 @@ class waModel
         return $prefix.$this->escapeField($field).
                        ($value === null ? " IS NULL" : " = ".$this->getFieldValue($field, $value));
     }
-        // Single field, single value
-        return $prefix.$this->escapeField($field).
-                       ($value === null ? " IS NULL" : " = ".$this->getFieldValue($field, $value));
-    }
 
     /**
      * Returns the number of records with the value of the specified field matching the specified value.
