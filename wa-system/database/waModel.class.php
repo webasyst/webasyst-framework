@@ -859,6 +859,8 @@ class waModel
      */
     protected function getWhereByField($field, $value = null, $add_table_name = false)
     {
+        $multiple_conditions = false;
+
         // Several conditions for different fields?
         if (is_array($field)) {
             $add_table_name = $value;
@@ -866,9 +868,12 @@ class waModel
             $where = array();
             foreach ($field as $f => $v) {
                 $where[] = $this->getWhereByField($f, $v, $add_table_name);
+                if (!$multiple_conditions && wa_is_int($f) && is_array($v)) {
+                    $multiple_conditions = true;
+                }
             }
 
-            return implode(" AND ", $where);
+            return $multiple_conditions ? sprintf('(%s)', implode(') OR (', $where)) : implode(" AND ", $where);
         }
 
         // Table prefix for field names
@@ -880,14 +885,22 @@ class waModel
 
         // Single field, multiple values?
         if (is_array($value)) {
-            if (!isset($this->fields[$field])) {
-                throw new waException(sprintf(_ws('Unknown field %s'), $field));
-            }
-            if ($value) {
-                return $prefix.$this->escapeField($field)." IN ('".implode("','", $this->escape($value))."')";
+            //recursion: $value is a nested array of 'field'=>'value' items to create an 'OR' condition
+            if (wa_is_int($field)) {
+                foreach ($value as $value_field => $value_value) {
+                    $where[] = $this->getWhereByField($value_field, $value_value, $add_table_name);
+                }
+                return implode(" AND ", $where);
             } else {
-                // analog field IN ('') - it's always false
-                return '0';
+                if (!isset($this->fields[$field])) {
+                    throw new waException(sprintf(_ws('Unknown field %s'), $field));
+                }
+                if ($value) {
+                    return $prefix.$this->escapeField($field)." IN ('".implode("','", $this->escape($value))."')";
+                } else {
+                    // analog field IN ('') - it's always false
+                    return '0';
+                }
             }
         }
 
