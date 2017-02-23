@@ -909,13 +909,18 @@ HTML;
         }
         $html .= '</form></div>';
         
-        $name = sprintf('%04x%04x', mt_rand(0, 0xffff), mt_rand(0, 0xffff)); // просто влом было писать что-то длинное
+        $name = sprintf('%04x%04x', mt_rand(0, 0xffff), mt_rand(0, 0xffff));
         $html = preg_replace('/ name="/', ' data-'.$name.'="', $html);
 
         $html .= <<<HTML
-<script>$(function(){ $('[data-{$name}]').each(function(i,v) {
-  $(v).prop('name', $(v).data('{$name}'));
-});});</script>
+<script>
+(function (d, c) {
+var data = d.querySelectorAll('[data-'+c+']');
+for (var i = 0; i < data.length; i++) {
+    if(data[i].dataset && data[i].dataset[c]) data[i].name = data[i].dataset[c];
+}
+})(document, '{$name}');
+</script>
 HTML;
         
         return $html;
