@@ -10,7 +10,7 @@ $.wa = $.extend(true, $.wa, {
         if (key == undefined) {
             return this.data;
         }
-        return this.data[name] || defaultValue || null;
+        return this.data[key] || defaultValue || null;
     },
     set: function(key, val) {
         if (key == undefined) {
@@ -19,7 +19,7 @@ $.wa = $.extend(true, $.wa, {
         if (typeof(key) == 'object') {
             $.extend(this.data, key);
         } else {
-            this.data[key] = value;
+            this.data[key] = val;
         }
         return this.data;
     },
