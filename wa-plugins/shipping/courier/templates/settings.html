@@ -1,8 +1,8 @@
 <div id="courier-pickup-settings">
     <div class="field">
-        <div class="name">{$p->_w('Shipping region')}</div>
+        <div class="name"><label for="{$namespace|escape}[rate_zone][country]">{$p->_w('Shipping region')}</label></div>
         <div class="value">
-            <select name="{$namespace|escape}[rate_zone][country]">
+            <select name="{$namespace|escape}[rate_zone][country]" title="{$p->_w('Shipping region')}">
                 <option value=""{if empty($values.rate_zone.country)} selected="selected"{/if}></option>
                 {foreach $countries as $country}
                     <option value="{$country.iso3letter|escape}"{if !empty($values.rate_zone.country) && ($values.rate_zone.country == $country.iso3letter)} selected="selected"{/if}>{$country.name|escape}</option>
@@ -19,7 +19,7 @@
                 </p>
                 <input name="{$namespace|escape}[rate_zone][region]" value="" type="hidden">
             {else}
-                <select name="{$namespace|escape}[rate_zone][region]">
+                <select name="{$namespace|escape}[rate_zone][region]" title="">
                     <option value=""{if empty($values.rate_zone.region)} selected="selected"{/if}></option>
                     {foreach $regions as $region}
                         <option value="{$region.code|escape}"{if ifset($values.rate_zone.region) == $region.code} selected="selected"{/if}>{$region.name|escape}</option>
@@ -37,7 +37,7 @@
 
         </div>
         <div class="value">
-            {$p->_w('City name')}: <input name="{$namespace|escape}[rate_zone][city]" value="{ifset($values.rate_zone.city)}" type="text">
+            <label>{$p->_w('City name')}: <input name="{$namespace|escape}[rate_zone][city]" value="{ifset($values.rate_zone.city)}" type="text"></label>
 
             <p class="hint">{$p->_w('If courier shipping is provided only within specific cities, enter the city names separated by comma so that customer is not be prompted to enter city name when this shipping option is selected; a city name will be automatically fetched as you specify it here. If this field is left blank, a customer will be prompted to enter a city name.')}</p>
         </div>
@@ -66,7 +66,7 @@
 
     <div class="field">
         <div class="value">
-            <select name="{$namespace|escape}[currency]">
+            <select name="{$namespace|escape}[currency]" title="">
                 {foreach $currencies as $currency}
                     <option value="{$currency.code|escape}"
                             {if $values.currency == $currency.code} selected="selected"{/if}>
@@ -86,7 +86,7 @@
                             <span class="weight" {if $values.rate_by != 'weight'}style="display:none;"{/if}>
                                 {$p->_w('Shipment weight')}
                             </span>
-                            <span class="price" {if $values.rate_by != 'price'}style="display:none;"{/if}>
+                        <span class="price" {if $values.rate_by != 'price'}style="display:none;"{/if}>
                                 {$p->_w('Shipment amount')}
                             </span>
                     </th>
@@ -117,7 +117,7 @@
                                    value="{$rate.limit|escape}"
                                    class="refreshable input short numerical"
                                    name="{$namespace|escape}[rate][{$rate@index}][limit]"
-                                    >
+                            >
                             <span class="rate-by">
                                 <span class="weight dimension" {if $values.rate_by != 'weight'}style="display:none;"{/if}>
                                     {if $values.weight_dimension == 'kg'}
@@ -137,7 +137,7 @@
                                    value="{$rate.cost|escape}"
                                    class="short numerical"
                                    name="{$namespace|escape}[rate][{$rate@index}][cost]"
-                                    >
+                            >
                             <span class="currency">{$values.currency}</span>
                         </td>
                         <td>
@@ -149,6 +149,7 @@
                 {/foreach}
                 </tbody>
             </table>
+            <br><br>
         </div>
     </div>
 
@@ -169,17 +170,27 @@
             </select>
         </div>
     </div>
-    {if !empty($map_adapters) && count($map_adapters) > 1}
-    <div class="field">
-        <div class="name">{$p->_w('Maps')}</div>
-        <div class="value">
-        {foreach $map_adapters as $a}
-            <label>
-                <input type="radio" name="{$namespace|escape}[map]" {if $values.map == $a->getId()}checked{/if} value="{$a->getId()}"> {$a->getName()}
-            </label><br>
-        {/foreach}
+
+    {if !empty($map_adapters)}
+        <div class="field">
+            <div class="name">[s`Maps`]</div>
+            {foreach $map_adapters as $a}
+                {$adapter_id = $a->getId() }
+                <div class="value no-shift">
+                    <label>
+                        <input type="radio" name="{$namespace|escape}[map]" {if $values.map==$adapter_id}checked{/if} value="{$adapter_id}">&nbsp;{$a->getName()}
+                    </label>
+
+                </div>
+                {$map_adapter_settings = $a->getSettingsHtml(['namespace'=>$namespace])}
+                {if !empty($map_adapter_settings)}
+                    <div class="value no-shift hint js-map-adapter-settings" data-adapter-id="{$adapter_id}" style="display: none;">
+                        {'../installer/?module=settings'|string_format:$p->_w('Online map settings are available in <a href="%s">Installer</a> app.')}
+                    </div>
+                {/if}
+            {/foreach}
+            <br><br>
         </div>
-    </div>
     {/if}
 
 </div>
@@ -188,6 +199,22 @@
         'use strict';
 
         var container = $('#courier-pickup-settings');
+
+        container.find(':input[name$="\[map\]"]').change(function (event) {
+            var $scope = $(this).parents('div.field');
+            if (!event.originalEvent) {
+                $scope.find('div.js-map-adapter-settings').hide();
+                if (this.checked) {
+                    $scope.find('div.js-map-adapter-settings[data-adapter-id="' + this.value + '"]').show();
+                }
+            } else {
+                $scope.find('div.js-map-adapter-settings').slideUp();
+                if (this.checked) {
+                    $scope.find('div.js-map-adapter-settings[data-adapter-id="' + this.value + '"]').slideDown();
+                }
+            }
+        });
+        container.find(':input[name$="\[map\]"]:checked').trigger('change');
 
         container.on('click', '.add-rate', function () {
             var el = $(this);
@@ -200,7 +227,7 @@
 
                 // increase index inside input name
                 var name = input.attr('name');
-                input.attr('name', name.replace(/\[rate\]\[(\d+)\]/, function (str, p1) {
+                input.attr('name', name.replace(/\[rate]\[(\d+)]/, function (str, p1) {
                     return '[rate][' + (parseInt(p1, 10) + 1) + ']';
                 }));
 
@@ -233,7 +260,7 @@
 
         container.find('select[name$="[weight_dimension]"]').change(function () {
             container.find('.rate-by .weight.dimension').text(
-                    $('option:selected', this).attr('data-value')
+                $('option:selected', this).attr('data-value')
             );
         });
 
@@ -250,24 +277,24 @@
                     country: this.value
                 }, function (r) {
                     if (
-                            r.data
-                            && r.data.options
-                            && r.data.oOrder
-                            && r.data.oOrder.length
+                        r.data
+                        && r.data.options
+                        && r.data.oOrder
+                        && r.data.oOrder.length
                     ) {
                         var select = $(
-                                "<select name='" + name + "'>" +
-                                "<option value=''></option>" +
-                                "</select>"
+                            "<select name='" + name + "'>" +
+                            "<option value=''></option>" +
+                            "</select>"
                         );
                         var o, selected = false;
                         for (var i = 0; i < r.data.oOrder.length; i++) {
                             o = $('<option></option>').attr(
-                                    'value', r.data.oOrder[i]
+                                'value', r.data.oOrder[i]
                             ).text(
-                                    r.data.options[r.data.oOrder[i]]
+                                r.data.options[r.data.oOrder[i]]
                             ).attr(
-                                    'disabled', r.data.oOrder[i] === ''
+                                'disabled', r.data.oOrder[i] === ''
                             );
                             if (!selected && old_val === r.data.oOrder[i]) {
                                 o.attr('selected', true);
@@ -285,6 +312,20 @@
 
             container.on('change', 'select[name="' + name + '"]', function () {
                 old_val = this.value;
+            });
+
+            var rate_name = '{$namespace|escape}[rate]';
+            container.on('change keyup', 'input[name^="' + rate_name + '"][name$="[limit]"]', function () {
+                this.value = this.value.replace(',', '.').replace(/[^\d\\.]+/, '');
+                if (parseFloat(this.value) < 0) {
+                    this.value = 0;
+                }
+                var td = $(this).parents('tr').find('td:first');
+                if (parseFloat(this.value) == 0) {
+                    td.text('≥');
+                } else {
+                    td.text('>');
+                }
             });
         })();
     });

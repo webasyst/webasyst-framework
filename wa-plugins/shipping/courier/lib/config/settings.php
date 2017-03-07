@@ -24,7 +24,7 @@ return array(
     'delivery_time'    => array(
         'value' => '+1 day',
         'title' => /*_wp*/('Estimated delivery time'),
-        'description' => /*_wp*/('Average order transit time. Estimated delivery date will be calculated automatically and shown to customer.'),
+        'description' => /*_wp*/('Average order transit time. Estimated delivery date will be calculated automatically and shown to customer.<br><br>'),
         'control_type' => waHtmlControl::RADIOGROUP,
         'options' => array(
             '+3 hour' => /*_wp*/('Same day'),
@@ -33,5 +33,10 @@ return array(
             '+1 week' => /*_wp*/('1 week'),
             ''        => /*_wp*/('Undefined')
         ),
+    ),
+    'customer_interval'=>array(
+        'title'=>/*_wp*/('Preferred delivery time'),
+        'control_type'=>'DeliveryIntervalControl',
+        'minutes'=>true,
     ),
 );

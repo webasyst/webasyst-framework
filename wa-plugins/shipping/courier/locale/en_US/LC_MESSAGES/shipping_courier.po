@@ -32,7 +32,7 @@ msgstr ""
 #: //wa-plugins/shipping/courier/lib/config/settings.php:24
 msgid ""
 "Average order transit time. Estimated delivery date will be calculated "
-"automatically and shown to customer."
+"automatically and shown to customer.<br><br>"
 msgstr ""
 
 #: //wa-plugins/shipping/courier/lib/config/settings.php:27
@@ -161,4 +161,24 @@ msgid ""
 "Enter shipping rate as a flat rate, as a percent of cart total, or as a sum "
 "of both. Example: <b>20+10%%</b> will calculate shipping rate as 20 %s + 10%"
 "% of cart total"
+msgstr ""
+
+#: /wa-plugins/shipping/courier/lib/config/settings.php:38
+msgid "Preferred delivery time"
+msgstr ""
+
+#: /wa-plugins/shipping/courier/templates/settings.html:106
+msgid "Enter shipping rate as a flat rate, as a percent of cart total, or as a sum of both. Example: <b>20+10%%</b> will calculate shipping rate as 20 %s + 10%% of cart total."
+msgstr ""
+
+#: /wa-plugins/shipping/courier/templates/settings.html:174
+msgid "Maps"
+msgstr ""
+
+#: /wa-plugins/shipping/courier/templates/settings.html:178
+msgid "Default system map"
+msgstr ""
+
+#: /wa-plugins/shipping/courier/lib/courierShipping.class.php:216
+msgid "Preferred delivery time"
 msgstr ""

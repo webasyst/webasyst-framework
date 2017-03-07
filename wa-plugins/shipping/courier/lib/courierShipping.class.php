@@ -123,11 +123,12 @@ class courierShipping extends waShipping
         self::sortRates($rates);
         $rates = array_reverse($rates);
         foreach ($rates as $rate) {
+            $rate['limit'] = floatval(preg_replace('@[^\d\.]+@', '', str_replace(',', '.', $rate['limit'])));
             if (($limit !== null)
                 && ($price === null)
                 && (
-                    (floatval($rate['limit']) < $limit)
-                    || ((floatval($rate['limit']) == 0) && (floatval($limit) == 0))
+                    ($rate['limit'] < $limit)
+                    || (($rate['limit'] == 0) && (floatval($limit) == 0))
                 )
             ) {
                 $price = $this->parseCost($rate['cost']);
@@ -145,6 +146,9 @@ class courierShipping extends waShipping
             $delivery_date = null;
         }
 
+        if (($limit !== null) && ($price === null)) {
+            return false;
+        }
         return array(
             'delivery' => array(
                 'est_delivery' => $delivery_date,
@@ -178,9 +182,69 @@ class courierShipping extends waShipping
 
     public function requestedAddressFields()
     {
-        return array(
-            'zip' => false,
+        $addresses = $this->allowedAddress();
+
+        $address = reset($addresses);
+
+        $fields = array();
+        foreach ($address as $field => $value) {
+            $fields[$field] = array(
+                'cost'     => true,
+                'value'    => $value,
+                'required' => true,
+            );
+        }
+        $value = array(
+            'cost'     => true,
+            'required' => true,
         );
+        $fields += array(
+            'city'    => $value,
+            'street'  => $value,
+        );
+
+        uksort($fields, array($this, 'sortAddressFields'));
+        return $fields;
+    }
+
+    private function sortAddressFields($a, $b)
+    {
+        $order = array(
+            'country',
+            'region',
+            'city',
+            'street',
+        );
+        $order = array_flip($order);
+        return max(1, min(-1, ifset($order[$b], 0) - ifset($order[$a], 0)));
+    }
+
+    public function customFields(waOrder $order)
+    {
+        $fields = parent::customFields($order);
+
+        $this->registerControl('CustomDeliveryIntervalControl');
+        $setting = $this->getSettings('customer_interval');
+
+        if (!empty($setting['interval'])) {
+            if (!strlen($this->delivery_time)) {
+                $from = time();
+            } else {
+                $from = strtotime(preg_replace('@,.+$@', '', $this->delivery_time));
+            }
+            $offset = max(0, ceil(($from - time()) / (24 * 3600)));
+            $fields['desired_delivery'] = array(
+                'value'        => null,
+                'title'        => $this->_w('Preferred delivery time'),
+                'control_type' => 'CustomDeliveryIntervalControl',
+                'params'       => array(
+                    'date'      => empty($setting['date']) ? null : ifempty($offset, 0),
+                    'interval'  => ifset($setting['interval']),
+                    'intervals' => ifset($setting['intervals']),
+                ),
+            );
+        }
+        return $fields;
     }
 
     public function getPrintForms(waOrder $order = null)
@@ -199,7 +263,7 @@ class courierShipping extends waShipping
             $view = wa()->getView();
             $main_contact_info = array();
             foreach (array('email', 'phone',) as $f) {
-                if (($v = $order->contact->get($f, 'top,html'))) {
+                if (($v = $order->getContact()->get($f, 'top,html'))) {
                     $main_contact_info[] = array(
                         'id'    => $f,
                         'name'  => waContactFields::get($f)->getName(),
@@ -219,7 +283,11 @@ class courierShipping extends waShipping
             $shipping_address_text = array();
             foreach (array('country_name', 'region_name', 'zip', 'city', 'street') as $k) {
                 if (!empty($order->shipping_address[$k])) {
-                    $shipping_address_text[] = $order->shipping_address[$k];
+                    $value = $order->shipping_address[$k];
+                    if (in_array($k, array('city'))) {
+                        $value = ucfirst($value);
+                    }
+                    $shipping_address_text[] = $value;
                 }
             }
 
