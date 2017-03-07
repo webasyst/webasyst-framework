@@ -253,7 +253,7 @@ $.wa = $.extend(true, $.wa, {
     },
 
     /** Click handler used in dropdownsCloseDisable() and dropdownsCloseEnable(). */
-    dropdownsClickHandler: function(e) {
+    dropdownsClickHandler: function() {
         var self = $(this);
         if (self.hasClass('no-click-close')) {
             return;
@@ -409,7 +409,7 @@ $.wa = $.extend(true, $.wa, {
 
 if (!window.wa_skip_ajax_setup) {
     $.ajaxSetup({'cache': false});
-    $(document).ajaxError(function(e, xhr, settings, exception) {
+    $(document).ajaxError(function(e, xhr) {
         // Generic error page
         if (xhr.status !== 200 && xhr.responseText) {
             if (!$.wa.errorHandler || $.wa.errorHandler(xhr)) {
