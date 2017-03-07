@@ -35,14 +35,17 @@ class webasystCreateAppCli extends webasystCreateCliController
             "lib/",
             "lib/actions/backend/",
             "lib/actions/backend/{$this->app_id}Backend.action.php" => $this->getActionCode(),
-            // "lib/layouts/{$this->app_id}Default.layout.php"         => $this->getLayoutCode(),
             "templates/actions/backend/Backend.html"                => $this->getDefaultTemplate(),
-            //'templates/layouts/Default.html'                  => $this->getLayoutTemplate(),
             "lib/classes/",
             "lib/models/",
             "lib/config/",
             "locale/"
         );
+
+        if (!empty($params['layout'])) {
+            $structure["lib/layouts/{$this->app_id}Default.layout.php"] = $this->getLayoutCode();
+            $structure['templates/layouts/Default.html'] = $this->getLayoutTemplate();
+        }
 
         $features = array_map('trim', preg_split('@[,\s]+@', ifset($params['features'], $this->getDefaults('features'))));
         // api
@@ -91,12 +94,14 @@ class webasystCreateAppCli extends webasystCreateCliController
             ));
 
             if (!empty($app['themes'])) {
-                $structure = array_merge($structure, array(
-                    'themes/.htaccess'          => '
+                $htaccess = <<<HTACCESS
 <FilesMatch "\.(php\d*|html?|xml)$">
     Deny from all
 </FilesMatch>
-',
+HTACCESS;
+
+                $structure = array_merge($structure, array(
+                    'themes/.htaccess'          => $htaccess,
                     'themes/default/index.html' => $this->getFrontendTemplate(),
                     'themes/default/css/default.css',
                 ));

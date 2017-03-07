@@ -5,11 +5,11 @@ class webasystCreateLayoutCli extends waCliController
     public function execute()
     {
         if (!waRequest::param(1) || null !== waRequest::param('help')) {
-            return $this->showHelp();
+            $this->showHelp();
+        } else {
+            list($app_id, $layout) = $this->getParameters();
+            $this->create($app_id, $layout);
         }
-
-        list($app_id, $layout) = $this->getParameters();
-        $this->create($app_id, $layout);
     }
 
     protected function showHelp()
@@ -48,7 +48,7 @@ HELP;
 
     protected function getPhp($app_id, $layout)
     {
-        $class_name = $app_id . ucfirst($layout) . 'Layout';
+        $class_name = $app_id.ucfirst($layout).'Layout';
         $result = "<?php\nclass {$class_name} extends waLayout\n{\n%CLASS_CONTENT%\n}\n";
         $result = str_replace('%CLASS_CONTENT%', "\tpublic function execute()\n\t{\n\t\t// !!! TODO\n\t}", $result);
         $result = str_replace("\t", "    ", $result);
@@ -105,4 +105,3 @@ HELP;
         exit;
     }
 }
-

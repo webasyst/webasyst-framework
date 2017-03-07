@@ -368,7 +368,7 @@ class waHtmlControl
         $title = '';
         if (isset($params['title']) && !empty($params['title_wrapper'])) {
             $option_title = htmlentities(self::_wp($params['title'], $params), ENT_QUOTES, self::$default_charset);
-            if (!empty($params['id'])) {
+            if (!empty($params['id']) && strlen($option_title)) {
                 $params['id'] = htmlentities($params['id'], ENT_QUOTES, self::$default_charset);
                 $option_title = sprintf('<label for="%s">%s</label>', $params['id'], $option_title);
             }
@@ -892,7 +892,7 @@ HTML;
         if (!empty($params['data'])) {
             $data = array();
             foreach ($params['data'] as $field => $value) {
-                $data['data-'.$field] = json_encode($value);
+                $data['data-'.$field] = trim(json_encode($value), '"');
             }
             $params_string .= $this->addCustomParams(array_keys($data), $data);
         }

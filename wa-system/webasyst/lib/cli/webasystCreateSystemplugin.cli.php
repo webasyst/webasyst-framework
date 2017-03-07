@@ -1,5 +1,6 @@
 <?php
-class webasystCreateSystemPluginCli extends waCliController
+
+class webasystCreateSystempluginCli extends waCliController
 {
     public function execute()
     {
@@ -105,5 +106,4 @@ HELP;
             print("Plugin with id \"{$id}\" already exists.\n");
         }
     }
-
 }

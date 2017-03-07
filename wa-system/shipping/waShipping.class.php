@@ -593,14 +593,14 @@ HTML;
         $interval_params = $params;
         $interval_params['value'] = ifset($params['value']['interval']);
         $interval_params['control_wrapper'] = "%2\$s\n%1\$s\n%3\$s\n";
-        $interval_params['title'] = ifset($params['title_interval'], 'Ask the desired delivery interval');
+        $interval_params['title'] = ifset($params['title_interval'], _ws('Ask the desired delivery interval'));
         $html .= waHtmlControl::getControl(waHtmlControl::CHECKBOX, 'interval', $interval_params);
         waHtmlControl::makeId($interval_params, 'interval');
         $html .= ifset($params['control_separator'], '<br/>');
 
         $date_params = $params;
         $date_params['value'] = ifset($params['value']['date']);
-        $date_params['title'] = ifset($params['title_date'], 'Ask the desired date');
+        $date_params['title'] = ifset($params['title_date'], _ws('Ask the desired date'));
         $date_params['control_wrapper'] = "%2\$s\n%1\$s\n%3\$s\n";
         $html .= waHtmlControl::getControl(waHtmlControl::CHECKBOX, 'date', $date_params);
         waHtmlControl::makeId($date_params, 'date');
@@ -629,7 +629,7 @@ HTML;
             waHtmlControl::addNamespace($interval_items_params, $id);
 
             $default_params = array(
-                'title' => ifset($params['title_from'], 'from'),
+                'title' => ifset($params['title_from'], _ws('from')),
                 'class' => 'short',
                 'value' => ifset($value['from']),
             );
@@ -644,7 +644,7 @@ HTML;
             }
 
             $default_params = array(
-                'title' => ifset($params['title_till'], 'till'),
+                'title' => ifset($params['title_till'], _ws('till')),
                 'class' => 'short',
                 'value' => ifset($value['to']),
             );
@@ -673,12 +673,12 @@ HTML;
     <td>{$from}</td>
     <td>{$to}</td>
     <td class="js-days">{$days}</td>
-    <td><a class="inline-link delete-interval"><i class="icon16 delete"></i></a></td>
+    <td><a class="inline-link delete-interval" href="javascript:void(0);"><i class="icon16 delete"></i></a></td>
     
 </tr>
 HTML;
         }
-        $rows = implode("</tr>\n<tr>", $rows);
+        $rows = implode("\n", $rows);
 
         $days = array(
             'Mon',
@@ -693,10 +693,10 @@ HTML;
             $day = _ws($day);
         }
         unset($day);
-        $days = implode('</th><th class="js-days">', $days);
+        $days = implode('</b></th><th class="js-days"><b>', $days);
 
-        $interval_description = htmlentities(ifset($params['description_interval'], 'Delivery intervals'), ENT_QUOTES, waHtmlControl::$default_charset);
-        $add_interval = htmlentities(ifset($params['description_interval'], 'Add interval'), ENT_QUOTES, waHtmlControl::$default_charset);
+        $interval_description = htmlentities(ifset($params['description_interval'], _ws('Delivery intervals')), ENT_QUOTES, waHtmlControl::$default_charset);
+        $add_interval = htmlentities(ifset($params['description_interval'], _ws('Add interval')), ENT_QUOTES, waHtmlControl::$default_charset);
 
         waHtmlControl::makeId($params);
         $html .= <<<HTML
@@ -704,7 +704,7 @@ HTML;
     <thead>
     <tr>
         <th colspan="2">{$interval_description}</th>
-        <th class="js-days">{$days}</th>
+        <th class="js-days"><b>{$days}</b></th>
         <th>&nbsp;</th>
     </tr>
     </thead>
@@ -713,7 +713,7 @@ HTML;
         {$rows}
     <tfoot>
     <tr class="white">
-        <td colspan="2"><a class="inline-link add-interval"><i class="icon16 add"></i><b><i>{$add_interval}</i></b></a></td>
+        <td colspan="2"><a class="inline-link add-interval" href="javascript:void(0);"><i class="icon16 add"></i><b><i>{$add_interval}</i></b></a></td>
         <td colspan="8">&nbsp;</td>
     </tr>
     </tfoot>
@@ -729,7 +729,7 @@ HTML;
         var interval = $('#{$interval_params['id']}');
 
         interval.change(function (event) {
-            var fast = event.originalEvent ? false : true;
+            var fast = !event.originalEvent;
             if (this.checked) {
                 table.show(fast ? null : 400);
                 date.attr('disabled', null);
@@ -740,12 +740,12 @@ HTML;
         }).change();
 
         date.change(function (event) {
-            var fast = event.originalEvent ? false : true;
+            var fast = !event.originalEvent;
             if (this.checked) {
-                table.find('.js-days').show(fast ? null : 400);
+                table.find('.js-days > *').animate({'opacity': '1'}, fast ? null : 300);
                 table.find('.js-days input').attr('disabled', null);
             } else {
-                table.find('.js-days').hide(fast ? null : 400);
+                table.find('.js-days > *').animate({'opacity': '0'}, fast ? null : 300);
                 table.find('.js-days input').attr('disabled', true);
             }
         }).change();
@@ -822,29 +822,39 @@ HTML;
         $html = '';
 
         $wrappers = array(
-            'title'               => '',
-            'title_wrapper'       => '%s',
-            'description_wrapper' => '<br>%s<br>',
-            'description'         => '',
-            'control_wrapper'     => "%s\n%s\n%s\n",
+            'title'           => '',
+            'title_wrapper'   => '%s',
+            'description'     => '',
+            'control_wrapper' => "%s\n%3\$s\n%2\$s\n",
 
         );
+
 
         $params = array_merge($params, $wrappers);
 
         $date_params = $params;
-
+        $date_format = waDateTime::getFormat('date');
         if (isset($params['params']['date'])) {
-            $date_params['style'] = "position: relative; z-index: 100000;";
-            $date_name = preg_replace('@([_\w]+)(\]?)$@', '$1.date$2', $name);
+            $date_params['style'] = "z-index: 100000;";
+
+            $date_name = preg_replace('@([_\w]+)(\]?)$@', '$1.date_str$2', $name);
             $offset = intval(ifset($params['params']['date'], 0));
+            $date_params['placeholder'] = waDateTime::format($date_format, sprintf('+ %d days', $offset));
+            $date_params['description'] = _ws('Date');
             $html .= waHtmlControl::getControl(waHtmlControl::INPUT, $date_name, $date_params);
             waHtmlControl::makeId($date_params, $date_name);
+
+            $date_name = preg_replace('@([_\w]+)(\]?)$@', '$1.date$2', $name);
+            $date_formatted_params = $params;
+            $date_formatted_params['style'] = "display: none;";
+            $html .= waHtmlControl::getControl(waHtmlControl::INPUT, $date_name, $date_formatted_params);
+            waHtmlControl::makeId($date_formatted_params, $date_name);
         }
 
         $interval_params = $params;
         $intervals = ifempty($params['params']['intervals'], array());
         $interval_params['options'] = array();
+        $available_days = array();
         foreach ($intervals as $interval) {
             if (is_array($interval) && isset($interval['from']) && isset($interval['to'])) {
                 $days = ifset($interval['day'], array());
@@ -860,17 +870,49 @@ HTML;
                     'title' => $value,
                     'data'  => array('days' => array_keys($days)),
                 );
+                $available_days = array_merge(array_keys($days), $available_days);
             }
-
         }
+
+        $available_days = array_values(array_unique($available_days));
 
         $interval_name = preg_replace('@([_\w]+)(\]?)$@', '$1.interval$2', $name);
         if ($interval_params['options']) {
+            $html .= ifset($params['control_separator']);
+
+            $option = array(
+                'value' => '',
+                'title' => '',
+                'data'  => array('days' => $available_days),
+            );
+            array_unshift($interval_params['options'], $option);
+
+            $interval_params['description'] = _ws('Time');
             $html .= waHtmlControl::getControl(waHtmlControl::SELECT, $interval_name, $interval_params);
             waHtmlControl::makeId($interval_params, $interval_name);
         } elseif (!empty($params['options']['interval'])) {
+            $html .= ifset($params['control_separator']);
+            $interval_params['description'] = _ws('Time');
             $html .= waHtmlControl::getControl(waHtmlControl::INPUT, $interval_name, $interval_params);
         }
+        if (empty($interval_params['id'])) {
+            $interval_params['id'] = 0;
+        }
+        $date_format_map = array(
+            'PHP' => 'JavaScript',
+            'Y'   => 'yy',
+            'd'   => 'dd',
+            'm'   => 'mm',
+        );
+        $js_date_format = str_replace(array_keys($date_format_map), array_values($date_format_map), $date_format);
+        $locale = wa()->getLocale();
+        $localization = sprintf("wa-content/js/jquery-ui/i18n/jquery.ui.datepicker-%s.js", $locale);
+        if (!is_readable($localization)) {
+            $localization = '';
+        }
+
+        $available_days = json_encode($available_days);
+
         if (isset($params['params']['date']) && isset($offset)) {
             $root_url = wa()->getRootUrl();
             $html .= <<<HTML
@@ -878,36 +920,87 @@ HTML;
     $(function () {
         'use strict';
         var date = $('#{$date_params['id']}');
-        var interval = $('#{$interval_params['id']}');
+        var date_formatted = $('#{$date_formatted_params['id']}');
+        var interval = '{$interval_params['id']}' ? $('#{$interval_params['id']}') : false;
+        var available_days = {$available_days};
         var init = function () {
             date.datepicker();
             date.datepicker("option", {
-                "dateFormat": 'yy-mm-dd',
+                "dateFormat": '{$js_date_format}',
                 'minDate': {$offset},
                 'onSelect': function (dateText) {
-                    var d = new Date(dateText);
-                    /**
-                     * filter select by days
-                     */
-                    interval.find('option').each(function () {
-                        var option = $(this);
-                        option.attr('disabled', (option.data('days').indexOf((d.getDay() + 6) % 7) == -1) ? 'disabled' : null);
-                    });
+                    var d = date.datepicker('getDate');
+                    date.val(dateText);
+                    date_formatted.val($.datepicker.formatDate('yy-mm-dd', d));
+                    if (d && interval && interval.length) {
+                        var day = (d.getDay() + 6) % 7;
+                        /**
+                         * filter select by days
+                         */
+                        var value = typeof(interval.val())!='undefined';
+                        var matched = null;
+                        interval.find('option').each(function () {
+                            var option = $(this);
+                            var disabled = (option.data('days').indexOf(day) == -1) ? 'disabled' : null;
+                            option.attr('disabled', disabled);
+                            if (disabled) {
+                                if (this.selected) {
+                                    value = false;
+                                }
+                            } else {
+                                matched = this;
+                                if (!value) {
+                                    this.selected = true;
+                                    value = !!this.value;
+                                    if (typeof(interval.highlight) == 'function') {
+                                        interval.highlight();
+                                    }
+                                }
+                            }
+                        });
+
+                        if (value) {
+                            interval.removeClass('error');
+                        } else if (matched) {
+                            matched.selected = true;
+                            interval.removeClass('error');
+                        } else {
+                            interval.addClass('error');
+                        }
+                    }
+
+                },
+                beforeShowDay: function (date) {
+                    if (interval && interval.length) {
+                        var day = (date.getDay() + 6) % 7;
+                        return [available_days.indexOf(day) != -1]
+                    } else {
+                        return [true];
+                    }
                 }
             });
             $('.ui-datepicker').css('zIndex', 999999);
         };
+
+        var init_locale = function () {
+            if ('$localization' && (!$.datepicker.regional || ($.datepicker.regional.indexOf('{$locale}'.substr(0, 2)) == -1))) {
+                $.getScript('{$root_url}{$localization}', init);
+            } else {
+                init();
+            }
+        };
+
         if (typeof(date.datepicker) != 'function') {
             $("<link/>", {
                 rel: "stylesheet",
                 type: "text/css",
                 href: "{$root_url}wa-content/css/jquery-ui/jquery-ui-1.7.2.custom.css"
             }).appendTo("head");
-            $.getScript('{$root_url}wa-content/js/jquery-ui/jquery-ui-1.7.2.custom.min.js', init);
-        } else {
-            init();
-        }
+            $.getScript('{$root_url}wa-content/js/jquery-ui/jquery-ui-1.7.2.custom.min.js', init_locale);
 
+        } else {
+            init_locale();
+        }
     });
 </script>
 HTML;

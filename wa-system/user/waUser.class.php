@@ -272,6 +272,9 @@ class waUser extends waContact
 
     public static function getNameAndStatus($user)
     {
+        if (!$user) {
+            return null;
+        }
         $formatted_user_name = self::formatName($user);
         $view = wa()->getView();
 

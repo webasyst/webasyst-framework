@@ -2013,3 +2013,96 @@ msgstr ""
 #: /wa-system/webasyst/templates/actions/dashboard/DashboardSidebar.html:5
 msgid "Install new widgets"
 msgstr ""
+
+#: /wa-system/controller/waFrontController.class.php:140
+msgid "Plugin not found"
+msgstr ""
+
+#: /wa-system/file/waNet.class.php:421
+#: /wa-system/file/waNet.class.php:425
+msgid "Error cUrl init"
+msgstr ""
+
+#: /wa-system/image/waImage.class.php:140
+msgid "No image adapters found. Install ImageMagick or GD extension to enable image-processing functionality."
+msgstr ""
+
+#: /wa-system/map/adapters/googleMap.class.php:91
+msgid "Google Maps API key"
+msgstr ""
+
+#: /wa-system/map/adapters/googleMap.class.php:92
+msgid "<a href=\"https://developers.google.com/maps/documentation/javascript/get-api-key\">Obtain a Google Maps API key</a> only if the free limit of 25,000 map loads per 24 hours is not sufficient."
+msgstr ""
+
+#: /wa-system/map/adapters/googleMap.class.php:94
+msgid "To be able to use an API key, <a href=\"https://console.developers.google.com/apis/api/static_maps_backend/\">enable Static Maps API</a> in your Google account."
+msgstr ""
+
+#: /wa-system/shipping/waShipping.class.php:596
+msgid "Ask the desired delivery interval"
+msgstr ""
+
+#: /wa-system/shipping/waShipping.class.php:603
+msgid "Ask the desired date"
+msgstr ""
+
+#: /wa-system/user/templates/NameAndStatus.html:14
+msgid "%s is now online"
+msgstr ""
+
+#: /wa-system/user/templates/NameAndStatus.html:25
+msgid "%s's birthday — %s"
+msgstr ""
+
+#: /wa-system/webasyst/lib/config/webasystConfig.class.php:19
+msgid "edited contact"
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/api/ApiAuthMobile.html:45
+msgid "Log out"
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/profile/ProfilePage.html:12
+msgid "Change photo"
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/profile/ProfilePage.html:28
+msgid "@"
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/profile/ProfilePhoto.html:25
+msgid "Drop photo here"
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/profile/ProfilePhoto.html:30
+msgid "To change drop another photo or upload file (JPG, GIF или PNG):"
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/profile/ProfilePhoto.html:33
+msgid "Or upload file (JPG, GIF or PNG):"
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/profile/ProfilePhoto.html:42
+msgid "Delete photo"
+msgstr ""
+
+#: /wa-system/webasyst/templates/actions/profile/ProfilePhoto.html:57
+msgid "Are you sure you want to delete this photo?"
+msgstr ""
+
+#: /wa-system/shipping/waShipping.class.php:632
+msgid "from"
+msgstr ""
+
+#: /wa-system/shipping/waShipping.class.php:647
+msgid "till"
+msgstr ""
+
+#: /wa-system/shipping/waShipping.class.php:698
+msgid "Delivery intervals"
+msgstr ""
+
+#: /wa-system/shipping/waShipping.class.php:699
+msgid "Add interval"
+msgstr ""

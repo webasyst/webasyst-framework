@@ -255,6 +255,13 @@ HELP;
             $whitelist = array_merge($rules['whitelist'], $whitelist);
         }
 
+        # use exclude.php
+        $exclude = $this->path.'/lib/config/exclude.php';
+        if (file_exists($exclude)) {
+            $exclude = self::getExcludePattern($exclude);
+            $blacklist = array_merge($blacklist, array_fill_keys($exclude, 'disabled at exclude.php'));
+        }
+
         waRequest::setParam(
             array(
                 'namespace' => $namespace,
@@ -295,6 +302,50 @@ HELP;
 
         }
         return compact('blacklist', 'whitelist');
+    }
+
+    private static function getExcludePattern($path, $base_path = null)
+    {
+        if ($exclude = include($path)) {
+            if (!is_array($exclude)) {
+                $exclude = array($exclude);
+            }
+            $exclude = self::makePattern($exclude, $base_path);
+        } else {
+            $exclude = false;
+        }
+        return $exclude;
+    }
+
+    private static function makePattern($patterns, $base_path = null)
+    {
+
+        $meta_characters = array('+', '.', '(', ')', '[', ']', '{', '}', '<', '>', '^', '$', '@');
+        foreach ($meta_characters as & $char) {
+            $char = "\\{$char}";
+            unset($char);
+        }
+        $command_characters = array('?', '*');
+
+        foreach ($command_characters as & $char) {
+            $char = "\\{$char}";
+            unset($char);
+        }
+
+        $cleanup_pattern = '@('.implode('|', $meta_characters).')@';
+        $command_pattern = '@('.implode('|', $command_characters).')@';
+        if ($base_path) {
+            $base_path = preg_replace('@([/\\\\]+)@', '/', $base_path.'/');
+            $base_path = preg_replace($cleanup_pattern, '\\\\$1', $base_path);
+        }
+        foreach ($patterns as & $pattern) {
+            $pattern = preg_replace($cleanup_pattern, '\\\\$1', $pattern);
+            $pattern = preg_replace($command_pattern, '.$1', $pattern);
+
+            $pattern = "@^{$base_path}({$pattern})@m";
+            unset($pattern);
+        }
+        return $patterns;
     }
 
     private static function getGitPattern($pattern)
@@ -907,9 +958,9 @@ HELP;
 
 
         $functions_blacklist = array(
-            '@^mysqli?_\.+@'              => 'Use waModel instead',
-            '@^eregi?(_replace)$@'        => 'Deprecated, use preg/preg_replace',
-            '@^spliti?$@'                 => 'Deprecated, use explode',
+            '@^mysqli?_\.+@'       => 'Use waModel instead',
+            '@^eregi?(_replace)$@' => 'Deprecated, use preg/preg_replace',
+            '@^spliti?$@'          => 'Deprecated, use explode',
         );
 
         foreach ($info['functions'] as $function => $files) {
@@ -1052,6 +1103,7 @@ HELP;
             $blacklist,
             array(
                 '@^lib/updates/dev/.+@'                               => 'developer stage updates',
+                '@^lib/config/exclude.php@'                           => 'exclude files list',
                 '@\.(bak|old|user|te?mp|www)(\.(php|css|js|html))?$@' => 'temp file',
                 '@(/|^)(\.DS_Store|\.desktop\.ini|thumbs\.db)$@'      => 'system file',
                 '@\b\.(svn|git|hg_archival\.txt)\b@'                  => 'CVS file',
@@ -1089,7 +1141,8 @@ HELP;
     protected function tracef()
     {
         $args = func_get_args();
-        $this->trace(call_user_func_array('sprintf', $args));
+        $format = array_shift($args);
+        $this->trace(vsprintf($format, $args));
     }
 
     protected function trace($string = '')

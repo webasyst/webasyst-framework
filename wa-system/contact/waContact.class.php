@@ -882,7 +882,7 @@ class waContact implements ArrayAccess
             $field_parts = explode(':', $field_id);
             $field_id = $field_parts[0];
         }
-        $f = $this->id && isset(self::$cache[$this->id]) && array_key_exists($field_id, self::$cache[$this->id]);
+        $f = $this->id && isset(self::$cache[$this->id]) && is_array(self::$cache[$this->id]) && array_key_exists($field_id, self::$cache[$this->id]);
         if ($old_value) {
             return $f;
         } else {

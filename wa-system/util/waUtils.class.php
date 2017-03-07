@@ -35,4 +35,32 @@ class waUtils
         }
         return !!$result;
     }
+
+    /**
+     * Extract values of specific field(key) from array of array
+     * Work kinda like array_column (php version < 7.0)
+     * @param array $array array of associative arrays
+     * @param string|int $field Key for extract value
+     * @param string|int|null $index_key Key use as the index for the returned array
+     * @return array[]string array of unique values
+     */
+    public static function getFieldValues(array $array, $field, $index_key = null)
+    {
+        $values = array();
+        foreach ($array as $elem) {
+            $elem = (array) $elem;
+            $index_value = null;
+            if ($index_key !== null && array_key_exists($index_key, $elem)) {
+                $index_value = $elem[$index_key];
+            }
+            if (array_key_exists($field, $elem)) {
+                if ($index_value === null) {
+                    $values[] = $elem[$field];
+                } else {
+                    $values[$index_value] = $elem[$field];
+                }
+            }
+        }
+        return $index_key !== null ? array_unique($values) : $values;
+    }
 }
