@@ -90,7 +90,7 @@ $.wa = $.extend(true, $.wa, {
         document.title = title;
     },
     array_search: function ( needle, haystack, strict ) {
-        var strict = !!strict;
+        strict = !!strict;
 
         for(var key in haystack){
             if( (strict && haystack[key] === needle) || (!strict && haystack[key] == needle) ){
