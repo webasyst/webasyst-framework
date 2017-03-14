@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WebAsyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2017-02-20 17:48+0300\n"
+"PO-Revision-Date: 2017-03-14 09:52+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -12,7 +12,7 @@ msgstr ""
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
 "Language: ru_RU\n"
-"X-Generator: Poedit 1.8.11\n"
+"X-Generator: Poedit 1.8.7.1\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
 
@@ -4400,11 +4400,11 @@ msgid "Google Maps API key"
 msgstr ""
 
 #: /wa-system/shipping/waShipping.class.php:596
-msgid "Ask the desired delivery interval"
+msgid "Request preferred delivery time"
 msgstr "Запрашивать желаемый интервал доставки"
 
 #: /wa-system/shipping/waShipping.class.php:603
-msgid "Ask the desired date"
+msgid "Request preferred delivery date"
 msgstr "Запрашивать желаемую дату доставки"
 
 #: /wa-system/shipping/waShipping.class.php:632
@@ -4422,3 +4422,6 @@ msgstr "Интервалы доставки"
 #: /wa-system/shipping/waShipping.class.php:699
 msgid "Add interval"
 msgstr "Добавить интервал"
+
+msgid "This setting must be supported by the app; e.g., Shop-Script ver. 7.2.4.114 or higher."
+msgstr "Эта настройка должна поддерживаться приложением, например, Shop-Script версии 7.2.4.114 или выше."

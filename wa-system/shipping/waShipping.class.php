@@ -166,15 +166,19 @@ abstract class waShipping extends waSystemPlugin
             $match = true;
             foreach ($allowed_address as $field => $value) {
                 if (!empty($value) && !empty($address[$field])) {
-                    $expected = mb_strtolower($address[$field]);
+                    $expected = trim(mb_strtolower($address[$field]));
                     if (is_array($value)) {
-                        if (!in_array($expected, array_map('mb_strtolower', $value))) {
+                        $value = array_map('trim', array_map('mb_strtolower', $value));
+                        if (!in_array($expected, $value)) {
                             $match = false;
                             break;
                         }
-                    } elseif ($expected != mb_strtolower($value)) {
-                        $match = false;
-                        break;
+                    } else {
+                        $value = trim(mb_strtolower($value));
+                        if ($expected != $value) {
+                            $match = false;
+                            break;
+                        }
                     }
                 }
             }
@@ -587,20 +591,20 @@ HTML;
 
         waHtmlControl::addNamespace($params, $name);
 
-        $html = "";
+        $html = '<p class="hint">'._ws('This setting must be supported by the app; e.g., Shop-Script ver. 7.2.4.114 or higher.').'</p>';
 
 
         $interval_params = $params;
         $interval_params['value'] = ifset($params['value']['interval']);
         $interval_params['control_wrapper'] = "%2\$s\n%1\$s\n%3\$s\n";
-        $interval_params['title'] = ifset($params['title_interval'], _ws('Ask the desired delivery interval'));
+        $interval_params['title'] = ifset($params['title_interval'], _ws('Request preferred delivery time'));
         $html .= waHtmlControl::getControl(waHtmlControl::CHECKBOX, 'interval', $interval_params);
         waHtmlControl::makeId($interval_params, 'interval');
         $html .= ifset($params['control_separator'], '<br/>');
 
         $date_params = $params;
         $date_params['value'] = ifset($params['value']['date']);
-        $date_params['title'] = ifset($params['title_date'], _ws('Ask the desired date'));
+        $date_params['title'] = ifset($params['title_date'], _ws('Request preferred delivery date'));
         $date_params['control_wrapper'] = "%2\$s\n%1\$s\n%3\$s\n";
         $html .= waHtmlControl::getControl(waHtmlControl::CHECKBOX, 'date', $date_params);
         waHtmlControl::makeId($date_params, 'date');
@@ -615,7 +619,7 @@ HTML;
                     'from_m' => 0,
                     'to'     => 12,
                     'to_m'   => 0,
-                    'day'    => array_fill(0, 5, true),
+                    'day'    => array_fill(0, 6, true),
                 ),
             )
         );
@@ -674,7 +678,7 @@ HTML;
     <td>{$to}</td>
     <td class="js-days">{$days}</td>
     <td><a class="inline-link delete-interval" href="javascript:void(0);"><i class="icon16 delete"></i></a></td>
-    
+
 </tr>
 HTML;
         }
@@ -732,10 +736,8 @@ HTML;
             var fast = !event.originalEvent;
             if (this.checked) {
                 table.show(fast ? null : 400);
-                date.attr('disabled', null);
             } else {
                 table.hide(fast ? null : 400);
-                date.attr('disabled', true);
             }
         }).change();
 
@@ -744,6 +746,9 @@ HTML;
             if (this.checked) {
                 table.find('.js-days > *').animate({'opacity': '1'}, fast ? null : 300);
                 table.find('.js-days input').attr('disabled', null);
+                if (!this.defaultChecked) {
+                    table.find('.js-days input').attr('checked', true);
+                }
             } else {
                 table.find('.js-days > *').animate({'opacity': '0'}, fast ? null : 300);
                 table.find('.js-days input').attr('disabled', true);
@@ -831,14 +836,14 @@ HTML;
 
 
         $params = array_merge($params, $wrappers);
-
+        $available_days = array();
         $date_params = $params;
         $date_format = waDateTime::getFormat('date');
         if (isset($params['params']['date'])) {
             $date_params['style'] = "z-index: 100000;";
 
             $date_name = preg_replace('@([_\w]+)(\]?)$@', '$1.date_str$2', $name);
-            $offset = intval(ifset($params['params']['date'], 0));
+            $offset = min(365, max(0, intval(ifset($params['params']['date'], 0))));
             $date_params['placeholder'] = waDateTime::format($date_format, sprintf('+ %d days', $offset));
             $date_params['description'] = _ws('Date');
             $html .= waHtmlControl::getControl(waHtmlControl::INPUT, $date_name, $date_params);
@@ -849,71 +854,79 @@ HTML;
             $date_formatted_params['style'] = "display: none;";
             $html .= waHtmlControl::getControl(waHtmlControl::INPUT, $date_name, $date_formatted_params);
             waHtmlControl::makeId($date_formatted_params, $date_name);
+
+
+            $date_format_map = array(
+                'PHP' => 'JavaScript',
+                'Y'   => 'yy',
+                'd'   => 'dd',
+                'm'   => 'mm',
+            );
+            $js_date_format = str_replace(array_keys($date_format_map), array_values($date_format_map), $date_format);
+            $locale = wa()->getLocale();
+            $localization = sprintf("wa-content/js/jquery-ui/i18n/jquery.ui.datepicker-%s.js", $locale);
+            if (!is_readable($localization)) {
+                $localization = '';
+            }
+
         }
 
         $interval_params = $params;
-        $intervals = ifempty($params['params']['intervals'], array());
-        $interval_params['options'] = array();
-        $available_days = array();
-        foreach ($intervals as $interval) {
-            if (is_array($interval) && isset($interval['from']) && isset($interval['to'])) {
-                $days = ifset($interval['day'], array());
-                $value = sprintf(
-                    '%d:%02d-%d:%02d',
-                    $interval['from'],
-                    ifset($interval['from_m'], 0),
-                    $interval['to'],
-                    ifset($interval['to_m'], 0)
+        if (!empty($params['params']['interval'])) {
+
+            $intervals = ifempty($params['params']['intervals'], array());
+
+            $interval_params['options'] = array();
+            foreach ($intervals as $interval) {
+                if (is_array($interval) && isset($interval['from']) && isset($interval['to'])) {
+                    $days = ifset($interval['day'], array());
+                    $value = sprintf(
+                        '%d:%02d-%d:%02d',
+                        $interval['from'],
+                        ifset($interval['from_m'], 0),
+                        $interval['to'],
+                        ifset($interval['to_m'], 0)
+                    );
+                    $interval_params['options'][] = array(
+                        'value' => $value,
+                        'title' => $value,
+                        'data'  => array('days' => array_keys($days)),
+                    );
+                    $available_days = array_merge(array_keys($days), $available_days);
+                }
+            }
+
+            $available_days = array_values(array_unique($available_days));
+
+            $interval_name = preg_replace('@([_\w]+)(\]?)$@', '$1.interval$2', $name);
+            if ($interval_params['options']) {
+                $html .= ifset($params['control_separator']);
+
+                $option = array(
+                    'value' => '',
+                    'title' => '',
+                    'data'  => array('days' => $available_days),
                 );
-                $interval_params['options'][] = array(
-                    'value' => $value,
-                    'title' => $value,
-                    'data'  => array('days' => array_keys($days)),
-                );
-                $available_days = array_merge(array_keys($days), $available_days);
+                array_unshift($interval_params['options'], $option);
+
+                $interval_params['description'] = _ws('Time');
+                $html .= waHtmlControl::getControl(waHtmlControl::SELECT, $interval_name, $interval_params);
+                waHtmlControl::makeId($interval_params, $interval_name);
+            } else {
+                $html .= ifset($params['control_separator']);
+                $interval_params['description'] = _ws('Time');
+                $html .= waHtmlControl::getControl(waHtmlControl::INPUT, $interval_name, $interval_params);
             }
         }
 
-        $available_days = array_values(array_unique($available_days));
-
-        $interval_name = preg_replace('@([_\w]+)(\]?)$@', '$1.interval$2', $name);
-        if ($interval_params['options']) {
-            $html .= ifset($params['control_separator']);
-
-            $option = array(
-                'value' => '',
-                'title' => '',
-                'data'  => array('days' => $available_days),
-            );
-            array_unshift($interval_params['options'], $option);
-
-            $interval_params['description'] = _ws('Time');
-            $html .= waHtmlControl::getControl(waHtmlControl::SELECT, $interval_name, $interval_params);
-            waHtmlControl::makeId($interval_params, $interval_name);
-        } elseif (!empty($params['options']['interval'])) {
-            $html .= ifset($params['control_separator']);
-            $interval_params['description'] = _ws('Time');
-            $html .= waHtmlControl::getControl(waHtmlControl::INPUT, $interval_name, $interval_params);
-        }
-        if (empty($interval_params['id'])) {
-            $interval_params['id'] = 0;
-        }
-        $date_format_map = array(
-            'PHP' => 'JavaScript',
-            'Y'   => 'yy',
-            'd'   => 'dd',
-            'm'   => 'mm',
-        );
-        $js_date_format = str_replace(array_keys($date_format_map), array_values($date_format_map), $date_format);
-        $locale = wa()->getLocale();
-        $localization = sprintf("wa-content/js/jquery-ui/i18n/jquery.ui.datepicker-%s.js", $locale);
-        if (!is_readable($localization)) {
-            $localization = '';
-        }
-
-        $available_days = json_encode($available_days);
 
         if (isset($params['params']['date']) && isset($offset)) {
+
+            if (empty($interval_params['id'])) {
+                $interval_params['id'] = '';
+            }
+
+            $available_days = json_encode($available_days);
             $root_url = wa()->getRootUrl();
             $html .= <<<HTML
 <script type="text/javascript">

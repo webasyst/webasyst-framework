@@ -139,6 +139,20 @@ abstract class waAppPayment implements waiPluginApp
     }
 
     /**
+     * @param $name string
+     * @return mixed
+     */
+    public function getAppProperties($name = null)
+    {
+        $info = wa()->getAppInfo($this->app_id);
+        $properties = ifset($info['payment_plugins']);
+        if (!is_array($properties)) {
+            $properties = array();
+        }
+        return $name ? ifset($properties[$name]) : $properties;
+    }
+
+    /**
      *
      *
      * @param array $wa_transaction_data

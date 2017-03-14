@@ -13,12 +13,12 @@ abstract class webasystCreateCliController extends waCliController
         if (!$this->init() || isset($params['help'])) {
             $this->showHelp();
         } else {
-            $this->initPath();
             $errors = $this->verifyParams($params);
             if ($errors) {
                 print "ERROR:\n";
                 print implode("\n", $errors);
             } else {
+                $this->initPath();
                 $config = $this->create($params);
                 print $this->showReport($config)."\n";
             }

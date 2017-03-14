@@ -33,6 +33,7 @@ class waContactForm
      *
      * @param string|array $file path to config file, or array of config options.
      * @param array $options
+     * @return self
      */
     public static function loadConfig($file, $options = array())
     {
@@ -62,7 +63,7 @@ class waContactForm
         foreach ($fields_config as $full_field_id => $opts) {
             if ($opts instanceof waContactField) {
                 $f = clone $opts;
-            } else if (is_array($opts)) {
+            } elseif (is_array($opts)) {
                 // Allow to specify something like 'phone.home' as field_id in config file.
                 $fid = explode('.', $full_field_id, 2);
                 $fid = $fid[0];
@@ -79,7 +80,7 @@ class waContactForm
                         } else {
                             $old_subfields = $f->getFields();
                             $subfields = array();
-                            foreach($opts['fields'] as $sfid => $sfopts) {
+                            foreach ($opts['fields'] as $sfid => $sfopts) {
                                 if (empty($old_subfields[$sfid])) {
                                     waLog::log('Field '.$fid.':'.$sfid.' not found and is ignored in '.(is_array($file) ? 'config' : $file));
                                     continue;
@@ -115,6 +116,11 @@ class waContactForm
         );
     }
 
+    /**
+     * @param waContactField $f
+     * @param $opts
+     * @return waContactField
+     */
     protected static function getClone($f, $opts)
     {
         if (!is_array($opts)) {
@@ -140,6 +146,7 @@ class waContactForm
      *
      * @param array $fields list of waContactField
      * @param array $options
+     * @throws waException
      */
     public function __construct($fields = array(), $options = array())
     {
@@ -147,7 +154,7 @@ class waContactForm
             throw new waException('$fields must be an array');
         }
         $this->fields = array();
-        foreach($fields as $full_field_id => $f) {
+        foreach ($fields as $full_field_id => $f) {
             if (!($f instanceof waContactField)) {
                 throw new waException('Bad parameters for '.get_class($this));
             }
@@ -175,7 +182,7 @@ class waContactForm
      * - 1 parameter: waContact. Fetch data via waContact->load()
      * - 2 parameters: field_id, value. Set value for single field.
      */
-    public function setValue($field_id, $value=null)
+    public function setValue($field_id, $value = null)
     {
         if (func_num_args() == 1) {
             if ($field_id instanceof waContact) {
@@ -184,7 +191,7 @@ class waContactForm
                 foreach ($this->fields as $fid => $f) {
                     $arr[$fid] = $c->get($fid);
                 }
-            } else if (is_array($field_id)) {
+            } elseif (is_array($field_id)) {
                 $arr = $field_id;
             } else {
                 return $this;
@@ -193,7 +200,7 @@ class waContactForm
             $arr = array($field_id => $value);
         }
 
-        foreach($arr as $fid => $v) {
+        foreach ($arr as $fid => $v) {
             if (isset($this->fields[$fid])) {
                 $this->values[$fid] = $v;
             }
@@ -252,7 +259,7 @@ class waContactForm
      * @param string $field_id field_id or null to set message for entire form, not attached to any field.
      * @param string $error_text
      */
-    public function errors($field_id='', $error_text=null)
+    public function errors($field_id = '', $error_text = null)
     {
         if (func_num_args() === 0) {
             return $this->errors;
@@ -273,9 +280,10 @@ class waContactForm
 
     /**
      * Validate this form and set internal state so that form HTML will contain error messages.
+     * @param waContact $contact
      * @return boolean true when no errors encountered; otherwise false.
      */
-    public function isValid($contact=null)
+    public function isValid($contact = null)
     {
         $this->validateFields($contact);
         return !$this->errors;
@@ -301,6 +309,8 @@ class waContactForm
      * HTML for the whole form or single form field.
      * @param string $field_id
      * @param boolean $with_errors whether to add class="error" and error text next to form fields
+     * @param bool $placeholders
+     * @return string HTML
      */
     public function html($field_id = null, $with_errors = true, $placeholders = false)
     {
@@ -321,7 +331,7 @@ class waContactForm
             }
             if ($this->post() !== null) {
                 $opts['value'] = $this->fields[$field_id]->set($this->contact, $this->post($field_id), array());
-            } else if (isset($this->values[$field_id]) &&
+            } elseif (isset($this->values[$field_id]) &&
                 ((is_array($this->values[$field_id]) && count($this->values[$field_id]) > 0) ||
                  (!is_array($this->values[$field_id]) && strlen((string)$this->values[$field_id])))) {
                 $opts['value'] = $this->fields[$field_id]->set($this->contact, $this->values[$field_id], array());
@@ -353,7 +363,10 @@ class waContactForm
         $class_value = $this->opt('css_class_value', wa()->getEnv() == 'frontend' ? 'wa-value' : 'value');
         $class_name = $this->opt('css_class_name', wa()->getEnv() == 'frontend' ? 'wa-name' : 'name');
         $result = '';
-        foreach($this->fields() as $fid => $f) {
+        foreach ($this->fields() as $fid => $f) {
+            /**
+             * @var waContactField $f
+             */
             if ($fid === 'password_confirm') {
                 continue;
             }
@@ -372,7 +385,7 @@ class waContactForm
                 continue;
             }
 
-            if ($f instanceof waContactHiddenField) {
+            if ($f->isHidden()) {
                 $result .= $this->html($fid, true);
                 continue;
             }
@@ -400,7 +413,7 @@ class waContactForm
      * @param mixed $default value to return when no option with this $name specified
      * @return mixed
      */
-    public function opt($name=null, $default=null)
+    public function opt($name = null, $default = null)
     {
         if ($name === null) {
             return $this->options;
@@ -411,7 +424,10 @@ class waContactForm
         return $default;
     }
 
-    /** Make sure POST data is properly validated using waFontactField instances in $this->fields. */
+    /**
+     * Make sure POST data is properly validated using waContactField instances in $this->fields.
+     * @param waContact $contact
+     */
     protected function validateFields($contact = null)
     {
         if (!$contact || !($contact instanceof waContact)) {
@@ -425,7 +441,7 @@ class waContactForm
         if ($this->post() === null) {
             return;
         }
-        foreach($this->fields as $fid => $f) {
+        foreach ($this->fields as $fid => $f) {
             $errors = $f->validate($f->set($this->contact, $this->post($fid), array()), $this->contact->getId());
             if (!$errors) {
                 continue;
@@ -444,4 +460,3 @@ class waContactForm
         }
     }
 }
-

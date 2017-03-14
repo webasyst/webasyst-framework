@@ -1071,7 +1071,7 @@ HELP;
 
                     $md5 = md5_file($file);
                     $file_size = filesize($file);
-                    $total_size += $file;
+                    $total_size += $file_size;
                     fprintf($fp, "%s *%s\n", $md5, $file);
                     $this->tracef("%5d\t%s\t%32s\t%s", ++$count, $file_size, $md5, $file);
                 } else {
@@ -1104,6 +1104,7 @@ HELP;
             array(
                 '@^lib/updates/dev/.+@'                               => 'developer stage updates',
                 '@^lib/config/exclude.php@'                           => 'exclude files list',
+                '@\.styl$@'                                           => 'CSS preprocessor files',
                 '@\.(bak|old|user|te?mp|www)(\.(php|css|js|html))?$@' => 'temp file',
                 '@(/|^)(\.DS_Store|\.desktop\.ini|thumbs\.db)$@'      => 'system file',
                 '@\b\.(svn|git|hg_archival\.txt)\b@'                  => 'CVS file',

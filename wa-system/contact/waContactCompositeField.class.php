@@ -384,6 +384,30 @@ class waContactCompositeField extends waContactField
         $params['validation_errors'] = $errors;
         return $this->getHtmlOne($params, $attrs);
     }
-}
 
-// EOF
+    public function isHidden()
+    {
+        $hidden = null;
+        if (isset($this->options['hidden'])) {
+            $hidden = $this->options['hidden'];
+        }
+
+        if ($hidden || ($hidden === null)) {
+            if (!empty($this->options['fields'])) {
+                foreach ($this->options['fields'] as $field) {
+                    /**
+                     * @var waContactField $field
+                     */
+                    $_hidden = $field->isHidden();
+
+                    if (!$_hidden) {
+                        $hidden = false;
+                    } elseif (($hidden === null) && $_hidden) {
+                        $hidden = true;
+                    }
+                }
+            }
+        }
+        return $hidden === null ? false : $hidden;
+    }
+}
