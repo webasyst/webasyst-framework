@@ -106,11 +106,15 @@ class payonlinePayment extends waPayment implements waIPayment, waIPaymentRefund
                 $transaction_data['state'] = self::STATE_DECLINED;
                 break;
             case 3:
+            case 4:
                 $message = 'Платеж отклонен банком-эмитентом карты. Обратитесь в банк, выясните причину отказа и повторите попытку оплаты.';
                 $transaction_result = 'failure';
                 $transaction_data['state'] = self::STATE_DECLINED;
                 break;
             default:
+                $message = 'Ошибка с кодом '.$request['ErrorCode'];
+                $transaction_result = 'failure';
+                $transaction_data['state'] = self::STATE_DECLINED;
                 break;
         }
 
