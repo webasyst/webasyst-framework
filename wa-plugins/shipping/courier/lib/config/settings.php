@@ -7,6 +7,15 @@ return array(
             'city'    => ''
         ),
     ),
+    'contact_fields'=>array(
+        'value' => array(
+            'city'   => 'city',
+            'street' => 'street',
+        ),
+    ),
+    'required_fields' => array(
+        'value' => false,
+    ),
     'rate_by'          => array(
         'value' => 'weight',
     ),

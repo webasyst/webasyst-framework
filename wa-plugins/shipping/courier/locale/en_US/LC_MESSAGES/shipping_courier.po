@@ -11,7 +11,7 @@ msgstr ""
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
 "Language: en_US\n"
-"X-Generator: Poedit 1.5.5\n"
+"X-Generator: Poedit 1.8.7.1\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
 
@@ -105,8 +105,6 @@ msgid ""
 "automatically fetched as you specify it here. If this field is left blank, a "
 "customer will be prompted to enter a city name."
 msgstr ""
-"If courier shipping is provided only within specific cities, enter the city "
-"names separated by comma."
 
 #: //wa-plugins/shipping/courier/templates/settings.html:46
 msgid "Shipping rate calculation"
@@ -164,21 +162,13 @@ msgid ""
 msgstr ""
 
 #: /wa-plugins/shipping/courier/lib/config/settings.php:38
+#: /wa-plugins/shipping/courier/lib/courierShipping.class.php:216
 msgid "Preferred delivery time"
 msgstr ""
 
 #: /wa-plugins/shipping/courier/templates/settings.html:106
-msgid "Enter shipping rate as a flat rate, as a percent of cart total, or as a sum of both. Example: <b>20+10%%</b> will calculate shipping rate as 20 %s + 10%% of cart total."
-msgstr ""
-
-#: /wa-plugins/shipping/courier/templates/settings.html:174
-msgid "Maps"
-msgstr ""
-
-#: /wa-plugins/shipping/courier/templates/settings.html:178
-msgid "Default system map"
-msgstr ""
-
-#: /wa-plugins/shipping/courier/lib/courierShipping.class.php:216
-msgid "Preferred delivery time"
+msgid ""
+"Enter shipping rate as a flat rate, as a percent of cart total, or as a sum "
+"of both. Example: <b>20+10%%</b> will calculate shipping rate as 20 %s + 10%"
+"% of cart total."
 msgstr ""

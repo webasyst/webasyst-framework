@@ -3,6 +3,8 @@
 /**
  *
  * @property-read array $rate_zone
+ * @property-read array $contact_fields
+ * @property-read bool $required_fields
  * @property-read string $rate_by
  * @property-read string $currency
  * @property-read string $weight_dimension
@@ -12,6 +14,13 @@
  */
 class courierShipping extends waShipping
 {
+    public function saveSettings($settings = array())
+    {
+        $fields = array_keys(array_filter(ifset($settings['rate_zone'], array())));
+        $settings['contact_fields'] = array_merge(ifset($settings['contact_fields'], array_combine($fields, $fields)));
+        return parent::saveSettings($settings);
+    }
+
     /**
      * @see waShipping::getSettingsHTML()
      * @param array $params
@@ -164,7 +173,7 @@ class courierShipping extends waShipping
         $address = array();
         foreach ($rate_zone as $field => $value) {
             if (!empty($value)) {
-                $address[$field] = strpos($value, ',') ? array_map('trim', explode(',', $value)) : $value;
+                $address[$field] = strpos($value, ',') ? array_filter(array_map('trim', explode(',', $value)), 'strlen') : trim($value);
             }
         }
         return array($address);
@@ -186,22 +195,52 @@ class courierShipping extends waShipping
 
         $address = reset($addresses);
 
-        $fields = array();
-        foreach ($address as $field => $value) {
-            $fields[$field] = array(
+        if ($this->getSettings('required_fields')) {
+            $fields = array();
+            foreach ($address as $field => $value) {
+                if (is_array($value)) {
+                    $fields[$field] = array(
+                        'cost'     => true,
+                        'required' => true,
+                    );
+                } else {
+                    $fields[$field] = array(
+                        'hidden' => true,
+                        'value'  => $value,
+                    );
+                }
+            }
+
+            $value = array(
                 'cost'     => true,
-                'value'    => $value,
                 'required' => true,
             );
+            if ($this->contact_fields) {
+                foreach ($this->contact_fields as $field => $enabled) {
+                    if ($enabled) {
+                        $fields += array($field => $value);
+                    }
+
+                }
+            }
+        } else {
+            $fields = array(
+                'zip' => false,
+            );
+
+            foreach ($address as $field => $value) {
+                if (!is_array($value)) {
+                    $fields[$field] = false;
+                }
+            }
+
+            $contact_fields = $this->contact_fields;
+            foreach (array('country', 'region', 'city', 'street') as $field) {
+                if (empty($contact_fields[$field])) {
+                    $fields += array($field => false);
+                }
+            }
         }
-        $value = array(
-            'cost'     => true,
-            'required' => true,
-        );
-        $fields += array(
-            'city'    => $value,
-            'street'  => $value,
-        );
 
         uksort($fields, array($this, 'sortAddressFields'));
         return $fields;
@@ -226,7 +265,7 @@ class courierShipping extends waShipping
         $this->registerControl('CustomDeliveryIntervalControl');
         $setting = $this->getSettings('customer_interval');
 
-        if (!empty($setting['interval'])) {
+        if (!empty($setting['interval']) || !empty($setting['date'])) {
             if (!strlen($this->delivery_time)) {
                 $from = time();
             } else {
