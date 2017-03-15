@@ -112,9 +112,11 @@ class payonlinePayment extends waPayment implements waIPayment, waIPaymentRefund
                 $transaction_data['state'] = self::STATE_DECLINED;
                 break;
             default:
-                $message = 'Ошибка с кодом '.$request['ErrorCode'];
-                $transaction_result = 'failure';
-                $transaction_data['state'] = self::STATE_DECLINED;
+                if($request['ErrorCode']) {
+                    $message = 'Ошибка с кодом '.$request['ErrorCode'];
+                    $transaction_result = 'failure';
+                    $transaction_data['state'] = self::STATE_DECLINED;
+                }
                 break;
         }
 
