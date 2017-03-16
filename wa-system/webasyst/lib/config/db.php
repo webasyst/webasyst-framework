@@ -299,7 +299,7 @@ return array(
         'error' => array('varchar', 255),
         'state' => array('varchar', 20),
         'view_data' => array('text'),
-        'amount' => array('float'),
+        'amount' => array('decimal', "15,4"),
         'currency_id' => array('varchar', 3),
         ':keys' => array(
             'PRIMARY' => 'id',
