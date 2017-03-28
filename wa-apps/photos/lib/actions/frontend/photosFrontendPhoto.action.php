@@ -122,7 +122,7 @@ class photosFrontendPhotoAction extends photosFrontendViewAction
 
         // get albums
         $album_photos_model = new photosAlbumPhotosModel();
-        $albums = $album_photos_model->getAlbums($photo, null, true);
+        $albums = $album_photos_model->getAlbums($photo['id'], null, true);
         $photo['albums'] = isset($albums[$photo['id']]) ? $albums[$photo['id']] : array();
 
         photosAlbumCountModel::extendAlbums($photo['albums']);
