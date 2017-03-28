@@ -22,7 +22,7 @@ class photosPhotoSaveFieldsController extends waJsonController
     public function execute()
     {
         $available_fields = array_merge($this->generic_fields, $this->stack_fields);
-        $data = waRequest::post('data');
+        $data = (array) waRequest::post('data');
         $photo_id = array();
         foreach ($data as &$item_data) {
             if (isset($item_data['id']) && ($id = array_unique(array_map('intval', explode(',', $item_data['id'])))) ) {

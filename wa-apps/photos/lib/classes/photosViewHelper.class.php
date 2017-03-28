@@ -32,7 +32,9 @@ class photosViewHelper extends waAppViewHelper
             $offset = 0;
             $limit = 500;
         }
-        return $collection->getPhotos("*,frontend_link,tags,".$sizes, $offset, $limit, true);
+        $photos = $collection->getPhotos("*,frontend_link,tags,".$sizes, $offset, $limit, true);
+        $photos = photosCollection::extendPhotos($photos);
+        return $photos;
     }
 
     /**

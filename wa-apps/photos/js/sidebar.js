@@ -3,6 +3,7 @@
         width: 200,
         options: {},
         init: function(options) {
+            var that = this;
             this.options = options || {};
             if (options.width) {
                 this.width = options.width;
@@ -10,6 +11,160 @@
             this.initCollapsible();
             this.initHandlers();
             this.initView();
+            setTimeout( function() {
+                that.initFixedSidebar();
+            }, 1000);
+        },
+
+        initFixedSidebar: function() {
+            // Class names
+            var top_fix_class = "fixed-to-top",
+                bottom_fix_class = "fixed-to-bottom";
+
+            // DOM
+            var $window = $(window),
+                $wrapper = $("#wa-app"),
+                $sidebarWrapper = $wrapper.find(".p-sidebar-wrapper"),
+                $sidebar = $sidebarWrapper.find(".p-sidebar-block");
+
+            // VARS
+            var display_height = $window.height(),
+                sidebar_top = $sidebar.offset().top;
+
+            // DINAMIC VARS
+            var is_top_set = false,
+                is_fixed_to_bottom = false,
+                is_fixed_to_top = false,
+                scroll_value = 0;
+
+            // EVENT
+            $window.on("scroll", scrollingSidebar);
+
+            // HANDLER
+            function scrollingSidebar() {
+                var scroll_top = $window.scrollTop(),
+                    sidebar_height = $sidebar.outerHeight(),
+                    wrapper_height = $wrapper.height(),
+                    dynamic_sidebar_top = $sidebar.offset().top,
+                    direction = ( scroll_value > scroll_top ) ? 1 : -1,
+                    delta = scroll_top - sidebar_top,
+                    sidebar_width = $sidebar.width();
+
+                var is_sidebar_large = ( sidebar_height + parseInt($sidebarWrapper.css("padding-top")) + parseInt($sidebarWrapper.css("padding-bottom")) >= wrapper_height ),
+                    active_scroll = ( wrapper_height > display_height && !is_sidebar_large );
+
+                if (active_scroll) {
+
+                    // If the height of the slider is smaller than the display, it's simple
+                    if (sidebar_height < display_height) {
+                        if (delta > 0) {
+                            if (is_top_set || !is_fixed_to_bottom || is_fixed_to_top) {
+                                $sidebar
+                                    .removeAttr("style")
+                                    .width(sidebar_width)
+                                    .addClass(top_fix_class);
+                            }
+                            is_fixed_to_top = true;
+                        } else {
+                            $sidebar
+                                .removeAttr("style")
+                                .removeClass(bottom_fix_class)
+                                .removeClass(top_fix_class);
+                        }
+
+                        // If the height is larger than the screen
+                    } else {
+                        // If less than the original position to turn off
+                        if (scroll_top <= sidebar_top) {
+                            if (is_top_set || is_fixed_to_bottom || is_fixed_to_top) {
+                                $sidebar
+                                    .removeAttr("style")
+                                    .removeClass(bottom_fix_class)
+                                    .removeClass(top_fix_class);
+
+                                is_top_set = is_fixed_to_bottom = is_fixed_to_top = false;
+                            }
+
+                            // If the above start after scrolling fix up
+                        } else if (scroll_top <= dynamic_sidebar_top && dynamic_sidebar_top >= sidebar_top) {
+
+                            if (direction > 0) {
+                                if (is_top_set || !is_fixed_to_top || is_fixed_to_bottom) {
+                                    $sidebar
+                                        .removeAttr("style")
+                                        .width(sidebar_width)
+                                        .removeClass(bottom_fix_class)
+                                        .addClass(top_fix_class);
+
+                                    is_top_set = is_fixed_to_bottom = false;
+                                    is_fixed_to_top = true;
+                                }
+                            } else {
+                                if (!is_top_set || is_fixed_to_top || is_fixed_to_bottom) {
+                                    $sidebar
+                                        .css("top", dynamic_sidebar_top - sidebar_top)
+                                        .removeClass(top_fix_class)
+                                        .removeClass(bottom_fix_class);
+
+                                    is_top_set = true;
+                                    is_fixed_to_top = is_fixed_to_bottom = false;
+                                }
+                            }
+
+                            // If the lower end
+                        } else if (scroll_top + display_height >= dynamic_sidebar_top + sidebar_height) {
+                            // If the direction of scrolling up
+                            if (direction > 0) {
+                                if (!is_top_set || is_fixed_to_top || is_fixed_to_bottom) {
+                                    $sidebar
+                                        .css("top", dynamic_sidebar_top - sidebar_top)
+                                        .removeClass(top_fix_class)
+                                        .removeClass(bottom_fix_class);
+
+                                    is_top_set = true;
+                                    is_fixed_to_top = is_fixed_to_bottom = false;
+                                }
+
+                                // If the direction of scrolling down
+                            } else {
+                                if (is_top_set || is_fixed_to_top || !is_fixed_to_bottom) {
+                                    $sidebar
+                                        .removeAttr("style")
+                                        .width(sidebar_width)
+                                        .removeClass(top_fix_class)
+                                        .addClass(bottom_fix_class);
+
+                                    is_top_set = is_fixed_to_top = false;
+                                    is_fixed_to_bottom = true;
+                                }
+                            }
+                            // In all other cases
+                        } else {
+                            if (!is_top_set || is_fixed_to_top || is_fixed_to_bottom) {
+                                $sidebar
+                                    .css("top", dynamic_sidebar_top - sidebar_top)
+                                    .removeClass(top_fix_class)
+                                    .removeClass(bottom_fix_class);
+
+                                is_top_set = true;
+                                is_fixed_to_top = is_fixed_to_bottom = false;
+                            }
+                        }
+                    }
+                } else {
+                    if (is_top_set || is_fixed_to_top || is_fixed_to_bottom) {
+                        $sidebar
+                            .removeAttr("style")
+                            .removeClass(bottom_fix_class)
+                            .removeClass(top_fix_class);
+
+                        is_top_set = is_fixed_to_top = is_fixed_to_bottom = false;
+                    }
+                }
+
+                // Save New Data
+                scroll_value = scroll_top;
+            }
         },
 
         initView: function() {

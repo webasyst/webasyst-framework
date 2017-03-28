@@ -1,8 +1,10 @@
 (function ($) {
     $.storage = new $.store();
     $.photos = {
+        namespace: '.photos',
         load_from_hash: 0,
         hash: '',
+        raw_hash: '',
         options: {},
         shift_next: false,      // signal that shift to next or prev photo
         anchor: '',             // we use hash (#) for RIA interface therefore browser-anchor mechanism doesn't work. Make own
@@ -84,6 +86,7 @@
                 hash = window.location.hash;
             }
             hash = hash.replace(/^[^#]*#\/*/, ''); /* fix syntax highlight*/
+            $.photos.raw_hash = hash;
             if (hash) {
                 hash = hash.split('/');
                 if (hash[0]) {
@@ -337,13 +340,13 @@
 
         pluginsAction: function(params) {
             $.photos.initClearance();
-
-            if ($('#wa-plugins-container').length) {
-                $.plugins.dispatch(params);
-            } else {
+            $('#p-sidebar li.selected').removeClass('selected');
+            $('#p-sidebar #sidebar-plugins').addClass('selected');
+            if (!$('#wa-plugins-container').length) {
                 $.photos.load("?module=plugins");
+            } else {
+                $.plugins.dispatch('#/plugins/' + params);
             }
-
         },
 
         photoAction: function (id) {
@@ -411,13 +414,19 @@
                 //XXX use event instead or etc
                 options.hide_name = $.storage.get('photos/list/hide_name',false);
             }
-            target.append(tmpl($.photos.list_template, {
-                photos: $.photos.photo_stream_cache.slice(offset, offset += chunk),
+
+            var chunk = $.photos.photo_stream_cache.slice(offset, offset += chunk);
+            var tmpl_prams = {
+                photos: chunk,
                 hash: $.photos.hash,
                 last_login_time: $.photos.options.last_login_time,
                 options:options,
-                selected: !!$('#selector-menu').find('[data-action=select-photos]').data('checked')
-            }));
+                selected: !!$('#selector-menu').find('[data-action=select-photos]').data('checked'),
+                view: ($.photos.list_template || '').replace('template-photo-', '')
+            };
+            target.append(tmpl($.photos.list_template, tmpl_prams));
+
+            $('#content').trigger('photos_list_chunk_render', [tmpl_prams]);
 
             if(offset < length) {
                 setTimeout(function() {
@@ -887,12 +896,21 @@
             });
         },
 
-        loadNewPhoto: function(id)
+        loadNewPhoto: function method(id)
         {
             $.photos.initClearance();
             $.photos.widget.loupe.init();
-            $.post('?module=photo&action=load', { id: id, hash: $.photos.hash },
+
+            method.xhr_map = method.xhr_map || {};
+            if (method.xhr_map[id]) {
+                method.xhr_map[id].abort();
+            }
+
+            method.xhr_map[id] = $.post('?module=photo&action=load', { id: id, hash: $.photos.hash },
                 function(r) {
+
+                    method.xhr_map[id] = null;
+
                     var data = r.data,
                         photo = data.photo;
                     $.photos.renderViewPhoto(data);
@@ -1442,35 +1460,28 @@
                     autocomplete_url: '?module=tag&action=list',
                     height: 120,
                     width: 150,
-                    defaultText: default_text
+                    defaultText: default_text,
+                    onChange: function () {
+                        if (tags_input.data('current_value') === tags_input.val()) {
+                            return;
+                        }
+                        tags_input.data('current_value', tags_input.val());
+                        $('#photo-save-tags-status').html('<i style="vertical-align: middle" class="icon16 yes"></i>'+$_('Saving')).fadeIn('slow');
+                        $.photos.assignTags({
+                            photo_id: $.photos.photo_stream_cache.getCurrent().id,
+                            tags: $('#photo-tags').val(),
+                            fn: function() {
+                                $('#photo-save-tags-status').html('<i style="vertical-align: middle" class="icon16 yes"></i>'+$_('Saved')).fadeOut('slow');
+                            },
+                            onDeniedExist: function() {
+                                alert($_("You don't have sufficient access rights"));
+                            }
+                        });
+                    }
                 });
             } catch (e) {
                 ;
             }
-            $('#photo-save-tags').click(function() {
-                var input = $('#photo-tags_tag');
-                if (input.length && (input.val() != default_text)) {
-                    input.trigger($.Event("keypress",{
-                        which:13
-                    }));
-                }
-                if (tags_input.data('current_value') === tags_input.val()) {
-                    return;
-                }
-                tags_input.data('current_value', tags_input.val());
-                $('#photo-save-tags-status').html('<i style="vertical-align: middle" class="icon16 yes"></i>'+$_('Saving')).fadeIn('slow');
-                $.photos.assignTags({
-                    photo_id: $.photos.photo_stream_cache.getCurrent().id,
-                    tags: $('#photo-tags').val(),
-                    fn: function() {
-                        $('#photo-save-tags-status').html('<i style="vertical-align: middle" class="icon16 yes"></i>'+$_('Saved')).fadeOut('slow');
-                    },
-                    onDeniedExist: function() {
-                        alert($_("You don't have sufficient access rights"));
-                    }
-                });
-
-            });
         },
 
         initPhotoContentControlWidget: function(data) {
@@ -3408,14 +3419,19 @@ $(function () {
     })();
 
     // Highlight photos when selected
-    $("#photo-list li input").live('change', function () {
-        if (this.checked) {
-            $(this).closest('li').addClass('selected');
-        } else {
-            $(this).closest('li').removeClass('selected');
-        }
-        $('#share-menu-block, #organize-menu-block').trigger('recount');
-    });
+    $('#content')
+        .off($.photos.namespace + '-photo-list-select-checkbox')
+        .on('change' + $.photos.namespace + '-photo-list-select-checkbox',
+            ':checkbox[name="photo_id[]"]',
+            function () {
+                if (this.checked) {
+                    $(this).closest('li').addClass('selected');
+                } else {
+                    $(this).closest('li').removeClass('selected');
+                }
+                $('#share-menu-block, #organize-menu-block').trigger('recount');
+            }
+        );
 
     // Hide arrows over the photo if there are nowhere to go in its direction
     $.photos.hooks_manager.bind('afterLoadPhoto', function() {

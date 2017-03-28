@@ -49,7 +49,7 @@ class photosPhotoHtmlRenderer
 
             // hidden image with class thumb need for rich gradual loading photo effect when go next/prev photo
             if (is_null($photo)) {
-                $li .= '<a href="javascript:void(0);"><img src="'.$theme_url.'/img/photostream-end.png"></a>';
+                $li .= '<a href="javascript:void(0);"><img src="'.$theme_url.'img/photostream-end.png"></a>';
             } else {
                 $salt = !is_null($photo['edit_datetime']) ? '?'.strtotime($photo['edit_datetime']) : '';
                 $li .= '<a href="'.(isset($photo['full_url']) ? $photo['full_url'] : $photo['url']).'"><img src="'.$photo['thumb_crop']['url'].$salt.'" alt=""><img class="thumb" src="'.$photo['thumb']['url'].$salt.'" style="display:none;" alt=""></a>';

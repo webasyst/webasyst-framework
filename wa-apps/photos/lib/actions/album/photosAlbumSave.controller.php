@@ -155,9 +155,11 @@ class photosAlbumSaveController extends waJsonController
 
     private function save($data)
     {
+        $just_created = false;
         if (!$this->id) {
             $this->log('album_create', 1);
             $this->id = $this->album_model->add($data);
+            $just_created = true;
         } else {
             $album = $this->album_model->getById($this->id);
             if (!$album) {
@@ -195,6 +197,17 @@ class photosAlbumSaveController extends waJsonController
         } else {
             $album_rights_model->setRights($this->id, 0);
         }
+
+        /**
+         * Extend save new album or update album settings process
+         * Make extra workup
+         * @event album_save
+         * @params array[string]int $params['id'] Album id
+         * @params array[string]bool $params['just_created'] Has album be just created
+         */
+        $params = array('id' => $this->id, 'just_created' => $just_created);
+        wa()->event('album_save', $params);
+
     }
 
     private function validate($data)

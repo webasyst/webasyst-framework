@@ -1,145 +1,149 @@
-<div class="sidebar left{$sidebar_width}px" id="p-sidebar">
-
-  <div class="block">
-    <ul class="menu-v with-icons">
-      {if $rights.upload}
-      <li class="bold bottom-padded">
-        <a href="?module=upload" id="p-upload-link"><i class="icon16 upload"></i>[`Upload photos`]</a>
-      </li>
-      {/if}
-      <li id="sidebar-all-albums">
-        <span class="count" id="count">{if $top_level_albums_count > 0}{$top_level_albums_count}{/if}</span>
-        <a href="#/albums/">
-          <i class="icon16 apps"></i>[`Albums`]
-        </a>
-      </li>
-      <li id="sidebar-all-photos">
-        <span class="count" id="count">{if $count > 0}{$count}{/if}</span>
-        <a href="#/">
-          <i class="icon16 pictures"></i>[`Photostream`]
-        </a>
-      </li>
-      <li id="sidebar-rated">
-        <span class="count" id="rated-count">{if $rated_count > 0}{$rated_count}{/if}</span>
-        <a href="#/search/rate>0/">
-          <i class="icon16 star"></i>[`Rated`]
-        </a>
-      </li>
-      {foreach $app_albums as $item}
-        <li>
-            <span class="count">{$item.count}</span>
-            <a href="#/app/{$item.id}">
-                <img class="p-app16x16icon-menu-v" src="{$item.icon}">
-                {$item.name}
-            </a>
-        </li>
-      {/foreach}      
-      {* @event backend_sidebar.%plugin_id%.menu *}
-      {foreach $backend_sidebar as $plugin_id => $item}
-        {if !empty($item.menu)}
-            {if is_array($item.menu)}
-                {foreach $item.menu as $i => $item_menu}
-                    <li id="sidebar-{$plugin_id}-{$i}">{$item_menu}</li>
+<div class="p-sidebar-wrapper sidebar left{$sidebar_width}px" id="p-sidebar">
+    <div class="p-sidebar-block">
+        <div class="block">
+            <ul class="menu-v with-icons">
+                {if $rights.upload}
+                    <li class="bold bottom-padded">
+                        <a href="?module=upload" id="p-upload-link"><i class="icon16 upload"></i>[`Upload photos`]</a>
+                    </li>
+                {/if}
+                <li id="sidebar-all-albums">
+                    <span class="count" id="count">{if $top_level_albums_count > 0}{$top_level_albums_count}{/if}</span>
+                    <a href="#/albums/">
+                        <i class="icon16 apps"></i>[`Albums`]
+                    </a>
+                </li>
+                <li id="sidebar-all-photos">
+                    <span class="count" id="count">{if $count > 0}{$count}{/if}</span>
+                    <a href="#/">
+                        <i class="icon16 pictures"></i>[`Photostream`]
+                    </a>
+                </li>
+                <li id="sidebar-rated">
+                    <span class="count" id="rated-count">{if $rated_count > 0}{$rated_count}{/if}</span>
+                    <a href="#/search/rate>0/">
+                        <i class="icon16 star"></i>[`Rated`]
+                    </a>
+                </li>
+                {foreach $app_albums as $item}
+                    <li>
+                        <span class="count">{$item.count}</span>
+                        <a href="#/app/{$item.id}">
+                            <img class="p-app16x16icon-menu-v" src="{$item.icon}">
+                            {$item.name}
+                        </a>
+                    </li>
                 {/foreach}
-            {else}
-                <li id="sidebar-{$plugin_id}">{$item.menu}</li>
+                {* @event backend_sidebar.%plugin_id%.menu *}
+                {foreach $backend_sidebar as $plugin_id => $item}
+                    {if !empty($item.menu)}
+                        {if is_array($item.menu)}
+                            {foreach $item.menu as $i => $item_menu}
+                                <li id="sidebar-{$plugin_id}-{$i}">{$item_menu}</li>
+                            {/foreach}
+                        {else}
+                            <li id="sidebar-{$plugin_id}">{$item.menu}</li>
+                        {/if}
+                    {/if}
+                {/foreach}
+            </ul>
+        </div>
+
+        <!-- collections -->
+        <div class="block p-drop" id="album-list-container">
+            {if $rights.upload}
+                <span class="count">
+              <a href="#" id="p-new-album" class="p-new-album"><i class="icon16 add" title="[`New album`]"></i></a>
+            </span>
             {/if}
-        {/if}
-      {/foreach}
-    </ul>
-  </div>
+            <span class="count subtree never-recount" style="display:none;">{$albums_count}</span>
+            <h5 class="heading collapse-handler" id="album-list-handler">
+                <i class="icon16 darr"></i><a href="javascript:void(0);">[`Albums`]</a>
+            </h5>
+            <div class="hierarchical" id="album-list">
+                {$albums}
+                <div class="block p-empty-album-list" {if $albums}style="display: none;"{/if}>
+                    <p class="hint align-center">[`Create an album using the green icon above.`]</p>
+                </div>
+            </div>
+        </div>
+        <div class="block" {if !isset($cloud) || empty($cloud)}style="display:none;"{/if} id="tag-cloud-block">
+            <h5 class="heading collapse-handler">
+                <i class="icon16 darr"></i>[`Tags`]
+            </h5>
+            <div class="block tags p-plugin-tag-cloud collapsible-content" id="tag-cloud"></div>
+        </div>
 
-  <!-- collections -->
-  <div class="block p-drop" id="album-list-container">
-    {if $rights.upload}
-        <span class="count">
-          <a href="#" id="p-new-album" class="p-new-album"><i class="icon16 add" title="[`New album`]"></i></a>
-        </span>
-    {/if}
-    <span class="count subtree never-recount" style="display:none;">{$albums_count}</span>
-    <h5 class="heading collapse-handler" id="album-list-handler">
-      <i class="icon16 darr"></i><a href="javascript:void(0);">[`Albums`]</a>
-    </h5>
-    <div class="hierarchical" id="album-list">
-      {$albums}
-      <div class="block p-empty-album-list" {if $albums}style="display: none;"{/if}>
-        <p class="hint align-center">[`Create an album using the green icon above.`]</p>
-      </div>
+        {* @event backend_sidebar.%plugin_id%.section *}
+        {foreach $backend_sidebar as $plugin_id => $item}{if !empty($item.section)}
+            <div class="block" id="sidebar-section-{$plugin_id}">{$item.section}</div>
+        {/if}{/foreach}
+
+        {if $wa->user()->getRights($wa->app(), 'pages') ||
+        $wa->user()->getRights($wa->app(), 'design') ||
+        $wa->user()->isAdmin('photos')}
+            <div class="hr"></div>
+
+            <!-- not-that-frequently-accessed app sections -->
+            <div class="block">
+                <ul class="menu-v with-icons">
+                    {if $wa->user()->getRights($wa->app(), 'pages')}
+                        <li id="sidebar-pages"><a href="#/pages/"><i class="icon16 notebook"></i>[s`Pages`]</a></li>
+                    {/if}
+                    {if $wa->user()->getRights($wa->app(), 'design')}
+                        <li id="sidebar-design"><a href="#/design/"><i class="icon16 design"></i>[s`Design`]</a></li>
+                    {/if}
+                    {if $wa->user()->isAdmin('photos')}
+                        <li id="sidebar-settings" class="top-padded"><a href="#/settings/"><i class="icon16 settings"></i>[`Settings`]</a></li>
+                        <li id="sidebar-plugins"><a href="#/plugins/"><i class="icon16 plugins"></i>[`Plugins`]</a></li>
+                    {/if}
+                </ul>
+            </div>
+        {/if}
+
+        <br><br><br>
+
+        <!-- sidebar width control -->
+        <div id="p-sidebar-width-control" class="block p-sidebar-width-control">
+            <a href="#" class="arrow left">&larr;</a>
+            <a href="#" class="arrow right">&rarr;</a>
+        </div>
     </div>
-  </div>
-  <div class="block" {if !isset($cloud) || empty($cloud)}style="display:none;"{/if} id="tag-cloud-block">
-    <h5 class="heading collapse-handler">
-      <i class="icon16 darr"></i>[`Tags`]
-    </h5>
-    <div class="block tags p-plugin-tag-cloud collapsible-content" id="tag-cloud"></div>
-  </div>
-
-  {* @event backend_sidebar.%plugin_id%.section *}
-  {foreach $backend_sidebar as $plugin_id => $item}{if !empty($item.section)}
-    <div class="block" id="sidebar-section-{$plugin_id}">{$item.section}</div>
-  {/if}{/foreach}
-
-  {if $wa->user()->getRights($wa->app(), 'pages') ||
-    $wa->user()->getRights($wa->app(), 'design') ||
-    $wa->user()->isAdmin('photos')}
-    <div class="hr"></div>
-
-    <!-- not-that-frequently-accessed app sections -->
-    <div class="block">
-      <ul class="menu-v with-icons">
-        {if $wa->user()->getRights($wa->app(), 'pages')}
-        <li id="sidebar-pages"><a href="#/pages/"><i class="icon16 notebook"></i>[s`Pages`]</a></li>
-        {/if}
-        {if $wa->user()->getRights($wa->app(), 'design')}
-        <li id="sidebar-design"><a href="#/design/"><i class="icon16 design"></i>[s`Design`]</a></li>
-        {/if}
-        {if $wa->user()->isAdmin('photos')}
-            <li id="sidebar-settings" class="top-padded"><a href="#/settings/"><i class="icon16 settings"></i>[`Settings`]</a></li>
-            <li id="sidebar-plugins"><a href="#/plugins/"><i class="icon16 plugins"></i>[`Plugins`]</a></li>
-        {/if}
-      </ul>
-    </div>
-  {/if}
-
-  <br><br><br>
-
-  <!-- sidebar width control -->
-  <div id="p-sidebar-width-control" class="block p-sidebar-width-control">
-    <a href="#" class="arrow left">&larr;</a>
-    <a href="#" class="arrow right">&rarr;</a>
-  </div>
-
 </div>
+
 {capture name="template-album-list-item"}{literal}
-  <li class="drag-newposition new-item"></li>
-  <li class="dr {%#o.type == Album.TYPE_STATIC ? 'static' : 'dynamic'%}" rel="{%#o.id%}">
-    <span class="count"></span>
-    <a href="#/album/{%#o.id%}" class="new-item"><i class="icon16 {%#o.type == Album.TYPE_STATIC ? 'pictures' : 'funnel' %}"></i>{%#o.name%}
-         {% if (o.status <= 0) { %}<i class="icon10 lock-bw no-overhanging"></i>{% } %}
-         <strong class="small highlighted count-new"></strong>
-    </a>
-  </li>
+    <li class="drag-newposition new-item"></li>
+    <li class="dr {%#o.type == Album.TYPE_STATIC ? 'static' : 'dynamic'%}" rel="{%#o.id%}">
+        <span class="count"></span>
+        <a href="#/album/{%#o.id%}" class="new-item"><i class="icon16 {%#o.type == Album.TYPE_STATIC ? 'pictures' : 'funnel' %}"></i>{%#o.name%}
+            {% if (o.status <= 0) { %}<i class="icon10 lock-bw no-overhanging"></i>{% } %}
+            <strong class="small highlighted count-new"></strong>
+        </a>
+    </li>
 {/literal}{/capture}
+
 {capture name="template-tag-cloud"}{literal}
     {% for (var i = 0, n = o.cloud.length, tag = o.cloud[i]; i < n; tag = o.cloud[++i]) { %}
-        <a href="#/tag/{%=tag.uri_name%}/" style="font-size: {%#tag.size%}%; opacity: {%#tag.opacity%}" data-id="{%#tag.id%}">{%=tag.name%}</a>
+    <a href="#/tag/{%=tag.uri_name%}/" style="font-size: {%#tag.size%}%; opacity: {%#tag.opacity%}" data-id="{%#tag.id%}">{%=tag.name%}</a>
     {% } %}
 {/literal}{/capture}
 
 {* js templates block*}
 {foreach $smarty.capture as $template => $template_content}
-{if $template_content && (strpos($template, 'template-')===0)}
-<script id="{$template}" type="text/html">
-{$template_content|replace:'</':'<\/'}
-</script>{capture name=$template}{/capture}
-{/if}
+    {if $template_content && (strpos($template, 'template-')===0)}
+        <script id="{$template}" type="text/html">
+            {$template_content|replace:'</':'<\/'}
+        </script>{capture name=$template}{/capture}
+    {/if}
 {/foreach}
 
-<script type="text/javascript">
+<script>
+( function($) {
     $('#tag-cloud').html(tmpl('template-tag-cloud', {
         cloud: {json_encode($cloud)}
     }));
     $.photos_sidebar.init({
         width: {$sidebar_width}
     });
+})(jQuery);
 </script>

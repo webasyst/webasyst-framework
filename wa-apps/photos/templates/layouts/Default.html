@@ -175,6 +175,13 @@
     {% var photo = o.photo, author = o.author, exif = o.exif; %}
 {/literal}
     <div class="block" id="photo-stream"></div>
+
+    <!-- begin plugin hook: "backend_photo_toolbar.top" -->
+    {foreach $backend_photo_toolbar as $plugin_id => $item}
+        {if !empty($item.top)}{$item.top}{/if}
+    {/foreach}
+    <!-- end plugin hook: "backend_photo_toolbar.top" -->
+
     <div class="block">
         <h6 class="heading">[`Share`]</h6>
         <ul class="menu-v with-icons compact" id="share-menu">
@@ -235,6 +242,13 @@
             <li data-action="delete-photo"><a href="#"><i class="icon16 delete"></i>[`Delete photo`]</a></li>
         </ul>
     </div>
+
+    <!-- begin plugin hook: "backend_photo_toolbar.bottom" -->
+    {foreach $backend_photo_toolbar as $plugin_id => $item}
+        {if !empty($item.bottom)}{$item.bottom}{/if}
+    {/foreach}
+    <!-- end plugin hook: "backend_photo_toolbar.bottom" -->
+
 {literal}
     <div class="block">
         <h6 class="heading">[`Tags`]</h6>
@@ -251,7 +265,6 @@
             {/if}
             {literal}
         </div>
-        <input type="button" id="photo-save-tags" value="[`Save`]">
         <span id="photo-save-tags-status" style="display:none;">
         </span>
     </div>

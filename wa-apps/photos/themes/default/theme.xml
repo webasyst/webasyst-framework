@@ -5,55 +5,55 @@
     <name locale="ru_RU">Дефолт 3.0</name>
     <description locale="ru_RU">Семейство адаптивных тем дизайна.</description>
     <files>
-        <file path="index.html" custom="0" parent="1">
+        <file path="index.html" parent="1">
         </file>
-        <file path="default.css" custom="0" parent="1">
+        <file path="default.css" parent="1">
         </file>
-        <file path="default.photos.css" custom="0">
+        <file path="default.photos.css">
         </file>
-        <file path="default.photos.js" custom="0">
-        </file> 
-        <file path="head.html" custom="0">
+        <file path="default.photos.js">
+        </file>
+        <file path="head.html">
             <description locale="en_US">Photos app's &lt;head&gt; instructions</description>
             <description locale="ru_RU">Блок &lt;head&gt; приложения «Фото»</description>
         </file>
-        <file path="header.html" custom="0">
-    		<description locale="en_US">App specific header content</description>
-    		<description locale="ru_RU">Содержимое «шапки» приложения</description>
-    	</file>
-        <file path="main.html" custom="0">
+        <file path="header.html">
+            <description locale="en_US">App specific header content</description>
+            <description locale="ru_RU">Содержимое «шапки» приложения</description>
+        </file>
+        <file path="main.html">
             <description locale="en_US">Main layout and navigation for the Photos app content</description>
             <description locale="ru_RU">Основное макет вывода содержимого и навигации в приложении «Фото»</description>
         </file>
-    	<file path="footer.html">
+        <file path="footer.html">
             <description locale="en_US">App specific footer content</description>
             <description locale="ru_RU">Содержимое футера приложения</description>
         </file>
-        <file path="photos-thumbs.html" custom="0">
+        <file path="photos-thumbs.html">
             <description locale="en_US">Photo list thumbnails view</description>
             <description locale="ru_RU">Список фотографий эскизами</description>
         </file>
-        <file path="photos-plain.html" custom="0">
+        <file path="photos-plain.html">
             <description locale="en_US">Photo list plain view</description>
             <description locale="ru_RU">Список фотографий «простыней»</description>
         </file>
-        <file path="photo.html" custom="0">
+        <file path="photo.html">
             <description locale="en_US">One photo and its details</description>
             <description locale="ru_RU">Просмотр фотографий по одной</description>
         </file>
-        <file path="home.html" custom="0">
+        <file path="home.html">
             <description locale="en_US">Wrapper for the main photo gallery homepage</description>
             <description locale="ru_RU">Обертка для главной страницы фотогалереи</description>
         </file>
-        <file path="album.html" custom="0">
+        <file path="album.html">
             <description locale="en_US">Wrapper for photo album</description>
             <description locale="ru_RU">Обертка для альбома фотографий</description>
         </file>
-        <file path="search.html" custom="0">
+        <file path="search.html">
             <description locale="en_US">Wrapper for photo search (filtering) results, e.g. by tag or by rating</description>
             <description locale="ru_RU">Обертка для страницы поиска (фильтрации) фотографий, например, по тегу или автору</description>
         </file>
-        <file path="page.html" custom="0">
+        <file path="page.html">
             <description locale="en_US">Static page content</description>
             <description locale="ru_RU">Содержимое информационной страницы</description>
         </file>
@@ -70,10 +70,6 @@
         <file path="my.profile.html" parent="1">
         </file>
         <file path="error.html" parent="1">
-        </file>
-        <file path="footer.html" custom="0">
-            <description locale="en_US">App specific footer content</description>
-            <description locale="ru_RU">Содержимое футера приложения</description>
         </file>
         <file path="default.js" parent="1">
         </file>

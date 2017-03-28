@@ -19,6 +19,13 @@ class photosAlbumDeleteMethod extends waAPIMethod
             
             if ($album_model->delete($id)) {
                 $this->response = true;
+
+                /**
+                 * Extend delete process
+                 * @event album_delete
+                 */
+                wa()->event('album_delete', $id);
+
             } else {
                 throw new waAPIException('server_error', 500);
             }
