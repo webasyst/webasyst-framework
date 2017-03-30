@@ -213,6 +213,7 @@ class photosPhotoRenderHelper
         $count = $right_bound - $left_bound + 1;
 
         $photo_stream = $collection->getPhotos('*,thumb,thumb_crop,tags', $left_bound, $count);
+        $photo_stream = photosCollection::extendPhotos($photo_stream);
         foreach ($photo_stream as &$item) {
             $item['thumb_custom'] = array(
                 'url' => photosPhoto::getPhotoUrlTemplate($item)
