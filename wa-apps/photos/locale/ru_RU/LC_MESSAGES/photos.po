@@ -1681,3 +1681,11 @@ msgstr ""
 #: /wa-apps/photos/templates/actions/dialog/DeleteAlbum.html:20
 msgid "Delete sub albums too"
 msgstr "Удалить все дочерние альбомы"
+
+#: /wa-apps/photos/templates/layouts/Default.html:86
+msgid "This photo is no longer in current dynamic album"
+msgstr "Эта фотография не присутсвует больше в динамическом альбоме"
+
+#: /wa-apps/photos/templates/layouts/Default.html:87
+msgid "Photo is not in album"
+msgstr "Фотография не в альбоме"

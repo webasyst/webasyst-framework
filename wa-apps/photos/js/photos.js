@@ -939,9 +939,21 @@
                 exif = data.exif,
                 stack = data.stack,
                 albums = data.albums,
+                album = data.album,
                 hooks = data.hooks,
                 frontend_link_template = data.frontend_link_template,
-                photo_stream = data.photo_stream;
+                photo_stream = data.photo_stream,
+                in_collection = photo_stream.in_collection;
+
+            var not_in_dynamic_album = false;
+            if (album && !in_collection) {
+                if (album.type == Album.TYPE_STATIC) {
+                    $.photos.goToHash('album/' + album.id + '/');
+                    return;
+                } else {
+                    not_in_dynamic_album = true;
+                }
+            }
 
             $.photos.setTitle(photo.name_not_escaped);
             $('#content').html(tmpl('template-p-block'));
@@ -972,7 +984,15 @@
             } else {
                 $.photos.scrollTop();
             }
-            $.photos.setNextPhotoLink();
+
+            $('#p-warning-not-in-album').hide();
+            if (not_in_dynamic_album) {
+                $('#p-warning-not-in-album').show();
+                $.photos.setNextPhotoLink($.photos.photo_stream_cache.getCurrent());
+            } else {
+                $.photos.setNextPhotoLink();
+            }
+
         },
 
         loadPhotoCompletly: function(photo)
@@ -994,6 +1014,9 @@
              * @hook
              */
             $.photos.hooks_manager.trigger('beforeLoadPhoto', photo);
+
+            $('#p-warning-not-in-album').hide();
+
             $.photos.setNextPhotoLink();
             $.photos.updatePhotoName(photo.name);
             $.photos.updatePhotoDescription(photo.description);
@@ -1032,7 +1055,28 @@
                 function (r) {
                     if (r.status == 'ok') {
                         var data = r.data,
-                            photo = data.photo;
+                            album = data.album,
+                            photo = data.photo,
+                            photo_stream = data.photo_stream,
+                            in_collection = photo_stream.in_collection;
+
+                        var not_in_dynamic_album = false;
+                        if (album && !in_collection) {
+                            if (album.type == Album.TYPE_STATIC) {
+                                $.photos.goToHash('album/' + album.id + '/');
+                                return;
+                            } else {
+                                not_in_dynamic_album = true;
+                            }
+                        }
+
+                        if (not_in_dynamic_album) {
+                            $('#p-warning-not-in-album').show();
+                            $.photos.setNextPhotoLink($.photos.photo_stream_cache.getCurrent());
+                        } else {
+                            $.photos.setNextPhotoLink();
+                        }
+
                         photo = $.photos.photo_stream_cache.updateById(photo.id, photo);
                         data.photo = photo;
                         $.photos.updateViewPhoto(data, is_preloaded);
@@ -1455,6 +1499,25 @@
             }
 
             tags_input.data('current_value', tags_input.val());
+
+            var onUserChange = function () {
+                if (tags_input.data('current_value') === tags_input.val()) {
+                    return;
+                }
+                tags_input.data('current_value', tags_input.val());
+                $('#photo-save-tags-status').html('<i style="vertical-align: middle" class="icon16 yes"></i>'+$_('Saving')).fadeIn('slow');
+                $.photos.assignTags({
+                    photo_id: $.photos.getPhotoId(),
+                    tags: $('#photo-tags').val(),
+                    fn: function() {
+                        $('#photo-save-tags-status').html('<i style="vertical-align: middle" class="icon16 yes"></i>'+$_('Saved')).fadeOut('slow');
+                    },
+                    onDeniedExist: function() {
+                        alert($_("You don't have sufficient access rights"));
+                    }
+                });
+            };
+
             try {
                 tags_input.tagsInput({
                     autocomplete_url: '?module=tag&action=list',
@@ -1462,21 +1525,13 @@
                     width: 150,
                     defaultText: default_text,
                     onChange: function () {
-                        if (tags_input.data('current_value') === tags_input.val()) {
-                            return;
-                        }
-                        tags_input.data('current_value', tags_input.val());
-                        $('#photo-save-tags-status').html('<i style="vertical-align: middle" class="icon16 yes"></i>'+$_('Saving')).fadeIn('slow');
-                        $.photos.assignTags({
-                            photo_id: $.photos.photo_stream_cache.getCurrent().id,
-                            tags: $('#photo-tags').val(),
-                            fn: function() {
-                                $('#photo-save-tags-status').html('<i style="vertical-align: middle" class="icon16 yes"></i>'+$_('Saved')).fadeOut('slow');
-                            },
-                            onDeniedExist: function() {
-                                alert($_("You don't have sufficient access rights"));
-                            }
-                        });
+                        // this event calls every time list of tags is changed, event by importTags, so don't use it for ajax!
+                    },
+                    onAddTag: function () {
+                        onUserChange();
+                    },
+                    onRemoveTag: function () {
+                        onUserChange();
                     }
                 });
             } catch (e) {
@@ -1785,6 +1840,7 @@
                 if (typeof tags === 'object' && tags) {
                     tags = $.photos.joinObject(tags, ',');
                 }
+                //#
                 tags_input.importTags(tags);
             }
         },
@@ -1949,10 +2005,10 @@
             return proper_thumb;
         },
 
-        setNextPhotoLink: function() {
+        setNextPhotoLink: function(next) {
             // set a-link to next
             var a = $('#photo').parents('a:first');
-            var next = $.photos.photo_stream_cache.getNext();
+            next = next ? next : $.photos.photo_stream_cache.getNext();
             if (next) {
                 a.attr('title', $_('Next →'));
                 a.attr('href', '#' + $.photos.hash + '/photo/' + next.id + '/');

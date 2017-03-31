@@ -259,6 +259,9 @@ select#upload-album-id { position: absolute /* to handle long album names */;}
 
 table.p-rate-distribution td { padding: 2px 15px 2px 0; }
 
+#p-warning-not-in-album { padding: 10px 5px; background: #ffb0a8; font-size: 0.95em; }
+#p-warning-not-in-album .icon16 { margin-top: -2px; }
+
 
 /* TABLET
 ========= */

@@ -82,6 +82,11 @@
                 <!-- end plugin hook: "backend_photo.after_rate" -->
             </span>
         </h1>
+        <div id="p-warning-not-in-album" style="display: none;">
+            <span title="[`This photo is no longer in current dynamic album`]">
+                <i class="icon16 exclamation"></i> [`Photo is not in album`]
+            </span>
+        </div>
         <div class="block half-padded float-right hint" id="photo-albums">
             {% include('template-photo-albums', { albums: albums }); %}
         </div>

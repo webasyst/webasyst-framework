@@ -136,13 +136,19 @@ class photosPhotoLoadController extends waJsonController
         $offset = $collection->getPhotoOffset($current_photo);
         $total_count = $collection->count();
 
+        $found_photos = $collection->getPhotos("id", $offset, 1, false);
+        $found_photo = reset($found_photos);
+        $in_collection = $found_photo && $found_photo['id'] == $this->photo['id'];
+
         $count = $this->getConfig()->getOption('photos_per_page');
         $offset = max($offset - floor($count/2), 0);
         $photos = array_values($collection->getPhotos('*,thumb,thumb_crop,thumb_middle,thumb_big,tags,edit_rights', $offset, $count));
 
         return array(
+            'total_count' => $total_count,
             'photos' => $photos,
-            'current_photo_id' => $current_photo['id']
+            'current_photo_id' => $current_photo['id'],
+            'in_collection' => $in_collection
         );
     }
 }
