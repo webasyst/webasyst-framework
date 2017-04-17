@@ -41,6 +41,9 @@ class waOAuthController extends waViewController
             // 3) That second time, adapter uses the code from GET to fetch user data
             //    from external resource and return here if all goes well.
             $person_data = $auth->auth();
+            if (!$person_data) {
+                throw new waException('Unable to finish auth process.');
+            }
 
             // Person identified. Now properly authorise them as local waContact,
             // possibly creating new waContact from data provided.

@@ -361,9 +361,9 @@ class waContactFields
         if (!$changed) {
             $fields[] = $field;
         }
-        foreach ($fields as $field) {
-            if ($field instanceof waContactField) {
-                $field->prepareVarExport();
+        foreach ($fields as $fld) {
+            if ($fld instanceof waContactField) {
+                $fld->prepareVarExport();
             }
         }
         waUtils::varExportToFile($fields, $file, true);

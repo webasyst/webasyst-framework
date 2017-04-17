@@ -2,12 +2,10 @@
 
 class facebookAuth extends waOAuth2Adapter
 {
-
     protected $check_state = true;
 
-    const LOGIN_URL = "http://www.facebook.com/dialog/oauth";
-    const ACCESS_TOKEN_URL = "https://graph.facebook.com/oauth/access_token";
-    const API_URL = "https://graph.facebook.com/";
+    const LOGIN_URL = "http://www.facebook.com/v2.8/dialog/oauth";
+    const API_URL   = "https://graph.facebook.com/v2.8/";
 
     public function __construct($options = array())
     {
@@ -26,11 +24,10 @@ class facebookAuth extends waOAuth2Adapter
     {
         // check state
         $redirect_uri = $this->getOption('redirect_uri');
-        $url = self::ACCESS_TOKEN_URL."?client_id=".$this->app_id."&client_secret=".$this->app_secret.
+        $url = self::API_URL."oauth/access_token?client_id=".$this->app_id."&client_secret=".$this->app_secret.
             "&redirect_uri=".urlencode($redirect_uri)."&code=".$code;
         $response = $this->get($url);
-        $params = null;
-        parse_str($response, $params);
+        $params = json_decode($response, true);
         // remove state from session
         wa()->getStorage()->remove('auth_facebook_state');
         if ($params && isset($params['access_token']) && $params['access_token']) {
@@ -39,11 +36,10 @@ class facebookAuth extends waOAuth2Adapter
         return null;
     }
 
-
     public function getUserData($token)
     {
         // get user data
-        $url = "https://graph.facebook.com/me?access_token=".$token."&fields=id,picture,link,first_name,last_name,email,name,locale,gender";
+        $url = self::API_URL."me?access_token=".$token."&fields=id,picture,link,first_name,last_name,email,name,locale,gender";
         $response = $this->get($url);
         if ($response && $response = json_decode($response, true)) {
             if (isset($response['error'])) {
@@ -59,7 +55,7 @@ class facebookAuth extends waOAuth2Adapter
                 'locale' => $response['locale'],
             );
             if (!empty($response['picture']) && isset($response['picture']['data']['url'])) {
-                $data['photo_url'] = "https://graph.facebook.com/me/picture?access_token=".$token."&type=normal";
+                $data['photo_url'] = self::API_URL."me/picture?access_token=".$token."&type=normal";
             }
             if (!empty($response['gender'])) {
                 $data['sex'] = $response['gender'] == 'male' ? 'm' : 'f';

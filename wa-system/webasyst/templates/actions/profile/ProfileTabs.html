@@ -48,6 +48,12 @@
     var error_gettings_tab_contents_msg = "Error getting tab contents.";
     var $layout_html = $('#t-profile-tabs-layout-html-{$uniqid}');
 
+    $tabs.data('tabs_controller', {
+        showTabHtml: showTabHtml,
+        updateIframeHeight: updateIframeHeight,
+        switchToTab: switchToTab
+    });
+
     setTimeout(init, 0); // timeout to allow other JS to modify something
 
     function init() {
@@ -164,6 +170,38 @@
                     $tabs.find('.t-tab a[data-tab-id="info"]').trigger('tab_content_updated');
                 }
             }, times*150);
+        }
+    }
+
+    // Helper for application code to manipulate tab when content is ready
+    function switchToTab(tab_id, testCallback) {
+
+        testCallback = testCallback || function() { return true; };
+        var deferred = $.Deferred();
+        var $tab_a = $tabs.find('.t-tab a[data-tab-id="'+tab_id+'"]').click();
+        $tab_a.on('tab_content_updated', tryCallback);
+        var interval = setInterval(tryCallback, 100);
+        setTimeout(tryCallback, 0);
+        return deferred.promise();
+
+        function tryCallback() {
+            var $iframe = $iframes_wrapper.children().filter(function() {
+                return tab_id == $(this).data('tab-id');
+            }).first();
+            try {
+                if (!$iframe[0].contentWindow || !testCallback($iframe)) {
+                    return;
+                }
+                $tab_a.off('tab_content_updated', tryCallback);
+                if (interval) {
+                    clearInterval(interval);
+                    interval = null;
+                }
+                setTimeout(function() {
+                    deferred.resolve($iframe);
+                }, 0);
+            } catch (e) {
+            }
         }
     }
 

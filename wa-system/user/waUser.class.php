@@ -285,11 +285,10 @@ class waUser extends waContact
             $user_birthday_str = waDateTime::format('shortdate', $time, waDateTime::getDefaultTimeZone());
         }
         $view->assign(array(
-            'user' => $user,
+            'user'                => $user,
             'formatted_user_name' => $formatted_user_name,
-            'user_birthday_str' => $user_birthday_str
+            'user_birthday_str'   => $user_birthday_str,
         ));
-        return $view->fetch('wa-system/user/templates/NameAndStatus.html');
+        return $view->fetch('file:'.dirname(__FILE__).'/templates/NameAndStatus.html');
     }
-
 }

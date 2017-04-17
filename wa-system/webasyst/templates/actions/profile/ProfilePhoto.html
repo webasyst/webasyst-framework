@@ -201,38 +201,38 @@
 
         // initialize image area selection plugin when image is ready
         (function(initArea) {
-            if ($image_img[0].complete) {
-                initArea();
-            } else {
-                $image_img.load(initArea);
-            }
-        }(function() {
             window.setTimeout(function() {
-                $dialog.removeClass('image-not-loaded').addClass('image-loaded');
-                var w = $image_img.width(),
-                    h = $image_img.height(),
-                    r = Math.min(w, h);
-
-                // Workaround for imgAreaSelect failing inside a position:fixed dialog
-                $image_img.closest('.dialog-window').css('position', 'absolute');
-
-                // Init crop selector
-                $image_img.imgAreaSelect({
-                    aspectRatio: '1:1',
-                    handles: true,
-                    fadeSpeed: 200,
-                    x1: Math.floor(w - r)/2,
-                    y1: Math.floor(h - r)/2,
-                    x2: Math.floor(w + r)/2,
-                    y2: Math.floor(h + r)/2,
-                    parent: '#new-photo-wrapper',
-                    onSelectChange: selectionCallback,
-                    onInit: selectionCallback
-                });
-
-                // Revert dialog css back
-                $image_img.closest('.dialog-window').css('position', 'fixed');
+                if ($image_img[0].complete) {
+                    window.setTimeout(initArea, 0);
+                } else {
+                    $image_img.load(initArea);
+                }
             }, 0);
+        }(function() {
+            $dialog.removeClass('image-not-loaded').addClass('image-loaded');
+            var w = $image_img.width(),
+                h = $image_img.height(),
+                r = Math.min(w, h);
+
+            // Workaround for imgAreaSelect failing inside a position:fixed dialog
+            $image_img.closest('.dialog-window').css('position', 'absolute');
+
+            // Init crop selector
+            $image_img.imgAreaSelect({
+                aspectRatio: '1:1',
+                handles: true,
+                fadeSpeed: 200,
+                x1: Math.floor(w - r)/2,
+                y1: Math.floor(h - r)/2,
+                x2: Math.floor(w + r)/2,
+                y2: Math.floor(h + r)/2,
+                parent: '#new-photo-wrapper',
+                onSelectChange: selectionCallback,
+                onInit: selectionCallback
+            });
+
+            // Revert dialog css back
+            $image_img.closest('.dialog-window').css('position', 'fixed');
         }));
 
         function selectionCallback(img, selection) {

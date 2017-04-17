@@ -1315,6 +1315,24 @@ class waContact implements ArrayAccess
         }
         return $top;
     }
+
+    /**
+     * Returns user's event
+     *
+     * @return array
+     */
+    public function getEvent()
+    {
+        if ($this->issetCache('_event')) {
+            return $this->getCache('_event');
+        }
+        $cem = new waContactEventsModel();
+        $event = $cem->getEventByContact($this->id, 1);
+        $this->setCache(array(
+            '_event' => $event,
+        ));
+        return $event;
+    }
 }
 
 // EOF

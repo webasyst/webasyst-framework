@@ -35,11 +35,14 @@ class waNet
     protected $options = array(
         'timeout'        => 15,
         'format'         => null,
+        'request_format' => null,
         'charset'        => 'utf-8',
         'verify'         => true,
         'md5'            => false,
         'log'            => false,
-        'authorization'  => array(),
+        'authorization'  => false,
+        'login'          => null,
+        'password'       => null,
         'proxy_host'     => null,
         'proxy_port'     => null,
         'proxy_user'     => null,
@@ -55,9 +58,6 @@ class waNet
             'cert'     => '',
             'password' => '',
         ),
-
-        //TODO add support for auth data
-        //auth data
     );
 
     protected $raw_response;
@@ -108,6 +108,13 @@ class waNet
 
     }
 
+    /**
+     * @param $url
+     * @param array|string|SimpleXMLElement|DOMDocument $content Parameter type relate to request format (xml/json/etc)
+     * @param string $method
+     * @return string|array|SimpleXMLElement Type related to response for response format (json/xml/etc)
+     * @throws waException
+     */
     public function query($url, $content = array(), $method = self::METHOD_GET)
     {
         $transport = $this->getTransport($url);
@@ -139,6 +146,11 @@ class waNet
         return $this->getResponse();
     }
 
+    /**
+     * @param string $url
+     * @param array|string|SimpleXMLElement|DOMDocument $content
+     * @param string $method
+     */
     protected function buildRequest(&$url, &$content, &$method)
     {
         if (!$content) {
@@ -186,7 +198,8 @@ class waNet
          */
 
         if (!empty($this->options['authorization'])) {
-            $this->request_headers["Authorization"] = "Basic ".urlencode(base64_encode("{$this->options['login']}:{$this->options['password']}"));
+            $authorization = sprintf("%s:%s", $this->options['login'], $this->options['password']);
+            $this->request_headers["Authorization"] = "Basic ".urlencode(base64_encode($authorization));
         }
 
         $this->request_headers['User-Agent'] = $this->user_agent;
@@ -204,8 +217,9 @@ class waNet
     }
 
     /**
-     * @param array $content
+     * @param array|string|SimpleXMLElement|DOMDocument $content
      * @return string
+     * @throws waException
      */
     protected function encodeRequest($content)
     {
@@ -219,12 +233,13 @@ class waNet
                 case self::FORMAT_XML:
                     if (is_object($content)) {
                         $class = get_class($content);
-                        if ($class == 'SimpleXMLElement') {
+
+                        if (class_exists('SimpleXMLElement') && ($content instanceof SimpleXMLElement)) {
                             /**
                              * @var SimpleXMLElement $content
                              */
                             $content = (string)$content->asXML();
-                        } elseif ($class == 'DOMDocument') {
+                        } elseif (class_exists('DOMDocument') && ($content instanceof DOMDocument)) {
                             /**
                              * @var DOMDocument $content
                              */
@@ -233,6 +248,9 @@ class waNet
                             }
                             $content->preserveWhiteSpace = false;
                             $content = (string)$content->saveXML();
+                        } else {
+                            $message = 'Unsupported class "%s" of content object. Expected instance of SimpleXMLElement or DOMDocument classes.';
+                            throw new waException(sprintf($message, $class));
                         }
                     }
                     break;
@@ -264,6 +282,10 @@ class waNet
         return $content;
     }
 
+    /**
+     * @param string $response
+     * @throws waException
+     */
     protected function decodeResponse($response)
     {
         $this->raw_response = $response;
@@ -324,14 +346,25 @@ class waNet
         }
     }
 
+    /**
+     * @param bool $raw If param is true method returns raw response string
+     * @return string|array|SimpleXMLElement Type related to response for response format (json/xml/etc)
+     */
     public function getResponse($raw = false)
     {
         return $raw ? $this->raw_response : $this->decoded_response;
     }
 
+    /**
+     * @param string|null $header
+     * @return array|mixed|null
+     */
     public function getResponseHeader($header = null)
     {
         if (!empty($header)) {
+            if (isset($this->response_header[$header])) {
+                return $this->response_header[$header];
+            }
             $header = str_replace('-', '_', strtolower($header));
             return ifset($this->response_header[$header]);
         }
@@ -353,6 +386,10 @@ class waNet
         }
     }
 
+    /**
+     * @param string $url
+     * @return string|bool
+     */
     protected function getTransport($url)
     {
         $available = array();
@@ -651,7 +688,6 @@ class waNet
     }
 
     /**
-     * @todo not implemented
      * @param $url
      * @param $content
      * @param $method
@@ -728,7 +764,7 @@ class waNet
      * @see http://stackoverflow.com/questions/686217/maximum-on-http-header-values
      * @param string $url
      * @param string[] $required_get_fields
-     * @return array POST data
+     * @return string POST data
      */
     private static function getPost(&$url, $required_get_fields = array())
     {
