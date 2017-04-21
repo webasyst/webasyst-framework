@@ -194,7 +194,7 @@ abstract class waView
         $version = $theme->version(true);
 
         $file = $theme->getFile($template);
-	$parent_theme = $theme;
+        $parent_theme = $theme;
         while ($parent_theme = $parent_theme->parent_theme) {
             $edition = $theme->edition + $parent_theme->edition;
             if (!empty($file['parent'])) {
@@ -204,7 +204,7 @@ abstract class waView
                     $version = $theme->version($edition);
                 }
                 $theme = $parent_theme;
-		$file = $parent_theme->getFile($template);
+                $file = $parent_theme->getFile($template);
             }
             $this->assign('wa_parent_theme_url', $this->getStaticUrl($parent_theme->url));
             $this->assign('wa_parent_theme_path', $parent_theme->path);
