@@ -147,4 +147,25 @@ class waAppViewHelper
         return $this->wa->getConfig()->getOption($name);
     }
 
+    /**
+     * Return plugin list.
+     *
+     * @return array
+     */
+    public function getPlugins()
+    {
+        return $this->wa->getConfig()->getPlugins();
+    }
+
+    /**
+     * Checks plugin status.
+     *
+     * @param string $name Plugin name
+     * @return bool
+     */
+    public function isEnabledPlugin($name)
+    {
+        $plugins = $this->wa->getConfig()->getPlugins();
+        return isset($plugins[$name]);
+    }
 }
