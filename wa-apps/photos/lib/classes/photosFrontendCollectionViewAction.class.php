@@ -93,7 +93,7 @@ class photosFrontendCollectionViewAction extends photosFrontendViewAction
              * @return array[string][string]string $return[%plugin_id%]['sidebar'] Footer section
              * @return array[string][string]string $return[%plugin_id%]['footer'] Footer section
              */
-            $this->view->assign('frontend_collection', wa()->event('frontend_collection'));
+            $this->view->assign('frontend_collection', wa()->event('frontend_collection', $this->hash));
         }
 
         $this->view->assign('lazy_load', !is_null(waRequest::get('lazy')));
