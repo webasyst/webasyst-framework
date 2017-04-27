@@ -21,19 +21,19 @@ return array(
     ),
     'length' => array(
         'value' => '',
-        'title' => /*_wp*/('Length of parcel box'),
+        'title' => /*_wp*/('Length of parcel box in cm'),
         'description' => /*_wp*/('for domestic shipping'),
         'control_type' => waHtmlControl::INPUT
     ),
     'width' => array(
         'value' => '',
-        'title' => /*_wp*/('Width of parcel box'),
+        'title' => /*_wp*/('Width of parcel box in cm'),
         'description' => /*_wp*/('for domestic shipping'),
         'control_type' => waHtmlControl::INPUT
     ),
     'height' => array(
         'value' => '',
-        'title' => /*_wp*/('Height of parcel box'),
+        'title' => /*_wp*/('Height of parcel box in cm'),
         'description' => /*_wp*/('for domestic shipping'),
         'control_type' => waHtmlControl::INPUT
     )
