@@ -46,9 +46,10 @@ class waAppViewHelper
         return $theme->path ? $theme->getUrl() : null;
     }
 
-    public function pages($parent_id = 0, $with_params = true)
+    public function pages($parent_id = 0, $with_params = true, $route_url = null)
     {
         if (is_bool($parent_id)) {
+            $route_url = $with_params;
             $with_params = $parent_id;
             $parent_id = 0;
         }
@@ -61,7 +62,16 @@ class waAppViewHelper
             } else {
                 $routes = wa()->getRouting()->getByApp($this->wa->getConfig()->getApplication(), $domain);
                 if ($routes) {
-                    $route = end($routes);
+                    if (is_string($route_url)) {
+                        foreach ($routes as $route) {
+                            if ($route['url'] === $route_url) {
+                                break;
+                            }
+                        }
+                        return array();
+                    } else {
+                        $route = current($routes);
+                    }
                     $route = $route['url'];
                     $url = wa()->getRootUrl(false, true).waRouting::clearUrl($route);
                 } else {
