@@ -101,6 +101,9 @@ class waDesignActions extends waActions
                     ksort($files);
                     $f = key($files);
                 }
+            } else {
+                // Decode special symbols (/,&)
+                $f = urldecode($f);
             }
             $file = $theme->getFile($f);
             if (!$file) {
