@@ -1046,7 +1046,7 @@ class waContact implements ArrayAccess
             return $result;
         } else {
             if ($is_admin) {
-                return $name ? $data['backend'] : $data;
+                return $name ? PHP_INT_MAX : $data;
             }
             if (!$has_app_access) {
                 return $name ? 0 : array();

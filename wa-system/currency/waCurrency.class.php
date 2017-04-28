@@ -146,11 +146,13 @@ class waCurrency
         }
         $currency = self::getInfo($currency);
         waLocale::loadByDomain('webasyst', $locale);
+        $locale_id = $locale;
         $locale = waLocale::getInfo($locale);
         self::$format_data['n'] = $n;
         self::$format_data['locale'] = $locale;
+        self::$format_data['locale']['id'] = $locale_id;
         self::$format_data['currency'] = $currency;
-        $pattern = '/%([0-9]?\.?[0-9]?)([iw!]*)({[n|f|c|s|h][0-9]?})?/i';
+        $pattern = '/%([0-9]?\.?[0-9]?)([iw!k]*)({[n|f|c|s|h][0-9]?})?/i';
         $result = preg_replace_callback($pattern, array('self', 'replace_callback'), $format);
         if ($locale !== $old_locale) {
             wa()->setLocale($old_locale);
@@ -187,61 +189,66 @@ class waCurrency
         }
 
         //
-        // $format: [iw]*
+        // $format: [iwk!]*
         //
         $format_lower = strtolower($format);
 
-        // 'i' format option: floor() $n to $precision.
-        // When not present then round() is used.
-        // 'w' option implies 'i'
-        if (strstr($format_lower, 'i') !== false || strstr($format_lower, 'w') !== false) {
-            $n = floor($n * pow(10, $precision)) / ((float) pow(10, $precision));
+        if (strstr($format_lower, 'k') !== false) {
+            // 'k' option: format to short string with K or M modifiers like 10.5K
+            // $precision is not used, always max 3 digits.
+            $result = self::formatWithUnit($n, $locale['id']);
         } else {
-            $n = round($n, $precision);
-
-            // required to show '%.1' correctly for 0.99
-            if ($trim_to_width !== false && strlen($n) > $trim_to_width) {
-                $n = substr($n, -$trim_to_width);
-            }
-        }
-
-        // 'w' option: amount written with words
-        if (strstr($format_lower, 'w') !== false) {
-            // Amount in words.
-            // Currently only works for integers.
-            $params = isset($locale['amount_in_words']) ? $locale['amount_in_words'] : array();
-            $result = self::getIntInWords($n, $params);
-            if (strstr($format, 'W') !== false) {
-                $result = mb_strtoupper(mb_substr($result, 0, 1)).mb_substr($result, 1);
-            }
-        } else if (strstr($format_lower, '!') !== false) {
-            $result = '';
-        } else {
-            if ($pad_to_width !== false) {
-                $result = str_pad($n, $pad_to_width, '0', STR_PAD_LEFT);
+            // 'i' format option: floor() $n to $precision.
+            // When not present then round() is used.
+            // 'w' option implies 'i'
+            if (strstr($format_lower, 'i') !== false || strstr($format_lower, 'w') !== false) {
+                $n = floor($n * pow(10, $precision)) / ((float) pow(10, $precision));
             } else {
-                if ($frac_only_exists && ($n == (int) $n) && $precision_arr[0] === '') {
-                    $precision = 0;
+                $n = round($n, $precision);
+
+                // required to show '%.1' correctly for 0.99
+                if ($trim_to_width !== false && strlen($n) > $trim_to_width) {
+                    $n = substr($n, -$trim_to_width);
                 }
-                $result = number_format($n, $precision, $locale['decimal_point'], $locale['thousands_sep']);
+            }
+
+            // 'w' option: amount written with words
+            if (strstr($format_lower, 'w') !== false) {
+                // Amount in words.
+                // Currently only works for integers.
+                $params = isset($locale['amount_in_words']) ? $locale['amount_in_words'] : array();
+                $result = self::getIntInWords($n, $params);
+                if (strstr($format, 'W') !== false) {
+                    $result = mb_strtoupper(mb_substr($result, 0, 1)).mb_substr($result, 1);
+                }
+            } else if (strstr($format_lower, '!') !== false) {
+                $result = '';
+            } else {
+                if ($pad_to_width !== false) {
+                    $result = str_pad($n, $pad_to_width, '0', STR_PAD_LEFT);
+                } else {
+                    if ($frac_only_exists && ($n == (int) $n) && $precision_arr[0] === '') {
+                        $precision = 0;
+                    }
+                    $result = number_format($n, $precision, $locale['decimal_point'], $locale['thousands_sep']);
+                }
             }
         }
-
-        // by default at the end
-        if (!isset($currency['sign_position'])) {
-            $currency['sign_position'] = 1;
-        }
-        if (!isset($currency['sign_delim'])) {
-            $currency['sign_delim'] = ' ';
-        }
-
-        if (!isset($currency['sign'])) {
-            $currency['sign'] = '';
-        }
-
 
         // $desc: add currency name, or sign, or code, etc.
         if ($desc) {
+            // by default at the end
+            if (!isset($currency['sign_position'])) {
+                $currency['sign_position'] = 1;
+            }
+            if (!isset($currency['sign_delim'])) {
+                $currency['sign_delim'] = ' ';
+            }
+
+            if (!isset($currency['sign'])) {
+                $currency['sign'] = '';
+            }
+
             $desc = substr($desc, 1, -1);
             $key = null;
             if (substr($desc, 0, 1) === 'c') {
@@ -277,6 +284,50 @@ class waCurrency
         }
 
         return ltrim($result);
+    }
+
+    public static function formatWithUnit($total, $locale = null)
+    {
+        if (!is_numeric($total)) {
+            return (string) $total;
+        }
+
+        list($coeff, $exp) = explode('e', sprintf('%e', $total));
+        $coeff = round($coeff, 2);
+        $exp = (int) $exp;
+
+        // Following code formats with at most 3 digits and a letter modifier:
+        // 10543210 -> 10.5M
+        // 1000000  -> 1M
+        // 10543    -> 10.5K
+        // 1000     -> 1K
+
+        if ($exp < 0) {
+            return self::formatHelper(round($total, 2), 0, 0, '', $locale);
+        } else if ($exp < 3) {
+            return self::formatHelper($coeff, $exp, 0, '', $locale);
+        } else if ($exp < 6) {
+            return self::formatHelper($coeff, $exp, 3, 'K', $locale);
+        } else if ($exp < 9) {
+            return self::formatHelper($coeff, $exp, 6, 'M', $locale);
+        } else {
+            return waLocale::format(round($total / 1000000), 0, $locale).'M';
+        }
+    }
+
+    protected static function formatHelper($coeff, $exp, $exp_limit, $letter, $locale)
+    {
+        $decimals = 2;
+        while ($exp > $exp_limit) {
+            $coeff *= 10;
+            $decimals--;
+            $exp--;
+        }
+        // make sure not to show last zeroes after comma
+        while ($decimals > 0 && $coeff == round($coeff, $decimals - 1)) {
+            $decimals--;
+        }
+        return waLocale::format($coeff, max(0, $decimals), $locale).$letter;
     }
 
     protected static function getData()

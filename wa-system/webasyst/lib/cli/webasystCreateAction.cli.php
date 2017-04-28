@@ -128,8 +128,8 @@ HTML;
         }
         return <<<PHP
 <?php
-class {$class_name} extends {$parent_class_name} {
-
+class {$class_name} extends {$parent_class_name}
+{
 %CLASS_CONTENT%
 }
 
@@ -214,8 +214,8 @@ PHP;
         // Get action type and names
         if (!waRequest::param(3)) {
             $action_type = 'action';
-            $action_names = array(strtolower(waRequest::param(2)));
-            if (!preg_match('~^[a-z][a-z0-9_]*$~', $action_names[0])) {
+            $action_names = array(waRequest::param(2));
+            if (!preg_match('~^[a-z][a-zA-Z0-9_]*$~', $action_names[0])) {
                 $this->dieWithErrors(array(
                     'Incorrect action name: '.$action_names[0],
                 ));
@@ -230,8 +230,8 @@ PHP;
 
             $action_names = array();
             for ($i = 3; waRequest::param($i); $i++) {
-                $action_name = strtolower(waRequest::param($i));
-                if (!preg_match('~^[a-z][a-z0-9_]*$~', $action_name)) {
+                $action_name = waRequest::param($i);
+                if (!preg_match('~^[a-z][a-zA-Z0-9_]*$~', $action_name)) {
                     $this->dieWithErrors(array(
                         'Incorrect action name: '.$action_name,
                     ));

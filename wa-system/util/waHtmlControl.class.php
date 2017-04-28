@@ -117,6 +117,7 @@ class waHtmlControl
             }
         } elseif (!empty($params['options_callback']) && !isset($params['options'])) {
             $params['options'] = self::getControlParams($params['options_callback']);
+            unset($params['options_callback']);
         }
 
 
@@ -207,18 +208,18 @@ class waHtmlControl
         $options = null;
         if (is_array($raw_params)) {
             $callback = array_shift($raw_params);
-            if (function_exists($callback)) {
+            if (is_object($callback) && ($class = get_class($callback))) {
+                $callback = array($callback);
+                $callback[] = array_shift($raw_params);
+                if (in_array($callback[1], get_class_methods($class))) {
+                    $options = call_user_func_array($callback, $raw_params);
+                }
+            } elseif (function_exists($callback)) {
                 $options = call_user_func_array($callback, $raw_params);
             } elseif (is_string($callback) && class_exists($callback)) {
                 $callback = array($callback);
                 $callback[] = array_shift($raw_params);
                 if (in_array($callback[1], get_class_methods($callback[0]))) {
-                    $options = call_user_func_array($callback, $raw_params);
-                }
-            } elseif (is_object($callback) && ($class = get_class($callback))) {
-                $callback = array($callback);
-                $callback[] = array_shift($raw_params);
-                if (in_array($callback[1], get_class_methods($class))) {
                     $options = call_user_func_array($callback, $raw_params);
                 }
             }

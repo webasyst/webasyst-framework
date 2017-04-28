@@ -655,35 +655,35 @@ class waPageActions extends waActions
             $app = null;
         }
 
+        $blocks = array();
         if (wa()->appExists('site')) {
-            $model = new waModel();
-            $blocks = $model->query('SELECT * FROM site_block ORDER BY sort')->fetchAll('id');
-
             $active_app = wa()->getApp();
-            $apps = wa()->getApps();
-            foreach ($apps as $_app_id => $_app) {
-                $path = $this->getConfig()->getAppsPath($_app_id, 'lib/config/site.php');
-                if (file_exists($path)) {
-                    waLocale::load(wa()->getLocale(), $this->getConfig()->getAppsPath($_app_id, 'locale'), $_app_id, true);
-                    $site_config = include($path);
-                    if (!empty($site_config['blocks'])) {
-                        foreach ($site_config['blocks'] as $block_id => $block) {
-                            if (!is_array($block)) {
-                                $block = array('content' => $block, 'description' => '');
-                            }
-                            $block_id = $_app_id.'.'.$block_id;
-                            if (!isset($blocks[$block_id])) {
-                                $block['id'] = $block_id;
-                                $block['app'] = $_app;
-                                $blocks[$block_id] = $block;
+            try {
+                $model = new waModel();
+                $blocks = $model->query('SELECT * FROM site_block ORDER BY sort')->fetchAll('id');
+                foreach (wa()->getApps() as $_app_id => $_app) {
+                    $path = $this->getConfig()->getAppsPath($_app_id, 'lib/config/site.php');
+                    if (file_exists($path)) {
+                        waLocale::load(wa()->getLocale(), $this->getConfig()->getAppsPath($_app_id, 'locale'), $_app_id, true);
+                        $site_config = include($path);
+                        if (!empty($site_config['blocks'])) {
+                            foreach ($site_config['blocks'] as $block_id => $block) {
+                                if (!is_array($block)) {
+                                    $block = array('content' => $block, 'description' => '');
+                                }
+                                $block_id = $_app_id.'.'.$block_id;
+                                if (!isset($blocks[$block_id])) {
+                                    $block['id'] = $block_id;
+                                    $block['app'] = $_app;
+                                    $blocks[$block_id] = $block;
+                                }
                             }
                         }
                     }
                 }
+            } catch (Exception $e) {
             }
             wa()->setActive($active_app);
-        } else {
-            $blocks = array();
         }
 
         $this->display(array(
