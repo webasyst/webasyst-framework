@@ -639,7 +639,14 @@ var DashboardWidget;
                     data: {}
                 }).done(function(r) {
                     $widget.html(r);
-                }).fail(function() {
+                }).fail(function(xhr, text_status, error) {
+                    if (xhr.responseText && xhr.responseText.indexOf) {
+                        console.log('Error getting widget contents', text_status, error);
+                        if (xhr.responseText.indexOf('waException') >= 0 || xhr.responseText.indexOf('id="Trace"') >= 0) {
+                            $widget.html('<div style="font-size:40%;">'+xhr.responseText+'</div>');
+                            return;
+                        }
+                    }
                     if (force) {
                         $widget.html("");
                     }

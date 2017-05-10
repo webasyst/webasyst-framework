@@ -3,14 +3,17 @@
 class waAppViewHelper
 {
     /**
+     * @deprecated use $this->wa() instead
      * @var waSystem
      */
     protected $wa;
+    protected $app_id;
     protected $cdn = '';
 
     public function __construct($system)
     {
         $this->wa = $system;
+        $this->app_id = $system->getConfig()->getApplication();
 
         if (wa()->getEnv() == 'frontend') {
             $domain = wa()->getRouting()->getDomain(null, true);
@@ -30,8 +33,7 @@ class waAppViewHelper
      */
     public function themePath($theme_id)
     {
-        $app_id = $this->wa->getConfig()->getApplication();
-        $theme = new waTheme($theme_id, $app_id);
+        $theme = new waTheme($theme_id, $this->app_id);
         return $theme->path ? $theme->path.'/' : null;
     }
 
@@ -41,8 +43,7 @@ class waAppViewHelper
      */
     public function themeUrl($theme_id)
     {
-        $app_id = $this->wa->getConfig()->getApplication();
-        $theme = new waTheme($theme_id, $app_id);
+        $theme = new waTheme($theme_id, $this->app_id);
         return $theme->path ? $theme->getUrl() : null;
     }
 
@@ -55,11 +56,11 @@ class waAppViewHelper
         try {
             $page_model = $this->getPageModel();
             $domain = wa()->getRouting()->getDomain(null, true);
-            if ($this->wa->getConfig()->getApplication() == wa()->getRouting()->getRoute('app')) {
+            if ($this->app_id == wa()->getRouting()->getRoute('app')) {
                 $route = wa()->getRouting()->getRoute('url');
-                $url = $this->wa->getAppUrl(null, true);
+                $url = wa($this->app_id)->getAppUrl(null, true);
             } else {
-                $routes = wa()->getRouting()->getByApp($this->wa->getConfig()->getApplication(), $domain);
+                $routes = wa()->getRouting()->getByApp($this->app_id, $domain);
                 if ($routes) {
                     $route = end($routes);
                     $route = $route['url'];
@@ -70,7 +71,7 @@ class waAppViewHelper
             }
             $pages = null;
             $cache_key = $domain.'/'.waRouting::clearUrl($route);
-            if ($cache = $this->wa->getCache()) {
+            if ($cache = wa($this->app_id)->getCache()) {
                 $pages = $cache->get($cache_key, 'pages');
             }
             if ($pages === null) {
@@ -124,7 +125,7 @@ class waAppViewHelper
     {
         $page_model = $this->getPageModel();
         $page = $page_model->getById($id);
-        $page['content'] = $this->wa->getView()->fetch('string:'.$page['content']);
+        $page['content'] = wa($this->app_id)->getView()->fetch('string:'.$page['content']);
 
         $page_params_model = $page_model->getParamsModel();
         $page += $page_params_model->getById($id);
@@ -138,13 +139,17 @@ class waAppViewHelper
      */
     protected function getPageModel()
     {
-        $class = $this->wa->getConfig()->getApplication().'PageModel';
+        $class = $this->app_id.'PageModel';
         return new $class();
     }
 
     public function config($name)
     {
-        return $this->wa->getConfig()->getOption($name);
+        return wa($this->app_id)->getConfig()->getOption($name);
     }
 
+    protected function wa()
+    {
+        return wa($this->app_id);
+    }
 }

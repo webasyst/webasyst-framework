@@ -273,6 +273,7 @@ class waAutoload
 
         'waArrayObject'            => 'util/waArrayObject.class.php',
         'waArrayObjectDiff'        => 'util/waArrayObjectDiff.class.php',
+        'waLazyDisplay'            => 'util/waLazyDisplay.class.php',
         'waCSV'                    => 'util/waCSV.class.php',
         'waHtmlControl'            => 'util/waHtmlControl.class.php',
         'waString'                 => 'util/waString.class.php',

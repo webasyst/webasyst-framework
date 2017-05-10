@@ -457,7 +457,7 @@ class waRouting
                 $app_routes = $this->getAppRoutes($r['app'], $r);
                 foreach ($app_routes as $app_r) {
                     $j = $i + $this->countParams($app_r, $params);
-                    if (!isset($params['action']) && !isset($app_r['action'])) {
+                    if (empty($params['action']) && empty($app_r['action'])) {
                         $j++;
                     }
                     $u = $app_r['url'];

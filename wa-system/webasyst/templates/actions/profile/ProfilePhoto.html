@@ -143,7 +143,7 @@
     });
 
     // Drag-and-drop files into the dialog
-    $dialog.find('.dialog-window').on("dragenter dragleave dragover", function() {
+    $dialog.find('.dialog-window,.js-dialog-drag-and-drop-area').on("dragenter dragleave dragover", function() {
         return false;
     }).on("drop dragdrop", function(event) {
         try {

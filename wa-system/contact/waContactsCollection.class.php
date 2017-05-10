@@ -374,7 +374,6 @@ class waContactsCollection
         return $data;
     }
 
-
     public function prepare($new = false, $auto_title = true)
     {
         if (!$this->prepared || $new) {
@@ -397,7 +396,7 @@ class waContactsCollection
                     * @param array [string]boolean $params['new']
                     * @return bool null if ignored, true when something changed in the collection
                     */
-                    $processed = wa()->event(array('contacts', 'contacts_collection'), $params);
+                    $processed = array_filter(wa()->event(array('contacts', 'contacts_collection'), $params));
                     if (!$processed) {
                         $this->where[] = 0;
                     }
@@ -602,7 +601,6 @@ class waContactsCollection
         }
     }
 
-
     public function addTitle($title, $delim = ', ')
     {
         if (!$title && $title !== '0' && $title !== 0) {
@@ -656,6 +654,20 @@ class waContactsCollection
         }
         if ($auto_title) {
             $this->addTitle(_ws('All users'));
+        }
+    }
+
+    protected function companyPrepare($params, $auto_title = true)
+    {
+
+        $params = array_filter(array_map('intval', explode(',', $params)));
+        if ($params) {
+            $this->where[] = "c.company_contact_id IN ('".join("','", $params)."')";
+        } else {
+            $this->where[] = '0';
+        }
+        if ($auto_title) {
+            $this->addTitle(_ws('Company'));
         }
     }
 

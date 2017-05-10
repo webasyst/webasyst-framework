@@ -90,10 +90,10 @@ HELP;
         );
 
         if (isset($params['db'])) {
-            array_push($paths, array('lib/models/'));
+            array_push($paths, 'lib/models/');
         }
         if (isset($params['locale'])) {
-            array_push($paths, array('locale/'));
+            array_push($paths, 'locale/');
         }
 
         if (isset($params['frontend'])) {
@@ -101,10 +101,8 @@ HELP;
 
             array_push(
                 $paths,
-                array(
-                    'lib/actions/frontend/',
-                    'templates/actions/frontend/',
-                )
+                'lib/actions/frontend/',
+                'templates/actions/frontend/'
             );
             $paths['lib/config/routing.php'] = array('*' => 'frontend');
 
@@ -121,7 +119,7 @@ HELP;
             'templates/',
         );
         if (isset($params['locale'])) {
-            array_push($protected_paths, array('locale/'));
+            array_push($protected_paths, 'locale/');
         }
 
         $this->createStructure($paths);

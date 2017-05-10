@@ -1108,7 +1108,9 @@ HELP;
                 '@\.(bak|old|user|te?mp|www)(\.(php|css|js|html))?$@' => 'temp file',
                 '@(/|^)(\.DS_Store|\.desktop\.ini|thumbs\.db)$@'      => 'system file',
                 '@\b\.(svn|git|hg_archival\.txt)\b@'                  => 'CVS file',
-                '@^\.git.*@'                                          => 'GIT file',
+                '@(/|^)\.git.*@'                                      => 'GIT file',
+                '@(/|^)\.[^/]+/@'                                     => 'directory with leading dot',
+                '@(/|^)\.(project|buildpath)@'                        => 'IDE file',
                 '@\.(zip|rar|gz)$@'                                   => 'archive',
                 '@\.log$@'                                            => 'log file',
                 '@\.md5$@'                                            => 'checksum file',
@@ -1135,11 +1137,9 @@ HELP;
 
     /**
      * @param string $format
-     * @param mixed $_1
-     * @param mixed $_2
-     * @return int
+     * @param mixed $_
      */
-    protected function tracef()
+    protected function tracef($format)
     {
         $args = func_get_args();
         $format = array_shift($args);
