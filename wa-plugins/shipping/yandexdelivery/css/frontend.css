@@ -1,0 +1,108 @@
+.yandexdelivery-loading-section {
+  text-align: center;
+}
+.yandexdelivery-loading-section + * {
+  margin-top: 1em;
+}
+.yandexdelivery-map-section {
+  display: table;
+  width: 100%;
+  table-layout: fixed;
+  margin: 1em 0;
+  font-size: 13px;
+}
+.yandexdelivery-map-section .line {
+  margin-top: 8px;
+}
+.yandexdelivery-map-section .line:first-child {
+  margin-top: 0;
+}
+.yandexdelivery-map-section:first-child {
+  margin-top: 0;
+}
+.yandexdelivery-map-section input[type="button"] {
+  font-size: 13px !important;
+}
+.yandexdelivery-map-section .t-layout {
+  display: table;
+  width: 100%;
+}
+.yandexdelivery-map-section .t-layout.inline {
+  width: auto;
+}
+.yandexdelivery-map-section .t-layout.fixed {
+  table-layout: fixed;
+}
+.yandexdelivery-map-section .t-layout > .t-column {
+  display: table-cell;
+  vertical-align: top;
+}
+.yandexdelivery-map-section .t-layout > .t-column.middle {
+  vertical-align: middle;
+}
+.yandexdelivery-map-section .t-layout > .t-column.center {
+  text-align: center;
+}
+.yandexdelivery-map-section .t-layout > .t-column.right {
+  text-align: right;
+}
+.yandexdelivery-map-section .yandexdelivery-map-wrapper,
+.yandexdelivery-map-section .yandexdelivery-aside-wrapper {
+  display: table-cell;
+  vertical-align: top;
+}
+.yandexdelivery-map-section .yandexdelivery-aside-wrapper {
+  padding-left: 1em;
+  width: 200px;
+}
+.yandexdelivery-map-section .yandexdelivery-aside-wrapper > ul {
+  margin: 0;
+}
+.yandexdelivery-map-section .yandexdelivery-aside-wrapper .yandexdelivery-aside {
+  overflow: auto;
+  max-height: 400px;
+}
+.yandexdelivery-map-section .yandexdelivery-aside-wrapper .yandexdelivery-aside > ul > li {
+  margin: 0 0 20px 0;
+  font-size: 1em;
+  line-height: 1.25em;
+  padding: 0 4px 0 2px;
+}
+.yandexdelivery-map-section .yandexdelivery-aside-wrapper .yandexdelivery-aside > ul > li:last-child {
+  margin-bottom: 0;
+}
+.yandexdelivery-map-section .yandexdelivery-aside-wrapper .yandexdelivery-aside > ul > li input[type="radio"] {
+  position: relative;
+  top: 1px;
+  left: 0;
+  margin: 0;
+  cursor: pointer;
+}
+.yandexdelivery-map-section .yandexdelivery-aside-wrapper .yandexdelivery-aside > ul > li label {
+  display: inline !important;
+  cursor: pointer;
+}
+.yandexdelivery-map-section .yandexdelivery-aside-wrapper .yandexdelivery-aside > ul > li .hint {
+  display: block !important;
+  margin: 2px 0 4px !important;
+}
+.yandexdelivery-map-section .yandexdelivery-map {
+  position: relative;
+  height: 400px;
+  background: #f0f0f0;
+}
+.yandexdelivery-pickup-section {
+  font-size: 13px;
+}
+.yandexdelivery-pickup-section .line {
+  margin-top: 8px;
+}
+.yandexdelivery-pickup-section .line:first-child {
+  margin-top: 0;
+}
+.yandexdelivery-pickup-section .yandexdelivery-pickup-header {
+  font-size: 120%;
+}
+.yandexdelivery-pickup-section a {
+  text-decoration: underline;
+}
