@@ -45,6 +45,7 @@ class waContact implements ArrayAccess
                     $this->set($k, $v);
                 }
             }
+            $this->setCache($this->data);
         } else {
             $this->id = (int)$id;
         }

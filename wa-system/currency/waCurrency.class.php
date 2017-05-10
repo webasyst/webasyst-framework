@@ -237,18 +237,6 @@ class waCurrency
 
         // $desc: add currency name, or sign, or code, etc.
         if ($desc) {
-            // by default at the end
-            if (!isset($currency['sign_position'])) {
-                $currency['sign_position'] = 1;
-            }
-            if (!isset($currency['sign_delim'])) {
-                $currency['sign_delim'] = ' ';
-            }
-
-            if (!isset($currency['sign'])) {
-                $currency['sign'] = '';
-            }
-
             $desc = substr($desc, 1, -1);
             $key = null;
             if (substr($desc, 0, 1) === 'c') {
@@ -339,10 +327,13 @@ class waCurrency
             if ($config && filemtime($config_path) > $cache->getFilemtime()) {
                 self::$data = array();
             } else {
+                // Read from cache unless config changed recently
                 self::$data = $cache->get();
             }
             if (!self::$data) {
                 self::$data = array();
+
+                // Currencies from wa-system/currency/data
                 $files = waFiles::listdir(dirname(__FILE__)."/data/");
                 foreach ($files as $file) {
                     if (preg_match('/^([A-Z]{3})\.php$/', $file, $matches)) {
@@ -357,18 +348,39 @@ class waCurrency
                                 'title' => $currency
                             );
                         }
+
                         self::$data[$currency] = $info;
                     }
                 }
+
+                // Currencies from wa-config/currency.php
                 foreach ($config as $cur => $info) {
-                    if (!isset(self::$data[$cur])) {
-                        self::$data[$cur] = $info;
-                    } else {
-                        foreach ($info as $k => $v) {
+                    self::$data[$cur] = ifset(self::$data[$cur], array());
+                    foreach ($info as $k => $v) {
+                        self::$data[$cur][$k] = $v;
+                    }
+                }
+
+                // Default currency params when not set
+                foreach(self::$data as $cur => $info) {
+                    self::$data[$cur]['code'] = $cur;
+                    $default_values = array(
+                        'sign' => $cur,
+                        'title' => $cur,
+                        'precision' => 2,
+                        'sign_position' => 1,
+                        'sign_delim' => ' ',
+                        'sign_html' => ifset($info['sign'], $cur),
+                        'frac_name' => array($cur),
+                        'name' => array($cur),
+                    );
+                    foreach($default_values as $k => $v) {
+                        if (!isset($info[$k])) {
                             self::$data[$cur][$k] = $v;
                         }
                     }
                 }
+
                 $cache->set(self::$data);
             }
         }

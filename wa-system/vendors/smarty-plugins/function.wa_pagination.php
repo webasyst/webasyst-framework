@@ -4,7 +4,7 @@ function smarty_function_wa_pagination($params, &$smarty)
 {
 
     $total = $params['total'];
-    $page = isset($params['page']) ? $params['page'] : waRequest::get('page', 1);
+    $page = isset($params['page']) ? (int) $params['page'] : waRequest::get('page', 1, 'int');
     if ($page < 1) {
         $page = 1;
     }

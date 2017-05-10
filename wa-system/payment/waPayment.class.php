@@ -227,8 +227,9 @@ abstract class waPayment extends waSystemPlugin
      * @return string['version']
      * @return string['build']
      * @return string['logo']
-     * @return string[unt]['icon'][int]
+     * @return string[int]['icon'][int]
      * @return string['img']
+     * @return string['icon']
      */
     final public static function info($id, $options = array(), $type = null)
     {

@@ -201,6 +201,33 @@ class waOrder implements ArrayAccess
         return $this->offsetSet($name, $value);
     }
 
+    public function __debugInfo()
+    {
+        return array(
+            'contact_id' => $this->contact_id,
+            'currency'   => $this->currency,
+            'total'      => $this->total,
+            'shipping'   => $this->shipping,
+            'subtotal'   => $this->subtotal,
+            'discount'   => $this->discount,
+            'data'       => $this->data,
+        );
+    }
+
+    /**
+     * @param array $an_array
+     * @return waOrder
+     */
+    public static function __set_state($an_array)
+    {
+        $data = array();
+        if (is_array($an_array) && isset($an_array['data'])) {
+            $data = $an_array['data'];
+        }
+
+        return new self($data);
+    }
+
     /**
      * @param mixed $offset
      * @return bool
@@ -225,8 +252,7 @@ class waOrder implements ArrayAccess
             $offset = $this->alias[$offset];
         }
         if (!isset($this->data[$offset])) {
-            $method = 'get'.preg_replace_callback('/(^|_)([\w])/', create_function('$c', 'return strtoupper($c[2]);'), $offset);
-            if (method_exists($this, $method)) {
+            if ( $method = $this->methodName($offset)) {
                 if (!in_array($offset, $this->fields)) {
                     $this->fields[] = $offset;
                 }
@@ -238,6 +264,12 @@ class waOrder implements ArrayAccess
         } else {
             return isset($this->data[$offset]) ? $this->data[$offset] : null;
         }
+    }
+
+    private function methodName($offset)
+    {
+        $method = 'get'.preg_replace_callback('/(^|_)([\w])/', create_function('$c', 'return strtoupper($c[2]);'), $offset);
+        return method_exists($this, $method)?$method:null;
     }
 
     /**
@@ -362,6 +394,16 @@ class waOrder implements ArrayAccess
             $quantity += $item['quantity'];
         }
         return $quantity;
+    }
+
+    public function getTotalDiscount()
+    {
+        $items = ifempty($this->data['items'], array());
+        $discount = 0;
+        foreach ($items as $item) {
+            $discount += isset($item['total_discount']) ? $item['total_discount'] : $item['discount'] * $item['quantity'];
+        }
+        return $discount;
     }
 
     public function getContactField($field, $format = null)

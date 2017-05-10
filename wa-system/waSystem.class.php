@@ -486,7 +486,7 @@ class waSystem
             }
 
         } catch(Exception $e) {
-            if (!waSystemConfig::isDebug()) {
+            if (!waSystemConfig::isDebug() && !in_array($e->getCode(), array(404, 403))) {
                 $log = array("Uncaught exception ".get_class($e).":");
                 $log[] = $e->getMessage()." (".$e->getCode().")";
                 $log[] = $e instanceof waException ? $e->getFullTraceAsString() : $e->getTraceAsString();

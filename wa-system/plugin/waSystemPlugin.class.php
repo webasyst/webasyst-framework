@@ -364,7 +364,7 @@ abstract class waSystemPlugin
      *
      * @param string $type
      * @param callback $callback
-     * @return waShipping Current object
+     * @return self Current object
      */
     protected function registerControl($type, $callback = null)
     {

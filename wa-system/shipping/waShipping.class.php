@@ -155,7 +155,22 @@ abstract class waShipping extends waSystemPlugin
                 } else {
                     foreach ($this->items as $item) {
                         $property_value += ($item['price'] - $item['discount']) * $item['quantity'];
+
                     }
+                }
+                break;
+            case 'raw_price':
+                if (isset($this->params['total_'.$property])) {
+                    $property_value = $this->params['total_'.$property];
+                } else {
+                    foreach ($this->items as $item) {
+                        $property_value += $item['price'] * $item['quantity'];
+                    }
+                }
+                break;
+            case 'items_discount':
+                foreach ($this->items as $item) {
+                    $property_value += empty($item['total_discount']) ? $item['discount'] * $item['quantity'] : $item['total_discount'];
                 }
                 break;
             case 'weight':
@@ -168,7 +183,6 @@ abstract class waShipping extends waSystemPlugin
                 }
                 break;
             case 'quantity':
-
                 foreach ($this->items as $item) {
                     $property_value += $item[$property];
                 }
@@ -186,9 +200,22 @@ abstract class waShipping extends waSystemPlugin
         return $this->getPackageProperty('weight');
     }
 
+    /**
+     * Package content price with discount
+     * @return double
+     */
     protected function getTotalPrice()
     {
         return $this->getPackageProperty('price');
+    }
+
+    /**
+     * Package content price before discount
+     * @return double
+     */
+    protected function getTotalRawPrice()
+    {
+        return $this->getPackageProperty('raw_price');
     }
 
     protected function getAddress($field = null)
@@ -287,6 +314,7 @@ abstract class waShipping extends waSystemPlugin
         $this->addItems($order->items);
         $this->setAddress($order->shipping_address);
         $params['total_price'] = $order->total;
+        $params['total_discount'] = $order->discount;
         $shipping_data = array();
         if (isset($params['shipping_data'])) {
             $shipping_data = $params['shipping_data'];
@@ -295,7 +323,6 @@ abstract class waShipping extends waSystemPlugin
                 $shipping_data = array();
             }
         }
-
 
         $this->setParams($params);
 
