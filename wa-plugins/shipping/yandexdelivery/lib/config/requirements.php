@@ -2,6 +2,6 @@
 return array(
     'app.installer' => array(
         'strict' => true,
-        'value'  => '>=1.6.10.0',
+        'value'  => '>=1.7.0.133',
     ),
 );

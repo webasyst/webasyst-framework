@@ -17,6 +17,7 @@
  * @property-read string $shipping_type
  * @property-read boolean $yd_warehouse
  * @property-read string $map
+ * @property-read boolean $debug
  */
 class yandexdeliveryShipping extends waShipping
 {
@@ -475,7 +476,10 @@ class yandexdeliveryShipping extends waShipping
 
     public function inputDataAction()
     {
-        $data = wa()->getStorage()->get($this->getCacheKey());
+        $key = $this->getCacheKey();
+        $storage = wa()->getStorage();
+        $data = $storage->get($key);
+        $storage->del($key);
         if (is_array($data)) {
             $this->sendJsonData($data);
         } else {
@@ -576,6 +580,7 @@ class yandexdeliveryShipping extends waShipping
             $params['to_yd_warehouse'] = $this->yd_warehouse ? 1 : 0;
             $params['assessed_value'] = $this->getAssessedPrice($this->insurance);
             $params['total_cost'] = round($this->getTotalPrice(), 2);
+            $params['order_cost'] = $params['total_cost'];
             $services = $this->apiQuery('searchDeliveryList', $params);
             if (empty($services)) {
                 throw new waException('Доставка по указанному адресу недоступна.');
@@ -598,7 +603,7 @@ class yandexdeliveryShipping extends waShipping
                 }
             }
 
-            $this->cache_key = md5(var_export($params, true));
+            //$this->cache_key = md5(var_export($params, true));
             wa()->getStorage()->set($this->getCacheKey(), $data);
             return $rates;
         } catch (waException $ex) {
@@ -641,7 +646,8 @@ class yandexdeliveryShipping extends waShipping
             case 'table':
                 $matched_size = array();
                 uasort($size['table'], array($this, 'sortSizes'));
-                foreach ($size['table'] as $sizes) {
+                $table = array_reverse($size['table']);
+                foreach ($table as $sizes) {
                     if ($weight <= floatval($sizes['weight'])) {
                         $matched_size = $sizes;
                     } else {
@@ -902,10 +908,9 @@ HTML;
         }
     }
 
-    private function getCacheKey()
+    private function getCacheKey($key = null)
     {
-        $key = false ? $this->cache_key : null;
-        return sprintf('wa-plugins/shipping/yandexdelivery/%s/%s/%s', $this->app_id, $this->key, $key);
+        return sprintf('wa-plugins/shipping/yandexdelivery/%s/%s/%s', $this->app_id, $this->key, $key ? $key : $this->cache_key);
     }
 
     protected function initControls()
@@ -1228,7 +1233,6 @@ HTML;
 
     });
 </script>
-<script src="https://api-maps.yandex.ru/2.1/?lang=ru_RU" type="text/javascript"></script>
 HTML;
 
 
@@ -1517,9 +1521,9 @@ HTML;
         $url = sprintf($this->url, $this->api_version, $method);
         $key = md5($url.var_export($data, true));
         if (in_array($method, array('searchDeliveryList'))) {
-            $cache = wa()->getCache();
-            if ($cache && ($cached = $cache->get($key))) {
-                return $cached;
+            $cache = new waVarExportCache($this->getCacheKey($key), 3600, 'webasyst');
+            if ($cache->isCached()) {
+                return $cache->get();
             }
         }
         $options = array(
@@ -1534,7 +1538,7 @@ HTML;
                 $this->api_error = $response['data'];
                 throw new waException($response['error']);
             } elseif (!empty($cache)) {
-                $cache->set($key, $response['data'], 3600);
+                $cache->set($response['data']);
             }
             if ($this->debug) {
                 $debug = var_export(compact('url', 'data', 'response'), true);

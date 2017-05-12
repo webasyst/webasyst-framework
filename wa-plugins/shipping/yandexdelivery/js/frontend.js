@@ -617,6 +617,7 @@ function ShippingYandexdelivery(key, id, url) {
              * @property {ymaps} map
              */
             map: null,
+            loading: false,
             manager: null,
             show: function (pickups) {
                 if (this.map) {
@@ -688,9 +689,17 @@ function ShippingYandexdelivery(key, id, url) {
 
                     } else {
                         var self = this;
-                        setTimeout(function () {
-                            self.init();
-                        }, 500);
+                        if (!this.loading) {
+                            this.loading = true;
+                            $.getScript('https://api-maps.yandex.ru/2.1/?lang=ru_RU', function () {
+                                self.init();
+                            });
+                        } else {
+
+                            setTimeout(function () {
+                                self.init();
+                            }, 500);
+                        }
                     }
                 }
             },
