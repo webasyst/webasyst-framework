@@ -491,16 +491,6 @@
             return false;
         },
 
-        clearLastView: function() {
-            this.lastView = {
-                title: null,
-                hash: null,
-                sort: null,
-                order: null,
-                offset: null
-            };
-        },
-
         /** Empty form to create a new contact. */
         contactsAddAction: function (params) {
             this.setBlock('contacts-info');
