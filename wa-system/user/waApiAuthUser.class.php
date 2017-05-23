@@ -26,7 +26,7 @@ class waApiAuthUser extends waAuthUser
     public function init()
     {
         if (wa()->getEnv() != 'api') {
-            throw new waRightException();
+            throw new waRightsException();
         }
 
         waUser::init();

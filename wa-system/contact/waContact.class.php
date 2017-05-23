@@ -354,7 +354,7 @@ class waContact implements ArrayAccess
                 }
                 // for non-multi fields return field value
                 else {
-                    return is_array($result) ? $result['value'] : $result;
+                    return is_array($result) ? ifset($result['value']) : $result;
                 }
             }
             // 'html' format: ???
@@ -749,9 +749,9 @@ class waContact implements ArrayAccess
                 waContactFields::getStorage($storage)->set($this, $storage_data);
             }
             $this->data = array();
-            wa()->event(array('contacts', 'save'), $this);
             $this->removeCache();
             $this->clearDisabledFields();
+            wa()->event(array('contacts', 'save'), $this);
 
         } catch (Exception $e) {
             // remove created contact
@@ -832,6 +832,16 @@ class waContact implements ArrayAccess
     public function getTimezone()
     {
         $timezone = $this->get('timezone');
+
+        // Make sure it's a valid timezone
+        if ($timezone) {
+            try {
+                new DateTimeZone($timezone);
+            } catch (Exception $e) {
+                $this['timezone'] = $timezone = null;
+            }
+        }
+
         if (!$timezone) {
             $timezone = self::$options['default']['timezone'];
         }
@@ -986,6 +996,16 @@ class waContact implements ArrayAccess
         if (is_array($value)) {
             $value = implode(",", $value);
         }
+
+        // Update cache
+        if (isset($this->settings[$app_id])) {
+            if (!is_array($name) && !is_array($value)) {
+                $this->settings[$app_id][$name] = $value;
+            } else {
+                unset($this->settings[$app_id]);
+            }
+        }
+
         return $setting_model->set($this->id, $app_id, $name, $value);
     }
 

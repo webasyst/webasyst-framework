@@ -213,13 +213,6 @@ class waRouting
             $this->dispatchRoutes($this->getAppRoutes($r['app'], $r, true), $url);
         }
 
-        // Default routing via GET parameters
-        if (waRequest::param('module') === null && ($module = waRequest::get('module'))) {
-            waRequest::setParam('module', $module);
-        }
-        if (waRequest::param('action') === null && ($action = waRequest::get('action'))) {
-            waRequest::setParam('action', $action);
-        }
         return $r;
     }
 

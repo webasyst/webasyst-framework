@@ -55,15 +55,13 @@ class waSystemConfig
         }
 
         $this->configure();
+        $this->environment = $environment;
         $this->init();
 
-        if ($environment === null) {
+        if ($this->environment === null) {
             $url = explode("/", $this->getRequestUrl(true, true));
             $url = $url[0];
-
             $this->environment = $url === $this->getSystemOption('backend_url') ? 'backend' : 'frontend';
-        } else {
-            $this->environment = $environment;
         }
 
         $url = $this->getRequestUrl();

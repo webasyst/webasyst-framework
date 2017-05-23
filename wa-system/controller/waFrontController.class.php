@@ -65,13 +65,13 @@ class waFrontController
     protected function getDispatchParams()
     {
         $env = $this->system->getEnv();
-        $action = waRequest::get($this->options['action'], null, 'string');
         if ($env == 'frontend') {
             $module = 'frontend';
-            $is_widget = $plugin = null;
+            $action = $is_widget = $plugin = null;
         } else {
             // Dispatch params are allowed via GET in backend
             $module = waRequest::get($this->options['module'], 'backend', 'string');
+            $action = waRequest::get($this->options['action'], null, 'string');
             $is_widget = waRequest::get('widget', null, 'string');
             $plugin = waRequest::get('plugin', null, 'string');
         }
@@ -80,6 +80,9 @@ class waFrontController
         $plugin = waRequest::param('plugin', $plugin, 'string');
         $module = waRequest::param('module', $module, 'string');
         $action = waRequest::param('action', $action, 'string');
+        if (waRequest::param('module') && $action === null) {
+            $action = waRequest::get($this->options['action'], null, 'string');
+        }
 
         // Make sure parameters are sane
         foreach (array($plugin, $module, $action) as $i => $v) {

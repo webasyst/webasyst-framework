@@ -7,13 +7,15 @@ class waAppViewHelper
      * @var waSystem
      */
     protected $wa;
-    protected $app_id;
+    protected $app_id = null;
     protected $cdn = '';
 
     public function __construct($system)
     {
         $this->wa = $system;
-        $this->app_id = $system->getConfig()->getApplication();
+        if ($system && $system->getConfig() && method_exists($system->getConfig(), 'getApplication')) {
+            $this->app_id = $system->getConfig()->getApplication();
+        }
 
         if (wa()->getEnv() == 'frontend') {
             $domain = wa()->getRouting()->getDomain(null, true);

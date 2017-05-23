@@ -100,7 +100,7 @@
                     cache: false
                 });
 
-                $.wa.errorHandler = function (xhr) {
+                if ($.wa) $.wa.errorHandler = function (xhr) {
                     if ((xhr.status === 403) || (xhr.status === 404)) {
                         var text = $(xhr.responseText);
                         if (text.find('.dialog-content').length) {

@@ -411,7 +411,7 @@ class waModel
             }
         }
 
-        if ($values && $where) {
+        if ($values) {
             $sql = "UPDATE ".($options ? $options." " : "").$this->table."
                    SET ".implode(", ", $values)."
                    WHERE ".$where;
@@ -829,10 +829,7 @@ class waModel
             $value = false;
         }
         $sql = "SELECT * FROM ".$this->table;
-        $where = $this->getWhereByField($field, $value);
-        if ($where != '') {
-            $sql .= " WHERE ".$where;
-        }
+        $sql .= " WHERE ".$this->getWhereByField($field, $value);
         if ($limit) {
             $sql .= " LIMIT ".(int) $limit;
         } elseif (!$all) {
@@ -865,10 +862,19 @@ class waModel
 
             $where = array();
             foreach ($field as $f => $v) {
-                $where[] = $this->getWhereByField($f, $v, $add_table_name);
+                $cond = $this->getWhereByField($f, $v, $add_table_name);
+                if ($cond === '1=0') {
+                    return '1=0';
+                } else if ($cond !== '1=1') {
+                    $where[] = $cond;
+                }
             }
 
-            return implode(" AND ", $where);
+            if ($where) {
+                return implode(" AND ", $where);
+            } else {
+                return '1=1';
+            }
         }
 
         // Table prefix for field names
@@ -886,8 +892,7 @@ class waModel
             if ($value) {
                 return $prefix.$this->escapeField($field)." IN ('".implode("','", $this->escape($value))."')";
             } else {
-                // analog field IN ('') - it's always false
-                return '0';
+                return '1=0';
             }
         }
 
@@ -906,9 +911,7 @@ class waModel
     public function countByField($field, $value = null)
     {
         $sql = "SELECT COUNT(*) FROM ".$this->table;
-        if ($where = $this->getWhereByField($field, $value)) {
-            $sql .= " WHERE ".$where;
-        }
+        $sql .= " WHERE ".$this->getWhereByField($field, $value);
         return $this->query($sql)->fetchField();
     }
 
@@ -939,11 +942,8 @@ class waModel
      */
     public function deleteByField($field, $value = null)
     {
-        if ($where = $this->getWhereByField($field, $value)) {
-            $sql = "DELETE FROM ".$this->table." WHERE ".$where;
-            return $this->exec($sql);
-        }
-        return true;
+        $sql = "DELETE FROM ".$this->table." WHERE ".$this->getWhereByField($field, $value);
+        return $this->exec($sql);
     }
 
     /** Truncates the table, deleting all rows. */

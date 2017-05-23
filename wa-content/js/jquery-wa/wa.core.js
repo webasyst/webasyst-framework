@@ -437,23 +437,34 @@ if (!window.wa_skip_ajax_setup) {
     });
 }
 
-$(document).ajaxSend(function (event, xhr, settings) {
-    if (settings.type == 'POST') {
-        var matches = document.cookie.match(new RegExp("(?:^|; )_csrf=([^;]*)"));
-        var csrf = matches ? decodeURIComponent(matches[1]) : '';
-        if (settings.data === null ) {
-            settings.data = '';
+if (!window.wa_skip_csrf_prefilter) {
+    $.ajaxPrefilter(function (settings, originalSettings, xhr) {
+        if ((settings.type||'').toUpperCase() !== 'POST') {
+            return;
         }
+
+        var matches = document.cookie.match(new RegExp("(?:^|; )_csrf=([^;]*)"));
+        if (!matches || !matches[1]) {
+            return;
+        }
+
+        var csrf = decodeURIComponent(matches[1]);
+        if (!settings.data && settings.data !== 0) settings.data = '';
+
         if (typeof(settings.data) == 'string') {
             if (settings.data.indexOf('_csrf=') == -1) {
                 settings.data += (settings.data.length > 0 ? '&' : '') + '_csrf=' + csrf;
                 xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
             }
         } else if (typeof(settings.data) == 'object') {
-            settings.data['_csrf'] = csrf;
+            if (window.FormData && settings.data instanceof window.FormData) {
+                settings.data.set('_csrf', csrf);
+            } else {
+                settings.data['_csrf'] = csrf;
+            }
         }
-    }
-});
+    });
+}
 
 if (!Array.prototype.indexOf)
 {

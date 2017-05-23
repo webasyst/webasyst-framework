@@ -222,11 +222,11 @@ class waContactsCollection
      */
     public function getContacts($fields = "id", $offset = 0, $limit = 50)
     {
-        $sql = "SELECT ".$this->getFields($fields)." ".$this->getSQL();
-        $sql .= $this->getGroupBy();
-        $sql .= $this->getHaving();
-        $sql .= $this->getOrderBy();
-        $sql .= " LIMIT ".($offset ? $offset.',' : '').(int)$limit;
+        $sql = "SELECT ".$this->getFields($fields)."\n".$this->getSQL();
+        $sql .= "\n".$this->getGroupBy();
+        $sql .= "\n".$this->getHaving();
+        $sql .= "\n".$this->getOrderBy();
+        $sql .= "\nLIMIT ".($offset ? $offset.',' : '').(int)$limit;
         //header("X-SQL-". mt_rand() . ": ". str_replace("\n", " ", $sql));
         $data = $this->getModel()->query($sql)->fetchAll('id');
         $ids = array_keys($data);
@@ -254,7 +254,7 @@ class waContactsCollection
 
             foreach ($this->post_fields as $table => $fields) {
                 if ($table == '_internal') {
-                    foreach ($fields as $f) {
+                    foreach (array_unique($fields) as $f) {
                         /**
                          * @var $f string
                          */
@@ -848,7 +848,7 @@ class waContactsCollection
             if (!empty($where['_or'])) {
                 $where['_or'] = "(" . implode(" OR ", $where['_or']) . ")";
             }
-            $sql .= " WHERE ".implode(" AND ", $where);
+            $sql .= "\nWHERE ".implode(" AND ", $where);
         }
 
         return $sql;

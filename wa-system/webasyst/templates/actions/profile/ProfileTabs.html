@@ -16,7 +16,7 @@
 
 <ul class="t-profile-tabs" id="t-profile-tabs-{$uniqid}">
     {foreach $tabs as $tab_id => $tab}
-        <li class="t-tab {if $selected_tab == $tab_id}is-selected{/if}">
+        <li class="t-tab {if $selected_tab == $tab_id}is-selected{/if}" data-tab-id="{$tab_id|escape}">
             <a href="javascript:void('{$tab_id|escape:javascript}')" data-url="{$tab.url|default:''}" data-tab-id="{$tab_id|escape}">
                 {$tab.title}
                 {if !empty($tab.count)}
@@ -167,7 +167,7 @@
                 iframe.contentWindow.document.close();
                 if ($iframe.is(':visible')) {
                     updateIframeHeight(iframe);
-                    $tabs.find('.t-tab a[data-tab-id="info"]').trigger('tab_content_updated');
+                    $tabs.find('.t-tab a[data-tab-id="'+tab_id+'"]').trigger('tab_content_updated');
                 }
             }, times*150);
         }

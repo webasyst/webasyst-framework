@@ -178,7 +178,12 @@ class waAuthUser extends waUser
         );
         foreach($data as $timezone) {
             if ($timezone) {
-                return $timezone;
+                try {
+                    // Make sure it's a valid timezone
+                    new DateTimeZone($timezone);
+                    return $timezone;
+                } catch (Exception $e) {
+                }
             }
         }
     }

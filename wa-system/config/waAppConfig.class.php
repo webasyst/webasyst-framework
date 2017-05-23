@@ -497,8 +497,12 @@ class waAppConfig extends SystemConfig
                 $files = $this->getPHPFiles($path);
                 foreach ($files as $file) {
                     $class = $this->getClassByFilename(basename($file));
-
                     if ($class) {
+                        // Classes in dir named /custom/ have priority.
+                        // This allows to override code without modifications to the original.
+                        if (isset($result[$class]) && false !== stripos(str_replace('\\', '/', $result[$class]), '/custom/')) {
+                            continue;
+                        }
                         $result[$class] = substr($file, $length + 1);
                     }
                 }
