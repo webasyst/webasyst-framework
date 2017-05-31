@@ -29,9 +29,17 @@ function wa_dumpc()
     // Show where we've been called from
     if(function_exists('debug_backtrace')) {
         echo "dumped from ";
+
+        $root_path = realpath(dirname(__FILE__).'/../..');
+        $root_path = str_replace('\\', '/', $root_path);
+        $root_path = preg_quote($root_path, '~');
         foreach(debug_backtrace() as $row) {
             if (ifset($row['file']) == __FILE__ || (empty($row['file']) && ifset($row['function']) == 'wa_dumpc')) {
                 continue;
+            }
+            if (!empty($row['file'])) {
+                $row['file'] = str_replace('\\', '/', $row['file']);
+                $row['file'] = preg_replace("~^{$root_path}/?~", '$1', $row['file']);
             }
             echo ifset($row['file'], '???'), ' line #', ifset($row['line'], '???'), ":\n";
             break;
@@ -119,6 +127,15 @@ function wa_is_int($val)
     // check against objects to avoid nasty object to int convertion errors
     if (!is_numeric($val)) {
         return false;
+    }
+    // Test for very large integers
+    if (function_exists('ctype_digit')) {
+        $val = (string) $val;
+        if (ctype_digit($val)) {
+            return true;
+        } else if ($val && $val{0} == '-' && ctype_digit(substr($val, 1))) {
+            return true;
+        }
     }
     // typecast trick works fine for anything else except boolean true
     return ($val !== true) && ((string)(int) $val) === ((string) $val);

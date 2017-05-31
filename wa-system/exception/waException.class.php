@@ -41,11 +41,12 @@ class waException extends Exception
         $result = '## '.$this->getFile().'('.$this->getLine().")\n";
         $result .= $this->getTraceAsString();
         if ($this->prev_exception) {
+            $wa = null;
             try {
-                $wa = wa();
-            } catch (Exception $e) {
-                $wa = null;
-            }
+                if (function_exists('wa')) {
+                    $wa = wa();
+                }
+            } catch (Exception $e) { }
             $msg = $this->prev_exception->getMessage();
             if (($wa && $wa->getEnv() == 'cli') || (!$wa && php_sapi_name() == 'cli')) {
                 $msg = nl2br(htmlspecialchars($msg, self::$htmlspecialchars_mode, 'utf-8'));
@@ -58,7 +59,17 @@ class waException extends Exception
                 $result .= $this->prev_exception->getTraceAsString();
             }
         }
-        return $result;
+
+        return $this->hideRootPath($result);
+    }
+
+    protected function hideRootPath($str)
+    {
+        $root_path = realpath(dirname(__FILE__).'/../..');
+        $root_path = str_replace('\\', '/', $root_path);
+        $root_path = preg_quote($root_path, '~');
+        $str = str_replace('\\', '/', $str);
+        return preg_replace("~(^|\s){$root_path}/?~", '$1', $str);
     }
 
     private function getFileContext()
@@ -154,11 +165,20 @@ class waException extends Exception
 
     protected function toStringDebug($wa, $additional_info)
     {
-        $request = wa_dump_helper($_REQUEST);
         $_ = waRequest::param();
         $params = wa_dump_helper($_);
+        $get = wa_dump_helper($_GET);
+        $post = null;
+        if ($_POST) {
+            $_ = $_POST;
+            if (isset($_['_csrf'])) {
+                $_['_csrf'] = '[hidden]';
+            }
+            $post = wa_dump_helper($_);
+        }
 
         $message = nl2br(htmlspecialchars($this->getMessage(), self::$htmlspecialchars_mode, 'utf-8'));
+        $message = ifempty($message, get_class($this));
         $trace = htmlspecialchars($this->getFullTraceAsString(), self::$htmlspecialchars_mode, 'utf-8');
         $additional_info = htmlspecialchars($additional_info, self::$htmlspecialchars_mode, 'utf-8');
 
@@ -174,18 +194,24 @@ HTML;
         }
 
         $result = <<<HTML
-<div style="width:99%; position:relative; text-align: left;">
+<div style="width:99%;position:relative;text-align:left;white-space:normal" class="wa-exception-debug-dump">
     <h2 id='Title'>{$message} <span class="hint">code {$this->getCode()}</span></h2>
     <div id="Trace">
-        <h3>{$this->getFile()} ({$this->getLine()})</h3>
         <pre>{$trace}</pre>
     </div>
     {$context}
     <div id="Request">
-        <h2>Request</h2>
-        <pre>{$request}</pre>
+        <h2>GET</h2>
+        <pre>{$get}</pre>
+HTML;
+        if ($post) {
+            $result .= <<<HTML
+        <h2>POST</h2>
+        <pre>{$post}</pre>
+HTML;
+        }
+        $result .= <<<HTML
     </div>
-</div>
     <div style="text-align: left;">
         <h2>Params</h2>
         <pre>{$params}</pre>
@@ -199,18 +225,22 @@ HTML;
         <pre>{$additional_info}</pre>
     </div>
 HTML;
-
         }
+        $result .= <<<HTML
+</div>
+HTML;
         return $result;
     }
 
     public function __toString()
     {
+        $wa = null;
+        $additional_info = '';
         try {
-            $wa = wa();
-            $additional_info = '';
+            if (function_exists('wa')) {
+                $wa = wa();
+            }
         } catch (Exception $e) {
-            $wa = null;
             $additional_info = $e->getMessage();
         }
 

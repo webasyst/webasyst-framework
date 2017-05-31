@@ -483,7 +483,11 @@ class waModel
             case 'tinyint':
             case 'int':
             case 'integer':
-                return (int) $value;
+                if (wa_is_int($value)) {
+                    return "'".$this->escape($value, 'int')."'";
+                } else {
+                    return (int) $value;
+                }
             case 'decimal':
             case 'double':
             case 'float':
@@ -725,7 +729,7 @@ class waModel
     }
 
     /**
-     * Escape data
+     * Make a string safe to use inside single quotes in SQL statement.
      *
      * @param mixed $data
      * @param string $type - int|like
@@ -735,20 +739,21 @@ class waModel
     {
         if (is_array($data)) {
             foreach ($data as $key => $value) {
-                if ($type === 'int') {
-                    $data[$key] = (int) $value;
-                } elseif ($type === 'like') {
-                    $value = str_replace('\\', '\\\\', $value);
-                    $data[$key] = str_replace(array('%', '_'), array('\%', '\_'), $this->adapter->escape($value));
-                } else {
-                    $data[$key] = $this->adapter->escape($value);
+                if (is_array($value)) {
+                    $value = '';
                 }
+                $data[$key] = $this->escape($value, $type);
             }
             return $data;
         }
+
         switch ($type) {
             case 'int':
-                return (int) $data;
+                if (wa_is_int($data)) {
+                    return $this->adapter->escape((string)$data);
+                } else {
+                    return (int) (string) $data;
+                }
             case 'like':
                 $data = str_replace('\\', '\\\\', $data);
                 return str_replace(array('%', '_'), array('\%', '\_'), $this->adapter->escape($data));

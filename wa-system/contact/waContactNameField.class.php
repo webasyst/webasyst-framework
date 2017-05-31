@@ -99,23 +99,43 @@ class waContactNameField extends waContactStringField
 
     public function set(waContact $contact, $value, $params = array(), $add = false)
     {
-        $value = trim($value);
+        $value = preg_replace('~\s+~', ' ', trim($value));
         if ($contact['is_company']) {
             return $value;
         }
-        $value_parts = explode(' ', trim($value), 3);
+
+        $contact['firstname'] = '';
+        $contact['middlename'] = '';
+        $contact['lastname'] = '';
+        if (!strlen($value)) {
+            return $value;
+        }
+
+        $value_parts = explode(' ', $value);
+        $sf_order = self::getNameOrder();
+
         switch (count($value_parts)) {
             case 1:
                 $contact['firstname'] = $value;
                 break;
             case 2:
-                $contact['firstname'] = $value_parts[0];
-                $contact['lastname'] = $value_parts[1];
+                if ($sf_order[0] == 'lastname') {
+                    $contact['lastname'] = $value_parts[0];
+                    $contact['firstname'] = $value_parts[1];
+                } else {
+                    $contact['firstname'] = $value_parts[0];
+                    $contact['lastname'] = $value_parts[1];
+                }
                 break;
-            case 3:
-                $contact['firstname'] = $value_parts[0];
-                $contact['middlename'] = $value_parts[1];
-                $contact['lastname'] = $value_parts[2];
+            default:
+                while($value_parts && count($sf_order) > 1) {
+                    if ($sf_order[0] == 'lastname') {
+                        $contact[array_pop($sf_order)] = array_pop($value_parts);
+                    } else {
+                        $contact[array_shift($sf_order)] = array_shift($value_parts);
+                    }
+                }
+                $contact['lastname'] = join(' ', $value_parts);
                 break;
         }
         return $value;
@@ -172,9 +192,12 @@ class waContactNameField extends waContactStringField
         return $name;
     }
 
-    public static function getNameOrder()
+    public static function getNameOrder($clear_cache = false)
     {
         static $result = null;
+        if ($clear_cache) {
+            $result = null;
+        }
         if ($result === null) {
             try {
                 $fld = waContactFields::get('name', 'person');

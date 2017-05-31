@@ -14,10 +14,6 @@
  */
 class waAuthUser extends waUser
 {
-    /**
-     * @var waStorage
-     */
-    protected $storage;
     protected $auth = false;
 
     public function __construct($id = null, $options = array())
@@ -32,8 +28,10 @@ class waAuthUser extends waUser
     public function init()
     {
         parent::init();
+        if (wa()->getEnv() === 'cli') {
+            return;
+        }
 
-        $this->storage = waSystem::getInstance()->getStorage();
         if (!isset(self::$options['session_timeout'])) {
             self::$options['session_timeout'] = 1800;
         }
@@ -87,7 +85,7 @@ class waAuthUser extends waUser
 
     public function updateLastTime($force = false)
     {
-        $time = $this->storage->read('user_last_datetime');
+        $time = wa()->getStorage()->read('user_last_datetime');
         if (!$time || $force || $time == '0000-00-00 00:00:00' ||
              (time() - strtotime($time) > 120)
         ) {
@@ -144,7 +142,7 @@ class waAuthUser extends waUser
             }
             $t = date("Y-m-d H:i:s");
             $contact_model->updateById($this->id, array('last_datetime' => $t));
-            $this->storage->write('user_last_datetime', $t);
+            wa()->getStorage()->write('user_last_datetime', $t);
         }
     }
 

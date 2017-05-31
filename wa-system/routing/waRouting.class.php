@@ -155,21 +155,24 @@ class waRouting
                 $this->domain .= '/'.$u;
             }
         }
-        if ($check) {
-            if (!isset($this->routes[$this->domain])) {
-                if (substr($this->domain, 0, 4) == 'www.') {
-                    $domain = substr($this->domain, 4);
-                } else {
-                    $domain = 'www.'.$this->domain;
-                }
-                if (wa()->getEnv() == 'frontend' && isset($this->routes[$domain])) {
+
+        if ($check && !isset($this->routes[$this->domain])) {
+            if (substr($this->domain, 0, 4) == 'www.') {
+                $domain = substr($this->domain, 4);
+            } else {
+                $domain = 'www.'.$this->domain;
+            }
+            if (isset($this->routes[$domain])) {
+                $this->domain = $domain;
+                if (wa()->getEnv() == 'frontend') {
                     $url = 'http'.(waRequest::isHttps()? 's' : '').'://';
                     $url .= $this->getDomainUrl($domain).'/'.wa()->getConfig()->getRequestUrl();
                     wa()->getResponse()->redirect($url, 301);
                 }
-                return $domain;
             }
+            return $this->domain;
         }
+
         if ($return_alias && isset($this->aliases[$this->domain])) {
             $this->domain = $this->aliases[$this->domain];
         }
@@ -436,11 +439,8 @@ class waRouting
                 if (isset($params['module']) && isset($r['module'])) {
                     $i++;
                 }
-                if ($absolute || $this->getDomain() != $domain) {
-                    $root_url = self::getUrlByRoute($r, $domain);
-                } else {
-                    $root_url = $this->system->getRootUrl(false, true).self::clearUrl($r['url']);
-                }
+
+                $root_url = self::getUrlByRoute($r, $domain, ($absolute || $this->getDomain() != $domain));
                 $root_url = preg_replace('/<url.*?>/i', '', $root_url);
 
                 if ($i > $max) {
@@ -506,18 +506,21 @@ class waRouting
      * @param string $domain
      * @return string
      */
-    public static function getUrlByRoute($route, $domain = null)
+    public static function getUrlByRoute($route, $domain = null, $absolute = true)
     {
-        $url = self::clearUrl($route['url']);
+        $result = self::clearUrl($route['url']);
         if ($domain) {
-            if (parse_url('http://'.$domain, PHP_URL_HOST) == waRequest::server('HTTP_HOST')) {
-                $https = waRequest::isHttps();
-            } else {
-                $https = false;
+            $result = self::getDomainUrl($domain, $absolute).'/'.$result;
+            if ($absolute) {
+                if (parse_url('http://'.$domain, PHP_URL_HOST) == waRequest::server('HTTP_HOST')) {
+                    $https = waRequest::isHttps();
+                } else {
+                    $https = false;
+                }
+                $result = 'http'.($https ? 's' : '').'://'.$result;
             }
-            return 'http'.($https ? 's' : '').'://'.self::getDomainUrl($domain).'/'.$url;
         }
-        return $url;
+        return $result;
     }
 
     public static function clearUrl($url)
@@ -529,16 +532,26 @@ class waRouting
 
     public static function getDomainUrl($domain, $absolute = true)
     {
-        $u1 = rtrim(wa()->getRootUrl(false, false), '/');
-        $u2 = rtrim(wa()->getRootUrl(false, true), '/');
         $domain_parts = @parse_url('http://'.$domain);
-        $u = isset($domain_parts['path']) ? $domain_parts['path'] : '';
-        if ($u1 != $u2 && substr($u, 0, strlen($u1)) == $u1) {
-            $u = $u2.substr($u, strlen($u1));
+        $result = isset($domain_parts['path']) ? $domain_parts['path'] : '';
+        if (!waSystemConfig::systemOption('mod_rewrite')) {
+            // without /index.php/
+            $root_url_static = rtrim(wa()->getRootUrl(false, false), '/');
+
+            // with /index.php/
+            $root_url_script = rtrim(wa()->getRootUrl(false, true), '/');
+
+            // Add /index.php/ to result in appropriate place
+            if (substr($result, 0, strlen($root_url_static)) == $root_url_static) {
+                $result = $root_url_script.substr($result, strlen($root_url_static));
+            }
         }
+
         if ($absolute) {
-            return $domain_parts['host'].(isset($domain_parts['port']) ? ':'.$domain_parts['port'] : '').$u;
+            $host = $domain_parts['host'].(isset($domain_parts['port']) ? ':'.$domain_parts['port'] : '');
+            return $host.$result;
+        } else {
+            return $result;
         }
-        return $u;
     }
 }

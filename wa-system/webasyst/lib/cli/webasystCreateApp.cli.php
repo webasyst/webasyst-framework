@@ -266,10 +266,10 @@ PHP;
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>{$wa->appName()} &mdash; {$wa->accountName()}</title>
     {$wa->css()}
-    <link type="text/css" rel="stylesheet" href="{$wa_app_static_url}css/%app_id%.css">
+    <link type="text/css" rel="stylesheet" href="{$wa_app_static_url}css/%app_id%.css?v{$wa->version()}">
     <script type="text/javascript" src="{$wa_url}wa-content/js/jquery/jquery-1.8.2.min.js"></script>
-    <script type="text/javascript" src="{$wa_url}wa-content/js/jquery-wa/wa.core.js"></script>
-    <script type="text/javascript" src="{$wa_app_static_url}js/%app_id%.js"></script>
+    <script type="text/javascript" src="{$wa_url}wa-content/js/jquery-wa/wa.core.js?v{$wa->version(true)}"></script>
+    <script type="text/javascript" src="{$wa_app_static_url}js/%app_id%.js?v{$wa->version()}"></script>
 
 </head>
 <body>
@@ -324,7 +324,7 @@ PHP;
 {$wa->css()}
 <link rel="stylesheet" type="text/css" href="{$wa_app_static_url}css/%app_id%.css?v{$wa->version()}" media="screen" />
 <script type="text/javascript" src="{$wa_url}wa-content/js/jquery/jquery-1.8.2.min.js"></script>
-<script type="text/javascript" src="{$wa_url}wa-content/js/jquery-wa/wa.core.js"></script>
+<script type="text/javascript" src="{$wa_url}wa-content/js/jquery-wa/wa.core.js?v{$wa->version(true)}"></script>
 </head>
 <body id="{$wa_app}"><div id="wa">
     {$wa->header()}

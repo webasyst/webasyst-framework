@@ -557,4 +557,32 @@ class waRequest
         }
         return false;
     }
+
+    public static function getPostMaxSize()
+    {
+        return self::toBytes(ini_get('post_max_size'));
+    }
+
+    public static function getUploadMaxFilesize()
+    {
+        return min(self::getPostMaxSize(), self::toBytes(ini_get('upload_max_filesize')));
+    }
+
+    protected static function toBytes($str)
+    {
+        $val = trim($str);
+        if (!$val) {
+            return 0;
+        }
+        $last = strtolower($str[strlen($str) - 1]);
+        switch ($last) {
+            case 'g':
+                $val *= 1024;
+            case 'm':
+                $val *= 1024;
+            case 'k':
+                $val *= 1024;
+        }
+        return $val;
+    }
 }

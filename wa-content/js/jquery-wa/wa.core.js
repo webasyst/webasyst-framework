@@ -458,7 +458,11 @@ if (!window.wa_skip_csrf_prefilter) {
             }
         } else if (typeof(settings.data) == 'object') {
             if (window.FormData && settings.data instanceof window.FormData) {
-                settings.data.set('_csrf', csrf);
+                if ('function' == typeof settings.data.set) {
+                    settings.data.set('_csrf', csrf);
+                } else {
+                    settings.data.append('_csrf', csrf);
+                }
             } else {
                 settings.data['_csrf'] = csrf;
             }

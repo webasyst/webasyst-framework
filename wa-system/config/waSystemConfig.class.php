@@ -64,9 +64,11 @@ class waSystemConfig
             $this->environment = $url === $this->getSystemOption('backend_url') ? 'backend' : 'frontend';
         }
 
-        $url = $this->getRequestUrl();
-        if ($url === 'robots.txt' || $url === 'favicon.ico' || $url == 'apple-touch-icon.png') {
-            $this->responseStatic($url);
+        if ($this->environment !== 'cli') {
+            $url = $this->getRequestUrl();
+            if ($url === 'robots.txt' || $url === 'favicon.ico' || $url == 'apple-touch-icon.png') {
+                $this->responseStatic($url);
+            }
         }
     }
 
@@ -165,14 +167,21 @@ class waSystemConfig
     public function getRootUrl($absolute = false, $script = false)
     {
         if (!self::$root_url) {
-            if (isset($_SERVER['SCRIPT_NAME']) && $_SERVER['SCRIPT_NAME']) {
-                self::$root_url = $_SERVER['SCRIPT_NAME'];
-            } elseif (isset($_SERVER['PHP_SELF']) && $_SERVER['PHP_SELF']) {
-                self::$root_url = $_SERVER['PHP_SELF'];
-            } else {
+            if ($this->environment !== 'cli') {
+                if (isset($_SERVER['SCRIPT_NAME']) && $_SERVER['SCRIPT_NAME']) {
+                    self::$root_url = $_SERVER['SCRIPT_NAME'];
+                } elseif (isset($_SERVER['PHP_SELF']) && $_SERVER['PHP_SELF']) {
+                    self::$root_url = $_SERVER['PHP_SELF'];
+                }
+                self::$root_url = '/'.ltrim(self::$root_url, '/');
+                self::$root_url = preg_replace('!/[^/]*$!', '/', self::$root_url);
+            }
+            if (!self::$root_url) {
+                self::$root_url = $this->systemOption('default_root_url');
+            }
+            if (!self::$root_url) {
                 self::$root_url = '/';
             }
-            self::$root_url = preg_replace('!/[^/]*$!', '/', self::$root_url);
         }
         if ($absolute) {
             $url = $this->getHostUrl();
@@ -184,12 +193,14 @@ class waSystemConfig
     public function getHostUrl()
     {
         if (waRequest::isHttps()) {
-            $url = 'https://';
+            $proto = 'https://';
         } else {
-            $url = 'http://';
+            $proto = 'http://';
         }
-        $url .= waRequest::server('HTTP_HOST');
-        return $url;
+
+        $host = waRequest::server('HTTP_HOST', $this->systemOption('default_host_domain'), 'string');
+        $host = ifempty($host, 'localhost');
+        return $proto.$host;
     }
 
     public function getDomain()
@@ -209,6 +220,26 @@ class waSystemConfig
         }
         @mb_internal_encoding('UTF-8');
         @ini_set('default_charset', 'utf-8');
+
+        // Make sure setlocale() is set to something utf8-compatible if at all possible
+        $sysloc = setlocale(LC_COLLATE, 0);
+        if (false === stripos($sysloc, 'utf-8') && false === stripos($sysloc, 'utf8')) {
+            $sysloc = explode('.', $sysloc, 2);
+            if (count($sysloc) < 2) {
+                $loc = 'en_US';
+            } else {
+                $loc = $sysloc[0];
+            }
+
+            $possible_locales = array();
+            $lang = preg_replace('~_.*~', '', $loc);
+            foreach(array($loc, $lang, 'en_US') as $locale) {
+                foreach(array('utf8','utf-8','UTF8','UTF-8') as $enc) {
+                    $possible_locales[] = $locale.'.'.$enc;
+                }
+            }
+            setlocale(LC_ALL, $possible_locales);
+        }
 
         @ini_set('register_globals', 'off');
         // magic quotes

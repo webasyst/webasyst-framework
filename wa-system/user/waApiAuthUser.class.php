@@ -30,7 +30,6 @@ class waApiAuthUser extends waAuthUser
         }
 
         waUser::init();
-        $this->storage = wa()->getStorage();
         $this->auth = true;
     }
 }

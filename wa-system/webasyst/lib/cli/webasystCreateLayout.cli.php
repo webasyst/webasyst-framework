@@ -64,8 +64,8 @@ HELP;
     {$wa->css()}
     <link href="{$wa_app_static_url}css/'.$app_id.'.css?v{$wa->version()}" rel="stylesheet" type="text/css" />
     <script src="{$wa_url}wa-content/js/jquery/jquery-1.11.1.min.js" type="text/javascript"></script>
-    <script src="{$wa_url}wa-content/js/jquery-wa/wa.core.js" type="text/javascript"></script>
-    <script type="text/javascript" src="{$wa_app_static_url}js/'.$app_id.'.js?{$wa->version()}"></script>
+    <script src="{$wa_url}wa-content/js/jquery-wa/wa.core.js?v{$wa->version(true)}" type="text/javascript"></script>
+    <script type="text/javascript" src="{$wa_app_static_url}js/'.$app_id.'.js?v{$wa->version()}"></script>
     {$wa->js()}
 </head>
 <body>
