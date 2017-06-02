@@ -24,10 +24,8 @@ class waWorkflowState extends waWorkflowEntity
      * @param boolean $name_only true to return actions names, false (default) to return waWorkflowAction instances
      * @return array action_id => waWorkflowAction or string depending on $name_only
      */
-    public function getActions($params = null)
+    public function getActions($params = null, $name_only=false)
     {
-        $args = func_get_args();
-        $name_only = isset($args[1]) ? $args[1] : false;
         $actions = array();
         $actions_ids = $this->getAvailableActionIds($params);
         if ($actions_ids === null) {
