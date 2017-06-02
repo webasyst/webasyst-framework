@@ -3,13 +3,34 @@
 class waLogModel extends waModel
 {
     protected $table = "wa_log";
+    /**
+     * @var string application name
+     */
+    protected $app_id;
+
+    /**
+     * @param string $type
+     * @param bool $writable
+     * @param string $app_id
+     */
+    public function __construct($type = null, $writable = false, $app_id = '')
+    {
+        if ($app_id) {
+            if (!waSystem::getInstance()->appExists($app_id)) {
+                throw new waException('Unknown application ' . $app_id);
+            }
+            $this->app_id = $app_id;
+        }
+
+        parent::__construct($type, $writable);
+    }
 
     public function add($action, $params = null, $subject_contact_id = null, $contact_id = null)
     {
         /**
          * @var waSystem
          */
-        $system = waSystem::getInstance();
+        $system = waSystem::getInstance($this->app_id);
         /**
          * @var waAppConfig
          */
@@ -21,9 +42,8 @@ class waLogModel extends waModel
             if (!isset($actions[$action])) {
                 if (waSystemConfig::isDebug()) {
                     throw new waException('Unknown action for log '.$action);
-                } else {
-                    return false;
                 }
+                return false;
             }
             if ($actions[$action] === false) {
                 return false;
@@ -52,7 +72,7 @@ class waLogModel extends waModel
 
     public function getLogs($where = array())
     {
-        $where_string = "l.action != 'login' AND l.action != 'logout'";
+        $where_string = "l.action NOT IN ('login', 'logout')";
         if (!empty($where['max_id'])) {
             $where_string .= ' AND l.id < '.(int)$where['max_id'];
             unset($where['max_id']);
