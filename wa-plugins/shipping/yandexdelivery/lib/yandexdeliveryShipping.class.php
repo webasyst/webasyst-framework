@@ -221,6 +221,14 @@ class yandexdeliveryShipping extends waShipping
 
         $shipping_address = $order->shipping_address;
 
+        if ($data['order_shipment_type'] != 'pickup') {
+            $data['deliverypoint'] = array(
+                'city'   => ifset($shipping_address['city']),
+                'index'  => ifset($shipping_address['zip']),
+                'street' => ifset($shipping_address['street']),
+            );
+        }
+
         $data['recipient'] = array(
             'first_name'  => ifempty($shipping_address['firstname'], $order->getContactField('firstname')),
             'last_name'   => ifempty($shipping_address['lastname'], $order->getContactField('lastname')),

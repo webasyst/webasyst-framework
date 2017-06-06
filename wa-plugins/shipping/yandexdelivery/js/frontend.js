@@ -627,7 +627,7 @@ function ShippingYandexdelivery(key, id, url) {
                         "features": pickups
                     });
 
-                    this.map.setBounds(this.manager.getBounds());
+                    this.map.setBounds(this.manager.getBounds(), {checkZoomRange: true});
 
                 } else if (this.id) {
                     var self = this;
