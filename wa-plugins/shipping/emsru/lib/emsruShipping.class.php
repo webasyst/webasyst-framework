@@ -6,6 +6,7 @@
  * @property-read string $city Город
  * @property-read double $surcharge Надбавка (%)
  * @property-read double $fixed_surcharge Надбавка
+ * @property-read double $difficult_charge Надбавка за каждый килограмм
  * @property-read string $company_name Получатель наложенного платежа (магазин)
  * @property-read string $address1 Адрес получателя наложенного платежа (магазина), строка 1
  * @property-read string $address2 Адрес получателя наложенного платежа (магазина), строка 2
@@ -81,6 +82,11 @@ class emsruShipping extends waShipping
                     if (doubleval($this->fixed_surcharge) > 0) {
                         $rate += $this->fixed_surcharge;
                     }
+
+                    if ($this->isDifficult()) {
+                        $rate += $this->difficult_charge * ceil($this->getTotalWeight());
+                    }
+
                     $services['main'] = array(
                         'rate'         => $rate,
                         'currency'     => 'RUB',
@@ -175,9 +181,11 @@ class emsruShipping extends waShipping
                 $model = new waRegionModel();
                 if ($region_name) {
                     $region_name = trim(preg_replace($pattern, '', mb_strtoupper($region_name)));
+                    $region_name = preg_replace('@\s*(—|-)\s*@', '-', $region_name);
                     $to = ifset($map['region'][$region_name]);
                 } elseif ($region && ($region = $model->get(ifset($address['country']), $region))) {
                     $region = trim(preg_replace($pattern, '', mb_strtoupper($region['name'])));
+                    $region = preg_replace('@\s*(—|-)\s*@', '-', $region);
                     $to = ifset($map['city'][$region], ifset($map['region'][$region]));
                 }
             }
@@ -375,8 +383,11 @@ class emsruShipping extends waShipping
 
     public function tracking($tracking_id = null)
     {
-        $url = "http://www.emspost.ru/ru/tracking/?id=".urlencode($tracking_id);
-        return 'Отслеживание отправления: <a href="'.$url.'" target="_blank">'.$url.'</a>';
+        if (!empty($tracking_id)) {
+            $template = 'Отслеживание отправления: <a href="https://pochta.ru/tracking#%1$s" target="_blank">https://pochta.ru/tracking#%1$s</a>';
+            return sprintf($template, htmlentities($tracking_id, ENT_NOQUOTES, 'utf-8'));
+        }
+        return '';
     }
 
     /**
@@ -624,5 +635,17 @@ class emsruShipping extends waShipping
             $view = wa()->getView();
         }
         return $view;
+    }
+
+    private function isDifficult()
+    {
+        $difficult = include($this->path.'/lib/config/data/difficult.php');
+        if (in_array($this->zip, $difficult)) {
+            return true;
+        } elseif (in_array(trim($this->getAddress('zip')), $difficult)) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }
