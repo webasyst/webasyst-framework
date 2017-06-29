@@ -8,6 +8,7 @@
  * @property {string} comment
  * @property {string} payment
  * @property {string} schedule
+ * @property {float} rate
  *
  * @property {string} input_id
  */
@@ -41,9 +42,15 @@
  */
 
 /**
+ * @typedef {object} shippingYandexDeliveryId
+ * @property {string} map
+ * @property {string} filter
+ */
+
+/**
  *
  * @param {string} key
- * @param {string} id
+ * @param {shippingYandexDeliveryId} id
  * @param {string} url
  * @returns {ShippingYandexdelivery}
  * @constructor
@@ -169,10 +176,17 @@ function ShippingYandexdelivery(key, id, url) {
             if (!this.filter_select) {
                 this.filter_select = form.find(':input[name$="\.filter\]"]:first');
             }
+            /**
+             * @this ShippingYandexdelivery.rate
+             */
 
             this.reset();
 
             var self = this;
+
+            /**
+             * @var {ShippingYandexdelivery.rate} self
+             */
 
             this.rate_select.off('change.yandexdelivery').on('change.yandexdelivery', function () {
                 self.change(this);
@@ -185,23 +199,20 @@ function ShippingYandexdelivery(key, id, url) {
                 var $this = $(this);
                 var exists = self.rate_select.find('option[value^="' + this.value + '\."]');
                 var services = [];
-                exists.each(function () {
-                    /**
-                     * @this HTMLOptionElement
-                     */
-                    var id = self.getId(this.value);
+                exists.each(function (index, element) {
+                    var id = self.getId(element.value);
                     var $service = $(this);
 
                     if (services.indexOf(id) === -1) {
                         services.push(id);
                         var $option = $('<option></option>');
                         $option.attr('value', id);
-                        $option.text(this.text.replace(/^([^:]+):.+(\([^\)]+\))$/, '$1 $2'));
+                        $option.text(this.text.replace(/^([^:]+):.+(\([^)]+\))$/, '$1 $2'));
                         $option.insertAfter($this);
                     }
 
                     $service.data('full-name', this.text);
-                    this.text = this.text.replace(/^([^:]+):\s+/, '').replace(/\([^\)]+\)$/, '');
+                    this.text = this.text.replace(/^([^:]+):\s+/, '').replace(/\([^)]+\)$/, '');
                     $service.data('name', this.text);
                 });
                 if (services.length) {
@@ -244,7 +255,7 @@ function ShippingYandexdelivery(key, id, url) {
                     instance.courier.load($(select).data('courier'));
                     break;
                 case 'pickup':
-                    var pickup_id = select.value.replace(/^.*\.([^\.]+)$/, '$1');
+                    var pickup_id = select.value.replace(/^.*\.([^.]+)$/, '$1');
                     instance.pickup.change();
                     instance.pickup.select(pickup_id);
                     break;
@@ -257,7 +268,7 @@ function ShippingYandexdelivery(key, id, url) {
         },
 
         getId: function (value) {
-            return value.replace(/^([^\.]+)\.([^\.]+)(\.[^\.]+)?$/, '$1.$2');
+            return value.replace(/^([^.]+)\.([^.]+)(\.[^.]+)?$/, '$1.$2');
         },
         filter: function (type) {
             var regexp = new RegExp('^' + type.replace(/\./, '\.') + '(\.|$)');
@@ -382,6 +393,7 @@ function ShippingYandexdelivery(key, id, url) {
         radio: null,
         pickup_container: null,
         pickup_list: null,
+        pickup_scroll: false,
 
         pickup_section: null,
 
@@ -459,9 +471,14 @@ function ShippingYandexdelivery(key, id, url) {
         /**
          *
          * @param {Array.<shippingYandexDeliveryPickup>} pickups
-         * @param number pickup_id
+         * @param {Number} pickup_id
          */
         load: function (pickups, pickup_id) {
+
+            /**
+             * @this ShippingYandexdelivery.pickup
+             */
+
             this.reset();
             if (this.pickup_container) {
                 this.pickup_container.slideDown();
@@ -469,7 +486,7 @@ function ShippingYandexdelivery(key, id, url) {
                 var center = pickups.length ? [pickups[0].lat, pickups[0].lng] : null;
                 var balloons = [];
                 for (var i = 0; i < pickups.length; i++) {
-                    balloons.push(this.add(pickups[i], pickups[i]['id'] == pickup_id));
+                    balloons.push(this.add(pickups[i], pickups[i]['id'] === pickup_id));
                 }
                 this.map.init(center);
                 this.map.show(balloons);
@@ -563,9 +580,9 @@ function ShippingYandexdelivery(key, id, url) {
                     var container = radio.parents('li:first');
                     setTimeout(function () {
                         self.map.select(id);
-
                     }, 10);
-                    if (false) {
+
+                    if (this.pickup_scroll) {
                         setTimeout(function () {
                             var offset = self.pickup_list.scrollTop() + container.position().top;
                             self.pickup_list.parent().scrollTop(offset);
@@ -619,21 +636,23 @@ function ShippingYandexdelivery(key, id, url) {
             map: null,
             loading: false,
             manager: null,
-            show: function (pickups) {
+            show: function (pickups, delay) {
+                var self = this;
                 if (this.map) {
                     this.map_container.show();
                     this.manager.add({
                         "type": "FeatureCollection",
                         "features": pickups
                     });
+                    setTimeout(function () {
+                        self.map.setBounds(self.manager.getBounds(), {checkZoomRange: true});
+                    }, delay ? 1500 : 500);
 
-                    this.map.setBounds(this.manager.getBounds(), {checkZoomRange: true});
 
                 } else if (this.id) {
-                    var self = this;
                     setTimeout(function () {
-                        self.show(pickups);
-                    }, 100);
+                        self.show(pickups, true);
+                    }, 1000);
                 }
             },
             select: function (id) {
@@ -734,6 +753,8 @@ function ShippingYandexdelivery(key, id, url) {
 
 
     this.initialized = false;
+    this.pickup.map.map = null;
+    this.pickup.map.manager = null;
     this.pickup.map.id = id.map;
     this.rate.id = id.filter;
 
@@ -747,7 +768,7 @@ function ShippingYandexdelivery(key, id, url) {
         this.form.hide();
 
         if (this.pickup.map.id) {
-            this.control_wrapper = this.form.find('#' + id.map).parents('.wa-field:first');
+            this.control_wrapper = this.form.find('#' + this.pickup.map.id).parents('.wa-field:first');
             this.fixUI();
             this.pickup.init(this.control_wrapper);
             this.loader.init(this.control_wrapper);
@@ -763,6 +784,13 @@ function ShippingYandexdelivery(key, id, url) {
                 }
             }
         }).change();
+
+        input.on("change.yandexdelivery", 'select[name="rate_id[' + this.key + ']"]', function () {
+            setTimeout(function () {
+                var context = $(".shipping-" + self.key + ":first");
+                $(':input[name="shipping_id"]', context).change();
+            }, 200)
+        });
     }
 
     return this;

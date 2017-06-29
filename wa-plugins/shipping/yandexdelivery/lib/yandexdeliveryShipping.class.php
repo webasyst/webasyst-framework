@@ -17,6 +17,7 @@
  * @property-read string $shipping_type
  * @property-read boolean $yd_warehouse
  * @property-read string $map
+ * @property-read string $taxes
  * @property-read boolean $debug
  */
 class yandexdeliveryShipping extends waShipping
@@ -135,7 +136,7 @@ class yandexdeliveryShipping extends waShipping
     }
 
     /**
-     * @return array
+     * @return float
      */
     protected function correctItems()
     {
@@ -186,7 +187,7 @@ class yandexdeliveryShipping extends waShipping
 
         $data += array(
             'order_requisite' => null,//number ID реквизитов магазина
-            'order_warehouse' => $this->warehouse_id,//number ID склада
+            'order_warehouse' => ($this->shipping_type == 'import') ? null : $this->warehouse_id,//number ID склада
             'order_num'       => $order->id,//number Номер заказа магазина (не больше 15 цифр)
 
             'order_weight' => $this->getTotalWeight(),//Вес заказа, кг
@@ -237,18 +238,18 @@ class yandexdeliveryShipping extends waShipping
             'phone'       => ifempty($shipping_address['phone'], $order->getContactField('phone')),
         );
 
-
         foreach ($this->getItems() as $item) {
             $data['order_items'][] = array(
-                'orderitem_name'     => $item['name'],      //string Наименование товара (Телевизор)
-                'orderitem_quantity' => $item['quantity'],  //number Количество товара (1)
-                'orderitem_cost'     => round($item['price'] - $item['discount']),     //number Цена товара, руб. (12000)
-                'orderitem_id'       => $item['id'],        //number ID товара (58767)
-                'orderitem_article'  => $item['sku'],       //string Артикул товара (GHY1234)
-                'orderitem_weight'   => round($item['weight'], 2),    //number Вес товара, кг (2)
-                'orderitem_length'   => round($item['length']),    //number Длина товара, см (10)
-                'orderitem_width'    => round($item['width']),     //number Ширина товара, см (20)
-                'orderitem_height'   => round($item['height']),    //number Высота товара, см (10)
+                'orderitem_name'      => $item['name'],      //string Наименование товара (Телевизор)
+                'orderitem_quantity'  => $item['quantity'],  //number Количество товара (1)
+                'orderitem_cost'      => round($item['price'] - $item['discount']),     //number Цена товара, руб. (12000)
+                'orderitem_id'        => $item['id'],        //number ID товара (58767)
+                'orderitem_article'   => $item['sku'],       //string Артикул товара (GHY1234)
+                'orderitem_weight'    => round($item['weight'], 2),    //number Вес товара, кг (2)
+                'orderitem_length'    => ceil($item['length']),    //number Длина товара, см (10)
+                'orderitem_width'     => ceil($item['width']),     //number Ширина товара, см (20)
+                'orderitem_height'    => ceil($item['height']),    //number Высота товара, см (10)
+                'orderitem_vat_value' => $this->getTaxId($item),   //id налоговой ставки
             );
         }
 
@@ -270,6 +271,42 @@ class yandexdeliveryShipping extends waShipping
         } catch (waException $ex) {
             return $ex->getMessage();
         }
+    }
+
+    private function getTaxId($item)
+    {
+        switch ($this->taxes) {
+            case 'no':
+                $id = 6;
+                break;
+            case 'map':
+                $rate = ifset($item['tax_rate']);
+                if (in_array($rate, array(null, false, ''), true)) {
+                    $rate = -1;
+                }
+                switch ($rate) {
+                    case 18:
+                        $id = 1;
+                        break;
+                    case 10:
+                        $id = 2;
+                        break;
+                    case 0:
+                        $id = 5;
+                        break;
+                    default:
+                        $id = 6;
+                        break;
+                }
+                break;
+
+            case 'skip':
+            default:
+                $id = null;
+                break;
+        }
+
+        return $id;
     }
 
     /**
@@ -585,11 +622,29 @@ class yandexdeliveryShipping extends waShipping
         try {
             $params = array();
             $params += $this->prepareAddress();
+            $params['weight'] = $this->getTotalWeight();
+            $params += $this->getPackageSize($params['weight']);
+
             $params['to_yd_warehouse'] = $this->yd_warehouse ? 1 : 0;
             $params['assessed_value'] = $this->getAssessedPrice($this->insurance);
             $params['total_cost'] = round($this->getTotalPrice(), 2);
             $params['order_cost'] = $params['total_cost'];
-            $services = $this->apiQuery('searchDeliveryList', $params);
+            try {
+                $services = $this->apiQuery('searchDeliveryList', $params);
+            } catch (waException $ex) {
+                switch ($ex->getCode()) {
+                    case 500:
+                        $message = 'При расчете стоимости доставки произошла ошибка. Повторите попытку позднее.';
+                        break;
+                    case 403:
+                        $message = 'При расчете стоимости доставки произошла ошибка. Проверьте параметры доступа.';
+                        break;
+                    default:
+                        $message = 'При расчете стоимости доставки произошла ошибка.';
+                        break;
+                }
+                throw new waException($message);
+            }
             if (empty($services)) {
                 throw new waException('Доставка по указанному адресу недоступна.');
             }
@@ -638,8 +693,6 @@ class yandexdeliveryShipping extends waShipping
             throw new waException('Не указан город доставки.');
         }
 
-        $address['weight'] = $this->getTotalWeight();
-        $address += $this->getPackageSize($address['weight']);
         return $address;
     }
 
@@ -1223,7 +1276,7 @@ HTML;
         'use strict';
 
         function init() {
-            new ShippingYandexdelivery(
+            var _instance = new ShippingYandexdelivery(
                 '$this->key',
                 {
                     map: '{$map_params['id']}',
@@ -1481,7 +1534,7 @@ HTML;
             }
         }
         if (!isset($keys[$method]) || !strlen($keys[$method])) {
-            throw new waException(sprintf("Not found key for method %s", $method));
+            throw new waException(sprintf("Not found key for method %s. Check plugin settings field 'method_keys'.", $method));
         }
         return $keys[$method];
     }
@@ -1525,7 +1578,6 @@ HTML;
 
         $data = $this->format($data);
 
-        $data['secret_key'] = md5($this->implode($data).$this->getMethodKey($method));
         $url = sprintf($this->url, $this->api_version, $method);
         $key = md5($url.var_export($data, true));
         if (in_array($method, array('searchDeliveryList'))) {
@@ -1534,13 +1586,17 @@ HTML;
                 return $cache->get();
             }
         }
-        $options = array(
-            'request_format' => 'default',
-            'format'         => waNet::FORMAT_JSON,
-            'verify'         => false,
-        );
         try {
+            $data['secret_key'] = md5($this->implode($data).$this->getMethodKey($method));
+
+            $options = array(
+                'request_format' => 'default',
+                'format'         => waNet::FORMAT_JSON,
+                'verify'         => false,
+            );
+
             $net = new waNet($options);
+
             $response = $net->query($url, $data, waNet::METHOD_POST);
             if ($response['status'] != 'ok') {
                 $this->api_error = $response['data'];
@@ -1548,10 +1604,12 @@ HTML;
             } elseif (!empty($cache)) {
                 $cache->set($response['data']);
             }
+
             if ($this->debug) {
                 $debug = var_export(compact('url', 'data', 'response'), true);
                 waLog::log($debug, 'wa-plugins/shipping/yandexdelivery/api.debug.log');
             }
+
         } catch (waException $ex) {
             $message = $ex->getMessage();
             unset($data['secret_key']);
@@ -1615,6 +1673,27 @@ HTML;
 &nbsp;&nbsp;&nbsp;&nbsp;- заказ, ожидавший отгрузку, переносится в список «Отмены» в кабинете «Яндекс.Доставки»;<br>
 &nbsp;&nbsp;&nbsp;&nbsp;- черновик не удаляется и остается без изменений, его можно вручную отредактировать или отправить в архив.',
                 'disabled'    => !$this->getAdapter()->getAppProperties(self::STATE_CANCELED),
+            ),
+        );
+    }
+
+    public function taxesOptions()
+    {
+        return array(
+            array(
+                'value' => 'skip',
+                'title' => 'Не передавать ставки НДС',
+
+            ),
+            array(
+                'value'    => 'no',
+                'title'    => 'НДС не облагается',
+                'disabled' => $this->getAdapter()->getAppProperties('taxes'),
+            ),
+            array(
+                'value'    => 'map',
+                'title'    => 'Передавать ставки НДС по каждой позиции',
+                'disabled' => $this->getAdapter()->getAppProperties('taxes'),
             ),
         );
     }
