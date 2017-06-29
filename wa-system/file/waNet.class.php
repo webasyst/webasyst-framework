@@ -33,27 +33,28 @@ class waNet
     protected $cookies = null;
     protected $request_headers = array();
     protected $options = array(
-        'timeout'        => 15,
-        'format'         => null,
-        'request_format' => null,
-        'charset'        => 'utf-8',
-        'verify'         => true,
-        'md5'            => false,
-        'log'            => false,
-        'authorization'  => false,
-        'login'          => null,
-        'password'       => null,
-        'proxy_host'     => null,
-        'proxy_port'     => null,
-        'proxy_user'     => null,
-        'proxy_password' => null,
-        'proxy_auth'     => 'basic',
-        'priority'       => array(
+        'timeout'             => 15,
+        'format'              => null,
+        'request_format'      => null,
+        'required_get_fields' => array(),
+        'charset'             => 'utf-8',
+        'verify'              => true,
+        'md5'                 => false,
+        'log'                 => false,
+        'authorization'       => false,
+        'login'               => null,
+        'password'            => null,
+        'proxy_host'          => null,
+        'proxy_port'          => null,
+        'proxy_user'          => null,
+        'proxy_password'      => null,
+        'proxy_auth'          => 'basic',
+        'priority'            => array(
             'curl',
             'fopen',
             'socket',
         ),
-        'ssl'            => array(
+        'ssl'                 => array(
             'key'      => '',
             'cert'     => '',
             'password' => '',
@@ -153,15 +154,27 @@ class waNet
      */
     protected function buildRequest(&$url, &$content, &$method)
     {
-        if (!$content) {
-            $content = self::getPost($url);
+        $format = ifempty($this->options['request_format'], $this->options['format']);
+        if ($content && in_array($format, array(self::FORMAT_XML, self::FORMAT_XML), true)) {
+            $method = self::METHOD_POST;
         }
 
-        if ($content) {
-            if ($method == self::METHOD_GET) {
-                $method = self::METHOD_POST;
-            }
-            $content = $this->encodeRequest($content);
+        if ($content && ($method == self::METHOD_GET)) {
+            $get = is_string($content) ? $content : http_build_query($content);
+            $url .= strpos($url, '?') ? '&' : '?'.$get;
+            $content = array();
+        }
+
+        if ($post = self::getPost($url, $this->options['required_get_fields'])) {
+            $method = self::METHOD_POST;
+            $content = array_merge($post, $content);
+        }
+
+        switch ($method) {
+            case self::METHOD_POST:
+            case self::METHOD_PUT:
+                $content = $this->encodeRequest($content);
+                break;
         }
     }
 
@@ -764,7 +777,7 @@ class waNet
      * @see http://stackoverflow.com/questions/686217/maximum-on-http-header-values
      * @param string $url
      * @param string[] $required_get_fields
-     * @return string POST data
+     * @return array POST data
      */
     private static function getPost(&$url, $required_get_fields = array())
     {
@@ -795,7 +808,7 @@ class waNet
                 $url .= '?'.http_build_query($get);
             }
         }
-        return $post ? http_build_query($post) : null;
+        return $post;
     }
 
     private function getHint($line)
@@ -820,5 +833,10 @@ class waNet
         if (!empty($this->ch)) {
             curl_close($this->ch);
         }
+    }
+
+    public function __debugInfo()
+    {
+        //TODO print requests details
     }
 }

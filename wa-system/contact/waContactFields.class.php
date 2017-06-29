@@ -353,9 +353,12 @@ class waContactFields
         foreach ($fields as $k => $v) {
             /** @var waContactField $v */
             if ($v->getId() == $id) {
-                $fields[$k] = $field;
-                $changed = true;
-                break;
+                if ($changed) {
+                    unset($fields[$k]);
+                } else {
+                    $fields[$k] = $field;
+                    $changed = true;
+                }
             }
         }
         if (!$changed) {
@@ -366,7 +369,7 @@ class waContactFields
                 $fld->prepareVarExport();
             }
         }
-        waUtils::varExportToFile($fields, $file, true);
+        waUtils::varExportToFile(array_values($fields), $file, true);
 
         // Update static vars
         self::$fieldStatus[$id] = false;

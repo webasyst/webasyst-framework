@@ -537,11 +537,19 @@ class waSystem
             throw new waRightsException('Access to this app denied', 403);
         }
 
-        // Init system app
+        // Init system and app
         wa('webasyst');
+        $wa_app = wa($app, 1);
+
+        // Check CSRF protection token if current active app enabled it
+        if ($wa_app->getConfig()->getInfo('csrf') && waRequest::method() == 'post') {
+            if (waRequest::post('_csrf') != waRequest::cookie('_csrf')) {
+                throw new waException('CSRF Protection', 403);
+            }
+        }
 
         // Pass through to FrontController of an active app
-        wa($app, 1)->getFrontController()->dispatch();
+        $wa_app->getFrontController()->dispatch();
     }
 
     private function dispatchFrontend($request_url)

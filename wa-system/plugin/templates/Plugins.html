@@ -62,6 +62,11 @@
 
 <script type="text/javascript">
 (function ($) {
+
+    var $_ = window.$_ || function() {
+        return arguments[0] || '';
+    };
+
     $.plugins = {
         options: {
             loading: '<i class="icon16 loading"></i>',

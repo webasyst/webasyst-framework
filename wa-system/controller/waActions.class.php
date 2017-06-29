@@ -56,9 +56,18 @@ abstract class waActions extends waController
 
         if (strpbrk($template, '/:') === false) {
             $match = array();
-            preg_match("/[A-Z][^A-Z]+/", get_class($this), $match);
-            $template = $this->getPluginRoot().'templates/actions/'.
-                strtolower($match[0])."/".$match[0].$template.$this->getView()->getPostfix();
+            if (!preg_match("/^[a-z]+([A-Z][a-z]+Plugin)?([A-Z][^A-Z]+)([A-Za-z]*)Actions$/", get_class($this), $match)) {
+                throw new Exception('bad class name for waActions class');
+            }
+            $template = $this->getPluginRoot().'templates/actions/'.strtolower($match[2])."/".$match[2].$match[3].$template.$this->getView()->getPostfix();
+            if ($this->getPluginRoot() && !file_exists(wa()->getAppPath($template))) {
+                $match = array();
+                preg_match("/[A-Z][^A-Z]+/", get_class($this), $match);
+                $template2 = $this->getPluginRoot().'templates/actions/'.strtolower($match[0])."/".$match[0].ucfirst($this->action).$this->getView()->getPostfix();
+                if (file_exists(wa()->getAppPath($template2))) {
+                    return $template2;
+                }
+            }
         }
 
         return $template;

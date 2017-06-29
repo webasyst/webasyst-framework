@@ -95,6 +95,14 @@ class waSignupAction extends waViewAction
 
         $auth_config = wa()->getAuthConfig();
 
+        // Check agreement with terms of service
+        if(!empty($auth_config['params']['service_agreement']) && $auth_config['params']['service_agreement'] == 'checkbox') {
+            if (empty($data['terms_accepted'])) {
+                $errors['terms_accepted'] = _ws('Please confirm your agreement');
+            }
+        }
+        unset($data['terms_accepted']);
+
         // remove unknown or dangerous keys from $data
         $contact_model = new waContactModel();
         $allowed_fields = waContactFields::getAll();

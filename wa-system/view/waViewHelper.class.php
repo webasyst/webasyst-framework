@@ -627,33 +627,43 @@ HTML;
         }
         if (!wa($this->app_id)->getCaptcha()->isValid()) {
             $errors['captcha'] = _ws('Invalid captcha');
+            return false;
         }
+
+        $agreed_to_terms = $this->post('agree_to_terms');
+        if ($agreed_to_terms !== null && !$agreed_to_terms) {
+            $errors['agree_to_terms'] = _ws('Please confirm your agreement');
+        }
+
         $email = $this->post('email');
         $email_validator = new waEmailValidator();
-        $subject = trim($this->post('subject', _ws('Website request')));
-        $body = trim($this->post('body'));
-        if (!$body) {
-            $errors['body'] = _ws('Please define your request');
-        }
         if (!$email) {
             $errors['email'] = _ws('Email is required');
         } elseif (!$email_validator->isValid($email)) {
             $errors['email'] = implode(', ', $email_validator->getErrors());
         }
-        if (!$errors) {
-            $body = nl2br(htmlspecialchars($body));
-            $body = _ws('Name').': '.htmlspecialchars($this->post('name'))."<br>\n".
-                    _ws('Email').': '.htmlspecialchars($email)."<br><br>\n".$body;
-            $m = new waMailMessage($subject, $body);
-            $m->setTo($to);
-            $m->setReplyTo(array($email => $this->post('name')));
-            if (!$m->send()) {
-                $errors['all'] = _ws('An error occurred while attempting to send your request. Please try again in a minute.');
-            } else {
-                return true;
-            }
+
+        $subject = trim($this->post('subject', _ws('Website request')));
+        $body = trim($this->post('body'));
+        if (!$body) {
+            $errors['body'] = _ws('Please define your request');
         }
-        return false;
+        if ($errors) {
+            return false;
+        }
+
+        $body = nl2br(htmlspecialchars($body));
+        $body = _ws('Name').': '.htmlspecialchars($this->post('name'))."<br>\n".
+                _ws('Email').': '.htmlspecialchars($email)."<br><br>\n".$body;
+        $m = new waMailMessage($subject, $body);
+        $m->setTo($to);
+        $m->setReplyTo(array($email => $this->post('name')));
+        if (!$m->send()) {
+            $errors['all'] = _ws('An error occurred while attempting to send your request. Please try again in a minute.');
+            return false;
+        }
+
+        return true;
     }
 
     public function csrf()
@@ -900,6 +910,26 @@ HTML;
             }
             $html .= '</div></div>';
         }
+
+        if (!empty($config['params']['service_agreement']) && !empty($config['params']['service_agreement_text'])) {
+            $html .= '<div class="wa-field"><div class="wa-value">';
+            if ($config['params']['service_agreement'] == 'checkbox') {
+                $html .= '<label><input type="checkbox" name="data[terms_accepted]" value="1"';
+                if (!empty($_POST['data']['terms_accepted'])) {
+                    $html .= ' checked';
+                }
+                $html .= '> ';
+                $html .= $config['params']['service_agreement_text'];
+                $html .= '</label>';
+                if (isset($errors['terms_accepted'])) {
+                    $html .= '<em class="wa-error-msg">'.$errors['terms_accepted'].'</em>';
+                }
+            } else {
+                $html .= $config['params']['service_agreement_text'];
+            }
+            $html .= '</div></div>';
+        }
+
         $signup_submit_name = !empty($config['params']['button_caption']) ? htmlspecialchars($config['params']['button_caption']) : _ws('Sign Up');
         $html .= '<div class="wa-field"><div class="wa-value wa-submit">
             <input type="submit" value="'.$signup_submit_name.'"> '.sprintf(_ws('or <a href="%s">login</a> if you already have an account'), $this->getUrl('/login')).'

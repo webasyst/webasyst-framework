@@ -215,7 +215,7 @@ PHP;
         if (!waRequest::param(3)) {
             $action_type = 'action';
             $action_names = array(waRequest::param(2));
-            if (!preg_match('~^[a-z][a-zA-Z0-9_]*$~', $action_names[0])) {
+            if (!preg_match('~^[a-zA-Z][a-zA-Z0-9_]*$~', $action_names[0])) {
                 $this->dieWithErrors(array(
                     'Incorrect action name: '.$action_names[0],
                 ));

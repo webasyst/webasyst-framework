@@ -2,8 +2,6 @@
 
 class waCSV
 {
-    const MAX_FIELDS_COUNT = 100;
-
     protected $file = false;
     protected $handler;
 
@@ -179,10 +177,6 @@ class waCSV
                 }
                 $n++;
             }
-        }
-
-        if ($fields_count > self::MAX_FIELDS_COUNT) {
-            throw new waException(sprintf(_("Number of columns can not exceed %s"), self::MAX_FIELDS_COUNT));
         }
 
         if ($k = $fields_count - count($fields)) {

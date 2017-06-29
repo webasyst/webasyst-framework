@@ -70,7 +70,7 @@ HELP;
     {
         $config = array(
             'name'     => empty($params['name']) ? ucfirst($this->plugin_id) : $params['name'],
-            'icon'     => 'img/'.$this->plugin_id.'.gif',
+            'img'     => 'img/'.$this->plugin_id.'.gif',
             'version'  => ifempty($params['version'], $this->getDefaults('version')),
             'vendor'   => ifempty($params['vendor'], $this->getDefaults('vendor')),
             'handlers' => array(),//TODO optional include some demo handlers
