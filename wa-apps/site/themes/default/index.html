@@ -116,7 +116,7 @@
         {if count($wa->apps())>0 || $wa->isAuthEnabled()}
 
             <!-- GLOBAL NAVIGATION -->
-            <div id="globalnav" class="{if $theme_settings.header_scheme|strstr:'white'}light{if $theme_settings.header_scheme|strstr:'andgray'} andgray{/if}{/if}"{if $theme_settings.header_customcolor} style="background-color: {$theme_settings.header_customcolor};""{/if}>
+            <div id="globalnav" class="{if $theme_settings.header_scheme|strstr:'white'}light{if $theme_settings.header_scheme|strstr:'andgray'} andgray{/if}{/if}"{if $theme_settings.header_customcolor} style="background-color: {$theme_settings.header_customcolor};"{/if}>
                 <div class="container">
 
                     {if $theme_settings.header_sitename || $theme_settings.logo}

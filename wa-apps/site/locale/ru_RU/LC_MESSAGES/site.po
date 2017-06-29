@@ -11,7 +11,7 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=((((n%10)==1)&&((n%100)!=11))?(0):(((((n%10)>=2)&&((n%10)<=4))&&(((n%100)<10)||((n%100)>=20)))?(1):2));\n"
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
-"X-Generator: Poedit 1.8.6\n"
+"X-Generator: Poedit 1.8.7.1\n"
 "Language: ru_RU\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
@@ -527,67 +527,67 @@ msgid "META Description"
 msgstr "META Description"
 
 #: /wa-apps/site/lib/actions/helper/siteHelper.action.php:9
-msgid "URL of this Webasyst installation (relative)"
-msgstr "URL установки Webasyst (относительный)"
+msgid "URL of this Webasyst installation (relative)."
+msgstr "URL установки Webasyst (относительный)."
 
 #: /wa-apps/site/lib/actions/helper/siteHelper.action.php:10
-msgid "URL of the current app settlement (relative)"
-msgstr "URL текущего поселения приложения (относительный)"
+msgid "URL of the current app settlement (relative)."
+msgstr "URL текущего поселения приложения (относительный)."
 
 #: /wa-apps/site/lib/actions/helper/siteHelper.action.php:11
-msgid "URL to access Webasyst backend (relative)"
-msgstr "URL доступа к бекенду Webasyst (относительный)"
+msgid "URL to access Webasyst backend (relative)."
+msgstr "URL доступа к бекенду Webasyst (относительный)."
 
 #: /wa-apps/site/lib/actions/helper/siteHelper.action.php:12
-msgid "URL of the current app design theme folder (relative)"
-msgstr "URL папки с файлами текущей темы оформления (относительный)"
+msgid "URL of the current app’s design theme folder (relative)."
+msgstr "URL папки с файлами текущей темы оформления (относительный)."
 
 #: /wa-apps/site/lib/actions/helper/siteHelper.action.php:16
-msgid "Returns current page URL (either absolute or relative)"
-msgstr "Возвращает URL текущей страницы (абсолютный либо относительный)"
+msgid "Returns current page URL.<br><em>$absolute = true</em> requires to return an absolute URL instead of a relative one.<br><em>$without_params = true</em> requires to return current URL without GET parameters."
+msgstr "Возвращает URL текущей страницы.<br><em>$absolute = true</em> обозначает получение абсолютного URL вместо относительного.<br><em>$without_params = true</em> возвращает текущий URL без GET-параметров."
 
 #: /wa-apps/site/lib/actions/helper/siteHelper.action.php:17
-msgid "Returns this domain’s root URL (absolute)"
-msgstr "Возвращает корневой URL этого домена (абсолютный)"
+msgid "Returns this domain’s root URL (absolute)."
+msgstr "Возвращает корневой URL этого домена (абсолютный)."
 
 #: /wa-apps/site/lib/actions/helper/siteHelper.action.php:18
 msgid "Returns value of the global var by <em>key</em>. Global var array is initially empty, and can be used arbitrarily."
 msgstr "Возвращает значение глобальной переменной по ключу <em>key</em>. Массив глобальных переменных изначально пуст и может использоваться произвольным образом"
 
 #: /wa-apps/site/lib/actions/helper/siteHelper.action.php:19
-msgid "Assigns global var a new value"
+msgid "Assigns a new value to a global variable."
 msgstr "Присваивает новое значение глобальной пемеренной"
 
-msgid "Assigns a new title"
-msgstr "Устанавливает новый заголовок"
+msgid "Assigns a new title."
+msgstr "Устанавливает новый заголовок."
 
 #: /wa-apps/site/lib/actions/helper/siteHelper.action.php:20
-msgid "Returns GET parameter value (same as PHP $_GET[\"<em>key</em>\"])"
-msgstr "Возаращает значение GET-параметра (аналогично $_GET[\"<em>key</em>\"] в PHP)"
+msgid "Returns GET parameter value (same as PHP $_GET[\"<em>key</em>\"]).<br>\"<em>default</em>\" is an optional default value which is returned if specified GET parameter is not found."
+msgstr "Возвращает значение GET-параметра (аналогично $_GET[\"<em>key</em>\"] в PHP).<br>\"<em>default</em>\" — необязательное значение по умолчанию, которое возвращается, если указанный GET-параметр не найден."
 
 #: /wa-apps/site/lib/actions/helper/siteHelper.action.php:21
-msgid "Based on current session data returns <em>true</em> or <em>false</em> if user is using a multi-touch mobile device; if no session var reflecting current website version (mobile or desktop) is available, User Agent information is used"
+msgid "Based on current session data, returns <em>true</em> or <em>false</em> depending on whether a multi-touch mobile device is used. If no session variable indicates the requested website version (mobile or desktop), User Agent information is used."
 msgstr "Возвращает <em>true</em> или <em>false</em> в зависимости от того, использует ли пользователь в данный момент мобильное multi-touch устройство (iPhone, Android и пр.) или нет; если переменная сессии, содержащая тип версии сайта (мобильный или стандартный), отсутствует, то используется информация из заголовков User Agent"
 
 #: /wa-apps/site/lib/actions/helper/siteHelper.action.php:23
-msgid "Returns POST parameter value (same as PHP $_POST[\"<em>key</em>\"])"
-msgstr "Возвращает значение POST-параметра (аналогично $_POST[\"<em>key</em>\"] в PHP)"
+msgid "Returns POST parameter value (same as $_POST[\"<em>key</em>\"] in PHP).<br>\"<em>default</em>\" is an optional default value which is returned if specified POST parameter is not found."
+msgstr "Возвращает значение POST-параметра (аналогично $_POST[\"<em>key</em>\"] в PHP).<br>\"<em>default</em>\" — необязательное значение по умолчанию, которое возвращается, если указанный POST-параметр не найден."
 
 #: /wa-apps/site/lib/actions/helper/siteHelper.action.php:24
-msgid "Returns SERVER parameter value (same as PHP $_SERVER[\"KEY\"])"
-msgstr "Возвращает значение параметра массива SERVER (аналогично $_SERVER[\"<em>key</em>\"] в PHP)"
+msgid "Returns SERVER parameter value (same as $_SERVER[\"<em>KEY</em>\"] in PHP).<br>\"<em>default</em>\" is an optional default value which is returned if specified server parameter is not found."
+msgstr "Возвращает значение параметра массива SERVER (аналогично $_SERVER[\"<em>key</em>\"] в PHP).<br>\"<em>default</em>\" — необязательное значение по умолчанию, которое возвращается, если указанный параметр массива SERVER не найден."
 
 #: /wa-apps/site/lib/actions/helper/siteHelper.action.php:25
-msgid "Returns SESSION var value (same as PHP $_SESSION[\"<em>key</em>\"])"
-msgstr "Возвращает значение переменной сессии SESSION (аналогично $_SESSION[\"<em>key</em>\"] в PHP)"
+msgid "Returns SESSION var value (same as $_SESSION[\"<em>key</em>\"] in PHP).<br>\"<em>default</em>\" is an optional default value which is returned if specified session parameter is not found."
+msgstr "Возвращает значение переменной сессии SESSION (аналогично $_SESSION[\"<em>key</em>\"] в PHP).<br>\"<em>default</em>\" — необязательное значение по умолчанию, которое возвращается, если указанная переменная сессии не найдена."
 
 #: /wa-apps/site/lib/actions/helper/siteHelper.action.php:26
-msgid "Embeds HTML block by ID"
-msgstr "Отображает содержимое блока по его идентификатору"
+msgid "Embeds HTML block by ID.<br><em>$params</em> is array of Smarty variables to be passed to block contents."
+msgstr "Отображает содержимое блока по его идентификатору.<br><em>$params</em> — массив переменных Smarty, которые нужно передать в содержимое блока."
 
 #: /wa-apps/site/lib/actions/helper/siteHelper.action.php:27
-msgid "Returns authorized user data from associated record in “Contacts” app. \"<em>field</em>\" (string) is optional and indicates the field id to be returned. If not  Returns <em>false</em> if user is not authorized"
-msgstr "Возвращает массив с данными авторизованного пользователя из соответствующей записи приложения «Контакты». Если указан необязательный параметр \"<em>field</em>\" (string), то возвращается содержимое конкретного поля записи о контакте. Если пользователь не авторизован, функция возвращает <em>false</em>"
+msgid "Returns authorized user‘s data. \"<em>field</em>\" (string) is optional and indicates the field id to be returned. Returns <em>false</em> if user is not authorized.<br><em>$format</em> parameter (defaults to \"html\") defines the <a href=\"https://developers.webasyst.com/cookbook/basics/classes/waContact/#method-get\" target=\"_blank\">format</a> of the returned value."
+msgstr "Возвращает массив с данными авторизованного пользователя. Если указан необязательный параметр \"<em>field</em>\" (string), то возвращается содержимое конкретного поля записи о контакте. Если пользователь не авторизован, функция возвращает <em>false</em>.<br>Параметр <em>$format</em> (значение по умолчанию — \"html\") определяет <a href=\"https://developers.webasyst.ru/cookbook/basics/classes/waContact/#method-get\" target=\"_blank\">формат</a> возвращаемых данных."
 
 #: /wa-apps/site/lib/actions/helper/siteHelper.action.php:28
 msgid "Returns User Agent info by specified “<em>key</em>” parameter:"
@@ -861,15 +861,15 @@ msgid "Email feedback form"
 msgstr "Форма для отправки сообщений"
 
 #: /wa-apps/site/lib/actions/helper/siteHelper.action.php:16
-msgid "Returns name of this Webasyst installation (name is specified in “Installer” app settings)"
-msgstr "Возвращает название данной установки Webasyst, указанное в настройках приложения «Инсталлер»"
+msgid "Returns name of this Webasyst installation specified in Installer app settings.<br><em>escape = false</em> requires to embed special characters in account name instead of displaying them."
+msgstr "Возвращает название данной установки Webasyst, указанное в настройках приложения «Инсталлер». <br><em>escape = false</em> обозначает прямую вставку специальных символов в названии аккаунта в HTML-код страницы вместо их отображения."
 
 #: /wa-apps/site/lib/actions/helper/siteHelper.action.php:17
-msgid "Returns this site’s core navigation menu which is either set automatically or manually in the “Site settings” screen"
-msgstr "Возвращает основное меню навигации этого сайта, сформированное автоматически или настроенное вручную в настройках сайта"
+msgid "Returns this site’s core navigation menu which is either defined automatically or manually in the Site‘s “Settings” screen."
+msgstr "Возвращает основное меню навигации этого сайта, сформированное автоматически или настроенное вручную в настройках приложения «Сайт»"
 
 #: /wa-apps/site/lib/actions/helper/siteHelper.action.php:24
-msgid "Returns user locale, e.g. \"en_US\", \"ru_RU\". In case user is authorized, locale is retrieved from “Contacts” app user record, or detected automatically otherwise"
+msgid "Returns user locale; e.g., “en_US”, “ru_RU”. If the user is authorized, the locale is retrieved from the user’s record in the Contacts app or is detected automatically otherwise."
 msgstr "Возвращает языковую локаль пользователя, например, en_US, ru_RU. Если пользователь авторизован, информация о локали извлекается из приложения «Контакты»; в противном случае определяется автоматически."
 
 #: /wa-apps/site/lib/actions/helper/siteHelper.action.php:31
@@ -1010,8 +1010,17 @@ msgid "Structure"
 msgstr "Структура"
 
 #: /wa-apps/site/lib/actions/helper/siteHelper.action.php:33
-msgid "Returns path to theme folder by <em>theme_id</em> and <em>APP_ID</em>"
-msgstr "Возвращает путь к папке темы дизайна по <em>theme_id</em> и <em>APP_ID</em>"
+msgid "Returns path to design theme folder by <em>app_id</em> and <em>theme_id</em>."
+msgstr "Возвращает путь к папке темы дизайна по <em>app_id</em> и <em>theme_id</em>."
+
+msgid "Returns current URL of design theme folder by <em>app_id</em> and <em>theme_id</em>."
+msgstr "Возвращает текущий URL папки с файлами темы дизайна по <em>app_id</em> и <em>theme_id</em>."
+
+msgid "Returns data array of a page by specified <em>app_id</em> and page <em>id</em>."
+msgstr "Возвращает массив данных страницы по указанным <em>app_id</em> и <em>id</em> страницы."
+
+msgid "Returns array of published pages set up in the app with specified <em>app_id</em>.<br><em>$parent_id</em> denotes the ID of the parent page whose subpages must be returned. If <em>0</em> is specified (default value), all app‘s pages are returned.<br><em>$with_params = false</em> means that pages are returned their without custom parameters. By default (<em>true</em>), custom parameters are returned."
+msgstr "Возвращает массив опубликованных страниц приложения с уазанным <em>app_id</em>.<br><em>$parent_id</em> обозначает ID родительской страницы, для которой необходимо получить вложенные страницы. Если указано <em>0</em> (значение по умолчанию), метод возвращает все страницы приложения.<br><em>$with_params = false</em> позволит получить массив страниц без их дополнительных параметров. По умолчанию (<em>true</em>) метод возвращает страницы с дополнительными параметрами."
 
 #: /wa-apps/site/themes/clear/content.html:9
 #: /wa-apps/site/themes/custom/content.html:4
@@ -1193,6 +1202,30 @@ msgstr "Редактировать название поля"
 msgid "Edit hint for this field"
 msgstr "Редактировать подсказку к полю"
 
+msgid "Personal data processing"
+msgstr "Обработка персональных данных"
+
+msgid "---INSERT A LINK HERE!---"
+msgstr "---ВСТАВЬТЕ СЮДА ССЫЛКУ НА ДОКУМЕНТ!---"
+
+msgid "I agree to %spersonal data protection policy%s"
+msgstr "Я согласен с %sполитикой обработки персональных данных%s"
+
+msgid "By submitting this form I agree to %spersonal data protection policy%s"
+msgstr "Нажимая на кнопку подтверждения, я соглашаюсь с %sполитикой обработки персональных данных%s"
+
+msgid "Do not require consent to personal data protection policy"
+msgstr "Не требовать согласия с политикой обработки персональных данных"
+
+msgid "Show only notice and link to policy"
+msgstr "Показывать только подсказку со ссылкой на политику"
+
+msgid "Show mandatory checkbox, notice, and link"
+msgstr "Предлагать включить обязательный флажок с подсказкой и ссылкой"
+
+msgid "Restore original text"
+msgstr "Восстановить стандартный текст"
+
 #: /wa-apps/site/templates/actions/personal/PersonalSettingsSignup.html:244
 msgid "Edit button label"
 msgstr "Редактировать текст на кнопке"
@@ -1303,4 +1336,3 @@ msgstr "Указанный email-адрес уже используется."
 
 msgid "Design"
 msgstr "Дизайн"
-

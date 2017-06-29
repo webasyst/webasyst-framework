@@ -1,41 +1,44 @@
-<?php 
+<?php
 
 class siteHelperAction extends waViewAction
 {
     public function execute()
     {
-        
+
         $wa_vars = array(
-                    '$wa_url' => _w('URL of this Webasyst installation (relative)'),
-                    '$wa_app_url' => _w('URL of the current app settlement (relative)'),
-                    '$wa_backend_url' => _w('URL to access Webasyst backend (relative)'),                    
-                    '$wa_theme_url' => _w('URL of the current app design theme folder (relative)'),                    
+                    '$wa_url' => _w('URL of this Webasyst installation (relative).'),
+                    '$wa_app_url' => _w('URL of the current app settlement (relative).'),
+                    '$wa_backend_url' => _w('URL to access Webasyst backend (relative).'),
+                    '$wa_theme_url' => _w('URL of the current app’s design theme folder (relative).'),
 
                     '$wa->title()' => _w('Title'),
-                    '$wa->title("<em>title</em>")' => _w('Assigns a new title'),
-                    '$wa->accountName()' => _w('Returns name of this Webasyst installation (name is specified in “Installer” app settings)'),
-                    '$wa->apps()' => _w('Returns this site’s core navigation menu which is either set automatically or manually in the “Site settings” screen'),
-                    '$wa->currentUrl(bool <em>$absolute</em>)' => _w('Returns current page URL (either absolute or relative)'),
-                    '$wa->domainUrl()' => _w('Returns this domain’s root URL (absolute)'),
+                    '$wa->title("<em>title</em>")' => _w('Assigns a new title.'),
+                    '$wa->accountName(bool <em>$escape</em>)' => _w('Returns name of this Webasyst installation specified in Installer app settings.<br><em>escape = false</em> requires to embed special characters in account name instead of displaying them.'),
+                    '$wa->apps()' => _w('Returns this site’s core navigation menu which is either defined automatically or manually in the Site‘s “Settings” screen.'),
+                    '$wa->currentUrl(bool <em>$absolute</em>, bool <em>$without_params</em>)' => _w('Returns current page URL.<br><em>$absolute = true</em> requires to return an absolute URL instead of a relative one.<br><em>$without_params = true</em> requires to return current URL without GET parameters.'),
+                    '$wa->domainUrl()' => _w('Returns this domain’s root URL (absolute).'),
                     '$wa->globals("<em>key</em>")' => _w('Returns value of the global var by <em>key</em>. Global var array is initially empty, and can be used arbitrarily.'),
-                    '$wa->globals("<em>key</em>", "<em>value</em>")' => _w('Assigns global var a new value'),
-                    '$wa->get("<em>key</em>")' => _w('Returns GET parameter value (same as PHP $_GET["<em>key</em>"])'),
-                    '$wa->isMobile()' => _w('Based on current session data returns <em>true</em> or <em>false</em> if user is using a multi-touch mobile device; if no session var reflecting current website version (mobile or desktop) is available, User Agent information is used'),
-                    '$wa->locale()' => _w('Returns user locale, e.g. "en_US", "ru_RU". In case user is authorized, locale is retrieved from “Contacts” app user record, or detected automatically otherwise'),
-                    '$wa->post("<em>key</em>")' => _w('Returns POST parameter value (same as PHP $_POST["<em>key</em>"])'),
-                    '$wa->server("<em>key</em>")' => _w('Returns SERVER parameter value (same as PHP $_SERVER["KEY"])'),
-                    '$wa->session("<em>key</em>")' => _w('Returns SESSION var value (same as PHP $_SESSION["<em>key</em>"])'),
-                    '$wa->block("<em>id</em>")' => _w('Embeds HTML block by ID'),
-                    '$wa->user("<em>field</em>")' => _w('Returns authorized user data from associated record in “Contacts” app. "<em>field</em>" (string) is optional and indicates the field id to be returned. If not  Returns <em>false</em> if user is not authorized'),
+                    '$wa->globals("<em>key</em>", "<em>value</em>")' => _w('Assigns a new value to a global variable.'),
+                    '$wa->isMobile()' => _w('Based on current session data, returns <em>true</em> or <em>false</em> depending on whether a multi-touch mobile device is used. If no session variable indicates the requested website version (mobile or desktop), User Agent information is used.'),
+                    '$wa->locale()' => _w('Returns user locale; e.g., “en_US”, “ru_RU”. If the user is authorized, the locale is retrieved from the user’s record in the Contacts app or is detected automatically otherwise.'),
+                    '$wa->get("<em>key</em>", "<em>default</em>")' => _w('Returns GET parameter value (same as PHP $_GET["<em>key</em>"]).<br>"<em>default</em>" is an optional default value which is returned if specified GET parameter is not found.'),
+                    '$wa->post("<em>key</em>", "<em>default</em>")' => _w('Returns POST parameter value (same as $_POST["<em>key</em>"] in PHP).<br>"<em>default</em>" is an optional default value which is returned if specified POST parameter is not found.'),
+                    '$wa->server("<em>key</em>", "<em>default</em>")' => _w('Returns SERVER parameter value (same as $_SERVER["<em>KEY</em>"] in PHP).<br>"<em>default</em>" is an optional default value which is returned if specified server parameter is not found.'),
+                    '$wa->session("<em>key</em>", "<em>default</em>")' => _w('Returns SESSION var value (same as $_SESSION["<em>key</em>"] in PHP).<br>"<em>default</em>" is an optional default value which is returned if specified session parameter is not found.'),
+                    '$wa->block("<em>id</em>", "<em>$params</em>")' => _w('Embeds HTML block by ID.<br><em>$params</em> is array of Smarty variables to be passed to block contents.'),
+                    '$wa->user("<em>field</em>", "<em>format</em>")' => _w('Returns authorized user‘s data. "<em>field</em>" (string) is optional and indicates the field id to be returned. Returns <em>false</em> if user is not authorized.<br><em>$format</em> parameter (defaults to "html") defines the <a href="https://developers.webasyst.com/cookbook/basics/classes/waContact/#method-get" target="_blank">format</a> of the returned value.'),
                     '$wa->userAgent("<em>key</em>")' => _w('Returns User Agent info by specified “<em>key</em>” parameter:').'<br />'.
-                    _w('— <em>"platform"</em>: current visitor device platform name, e.g. <em>windows, mac, linux, ios, android, blackberry</em>;').'<br />'.
-                    _w('— <em>"isMobile"</em>: returns <em>true</em> or <em>false</em> if user is using a multi-touch mobile device (iOS, Android and similar), based solely on User Agent string;'),
-                    '$wa-><em>APP_ID</em>->themePath("<em>theme_id</em>")' => _w('Returns path to theme folder by <em>theme_id</em> and <em>APP_ID</em>'),
-        );        
-        
+                        _w('— <em>"platform"</em>: current visitor device platform name, e.g. <em>windows, mac, linux, ios, android, blackberry</em>;').'<br />'.
+                        _w('— <em>"isMobile"</em>: returns <em>true</em> or <em>false</em> if user is using a multi-touch mobile device (iOS, Android and similar), based solely on User Agent string;'),
+                    '$wa-><em>app_id</em>->themePath("<em>theme_id</em>")' => _w('Returns path to design theme folder by <em>app_id</em> and <em>theme_id</em>.'),
+                    '$wa-><em>app_id</em>->themeUrl("<em>theme_id</em>")' => _w('Returns current URL of design theme folder by <em>app_id</em> and <em>theme_id</em>.'),
+                    '$wa-><em>app_id</em>->page(<em>$id</em>)' => _w('Returns data array of a page by specified <em>app_id</em> and page <em>id</em>.'),
+                    '$wa-><em>app_id</em>->pages(<em>$parent_id</em>, bool <em>$with_params</em>)' => _w('Returns array of published pages set up in the app with specified <em>app_id</em>.<br><em>$parent_id</em> denotes the ID of the parent page whose subpages must be returned. If <em>0</em> is specified (default value), all app‘s pages are returned.<br><em>$with_params = false</em> means that pages are returned their without custom parameters. By default (<em>true</em>), custom parameters are returned.'),
+        );
+
         $app_id = waRequest::get('app');
         $file = waRequest::get('file');
-        $vars = array();       
+        $vars = array();
         if ($app_id) {
             $app = wa()->getAppInfo($app_id);
             $path = $this->getConfig()->getAppsPath($app_id, 'lib/config/site.php');
@@ -51,8 +54,8 @@ class siteHelperAction extends waViewAction
                     if (isset($site['vars']['all'])) {
                         $vars += $site['vars']['all'];
                     }
-                } 
-            }            
+                }
+            }
             if ($app_id == 'site' && ($id = waRequest::get('id'))) {
                 $page_model = new sitePageModel();
                 $page = $page_model->getById($id);
@@ -62,7 +65,7 @@ class siteHelperAction extends waViewAction
         } else {
             $app = null;
         }
-        
+
         $this->view->assign('vars', $vars);
         $this->view->assign('file', $file);
         $this->view->assign('app', $app);
@@ -81,7 +84,7 @@ class siteHelperAction extends waViewAction
             '{$foo=3*4}' => _w('Assigns variable a value'),
             '{time()}' => _w('Direct PHP function access. E.g. <em>{time()}</em> displays the current timestamp'),
             '{literal}...{/literal}' => _w('Content between {literal} tags will not be parsed by Smarty'),
-            '{include file="..."}' => _w('Embeds a Smarty template into the current content. <em>file</em> attribute specifies a template filename within the current design theme folder'), 
+            '{include file="..."}' => _w('Embeds a Smarty template into the current content. <em>file</em> attribute specifies a template filename within the current design theme folder'),
             '{if}...{else}...{/if}' => _w('Similar to PHP if statements'),
             '{foreach from=$a key=k item=v}...{foreachelse}...{/foreach}' => _w('{foreach} is for looping over arrays of data'),
         ));

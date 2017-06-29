@@ -74,6 +74,21 @@ return array(
         {if !empty($errors.captcha)}<em class="wa-error-msg">{$errors.captcha}</em>{/if}
     </div>
   </div>
+
+  {$agreement_link = ""}
+  {if $agreement_link}
+    <div class="wa-field">
+      <div class="wa-value">
+        <input type="hidden" name="agree_to_terms" value="">
+        <label>
+          <input type="checkbox" name="agree_to_terms" value="1"{if $wa->post("agree_to_terms")} checked{/if}>
+          [s`I agree to the`] <a href="{$agreement_link|escape}" target="_blank">[s`personal data protection policy`]</a>
+          {if !empty($errors.agree_to_terms)}<em class="wa-error-msg">{$errors.agree_to_terms}</em>{/if}
+        </label>
+      </div>
+    </div>
+  {/if}
+
   <div class="wa-field">
     <div class="wa-value wa-submit">
       {if !empty($errors.all)}<em class="wa-error-msg">{$errors.all}</em><br>{/if}

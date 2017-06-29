@@ -8,7 +8,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 1.7.5\n"
+"X-Generator: Poedit 1.8.7.1\n"
 "Language: en_US\n"
 
 #: /wa-apps/site/templates/layouts/Sidebar.html:51
@@ -632,39 +632,39 @@ msgid "Database error"
 msgstr ""
 
 #: /wa-apps/site/lib/actions/helper/siteHelper.action.php:9
-msgid "URL of this Webasyst installation (relative)"
+msgid "URL of this Webasyst installation (relative)."
 msgstr ""
 
 #: /wa-apps/site/lib/actions/helper/siteHelper.action.php:10
-msgid "URL of the current app settlement (relative)"
+msgid "URL of the current app settlement (relative)."
 msgstr ""
 
 #: /wa-apps/site/lib/actions/helper/siteHelper.action.php:11
-msgid "URL to access Webasyst backend (relative)"
+msgid "URL to access Webasyst backend (relative)."
 msgstr ""
 
 #: /wa-apps/site/lib/actions/helper/siteHelper.action.php:12
-msgid "URL of the current app design theme folder (relative)"
-msgstr "URL of the current app’s design theme folder (relative)"
+msgid "URL of the current app’s design theme folder (relative)."
+msgstr ""
 
 #: /wa-apps/site/lib/actions/helper/siteHelper.action.php:15
-msgid "Assigns a new title"
+msgid "Assigns a new title."
 msgstr ""
 
 #: /wa-apps/site/lib/actions/helper/siteHelper.action.php:16
-msgid "Returns name of this Webasyst installation (name is specified in “Installer” app settings)"
-msgstr "Returns the name of this Webasyst installation, which is specified in “Installer” app settings"
+msgid "Returns name of this Webasyst installation specified in Installer app settings.<br><em>escape = false</em> requires to embed special characters in account name instead of displaying them."
+msgstr ""
 
 #: /wa-apps/site/lib/actions/helper/siteHelper.action.php:17
-msgid "Returns this site’s core navigation menu which is either set automatically or manually in the “Site settings” screen"
-msgstr "Returns this site’s core navigation menu, which is defined either automatically or manually in the “Site settings” screen"
+msgid "Returns this site’s core navigation menu which is either defined automatically or manually in the Site‘s “Settings” screen."
+msgstr ""
 
 #: /wa-apps/site/lib/actions/helper/siteHelper.action.php:18
-msgid "Returns current page URL (either absolute or relative)"
+msgid "Returns current page URL.<br><em>$absolute = true</em> requires to return an absolute URL instead of a relative one.<br><em>$without_params = true</em> requires to return current URL without GET parameters."
 msgstr ""
 
 #: /wa-apps/site/lib/actions/helper/siteHelper.action.php:19
-msgid "Returns this domain’s root URL (absolute)"
+msgid "Returns this domain’s root URL (absolute)."
 msgstr ""
 
 #: /wa-apps/site/lib/actions/helper/siteHelper.action.php:20
@@ -672,40 +672,41 @@ msgid "Returns value of the global var by <em>key</em>. Global var array is init
 msgstr "Returns the value of a global variable by its <em>key</em>. Global variable array is initially empty and can be used arbitrarily."
 
 #: /wa-apps/site/lib/actions/helper/siteHelper.action.php:21
-msgid "Assigns global var a new value"
-msgstr "Assigns a new value to a global variable"
+msgid "Assigns a new value to a global variable."
+msgstr ""
 
 #: /wa-apps/site/lib/actions/helper/siteHelper.action.php:22
-msgid "Returns GET parameter value (same as PHP $_GET[\"<em>key</em>\"])"
-msgstr "Returns a GET parameter value (same as PHP $_GET[\"<em>key</em>\"])"
+msgid "Returns GET parameter value (same as PHP $_GET[\"<em>key</em>\"]).<br>\"<em>default</em>\" is an optional default value which is returned if specified GET parameter is not found."
+msgstr ""
 
 #: /wa-apps/site/lib/actions/helper/siteHelper.action.php:23
-msgid "Based on current session data returns <em>true</em> or <em>false</em> if user is using a multi-touch mobile device; if no session var reflecting current website version (mobile or desktop) is available, User Agent information is used"
-msgstr "Based on current session data, returns <em>true</em> or <em>false</em> depending on whether a multi-touch mobile device is used. If no session variable indicates the requested website version (mobile or desktop), User Agent information is used."
+msgid "Based on current session data, returns <em>true</em> or <em>false</em> depending on whether a multi-touch mobile device is used. If no session variable indicates the requested website version (mobile or desktop), User Agent information is used."
+msgstr ""
 
 #: /wa-apps/site/lib/actions/helper/siteHelper.action.php:24
-msgid "Returns user locale, e.g. \"en_US\", \"ru_RU\". In case user is authorized, locale is retrieved from “Contacts” app user record, or detected automatically otherwise"
-msgstr "Returns user locale; e.g., “en_US”, “ru_RU”. If the user is authorized, the locale is retrieved from the user’s record in the Contacts app or is detected automatically otherwise."
+msgid "Returns user locale; e.g., “en_US”, “ru_RU”. If the user is authorized, the locale is retrieved from the user’s record in the Contacts app or is detected automatically otherwise."
+msgstr ""
 
 #: /wa-apps/site/lib/actions/helper/siteHelper.action.php:25
-msgid "Returns POST parameter value (same as PHP $_POST[\"<em>key</em>\"])"
+msgid "Returns POST parameter value (same as $_POST[\"<em>key</em>\"] in PHP).<br>\"<em>default</em>\" is an optional default value which is returned if specified POST parameter is not found."
 msgstr ""
 
 #: /wa-apps/site/lib/actions/helper/siteHelper.action.php:26
-msgid "Returns SERVER parameter value (same as PHP $_SERVER[\"KEY\"])"
+msgid "Returns SERVER parameter value (same as $_SERVER[\"<em>KEY</em>\"] in PHP).<br>\"<em>default</em>\" is an optional default value which is returned if specified server parameter is not found."
 msgstr ""
 
 #: /wa-apps/site/lib/actions/helper/siteHelper.action.php:27
-msgid "Returns SESSION var value (same as PHP $_SESSION[\"<em>key</em>\"])"
-msgstr "Returns SESSION variable value (same as PHP $_SESSION[\"<em>key</em>\"])"
+msgid "Returns SESSION var value (same as $_SESSION[\"<em>key</em>\"] in PHP).<br>\"<em>default</em>\" is an optional default value which is returned if specified session parameter is not found."
+msgstr ""
 
 #: /wa-apps/site/lib/actions/helper/siteHelper.action.php:28
-msgid "Embeds HTML block by ID"
+msgid "Embeds HTML block by ID.<br><em>$params</em> is array of Smarty variables to be passed to block contents."
 msgstr ""
 
 #: /wa-apps/site/lib/actions/helper/siteHelper.action.php:29
-msgid "Returns authorized user data from associated record in “Contacts” app. \"<em>field</em>\" (string) is optional and indicates the field id to be returned. If not  Returns <em>false</em> if user is not authorized"
-msgstr "Returns authorized user data from a record in the Contacts app. \"<em>field</em>\" (string) is optional and indicates the field id to be returned. Returns <em>false</em> if user is not authorized."
+msgid ""
+"Returns authorized user‘s data. \"<em>field</em>\" (string) is optional and indicates the field id to be returned. Returns <em>false</em> if user is not authorized.<br><em>$format</em> parameter (defaults to \"html\") defines the <a href=\"https://developers.webasyst.com/cookbook/basics/classes/waContact/#method-get\" target=\"_blank\">format</a> of the returned value."
+msgstr ""
 
 #: /wa-apps/site/lib/actions/helper/siteHelper.action.php:30
 msgid "Returns User Agent info by specified “<em>key</em>” parameter:"
@@ -994,7 +995,7 @@ msgid "Structure"
 msgstr ""
 
 #: /wa-apps/site/lib/actions/helper/siteHelper.action.php:33
-msgid "Returns path to theme folder by <em>theme_id</em> and <em>APP_ID</em>"
+msgid "Returns path to design theme folder by <em>theme_id</em> and <em>app_id</em>."
 msgstr ""
 
 #: /wa-apps/site/themes/clear/content.html:9 /wa-apps/site/themes/custom/content.html:4 /wa-apps/site/themes/default/index.html:67 /wa-apps/site/themes/facebook/content.html:25 /wa-apps/site/themes/nifty/content.html:6 /wa-apps/site/themes/sidebar/content.html:6 /wa-apps/site/themes/vk/content.html:25

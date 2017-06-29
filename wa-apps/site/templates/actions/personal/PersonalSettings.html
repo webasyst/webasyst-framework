@@ -5,7 +5,7 @@
     <div class="s-ibutton-checkbox">
         <ul class="menu-h s-ibutton-checkbox">
             <li><span id="s-personal-app-disabled-label" class="gray">[`Disabled`]</span></li>
-            <li> 
+            <li>
                 <div style="">
                 <input id="s-auth-enabled" name="enabled" class="ibutton" type="checkbox" {if !$auth_apps}disabled="disabled"{/if} {if $auth_config['auth']}checked="checked"{/if} />
                 </div>
@@ -15,7 +15,7 @@
         <br>
         <p {if $auth_config['auth']} style="display:none"{/if} class="gray"><i class="icon10 no-bw top-padded"></i> {sprintf('[`User sign up, authorization and personal accounts are not enabled on %s.`]', $domain)}</p>
     </div>
-    
+
     <div class="s-auth-content" {if !$auth_config['auth']} style="display:none"{/if}>
         <p><i class="icon10 yes top-padded"></i> {sprintf('[`User sign up, authorization and personal accounts are enabled on %s. <a id="configure-app" href="#" class="inline-link"><b><i>Configure URLs</i></b></a>`]', $domain)}</p>
         <div id="configure-app-div" class="block s-configure-app-div" {if $wa->get('hash') != 'configure-app'}style="display: none;"{/if}>
@@ -54,11 +54,11 @@
             {/foreach}
         </ul>
     {/if}
-    
+
     <!-- misc auth settings form -->
     <div id="s-personal-settings-auth" class="tab-content">
         <div class="block not-padded top-padded">
-            <form class="s-auth-form" method="post" action="?module=personal&action=settingsSave&domain_id={$domain_id}">
+            <form class="s-auth-form" method="post" action="?module=personal&action=settingsSave&domain_id={$domain_id}" style="margin-left:-3px;padding-left:3px;">
 
                 <!-- captcha -->
                 <div class="block not-padded bottom-padded">
