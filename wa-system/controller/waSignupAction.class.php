@@ -99,6 +99,7 @@ class waSignupAction extends waViewAction
         if(!empty($auth_config['params']['service_agreement']) && $auth_config['params']['service_agreement'] == 'checkbox') {
             if (empty($data['terms_accepted'])) {
                 $errors['terms_accepted'] = _ws('Please confirm your agreement');
+                $is_error = true;
             }
         }
         unset($data['terms_accepted']);
