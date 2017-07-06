@@ -56,6 +56,32 @@ return array(
         'options_callback' => array('yandexmoneyPayment', 'settingsPaymentOptions'),
         'class'            => 'js-yandexmoney-integration-type js-yandexmoney-kassa',
     ),
+    'receipt' => array(
+        'value'            => false,
+        'title'            => 'Фискализировать чеки через «Яндекс.Кассу»',
+        'description'      => '',
+        'control_type'     => waHtmlControl::CHECKBOX,
+        'class'            => 'js-yandexmoney-integration-type js-yandexmoney-kassa',
+    ),
+    'taxes'         => array(
+        'value'        => 'map',
+        'title'        => 'Передача ставок НДС',
+        'control_type' => waHtmlControl::RADIOGROUP,
+        'description'  => 'Если ваша организация работает по ОСН, выберите вариант «Передавать ставки НДС по каждой позиции».<br>
+Ставка НДС может быть равна 0%, 10% или 18%. В настройках налогов в приложении выберите, чтобы НДС был включен в цену товара.<br>
+Если вы работаете по другой системе налогообложения, выберите «НДС не облагается».',
+        'options_callback'=>array($this,'taxesOptions'),
+        'class'            => 'js-yandexmoney-integration-type js-yandexmoney-kassa',
+    ),
+    'taxSystem'        => array(
+        'value'            => -1,
+        'title'            => 'Несколько систем налогообложения',
+        'description'      => 'Параметр <code>taxSystem</code>. Выберите нужное значение, только если вы используете несколько систем налогообложения.
+В остальных случаях оставьте вариант «Не передавать».',
+        'control_type'     => waHtmlControl::SELECT,
+        'options_callback' => array($this, 'settingsTaxOptions'),
+        'class'            => 'js-yandexmoney-integration-type js-yandexmoney-kassa',
+    ),
     'TESTMODE'         => array(
         'value'        => '',
         'title'        => 'Тестовый режим',
@@ -70,6 +96,7 @@ return array(
         guide: null,
         form: null,
         payment_mode: null,
+        receipt:null,
 
         init: function () {
             this.fields = this.form.find(".js-yandexmoney-integration-type");
@@ -143,9 +170,23 @@ return array(
                 var field = this.form.find(':input[name*="\[paymentType\]"]:first').parents('div.field:first');
                 if (element.val() == 'customer') {
                     this.show([field], fast);
+                    this.receipt.attr('disabled', true);
                 } else {
                     this.hide([field], fast);
+                    this.receipt.attr('disabled', null);
                 }
+            }
+        },
+        changeReceipt: function (event, element) {
+            var fast = event.originalEvent ? false : true;
+            var fields = [
+                this.form.find(':input[name$="\[taxSystem\]"]:first').parents('div.field:first'),
+                this.form.find(':input[name$="\[taxes\]"]:first').parents('div.field:first')
+            ];
+            if (element.attr("checked")) {
+                this.show(fields, fast);
+            } else {
+                this.hide(fields, fast);
             }
         },
         show: function (elements, fast) {
@@ -160,7 +201,7 @@ return array(
             }
 
         },
-        hide: function (elements, show, fast) {
+        hide: function (elements, fast) {
             for (var i = 0; i < elements.length; i++) {
                 if (elements[i]) {
                     if (fast) {
@@ -174,15 +215,19 @@ return array(
         bind: function () {
             this.form = $(':input[name$="\[integration_type\]"]').parents('form:first');
             this.payment_mode = this.form.find(':input[name$="\[payment_mode\]"]');
+            this.receipt = this.form.find(':input[name$="\[receipt\]"]');
 
             var self = this;
             $(':input[name$="\[integration_type\]"]').unbind('change').bind('change', function (event) {
                 self.changeIntegrationType(event, $(this));
             }).trigger('change');
 
-
             this.payment_mode.unbind('change').bind('change', function (event) {
                 self.changePaymentMode(event, $(this));
+            }).trigger('change');
+
+            this.receipt.unbind('change').bind('change', function (event) {
+                self.changeReceipt(event, $(this));
             }).trigger('change');
         }
     };
