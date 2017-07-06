@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE theme PUBLIC "wa-app-theme" "http://www.webasyst.com/wa-content/xml/wa-app-theme.dtd">
-<theme id="default" system="0" vendor="webasyst" author="Webasyst" app="site" version="3.3.0">
+<theme id="default" system="0" vendor="webasyst" author="Webasyst" app="site" version="3.3.1">
     <name locale="en_US">Default 3.0</name>
     <name locale="ru_RU">Дефолт 3.0</name>
     <description locale="en_US">Adaptive design theme for all base Webasyst apps</description>
@@ -361,6 +361,11 @@
             <description locale="ru_RU">Дополнительная подсказка посетителям вашего сайта (и поисковым системам).</description>
             <description locale="en_US">Add a disclaimer or a hint to your site visitors (and search engines too).</description>
         </setting>
+        <setting var="footer_notice" control_type="text">
+            <value></value>
+            <name locale="en_US">Footer notice</name>
+            <name locale="ru_RU">Уведомление в подвале сайта</name>
+        </setting>
         <setting var="facebook" control_type="text">
             <value locale="en_US">https://www.facebook.com/Webasyst</value>
             <value locale="ru_RU">https://www.facebook.com/Webasyst.RU</value>
@@ -389,7 +394,6 @@
             <name locale="en_US">Youtube channel URL</name>
             <name locale="ru_RU">Адрес канала YouTube</name>
         </setting>
-
 
         <setting var="divider_social" control_type="group_divider">
             <value></value>
@@ -445,9 +449,6 @@ VK.Widgets.Group("vk_groups", {mode: 0, width: "260", height: "400", color1: 'FF
             <description locale="en_US">Embed your VK community widget code here. Code can be obtained on VK website: http://vk.com/dev/Community</description>
             <description locale="ru_RU">Поместите в это поле код виджета вашего сообщества во Вконтакте. Код можно получить на сайте соцсети http://vk.com/dev/Community</description>
         </setting>
-
-
-
     </settings>
     <locales>
         <locale>

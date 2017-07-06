@@ -312,6 +312,11 @@
                     <a href="{$wa_url}">{$wa->accountName()}</a>
                 </div>
                 {include file="`$wa_active_theme_path`/footer.html" inline}
+
+                {if !empty($theme_settings.footer_notice)}
+                    <div style="clear: both"></div>
+                    <div class="s-footer-notice">{$theme_settings.footer_notice}</div>
+                {/if}
             </div>
         </div>
 

@@ -711,3 +711,7 @@ html.font_size_16 body { font-size: 16px; }
     .container { max-width: 1200px; }
 
 }
+
+/* FOOTER NOTICE */
+.s-footer-notice { margin: 2.5em 0 1em; font-size: .9em; line-height: 1.3em; text-align: center; }
+.s-footer-notice a { color: inherit; text-decoration: underline; }

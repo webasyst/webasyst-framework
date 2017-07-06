@@ -1209,7 +1209,7 @@ msgid "---INSERT A LINK HERE!---"
 msgstr "---ВСТАВЬТЕ СЮДА ССЫЛКУ НА ДОКУМЕНТ!---"
 
 msgid "I agree to %spersonal data protection policy%s"
-msgstr "Я согласен с %sполитикой обработки персональных данных%s"
+msgstr "Я соглашаюсь с %sполитикой обработки персональных данных%s"
 
 msgid "By submitting this form I agree to %spersonal data protection policy%s"
 msgstr "Нажимая на кнопку подтверждения, я соглашаюсь с %sполитикой обработки персональных данных%s"
