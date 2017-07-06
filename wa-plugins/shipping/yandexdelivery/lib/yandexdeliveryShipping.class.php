@@ -1688,12 +1688,12 @@ HTML;
             array(
                 'value'    => 'no',
                 'title'    => 'НДС не облагается',
-                'disabled' => $this->getAdapter()->getAppProperties('taxes'),
+                'disabled' => !$this->getAdapter()->getAppProperties('taxes'),
             ),
             array(
                 'value'    => 'map',
                 'title'    => 'Передавать ставки НДС по каждой позиции',
-                'disabled' => $this->getAdapter()->getAppProperties('taxes'),
+                'disabled' => !$this->getAdapter()->getAppProperties('taxes'),
             ),
         );
     }

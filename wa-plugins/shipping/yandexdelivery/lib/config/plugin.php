@@ -4,7 +4,7 @@ return array(
     'description' => 'Расчет стоимости доставки сервисом «Яндекс.Доставка».',
     'icon'        => 'img/yandexdelivery16.png',
     'logo'        => 'img/yandexdelivery.png',
-    'version'     => '1.1.0',
+    'version'     => '1.1.1',
     'vendor'      => 'webasyst',
     'external'    => true,
 );
