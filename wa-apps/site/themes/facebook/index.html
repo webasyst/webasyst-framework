@@ -35,13 +35,13 @@
 
     Define your internal Facebook app navigation tabs as suggested above according to your routing setup.
     Depending on your routing setup, URLs such as '/blog/' may need to be changed to '/facebook/blog/', '/facebook/blog/' or similar.
-    
+
         [
             'url' => '/YOUR_FACEBOOK_ENABLED_APP_SETTLEMENT_URL/APP_ID/',
             'name' => 'TAB_NAME'
         ]
         (separate elements with comma ,)
-        
+
     The 'url' must represent the URL you have entered in your Site routing settings for the appropriate Facebook-enabled app, i.e. Shop-Script, Blog, Photos, Site, etc.
 
 *}
@@ -51,19 +51,19 @@
     <title>{$wa->title()|escape}</title>
     <meta name="Keywords" content="{$wa->meta('keywords')|escape}" />
     <meta name="Description" content="{$wa->meta('description')|escape}" />
-    
+
     <link rel="shortcut icon" href="/favicon.ico"/>
     {if $wa->blog}
         <!-- rss -->
         {$rss=$wa->blog->rssUrl()}
         {if $rss}<link rel="alternate" type="application/rss+xml" title="[s`RSS`] &mdash; {$wa->accountName()}" href="{$rss}">{/if}
     {/if}
-    
+
     <!-- css -->
     <link href="{$wa_theme_url}facebook.css?v{$wa_theme_version}" rel="stylesheet" type="text/css"/>
     {if $wa->shop && $wa->shop->currency() == 'RUB'} <link href="{$wa_url}wa-content/font/ruble/arial/fontface.css" rel="stylesheet" type="text/css">{/if}
     {$wa->css()} {* links active plugins CSS *}
-    
+
     <!-- js -->
     <script type="text/javascript" src="{$wa_static_url}wa-content/js/jquery/jquery-1.8.2.min.js"></script>
     <!-- internal shop-script js for facebook iframe app integration -->
@@ -88,9 +88,9 @@
         <meta name="viewport" content="width=device-width; initial-scale=1; maximum-scale=1; user-scalable=0;" />
     {/if}
     {$wa->js()} {* links active plugins JS *}
-    
+
     {include file="`$wa_active_theme_path`/head.html" inline}
-    
+
     {$wa->head()} {* links Google Analytics tracking code and current site's custom JS (Site app) *}
 </head>
 <body id="{$wa_app}">
@@ -110,14 +110,14 @@
                 <!-- search form (app dependent) -->
                 <div class="search float-right">
                     {include file="`$wa_active_theme_path`/searchform.html" inline}
-                </div> 
-            {/if}   
-            
+                </div>
+            {/if}
+
             <h2 class="block facebook-app-title float-left">
                 <!-- replace with your company logo if you want -->
                 {$wa->accountName()}
             </h2>
-                
+
             <div id="facebook_like" class="float-left" style="clear: none !important; margin-top: 13px;">
                 <div class="fb-like" data-href="{$wa->domainUrl()}" data-send="false" data-layout="button_count" data-width="200" data-show-faces="false"></div>
             </div>
@@ -129,18 +129,18 @@
                 <div class="block float-right">
                     [s`Order by phone`]: <strong>{$wa->shop->settings('phone')}</strong>
                 </div>
-            {/if}  
+            {/if}
 
             <!-- main Facebook app sections -->
             <ul class="facebook-tabs">
                 {foreach $fb_tabs as $t}<li{if $t.url==$wa_app_url} class="selected"{/if}><a href="{$t.url}">{$t.name}</a></li>{/foreach}
             </ul>
-            
+
             <div class="clear-both"></div>
-            
+
         </div>
     </div>
-    
+
     <div id="main">
         <div class="container">
             <!-- INTERNAL APP NAVIGATION & CONTENT -->
@@ -148,7 +148,7 @@
             <div class="clear-both"></div>
         </div>
     </div>
-    
+
     <!-- FOOTER -->
     <div id="footer">
         <div class="block">
@@ -164,6 +164,11 @@
                     </ul>
                   </div>
                 -->
+
+                {if !empty($theme_settings.footer_notice)}
+                    <div style="clear: both"></div>
+                    <div class="s-footer-notice">{$theme_settings.footer_notice}</div>
+                {/if}
             </div>
         </div>
     </div>

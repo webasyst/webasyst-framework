@@ -19,14 +19,14 @@
     <link href="{$wa_theme_url}nifty.css?v{$wa_theme_version}" rel="stylesheet" type="text/css"/>
     {if $wa->shop && $wa->shop->currency() == 'RUB'} <link href="{$wa_url}wa-content/font/ruble/arial/fontface.css" rel="stylesheet" type="text/css">{/if}
     {$wa->css()} {* links active plugins CSS *}
-    
+
     <!-- js -->
     <script type="text/javascript" src="{$wa_static_url}wa-content/js/jquery/jquery-1.8.2.min.js"></script>
-    <script type="text/javascript" src="{$wa_theme_url}nifty.js?v{$wa_theme_version}"></script>    
+    <script type="text/javascript" src="{$wa_theme_url}nifty.js?v{$wa_theme_version}"></script>
     {$wa->js()} {* links active plugins JS *}
-    
+
     {include file="`$wa_active_theme_path`/head.html" inline}
-    
+
     {$wa->head()} {* links Google Analytics tracking code and current site's custom JS (Site app) *}
 
     <!--[if lt IE 9]>
@@ -42,7 +42,7 @@
     document.createElement('menu');
     </script>
     <![endif]-->
-    
+
     <!-- custom theme styling -->
     <style>
         {if !empty($theme_settings.color_scheme)}
@@ -62,13 +62,13 @@
             #niftybox { background-color: {$_color}; }
         {/if}
     </style>
-    
+
 </head>
 <body id="{$wa_app}">
 
     <div id="header">
         <div class="container">
-        
+
             <div class="block">
 
                 {if $wa->isAuthEnabled()}
@@ -89,20 +89,20 @@
                         </ul>
                     </div>
                 {/if}
-            
+
                 {if $wa->shop}
                     <!-- search form (app dependent) -->
                     <div class="float-right search">
                         <form method="get" action="{$wa->getUrl('shop/frontend/search')}">
                             <input type="search" name="query" {if !empty($query)}value="{$query}"{/if} id="search" placeholder="[s`Find products`]">
                         </form>
-                    </div>                     
+                    </div>
                 {/if}
-    
-                
+
+
                 <!-- subscription links -->
             	<div class="float-right subscribe">
-                    {if $wa->blog}	   
+                    {if $wa->blog}
                         {$rss = $wa->blog->rssUrl()}
                         {if $rss}
                     		<a href="{$rss}" title="[s`Subscribe`]" class="bold"><i class="icon16 rss"></i></a>
@@ -111,25 +111,25 @@
             		<a href="{$theme_settings.facebook_url}" title="Facebook"><i class="icon16 facebook"></i></a>
             		<a href="{$theme_settings.twitter_url}" title="Twitter"><i class="icon16 twitter"></i></a>
             	</div>
-    
-                {if $wa->shop}                  
+
+                {if $wa->shop}
                     <!-- phone number -->
                     {if $wa->shop->settings('phone')}
                         <div class="float-right phone">
                             {$wa->shop->settings('phone')}
                         </div>
-                    {/if}  
+                    {/if}
                 {/if}
-                
+
                 <!-- TITLE -->
-            
+
                 <h2 class="title">
                     <a href="{$wa_url}">{$wa->accountName()}</a>
                 </h2>
             </div>
-            
+
             <div id="niftybox" role="navigation">
-                <div class="apps">            
+                <div class="apps">
                     {if $wa->shop}
                         <!-- display shopping cart info in case Shop-Script is installed -->
                         {$cart_total = $wa->shop->cart->total()}
@@ -139,7 +139,7 @@
                                  <strong class="cart-total">{wa_currency_html($cart_total, $wa->shop->currency())}</strong>
                              </a>
                          </div>
-                    {/if}                              
+                    {/if}
                     <!-- main website sections -->
                     <ul class="menu-h">
                         {foreach $wa->apps() as $a}
@@ -151,10 +151,10 @@
                     {include file="`$wa_active_theme_path`/navigation.html"}
                 </div>
             </div>
-            
+
         </div>
     </div>
-    
+
     <div id="main">
         <div class="container">
             <!-- INTERNAL APP NAVIGATION & CONTENT -->
@@ -162,7 +162,7 @@
             <div class="clear-both"></div>
         </div>
     </div>
-    
+
     <!-- FOOTER -->
     <div id="footer">
         <div class="container">
@@ -179,8 +179,13 @@
                   </div>
                 -->
             </div>
+
+            {if !empty($theme_settings.footer_notice)}
+                <div class="s-footer-notice">
+                    {$theme_settings.footer_notice}
+                </div>
+            {/if}
         </div>
     </div>
-    
 </body>
 </html>
