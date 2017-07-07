@@ -1,13 +1,28 @@
+{strip}
+
 <main class="wa-site-wrapper" role="main">
-    {if isset($breadcrumbs) && !empty($breadcrumbs)}
+
+    {if !empty($page)}
+        {$subpages = $wa->site->pages($page.id)}
+    {/if}
+    {if !empty($breadcrumbs) || !empty($subpages)}
         <nav class="content-nav-wrapper" role="navigation">
             <div class="nav-group">
                 <div class="nav-list" itemprop="breadcrumb">
-                    {foreach $breadcrumbs as $breadcrumb}
-                    <div class="nav-item back-nav-item">
-                        <a href="{$breadcrumb.url}">{$breadcrumb.name|escape}</a>
-                    </div>
-                    {/foreach}
+                    {if !empty($breadcrumbs)}
+                        {foreach $breadcrumbs as $breadcrumb}
+                            <div class="nav-item back-nav-item">
+                                <a href="{$breadcrumb.url}">{$breadcrumb.name|escape}</a>
+                            </div>
+                        {/foreach}
+                    {/if}
+                    {if !empty($subpages)}
+                        {foreach $subpages as $breadcrumb}
+                            <div class="nav-item">
+                                <a href="{$breadcrumb.url}">{$breadcrumb.name|escape}</a>
+                            </div>
+                        {/foreach}
+                    {/if}
                 </div>
             </div>
         </nav>
@@ -25,3 +40,5 @@
         {/if}
     </div>
 </main>
+
+{/strip}

@@ -19,5 +19,9 @@
     <!--HIDDEN MENU-->
     {include file="layout-menu.html" inline}
     <!--HIDDEN MENU-->
+
+    {if !empty($theme_settings.footer_notice)}
+        <div class="s-footer-notice">{$theme_settings.footer_notice}</div>
+    {/if}
 </body>
 </html>

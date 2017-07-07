@@ -11,7 +11,9 @@
 
         {if $wa->shop && $wa->shop->settings('phone')}
             <div class="shop-details-wrapper">
-                <div class="phone-wrapper">{$wa->shop->settings('phone')}</div>
+                <div class="phone-wrapper">
+                    <a href="tel:{$wa->shop->settings('phone')}" data-rel="external">{$wa->shop->settings('phone')}</a>
+                </div>
                 {if $wh = $wa->shop->settings('workhours')}
                     <div class="workhours-wrapper">
                         {$wh.days_from_to}{if $wh.hours_from && $wh.hours_to} {$wh.hours_from}—{$wh.hours_to}{/if}
@@ -48,7 +50,9 @@
                         <div class="nav-item {if $a.url==$wa_app_url && !$wa->globals('isMyAccount')}active-nav-item{/if}">
                             <a href="{$a.url}">{$a.name}</a>
                         </div>
-                        {$apps_available[$a.app] = 1}
+                        {if !empty($a.app)}
+                            {$apps_available[$a.app] = 1}
+                        {/if}
                     {/foreach}
                 </div>
             </div>
@@ -111,6 +115,22 @@
                 {/if}
             {/if}
 
+            {if $wa->hub && !empty($apps_available['hub'])}
+                {$pages = $wa->hub->pages()}
+                {if count($pages)}
+                    <div class="nav-group">
+                        <div class="nav-header">[`Hub`]</div>
+                        <div class="nav-list">
+                            {foreach $pages as $p}
+                                <div class="nav-item">
+                                    <a href="{$p.url}">{$p.name}</a>
+                                </div>
+                            {/foreach}
+                        </div>
+                    </div>
+                {/if}
+            {/if}
+
             {if $wa->photos && !empty($apps_available['photos'])}
                 <!-- PHOTOS CORE NAVIGATION -->
                 <div class="nav-group">
@@ -126,7 +146,7 @@
                         {$pages = $wa->photos->pages()}
                         {if count($pages)}
                             {foreach $pages as $p}
-                                <div class="nav-item {if $p.id == $selected_node.id}active-nav-item{/if}">
+                                <div class="nav-item">
                                     <a href="{$p.url}">{$p.name}</a>
                                 </div>
                             {/foreach}
@@ -134,7 +154,7 @@
                     </div>
                 </div>
             {/if}
-            
+
             {if $wa->isAuthEnabled()}
                 <!-- USER ACCOUNT -->
                 <div class="nav-group">
@@ -169,5 +189,15 @@
                 </div>
             {/if}
         </nav>
+
+        {if !empty($theme_settings.show_full_site_link)}
+            <div class="full-version-link" style="text-align: center;">
+                {$_full_link_href = $wa->getUrl('site/frontend')}
+                {if $wa->shop && !empty($apps_available['shop'])}
+                    {$_full_link_href = $wa->getUrl('shop/frontend')}
+                {/if}
+                <a href="{$_full_link_href}?nomobile=1">[`Desktop version`]</a>
+            </div>
+        {/if}
     </div>
 </section>
