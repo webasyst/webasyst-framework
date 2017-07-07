@@ -66,7 +66,7 @@ return array(
     'taxes'         => array(
         'value'        => 'map',
         'title'        => 'Передача ставок НДС',
-        'control_type' => waHtmlControl::RADIOGROUP,
+        'control_type' => waHtmlControl::SELECT,
         'description'  => 'Если ваша организация работает по ОСН, выберите вариант «Передавать ставки НДС по каждой позиции».<br>
 Ставка НДС может быть равна 0%, 10% или 18%. В настройках налогов в приложении выберите, чтобы НДС был включен в цену товара.<br>
 Если вы работаете по другой системе налогообложения, выберите «НДС не облагается».',
@@ -170,10 +170,8 @@ return array(
                 var field = this.form.find(':input[name*="\[paymentType\]"]:first').parents('div.field:first');
                 if (element.val() == 'customer') {
                     this.show([field], fast);
-                    this.receipt.attr('disabled', true);
                 } else {
                     this.hide([field], fast);
-                    this.receipt.attr('disabled', null);
                 }
             }
         },

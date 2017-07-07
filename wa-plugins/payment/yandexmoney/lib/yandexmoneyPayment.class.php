@@ -139,7 +139,8 @@ class yandexmoneyPayment extends waPayment implements waIPayment
                     if (defined('JSON_UNESCAPED_UNICODE')) {
                         $json_options |= constant('JSON_UNESCAPED_UNICODE');
                     }
-                    $hidden_fields['ym_merchant_receipt'] = json_encode($receipt, $json_options);
+
+                    $hidden_fields['ym_merchant_receipt'] = $json_options ? json_encode($receipt, $json_options) : json_encode($receipt);
                 }
 
                 $view->assign('hidden_fields', $hidden_fields);
@@ -167,7 +168,7 @@ class yandexmoneyPayment extends waPayment implements waIPayment
     private function getReceiptData(waOrder $order)
     {
         $receipt = null;
-        if ($this->receipt && $this->getAdapter()->getAppProperties('taxes')) {
+        if ($this->receipt) {
             $contact = $order->getContactField('email');
             if (empty($contact)) {
                 if ($contact = $order->getContactField('phone')) {
@@ -663,6 +664,7 @@ class yandexmoneyPayment extends waPayment implements waIPayment
 
     public function settingsTaxOptions()
     {
+        $disabled = !$this->getAdapter()->getAppProperties('taxes');
         return array(
             array(
                 'value' => 0,
@@ -671,48 +673,48 @@ class yandexmoneyPayment extends waPayment implements waIPayment
             array(
                 'value'    => 1,
                 'title'    => 'Общая СН',
-                'disabled' => !$this->getAdapter()->getAppProperties('taxes'),
+                'disabled' => $disabled,
             ),
             array(
                 'value'    => 2,
                 'title'    => 'Упрощенная СН (доходы)',
-                'disabled' => !$this->getAdapter()->getAppProperties('taxes'),
+                'disabled' => $disabled,
             ),
             array(
                 'value'    => 3,
                 'title'    => 'Упрощенная СН (доходы минус расходы)',
-                'disabled' => !$this->getAdapter()->getAppProperties('taxes'),
+                'disabled' => $disabled,
             ),
             array(
                 'value'    => 4,
                 'title'    => 'Единый налог на вмененный доход',
-                'disabled' => !$this->getAdapter()->getAppProperties('taxes'),
+                'disabled' => $disabled,
             ),
             array(
                 'value'    => 5,
                 'title'    => 'Единый сельскохозяйственный налог',
-                'disabled' => !$this->getAdapter()->getAppProperties('taxes'),
+                'disabled' => $disabled,
             ),
             array(
                 'value'    => 6,
                 'title'    => 'Патентная СН',
-                'disabled' => !$this->getAdapter()->getAppProperties('taxes'),
+                'disabled' => $disabled,
             ),
         );
     }
 
     public function taxesOptions()
     {
+        $disabled = !$this->getAdapter()->getAppProperties('taxes');
         return array(
             array(
-                'value'    => 'no',
-                'title'    => 'НДС не облагается',
-                'disabled' => !$this->getAdapter()->getAppProperties('taxes'),
+                'value' => 'no',
+                'title' => 'НДС не облагается',
             ),
             array(
                 'value'    => 'map',
                 'title'    => 'Передавать ставки НДС по каждой позиции',
-                'disabled' => !$this->getAdapter()->getAppProperties('taxes'),
+                'disabled' => $disabled,
             ),
         );
     }
