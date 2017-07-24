@@ -253,6 +253,6 @@ li.error a {color: red}
 /* .s-personal-structure li:hover .s-onoff i.icon10.status-green { display: none; } */
 .s-personal-structure li.selected a { border-top: 1px solid #ddd; }
 .s-personal-structure li.selected .s-onoff { background: #e7e7e7; }
-.s-personal-field-list { margin-top: 10px; }
-.s-personal-field-list label { display: block; margin-bottom: 10px; }
+.s-personal-field-list { margin-top: 10px; max-width: 30%; }
+.s-personal-field-list label { display: block; margin-bottom: 10px; white-space: normal; word-wrap: break-word; }
 .s-configure-app-div { padding: 20px; background: #f3f3ee; margin-bottom: 20px; }

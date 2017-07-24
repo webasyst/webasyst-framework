@@ -186,6 +186,7 @@
                             $('#configure-app-div').slideToggle(200);
                         });
                     });                    //location.reload();
+                    f.find('.button.yellow').removeClass('yellow').addClass('green');
                 } else {
                     f.find(".s-settings-form-status").html(response.errors ? response.errors : response).css('color', 'red');
                     f.find(".s-settings-form-status").fadeIn("slow");
@@ -193,6 +194,15 @@
             }, "json");
             return false;
         });
+
+        // Turn button from green to yellow when something's changed in the form
+        setTimeout(function() { "use strict";
+            var $button = $('form.s-auth-form .button.green').last();
+            var $form = $button.closest('form');
+            $form.on('change keyup', function() {
+                $button.removeClass('green').addClass('yellow');
+            });
+        }, 50);
     });
 </script>
 {else}

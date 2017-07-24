@@ -15,6 +15,14 @@
     .form-constructor .show-when-enabled {
         display: block;
     }
+    #service-agreement-wrapper {
+        line-height: 1.5em;
+        margin-bottom: 20px;
+    }
+    #service-agreement-wrapper textarea {
+        min-width: 450px;
+        min-height: 80px;
+    }
     /*
     * ---Form constructor
     */
@@ -170,12 +178,7 @@
         width: 300px;
         white-space: normal;
         margin:4px 0 10px;
-        border: 1px dashed #ccc;
-        cursor:pointer;
         padding: 2px;
-    }
-    #form-constructor-service-agreement:hover {
-        border: 1px dashed #00f;
     }
     #form-constructor-service-agreement.editor-on {
         border: none !important;
@@ -237,26 +240,30 @@
 
 <h5 class="heading">[`Sign up form fields`]</h5>
 
-<div>
-    <p id="service-agreement-wrapper">
-        <span class="hint">[`Personal data processing`]</span>
+<div id="service-agreement-wrapper">
+    <span class="hint">[`Personal data processing`]</span>
+    <br>
+    <label>
+        <input type="radio" name="params[service_agreement]" value=""{if empty($params.service_agreement)} checked{/if}>
+        [`Do not require consent to personal data protection policy`]
+    </label>
+    <br>
+    {$link_tag = sprintf('<a href="%s" target="_blank">', _w('---INSERT A LINK HERE!---'))}
+    <label data-default-text="{sprintf_wp('By submitting this form I agree to %spersonal data protection policy%s', $link_tag, '</a>')|escape}">
+        <input type="radio" name="params[service_agreement]" value="notice"{if ifset($params.service_agreement) == 'notice'} checked{/if}>
+        [`Show only notice and link to policy`]
+    </label>
+    <br>
+    <label data-default-text="{sprintf_wp('I agree to %spersonal data protection policy%s', $link_tag, '</a>')|escape}">
+        <input type="radio" name="params[service_agreement]" value="checkbox"{if ifset($params.service_agreement) == 'checkbox'} checked{/if}>
+        [`Show mandatory checkbox, notice, and link`]
+    </label>
+
+    <div class="hidden value text-editor">
+        <textarea name="params[service_agreement_text]">{ifset($params.service_agreement_text)|escape}</textarea>
         <br>
-        <label>
-            <input type="radio" name="params[service_agreement]" value=""{if empty($params.service_agreement)} checked{/if}>
-            [`Do not require consent to personal data protection policy`]
-        </label>
-        <br>
-        {$link_tag = sprintf('<a href="%s" target="_blank">', _w('---INSERT A LINK HERE!---'))}
-        <label data-default-text="{sprintf_wp('By submitting this form I agree to %spersonal data protection policy%s', $link_tag, '</a>')|escape}">
-            <input type="radio" name="params[service_agreement]" value="notice"{if ifset($params.service_agreement) == 'notice'} checked{/if}>
-            [`Show only notice and link to policy`]
-        </label>
-        <br>
-        <label data-default-text="{sprintf_wp('I agree to %spersonal data protection policy%s', $link_tag, '</a>')|escape}">
-            <input type="radio" name="params[service_agreement]" value="checkbox"{if ifset($params.service_agreement) == 'checkbox'} checked{/if}>
-            [`Show mandatory checkbox, notice, and link`]
-        </label>
-    </p>
+        <span class="hint"><a href="javascript:void(0)" class="inline-link generalte-example-link"><b><i>[`Restore original text`]</i></b></a></span>
+    </div>
 </div>
 
 <div class="form-constructor" style="white-space:nowrap;">
@@ -286,12 +293,9 @@
             {/foreach}
         </div>
 
-        <div class="editable-wrapper" id="form-constructor-service-agreement">
-            <i></i>
+        <div id="form-constructor-service-agreement">
             <input type="checkbox" checked disabled>
-            <div data-editable-element="true" class="contains_html display-inline"></div>
-            <textarea class="hidden show-when-editable" name="params[service_agreement_text]">{ifset($params.service_agreement_text)|escape}</textarea>
-            <span class="hint hidden show-when-editable"><a href="javascript:void(0)" class="generalte-example-link">[`Restore original text`]</a></span>
+            <div class="preview-text display-inline"></div>
         </div>
 
         <span class="editable-wrapper">
@@ -445,32 +449,44 @@
 
         // Show/hide terms of service agreement when user switches the radio button
         (function() {
-            var $wrapper = $('#form-constructor-service-agreement');
-            var $editable_element = $wrapper.find('[data-editable-element]');
-            var $textarea = $wrapper.find('textarea');
+            var $preview_wrapper = $('#form-constructor-service-agreement');
+            var $preview_text = $preview_wrapper.find('.preview-text');
+            var $radio_wrapper = $('#service-agreement-wrapper');
+            var $textarea = $radio_wrapper.find('textarea');
             var previous_default_text = null;
 
-            $('#service-agreement-wrapper').on('change', ':radio', function() {
+            // Update text in preview when textarea changes
+            $textarea.on('keyup keypress change blur', function() {
+                $preview_text.html($textarea.val());
+            });
+
+            // Update textarea and preview visibility when radio is selected
+            $radio_wrapper.on('change', ':radio', function() {
                 if (!$textarea.val() || previous_default_text == $textarea.val()) {
                     setDefaultText();
                 }
 
+                $textarea.change();
                 switch(this.value) {
                     case 'notice':
-                        $wrapper.show().find(':checkbox').hide();
+                        $preview_wrapper.show();
+                        $textarea.closest('.text-editor').show();
+                        $preview_wrapper.find(':checkbox').hide();
                         break;
                     case 'checkbox':
-                        $wrapper.show().find(':checkbox').show();
+                        $preview_wrapper.show();
+                        $textarea.closest('.text-editor').show();
+                        $preview_wrapper.find(':checkbox').show();
                         break;
                     default:
-                        $wrapper.hide();
+                        $preview_wrapper.hide();
+                        $textarea.closest('.text-editor').hide();
                         break;
                 }
-            }).find(':checked').change();
+            }).find(':radio:checked').change();
 
-            $editable_element.html($textarea.val());
-
-            $wrapper.on('mousedown', '.generalte-example-link', function(e) {
+            // Replace textarea value when user clicks on 'Restore original text' link
+            $radio_wrapper.on('mousedown', '.generalte-example-link', function(e) {
                 setDefaultText();
                 $textarea.focus();
                 return false;
@@ -478,8 +494,7 @@
 
             function setDefaultText() {
                 previous_default_text = $('#service-agreement-wrapper :radio:checked').closest('label').data('default-text') || '';
-                $editable_element.html(previous_default_text);
-                $textarea.val(previous_default_text);
+                $textarea.val(previous_default_text).change();
             }
         }());
 

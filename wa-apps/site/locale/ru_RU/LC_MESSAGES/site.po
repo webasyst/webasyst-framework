@@ -1209,10 +1209,10 @@ msgid "---INSERT A LINK HERE!---"
 msgstr "---ВСТАВЬТЕ СЮДА ССЫЛКУ НА ДОКУМЕНТ!---"
 
 msgid "I agree to %spersonal data protection policy%s"
-msgstr "Я соглашаюсь с %sполитикой обработки персональных данных%s"
+msgstr "Я принимаю условия %sполитики обработки персональных данных%s"
 
 msgid "By submitting this form I agree to %spersonal data protection policy%s"
-msgstr "Нажимая на кнопку подтверждения, я соглашаюсь с %sполитикой обработки персональных данных%s"
+msgstr "Нажимая на кнопку подтверждения, я принимаю условия %sполитики обработки персональных данных%s"
 
 msgid "Do not require consent to personal data protection policy"
 msgstr "Не требовать согласия с политикой обработки персональных данных"
@@ -1336,3 +1336,4 @@ msgstr "Указанный email-адрес уже используется."
 
 msgid "Design"
 msgstr "Дизайн"
+
