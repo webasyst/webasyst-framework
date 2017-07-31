@@ -47,7 +47,7 @@
             [`Or upload file (JPG, GIF or PNG):`]
         </p>
         <form id="imageform" target="sendfile" action="{$tmpimage_url}" method="post" enctype="multipart/form-data">
-            <div class="c-photo-loading-image"><input id="fileselect" type="file" name="photo" /><i id="photo-loading-image" class="icon16 loading" style="margin-left:16px;display:none"></i><input id="photo-id-input" type="hidden" name="id" value=""></div>
+            <div class="c-photo-loading-image"><input id="fileselect" type="file" name="photo" /><i id="photo-loading-image" class="icon16 loading" style="margin-left:16px;display:none"></i><input id="photo-id-input" type="hidden" name="id" value="">{$wa->csrf()}</div>
         </form>
 
         <div id="photo-editor-buttons">

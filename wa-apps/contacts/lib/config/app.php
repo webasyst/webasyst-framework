@@ -8,10 +8,11 @@ return array(
     ),
     'rights'    => true,
     'analytics' => true,
-    'version'   => '1.1.5',
+    'version'   => '1.1.6',
     'critical'  => '1.1.0',
     'vendor'    => 'webasyst',
     'system'    => false,
+    'csrf'      => true,
     'plugins'   => true,
     'frontend'  => true,
     'routing_params' => array(

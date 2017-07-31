@@ -1435,7 +1435,7 @@
         /** Gracefully reload sidebar. */
         reloadSidebar: function() {
             $.post("?module=backend&action=sidebar", null, function (response) {
-                var sb = $("#wa-app .sidebar");
+                var sb = $("#c-sidebar");
                 sb.css('height', sb.height()+'px') // prevents blinking in some browsers
                   .html(response)
                   .css('height', '');
