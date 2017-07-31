@@ -365,7 +365,10 @@ class waContactCompositeField extends waContactField
             } else {
                 unset($params_subfield['validation_errors']);
             }
-
+            
+            if ($field->isRequired()) {
+                $params_subfield['is_required'] = true;
+            }
             if ($field instanceof waContactHiddenField) {
                 $result[] = $field->getHTML($params_subfield, $attrs_one);
             } else {

@@ -352,6 +352,9 @@ class waContactForm
                 $this->fields[$field_id]->setParameter('localized_names', _ws('New password'));
                 $opts['add_password_confirm'] = true;
             }
+            if ($this->fields[$field_id]->isRequired()) {
+                $opts['is_required'] = true;
+            }
             if ($placeholders) {
                 $opts['placeholder'] = true;
             }
