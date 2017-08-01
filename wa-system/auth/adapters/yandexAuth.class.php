@@ -17,8 +17,8 @@ class yandexAuth extends waOAuth2Adapter
     public function getControls()
     {
         return array(
-            'app_id' => 'Id приложения',
-            'app_secret' => 'Пароль приложения'
+            'app_id'     => _ws('Yandex app ID'),
+            'app_secret' => _ws('Yandex app secret'),
         );
     }
 

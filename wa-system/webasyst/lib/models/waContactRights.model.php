@@ -340,8 +340,10 @@ class waContactRightsModel extends waModel {
         // filter app admins
         if ($name != 'backend') {
             foreach($this->getByIds(array_keys($no_access), $app_id, 'backend', $check_groups) as $id => $v) {
-                $access[$id] = PHP_INT_MAX;
-                unset($no_access[$id]);
+                if ($v > 1) {
+                    $access[$id] = PHP_INT_MAX;
+                    unset($no_access[$id]);
+                }
             }
         }
         if (!$no_access) {

@@ -13,6 +13,14 @@ class facebookAuth extends waOAuth2Adapter
         parent::__construct($options);
     }
 
+    public function getControls()
+    {
+        return array(
+            'app_id'     => _ws('Facebook app ID'),
+            'app_secret' => _ws('Facebook app secret'),
+        );
+    }
+
     public function getRedirectUri()
     {
         // Login dialog url

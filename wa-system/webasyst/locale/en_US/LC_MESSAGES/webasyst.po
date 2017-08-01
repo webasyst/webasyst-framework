@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WebAsyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2017-03-14 09:52+0300\n"
+"PO-Revision-Date: 2017-07-17 17:07+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -2105,3 +2105,27 @@ msgstr ""
 #: /wa-system/shipping/waShipping.class.php:699
 msgid "Add interval"
 msgstr ""
+
+msgid "Google app ID"
+msgstr "Client ID"
+
+msgid "Google app secret"
+msgstr "Client secret"
+
+msgid "Facebook app ID"
+msgstr "App ID"
+
+msgid "Facebook app secret"
+msgstr "App Secret"
+
+msgid "VK app ID"
+msgstr "Application ID"
+
+msgid "VK app secret"
+msgstr "Secure key"
+
+msgid "Yandex app ID"
+msgstr "ID"
+
+msgid "Yandex app secret"
+msgstr "Password"

@@ -2021,6 +2021,7 @@ HTACCESS;
         /** @var string[] $white_list */
         static $white_list = array(
             'js',
+            'map',
             'css',
             'html',
             'txt',

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WebAsyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2017-06-30 12:49+0300\n"
+"PO-Revision-Date: 2017-07-17 17:07+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -3417,10 +3417,10 @@ msgid "Please confirm your agreement"
 msgstr "Подтвердите согласие"
 
 msgid "I agree to the"
-msgstr "Я соглашаюсь с"
+msgstr "Я принимаю условия"
 
 msgid "personal data protection policy"
-msgstr "политикой обработки персональных данных"
+msgstr "политики обработки персональных данных"
 
 #: /wa-system/view/waViewHelper.class.php:439
 msgid "Email is required"
@@ -4434,3 +4434,27 @@ msgstr "Добавить интервал"
 
 msgid "This setting must be supported by the app; e.g., Shop-Script ver. 7.2.4.114 or higher."
 msgstr "Эта настройка должна поддерживаться приложением, например, Shop-Script версии 7.2.4.114 или выше."
+
+msgid "Google app ID"
+msgstr "Идентификатор клиента"
+
+msgid "Google app secret"
+msgstr "Секрет клиента"
+
+msgid "Facebook app ID"
+msgstr "Идентификатор приложения"
+
+msgid "Facebook app secret"
+msgstr "Секрет приложения"
+
+msgid "VK app ID"
+msgstr "ID приложения"
+
+msgid "VK app secret"
+msgstr "Защищенный ключ"
+
+msgid "Yandex app ID"
+msgstr "ID"
+
+msgid "Yandex app secret"
+msgstr "Пароль"

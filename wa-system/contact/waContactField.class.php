@@ -737,7 +737,12 @@ abstract class waContactField
             $disabled = 'disabled="disabled"';
         }
 
-        $result = '<input '.$attrs.' '.$disabled.' type="text" name="'.htmlspecialchars($name_input).'" value="'.htmlspecialchars($value).'">';
+        $name = $this->getName(null, true);
+        if (!empty($params['placeholder'])) {
+            $attrs .= ' placeholder="'.$name.'"';
+        }
+
+        $result = '<input '.$attrs.' title="'.$name.'" '.$disabled.' type="text" name="'.htmlspecialchars($name_input).'" value="'.htmlspecialchars($value).'">';
         if ($ext) {
             // !!! add a proper <select>?
             $result .= '<input type="hidden" '.$disabled.' name="'.htmlspecialchars($name.'[ext]').'" value="'.htmlspecialchars($ext).'">';
@@ -765,10 +770,6 @@ abstract class waContactField
             if (false === strpos($attrs, 'class="error')) {
                 $attrs .= ' class="error"';
             }
-        }
-
-        if (!empty($params['placeholder'])) {
-            $attrs .= ' placeholder="'.$this->getName(null, true).'"';
         }
 
         return $this->getHtmlOne($params, $attrs).$errors_html;
@@ -818,6 +819,10 @@ abstract class waContactField
     {
     }
 
+    /**
+     * @param $state
+     * @return waContactField
+     */
     public static function __set_state($state)
     {
         return new $state['_type']($state['id'], $state['name'], $state['options']);

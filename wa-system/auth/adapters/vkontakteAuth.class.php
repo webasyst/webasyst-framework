@@ -22,8 +22,8 @@ class vkontakteAuth extends waOAuth2Adapter
     public function getControls()
     {
         return array(
-            'app_id' => 'ID приложения',
-            'app_secret' => 'Защищенный ключ'
+            'app_id'     => _ws('VK app ID'),
+            'app_secret' => _ws('VK app secret'),
         );
     }
 

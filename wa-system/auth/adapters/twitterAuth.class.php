@@ -11,8 +11,8 @@ class twitterAuth extends waAuthAdapter
     public function getControls()
     {
         return array(
-            'app_id' => 'Consumer key',
-            'app_secret' => 'Consumer secret'
+            'app_id'     => 'Consumer Key',
+            'app_secret' => 'Consumer Secret',
         );
     }
 

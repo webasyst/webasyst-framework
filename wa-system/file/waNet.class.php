@@ -212,7 +212,7 @@ class waNet
 
         if (!empty($this->options['authorization'])) {
             $authorization = sprintf("%s:%s", $this->options['login'], $this->options['password']);
-            $this->request_headers["Authorization"] = "Basic ".urlencode(base64_encode($authorization));
+            $this->request_headers["Authorization"] = "Basic ".base64_encode($authorization);
         }
 
         $this->request_headers['User-Agent'] = $this->user_agent;
@@ -837,6 +837,12 @@ class waNet
 
     public function __debugInfo()
     {
-        //TODO print requests details
+        return array(
+            'options'          => $this->options,
+            'request_headers'  => $this->request_headers,
+            'response_headers' => $this->response_header,
+            'raw'              => $this->raw_response,
+            'preview'          => $this->decoded_response,
+        );
     }
 }

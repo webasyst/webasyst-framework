@@ -11,8 +11,8 @@ class googleAuth extends waOAuth2Adapter
     public function getControls()
     {
         return array(
-            'app_id' => 'Client ID',
-            'app_secret' => 'Client secret'
+            'app_id'     => _ws('Google app ID'),
+            'app_secret' => _ws('Google app secret'),
         );
     }
 
