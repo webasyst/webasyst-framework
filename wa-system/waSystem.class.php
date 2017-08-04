@@ -193,10 +193,11 @@ class waSystem
      */
     protected function getFactory($name, $class, $options = array(), $first_param = false)
     {
-        if (isset($this->factories[$name])) {
+        $new_instance = array_key_exists('new_instance', $options);
+        if (isset($this->factories[$name]) && !$new_instance) {
             return $this->factories[$name];
         }
-        if (($config = $this->getConfig()->getFactory($name))) {
+        if ( ( $config = $this->getConfig()->getFactory($name))) {
             if (is_array($config)) {
                 $class = $config[0];
                 $options = isset($config[1]) ? $config[1] : $options;
@@ -208,9 +209,14 @@ class waSystem
             throw new waException('Unable to load factory class '.$class);
         }
         if ($first_param !== false) {
-            $this->factories[$name] = new $class($first_param, $options);
+            $factory = new $class($first_param, $options);
         } else {
-            $this->factories[$name] = new $class($options);
+            $factory = new $class($options);
+        }
+        if($new_instance) {
+            return $factory;
+        } else {
+            $this->factories[$name] = $factory;
         }
         return $this->factories[$name];
     }
