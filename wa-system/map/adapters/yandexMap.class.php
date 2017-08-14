@@ -123,14 +123,15 @@ HTML;
                 if (!empty($response['metaDataProperty']['GeocoderResponseMetaData']['found'])) {
                     if ($response['metaDataProperty']['GeocoderResponseMetaData']['found'] == 1) {
                         $member = reset($response['featureMember']);
-                        if (!empty($member['GeoObject']['Point'])) {
-                            $point = reset($member['GeoObject']['Point']);
-                            if (strpos($point, ' ')) {
-                                $data = array(
-                                    'lat' => '',
-                                    'lng' => '',
-                                );
-                                list($data['lng'], $data['lat']) = explode(' ', $point, 2);
+                        if (!empty($member['GeoObject']['Point']['pos'])) {
+                            $data += self::parse($member['GeoObject']['Point']['pos']);
+                        }
+                    } else {
+                        foreach ($response['featureMember'] as $member) {
+                            $precision = ifset($member['GeoObject']['metaDataProperty']['GeocoderMetaData']['precision']);
+                            if (!empty($member['GeoObject']['Point']) && ($precision == 'exact')) {
+                                $data += self::parse($member['GeoObject']['Point']['pos']);
+                                break;
                             }
                         }
                     }
@@ -142,10 +143,24 @@ HTML;
         return $data;
     }
 
+    private static function parse($point)
+    {
+        $data = array();
+        if (strpos($point, ' ')) {
+            $data = array(
+                'lat' => '',
+                'lng' => '',
+            );
+            list($data['lng'], $data['lat']) = explode(' ', $point, 2);
+        }
+        return $data;
+    }
+
     protected function sendGeoCodingRequest($address)
     {
         $response = null;
         if ($address) {
+            $address = preg_replace('@российская\s+федерация@ui', 'Россия', $address);
             /**
              * @link https://tech.yandex.ru/maps/doc/geocoder/desc/concepts/About-docpage/
              */

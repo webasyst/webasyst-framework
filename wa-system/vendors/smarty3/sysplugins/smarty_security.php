@@ -71,30 +71,55 @@ class Smarty_Security {
         'waHtmlControl',
         'waLog',
         'waRequest::file',
+        'waDbConnector',
     );
     /**
      * This is an array of disabled PHP functions.
-     *
-     * If empty all functions are allowed.
-     * To disable all PHP functions set $php_functions = null.
-     * @var array
      */
     protected $php_functions = array(
-        'eval', 'exec', 'system', 'popen', 'proc_open', 'shell_exec', 'passthru',
-        'file_put_contents', 'file_get_contents', 'fopen', 'file', 'fwrite', 'fputs', 'copy', 'rename', 'move_uploaded_file', 'readfile',
-        'link', 'symlink', 'unlink',
-        'call_user_func', 'call_user_func_array', 'create_function', 'call_user_method', 'call_user_method_array',
-        'preg_replace_callback', 'wa', 'wa_lambda', 'preg_replace', 'unserialize', 'serialize', 'debug_backtrace',
-        'get_defined_vars', 'get_defined_constants',
+        'dl', 'eval', 'exec', 'system', 'popen', 'pclose', 'shell_exec', 'passthru', 'assert', 'assert_options',
+        'fopen', 'fwrite', 'fput', 'fputs', 'copy', 'chmod', 'chgrp', 'chown', 'rename',
+        'touch', 'tempnam', 'fscanf', 'glob',
+        'lchown', 'lchgrp', 'link', 'symlink', 'unlink', 'realpath', 'scandir', 'opendir', 'rmdir', 'mkdir', 'is_writable',
+        'call_user_func', 'call_user_func_array', 'create_function', 'call_user_method', 'call_user_method_array', 'lstat', 'stat',
+        'register_shutdown_function', 'register_tick_function', 'set_error_handler', 'set_exception_handler', 'session_set_save_handler',
+        'preg_replace_callback', 'wa', 'wa_lambda', 'preg_replace', 'unserialize', 'serialize', 'debug_backtrace', 'get_resources', 'phpinfo',
+        'get_defined_vars', 'get_defined_constants', 'getenv', 'putenv', 'get_current_user', 'get_cfg_var',  'pathinfo',
+        'disk_free_space', 'disk_total_space', 'diskfreespace', 'getcwd', 'getlastmo', 'gid',
         'array_map', 'array_walk', 'array_reduce', 'array_filter', 'usort', 'uksort', 'uasort', 'array_diff_uassoc', 'array_diff_ukey',
         'array_udiff_assoc', 'array_udiff_uassoc', 'array_udiff', 'array_uintersect_assoc', 'array_uintersect_uassoc',
-        'array_intersect_uassoc', 'array_intersect_ukey',
-        'array_uintersect', 'array_walk', 'array_walk_recursive',
-        'func_get_args', 'func_get_arg', 'class_alias', 'iterator_apply',
-        'mysql_fetch_object', 'mysqli_fetch_object',
-        'dom_import_simplexml', 'simplexml_load_string', 'simplexml_load_file',
+        'array_intersect_uassoc', 'array_intersect_ukey', 'extract', 'parse_str',
+        'array_uintersect', 'array_walk', 'array_walk_recursive', 'pfsockopen', 'fsockopen',
+        'func_get_args', 'func_get_arg', 'class_alias', 'iterator_apply', 'iptcembed',
+        'dom_import_simplexml', 'simplexml_load_string', 'show_source', 'php_strip_whitespace', 'get_meta_tags',
         'spl_autoload_register', 'spl_autoload_call', 'sscanf', 'curl_init',
-        'debug_backtrace', 'mail',
+        'debug_backtrace', 'mail', 'set', 'php_uname',
+        //'move_uploaded_file', 'tmpfile', 'highlight_file', 'parse_ini_file', 'simplexml_load_file', 'ini_alter', 'ini_get',
+    );
+    /**
+     * Array of disabled PHP function masks.
+     */
+    protected $php_function_masks = array(
+        '~callback~i',
+        '~exif_~i',
+        '~(?<!is_)file(?!(mtime|_exists))~i',
+        '~^mysql~i',
+        '~^gz~i',
+        '~^bz~i',
+        '~^posix~i',
+        '~^pcntl~i',
+        '~^ob_~i',
+        '~^sqlite~i',
+        '~^getmy~i',
+        '~^proc_~i',
+        '~^apache_~i',
+        '~^image~i',
+        '~^ftp_~i',
+        '~^read~i',
+        '~^curl_~i',
+        '~^stream~i',
+        '~^ini_~i',
+        '~^xmlrpc_~i',
     );
     /**
      * This is an array of trusted PHP modifiers.
@@ -203,13 +228,24 @@ class Smarty_Security {
      */
     public function isTrustedPhpFunction($function_name, $compiler)
     {
-        if (!empty($this->php_functions) && in_array($function_name, $this->php_functions)) {
+        $unsafe = in_array($function_name, $this->php_functions);
+        if (!$unsafe) {
+            foreach($this->php_function_masks as $mask) {
+                if (preg_match($mask, $function_name)) {
+                    $unsafe = true;
+                    break;
+                }
+            }
+        }
+
+        if ($unsafe) {
             $compiler->trigger_template_error("PHP function '{$function_name}' not allowed by security setting");
             return false;
         }
 
         return true;
     }
+
     /**
      * Check if static class is trusted.
      *
@@ -241,7 +277,7 @@ class Smarty_Security {
      */
     public function isTrustedPhpModifier($modifier_name, $compiler)
     {
-        if (in_array($modifier_name, $this->php_functions)) {
+        if (!$this->isTrustedPhpFunction($modifier_name, $compiler)) {
             $compiler->trigger_template_error("modifier '{$modifier_name}' not allowed by security setting");
             return false; // should not, but who knows what happens to the compiler in the future?
         }
