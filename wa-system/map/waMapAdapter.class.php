@@ -20,14 +20,28 @@ abstract class waMapAdapter
      */
     public function getHTML($address, $options = array())
     {
-        if (!$address) {
-            return '';
+        if ($address) {
+            if (is_string($address)) {
+                return $this->getByAddress($address, $options);
+            } elseif (is_array($address) && isset($address[0]) && isset($address[1])) {
+                return $this->getByLatLng($address[0], $address[1], $options);
+            }
         }
-        if (is_string($address)) {
-            return $this->getByAddress($address, $options);
-        } elseif (is_array($address) && isset($address[0]) && isset($address[1])) {
-            return $this->getByLatLng($address[0], $address[1], $options);
-        }
+        return '';
+    }
+
+    /**
+     * @param $address
+     * @return array <pre>
+     * array(
+     *  'lat'=>float,
+     *  'lng'=>float,
+     * )
+     * </pre>
+     */
+    public function geocode($address)
+    {
+        return array();
     }
 
     abstract public function getJs($html = true);
@@ -99,6 +113,23 @@ abstract class waMapAdapter
     protected function getSettingsKey()
     {
         return sprintf('map_adapter_%s', $this->getId());
+    }
+
+    protected function geocodingAllowed($allowed = null)
+    {
+        $sm = self::getSettingsModel();
+        $app_id = 'webasyst';
+        $name = 'geocoding.'.$this->getId();
+        if ($allowed === null) {
+            $last_geocoding = $sm->get($app_id, $name, 0);
+            return ((time() - $last_geocoding) >= 3600);
+        } elseif ($allowed) {
+            $sm->del($app_id, $name);
+            return true;
+        } else {
+            $sm->set($app_id, $name, time());
+            return false;
+        }
     }
 
     /**

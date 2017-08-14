@@ -434,6 +434,10 @@ class idna_convert
             for ($old_idx = $idx, $w = 1, $k = $this->_base; 1 ; $k += $this->_base) {
                 $digit = $this->_decode_digit($encoded{$enco_idx++});
                 $idx += $digit * $w;
+                if ($idx < 0) {
+                    $this->_error('Integer oferflow while decoding');
+                    return false;
+                }
                 $t = ($k <= $bias) ? $this->_tmin :
                         (($k >= $bias + $this->_tmax) ? $this->_tmax : ($k - $bias));
                 if ($digit < $t) break;
@@ -445,7 +449,9 @@ class idna_convert
             $idx %= ($deco_len + 1);
             if ($deco_len > 0) {
                 // Make room for the decoded char
-                for ($i = $deco_len; $i > $idx; $i--) $decoded[$i] = $decoded[($i - 1)];
+                for ($i = $deco_len; $i > $idx; $i--) {
+                    $decoded[$i] = $decoded[($i - 1)];
+                }
             }
             $decoded[$idx++] = $char;
         }
@@ -904,7 +910,7 @@ class idna_convert
                 $output .= chr(224+($v >> 12)).chr(128+(($v >> 6) & 63)).chr(128+($v & 63));
             } elseif ($v < (1 << 21)) { // 4 bytes
                 $output .= chr(240+($v >> 18)).chr(128+(($v >> 12) & 63)).chr(128+(($v >> 6) & 63)).chr(128+($v & 63));
-            } elseif (self::$safe_mode) {
+            } elseif (!empty(self::$safe_mode) && isset(self::$safe_char)) {
                 $output .= self::$safe_char;
             } else {
                 $this->_error('Conversion from UCS-4 to UTF-8 failed: malformed input at byte '.$k);

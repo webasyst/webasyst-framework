@@ -182,18 +182,20 @@ class waNet
     {
         $this->request_headers['Connection'] = 'close';
         $this->request_headers['Date'] = date('c');
-        switch ($this->options['format']) {
-            case self::FORMAT_JSON:
-                $this->request_headers["Accept"] = "application/json";
-                break;
+        if (empty($this->request_headers['Accept'])) {
+            switch ($this->options['format']) {
+                case self::FORMAT_JSON:
+                    $this->request_headers["Accept"] = "application/json";
+                    break;
 
-            case self::FORMAT_XML:
-                $this->request_headers["Accept"] = "text/xml";
-                break;
+                case self::FORMAT_XML:
+                    $this->request_headers["Accept"] = "text/xml";
+                    break;
 
-            default:
-                $this->request_headers['Accept'] = '*/*';
-                break;
+                default:
+                    $this->request_headers['Accept'] = '*/*';
+                    break;
+            }
         }
 
         $this->request_headers['Accept-Charset'] = $this->options['charset'];
@@ -274,20 +276,22 @@ class waNet
         }
 
         $this->request_headers['Content-Length'] = strlen($content);
-        switch ($format) {
-            case self::FORMAT_JSON:
-                $this->request_headers['Content-Type'] = 'application/json';
-                break;
+        if (empty($this->request_headers['Content-Type'])) {
+            switch ($format) {
+                case self::FORMAT_JSON:
+                    $this->request_headers['Content-Type'] = 'application/json';
+                    break;
 
-            case self::FORMAT_XML:
-                $this->request_headers['Content-Type'] = 'application/xml';
-                break;
-            case self::FORMAT_CUSTOM:
-                //$this->request_headers['Content-Type'] ='application/'.$this->options['custom_content_type'];
-                break;
-            default:
-                $this->request_headers['Content-Type'] = 'application/x-www-form-urlencoded';
-                break;
+                case self::FORMAT_XML:
+                    $this->request_headers['Content-Type'] = 'application/xml';
+                    break;
+                case self::FORMAT_CUSTOM:
+                    //$this->request_headers['Content-Type'] ='application/'.$this->options['custom_content_type'];
+                    break;
+                default:
+                    $this->request_headers['Content-Type'] = 'application/x-www-form-urlencoded';
+                    break;
+            }
         }
         if (!empty($this->options['md5'])) {
             $this->request_headers['Content-MD5'] = base64_encode(md5($content, true));
@@ -345,12 +349,13 @@ class waNet
                 $this->decoded_response = @simplexml_load_string($this->raw_response);
 
                 if ($this->decoded_response === false) {
-                    $error = libxml_get_last_error();
-                    /**
-                     * @var LibXMLError $error
-                     */
-                    $this->log($error->message);
-                    throw new waException('Error while decode XML response: '.$error->message, $error->code);
+                    if ($error = libxml_get_last_error()) {
+                        /**
+                         * @var LibXMLError $error
+                         */
+                        $this->log($error->message);
+                        throw new waException('Error while decode XML response: '.$error->message, $error->code);
+                    }
                 }
                 break;
             default:

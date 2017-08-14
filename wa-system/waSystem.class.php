@@ -302,7 +302,7 @@ class waSystem
                 return new $class();
             }
         }
-        throw new waException("Map adapter not found.");
+        throw new waException(sprintf("Map adapter %s not found.", var_export($adapter, true)));
     }
 
     /**

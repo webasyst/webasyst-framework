@@ -33,21 +33,26 @@ class waContact implements ArrayAccess
             self::$options[$name] = $value;
         }
 
+        if (is_array($id)) {
+            if (isset($id['id'])) {
+                $this->id = (int)$id['id'];
+                unset($id['id']);
+            }
+        } else {
+            $this->id = (int)$id;
+        }
+        if ($this->id && $this->id < 0) {
+            throw new waException('negative id');
+        }
+
         $this->init();
 
         if (is_array($id)) {
-            if (isset($id['id'])) {
-                $this->id = $id['id'];
-            }
             $this->setCache($id);
             foreach ($id as $k => $v) {
-                if ($k != 'id') {
-                    $this->set($k, $v);
-                }
+                $this->set($k, $v);
             }
             $this->setCache($this->data);
-        } else {
-            $this->id = (int)$id;
         }
     }
 
@@ -607,7 +612,7 @@ class waContact implements ArrayAccess
     public function save($data = array(), $validate = false)
     {
         $add = array();
-        foreach ($data as $key => $value) {
+        foreach ($this->removeSpecialFields($data) as $key => $value) {
             if (strpos($key, '.')) {
                 $key_parts = explode('.', $key);
                 $f = waContactFields::get($key_parts[0]);
@@ -637,6 +642,8 @@ class waContact implements ArrayAccess
                 $this->data[$key] = $value;
             }
         }
+
+        $this->data = $this->removeSpecialFields($this->data);
         $this->data['name'] = $this->get('name');
         $this->data['firstname'] = $this->get('firstname');
         $this->data['is_company'] = $this->get('is_company');
@@ -762,6 +769,27 @@ class waContact implements ArrayAccess
             $errors['name'][] = $e->getMessage();
         }
         return $errors ? $errors : 0;
+    }
+
+    // Return a new array, removing fields that are not allowed for save() to modify
+    protected function removeSpecialFields($data)
+    {
+        unset(
+            $data['id'],
+            $data['last_datetime'],
+            $data['create_datetime']
+        );
+        if (wa()->getEnv() == 'frontend' || waConfig::get('is_template')) {
+            unset(
+                $data['login'],
+                $data['is_user'],
+                $data['is_company'],
+                $data['create_method'],
+                $data['create_app_id'],
+                $data['create_contact_id']
+            );
+        }
+        return $data;
     }
 
     public function clearDisabledFields()

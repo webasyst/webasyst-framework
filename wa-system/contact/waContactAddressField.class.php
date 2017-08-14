@@ -46,13 +46,14 @@ class waContactAddressField extends waContactCompositeField
         if (!isset($data['value'])) {
             $value = array();
             foreach ($this->options['fields'] as $field) {
+                /**
+                 * @var $field waContactField
+                 */
                 $f_id = $field->getId();
                 if ($ignore_hidden && $field instanceof waContactHiddenField) {
                     continue;
                 }
-                /**
-                 * @var $field waContactField
-                 */
+
                 if (isset($data['data'][$f_id])) {
                     $tmp = trim($field->format($data['data'][$f_id], 'value', $data['data']));
                     if ($tmp) {
@@ -68,90 +69,43 @@ class waContactAddressField extends waContactCompositeField
         return parent::format($data, $format);
     }
 
-    private function sendGeoCodingRequest($value)
-    {
-        $url = 'https://maps.googleapis.com/maps/api/geocode/json';
-        $params = array(
-            'address' => $this->format($value, 'forMap'),
-            'sensor'  => 'false'
-        );
-        $url = $url.'?'.http_build_query($params);
-        $timeout = 9;
-        if (function_exists('curl_init')) {
-            $ch = curl_init($url);
-            curl_setopt($ch, CURLOPT_HEADER, 0);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-            curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $timeout);
-            $content = curl_exec($ch);
-            $status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-            curl_close($ch);
-            if ($status == 200) {
-                return $content;
-            }
-        } else {
-            if (ini_get('allow_url_fopen')) {
-                $wrappers = stream_get_wrappers();
-                if (in_array('https', $wrappers)) {
-                    $old_timeout = @ini_set('default_socket_timeout', $timeout);
-                    $response = @file_get_contents($url);
-                    @ini_set('default_socket_timeout', $old_timeout);
-                    return $response;
-                }
-            }
-        }
-        return null;
-    }
-
     private function setGeoCoords($value)
     {
         if (!isset($value['data'])) {
             return $value;
         }
-        $sm = new waAppSettingsModel();
-        $app_id = 'webasyst';
-        $name = 'geocoding';
-        $last_geocoding = $sm->get($app_id, $name, 0);
-        if (time() - $last_geocoding >= 3600) {
-            $response = $this->sendGeoCodingRequest($value);
-            if ($response) {
-                $response = json_decode($response, true);
-                if ($response['status'] == "OK") {
-                    $sm->del($app_id, $name);
-                    foreach ($response['results'] as $result) {
-                        if (empty($result['partial_match'])) {      // address correct, geocoding without errors
-                            $value['data']['lat'] = ifset($result['geometry']['location']['lat'], '');
-                            $value['data']['lng'] = ifset($result['geometry']['location']['lng'], '');
-                            break;
-                        }
-                    }
-                } else if ($response['status'] == "OVER_QUERY_LIMIT") {
-                    $sm->set($app_id, $name, time());
-                }
-            } else {
-                $sm->set($app_id, $name, time());
+
+        try {
+            $map = wa()->getMap();
+            $address = $this->format($value, 'forMap');
+            $data = null;
+            if (!empty($address['with_street'])) {
+                $data = $map->geocode($address['with_street']);
             }
+            if (empty($data) && !empty($address['without_street'])) {
+                $data = $map->geocode($address['without_street']);
+            }
+            if ($data) {
+                $value['data'] = array_merge($value['data'], $data);
+            }
+        } catch (waException $ex) {
+            waLog::log("waContactAddressField->setGeoCoords(): ".$ex->getMessage()."\n".$ex->getFullTraceAsString(), 'geocode.log');
         }
         return $value;
     }
 
-    public function set(waContact $contact, $value, $params = array(), $add = false)
+    public function prepareSave($value, waContact $contact = null)
     {
-        $result = parent::set($contact, $value, $params, $add);
-        if (true || !empty($this->options['geocoding'])) {
-            if (isset($result[0])) {
-                foreach ($result as &$value) {
-                    $value = $this->setGeoCoords($value);
-                }
-                unset($value);
-            } else {
-                $result = $this->setGeoCoords($result);
+        if (isset($value[0])) {
+            foreach ($value as &$v) {
+                $v = $this->setGeoCoords($v);
             }
+            unset($v);
+        } else {
+            $value = $this->setGeoCoords($value);
         }
-        return $result;
+        return parent::prepareSave($value, $contact);
     }
-
 }
 
 class waContactAddressForMapFormatter extends waContactFieldFormatter
@@ -161,17 +115,19 @@ class waContactAddressForMapFormatter extends waContactFieldFormatter
             'with_street' => '',
             'without_street' => ''
         );
-        foreach ($res as $k => &$r) {
-            $parts = array();
-            foreach (waContactFields::get('address')->getFields() as $field) {
-                /**
-                 * @var waContactField $field
-                 */
-                $id = $field->getId();
-                if (isset($data['data'][$id]) && trim($data['data'][$id])) {
-                    $parts[$id] = $field->format($data['data'][$id], 'value', $data['data']);
-                }
+        $parts = array();
+        foreach (waContactFields::get('address')->getFields() as $field) {
+            /**
+             * @var waContactField $field
+             */
+            $id = $field->getId();
+            if (!in_array($id, array('lat', 'lng')) && isset($data['data'][$id]) && trim($data['data'][$id])) {
+                $parts[$id] = $field->format($data['data'][$id], 'value', $data['data']);
             }
+        }
+
+        foreach ($res as $k => &$r) {
+
             $p = $parts;
             $value = array();
             if (isset($parts['country'])) {
@@ -182,11 +138,8 @@ class waContactAddressForMapFormatter extends waContactFieldFormatter
                 $value[] = $p['region'];
                 unset($p['region']);
             }
-            if (isset($parts['city']))
-            {
-                if (!isset($parts['region']) ||
-                        mb_strtolower($parts['region']) != mb_strtolower($parts['city']))
-                {
+            if (isset($parts['city'])) {
+                if (!isset($parts['region']) || (mb_strtolower($parts['region']) != mb_strtolower($parts['city']))) {
                     $value[] = $p['city'];
                 }
                 unset($p['city']);
@@ -361,7 +314,7 @@ class waContactAddressDataFormatter extends waContactAddressOneLineFormatter
     {
         $parts = $this->getParts($data);
         $data['value'] = array();
-        foreach($parts['parts'] + $data['data'] as $key => $value) {
+        foreach ($parts['parts'] + $data['data'] as $key => $value) {
             if (strlen($value)) {
                 $data['value'][$key] = $value;
             }

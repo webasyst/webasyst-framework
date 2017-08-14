@@ -26,9 +26,10 @@ class googleMap extends waMapAdapter
             $width = ifset($options['width'], '100%');
             $height = ifset($options['height'], '400px');
             $address = json_encode($address);
+            $style = sprintf('width: %s; height: %s', $width, $height);
 
             $html = <<<HTML
-<div id="google-map-{$id}" class="map" style="width:{$width}; height: {$height}"></div>
+<div id="google-map-{$id}" class="map" style="{$style}"></div>
 <script type="text/javascript">
 $(function () {
         if (!window.init_google_maps) {
@@ -39,7 +40,7 @@ $(function () {
         $(window).one('init_google_maps', function () {
             var geocoder = new google.maps.Geocoder();
             geocoder.geocode( { 'address': {$address}}, function(results, status) {
-                if (status == google.maps.GeocoderStatus.OK) {
+                if (status === google.maps.GeocoderStatus.OK) {
                     var map =  new google.maps.Map(document.getElementById('google-map-{$id}'), {
                         center: new google.maps.LatLng(55.753994, 37.622093),
                         zoom: {$zoom}
@@ -115,5 +116,80 @@ HTML;
         } else {
             return $url;
         }
+    }
+
+    public function geocode($address)
+    {
+        $data = array();
+        if ($this->geocodingAllowed()) {
+            if ($response = $this->sendGeoCodingRequest($address)) {
+                switch ($response['status']) {
+                    case 'ZERO_RESULTS':
+                        //XXX
+                        $this->geocodingAllowed(true);
+                        break;
+                    case 'OK':
+                        $this->geocodingAllowed(true);
+                        foreach ($response['results'] as $result) {
+                            if (empty($result['partial_match']) || (count($response['results']) === 1)) {
+                                // address correct, geocoding without errors
+                                $data['lat'] = ifset($result['geometry']['location']['lat'], '');
+                                $data['lng'] = ifset($result['geometry']['location']['lng'], '');
+                                break;
+                            }
+                        }
+                        break;
+                    case 'REQUEST_DENIED':
+                    case 'OVER_QUERY_LIMIT':
+                        $this->geocodingAllowed(false);
+                        break;
+
+                }
+            } else {
+                $this->geocodingAllowed(false);
+            }
+        }
+        return $data;
+    }
+
+    protected function sendGeoCodingRequest($address)
+    {
+        /**
+         * @link https://developers.google.com/maps/documentation/geocoding/intro?hl=ru
+         */
+
+        $response = null;
+        if ($address) {
+            $url = 'https://maps.googleapis.com/maps/api/geocode/json';
+            $address = preg_replace('@российская\s+федерация@ui', 'Россия', $address);
+            $params = array(
+                'address' => $address,
+                'sensor'  => 'false',
+            );
+
+            $options = array(
+                'format'  => waNet::FORMAT_JSON,
+                'timeout' => 9,
+            );
+            $net = new waNet($options);
+            try {
+                $response = $net->query($url, $params);
+            } catch (waException $ex) {
+                if ( ( $response = $net->getResponse())) {
+                    $log_template = "%s: %s\n\$request=%s;\n";
+                    $response += array(
+                        'status'        => 'UNKNOWN',
+                        'error_message' => $ex->getMessage(),
+                    );
+                    $message = sprintf($log_template, $response['status'], $response['error_message'], var_export($params, true));
+                } else {
+                    $message = $ex->getMessage()."\n".$ex->getFullTraceAsString();
+                    $response = array();
+                }
+
+                waLog::log(get_class($this).":\n".$message, 'geocode.log');
+            }
+        }
+        return $response;
     }
 }

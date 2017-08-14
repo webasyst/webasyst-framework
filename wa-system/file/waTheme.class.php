@@ -459,6 +459,11 @@ class waTheme implements ArrayAccess
      */
     private function getXML($as_dom = false)
     {
+        $xml_options = LIBXML_NOCDATA|LIBXML_NOENT|LIBXML_NONET;
+        libxml_use_internal_errors(true);
+        libxml_disable_entity_loader(false);
+        libxml_clear_errors();
+
         if ($as_dom && !class_exists('DOMDocument')) {
             throw new waException('PHP extension DOM required');
         } elseif (!function_exists('simplexml_load_file')) {
@@ -466,19 +471,18 @@ class waTheme implements ArrayAccess
         }
         $path = $this->path.'/'.self::PATH;
         if (file_exists($path) && filesize($path)) {
-            libxml_use_internal_errors(true);
-            libxml_clear_errors();
+
             if ($as_dom) {
                 $xml = new DOMDocument(1.0, 'UTF-8');
                 $xml->preserveWhiteSpace = false;
                 $xml->formatOutput = true;
-                if (!$xml->load($path, LIBXML_NOCDATA)) {
+                if (!$xml->load($path, $xml_options)) {
                     $this->throwXmlError($path);
                 }
                 $xml->preserveWhiteSpace = false;
                 $xml->formatOutput = true;
             } else {
-                $xml = @simplexml_load_file($path, null, LIBXML_NOCDATA);
+                $xml = @simplexml_load_file($path, null, $xml_options);
                 if (!$xml) {
                     $this->throwXmlError($path);
                 }
@@ -499,13 +503,14 @@ XML;
                 $xml = new DOMDocument(1.0, 'UTF-8');
                 $xml->preserveWhiteSpace = false;
                 $xml->formatOutput = true;
-                $xml->loadXML($data, LIBXML_NOCDATA);
+                $xml->loadXML($data, $xml_options);
                 $xml->preserveWhiteSpace = false;
                 $xml->formatOutput = true;
             } else {
-                $xml = @simplexml_load_string($data, null, LIBXML_NOCDATA);
+                $xml = @simplexml_load_string($data, null, $xml_options);
             }
         }
+
         return $xml;
     }
 
@@ -1659,8 +1664,10 @@ HTACCESS;
         $this->init();
         $locale = wa()->getLocale();
         $result = array();
-        foreach ($this->info['locales'] as $id => $str) {
-            $result[$id] = !empty($str[$locale]) ? $str[$locale] : null;
+        if (!empty($this->info['locales'])) {
+            foreach ($this->info['locales'] as $id => $str) {
+                $result[$id] = !empty($str[$locale]) ? $str[$locale] : null;
+            }
         }
         return $result;
     }
