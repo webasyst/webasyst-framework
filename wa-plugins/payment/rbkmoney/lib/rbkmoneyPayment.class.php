@@ -5,6 +5,8 @@
  * @property string $shop_id
  * @property string $shop_account
  * @property string $secret_key
+ * @property string $due_date Количество дней действия выставленного счета
+ * @property string $payment_method Тип оплаты
  */
 class rbkmoneyPayment extends waPayment implements waIPayment
 {
@@ -39,6 +41,13 @@ class rbkmoneyPayment extends waPayment implements waIPayment
         $hidden_fields['recipientCurrency'] = $currency;
         $hidden_fields['user_email'] = $order->getContact()->get('email', 'default');
         $hidden_fields['language'] = substr($order->getContact()->getLocale(), 0, 2);
+
+        if(isset($this->payment_method) && ($this->payment_method !== 'all')) {
+            $hidden_fields['preference'] = $this->payment_method;
+        }
+
+        if(isset($this->due_date) && (intval($this->due_date) > 0))
+            $hidden_fields['DueDate'] = "{$this->due_date}d";
 
         $transaction_data = array(
             'order_id' => $order->id,
