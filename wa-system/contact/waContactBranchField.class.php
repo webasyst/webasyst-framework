@@ -60,7 +60,7 @@ class waContactBranchField extends waContactSelectField
     }
 
     var initially_selected = radios_parent.find(':radio[name="{$radios_name}"]:checked');
-    var previous_selection = 'hide_by_default';
+    var previous_selection = initially_selected.length ? initially_selected.val() : 'hide_by_default';
 
     radios_parent.on('change', ':radio[name="{$radios_name}"]', function() {
 
@@ -104,22 +104,23 @@ class waContactBranchField extends waContactSelectField
         previous_selection = option_id;
     });
 
+    var hide_by_default = hide_data[previous_selection] || {};
+    
+    for (var field_id in hide_by_default) {
+        if (!hide_by_default.hasOwnProperty(field_id)) {
+            continue;
+        }
+        if (!field_names[field_id]) {
+            continue;
+        }
+        var field_to_hide = $('[name^="'+field_names[field_id]+'"]:first').closest('.wa-field,.field');
+        if (!field_to_hide.is('.required,.wa-required')) {
+            field_to_hide.hide();
+        }
+    }
+
     if (initially_selected && initially_selected.length) {
         initially_selected.change();
-    } else {
-        var hide_by_default = hide_data.hide_by_default;
-        for (var field_id in hide_by_default) {
-            if (!hide_by_default.hasOwnProperty(field_id)) {
-                continue;
-            }
-            if (!field_names[field_id]) {
-                continue;
-            }
-            var field_to_hide = $('[name^="'+field_names[field_id]+'"]:first').closest('.wa-field,.field');
-            if (!field_to_hide.is('.required,.wa-required')) {
-                field_to_hide.hide();
-            }
-        }
     }
 }); };</script>
 EOF;
