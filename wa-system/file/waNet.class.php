@@ -87,6 +87,25 @@ class waNet
     }
 
     /**
+     * @param string $name
+     * @return mixed
+     */
+    function __get($name)
+    {
+        if(!in_array($name, array('options', 'request_headers'))) {
+            $trace = debug_backtrace();
+            trigger_error(
+                'Undefined property via __get(): ' . $name .
+                ' in ' . $trace[0]['file'] .
+                ' on line ' . $trace[0]['line'],
+                E_USER_NOTICE);
+            return null;
+        }
+
+        return $this->$name;
+    }
+
+    /**
      * @param string $user_agent
      * @return string
      */
