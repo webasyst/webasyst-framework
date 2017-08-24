@@ -390,6 +390,17 @@ class waNet
         return $this->response_header;
     }
 
+    /**
+     * Chainable method to reset all setting, options, cookies, headers to their default values
+     *
+     * @return waNet $this
+     */
+    public function reset()
+    {
+        $this->_reset();
+        return $this;
+    }
+
     protected function parseHeader($http_response_header)
     {
         foreach ($http_response_header as $header) {
