@@ -391,6 +391,26 @@ class waNet
     }
 
     /**
+     * @param array $options
+     * @return waNet $this
+     */
+    public function options(array $options)
+    {
+        $this->options = array_merge($this->options, $options);
+        return $this;
+    }
+
+    /**
+     * @param array $headers
+     * @return waNet $this
+     */
+    public function requestHeaders(array $headers)
+    {
+        $this->request_headers = array_merge($this->request_headers, $headers);
+        return $this;
+    }
+
+    /**
      * Chainable method to reset all setting, options, cookies, headers to their default values
      *
      * @return waNet $this
