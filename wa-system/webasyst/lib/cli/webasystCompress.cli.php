@@ -666,6 +666,14 @@ HELP;
                             )
                         );
                         break;
+                    case 'wa-plugins/payment':
+                        $available = array_merge(
+                            $available,
+                            array(
+                                'offline',
+                            )
+                        );
+                        break;
                     default:
                         break;
                 }

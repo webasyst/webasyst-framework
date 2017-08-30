@@ -147,9 +147,13 @@ class waDateTime
         if (is_numeric($time) && strlen($time)!= 8) {
             $time = date('Y-m-d H:i:s', $time);
         }
-        $date_time = new DateTime($time);
-        if ($timezone) {
-            $date_time->setTimezone(new DateTimeZone($timezone));
+        try {
+            $date_time = new DateTime($time);
+            if ($timezone) {
+                $date_time->setTimezone(new DateTimeZone($timezone));
+            }
+        } catch (Exception $e) {
+            throw new waException($e);
         }
 
         // hack to insert month name in lower case

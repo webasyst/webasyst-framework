@@ -99,23 +99,31 @@ class waAutoload
     {
         if (isset($this->system_classes[$class])) {
             return $this->base_path.'/wa-system/'.$this->system_classes[$class];
-        } elseif (substr($class, 0, 9) === 'waContact') {
-            if (substr($class, 0, 16) === 'waContactAddress') {
-                // formatters live in the same file as waContactAddressField
-                $result = $this->base_path.'/wa-system/contact/waContactAddressField.class.php';
-            } else {
-                $result = $this->base_path.'/wa-system/contact/'.$class.'.class.php';
-            }
-            if (is_readable($result)) {
-                return $result;
-            }
-        } elseif (substr($class, 0, 4) === 'waDb') {
-            $file = $this->base_path.'/wa-system/database/'.$class.'.class.php';
-            if (is_readable($file)) {
-                return $file;
-            }
         } elseif (substr($class, 0, 2) == 'wa') {
             if (strpos($class, '.') !== false) return null;
+
+            if (substr($class, 0, 4) === 'waDb') {
+                $file = $this->base_path.'/wa-system/database/'.$class.'.class.php';
+                if (is_readable($file)) {
+                    return $file;
+                }
+            } elseif (substr($class, -5) == 'Model') {
+                $path = $this->base_path.'/wa-system/webasyst/lib/models/'.substr($class, 0, -5).'.model.php';
+                if (is_readable($path)) {
+                    return $path;
+                }
+            } elseif (substr($class, 0, 9) === 'waContact') {
+                if (substr($class, 0, 16) === 'waContactAddress') {
+                    // formatters live in the same file as waContactAddressField
+                    $result = $this->base_path.'/wa-system/contact/waContactAddressField.class.php';
+                } else {
+                    $result = $this->base_path.'/wa-system/contact/'.$class.'.class.php';
+                }
+                if (is_readable($result)) {
+                    return $result;
+                }
+            }
+
             $dir = preg_replace("/^wai?([A-Z][a-z]+).*?$/", "$1", $class);
             $path = $this->base_path.'/wa-system/'.strtolower($dir).'/'.$class.'.'.(substr($class, 0, 3) === 'wai' ? 'interface' : 'class').'.php';
             if (file_exists($path)) {
@@ -189,8 +197,6 @@ class waAutoload
         'waRightConfig'            => 'config/waRightConfig.class.php',
         'waSystemConfig'           => 'config/waSystemConfig.class.php',
 
-        'waContactsCollection'     => 'contact/waContactsCollection.class.php',
-
         'waAction'                 => 'controller/waAction.class.php',
         'waActions'                => 'controller/waActions.class.php',
         'waController'             => 'controller/waController.class.php',
@@ -215,21 +221,6 @@ class waAutoload
         'waCaptcha'                => 'captcha/waCaptcha.class.php',
         'waReCaptcha'              => 'captcha/recaptcha/waReCaptcha.class.php',
 
-        'waDbAdapter'              => 'database/waDbAdapter.class.php',
-        'waDbCacheIterator'        => 'database/waDbCacheIterator.class.php',
-        'waDbConnector'            => 'database/waDbConnector.class.php',
-        'waDbMysqlAdapter'         => 'database/waDbMysqlAdapter.class.php',
-        'waDbMysqliAdapter'        => 'database/waDbMysqliAdapter.class.php',
-        'waDbQuery'                => 'database/waDbQuery.class.php',
-        'waDbQueryAnalyzer'        => 'database/waDbQueryAnalyzer.class.php',
-        'waDbRecord'               => 'database/waDbRecord.class.php',
-        'waDbResult'               => 'database/waDbResult.class.php',
-        'waDbResultDelete'         => 'database/waDbResultDelete.class.php',
-        'waDbResultInsert'         => 'database/waDbResultInsert.class.php',
-        'waDbResultIterator'       => 'database/waDbResultIterator.class.php',
-        'waDbResultSelect'         => 'database/waDbResultSelect.class.php',
-        'waDbResultUpdate'         => 'database/waDbResultUpdate.class.php',
-        'waDbStatement'            => 'database/waDbStatement.class.php',
         'waModel'                  => 'database/waModel.class.php',
         'waModelExpr'              => 'database/waModelExpr.class.php',
         'waNestedSetModel'         => 'database/waNestedSetModel.class.php',
@@ -299,30 +290,6 @@ class waAutoload
         'waWorkflowState'          => 'workflow/waWorkflowState.class.php',
 
         'waSystem'                 => 'waSystem.class.php',
-
-        'waApiTokensModel'         => 'webasyst/lib/models/waApiTokens.model.php',
-        'waApiAuthCodesModel'      => 'webasyst/lib/models/waApiAuthCodes.model.php',
-        'waAppSettingsModel'       => 'webasyst/lib/models/waAppSettings.model.php',
-        'waAppTokensModel'         => 'webasyst/lib/models/waAppTokens.model.php',
-        'waAnnouncementModel'      => 'webasyst/lib/models/waAnnouncement.model.php',
-        'waContactModel'           => 'webasyst/lib/models/waContact.model.php',
-        'waContactCategoriesModel' => 'webasyst/lib/models/waContactCategories.model.php',
-        'waContactCategoryModel'   => 'webasyst/lib/models/waContactCategory.model.php',
-        'waContactDataModel'       => 'webasyst/lib/models/waContactData.model.php',
-        'waContactDataTextModel'   => 'webasyst/lib/models/waContactDataText.model.php',
-        'waContactEmailsModel'     => 'webasyst/lib/models/waContactEmails.model.php',
-        'waContactRightsModel'     => 'webasyst/lib/models/waContactRights.model.php',
-        'waContactSettingsModel'   => 'webasyst/lib/models/waContactSettings.model.php',
-        'waContactFieldValuesModel' => 'webasyst/lib/models/waContactFieldValues.model.php',
-        'waContactEventsModel'      => 'webasyst/lib/models/waContactEvents.model.php',
-        'waCountryModel'           => 'webasyst/lib/models/waCountry.model.php',
-        'waGroupModel'             => 'webasyst/lib/models/waGroup.model.php',
-        'waLogModel'               => 'webasyst/lib/models/waLog.model.php',
-        'waLoginLogModel'          => 'webasyst/lib/models/waLoginLog.model.php',
-        'waUserGroupsModel'        => 'webasyst/lib/models/waUserGroups.model.php',
-        'waRegionModel'            => 'webasyst/lib/models/waRegion.model.php',
-        'waTransactionModel'       => 'webasyst/lib/models/waTransaction.model.php',
-        'waTransactionDataModel'   => 'webasyst/lib/models/waTransactionData.model.php',
 
         'waPageModel'              => 'page/models/waPage.model.php',
         'waPageParamsModel'        => 'page/models/waPageParams.model.php',

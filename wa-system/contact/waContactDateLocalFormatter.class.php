@@ -17,13 +17,13 @@ class waContactDateLocalFormatter extends waContactFieldFormatter
     public function format($data)
     {
         if (is_array($data)) {
-            $value =& $data['value']; 
+            $value =& $data['value'];
         } else {
             $value =& $data;
         }
         if ($value) {
             $format = isset($this->options['format']) ? $this->options['format'] : 'date';
-            $value = waDateTime::format($format, $value);
+            $value = waDateTime::format($format, $value, waDateTime::getDefaultTimeZone());
         }
         unset($value); // being paranoid
 

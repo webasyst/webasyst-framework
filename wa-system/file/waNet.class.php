@@ -49,6 +49,7 @@ class waNet
         'proxy_user'          => null,
         'proxy_password'      => null,
         'proxy_auth'          => 'basic',
+        'expected_http_code'  => 200, // null to accept any code
         'priority'            => array(
             'curl',
             'fopen',
@@ -140,8 +141,10 @@ class waNet
 
         $this->decodeResponse($response);
 
-        if (empty($this->response_header['http_code']) || ($this->response_header['http_code'] != 200)) {
-            throw new waException($response, $this->response_header['http_code']);
+        if ($this->options['expected_http_code'] !== null) {
+            if (empty($this->response_header['http_code']) || ($this->response_header['http_code'] != $this->options['expected_http_code'])) {
+                throw new waException($response, $this->response_header['http_code']);
+            }
         }
 
         return $this->getResponse();
@@ -554,27 +557,33 @@ class waNet
 
             $curl_options = array();
 
-            if ($content) {
-                switch ($method) {
-                    case self::METHOD_POST:
-                        $curl_options[CURLOPT_POST] = 1;
+            switch ($method) {
+                case self::METHOD_POST:
+                    $curl_options[CURLOPT_POST] = 1;
+                    if ($content) {
                         $curl_options[CURLOPT_POSTFIELDS] = $content;
-                        break;
-                    case self::METHOD_PUT:
+                    }
+                    break;
+                case self::METHOD_PUT:
+                    $curl_options[CURLOPT_CUSTOMREQUEST] = $method;
+                    if ($content) {
                         $curl_options[CURLOPT_POST] = 0;
-                        $curl_options[CURLOPT_CUSTOMREQUEST] = $method;
                         $curl_options[CURLOPT_POSTFIELDS] = $content;
-                        break;
-                    case self::METHOD_DELETE:
+                    }
+                    break;
+                case self::METHOD_DELETE:
+                    $curl_options[CURLOPT_CUSTOMREQUEST] = $method;
+                    if ($content) {
                         $curl_options[CURLOPT_POST] = 0;
-                        $curl_options[CURLOPT_CUSTOMREQUEST] = $method;
                         $curl_options[CURLOPT_POSTFIELDS] = $content;
-                        break;
-                    default:
+                    }
+                    break;
+                default:
+                    if ($content) {
                         $curl_options[CURLOPT_POST] = 0;
                         $curl_options[CURLOPT_CUSTOMREQUEST] = null;
                         $curl_options[CURLOPT_POSTFIELDS] = null;
-                }
+                    }
             }
 
             $headers = $this->buildHeaders('curl', false);
@@ -628,11 +637,13 @@ class waNet
             }
         }
 
-        if (!$response || !in_array($response_code, array('unknown', 200), true)) {
-            if (empty($hint)) {
-                $hint = $this->getHint(__LINE__);
+        if ($this->options['expected_http_code'] !== null) {
+            if (!$response || !in_array($response_code, array('unknown', $this->options['expected_http_code']), true)) {
+                if (empty($hint)) {
+                    $hint = $this->getHint(__LINE__);
+                }
+                throw new waException("Invalid server response with code {$response_code} while request {$url}.{$hint}\n\t(fopen used)");
             }
-            throw new waException("Invalid server response with code {$response_code} while request {$url}.{$hint}\n\t(fopen used)");
         }
         return $response;
     }

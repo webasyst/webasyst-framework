@@ -28,26 +28,33 @@ class waMailMessage extends Swift_Message
      */
     public function setTo($addresses, $name = null)
     {
-        $this->_formatAddresses($addresses, $name);
-        if (!is_array($addresses) && isset($name)) {
-            $addresses = array($addresses => $name);
+        try {
+            $this->_formatAddresses($addresses, $name);
+            if (!is_array($addresses) && isset($name)) {
+                $addresses = array($addresses => $name);
+            }
+            $result = array();
+            foreach ((array)$addresses as $email => $name) {
+                if (!is_string($email)) {
+                    $email = $name;
+                    $name = null;
+                }
+                if (!preg_match("/^[a-z0-9~@+:\[\]\.-]+$/ui", $email)) {
+                    $email = $this->encodeEmail($email);
+                }
+                if ($name === null) {
+                    $result[] = $email;
+                } else {
+                    $result[$email] = $name;
+                }
+            }
+            return parent::setTo($result);
+        } catch (Exception $e) {
+            if (!$e instanceof waException) {
+                $e = new waException($e);
+            }
+            throw $e;
         }
-        $result = array();
-        foreach ((array)$addresses as $email => $name) {
-            if (!is_string($email)) {
-                $email = $name;
-                $name = null;
-            }
-            if (!preg_match("/^[a-z0-9~@+:\[\]\.-]+$/ui", $email)) {
-                $email = $this->encodeEmail($email);
-            }
-            if ($name === null) {
-                $result[] = $email;
-            } else {
-                $result[$email] = $name;
-            }
-        }
-        return parent::setTo($result);
     }
 
 

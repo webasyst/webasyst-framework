@@ -540,8 +540,11 @@ abstract class waContactField
             }
 
             if ($formatter = $this->getFormatter($f)) {
-                $data = $formatter->format($data);
-                continue;
+                try {
+                    $data = $formatter->format($data);
+                    continue;
+                } catch (waException $e) {
+                }
             }
 
             if ($f == 'value') {

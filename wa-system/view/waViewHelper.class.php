@@ -415,7 +415,12 @@ HTML;
 
     public function domainUrl()
     {
-        return $this->getConfig()->getHostUrl();
+        if (wa()->getEnv() === 'cli') {
+            $app_settings_model = new waAppSettingsModel();
+            return $app_settings_model->get('webasyst', 'url', '#');
+        } else {
+            return $this->getConfig()->getHostUrl();
+        }
     }
 
     public function currentUrl($absolute = false, $without_params = false)

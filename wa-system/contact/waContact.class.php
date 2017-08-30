@@ -993,6 +993,11 @@ class waContact implements ArrayAccess
      */
     public function getSettings($app_id, $name = null, $default = null)
     {
+        // Use cache in current user's waContact if possible, even if it's a different waContact instance
+        if ($this->id && $this->id == wa()->getUser()->getId() && $this !== wa()->getUser()) {
+            return wa()->getUser()->getSettings($app_id, $name, $default);
+        }
+
         // For general settings
         if (!$app_id) {
             $app_id = '';
@@ -1020,6 +1025,11 @@ class waContact implements ArrayAccess
      */
     public function setSettings($app_id, $name, $value = null)
     {
+        // Use cache in current user's waContact if possible, even if it's a different waContact instance
+        if ($this->id && $this->id == wa()->getUser()->getId() && $this !== wa()->getUser()) {
+            return wa()->getUser()->setSettings($app_id, $name, $value);
+        }
+
         $setting_model = new waContactSettingsModel();
         if (is_array($value)) {
             $value = implode(",", $value);

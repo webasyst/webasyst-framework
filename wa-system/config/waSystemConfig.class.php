@@ -241,6 +241,9 @@ class waSystemConfig
             setlocale(LC_ALL, $possible_locales);
         }
 
+        // Always use dot separator when formatting floats
+        setlocale(LC_NUMERIC, 'C');
+
         @ini_set('register_globals', 'off');
         // magic quotes
         @ini_set("magic_quotes_runtime", 0);

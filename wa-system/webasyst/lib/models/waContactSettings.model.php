@@ -17,6 +17,11 @@ class waContactSettingsModel extends waModel
 
     public function getOne($contact_id, $app_id, $name)
     {
+        // Use cache in current user's waContact if possible
+        if ($contact_id == wa()->getUser()->getId()) {
+            return wa()->getUser()->getSettings($app_id, $name);
+        }
+
         $data = $this->getByField(array(
             'contact_id' => $contact_id,
             'app_id' => $app_id,

@@ -79,7 +79,7 @@ class Smarty_Security {
     protected $php_functions = array(
         'dl', 'eval', 'exec', 'system', 'popen', 'pclose', 'shell_exec', 'passthru', 'assert', 'assert_options',
         'fopen', 'fwrite', 'fput', 'fputs', 'copy', 'chmod', 'chgrp', 'chown', 'rename',
-        'touch', 'tempnam', 'fscanf', 'glob',
+        'touch', 'tempnam', 'fscanf', 'glob', 'fprintf',
         'lchown', 'lchgrp', 'link', 'symlink', 'unlink', 'realpath', 'scandir', 'opendir', 'rmdir', 'mkdir', 'is_writable',
         'call_user_func', 'call_user_func_array', 'create_function', 'call_user_method', 'call_user_method_array', 'lstat', 'stat',
         'register_shutdown_function', 'register_tick_function', 'set_error_handler', 'set_exception_handler', 'session_set_save_handler',
