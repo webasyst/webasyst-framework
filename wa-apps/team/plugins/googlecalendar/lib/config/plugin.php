@@ -5,7 +5,7 @@ return array(
     'description' => /*_wp*/('Google Calendar integration'),
     'icon'        => 'img/googlecalendar16.png',
     'img'         => 'img/googlecalendar16.png',
-    'version'     => '1.0',
+    'version'     => '1.0.19',
     'vendor'      => 'webasyst',
     'frontend'    => false,
     'external_calendar' => true,

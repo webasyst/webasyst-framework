@@ -169,10 +169,6 @@ class teamGooglecalendarPlugin extends teamCalendarExternalPlugin
         $options = array_merge($this->calendar->getParams(), $options);
         $driver = $this->getDriver($this->calendar->getParam('token'), $options);
 
-        if (empty($options['syncToken'])) {
-            return array();
-        }
-
         try {
             $res = $driver->getEvents($this->calendar->getNativeCalendarId(), $options);
         } catch (teamCalendarExternalTokenInvalidException $e) {
@@ -330,14 +326,20 @@ class teamGooglecalendarPlugin extends teamCalendarExternalPlugin
 
     public function beforeRefreshToken()
     {
-        if (!$this->calendar->getParam('token_invalid')) {
-            $this->calendar->setParam('token_invalid', date('Y-m-d H:i:s'));
+        if (!$this->calendar->getParam('refreshing_start')) {
+            $this->calendar->setParam('refreshing_start', date('Y-m-d H:i:s'));
         }
     }
 
     public function afterRefreshToken($token)
     {
-        $this->calendar->setParam('token', $token);
+        $this->calendar->deleteParam('refreshing_start');
+        if (!$token) {
+            $this->calendar->deleteParam('token');
+            $this->calendar->setParam('token_invalid', date('Y-m-d H:i:s'));
+        } else {
+            $this->calendar->setParam('token', $token);
+        }
     }
 
     /**
@@ -525,8 +527,8 @@ class teamGooglecalendarPlugin extends teamCalendarExternalPlugin
         if (!$this->checkCalendar()) {
             return false;
         }
-        $native_event_id = $this->calendar->getNativeCalendarId();
-        if (!$native_event_id) {
+        $native_calendar_id = $this->calendar->getNativeCalendarId();
+        if (!$native_calendar_id) {
             return false;
         }
         if (empty($event['native_event_id'])) {
@@ -538,7 +540,7 @@ class teamGooglecalendarPlugin extends teamCalendarExternalPlugin
         $options = $this->calendar->getParams() + $options;
         try {
             $driver = $this->getDriver($this->calendar->getParam('token'), $options);
-            $driver->deleteEvent($native_event_id, $event['native_event_id']);
+            $driver->deleteEvent($native_calendar_id, $event['native_event_id']);
         } catch (teamCalendarExternalTokenInvalidException $e) {
             $this->throwTokenInvalidException();
         }
@@ -548,7 +550,15 @@ class teamGooglecalendarPlugin extends teamCalendarExternalPlugin
 
     protected function isTokenInvalid()
     {
-        return $this->calendar->getParam('token_invalid') || !$this->calendar->getParam('token');
+        $is_invalid = $this->calendar->getParam('token_invalid');
+        if (!$is_invalid) {
+            $refreshing_start = $this->calendar->getParam('refreshing_start');
+            $_1min = 3600;
+            if ($refreshing_start && time() - strtotime($refreshing_start) > $_1min) {
+                $is_invalid = true;
+            }
+        }
+        return $is_invalid;
     }
 
     protected function checkTokenInvalid()
@@ -560,6 +570,11 @@ class teamGooglecalendarPlugin extends teamCalendarExternalPlugin
 
     protected function throwTokenInvalidException()
     {
+        if (!$this->calendar->getParam('token_invalid')) {
+            $this->calendar->setParam('token_invalid', date('Y-m-d H:i:s'));
+            $this->calendar->deleteParam('refreshing_start');
+            $this->calendar->deleteParam('token');
+        }
         $e = new teamCalendarExternalTokenInvalidException();
         $e->setParams(array(
             'external_calendar_id' => $this->calendar->getId()

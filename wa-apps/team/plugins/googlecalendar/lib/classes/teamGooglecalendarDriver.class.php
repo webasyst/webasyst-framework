@@ -174,6 +174,9 @@ class teamGooglecalendarDriver
             CURLOPT_POSTFIELDS => json_encode($data)
         ));
         $this->checkError($res['body']);
+        if (!empty($res['body']['status']) && $res['body']['status'] === 'cancelled') {
+            throw new teamCalendarExternalEventNotFoundException();
+        }
         return $res['body'];
     }
 
@@ -229,6 +232,7 @@ class teamGooglecalendarDriver
         if (empty($data['error'])) {
             return null;
         }
+
         $error_message = 'Unknown error.';
         if (!empty($data['message'])) {
             $error_message = $data['message'];
@@ -252,6 +256,8 @@ class teamGooglecalendarDriver
 
         if ($error_message === 'Invalid Credentials') {
             $e = new teamCalendarExternalTokenInvalidException($error_message);
+        } else if ($error_message === 'Resource has been deleted' || $error_message === 'Not Found') {
+            $e = new teamCalendarExternalEventNotFoundException($error_message);
         }
 
         throw $e;
