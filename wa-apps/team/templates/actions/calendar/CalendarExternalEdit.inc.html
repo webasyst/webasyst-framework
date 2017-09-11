@@ -169,7 +169,7 @@
                 var loading = container.find('.t-buttons-loading');
                 $.post('?module=calendarExternal&action=delete', { id: link.data('id'), 'with_events': 1 })
                     .done(function () {
-                        location.href = '{$wa_app_url}u/{$wa->user('login')}/info/';
+                        location.href = '{$wa_app_url}u/{urlencode($wa->user('login'))}/info/';
                     })
                     .always(function () {
                         loading.hide();

@@ -12,7 +12,7 @@ msgstr ""
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
 "Language: ru_RU\n"
-"X-Generator: Poedit 1.8.8\n"
+"X-Generator: Poedit 1.8.11\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
 
@@ -867,8 +867,8 @@ msgid "Font color"
 msgstr "Цвет текста"
 
 #: /wa-apps/team/templates/actions/calendar/Calendar.html:123
-msgid "Authorized users only"
-msgstr "Только авторизованные пользователи"
+msgid "Selected user groups only"
+msgstr "Только отдельные группы пользователей"
 
 #: /wa-apps/team/templates/actions/calendar/Calendar.html:129
 msgid "Select user groups which you want to be able to control events in this calendar:"
@@ -1405,7 +1405,7 @@ msgid "on vacation"
 msgstr "в отпуске"
 
 msgid "in a business trip"
-msgstr "в командировка"
+msgstr "в командировке"
 
 msgid "sick"
 msgstr "болею"
@@ -1457,3 +1457,53 @@ msgstr "Подключить мой %s сейчас"
 
 msgid "To connect an external calendar:"
 msgstr "Для подключения внешнего календаря:"
+
+msgid "deleted "
+msgstr "удалена"
+
+msgid " deleted"
+msgstr "удален"
+
+msgid "deleted"
+msgstr "удалено"
+
+#: /wa-apps/team/templates/actions/calendar/CalendarExternalConnectForm.inc.html:3
+msgid "Register application on %s"
+msgstr ""
+
+#: /wa-apps/team/templates/actions/calendar/CalendarExternalConnectForm.inc.html:5
+msgid "Connect %s account:"
+msgstr ""
+
+#: /wa-apps/team/templates/actions/calendar/CalendarExternalDeleteConfirm.html:21
+msgid "Also delete all events imported from this calendar "
+msgstr ""
+
+#: /wa-apps/team/templates/layouts/Default.html:100
+msgid "Check your key first of all <a href=\"{$wa_app_url}settings/\">here</a>"
+msgstr ""
+
+#: /wa-apps/team/templates/layouts/Default.html:101
+msgid "Error"
+msgstr ""
+
+#: /wa-apps/team/templates/layouts/Default.html:102
+msgid "Google map has error, maybe key is invalid"
+msgstr ""
+
+#: /wa-apps/team/lib/actions/schedule/teamScheduleDay.action.php:50
+msgid "Август"
+msgstr ""
+
+#: /wa-apps/team/lib/classes/calendar/teamCalendarExternalNullPlugin.class.php:20
+#: /wa-apps/team/lib/classes/calendar/teamCalendarExternalNullPlugin.class.php:23
+msgid "- Uninstalled"
+msgstr ""
+
+#: /wa-apps/team/lib/classes/calendar/teamCalendarExternalNullPlugin.class.php:24
+msgid "Uninstalled or not existed plugin"
+msgstr ""
+
+#: /wa-apps/team/lib/classes/calendar/teamCalendarExternalNullPlugin.class.php:105
+msgid "Plugin not found"
+msgstr ""

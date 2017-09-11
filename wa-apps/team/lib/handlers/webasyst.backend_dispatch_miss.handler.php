@@ -8,6 +8,11 @@ class teamWebasystBackend_dispatch_missHandler extends waEventHandler
             return;
         }
 
+        // CRM app takes precedence
+        if (wa()->getUser()->getRights('crm', 'backend')) {
+            return;
+        }
+
         // Idea is to redirect links to old contact profile to team app
         // in case there's no Contacts app installed.
         //

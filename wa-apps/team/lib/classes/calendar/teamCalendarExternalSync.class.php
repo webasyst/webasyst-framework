@@ -71,7 +71,8 @@ class teamCalendarExternalSync
             $options = $this->options;
 
             $min_start = $this->getCalendarModel()->getMinStart($this->calendar['id']);
-            $options['min_time'] = date('Y-m-d', strtotime($min_start));
+            $today = strtotime(date('Y-m-d'));
+            $options['min_time'] = date('Y-m-d', min(strtotime($min_start), $today));
 
             $max_time_offset = $this->getConfig()->getExternalCalendarSyncMaxDateOffset();
             $options['max_time'] = date('Y-m-d', strtotime("+ {$max_time_offset} months"));

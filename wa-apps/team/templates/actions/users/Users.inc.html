@@ -10,7 +10,8 @@
             {$_title = waUser::getNameAndStatus($user)}
             {$_user_uri = "`$wa_app_url`id/`$user.id`/"}
             {if !empty($user.login) && $user.login != $_title}
-                {$_user_uri = "`$wa_app_url`u/`$user.login|escape`/"}
+                {$_l = urlencode($user.login)|escape}
+                {$_user_uri = "`$wa_app_url`u/`$_l`/"}
             {/if}
 
             <li class="t-user-wrapper {if $user.is_user >= 1}js-move-user{/if}" data-user-id="{$user.id}" data-update-datetime="{$user.update_datetime|default:''}">

@@ -51,18 +51,27 @@ class teamInviteFrontendAction extends waViewAction
 
                 $token_data = json_decode($this->params['data'], true);
 
-                // Save login and password
+                // For security reasons login and is_user
+                // have to be updated directly via model
+                $contact_model = new waContactModel();
+                $contact_model->updateById($contact_id, array(
+                    'login' => $data['login'],
+                    'is_user' => 1,
+                ));
+
+                // Save password
                 $contact = new waContact($contact_id);
-                $contact['login'] = $data['login'];
                 $contact['password'] = $data['password'];
-                $contact['is_user'] = 1;
+                $contact->save();
+
+                // Save rights
                 if (!empty($token_data['full_access'])) {
                     $contact->setRight('webasyst', 'backend', 2);
                 } else {
                     $contact->setRight('team', 'backend', 1);
                 }
-                $contact->save();
 
+                // Assign to groups
                 if (!empty($token_data['groups'])) {
                     $ugm = new waUserGroupsModel();
                     foreach ($token_data['groups'] as $gid) {

@@ -10,7 +10,7 @@ class teamFrontController extends waFrontController
             // to enable routing.backend.php
             $module = waRequest::get($this->options['module']);
             if (empty($module)) {
-                $team_routing = new waRouting($this->system, array(
+                $routing = new waRouting($this->system, array(
                     'default' => array(
                         array(
                             'url' => wa()->getConfig()->systemOption('backend_url').'/team/*',
@@ -18,7 +18,7 @@ class teamFrontController extends waFrontController
                         ),
                     ),
                 ));
-                $team_routing->dispatch();
+                $routing->dispatch();
                 if (!waRequest::param('module')) {
                     throw new waException('Page not found', 404);
                 }

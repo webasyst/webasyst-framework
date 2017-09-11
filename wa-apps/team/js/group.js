@@ -10,7 +10,7 @@ var GroupPage = ( function($) {
 
         // VARS
         that.group_id = options["group_id"];
-        that.map_provider = options["map_provider"];
+        that.map_adapter = options["map_adapter"];
         that.latitude = options["latitude"];
         that.longitude = options["longitude"];
         that.can_manage = options["can_manage"];
@@ -41,7 +41,7 @@ var GroupPage = ( function($) {
     GroupPage.prototype.bindEvents = function() {
         var that = this;
 
-        if (that.map_provider && that.latitude && that.longitude) {
+        if (that.map_adapter && that.latitude && that.longitude) {
             that.$wrapper.on("click", ".js-open-map-link", function() {
                 that.showMap();
             });
@@ -74,7 +74,7 @@ var GroupPage = ( function($) {
         var that = this;
 
         var $map = that.$wrapper.find("#t-location-map"),
-            map = new TeamMap($map, that.map_provider);
+            map = new TeamMap($map, that.map_adapter);
 
         map.render(that.latitude, that.longitude);
     };
@@ -542,7 +542,7 @@ var GroupEditDialog = ( function($) {
 
         // INIT
         that.bindEvents();
-        that.initMap( ( options["map_type"] || "google") );
+        that.teamMap = that.initMap( ( options["map_type"] || "google") );
     };
 
     GroupEditDialog.prototype.bindEvents = function() {
@@ -629,34 +629,61 @@ var GroupEditDialog = ( function($) {
         that.$activeIcon = $icon;
     };
 
-    GroupEditDialog.prototype.save = function() {
+    GroupEditDialog.prototype.save = function(try_num) {
         var that = this,
             href = "?module=group&action=save",
             data;
+
+        try_num = try_num || 0;
 
         if (!that.is_locked) {
             that.is_locked = true;
             data = prepareData( that.$form.serializeArray() );
 
             if (data) {
-                if (that.is_map_loading) {
+                if (that.is_map_loading && try_num < 5) {
                     that.is_locked = false;
                     that.save_timeout = setTimeout( function() {
                         if ($.contains(document, that.$wrapper[0])) {
-                            that.save();
+                            that.save(try_num + 1);
                         }
                     }, 1000);
                     return false;
                 }
 
-                $.post(href, data, function(response) {
-                    if (response.status == "ok") {
-                        var content_uri = $.team.app_url + "group/" + response.data.id + "/manage/";
-                        $.team.content.load( content_uri );
-                        $.team.sidebar.reload();
-                        that.is_locked = false;
-                    }
-                });
+                var post = function () {
+                    $.post(href, data, function(response) {
+                        if (response.status == "ok") {
+                            var content_uri = $.team.app_url + "group/" + response.data.id + "/manage/";
+                            $.team.content.load( content_uri );
+                            $.team.sidebar.reload();
+                            that.is_locked = false;
+                        }
+                    });
+                };
+
+                var address = data['data[location][address]'],
+                    lat = data['data[location][latitude]'],
+                    lng = data['data[location][longitude]'];
+                if (address && (!lat || !lng) && that.teamMap) {
+                    that.teamMap.geocode(
+                        address,
+                        function (lat, lng) {
+                            data['data[location][latitude]'] = lat;
+                            data['data[location][longitude]'] = lng;
+                            post();
+                        },
+                        function () {
+                            post();
+                        }
+                    );
+                    return;
+                }
+
+                post();
+
+
+
             } else {
                 that.is_locked = false;
             }
@@ -701,7 +728,7 @@ var GroupEditDialog = ( function($) {
         }
     };
 
-    GroupEditDialog.prototype.initMap = function( provider ) {
+    GroupEditDialog.prototype.initMap = function( adapter ) {
         var that = this,
             $block = that.$block,
             $address = that.$addressToggle.find('.f-location-edit-address-input'),
@@ -720,7 +747,7 @@ var GroupEditDialog = ( function($) {
         }
 
         // init map
-        teamMap = new TeamMap($map, provider);
+        teamMap = new TeamMap($map, adapter);
 
         // first show on map
         var lng = $longtitude.val();
@@ -796,6 +823,8 @@ var GroupEditDialog = ( function($) {
                 $longtitude.val(lng);
             }
         }
+
+        return teamMap;
     };
 
     return GroupEditDialog;

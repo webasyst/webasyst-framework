@@ -158,7 +158,7 @@
 
                                                             {if $_user}
                                                                 {if $_is_birthday}
-                                                                    <span class="t-login">{$_user.login|escape}</span>
+                                                                    <span class="t-login">{$_user.name|escape}</span>
                                                                 {elseif !empty($_user.photo_url_16)}
                                                                     <i class="icon16 userpic20" style="background-image: url({$_user.photo_url_16})" title="{$_user.name|escape}"></i>
                                                                 {/if}

@@ -159,13 +159,13 @@
             var link = $(this);
             var loading = container.find('.t-buttons-loading').show();
             if (!link.data('id')) {
-                location.href = '{$wa_app_url}u/{$wa->user('login')}/info/';
+                location.href = '{$wa_app_url}u/{urlencode($wa->user('login'))}/info/';
                 return;
             }
 
             $.post('?module=calendarExternal&action=delete', { id: link.data('id') })
                     .done(function () {
-                        location.href = '{$wa_app_url}u/{$wa->user('login')}/info/';
+                        location.href = '{$wa_app_url}u/{urlencode($wa->user('login'))}/info/';
                     })
                     .always(function () {
                         loading.hide();

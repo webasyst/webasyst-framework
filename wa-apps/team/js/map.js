@@ -57,6 +57,25 @@ var TeamMap = (function ($) {
             map: that.map_info.map
         });
         that.map_info.map.setCenter(latLng);
+
+        TeamMap.google_error_html = TeamMap.google_error_html || '';
+        setTimeout(function () {
+            if (that.$map.find('.gm-err-container').length) {
+                var $err = that.$map.find('.gm-err-container');
+                $err.find('.gm-err-message').last().after('<div class="gm-err-message">' + $.team.locales.map_check_your_key + '</div>');
+                TeamMap.google_error_html = that.$map.find('.gm-err-container').parent().html();
+            } else if (!that.$map.find('.gm-style').length) {
+                if (TeamMap.google_error_html) {
+                    that.$map.children().html(TeamMap.google_error_html);
+                } else {
+                    var html = '<div class="gm-err-container"><div class="gm-err-content"><div class="gm-err-icon"><img src="https://maps.gstatic.com/mapfiles/api-3/images/icon_error.png" draggable="false" style="user-select: none;"></div><div class="gm-err-title">:title:</div><div class="gm-err-message">:message1:</div><div class="gm-err-message">:message2:</div></div></div>';
+                    html = html.replace(':title:', $.team.locales.map_error_title);
+                    html = html.replace(':message1:', $.team.locales.map_error_message);
+                    html = html.replace(':message2:', $.team.locales.map_check_your_key);
+                    that.$map.children().html(html);
+                }
+            }
+        }, 5000);
     };
 
     TeamMap.prototype.yandexRender = function (lat, lng) {
@@ -94,14 +113,26 @@ var TeamMap = (function ($) {
 
     TeamMap.prototype.googleGeocode = function (query, success, fail) {
         var geocoder = new google.maps.Geocoder();
+        var was_res = false,
+            too_late = false;
         geocoder.geocode( { 'address': query }, function(results, status) {
+            was_res = true;
+            if (too_late) {
+                return;
+            }
             if (status == google.maps.GeocoderStatus.OK) {
                 var latLng = results[0].geometry.location;
                 success(latLng.lat(), latLng.lng());
             } else {
-                fail();
+                fail && fail();
             }
         });
+        setTimeout(function () {
+            if (!was_res) {
+                too_late = true;
+                fail && fail(true);
+            }
+        }, 5000);
     };
 
     TeamMap.prototype.yandexGeocode = function (query, success, fail) {

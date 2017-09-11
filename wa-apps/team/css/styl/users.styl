@@ -35,6 +35,7 @@
             .t-user-block
                 line-height 18px
 
+
                 .t-userpic-wrapper
                     font-size 0
                     line-height 0
@@ -47,7 +48,7 @@
                         border-radius 50%
 
                 .t-name
-                    word-break: break-word
+                    word-wrap: break-word
                     margin 0 0 6px
 
                     .user-badge
@@ -55,6 +56,8 @@
 
                 .t-job
                     margin 6px 0 0;
+                    font-size: 90%
+                    line-height: 1.3em
 
                 .t-login
                     color #bebfc5
@@ -232,7 +235,7 @@
 
                     .t-user-block
                         .t-layout
-                            word-break: break-word;
+                            word-wrap: break-word;
 
                             & > .t-column
                                 vertical-align middle
@@ -257,6 +260,7 @@
 
                         .t-name
                             margin 0
+                            line-height (18/$rem)em
 
                         .t-login
                             font-size (12/$rem)em

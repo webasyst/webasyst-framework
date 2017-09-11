@@ -20,6 +20,8 @@ var ProfileStatistic = ( function($) {
             // DATA
             that.charts = options.data;
             that.data = getData(that.charts, that.app_id);
+            that.group_by = options["group_by"];
+            that.locales = options["locales"];
 
             // VARS
             that.margin = {
@@ -267,11 +269,9 @@ var ProfileStatistic = ( function($) {
                 $app = that.$hint.find(".t-app"),
                 $count = that.$hint.find(".t-value");
 
-            var month = (date.getMonth() + 1);
-            month = ( month < 10 ) ? "0" + month : month;
-            var day = date.getDate();
-            day = ( day < 10 ) ? "0" + day : day;
-            $date.text(day + "." + month + "." + date.getFullYear() );
+            var hint_text = getHintText(date, that.group_by);
+
+            $date.text(hint_text );
             $app.text(chart.name);
             $count.text(point.value);
 
@@ -304,6 +304,31 @@ var ProfileStatistic = ( function($) {
                 }
 
                 return hintOffset;
+            }
+
+            function getHintText(date, group_by) {
+                var month = parseInt( date.getMonth() ),
+                    result;
+
+                if (group_by == "months") {
+                    var months = that.locales["months"];
+                    if (months[month]) {
+                        result = months[month];
+                    } else {
+                        months = ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"];
+                        result = months[month];
+                    }
+                } else {
+                    var day = date.getDate();
+                    day = ( day < 10 ) ? "0" + day : day;
+
+                    month += 1;
+                    month = ( month < 10 ) ? "0" + month : month;
+
+                    result = day + "." + month + "." + date.getFullYear();
+                }
+
+                return result;
             }
         };
 
@@ -391,12 +416,12 @@ var ProfileStatistic = ( function($) {
         function getValueTicks(length, domain) {
             var min = domain[0],
                 max = ( domain[1] || 1 ),
-                delta = (max - min),
+                delta = (max - min) + 1,
                 period = delta/(length - 1),
                 result = [];
 
             for (var i = 0; i < length; i++) {
-                var label = parseInt(  i * period * 10 ) / 10;
+                var label = (delta > 10) ? Math.round( i * period ) : (parseInt(  i * period * 10 ) / 10 );
                 result.push(label);
             }
 
@@ -425,7 +450,8 @@ var ProfileStatistic = ( function($) {
         that.start_date = options["start_date"];
         that.end_date = options["end_date"];
         that.loading_class = "is-loading";
-        that.contact_id = options['contact_id'];
+        that.contact_id = options["contact_id"];
+        that.locales = options["locales"];
 
         // DYNAMIC VARS
         that.graph = false;
@@ -477,6 +503,8 @@ var ProfileStatistic = ( function($) {
             that.graph = new Graph({
                 $wrapper: that.$graphWrapper,
                 data: prepareData(that.graphData),
+                group_by: that.group_by,
+                locales: that.locales,
                 app_id: that.app_id
             });
         }

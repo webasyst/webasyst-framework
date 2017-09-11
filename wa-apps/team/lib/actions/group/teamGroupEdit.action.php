@@ -28,7 +28,7 @@ class teamGroupEditAction extends waViewAction
         $tasm = new teamWaAppSettingsModel();
         $this->view->assign(array(
             'group' => $group,
-            'map_provider' => $tasm->getMapProvider()
+            'map_adapter' => $tasm->getMapAdapter()
         ));
     }
 

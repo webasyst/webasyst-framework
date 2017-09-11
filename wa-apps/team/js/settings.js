@@ -204,9 +204,10 @@ var SettingsPage = ( function($) {
                 that.$submitButton.removeClass("yellow").addClass("green");
 
                 if (r.status === 'ok') {
-                    if (r.data.map_provider === 'google') {
-                        $.getScript('https://maps.googleapis.com/maps/api/js?sensor=false&key=' + r.data.google_map_key + '&lang=' + r.data.lang);
-                    } else if (r.data.map_provider === 'yandex') {
+                    if (r.data.map_info.adapter === 'google') {
+                        $.getScript('https://maps.googleapis.com/maps/api/js?sensor=false&key=' +
+                            (r.data.map_info.settings.key || '') + '&lang=' + r.data.lang);
+                    } else if (r.data.map_info.adapter === 'yandex') {
                         $.getScript('https://api-maps.yandex.ru/2.1/?lang=' + r.data.lang);
                     }
                 }

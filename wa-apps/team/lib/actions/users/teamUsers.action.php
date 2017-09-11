@@ -7,8 +7,6 @@ class teamUsersAction extends teamContentViewAction
 
     public function execute()
     {
-        $cm = new waContactModel();
-
         $sort = $this->getSort();
         $contacts = teamUser::getList('users', array(
             'order' => $sort,

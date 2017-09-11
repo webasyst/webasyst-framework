@@ -7,6 +7,43 @@
         calendar: false,
         /* Need for title generation */
         title_pattern: "Team — %s",
+
+        /** One-time initialization called from layout */
+        init: function(options) {
+
+            'is_debug|app_url|locales'.split('|').forEach(function(k) {
+                $.team[k] = options[k];
+            });
+
+            // Set up CSRF
+            $(document).ajaxSend(function(event, xhr, settings) {
+                if (settings.type != 'POST') {
+                    return;
+                }
+
+                var matches = document.cookie.match(new RegExp("(?:^|; )_csrf=([^;]*)"));
+                var csrf = matches ? decodeURIComponent(matches[1]) : '';
+                settings.data = settings.data || '';
+                if (typeof(settings.data) == 'string') {
+                    if (settings.data.indexOf('_csrf=') == -1) {
+                        settings.data += (settings.data.length > 0 ? '&' : '') + '_csrf=' + csrf;
+                        xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                    }
+                } else if (typeof(settings.data) == 'object') {
+                    settings.data['_csrf'] = csrf;
+                }
+            });
+
+            /* Main content router */
+            $.team.content = new ContentRouter({
+                $content: $("#t-content")
+            });
+
+            /* Sync for external calendars */
+            $.team.setSync();
+
+        },
+
         /* Used on each content page */
         setTitle: function( title_string ) {
             if (title_string) {
@@ -45,16 +82,12 @@
         },
 
         /* Initialized in templates/layouts/Default.html */
-        setSync: function (is_debug) {
+        setSync: function () {
             var coef = Math.floor(Math.random() * 100) / 100,
                 delay = 30000 + coef * 30000,
                 xhr, timer;
 
-            if (is_debug) {
-                run();
-            } else {
-                setTimeout(run, delay / 2);
-            }
+            setTimeout(run, $.team.is_debug ? 100 : delay / 2);
 
             function run() {
                 console.log('send sync request');
@@ -107,10 +140,17 @@ var ContentRouter = ( function($) {
         var full_app_url = window.location.origin + $.team.app_url;
         $(document).on('click', 'a', function(event) {
             var use_content_router = ( that.is_enabled && ( this.href.substr(0, full_app_url.length) == full_app_url ) );
-            if (use_content_router) {
+
+            if (event.ctrlKey || event.shiftKey || event.metaKey) {
+
+            } else if (use_content_router) {
                 event.preventDefault();
                 that.load(this.href);
             }
+        });
+
+        $("#wa-app-team").on("click", "a", function(event) {
+            event.stopPropagation();
         });
 
         if (that.api_enabled) {

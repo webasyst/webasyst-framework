@@ -9,8 +9,7 @@ class teamSettingsSaveController extends waJsonController
 
         $tasm = new teamWaAppSettingsModel();
         $this->response = array(
-            'map_provider' => $tasm->getMapProvider(),
-            'google_map_key' => $tasm->getGoogleMapKey(),
+            'map_info' => $tasm->getMapInfo(),
             'lang' => wa()->getLocale()
         );
     }
@@ -21,7 +20,7 @@ class teamSettingsSaveController extends waJsonController
         if (!empty($data['user_name_format'])) {
             $tasm->saveUserNameDisplayFormat($data['user_name_format']);
         }
-        $tasm->setMap(ifset($data['map']['map_provider']), ifset($data['map']['google_map_key']));
+        $tasm->setMapInfo(ifset($data['map']['adapter']), (array) ifset($data['map']['settings']));
     }
 
     public function getData()

@@ -12,10 +12,7 @@
                 </div>
             </div>
             <div class="t-column">
-                <h5 class="t-name">
-                    <span class="user-info">{$user.name|escape}</span>
-                </h5>
-
+                <h5 class="t-name">{$user.name|escape}</h5>
                 {if !empty($user.login)}
                     <div class="t-login">@{$user.login|escape}</div>
                 {/if}

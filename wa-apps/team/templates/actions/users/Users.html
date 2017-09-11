@@ -19,8 +19,9 @@
                     ]}
                     <li>
                         <span style="margin: 0 4px 0 0;">[`Sort by`]:</span>
-                        <a class="t-selected-item inline-link" href="{$wa_app_url}?sort={$sort}" style="display: inline-block;">
-                            <b><i>{$_sort_list[$sort]|escape}</i></b>&nbsp;<i class="icon10 darr"></i>
+                        <a class="t-selected-item inline-link" href="{$wa_app_url}?sort={$sort|escape}" style="display: inline-block;">
+                            <b><i>{if isset($_sort_list[$sort])}{$_sort_list[$sort]|escape}{else}&mdash;{/if}</i></b>
+                            &nbsp;<i class="icon10 darr"></i>
                         </a>
                         <ul class="menu-v with-icons">
                             {foreach $_sort_list as $_id=>$_name}

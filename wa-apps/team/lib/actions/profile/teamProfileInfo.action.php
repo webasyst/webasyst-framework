@@ -25,7 +25,7 @@ class teamProfileInfoAction extends waViewAction
 
     public function execute()
     {
-        $can_edit = teamUser::canEdit($this->id);
+        $can_edit = $this->canEdit();
         $this->getContactInfo($can_edit);
 
         $this->view->assign('can_edit', $can_edit);
@@ -36,9 +36,14 @@ class teamProfileInfoAction extends waViewAction
         $this->view->assign('is_superadmin', wa()->getUser()->isAdmin());
     }
 
+    protected function canEdit()
+    {
+        return teamUser::canEdit($this->id);
+    }
+
     protected function getSaveUrl($can_edit)
     {
-        if ($can_edit === 'limitd_own_profile') {
+        if ($can_edit === 'limited_own_profile') {
             $app_url = wa()->getConfig()->getBackendUrl(true);
         } else {
             $app_url = wa()->getUrl();

@@ -4,7 +4,7 @@ class teamWaAppSettingsModel extends waAppSettingsModel
 {
     protected $app_id = 'team';
 
-    protected $map_providers = array('yandex', 'google');
+    protected $map_adapters = array('yandex', 'google');
 
     /**
      * @var teamConfig
@@ -49,33 +49,36 @@ class teamWaAppSettingsModel extends waAppSettingsModel
         return $this->set('webasyst', 'user_name_display', $value);
     }
 
-    public function setMap($map_provider, $google_map_key = '')
+    public function getMapAdapter()
     {
-        $map_provider = $this->typecastMapProvider($map_provider);
-        $this->set('webasyst', 'map_provider', $map_provider);
-        if ($map_provider === 'google') {
-            if ($google_map_key) {
-                $this->set('webasyst', 'google_map_key', $google_map_key);
-            } else {
-                $this->del('webasyst', 'google_map_key');
-            }
-        } else {
-            $this->del('webasyst', 'google_map_key');
+        $map_adapter = $this->typecastMapAdapter($this->get('webasyst', 'map_adapter'));
+        if (!in_array($map_adapter, $this->map_adapters)) {
+            $map_adapter = $this->map_adapters[0];
         }
+        return $map_adapter;
     }
 
-    public function getMapProvider()
+    public function getMapInfo()
     {
-        $map_provider = $this->typecastMapProvider($this->get('webasyst', 'map_provider'));
-        if (!in_array($map_provider, $this->map_providers)) {
-            $map_provider = $this->map_providers[0];
-        }
-        return $map_provider;
+        $adapter = $this->getMapAdapter();
+        $settings = $this->get('webasyst', 'map_adapter_' . $adapter);
+        $settings = $settings ? json_decode($settings, true) : null;
+        $settings = (array) $settings;
+        return array(
+            'adapter' => $adapter,
+            'settings' => $settings
+        );
     }
 
-    public function getGoogleMapKey()
+    public function setMapInfo($map_adapter, $settings = array())
     {
-        return (string) $this->get('webasyst', 'google_map_key');
+        $map_adapter = $this->typecastMapAdapter($map_adapter);
+        $this->set('webasyst', 'map_adapter', $map_adapter);
+        $old_settings = $this->get('webasyst', 'map_adapter_' . $map_adapter);
+        $old_settings = $old_settings ? json_decode($old_settings, true) : null;
+        $old_settings = (array) $old_settings;
+        $settings = array_merge($old_settings, $settings);
+        $this->set('webasyst', 'map_adapter_' . $map_adapter, json_encode($settings));
     }
 
     public function getUserNameDisplayFormat()
@@ -84,11 +87,11 @@ class teamWaAppSettingsModel extends waAppSettingsModel
         return $this->get('webasyst', 'user_name_display', 'name');
     }
 
-    private function typecastMapProvider($map_provider)
+    private function typecastMapAdapter($map_adapter)
     {
-        if (!in_array($map_provider, $this->map_providers)) {
-            $map_provider = $this->map_providers[0];
+        if (!in_array($map_adapter, $this->map_adapters)) {
+            $map_adapter = $this->map_adapters[0];
         }
-        return $map_provider;
+        return $map_adapter;
     }
 }

@@ -69,9 +69,22 @@ class teamScheduleEventSaveController extends waJsonController
             $update['sequence'] = $event['sequence'] + 1;
             $update['external_events'] = $event['external_events'];
 
-            $cem->updateEvent($id, $update);
+            $result = $cem->updateEvent($id, $update);
 
-            $this->logAction('event_edit', $id, $event['contact_id']);
+            if ($result) {
+                $this->logAction('event_edit', $id, $event['contact_id']);
+            }
+
+            $message = '';
+            $external_events_result = (array) ifset($result['external_events_result']);
+            foreach ($external_events_result as $event_id => $res) {
+                if ($res === 'not_found') {
+                    $message = "Related external event does't exist";
+                    break;
+                }
+            }
+
+            $this->response['message'] = $message;
 
         } else {
 
@@ -90,6 +103,6 @@ class teamScheduleEventSaveController extends waJsonController
             ));
             $this->logAction('event_add', $id, $contact_id);
         }
-        $this->response = array('id' => $id);
+        $this->response['id'] = $id;
     }
 }

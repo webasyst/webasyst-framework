@@ -196,7 +196,7 @@
         ( function($) {
             new GroupEditDialog({
                 $wrapper: $("#t-edit-group"),
-                map_type: '{$map_provider}',
+                map_type: '{$map_adapter}',
                 group_id: {if !empty($group.id)}{$group.id}{else}false{/if},
                 locales: {
                     empty: "[`Group name is mandatory.`]",

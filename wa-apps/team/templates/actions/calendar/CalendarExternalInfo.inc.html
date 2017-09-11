@@ -9,7 +9,8 @@
         {$_user = $calendar.owner}
         {$_user_link = "`$wa_app_url`id/`$_user.id`/"}
         {if !empty($_user.login)}
-            {$_user_link = "`$wa_app_url`u/`$_user.login`/"}
+            {$_l = urlencode($_user.login)}
+            {$_user_link = "`$wa_app_url`u/`$_l`/"}
         {/if}
 
         <div class="profile image32px">

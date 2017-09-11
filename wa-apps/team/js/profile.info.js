@@ -139,10 +139,10 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) { "use strict";
                 if (this.contactType === 'person') {
                     if (['firstname', 'middlename', 'lastname'].indexOf(this.fieldData.id) >= 0) {
                         cssClass = 'subname';
-                        inlineElement.find('.val').attr('placeholder', this.fieldData.name);
+                        inlineElement.find('.val').attr('placeholder', this.fieldData.name).attr('title', this.fieldData.name);
                     } else if (this.fieldData.id === 'title') {
                         cssClass = 'subname title';
-                        inlineElement.find('.val').attr('placeholder', this.fieldData.name);
+                        inlineElement.find('.val').attr('placeholder', this.fieldData.name).attr('title', this.fieldData.name);
                     } else if (this.fieldData.id === 'jobtitle') {
                         cssClass = 'jobtitle-company jobtitle';
                         //inlineElement.find('.val').attr('placeholder', this.fieldData.name);
@@ -1517,19 +1517,18 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) { "use strict";
                 wrapper.append($('<div class="address-subfield"></div>').append(element));
                 if (sf.fieldData.type !== 'Hidden') {
                     //$.wa.defaultInputValue(element.find('input.val'), sf.fieldData.name+(sf.fieldData.required ? ' ('+$_('required')+')' : ''), 'empty');
-                    element.find('input.val').attr(
-                        'placeholder',
-                        sf.fieldData.name+(sf.fieldData.required ? ' ('+$_('required')+')' : '')
-                    );
+                    var placeholder_text = sf.fieldData.name+(sf.fieldData.required ? ' ('+$_('required')+')' : '');
+                    element.find('input.val,textarea.val').attr('placeholder', placeholder_text).attr('title', placeholder_text);
                 }
             }
             return wrapper;
         }
     });//}}}
 
-    contactEditor.factoryTypes.Birthday = contactEditor.factoryTypes.Date = $.extend({}, contactEditor.baseFieldType, {//{{{
+    contactEditor.factoryTypes.Birthday = $.extend({}, contactEditor.baseFieldType, {//{{{
 
         newInlineFieldElement: function(mode) {
+            this.fieldValue = this.fieldValue || {};
             // Do not show anything in view mode if field is empty
             if(mode == 'view' && !this.fieldValue.value) {
                 return null;
@@ -1625,6 +1624,65 @@ $.wa.fieldTypesFactory = function(contactEditor, fieldType) { "use strict";
             }
         }
 
+    });//}}}
+
+    contactEditor.factoryTypes.Date = $.extend({}, contactEditor.factoryTypes.String, {//{{{
+        initializeFactory: function(fieldData, options) {
+            this.fieldData = fieldData || {};
+            this.options = options || {};
+            this.fieldData.input_height = 1;
+        },
+        setValue: function(data) {
+            this.fieldValue = data;
+            if (this.currentMode == 'null' || this.domElement === null) {
+                return;
+            }
+
+            if (this.currentMode == 'edit') {
+                this.domElement.find('input:text').datepicker('setDate', this.fieldValue);
+            } else {
+                this.domElement.find('.val').html(this.fieldValue);
+            }
+        },
+        newInlineFieldElement: function(mode) {
+            var result = contactEditor.factoryTypes.String.newInlineFieldElement.call(this, mode);
+            if (mode == 'edit') {
+
+                var that = this;
+                var $input_text = result.find('input:text').removeClass('val');
+                var $input_hidden = $('<input type="hidden" class="val">').insertAfter($input_text);
+
+                (function(init) { "use strict";
+                    if ($input_text.datepicker) {
+                        init();
+                    } else {
+                        $.wa.loadFiles([
+                            $.wa.contactEditor.wa_backend_url + '../wa-content/js/jquery-ui/jquery.ui.core.min.js',
+                            $.wa.contactEditor.wa_backend_url + '../wa-content/js/jquery-ui/jquery.ui.datepicker.min.js'
+                            //$.wa.contactEditor.wa_backend_url + '../wa-content/js/jquery-ui/i18n/jquery.ui.datepicker-'+locale+'.js'
+                        ]).then(init);
+                    }
+                }(function() { "use strict";
+                    $input_text.datepicker({
+                        altField: $input_hidden,
+                        altFormat: "yy-mm-dd",
+                        dateFormat: that.fieldData.format,
+                        changeMonth: true,
+                        changeYear: true,
+                        shortYearCutoff: 2,
+                        showOtherMonths: true,
+                        selectOtherMonths: true,
+                        stepMonths: 2,
+                        numberOfMonths: 2
+                    });
+                    if (that.fieldValue) {
+                        $input_text.datepicker('setDate', that.fieldValue);
+                    }
+                }));
+            }
+
+            return result;
+        }
     });//}}}
 
     contactEditor.factoryTypes.IM = $.extend({}, contactEditor.baseFieldType, {//{{{
@@ -2034,7 +2092,7 @@ $.wa.contactEditorFactory = function(options) { "use strict"; //{{{
 
                 setTimeout( function() {
                     initStickyButtons( el.find('.buttons') );
-                }, 200);
+                }, 666);
 
             } else {
                 el.addClass('view-mode');
@@ -2059,9 +2117,10 @@ $.wa.contactEditorFactory = function(options) { "use strict"; //{{{
 
                 // INIT
                 window.profileTab.initScrollWatcher( $block, onScroll);
+
                 root.setTimeout( function() {
                     $(root).trigger("scroll");
-                }, 4);
+                }, 666);
 
                 function onScroll(data) {
                     if (data.bottom <= block_h) {

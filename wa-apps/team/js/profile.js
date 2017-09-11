@@ -14,7 +14,6 @@ var Profile = ( function($) {
         that.api_enabled = ( window.history && window.history.pushState );
         that.user = options.user || { id: 0 };
         that.photo_dialog_url = options.photo_dialog_url;
-        that.photo_save_url = options.photo_save_url;
 
         // DYNAMIC VARS
         that.is_locked = false;
@@ -60,8 +59,6 @@ var Profile = ( function($) {
         that.$wrapper.find('.photo-change-link a').click(function() {
             $('#contact-photo-crop-dialog').remove();
             $('<div id="contact-photo-crop-dialog">')
-                .data('photo-upload-url', that.photo_save_url)
-                .data('photo-delete-url', that.photo_save_url)
                 .appendTo(that.$wrapper)
                 .waDialog({
                     'class': 'large',
@@ -334,8 +331,13 @@ var ActivityLazyLoading = ( function($) {
             }
 
             if (is_paging_exist) {
-                that.onScroll();
-            } else {
+                try {
+                    that.onScroll();
+                } catch (e) {
+                    is_paging_exist = false;
+                }
+            }
+            if (!is_paging_exist) {
                 that.$window.off("scroll", onScroll);
                 $(window_parent).off("scroll", onScroll);
             }

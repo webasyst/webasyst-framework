@@ -243,9 +243,13 @@ class teamWaContactEventsModel extends waContactEventsModel
         $event['external_events'] = $external_events;
 
         // first try update external events, if failed (throw exception) we will not update event itself)
-        $this->updateExternalEvents($event);
+        $result = $this->updateExternalEvents($event);
 
         $this->updateById($id, $update);
+
+        return array(
+            'external_events_result' => $result
+        );
     }
 
     public function deleteEvent($id)
@@ -256,9 +260,13 @@ class teamWaContactEventsModel extends waContactEventsModel
         }
 
         // first try delete external events, if failed (throw exception) we will not delete event itself
-        $this->deleteExternalEvents($event);
+        $result = $this->deleteExternalEvents($event);
 
         $this->deleteById($event['id']);
+
+        return array(
+            'external_events_result' => $result
+        );
     }
 
     /**
@@ -330,6 +338,8 @@ class teamWaContactEventsModel extends waContactEventsModel
         $external_events = (array)ifset($event['external_events']);
         unset($event['external_events']);
 
+        $results = array();
+
         /**
          * @var teamCalendarExternalPlugin[] $calendar_external_plugins
          */
@@ -347,8 +357,18 @@ class teamWaContactEventsModel extends waContactEventsModel
                 if ($plugin) {
                     $integration_level = $plugin->getCalendar()->getIntegrationLevel();
                     if (in_array($integration_level, array(teamCalendarExternalModel::INTEGRATION_LEVEL_SYNC, teamCalendarExternalModel::INTEGRATION_LEVEL_FULL))) {
-                        $result = $plugin->updateEvent($event + $external_event);
-                        if (is_array($result)) {
+
+                        $not_found = false;
+                        try {
+                            $result = $plugin->updateEvent($event + $external_event);
+                        } catch (teamCalendarExternalEventNotFoundException $e) {
+                            $results[$external_event['id']] = 'not_found';
+                            $not_found = true;
+                        }
+                        if ($not_found) {
+                            $this->getEventExternalModel()->delete($external_event['id'], false);
+                        }
+                        if (!$not_found && is_array($result)) {
                             $result['params'] = ifset($result['params'], array());
 
                             // if there are diffs in params, so safe differ params
@@ -371,11 +391,14 @@ class teamWaContactEventsModel extends waContactEventsModel
                 }
             }
         }
+        return $results;
     }
 
     protected function deleteExternalEvents($event)
     {
         $external_events = (array)ifset($event['external_events']);
+
+        $result = array();
 
         /**
          * @var teamCalendarExternalPlugin[] $calendar_external_plugins
@@ -394,12 +417,18 @@ class teamWaContactEventsModel extends waContactEventsModel
                 if ($plugin) {
                     $integration_level = $plugin->getCalendar()->getIntegrationLevel();
                     if (in_array($integration_level, array(teamCalendarExternalModel::INTEGRATION_LEVEL_SYNC, teamCalendarExternalModel::INTEGRATION_LEVEL_FULL))) {
-                        $plugin->deleteEvent($external_event);
+                        try {
+                            $plugin->deleteEvent($external_event);
+                        } catch (teamCalendarExternalEventNotFoundException $e) {
+                            $result[$external_event['id']] = 'not_found';
+                        }
                     }
                 }
             }
             $this->getEventExternalModel()->delete($external_event['id']);
         }
+
+        return $result;
     }
 
     public function moveEventDates($id, $date_diff_days)

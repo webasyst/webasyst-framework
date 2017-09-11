@@ -94,7 +94,7 @@ class teamAccessSaveActions extends waJsonActions
     /** Helper to validate login from POST */
     protected function validatedLogin()
     {
-        $login = trim(waRequest::post('login', '', 'string_trim'));
+        $login = trim(urldecode(waRequest::post('login', '', 'string_trim')));
         if (strlen($login) <= 0) {
             $this->errors[] = _w('Login is required.');
             return null;

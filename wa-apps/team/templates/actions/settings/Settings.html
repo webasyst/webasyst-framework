@@ -68,12 +68,12 @@
                             <ul class="menu-v compact">
                                 <li class="t-item-wrapper">
                                     <label>
-                                        <input class="t-input" type="radio" name="data[map][map_provider]" value="google" {if $map_provider == 'google'}checked="checked"{/if}>
+                                        <input class="t-input" type="radio" name="data[map][adapter]" value="google" {if $map_info.adapter == 'google'}checked="checked"{/if}>
                                         <span class="t-name">[`Google Maps`]</span>
                                     </label>
-                                    <div class="t-hidden-content" style="{if $map_provider != 'google'}display: none;{/if}">
+                                    <div class="t-hidden-content" style="{if $map_info.adapter != 'google'}display: none;{/if}">
                                         <span style="margin: 0 4px 0 0; vertical-align: middle;">[`Google Maps API key`]:</span>
-                                        <input type="text" name="data[map][google_map_key]" value="{$google_map_key}">
+                                        <input type="text" name="data[map][settings][key]" value="{$map_info.settings.key|default:''}">
                                         <div class="hint">
                                             [`You need to <a href="https://developers.google.com/maps/documentation/javascript/get-api-key" target="_blank">get a Key/Authentication</a> to use Google Maps JavaScript API`]
                                         </div>
@@ -81,7 +81,7 @@
                                 </li>
                                 <li class="t-item-wrapper">
                                     <label>
-                                        <input class="t-input" type="radio" name="data[map][map_provider]" value="yandex" {if $map_provider == 'yandex'}checked="checked"{/if}>
+                                        <input class="t-input" type="radio" name="data[map][adapter]" value="yandex" {if $map_info.adapter == 'yandex'}checked="checked"{/if}>
                                         <span class="t-name">[`Yandex Maps`]</span>
                                     </label>
                                 </li>

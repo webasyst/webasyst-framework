@@ -24,7 +24,7 @@ class teamProfileStatsAction extends waViewAction
             'timeframe' => waRequest::request('timeframe'),
             'selected_app_id' => waRequest::request('app_id', null, 'string'),
             'contact_id' => $contact_id,
-            'apps' => wa()->getApps(true),
+            'apps' => self::getApps(),
         ));
     }
 
@@ -39,8 +39,7 @@ class teamProfileStatsAction extends waViewAction
             'contact_id' => $contact_id !== null ? $contact_id : wa()->getUser()->getId()
         ));
 
-
-        $all_apps = wa()->getApps(true);
+        $all_apps = self::getApps();
         $app_ids = array_keys($all_apps);
 
         // Prepare app info for JS
@@ -129,5 +128,14 @@ class teamProfileStatsAction extends waViewAction
             $start_date = $log_model->getMinDate();
         }
         return array($start_date, $end_date, $group_by);
+    }
+
+    protected static function getApps()
+    {
+        $all_apps = wa()->getApps(true);
+        if (wa()->getUser()->isAdmin()) {
+            return $all_apps;
+        }
+        return wa()->getUser()->getApps();
     }
 }

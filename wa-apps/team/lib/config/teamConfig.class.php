@@ -252,15 +252,24 @@ class teamConfig extends waAppConfig
                             '</a>'
                         );
                     } else {
-                        $l['params_html'] = sprintf_wp(
-                            $actions[$l['action']]['label'],
-                            '<a href="'.$app_url.'id/'.$l['subject_contact_id'].'/">'.
-                            htmlspecialchars(ifempty($contacts[$l['subject_contact_id']][0], $l['subject_contact_id'])).
-                            '</a>',
-                            '<a href="'.$app_url.'group/'.$l['params'].'/">'.
-                            htmlspecialchars(ifempty($groups[$l['params']], $l['params'])).
-                            '</a>'
-                        );
+                        $param1 = null;
+                        if ($l['subject_contact_id']) {
+                            if (!empty($contacts[$l['subject_contact_id']][0])) {
+                                $param1 = '<a href="'.$app_url.'id/'.$l['subject_contact_id'].'/">'.
+                                    htmlspecialchars($contacts[$l['subject_contact_id']][0]).
+                                    '</a>';
+                            } else {
+                                $param1 = '<span class="small">[ id: '.$l['subject_contact_id'].', '._w(' deleted').' ]</span>';
+                            }
+                        }
+                        if (!empty($groups[$l['params']])) {
+                            $param2 = '<a href="'.$app_url.'group/'.$l['params'].'/">'.
+                                htmlspecialchars($groups[$l['params']]).
+                                '</a>';
+                        } else {
+                            $param2 = '<span class="small">[ id: '.$l['params'].', '._w('deleted ').' ]</span>';
+                        }
+                        $l['params_html'] = sprintf_wp($actions[$l['action']]['label'], $param1, $param2);
                     }
                 }
                 unset($l);

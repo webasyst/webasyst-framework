@@ -16,7 +16,7 @@ class teamUser
 
         try {
             // Look up by login if specified via routing
-            $user_login = waRequest::param('login', null, waRequest::TYPE_STRING_TRIM);
+            $user_login = urldecode(waRequest::param('login', null, waRequest::TYPE_STRING_TRIM));
             if ($user_login) {
                 self::$current_user = waUser::getByLogin($user_login);
                 if (!self::$current_user) {

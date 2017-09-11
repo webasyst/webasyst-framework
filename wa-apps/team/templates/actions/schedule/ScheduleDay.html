@@ -72,7 +72,7 @@
                         {if !empty($users[$_event.contact_id])}
                             {$_user = $users[$_event.contact_id]}
                             {if $_is_birthday}
-                                <span class="t-login">{$_user.login|escape}</span>
+                                <span class="t-login">{$_user.name|escape}</span>
                             {elseif !empty($_user.photo_url_16)}
                                 <i class="icon16 userpic20" style="background-image: url({$_user.photo_url_16})"></i>
                             {/if}

@@ -49,9 +49,9 @@
         <script src="{$wa_url}wa-content/js/jquery-ui/i18n/jquery.ui.datepicker-{$wa->locale()}.js"></script>
     {/if}
 
-    {if $map_provider === 'google'}
-        <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false&key={$google_map_key}&lang={$wa->locale()}"></script>
-    {elseif $map_provider === 'yandex'}
+    {if $map_info.adapter === 'google'}
+        <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false&key={$map_info.settings.key|default:''}&lang={$wa->locale()}"></script>
+    {elseif $map_info.adapter === 'yandex'}
         <script src="https://api-maps.yandex.ru/2.1/?lang={$wa->locale()}" type="text/javascript"></script>
     {/if}
 
@@ -92,14 +92,15 @@
 </div>
 
 <script>
-( function($) {
-    /* App url often used in AJAX queries, comparisons links href */
-    $.team.app_url = {$wa_app_url|json_encode};
-    /* Calendar external sync */
-    $.team.setSync({$is_debug});
-    /* Main content router */
-    $.team.content = new ContentRouter({
-        $content: $("#t-content")
+(function($) {
+    $.team.init({
+        is_debug: {$is_debug},
+        app_url: {$wa_app_url|json_encode},
+        locales: {
+            map_check_your_key: '[`Check your key first of all <a href="{$wa_app_url}settings/">here</a>`]',
+            map_error_title: '[`Error`]',
+            map_error_message: '[`Google map has error, maybe key is invalid`]'
+        }
     });
 })(jQuery);
 </script>

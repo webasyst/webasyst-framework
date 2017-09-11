@@ -1289,6 +1289,9 @@ var EventEditDialog = ( function($) {
             $.post(href, data, function(response) {
 
                 if (response.status == "ok") {
+                    if (response.data && response.data.message) {
+                        alert(response.data.message);
+                    }
                     that.reloadCalendar();
                 } else if (response.errors) {
                     var redirect = null;
@@ -1807,6 +1810,9 @@ var EventDeleteDialog = ( function($) {
 
         $.post(href, data, function(response) {
             if (response.status == "ok") {
+                if (response.data && response.data.message) {
+                    alert(response.data.message);
+                }
                 that.$wrapper.trigger("close");
                 $.team.calendar.reload();
             }

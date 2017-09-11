@@ -171,7 +171,6 @@
             new Profile({
                 $wrapper: $('#contact-info-top').closest('.t-profile-page'),
                 photo_dialog_url: "{$wa_backend_url}?module=profile&action=photo&id={$user.id}",
-                photo_save_url: "{$wa_url}?module=profile&action=photoSave",
                 user: {
                     id: {$user.id|json_encode}
                 }

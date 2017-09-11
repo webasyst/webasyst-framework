@@ -20,7 +20,7 @@ class teamGroupAction extends teamUsersAction
             $sort = $this->getSort();
 
             $tasm = new teamWaAppSettingsModel();
-            $map_provider = $tasm->getMapProvider();
+            $map_adapter = $tasm->getMapAdapter();
 
             $contacts = teamUser::getList('group/' . $group_id, array(
                 'order' => $sort,
@@ -36,7 +36,7 @@ class teamGroupAction extends teamUsersAction
                 'contacts'         => $contacts,
                 'can_manage_group' => teamHelper::hasRights('manage_group.' . $group_id),
                 'sort'             => $sort,
-                'map_provider'     => $map_provider,
+                'map_adapter'     => $map_adapter,
             ));
         }
     }

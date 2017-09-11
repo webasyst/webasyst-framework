@@ -652,7 +652,7 @@ var Sidebar = ( function($) {
             $groups = that.$groups,
             $locationsWrapper = that.$locationsWrapper,
             $locations = that.$locations,
-            href = $.team.app_url + "?module=group&action=sortSave",
+            href = that.app_url + "?module=group&action=sortSave",
             item_index,
             xhr = false;
 
@@ -669,9 +669,16 @@ var Sidebar = ( function($) {
                     ui.item.removeAttr("style");
                     if (item_index != ui.item.index() ) {
                         var sortArray = getSortArray( $groupsWrapper );
-                        saveSort(href, {
-                            groups: sortArray
+
+                        var data = [];
+                        $.each(sortArray, function(index, item) {
+                            data.push({
+                                name: "groups[]",
+                                value: item
+                            });
                         });
+
+                        saveSort(href, data);
                     }
                 }
             });
@@ -719,8 +726,7 @@ var Sidebar = ( function($) {
                 xhr.abort();
                 xhr = false;
             }
-
-            xhr = $.post(href, data, function(response) {
+            xhr = $.post(href, data, function() {
                 xhr = false;
             });
         }

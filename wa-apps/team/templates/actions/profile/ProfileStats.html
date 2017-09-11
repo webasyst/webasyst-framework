@@ -257,8 +257,6 @@
                         });
 
                         {* Init datepicker here *}
-                        console.log('-- Init datepicker here -- ');
-
 
                         {* Submit button temporary - rework it to on lister changes in filter selector *}
                         $('.t-filter-apply', container).click(function () {
@@ -356,7 +354,23 @@
                 timeframe: {if !empty($timeframe)}{$timeframe|json_encode}{else}false{/if},
                 start_date: {if !empty($start_date)}{$start_date|json_encode}{else}false{/if},
                 end_date: {if !empty($end_date)}{$end_date|json_encode}{else}false{/if},
-                contact_id: {$contact_id|json_encode}
+                contact_id: {$contact_id|json_encode},
+                locales: {
+                    months: [
+                        "{_ws('January', 'January')}",
+                        "{_ws('February', 'February', 1)}",
+                        "{_ws('March', 'March')}",
+                        "{_ws('April', 'April')}",
+                        "{_ws('May', 'May')}",
+                        "{_ws('June', 'June')}",
+                        "{_ws('July', 'July')}",
+                        "{_ws('August', 'August')}",
+                        "{_ws('September', 'September')}",
+                        "{_ws('October', 'October')}",
+                        "{_ws('November', 'November')}",
+                        "{_ws('December', 'December')}"
+                    ]
+                }
             });
         })(jQuery);
     </script>

@@ -38,19 +38,13 @@ class teamContactsProfileTabHandler extends waEventHandler
 
             // Contact info
             if ($has_access_team || $is_own_profile) {
-                try {
-                    $action = new teamProfileInfoAction(array(
-                        'id' => $contact_id,
-                    ));
-                    $html = $action->display();
-                } catch (Exception $e) {
-                    $html = (string) $e;
-                }
                 $result[] = array(
                     'id' => 'info',
                     'count' => '',
                     'title' => _w('Contact info'),
-                    'html' => $html,
+                    'html' => new waLazyDisplay(new teamProfileInfoAction(array(
+                        'id' => $contact_id,
+                    ))),
                 );
             }
 
@@ -63,19 +57,13 @@ class teamContactsProfileTabHandler extends waEventHandler
                     'count' => '',
                 );
             } elseif ($is_own_profile) {
-                try {
-                    $action = new teamProfileAccessAction(array(
-                        'id' => $contact_id,
-                    ));
-                    $html = $action->display();
-                } catch (Exception $e) {
-                    $html = (string) $e;
-                }
                 $result[] = array(
                     'id' => 'access',
-                    'title' => _w('User access'),
-                    'html' => $html,
                     'count' => '',
+                    'title' => _w('User access'),
+                    'html' => new waLazyDisplay(new teamProfileAccessAction(array(
+                        'id' => $contact_id,
+                    ))),
                 );
             }
         }
