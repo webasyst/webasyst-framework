@@ -54,3 +54,6 @@ msgstr "Другое"
 
 msgid "cancel"
 msgstr "отмена"
+
+msgid "or"
+msgstr "или"

@@ -435,7 +435,13 @@ class teamCaldavClient
             )
         );
 
-        $this->checkError($response);
+        try {
+            $this->checkError($response);
+        } catch (teamCaldavClientException $e) {
+            if ($e->getCode() == 404) {
+                throw new teamCalendarExternalEventNotFoundException();
+            }
+        }
 
         return $result;
     }

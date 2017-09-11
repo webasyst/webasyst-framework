@@ -313,7 +313,10 @@ class teamCaldavPlugin extends teamCalendarExternalPlugin
             $event = $vevent->toAppEvent();
             $event['etag'] = $item['etag'];
             $event['href'] = $item['href'];
-            $events[] = $event;
+            $end = strtotime($event['end']);
+            if ($range['start'] < $end) {
+                $events[] = $event;
+            }
         }
 
         $done = (bool) ifset($params['done']);
@@ -420,13 +423,18 @@ class teamCaldavPlugin extends teamCalendarExternalPlugin
         $data = $this->getEventsFields($xml);
         $events = array();
 
+        $range = $this->calculateTimeRange($params, true);
+
         foreach ($data as $item) {
             $event_data = $this->extractEventData($item['calendar_data']);
             $vevent = new teamIcalEvent($event_data);
             $event = $vevent->toAppEvent();
             $event['etag'] = $item['etag'];
             $event['href'] = $item['href'];
-            $events[] = $event;
+            $end = strtotime($event['end']);
+            if ($range['start'] < $end) {
+                $events[] = $event;
+            }
         }
 
         $delete = array();
@@ -763,6 +771,11 @@ class teamCaldavPlugin extends teamCalendarExternalPlugin
         ));
         $options = $this->calendar->getParams() + $options;
         $client = new teamCaldavClient($options['url'], $options['login'], $options['password']);
+
+        if (!$this->getEvent($url)) {
+            throw new teamCalendarExternalEventNotFoundException();
+        }
+
         $client->updateEvent($url, $vevent, $event_params);
 
         $xml = $client->multigetCalendarData($this->calendar->getNativeCalendarId(), array($url));
@@ -797,9 +810,55 @@ class teamCaldavPlugin extends teamCalendarExternalPlugin
 
         $options = $this->calendar->getParams() + $options;
         $client = new teamCaldavClient($options['url'], $options['login'], $options['password']);
+
+        if (!$this->getEvent($url)) {
+            throw new teamCalendarExternalEventNotFoundException();
+        }
+
         $client->deleteEvent($url, $event_params);
 
         return true;
+    }
+
+    protected function getEvent($event_url)
+    {
+        if (!$this->checkCalendar()) {
+            return false;
+        }
+
+        $calendar_url = $this->calendar->getNativeCalendarId();
+        if (!$calendar_url) {
+            return false;
+        }
+
+        $params = $this->calendar->getParams();
+        $client = new teamCaldavClient($params['url'], $params['login'], $params['password']);
+        $urls = array(
+            $event_url
+        );
+
+        $data = array();
+        $xml = $client->multigetCalendarData($calendar_url, $urls);
+        $xml->registerXPathNamespace('D', 'DAV:');
+        foreach ($this->getEventsFields($xml) as $item) {
+            $data[] = $item;
+        }
+
+        if (empty($data)) {
+            return null;
+        }
+
+        $events = array();
+        foreach ($data as $item) {
+            $event_data = $this->extractEventData($item['calendar_data']);
+            $vevent = new teamIcalEvent($event_data);
+            $event = $vevent->toAppEvent();
+            $event['etag'] = $item['etag'];
+            $event['href'] = $item['href'];
+            $events[] = $event;
+        }
+
+        return $events[0];
     }
 
     public function getCalendarName()
