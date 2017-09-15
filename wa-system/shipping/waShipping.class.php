@@ -1015,12 +1015,14 @@ HTML;
             $offset = min(365, max(0, intval(ifset($params['params']['date'], 0))));
             $date_params['placeholder'] = waDateTime::format($date_format, sprintf('+ %d days', $offset));
             $date_params['description'] = _ws('Date');
+            $date_params['value'] = ifset($params['value']['date_str']);
             $html .= waHtmlControl::getControl(waHtmlControl::INPUT, $date_name, $date_params);
             waHtmlControl::makeId($date_params, $date_name);
 
             $date_name = preg_replace('@([_\w]+)(\]?)$@', '$1.date$2', $name);
             $date_formatted_params = $params;
             $date_formatted_params['style'] = "display: none;";
+            $date_formatted_params['value']=ifset($params['value']['date']);
             $html .= waHtmlControl::getControl(waHtmlControl::INPUT, $date_name, $date_formatted_params);
             waHtmlControl::makeId($date_formatted_params, $date_name);
 
@@ -1079,6 +1081,7 @@ HTML;
                 array_unshift($interval_params['options'], $option);
 
                 $interval_params['description'] = _ws('Time');
+                $interval_params['value'] = ifset($params['value']['interval']);
                 $html .= waHtmlControl::getControl(waHtmlControl::SELECT, $interval_name, $interval_params);
                 waHtmlControl::makeId($interval_params, $interval_name);
             } else {
@@ -1101,29 +1104,29 @@ HTML;
 <script type="text/javascript">
     $(function () {
         'use strict';
-        var date = $('#{$date_params['id']}');
+        var date_input = $('#{$date_params['id']}');
         var date_formatted = $('#{$date_formatted_params['id']}');
         var interval = '{$interval_params['id']}' ? $('#{$interval_params['id']}') : false;
         var available_days = {$available_days};
         var init = function () {
-            date.datepicker();
-            date.datepicker("option", {
+            date_input.datepicker();
+            date_input.datepicker("option", {
                 "dateFormat": '{$js_date_format}',
-                'minDate': {$offset},
-                'onSelect': function (dateText) {
-                    var d = date.datepicker('getDate');
-                    date.val(dateText);
+                "minDate": {$offset},
+                "onSelect": function (dateText) {
+                    var d = date_input.datepicker('getDate');
+                    date_input.val(dateText);
                     date_formatted.val($.datepicker.formatDate('yy-mm-dd', d));
                     if (d && interval && interval.length) {
                         var day = (d.getDay() + 6) % 7;
                         /**
                          * filter select by days
                          */
-                        var value = typeof(interval.val())!='undefined';
+                        var value = typeof(interval.val()) !== 'undefined';
                         var matched = null;
                         interval.find('option').each(function () {
                             var option = $(this);
-                            var disabled = (option.data('days').indexOf(day) == -1) ? 'disabled' : null;
+                            var disabled = (option.data('days').indexOf(day) === -1) ? 'disabled' : null;
                             option.attr('disabled', disabled);
                             if (disabled) {
                                 if (this.selected) {
@@ -1134,7 +1137,7 @@ HTML;
                                 if (!value) {
                                     this.selected = true;
                                     value = !!this.value;
-                                    if (typeof(interval.highlight) == 'function') {
+                                    if (typeof(interval.highlight) === 'function') {
                                         interval.highlight();
                                     }
                                 }
@@ -1152,27 +1155,30 @@ HTML;
                     }
 
                 },
-                beforeShowDay: function (date) {
+                "beforeShowDay": function (date) {
                     if (interval && interval.length) {
                         var day = (date.getDay() + 6) % 7;
-                        return [available_days.indexOf(day) != -1]
+                        return [(date_input.data('available_days')||available_days||[]).indexOf(day) !== -1]
                     } else {
                         return [true];
                     }
                 }
             });
-            $('.ui-datepicker').css('zIndex', 999999);
+            $('.ui-datepicker').css({
+                "zIndex":999999,
+                "display":'none'
+            });
         };
 
         var init_locale = function () {
-            if ('$localization' && (!$.datepicker.regional || ($.datepicker.regional.indexOf('{$locale}'.substr(0, 2)) == -1))) {
+            if ('$localization' && (!$.datepicker.regional || ($.datepicker.regional.indexOf('{$locale}'.substr(0, 2)) === -1))) {
                 $.getScript('{$root_url}{$localization}', init);
             } else {
                 init();
             }
         };
 
-        if (typeof(date.datepicker) != 'function') {
+        if (typeof(date_input.datepicker) !== 'function') {
             $("<link/>", {
                 rel: "stylesheet",
                 type: "text/css",

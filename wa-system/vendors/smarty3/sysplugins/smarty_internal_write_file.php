@@ -83,6 +83,11 @@ class Smarty_Internal_Write_File {
             chmod($_filepath, $smarty->_file_perms);
             umask($old_umask);
         }
+
+        if (function_exists('opcache_invalidate')) {
+            @opcache_invalidate($_filepath);
+        }
+
         error_reporting($_error_reporting);
         return true;
     }
