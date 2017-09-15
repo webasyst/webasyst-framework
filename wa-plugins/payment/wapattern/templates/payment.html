@@ -1,0 +1,27 @@
+<form action="{$form_url}" method="POST" target="_top" id="paymentForm">
+    {foreach $form as $name => $value}
+        <input type="hidden" name="{$name}" value="{$value|escape}">
+    {/foreach}
+    {if $auto_submit}
+        <i class="icon16 loading"></i>
+        <em>{$plugin->_w('Redirecting to secure wapattern website for payment...')}</em>
+        <br/>
+        <br/>
+        <script type="text/javascript">
+            (function () {
+                var form = document.getElementById('paymentForm');
+                var timer = setTimeout(function () {
+                    document.getElementById('paymentFormSubmit').setAttribute('disabled', 'disabled');
+                    form.submit();
+                }, 3000);
+                form.addEventListener("submit", function () {
+                    document.getElementById('paymentFormSubmit').setAttribute('disabled', 'disabled');
+                    if (timer) {
+                        clearTimeout(timer);
+                    }
+                });
+            })();
+        </script>
+    {/if}
+    <input type="submit" value="{$plugin->_w('Proceed to wapattern to make payment')|escape}" id="paymentFormSubmit">
+</form>
