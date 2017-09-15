@@ -61,8 +61,8 @@ class rbkmoneyPayment extends waPayment implements waIPayment
         $transaction_data = parent::formalizeData($transaction_raw_data);
 
         $fields = array(
-            'userName'  => 'Имя Пользователя в Системе RBK Money',
-            'userEmail' => 'Email Пользователя в Системе RBK Money'
+            'userName'  => 'Имя Пользователя в системе RBKmoney',
+            'userEmail' => 'Email Пользователя в системе RBKmoney'
         );
         $view_data = array();
         foreach ($fields as $field => $description) {
