@@ -150,7 +150,7 @@ class courierShipping extends waShipping
                 $date = waDateTime::format('humandate', $date);
             }
             unset($date);
-            $delivery_date = implode(' —', $delivery_date);
+            $delivery_date = implode(' — ', $delivery_date);
         } else {
             $delivery_date = null;
         }
@@ -272,8 +272,21 @@ class courierShipping extends waShipping
                 $from = strtotime(preg_replace('@,.+$@', '', $this->delivery_time));
             }
             $offset = max(0, ceil(($from - time()) / (24 * 3600)));
+            $shipping_params = $order->shipping_params;
+            $value = array();
+
+            if (!empty($shipping_params['desired_delivery.interval'])) {
+                $value['interval'] = $shipping_params['desired_delivery.interval'];
+            }
+            if (!empty($shipping_params['desired_delivery.date_str'])) {
+                $value['date_str'] = $shipping_params['desired_delivery.date_str'];
+            }
+            if (!empty($shipping_params['desired_delivery.date'])) {
+                $value['date'] = $shipping_params['desired_delivery.date'];
+            }
+
             $fields['desired_delivery'] = array(
-                'value'        => null,
+                'value'        => $value,
                 'title'        => $this->_w('Preferred delivery time'),
                 'control_type' => 'CustomDeliveryIntervalControl',
                 'params'       => array(
@@ -298,7 +311,7 @@ class courierShipping extends waShipping
 
     public function displayPrintForm($id, waOrder $order, $params = array())
     {
-        if ($id = 'delivery_list') {
+        if ($id == 'delivery_list') {
             $view = wa()->getView();
             $main_contact_info = array();
             foreach (array('email', 'phone',) as $f) {
@@ -341,7 +354,7 @@ class courierShipping extends waShipping
                     $map = wa()->getMap($map_adapter)->getHTML($shipping_address_text, array(
                         'width'  => '100%',
                         'height' => '350pt',
-                        'zoom'   => 16
+                        'zoom'   => 16,
                     ));
                 } catch (waException $e) {
                     $map = '';
