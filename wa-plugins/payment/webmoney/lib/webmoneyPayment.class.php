@@ -59,6 +59,7 @@ class webmoneyPayment extends waPayment implements waIPayment
 					'Y' => 'UZS',
 					'B' => 'BYR',
 				);
+
 				$pattern      = '/^([' . implode('', array_keys($currency_map)) . '])\d+$/i';
 				if (preg_match($pattern, trim($this->LMI_PAYEE_PURSE), $matches))
 				{
