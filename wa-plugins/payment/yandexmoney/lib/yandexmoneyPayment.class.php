@@ -77,6 +77,12 @@ class yandexmoneyPayment extends waPayment implements waIPayment
                 'data' => 'Оплата на сайте Яндекс.Денег производится в только в рублях (RUB) и в данный момент невозможна, так как эта валюта не определена в настройках.',
             );
         }
+        if (!$this->secret_key) {
+            return array(
+                'type' => 'error',
+                'data' => 'Внимание ошибка в настройках метода оплаты WebMoney-PayMaster! Обратитесь пожалуйста к администратору.',
+            );
+        }
         $view = wa()->getView();
         switch ($this->integration_type) {
 
