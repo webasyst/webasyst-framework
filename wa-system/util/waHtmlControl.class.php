@@ -566,7 +566,7 @@ HTML;
         $value = htmlentities((string)$params['value'], ENT_QUOTES, self::$default_charset);
         $control .= "<h3 name=\"{$control_name}\"";
         $control .= self::addCustomParams(array('id', 'class', 'style',), $params);
-        $control .= ">{$value}</p>";
+        $control .= ">{$value}</h3>";
         if (!isset($params['custom_description_wrapper'])) {
             $params['custom_description_wrapper'] = '<h4 class="hint">%s</h4>';
         }
