@@ -15,6 +15,18 @@
 class waString
 {
     /**
+     * Wrapper to simplify htmlentities() and htmlspecialchars usage
+     *
+     * @param string $str
+     * @param int $flags
+     * @return string
+     */
+    public static function escape($str, $flags = ENT_COMPAT | ENT_HTML401)
+    {
+        return htmlentities($str, $flags, 'UTF-8');
+    }
+
+    /**
      * Generate a random UUID (v4)
      * 
      * @see http://www.ietf.org/rfc/rfc4122.txt
