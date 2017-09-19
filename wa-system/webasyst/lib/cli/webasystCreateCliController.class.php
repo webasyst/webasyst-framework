@@ -18,9 +18,14 @@ abstract class webasystCreateCliController extends waCliController
                 print "ERROR:\n";
                 print implode("\n", $errors);
             } else {
-                $this->initPath();
-                $config = $this->create($params);
-                print $this->showReport($config)."\n";
+                try {
+                    $this->initPath();
+                    $config = $this->create($params);
+                    print $this->showReport($config)."\n";
+                } catch (waException $ex) {
+                    print sprintf("ERROR:\n%s\n\n", $ex->getMessage());
+                    $this->showHelp();
+                }
             }
         }
     }
@@ -52,6 +57,11 @@ HELP;
         if (!preg_match('@^[a-z][a-z0-9]+$@', $this->app_id)) {
             $errors[] = "Invalid app ID";
         }
+
+        if (!empty($params['version']) && !preg_match('@^[\d]+(\.\d+)*$@', $params['version'])) {
+            $errors[] = 'Invalid version format';
+        }
+
         return $errors;
     }
 
@@ -90,6 +100,9 @@ HELP;
         return $errors;
     }
 
+    /**
+     * @param $paths
+     */
     protected function createStructure($paths)
     {
         foreach ($paths as $path => $content) {

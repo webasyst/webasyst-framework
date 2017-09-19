@@ -389,8 +389,6 @@ HELP;
                     if (!is_array($config)) {
                         $this->tracef('ERROR: Invalid or empty config %s', $name);
                         $config = false;
-                    } else {
-                        //TODO check icon path #51.795
                     }
                 }
             }
@@ -594,6 +592,7 @@ HELP;
 
     private function testConfig()
     {
+        $valid = true;
         $available = array(
             'name',
             'description',
@@ -684,12 +683,35 @@ HELP;
             if ($keys) {
                 $this->tracef("Invalid %s's settings: unknown config options (%s)", $this->type, implode(',', $keys));
             }
+            $valid = $valid && empty($keys);
+
+            $images = false;
+            $fields = array('icon', 'img', 'logo');
+            foreach ($fields as $field) {
+                if (!empty($this->config[$field])) {
+                    $files = (array)$this->config[$field];
+                    foreach ($files as $file) {
+                        $file = '/'.ltrim($file, '/');
+                        if (!file_exists($this->path.$file)) {
+                            $this->tracef('WARNING: not found %s file %s', $field, $file);
+                            $valid = false;
+                        } else {
+                            $images = true;
+                        }
+                    }
+                }
+            }
+
+            if (empty($images)) {
+                $this->tracef('WARNING: not found any of %s', implode(', ', $fields));
+                $valid = false;
+            }
         } else {
             $this->trace('ERROR: Empty or invalid item config');
-            return false;
+            $valid = false;
         }
 
-        return empty($keys);
+        return $valid;
     }
 
     private function testRouting()
