@@ -60,7 +60,7 @@ class webmoneyPayment extends waPayment implements waIPayment
 					'B' => 'BYR',
 				);
 
-				$pattern      = '/^([' . implode('', array_keys($currency_map)) . '])\d+$/i';
+				$pattern = '/^([' . implode('', array_keys($currency_map)) . '])\d+$/i';
 				if (preg_match($pattern, trim($this->LMI_PAYEE_PURSE), $matches))
 				{
 					$key = strtoupper($matches[1]);
@@ -120,6 +120,7 @@ class webmoneyPayment extends waPayment implements waIPayment
 			'LMI_CURRENCY'       => strtoupper($order->currency),
 		);
 
+
 		// добавляем в платежную форму поля, требуемые платежной системой WebMoney
 		$hidden_fields = array(
 			'LMI_MERCHANT_ID'              => $this->LMI_MERCHANT_ID,
@@ -137,13 +138,18 @@ class webmoneyPayment extends waPayment implements waIPayment
 			'SIGN'                         => $this->getSign($request, $this->secret_key, $this->hash_method),
 			//URL для обратного вызова для подтверждения оплаты заказа
 			'LMI_PAYMENT_NOTIFICATION_URL' => $this->getRelayUrl(),
-			//Переадресация пользователя в случае успешной оплаты через PayMaster
-			'LMI_SUCCESS_URL'              => $this->getAdapter()->getBackUrl(waAppPayment::URL_SUCCESS, $transaction_data),
-			//Переадресация пользователя в случае неудачной попытки через PayMaster
-			'LMI_FAILURE_URL'              => $this->getAdapter()->getBackUrl(waAppPayment::URL_FAIL, $transaction_data),
 			'wa_app'                       => $this->app_id,
 			'wa_merchant_contact_id'       => $this->merchant_id,
 		);
+
+		$transaction_data = $this->formalizeData($hidden_fields);
+
+
+		//Переадресация пользователя в случае успешной оплаты через PayMaster
+		$hidden_fields['LMI_SUCCESS_URL'] = $this->getAdapter()->getBackUrl(waAppPayment::URL_SUCCESS, $transaction_data);
+		//Переадресация пользователя в случае неудачной попытки через PayMaster
+		$hidden_fields['LMI_FAILURE_URL'] = $this->getAdapter()->getBackUrl(waAppPayment::URL_FAIL, $transaction_data);
+
 		if ($this->LMI_PAYEE_PURSE)
 		{
 			$hidden_fields['LMI_PAYEE_PURSE'] = $this->LMI_PAYEE_PURSE;
@@ -156,8 +162,6 @@ class webmoneyPayment extends waPayment implements waIPayment
 		{
 			$hidden_fields['LMI_PAYER_EMAIL'] = $order_data['customer_info']['email'];
 		}
-
-		$transaction_data = $this->formalizeData($hidden_fields);
 
 		switch ($this->protocol)
 		{
@@ -189,7 +193,7 @@ class webmoneyPayment extends waPayment implements waIPayment
 			$hidden_fields["LMI_SHOPPINGCART.ITEM[{$key}].NAME"]  = $product['name'];
 			$hidden_fields["LMI_SHOPPINGCART.ITEM[{$key}].QTY"]   = $product['quantity'];
 			$hidden_fields["LMI_SHOPPINGCART.ITEM[{$key}].PRICE"] = number_format($product['price'] - $product['discount'], 2, '.', '');
-			$hidden_fields["LMI_SHOPPINGCART.ITEM[{$key}].TAX"]   = $this->vatProducts;
+			$hidden_fields["LMI_SHOPPINGCART.ITEM[{$key}].TAX"]   = $this->vatMapper($product);
 		}
 
 		if ($order->shipping > 0)
@@ -278,7 +282,6 @@ class webmoneyPayment extends waPayment implements waIPayment
 		{
 			throw new waPaymentException('Empty merchant data');
 		}
-
 
 		// определяем способ обработки транзакции приложением в зависимости от типа транзакции
 		switch ($transaction_data['type'])
@@ -758,6 +761,8 @@ class webmoneyPayment extends waPayment implements waIPayment
 	public function vatProductsOptions()
 	{
 
+		$disabled = !$this->getAdapter()->getAppProperties('taxes');
+
 		return array(
 			array(
 				'value' => 'vat18',
@@ -782,6 +787,11 @@ class webmoneyPayment extends waPayment implements waIPayment
 			array(
 				'value' => 'no_vat',
 				'title' => 'без НДС',
+			),
+			array(
+				'value'    => 'map',
+				'title'    => 'Передавать ставки НДС по каждой позиции',
+				'disabled' => $disabled,
 			),
 		);
 	}
@@ -818,5 +828,44 @@ class webmoneyPayment extends waPayment implements waIPayment
 				'title' => 'без НДС',
 			),
 		);
+	}
+
+	/**
+	 *
+	 * Функция, которая приводит НДС продуктов от вида хранения WebMaster к PayMaster
+	 *
+	 * @param array $product
+	 *
+	 * @return string
+	 */
+	private function vatMapper($product)
+	{
+		$vat = $this->vatProducts;
+		if ($this->vatProducts == 'map')
+		{
+			$rate = ifset($product['tax_rate']);
+			//если в поле ничего нет делаем rate = -1 потом в следующем switch присвоем no_vat по default
+			if (in_array($rate, array(null, false, ''), true))
+			{
+				$rate = -1;
+			}
+			switch ($rate)
+			{
+				case 18: # 4 — НДС чека по ставке 18%;
+					$vat = 'vat18';
+					break;
+				case 10: # 3 — НДС чека по ставке 10%;
+					$vat = 'vat10';
+					break;
+				case 0: # 2 — НДС по ставке 0%;
+					$vat = 'vat0';
+					break;
+				default: # 1 — без НДС;
+					$vat = 'no_vat';
+					break;
+			}
+		}
+
+		return $vat;
 	}
 }
