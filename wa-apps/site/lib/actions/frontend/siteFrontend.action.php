@@ -1,7 +1,7 @@
-<?php 
+<?php
 
-class siteFrontendAction extends waViewAction
-{   
+class siteFrontendAction extends waPageAction
+{
     public function execute()
     {
         $page = $this->params;
@@ -15,8 +15,9 @@ class siteFrontendAction extends waViewAction
             $this->view->getHelper()->globals($params);
             $this->view->assign('page', $page);
             $this->view->assign('wa_theme_url', $this->getThemeUrl());
-            $page['content'] = $this->view->fetch('string:'.$page['content']);
+            $page['content'] = $this->renderPage($page);
             $this->view->assign('page', $page);
+
             // set response
             if (!$this->getResponse()->getTitle()) {
                 $this->getResponse()->setTitle($page['title']);
@@ -70,16 +71,7 @@ class siteFrontendAction extends waViewAction
 
     public function display($clear_assign = true)
     {
-        if (waSystemConfig::isDebug()) {
-            return parent::display(false);
-        }
-        try {
-            return parent::display(false);
-        } catch (SmartyCompilerException $e) {
-            $message = preg_replace('/(on\sline\s[0-9]+).*$/i', '$1', $e->getMessage());
-            $message = str_replace(wa()->getConfig()->getRootPath(), '', $message);
-            throw new SmartyCompilerException($message, $e->getCode());
-        }
+        return parent::display(false);
     }
 
 }
