@@ -19,9 +19,21 @@
  * @property {string} placeholder
  * @property {number} offset
  */
+/**
+ * @typedef {object} shippingYandexDeliveryGeocode
+ * @property {string} description
+ * @property {string} title
+ * @property {string} value
+ */
 
 /**
  * @typedef {object} shippingYandexDeliveryResponseData
+ * @property {Array.<shippingYandexDeliveryResponseService>}  services
+ * @property {Array.<shippingYandexDeliveryGeocode>}  options
+ */
+
+/**
+ * @typedef {object} shippingYandexDeliveryResponseService
  * @property {string} type
  * @property {Array.<shippingYandexDeliveryPickup>}  pickup
  * @property {Array.<shippingYandexDeliveryCourier>}  courier
@@ -68,6 +80,7 @@ function ShippingYandexdelivery(key, id, url) {
     this.container = null;
     this.control_wrapper = null;
     this.form = null;
+    this.address = null;
 
     this.fixUI = function () {
         this.control_wrapper.find("> .wa-name, > .name").hide();
@@ -107,15 +120,20 @@ function ShippingYandexdelivery(key, id, url) {
     this.rate = {
         id: null,
         rate_select: null,
+        geo_id_select: null,
         filter_select: null,
         load: function () {
             instance.loader.show();
             var rate = this.rate_select;
+            var city = instance.address.find(':input[name$="\[address\.shipping]\[city]"]').val();
+            var geo_id = ('' + this.geo_id_select.val()).replace(/\W.+$/, '');
             var self = this;
             $.ajax({
                 "type": 'POST',
                 "url": instance.url,
-                "data": {},
+                "data": {
+                    "city": city
+                },
                 /**
                  *
                  * @param {shippingYandexDeliveryResponse} response
@@ -125,9 +143,10 @@ function ShippingYandexdelivery(key, id, url) {
                         if (response.data) {
                             instance.loader.hide();
                             var data;
-                            for (var id in response.data) {
-                                if (response.data.hasOwnProperty(id)) {
-                                    data = response.data[id];
+                            var services = response.data.services;
+                            for (var id in services) {
+                                if (services.hasOwnProperty(id)) {
+                                    data = services[id];
                                     switch (data.type) {
                                         case 'post': /* nothing to show? */
                                             break;
@@ -140,6 +159,41 @@ function ShippingYandexdelivery(key, id, url) {
                                     }
                                 }
                             }
+
+                            self.geo_id_select.find('>option').each(function () {
+                                $(this).remove();
+                            });
+
+                            var options = response.data.options;
+                            var option;
+                            var $option;
+                            var count = 0;
+                            var selected = null;
+                            for (var _geo_id in options) {
+                                if (options.hasOwnProperty(_geo_id)) {
+                                    option = options[_geo_id];
+                                    $option = $('<option></option>');
+                                    $option.val(option.value);
+                                    $option.text(option.description);
+                                    $option.attr('title', option.title);
+                                    $option.data(option.data || []);
+                                    self.geo_id_select.append($option);
+                                    ++count;
+                                    if (_geo_id == geo_id) {
+                                        selected = option.value;
+                                    }
+                                }
+                            }
+                            self.geo_id_select.val(selected ? selected : null);
+                            if (count > 1) {
+                                self.geo_id_select.parents('.wa-field:first').show();
+                                self.geo_id_select.attr('disabled', null);
+
+                            } else {
+                                self.geo_id_select.parents('.wa-field:first').hide();
+                                self.geo_id_select.attr('disabled', true);
+                            }
+                            //add address options into suggest
 
                             self.filter_select.off('change.yandexdelivery').on('change.yandexdelivery', function () {
                                 /**
@@ -159,7 +213,16 @@ function ShippingYandexdelivery(key, id, url) {
             });
         },
         reset: function () {
-            this.filter_select.insertBefore(this.rate_select);
+            if (!this.filter_select.data('moved')) {
+                instance.container.find(':input[name$="\.filter\]"]').each(function () {
+                    var $this = $(this);
+                    if ($this.data('moved')) {
+                        $this.remove();
+                    }
+                });
+                this.filter_select.data('moved', true);
+                this.filter_select.insertBefore(this.rate_select);
+            }
             this.filter_select.find('option').each(function () {
                 var $this = $(this);
                 if (this.value.match(/\./)) {
@@ -174,8 +237,18 @@ function ShippingYandexdelivery(key, id, url) {
         init: function (form, select) {
             this.rate_select = select;
             if (!this.filter_select) {
+                instance.container.find(':input[name$="\.filter\]"]').each(function () {
+                    var $this = $(this);
+                    if ($this.data('moved')) {
+                        $this.remove();
+                    }
+                });
                 this.filter_select = form.find(':input[name$="\.filter\]"]:first');
             }
+            if (!this.geo_id_select) {
+                this.geo_id_select = form.find(':input[name$="\[geo_id_to\]"]:first');
+            }
+            this.geo_id_select.parents('.wa-field:first').hide();
             /**
              * @this ShippingYandexdelivery.rate
              */
@@ -190,6 +263,9 @@ function ShippingYandexdelivery(key, id, url) {
 
             this.rate_select.off('change.yandexdelivery').on('change.yandexdelivery', function () {
                 self.change(this);
+            });
+            this.geo_id_select.off('change.yandexdelivery').on('change.yandexdelivery', function () {
+                self.suggest(this);
             });
 
 
@@ -262,6 +338,16 @@ function ShippingYandexdelivery(key, id, url) {
             }
         },
 
+        /**
+         *
+         * @param {HTMLOptionElement} select
+         */
+        suggest: function (select) {
+            var city = select.value.replace(/,.+$/, '').replace(/^\d+\W\s*[^\(]+\(/, '').replace(/^[\wа-яА-Я]\.?\s+/ui, '');
+            var $city = instance.address.find(':input[name$="\[address\.shipping]\[city]"]');
+            $city.val(city).change();
+        },
+
         select: function (type, id) {
             var value = this.rate_select.find('option[value^="' + type + '\."][value$="\.' + id + '"]').attr('value');
             this.rate_select.val(value).trigger('change');
@@ -308,7 +394,7 @@ function ShippingYandexdelivery(key, id, url) {
             });
             instance.hide();
 
-            if ((count === 1) || ((type === 'pickup') && instance.pickup.map.id)) {
+            if ((false && (count === 1)) || ((type === 'pickup') && instance.pickup.map.id)) {
                 this.rate_select.hide();
             } else {
                 this.rate_select.show();
@@ -762,6 +848,7 @@ function ShippingYandexdelivery(key, id, url) {
 
     this.container = $('.shipping-' + self.key + ':first');
     this.form = $('.shipping-' + self.key + ':first .wa-form:not(.wa-address):first');
+    this.address = $('.shipping-' + self.key + ':first .wa-form.wa-address:first');
     this.container = this.form.length ? this.form.parents('form:first') : null;
     if (this.form.length && this.container) {
 
@@ -775,6 +862,8 @@ function ShippingYandexdelivery(key, id, url) {
         }
 
         var input = this.container.find(':input[name="shipping_id"]');
+
+        this.form.find(':input[name$="\[geo_id_to\]"]:first').parents('.wa-field:first').hide();
 
         this.courier.init(this.form);
         input.on('change.yandexdelivery', function () {
