@@ -3,14 +3,6 @@
 <script src="{$wa_url}wa-content/js/jquery-plugins/ibutton/jquery.ibutton.min.js?v{$wa->version(true)}"></script>
 {/if}
 
-<link type="text/css" rel="stylesheet" href="{$wa_url}wa-content/js/redactor/redactor.css?v{$wa->version(true)}">
-<script src="{$wa_url}wa-content/js/redactor/redactor.min.js?v{$wa->version(true)}"></script>
-{if $lang!='en'}<script src="{$wa_url}wa-content/js/redactor/{$lang}.js?v{$wa->version(true)}"></script>{/if}
-
-{if $options.js.ace}
-<script src="{$wa_url}wa-content/js/ace/ace.js?v{$wa->version(true)}"></script>
-{/if}
-
 {if $options.js.storage}
     <script src="{$wa_url}wa-content/js/jquery-plugins/jquery.json.js?v{$wa->version(true)}"></script>
     <script src="{$wa_url}wa-content/js/jquery-plugins/jquery.store.js?v{$wa->version(true)}"></script>
@@ -24,15 +16,65 @@
 <script src="{$wa_url}wa-content/js/jquery-ui/jquery.ui.draggable.min.js"></script>
 <script src="{$wa_url}wa-content/js/jquery-ui/jquery.ui.droppable.min.js"></script>
 
-{if $options.js.editor}
-<script src="{$wa_url}wa-content/js/jquery-wa/editor.js?v{$wa->version()}"></script>
+{if $options.js.ace || !$options.is_ajax}
+    <script src="{$wa_url}wa-content/js/ace/ace.js?v{$wa->version(true)}"></script>
 {/if}
+
+<script>(function() { "use strict";
+
+    // This promise is resolved when all WYSIWYG files are loaded
+    // and $.fn.waEditor() function is ready.
+    $.wa_editor_ready = (function() {
+        // Load $.wa.loadFiles() if not loaded already
+        if (!$.wa || !$.wa.loadFiles) {
+            return $.ajax({
+                url: "{$wa_url}wa-content/js/jquery-wa/wa.core.js?v{$wa->version(true)}",
+                dataType: "script",
+                cache: true
+            });
+        } else {
+            return $.Deferred().resolve().promise();
+        }
+    }()).then(function() {
+        var to_load = [];
+        var load_locale = false;
+
+        // Load Redactor II unless already loaded by application
+        if (!$.Redactor) {
+            to_load.push("{$wa_url}wa-content/js/redactor/2/redactor.css?v{$wa->version(true)}");
+            to_load.push("{$wa_url}wa-content/js/redactor/2/redactor.min.js?v{$wa->version(true)}");
+            load_locale = {json_encode($lang != 'en')};
+        }
+
+        return $.wa.loadFiles(to_load).then(function() {
+            if (load_locale) {
+                // Load Redactor II locale when its ready
+                return $.wa.loadFiles("{$wa_url}wa-content/js/redactor/2/{$lang}.js?v{$wa->version(true)}");
+            } else {
+                return true;
+            }
+        }).then(function() {
+            if ($.Redactor.VERSION.substr(0, 3) == '10.') {
+                // Old RedactorI used by legacy application
+                return $.wa.loadFiles("{$wa_url}wa-content/js/jquery-wa/editor.js?v{$wa->version(true)}").then(function() {
+                    return 'waEditor';
+                });
+            } else {
+                // New RedactorII
+                return $.wa.loadFiles("{$wa_url}wa-content/js/jquery-wa/editor2.js?v{$wa->version(true)}").then(function() {
+                    return 'waEditor2';
+                });
+            }
+        });
+    });
+
+})();</script>
 
 <style type="text/css">
     .wa-pages { margin-bottom: 80px; }
     .wa-pages h4.heading { word-wrap: break-word; word-break: break-all; position: relative; margin-right: 15px; }
     .wa-pages h4.heading span.count { position: absolute; right: -15px; }
-    
+
     .wa-page-gray { color: #AAA;}
     .wa-page-draft { background: #CCC; color: white; font-weight: bold; font-size: 0.8em; padding: 0 2px; }
     .wa-page-wysiwyg-html-toggle { margin-right: 17px; margin-top: -20px; float: right; margin-bottom: 0; }
@@ -41,7 +83,7 @@
     .wa-page-wysiwyg-html-toggle li a { display: block; color: #888; font-weight: bold; padding: 4px 12px 6px; text-decoration: none; font-size: 0.9em; }
 
     .wa-page-urls a i { margin: 0}
-    
+
     .block-pages h4.heading { margin-bottom: 10px; margin-top: 5px; margin-left: -2px; }
     .block-pages ul.menu-v.with-icons li a { word-break: break-all; }
 
@@ -54,7 +96,7 @@
     .block-pages ul li.drag-newposition.active { border-top: 2px solid #BB8; background: none; }
     .wa-editor-core-wrapper { background: white;}
     .wa-ibutton-checkbox ul.menu-h li { padding: 1px 0 10px; vertical-align: middle;}
-   
+
     #wa-editor-status i.icon16 { margin-top: 6px; }
 
     .wa-dropdown { float: right; margin: 2px 20px 0 0; }
@@ -90,7 +132,7 @@
         {foreach $routes as $r => $route}
         <div class="block block-pages">
         <h4 class="heading">
-        	<span class="count"><span style="display: none;"></span><i {if !$r}style="display:none" {/if}class="icon16 add wa-page-add no-parent"></i></span>
+            <span class="count"><span style="display: none;"></span><i {if !$r}style="display:none" {/if}class="icon16 add wa-page-add no-parent"></i></span>
             <i class="icon16 darr"></i> {if $r}{str_replace('www.','',$r)|escape|truncate:23:'...':false:true}{else}[s`Unpublished`]{/if}
             {if !$r && count($routes) > 1}
             <a id="wa-page-settle" style="margin-left: 10px;" href="#"><i class="icon16 exclamation"></i></a>
@@ -147,7 +189,7 @@
                     {if !empty($p.childs)}<i class="icon16 darr expander overhanging"></i>{/if}
                     <i class="icon16 notebook"></i>
                     <a class="wa-page-link" href="{$page_url}{$p.id}">
-                    	<span class="count"><i class="icon10 add wa-page-add"></i></span>
+                        <span class="count"><i class="icon10 add wa-page-add"></i></span>
                         {$p.name|escape}
                         <span class="hint">/{$p.full_url|escape}</span>
                         {if !$p.status} <span class="wa-page-draft">[s`draft`]</span>{/if}
@@ -406,7 +448,7 @@
                 if (before.length && !before.hasClass('helper')) {
                     before_id = before.attr('id').replace(/page-/, '');
                 }
-                
+
                 var sep = dr.next();
                 // means that actually nothing will be changed
                 if (sep.get(0) == self.get(0) || id == before_id) {
@@ -421,7 +463,7 @@
                 };
 
                 var home = dr.prev();
-                
+
                 sep.insertAfter(self);
                 dr.insertAfter(self);
 

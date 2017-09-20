@@ -475,7 +475,8 @@ class Smarty_Internal_Template extends Smarty_Internal_TemplateBase {
             }
             $this->cached->valid = $is_valid;
         } else {
-            $this->mustCompile = !$is_valid;        }
+            $this->mustCompile = !$is_valid;
+        }
         // store data in reusable Smarty_Template_Compiled
         if (!$cache) {
             $this->compiled->_properties = $properties;

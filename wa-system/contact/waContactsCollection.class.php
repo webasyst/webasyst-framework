@@ -463,13 +463,15 @@ class waContactsCollection
                     $cond = array();
                     foreach ($t_a as $t) {
                         $t = trim($t);
-                        if ($t) {
+                        if (strlen($t) > 0) {
                             $t = $model->escape($t, 'like');
                             $cond[] = "c.name LIKE '%{$t}%'";
                         }
                     }
-                    $this->addWhere(implode(" AND ", $cond));
-                    $title[] = _ws('Name').$parts[1].$parts[2];
+                    if ($cond) {
+                        $this->addWhere(implode(" AND ", $cond));
+                        $title[] = _ws('Name').$parts[1].$parts[2];
+                    }
                 } else if ($parts[0] == 'email') {
                     if (!isset($this->joins['email'])) {
                         $this->joins['email'] = array(

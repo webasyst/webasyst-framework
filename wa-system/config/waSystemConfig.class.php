@@ -382,6 +382,9 @@ class waSystemConfig
 
     public function setAuth($data)
     {
+        if (waConfig::get('is_template')) {
+            return false;
+        }
         $path = $this->getPath('config', 'auth');
         if (waUtils::varExportToFile($data, $path)) {
             $cache = new waRuntimeCache('wa-config/auth');

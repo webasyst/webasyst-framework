@@ -48,6 +48,10 @@ class waHtmlControl
             self::GROUPBOX,
             self::CONTACT,
             self::CONTACTFIELD,
+            self::HELP,
+            self::TITLE,
+            self::CUSTOM,
+            self::INTERVAL,
         );
     }
 

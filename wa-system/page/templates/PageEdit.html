@@ -23,7 +23,7 @@
             $(".wa-page-delete").click(function () {
                 if (confirm('[s`This will delete entire page. Are you sure?`]')) {
                     $.post($(this).attr('href'), { id:{$page.id}}, function () {
-                        
+
                         var li = $("#page-{$page.id}");
                         var prev = li.prevAll('.dr:first');
                         if (prev.length > 0) {
@@ -204,6 +204,7 @@
         </ul>
         <div style="clear:both">
             <textarea style="display:none" id="wa-page-content" name="info[content]">{if $page}{$page.content|escape}{/if}</textarea>
+            {$wa->csrf()}
         </div>
     </div>
     {if $options.save_panel}
@@ -240,13 +241,15 @@
                         if (el.children('b').length) {
                             el = el.children('b');
                         }
-                        $('#wa-page-content').waEditor('insert.html', el.text());
+                        $.wa_editor_ready.then(function(method) {
+                            $('#wa-page-content')[method]('insert.html', el.text());
+                        });
                         return false;
                     });
                 </script>
             </div>
         </div>
-        
+
         <input id="wa-page-button" type="submit" class="button green" value="[s`Save`]" />
         <em class="hint">Ctrl + S</em>
         <span id="wa-editor-status" style="margin-left: 25px; display: none"></span>
@@ -278,12 +281,14 @@
             {/if}
         {/if}
 
-        $('#wa-page-content').waEditor({
-            lang: "{$lang}",
-            saveButton: '#wa-page-button',
-            uploadFields: {
-                '_csrf': "{waRequest::cookie('_csrf', '')}"
-            }
+        $.wa_editor_ready.then(function(method) {
+            $('#wa-page-content')[method]({
+                lang: "{$lang}",
+                saveButton: '#wa-page-button',
+                uploadFields: {
+                    '_csrf': "{waRequest::cookie('_csrf', '')}"
+                }
+            });
         });
 
 
@@ -362,64 +367,66 @@
             });
         {/if}
 
-        $("#wa-page-form").submit(function () {
-            if ($('#wa-page-settings input[name="info[name]"]').is(":focus")) {
-                if (!$("#wa-page-form-translit").length) {
-                    $("#wa-page-form").append('<input id="wa-page-form-translit" type="hidden" name="translit" value="1">');
-                }
-            }
-            $('#wa-page-content').waEditor('sync');
+        $("#wa-page-form").submit(function (evt) {
             var form = $(this);
-            var li = $(".block-pages ul li.selected");
-            $("#wa-editor-status").html("<i class='icon16 loading'></i> [s`Saving...`]").fadeIn("slow");
-            $.post(form.attr('action'), form.serialize(), function (response) {
-            if (response.status == 'ok') {
-                $(".error").removeClass('error');
-                $("#wa-editor-status").html('<i class="icon16 yes"></i> [s`Saved`]').fadeOut('slow');
-                $('#wa-page-button').removeClass('yellow').removeClass('red').addClass('green');
-                var p = response.data;
-                if (!p.status) {
-                    p.name += ' <span class="wa-page-draft">[s`draft`]</span>';
+            evt.preventDefault();
+            $.wa_editor_ready.then(function(method) {
+                if ($('#wa-page-settings input[name="info[name]"]').is(":focus")) {
+                    if (!$("#wa-page-form-translit").length) {
+                        $("#wa-page-form").append('<input id="wa-page-form-translit" type="hidden" name="translit" value="1">');
+                    }
                 }
-                var html = $('<li id="page-' + p.id + '" class="dr selected">' +
-                '<a class="wa-page-link" href="{$page_url}' + p.id + '">' +
-                '<span class="count"><i class="icon10 add wa-page-add"></i></span>' +
-                '<i class="icon16 notebook"></i>' + p.name + ' <span class="hint">/' + p.full_url +'</span>' + '</a></li>');
-                if (p.add) {
-                    li.replaceWith(html);
-                } else {
-                    $("#page-" + p.id).children('a.wa-page-link').replaceWith($(html).find('a.wa-page-link'));
-                    $("#page-" + p.id + ' > ul li span.hint').each(function () {
-                        $(this).text('/' + p.full_url + (p.full_url.length > 0 && p.full_url.substr(-1) != '/' ? '/' : '') + $(this).text().substr(p.old_full_url.length + 1));
-                    });
-                }
-                if (response.data.add) {
-                    waLoadPage(p.id);
-                } else {
-                    $(".wa-page-editor h2.wa-page-name").html(p.name);
-                }
-                {if !empty($url)}
-                var page_url = '{$url|escape}' + p.url;
-                {elseif isset($page_route)}
-                var page_url = 'http://{$page.domain}/{$page_route}' + p.full_url;
-                {/if}
+                $('#wa-page-content')[method]('sync');
+                var li = $(".block-pages ul li.selected");
+                $("#wa-editor-status").html("<i class='icon16 loading'></i> [s`Saving...`]").fadeIn("slow");
+                $.post(form.attr('action'), form.serialize(), function (response) {
+                    if (response.status == 'ok') {
+                        $(".error").removeClass('error');
+                        $("#wa-editor-status").html('<i class="icon16 yes"></i> [s`Saved`]').fadeOut('slow');
+                        $('#wa-page-button').removeClass('yellow').removeClass('red').addClass('green');
+                        var p = response.data;
+                        if (!p.status) {
+                            p.name += ' <span class="wa-page-draft">[s`draft`]</span>';
+                        }
+                        var html = $('<li id="page-' + p.id + '" class="dr selected">' +
+                        '<a class="wa-page-link" href="{$page_url}' + p.id + '">' +
+                        '<span class="count"><i class="icon10 add wa-page-add"></i></span>' +
+                        '<i class="icon16 notebook"></i>' + p.name + ' <span class="hint">/' + p.full_url +'</span>' + '</a></li>');
+                        if (p.add) {
+                            li.replaceWith(html);
+                        } else {
+                            $("#page-" + p.id).children('a.wa-page-link').replaceWith($(html).find('a.wa-page-link'));
+                            $("#page-" + p.id + ' > ul li span.hint').each(function () {
+                                $(this).text('/' + p.full_url + (p.full_url.length > 0 && p.full_url.substr(-1) != '/' ? '/' : '') + $(this).text().substr(p.old_full_url.length + 1));
+                            });
+                        }
+                        if (response.data.add) {
+                            waLoadPage(p.id);
+                        } else {
+                            $(".wa-page-editor h2.wa-page-name").html(p.name);
+                        }
+                        {if !empty($url)}
+                        var page_url = '{$url|escape}' + p.url;
+                        {elseif isset($page_route)}
+                        var page_url = 'http://{$page.domain}/{$page_route}' + p.full_url;
+                        {/if}
 
-                if ($(".wa-page-urls a").length) {
-                    $(".wa-page-urls a").attr('href', page_url + '?preview={$preview_hash}');
-                    $(".wa-page-urls a:first").html(page_url);
-                }
-            } else if (response.status == 'fail') {
-                if ($.isArray(response.errors)) {
-                    var e = response.errors[0];
-                    $(response.errors[1]).addClass('error');
-                } else {
-                    var e = response.errors;
-                }
-                $("#wa-editor-status").html('<b style="color:red">' + (e ? e : $_('An error occurred while saving')) + '</b>');
-                $('#wa-page-button').removeClass('yellow').removeClass('green').addClass('red');
-            }
-            }, "json");
-            return false;
+                        if ($(".wa-page-urls a").length) {
+                            $(".wa-page-urls a").attr('href', page_url + '?preview={$preview_hash}');
+                            $(".wa-page-urls a:first").html(page_url);
+                        }
+                    } else if (response.status == 'fail') {
+                        if ($.isArray(response.errors)) {
+                            var e = response.errors[0];
+                            $(response.errors[1]).addClass('error');
+                        } else {
+                            var e = response.errors;
+                        }
+                        $("#wa-editor-status").html('<b style="color:red">' + (e ? e : $_('An error occurred while saving')) + '</b>');
+                        $('#wa-page-button').removeClass('yellow').removeClass('green').addClass('red');
+                    }
+                }, "json");
+            });
         });
     });
 </script>

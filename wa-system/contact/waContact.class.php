@@ -303,6 +303,10 @@ class waContact implements ArrayAccess
             $format = explode('|', $format);
         }
 
+        if ($field_id === 'id') {
+            return $this->getId();
+        }
+
         // Try to use field object
         $field = waContactFields::get($field_id, 'enabled');
         if ($field) {
@@ -776,17 +780,27 @@ class waContact implements ArrayAccess
     {
         unset(
             $data['id'],
-            $data['last_datetime'],
-            $data['create_datetime']
+            $data['last_datetime']
         );
-        if (wa()->getEnv() == 'frontend' || waConfig::get('is_template')) {
+        if ($this->getId()) {
+            unset(
+                $data['create_datetime'],
+                $data['create_contact_id'],
+                $data['create_app_id'],
+                $data['create_method'],
+                $data['is_company']
+            );
+        }
+        if (wa()->getEnv() == 'frontend') {
             unset(
                 $data['login'],
+                $data['is_user']
+            );
+        }
+        if (waConfig::get('is_template')) {
+            unset(
                 $data['is_user'],
-                $data['is_company'],
-                $data['create_method'],
-                $data['create_app_id'],
-                $data['create_contact_id']
+                $data['is_company']
             );
         }
         return $data;

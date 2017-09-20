@@ -120,6 +120,7 @@ class Smarty_Security {
         '~^stream~i',
         '~^ini_~i',
         '~^xmlrpc_~i',
+        '~^mb_ereg_~i',
     );
     /**
      * This is an array of trusted PHP modifiers.
@@ -259,6 +260,11 @@ class Smarty_Security {
         $method= substr(strtolower($method), 0, strpos($method, '('));
         if (in_array($class_name, $this->static_classes) || in_array($class_name.'::'.$method, $this->static_classes)
             || substr($class_name, 0, 7) == 'Smarty_') {
+            $compiler->trigger_template_error("access to static class '{$class_name}' not allowed by security setting");
+            return false;
+        }
+
+        if ($method == 'getactive' || $method == 'getappconfig' || $method == 'setdebug' || $method == 'systemoption') {
             $compiler->trigger_template_error("access to static class '{$class_name}' not allowed by security setting");
             return false;
         }

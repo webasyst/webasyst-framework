@@ -171,11 +171,16 @@ jQuery.fn.waDialog = function (options) {
 
 
     if (options.onSubmit) {
-        d.find('form').unbind('submit').submit(function () {
+        d.find('form').unbind('submit').submit(function (evt) {
             if (options.disableButtonsOnSubmit) {
                 d.find("input[type=submit]").attr('disabled', 'disabled');
             }
-            return options.onSubmit.apply(this, [d]);
+            try {
+                return options.onSubmit.apply(this, [d, evt]);
+            } catch (e) {
+                evt.preventDefault();
+                throw e;
+            }
         });
     }
 

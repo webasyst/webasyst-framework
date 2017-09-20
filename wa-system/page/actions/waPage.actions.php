@@ -14,7 +14,7 @@ class waPageActions extends waActions
         'js' => array(
             'ace' => true,
             'editor' => true,
-            'storage' => false
+            'storage' => false,
         ),
         'is_ajax' => false,
         'data' => array()
@@ -482,7 +482,6 @@ class waPageActions extends waActions
         $this->displayJson(array());
     }
 
-
     public function moveAction()
     {
         $page_model = $this->getPageModel();
@@ -520,12 +519,19 @@ class waPageActions extends waActions
             }
             $errors = implode(" \r\n", $errors);
         }
+
+        $this->getResponse()->sendHeaders();
         if (waRequest::get('filelink')) {
-            $this->getResponse()->sendHeaders();
             if ($errors) {
                 echo json_encode(array('error' => $errors));
             } else {
                 echo json_encode(array('filelink' => $response));
+            }
+        } else if (waRequest::get('r') === '2') {
+            if ($errors) {
+                echo json_encode(array('error' => $errors));
+            } else {
+                echo json_encode(array('url' => $response));
             }
         } else {
             $this->displayJson($response, $errors);

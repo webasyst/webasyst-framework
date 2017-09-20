@@ -662,6 +662,7 @@ HELP;
                             array(
                                 'external_tracking',
                                 'external',
+                                'backend_custom_fields',
                             )
                         );
                         break;

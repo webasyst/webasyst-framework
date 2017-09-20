@@ -413,6 +413,5 @@ class waCurrency
             default:
                 return $data;
         }
-
     }
 }

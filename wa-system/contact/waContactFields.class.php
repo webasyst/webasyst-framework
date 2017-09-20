@@ -247,6 +247,9 @@ class waContactFields
      */
     public static function createField($field)
     {
+        if (waConfig::get('is_template')) {
+            throw new waException('access from template is not allowed');
+        }
         if (!($field instanceof waContactField)) {
             throw new waException('Invalid contact field '.print_r($field, TRUE));
         }
@@ -267,6 +270,9 @@ class waContactFields
      */
     public static function deleteField($id)
     {
+        if (waConfig::get('is_template')) {
+            throw new waException('access from template is not allowed');
+        }
         self::ensureStaticVars();
         if (is_object($id) && $id instanceof waContactField) {
             $id = $id->getId();
@@ -331,6 +337,9 @@ class waContactFields
      */
     public static function updateField($field)
     {
+        if (waConfig::get('is_template')) {
+            throw new waException('access from template is not allowed');
+        }
         if (! ( $field instanceof waContactField)) {
             throw new waException('Invalid contact field '.print_r($field, TRUE));
         }
@@ -399,6 +408,9 @@ class waContactFields
      */
     public static function enableField($field, $type, $position=null)
     {
+        if (waConfig::get('is_template')) {
+            throw new waException('access from template is not allowed');
+        }
         if (!($field instanceof waContactField)) {
             $field = self::get($field, 'all');
         }
@@ -481,6 +493,9 @@ class waContactFields
      * @throws waException
      */
     public static function disableField($id, $type, $delete = false) {
+        if (waConfig::get('is_template')) {
+            throw new waException('access from template is not allowed');
+        }
         self::ensureStaticVars();
         if (is_object($id) && $id instanceof waContactField) {
             $id = $id->getId();
