@@ -18,10 +18,10 @@ class waContactEmailStorage extends waContactStorage
      * @var waContactEmailsModel
      */
     protected $model;
-    
+
     /**
-     * Returns model 
-     * 
+     * Returns model
+     *
      * @return waContactEmailsModel
      */
     public function getModel()
@@ -29,9 +29,9 @@ class waContactEmailStorage extends waContactStorage
         if (!$this->model) {
             $this->model = new waContactEmailsModel();
         }
-        return $this->model;        
+        return $this->model;
     }
-    
+
     public function load(waContact $contact, $fields = null)
     {
         return array('email' => $this->getModel()->getEmails($contact->getId()));
@@ -48,12 +48,12 @@ class waContactEmailStorage extends waContactStorage
         $sort = 0;
         foreach ($fields['email'] as $sort => $field) {
             if ($field === null) {
-                $sql = "DELETE FROM ".$this->getModel()->getTableName()." 
+                $sql = "DELETE FROM ".$this->getModel()->getTableName()."
                         WHERE contact_id = i:id AND sort >= i:sort";
                 $this->getModel()->exec($sql, array('id' => $contact->getId(), 'sort' => $sort));
                 continue;
-            } 
-            
+            }
+
             $status = false;
             if (is_array($field)) {
                 $value = $field['value'];
@@ -74,7 +74,7 @@ class waContactEmailStorage extends waContactStorage
                     'status' => $status
                 );
             } else {
-                $sql = "DELETE FROM ".$this->getModel()->getTableName()." 
+                $sql = "DELETE FROM ".$this->getModel()->getTableName()."
                         WHERE contact_id = i:id AND sort = i:sort";
                 $this->getModel()->exec($sql, array('id' => $contact->getId(), 'sort' => $sort));
                 $delete_flag = true;
@@ -82,10 +82,10 @@ class waContactEmailStorage extends waContactStorage
             }
         }
         if ($delete_flag) {
-                $sql = "DELETE FROM ".$this->getModel()->getTableName()." 
+                $sql = "DELETE FROM ".$this->getModel()->getTableName()."
                         WHERE contact_id = i:id AND sort >= i:sort";
-                $this->getModel()->exec($sql, array('id' => $contact->getId(), 'sort' => $sort));            
-        } 
+                $this->getModel()->exec($sql, array('id' => $contact->getId(), 'sort' => $sort));
+        }
         if ($data) {
             // find records to update
             $rows = $this->getModel()->getByField(array(
@@ -139,12 +139,12 @@ class waContactEmailStorage extends waContactStorage
                     SELECT email, COUNT(*) AS num
                     FROM wa_contact_emails
                     GROUP BY email
-                    HAVING num > 1 
+                    HAVING num > 1
                 ) AS t";
         $r = $this->getModel()->query($sql)->fetchField();
         return $r ? $r : 0;
     }
-    
+
     public function findDuplicatesFor($field, $values, $excludeIds=array()) {
         if (!$values) {
             return array();
@@ -153,7 +153,7 @@ class waContactEmailStorage extends waContactStorage
                 FROM wa_contact_emails
                 WHERE email IN (:values)".
                     ($excludeIds ? " AND contact_id NOT IN (:excludeIds) " : '').
-                "GROUP BY email";
+                "GROUP BY email, contact_id";
         $r = $this->getModel()->query($sql, array('values' => $values, 'excludeIds' => $excludeIds));
         return $r->fetchAll('email', true);
     }

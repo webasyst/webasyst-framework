@@ -56,14 +56,26 @@ class waDbMysqliAdapter extends waDbAdapter
      */
     public function query($query)
     {
-        $r =  $this->handler->query($query);
-        // check error MySQL server has gone away
-        if (!$r && $this->handler->errno == 2006 && $this->handler->ping()) {
-            return $this->handler->query($query);
-        } elseif (!$r && $this->handler->errno == 1104) {
-            // try set sql_big_selects
-            $this->handler->query('SET SQL_BIG_SELECTS=1');
-            return $this->handler->query($query);
+        $r = @$this->handler->query($query);
+        if (!$r) {
+            switch ($this->handler->errno) {
+                case 2006:
+                    // check error MySQL server has gone away
+                    $ping = $this->handler->ping();
+                    if (!$ping && $this->settings) {
+                        $this->close();
+                        sleep(1);
+                        $this->handler = $this->connect($this->settings);
+                        $ping = $this->handler->ping();
+                    }
+                    $r = $ping ? @$this->handler->query($query) : false;
+                    break;
+                case 1104:
+                    // try set sql_big_selects
+                    $this->handler->query('SET SQL_BIG_SELECTS=1');
+                    $r = @$this->handler->query($query);
+                    break;
+            }
         }
         return $r;
     }

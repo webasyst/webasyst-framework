@@ -713,7 +713,7 @@ class waPageActions extends waActions
                 '{literal}...{/literal}' => _ws('Content between {literal} tags will not be parsed by Smarty'),
                 '{include file="..."}' => _ws('Embeds a Smarty template into the current content. <em>file</em> attribute specifies a template filename within the current design theme folder'),
                 '{if}...{else}...{/if}' => _ws('Similar to PHP if statements'),
-                '{foreach from=$a key=k item=v}...{foreachelse}...{/foreach}' => _ws('{foreach} is for looping over arrays of data'),
+                '{foreach $a as $k => $v}...{foreachelse}...{/foreach}' => _ws('{foreach} is for looping over arrays of data'),
             ),
             'blocks' => $blocks
         ), $this->getConfig()->getRootPath().'/wa-system/page/templates/Help.html');

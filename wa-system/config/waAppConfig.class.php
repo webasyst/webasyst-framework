@@ -290,14 +290,18 @@ class waAppConfig extends SystemConfig
         // Install the app and remember to skip all updates
         // if this is the first launch.
         $is_first_launch = false;
+        $is_from_template = waConfig::get('is_template');
         if (empty($time)) {
             $time = null;
             $is_first_launch = true;
 
             try {
+                waConfig::set('is_template', null);
                 $this->install();
+                waConfig::set('is_template', $is_from_template);
             } catch (waException $e) {
                 waLog::log("Error installing application ".$this->application." at first run:\n".$e->getMessage()." (".$e->getCode().")\n".$e->getTraceAsString());
+                waConfig::set('is_template', $is_from_template);
                 throw $e;
             }
 
@@ -332,6 +336,7 @@ class waAppConfig extends SystemConfig
             // Updates are all skipped on app's first launch with install.php
             $app_settings_model->set($this->application, 'update_time', $last_update_ts);
         } else {
+            waConfig::set('is_template', null);
             $cache_database_dir = $this->getPath('cache').'/db';
             foreach ($files as $t => $file) {
                 try {
@@ -347,6 +352,7 @@ class waAppConfig extends SystemConfig
                     break;
                 }
             }
+            waConfig::set('is_template', $is_from_template);
         }
 
     }
