@@ -125,6 +125,7 @@ class yandexdeliveryShipping extends waShipping
 
         if (!empty($shipping_params['desired_delivery.interval'])) {
             $value['interval'] = $shipping_params['desired_delivery.interval'];
+            $value['interval'] = preg_replace('@(^\-)(\d:)@', '$10$2', $value['interval']);
         }
         if (!empty($shipping_params['desired_delivery.date_str'])) {
             $value['date_str'] = $shipping_params['desired_delivery.date_str'];
@@ -864,7 +865,6 @@ class yandexdeliveryShipping extends waShipping
         $type = strtolower($service['type']);
 
         $rate['custom_data'] = array(
-
             'type' => $type,
         );
 
@@ -884,7 +884,9 @@ class yandexdeliveryShipping extends waShipping
 
                 foreach ($schedules as $schedule) {
                     $schedule['from'] = preg_replace('@\:00$@', '', $schedule['from']);
+                    $schedule['from'] = preg_replace('@^(\d:)@', '0$1', $schedule['from']);
                     $schedule['to'] = preg_replace('@:00$@', '', $schedule['to']);
+                    $schedule['to'] = preg_replace('@^(\d:)@', '0$1', $schedule['to']);
                     $interval = sprintf('%s-%s', $schedule['from'], $schedule['to']);
                     if (!isset($intervals[$interval])) {
                         $intervals[$interval] = array();
@@ -899,7 +901,7 @@ class yandexdeliveryShipping extends waShipping
                     unset($interval);
                 }
 
-                ksort($intervals);
+                ksort($intervals, SORT_NATURAL);
                 unset($intervals);
 
                 $date_format = waDateTime::getFormat('date');
@@ -1464,10 +1466,20 @@ HTML;
         );
 
         $params = array_merge($params, $wrappers);
+        $value = ifset($params['value']);
+        if (!is_array($value)) {
+            $value = array();
+        }
+        $params['value'] = null;
 
         $available_days = array(1, 2, 3, 4, 5, 6, 7);
+        unset($params['id']);
 
         $interval_params = $params;
+        $interval_params['value'] = ifset($value['interval']);
+        $interval_params['data'] = array(
+            'value' => $interval_params['value'],
+        );
 
         $interval_params['description'] = _ws('Time');
         $interval_params['options'] = array(
@@ -1491,6 +1503,7 @@ HTML;
             $date_params['placeholder'] = waDateTime::format($date_format, sprintf('+ %d days', $offset));
             $date_params['description'] = _ws('Date');
 
+            $date_params['value'] = ifset($value['date_str']);
             $html .= waHtmlControl::getControl(waHtmlControl::INPUT, $date_name, $date_params);
             waHtmlControl::makeId($date_params, $date_name);
 
@@ -1498,6 +1511,7 @@ HTML;
             $date_formatted_params = $params;
             $date_formatted_params['style'] = "display: none;";
 
+            $date_formatted_params['value'] = ifset($value['date']);
             $html .= waHtmlControl::getControl(waHtmlControl::INPUT, $date_name, $date_formatted_params);
             waHtmlControl::makeId($date_formatted_params, $date_name);
 
@@ -1532,6 +1546,7 @@ HTML;
         var date = $('#'+id_date);
         var date_formatted = $('#'+id_date_formatted);
         var interval = '{$interval_params['id']}' ? $('#{$interval_params['id']}') : false;
+        
         date.data('available_days', {$available_days});
         var init = function () {
             date.datepicker();
@@ -1593,7 +1608,10 @@ HTML;
                     }
                 }
             });
-            $('.ui-datepicker').css('zIndex', 999999);
+            $('.ui-datepicker').css({
+                "zIndex": 999998,
+                "display": 'none'
+            });
         };
 
         var init_locale = function () {
@@ -1621,6 +1639,7 @@ HTML;
         }
 
         $html .= ifset($params['control_separator']);
+        unset($interval_params['id']);
         $html .= waHtmlControl::getControl(waHtmlControl::SELECT, $interval_name, $interval_params);
 
         $html .= $javascript;

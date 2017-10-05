@@ -451,16 +451,28 @@ function ShippingYandexdelivery(key, id, url) {
             this.courier_container.find(':input').attr('disabled', null);
 
             courier.available_days = [];
+            var value = this.interval.val();
+            var first_value = null;
+
+            this.interval.find('option:not(:first)').remove();
 
             for (var interval in courier.intervals) {
                 if (courier.intervals.hasOwnProperty(interval)) {
                     courier.available_days = courier.available_days.concat(courier.intervals[interval]);
+                    if (first_value === null) {
+                        first_value = interval;
+                    } else {
+                        first_value = false;
+                    }
                     this.interval.append($("<option></option>")
                         .attr("value", interval)
                         .data('days', courier.intervals[interval])
                         .text(interval));
                 }
             }
+
+            this.interval.val(value ? value : first_value);
+
 
             this.date.datepicker('option', 'minDate', courier.offset);
             this.date.data('available_days', courier.available_days);
