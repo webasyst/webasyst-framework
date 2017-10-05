@@ -29,7 +29,14 @@ class invoicejurPayment extends waPayment implements waIPayment, waIPaymentCaptu
             $url = $this->getAdapter()->getBackUrl(waAppPayment::URL_PRINTFORM, $wa_transaction_data);
             wa()->getResponse()->redirect($url);
         }
-        return wa()->getView()->fetch($this->path.'/templates/payment.html');
+        $payment_id = isset($payment_form_data['payment_id']) ? $payment_form_data['payment_id'] : null;
+
+        $view = wa()->getView();
+        $view->assign('order_id', $order_data['id']);
+        $view->assign('merchant_id', $order_data['merchant_id']);
+        $view->assign('app_payment', ifset($payment_form_data['app_payment']));
+        $view->assign('payment_params', ifset($payment_form_data['payment_'.$payment_id]));
+        return $view->fetch($this->path.'/templates/payment.html');
     }
 
     public function capture($transaction_raw_data)
@@ -68,9 +75,7 @@ class invoicejurPayment extends waPayment implements waIPayment, waIPaymentCaptu
                 'company' => ifset($params['payment_params_'.$company], $order->contact_id ? $order->getContactField($company) : ''),
                 'inn'     => ifset($params['payment_params_'.$inn], $order->contact_id ? $order->getContactField($inn) : ''),
             );
-
             $view = wa()->getView();
-
             $view->assign('order', $order);
             $view->assign('settings', $this->getSettings(), true);
             $view->assign('company', $company, true);
@@ -112,5 +117,27 @@ class invoicejurPayment extends waPayment implements waIPayment, waIPaymentCaptu
             $result['inn']['value'] = $inn;
         }
         return $result;
+    }
+
+    public function printFormAction($params)
+    {
+        foreach ($params as $k=>$v) {
+            if (strpos($k, 'payment_params_') === 0) {
+                $params['params'][$k] = $v;
+            }
+        }
+        if (!empty($params['contact_id'])) {
+            $c = new waContact($params['contact_id']);
+            $a = $c->get('address.billing');
+            if (!empty($a[0])) {
+                $params['billing_address'] = $a[0]['data'];
+            }
+            $a = $c->get('address.shipping');
+            if (!empty($a[0])) {
+                $params['shipping_address'] = $a[0]['data'];
+            }
+        }
+        $order = new waOrder($params);
+        return $this->displayPrintForm($params['plugin'], $order);
     }
 }
