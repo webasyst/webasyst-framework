@@ -1,6 +1,9 @@
 #wa { background: #fff; }
 
-.b-sidebar { margin-top: 18px; }
+#wa-app > .sidebar { padding-top: 18px; }
+.b-sidebar { position: relative; }
+.b-sidebar.fixed-to-top { position: fixed; top: 0;}
+.b-sidebar.fixed-to-bottom { position: fixed; bottom: 0; }
 .b-sidebar ul.menu-v li a strong.small.highlighted,
 .b-sidebar ul.menu-v li a:hover strong.small.highlighted { color: #000; }
 .b-sidebar ul.menu-v li a i.icon10.lock-bw { margin-top: 2px; }
@@ -257,20 +260,20 @@ ul.b-plugin-tag-navigation a span.b-tag { text-decoration: none; }
 /* TABLET
 ========= */
 
-@media screen and (max-width: 1024px) { 
+@media screen and (max-width: 1024px) {
 
     /* landscape + portrait */
-    
+
     .b-stream { margin-left: 10px; }
     .b-post .b-post-body { margin-right: 0; }
     .b-fixed-button-bar { left: 180px; right: 186px; }
     .b-empty-list { padding-left: 30px; padding-right: 30px; }
     .b-welcome { padding-left: 0px; padding-right: 0px; }
     .realtime-edit-mode .b-fixed-button-bar { left: 10px !important; }
-    
+
 }
 
-@media screen and (max-width: 768px) { 
+@media screen and (max-width: 768px) {
 
     /* portrait */
 
@@ -278,5 +281,5 @@ ul.b-plugin-tag-navigation a span.b-tag { text-decoration: none; }
     .content.right200px { margin-right: 0; }
     .b-fixed-button-bar { right: 16px; }
     #realtime-preview-toggle { display: none; }
-        
+
 }

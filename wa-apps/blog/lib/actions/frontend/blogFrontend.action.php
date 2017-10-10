@@ -173,7 +173,7 @@ class blogFrontendAction extends blogViewAction
         $this->view->assign('post_count', $post_model->searchCount());
         $this->view->assign('show_comments', !isset($options['comments']) || $options['comments']);
         $this->view->assign('posts_per_page', $posts_per_page);
-        $this->view->assign('blog_query', $query);
+        $this->view->assign('blog_query', htmlspecialchars($query));
         
         /**
          * Backward compatibility with older themes
