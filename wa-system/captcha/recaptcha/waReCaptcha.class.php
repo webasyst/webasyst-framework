@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 class waReCaptcha extends waAbstractCaptcha
 {
@@ -9,30 +9,56 @@ class waReCaptcha extends waAbstractCaptcha
     );
 
     const SITE_VERIFY_URL = 'https://www.google.com/recaptcha/api/siteverify';
-    
+
     public function getHtml()
     {
-        $sitekey = $this->options['sitekey'];
-        $html = <<<HTML
-<script type="text/javascript">
-    var grecaptchaLoaded = false;
-    var onloadRecaptchaCallback = function() {
-        if(grecaptchaLoaded) return; //only once
-        var collection = document.getElementsByClassName('g-recaptcha');
-        for (var i = 0; i < collection.length; i++) {
-            grecaptcha.render(collection[i], {'sitekey' : '$sitekey'});
-        }
-        grecaptchaLoaded = true;
+        $sitekey = json_encode($this->options['sitekey']);
+
+        // Explicit rendering, as well as $.getScript(), are used
+        // to allow multiple ReCaptchas on the same page.
+
+        // Click to .wa-captcha-refresh is used in templates to programmatically reset WA CAPTCHAs.
+        // An invisible element is added here to support the same behaviour.
+
+        return <<<HTML
+<script>(function() {
+    if (window.onloadWaRecaptchaCallback) {
+        return;
+    }
+
+    window.onloadWaRecaptchaCallback = function() {
+        var sitekey = {$sitekey};
+        if (!window.grecaptcha) return;
+        $('.g-recaptcha:not(.initialized)').each(function() {
+            var wrapper = $(this).addClass('initialized');
+            var widget_id = grecaptcha.render(wrapper[0], { sitekey: sitekey });
+            wrapper.siblings('.wa-captcha-refresh').click(function() {
+                try {
+                    grecaptcha.reset(widget_id);
+                } catch (e) {
+                    console.log('Unable to reset WA ReCaptcha widget id =', widget_id);
+                    console.log(e);
+                }
+                return false;
+            });
+        });
     };
-</script>
+
+    $(function() {
+        if (window.grecaptcha) {
+            window.onloadWaRecaptchaCallback();
+        } else {
+            $.getScript("https://www.google.com/recaptcha/api.js?render=explicit&onload=onloadWaRecaptchaCallback");
+        }
+    });
+})();</script>
 <div class="wa-captcha wa-recaptcha">
-    <script src='https://www.google.com/recaptcha/api.js?onload=onloadRecaptchaCallback&render=explicit' async></script>
+    <a class="wa-captcha-refresh" style="display:none;"></a>
     <div class="g-recaptcha"></div>
 </div>
 HTML;
-        return $html;
     }
-    
+
     public function isValid($code = null, &$error = '')
     {
         if ($code === null) {

@@ -39,11 +39,15 @@
 </div>
 <script type="text/javascript">
     $(document).ready(function () {
-        $('#wa-login-dialog').waDialog({ 'esc': false});
-        $('#wa-login-input').focus();
-        var input = $('input:text')[0] || $('input:password')[0];
-        if (input) {
-            input.focus();
+        $('#wa-login-dialog').waDialog({ 'esc': false });
+        var $login_input = $('#wa-login-input').focus();
+        if (!$login_input.length) {
+            var input = $('input:text')[0] || $('input:password')[0];
+            if (input) {
+                input.focus();
+            }
+        } else if ($login_input.val()) {
+            $login_input.closest('.dialog-content-indent').find('input[type="password"]').focus();
         }
     });
 </script>

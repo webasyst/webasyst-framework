@@ -14,7 +14,7 @@
 .wa-dropdown { float: right; margin: 5px 20px 0 0; }
 .wa-dropdown .wa-dropdown-content { padding: 20px;  width: auto; width: 760px;  min-height: 180px; max-height: 310px; overflow: auto; overflow-x: hidden;}
 .wa-dropdown .wa-dropdown-content .field .name .inline-link b i { font-weight: bold; }
-.wa-dropdown .wa-dropdown-content .field .name { width: 340px; }
+.wa-dropdown .wa-dropdown-content .field .name { width: 330px; }
 .wa-dropdown .wa-dropdown-content .field .value { margin-left: 350px; }
 .wa-dropdown .wa-dropdown-content .field.subfield .name { margin-left: 20px; }
 .wa-dropdown .wa-dropdown-content .field.subfield .name .inline-link b i { font-weight: normal; font-size: 0.9em; }

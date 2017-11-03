@@ -875,9 +875,7 @@ class waSystem
         return $path;
     }
 
-
     /**
-     *
      * Returns path to current app's data directory.
      *
      * @param  string|null  $path    Optional path to a subdirectory in main directory with user data files.
@@ -920,9 +918,15 @@ class waSystem
         if ($app_id === null) {
             $app_id = $this->getConfig()->getApplication();
         }
-        return $this->getRootUrl($absolute).'wa-data/'.($public ? 'public' : 'protected').'/'.$app_id.($path ? '/'.$path : '');
+        $data_path = $this->getDataPath($path, $public, $app_id, false);
+        $base = waConfig::get('wa_path_root');
+        if (strpos($data_path, $base) === 0) {
+            $data_path = substr($data_path, strlen($base) + 1);
+        } else {
+            $data_path = 'wa-data/'.($public ? 'public' : 'protected').'/'.$app_id.($path ? '/'.$path : '');
+        }
+        return $this->getRootUrl($absolute).$data_path;
     }
-
 
     /**
      * Returns path to directory used for storing app's temporary files.
@@ -1466,12 +1470,19 @@ class waSystem
                     $class_name = strtok($class_name, '.').ucfirst(strtok(''));
                 }
                 $class_name = $app_id.ucfirst($event_app_id).ucfirst($class_name)."Handler";
+                if (!class_exists($class_name)) {
+                    if (waSystemConfig::isDebug()) {
+                        waLog::log('Event handler class does not exist: '.$class_name);
+                    }
+                    continue;
+                }
+
                 /**
                  * @var $handler waEventHandler
                  */
                 self::pushActivePlugin(null, $app_id);
-                $handler = new $class_name();
                 try {
+                    $handler = new $class_name();
                     $r = $handler->execute($params);
                     if ($r !== null) {
                         $result[$app_id] = $r;
@@ -1583,6 +1594,15 @@ class waSystem
         }
 
         wa($old_app, 1);
+
+        // Super event hook in wa-config/SystemConfig is called for all events
+        if (method_exists($event_system->getConfig(), 'eventHookAfter')) {
+            $r = $event_system->getConfig()->eventHookAfter($event_app_id, $name, $params, $result);
+            if (is_array($r)) {
+                return $r;
+            }
+        }
+
         return $result;
     }
 

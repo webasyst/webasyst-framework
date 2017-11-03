@@ -568,13 +568,17 @@ class waRequest
         return min(self::getPostMaxSize(), self::toBytes(ini_get('upload_max_filesize')));
     }
 
-    protected static function toBytes($str)
+    public static function toBytes($str)
     {
         $val = trim($str);
         if (!$val) {
             return 0;
         }
         $last = strtolower($str[strlen($str) - 1]);
+        if (wa_is_int($last)) {
+            return $val;
+        }
+        $val = @ (float) substr($val, 0, -1);
         switch ($last) {
             case 'g':
                 $val *= 1024;
@@ -583,6 +587,6 @@ class waRequest
             case 'k':
                 $val *= 1024;
         }
-        return $val;
+        return (int) $val;
     }
 }

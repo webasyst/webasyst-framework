@@ -64,25 +64,33 @@ class waForgotPasswordAction extends waViewAction
     {
         $contact_model = new waContactModel();
         $is_user = $auth->getOption('is_user');
-        if (strpos($login, '@')) {
-            $sql = "SELECT c.* FROM wa_contact c
-            JOIN wa_contact_emails e ON c.id = e.contact_id
-            WHERE ".($is_user ? "c.is_user = 1 AND " : "")."e.email LIKE '".$contact_model->escape($login, 'like')."' AND e.sort = 0
-            ORDER BY c.id LIMIT 1";
+
+        // Look by login (logins may contain @)
+        if ($login) {
+            $contact_info = $contact_model->getByField('login', (string)$login);
+        }
+
+        // Look by primary email
+        if (empty($contact_info) && $login && strpos($login, '@')) {
+            $sql = "SELECT c.*
+                    FROM wa_contact c
+                        JOIN wa_contact_emails e
+                            ON c.id = e.contact_id
+                                AND e.sort = 0
+                    WHERE e.email LIKE '".$contact_model->escape($login, 'like')."'
+                        ".($is_user ? " AND c.is_user = 1" : "")."
+                    ORDER BY c.id
+                    LIMIT 1";
             $contact_info = $contact_model->query($sql)->fetch();
-        } elseif ($login) {
-            $contact_info = $contact_model->getByField('login', $login);
-        } else {
-            return false;
         }
-        if ($contact_info && (!$is_user || $contact_info['is_user'])) {
-            $contact = new waContact($contact_info['id']);
-            $contact->setCache($contact_info);
-            return $contact;
+
+        // Make sure it's a user if asked for a user
+        if (!empty($contact_info) && (!$is_user || $contact_info['is_user'])) {
+            return new waContact($contact_info);
         }
+
         return false;
     }
-
 
     protected function getResetPasswordUrl($hash)
     {

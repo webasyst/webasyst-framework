@@ -16,7 +16,6 @@ class waContact implements ArrayAccess
 {
     protected $id;
     // static runtime array cache for all contacts
-    // @todo: set protected this property
     public static $cache = array();
     // for unsaved data
     protected $data;

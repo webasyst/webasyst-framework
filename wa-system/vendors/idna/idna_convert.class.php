@@ -241,12 +241,18 @@ class idna_convert
                         .(empty($parsed['query']) ? '' : '?'.$parsed['query'])
                         .(empty($parsed['fragment']) ? '' : '#'.$parsed['fragment']);
             } else { // parse_url seems to have failed, try without it
-                $arr = explode('.', $input);
-                foreach ($arr as $k => $v) {
-                    $conv = $this->_decode($v);
-                    $arr[$k] = ($conv) ? $conv : $v;
+                $parts = explode('/', ltrim($input, '/'));
+                if ($parts) {
+                    $arr = explode('.', array_shift($parts));
+                    foreach ($arr as $k => $v) {
+                        $conv = $this->_decode($v);
+                        $arr[$k] = ($conv) ? $conv : $v;
+                    }
+                    array_unshift($parts, join('.', $arr));
+                    $return = join('/', $parts);
+                } else {
+                    $return = $input;
                 }
-                $return = join('.', $arr);
             }
         } else { // Otherwise we consider it being a pure domain name string
             $return = $this->_decode($input);

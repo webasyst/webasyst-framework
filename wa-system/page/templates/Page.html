@@ -22,13 +22,17 @@
 
 <script>(function() { "use strict";
 
+    var lang = {$lang|json_encode};
+    var wa_url = {$wa_url|json_encode};
+    var framework_version = {$wa->version(true)|json_encode};
+
     // This promise is resolved when all WYSIWYG files are loaded
     // and $.fn.waEditor() function is ready.
     $.wa_editor_ready = (function() {
         // Load $.wa.loadFiles() if not loaded already
         if (!$.wa || !$.wa.loadFiles) {
             return $.ajax({
-                url: "{$wa_url}wa-content/js/jquery-wa/wa.core.js?v{$wa->version(true)}",
+                url: wa_url+"wa-content/js/jquery-wa/wa.core.js?v"+framework_version,
                 dataType: "script",
                 cache: true
             });
@@ -41,27 +45,27 @@
 
         // Load Redactor II unless already loaded by application
         if (!$.Redactor) {
-            to_load.push("{$wa_url}wa-content/js/redactor/2/redactor.css?v{$wa->version(true)}");
-            to_load.push("{$wa_url}wa-content/js/redactor/2/redactor.min.js?v{$wa->version(true)}");
-            load_locale = {json_encode($lang != 'en')};
+            to_load.push(wa_url+"wa-content/js/redactor/2/redactor.css?v"+framework_version);
+            to_load.push(wa_url+"wa-content/js/redactor/2/redactor.min.js?v"+framework_version);
+            load_locale = lang !== 'en';
         }
 
         return $.wa.loadFiles(to_load).then(function() {
             if (load_locale) {
                 // Load Redactor II locale when its ready
-                return $.wa.loadFiles("{$wa_url}wa-content/js/redactor/2/{$lang}.js?v{$wa->version(true)}");
+                return $.wa.loadFiles(wa_url+"wa-content/js/redactor/2/"+lang+".js?v"+framework_version);
             } else {
                 return true;
             }
         }).then(function() {
             if ($.Redactor.VERSION.substr(0, 3) == '10.') {
                 // Old RedactorI used by legacy application
-                return $.wa.loadFiles("{$wa_url}wa-content/js/jquery-wa/editor.js?v{$wa->version(true)}").then(function() {
+                return $.wa.loadFiles(wa_url+"wa-content/js/jquery-wa/editor.js?v"+framework_version).then(function() {
                     return 'waEditor';
                 });
             } else {
                 // New RedactorII
-                return $.wa.loadFiles("{$wa_url}wa-content/js/jquery-wa/editor2.js?v{$wa->version(true)}").then(function() {
+                return $.wa.loadFiles(wa_url+"wa-content/js/jquery-wa/editor2.js?v"+framework_version).then(function() {
                     return 'waEditor2';
                 });
             }
@@ -102,7 +106,7 @@
     .wa-dropdown { float: right; margin: 2px 20px 0 0; }
     .wa-dropdown .wa-dropdown-content { padding: 20px;  width: auto; width: 760px;  min-height: 180px; max-height: 310px; overflow: auto; overflow-x: hidden;}
     .wa-dropdown .wa-dropdown-content .field .name .inline-link b i { font-weight: bold; }
-    .wa-dropdown .wa-dropdown-content .field .name { width: 340px; }
+    .wa-dropdown .wa-dropdown-content .field .name { width: 330px; }
     .wa-dropdown .wa-dropdown-content .field .value { margin-left: 350px; }
     .wa-dropdown .wa-dropdown-content .field.subfield .name { margin-left: 20px; }
     .wa-dropdown .wa-dropdown-content .field.subfield .name .inline-link b i { font-weight: normal; font-size: 0.9em; }
@@ -301,7 +305,7 @@
 
         $('.expander').click(function() {
             var page_id = $(this).parent().attr('id').replace(/page-/g, '');
-            var k = '{$wa->app()}/pages/page-' + page_id;
+            var k = wa_app+'/pages/page-' + page_id;
             if($(this).hasClass('rarr')) {
                 waExpand(page_id);
                 $.storage.del(k);
@@ -313,7 +317,7 @@
 
         $('.expander').each(function() {
             var page_id = $(this).parent().attr('id').replace(/page-/g, '');
-            var k = '{$wa->app()}/pages/page-' + page_id;
+            var k = wa_app+'/pages/page-' + page_id;
             if ($.storage.get(k)) {
                 waClose(page_id);
             }
@@ -371,7 +375,7 @@
             if ($(e.target).hasClass('wa-page-add')) return true;
             var h = $(this);
             var ul = h.next('ul');
-            var k = '{$wa->app()}/pages/domain-' + ul.data('domain') + '/' + ul.data('route');
+            var k = wa_app+'/pages/domain-' + ul.data('domain') + '/' + ul.data('route');
             var is_save = !(not_save || false)
             if (is_save) {
                 if (!$.storage.get(k)) {
@@ -395,7 +399,7 @@
         });
         $(".block-pages h4.heading").each(function () {
             var ul = $(this).next('ul');
-            var k = '{$wa->app()}/pages/domain-' + ul.data('domain') + '/' + ul.data('route');
+            var k = wa_app+'/pages/domain-' + ul.data('domain') + '/' + ul.data('route');
             if ($.storage.get(k)) {
                 $(this).trigger('click', true);
             }

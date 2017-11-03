@@ -501,11 +501,15 @@ $.wa.locale = $.wa.locale || {};
 /** One parameter: translate a string.
   * Two parameters, int and string: translate and get correct word form to use with number. */
 $_ = function(p1, p2) {
+    if (!$ || !$.wa || !$.wa.locale) {
+        console.log('JS localization failed: empty $.wa.locale');
+        return ('string' === typeof p2) ? p2 : p1;
+    }
     // Two parameters: number and string?
     if (p2) {
         if (!$.wa.locale[p2]) {
             if (console){
-                console.log('Localization failed: '+p2); // !!!
+                console.log('JS localization failed: '+p2);
             }
             return p2;
         }
@@ -530,7 +534,7 @@ $_ = function(p1, p2) {
     }
 
     if (console){
-        console.log('Localization failed: '+p1); // !!!
+        console.log('JS localization failed: '+p1);
     }
     return p1;
 };

@@ -15,6 +15,7 @@ jQuery.fn.waEditor2 = function () {
 
         // ace
         var editor = initAce($textarea, options);
+        updateLastWysiwygCode($textarea.val());
 
         // redactor
         $textarea.redactor(options);
@@ -50,7 +51,16 @@ jQuery.fn.waEditor2 = function () {
                 $(this).removeAttr('data-src');
             });
             $textarea.redactor('code.sync');
-            editor.setValue($textarea.redactor('code.get'));
+
+            // If something is modified in WYSIWYG, set new code to source code editor.
+            // Otherwise keep the old code, without WYSIWYG's re-formatting.
+            var new_code = $textarea.redactor('code.get');
+            if (new_code !== $textarea.data('last_wysiwyg_code')) {
+                editor.setValue(new_code);
+            } else {
+                editor.setValue(getSourceCode(new_code));
+            }
+
             $wrapper.find('.ace').show();
             editor.focus();
             editor.navigateTo(p.row, p.column);
@@ -77,6 +87,7 @@ jQuery.fn.waEditor2 = function () {
             $textarea.redactor('focus.start');
             $wrapper.find('.ace').hide();
             $textarea.redactor('core.box').show();
+            updateLastWysiwygCode(editor.getValue());
             return false;
         });
 
@@ -94,13 +105,25 @@ jQuery.fn.waEditor2 = function () {
             if (options['focus']) {
                 if (!options['iframe']) {
                     $textarea.redactor('focus.start');
-                }
-                else {
+                } else {
                     setTimeout(function(){
                         $textarea.redactor('focus.start');
                     }, 100);
                 }
             }
+        }
+
+        function getSourceCode(def) {
+            return $textarea.data('original_code') || def;
+        }
+
+        function updateLastWysiwygCode(original_code) {
+            if (original_code) {
+                $textarea.data('original_code', original_code);
+            }
+            setTimeout(function() {
+                $textarea.data('last_wysiwyg_code', $textarea.redactor('code.get'));
+            }, 50);
         }
     });
 
@@ -149,6 +172,9 @@ jQuery.fn.waEditor2 = function () {
             paragraphy: false,
             replaceDivs: false,
             toolbarFixed: true,
+            replaceTags: false,
+            removeNewlines: false,
+            removeComments: false,
             buttons: ['format', /*'inline',*/ 'bold', 'italic', 'underline', 'deleted', 'lists',
                 /*'outdent', 'indent',*/ 'image', 'video', 'table', 'link', 'alignment',
                 'horizontalrule',  'fontcolor', 'fontsize', 'fontfamily'],

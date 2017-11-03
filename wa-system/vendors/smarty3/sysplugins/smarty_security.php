@@ -217,6 +217,7 @@ class Smarty_Security {
     public function __construct($smarty)
     {
         $this->smarty = $smarty;
+        $this->static_classes = array_map('strtolower', $this->static_classes);
     }
 
     /**
@@ -257,15 +258,17 @@ class Smarty_Security {
      */
     public function isTrustedStaticClass($class_name, $compiler, $method = false)
     {
-        $method= substr(strtolower($method), 0, strpos($method, '('));
+        $orig_class_name = $class_name;
+        $class_name = strtolower($class_name);
+        $method = substr(strtolower($method), 0, strpos($method, '('));
         if (in_array($class_name, $this->static_classes) || in_array($class_name.'::'.$method, $this->static_classes)
-            || substr($class_name, 0, 7) == 'Smarty_') {
-            $compiler->trigger_template_error("access to static class '{$class_name}' not allowed by security setting");
+            || substr($class_name, 0, 7) == 'smarty_') {
+            $compiler->trigger_template_error("access to static class '{$orig_class_name}' not allowed by security setting");
             return false;
         }
 
         if ($method == 'getactive' || $method == 'getappconfig' || $method == 'setdebug' || $method == 'systemoption') {
-            $compiler->trigger_template_error("access to static class '{$class_name}' not allowed by security setting");
+            $compiler->trigger_template_error("access to static class '{$orig_class_name}' not allowed by security setting");
             return false;
         }
 

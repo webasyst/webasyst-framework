@@ -15,6 +15,7 @@
  * @property double $shipping shipping price
  * @property string $shipping_name
  * @property string $payment_name
+ * @property bool $tax_included
  *
  * @property bool $recurrent
  *
@@ -29,6 +30,7 @@
  * @property string[] $shipping_data
  * @property string $shipping_rate_id
  * @property string $shipping_plugin Plugin string id usps,dhl
+ * @property float $shipping_tax_rate
  *
  *
  * @property array $shipping_address
@@ -79,6 +81,8 @@
  * @property int $total_quantity
  *
  * @property mixed $contact_%field%
+ * @property-read string $contact_email
+ * @property-read string $contact_name
  *
  * @property string $comment
  * @property array $params
@@ -187,7 +191,16 @@ class waOrder implements ArrayAccess
                 }
             }
         }
-        $this->subtotal = 0.0 + $this->total - $this->tax + $this->discount - $this->shipping;
+
+        $subtotal = 0.0 + $this->total;
+        if ($this->tax_included !== true) {
+            $subtotal -= $this->tax;
+        }
+
+        $subtotal += $this->discount;
+        $subtotal -= $this->shipping;
+
+        $this->subtotal = $subtotal;
         $this->init();
     }
 
@@ -201,16 +214,26 @@ class waOrder implements ArrayAccess
         return $this->offsetSet($name, $value);
     }
 
+    /**
+     * var_dump handler
+     * @return array
+     */
     public function __debugInfo()
     {
         return array(
-            'contact_id' => $this->contact_id,
-            'currency'   => $this->currency,
-            'total'      => $this->total,
-            'shipping'   => $this->shipping,
-            'subtotal'   => $this->subtotal,
-            'discount'   => $this->discount,
-            'data'       => $this->data,
+            'contact_id'      => $this->contact_id,
+            'id'              => $this->id,
+            'currency'        => $this->currency,
+            'total'           => $this->total,
+            'shipping'        => $this->shipping,
+            'subtotal'        => $this->subtotal,
+            'discount'        => $this->discount,
+            'items'           => $this->items,
+            'shipping_params' => $this->shipping_params,
+            'shipping_data'   => $this->shipping_data,
+            'billing_params'  => $this->billing_params,
+            'billing_data'    => $this->billing_data,
+            'data'            => $this->data,
         );
     }
 
@@ -252,7 +275,7 @@ class waOrder implements ArrayAccess
             $offset = $this->alias[$offset];
         }
         if (!isset($this->data[$offset])) {
-            if ( $method = $this->methodName($offset)) {
+            if ($method = $this->methodName($offset)) {
                 if (!in_array($offset, $this->fields)) {
                     $this->fields[] = $offset;
                 }
@@ -269,7 +292,7 @@ class waOrder implements ArrayAccess
     private function methodName($offset)
     {
         $method = 'get'.preg_replace_callback('/(^|_)([\w])/', create_function('$c', 'return strtoupper($c[2]);'), $offset);
-        return method_exists($this, $method)?$method:null;
+        return method_exists($this, $method) ? $method : null;
     }
 
     /**

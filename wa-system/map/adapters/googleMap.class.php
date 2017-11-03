@@ -10,6 +10,8 @@ class googleMap extends waMapAdapter
 
     protected function getByAddress($address, $options = array())
     {
+        $address = preg_replace('@российская\s+федерация@ui', 'Россия', $address);
+
         $locale = wa()->getLocale();
         $zoom = ifset($options['zoom'], 10);
         if (!empty($options['static'])) {

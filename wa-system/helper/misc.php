@@ -46,11 +46,15 @@ function wa_dumpc()
         }
     }
 
-    foreach(func_get_args() as $v) {
+    $args = func_get_args();
+    foreach($args as $v) {
         echo "\n".wa_dump_helper($v)."\n";
     }
     if (php_sapi_name() != 'cli') {
         echo "</pre>\n";
+    }
+    if (!waConfig::get('is_template')) {
+        return reset($args);
     }
 }
 

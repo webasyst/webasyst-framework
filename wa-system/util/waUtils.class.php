@@ -8,20 +8,22 @@ class waUtils
         if ($export) {
             $var = var_export($var, true);
         }
-        $dir = realpath(dirname($file));
         $file_contents = "<?php\nreturn {$var};\n";
 
         // Attempt to write to tmp file and then rename.
         // This minimizes the risk that a half-written file will be
         // included by another process if something goes wrong.
-        $tmp_file = tempnam($dir, basename($file));
-        if ($tmp_file && $dir == realpath(dirname($tmp_file))) {
-            @chmod($tmp_file, 0664);
-            $result = @file_put_contents($tmp_file, $file_contents);
-            $result = $result && @rename($tmp_file, $file);
-        }
-        if (file_exists($tmp_file)) {
-            @unlink($tmp_file);
+        $dir = realpath(dirname($file));
+        if ($dir) {
+            $tmp_file = @tempnam($dir, basename($file));
+            if ($tmp_file && $dir == realpath(dirname($tmp_file))) {
+                @chmod($tmp_file, 0664);
+                $result = @file_put_contents($tmp_file, $file_contents);
+                $result = $result && @rename($tmp_file, $file);
+            }
+            if ($tmp_file && file_exists($tmp_file)) {
+                @unlink($tmp_file);
+            }
         }
 
         // Attempt to write to destination directly.

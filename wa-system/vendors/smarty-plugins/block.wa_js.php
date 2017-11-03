@@ -19,6 +19,7 @@ function smarty_block_wa_js($params, $content, &$smarty) {
 
     $wa = waSystem::getInstance();
 
+    $root_path = str_replace('\\', '/', $wa->getConfig()->getRootPath());
     $jquery_ui_path = "wa-content/js/jquery-ui/jquery.ui.";
     $jquery_ui_path_n = strlen($jquery_ui_path);
 
@@ -31,7 +32,6 @@ function smarty_block_wa_js($params, $content, &$smarty) {
     //
     if ((defined('DEBUG_WA_JS') || !SystemConfig::isDebug()) && isset($params['file'])) {
         $params['uibundle'] = ifset($params['uibundle'], true);
-        $root_path = str_replace('\\', '/', $wa->getConfig()->getRootPath());
         $app_path = str_replace('\\', '/', $wa->getConfig()->getAppPath());
         $result = '';
         $files_combine = array();
@@ -127,7 +127,16 @@ function smarty_block_wa_js($params, $content, &$smarty) {
         $f = trim($f);
         if ($f) {
             // Add ?version to circumvent browser caching
-            if (substr($f, $n, 10) !== 'wa-content') {
+            if (substr($f, $n, 10) === 'wa-content') {
+                if (!SystemConfig::isDebug() || strpos(substr($f, $n + 10), 'wa') !== false) {
+                    $f .= '?v' . $wa->getVersion('webasyst');
+                } else {
+                    $file_path = $root_path.'/'.substr($f, $n);
+                    if (file_exists($file_path)) {
+                        $f .= '?v' . filemtime($file_path);
+                    }
+                }
+            } else {
                 $f .= '?v' . $wa->getVersion();
             }
 

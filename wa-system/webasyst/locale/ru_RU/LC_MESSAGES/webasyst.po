@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WebAsyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2017-07-17 17:07+0300\n"
+"PO-Revision-Date: 2017-10-17 15:45+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -3606,7 +3606,7 @@ msgstr "Также сбросить все изменения, которые в
 msgid "Revert"
 msgstr "Восстановить"
 
-msgid "Website request"
+msgid "Request from website"
 msgstr "Запрос с сайта"
 
 msgid "Thank you!"

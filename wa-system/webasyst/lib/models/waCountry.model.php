@@ -47,15 +47,17 @@ class waCountryModel extends waModel
 
     public function get($id, $locale=null)
     {
-        static $cache = array();
+        // self::$cache works only after full locale preload
+        // It's good when it's there, but we can not rely on it.
         $locale = $this->ensureLocale($locale);
         if (self::$cacheLocale == $locale) {
             return isset(self::$cache[$id]) ? self::$cache[$id] : null;
         }
 
-        // Profiling shows that it is reasonable to have such cache here:
-        // it saves several queries per page, when there's a contact form
-        // or use of field formatters on that page.
+        // Local cache saves individual lines.
+        // Profiling shows that it is reasonable to have such cache here: it saves
+        // several queries per page, when there are several addresses rendered on a page.
+        // E.g. any contact form.
         static $cache = array();
         if ($locale === $this->ensureLocale(null) && !empty($cache[$id])) {
             return $cache[$id];

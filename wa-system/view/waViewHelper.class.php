@@ -648,7 +648,16 @@ HTML;
             $errors['email'] = implode(', ', $email_validator->getErrors());
         }
 
-        $subject = trim($this->post('subject', _ws('Website request')));
+        $subject = trim($this->post('subject', _ws("Request from website")));
+        $domain = wa()->getRouting()->getDomain();
+        if ($domain) {
+            if (false !== strpos($domain, '--')) {
+                $idna = new waIdna();
+                $domain = $idna->decode($domain);
+            }
+            $subject = $subject.' '.$domain;
+        }
+
         $body = trim($this->post('body'));
         if (!$body) {
             $errors['body'] = _ws('Please define your request');

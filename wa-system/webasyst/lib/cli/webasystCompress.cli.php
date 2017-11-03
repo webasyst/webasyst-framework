@@ -555,7 +555,8 @@ HELP;
                 # 1.2 themes
                 # 1.3 plugins
                 # 2. Check PHP code
-                $result = $this->testPhp() && $result;
+                $style = $this->getParam('style');
+                $result = $this->testPhp($style) && $result;
                 break;
         }
 
@@ -663,6 +664,7 @@ HELP;
                                 'external_tracking',
                                 'external',
                                 'backend_custom_fields',
+                                'locale',
                             )
                         );
                         break;
@@ -670,6 +672,8 @@ HELP;
                         $available = array_merge(
                             $available,
                             array(
+                                'type',
+                                'locale',
                                 'offline',
                             )
                         );
@@ -790,7 +794,7 @@ HELP;
         return $result;
     }
 
-    private function testPhp()
+    private function testPhp($param)
     {
         $result = true;
 
@@ -804,6 +808,7 @@ HELP;
                 $php_bin = 'php';
             }
 
+
             $command = sprintf('%s -v', $php_bin);
             $res = $this->exec($command, $outputs);
             if (($res !== 0) && ($php_bin != 'php')) {
@@ -811,11 +816,20 @@ HELP;
                 $command = sprintf('%s -v', $php_bin);
                 $res = $this->exec($command, $outputs);
             }
+
             if ($res === 0) {
-                $this->trace('Run PHP syntax check');
+                $this->trace("\nRun PHP syntax check");
                 $this->tracef("bin path: %s\nPHP Version:\n\t%s\n", $php_bin, implode("\n\t", $outputs));
+                $errors = array(
+                    'ignored' => 0,
+                    'strict'  => 0,
+                );
                 foreach ($this->files as $file) {
                     if (pathinfo($file, PATHINFO_EXTENSION) == 'php') {
+                        $strict = true;
+                        if (in_array('no-vendors', $param, true) && preg_match('@^(lib/|js/)?vendors?/@', $file)) {
+                            $strict = false;
+                        }
                         $command = sprintf('%s -l -f "%s/%s"', $php_bin, $this->path, $file);
                         $outputs = null;
 
@@ -824,18 +838,36 @@ HELP;
                         if ($res !== 0) {
                             $outputs = array_filter($outputs, 'trim');
                             if ($outputs) {
-                                $this->tracef("PHP errors at file %s:", $file);
+                                if ($strict) {
+                                    $format = "\nERROR at [%s]:";
+                                } else {
+                                    $format = "\nIgnored ERROR at vendor file [%s]:";
+                                }
+                                $this->tracef($format, $file);
                                 foreach ($outputs as $output) {
                                     $this->tracef("\t%s", trim(str_replace($this->path.'/'.$file, 'file', $output)));
                                 }
-                                $result = false;
+                                if ($strict) {
+                                    $result = false;
+                                    ++$errors['strict'];
+                                } else {
+                                    ++$errors['ignored'];
+                                }
                             }
                         }
                     }
                 }
 
+                foreach ($errors as $type => $count) {
+                    if($count){
+                        $this->tracef("Found %d %s errors", $count, $type);
+                    }
+                }
+
                 if ($result) {
-                    $this->trace("PHP file syntax check\tOK");
+                    $this->trace("PHP file syntax check\tPASSED");
+                } else {
+                    $this->trace("PHP file syntax check\tFAILED");
                 }
             } else {
                 $this->trace("PHP binary not found, compile check skipped");

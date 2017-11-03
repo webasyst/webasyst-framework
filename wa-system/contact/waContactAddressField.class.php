@@ -263,7 +263,9 @@ class waContactAddressOneLineFormatter extends waContactFieldFormatter
                 }
             }
         }
-        if ((ifset($data['data']['country']) != 'usa') && (ifset($result['parts']['region']) == ifset($result['parts']['city']))) {
+        $city = isset($result['parts']['city']) ? $result['parts']['city'] : null;
+        $region = isset($result['parts']['region']) ? $result['parts']['region'] : null;
+        if (ifset($data['data']['country']) != 'usa' && $city == $region) {
             unset($result['parts']['region']);
         }
 

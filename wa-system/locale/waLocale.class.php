@@ -430,8 +430,13 @@ function _wd($domain, $msgid1, $msgid2 = null, $n = null, $sprintf = true)
 function _wp($msgid1, $msgid2 = null, $n = null, $sprintf = true)
 {
     if ($domain = wa()->getActiveLocaleDomain()) {
-        return _wd($domain, $msgid1, $msgid2, $n, $sprintf);
-    } else {
-        return _w($msgid1, $msgid2, $n, $sprintf);
+        $result = _wd($domain, $msgid1, $msgid2, $n, $sprintf);
     }
+    if (!$domain || $result === $msgid1) {
+        $result = _w($msgid1, $msgid2, $n, $sprintf);
+    }
+    if ($result === $msgid1) {
+        $result = _ws($msgid1, $msgid2, $n, $sprintf);
+    }
+    return $result;
 }

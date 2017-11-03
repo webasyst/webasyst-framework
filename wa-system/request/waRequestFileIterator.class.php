@@ -27,6 +27,7 @@ class waRequestFileIterator extends waRequestFile implements Iterator,Countable,
         } else if (!is_array($_FILES[$input_name]['name'])) {
             parent::__construct($_FILES[$input_name]); // one uploaded file
             $this->files[] = &$this;
+            $this->indexes[] = 0;
         } else {
             // Several files with the same input name
             $init = false;

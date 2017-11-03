@@ -373,7 +373,7 @@ class waModel
      *
      * @param string|array $field (single field) Name of the table field whose value needs to be updated.
      *     (multiple fields) Associative array of table fields by whose values table records must be searched.
-     * @param string $value (single field) Existing value of the specified field, which needs to be replaced with a new
+     * @param string|array $value (single field) Existing value of the specified field, which needs to be replaced with a new
      *     value. Instead of one searched value, you may specify an array; in this case the specified field is updated
      *     for all records where field's value matches one of array items.
      * @param array $data Associative array of new values to be updated for found records.
@@ -462,6 +462,9 @@ class waModel
         $type = strtolower($this->fields[$field]['type']);
         if ($value === null && (!isset($this->fields[$field]['null']) || $this->fields[$field]['null'])) {
             return 'NULL';
+        }
+        if ($type == 'varchar' && !is_array($value) && !is_object($value)) {
+            $value = substr((string)$value, 0, $this->fields[$field]['params']);
         }
 
         return $this->castValue($type, $value, !isset($this->fields[$field]['null']) || $this->fields[$field]['null']);

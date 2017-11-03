@@ -153,14 +153,34 @@ class waCurrency
         self::$format_data['locale']['id'] = $locale_id;
         self::$format_data['currency'] = $currency;
         $pattern = '/%([0-9]?\.?[0-9]?)([iw!k]*)({[n|f|c|s|h][0-9]?})?/i';
-        $result = preg_replace_callback($pattern, array('self', 'replace_callback'), $format);
+        $result = preg_replace_callback($pattern, array('self', 'replaceCallback'), $format);
         if ($locale !== $old_locale) {
             wa()->setLocale($old_locale);
         }
         return $result;
     }
 
-    private static function replace_callback($matches)
+    /**
+     * @param float $n
+     * @param string|array|int $currency Currency ISO3 code, currency info or currency precision
+     * @return float
+     */
+    public static function round($n, $currency)
+    {
+        if (!is_array($currency) && !is_numeric($currency)) {
+            $currency = self::getInfo($currency);
+        }
+        $precision = 4;
+        if (is_numeric($currency)) {
+            $precision = min($precision, $currency);
+        } elseif (is_array($currency) && isset($currency['precision'])) {
+            $precision = min($precision, $currency['precision']);
+        }
+
+        return round((float)str_replace(',', '.', $n), $precision);
+    }
+
+    private static function replaceCallback($matches)
     {
         return self::extract(self::$format_data['n'], self::$format_data['currency'], self::$format_data['locale'], $matches[1], $matches[2], ifset($matches[3], ''));
     }
@@ -221,7 +241,7 @@ class waCurrency
                 if (strstr($format, 'W') !== false) {
                     $result = mb_strtoupper(mb_substr($result, 0, 1)).mb_substr($result, 1);
                 }
-            } else if (strstr($format_lower, '!') !== false) {
+            } elseif (strstr($format_lower, '!') !== false) {
                 $result = '';
             } else {
                 if ($pad_to_width !== false) {
@@ -244,7 +264,7 @@ class waCurrency
             } elseif (substr($desc, 0, 1) === 's' || substr($desc, 0, 1) === 'h') {
                 if (substr($desc, 0, 1) === 'h' && !empty($currency['sign_html'])) {
                     $s = $currency['sign_html'];
-                }  else {
+                } else {
                     $s = $currency['sign'];
                 }
                 switch ($currency['sign_position']) {
@@ -292,11 +312,11 @@ class waCurrency
 
         if ($exp < 0) {
             return self::formatHelper(round($total, 2), 0, 0, '', $locale);
-        } else if ($exp < 3) {
+        } elseif ($exp < 3) {
             return self::formatHelper($coeff, $exp, 0, '', $locale);
-        } else if ($exp < 6) {
+        } elseif ($exp < 6) {
             return self::formatHelper($coeff, $exp, 3, 'K', $locale);
-        } else if ($exp < 9) {
+        } elseif ($exp < 9) {
             return self::formatHelper($coeff, $exp, 6, 'M', $locale);
         } else {
             return waLocale::format(round($total / 1000000), 0, $locale).'M';
@@ -362,7 +382,7 @@ class waCurrency
                 }
 
                 // Default currency params when not set
-                foreach(self::$data as $cur => $info) {
+                foreach (self::$data as $cur => $info) {
                     self::$data[$cur]['code'] = $cur;
                     $default_values = array(
                         'sign' => $cur,
@@ -374,7 +394,7 @@ class waCurrency
                         'frac_name' => array($cur),
                         'name' => array($cur),
                     );
-                    foreach($default_values as $k => $v) {
+                    foreach ($default_values as $k => $v) {
                         if (!isset($info[$k])) {
                             self::$data[$cur][$k] = $v;
                         }

@@ -138,9 +138,13 @@
 
         parsePath: function (path) {
             path = path.replace(new RegExp('^.*' + this.options.path), '');
+
+            var splited_array = path.split("/"),
+                tail = (splited_array.length > 1) ? splited_array[1] : null;
+
             return {
                 plugin: path.replace(/\/.*$/, '') || null,
-                tail: path.replace(/^[^\/]+\//, '').replace(/[\w_\-]+=.*$/, '').replace(/\/$/, '') || null,
+                tail: tail,
                 raw: path
             };
         },
@@ -307,6 +311,9 @@
                 } else if (path.plugin) {
                     url = '?module=plugins&action=settings&id=' + path.plugin;
                 }
+
+                url += ( path.tail ? "&" + path.tail : "" );
+
                 return url;
             },
 

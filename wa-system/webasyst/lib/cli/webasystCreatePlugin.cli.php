@@ -104,7 +104,7 @@ HELP;
                 'lib/actions/frontend/',
                 'templates/actions/frontend/'
             );
-            $paths['lib/config/routing.php'] = array('*' => 'frontend');
+            $paths['lib/config/routing.php'] = array($this->plugin_id.'/*' => 'frontend/');
 
         }
 
