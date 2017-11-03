@@ -295,7 +295,7 @@ header .cart { float: right; }
 header .cart a { padding: 12px 16px 11px 13px; display: block; background: rgba(255,255,255,0.3); color: #fff; font-size: 1.5em; }
 header .cart a strong { color: #ff7; }
 header .cart a:hover { background: rgba(255,255,255,0.4) !important; }
-header .cart .cart-just-added { display: none; padding: 9px 18px; font-size: 0.9em; }
+header .cart .cart-just-added { position: absolute; top: 100%; left: 0; width: 100%; box-sizing: border-box; display: none; padding: 9px 18px; font-size: 0.9em; }
 header .cart a.cart-to-checkout { display: none !important; text-align: center; font-weight: bold; padding: 11px 18px; color: #006bd8; font-size: 1.1em; }
 header .cart a.cart-to-checkout:hover { background: #fff !important; }
 header .cart i.cart-icon { background-repeat:no-repeat; height:24px; width:24px; display: block; float: left; text-indent:-9999px; text-decoration:none!important; background-image: url('img/icons.png'); background-size: 260px 160px; background-position: -216px -50px; margin: -3px 10px 0 0; }
