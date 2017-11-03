@@ -12,10 +12,22 @@ class waReCaptcha extends waAbstractCaptcha
     
     public function getHtml()
     {
+        $sitekey = $this->options['sitekey'];
         $html = <<<HTML
+<script type="text/javascript">
+    var grecaptchaLoaded = false;
+    var onloadRecaptchaCallback = function() {
+        if(grecaptchaLoaded) return; //only once
+        var collection = document.getElementsByClassName('g-recaptcha');
+        for (var i = 0; i < collection.length; i++) {
+            grecaptcha.render(collection[i], {'sitekey' : '$sitekey'});
+        }
+        grecaptchaLoaded = true;
+    };
+</script>
 <div class="wa-captcha wa-recaptcha">
-    <script src='https://www.google.com/recaptcha/api.js' async></script>
-    <div class="g-recaptcha" data-sitekey="{$this->options['sitekey']}"></div>
+    <script src='https://www.google.com/recaptcha/api.js?onload=onloadRecaptchaCallback&render=explicit' async></script>
+    <div class="g-recaptcha"></div>
 </div>
 HTML;
         return $html;
