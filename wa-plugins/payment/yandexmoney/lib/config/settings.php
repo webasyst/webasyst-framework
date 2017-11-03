@@ -105,7 +105,7 @@ return array(
         changeIntegrationType: function (event, element) {
             if (element.attr("checked")) {
                 this.init(element);
-                var fast = event.originalEvent ? false : true;
+                var fast = !event.originalEvent;;
                 var selected = element.val();
                 var queue = {
                     'show': [],
@@ -166,7 +166,7 @@ return array(
         },
         changePaymentMode: function (event, element) {
             if (element.attr("checked")) {
-                var fast = event.originalEvent ? false : true;
+                var fast = !event.originalEvent;;
                 var field = this.form.find(':input[name*="\[paymentType\]"]:first').parents('div.field:first');
                 if (element.val() == 'customer') {
                     this.show([field], fast);
@@ -176,7 +176,7 @@ return array(
             }
         },
         changeReceipt: function (event, element) {
-            var fast = event.originalEvent ? false : true;
+            var fast = !event.originalEvent;
             var fields = [
                 this.form.find(':input[name$="\[taxSystem\]"]:first').parents('div.field:first'),
                 this.form.find(':input[name$="\[taxes\]"]:first').parents('div.field:first')

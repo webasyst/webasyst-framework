@@ -176,6 +176,8 @@ class yandexmoneyPayment extends waPayment implements waIPayment
                 }
             }
 
+
+
             if (!empty($contact)) {
                 $receipt = array(
                     'customerContact' => $contact,
@@ -198,13 +200,19 @@ class yandexmoneyPayment extends waPayment implements waIPayment
                 }
 
                 #shipping
+                $item = array(
+                    'quantity' => 1,
+                    'name'     => $order->shipping_name,
+                    'amount'   => $order->shipping,
+                    'tax_rate' => $order->shipping_tax_rate,
+                );
                 $receipt['items'][] = array(
                     'quantity' => 1,
                     'price'    => array(
-                        'amount' => number_format($order->shipping, 2, '.', ''),
+                        'amount' => number_format($item['amount'], 2, '.', ''),
                     ),
-                    'tax'      => 1,
-                    'text'     => mb_substr($order->shipping_name, 0, 128),
+                    'tax'      => $this->getTaxId($item),
+                    'text'     => mb_substr($item['name'], 0, 128),
                 );
             }
         }
