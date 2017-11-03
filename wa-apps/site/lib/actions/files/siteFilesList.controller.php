@@ -5,7 +5,7 @@ class siteFilesListController extends waJsonController
     public function execute()
     {
         $path = rtrim(waRequest::post('path'), ' /');
-        $path = wa()->getDataPath($path, true);
+        $path = wa()->getDataPath($path, true, null, false);
 
         if (!file_exists($path)) {
             throw new waException("File not found", 404);

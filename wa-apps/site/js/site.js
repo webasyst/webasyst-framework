@@ -214,6 +214,7 @@ $.wa.site = {
 			load = false;
 		}
 
+		params = decodeURI(params);
         if (params && (params.indexOf('?') != -1) && params.substr(-1) != '/') {
             var tmp = params.substr(params.indexOf('?') + 1);
             params = params.substr(0, params.indexOf('?'));
@@ -222,7 +223,6 @@ $.wa.site = {
                 page = tmp[1];
             }
         }
-
 		//s-files-tree
 		var loadFiles =  function () {
 			$.wa.site.active($("#s-link-files"));
@@ -233,7 +233,10 @@ $.wa.site = {
 			} else {
 				$("a.s-baseurl").removeClass('selected');
 				$("#s-folder-actions-li").show();
-				var a = $("#s-files-tree a[href='#/files/" + params + "']");
+
+                var a = $("#s-files-tree a[href]").filter(function() {
+                    return $(this).attr('href') == '#/files/' + params + '';
+                });
 				a.parent().addClass('selected');
 				var p = a.parent();
 				while (p.length) {
@@ -242,7 +245,13 @@ $.wa.site = {
 						i.click();
 					}
 					p = p.parent('ul').parent('li');
-				}				
+				}
+			}
+
+			if ($.wa.site.filesPath()) {
+                $("#s-folder-actions-li").show();
+			} else {
+                $("#s-folder-actions-li").hide();
 			}
 			
 			$.wa.site.filesList(params, page);
@@ -281,7 +290,7 @@ $.wa.site = {
             page = this.filesPage();
         }
         var url = 'http://' + this.options.domain_url + '/wa-data/public/site/' + $.wa.site.filesPath();
-		$.post("?module=files&action=list&page=" + page, {path: path}, function (response) {
+        $.post("?module=files&action=list&page=" + page, {path: path}, "json").then(function (response) {
 			$("#s-files-grid tr.s-file").remove();
             $("div.s-pagination").empty();
 			for (var i = 0; i < response.data.files.length; i++) {
@@ -303,7 +312,8 @@ $.wa.site = {
                 html += '</ul>';
                 $("div.s-pagination").html(html).show();
             }
-		}, "json");
+        }, function() {
+        });
 	},
 	
 	getFileSize: function (size) {
@@ -556,9 +566,9 @@ $.wa.site = {
 			if (typeof(data[i]) != 'string') {
 				html += '<i class="icon16 rarr overhanging"></i>';
 			}
-			html += '<a href="#/files/' + hash + id + '/"><i class="icon16 folder"></i><b>' + id + '</b></a>';			
+			html += '<a href="#/files/' + hash + decodeURI(id) + '/"><i class="icon16 folder"></i><b>' + decodeURI(id) + '</b></a>';
 			if (typeof(data[i]) != 'string') {
-				html +=  this.getTreeHTML(data[i]['childs'], false, hash + id + '/');
+				html +=  this.getTreeHTML(data[i]['childs'], false, hash + decodeURI(id) + '/');
 			}
 			html += '</li>';
 		}

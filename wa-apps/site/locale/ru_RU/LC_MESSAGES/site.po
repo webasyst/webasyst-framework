@@ -1020,7 +1020,7 @@ msgid "Returns data array of a page by specified <em>app_id</em> and page <em>id
 msgstr "Возвращает массив данных страницы по указанным <em>app_id</em> и <em>id</em> страницы."
 
 msgid "Returns array of published pages set up in the app with specified <em>app_id</em>.<br><em>$parent_id</em> denotes the ID of the parent page whose subpages must be returned. If <em>0</em> is specified (default value), all app‘s pages are returned.<br><em>$with_params = false</em> means that pages are returned their without custom parameters. By default (<em>true</em>), custom parameters are returned."
-msgstr "Возвращает массив опубликованных страниц приложения с уазанным <em>app_id</em>.<br><em>$parent_id</em> обозначает ID родительской страницы, для которой необходимо получить вложенные страницы. Если указано <em>0</em> (значение по умолчанию), метод возвращает все страницы приложения.<br><em>$with_params = false</em> позволит получить массив страниц без их дополнительных параметров. По умолчанию (<em>true</em>) метод возвращает страницы с дополнительными параметрами."
+msgstr "Возвращает массив опубликованных страниц приложения с указанным <em>app_id</em>.<br><em>$parent_id</em> обозначает ID родительской страницы, для которой необходимо получить вложенные страницы. Если указано <em>0</em> (значение по умолчанию), метод возвращает все страницы приложения.<br><em>$with_params = false</em> позволит получить массив страниц без их дополнительных параметров. По умолчанию (<em>true</em>) метод возвращает страницы с дополнительными параметрами."
 
 #: /wa-apps/site/themes/clear/content.html:9
 #: /wa-apps/site/themes/custom/content.html:4
@@ -1336,4 +1336,3 @@ msgstr "Указанный email-адрес уже используется."
 
 msgid "Design"
 msgstr "Дизайн"
-

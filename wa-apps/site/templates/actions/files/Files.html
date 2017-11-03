@@ -324,33 +324,35 @@
 	});		
 	
 	$("#s-folder-delete").click(function () {
-		$("#s-delete-dialog").waDialog({
-			content: '<h1>[`Delete folder`]</h1><p>[`Folder will be deleted without the ability to recover.`]</p>',
-			disableButtonsOnSubmit: true,
-			onSubmit: function () {
-				$.post('?module=files&action=delete', { path: $.wa.site.filesPath()}, function (response) {
-					if (response.status == 'ok') {
-						$("#s-delete-dialog").hide();
-						var li = $("#s-files-tree li.selected");
-						if (li.prev().length) {
-							var hash = li.prev().find('a').attr('href');
-						} else if (li.next().length) {
-							var hash = li.next().find('a').attr('href');
-						} else if (li.parents('li').length) {
-							var hash = li.parents('li').find('a').attr('href');
-							li.parents('li').children('i').remove();
-						} else {
-							var hash = '#/files/';
-						}
-						li.remove();
-						$.wa.setHash(hash);
-					} else if (response.status == 'fail') {
-						alert(response.errors);
-						$("#s-delete-dialog input[type=submit]").removeAttr('disabled');
-					}
-				}, "json");
-			}
-		});
+	    if ($.wa.site.filesPath()) {
+            $("#s-delete-dialog").waDialog({
+                content: '<h1>[`Delete folder`]</h1><p>[`Folder will be deleted without the ability to recover.`]</p>',
+                disableButtonsOnSubmit: true,
+                onSubmit: function () {
+                    $.post('?module=files&action=delete', { path: $.wa.site.filesPath()}, function (response) {
+                        if (response.status == 'ok') {
+                            $("#s-delete-dialog").hide();
+                            var li = $("#s-files-tree li.selected");
+                            if (li.prev().length) {
+                                var hash = li.prev().find('a').attr('href');
+                            } else if (li.next().length) {
+                                var hash = li.next().find('a').attr('href');
+                            } else if (li.parents('li').length) {
+                                var hash = li.parents('li').find('a').attr('href');
+                                li.parents('li').children('i').remove();
+                            } else {
+                                var hash = '#/files/';
+                            }
+                            li.remove();
+                            $.wa.setHash(hash);
+                        } else if (response.status == 'fail') {
+                            alert(response.errors);
+                            $("#s-delete-dialog input[type=submit]").removeAttr('disabled');
+                        }
+                    }, "json");
+                }
+            });
+        }
 		return false;
 	});
 	

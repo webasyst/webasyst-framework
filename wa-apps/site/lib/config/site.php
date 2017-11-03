@@ -63,7 +63,7 @@ return array(
   <div class="wa-field">
     <div class="wa-name">[s`Message`]:</div>
     <div class="wa-value">
-      <input type="hidden" name="subject" value="[s`Website request`]">
+      <input type="hidden" name="subject" value="[s`Request from website`]">
       <textarea {if !empty($errors.body)}class="wa-error"{/if} name="body">{$wa->post("body")|escape}</textarea>
       {if !empty($errors.body)}<em class="wa-error-msg">{$errors.body}</em>{/if}
     </div>

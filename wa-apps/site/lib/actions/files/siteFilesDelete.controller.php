@@ -4,22 +4,30 @@ class siteFilesDeleteController extends waJsonController
 {
     public function execute()
     {
-        $p = $path = rtrim(waRequest::post('path'), ' /');
+        $path = rtrim(waRequest::post('path'), ' /');
+
         $file = waRequest::post('file');
+
         try {
             if ($file) {
                 if (!is_array($file)) {
                     $file = array($file);
                 }
+                $count = 0;
                 foreach ($file as $f) {
-                    $f = $path.'/'.$f;
-                    waFiles::delete(wa()->getDataPath($f, true, null, false));
+                    if (strlen($f)) {
+                        $f = $path.'/'.$f;
+                        waFiles::delete(wa()->getDataPath($f, true, null, false));
+                        $count++;
+                    }
                 }
-                $this->log('file_delete', count($file));
-            } else {
+                if ($count) {
+                    $this->log('file_delete', $count);
+                }
+            } else if ($path) {
                 $path = wa()->getDataPath($path, true, null, false);
                 if (!is_writable($path)) {
-                    $this->errors = sprintf(_w("Folder could not bet deleted due to the insufficient permissions."), $p);
+                    $this->errors = sprintf(_w("Folder could not bet deleted due to the insufficient permissions."), $path);
                 } else {
                     waFiles::delete($path);
                     $this->log('file_delete', 1);

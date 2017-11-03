@@ -7,7 +7,9 @@ class siteFilesAddFolderController extends waJsonController
         $p = $path = rtrim(waRequest::post('path'), ' /');
         $path = wa()->getDataPath($path, true, null, false);
         $folder = waRequest::post('name');
-        $folder = preg_replace('!\.\.[/\\\]!','', $folder);
+        $folder = waLocale::transliterate($folder);
+        $folder = preg_replace('/[^a-zA-Z0-9_\-]+/', '-', $folder);
+        $folder = trim($folder, '-');
 
         if (file_exists($path)) {
             if (!is_writable($path)) {
