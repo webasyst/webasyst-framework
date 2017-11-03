@@ -84,9 +84,9 @@
                         <td>
                             <b>
                                 {if !empty($order.billing_address.address)}
-                                    {$order.billing_address.city|escape}, {$order.billing_address.zip|escape}, {$order.billing_address.street|escape}
+                                    {$order.billing_address.region_name|default:'регион'|escape}, {$order.billing_address.city|escape}, {$order.billing_address.zip|escape}, {$order.billing_address.street|escape}
                                 {else}
-                                    {$order.shipping_address.city|escape}, {$order.shipping_address.zip|escape}, {$order.shipping_address.street|escape}
+                                    {$order.shipping_address.region_name|default:'регион'|escape}, {$order.shipping_address.city|escape}, {$order.shipping_address.zip|escape}, {$order.shipping_address.street|escape}
                                 {/if}
                             </b>
                         </td>
@@ -108,7 +108,7 @@
                     {foreach $order.items as $item}
                         <tr bgcolor=white>
                             <td>{$item@iteration}</td>
-                            <td><b>{$item.name|escape}</b></td>
+                            <td><b>{$item.name}</b></td>
                             <td>шт.</td>
                             <td>{$item.quantity}</td>
                             <td>{$item.price|wa_format_amount:$order.currency:'%2'}</td>
@@ -137,7 +137,7 @@
                             <td align=right width="10%"><b>{$order.discount|wa_format_amount:$order.currency:'%2'}</b></td>
                         </tr>
                     {/if}
-                    {if $order.tax > 0}
+                    {if ($order.tax_included > 0)||($order.tax)}
                         <tr bgcolor=white>
                             <td align=right width="90%">НДС</td>
                             <td align=right width="10%"><b>{$order.tax|wa_format_amount:$order.currency:'%2'}</b></td>
