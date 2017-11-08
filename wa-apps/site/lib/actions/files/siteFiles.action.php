@@ -14,6 +14,9 @@ class siteFilesAction extends waViewAction
     {
         $result = array();
         $dh = opendir($path);
+        if (!$dh) {
+            return array();
+        }
         while (($f = readdir($dh)) !== false) {
             if ($f !== '.' && $f !== '..' && is_dir($path.'/'.$f)) {
 
