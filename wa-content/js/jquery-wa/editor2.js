@@ -175,6 +175,8 @@ jQuery.fn.waEditor2 = function () {
             replaceTags: false,
             removeNewlines: false,
             removeComments: false,
+            imagePosition: true,
+            imageResizable: true,
             buttons: ['format', /*'inline',*/ 'bold', 'italic', 'underline', 'deleted', 'lists',
                 /*'outdent', 'indent',*/ 'image', 'video', 'table', 'link', 'alignment',
                 'horizontalrule',  'fontcolor', 'fontsize', 'fontfamily'],

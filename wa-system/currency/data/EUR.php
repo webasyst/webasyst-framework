@@ -3,6 +3,7 @@
 return array(
     'code' => 'EUR',
     'sign' => '€',
+	'iso4217' => '978',
     'sign_position' => 0,
     'sign_delim' => '',
     'title' => 'Euro',

@@ -3,6 +3,7 @@
 return array(
     'code' => 'CAD',
     'sign' => 'CDN$ ',
+	'iso4217' => '124',
     'sign_position' => 0,
     'sign_delim' => '',
     'title' => 'Canadian dollar',

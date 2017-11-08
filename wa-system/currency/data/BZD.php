@@ -3,6 +3,7 @@
 return array(
     'code' => 'BZD',
     'sign' => '$',
+	'iso4217' => '84',
     'sign_position' => 0,
     'sign_delim' => '',
     'title' => 'Belize dollar',

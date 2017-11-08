@@ -464,7 +464,7 @@ class waModel
             return 'NULL';
         }
         if ($type == 'varchar' && !is_array($value) && !is_object($value)) {
-            $value = substr((string)$value, 0, $this->fields[$field]['params']);
+            $value = mb_substr((string)$value, 0, $this->fields[$field]['params']);
         }
 
         return $this->castValue($type, $value, !isset($this->fields[$field]['null']) || $this->fields[$field]['null']);

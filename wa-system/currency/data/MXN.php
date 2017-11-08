@@ -3,6 +3,7 @@
 return array(
     'code' => 'MXN',
     'sign' => '$',
+	'iso4217' => '484',
     'sign_position' => 0,
     'sign_delim' => '',
     'title' => 'Mexican peso',

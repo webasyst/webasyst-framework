@@ -385,14 +385,15 @@ class waCurrency
                 foreach (self::$data as $cur => $info) {
                     self::$data[$cur]['code'] = $cur;
                     $default_values = array(
-                        'sign' => $cur,
-                        'title' => $cur,
-                        'precision' => 2,
+                        'sign'          => $cur,
+                        'iso4217'       => '',
+                        'title'         => $cur,
+                        'precision'     => 2,
                         'sign_position' => 1,
-                        'sign_delim' => ' ',
-                        'sign_html' => ifset($info['sign'], $cur),
-                        'frac_name' => array($cur),
-                        'name' => array($cur),
+                        'sign_delim'    => ' ',
+                        'sign_html'     => ifset($info['sign'], $cur),
+                        'frac_name'     => array($cur),
+                        'name'          => array($cur),
                     );
                     foreach ($default_values as $k => $v) {
                         if (!isset($info[$k])) {

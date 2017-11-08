@@ -934,6 +934,20 @@ abstract class waPayment extends waSystemPlugin
         }
         return strtoupper($country['iso2letter']);
     }
+
+    /**
+     * @param $currency_code
+     * @return mixed
+     * @throws waException
+     */
+    protected function getCurrencyISO4217Code($currency_code)
+    {
+        $currency = waCurrency::getInfo($currency_code);
+        if (!$currency) {
+            throw new waException($this->_w("Unknown currency: ").$currency_code);
+        }
+        return $currency['iso4217'];
+    }
 }
 
 interface waIPayment

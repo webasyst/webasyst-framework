@@ -3,6 +3,7 @@
 return array(
     'code' => 'AZN',
     'sign' => '₼',
+	'iso4217' => '944',
     'sign_position' => null,
     'sign_delim' => null,
     'title' => 'Azerbaijani manat',
