@@ -77,7 +77,7 @@ class waContactRegionField extends waContactField
             $name_input .= '[value]';
         }
 
-        $country = ifset($params['composite_value']['country']);
+        $country = isset($params['composite_value']['country']) ? $params['composite_value']['country'] : '';
         $region_countries = array_fill_keys($this->getRegionCountries(), 1);
         if (!$region_countries || (empty($country) && empty($params['parent']))) {
             // The simplest case: just show <input> with no logic at all.
