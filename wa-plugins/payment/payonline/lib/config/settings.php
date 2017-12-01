@@ -1,26 +1,26 @@
 <?php
 return array(
-    'payonline_id'  => array(
+    'payonline_id' => array(
         'value'        => '',
         'title'        => 'MerchantId',
         'description'  => 'Идентификатор, полученный при активации',
         'control_type' => waHtmlControl::INPUT,
     ),
-    'secret_key'    => array(
+    'secret_key'   => array(
         'value'        => '',
         'title'        => 'PrivateSecurityKey',
         'description'  => 'Ключ, полученный при активации',
         'control_type' => waHtmlControl::INPUT,
     ),
-    'currency'      => array(
+    'currency'     => array(
         'value'        => '',
         'title'        => 'Валюта заказа',
         'description'  => 'Валюта, в которой будет проводиться транзакция в процессинговом центре.',
         'control_type' => waHtmlControl::GROUPBOX,
         'options'      => array(
-            array('title' => '(RUB) российский рубль', 'value' => 'RUB', 'description' => '', ),
-            array('title' => '(USD) доллар США', 'value' => 'USD', 'description' => '', ),
-            array('title' => '(EUR) евро', 'value' => 'EUR', 'description' => '', ),
+            array('title' => '(RUB) российский рубль', 'value' => 'RUB', 'description' => '',),
+            array('title' => '(USD) доллар США', 'value' => 'USD', 'description' => '',),
+            array('title' => '(EUR) евро', 'value' => 'EUR', 'description' => '',),
         ),
     ),
 
@@ -54,12 +54,33 @@ return array(
             array('title' => 'русский', 'value' => 'ru'),
         ),
     ),
-    /*
-     'DEBUGMODE'=> array(
-     'value' 			=> '',
-     'title' 			=> 'Отладочный режим',
-     'description'	 	=> 'Включите для записи информации обо всех транзакциях в служебный файл.',
-     'control_type' 	=> 'setting_CHECK_BOX(',
-     ),
-     */
+
+    'receipt' => array(
+        'value'        => false,
+        'title'        => 'Фискализировать чеки',
+        'description'  => ''.
+
+            '
+<script type="text/javascript">
+(function () {
+    $(\':input[name$="\[receipt\]"]\').unbind(\'change\').bind(\'change\', function (event) {
+        var show = this.checked;
+        var fast = !event.originalEvent;
+        $(this).parents(\'form\').find(\':input[name$="\[sno\]"]\').each(function () {
+            if (show) {
+                $(this).parents(\'div.field\').show(400);
+            } else {
+                if (fast) {
+                    $(this).parents(\'div.field\').hide();
+                } else {
+                    $(this).parents(\'div.field\').hide(400);
+                }
+            }
+        })
+    }).trigger(\'change\');
+})();
+</script>
+',
+        'control_type' => waHtmlControl::CHECKBOX,
+    ),
 );

@@ -1,0 +1,180 @@
+<html>
+<head>
+    <title>Кассовый чек</title>
+    <style>
+        {include file="../css/receipt.css"}
+    </style>
+</head>
+<body>
+{$_is_done = false}
+{if $response.status.code === -1}
+    {$_is_done = true}
+{/if}
+<div class="payonline-printform-receipt" id="payonline-printform-receipt">
+    <header class="crm-dialog-header">
+        <h1>Кассовый чек</h1>
+    </header>
+
+    <div class="c-receipt-wrapper">
+        <div class="field-group">
+
+            {if $response.status.code === 7}
+                <div class="c-field-wrapper c-layout fixed">
+                    <div class="c-column">Статус</div>
+                    <div class="c-column right">
+                        <span style="color: #ff8c00">Ожидание</span>
+                    </div>
+                </div>
+                <div class="c-field-wrapper c-layout fixed">
+                    <div class="c-column">UUID</div>
+                    <div class="c-column right">{$receipt.name_document}</div>
+                </div>
+            {elseif $response.status.code !== -1}
+                <div class="c-field-wrapper c-layout fixed">
+                    <div class="c-column">Ошибка</div>
+                    <div class="c-column right">
+                        <span style="color: #f20;">{$response.status.text|escape}</span>
+                    </div>
+                </div>
+                <div class="c-field-wrapper c-layout fixed">
+                    <div class="c-column">Код ошибки</div>
+                    <div class="c-column right">{$response.status.code}</div>
+                </div>
+            {/if}
+
+            {if !empty($_is_done)}
+                <div class="c-field-wrapper c-layout fixed">
+                    <div class="c-column">Номер смены</div>
+                    <div class="c-column right">{$receipt.shift_number|escape}</div>
+                </div>
+            {/if}
+
+            {if !empty($_is_done)}
+                <div class="c-field-wrapper c-layout fixed">
+                    <div class="c-column">Номер чека за смену</div>
+                    <div class="c-column right">{$receipt.fiscal_receipt_number|escape}</div>
+                </div>
+            {/if}
+
+            <div class="c-field-wrapper c-layout fixed">
+                <div class="c-column">Признак расчета</div>
+                <div class="c-column right">
+                    {if $receipt.operation == 'Benefit'}
+                        Приход
+                    {elseif $receipt.operation == 'Charge'}
+                        Возврат
+                    {/if}
+                </div>
+            </div>
+
+            <div class="c-field-wrapper c-layout fixed">
+                <div class="c-column">Адрес покупателя</div>
+                <div class="c-column right">{$receipt.recipient|escape}</div>
+            </div>
+
+            {if !empty($_is_done)}
+                <div class="c-field-wrapper c-layout fixed">
+                    <div class="c-column">Заводской номер фискального накопителя</div>
+                    <div class="c-column right">{$receipt.fn_number|escape}</div>
+                </div>
+            {/if}
+
+            {if !empty($_is_done)}
+                <div class="c-field-wrapper c-layout fixed">
+                    <div class="c-column">Фискальный признак документа</div>
+                    <div class="c-column right">{$receipt.fiscal_document_attribute|escape}</div>
+                </div>
+            {/if}
+
+            {if !empty($_is_done)}
+                <div class="c-field-wrapper c-layout fixed">
+                    <div class="c-column">Регистрационный номер ККТ</div>
+                    <div class="c-column right">{$receipt.ecr_registration_number|escape}</div>
+                </div>
+            {/if}
+
+            {if !empty($_is_done)}
+                <div class="c-field-wrapper c-layout fixed">
+                    <div class="c-column">Порядковый номер фискального документа</div>
+                    <div class="c-column right">{$receipt.fiscal_document_number|escape}</div>
+                </div>
+            {/if}
+
+            {if !empty($_is_done)}
+                <div class="c-field-wrapper c-layout fixed">
+                    <div class="c-column">Дата, время</div>
+                    <div class="c-column right">{$receipt.receipt_datetime|wa_datetime|escape}</div>
+                </div>
+            {/if}
+
+            {if !empty($_is_done)}
+                <div class="c-field-wrapper c-layout fixed">
+                    <div class="c-column">Кассир</div>
+                    <div class="c-column right">Системный администратор</div>
+                </div>
+            {/if}
+        </div>
+
+        <div class="field-group">
+            <ul class="c-items-list">
+                {foreach $data.goods as $_i}
+                    <li>
+                        <div class="line c-layout fixed">
+                            <div class="c-column bold">{$_i.description|escape}</div>
+                            <div class="c-column right">{$_i.quantity|escape} x {$_i.amount|wa_format|escape}</div>
+                        </div>
+                        <div class="line c-layout fixed">
+                            <div class="c-column">ИТОГ</div>
+                            <div class="c-column right">{$_i.total|wa_format_amount_currency:'RUB'}</div>
+                        </div>
+                        <div class="line c-layout fixed">
+                            <div class="c-column">НДС</div>
+                            <div class="c-column right">
+                                {if $_i.tax|escape == 'none'}
+                                    не облагается
+                                {elseif $_i.tax_rate}
+                                    {$_i.tax_rate}%:
+                                    {$_i.tax_total|wa_format_amount_currency:'RUB'}
+                                {else}
+                                    {$_i.tax_rate}%
+                                {/if}
+                            </div>
+                        </div>
+                    </li>
+                {/foreach}
+            </ul>
+        </div>
+
+        <div class="field-group">
+            <div class="c-field-wrapper c-layout fixed" style="font-size: 1.5em;">
+                <div class="c-column bold">ИТОГ</div>
+                <div class="c-column bold right">{$receipt.total|escape|wa_format_amount_currency:'RUB'}</div>
+            </div>
+
+            <div class="c-field-wrapper c-layout fixed">
+                <div class="c-column">Оплачено электронным средством платежа</div>
+                <div class="c-column right">{$receipt.total|escape|wa_format_amount_currency:'RUB'}</div>
+            </div>
+            {*
+                                <div class="c-field-wrapper c-layout fixed">
+                                    <div class="c-column">Применяемая система налогообложения</div>
+                                    <div class="c-column right">{ifempty($sno[$receipt.receipt_data.receipt.attributes.sno|escape], $receipt.receipt_data.receipt.attributes.sno|escape)}</div>
+                                </div>
+            *}
+        </div>
+
+        {if !empty($_is_done)}
+            <div class="field-group">
+                <div class="line">Чек сформирован в электронном виде и всегда доступен на сайте оператора фискальных данных</div>
+                <div class="line">
+                    {$_href = "https://`$receipt.fns_site`/web/noauth/cheque?fn=`$receipt.fn_number|escape`&fp=`$receipt.fiscal_document_attribute|escape`"}
+                    {$_href = "https://lk.platformaofd.ru/web/noauth/cheque?fn=`$receipt.fn_number|escape`&fp=`$receipt.fiscal_document_attribute|escape`"}
+                    <a href="{$_href|escape}" target="_blank">{$_href|escape}</a>
+                </div>
+            </div>
+        {/if}
+    </div>
+</div>
+
+</body>
+</html>
