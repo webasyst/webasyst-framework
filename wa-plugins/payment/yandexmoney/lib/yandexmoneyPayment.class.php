@@ -16,6 +16,7 @@
  * @property-read boolean $receipt
  * @property-read int $taxSystem
  * @property-read string $taxes
+ * @property-read string $merchant_currency
  *
  * @see https://money.yandex.ru/doc.xml?id=526537
  */
@@ -60,9 +61,19 @@ class yandexmoneyPayment extends waPayment implements waIPayment
     private $order_id;
     private $request;
 
+    private static $currencies = array(
+        'RUB',
+        'EUR',
+        'USD',
+    );
+
     public function allowedCurrency()
     {
-        return 'RUB';
+        $currency = $this->merchant_currency ? $this->merchant_currency : reset(self::$currencies);
+        if (!in_array($currency, self::$currencies)) {
+            $currency = reset(self::$currencies);
+        }
+        return $currency;
     }
 
     public function payment($payment_form_data, $order_data, $auto_submit = false)
@@ -71,17 +82,17 @@ class yandexmoneyPayment extends waPayment implements waIPayment
             $auto_submit = false;
         }
         $order_data = waOrder::factory($order_data);
-        if ($order_data['currency_id'] != 'RUB') {
-            return array(
-                'type' => 'error',
-                'data' => 'Оплата на сайте Яндекс.Денег производится в только в рублях (RUB) и в данный момент невозможна, так как эта валюта не определена в настройках.',
-            );
+        $currency = $this->allowedCurrency();
+        if ($order_data['currency_id'] != $currency) {
+            $template = 'Оплата на сайте «Яндекс.Денег» производится в только в %s и в данный момент невозможна, потому что эта валюта не определена в настройках.';
+            throw new waPaymentException(sprintf($template, $currency));
         }
         $view = wa()->getView();
+        $view->assign('plugin', $this);
         switch ($this->integration_type) {
 
             case 'personal':
-                $view->assign('plugin', $this);
+
                 $view->assign('order', $order_data);
                 $view->assign('return_url', $this->getAdapter()->getBackUrl(waAppPayment::URL_SUCCESS));
                 $view->assign('label', $this->app_id.'_'.$this->account.'_'.$order_data['order_id']);
@@ -93,7 +104,7 @@ class yandexmoneyPayment extends waPayment implements waIPayment
                     'CustomerNumber' => $order_data['customer_contact_id'],
                     //'customerNumber' => $order_data['customer_contact_id'],
                     'orderNumber'    => $this->app_id.'_'.$this->merchant_id.'_'.$order_data['order_id'],
-                    'Sum'            => number_format($order_data['amount'], 2, '.', ''),
+                    'Sum'            => number_format($order_data->total, 2, '.', ''),
                 );
                 if ($order_data->recurrent === true) {
                     //пользователь не сможет отказаться от повторных списаний (но сможет прервать оплату)
@@ -160,6 +171,15 @@ class yandexmoneyPayment extends waPayment implements waIPayment
         return $view->fetch($this->path.'/templates/payment.html');
     }
 
+    public function getSettingsHTML($params = array())
+    {
+        $html = parent::getSettingsHTML($params);
+
+        $js = file_get_contents($this->path.'/js/settings.js');
+        $html .= sprintf('<script type="text/javascript">%s</script>', $js);
+        return $html;
+    }
+
     /**
      * @see https://tech.yandex.ru/money/doc/payment-solution/payment-form/payment-form-receipt-docpage/
      * @param waOrder $order
@@ -173,10 +193,11 @@ class yandexmoneyPayment extends waPayment implements waIPayment
             if (empty($contact)) {
                 if ($contact = $order->getContactField('phone')) {
                     $contact = sprintf('+%s', preg_replace('@^8@', '7', $contact));
+                } else {
+                    $model = new waAppSettingsModel();
+                    $contact = $model->get('webasyst', 'email');
                 }
             }
-
-
 
             if (!empty($contact)) {
                 $receipt = array(
@@ -188,35 +209,40 @@ class yandexmoneyPayment extends waPayment implements waIPayment
                 }
 
                 foreach ($order->items as $item) {
-                    $item['amount'] = $item['price'] - ifset($item['discount'], 0.0);
-                    $receipt['items'][] = array(
-                        'quantity' => $item['quantity'],
-                        'price'    => array(
-                            'amount' => number_format($item['amount'], 2, '.', ''),
-                        ),
-                        'tax'      => $this->getTaxId($item),
-                        'text'     => mb_substr($item['name'], 0, 128),
-                    );
+                    $item['amount'] = round($item['price'], 2) - round(ifset($item['discount'], 0.0), 2);
+                    $receipt['items'][] = $this->formatReceiptItem($item);
+                    unset($item);
                 }
 
                 #shipping
-                $item = array(
-                    'quantity' => 1,
-                    'name'     => $order->shipping_name,
-                    'amount'   => $order->shipping,
-                    'tax_rate' => $order->shipping_tax_rate,
-                );
-                $receipt['items'][] = array(
-                    'quantity' => 1,
-                    'price'    => array(
-                        'amount' => number_format($item['amount'], 2, '.', ''),
-                    ),
-                    'tax'      => $this->getTaxId($item),
-                    'text'     => mb_substr($item['name'], 0, 128),
-                );
+                if (($order->shipping) || strlen($order->shipping_name)) {
+                    $item = array(
+                        'quantity'     => 1,
+                        'name'         => $order->shipping_name,
+                        'amount'       => round($order->shipping, 2),
+                        'tax_rate'     => $order->shipping_tax_rate,
+                        'tax_included' => ($order->shipping_tax_included !== null) ? $order->shipping_tax_included : true,
+                    );
+                    $receipt['items'][] = $this->formatReceiptItem($item);
+                }
             }
         }
         return $receipt;
+    }
+
+    private function formatReceiptItem($item)
+    {
+        if (isset($item['tax_included']) && empty($item['tax_included']) && !empty($item['tax_rate'])) {
+            $item['amount'] += round(floatval($item['tax_rate']) * $item['amount'] / 100.0, 2);
+        }
+        return array(
+            'quantity' => $item['quantity'],
+            'price'    => array(
+                'amount' => number_format(round($item['amount'], 2), 2, '.', ''),
+            ),
+            'tax'      => $this->getTaxId($item),
+            'text'     => mb_substr($item['name'], 0, 128),
+        );
     }
 
     private function getTaxId($item)
@@ -228,16 +254,30 @@ class yandexmoneyPayment extends waPayment implements waIPayment
                 $id = 1;
                 break;
             case 'map':
+                $tax_included = !isset($item['tax_included']) ? true : $item['tax_included'];
                 $rate = ifset($item['tax_rate']);
                 if (in_array($rate, array(null, false, ''), true)) {
                     $rate = -1;
                 }
+
+                if (!$tax_included && $rate > 0) {
+                    throw new waPaymentException('Фискализация товаров с налогом не включенном в стоимость не поддерживается. Обратитесь к администратору магазина');
+                }
+
                 switch ($rate) {
-                    case 18: # 4 — НДС чека по ставке 18%;
-                        $id = 4;
+                    case 18:
+                        if ($tax_included) {# 4 — НДС чека по ставке 18%;
+                            $id = 4;
+                        } else { #6 — НДС чека по расчетной ставке 18/118.
+                            $id = 6;
+                        }
                         break;
-                    case 10: # 3 — НДС чека по ставке 10%;
-                        $id = 3;
+                    case 10:
+                        if ($tax_included) {# 3 — НДС чека по ставке 10%;
+                            $id = 3;
+                        } else { #  5 — НДС чека по расчетной ставке 10/110;
+                            $id = 5;
+                        }
                         break;
                     case 0: # 2 — НДС по ставке 0%;
                         $id = 2;
@@ -297,11 +337,18 @@ class yandexmoneyPayment extends waPayment implements waIPayment
 
     public function callbackMatchSettings($settings)
     {
-        return !empty($settings['ShopID'])
-            && ($settings['ShopID'] == ifset($this->request['shopId']))
-            && !empty($settings['scid'])
-            && ($settings['scid'] == ifset($this->request['scid']))
-            && ($settings['payment_mode'] == 'MP');
+        $result = !empty($settings['ShopID']) && ($settings['ShopID'] == ifset($this->request['shopId']));
+        if ($result) {
+            $result = intval($result);
+            if (!empty($settings['scid']) && ($settings['scid'] == ifset($this->request['scid']))) {
+                $result += 2;
+            }
+
+            if ($settings['payment_mode'] == 'MP') {
+                $result += 1;
+            }
+        }
+        return $result;
     }
 
     /**
@@ -413,6 +460,7 @@ class yandexmoneyPayment extends waPayment implements waIPayment
     {
         if ($this->TESTMODE) {
             return 'https://demomoney.yandex.ru/eshop.xml';
+
         } else {
             return 'https://money.yandex.ru/eshop.xml';
         }
@@ -562,7 +610,7 @@ class yandexmoneyPayment extends waPayment implements waIPayment
                 'type'        => null,
                 'native_id'   => ifset($transaction_raw_data['invoiceId']),
                 'amount'      => ifset($transaction_raw_data['orderSumAmount']),
-                'currency_id' => 'RUB',
+                'currency_id' => $this->allowedCurrency(),
                 'customer_id' => ifempty($transaction_raw_data['customerNumber'], ifset($transaction_raw_data['CustomerNumber'])),
                 'result'      => 1,
                 'order_id'    => $this->order_id,
@@ -725,5 +773,32 @@ class yandexmoneyPayment extends waPayment implements waIPayment
                 'disabled' => $disabled,
             ),
         );
+    }
+
+    public function settingsCurrencyOptions()
+    {
+        $available = array();
+        $app_config = wa()->getConfig();
+        if (method_exists($app_config, 'getCurrencies')) {
+            $currencies = $app_config->getCurrencies();
+            foreach ($currencies as $code => $c) {
+                if (in_array($code, self::$currencies)) {
+                    $available[] = array(
+                        'value'       => $code,
+                        'title'       => sprintf('%s %s', $c['code'], $c['title']),
+                        'description' => $c['sign'],
+                    );
+                }
+            }
+        } else {
+            $code = 'RUB';
+            $c = waCurrency::getInfo($code);
+            $available[] = array(
+                'value'       => $code,
+                'title'       => sprintf('%s %s', $c['code'], $c['title']),
+                'description' => $c['sign'],
+            );
+        }
+        return $available;
     }
 }

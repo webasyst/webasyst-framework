@@ -1,11 +1,1 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<{$result.data.action}Response
-    performedDatetime="{$result.data.performedDatetime}"
-    code="{$result.data.code}"
-    invoiceId="{$result.data.invoiceId}"
-    shopId="{$result.data.shopId}"
-{if (!empty($result.data.techMessage) && $result.data.code)}
-
-    techMessage="{$result.data.techMessage|escape:'html':'utf-8'}"
-{/if}
-/>
+<?xml version="1.0" encoding="UTF-8"?><{$result.data.action}Response performedDatetime="{$result.data.performedDatetime}" code="{$result.data.code}" invoiceId="{$result.data.invoiceId}" shopId="{$result.data.shopId}"{if (!empty($result.data.techMessage) && $result.data.code)} techMessage="{$result.data.techMessage|escape:'html':'utf-8'}"{/if}/>

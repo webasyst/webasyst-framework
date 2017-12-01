@@ -6,7 +6,7 @@
 
     {if $auto_submit}
         <i class="icon16 loading"></i>
-        <em>Перенаправление на сайт «Яндекс.Денег» для оплаты...</em>
+        <em>{$plugin->_w('Redirecting to Yandex.Money website for payment...')|escape}</em>
         <br/>
         <br/>
         <script type="text/javascript">
@@ -28,18 +28,18 @@
     {foreach $fields as $field}
         {$field}<br>
     {/foreach}
-    <input id="paymentFormSubmit"  type="submit" value="Оплатить заказ на сайте Яндекс.Денег"/>
+    <input id="paymentFormSubmit"  type="submit" value="{$plugin->_w('Pay for your order on Yandex.Money website')|escape}"/>
 </form>
 {elseif $integration_type == 'mpos'}
-    Оплатите банковской картой при получении заказа с использованием мобильного терминала
+    {$plugin->_w('Pay using a bank card via a mobile point-of-sale terminal upon order receipt.')|escape}
 {else}
-    Оплатите вашим кошельком в Яндекс.Деньги:<br>
+    {$plugin->_w('Pay from your Yandex.Money purse:')|escape}<br>
     <iframe frameborder="0" allowtransparency="true" scrolling="no"
         src="https://money.yandex.ru/embed/small.xml?account={$plugin->account}&quickpay=small&yamoney-payment-type=on&button-text=01&button-size=l&button-color=orange&targets={$order['description']|escape:'url'}&default-sum={$order['amount']|escape:'url'}&successURL={$return_url|escape:'url'}&label={$label|escape:'url'}"
         width="228" height="54">
 
     </iframe><br>
-    или банковской картой:<br>
+    {$plugin->_w('or using a bank card:')|escape}<br>
 
     <iframe frameborder="0" allowtransparency="true" scrolling="no"
             src="https://money.yandex.ru/embed/small.xml?account={$plugin->account}&quickpay=small&any-card-payment-type=on&button-text=01&button-size=l&button-color=orange&targets={$order['description']|escape:'url'}&default-sum={$order['amount']|escape:'url'}&successURL={$return_url|escape:'url'}&label={$label|escape:'url'}"
