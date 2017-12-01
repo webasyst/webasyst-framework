@@ -1,0 +1,19 @@
+<select name="payment[settings][atolonline_sno]" id="wahtmlcontrol_payment_settings_atolonline_sno">
+    {foreach $options as $_o}
+        <option value="{$_o.value}"{if $selected == {$_o.value}} selected{/if}>{$_o.title|escape}</option>
+    {/foreach}
+</select>
+<script>$(function() {
+    toggleSno(0);
+    $('#wahtmlcontrol_payment_settings_atolonline_on').on('change', function() {
+        toggleSno(100);
+    });
+    function toggleSno(speed) {
+        var obj = $('#wahtmlcontrol_payment_settings_atolonline_sno').closest('.field');
+        if ($('#wahtmlcontrol_payment_settings_atolonline_on').is(':checked')) {
+            obj.slideDown(speed);
+        } else {
+            obj.slideUp(speed);
+        }
+    }
+});</script>
